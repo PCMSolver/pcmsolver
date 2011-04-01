@@ -10,20 +10,22 @@ set (EXECUTABLE "pcmsolver.exe")
 
 option(PCMSOLVER_ENABLE_PCMGREEN "Use Green´s function library" ON)
 
+include(ExternalProject)
+
 set (pcmsolver_SOURCES
 pcmsolver.cpp
 TraditionalPCMOperator.cpp 
 TraditionalPCMOperator.h)
 
-if (PCMSOLVER_ENABLE_XCFUN)
+if (PCMSOLVER_ENABLE_PCMGREEN)
 	ExternalProject_Add(pcmgreen
-		PREFIX ${CMAKE_SOURCE_DIR}/external
-		SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/pcmgreen
-		BINARY_DIR ${CMAKE_SOURCE_DIR}/external/pcmgreen-build
+		PREFIX ${CMAKE_SOURCE_DIR}
+		SOURCE_DIR ${CMAKE_SOURCE_DIR}/pcm-green
+		BINARY_DIR ${CMAKE_SOURCE_DIR}/pcm-green-build
 		DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
 		DOWNLOAD_COMMAND git submodule update
-		INSTALL_DIR ${CMAKE_SOURCE_DIR}/external
-		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
+		INSTALL_DIR ${CMAKE_SOURCE_DIR}
+		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}
 		)
 	set(HAVE_PCMGREEN TRUE)
 endif()

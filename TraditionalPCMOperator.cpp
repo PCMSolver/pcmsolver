@@ -1,3 +1,7 @@
+/*! \file TraditionalPCMOperator.cpp
+\brief Class implementation for the traditional pcm solver
+*/
+
 #include "TraditionalPCMOperator.h"
 
 /*

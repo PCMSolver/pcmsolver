@@ -1,3 +1,8 @@
+/*! \file TraditionalPCMOperator.h 
+\brief Traditional PCM solver
+*/
+
+
 #ifndef TRADITIONALPCMOPERATOR_H
 #define TRADITIONALPCMOPERATOR_H
 
@@ -28,14 +33,14 @@ public:
 
   virtual ~TraditionalPCMOperator() {};
 
-  /* @brief Clone the interface type
+  /** @brief Clone the interface type
    *
    * @return newly created BEMInterface-object
    *
    */
   //  virtual BEMInterface *newBEMInterface();
 
-  /* @brief Initializes the cavity
+  /** @brief Initializes the cavity
    *
    * Initializes cavity definitions from a file. This should be done
    * before any other operations.
@@ -47,7 +52,7 @@ public:
   virtual bool readCavity(std::string &filename);
 
 
-  /* @brief Returns essential cavity information. 
+  /** @brief Returns essential cavity information. 
    *
    * @param points Quadrature points on the cavity
    * @param normals Normal of the cavity at a corresponding quadrature
@@ -61,7 +66,7 @@ public:
 			     std::vector<double> &areas_);
   
 
-  /* @brief Constructs the system matrix according to some interface.
+  /** @brief Constructs the system matrix according to some interface.
    *
    * Remember to call this method before computing charges etc. NOT
    * thread safe, i.e., only one system matrix per object.
@@ -70,7 +75,7 @@ public:
   //  virtual void constructSystemMatrix(GreensFunctionInterface &iface);
   virtual void constructSystemMatrix();  
 
-  /* @brief Solve polarization charges according to some potential.
+  /** @brief Solve polarization charges according to some potential.
    *
    * Uses system matrix alread computed with constructSystemMatrix to
    * obtain polarization charges on the surface. Charges are returned
@@ -89,7 +94,7 @@ public:
   //   virtual void solveForPotential();
   
 
-  /* @brief Output
+  /** @brief Output
    *
    */
   virtual void printInfo(std::ostream &out);

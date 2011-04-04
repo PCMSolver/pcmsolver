@@ -9,6 +9,7 @@ set (pcmsolver_VERSION_MINOR 1)
 set (EXECUTABLE "pcmsolver.exe")
 
 option(PCMSOLVER_ENABLE_PCMGREEN "Use Green´s function library" ON)
+option(PCMSOLVER_ENABLE_PCMCAV "Use Cavity generator library" ON)
 
 include(ExternalProject)
 
@@ -30,9 +31,27 @@ if (PCMSOLVER_ENABLE_PCMGREEN)
 	set(HAVE_PCMGREEN TRUE)
 endif()
 
+if (PCMSOLVER_ENABLE_PCMCAV)
+	ExternalProject_Add(pcmcav
+		DOWNLOAD_COMMAND git submodule update
+		DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
+		PREFIX ${CMAKE_SOURCE_DIR}/external
+		SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/pcmcav
+		BINARY_DIR ${CMAKE_SOURCE_DIR}/external/pcmcav-build
+		INSTALL_DIR ${CMAKE_SOURCE_DIR}/external
+		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
+		)
+	set(HAVE_PCMCAV TRUE)
+endif()
+
 ExternalProject_Add_Step(pcmgreen init
 	COMMAND git submodule init
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	)
+
+ExternalProject_Add_Step(pcmcav init
+	COMMAND git submodule init
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/external
 	)
 
 find_package(Eigen)

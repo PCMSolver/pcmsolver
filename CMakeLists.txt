@@ -51,7 +51,7 @@ ExternalProject_Add_Step(pcmgreen init
 
 ExternalProject_Add_Step(pcmcav init
 	COMMAND git submodule init
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/external
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	)
 
 find_package(Eigen)

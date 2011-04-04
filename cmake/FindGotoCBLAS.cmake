@@ -1,0 +1,10 @@
+include(CBlasFunctions)
+init_vendor_cblas(GOTO)
+find_cblas_include_dirs(GOTO cblas.h)
+find_cblas_libraries(GOTO lib cblas)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(GotoCBLAS DEFAULT_MSG
+	GOTO_CBLAS_INCLUDE_DIRS GOTO_CBLAS_LIBRARIES)
+
+mark_as_advanced(GOTO_CBLAS_INCLUDE_DIRS GOTO_CBLAS_LIBRARIES)

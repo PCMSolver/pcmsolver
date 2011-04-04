@@ -1,0 +1,210 @@
+#!/bin/bash -l
+#
+# Written by Jonas Juselius <jonas.juselius@uit.no>
+# Modified by Luca Frediani and Stefano Corni
+#   University of Tromsø, October 2009
+#
+set -e
+
+#defaults
+install_prefix=${install_prefix:="-DCMAKE_INSTALL_PREFIX=`pwd`"}
+build_dir=Debug
+build_type=Debug
+ctest=false
+
+config_flags=""
+enable_blas=true
+enable_mpi=false
+enable_omp=false
+config_ok=false
+
+usage() {
+cat << EOF
+ Usage: setup [options] [dir]
+   --prefix=DIR     Base install path
+   --debug          Configure the debugging version in (defautlt)
+   --release        Configure the fully optimized version
+   --para           Enable the OpenMP + MPI parallel version
+   --omp            Enable OpenMP
+   --mpi            Enable MPI
+   --no-gtest       Enable unit testing
+   --no-blas        Disable the BLAS back-end
+   --help           Print this message
+   --coverage       Compiler with code coverage
+   --ctest          Produce output for CTest
+   -D*              Any other options are passed directly to 'cmake'
+
+ setup is a frontend to 'cmake'. It tries to automagically configure 
+ some known standard and non-standard systems. If it fails, you must run 
+ 'ccmake' by hand.
+EOF
+exit 0
+}
+
+parse_command_line () {
+	for i in $*; do
+		case $i in
+			--prefix=*) setup_install_prefix $i; shift ;;
+			--debug) build_type=Debug; build_dir=Debug; shift ;;
+			--release) build_type=Release; build_dir=Release; shift ;;
+			--para*) enable_mpi=true; enable_omp=true; shift ;;
+			--omp) enable_omp=true; shift ;;
+			--mpi) enable_mpi=true; shift ;;
+			--no-blas|--disable-blas) enable_blas=false; shift ;;
+			-D*) config_flags="$config_flags $i"; shift ;;
+			--help|-h|-?) usage; shift ;;
+			--ctest) ctest=true; shift ;;
+			-*) echo "Invalid option: $i"; exit 1 ;;
+		esac
+	done
+	if [ $# != 0 ]; then
+		if [ $# = 1 ]; then
+			build_dir=$1
+		else
+			usage
+		fi
+	fi
+}
+
+setup_install_prefix() {
+	prefix="`echo $1 |sed 's/--prefix=//'`"
+	install_prefix="-DCMAKE_INSTALL_PREFIX=$1"
+}
+
+setup_config_flags() {
+	if [ "x$EIGEN_ROOT" != x ]; then 
+		config_flags="$config_flags -DEIGEN_ROOT=$EIGEN_ROOT"
+	fi
+	
+	if [ "x$BOOST_ROOT" != x ]; then
+		config_flags="$config_flags -DBOOST_ROOT=$BOOST_ROOT"
+	fi
+	
+	if [ "x$enable_mpi" = "xtrue" ]; then
+		config_flags="$config_flags -DMRCPP_ENABLE_MPI=ON"
+	fi
+
+	if [ "x$enable_omp" = "xtrue" ]; then
+		config_flags="$config_flags -DMRCPP_ENABLE_OPENMP=ON"
+	fi
+
+	[ "x$enable_blas" = "xtrue" ] && setup_blas
+
+}
+
+setup_blas() {
+	if [ "x$BLAS_VENDOR" == "xany" ]; then 
+		config_flags="$config_flags -DMRCPP_ENABLE_CBLAS=ON"
+	elif [ "x$BLAS_VENDOR" != x ]; then 
+		config_flags="$config_flags -DMRCPP_ENABLE_CBLAS=ON"
+		config_flags="$config_flags -D${BLAS_VENDOR}_ROOT=$BLAS_ROOT"
+	fi
+}
+
+config_stallo() {
+	module load boost
+	module load eigen
+	CMAKE="$CMAKE_ROOT/bin/cmake"
+	if [ "x$enable_mpi" = "xtrue" ]; then
+		CXX=mpic++
+		CC=mpicc
+		FC=mpif90
+		export MPIEXEC_PREFLAGS="--mca btl self,tcp"
+	else
+		CXX=${CXX:=icpc}
+		CC=${CC:=icc}
+		FC=${FC:=ifort}
+	fi
+	case $CXX in
+		*g++) 
+		module unload mkl
+		module load atlas
+		BLAS_VENDOR=ATLAS
+		BLAS_ROOT=${BLAS_ROOT:="$ATLAS_ROOT"}
+		;;
+		*) 
+		BLAS_VENDOR=MKL
+		BLAS_ROOT=${BLAS_ROOT:="/global/apps/intel/mkl/10.2.0.013"}
+		;;
+	esac	
+	MW_FILTER_DIR=${MW_FILTER_DIR:="/home/jonas/dev/MultiwaveletFilters"}
+	EIGEN_ROOT=${EIGEN_ROOT:="/home/jonas/dev/eigen2"}
+	BOOST_ROOT=${BOOST_ROOT:="$BOOSTHOME"}
+	enable_coverage=${enable_coverage:=false}
+	config_ok=true
+}
+
+config_darwin_osx() {
+	BOOST_ROOT=${BOOST_ROOT:="/opt/local/lib"}
+	EIGEN_ROOT=${EIGEN_ROOT:="/opt/eigen2"}
+	BLAS_VENDOR=${BLAS:=any}
+	if [ "x$enable_mpi" = "xtrue" ]; then
+		CXX=mpic++
+		CC=mpicc
+		FC=mpif90
+	fi
+	config_ok=true
+}
+
+config_fedora() {
+	BLAS=${BLAS:=yes}
+	if [ "x$enable_mpi" = "xtrue" ]; then
+		CXX=mpic++
+		CC=mpicc
+		FC=mpif90
+	fi
+	config_ok=true
+}
+
+config_ubuntu() {
+	BLAS=${BLAS:=yes}
+	if [ "x$enable_mpi" = "xtrue" ]; then
+		CXX=mpic++
+		CC=mpicc
+		FC=mpif90
+	fi
+	config_ok=true
+}
+
+try_config_host() {
+	case `hostname` in
+		stallo*) config_stallo ;;
+	esac
+}
+
+try_config_os() {
+	case `uname` in
+		Linux*)
+
+		case `lsb_release -si` in
+			Ubuntu|Debian) config_ubuntu ;;
+			Fedora|CentOS) config_fedora ;;
+		esac
+		;;
+		Darwin) config_darwin_osx ;;
+	esac
+}
+
+parse_command_line $*
+
+[ "${config_ok}" = "false" ] && try_config_host
+[ "${config_ok}" = "false" ] && try_config_os
+[ "${config_ok}" = "false" ] && echo "Unknown system, using generic setup"
+
+setup_config_flags
+
+buildenv=""
+[ "x$CXX" != "x" ] && buildenv="$buildenv CXX=$CXX"
+[ "x$CC" != "x" ] && buildenv="$buildenv CC=$CC"
+[ "x$FC" != "x" ] && buildenv="$buildenv Fortran=$FC"
+
+configure_cmd="$buildenv ${CMAKE:="cmake"} $install_prefix $config_flags"
+
+if [ "$ctest" = "true" ]; then
+	echo "$configure_cmd -DCMAKE_BUILD_TYPE=$build_type"
+else
+	[ ! -d $build_dir ] && mkdir $build_dir
+	cd $build_dir
+	eval "$configure_cmd -DCMAKE_BUILD_TYPE=$build_type .."
+	cd ..
+fi

@@ -55,6 +55,7 @@ ExternalProject_Add_Step(pcmcav init
 	)
 
 find_package(Eigen)
+find_package(CBLAS)
 
 link_directories (${CMAKE_SOURCE_DIR}/lib)
 

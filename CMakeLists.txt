@@ -37,11 +37,17 @@ ExternalProject_Add_Step(pcmgreen init
 
 find_package(Eigen)
 
+link_directories (${CMAKE_SOURCE_DIR}/lib)
+
 include_directories (${EIGEN_INCLUDE_DIRS})
+
+include_directories (${CMAKE_SOURCE_DIR}/include)
 
 #add_definitions(-I/home/notasoul/luca/eigen)
 
-add_executable ("pcmsolver.exe" ${pcmsolver_SOURCES})
+add_executable (pcmsolver.exe ${pcmsolver_SOURCES})
+
+target_link_libraries (pcmsolver.exe green metalsphere) 
 
 # install executables and scripts
 install (TARGETS ${EXECUTABLE} 

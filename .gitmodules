@@ -1,3 +1,6 @@
 [submodule "pcm-green"]
 	path = pcm-green
 	url = git@repo.ctcc.no:pcm-green.git
+[submodule "external/pcmcav"]
+	path = external/pcmcav
+	url = git@repo.ctcc.no:pcmcav

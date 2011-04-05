@@ -3,6 +3,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
 project (pcmsolver CXX C Fortran)
 
+message("Fortran compiler in pcmsolver ${CMAKE_Fortran_COMPILER}")
+
 set (pcmsolver_VERSION_MAJOR 0)
 set (pcmsolver_VERSION_MINOR 1)
 # build executable

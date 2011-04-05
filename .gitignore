@@ -6,6 +6,7 @@ external/*-build
 external/src
 external/tmp
 external/lib
+external/include
 Debug
 Release
 

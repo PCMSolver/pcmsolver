@@ -81,11 +81,11 @@ setup_config_flags() {
 	fi
 	
 	if [ "x$enable_mpi" = "xtrue" ]; then
-		config_flags="$config_flags -DMRCPP_ENABLE_MPI=ON"
+		config_flags="$config_flags -DENABLE_MPI=ON"
 	fi
 
 	if [ "x$enable_omp" = "xtrue" ]; then
-		config_flags="$config_flags -DMRCPP_ENABLE_OPENMP=ON"
+		config_flags="$config_flags -DENABLE_OPENMP=ON"
 	fi
 
 	[ "x$enable_blas" = "xtrue" ] && setup_blas
@@ -94,10 +94,11 @@ setup_config_flags() {
 
 setup_blas() {
 	if [ "x$BLAS_VENDOR" == "xany" ]; then 
-		config_flags="$config_flags -DMRCPP_ENABLE_CBLAS=ON"
+		config_flags="$config_flags -DENABLE_CBLAS=ON"
 	elif [ "x$BLAS_VENDOR" != x ]; then 
-		config_flags="$config_flags -DMRCPP_ENABLE_CBLAS=ON"
-		config_flags="$config_flags -D${BLAS_VENDOR}_ROOT=$BLAS_ROOT"
+		config_flags="$config_flags -DENABLE_CBLAS=ON"
+#		config_flags="$config_flags -D${BLAS_VENDOR}_ROOT=$BLAS_ROOT"
+		config_flags="$config_flags -DCBLAS_ROOT=$BLAS_ROOT"
 	fi
 }
 

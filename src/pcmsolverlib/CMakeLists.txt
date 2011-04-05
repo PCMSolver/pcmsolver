@@ -1,0 +1,9 @@
+set (pcmsolverlib_SOURCES
+TraditionalPCMOperator.cpp
+PCMSolver.cpp
+)
+
+add_library(pcmsolver ${pcmsolverlib_SOURCES})
+
+install(TARGETS pcmsolver
+	ARCHIVE DESTINATION lib)

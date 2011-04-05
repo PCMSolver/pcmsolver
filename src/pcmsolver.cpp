@@ -2,11 +2,16 @@
 #include <iostream>
 #include <fstream>
 
+using namespace std;
+
+
 #include "TraditionalPCMOperator.h"
 #include "GreensFunction.h"
 #include "UniformDielectric.h"
+#include "MetalSphere.h"
+#include "GreensFunctionSum.h"
 
-using namespace std;
+#include "PCMSolver.h"
 
 int main(){
   std::vector<Vector3d> points, normals, atoms;
@@ -16,6 +21,8 @@ int main(){
   //  GreensFunctionInterface iface;
   std::string fname("output_cav");
   //  VectorXd *potential, *charges;
+
+
 
   // potential testing variables
   Vector3d Rwater;
@@ -41,12 +48,28 @@ int main(){
 
   totalCharge = 0;
 
-  double p1[3] = {0.0, 0.0, 0.0};
-  double p2[3] = {0.0, 0.0, 1.0};
+  double p1[3] = {0.0, 10.1, 0.0};
+  double p2[3] = {0.0, 10.2, 0.0};
+  double ps[3] = {0.0, 0.0, 0.0};
 
   UniformDielectric water(78.39);
-  double green = water.evalf(p1, p2);
+  MetalSphere metal(78.39, -1000000.0, 0.0, ps, 10.0);
+  GreensFunctionSum waterMetal(water, metal);
+
+  PCMSolver<UniformDielectric> waterSolver(water);
+  PCMSolver<MetalSphere> metalSolver(metal);
+  PCMSolver<GreensFunctionSum> waterMetalSolver(waterMetal);
+  
+  GreensFunction &water2 = waterSolver.getGreensFunction();
+  GreensFunction &metal2 = metalSolver.getGreensFunction();
+  GreensFunction &waterMetal2 = waterMetalSolver.getGreensFunction();
+
+  double green = water2.evalf(p1,p2);
   cout << " green " << green << endl;
+  double green2 = metal2.evalf(p1,p2);
+  cout << " green2 " << green2 << endl;
+  double green3 = waterMetal2.evalf(p1,p2);
+  cout << " green3 " << green3 << endl;
 
 }
 

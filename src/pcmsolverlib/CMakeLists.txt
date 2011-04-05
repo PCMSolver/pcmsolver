@@ -1,5 +1,7 @@
 set (pcmsolverlib_SOURCES
-TraditionalPCMOperator.cpp)
+TraditionalPCMOperator.cpp
+PCMSolver.cpp
+)
 
 add_library(pcmsolver ${pcmsolverlib_SOURCES})
 

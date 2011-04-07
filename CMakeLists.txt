@@ -59,13 +59,15 @@ ExternalProject_Add_Step(pcmcav init
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	)
 
-find_package(Eigen)
+#find_package(Eigen)
+find_package(Eigen3)
 find_package(CBLAS)
 
 link_directories (${CMAKE_SOURCE_DIR}/lib)
 link_directories (${CMAKE_SOURCE_DIR}/external/lib)
 
-include_directories (${EIGEN_INCLUDE_DIRS})
+include_directories (${EIGEN3_INCLUDE_DIR})
+#include_directories (${EIGEN_INCLUDE_DIRS})
 include_directories (${CMAKE_SOURCE_DIR}/include)
 include_directories (${CMAKE_SOURCE_DIR}/external/include)
 

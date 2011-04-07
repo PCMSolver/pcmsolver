@@ -14,38 +14,32 @@
 using namespace std;
 
 #include "GreensFunction.h"
+#include "Vacuum.h"
 #include "UniformDielectric.h"
 #include "GreensFunctionSum.h"
-
 #include "MetalSphere.h"
 
-template <class Green>
+template <class GI, class GO>
 class PCMSolver{
  public:
-    PCMSolver(Green &greensFunction_){greensFunction = &greensFunction_;};
+    PCMSolver(GI &gfi, GO &gfo){
+        greenInside = &gfi;
+        greenOutside = &gfo;
+    };
     ~PCMSolver(){};
-    Green &getGreensFunction();
+    GI &getGreenInside();
+    GO &getGreenOutside();
+    virtual void buildPCMMatrix();
+    virtual bool readCavity(string &filename);
  private:
-    Green *greensFunction;
+    int cavitySize;
+    GI *greenInside;
+    GO *greenOutside;
+    VectorXd areaTess;
+    VectorXd radiusTess;
+    Matrix<double, Dynamic, 3> centerSphereTess;
+    Matrix<double, Dynamic, 3> centerTess;
+    Matrix<double, Dynamic, 3> normalTess;
+    MatrixXd PCMMatrix;
 };
-/*
-class PCMSolver{
- public:
-    PCMSolver(GreensFunction &GF_){GF = &GF_;};
-    ~PCMSolver(){};
-    GreensFunction &getGreensFunction();
- private:
-    GreensFunction *GF;
-*/
-    /* 
-protected:
-    double PCM_E;  
-    std::vector<Vector3d> points_;
-    std::vector<double> areas_;
-    std::vector<Vector3d> correspondingSpheres_;
-    std::vector<Vector3d> atoms_;
-    std::vector<double> sphereRadii_;
-    std::vector<Vector3d> normals_;
-    MatrixXd systemMatrix_;
-    */
 #endif

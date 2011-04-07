@@ -1,5 +1,4 @@
 set (pcmsolverlib_SOURCES
-TraditionalPCMOperator.cpp
 PCMSolver.cpp
 )
 

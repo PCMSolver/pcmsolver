@@ -72,8 +72,8 @@ setup_install_prefix() {
 }
 
 setup_config_flags() {
-	if [ "x$EIGEN_ROOT" != x ]; then 
-		config_flags="$config_flags -DEIGEN_ROOT=$EIGEN_ROOT"
+	if [ "x$EIGEN3_ROOT" != x ]; then 
+		config_flags="$config_flags -DEIGEN3_ROOT=$EIGEN3_ROOT"
 	fi
 	
 	if [ "x$BOOST_ROOT" != x ]; then
@@ -129,7 +129,6 @@ config_stallo() {
 		;;
 	esac	
 	MW_FILTER_DIR=${MW_FILTER_DIR:="/home/jonas/dev/MultiwaveletFilters"}
-	EIGEN_ROOT=${EIGEN_ROOT:="/home/jonas/dev/eigen2"}
 	BOOST_ROOT=${BOOST_ROOT:="$BOOSTHOME"}
 	enable_coverage=${enable_coverage:=false}
 	config_ok=true
@@ -137,7 +136,7 @@ config_stallo() {
 
 config_darwin_osx() {
 	BOOST_ROOT=${BOOST_ROOT:="/opt/local/lib"}
-	EIGEN_ROOT=${EIGEN_ROOT:="/opt/eigen2"}
+	EIGEN3_ROOT=${EIGEN3_ROOT:="/opt/eigen3"}
 	BLAS_VENDOR=${BLAS:=any}
 	if [ "x$enable_mpi" = "xtrue" ]; then
 		CXX=mpic++

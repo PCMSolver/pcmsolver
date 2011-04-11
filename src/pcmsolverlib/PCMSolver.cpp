@@ -40,18 +40,23 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
 
     for(int i = 0; i < cavitySize; i++){
 	Vector3d p1 = centerTess.row(i);
+	Vector3d n1 = normalTess.row(i);
+	cout << " Index " << i << endl << p1 << endl << n1 << endl;
 	SI(i,i) =   factor * sqrt(4 * M_PI / areaTess(i));
-	DI(i,i) = - factor * sqrt(4 * M_PI * areaTess(i)) / radiusTess(i);
+	DI(i,i) = - factor * sqrt(4 * M_PI / areaTess(i)) / (2*radiusTess(i));
 	for (int j = 0; j < cavitySize; j++){
 	    Vector3d p2 = centerTess.row(j);
+	    Vector3d n2 = normalTess.row(j);
 	    if (i != j) {
 		SI(i,j) = greenInside->evalf(p1, p2);
 		SE(i,j) = greenOutside->evalf(p1, p2);
-		DI(i,j) = greenInside->evald(normalTess.row(j), p1, p2);
-		DE(i,j) = greenOutside->evald(normalTess.row(j), p1, p2);
+		DI(i,j) = -greenInside->evald(n2, p1, p2);
+		DE(i,j) = -greenOutside->evald(n2, p1, p2);
 	    }
 	}
     }
+
+    cout << "TOTAL AREA " << areaTess.sum() << endl;
 
     MatrixXd areaTessInv(cavitySize, cavitySize);
     areaTessInv.setZero();

@@ -6,7 +6,6 @@
 using namespace std;
 using namespace Eigen;
 
-#include "TraditionalPCMOperator.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
@@ -16,23 +15,32 @@ using namespace Eigen;
 #include "PCMSolver.h"
 
 int main(){
-    VectorXd potential, charges;
     std::string fname("cavity.out");
     
     Vector3d p1(0.0, 10.1, 0.0);
     Vector3d p2(0.0, 10.2, 0.0);
     Vector3d ps(0.0,  0.0, 0.0);
     
-    UniformDielectric water(78.39);
+    UniformDielectric water(2.0);
     UniformDielectric cyclohexane(2.0);
     Vacuum vacuum;
     
-    PCMSolver<Vacuum, UniformDielectric> waterSolver(vacuum, water);
+    PCMSolver<Vacuum, UniformDielectric> waterSolver(vacuum, cyclohexane);
     GreensFunction &water2 = waterSolver.getGreenOutside();
     double green = water2.evalf(p1,p2);
     cout << " green " << green << endl;
     waterSolver.readCavity(fname);
     waterSolver.buildPCMMatrix();
+    
+    int size = waterSolver.getCavitySize();
+    VectorXd potential(size);
+    VectorXd charges(size);
+    potential.setConstant(1.0);
+    const MatrixXd &matrix = waterSolver.getPCMMatrix();
+    charges = matrix * potential;
+    cout << " CHARGES " << charges.sum() << endl;
+    cout << charges << endl;
+
 }
 
 //

@@ -29,6 +29,8 @@ class PCMSolver{
     ~PCMSolver(){};
     GI &getGreenInside();
     GO &getGreenOutside();
+    int getCavitySize() const {return cavitySize;};
+    const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
     virtual void buildPCMMatrix();
     virtual bool readCavity(string &filename);
  private:

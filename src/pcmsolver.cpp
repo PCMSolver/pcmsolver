@@ -21,11 +21,10 @@ int main(){
     Vector3d p2(0.0, 10.2, 0.0);
     Vector3d ps(0.0,  0.0, 0.0);
     
-    UniformDielectric water(2.0);
-    UniformDielectric cyclohexane(2.0);
+    UniformDielectric water(10000.0);
     Vacuum vacuum;
     
-    PCMSolver<Vacuum, UniformDielectric> waterSolver(vacuum, cyclohexane);
+    PCMSolver<Vacuum, UniformDielectric> waterSolver(vacuum, water);
     GreensFunction &water2 = waterSolver.getGreenOutside();
     double green = water2.evalf(p1,p2);
     cout << " green " << green << endl;

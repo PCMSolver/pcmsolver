@@ -3,7 +3,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
 project (pcmsolver CXX C Fortran)
 
-message("Fortran compiler in pcmsolver ${CMAKE_Fortran_COMPILER}")
+cmake_minimum_required(VERSION 2.6)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
 set (pcmsolver_VERSION_MAJOR 0)
 set (pcmsolver_VERSION_MINOR 1)
@@ -11,6 +12,27 @@ set (pcmsolver_VERSION_MINOR 1)
 
 option(PCMSOLVER_ENABLE_PCMGREEN "Use Green´s function library" ON)
 option(PCMSOLVER_ENABLE_PCMCAV "Use Cavity generator library" ON)
+
+include(SaveCompilerFlags)
+
+If (NOT DEFINED HAVE_CXX_FLAGS)
+if (CMAKE_COMPILER_IS_GNUCXX)
+	set (CMAKE_CXX_FLAGS "-Wall -Wno-unknown-pragmas -Wno-sign-compare -Woverloaded-virtual -Wwrite-strings -Wno-unused")
+	set (CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -DDEBUG")
+	set (CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wno-unused")
+	if (ENABLE_CODE_COVERAGE)
+		set (CMAKE_CXX_FLAGS 
+			"${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+		set (CMAKE_CXX_LINK_FLAGS "-fprofile-arcs -ftest-coverage")
+	endif()
+elseif (CMAKE_CXX_COMPILER_ID MATCHES Intel)
+	set (CMAKE_CXX_FLAGS "-Wno-unknown-pragmas")
+	set (CMAKE_CXX_FLAGS_DEBUG "-O0 -debug -DDEBUG")
+	set (CMAKE_CXX_FLAGS_RELEASE "-debug -O3 -DNDEBUG")
+	set (CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -shared-intel")
+endif ()
+SaveCompilerFlags(CXX)
+endif ()
 
 include(ExternalProject)
 

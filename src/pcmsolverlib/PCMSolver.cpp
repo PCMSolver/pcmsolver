@@ -41,7 +41,6 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
     for(int i = 0; i < cavitySize; i++){
 	Vector3d p1 = centerTess.row(i);
 	Vector3d n1 = normalTess.row(i);
-	cout << " Index " << i << endl << p1 << endl << n1 << endl;
 	double sii = factor * sqrt(4 * M_PI / areaTess(i)); 
 	SI(i,i) =  sii; 
 	SE(i,i) =  sii / greenOutside->getEpsilon();
@@ -70,7 +69,7 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
 	aInv(i,i) = 2 * M_PI / areaTess(i);
     }
 
-    PCMMatrix = ((aInv - DE) * a * SI + SE * a *(aInv + DI.transpose()));
+    PCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose()));
     PCMMatrix = PCMMatrix.inverse();
     PCMMatrix *= ((aInv - DE) - SE * SI.inverse() * (aInv - DI));
     PCMMatrix = PCMMatrix * a;

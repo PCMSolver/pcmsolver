@@ -19,24 +19,23 @@ using namespace std;
 #include "GreensFunctionSum.h"
 #include "MetalSphere.h"
 
-template <class GI, class GO>
 class PCMSolver{
  public:
-    PCMSolver(GI &gfi, GO &gfo){
+    PCMSolver(GreensFunction &gfi, GreensFunction &gfo){
         greenInside = &gfi;
         greenOutside = &gfo;
     };
     ~PCMSolver(){};
-    GI &getGreenInside();
-    GO &getGreenOutside();
+    GreensFunction &getGreenInside();
+    GreensFunction &getGreenOutside();
     int getCavitySize() const {return cavitySize;};
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
     virtual void buildPCMMatrix();
     virtual bool readCavity(string &filename);
  private:
     int cavitySize;
-    GI *greenInside;
-    GO *greenOutside;
+    GreensFunction *greenInside;
+    GreensFunction *greenOutside;
     VectorXd areaTess;
     VectorXd radiusTess;
     Matrix<double, Dynamic, 3> centerSphereTess;

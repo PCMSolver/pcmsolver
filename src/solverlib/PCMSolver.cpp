@@ -18,18 +18,15 @@ using namespace Eigen;
 #include "GreensFunctionSum.h"
 #include "MetalSphere.h"
 
-template <class GI, class GO>
-GI& PCMSolver<GI, GO>::getGreenInside(){
+GreensFunction& PCMSolver::getGreenInside(){
 	return *greenInside;
 }
 
-template <class GI, class GO>
-GO& PCMSolver<GI, GO>::getGreenOutside(){
+GreensFunction& PCMSolver::getGreenOutside(){
 	return *greenOutside;
 }
 
-template <class GI, class GO>
-void PCMSolver<GI, GO>::buildPCMMatrix(){
+void PCMSolver::buildPCMMatrix(){
 
     MatrixXd SI(cavitySize, cavitySize);
     MatrixXd SE(cavitySize, cavitySize);
@@ -97,8 +94,7 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
     }
     */
 
-template <class GI, class GO>
-bool PCMSolver<GI, GO>::readCavity(string &filename){
+bool PCMSolver::readCavity(string &filename){
     Vector3d v;
     Vector3d sph;
     double area;
@@ -158,6 +154,6 @@ bool PCMSolver<GI, GO>::readCavity(string &filename){
     return false;
 }
 
-template class PCMSolver<Vacuum, UniformDielectric>;
+//template class PCMSolver<Vacuum, UniformDielectric>;
 //template class PCMSolver<Vacuum, GreensFunctionSum>;
 

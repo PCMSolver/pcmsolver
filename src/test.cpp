@@ -24,7 +24,7 @@ int main(){
     UniformDielectric water(10000.0);
     Vacuum vacuum;
     
-    PCMSolver<Vacuum, UniformDielectric> waterSolver(vacuum, water);
+    PCMSolver waterSolver(vacuum, water);
     GreensFunction &water2 = waterSolver.getGreenOutside();
     double green = water2.evalf(p1,p2);
     cout << " green " << green << endl;

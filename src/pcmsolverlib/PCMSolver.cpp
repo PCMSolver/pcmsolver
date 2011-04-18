@@ -17,6 +17,8 @@ using namespace Eigen;
 #include "UniformDielectric.h"
 #include "GreensFunctionSum.h"
 #include "MetalSphere.h"
+#include "Cavity.h"
+#include "GePolCavity.h"
 
 template <class GI, class GO>
 GI& PCMSolver<GI, GO>::getGreenInside(){
@@ -28,6 +30,8 @@ GO& PCMSolver<GI, GO>::getGreenOutside(){
 	return *greenOutside;
 }
 
+
+/*    THE OLD VERSION OF PCM SOLVER
 template <class GI, class GO>
 void PCMSolver<GI, GO>::buildPCMMatrix(){
 
@@ -69,6 +73,12 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
     PCMMatrix *= ((areaTessInv - DE) - SE * SI.inverse() * (areaTessInv - DI));
 }
 
+
+
+*/
+
+
+
     /*
     for (int i=0; i++; i < cavitySize){
 	for (int j=0; i++; i < cavitySize){
@@ -90,6 +100,63 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
 	}
     }
     */
+
+
+
+
+
+template <class GI, class GO>
+void PCMSolver<GI, GO>::buildPCMMatrix(){
+
+  MatrixXd<double, Dynamic, Dynamic>  SI;
+  MatrixXd<double, Dynamic, Dynamic>  SE;
+  MatrixXd<double, Dynamic, Dynamic>  DI;
+  MatrixXd<double, Dynamic, Dynamic>  DE;
+
+  double factor = 1.0694;
+  
+  GenPolCavity cav("cavity.inp");
+  cav.makeCavity(500);
+
+  SI.resize(cav.getNTess(),cav.getNTess());
+  SE.resize(cav.getNTess(),cav.getNTess());
+  DI.resize(cav.getNTess(),cav.getNTess());
+  DE.resize(cav.getNTess(),cav.getNTess());
+
+
+  for(int i = 0; i < cav.getNTess(); i++){
+    Vector3d p1 = cav.getTessCenter()->row(i);
+    Vector3d n1 = cav.getTessNormal()->row(i);
+    cout << " Index " << i << endl << p1 << endl << n1 << endl;
+    SI(i,i) =   factor * sqrt(4 * M_PI / cav.getTessArea(i));
+    DI(i,i) = - factor * sqrt(4 * M_PI / cav.getTessArea(i)) / (2*cav.getTessRadius(i));
+    for (int j = 0; j < cav.getNTess(); j++){
+      Vector3d p2 = cav.getTessCenter()->row(j);
+      Vector3d n2 = cav.getTessNormal()->row(i);
+      if (i != j) {
+	SI(i,j) = greenInside->evalf(p1, p2);
+	SE(i,j) = greenOutside->evalf(p1, p2);
+	DI(i,j) = -greenInside->evald(n2, p1, p2);
+	DE(i,j) = -greenOutside->evald(n2, p1, p2);
+      }
+    }
+  }
+  
+  cout << "TOTAL AREA " << cav.getTessArea()->sum() << endl;
+  
+  MatrixXd<double, Dynamic, Dynamic>  areaTessInv;
+  areaTessInv.resize(cav.getNTess(),cav.getNTess());
+
+  areaTessInv.setZero();
+  for (int i = 0; i < cav.getNTess(); i++) {
+    areaTessInv(i,i) *= 2 * M_PI / cav.getTessArea(i);
+  }
+  
+  PCMMatrix = ((areaTessInv - DE) * SI + SE * (areaTessInv + DI.transpose()));
+  PCMMatrix = PCMMatrix.inverse();
+  PCMMatrix *= ((areaTessInv - DE) - SE * SI.inverse() * (areaTessInv - DI));
+}
+
 
 template <class GI, class GO>
 bool PCMSolver<GI, GO>::readCavity(string &filename){

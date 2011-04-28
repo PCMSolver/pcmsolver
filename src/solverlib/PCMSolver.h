@@ -27,12 +27,15 @@ class PCMSolver{
     };
     ~PCMSolver(){};
     GreensFunction &getGreenInside();
-    GreensFunction &getGreenOutside();
+    GreensFunction &getGreenOutside();    
     int getCavitySize() const {return cavitySize;};
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
     virtual void buildPCMMatrix();
     virtual bool readCavity(string &filename);
+    virtual double compDiagonalElementSoper(GreensFunction *green, int i);
+    virtual double compDiagonalElementDoper(GreensFunction *green, int i);
  private:
+    static const double factor = 1.0694;
     int cavitySize;
     GreensFunction *greenInside;
     GreensFunction *greenOutside;

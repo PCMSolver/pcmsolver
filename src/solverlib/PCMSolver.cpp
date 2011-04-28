@@ -26,6 +26,41 @@ GreensFunction& PCMSolver::getGreenOutside(){
 	return *greenOutside;
 }
 
+double PCMSolver::compDiagonalElementSoper(GreensFunction *green, int i) {
+    double s;
+    if (UniformDielectric *uniform = dynamic_cast<UniformDielectric*> (green)) {
+	    double eps = uniform->getEpsilon();
+	    s = factor * sqrt(4 * M_PI / areaTess(i)) / eps;   
+    }
+    else if (Vacuum *vacuum = dynamic_cast<Vacuum *>(green)) {
+	s = factor * sqrt(4 * M_PI / areaTess(i));   
+    }
+    else {
+	    cout << "Not uniform dielectric" << endl;
+	    cout << "Not yet implemented" << endl;
+	    exit(-1);
+    }
+    return s;
+}
+
+double PCMSolver::compDiagonalElementDoper(GreensFunction *green, int i) {
+    double s, d;
+    if (UniformDielectric *uniform = dynamic_cast<UniformDielectric *>(green)) {
+        s = factor * sqrt(4 * M_PI / areaTess(i));   
+	d = -s / (2*radiusTess(i));
+    }
+    else if (Vacuum *vacuum = dynamic_cast<Vacuum *>(green)) {
+	s = factor * sqrt(4 * M_PI / areaTess(i));   
+	d = -s / (2*radiusTess(i));
+    }
+    else {
+	cout << "Not uniform dielectric" << endl;
+	cout << "Not yet implemented" << endl;
+	exit(-1);
+    }
+    return d;
+}
+
 void PCMSolver::buildPCMMatrix(){
 
     MatrixXd SI(cavitySize, cavitySize);
@@ -33,16 +68,13 @@ void PCMSolver::buildPCMMatrix(){
     MatrixXd DI(cavitySize, cavitySize);
     MatrixXd DE(cavitySize, cavitySize);
     
-    double factor = 1.0694;
-
     for(int i = 0; i < cavitySize; i++){
 	Vector3d p1 = centerTess.row(i);
 	Vector3d n1 = normalTess.row(i);
-	double sii = factor * sqrt(4 * M_PI / areaTess(i)); 
-	SI(i,i) =  sii; 
-	SE(i,i) =  sii / greenOutside->getEpsilon();
-	DI(i,i) =  -sii / (2*radiusTess(i));
-	DE(i,i) =  -sii / (2*radiusTess(i));
+	SI(i,i) =  compDiagonalElementSoper(greenInside,  i); 
+	SE(i,i) =  compDiagonalElementSoper(greenOutside, i);
+	DI(i,i) =  compDiagonalElementDoper(greenInside,  i); 
+	DE(i,i) =  compDiagonalElementDoper(greenOutside, i); 
 	for (int j = 0; j < cavitySize; j++){
 	    Vector3d p2 = centerTess.row(j);
 	    Vector3d n2 = normalTess.row(j);
@@ -54,8 +86,6 @@ void PCMSolver::buildPCMMatrix(){
 	    }
 	}
     }
-
-    cout << "TOTAL AREA " << areaTess.sum() << endl;
 
     MatrixXd a(cavitySize, cavitySize);
     MatrixXd aInv(cavitySize, cavitySize);

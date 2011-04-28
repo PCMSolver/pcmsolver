@@ -12,7 +12,8 @@ using namespace Eigen;
 #include "UniformDielectric.h"
 #include "MetalSphere.h"
 #include "GreensFunctionSum.h"
-
+#include "Cavity.h"
+#include "GePolCavity.h"
 #include "PCMSolver.h"
 
 int main(){
@@ -26,14 +27,16 @@ int main(){
     UniformDielectric water(10000.0);
     Vacuum vacuum;
     
-    PCMSolver waterSolver(vacuum, metal);
+    GePolCavity cavity("cavity.inp");
+    cavity.makeCavity();
+
+    PCMSolver waterSolver(vacuum, water);
     GreensFunction &water2 = waterSolver.getGreenOutside();
     double green = water2.evalf(p1,p2);
     cout << " green " << green << endl;
-    waterSolver.readCavity(fname);
-    waterSolver.buildPCMMatrix();
-    
-    int size = waterSolver.getCavitySize();
+    //    waterSolver.readCavity(fname);
+    waterSolver.buildPCMMatrix(cavity);
+    int size = cavity.getNTess();
     VectorXd potential(size);
     VectorXd charges(size);
     potential.setConstant(1.0);
@@ -41,7 +44,6 @@ int main(){
     charges = matrix * potential;
     cout << " CHARGES " << charges.sum() << endl;
     cout << charges << endl;
-
 }
 
 //

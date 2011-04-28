@@ -13,12 +13,6 @@
 
 using namespace std;
 
-#include "GreensFunction.h"
-#include "Vacuum.h"
-#include "UniformDielectric.h"
-#include "GreensFunctionSum.h"
-#include "MetalSphere.h"
-
 class PCMSolver{
  public:
     PCMSolver(GreensFunction &gfi, GreensFunction &gfo){
@@ -32,8 +26,8 @@ class PCMSolver{
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
     virtual void buildPCMMatrix();
     virtual bool readCavity(string &filename);
-    virtual double compDiagonalElementSoper(GreensFunction *green, int i);
-    virtual double compDiagonalElementDoper(GreensFunction *green, int i);
+    virtual double compDiagonalElementSoper(GreensFunction *green, int i, GePolCavity cav);
+    virtual double compDiagonalElementDoper(GreensFunction *green, int i, GePolCavity cav);
  private:
     static const double factor = 1.0694;
     int cavitySize;

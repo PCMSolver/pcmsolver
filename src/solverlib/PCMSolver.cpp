@@ -20,37 +20,68 @@ using namespace Eigen;
 #include "Cavity.h"
 #include "GePolCavity.h"
 
-template <class GI, class GO>
-GI& PCMSolver<GI, GO>::getGreenInside(){
+GreensFunction& PCMSolver::getGreenInside(){
 	return *greenInside;
 }
 
-template <class GI, class GO>
-GO& PCMSolver<GI, GO>::getGreenOutside(){
+GreensFunction& PCMSolver::getGreenOutside(){
 	return *greenOutside;
 }
 
+double PCMSolver::compDiagonalElementSoper(GreensFunction *green, int i, GePolCavity cav) {
+    double s;
+    if (UniformDielectric *uniform = dynamic_cast<UniformDielectric*> (green)) {
+	    double eps = uniform->getEpsilon();
+	    s = factor * sqrt(4 * M_PI / cav.getTessArea(i)) / eps;   
+    }
+    else if (Vacuum *vacuum = dynamic_cast<Vacuum *>(green)) {
+	s = factor * sqrt(4 * M_PI / cav.getTessArea(i));   
+    }
+    else {
+	    cout << "Not uniform dielectric" << endl;
+	    cout << "Not yet implemented" << endl;
+	    exit(-1);
+    }
+    return s;
+}
 
-/*    THE OLD VERSION OF PCM SOLVER
-template <class GI, class GO>
-void PCMSolver<GI, GO>::buildPCMMatrix(){
+double PCMSolver::compDiagonalElementDoper(GreensFunction *green, int i, GePolCavity cav) {
+    double s, d;
+    if (UniformDielectric *uniform = dynamic_cast<UniformDielectric *>(green)) {
+        s = factor * sqrt(4 * M_PI / cav.getTessArea(i));   
+	d = -s / (2*cav.getTessRadius(i));
+    }
+    else if (Vacuum *vacuum = dynamic_cast<Vacuum *>(green)) {
+	s = factor * sqrt(4 * M_PI / cav.getTessArea(i));   
+	d = -s / (2*cav.getTessRadius(i));
+    }
+    else {
+	cout << "Not uniform dielectric" << endl;
+	cout << "Not yet implemented" << endl;
+	exit(-1);
+    }
+    return d;
+}
+
+void PCMSolver::buildPCMMatrix(GePolCavity cav){
+
+    int cavitySize = cav.getNTess();
 
     MatrixXd SI(cavitySize, cavitySize);
     MatrixXd SE(cavitySize, cavitySize);
     MatrixXd DI(cavitySize, cavitySize);
     MatrixXd DE(cavitySize, cavitySize);
     
-    double factor = 1.0694;
-
     for(int i = 0; i < cavitySize; i++){
-	Vector3d p1 = centerTess.row(i);
-	Vector3d n1 = normalTess.row(i);
-	cout << " Index " << i << endl << p1 << endl << n1 << endl;
-	SI(i,i) =   factor * sqrt(4 * M_PI / areaTess(i));
-	DI(i,i) = - factor * sqrt(4 * M_PI / areaTess(i)) / (2*radiusTess(i));
+	Vector3d p1 = cav.getTessCenter()->row(i);
+	Vector3d n1 = cav.getTessNormal()->row(i);
+	SI(i,i) =  compDiagonalElementSoper(greenInside,  i, cav); 
+	SE(i,i) =  compDiagonalElementSoper(greenOutside, i, cav);
+	DI(i,i) =  compDiagonalElementDoper(greenInside,  i, cav); 
+	DE(i,i) =  compDiagonalElementDoper(greenOutside, i, cav); 
 	for (int j = 0; j < cavitySize; j++){
-	    Vector3d p2 = centerTess.row(j);
-	    Vector3d n2 = normalTess.row(j);
+	    Vector3d p2 = cav.getTessCenter()->row(j);
+	    Vector3d n2 = cav.getTessNormal()->row(i);
 	    if (i != j) {
 		SI(i,j) = greenInside->evalf(p1, p2);
 		SE(i,j) = greenOutside->evalf(p1, p2);
@@ -59,51 +90,21 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
 	    }
 	}
     }
-
-    cout << "TOTAL AREA " << areaTess.sum() << endl;
-
-    MatrixXd areaTessInv(cavitySize, cavitySize);
-    areaTessInv.setZero();
+  
+    MatrixXd a(cavitySize, cavitySize);
+    MatrixXd aInv(cavitySize, cavitySize);
+    a.setZero();
+    aInv.setZero();
     for (int i = 0; i < cavitySize; i++) {
-	areaTessInv(i,i) *= 2 * M_PI / areaTess(i);
+	a(i,i) = areaTess(i);
+	aInv(i,i) = 2 * M_PI / areaTess(i);
     }
 
-    PCMMatrix = ((areaTessInv - DE) * SI + SE * (areaTessInv + DI.transpose()));
+    PCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose()));
     PCMMatrix = PCMMatrix.inverse();
-    PCMMatrix *= ((areaTessInv - DE) - SE * SI.inverse() * (areaTessInv - DI));
+    PCMMatrix *= ((aInv - DE) - SE * SI.inverse() * (aInv - DI));
+    PCMMatrix = PCMMatrix * a;
 }
-
-
-
-*/
-
-
-
-    /*
-    for (int i=0; i++; i < cavitySize){
-	for (int j=0; i++; i < cavitySize){
-	    
-	}	
-    }
-    
-
-    for(unsigned int i = 0; i < cavitySize; i++){
-	for (unsigned int j=0; j < cavitySize; j++){
-	    if (i != j) {
-		D(i,j) = areas_[i]*areas_[j]*(points_[i] - points_[j]).dot(normals_[j]);;
-		D(i,j) = D(i,j) / (4*M_PI*pow((points_[i] - points_[j]).norm(),3));
-	    }
-	    else {
-		D(i,j) = -1.07 * areas_[i] * sqrt(areas_[i]/(4*M_PI));
-		D(i,j) = D(i,j) / (2.0 * sphereRadii_[i]);
-	    }
-	}
-    }
-    */
-
-
-
-
 
 template <class GI, class GO>
 void PCMSolver<GI, GO>::buildPCMMatrix(){
@@ -115,7 +116,6 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
 
   double factor = 1.0694;
   
-  GenPolCavity cav("cavity.inp");
   cav.makeCavity(500);
 
   SI.resize(cav.getNTess(),cav.getNTess());
@@ -160,6 +160,9 @@ void PCMSolver<GI, GO>::buildPCMMatrix(){
 
 template <class GI, class GO>
 bool PCMSolver<GI, GO>::readCavity(string &filename){
+=======
+bool PCMSolver::readCavity(string &filename){
+>>>>>>> devel:src/solverlib/PCMSolver.cpp
     Vector3d v;
     Vector3d sph;
     double area;
@@ -219,6 +222,6 @@ bool PCMSolver<GI, GO>::readCavity(string &filename){
     return false;
 }
 
-template class PCMSolver<Vacuum, UniformDielectric>;
-template class PCMSolver<Vacuum, GreensFunctionSum>;
+//template class PCMSolver<Vacuum, UniformDielectric>;
+//template class PCMSolver<Vacuum, GreensFunctionSum>;
 

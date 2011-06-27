@@ -1,8 +1,4 @@
 #!/bin/bash -l
-#
-# Written by Jonas Juselius <jonas.juselius@uit.no>
-# Modified by Luca Frediani and Stefano Corni
-#
 set -e
 
 #defaults
@@ -14,6 +10,9 @@ config_flags=""
 enable_blas=true
 enable_mpi=false
 enable_omp=false
+enable_cuda=false
+enable_tests=false
+enable_coverage=false
 config_ok=false
 
 usage() {
@@ -25,7 +24,8 @@ cat << EOF
    --para           Enable the OpenMP + MPI parallel version
    --omp            Enable OpenMP
    --mpi            Enable MPI
-   --no-gtest       Enable unit testing
+   --cuda           Enable CUDA support
+   --enable-tests   Enable unit testing
    --no-blas        Disable the BLAS back-end
    --help           Print this message
    --coverage       Compiler with code coverage
@@ -48,6 +48,9 @@ parse_command_line () {
 			--para*) enable_mpi=true; enable_omp=true; shift ;;
 			--omp) enable_omp=true; shift ;;
 			--mpi) enable_mpi=true; shift ;;
+			--cuda) enable_cuda=true; shift ;;
+			--enable-tests) enable_tests=true; shift ;;
+			--coverage) enable_coverage=true; shift ;;
 			--no-blas|--disable-blas) enable_blas=false; shift ;;
 			-D*) config_flags="$config_flags $i"; shift ;;
 			--help|-h|-?) usage; shift ;;
@@ -73,6 +76,18 @@ setup_config_flags() {
 		config_flags="$config_flags -DBOOST_ROOT=$BOOST_ROOT"
 	fi
 	
+	if [ "x$enable_tests" = "xtrue" ]; then
+		config_flags="$config_flags -DENABLE_TESTS=ON"
+	fi
+
+	if [ "x$GTEST_ROOT" != x ]; then
+		config_flags="$config_flags -DGTEST_ROOT=$GTEST_ROOT"
+	fi
+
+	if [ "x$enable_coverage" = "xtrue" ]; then
+		config_flags="$config_flags -DENABLE_CODE_COVERAGE=ON"
+	fi
+
 	if [ "x$enable_mpi" = "xtrue" ]; then
 		config_flags="$config_flags -DENABLE_MPI=ON"
 		config_flags="$config_flags -DMPI_COMPILER=`which $CXX`"
@@ -80,6 +95,10 @@ setup_config_flags() {
 
 	if [ "x$enable_omp" = "xtrue" ]; then
 		config_flags="$config_flags -DENABLE_OPENMP=ON"
+	fi
+
+	if [ "x$enable_cuda" = "xtrue" ]; then
+		config_flags="$config_flags -DENABLE_CUDA=ON"
 	fi
 
 	[ "x$enable_blas" = "xtrue" ] && setup_blas
@@ -112,6 +131,7 @@ config_stallo() {
 	case $CXX in
 		*g++) 
 		module unload mkl
+		module unload google-test
 		module load atlas
 		module load google-test/1.5.0_gcc
 		BLAS_TYPE=Atlas
@@ -122,14 +142,13 @@ config_stallo() {
 		BLAS_ROOT=${BLAS_ROOT:="$MKL_ROOT"}
 		;;
 	esac	
-	MW_FILTER_DIR=${MW_FILTER_DIR:="/home/jonas/dev/MultiwaveletFilters"}
 	BOOST_ROOT=${BOOST_ROOT:="$BOOSTHOME"}
 	enable_coverage=${enable_coverage:=false}
 	config_ok=true
 }
 
 config_darwin_osx() {
-	BOOST_ROOT=${BOOST_ROOT:="/opt/local/lib"}
+	BOOST_ROOT=${BOOST_ROOT:="/opt/local"}
 	if [ "x$enable_mpi" = "xtrue" ]; then
 		CXX=mpic++
 		CC=mpicc
@@ -139,7 +158,6 @@ config_darwin_osx() {
 }
 
 config_fedora() {
-	BLAS=${BLAS:=yes}
 	if [ "x$enable_mpi" = "xtrue" ]; then
 		CXX=mpic++
 		CC=mpicc
@@ -149,7 +167,7 @@ config_fedora() {
 }
 
 config_ubuntu() {
-	BLAS=${BLAS:=yes}
+	EIGEN3_ROOT=${EIGEN3_ROOT:="/opt/eigen/3.0.0"}
 	if [ "x$enable_mpi" = "xtrue" ]; then
 		CXX=mpic++
 		CC=mpicc
@@ -209,3 +227,4 @@ if [ "$show" = "true" ]; then
 else
 	eval "$configure_cmd $srcdir"
 fi
+

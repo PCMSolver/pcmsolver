@@ -17,7 +17,7 @@ using namespace Eigen;
 #include "PCMSolver.h"
 
 int main(){
-    std::string fname("cavity.out");
+    std::string cavname("cavity.inp");
     
     Vector3d p1(0.0, 10.1, 0.0);
     Vector3d p2(0.0, 10.2, 0.0);
@@ -27,7 +27,7 @@ int main(){
     UniformDielectric water(10000.0);
     Vacuum vacuum;
     
-    GePolCavity cavity("cavity.inp");
+    GePolCavity cavity(cavname);
     cavity.makeCavity();
 
     PCMSolver waterSolver(vacuum, water);

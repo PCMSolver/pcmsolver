@@ -6,17 +6,26 @@
 
 #include <Eigen/Dense>
 
+#include "Getkw.h"
+#include "Cavity.h"
+//class Getkw;
+
 /*
 
 C++ inteface and wrapper for GePol cavity class
 written by Krzysztof Mozgawa, 2011
 
 */
+
+class Getkw;
+
 class GePolCavity : public Cavity {
  public:
+    GePolCavity(){}
     GePolCavity(string &filename){
         readInput(filename);
-    };
+    }
+    GePolCavity(Getkw &Input);
     ~GePolCavity(){};
     void makeCavity();
     void writeOutput(string &filename);
@@ -35,9 +44,6 @@ class GePolCavity : public Cavity {
     VectorXd tessRadius;
     // Variables needed for communication with pedra cavity
     // if one would require more thatn 300 spheres it needs to be changed here
-    double nesfp;
-    double xe[300], ye[300], ze[300], rin[300];
-
 };
 
 

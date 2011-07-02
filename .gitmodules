@@ -1,6 +1,3 @@
-[submodule "external/pcmcav"]
-	path = external/pcmcav
-	url = git@repo.ctcc.no:pcmcav
-[submodule "external/pcm-green"]
-	path = external/pcm-green
-	url = git@repo.ctcc.no:pcm-green
+[submodule "external/libgetkw"]
+	path = external/libgetkw
+	url = https://repo.ctcc.no/git/libgetkw

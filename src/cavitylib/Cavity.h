@@ -20,8 +20,8 @@ written by Krzysztof Mozgawa, 2011
 class Cavity
 {
  public:
-    Cavity(){};
-    ~Cavity(){};
+    Cavity(){}
+    ~Cavity(){}
     virtual void makeCavity() = 0;
     virtual void writeOutput(string &filename);
     virtual int getNTess(){ return nTess;};

@@ -2,11 +2,8 @@
 *#
 *.out
 output*
-external/*-build
-external/src
-external/tmp
-external/lib
-external/include
-Debug
-Release
-
+external
+Release*
+Makefile
+Debug*
+.DS_Store

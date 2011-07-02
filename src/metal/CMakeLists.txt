@@ -1,5 +1,5 @@
-add_library(metalsphere gsfera.F plgndr.F)
+add_library(metal gsfera.F plgndr.F)
 
-install(TARGETS metalsphere
+install(TARGETS metal
 	ARCHIVE DESTINATION lib)
 

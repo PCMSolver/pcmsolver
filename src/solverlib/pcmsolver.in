@@ -1,0 +1,136 @@
+#!@PYTHON_EXECUTABLE@
+# -*- coding: utf-8 -*-
+# vim:filetype=python:
+#
+# Written by Jonas Juselius <jonas.juselius@chem.uit.no> 
+# University of Tromsø, 2008
+#
+# Adapted to PCMSolver by Luca Frediani, 2011
+#
+
+ON=1
+OFF=0
+
+executable="@PCMSOLVER_EXECUTABLE@"
+debug=@PCMSOLVER_DRIVER_DEBUG@
+printlevel=0
+dryrun=False
+libdir="@INST_LIBDIR@"
+
+import sys, re, optparse, os, string, subprocess, tempfile
+from copy import deepcopy
+
+sys.path.append(libdir)
+import getkw
+
+def main():
+	global topsect, debug, executable, printlevel, dryrun
+
+	if debug == ON:
+		debug = True
+	else:
+		debug = False
+
+	valid_keywords = setup_keywords()
+	printl = int(valid_keywords.getkw('PRINTL')[0])
+	inpfil = parse_cmdline(valid_keywords)
+
+	if printlevel > 1:
+		print "Starting " + sys.argv[0]
+	
+	if inpfil is None:
+		inpfil = "pcmsolver.inp"
+
+	input=getkw.GetkwParser()
+	inkw=input.parseFile(inpfil)
+	inkw.sanitize(valid_keywords)
+	topsect=inkw.get_topsect()
+	inkw.run_callbacks(valid_keywords)
+	
+	if dryrun:
+		xfile='@' + inpfil
+		fd=open(xfile,'w')
+		print >> fd, inkw.top
+		fd.close()
+	else:
+		with tempfile.TemporaryFile(mode='w+r') as fd:
+			fd.write(str(inkw.top))
+			fd.seek(0)
+			p = subprocess.Popen(executable, stdin=fd)
+			fd.close()
+
+def parse_cmdline(valid_keywords):
+	global debug, executable, printlevel, dryrun
+	usage="usage: %prog [options] [config] inpfile"
+	cmdln=optparse.OptionParser(usage=usage)
+	cmdln.add_option('-D','--dryrun', action='store_true', dest='dryrun',
+			default=False, help='Only process input')
+	cmdln.add_option('-d','--debug', action='store_true', dest='debug',
+			default=False, help='debug')
+	cmdln.add_option('-p','--print', action='store', dest='printlevel',
+			help='print level')
+	cmdln.add_option('-x','--executable', action='store', dest='executable',
+			help='set executable name')
+	(opts, args)=cmdln.parse_args()
+	
+	if opts.executable:
+		executable = opts.executable
+
+	if opts.dryrun:
+		dryrun=opts.dryrun
+
+	if opts.printlevel:
+		printlevel=int(opts.printlevel)
+		valid_keywords.setkw('printlevel', printlevel)
+
+	if opts.debug == True:
+		debug=opts.debug
+		printlevel = 1
+	
+	if (len(args) == 0):
+		inpfil=None
+	elif (len(args) == 1):
+		inpfil=args[0]
+	else:
+		cmdln.error('incorrect number of files')
+		sys.exit(0)
+	return inpfil
+
+def	setup_keywords():
+	top=getkw.Section('toplevel', callback=verify_top)
+	top.set_status(True)
+	top.add_kw('PRINTL',    'INT', 0)
+
+	cavity=getkw.Section('Cavity', callback=verify_cavity)
+	cavity.add_kw('Area','DBL', 0.3)
+	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
+	top.add_sect(cavity)
+
+	return top
+		
+def verify_top(section):
+	printl=section.get('PRINTL')
+	pr=printl.get()
+	if (pr < 0):
+		sys.exit(1)
+	
+def verify_cavity(section):
+	area=section.get('Area')
+	a=area.get()
+	if (a < 0.1):
+		print "Area value is too small"
+		print "Minimum value: 0.1"
+		sys.exit(1)
+	
+def verify_spheres(keyword):
+	print "verifying spheres array"
+	spheres=keyword.get()
+	if (len(spheres)%4 != 0):
+		print "Incoherent input for Spheres keyword"
+		sys.exit(1)
+	for i in range(3,len(spheres),4):
+		print i, spheres[i]
+	
+if __name__ == '__main__':
+	main()
+

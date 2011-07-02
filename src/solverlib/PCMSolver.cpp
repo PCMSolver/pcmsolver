@@ -95,9 +95,12 @@ void PCMSolver::buildPCMMatrix(GePolCavity cav){
     MatrixXd aInv(cavitySize, cavitySize);
     a.setZero();
     aInv.setZero();
+	cout << "cavity size " << cavitySize << endl;
+	cout << cav.getTessArea(1) << endl;
+
     for (int i = 0; i < cavitySize; i++) {
-		a(i,i) = areaTess(i);
-		aInv(i,i) = 2 * M_PI / areaTess(i);
+		a(i,i) = cav.getTessArea(i);
+		aInv(i,i) = 2 * M_PI / cav.getTessArea(i);
     }
 
     PCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose()));

@@ -9,7 +9,7 @@ C
       double precision xtscor(*), ytscor(*), ztscor(*)
       double precision xsphcor(*), ysphcor(*), zsphcor(*), rsph(*)
       double precision ar(*), xe(*), ye(*), ze(*), rin(*)
-      double precision nts, nesfp
+      integer nts, nesfp
       PARAMETER (LWORK=10000000)
       dimension work(lwork)
       call makecav_(work,lwork,xtscor,ytscor,ztscor,ar,xsphcor,

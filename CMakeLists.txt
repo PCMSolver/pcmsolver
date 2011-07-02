@@ -1,15 +1,35 @@
 cmake_minimum_required (VERSION 2.6)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
+message("${CMAKE_SOURCE_DIR}")
+
 project (pcmsolver CXX C Fortran)
 
 set (pcmsolver_VERSION_MAJOR 0)
 set (pcmsolver_VERSION_MINOR 1)
 # build executable
 
-option(PCMSOLVER_ENABLE_PCMGREEN "Use Green´s function library" ON)
-option(PCMSOLVER_ENABLE_PCMCAV "Use Cavity generator library" ON)
+# guard against in-source builds
 
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
+endif()
+
+# Guard against bad build-type strings
+
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
+if(NOT cmake_build_type_tolower STREQUAL "debug"
+   AND NOT cmake_build_type_tolower STREQUAL "release")
+  message(FATAL_ERROR "Unknown build type \"${CMAKE_BUILD_TYPE}\". Allowed values are Debug, Release (case-insensitive).")
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
+
+include(Compilers)
 include(SaveCompilerFlags)
 
 # FFLAGS depend on the compiler
@@ -54,7 +74,23 @@ endif ()
 SaveCompilerFlags(CXX)
 endif ()
 
+find_package(Git)
 include(ExternalProject)
+
+add_custom_command(
+	OUTPUT ${CMAKE_SOURCE_DIR}/external/git-submodule-done
+	COMMAND ${CMAKE_COMMAND} -E touch 
+		${CMAKE_SOURCE_DIR}/external/git-submodule-done
+	COMMAND git submodule init
+	COMMAND git submodule update
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	)
+
+add_custom_target(git_submodules ALL
+	DEPENDS ${CMAKE_SOURCE_DIR}/external/git-submodule-done
+	)
+
+add_custom_target(external)
 
 set (ExternalProjectCMakeArgs  
   -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
@@ -65,47 +101,20 @@ set (ExternalProjectCMakeArgs
   -DEIGEN3_ROOT=${EIGEN3_ROOT}
   )
 
-#if (PCMSOLVER_ENABLE_PCMGREEN)
-#  ExternalProject_Add(pcmgreen
-#	PREFIX ${CMAKE_SOURCE_DIR}/external
-#	SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/pcm-green
-#	BINARY_DIR ${CMAKE_SOURCE_DIR}/external/pcm-green-build
-#	DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
-#	DOWNLOAD_COMMAND git submodule update
-#	INSTALL_DIR ${CMAKE_SOURCE_DIR}/external
-#	CMAKE_ARGS ${ExternalProjectCMakeArgs}
-#	)
-#  set(HAVE_PCMGREEN TRUE)
-#endif()
-#
-#if (PCMSOLVER_ENABLE_PCMCAV)
-#	ExternalProject_Add(pcmcav
-#		DOWNLOAD_COMMAND git submodule update
-#		DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
-#		PREFIX ${CMAKE_SOURCE_DIR}/external
-#		SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/pcmcav
-#		BINARY_DIR ${CMAKE_SOURCE_DIR}/external/pcmcav-build
-#		INSTALL_DIR ${CMAKE_SOURCE_DIR}/external
-#		CMAKE_ARGS ${ExternalProjectCMakeArgs}
-#		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external
-#		)
-#	set(HAVE_PCMCAV TRUE)
-#endif()
-#
-#ExternalProject_Add_Step(pcmgreen init
-#	COMMAND git submodule init
-#	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#	)
-#
-#ExternalProject_Add_Step(pcmcav init
-#	COMMAND git submodule init
-#	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#	)
+ExternalProject_Add(libgetkw
+	DOWNLOAD_COMMAND git submodule update
+	DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
+	PREFIX ${CMAKE_SOURCE_DIR}/external
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/libgetkw
+	BINARY_DIR ${CMAKE_SOURCE_DIR}/external/libgetkw-build
+	INSTALL_DIR ${CMAKE_SOURCE_DIR}/external
+	CMAKE_ARGS ${ExternalProjectCMakeArgs}
+	)
 
-#find_package(Eigen)
+add_dependencies(external libgetkw)
+
 find_package(Eigen3)
 find_package(CBLAS)
-
 find_package(BLAS)
 find_package(LAPACK)
 if(BLAS_FOUND AND LAPACK_FOUND)
@@ -124,7 +133,6 @@ link_directories (${CMAKE_SOURCE_DIR}/lib)
 link_directories (${CMAKE_SOURCE_DIR}/external/lib)
 
 include_directories (${EIGEN3_INCLUDE_DIR})
-#include_directories (${EIGEN_INCLUDE_DIRS})
 include_directories (${CMAKE_SOURCE_DIR}/include)
 include_directories (${CMAKE_SOURCE_DIR}/external/include)
 

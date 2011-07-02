@@ -39,7 +39,7 @@ C
       double precision xtscor_(*), ytscor_(*), ztscor_(*)
       double precision xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
       double precision ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
-      double precision nts_, nesfp_
+      integer nts_, nesfp_
 
 
 Creader      open(1,file='cavity.inp', STATUS='OLD', IOSTAT=INFO)

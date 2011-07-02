@@ -1,6 +1,6 @@
 C
 C  -- dalton/sirius/sircav.F --
-C     (Luca Frediano)
+C     (Luca Frediani)
 C
 C/* Deck pedram */
       SUBROUTINE PEDRA_M_(WORK,LWORK)

@@ -95,7 +95,6 @@ void PCMSolver::buildPCMMatrix(GePolCavity cav){
     MatrixXd aInv(cavitySize, cavitySize);
     a.setZero();
     aInv.setZero();
-	cout << "cavity size " << cavitySize << endl;
 	cout << cav.getTessArea(1) << endl;
 
     for (int i = 0; i < cavitySize; i++) {
@@ -130,8 +129,6 @@ bool PCMSolver::readCavity(string &filename){
 
 
     input >> cavitySize;
-
-    std::cout << "cavity size " << cavitySize << std::endl;;
 
     areaTess.resize(cavitySize);
     radiusTess.resize(cavitySize);

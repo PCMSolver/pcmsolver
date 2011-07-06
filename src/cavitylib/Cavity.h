@@ -24,18 +24,19 @@ class Cavity
     ~Cavity(){}
     virtual void makeCavity() = 0;
     virtual void writeOutput(string &filename);
-    virtual int getNTess(){ return nTess;};
-    virtual Matrix<double, Dynamic, 3> & getTessCenter(){return tessCenter;};
-    virtual Matrix<double, Dynamic, 3> & getTessNormal(){return tessNormal;};
-    virtual VectorXd & getTessArea(){return tessArea;};
-    virtual double getTessArea(int i){return tessArea(i);};
-    virtual double getTessCenter(int i, int j){return tessCenter(i,j);};
+    virtual int getNTess(){ return nTess;}
+    virtual Matrix<double, Dynamic, 3> & getTessCenter(){return tessCenter;}
+    virtual Matrix<double, Dynamic, 3> & getTessNormal(){return tessNormal;}
+    virtual VectorXd & getTessArea(){return tessArea;}
+    virtual double getTessArea(int i){return tessArea(i);}
+    virtual double getTessCenter(int i, int j){return tessCenter(i,j);}
+    virtual int size(){return nTess;}
  protected:
     int nTess;
     Matrix<double, Dynamic, 3> tessCenter;
     Matrix<double, Dynamic, 3> tessNormal;
     VectorXd tessArea;
-
+    double averageArea;
 };
 
 

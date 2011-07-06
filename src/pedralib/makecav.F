@@ -19,7 +19,7 @@ C if you don't want to use external (c++) input comment out lines between Cex
 C
       subroutine makecav_(work,lwork,xtscor_,ytscor_,ztscor_,ar_,
      & xsphcor_,ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_,
-     & rin_)
+     & rin_, avgarea_)
 
 #include <implicit.h>
 #include <maxorb.h>
@@ -39,6 +39,7 @@ C
       double precision xtscor_(*), ytscor_(*), ztscor_(*)
       double precision xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
       double precision ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
+      double precision avgarea_
       integer nts_, nesfp_
 
 
@@ -47,12 +48,13 @@ Creader      open(1,file='cavity.inp', STATUS='OLD', IOSTAT=INFO)
 Clog      open(LUPRI,file='cavity.log', STATUS='REPLACE')
       MAXREP=0
       NSYM=1
-      AREATS=100000000.05
+      AREATS=avgArea_
       ICESPH=1
       IPRPCM=20
       GROUP = 'C1'
       RSOLV = 0.0D0
       RET = 100.0D0
+      print *,"avgearea",  avgarea_
 C      NESF=2
 
 C

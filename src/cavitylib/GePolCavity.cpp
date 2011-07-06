@@ -19,6 +19,7 @@ using namespace Eigen;
 
 GePolCavity::GePolCavity(Getkw &Input){
 	vector<double> spheresInput = Input.getDblVec("Cavity.Spheres");
+	averageArea = Input.getDbl("Cavity.Area");
 	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
     sphereCenter.resize(nSpheres, NoChange);
     sphereRadius.resize(nSpheres);
@@ -62,10 +63,6 @@ bool GePolCavity::readInput(string &filename){
 			cout << "Type mismatch or file corrupted." ;
 			exit(1);
 		}
-//		sphereCenter(i,0) = xe[i];
-//		sphereCenter(i,1) = ye[i];
-//		sphereCenter(i,2) = ze[i];
-//		sphereRadius(i) = rin[i];
     }
     input.close();
     return false;
@@ -92,8 +89,8 @@ void GePolCavity::writeOutput(string &filename){
 
 extern"C" {
     void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor,
-			     double *ysphcor, double *zsphcor, double *rsph, int *nts, int *nesfp,
-			     double *xe, double *ye, double *ze, double *rin);
+							 double *ysphcor, double *zsphcor, double *rsph, int *nts, int *nesfp,
+							 double *xe, double *ye, double *ze, double *rin, double *avgArea);
 }
 
 
@@ -115,7 +112,8 @@ void GePolCavity::makeCavity(){
 		cout << xe[i] << " "  << ye[i] << " "  << ze[i] << " "  << rin[i] << endl;
 	}
 
-	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, xe, ye, ze, rin);
+	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
+						xe, ye, ze, rin, &averageArea);
 
 	cout << nts << endl;
     

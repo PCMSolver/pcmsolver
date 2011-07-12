@@ -8,6 +8,7 @@ using namespace Eigen;
 
 using namespace std;
 
+#include "Getkw.h"
 #include "GreensFunction.h"
 #include "MetalSphere.h"
 
@@ -18,13 +19,23 @@ extern"C" {
 }
 
 MetalSphere::MetalSphere(double eps, double epsRe, double epsIm, Vector3d &pos,
-			 double radius){
-        epsSolvent = eps;
-        sphRadius = radius;
-        sphPosition = pos;
-        epsMetal = dcomplex(epsRe,epsIm);
-        uniformFlag = false;
-    };
+						 double radius){
+	epsSolvent = eps;
+	sphRadius = radius;
+	sphPosition = pos;
+	epsMetal = dcomplex(epsRe,epsIm);
+	uniformFlag = false;
+};
+
+MetalSphere::MetalSphere(Section green){
+	epsSolvent = green.getDbl("Eps");
+	epsMetal = dcomplex(green.getDbl("EpsRe"), green.getDbl("EpsImg"));
+	sphRadius = green.getDbl("Radius");
+	const vector<double> &pos_ = green.getDblVec("SpherePosition");
+
+	Vector3d pos(pos_[0], pos_[1], pos_[2]);
+	uniformFlag = false;
+};
 
 double MetalSphere::evalf(Vector3d &p1, Vector3d &p2) {
     double epsre, epsim, greenre, greenim;

@@ -7,14 +7,58 @@
 using namespace std;
 using namespace Eigen;
 
+#include "Getkw.h"
 #include "GreensFunction.h"
+#include "Vacuum.h"
+#include "UniformDielectric.h"
+#include "MetalSphere.h"
 #include "GreensFunctionSum.h"
 
-GreensFunctionSum::GreensFunctionSum(GreensFunction &first, GreensFunction &second){
-        greenFirst  = &first;
-        greenSecond = &second;
+GreensFunctionSum::GreensFunctionSum(GreensFunction &first, 
+									 GreensFunction &second){
+	greenFirst  = &first;
+	greenSecond = &second;
 	uniformFlag = greenFirst->isUniform() && greenSecond->isUniform();
-    };
+};
+
+GreensFunctionSum::GreensFunctionSum(Section green){
+
+	greenFirst  = allocateGreensFunction(green.getSect("Green<one>"));
+	greenSecond = allocateGreensFunction(green.getSect("Green<two>"));
+	/*
+	GreensFunction *gf;
+	{
+		const Section greenPart = green.getSect("Green<one>");
+		const string greenType = greenPart.getStr("Type");
+		if (greenType == "Vacuum") {
+			gf = new Vacuum();
+		} else if (greenType == "UniformDielectric") {
+			gf = new UniformDielectric(greenPart);
+		} else if (greenType == "MetalSphere") {
+			gf = new MetalSphere(greenPart);
+		} else {
+			cout << "Unknown Greens function" << endl;
+			exit(1);
+		}
+		greenFirst = gf;
+	}
+
+	greenPart = green.getSect("Green<two>");
+	greenType = greenPart.getStr("Type");
+	if (greenType == "Vacuum") {
+		gf = new Vacuum();
+	} else if (greenType == "UniformDielectric") {
+		gf = new UniformDielectric(greenPart);
+	} else if (greenType == "MetalSphere") {
+		gf = new MetalSphere(greenPart);
+	} else {
+		cout << "Unknown Greens function" << endl;
+		exit(1);
+	}
+	greenSecond = gf;
+	*/
+	uniformFlag = greenFirst->isUniform() && greenSecond->isUniform();
+};
 
 double GreensFunctionSum::evalf(Vector3d &p1, Vector3d &p2) {
     double valFirst = greenFirst->evalf(p1, p2);
@@ -41,3 +85,4 @@ void GreensFunctionSum::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2,
     gradient = gradFirst + gradSecond;
     return;
 }
+

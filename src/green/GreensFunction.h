@@ -20,6 +20,7 @@ class GreensFunction
     virtual double derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta = 0.001);
     virtual void gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2, double delta = 0.001);    
     bool isUniform(){ return uniformFlag; };
+    GreensFunction* allocateGreensFunction(const Section &green);
  protected:
 	bool uniformFlag;	
 };

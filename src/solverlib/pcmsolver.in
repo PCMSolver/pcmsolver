@@ -101,6 +101,22 @@ def	setup_keywords():
 	top.set_status(True)
 	top.add_kw('PRINTL',    'INT', 0)
 
+	medium=getkw.Section('Medium', callback=verify_medium)
+	medium.add_kw('Solvent', 'STR', 'water')
+	top.add_sect(medium)
+	
+	green=getkw.Section('Green', callback=verify_green)
+	green.add_kw('Type', 'STR', 'UniformDielectric')
+	green.add_kw('Eps', 'DBL')
+	green.add_kw('EpsRe', 'DBL')
+	green.add_kw('EpsImg', 'DBL')
+	green.add_kw('SphereRadius', 'DBL')
+	green.add_kw('SpherePosition', 'DBLARRAY')
+	medium.add_sect(green)
+
+	green_part = copy.deepcopy(green)
+	green.add_sect(green_part)
+
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
 	cavity.add_kw('Area','DBL', 0.3)
 	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
@@ -122,6 +138,54 @@ def verify_cavity(section):
 		print "Minimum value: 0.1"
 		sys.exit(1)
 	
+def verify_medium(section):
+	solvent=section.get('Solvent')
+	if (solvent.get() != 'water')
+		print "Only water defined for now, sorry!"
+		sys.exit(1)
+	
+def verify_green(section):
+	required = ('Type',)
+	allowed = ('Vacuum', 'UniformDielectric', 'MetalSphere', 'GreensFunctionSum')
+
+
+	green1 = section.get('Green<one>')
+	green2 = section.get('Green<two>')
+	eps = section.get('Eps')
+	epsimg = section.get('EpsImg')
+	epsre = section.get('EpsRe')
+        position = section.get('SpherePosition')
+        radius = section.get('SphereRadius')
+
+	type=section.get('Type')
+	if (type.get() not in allowed):
+		print "Allowed Green's functions are:", allowed
+		sys.exit(1)
+
+	if (type.get() == 'UniformDielectric'):
+		if not eps.isSet():
+			print "Eps not defined for UniformDielectric"
+			sys.exit(1)
+
+	if (type.get() == 'MetalSphere'):
+		if not (eps.isSet() and epsre.isSet and epsimg.isSet()):
+			print "Eps and/or EpsImg not defined for MetalSphere"
+			sys.exit(1)
+		if not (position.isSet() and radius.isSet()):
+			print "SpherePosition and/or SphereRadius not defined for MetalSphere"
+			sys.exit(1)
+		if (len(position.get()) != 3):
+			print "SpherePosition error"
+			sys.exit(1)
+		if (radius.get()  < 0.1):
+			print "Minimum value allowed for Radius is 0.1"
+
+	if (type.get() == 'GreensFunctionSum'):
+		if not (green1.isSet() and green2.isSet()):
+			print "One or both components not defined for GreensFunctionSum"
+			sys.exit(1)
+
+
 def verify_spheres(keyword):
 	print "verifying spheres array"
 	spheres=keyword.get()

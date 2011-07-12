@@ -15,11 +15,10 @@ using namespace std;
 
 class PCMSolver{
  public:
-    PCMSolver(GreensFunction &gfi, GreensFunction &gfo){
-        greenInside = &gfi;
-        greenOutside = &gfo;
-    };
-    ~PCMSolver(){};
+    PCMSolver(GreensFunction &gfi, GreensFunction &gfo){greenInside = &gfi; greenOutside = &gfo;}
+    PCMSolver(GreensFunction *gfi, GreensFunction *gfo){greenInside = gfi; greenOutside = gfo;}
+    PCMSolver(Section solver);
+    ~PCMSolver(){delete greenInside; delete greenOutside;}
     GreensFunction &getGreenInside();
     GreensFunction &getGreenOutside();    
     int getCavitySize() const {return cavitySize;};

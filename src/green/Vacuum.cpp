@@ -4,8 +4,12 @@
 
 using namespace Eigen;
 
+#include "Getkw.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
+#include "UniformDielectric.h"
+#include "MetalSphere.h"
+#include "GreensFunctionSum.h"
 
 double Vacuum::evalf(Vector3d &p1, Vector3d &p2) {
     double dist = sqrt((p1 - p2).dot(p1 - p2));

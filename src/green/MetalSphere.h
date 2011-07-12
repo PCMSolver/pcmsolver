@@ -10,6 +10,7 @@ class MetalSphere : public GreensFunction
  public:
     MetalSphere(double eps, double epsRe, double epsIm, Vector3d &pos,
                 double radius);
+    MetalSphere(Section green);
     ~MetalSphere(){};
     double evalf(Vector3d &p1, Vector3d &p2);
     double evald(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta = 0.001);

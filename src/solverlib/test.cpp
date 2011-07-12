@@ -1,4 +1,3 @@
-
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -7,12 +6,12 @@
 using namespace std;
 using namespace Eigen;
 
+#include "Getkw.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
 #include "MetalSphere.h"
 #include "GreensFunctionSum.h"
-#include "Getkw.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "PCMSolver.h"
@@ -28,7 +27,7 @@ int main(int argc, char** argv){
 		cout << "Invalid nr. of arguments" << endl;
 		exit(1);
 	}
-
+	
 	Getkw Input = Getkw(infile, false, true);
 
 	int printl = Input.getInt("PRINTL");

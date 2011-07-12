@@ -11,6 +11,7 @@
 using namespace std;
 using namespace Eigen;
 
+#include "Getkw.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
@@ -19,6 +20,50 @@ using namespace Eigen;
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "PCMSolver.h"
+
+PCMSolver::PCMSolver(Section solver) {
+	greenInside  = 
+		greenInside->allocateGreensFunction(solver.getSect("Green<inside>"));
+	greenOutside = 
+		greenOutside->allocateGreensFunction(solver.getSect("Green<outside>"));
+	/*
+	{
+		const Section &green = solver.getSect("Green<inside>");
+		Const string greenType = green.getStr("Type");
+		if (greenType == "Vacuum") {
+			gf = new Vacuum();
+		} else if (greenType == "UniformDielectric") {
+			gf = new UniformDielectric(green);
+		} else if (greenType == "MetalSphere") {
+			gf = new MetalSphere(green);
+		} else if (greenType == "GreensFunctionSum") {
+			gf = new GreensFunctionSum(green);
+		} else {
+			cout << "Unknown Greens function" << endl;
+			exit(1);
+		}
+		greenInside = gf;
+	}
+
+	{
+		Const Section &green = solver.getSect("Green<outside>");
+		const string greenType = green.getStr("Type");
+		if (greenType == "Vacuum") {
+			gf = new Vacuum();
+		} else if (greenType == "UniformDielectric") {
+			gf = new UniformDielectric(green);
+		} else if (greenType == "MetalSphere") {
+			gf = new MetalSphere(green);
+		} else if (greenType == "GreensFunctionSum") {
+			gf = new GreensFunctionSum(green);
+		} else {
+			cout << "Unknown Greens function" << endl;
+			exit(1);
+		}
+		greenOutside = gf;
+	}
+	*/
+}
 
 GreensFunction& PCMSolver::getGreenInside(){
 	return *greenInside;
@@ -165,7 +210,4 @@ bool PCMSolver::readCavity(string &filename){
 
     return false;
 }
-
-//template class PCMSolver<Vacuum, UniformDielectric>;
-//template class PCMSolver<Vacuum, GreensFunctionSum>;
 

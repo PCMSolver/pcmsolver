@@ -22,41 +22,8 @@ GreensFunctionSum::GreensFunctionSum(GreensFunction &first,
 };
 
 GreensFunctionSum::GreensFunctionSum(Section green){
-
 	greenFirst  = allocateGreensFunction(green.getSect("Green<one>"));
 	greenSecond = allocateGreensFunction(green.getSect("Green<two>"));
-	/*
-	GreensFunction *gf;
-	{
-		const Section greenPart = green.getSect("Green<one>");
-		const string greenType = greenPart.getStr("Type");
-		if (greenType == "Vacuum") {
-			gf = new Vacuum();
-		} else if (greenType == "UniformDielectric") {
-			gf = new UniformDielectric(greenPart);
-		} else if (greenType == "MetalSphere") {
-			gf = new MetalSphere(greenPart);
-		} else {
-			cout << "Unknown Greens function" << endl;
-			exit(1);
-		}
-		greenFirst = gf;
-	}
-
-	greenPart = green.getSect("Green<two>");
-	greenType = greenPart.getStr("Type");
-	if (greenType == "Vacuum") {
-		gf = new Vacuum();
-	} else if (greenType == "UniformDielectric") {
-		gf = new UniformDielectric(greenPart);
-	} else if (greenType == "MetalSphere") {
-		gf = new MetalSphere(greenPart);
-	} else {
-		cout << "Unknown Greens function" << endl;
-		exit(1);
-	}
-	greenSecond = gf;
-	*/
 	uniformFlag = greenFirst->isUniform() && greenSecond->isUniform();
 };
 

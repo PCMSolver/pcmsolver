@@ -21,12 +21,18 @@ PCMSolver *solver;
 extern "C" void init_gepol_cavity_(){
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
-	cout << infile << endl;
 	Getkw Input = Getkw(infile, false, true);
     cavity = new GePolCavity(Input);
 	cavity->makeCavity();
-    UniformDielectric water(78.39);
-    Vacuum vacuum;
+}
+
+extern "C" void init_pcmsolver_(){
+	const char *infile = 0;
+	infile = "@pcmsolver.inp";
+	Getkw Input = Getkw(infile, false, true);
+	const Section &Medium = Input.getSect("Medium<Medium>");
+	cout << Medium << endl;
+	solver = new PCMSolver(Medium);
 }
 
 extern "C" void print_gepol_cavity_(){

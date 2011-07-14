@@ -22,47 +22,11 @@ using namespace Eigen;
 #include "PCMSolver.h"
 
 PCMSolver::PCMSolver(Section solver) {
+	cout << "creating solver" << endl;
 	greenInside  = 
 		greenInside->allocateGreensFunction(solver.getSect("Green<inside>"));
 	greenOutside = 
 		greenOutside->allocateGreensFunction(solver.getSect("Green<outside>"));
-	/*
-	{
-		const Section &green = solver.getSect("Green<inside>");
-		Const string greenType = green.getStr("Type");
-		if (greenType == "Vacuum") {
-			gf = new Vacuum();
-		} else if (greenType == "UniformDielectric") {
-			gf = new UniformDielectric(green);
-		} else if (greenType == "MetalSphere") {
-			gf = new MetalSphere(green);
-		} else if (greenType == "GreensFunctionSum") {
-			gf = new GreensFunctionSum(green);
-		} else {
-			cout << "Unknown Greens function" << endl;
-			exit(1);
-		}
-		greenInside = gf;
-	}
-
-	{
-		Const Section &green = solver.getSect("Green<outside>");
-		const string greenType = green.getStr("Type");
-		if (greenType == "Vacuum") {
-			gf = new Vacuum();
-		} else if (greenType == "UniformDielectric") {
-			gf = new UniformDielectric(green);
-		} else if (greenType == "MetalSphere") {
-			gf = new MetalSphere(green);
-		} else if (greenType == "GreensFunctionSum") {
-			gf = new GreensFunctionSum(green);
-		} else {
-			cout << "Unknown Greens function" << endl;
-			exit(1);
-		}
-		greenOutside = gf;
-	}
-	*/
 }
 
 GreensFunction& PCMSolver::getGreenInside(){

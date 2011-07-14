@@ -34,7 +34,7 @@ int main(int argc, char** argv){
 	double area = Input.getDbl("Cavity.Area");
 
     GePolCavity cavity(Input);
-	cavity.makeCavity();
+	cavity.makeCavity(5000, 10000000);
     
 	Vector3d p1(0.0, 10.1, 0.0);
     Vector3d p2(0.0, 10.2, 0.0);

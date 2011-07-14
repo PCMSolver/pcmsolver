@@ -88,17 +88,26 @@ void GePolCavity::writeOutput(string &filename){
 }
 
 extern"C" {
-    void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor,
-							 double *ysphcor, double *zsphcor, double *rsph, int *nts, int *nesfp,
-							 double *xe, double *ye, double *ze, double *rin, double *avgArea);
+    void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, 
+							 double *ar, double *xsphcor, double *ysphcor, 
+							 double *zsphcor, double *rsph, int *nts, int *nesfp,
+							 double *xe, double *ye, double *ze, double *rin, 
+							 double *avgArea, double* work, int* lwork);
 }
 
 
-void GePolCavity::makeCavity(){
+void GePolCavity::makeCavity(int maxts, int lwork){
 
-    double xtscor[5000], ytscor[5000], ztscor[5000];
-    double xsphcor[5000], ysphcor[5000], zsphcor[5000];
-    double ar[5000], rsph[5000];
+	double *xtscor  = new double(maxts);
+	double *ytscor  = new double(maxts);
+	double *ztscor  = new double(maxts);
+	double *ar      = new double(maxts);
+	double *xsphcor = new double(maxts);
+	double *ysphcor = new double(maxts);
+	double *zsphcor = new double(maxts);
+	double *rsph    = new double(maxts);
+	double *work    = new double(lwork);
+
     int nts;
 
 	double *xe = sphereCenter.col(0).data();
@@ -106,14 +115,8 @@ void GePolCavity::makeCavity(){
 	double *ze = sphereCenter.col(2).data();
 	double *rin = sphereRadius.data();
 
-	cout << nSpheres << endl;
-
-	for (int i = 0; i < nSpheres; i++) {
-		cout << xe[i] << " "  << ye[i] << " "  << ze[i] << " "  << rin[i] << endl;
-	}
-
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
-						xe, ye, ze, rin, &averageArea);
+						xe, ye, ze, rin, &averageArea, work, &lwork);
 
 	cout << nts << endl;
     
@@ -134,5 +137,15 @@ void GePolCavity::makeCavity(){
 		tessRadius(i) = rsph[i];
     }
     tessNormal = tessCenter - tessSphereCenter;
+
+	delete xtscor;
+	delete ytscor;
+	delete ztscor;
+	delete ar;
+	delete xsphcor;
+	delete ysphcor;
+	delete zsphcor;
+	delete rsph;
+	delete work;
 }
 

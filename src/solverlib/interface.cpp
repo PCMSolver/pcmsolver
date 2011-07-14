@@ -23,7 +23,7 @@ extern "C" void init_gepol_cavity_(){
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
     cavity = new GePolCavity(Input);
-	cavity->makeCavity();
+	cavity->makeCavity(5000, 10000000);
 }
 
 extern "C" void init_pcmsolver_(){

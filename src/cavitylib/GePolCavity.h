@@ -27,7 +27,7 @@ class GePolCavity : public Cavity {
     }
     GePolCavity(Getkw &Input);
     ~GePolCavity(){};
-    void makeCavity();
+    void makeCavity(int maxts, int lwork);
     void writeOutput(string &filename);
     VectorXd & getTessRadius(){return tessRadius;};
     VectorXd & getSphereRadius(){return sphereRadius;};

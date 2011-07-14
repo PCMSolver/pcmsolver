@@ -43,9 +43,7 @@ C
       integer nts_, nesfp_
 
 
-Creader      open(1,file='cavity.inp', STATUS='OLD', IOSTAT=INFO)
       LUPRI = 3
-Clog      open(LUPRI,file='cavity.log', STATUS='REPLACE')
       MAXREP=0
       NSYM=1
       AREATS=avgArea_
@@ -55,39 +53,14 @@ Clog      open(LUPRI,file='cavity.log', STATUS='REPLACE')
       RSOLV = 0.0D0
       RET = 100.0D0
       print *,"avgearea",  avgarea_
-C      NESF=2
-
-C
-C     In principle this should exit the program if there is no cavity  input file, but it's not working. Therefore, it's commented out.
-C
-Clog      IF (INFO.EQ.1) then
-Clog        write(LUPRI,*) 'Input cavity file does not exist. Exiting...'
-clog        STOP
-clog      end if
-Creader      read(1,*) NESFP
-
-Cex
       NESFP = nesfp_
-Cex
-
-Clog      write(LUPRI,*) 'Number of spheres=', NESFP
       do i=1, NESFP
-Clog         write(LUPRI,*) 'Reading coordinates or sphere nr', i
-Creader         read(1,*) XE(i), YE(i), ZE(i), RIN(i)
-
-Cex
          XE(i) = xe_(i)
          YE(i) = ye_(i)
          ZE(i) = ze_(i)
          RIN(i) = rin_(i)
-Cex
-
          ALPHA(i)=1
-Clog         write(LUPRI,*) 'x=',XE(i),'y=',YE(i), 'z=', ZE(i),'rad=',RIN(I)
       enddo
-Clog      write(LUPRI,*) 'Succesfully read the file !'
-Creader      close(1)
-      
       
       NESF=NESFP
 
@@ -102,13 +75,8 @@ Creader      close(1)
          
       CALL PEDRA_M_(WORK, LWORK)
       
-Cwriter      open(2, file='cavity.out', STATUS="REPLACE", Iostat=INFO)
       nts_=nts
-Cwriter      write(2,*) NTS
       do i=1,NTS
-Cwriter         write(2,*) XTSCOR(i), YTSCOR(i), ZTSCOR(i), AS(i), 
-Cweiter     &        XE(ISPHE(i)), YE(ISPHE(i)), ZE(ISPHE(i)), RE(ISPHE(i))
-
          xtscor_(i) = xtscor(i)
          ytscor_(i) = ytscor(i)
          ztscor_(i) = ztscor(i)
@@ -118,8 +86,5 @@ Cweiter     &        XE(ISPHE(i)), YE(ISPHE(i)), ZE(ISPHE(i)), RE(ISPHE(i))
          zsphcor_(i) = ze(isphe(i))
          rsph_(i) = re(isphe(i))
       enddo
-Cwriter      close(2)
-
-Clog      close(LUPRI)
       return
       END

@@ -10,7 +10,7 @@ c
      &        TOTSYM, NMWALK, DKTRAN, GEOALL, WESTA,  SEGAUX,
      &        ERFEXP, DOSRIN, SRINTS, CHI1ST, QM3, QMMM
 C
-      COMMON /GNRINF/ 
+      COMMON /PCM_GNRINF/ 
      &        ! double:
      &        GRADML, PANAS,  CHIVAL, THR_REDFAC,
      &        ! integer:
@@ -26,5 +26,5 @@ C
       INTEGER LBASDIR
       PARAMETER (LBASDIR = 600)
       CHARACTER*(LBASDIR) BASDIR
-      COMMON /GNRCHR/ BASDIR
+      COMMON /PCM_GNRCHR/ BASDIR
 C --- end of gnrinf.h ---

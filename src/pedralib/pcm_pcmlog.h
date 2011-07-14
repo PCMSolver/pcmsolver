@@ -5,5 +5,5 @@ C PCM:    True if we perform a PCM calculation
 C OUTFLD: Local field correction for pure liquids
       LOGICAL PCM,OUTFLD,NEWMAT,LOCFLD,NONEQ,NEQRSP,
      $        NPCMIN,OLDCEN,NEWQR
-      COMMON /PCMLOG/ PCM,OUTFLD,NEWMAT,LOCFLD,NONEQ,NEQRSP,
+      COMMON /PCM_LOG/ PCM,OUTFLD,NEWMAT,LOCFLD,NONEQ,NEQRSP,
      $                NPCMIN,OLDCEN,NEWQR

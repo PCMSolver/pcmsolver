@@ -45,7 +45,7 @@ C          FLORIDA, GAINESVILLE
 C..........VERSION = 09/05/73/03
 C.......................................................................
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION AMATRX(*)
       INTEGER BEGIN
       CHARACTER*1 ASA(3),BLANK,CTL
@@ -157,7 +157,7 @@ C          FLORIDA, GAINESVILLE
 C..........OUTPAK_ VERSION = 09/05/73/03
 C.......................................................................
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       INTEGER NDIM(NBLK),BEGIN
       DIMENSION AMATRX(*)
       CHARACTER*1 ASA(3),BLANK,CTL
@@ -295,7 +295,7 @@ C          FLORIDA, GAINESVILLE
 C..........OUTPAK_ VERSION = 09/05/73/03
 C.......................................................................
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       INTEGER NDIM(NBLK),BEGIN
       DIMENSION AMATRX(*)
       CHARACTER*1 ASA(3),BLANK,CTL
@@ -303,7 +303,7 @@ C
       PARAMETER (D0 = 0.0D0, KCOLP=4, KCOLN=6)
       PARAMETER (FFMIN=1.D-3, FFMAX = 1.D3)
       DATA COLUMN/'Column  '/, ASA/' ', '0', '-'/, BLANK/' '/
-#include <ibtfun.h>
+#include <pcm_ibtfun.h>
 C
       IF (IREPO .NE. 1) THEN
          IBLK = 1
@@ -438,7 +438,7 @@ C REVISED; FEBRUARY 26, 1971
 C
 C.......................................................................
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION AMATRX(*)
       INTEGER NDIM(NBLK), BEGIN, KCOL
       CHARACTER*1 ASA(3), BLANK, CTL
@@ -558,7 +558,7 @@ C REVISED; FEBRUARY 26, 1971
 C
 C.......................................................................
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       INTEGER   ROWLOW,ROWHI,COLLOW,COLHI,ROWDIM,COLDIM,BEGIN,KCOL
       DIMENSION AMATRX(ROWDIM,COLDIM)
       CHARACTER*1 ASA(3), BLANK, CTL
@@ -659,7 +659,7 @@ C REVISED; FEBRUARY 26, 1971
 C
 C.......................................................................
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       INTEGER   ROWLOW,ROWHI,COLLOW,COLHI,ROWDIM,COLDIM,BEGIN,KCOL
       DIMENSION AMATRX(ROWDIM,COLDIM)
       CHARACTER*1 ASA(3), BLANK, CTL
@@ -752,7 +752,7 @@ C   MAXLIN    : max. lines of output with vector elements
 C   LUOUT     : output unit
 C
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION VEC(*)
       PARAMETER (D0 = 0.0D0, D1 = 1.0D0)
       PARAMETER (D1LOW = D1 - 1.0D-10, D1HGH = D1 + 1.0D-10)
@@ -853,7 +853,7 @@ C   NPOT      : IBASE**-NPOT is lowest magnitude considered
 C   LUOUT     : output unit
 C
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION VEC(*)
       PARAMETER (D0 = 0.0D0, D1 = 1.0D0)
       PARAMETER (IBASE = 10)
@@ -974,9 +974,9 @@ C   INCVEC    : Increment between each element in vector VEC
 C   THRZER    : Threshold for zero elements
 C
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION VEC(*)
-#include <priunit.h>
+#include <pcm_priunit.h>
       PARAMETER (D0 = 0.0D0, D100 = 100.0D0)
 C
 C     Test input

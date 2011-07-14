@@ -1,5 +1,5 @@
       SUBROUTINE DZERO_(DX,LENGTH)
-#include "implicit.h"
+#include "pcm_implicit.h"
 C                                                                               
 C Last revision 5-May-1984 by Hans Jorgen Aa. Jensen                            
 C                                                                               
@@ -18,7 +18,7 @@ C
       END
       SUBROUTINE AROUND_(HEAD)
       CHARACTER HEAD*(*)
-#include <priunit.h>
+#include <pcm_priunit.h>
       LHEAD  = LNBLNK(HEAD)
       LNG    = LHEAD + 2
       IND = MAX(1,(80 - LNG)/2 + 1)
@@ -35,8 +35,8 @@ Cx    WRITE (LUPRI,'(150A)')   (' ',I=1,IND), '`', ('-',I=1,LNG), ''''
 C                                                                               
 C 7-Jul-1992 hjaaj+hh                                                           
 C                                                                               
-#include <implicit.h>
-#include <priunit.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
       DIMENSION VECS(NVDIM,NVSIM)
 C                                                                               
 C Used from common blocks:                                                      
@@ -44,10 +44,10 @@ C  INFINP : SUPSYM
 C  INFVAR : NWOPT,JWOPSY                                                        
 C  INFPRI : LUERR                                                               
 C                                                                               
-#include <maxorb.h>
-#include <infinp.h>
-#include <infvar.h>
-#include <infpri.h>
+#include <pcm_maxorb.h>
+#include <pcm_infinp.h>
+#include <pcm_infvar.h>
+#include <pcm_infpri.h>
 C                                                                               
 Ckm      CALL QENTER_('AVERAG_')
       IF (.NOT. SUPSYM) GO TO 9999
@@ -84,7 +84,7 @@ C Purpose: Average degenerate super symmetries
 C          (which are different components of a degenerate irrep).              
 C          This corresponds to doing a microcanonical average.                  
 C                                                                               
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION VECS(NVDIM,NVSIM)
 C                                                                               
 C Used from common blocks:                                                      
@@ -93,13 +93,13 @@ C   INFIND : ISW(*),ISSORD(*)
 C   INFVAR : NWOPT                                                              
 C   INFPRI : LUERR                                                              
 C                                                                               
-#include <maxash.h>
-#include <maxorb.h>
-#include <priunit.h>
-#include <infind.h>
-#include <inforb.h>
-#include <infvar.h>
-#include <infpri.h>
+#include <pcm_maxash.h>
+#include <pcm_maxorb.h>
+#include <pcm_priunit.h>
+#include <pcm_infind.h>
+#include <pcm_inforb.h>
+#include <pcm_infvar.h>
+#include <pcm_infpri.h>
 C                                                                               
       PARAMETER (MAXDEG = 20, D1 = 1.0D0)
       DIMENSION ISSDEG(MAXDEG),ISSOFF(MAXDEG),IDEGV(MAXDEG)
@@ -221,7 +221,7 @@ C 1-May-2000 hjaaj
 C                                                                               
 C Purpose: Generate KLWOP array from JWOP                                       
 C                                                                               
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION   KLWOP(NOCCT,NORBT)
       CHARACTER*8 XLABEL
 C                                                                               
@@ -230,12 +230,12 @@ C   INFORB: NOCCT,NORBT
 C   INFIND: ISW(*)                                                              
 C   INFVAR: NWOPT,JWOP(2,*)                                                     
 C                                                                               
-#include <priunit.h>
-#include <maxash.h>
-#include <maxorb.h>
-#include <inforb.h>
-#include <infind.h>
-#include <infvar.h>
+#include <pcm_priunit.h>
+#include <pcm_maxash.h>
+#include <pcm_maxorb.h>
+#include <pcm_inforb.h>
+#include <pcm_infind.h>
+#include <pcm_infvar.h>
 C                                                                               
       NKLWOP = NOCCT*NORBT
       CALL IZERO_(KLWOP,NKLWOP)
@@ -261,12 +261,12 @@ C
 C     2-Jul-92 Hinne Hettema                                                    
 C     Purpose : dump supersymmetry information to output for debugging          
 C                                                                               
-#include <implicit.h>
+#include <pcm_implicit.h>
 C                                                                               
-#include <maxash.h>
-#include <maxorb.h>
-#include <inforb.h>
-#include <infind.h>
+#include <pcm_maxash.h>
+#include <pcm_maxorb.h>
+#include <pcm_inforb.h>
+#include <pcm_infind.h>
 C                                                                               
 Ckm      CALL QENTER_('AVEDMP_')
       WRITE(LUWDMP,'(/A/A)')
@@ -321,7 +321,7 @@ C
 C     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.                          
 C     DNRM2_: JACK DONGARRA, LINPACK, 3/11/78.                                   
 C                                                                               
-#include <implicit.h>
+#include <pcm_implicit.h>
 C                                                                               
       DIMENSION DX(*)
       PARAMETER ( ZERO = 0.0D0 )
@@ -403,9 +403,9 @@ C Direct access-specific output:
 C  OLDDX    logical, true if old LUDX file was opened
 C
 C
-#include <implicit.h>
-#include <priunit.h>
-#include <chrnos.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_chrnos.h>
       CHARACTER*80 STATUF, ACCESF, FORMF
       CHARACTER*(*) FILEIN, STATIN, ACCEIN, FORMIN
       integer max_filename_length
@@ -416,8 +416,8 @@ C
       INTEGER FILELN, STATLN, ACCELN, FORMLN
       LOGICAL OLDDX, FEXST, FIRST
       COMMON /UNITAR/ IUNTAB(1:99)
-#include <gnrinf.h>
-#include <infpar.h>
+#include <pcm_gnrinf.h>
+#include <pcm_infpar.h>
       DATA FIRST /.TRUE./
       SAVE FIRST
 C
@@ -817,14 +817,14 @@ C  STATUS   Indicate whether the file should be removed or kept
 C           ('KEEP' or 'DELETE'). Note that the default is that the file
 C           is to be deleted
 C
-#include <implicit.h>
-#include <priunit.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
       CHARACTER*(*) DISP
       CHARACTER*80 FNNAME, FNNM2
       CHARACTER*3 IODIR
       LOGICAL FEXIST, OPND, OLDDX
       COMMON /UNITAR/ IUNTAB(1:99)
-#include <chrnos.h>
+#include <pcm_chrnos.h>
 C
 C     We first deal with the unit number
 C
@@ -962,7 +962,7 @@ C end of GPCLOSE_
 C
       END
       SUBROUTINE UPCASE_(WORD)
-#include "implicit.h"
+#include "pcm_implicit.h"
 C                                                                               
 C     Routine that uppercases the word provided. Allows the input easily to     
 C     be made case insensitive. F90 routine supplied by Anthony Stone and       
@@ -1036,7 +1036,7 @@ C
 C
       CHARACTER*(*) NAME, STATUS
       LOGICAL OLDDX, FEXIST
-#include <priunit.h>
+#include <pcm_priunit.h>
 #if defined (SYS_CRAY) || defined (SYS_T3D) || defined (SYS_T90)
 C
 C     CRAY has 8 byte integers.
@@ -1167,8 +1167,8 @@ C end of OPENDX_
 C
       END
       SUBROUTINE STOPIT_(SUB,PLACE,INT1,INT2)
-#include <implicit.h>
-#include <priunit.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
       CHARACTER*(*) SUB, PLACE
       WRITE (LUPRI,'(//3A)') ' Work space exceeded in subroutine ',
      *                         SUB,'.'
@@ -1188,8 +1188,8 @@ C
       STOP
       END
       SUBROUTINE READT_ (IT,N,X)
-#include "implicit.h"
-#include "priunit.h"
+#include "pcm_implicit.h"
+#include "pcm_priunit.h"
       CHARACTER*60 FNAME
       DIMENSION X(N)
       IF (IT .LE. 0) GOTO 30
@@ -1215,7 +1215,7 @@ C Version 6-Mar-1985 by hjaaj
 C                                                                               
       CHARACTER*(*) STRING
 C                                                                               
-#include <priunit.h>
+#include <pcm_priunit.h>
 C                                                                               
 Ckm      CALL QENTER_('ERRWRK_')
       IF (LNEED .GE. 0) THEN
@@ -1238,7 +1238,7 @@ C Written 18-Dec-1984 Hans Joergen Aa. Jensen
 C
 C Return elapsed CPU time and elapsed real time.
 C
-#include "implicit.h"
+#include "pcm_implicit.h"
 C
 #if defined (SYS_CRAY) || defined (SYS_T3D) || defined (SYS_T90)
 C...  Cray unicos timing code
@@ -1373,16 +1373,16 @@ C Purpose: Transform from SP format to SI format, that is:
 C          unpack symmetric,   packed matrix ASP                                
 C              to symmetric, unpacked matrix ASI.                               
 C                                                                               
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION ASP(*), ASI(N,*)
 C                                                                               
       ENTRY      DSPTGE_(N,ASP,ASI)
 C     ... equivalent subroutine name                                            
 C                                                                               
-#include <nosync.h>
+#include <pcm_nosync.h>
       DO 200 J = 1,N
          JOFF = (J*J-J)/2
-#include <nosync.h>
+#include <pcm_nosync.h>
          DO 100 I = 1,J-1
             ASI(I,J) = ASP(JOFF+I)
             ASI(J,I) = ASP(JOFF+I)
@@ -1404,7 +1404,7 @@ C   a routine in LAPACK for solving linear equations;
 C   when linking with complib on SGI/IRIX the LAPACK routine                    
 C   was loaded instead of this one).                                            
 C                                                                               
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION AGE(NRDIMA,*)
       PARAMETER (NBLK = 128)
       DO 400 JBLK = 1,NROWA,NBLK
@@ -1428,7 +1428,7 @@ C  SUBROUTINE DUNIT_ SETS THE REAL SQUARE MATRIX A EQUAL
 C  TO A UNIT MATRIX.                                                            
 C  /VER 2/ 14-Sep-1983 hjaaj                                                    
 C                                                                               
-#include "implicit.h"
+#include "pcm_implicit.h"
       DIMENSION A(*)
       PARAMETER (D1=1.0D00, D0=0.0D00)
 C                                                                               
@@ -1455,7 +1455,7 @@ C
 C  AP is A in packed format.                                                    
 C  KPVT is a scratch array of length N.                                         
 C                                                                               
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION AP(*),B(N,*),KPVT(*)
 C                                                                               
       CALL DSPFA_ (AP,N,KPVT,INFO)
@@ -1938,7 +1938,7 @@ C   29-Jul-1992 hjaaj (only dswap if nevec .gt. 0)
 C    2-Nov-1984 hjaaj (new parameter NEVEC, EVEC(1:NEVEC,1:N))                  
 C   27-Oct-1984 hjaaj (reduced number of swaps)                                 
 C                                                                               
-#include "implicit.h"
+#include "pcm_implicit.h"
       DIMENSION EVEC(*),EVAL(*)
       IF (N.LE.1) RETURN
       IN = 1
@@ -1991,14 +1991,14 @@ C  20-Jul-1992 hjaaj  Changed C1,C2 to THRZER
 C  30-oct-1992 hjaaj  zero f(ab) to avoid round-off errors
 C                     absolute conv.threshold SD=C1
 C  18-aug-2005 wmk    Changed C1 to 1.D-15
-#include "implicit.h"
-#include "priunit.h"
+#include "pcm_implicit.h"
+#include "pcm_priunit.h"
       DIMENSION F(*),V(NROWV,*)
       DIMENSION BIG(*) ,JBIG(*)
       PARAMETER (D0 = 0.0D0, D1 = 1.0D0, ROOT2 = 0.707106781186548D0)
       PARAMETER(DP5 = 0.5D0, D1P5 = 1.5D0, D1P375 = 1.375D0,
      *          D3P875 = 3.875D0, DP25 = 0.25D0)
-#include "thrzer.h"
+#include "pcm_thrzer.h"
       DATA C1,C2,C3,C4,C5,C6/1.D-15,THRZER,1.D-20,1.D-14,1.D-9,1.D-5/
 Cwas: DATA C1,C2,C3,C4,C5,C6/THRZER,THRZER,1.D-20,1.D-14,1.D-9,1.D-5/
 Cwas: DATA C1,C2,C3,C4,C5,C6/1.D-12,1.D-12,1.D-20,1.D-14,1.D-9,1.D-5/
@@ -2090,7 +2090,7 @@ C
             CX= SQRT(DP5   + T)
             SX= SIGN( SQRT(DP5 - T),T2X2)
   270    CONTINUE
-#include "ivdep.h"
+#include "pcm_ivdep.h"
          DO 275 IR=1,IA
             T        = F(IAA+IR)*SX
             F(IAA+IR)= F(IAA+IR)*CX+F(IBB+IR)*SX
@@ -2166,7 +2166,7 @@ C              F(IEAB)=     TT*CX+F(IEBR)*SX
                END IF
   390       CONTINUE
 C
-#include "ivdep.h"
+#include "pcm_ivdep.h"
          DO I=1,NROWV
             VIIA = V(I,IA)
             VIIB = V(I,IB)

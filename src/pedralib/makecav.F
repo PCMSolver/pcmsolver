@@ -21,18 +21,18 @@ C
      & xsphcor_,ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_,
      & rin_, avgarea_)
 
-#include <implicit.h>
-#include <maxorb.h>
-#include <maxaqn.h>
-#include <priunit.h>
-#include <iratdef.h>
-#include <pcmdef.h>
-#include <mxcent.h>
-#include <infpri.h>
-#include <pcm.h>
-#include <pcmlog.h>
-#include <symmet.h>
-#include <pgroup.h>
+#include <pcm_implicit.h>
+#include <pcm_maxorb.h>
+#include <pcm_maxaqn.h>
+#include <pcm_priunit.h>
+#include <pcm_iratdef.h>
+#include <pcm_pcmdef.h>
+#include <pcm_mxcent.h>
+#include <pcm_infpri.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
+#include <pcm_symmet.h>
+#include <pcm_pgroup.h>
 
       DIMENSION WORK(*)
 

@@ -15,10 +15,10 @@ using namespace std;
 
 class PCMSolver{
  public:
-    PCMSolver(GreensFunction &gfi, GreensFunction &gfo){greenInside = &gfi; greenOutside = &gfo;}
-    PCMSolver(GreensFunction *gfi, GreensFunction *gfo){greenInside = gfi; greenOutside = gfo;}
+    PCMSolver(GreensFunction &gfi, GreensFunction &gfo);
+    PCMSolver(GreensFunction *gfi, GreensFunction *gfo);
     PCMSolver(Section solver);
-    ~PCMSolver(){delete greenInside; delete greenOutside;}
+    ~PCMSolver();
     GreensFunction &getGreenInside();
     GreensFunction &getGreenOutside();    
     int getCavitySize() const {return cavitySize;};
@@ -28,6 +28,7 @@ class PCMSolver{
     virtual double compDiagonalElementSoper(GreensFunction *green, int i, GePolCavity cav);
     virtual double compDiagonalElementDoper(GreensFunction *green, int i, GePolCavity cav);
  private:
+    bool allocated;
     static const double factor = 1.0694;
     int cavitySize;
     GreensFunction *greenInside;

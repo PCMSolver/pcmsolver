@@ -13,7 +13,7 @@ C
 #include <pcm_infpri.h>
 C
       LOGICAL SOME
-      DIMENSION WORK(LWORK)
+      DIMENSION WORK(*)
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 C
@@ -188,6 +188,7 @@ C
         STOP
       ENDIF
 C
+
       DO 120 I=NN,NE
          NES=I-1
          DO 130 J=1,NES

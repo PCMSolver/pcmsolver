@@ -21,12 +21,30 @@ using namespace Eigen;
 #include "GePolCavity.h"
 #include "PCMSolver.h"
 
+PCMSolver::PCMSolver(GreensFunction &gfi, GreensFunction &gfo){
+	allocated = false;
+	greenInside = &gfi; 
+	greenOutside = &gfo;
+}
+PCMSolver::PCMSolver(GreensFunction *gfi, GreensFunction *gfo){
+	allocated = false;
+	greenInside = gfi; 
+	greenOutside = gfo;
+}
+
 PCMSolver::PCMSolver(Section solver) {
-	cout << "creating solver" << endl;
+	allocated = true;
 	greenInside  = 
 		greenInside->allocateGreensFunction(solver.getSect("Green<inside>"));
 	greenOutside = 
 		greenOutside->allocateGreensFunction(solver.getSect("Green<outside>"));
+}
+
+PCMSolver::~PCMSolver(){
+	if(allocated) {
+		delete greenInside; 
+		delete greenOutside;
+	}
 }
 
 GreensFunction& PCMSolver::getGreenInside(){

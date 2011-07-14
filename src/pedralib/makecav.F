@@ -17,9 +17,9 @@ C     Creader works regardless of Clog and Creader.
 C
 C if you don't want to use external (c++) input comment out lines between Cex
 C
-      subroutine makecav_(work,lwork,xtscor_,ytscor_,ztscor_,ar_,
+      subroutine makecav_(xtscor_,ytscor_,ztscor_,ar_,
      & xsphcor_,ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_,
-     & rin_, avgarea_)
+     & rin_, avgarea_, work2, lwork2)
 
 #include <pcm_implicit.h>
 #include <pcm_maxorb.h>
@@ -34,15 +34,15 @@ C
 #include <pcm_symmet.h>
 #include <pcm_pgroup.h>
 
-      DIMENSION WORK(*)
-
+      DIMENSION WORK(10000000)
+      dimension work2(*)
       double precision xtscor_(*), ytscor_(*), ztscor_(*)
       double precision xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
       double precision ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
       double precision avgarea_
       integer nts_, nesfp_
 
-
+      LWORK=10000000
       LUPRI = 3
       MAXREP=0
       NSYM=1
@@ -52,7 +52,6 @@ C
       GROUP = 'C1'
       RSOLV = 0.0D0
       RET = 100.0D0
-      print *,"avgearea",  avgarea_
       NESFP = nesfp_
       do i=1, NESFP
          XE(i) = xe_(i)
@@ -72,8 +71,8 @@ C
       PT(5) =  1
       PT(6) =  1
       PT(7) =  1
-         
-      CALL PEDRA_M_(WORK, LWORK)
+
+      CALL PEDRA_M_(WORK2, LWORK2)
       
       nts_=nts
       do i=1,NTS

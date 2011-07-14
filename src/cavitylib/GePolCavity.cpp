@@ -98,15 +98,15 @@ extern"C" {
 
 void GePolCavity::makeCavity(int maxts, int lwork){
 
-	double *xtscor  = new double(maxts);
-	double *ytscor  = new double(maxts);
-	double *ztscor  = new double(maxts);
-	double *ar      = new double(maxts);
-	double *xsphcor = new double(maxts);
-	double *ysphcor = new double(maxts);
-	double *zsphcor = new double(maxts);
-	double *rsph    = new double(maxts);
-	double *work    = new double(lwork);
+	double *xtscor  = new double[maxts];
+	double *ytscor  = new double[maxts];
+	double *ztscor  = new double[maxts];
+	double *ar      = new double[maxts];
+	double *xsphcor = new double[maxts];
+	double *ysphcor = new double[maxts];
+	double *zsphcor = new double[maxts];
+	double *rsph    = new double[maxts];
+	double *work    = new double[lwork];
 
     int nts;
 

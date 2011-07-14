@@ -11,8 +11,8 @@ C
       double precision xsphcor(*), ysphcor(*), zsphcor(*), rsph(*)
       double precision ar(*), xe(*), ye(*), ze(*), rin(*)
       integer nts, nesfp
-      call makecav_(work,lwork,xtscor,ytscor,ztscor,ar,xsphcor,
-     & ysphcor, zsphcor, rsph, nts, nesfp, xe, ye, ze, rin, avgArea)
-C      print *, 'cavity created!'
+      call makecav_(xtscor,ytscor,ztscor,ar,xsphcor,
+     &     ysphcor, zsphcor, rsph, nts, nesfp, xe, ye, ze, rin, avgArea,
+     $     work, lwork)
       end
 

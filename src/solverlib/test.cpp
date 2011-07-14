@@ -35,7 +35,6 @@ int main(int argc, char** argv){
 
     GePolCavity cavity(Input);
 	cavity.makeCavity(5000, 10000000);
-    
 	Vector3d p1(0.0, 10.1, 0.0);
     Vector3d p2(0.0, 10.2, 0.0);
     Vector3d ps(0.0,  0.0, 0.0);
@@ -44,12 +43,12 @@ int main(int argc, char** argv){
     UniformDielectric water(10000.0);
     Vacuum vacuum;
 
-    PCMSolver waterSolver(vacuum, water);
+    PCMSolver waterSolver(vacuum, water); 
+
     waterSolver.buildPCMMatrix(cavity);
     VectorXd potential(cavity.size());
     VectorXd charges(cavity.size());
     potential.setConstant(1.0);
     const MatrixXd &matrix = waterSolver.getPCMMatrix();
     charges = matrix * potential;
-    cout << " CHARGES " << charges.sum() << endl;
 }

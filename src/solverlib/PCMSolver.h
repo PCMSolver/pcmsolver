@@ -25,10 +25,15 @@ class PCMSolver{
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
     virtual void buildPCMMatrix(GePolCavity cav);
     virtual bool readCavity(string &filename);
-    virtual double compDiagonalElementSoper(GreensFunction *green, int i, GePolCavity cav);
-    virtual double compDiagonalElementDoper(GreensFunction *green, int i, GePolCavity cav);
+    virtual double compDiagonalElementSoper(GreensFunction *green, int i, 
+                                            GePolCavity cav);
+    virtual double compDiagonalElementDoper(GreensFunction *green, int i, 
+                                            GePolCavity cav);
+    virtual VectorXd solver(const VectorXd &potential);
  private:
     bool allocated;
+    bool builtAnisotropicMatrix;
+    bool builtIsotropicMatrix;
     static const double factor = 1.0694;
     int cavitySize;
     GreensFunction *greenInside;

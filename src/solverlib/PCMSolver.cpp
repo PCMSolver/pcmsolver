@@ -90,9 +90,9 @@ double PCMSolver::compDiagonalElementDoper(GreensFunction *green, int i, GePolCa
     return d;
 }
 
-void PCMSolver::buildPCMMatrix(GePolCavity cav){
+void PCMSolver::buildGeneralPCMMatrix(GePolCavity cav){
 
-    int cavitySize = cav.getNTess();
+    cavitySize = cav.getNTess();
 
     MatrixXd SI(cavitySize, cavitySize);
     MatrixXd SE(cavitySize, cavitySize);
@@ -122,7 +122,6 @@ void PCMSolver::buildPCMMatrix(GePolCavity cav){
     MatrixXd aInv(cavitySize, cavitySize);
     a.setZero();
     aInv.setZero();
-	cout << cav.getTessArea(1) << endl;
 
     for (int i = 0; i < cavitySize; i++) {
 		a(i,i) = cav.getTessArea(i);
@@ -135,61 +134,13 @@ void PCMSolver::buildPCMMatrix(GePolCavity cav){
     PCMMatrix = PCMMatrix * a;
 }
 
-bool PCMSolver::readCavity(string &filename){
-    Vector3d v;
-    Vector3d sph;
-    double area;
-    double radius;
-    int TesNum;
-    ifstream input;
-    std::cout << "filename " << filename << std::endl;;
+VectorXd PCMSolver::solver(const VectorXd &potential) {
+	VectorXd charges = PCMMatrix * potential;
+	return charges;
+}
 
-    input.open(filename.c_str(), fstream::in);
-    if (input.eof()){
-	cout << "Unexpected end of file." ;
+void PCMSolver::buildIsotropicPCMMatrix(GePolCavity cav){
+	cout << "Not yet implemented" << endl;
 	exit(1);
-    }
-    if (input.bad() != 0 ){
-	cout << "Type mismatch or file corrupted." ;
-	exit(1);
-    }
-
-
-    input >> cavitySize;
-
-    areaTess.resize(cavitySize);
-    radiusTess.resize(cavitySize);
-    centerSphereTess.resize(cavitySize, 3);
-    centerTess.resize(cavitySize, 3);
-    PCMMatrix.resize(cavitySize, cavitySize);
-
-    for(int i = 0; i < cavitySize; i++) {
-	if (input.eof()){
-	    cout << "Unexpected end of file." ;
-	    exit(1);
-	}
-	if (input.bad() != 0 ){
-	    cout << "Type mismatch or file corrupted." ;
-	    exit(1);
-	}
-	input >> centerTess(i,0);
-	input >> centerTess(i,1);
-	input >> centerTess(i,2);
-	input >> areaTess(i);
-	input >> centerSphereTess(i,0);
-	input >> centerSphereTess(i,1);
-	input >> centerSphereTess(i,2);
-	input >> radiusTess(i);
-    }
-    input.close();
-
-    normalTess = centerTess - centerSphereTess;
-    for(int i = 0; i < cavitySize; i++) {
-	normalTess.row(i).normalize();
-    }
-
-    std::cout<< centerTess << std::endl;
-
-    return false;
 }
 

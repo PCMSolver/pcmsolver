@@ -415,7 +415,7 @@ C
       CHARACTER FILENM*(max_filename_length)
       INTEGER FILELN, STATLN, ACCELN, FORMLN
       LOGICAL OLDDX, FEXST, FIRST
-      COMMON /UNITAR/ IUNTAB(1:99)
+      COMMON /PCM_UNITAR/ IUNTAB(1:99)
 #include <pcm_gnrinf.h>
 #include <pcm_infpar.h>
       DATA FIRST /.TRUE./
@@ -823,7 +823,7 @@ C
       CHARACTER*80 FNNAME, FNNM2
       CHARACTER*3 IODIR
       LOGICAL FEXIST, OPND, OLDDX
-      COMMON /UNITAR/ IUNTAB(1:99)
+      COMMON /PCM_UNITAR/ IUNTAB(1:99)
 #include <pcm_chrnos.h>
 C
 C     We first deal with the unit number

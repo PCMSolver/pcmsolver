@@ -23,17 +23,23 @@ using namespace Eigen;
 
 PCMSolver::PCMSolver(GreensFunction &gfi, GreensFunction &gfo){
 	allocated = false;
+	builtIsotropicMatrix = false;
+	builtAnisotropicMatrix = false;
 	greenInside = &gfi; 
 	greenOutside = &gfo;
 }
 PCMSolver::PCMSolver(GreensFunction *gfi, GreensFunction *gfo){
 	allocated = false;
+	builtIsotropicMatrix = false;
+	builtAnisotropicMatrix = false;
 	greenInside = gfi; 
 	greenOutside = gfo;
 }
 
 PCMSolver::PCMSolver(Section solver) {
 	allocated = true;
+	builtIsotropicMatrix = false;
+	builtAnisotropicMatrix = false;
 	greenInside  = 
 		greenInside->allocateGreensFunction(solver.getSect("Green<inside>"));
 	greenOutside = 
@@ -90,7 +96,7 @@ double PCMSolver::compDiagonalElementDoper(GreensFunction *green, int i, GePolCa
     return d;
 }
 
-void PCMSolver::buildGeneralPCMMatrix(GePolCavity cav){
+void PCMSolver::buildAnisotropicMatrix(GePolCavity cav){
 
     cavitySize = cav.getNTess();
 
@@ -132,15 +138,25 @@ void PCMSolver::buildGeneralPCMMatrix(GePolCavity cav){
     PCMMatrix = PCMMatrix.inverse();
     PCMMatrix *= ((aInv - DE) - SE * SI.inverse() * (aInv - DI));
     PCMMatrix = PCMMatrix * a;
+	
+	builtAnisotropicMatrix = true;
+
 }
 
-VectorXd PCMSolver::solver(const VectorXd &potential) {
-	VectorXd charges = PCMMatrix * potential;
-	return charges;
-}
-
-void PCMSolver::buildIsotropicPCMMatrix(GePolCavity cav){
+void PCMSolver::buildIsotropicMatrix(GePolCavity cav){
 	cout << "Not yet implemented" << endl;
 	exit(1);
 }
+
+VectorXd PCMSolver::compCharge(const VectorXd &potential) {
+	VectorXd charge;
+	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
+		charge = PCMMatrix * potential;
+	} else {
+		cout << "PCM matrtix not initialized" << endl;
+		exit(1);
+	}
+	return charge;
+}
+
 

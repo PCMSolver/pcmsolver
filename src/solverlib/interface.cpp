@@ -18,7 +18,7 @@ using namespace Eigen;
 GePolCavity *cavity;
 PCMSolver *solver;
 
-extern "C" void init_gepol_cavity_(){
+extern "C" void init_gepol_cavity_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
@@ -26,7 +26,7 @@ extern "C" void init_gepol_cavity_(){
 	cavity->makeCavity(5000, 10000000);
 }
 
-extern "C" void init_pcmsolver_(){
+extern "C" void init_pcmsolver_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
@@ -35,6 +35,25 @@ extern "C" void init_pcmsolver_(){
 	solver = new PCMSolver(Medium);
 }
 
+extern "C" void build_anisotropic_matrix_() {
+	solver->buildAnisotropicMatrix(*cavity);
+}
+
+//copying mechanism of the following routine needs to be revised
+extern "C" void comp_charge_(double *potential_, double *charge_) {
+	int nts = solver->getCavitySize(); 
+	VectorXd potential(nts);
+	VectorXd charge(nts);
+	for (int i = 0; i < nts; i++) {
+		potential(i) = potential_[i];
+	}
+	charge = solver->compCharge(potential);
+	for (int i = 0; i < nts; i++) {
+		charge_[i] = charge(i);
+	}
+}
+
 extern "C" void print_gepol_cavity_(){
 	cout << "Cavity size" << cavity->size() << endl;
 }
+

@@ -45,7 +45,7 @@ int main(int argc, char** argv){
 
     PCMSolver waterSolver(vacuum, water); 
 
-    waterSolver.buildPCMMatrix(cavity);
+    waterSolver.buildAnisotropicMatrix(cavity);
     VectorXd potential(cavity.size());
     VectorXd charges(cavity.size());
     potential.setConstant(1.0);

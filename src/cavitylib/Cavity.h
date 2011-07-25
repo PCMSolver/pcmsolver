@@ -25,8 +25,14 @@ class Cavity
     virtual void makeCavity(int, int) = 0; // not nice, needs fix
     virtual void writeOutput(string &filename);
     virtual Matrix<double, Dynamic, 3> & getTessCenter(){return tessCenter;}
+    virtual Vector3d getTessCenter(int i){return tessCenter.row(i);}
+
     virtual Matrix<double, Dynamic, 3> & getTessNormal(){return tessNormal;}
+    virtual Vector3d getTessNormal(int i){return tessNormal.row(i);}
+
     virtual VectorXd & getTessArea(){return tessArea;}
+    virtual double getTessArea(int i){return tessArea(i);}
+
     virtual int size(){return nTess;}
  protected:
     int nTess;

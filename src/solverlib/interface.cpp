@@ -21,32 +21,33 @@ PCMSolver *solver;
 //      Subroutine PotExpVal(Density, Centers, Nts, Potential, Work, 
 //     $                     LWork)
 extern "C" void electron_pot_(double *density, double* centers, int *nts, 
-							 double *potential, double *work, double *lwork)
+							  double *potential, double *work, int *lwork);
 
-extern "C" void nuclear_pot_(double* centers, int *nts, double *potential)
+extern "C" void nuclear_pot_(double* centers, int *nts, double *potential);
 
 //      Subroutine Fock_PCMModule(Fock, Centers, Nts, Charges, Work, 
 //     $                     LWork)
 extern "C" void fock_pcm_module_(double *fock, double* centers, int *nts, 
-								 double *charges, double *work, double *lwork);
+								 double *charges, double *work, int *lwork);
 
 extern "C" void pcm_scf_(double *fock, double *energy, double *density, 
 						 double *work, int *lwork) {
 	VectorXd ElectronPotential(cavity->size());
 	VectorXd NuclearPotential(cavity->size());
 
-	nuclear_pot_(cavity->getCenterTess.data(), cavity->size(), NuclearPotential.data())
-	electron_pot_(density, cavity->getCenterTess.data(), cavity->size(), 
+	int nts = cavity->size();
+	nuclear_pot_(cavity->getTessCenter().data(), &nts, NuclearPotential.data());
+	electron_pot_(density, cavity->getTessCenter().data(), &nts, 
 				 ElectronPotential.data(), work, lwork);
-	VectorXd NuclearCharge = solver.compCharge(NuclearPotential);
-	VectorXd ElectronCharge = solver.compCharge(ElectronPotential);
+	VectorXd NuclearCharge = solver->compCharge(NuclearPotential);
+	VectorXd ElectronCharge = solver->compCharge(ElectronPotential);
 	VectorXd TotalCharge = ElectronCharge + NuclearCharge;
-	Eee = ElectronCharge * ElectronPotential;
-	Een = ElectronCharge * NuclearPotential;
-	Ene = NuclearCharge  * ElectronPotential;
-	Enn = NuclearCharge  * NuclearPotential;
-	Etot = 0.5 * (Eee + Een + Ene + Enn);
-	fock_pcm_module_(fock, cavity->getCenterTess.data(), cavity->size(),  
+	double Eee = ElectronCharge.dot(ElectronPotential);
+	double Een = ElectronCharge.dot(NuclearPotential);
+	double Ene = NuclearCharge.dot(ElectronPotential);
+	double Enn = NuclearCharge.dot(NuclearPotential);
+	double Etot = 0.5 * (Eee + Een + Ene + Enn);
+	fock_pcm_module_(fock, cavity->getTessCenter().data(), &nts,
 					 ElectronCharge.data(), work, lwork);
 }
 

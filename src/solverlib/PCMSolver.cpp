@@ -65,10 +65,10 @@ double PCMSolver::compDiagonalElementSoper(GreensFunction *green, int i, GePolCa
     double s;
     if (UniformDielectric *uniform = dynamic_cast<UniformDielectric*> (green)) {
 	    double eps = uniform->getEpsilon();
-	    s = factor * sqrt(4 * M_PI / cav.getTessArea(i)) / eps;   
+	    s = factor * sqrt(4 * M_PI / (cav.getTessArea)(i)) / eps;   
     }
     else if (Vacuum *vacuum = dynamic_cast<Vacuum *>(green)) {
-		s = factor * sqrt(4 * M_PI / cav.getTessArea(i));   
+		s = factor * sqrt(4 * M_PI / (cav.getTessArea)(i));   
     }
     else {
 	    cout << "Not uniform dielectric" << endl;
@@ -98,7 +98,7 @@ double PCMSolver::compDiagonalElementDoper(GreensFunction *green, int i, GePolCa
 
 void PCMSolver::buildAnisotropicMatrix(GePolCavity cav){
 
-    cavitySize = cav.getNTess();
+    cavitySize = cav.size();
 
     MatrixXd SI(cavitySize, cavitySize);
     MatrixXd SE(cavitySize, cavitySize);

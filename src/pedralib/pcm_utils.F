@@ -589,7 +589,7 @@ C
              END IF
             END IF
          END IF
-         IF (IPRERR.GT.1) WRITE (LUERR,*) 'GPOPEN_ calling OPENDX_ ',
+         IF (IERPCM.GT.1) WRITE (LUERR,*) 'GPOPEN_ calling OPENDX_ ',
      &      LUNIT,' ',FILENM(1:FILELN),NELEM,' ',STATUF(1:STATLN)
          CALL OPENDX_(LUNIT,FILENM(1:FILELN),NELEM,STATUF(1:STATLN),
      &               OLDDX)
@@ -616,7 +616,7 @@ C
 C
             INQUIRE(FILE=FILENM(1:FILELN),EXIST=FEXST,IOSTAT=IOS)
             IF (.NOT. FEXST) GOTO 9007
-            IF (IPRERR.gt.1) write (LUERR,*) 'GPOPEN_ seq OLD ',LUNIT,
+            IF (IERPCM.gt.1) write (LUERR,*) 'GPOPEN_ seq OLD ',LUNIT,
      &         ' ',FILENM(1:FILELN),' ',FORMF(1:FORMLN)
             OPEN(UNIT=LUNIT,FILE=FILENM(1:FILELN),STATUS='OLD',
      &           ACCESS='SEQUENTIAL',FORM=FORMF(1:FORMLN),ERR=9004,
@@ -648,13 +648,13 @@ C
                END IF
             END IF
             IF (STATUF(1:7) .EQ. 'SCRATCH') THEN
-               IF (IPRERR.gt.1) write (LUERR,*) 'GPOPEN_ seq scratch ',
+               IF (IERPCM.gt.1) write (LUERR,*) 'GPOPEN_ seq scratch ',
      &            LUNIT,' ',FORMF(1:FORMLN)
                OPEN(UNIT=LUNIT,STATUS='SCRATCH',
      &              ACCESS='SEQUENTIAL',FORM=FORMF(1:FORMLN),
      &              ERR=9004,IOSTAT=IOS)
             ELSE
-               IF (IPRERR.gt.1) write (LUERR,*) 'GPOPEN_ seq ',
+               IF (IERPCM.gt.1) write (LUERR,*) 'GPOPEN_ seq ',
      &            STATUF(1:STATLN),LUNIT,' ',FILENM(1:FILELN),
      &            ' ',FORMF(1:FORMLN)
                IF(STATUF(1:STATLN) .EQ. 'NEW') THEN
@@ -664,7 +664,7 @@ C                  This will often be the case if we restart a
 C                  calculation.
                   INQUIRE(FILE=FILENM(1:FILELN),EXIST=FEXST,IOSTAT=IOS)
                   IF (FEXST) THEN
-                     IF (IPRERR.gt.1) write (LUERR,*)
+                     IF (IERPCM.gt.1) write (LUERR,*)
      &                  'GPOPEN_ INFO: file ',FILENM(1:FILELN),
      &                  ' already exists and is deleted first.'
                      OPEN(UNIT=LUNIT,FILE=FILENM(1:FILELN),
@@ -846,7 +846,7 @@ C
          CALL FLSHFO_(LUPRI)
       END IF
       IF (DISP .EQ. 'KEEP') THEN
-         IF (IPRERR.gt.1) write (LUERR,*) 'GPCLOSE_ keep',LUNIT
+         IF (IERPCM.gt.1) write (LUERR,*) 'GPCLOSE_ keep',LUNIT
          CLOSE (LUNIT,STATUS='KEEP',ERR=9003)
          IUNTAB(LUNIT) = 0
          LUNIT = -30000-LUNIT
@@ -878,7 +878,7 @@ C
                OPEN (UNIT=LUNIT,FILE=FNNAME(1:LN),STATUS='OLD')
             END IF
          END IF
-         IF (IPRERR.gt.1) write (LUERR,*) 'GPCLOSE_ delete',LUNIT
+         IF (IERPCM.gt.1) write (LUERR,*) 'GPCLOSE_ delete',LUNIT
          CLOSE (LUNIT,STATUS='DELETE',ERR=20)
          IUNIT = 0
  16      CONTINUE

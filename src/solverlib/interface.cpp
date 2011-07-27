@@ -59,6 +59,7 @@ extern "C" void init_gepol_cavity_() {
 	Getkw Input = Getkw(infile, false, true);
     cavity = new GePolCavity(Input);
 	cavity->makeCavity(5000, 10000000);
+	cout << *cavity << endl;
 }
 
 extern "C" void init_pcmsolver_() {
@@ -66,7 +67,6 @@ extern "C" void init_pcmsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	cout << Medium << endl;
 	solver = new PCMSolver(Medium);
 }
 

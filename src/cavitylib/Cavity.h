@@ -34,6 +34,8 @@ class Cavity
     virtual double getTessArea(int i){return tessArea(i);}
 
     virtual int size(){return nTess;}
+
+    friend std::ostream& operator<<(std::ostream &o, const Cavity &c);
  protected:
     int nTess;
     Matrix<double, Dynamic, 3> tessCenter;

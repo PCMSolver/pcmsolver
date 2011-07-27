@@ -463,35 +463,6 @@ C
 Clf Replication of geometrical parameters according to simmetry
 C
       CALL REPCAV_(VERT,CENTR,NPERM,NUMTS,NUMSPH)
-      IF (NRWCAV .EQ. 1) THEN
-         LUCAVD = -8675
-         CALL GPOPEN_(LUCAVD,'CAVDATA','OLD','SEQUENTIAL'
-     $        ,'UNFORMATTED',IDUMMY,.FALSE.)
-         READ(LUCAVD) NTS
-         READ(LUCAVD) ISPHE
-         READ(LUCAVD) XTSCOR
-         READ(LUCAVD) YTSCOR
-         READ(LUCAVD) ZTSCOR
-         READ(LUCAVD) AS
-         CALL GPCLOSE_(LUCAVD,'KEEP')
-         NTSIRR = NTS / (MAXREP + 1)
-      ELSE IF (NRWCAV .EQ. 2) THEN
-         LUCAVD = -8675
-         CALL GPOPEN_(LUCAVD,'CAVDATA','UNKNOWN','SEQUENTIAL'
-     $        ,'UNFORMATTED',IDUMMY,.FALSE.)
-         WRITE(LUCAVD) NTS
-         WRITE(LUCAVD) ISPHE
-         WRITE(LUCAVD) XTSCOR
-         WRITE(LUCAVD) YTSCOR
-         WRITE(LUCAVD) ZTSCOR
-         WRITE(LUCAVD) AS
-         CALL GPCLOSE_(LUCAVD,'KEEP')
-      ELSE IF (NRWCAV .EQ. 0) THEN
-         CONTINUE
-      ELSE
-         WRITE(LUPRI,*) 'SIRCAV: WRONG VALUE OF NRWCAV'
-         STOP
-      END IF
 C
 C Prepare data for geomview
 C
@@ -507,7 +478,8 @@ C         write(lupri,1240) i, xtscor(i),ytscor(i),ztscor(i),as(i)
 C      enddo
 C      call flshfo(lupri)
 
-      IF (IPRPCM .GT. 10) THEN
+clf      IF (IPRPCM .GT. 10) THEN
+      IF (.true.) THEN
          KORD  = 1
          KIDX  = KORD + 4 * NTS
          KLAST = KIDX + NTS

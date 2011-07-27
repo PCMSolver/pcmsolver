@@ -42,8 +42,14 @@ C
       double precision avgarea_
       integer nts_, nesfp_
 
+      print *, 'lupri in pcm_cav', lupri
+      LUPRI_BACK = LUPRI
+      LUPRI = -10
+      CALL GPOPEN_(LUPRI,'CAVDATA','OLD','SEQUENTIAL'
+     $     ,'UNFORMATTED',IDUMMY,.FALSE.)
+
+
       LWORK=10000000
-      LUPRI = 3
       MAXREP=0
       NSYM=1
       AREATS=avgArea_
@@ -86,4 +92,9 @@ C
          rsph_(i) = re(isphe(i))
       enddo
       return
+
+      CALL GPCLOSE_(LUPRI,'KEEP')
+
+      LUPRI = LUPRI_BACK
+
       END

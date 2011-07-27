@@ -22,13 +22,13 @@ C
       LHEAD  = LNBLNK(HEAD)
       LNG    = LHEAD + 2
       IND = MAX(1,(80 - LNG)/2 + 1)
-      WRITE (LUPRI,'(//150A)') (' ',I=1,IND), '+', ('-',I=1,LNG), '+'
-      WRITE (LUPRI,'(150A)')   (' ',I=1,IND), '! ', HEAD(1:LHEAD), ' !'
-      WRITE (LUPRI,'(150A)')   (' ',I=1,IND), '+', ('-',I=1,LNG), '+'
-Cx    WRITE (LUPRI,'(//150A)') (' ',I=1,IND), '.', ('-',I=1,LNG), '.'           
-Cx    WRITE (LUPRI,'(150A)')   (' ',I=1,IND), '| ', HEAD(1:LHEAD), ' |'         
-Cx    WRITE (LUPRI,'(150A)')   (' ',I=1,IND), '`', ('-',I=1,LNG), ''''          
-      WRITE (LUPRI,'()')
+      WRITE (LVPRI,'(//150A)') (' ',I=1,IND), '+', ('-',I=1,LNG), '+'
+      WRITE (LVPRI,'(150A)')   (' ',I=1,IND), '! ', HEAD(1:LHEAD), ' !'
+      WRITE (LVPRI,'(150A)')   (' ',I=1,IND), '+', ('-',I=1,LNG), '+'
+Cx    WRITE (LVPRI,'(//150A)') (' ',I=1,IND), '.', ('-',I=1,LNG), '.'           
+Cx    WRITE (LVPRI,'(150A)')   (' ',I=1,IND), '| ', HEAD(1:LHEAD), ' |'         
+Cx    WRITE (LVPRI,'(150A)')   (' ',I=1,IND), '`', ('-',I=1,LNG), ''''          
+      WRITE (LVPRI,'()')
       RETURN
       END
       SUBROUTINE AVERAG_ (VECS,NVDIM,NVSIM)
@@ -42,7 +42,7 @@ C
 C Used from common blocks:                                                      
 C  INFINP : SUPSYM                                                              
 C  INFVAR : NWOPT,JWOPSY                                                        
-C  INFPRI : LUERR                                                               
+C  INFPRI : LVERR                                                               
 C                                                                               
 #include <pcm_maxorb.h>
 #include <pcm_infinp.h>
@@ -63,14 +63,14 @@ C
 C *** Error sections                                                            
 C                                                                               
  910   CONTINUE
-      WRITE (LUERR,9010) JWOPSY
-Ckm      CALL QTRACE_(LUERR)
+      WRITE (LVERR,9010) JWOPSY
+Ckm      CALL QTRACE_(LVERR)
       STOP
  9010  FORMAT(/' ERROR-AVERAG_, operator symmetry .ne. 1; JWOPSY =',I8)
 C                                                                               
  920    CONTINUE
-      WRITE (LUERR,9020) NVDIM,NWOPT
-Ckm      CALL QTRACE_(LUERR)
+      WRITE (LVERR,9020) NVDIM,NWOPT
+Ckm      CALL QTRACE_(LVERR)
       STOP
  9020  FORMAT(/' ERROR-AVERAG_, vector length',I8,' is less than NWOPT',
      *   I8)
@@ -91,7 +91,7 @@ C Used from common blocks:
 C   INFORB : NSSYM,NORBSS(),IORBSS(),NINFSS(*,3), NOCCT,NORBT                   
 C   INFIND : ISW(*),ISSORD(*)                                                   
 C   INFVAR : NWOPT                                                              
-C   INFPRI : LUERR                                                              
+C   INFPRI : LVERR                                                              
 C                                                                               
 #include <pcm_maxash.h>
 #include <pcm_maxorb.h>
@@ -118,8 +118,8 @@ C
 Ckm      CALL QENTER_('AVERSS_')
       CALL MAKE_KLWOP_(KLWOP)
       IF (IPRAVE .GT. 100) THEN
-         WRITE(LUPRI,'(/A)') ' AVERSS_, Incoming orbital vector(s):'
-         CALL OUTPUT_(VECS,1,NWOPT,1,NVSIM,NVDIM,NVSIM,-1,LUPRI)
+         WRITE(LVPRI,'(/A)') ' AVERSS_, Incoming orbital vector(s):'
+         CALL OUTPUT_(VECS,1,NWOPT,1,NVSIM,NVDIM,NVSIM,-1,LVPRI)
       END IF
 C                                                                               
       DO 800 ISSYMR = 1,NSSYM
@@ -135,14 +135,14 @@ C        Skip this supsym if not degenerate or not "root supsym"
             END IF
  100            CONTINUE
          IF (IPRAVE .GT. 5 .OR. NDEG .NE. NINFSS(ISSYMR,1)) THEN
-            WRITE(LUPRI,'(/A,I3,A/A,(T35,8I5))')
+            WRITE(LVPRI,'(/A,I3,A/A,(T35,8I5))')
      &         'AVERSS_ averaging ',NDEG,' degenerate super symmetries',
      &         ' namely sup.sym.s no.',(ISSDEG(IDEG),IDEG=1,NDEG)
          END IF
          IF (NDEG .NE. NINFSS(ISSYMR,1)) THEN
-            WRITE(LUPRI,'(/A)')
+            WRITE(LVPRI,'(/A)')
      &      ' AVERSS_-software error: inconsistent degeneracy in NINFSS'
-            CALL AVEDMP_(LUPRI)
+            CALL AVEDMP_(LVPRI)
             STOP
          END IF
 C                                                                               
@@ -169,7 +169,7 @@ Chjaaj         ... this is an inactive orbital
                   IF (LMOW .LE. 0) THEN
                      IDEGV(IDEG) = 0
                      NERR = NERR + 1
-                     WRITE(LUPRI,'(/A)')
+                     WRITE(LVPRI,'(/A)')
      &                    'AVERSS_ error: degenerate orbitals not ',
      &                    'same orbital class.'
                   ELSE
@@ -179,18 +179,18 @@ Chjaaj         ... this is an inactive orbital
  410                        CONTINUE
                IF (IPRAVE .GT. 10 .OR. NERR .GT. 0) THEN
                   IF (NERR .GT. 0) THEN
-                     WRITE(LUPRI,'(/A/A/)')
+                     WRITE(LVPRI,'(/A/A/)')
      &         ' AVERSS_ error: not all degenerate rotations included',
      &         ' Probable error: some but not all'//
      &            ' of the degenerate orbitals have been frozen.'
                   END IF
-                  WRITE(LUPRI,'(A,(T35,4I10))')
+                  WRITE(LVPRI,'(A,(T35,4I10))')
      &               ' AVERSS_ averaging orb.rot. no.s',
      &               (IDEGV(IDEG),IDEG=1,NDEG)
-                  IF (NERR .GT. 0) CALL AVEDMP_(LUPRI)
+                  IF (NERR .GT. 0) CALL AVEDMP_(LVPRI)
                END IF
                IF (NERR .GT. 0) THEN
-Ckm                  CALL QTRACE_(LUPRI)
+Ckm                  CALL QTRACE_(LVPRI)
                   STOP
                END IF
                DO 460 IVSIM = 1,NVSIM
@@ -208,8 +208,8 @@ Ckm                  CALL QTRACE_(LUPRI)
  800                                                    CONTINUE
 C                                                                               
       IF (IPRAVE .GT. 100) THEN
-         WRITE(LUPRI,'(/A)') ' AVERSS_, Averaged orbital vector(s):'
-         CALL OUTPUT_(VECS,1,NWOPT,1,NVSIM,NVDIM,NVSIM,-1,LUPRI)
+         WRITE(LVPRI,'(/A)') ' AVERSS_, Averaged orbital vector(s):'
+         CALL OUTPUT_(VECS,1,NWOPT,1,NVSIM,NVDIM,NVSIM,-1,LVPRI)
       END IF
 C                                                                               
 Ckm      CALL QEXIT('AVERSS_')
@@ -246,10 +246,10 @@ C
          IF (KLWOP(KW,LW) .EQ. 0) THEN
             KLWOP(KW,LW)  = IG
          ELSE
-            WRITE (LUPRI,'(/A,I10,A,I10//A)')
+            WRITE (LVPRI,'(/A,I10,A,I10//A)')
      &      'Fatal error, duplicate entry in JWOP found for elements',
      &      KLWOP(KW,LW),' and',IG,'Dump of JWOP:'
-            WRITE (LUPRI,'(3I10)') (I,JWOP(1,I),JWOP(2,I),I=1,NWOPT)
+            WRITE (LVPRI,'(3I10)') (I,JWOP(1,I),JWOP(2,I),I=1,NWOPT)
             STOP
          END IF
       END DO
@@ -589,7 +589,7 @@ C
              END IF
             END IF
          END IF
-         IF (IERPCM.GT.1) WRITE (LUERR,*) 'GPOPEN_ calling OPENDX_ ',
+         IF (IERPCM.GT.1) WRITE (LVERR,*) 'GPOPEN_ calling OPENDX_ ',
      &      LUNIT,' ',FILENM(1:FILELN),NELEM,' ',STATUF(1:STATLN)
          CALL OPENDX_(LUNIT,FILENM(1:FILELN),NELEM,STATUF(1:STATLN),
      &               OLDDX)
@@ -616,7 +616,7 @@ C
 C
             INQUIRE(FILE=FILENM(1:FILELN),EXIST=FEXST,IOSTAT=IOS)
             IF (.NOT. FEXST) GOTO 9007
-            IF (IERPCM.gt.1) write (LUERR,*) 'GPOPEN_ seq OLD ',LUNIT,
+            IF (IERPCM.gt.1) write (LVERR,*) 'GPOPEN_ seq OLD ',LUNIT,
      &         ' ',FILENM(1:FILELN),' ',FORMF(1:FORMLN)
             OPEN(UNIT=LUNIT,FILE=FILENM(1:FILELN),STATUS='OLD',
      &           ACCESS='SEQUENTIAL',FORM=FORMF(1:FORMLN),ERR=9004,
@@ -648,13 +648,13 @@ C
                END IF
             END IF
             IF (STATUF(1:7) .EQ. 'SCRATCH') THEN
-               IF (IERPCM.gt.1) write (LUERR,*) 'GPOPEN_ seq scratch ',
+               IF (IERPCM.gt.1) write (LVERR,*) 'GPOPEN_ seq scratch ',
      &            LUNIT,' ',FORMF(1:FORMLN)
                OPEN(UNIT=LUNIT,STATUS='SCRATCH',
      &              ACCESS='SEQUENTIAL',FORM=FORMF(1:FORMLN),
      &              ERR=9004,IOSTAT=IOS)
             ELSE
-               IF (IERPCM.gt.1) write (LUERR,*) 'GPOPEN_ seq ',
+               IF (IERPCM.gt.1) write (LVERR,*) 'GPOPEN_ seq ',
      &            STATUF(1:STATLN),LUNIT,' ',FILENM(1:FILELN),
      &            ' ',FORMF(1:FORMLN)
                IF(STATUF(1:STATLN) .EQ. 'NEW') THEN
@@ -664,7 +664,7 @@ C                  This will often be the case if we restart a
 C                  calculation.
                   INQUIRE(FILE=FILENM(1:FILELN),EXIST=FEXST,IOSTAT=IOS)
                   IF (FEXST) THEN
-                     IF (IERPCM.gt.1) write (LUERR,*)
+                     IF (IERPCM.gt.1) write (LVERR,*)
      &                  'GPOPEN_ INFO: file ',FILENM(1:FILELN),
      &                  ' already exists and is deleted first.'
                      OPEN(UNIT=LUNIT,FILE=FILENM(1:FILELN),
@@ -686,8 +686,8 @@ C
 C error branches
 C
  9001 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -701,8 +701,8 @@ Ckm      CALL QTRACE_(LUGPPRI)
       STOP
 C
  9002 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -717,8 +717,8 @@ Ckm      CALL QTRACE_(LUGPPRI)
       STOP
 C
  9003 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -733,8 +733,8 @@ Ckm      CALL QTRACE_(LUGPPRI)
       STOP
 C
  9004 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -746,8 +746,8 @@ Ckm      CALL QTRACE_(LUGPPRI)
       STOP
 C
  9005 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -760,8 +760,8 @@ Ckm      CALL QTRACE_(LUGPPRI)
       STOP
 C
  9006 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -776,8 +776,8 @@ Ckm      CALL QTRACE_(LUGPPRI)
       STOP
 C
  9007 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -840,13 +840,13 @@ C
 C
       INQUIRE(UNIT=LUNIT,EXIST=FEXIST,OPENED=OPND)
       IF (.NOT. FEXIST .OR. .NOT. OPND) THEN
-         WRITE (LUPRI,'(/A/A,I3)')
+         WRITE (LVPRI,'(/A/A,I3)')
      &     ' WARNING: Tried to close a non-existent or already '//
      &     'closed file', ' Unit number was: ',LUNIT
-         CALL FLSHFO_(LUPRI)
+         CALL FLSHFO_(LVPRI)
       END IF
       IF (DISP .EQ. 'KEEP') THEN
-         IF (IERPCM.gt.1) write (LUERR,*) 'GPCLOSE_ keep',LUNIT
+         IF (IERPCM.gt.1) write (LVERR,*) 'GPCLOSE_ keep',LUNIT
          CLOSE (LUNIT,STATUS='KEEP',ERR=9003)
          IUNTAB(LUNIT) = 0
          LUNIT = -30000-LUNIT
@@ -878,7 +878,7 @@ C
                OPEN (UNIT=LUNIT,FILE=FNNAME(1:LN),STATUS='OLD')
             END IF
          END IF
-         IF (IERPCM.gt.1) write (LUERR,*) 'GPCLOSE_ delete',LUNIT
+         IF (IERPCM.gt.1) write (LVERR,*) 'GPCLOSE_ delete',LUNIT
          CLOSE (LUNIT,STATUS='DELETE',ERR=20)
          IUNIT = 0
  16      CONTINUE
@@ -917,8 +917,8 @@ C
 C error branches
 C
  9001 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -931,8 +931,8 @@ Ckm      CALL QTRACE_(LUGPPRI)
       STOP
 C
  9002 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -945,8 +945,8 @@ Ckm      CALL QTRACE_(LUGPPRI)
       STOP
 C
  9003 CONTINUE
-      IF (LUPRI .GE. 0) THEN
-         LUGPPRI = LUPRI
+      IF (LVPRI .GE. 0) THEN
+         LUGPPRI = LVPRI
       ELSE
          LUGPPRI = 6
       END IF
@@ -998,7 +998,7 @@ C executing (provided the computer allows shared access).
 C This subroutine may be a dummy routine.                                       
 C                                                                               
       IF (IUNIT .GE. 0) THEN
-C     ... do not try to flush unused units (e.g. LUPRI on a slave) /hjaaj       
+C     ... do not try to flush unused units (e.g. LVPRI on a slave) /hjaaj       
 #if  defined (SYS_AIX)  || defined (SYS_IRIX) || defined (SYS_NEC)  \
   || defined (SYS_CRAY) || defined (SYS_T3D) || defined (SYS_LINUX) \
   || defined (SYS_SUN)  || defined (SYS_HAL) || defined (SYS_T90)   \
@@ -1147,20 +1147,20 @@ C
 C error branches
 C
  9000 CONTINUE
-      WRITE (LUPRI,'(//2A/2A/A,I5)')
+      WRITE (LVPRI,'(//2A/2A/A,I5)')
      *   ' --> ERROR (OPENDX_) INVALID STATUS KEYWORD: ',STATUS,
      *   '                    FILE NAME   =',NAME,
      *   '                    FILE NUMBER =',LUDX
-Ckm      CALL QTRACE_(LUPRI)
+Ckm      CALL QTRACE_(LVPRI)
       STOP
 C
  9100 CONTINUE
-      WRITE (LUPRI,'(//A/2A/A,I5/A)')
+      WRITE (LVPRI,'(//A/2A/A,I5/A)')
      *   ' --> ERROR (OPENDX_) OLD FILE NOT FOUND',
      *   '                    FILE NAME   =',NAME,
      *   '                    FILE NUMBER =',LUDX,
      *   ' --- or wrong record length on old file.'
-Ckm      CALL QTRACE_(LUPRI)
+Ckm      CALL QTRACE_(LVPRI)
       STOP
 C
 C end of OPENDX_
@@ -1170,21 +1170,21 @@ C
 #include <pcm_implicit.h>
 #include <pcm_priunit.h>
       CHARACTER*(*) SUB, PLACE
-      WRITE (LUPRI,'(//3A)') ' Work space exceeded in subroutine ',
+      WRITE (LVPRI,'(//3A)') ' Work space exceeded in subroutine ',
      *                         SUB,'.'
       IF (LNBLNK(PLACE) .GT. 0) THEN
-         WRITE (LUPRI,'(/2A)') ' Location: ',PLACE
+         WRITE (LVPRI,'(/2A)') ' Location: ',PLACE
       END IF
       JNT1  = ABS(INT1)
       JNT2  = ABS(INT2)
       LWRKR = MAX(JNT1,JNT2)
       LWRKA = MIN(JNT1,JNT2)
       IF (INT1 .LT. 0 .OR. INT2 .LT. 0) THEN
-         WRITE (LUPRI,'(/A,I10)  ') ' Space required  >',LWRKR
+         WRITE (LVPRI,'(/A,I10)  ') ' Space required  >',LWRKR
       ELSE
-         WRITE (LUPRI,'(/A,I10)  ') ' Space required  =',LWRKR
+         WRITE (LVPRI,'(/A,I10)  ') ' Space required  =',LWRKR
       END IF
-      WRITE (LUPRI,'( A,I10)') ' Space available =',LWRKA
+      WRITE (LVPRI,'( A,I10)') ' Space available =',LWRKA
       STOP
       END
       SUBROUTINE READT_ (IT,N,X)
@@ -1197,16 +1197,16 @@ C
       RETURN
  10      CONTINUE
       INQUIRE(UNIT=IT,NAME=FNAME)
-      WRITE (LUPRI,*) 'READT_: END reading file ',FNAME,
+      WRITE (LVPRI,*) 'READT_: END reading file ',FNAME,
      & ' UNIT ',IT, ' record length ',N
       STOP
  20      CONTINUE
       INQUIRE(UNIT=IT,NAME=FNAME)
-      WRITE (LUPRI,*) 'READT_: ERROR reading file ',FNAME,
+      WRITE (LVPRI,*) 'READT_: ERROR reading file ',FNAME,
      & ' UNIT ',IT, ' record length ',N
       STOP
  30      CONTINUE
-      WRITE (LUPRI,*) 'READT_ ERRROR: non-positive file unit number ',IT
+      WRITE (LVPRI,*) 'READT_ ERRROR: non-positive file unit number ',IT
       STOP
       END
       SUBROUTINE ERRWRK_ (STRING,LNEED,LAVAIL)
@@ -1219,11 +1219,11 @@ C
 C                                                                               
 Ckm      CALL QENTER_('ERRWRK_')
       IF (LNEED .GE. 0) THEN
-         WRITE (LUPRI,1010) STRING,LNEED,LAVAIL
+         WRITE (LVPRI,1010) STRING,LNEED,LAVAIL
       ELSE
-         WRITE (LUPRI,1020) STRING,-LNEED,LAVAIL
+         WRITE (LVPRI,1020) STRING,-LNEED,LAVAIL
       END IF
-Ckm      CALL QTRACE_(LUPRI)
+Ckm      CALL QTRACE_(LVPRI)
       STOP
 C                                                                               
  1010  FORMAT(/'  FATAL ERROR, insufficient core for ',A,
@@ -2176,7 +2176,7 @@ C
       GO TO 410
   420 CONTINUE
 c     CALL GETTIM_(TEND, WEND)
-c     WRITE(LUPRI,'(/A,4I10/A,2F20.2)')
+c     WRITE(LVPRI,'(/A,4I10/A,2F20.2)')
 c    &    'JACO_ -- ITJACO, NB,NMAX,NROWV :',ITJACO, NB,NMAX,NROWV,
 c    &    'JACO_ -- CPUTIME, WALLTIME     :',TEND-TSTRT, WEND-WSTRT
 Ckm      CALL QEXIT('JACO_')

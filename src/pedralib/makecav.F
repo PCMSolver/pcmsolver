@@ -43,7 +43,7 @@ C
       integer nts_, nesfp_
 
       LWORK=10000000
-      LUPRI = 3
+      LVPRI = 3
       MAXREP=0
       NSYM=1
       AREATS=avgArea_

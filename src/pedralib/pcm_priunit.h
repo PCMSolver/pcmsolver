@@ -2,6 +2,6 @@ C     FILE: priunit.h
       CHARACTER*80 SEPARATOR
       PARAMETER (SEPARATOR = '----------------------------------------'
      &                     //'----------------------------------------')
-      INTEGER LUPRI, LUERR, IERPCM
+      INTEGER LVPRI, LVERR, IERPCM
       COMMON /PCM_PRIUNIT/
-     &        LUPRI, LUERR, IERPCM
+     &        LVPRI, LVERR, IERPCM

@@ -36,8 +36,8 @@ extern "C" void energy_pcm_(double *energy, double *density,
 	VectorXd NuclearPotential(cavity->size());
 
 	int nts = cavity->size();
-	nuclear_pot_(cavity->getTessCenter().data(), &nts, NuclearPotential.data());
-	electron_pot_(density, cavity->getTessCenter().data(), &nts, 
+	nuc_pot_pcm_(cavity->getTessCenter().data(), &nts, NuclearPotential.data());
+	ele_pot_pcm_(density, cavity->getTessCenter().data(), &nts, 
 				 ElectronPotential.data(), work, lwork);
 	VectorXd NuclearCharge = solver->compCharge(NuclearPotential);
 	VectorXd ElectronCharge = solver->compCharge(ElectronPotential);
@@ -47,7 +47,7 @@ extern "C" void energy_pcm_(double *energy, double *density,
 	double Ene = NuclearCharge.dot(ElectronPotential);
 	double Enn = NuclearCharge.dot(NuclearPotential);
 	*energy = 0.5 * (Eee + Een + Ene + Enn);
-	cout << 'External PCM Energy: ' << *energy << endl;
+	cout << "External PCM Energy: " << *energy << endl;
 	/*	fock_pcm_module_(fock, cavity->getTessCenter().data(), &nts,
 		ElectronCharge.data(), work, lwork);*/
 }

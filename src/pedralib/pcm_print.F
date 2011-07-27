@@ -5,7 +5,7 @@ C...   These routines are in the public domain and can be
 C...   used freely in other programs.
 C...
 C
-      SUBROUTINE OUTPAK_ (AMATRX,NROW,NCTL,LUPRI)
+      SUBROUTINE OUTPAK_ (AMATRX,NROW,NCTL,LVPRI)
 C.......................................................................
 C Revised 16-Dec-1983 by Hans Jorgen Aa. Jensen.
 C         16-Jun-1986 hjaaj ( removed Hollerith )
@@ -72,7 +72,7 @@ C
          AMAX = MAX( AMAX, ABS(AMATRX(I)) )
     5 CONTINUE
       IF (AMAX .EQ. ZERO) THEN
-         WRITE (LUPRI,'(/T6,A)') 'Zero matrix.'
+         WRITE (LVPRI,'(/T6,A)') 'Zero matrix.'
          GO TO 200
       END IF
       IF (FFMIN .LE. AMAX .AND. AMAX .LE. FFMAX) THEN
@@ -92,14 +92,14 @@ C
 C.....BEGIN NON STANDARD DO LOOP.
       BEGIN= 1
  1050 NCOL = 1
-         WRITE (LUPRI,1000) (COLUMN,I,I = BEGIN,LAST)
+         WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
          DO 40 K = BEGIN,NROW
             KTOTAL = (K*(K-1))/2 + BEGIN - 1
             DO 10 I = 1,NCOL
                IF (AMATRX(KTOTAL+I) .NE. ZERO) GO TO 20
    10       CONTINUE
             GO TO 30
-   20       WRITE (LUPRI,PFMT) CTL,K,(AMATRX(J+KTOTAL),J=1,NCOL)
+   20       WRITE (LVPRI,PFMT) CTL,K,(AMATRX(J+KTOTAL),J=1,NCOL)
    30       IF (K .LT. (BEGIN+KCOL-1)) NCOL = NCOL + 1
    40    CONTINUE
          LAST = MIN(LAST+KCOL,NROW)
@@ -113,7 +113,7 @@ C2000 FORMAT (A1,'Row',I4,2X,1P,8D15.6)
 C2000 FORMAT (A1,I7,2X,1P,8D15.6)
       END
 C  /* Deck outpkb */
-      SUBROUTINE OUTPKB_ (AMATRX,NDIM,NBLK,NCTL,LUPRI)
+      SUBROUTINE OUTPKB_ (AMATRX,NDIM,NBLK,NCTL,LVPRI)
 C.......................................................................
 C
 C OUTPKB_ is OUTPAK_ modified for blocking as specified by
@@ -188,7 +188,7 @@ C
          AMAX = MAX( AMAX, ABS(AMATRX(I)) )
   205 CONTINUE
       IF (AMAX .EQ. ZERO) THEN
-         WRITE (LUPRI,3000) NBLK
+         WRITE (LVPRI,3000) NBLK
          GO TO 800
       END IF
       IF (FFMIN .LE. AMAX .AND. AMAX .LE. FFMAX) THEN
@@ -208,10 +208,10 @@ C
          DO 5 I=1,IIDIM
             IF (AMATRX(IOFF+I).NE.ZERO) GO TO 15
     5    CONTINUE
-         WRITE (LUPRI,1100) IBLK
+         WRITE (LVPRI,1100) IBLK
          GO TO 90
    15    CONTINUE
-         WRITE (LUPRI,1200) IBLK
+         WRITE (LVPRI,1200) IBLK
 C
 C LAST IS THE LAST COLUMN NUMBER IN THE ROW CURRENTLY BEING PRINTED
 C
@@ -222,14 +222,14 @@ C
          BEGIN = 1
 C.....BEGIN NON STANDARD DO LOOP.
  1050       NCOL = 1
-            WRITE (LUPRI,1000) (COLUMN,I,I = BEGIN,LAST)
+            WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
             KTOTAL = IOFF + BEGIN*(BEGIN+1)/2 - 1
             DO 40 K = BEGIN,IDIM
                DO 10 I = 1,NCOL
                   IF (AMATRX(KTOTAL+I) .NE. ZERO) GO TO 20
    10          CONTINUE
                GO TO 30
-   20          WRITE (LUPRI,PFMT) CTL,K,(AMATRX(KTOTAL+J),J=1,NCOL)
+   20          WRITE (LVPRI,PFMT) CTL,K,(AMATRX(KTOTAL+J),J=1,NCOL)
    30          IF (K .LT. (BEGIN+KCOL-1)) NCOL = NCOL + 1
                KTOTAL = KTOTAL + K
    40       CONTINUE
@@ -250,7 +250,7 @@ C2000 FORMAT (A1,'Row',I4,2X,1P,8D15.6)
 C2000 FORMAT (A1,I7,2X,1P,8D15.6)
       END
 C  /* Deck outpks */
-      SUBROUTINE OUTPKS_ (AMATRX,NDIM,NBLK,IREPO,NCTL,LUPRI)
+      SUBROUTINE OUTPKS_ (AMATRX,NDIM,NBLK,IREPO,NCTL,LVPRI)
 C.......................................................................
 C
 C OUTPKS_ is OUTPAK_ modified for blocking as specified by
@@ -312,11 +312,11 @@ C
             IF (IREPA .GT. IREPB) THEN
                NDIMA = NDIM(IREPA + 1)
                NDIMB = NDIM(IREPB + 1)
-               WRITE (LUPRI,'(/A,2I5)') ' Symmetries: ',IREPA+1,IREPB+1
-               WRITE (LUPRI,'(/A,2I5)') ' Dimensions: ',NDIMA,NDIMB
+               WRITE (LVPRI,'(/A,2I5)') ' Symmetries: ',IREPA+1,IREPB+1
+               WRITE (LVPRI,'(/A,2I5)') ' Dimensions: ',NDIMA,NDIMB
                IF (NDIMA.GT.0 .AND. NDIMB.GT.0) THEN
                   CALL OUTPUT_(AMATRX(IBLK),1,NDIMA,1,NDIMB,
-     *                        NDIMA,NDIMB,NCTL,LUPRI)
+     *                        NDIMA,NDIMB,NCTL,LVPRI)
                   IBLK = IBLK + NDIMA*NDIMB
                END IF
             ENDIF
@@ -345,7 +345,7 @@ C
          AMAX = MAX( AMAX, ABS(AMATRX(I)) )
   205 CONTINUE
       IF (AMAX .EQ. D0) THEN
-         WRITE (LUPRI,3000) NBLK
+         WRITE (LVPRI,3000) NBLK
          GO TO 800
       END IF
       IF (FFMIN .LE. AMAX .AND. AMAX .LE. FFMAX) THEN
@@ -365,10 +365,10 @@ C
          DO 5 I=1,IIDIM
             IF (AMATRX(IOFF+I).NE.D0) GO TO 15
     5    CONTINUE
-         WRITE (LUPRI,1100) IBLK
+         WRITE (LVPRI,1100) IBLK
          GO TO 90
    15    CONTINUE
-         WRITE (LUPRI,1200) IBLK
+         WRITE (LVPRI,1200) IBLK
 C
 C LAST IS THE LAST COLUMN NUMBER IN THE ROW CURRENTLY BEING PRINTED
 C
@@ -379,14 +379,14 @@ C
          BEGIN = 1
 C.....BEGIN NON STANDARD DO LOOP.
  1050       NCOL = 1
-            WRITE (LUPRI,1000) (COLUMN,I,I = BEGIN,LAST)
+            WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
             KTOTAL = IOFF + BEGIN*(BEGIN+1)/2 - 1
             DO 40 K = BEGIN,IDIM
                DO 10 I = 1,NCOL
                   IF (AMATRX(KTOTAL+I) .NE. D0) GO TO 20
    10          CONTINUE
                GO TO 30
-   20          WRITE (LUPRI,PFMT) CTL,K,(AMATRX(KTOTAL+J),J=1,NCOL)
+   20          WRITE (LVPRI,PFMT) CTL,K,(AMATRX(KTOTAL+J),J=1,NCOL)
    30          IF (K .LT. (BEGIN+KCOL-1)) NCOL = NCOL + 1
                KTOTAL = KTOTAL + K
    40       CONTINUE
@@ -405,7 +405,7 @@ C
  1000 FORMAT (/12X,6(3X,A6,I4,2X),(3X,A6,I4))
       END
 C  /* Deck outptb */
-      SUBROUTINE OUTPTB_ (AMATRX,NDIM,NBLK,NCTL,LUPRI)
+      SUBROUTINE OUTPTB_ (AMATRX,NDIM,NBLK,NCTL,LVPRI)
 C.......................................................................
 C
 C OUTPTB_ is OUTPUT_ modified for blocking as specified by
@@ -469,7 +469,7 @@ C
          AMAX = MAX( AMAX, ABS(AMATRX(I)) )
   205 CONTINUE
       IF (AMAX .EQ. ZERO) THEN
-         WRITE (LUPRI,3000) NBLK
+         WRITE (LVPRI,3000) NBLK
          GO TO 800
       END IF
       IF (FFMIN .LE. AMAX .AND. AMAX .LE. FFMAX) THEN
@@ -488,20 +488,20 @@ C
           DO 10 I=1,I2DIM
           IF (AMATRX(IOFF+I).NE.ZERO) GO TO 15
    10     CONTINUE
-        WRITE (LUPRI,1100) IBLK
+        WRITE (LVPRI,1100) IBLK
         GO TO 90
    15   CONTINUE
-        WRITE (LUPRI,1200) IBLK
+        WRITE (LVPRI,1200) IBLK
         LAST = MIN(IDIM,KCOL)
           DO 2 BEGIN = 1,IDIM,KCOL
-          WRITE (LUPRI,1000) (COLUMN,I,I = BEGIN,LAST)
+          WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
             DO 1 K = 1,IDIM
             IOFFK = IOFF + K
               DO 4 I=BEGIN,LAST
               IF (AMATRX(IOFFK+(I-1)*IDIM).NE.ZERO) GO TO 5
     4         CONTINUE
             GO TO 1
-    5       WRITE (LUPRI,PFMT) CTL,K,(AMATRX(IOFFK+(I-1)*IDIM),
+    5       WRITE (LVPRI,PFMT) CTL,K,(AMATRX(IOFFK+(I-1)*IDIM),
      *        I = BEGIN,LAST)
     1       CONTINUE
     2     LAST = MIN(LAST+KCOL,IDIM)
@@ -519,7 +519,7 @@ C2000 FORMAT (A1,I7,2X,1P,8D15.6)
       END
 C  /* Deck output */
       SUBROUTINE OUTPUT_(AMATRX,ROWLOW,ROWHI,COLLOW,COLHI,ROWDIM,COLDIM,
-     *                   NCTL,LUPRI)
+     *                   NCTL,LVPRI)
 C.......................................................................
 C Revised 15-Dec-1983 by Hans Jorgen Aa. Jensen.
 C         16-Jun-1986 hjaaj ( removed Hollerith )
@@ -576,7 +576,7 @@ C
             AMAX = MAX( AMAX, ABS(AMATRX(I,J)) )
    10 CONTINUE
       IF (AMAX .EQ. ZERO) THEN
-         WRITE (LUPRI,'(/T6,A)') 'Zero matrix.'
+         WRITE (LVPRI,'(/T6,A)') 'Zero matrix.'
          GO TO 3
       END IF
       IF (FFMIN .LE. AMAX .AND. AMAX .LT. FFMAX) THEN
@@ -603,13 +603,13 @@ C
 C
       LAST = MIN(COLHI,COLLOW+KCOL-1)
       DO 2 BEGIN = COLLOW,COLHI,KCOL
-         WRITE (LUPRI,1000) (COLUMN,I,I = BEGIN,LAST)
+         WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
          DO 1 K = ROWLOW,ROWHI
             DO 4 I = BEGIN,LAST
                IF (abs(AMATRX(K,I)).gt.thrpri) GO TO 5
     4       CONTINUE
          GO TO 1
-    5       WRITE (LUPRI,PFMT) CTL,K,(AMATRX(K,I), I = BEGIN,LAST)
+    5       WRITE (LVPRI,PFMT) CTL,K,(AMATRX(K,I), I = BEGIN,LAST)
     1    CONTINUE
     2 LAST = MIN(LAST+KCOL,COLHI)
     3 RETURN
@@ -618,7 +618,7 @@ C2000 FORMAT (A1,'Row',I4,2X,1P,8D14.6)
 C2000 FORMAT (A1,I7,2X,1P,8D14.6)
       END
       SUBROUTINE OUTPUT_x(AMATRX,ROWLOW,ROWHI,COLLOW,COLHI,ROWDIM,
-     *                   COLDIM,NCTL,LUPRI)
+     *                   COLDIM,NCTL,LVPRI)
 C.......................................................................
 C Revised 15-Dec-1983 by Hans Jorgen Aa. Jensen.
 C         16-Jun-1986 hjaaj ( removed Hollerith )
@@ -677,7 +677,7 @@ C
             AMAX = MAX( AMAX, ABS(AMATRX(I,J)) )
    10 CONTINUE
       IF (AMAX .EQ. ZERO) THEN
-         WRITE (LUPRI,'(/T6,A)') 'Zero matrix.'
+         WRITE (LVPRI,'(/T6,A)') 'Zero matrix.'
          GO TO 3
       END IF
       IF (FFMIN .LE. AMAX .AND. AMAX .LE. FFMAX) THEN
@@ -702,13 +702,13 @@ C
 C
       LAST = MIN(COLHI,COLLOW+KCOL-1)
       DO 2 BEGIN = COLLOW,COLHI,KCOL
-         WRITE (LUPRI,1000) (COLUMN,I,I = BEGIN,LAST)
+         WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
          DO 1 K = ROWLOW,ROWHI
             DO 4 I = BEGIN,LAST
                IF (abs(AMATRX(K,I)).GT.0.5D-3) GO TO 5
     4       CONTINUE
          GO TO 1
-    5       WRITE (LUPRI,PFMT) CTL,K,(AMATRX(K,I), I = BEGIN,LAST)
+    5       WRITE (LVPRI,PFMT) CTL,K,(AMATRX(K,I), I = BEGIN,LAST)
     1    CONTINUE
     2 LAST = MIN(LAST+KCOL,COLHI)
     3 RETURN
@@ -717,7 +717,7 @@ C2000 FORMAT (A1,'Row',I4,2X,1P,8D15.6)
 C2000 FORMAT (A1,I7,2X,1P,8D15.6)
       END
 C  /* Deck prtab */
-      SUBROUTINE PRTAB_(NTABLE,TABLE,TEXT,LUPRI)
+      SUBROUTINE PRTAB_(NTABLE,TABLE,TEXT,LVPRI)
 C
 C 28-Dec-1989 Hans Joergen Aa. Jensen
 C
@@ -726,13 +726,13 @@ C
       CHARACTER*(*) TABLE(NTABLE), TEXT
       LTEXT = LEN(TEXT)
       LTEXT = MIN(70,LTEXT)
-      WRITE (LUPRI,'(//1X,A/1X,70A1/)') TEXT(1:LTEXT),('=',I=1,LTEXT)
+      WRITE (LVPRI,'(//1X,A/1X,70A1/)') TEXT(1:LTEXT),('=',I=1,LTEXT)
       DO 100 I = 1,NTABLE
          IF (INDEX(TABLE(I),'XXXX') .EQ. 0) THEN
-            WRITE (LUPRI,'(T6,A)') TABLE(I)
+            WRITE (LVPRI,'(T6,A)') TABLE(I)
          END IF
   100 CONTINUE
-      WRITE (LUPRI,'()')
+      WRITE (LVPRI,'()')
       RETURN
       END
 C  /* Deck prvec */
@@ -983,12 +983,12 @@ C     Test input
 C
       NERR = 0
       IF (NDIM   .LE. 0) THEN
-         WRITE (LUPRI,'(/5X,A,I10)')
+         WRITE (LVPRI,'(/5X,A,I10)')
      &     'No percentage from PNZVEC_ because NDIM .le. 0; NDIM =',NDIM
          NERR = NERR + 1
       END IF
       IF (INCVEC .LE. 0) THEN
-         WRITE (LUPRI,'(/5X,A,I10)')
+         WRITE (LVPRI,'(/5X,A,I10)')
      &      'No percentage from PNZVEC_ because INCVEC .le. 0;INCVEC =',
      &      INCVEC
          NERR = NERR + 1
@@ -1010,7 +1010,7 @@ C
       END
 C  /* Deck coutput */
       SUBROUTINE COUTPUT__(AMATRX,ROWLOW,ROWHI,COLLOW,COLHI,ROWDIM,
-     *                   COLDIM,NCTL,LUPRI)
+     *                   COLDIM,NCTL,LVPRI)
 C.......................................................................
 C Revised 15-Dec-1983 by Hans Jorgen Aa. Jensen.
 C         16-Jun-1986 hjaaj ( removed Hollerith )
@@ -1069,7 +1069,7 @@ C
             AMAX = MAX( AMAX, ABS(AMATRX(I,J)) )
    10 CONTINUE
       IF (AMAX .EQ. ZERO) THEN
-         WRITE (LUPRI,'(/T6,A)') 'Zero matrix.'
+         WRITE (LVPRI,'(/T6,A)') 'Zero matrix.'
          GO TO 3
       END IF
       IF (FFMIN .LE. AMAX .AND. AMAX .LE. FFMAX) THEN
@@ -1094,13 +1094,13 @@ C
 C
       LAST = MIN(COLHI,COLLOW+KCOL-1)
       DO 2 BEGIN = COLLOW,COLHI,KCOL
-         WRITE (LUPRI,1000) (COLUMN,I,I = BEGIN,LAST)
+         WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
          DO 1 K = ROWLOW,ROWHI
             DO 4 I = BEGIN,LAST
                IF (AMATRX(K,I).NE.ZERO) GO TO 5
     4       CONTINUE
          GO TO 1
-    5       WRITE (LUPRI,PFMT) CTL,K,(AMATRX(K,I), I = BEGIN,LAST)
+    5       WRITE (LVPRI,PFMT) CTL,K,(AMATRX(K,I), I = BEGIN,LAST)
     1    CONTINUE
     2 LAST = MIN(LAST+KCOL,COLHI)
     3 RETURN

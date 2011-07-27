@@ -42,10 +42,10 @@ C
       double precision avgarea_
       integer nts_, nesfp_
 
-      print *, 'lupri in pcm_cav', lupri
-      LUPRI_BACK = LUPRI
-      LUPRI = -10
-      CALL GPOPEN_(LUPRI,'CAVDATA','OLD','SEQUENTIAL'
+      print *, 'lvpri in pcm_cav', lvpri
+      LVPRI_BACK = LVPRI
+      LVPRI = -10
+      CALL GPOPEN_(LVPRI,'CAVDATA','OLD','SEQUENTIAL'
      $     ,'UNFORMATTED',IDUMMY,.FALSE.)
 
 
@@ -93,8 +93,8 @@ C
       enddo
       return
 
-      CALL GPCLOSE_(LUPRI,'KEEP')
+      CALL GPCLOSE_(LVPRI,'KEEP')
 
-      LUPRI = LUPRI_BACK
+      LVPRI = LVPRI_BACK
 
       END

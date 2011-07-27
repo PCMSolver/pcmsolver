@@ -20,18 +20,18 @@ PCMSolver *solver;
 
 //      Subroutine PotExpVal(Density, Centers, Nts, Potential, Work, 
 //     $                     LWork)
-extern "C" void electron_pot_(double *density, double* centers, int *nts, 
+extern "C" void ele_pot_pcm_(double *density, double* centers, int *nts, 
 							  double *potential, double *work, int *lwork);
 
-extern "C" void nuclear_pot_(double* centers, int *nts, double *potential);
+extern "C" void nuc_pot_pcm_(double* centers, int *nts, double *potential);
 
 //      Subroutine Fock_PCMModule(Fock, Centers, Nts, Charges, Work, 
 //     $                     LWork)
-extern "C" void fock_pcm_module_(double *fock, double* centers, int *nts, 
+extern "C" void fock_pcm_(double *fock, double* centers, int *nts, 
 								 double *charges, double *work, int *lwork);
 
-extern "C" void pcm_scf_(double *fock, double *energy, double *density, 
-						 double *work, int *lwork) {
+extern "C" void energy_pcm_(double *energy, double *density, 
+							double *work, int *lwork) {
 	VectorXd ElectronPotential(cavity->size());
 	VectorXd NuclearPotential(cavity->size());
 
@@ -46,9 +46,10 @@ extern "C" void pcm_scf_(double *fock, double *energy, double *density,
 	double Een = ElectronCharge.dot(NuclearPotential);
 	double Ene = NuclearCharge.dot(ElectronPotential);
 	double Enn = NuclearCharge.dot(NuclearPotential);
-	double Etot = 0.5 * (Eee + Een + Ene + Enn);
-	fock_pcm_module_(fock, cavity->getTessCenter().data(), &nts,
-					 ElectronCharge.data(), work, lwork);
+	*energy = 0.5 * (Eee + Een + Ene + Enn);
+	cout << 'External PCM Energy: ' << *energy << endl;
+	/*	fock_pcm_module_(fock, cavity->getTessCenter().data(), &nts,
+		ElectronCharge.data(), work, lwork);*/
 }
 
 

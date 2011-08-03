@@ -118,6 +118,7 @@ void GePolCavity::makeCavity(int maxts, int lwork){
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, work, &lwork);
 
+
 	cout << nts << endl;
     
     nTess = int(nts);

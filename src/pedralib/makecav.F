@@ -34,7 +34,6 @@ C
 #include <pcm_symmet.h>
 #include <pcm_pgroup.h>
 
-      DIMENSION WORK(10000000)
       dimension work2(*)
       double precision xtscor_(*), ytscor_(*), ztscor_(*)
       double precision xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
@@ -42,14 +41,13 @@ C
       double precision avgarea_
       integer nts_, nesfp_
 
-      print *, 'lvpri in pcm_cav', lvpri
-      LVPRI_BACK = LVPRI
-      LVPRI = -10
-      CALL GPOPEN_(LVPRI,'CAVDATA','OLD','SEQUENTIAL'
-     $     ,'UNFORMATTED',IDUMMY,.FALSE.)
-
-
-      LWORK=10000000
+      LVPRI = 121201
+      print *, 'lvpri in makecav', lvpri
+      OPEN(LVPRI,
+     $     FILE   = 'PEDRA.OUT',
+     $     ACCESS = 'APPEND',
+     $     STATUS = 'UNKNOWN')
+      write(lvpri,*) 'abc'
       MAXREP=0
       NSYM=1
       AREATS=avgArea_
@@ -78,8 +76,9 @@ C
       PT(6) =  1
       PT(7) =  1
 
+      write(lvpri,*) 'abc'
       CALL PEDRA_M_(WORK2, LWORK2)
-      
+
       nts_=nts
       do i=1,NTS
          xtscor_(i) = xtscor(i)
@@ -91,10 +90,6 @@ C
          zsphcor_(i) = ze(isphe(i))
          rsph_(i) = re(isphe(i))
       enddo
+
       return
-
-      CALL GPCLOSE_(LVPRI,'KEEP')
-
-      LVPRI = LVPRI_BACK
-
       END

@@ -40,7 +40,7 @@ int main(int argc, char** argv){
     Vector3d ps(0.0,  0.0, 0.0);
     
     MetalSphere metal(20.0, 0.0, 10000.0, ps, 10.0);
-    UniformDielectric water(10000.0);
+    UniformDielectric water(78.39);
     Vacuum vacuum;
 
     PCMSolver waterSolver(vacuum, water); 
@@ -50,5 +50,8 @@ int main(int argc, char** argv){
     VectorXd charges(cavity.size());
     potential.setConstant(1.0);
     const MatrixXd &matrix = waterSolver.getPCMMatrix();
-    charges = matrix * potential;
+    charges = waterSolver.compCharge(potential);
+	double tot = charges.sum();
+	double eps = water.getEpsilon();
+	cout << "Green " <<  tot << " " << tot * eps/(1.0-eps) << endl;
 }

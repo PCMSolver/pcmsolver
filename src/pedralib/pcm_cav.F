@@ -17,8 +17,6 @@ C
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 C
-Ckm      CALL QENTER_('PEDRA_')
-C
 C     ----- set memory pointers for polyhedra setup -----
 C
       SOME = IPRPCM.NE.-5
@@ -45,7 +43,7 @@ C
       LCV    = LJTR   + NUMTS*3
       LNPERM = LCV    + NUMVER*3
       LAST   = LNPERM + NUMSPH*8
-      IF (LAST .GT. LWORK) CALL STOPIT_('PEDRA_M_',' ',LAST,LWORK)
+      IF (LAST .GT. LWORK) CALL ERRWRK_('PEDRA_M_',LAST,LWORK)
       LWRK   = LWORK - LAST + 1
       IF(SOME) WRITE(LVPRI,910) LAST
 C
@@ -101,8 +99,10 @@ C     Se stiamo costruendo una nuova cavita' per il calcolo del
 C     contributo dispersivo e repulsivo:
 C
       IDISREP = 0
-      IPRCAV = 10
-C
+      IPRCAV = 0
+      print *, 'def', lvpri
+      write (lvpri,*) 'def'
+C     
 C
 C se icesph=0
 C     legge i raggi dall'input e fa coincidere i centri con gli atomi
@@ -119,7 +119,7 @@ Clf
 Clfc           XE(J)=CORD(1,J)
 Clfc           YE(J)=CORD(2,J)
 Clfc           ZE(J)=CORD(3,J)
-ClfClf            write(lupri,*) 'icesph',icesph,nesfp
+ClfClf            write(lvpri,*) 'icesph',icesph,nesfp
 Clf            XE(J)=PCMCORD(1,J)
 Clf            YE(J)=PCMCORD(2,J)
 Clf            ZE(J)=PCMCORD(3,J)
@@ -136,21 +136,22 @@ Clf         ENDDO
 Clf      END IF
 Clf      NESF=NESFP
 C      print * ,'at the beginning of pedra', nesf
-C      write(lupri,*) 'at the beginning of pedra', nesf
+C      write(lvpri,*) 'at the beginning of pedra', nesf
 C      do i=1,nesf
-C         write(lupri,1111) xe(i), ye(i), ze(i), re(i)
+C         write(lvpri,1111) xe(i), ye(i), ze(i), re(i)
 C      enddo 
 C
 C  PEDRA_ prevede che i dati geometrici siano espressi in ANGSTROM :
 C  vengono trasformati, e solo alla fine i risultati tornano in bohr.
 C
    90 CONTINUE
+      write (lvpri,*) 'spheres in pedra', xtang
       DO I=1,NESFP
-         RE(I)=RIN(I)
-         XE(I)=XE(I)*XTANG
-         YE(I)=YE(I)*XTANG
-         ZE(I)=ZE(I)*XTANG
-         RE(I) = RE(I) * ALPHA(I)
+         XE(I)=XE(I)
+         YE(I)=YE(I)
+         ZE(I)=ZE(I)
+         RE(I) = RIN(I) * ALPHA(I)
+         write (lvpri,*) xe(i), ye(i), ze(i), re(i)
       ENDDO
       DR = DR*XTANG
 C
@@ -302,12 +303,13 @@ C     Modification by Ville & Chris for new cavity gen
       LMASS = LGEOM + 3 * KATOM
       LEND  = LMASS + KATOM
       LWRK =  LWORK - LEND
-Clf      write(lupri,*) 'katom',katom,lgeom,lmass,lend
+Clf      write(lvpri,*) 'katom',katom,lgeom,lmass,lend
       IF (LWRK .LT. 0) THEN
       WRITE(*,*) '2'
       STOP
       ENDIF
 
+      print *, 'katom', katom
       IF (KATOM .GT. 1) THEN
          CALL PCMTNS_(ROTCAV,WORK(LGEOM),WORK(LMASS),KATOM)
       END IF
@@ -380,7 +382,7 @@ C     In INTSPH(MxTs,10) sono registrate le sfere a cui appartengono i lati
 C     delle tessere.
 C
             IF (IPRCAV.GT.15) THEN
-               write(lupri,9100) NN + 1
+               write(lvpri,9100) NN + 1
                DO IVER = 1, 3
                   WRITE(LVPRI,9110) IVER, (PTS(JCOR,IVER),JCOR=1,3)
                END DO
@@ -466,17 +468,17 @@ C
 C
 C Prepare data for geomview
 C
-Clf      write(lupri,*) 'vertici delle tessere'
+Clf      write(lvpri,*) 'vertici delle tessere'
 C      do i=1,nts
 C         do j=1,nvert(i)
-C            write(lupri,1241) i,j,(vert(i,j,k),k=1,3)
+C            write(lvpri,1241) i,j,(vert(i,j,k),k=1,3)
 C         enddo
 C      enddo
-C      write(lupri,*) 'centers of tesserae'
+C      write(lvpri,*) 'centers of tesserae'
 C      do i=1,nts
-C         write(lupri,1240) i, xtscor(i),ytscor(i),ztscor(i),as(i)
+C         write(lvpri,1240) i, xtscor(i),ytscor(i),ztscor(i),as(i)
 C      enddo
-C      call flshfo(lupri)
+C      call flshfo(lvpri)
 
 clf      IF (IPRPCM .GT. 10) THEN
       IF (.true.) THEN
@@ -485,7 +487,7 @@ clf      IF (IPRPCM .GT. 10) THEN
          KLAST = KIDX + NTS
          IF (KLAST.LT.LWORK) THEN
             CALL DZERO_(WORK,KLAST)
-            call ORDPCM_(lupri,nts,xtscor,ytscor,ztscor,as,work(kord),
+            call ORDPCM_(lvpri,nts,xtscor,ytscor,ztscor,as,work(kord),
      $           work(kidx),work(klast),lwork)
          ELSE
             WRITE(LVPRI,*)
@@ -510,7 +512,6 @@ clf      IF (IPRPCM .GT. 10) THEN
  1248 FORMAT('BOH???: ',3F15.11)
  1249 FORMAT('AREA=',F10.8,'ISPHE=',I4,'NVERT=',I3)
       CALL PLOTCAV_(VERT,NUMTS)
-      call FLSHFO_(lupri)
 C
 C***********************************************************
 C     Calcola il volume della cavita' con la formula (t. di Gauss):
@@ -574,7 +575,7 @@ C
                   ENDIF
                ENDDO
             ENDIF
-            IF(NATSPH.EQ.0)then
+            IF(NATSPH.EQ.0) then
                DO ICOORD = 1, 3
                   CALL CAVDER_(NSFE,NSFER,ICOORD,INTSPH,NEWSPH)
                ENDDO
@@ -1158,7 +1159,7 @@ C
         ZTSCOR(II2)=ZTSCOR(II)
       ENDDO
 C
-Clf      write(lupri,*) 'see if the pt are correct',nts
+Clf      write(lvpri,*) 'see if the pt are correct',nts
       DO ISYMOP=1,MAXREP
          DO I=1,NTSIRR
             II=I+NTSIRR*ISYMOP
@@ -1179,7 +1180,7 @@ C            distance=sqrt((xtscor(j)-xtscor(i))**2
 C     $                   +(ytscor(j)-ytscor(i))**2
 C     $                   +(ztscor(j)-ztscor(i))**2)
 C            if(i.ne.j .and. distance.lt.1.0d-8) then
-C               write(lupri,*) 'tesserae too close:',i,j
+C               write(lvpri,*) 'tesserae too close:',i,j
 C            endif
 C         enddo
 C      enddo
@@ -1211,12 +1212,6 @@ C     sfera) e sfera alla cui intersezione con NS appartiene l'arco (se
 C     appartiene alla sfera originaria INTSPH(numts,N)=NS)
 C
 C
-Clf LAN determines if the analytical algorithm is used to calculate
-C     the intersection between a sphere and a tessera. For the time
-C     beeing the analytical algorithm is not used because I'm already
-C     debugging it. In the future it will be the only option.
-C
-C      LAN = .TRUE.
       IPRCAV = 0
       LAN = .FALSE.
       AREA = 0.0D+00
@@ -1982,14 +1977,14 @@ C
 Clf 220     CONTINUE
          N0 = MOD(NV+N0-1,NV)
          IF(N0 .EQ. 0) N0 = NV
-Clf         write(lupri,*) "N0 is", N0, NTRHSO(N0)
+Clf         write(lvpri,*) "N0 is", N0, NTRHSO(N0)
 Clf         IF(NTRHSO(N0).EQ.1) GOTO 220
          N2 = N
 Clf         NCONT = 0
 Clf 230     CONTINUE
          N2 = MOD(N2+1,NV)
          IF(N2 .EQ. 0) N2 = NV
-Clf         write(lupri,*) "N2 is", N2, NTRHSO(N1)
+Clf         write(lvpri,*) "N2 is", N2, NTRHSO(N1)
 Clf         IF(NTRHSO(N1 + NCONT).EQ.1) THEN
 Clf            NCONT = NCONT + 1
 Clf            GOTO 230
@@ -2185,20 +2180,22 @@ C
 C     Prepare the input file for GeomView (coloured polyhedra)
 C
       IF (ICESPH .EQ. 0 .OR. ICESPH .EQ. 2 .OR. ICESPH .EQ. 3) INDEX = 1
-      IPUNCH=-4
-      CALL GPOPEN_(IPUNCH,'cavity.off','UNKNOWN',' ','FORMATTED',
-     *            IDUMMY,.FALSE.)
-      NUMV = 0
+      LUCAV = 12121201
+      OPEN(UNIT   = LUCAV,
+     $     FILE   = 'cavity.off',
+     $     ACCESS = 'SEQUENTIAL',
+     $     STATUS = 'UNKNOWN')
+      Numv = 0
       DO 10 I = 1, NTs
   10    NUMV = NUMV + NVert(i)
-      WRITE(IPUNCH,500)'COFF'
-      WRITE(IPUNCH,1000)NUMV, NTs, NumV
+      WRITE(LUCAV,500)'COFF'
+      WRITE(LUCAV,1000)NUMV, NTs, NumV
       K = 0
       LAST = 0
  100  CONTINUE
       DO 2010 I = 1, NTs
         N=ISphe(I)
-        IF(N.ne.Last) WRITE(IPUNCH,1500)N
+        IF(N.ne.Last) WRITE(LUCAV,1500)N
         Last = N
         IF(Index.EQ.1) THEN
            Call COLOUR_(N,C1,C2,C3)
@@ -2210,13 +2207,12 @@ C
         Do 2020 j = 1, NVert(i)
           IVTS(I,J) = K
           K = K + 1
-          WRITE(IPUNCH,2001)(VERT(I,J,JCORD),JCORD=1,3),
+          WRITE(LUCAV,2001)(VERT(I,J,JCORD),JCORD=1,3),
      $         C1,C2,C3,0.75,I
  2020 CONTINUE
  2010 CONTINUE
       Do 20 I = 1, NTs
-  20    WRITE(IPUNCH,3000)NVert(I),(IVTS(I,J),J=1,NVERT(I))
-      CALL GPCLOSE_(IPUNCH,'KEEP')
+ 20      WRITE(LUCAV,3000)NVert(I),(IVTS(I,J),J=1,NVERT(I))
  500  FORMAT(1x,a)
 1000  FORMAT(3i10)
 1500  FORMAT('# Sphere number ',i4)
@@ -2410,7 +2406,7 @@ c
             NT = NT * 2
             NV = NV * 2
             ITS = ITS * 2
-Clf            write(lupri,*) 'nt,nv,its',nt,nv,its
+Clf            write(lvpri,*) 'nt,nv,its',nt,nv,its
          ENDIF
       END DO
       DO I = 1,ITS
@@ -2488,7 +2484,7 @@ Clf      WRITE(LVPRI,*) 'INERTIA TENSOR EIGENVECTORS AND EIGENVALUES'
 Clf         WRITE(LVPRI,*) (EIGINV(I,J),J=1,3), EIGVAL(I), OMEGA(I), QUAD
       ENDDO
 C      do i=1,3
-C         write(lupri,*) 'tinert',(tinert(i,j),j=1,3)
+C         write(lvpri,*) 'tinert',(tinert(i,j),j=1,3)
 C      enddo
       DO I = 1,3
          DO J= 1,3
@@ -2501,7 +2497,7 @@ C      enddo
       NORDER_(3) = 3
       IF (NOPAX.GE.3) THEN
          DO I = 1,3
-C            write(lupri,*) 'iax',i,isop(i),iax(isop(i))
+C            write(lvpri,*) 'iax',i,isop(i),iax(isop(i))
             DO J = 1,3
                DIJ = 0.0D0
                IF (I.EQ.J) DIJ = 1.0D0
@@ -2576,7 +2572,7 @@ ClfC
 Clf      W(1) = A(2) * B(3) - A(3) * B(2)
 Clf      W(2) = A(3) * B(1) - A(1) * B(3)
 Clf      W(3) = A(1) * B(2) - A(2) * B(1)
-Clf      write(lupri,*) 'normal vector', (w(i),i=1,3)
+Clf      write(lvpri,*) 'normal vector', (w(i),i=1,3)
 Clf      WM2  = W(1) ** 2 + W(2) ** 2 + W(3) ** 2
 Clf      WM   = DSQRT ( WM2 )
 Clf      WMXY = DSQRT ( W(1) ** 2 + W(2) ** 2 )
@@ -2591,20 +2587,20 @@ Clf      PM  = DSQRT ( PM2 )
 Clf      QM  = DSQRT ( QM2 )
 Clf      AM  = DSQRT ( AM2 )
 Clf      BM  = DSQRT ( BM2 )
-ClfC      write(lupri,*) 'moduli'
-ClfC      write(lupri,*) pm2,qm2,am2,bm2
-ClfC      write(lupri,*) pm,qm,am,bm
+ClfC      write(lvpri,*) 'moduli'
+ClfC      write(lvpri,*) pm2,qm2,am2,bm2
+ClfC      write(lvpri,*) pm,qm,am,bm
 ClfC
 ClfClf determination of sines and cosines of the euler angles
 ClfC
 Clf      IF(WMXY.GT.1.0D-12) THEN
-Clf         write(lupri,*) 'wmxy grande'
+Clf         write(lvpri,*) 'wmxy grande'
 Clf         COSA = W(1) / DSQRT( W(1) ** 2 + W(2) ** 2 )
 Clf         SINA = W(2) / DSQRT( W(1) ** 2 + W(2) ** 2 )
 Clf         COSB = W(3) / WM
 Clf         SINB = DSQRT( 1 - COSB ** 2 )
 Clf      ELSEIF(WM.GT.1.0D-8) THEN
-Clf         write(lupri,*) 'wm grande'
+Clf         write(lvpri,*) 'wm grande'
 Clf         COSA = 1.0D0
 Clf         SINA = 0.0D0
 Clf         COSB = W(3)/DABS(W(3))
@@ -2629,11 +2625,11 @@ Clf      W(3) = SINB * COSA * A(1) + SINB * SINA * A(2) + COSB * A(3)
 Clf      COSG = W(1) / AM
 Clf      SING = W(2) / AM
 Clf      IF(DABS(W(3)).GT.1.0D-8) CALL QUIT('ANLINT: ROTATION ERROR 3')
-Clf      write(lupri,*) 'DOPO a e b rot',(w(i),i=1,3)
-Clf      write(lupri,*) 'rp e rq', rp,rq
-Clf      write(lupri,*) 'sin e cos'
-Clf      write(lupri,*) sina,sinb,sing
-Clf      write(lupri,*) cosa,cosb,cosg
+Clf      write(lvpri,*) 'DOPO a e b rot',(w(i),i=1,3)
+Clf      write(lvpri,*) 'rp e rq', rp,rq
+Clf      write(lvpri,*) 'sin e cos'
+Clf      write(lvpri,*) sina,sinb,sing
+Clf      write(lvpri,*) cosa,cosb,cosg
 ClfC
 ClfClf rotation matrix
 ClfC
@@ -2646,20 +2642,20 @@ Clf      MAT(2,3) =   SING * SINB
 Clf      MAT(3,1) =   SINB * COSA
 Clf      MAT(3,2) =   SINB * SINA
 Clf      MAT(3,3) =   COSB
-Clf      write(lupri,*)'mat'
+Clf      write(lvpri,*)'mat'
 Clf      do i=1,3
-Clf         write(lupri,*) (mat(I,J),J=1,3)
+Clf         write(lvpri,*) (mat(I,J),J=1,3)
 Clf      enddo
 ClfC
 ClfClf rotation of vectors and intersection calculations
 ClfC
-Clf      write(lupri,*)'AAAAAA',AM2
+Clf      write(lvpri,*)'AAAAAA',AM2
 Clf      CALL TRIROT(MAT,A)
-Clf      write(lupri,*)'BBBBBB',BM2
+Clf      write(lvpri,*)'BBBBBB',BM2
 Clf      CALL TRIROT(MAT,B)
-Clf      write(lupri,*)'PPPPPP',PM2
+Clf      write(lvpri,*)'PPPPPP',PM2
 Clf      CALL TRIROT(MAT,P)
-Clf      write(lupri,*)'QQQQQQ',QM2
+Clf      write(lvpri,*)'QQQQQQ',QM2
 Clf      CALL TRIROT(MAT,Q)
 Clf      R1R1 = RP**2 - PM2
 Clf      R1 = DSQRT(R1R1)
@@ -2746,9 +2742,9 @@ Clf      MAT(1,2) = - SING * COSB * COSA - COSG * SINA
 Clf      MAT(3,2) =   SING * SINB
 Clf      MAT(1,3) =   SINB * COSA
 Clf      MAT(2,3) =   SINB * SINA
-Clf      write(lupri,*)'matinv'
+Clf      write(lvpri,*)'matinv'
 Clf      do i=1,3
-Clf         write(lupri,*) (mat(I,J),J=1,3)
+Clf         write(lvpri,*) (mat(I,J),J=1,3)
 Clf      enddo
 Clf      CALL TRIROT(MAT,H)
 Clf      DO I = 1,3
@@ -2763,14 +2759,14 @@ Clf      SUBROUTINE TRIROT(M,V)
 Clf#include <pcm_implicit.h>
 Clf#include <pcm_priunit.h>
 Clf      DOUBLE PRECISION M(3,*),V(*),W(3)
-Clf      write(lupri,*) 'PRIMA', (V(I),I=1,3)
+Clf      write(lvpri,*) 'PRIMA', (V(I),I=1,3)
 Clf      DO I = 1,3
 Clf         W(I) = M(I,1) * V(1) + M(I,2) * V(2) + M(I,3) * V(3)
 Clf      ENDDO
 Clf      DO I = 1,3
 Clf         V(I) = W(I)
 Clf      ENDDO
-Clf      write(lupri,*) 'DOPO', (V(I),I=1,3)
+Clf      write(lvpri,*) 'DOPO', (V(I),I=1,3)
 Clf      RETURN
 Clf      END
 
@@ -2807,7 +2803,7 @@ C/* Deck UPDCAV_*/
       RETURN
       END
 C/* Deck ordpcm*/
-      SUBROUTINE ORDPCM_(lupri,nts,xtscor,ytscor,ztscor,as,privec,
+      SUBROUTINE ORDPCM_(lvpri,nts,xtscor,ytscor,ztscor,as,privec,
      $     idxpri,work,lwork)
 #include <pcm_implicit.h>
       DIMENSION PRIVEC(4,*), XTSCOR(*), YTSCOR(*), ZTSCOR(*),
@@ -2852,9 +2848,10 @@ C/* Deck ordpcm*/
       ENDIF
       DO I = 1, NTS
          WRITE(LVPRI,1250) (dabs(PRIVEC(J,I)),J=1,4)
+         print *, (dabs(PRIVEC(J,I)),J=1,4), lvpri
       ENDDO
       DO I = 1, NTS
-         WRITE(LVPRI,1240) idxpri(I),(dabs(PRIVEC(J,I)),J=1,4)
+         print *, idxpri(I),(dabs(PRIVEC(J,I)),J=1,4), lvpri
       ENDDO
       RETURN
  1240 format(i3,4f15.9)

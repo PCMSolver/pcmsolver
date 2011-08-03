@@ -100,6 +100,7 @@ def	setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
 	top.add_kw('PRINTL',    'INT', 0)
+	top.add_kw('Units',     'STR', 'AU')
 
 	medium=getkw.Section('Medium', callback=verify_medium)
 	medium.add_kw('Solvent', 'STR', 'water')
@@ -125,15 +126,22 @@ def	setup_keywords():
 	return top
 		
 def verify_top(section):
-	printl=section.get('PRINTL')
-	pr=printl.get()
-	if (pr < 0):
-		sys.exit(1)
+	key = section.get('PRINTL')
+	val = key.get()
+	if (val < 0):
+		val = 0
 	
+	allowed_units = ('AU', 'Angstrom')
+	key = section.get('Units')
+	val = key.get()
+	if (val not in allowed_units):
+		print "Allowed units are: ", allowed_units
+		sys.exit(1)
+
 def verify_cavity(section):
 	area=section.get('Area')
 	a=area.get()
-	if (a < 0.1):
+	if (a < 0.01):
 		print "Area value is too small"
 		print "Minimum value: 0.1"
 		sys.exit(1)

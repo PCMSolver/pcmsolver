@@ -21,8 +21,6 @@ SUBROUTINE WLKDIN(COR, TMASS, N, ANGMOM, TINERT, OMEGA, CEPVAL, CEPVEC, DOCOPY, 
   REAL(8), parameter :: TSTLIN = 1D-10
 
   TINERT = 0D0 
-!km  write(LUPRI,*) 'Zeroing succesfully complete, beginnig calculating'
-
   do i=1, N
      do j=1,3
         do k=1,3

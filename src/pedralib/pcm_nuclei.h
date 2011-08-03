@@ -21,5 +21,5 @@
       COMMON /PCM_NUCLEC/ NAMEX(MXCOOR), NAMDEP(MXCENT), NAMDPX(MXCOOR),
      &                NAMN(MXCENT)
       INTEGER MULBSI
-      COMMON /MULBAS/ MULBSI(MXCENT)
+      COMMON /PCM_MULBAS/ MULBSI(MXCENT)
 C     MULBAS has been added for multiple basis sets (WK/UniKA/31-10-2002).

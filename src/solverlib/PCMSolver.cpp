@@ -114,7 +114,7 @@ void PCMSolver::buildAnisotropicMatrix(GePolCavity cav){
 		DE(i,i) =  compDiagonalElementDoper(greenOutside, i, cav); 
 		for (int j = 0; j < cavitySize; j++){
 			Vector3d p2 = cav.getTessCenter().row(j);
-			Vector3d n2 = cav.getTessNormal().row(i);
+			Vector3d n2 = cav.getTessNormal().row(j);
 			if (i != j) {
 				SI(i,j) = greenInside->evalf(p1, p2);
 				SE(i,j) = greenOutside->evalf(p1, p2);
@@ -151,7 +151,7 @@ void PCMSolver::buildIsotropicMatrix(GePolCavity cav){
 VectorXd PCMSolver::compCharge(const VectorXd &potential) {
 	VectorXd charge;
 	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
-		charge = PCMMatrix * potential;
+		charge = - PCMMatrix * potential;
 	} else {
 		cout << "PCM matrtix not initialized" << endl;
 		exit(1);

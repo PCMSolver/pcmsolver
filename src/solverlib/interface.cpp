@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream> 
 #include <string>
 
@@ -43,14 +44,12 @@ extern "C" void energy_pcm_(double *energy, double *density,
 	VectorXd NuclearCharge = solver->compCharge(NuclearPotential);
 	VectorXd ElectronCharge = solver->compCharge(ElectronPotential);
 	VectorXd TotalCharge = ElectronCharge + NuclearCharge;
-	cout << "Nuclear potential" << endl;
-	cout << NuclearPotential << endl;
-	cout << "Electronic potential" << endl;
-	cout << ElectronPotential << endl;
-	cout << "Nuclear charge" << endl;
-	cout << NuclearCharge << endl;
-	cout << "Electronic charge" << endl;
-	cout << ElectronCharge << endl;
+	ArrayXd sigmaNuc = NuclearCharge.array()/(cavity->getTessArea()).array();
+	for (int i = 0; i < NuclearCharge.size(); i++) {
+		cout << scientific << setw(17) << setiosflags(ios::right) << setprecision(8) << NuclearCharge(i);
+		cout << scientific << setw(17) << setiosflags(ios::right) << setprecision(8) << sigmaNuc(i);
+		cout << fixed << setw(15) << setiosflags(ios::right) << setprecision(8) << cavity->getTessArea(i) << endl;
+	}
 	double totElChg = ElectronCharge.sum();
 	double totNuChg = NuclearCharge.sum();
 	cout << "total charges" << " " << totElChg << " " << totNuChg << endl;
@@ -82,11 +81,15 @@ extern "C" void init_pcmsolver_() {
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
 	solver = new PCMSolver(Medium);
-	solver->buildAnisotropicMatrix(*cavity);
+	solver->buildIsotropicMatrix(*cavity);
 }
 
 extern "C" void build_anisotropic_matrix_() {
 	solver->buildAnisotropicMatrix(*cavity);
+}
+
+extern "C" void build_isotropic_matrix_() {
+	solver->buildIsotropicMatrix(*cavity);
 }
 
 //copying mechanism of the following routine needs to be revised

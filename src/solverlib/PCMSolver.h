@@ -34,7 +34,7 @@ class PCMSolver{
     bool allocated;
     bool builtAnisotropicMatrix;
     bool builtIsotropicMatrix;
-    static const double factor = 1.0694;
+    static const double factor = 1.07;
     int cavitySize;
     GreensFunction *greenInside;
     GreensFunction *greenOutside;

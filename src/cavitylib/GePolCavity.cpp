@@ -137,7 +137,11 @@ void GePolCavity::makeCavity(int maxts, int lwork){
 		tessSphereCenter(i,2) = zsphcor[i];
 		tessRadius(i) = rsph[i];
     }
+
     tessNormal = tessCenter - tessSphereCenter;
+    for(int i=0; i < nTess; i++){
+		tessNormal.row(i) /= tessNormal.row(i).norm();
+	}
 
 	delete xtscor;
 	delete ytscor;

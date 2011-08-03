@@ -144,8 +144,71 @@ void PCMSolver::buildAnisotropicMatrix(GePolCavity cav){
 }
 
 void PCMSolver::buildIsotropicMatrix(GePolCavity cav){
-	cout << "Not yet implemented" << endl;
-	exit(1);
+
+
+	double epsilon;
+    if (UniformDielectric *uniform = 
+		dynamic_cast<UniformDielectric *>(greenOutside)) {
+		epsilon = uniform->getEpsilon();
+	} else {
+		cout << "Need uniform dielectric outside" << endl;
+		exit(1);
+	}
+    if (Vacuum *vacuum = dynamic_cast<Vacuum *>(greenInside)) {
+	} else {
+		cout << "Need vacuum inside" << endl;
+		exit(1);
+	}
+	cout << "Building isotropic PCM matrix " << epsilon << endl;
+
+    cavitySize = cav.size();
+
+    MatrixXd SI(cavitySize, cavitySize);
+    MatrixXd DI(cavitySize, cavitySize);
+    
+    for(int i = 0; i < cavitySize; i++){
+		Vector3d p1 = cav.getTessCenter().row(i);
+		Vector3d n1 = cav.getTessNormal().row(i);
+		SI(i,i) =  compDiagonalElementSoper(greenInside,  i, cav); 
+		DI(i,i) =  compDiagonalElementDoper(greenInside,  i, cav);
+		for (int j = 0; j < cavitySize; j++){
+			Vector3d p2 = cav.getTessCenter().row(j);
+			Vector3d n2 = cav.getTessNormal().row(j);
+			if (i != j) {
+				SI(i,j) = greenInside->evalf(p1, p2);
+				DI(i,j) = -greenInside->evald(n2, p1, p2);
+				//				cout << i+1 << " " << j+1 << " " 
+				//					 << p1.transpose() << " " << p2.transpose() << " " << n2.transpose() << " " << SI(i,j) << " " << DI(i,j) << endl;
+			}
+		}
+    }
+  
+    MatrixXd a(cavitySize, cavitySize);
+    MatrixXd aInv(cavitySize, cavitySize);
+    a.setZero();
+    aInv.setZero();
+
+    for (int i = 0; i < cavitySize; i++) {
+		a(i,i) = cav.getTessArea(i);
+		aInv(i,i) = 2 * M_PI / cav.getTessArea(i);
+    }
+
+	//	SI = SI * a / (4*M_PI);
+	//	DI = a * DI * a / (4*M_PI);
+
+	//	cout << "si matrix " << endl << SI << endl;
+	//	cout << "di matrix " << endl << DI << endl;
+
+
+	double fact = (epsilon+1.0)/(epsilon-1.0);
+
+    PCMMatrix = (fact * aInv - DI) * a * SI;
+    PCMMatrix = PCMMatrix.inverse();
+    PCMMatrix *= (aInv - DI);
+    PCMMatrix = PCMMatrix * a;
+	
+	builtIsotropicMatrix = true;
+
 }
 
 VectorXd PCMSolver::compCharge(const VectorXd &potential) {

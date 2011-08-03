@@ -72,7 +72,6 @@ ExternalProject_Add(libgetkw
 add_dependencies(external libgetkw)
 
 find_package(Eigen3)
-find_package(CBLAS)
 find_package(BLAS)
 find_package(LAPACK)
 if(BLAS_FOUND AND LAPACK_FOUND) # check new versions of this stuff in Dalton

@@ -31,48 +31,59 @@ extern "C" void nuc_pot_pcm_(double* centers, int *nts, double *potential);
 extern "C" void fock_pcm_(double *fock, double* centers, int *nts, 
 								 double *charges, double *work, int *lwork);
 
-extern "C" void energy_pcm_(double *energy, double *density, 
-							double *work, int *lwork) {
-	VectorXd ElectronPotential(cavity->size());
-	VectorXd NuclearPotential(cavity->size());
-
-	int nts = cavity->size();
-	nuc_pot_pcm_(cavity->getTessCenter().data(), &nts, NuclearPotential.data());
-	ele_pot_pcm_(density, cavity->getTessCenter().data(), &nts, 
-				 ElectronPotential.data(), work, lwork);
-	NuclearPotential.setConstant(1.0);
-	VectorXd NuclearCharge = solver->compCharge(NuclearPotential);
-	VectorXd ElectronCharge = solver->compCharge(ElectronPotential);
-	VectorXd TotalCharge = ElectronCharge + NuclearCharge;
-	ArrayXd sigmaNuc = NuclearCharge.array()/(cavity->getTessArea()).array();
-	for (int i = 0; i < NuclearCharge.size(); i++) {
-		cout << scientific << setw(17) << setiosflags(ios::right) << setprecision(8) << NuclearCharge(i);
-		cout << scientific << setw(17) << setiosflags(ios::right) << setprecision(8) << sigmaNuc(i);
-		cout << fixed << setw(15) << setiosflags(ios::right) << setprecision(8) << cavity->getTessArea(i) << endl;
-	}
-	double totElChg = ElectronCharge.sum();
-	double totNuChg = NuclearCharge.sum();
-	cout << "total charges" << " " << totElChg << " " << totNuChg << endl;
-	double ons = (1.0-78.39)/78.39;
-	cout << "total charges" << " " << totElChg/ons << " " << totNuChg/ons << endl;
-	double Eee = ElectronCharge.dot(ElectronPotential);
-	double Een = ElectronCharge.dot(NuclearPotential);
-	double Ene = NuclearCharge.dot(ElectronPotential);
-	double Enn = NuclearCharge.dot(NuclearPotential);
-	*energy = 0.5 * (Eee + Een + Ene + Enn);
-	cout << "External PCM Energy: " << *energy << endl;
-	/*	fock_pcm_module_(fock, cavity->getTessCenter().data(), &nts,
-		ElectronCharge.data(), work, lwork);*/
+extern "C" void get_cavity_size_(int * nts) {
+	*nts = cavity->size();
 }
 
+extern "C" void get_surface_charge_(double * charge) {
+	for (int i = 0; i < cavity->size(); i++) {
+		charge[i] = cavity->getChg(Cavity::Nuclear, i) + 
+			        cavity->getChg(Cavity::Electronic, i);
+	}
+}
+
+extern "C" void get_tess_centers_(double * centers) {
+	int j = 0;
+	for (int i = 0; i < cavity->size(); i++) {
+		Vector3d tess = cavity->getTessCenter(i);
+		centers[j] = tess(0);
+		centers[j+1] = tess(1);
+		centers[j+2] = tess(2);
+		j += 3;
+	}
+}
+
+extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
+	int nts = cavity->size();
+	nuc_pot_pcm_(cavity->getTessCenter().data(), &nts, 
+				 cavity->getPot(Cavity::Nuclear).data());
+	ele_pot_pcm_(density, cavity->getTessCenter().data(), &nts, 
+				 cavity->getPot(Cavity::Electronic).data(), work, lwork);
+
+	solver->compCharge(cavity->getPot(Cavity::Nuclear),    
+					   cavity->getChg(Cavity::Nuclear));
+	solver->compCharge(cavity->getPot(Cavity::Electronic), 
+					   cavity->getChg(Cavity::Electronic));
+
+	double totElChg = cavity->getChg(Cavity::Electronic).sum();
+	double totNuChg = cavity->getChg(Cavity::Nuclear).sum();
+
+	cout << "total charges" << " " << totElChg << " " << totNuChg << endl;
+}
+
+extern "C" void comp_pol_ene_pcm_(double * energy) {
+	* energy = cavity->compPolarizationEnergy();
+}
 
 extern "C" void init_gepol_cavity_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
     cavity = new GePolCavity(Input);
+	cout << "before make cavity" << endl;
 	cavity->makeCavity(5000, 10000000);
-	cout << *cavity << endl;
+	cout << "after make cavity" << endl;
+	cavity->initPotChg();
 }
 
 extern "C" void init_pcmsolver_() {

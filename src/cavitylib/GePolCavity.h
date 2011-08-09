@@ -32,15 +32,15 @@ class GePolCavity : public Cavity {
     VectorXd & getTessRadius(){return tessRadius;};
     VectorXd & getSphereRadius(){return sphereRadius;};
     int getNSpheres(){return nSpheres;};
-    Matrix<double, Dynamic, 3> & getSphereCenter(){return sphereCenter;};
-    Matrix<double, Dynamic, 3> & getTessSphereCenter(){return tessSphereCenter;};
+    Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
+    Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
  private:
     bool readInput(string &filename);
     int nSpheres;
     VectorXd sphereRadius;
-    Matrix<double, Dynamic, 3> sphereCenter;
-    Matrix<double, Dynamic, 3> tessSphereCenter;
+    Matrix<double, 3, Dynamic> sphereCenter;
+    Matrix<double, 3, Dynamic> tessSphereCenter;
     VectorXd tessRadius;
     // Variables needed for communication with pedra cavity
     // if one would require more thatn 300 spheres it needs to be changed here

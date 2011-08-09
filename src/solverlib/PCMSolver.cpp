@@ -106,15 +106,15 @@ void PCMSolver::buildAnisotropicMatrix(GePolCavity cav){
     MatrixXd DE(cavitySize, cavitySize);
     
     for(int i = 0; i < cavitySize; i++){
-		Vector3d p1 = cav.getTessCenter().row(i);
-		Vector3d n1 = cav.getTessNormal().row(i);
+		Vector3d p1 = cav.getTessCenter(i);
+		Vector3d n1 = cav.getTessNormal(i);
 		SI(i,i) =  compDiagonalElementSoper(greenInside,  i, cav); 
 		SE(i,i) =  compDiagonalElementSoper(greenOutside, i, cav);
 		DI(i,i) =  compDiagonalElementDoper(greenInside,  i, cav); 
 		DE(i,i) =  compDiagonalElementDoper(greenOutside, i, cav); 
 		for (int j = 0; j < cavitySize; j++){
-			Vector3d p2 = cav.getTessCenter().row(j);
-			Vector3d n2 = cav.getTessNormal().row(j);
+			Vector3d p2 = cav.getTessCenter(j);
+			Vector3d n2 = cav.getTessNormal(j);
 			if (i != j) {
 				SI(i,j) = greenInside->evalf(p1, p2);
 				SE(i,j) = greenOutside->evalf(p1, p2);
@@ -140,6 +140,7 @@ void PCMSolver::buildAnisotropicMatrix(GePolCavity cav){
     PCMMatrix = PCMMatrix * a;
 	
 	builtAnisotropicMatrix = true;
+	builtIsotropicMatrix = false;
 
 }
 
@@ -167,18 +168,16 @@ void PCMSolver::buildIsotropicMatrix(GePolCavity cav){
     MatrixXd DI(cavitySize, cavitySize);
     
     for(int i = 0; i < cavitySize; i++){
-		Vector3d p1 = cav.getTessCenter().row(i);
-		Vector3d n1 = cav.getTessNormal().row(i);
+		Vector3d p1 = cav.getTessCenter(i);
+		Vector3d n1 = cav.getTessNormal(i);
 		SI(i,i) =  compDiagonalElementSoper(greenInside,  i, cav); 
 		DI(i,i) =  compDiagonalElementDoper(greenInside,  i, cav);
 		for (int j = 0; j < cavitySize; j++){
-			Vector3d p2 = cav.getTessCenter().row(j);
-			Vector3d n2 = cav.getTessNormal().row(j);
+			Vector3d p2 = cav.getTessCenter(j);
+			Vector3d n2 = cav.getTessNormal(j);
 			if (i != j) {
 				SI(i,j) = greenInside->evalf(p1, p2);
 				DI(i,j) = -greenInside->evald(n2, p1, p2);
-				//				cout << i+1 << " " << j+1 << " " 
-				//					 << p1.transpose() << " " << p2.transpose() << " " << n2.transpose() << " " << SI(i,j) << " " << DI(i,j) << endl;
 			}
 		}
     }
@@ -193,13 +192,6 @@ void PCMSolver::buildIsotropicMatrix(GePolCavity cav){
 		aInv(i,i) = 2 * M_PI / cav.getTessArea(i);
     }
 
-	//	SI = SI * a / (4*M_PI);
-	//	DI = a * DI * a / (4*M_PI);
-
-	//	cout << "si matrix " << endl << SI << endl;
-	//	cout << "di matrix " << endl << DI << endl;
-
-
 	double fact = (epsilon+1.0)/(epsilon-1.0);
 
     PCMMatrix = (fact * aInv - DI) * a * SI;
@@ -208,6 +200,7 @@ void PCMSolver::buildIsotropicMatrix(GePolCavity cav){
     PCMMatrix = PCMMatrix * a;
 	
 	builtIsotropicMatrix = true;
+	builtAnisotropicMatrix = false;
 
 }
 
@@ -220,6 +213,15 @@ VectorXd PCMSolver::compCharge(const VectorXd &potential) {
 		exit(1);
 	}
 	return charge;
+}
+
+void PCMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
+	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
+		charge = - PCMMatrix * potential;
+	} else {
+		cout << "PCM matrtix not initialized" << endl;
+		exit(1);
+	}
 }
 
 

@@ -100,8 +100,6 @@ C     contributo dispersivo e repulsivo:
 C
       IDISREP = 0
       IPRCAV = 0
-      print *, 'def', lvpri
-      write (lvpri,*) 'def'
 C     
 C
 C se icesph=0
@@ -309,7 +307,6 @@ Clf      write(lvpri,*) 'katom',katom,lgeom,lmass,lend
       STOP
       ENDIF
 
-      print *, 'katom', katom
       IF (KATOM .GT. 1) THEN
          CALL PCMTNS_(ROTCAV,WORK(LGEOM),WORK(LMASS),KATOM)
       END IF
@@ -480,7 +477,7 @@ C         write(lvpri,1240) i, xtscor(i),ytscor(i),ztscor(i),as(i)
 C      enddo
 C      call flshfo(lvpri)
 
-clf      IF (IPRPCM .GT. 10) THEN
+Clf      IF (IPRPCM .GT. 10) THEN
       IF (.true.) THEN
          KORD  = 1
          KIDX  = KORD + 4 * NTS
@@ -2848,10 +2845,6 @@ C/* Deck ordpcm*/
       ENDIF
       DO I = 1, NTS
          WRITE(LVPRI,1250) (dabs(PRIVEC(J,I)),J=1,4)
-         print *, (dabs(PRIVEC(J,I)),J=1,4), lvpri
-      ENDDO
-      DO I = 1, NTS
-         print *, idxpri(I),(dabs(PRIVEC(J,I)),J=1,4), lvpri
       ENDDO
       RETURN
  1240 format(i3,4f15.9)

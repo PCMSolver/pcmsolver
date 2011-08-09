@@ -29,7 +29,8 @@ class PCMSolver{
                                             GePolCavity cav);
     virtual double compDiagonalElementDoper(GreensFunction *green, int i, 
                                             GePolCavity cav);
-    virtual VectorXd compCharge(const VectorXd &potential);
+    virtual VectorXd compCharge(const VectorXd & potential);
+    virtual void compCharge(const VectorXd & potential, VectorXd & charge);
  private:
     bool allocated;
     bool builtAnisotropicMatrix;
@@ -38,11 +39,6 @@ class PCMSolver{
     int cavitySize;
     GreensFunction *greenInside;
     GreensFunction *greenOutside;
-    VectorXd areaTess;
-    VectorXd radiusTess;
-    Matrix<double, Dynamic, 3> centerSphereTess;
-    Matrix<double, Dynamic, 3> centerTess;
-    Matrix<double, Dynamic, 3> normalTess;
     MatrixXd PCMMatrix;
 };
 #endif

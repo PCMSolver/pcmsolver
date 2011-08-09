@@ -21,21 +21,17 @@ GePolCavity::GePolCavity(Getkw &Input){
 	vector<double> spheresInput = Input.getDblVec("Cavity.Spheres");
 	averageArea = Input.getDbl("Cavity.Area");
 	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
-    sphereCenter.resize(nSpheres, NoChange);
+    sphereCenter.resize(NoChange, nSpheres);
     sphereRadius.resize(nSpheres);
 	int j = 0;
 	for (int i = 0; i < nSpheres; i++) {
-		sphereCenter(i,0) = spheresInput[j];
-		sphereCenter(i,1) = spheresInput[j+1];
-		sphereCenter(i,2) = spheresInput[j+2];
+		sphereCenter(0,i) = spheresInput[j];
+		sphereCenter(1,i) = spheresInput[j+1];
+		sphereCenter(2,i) = spheresInput[j+2];
 		sphereRadius(i)   = spheresInput[j+3];
 		j += 4;
 	}
-
-	//	cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
-
+	cout << sphereCenter << endl << sphereRadius << endl;
 }
 
 bool GePolCavity::readInput(string &filename){
@@ -75,13 +71,13 @@ void GePolCavity::writeOutput(string &filename){
 
     output << nTess << endl;
     for(int i=0; i < nTess; i++) {
-		output << tessCenter(i,0) << " ";
-		output << tessCenter(i,1) << " ";
-		output << tessCenter(i,2) << " ";
+		output << tessCenter(0,i) << " ";
+		output << tessCenter(1,i) << " ";
+		output << tessCenter(2,i) << " ";
 		output << tessArea(i) << " ";
-		output << tessSphereCenter(i,0) << " ";
-		output << tessSphereCenter(i,1) << " ";
-		output << tessSphereCenter(i,2) << " ";
+		output << tessSphereCenter(0,i) << " ";
+		output << tessSphereCenter(1,i) << " ";
+		output << tessSphereCenter(2,i) << " ";
 		output << tessRadius(i) << endl;
     }
     output.close();
@@ -110,37 +106,37 @@ void GePolCavity::makeCavity(int maxts, int lwork){
 
     int nts;
 
-	double *xe = sphereCenter.col(0).data();
-	double *ye = sphereCenter.col(1).data();
-	double *ze = sphereCenter.col(2).data();
+	double *xe = sphereCenter.row(0).data();
+	double *ye = sphereCenter.row(1).data();
+	double *ze = sphereCenter.row(2).data();
 	double *rin = sphereRadius.data();
 
+	cout << "Calling F77 to gen cavity" << endl;
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, work, &lwork);
 
+	cout << "Called F77 to gen cavity" << endl;
 
-	cout << nts << endl;
-    
     nTess = int(nts);
-    tessCenter.resize(nTess, NoChange);
-    tessSphereCenter.resize(nTess,NoChange);
-    tessNormal.resize(nTess,NoChange);
+    tessCenter.resize(NoChange, nTess);
+    tessSphereCenter.resize(NoChange, nTess);
+    tessNormal.resize(NoChange, nTess);
     tessArea.resize(nTess);
     tessRadius.resize(nTess);
     for(int i=0; i < nTess; i++){
-		tessCenter(i,0) = xtscor[i];
-		tessCenter(i,1) = ytscor[i];
-		tessCenter(i,2) = ztscor[i];
+		tessCenter(0,i) = xtscor[i];
+		tessCenter(1,i) = ytscor[i];
+		tessCenter(2,i) = ztscor[i];
 		tessArea(i) = ar[i];
-		tessSphereCenter(i,0) = xsphcor[i];
-		tessSphereCenter(i,1) = ysphcor[i];
-		tessSphereCenter(i,2) = zsphcor[i];
+		tessSphereCenter(0,i) = xsphcor[i];
+		tessSphereCenter(1,i) = ysphcor[i];
+		tessSphereCenter(2,i) = zsphcor[i];
 		tessRadius(i) = rsph[i];
     }
 
     tessNormal = tessCenter - tessSphereCenter;
     for(int i=0; i < nTess; i++){
-		tessNormal.row(i) /= tessNormal.row(i).norm();
+		tessNormal.col(i) /= tessNormal.col(i).norm();
 	}
 
 	delete xtscor;
@@ -152,5 +148,8 @@ void GePolCavity::makeCavity(int maxts, int lwork){
 	delete zsphcor;
 	delete rsph;
 	delete work;
+	
+	isBuilt = true;
+
 }
 

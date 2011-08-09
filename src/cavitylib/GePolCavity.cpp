@@ -31,7 +31,6 @@ GePolCavity::GePolCavity(Getkw &Input){
 		sphereRadius(i)   = spheresInput[j+3];
 		j += 4;
 	}
-	cout << sphereCenter << endl << sphereRadius << endl;
 }
 
 bool GePolCavity::readInput(string &filename){
@@ -111,11 +110,8 @@ void GePolCavity::makeCavity(int maxts, int lwork){
 	double *ze = sphereCenter.row(2).data();
 	double *rin = sphereRadius.data();
 
-	cout << "Calling F77 to gen cavity" << endl;
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, work, &lwork);
-
-	cout << "Called F77 to gen cavity" << endl;
 
     nTess = int(nts);
     tessCenter.resize(NoChange, nTess);

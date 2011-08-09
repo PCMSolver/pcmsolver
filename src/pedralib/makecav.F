@@ -42,12 +42,10 @@ C
       integer nts_, nesfp_
 
       LVPRI = 121201
-      print *, 'lvpri in makecav', lvpri
       OPEN(LVPRI,
      $     FILE   = 'PEDRA.OUT',
      $     ACCESS = 'APPEND',
      $     STATUS = 'UNKNOWN')
-      write(lvpri,*) 'abc'
       MAXREP=0
       NSYM=1
       AREATS=avgArea_
@@ -76,7 +74,6 @@ C
       PT(6) =  1
       PT(7) =  1
 
-      write(lvpri,*) 'abc'
       CALL PEDRA_M_(WORK2, LWORK2)
 
       nts_=nts

@@ -160,7 +160,6 @@ void PCMSolver::buildIsotropicMatrix(GePolCavity cav){
 		cout << "Need vacuum inside" << endl;
 		exit(1);
 	}
-	cout << "Building isotropic PCM matrix " << epsilon << endl;
 
     cavitySize = cav.size();
 

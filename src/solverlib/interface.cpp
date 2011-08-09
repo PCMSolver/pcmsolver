@@ -35,10 +35,22 @@ extern "C" void get_cavity_size_(int * nts) {
 	*nts = cavity->size();
 }
 
-extern "C" void get_surface_charge_(double * charge) {
+extern "C" void get_total_surface_charge_(double * charge) {
 	for (int i = 0; i < cavity->size(); i++) {
 		charge[i] = cavity->getChg(Cavity::Nuclear, i) + 
 			        cavity->getChg(Cavity::Electronic, i);
+	}
+}
+
+extern "C" void get_nuclear_surface_charge_(double * charge) {
+	for (int i = 0; i < cavity->size(); i++) {
+		charge[i] = cavity->getChg(Cavity::Nuclear, i);
+	}
+}
+
+extern "C" void get_electronic_surface_charge_(double * charge) {
+	for (int i = 0; i < cavity->size(); i++) {
+		charge[i] = cavity->getChg(Cavity::Electronic, i);
 	}
 }
 
@@ -51,6 +63,7 @@ extern "C" void get_tess_centers_(double * centers) {
 		centers[j+2] = tess(2);
 		j += 3;
 	}
+	
 }
 
 extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
@@ -67,8 +80,6 @@ extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
 
 	double totElChg = cavity->getChg(Cavity::Electronic).sum();
 	double totNuChg = cavity->getChg(Cavity::Nuclear).sum();
-
-	cout << "total charges" << " " << totElChg << " " << totNuChg << endl;
 }
 
 extern "C" void comp_pol_ene_pcm_(double * energy) {
@@ -80,9 +91,7 @@ extern "C" void init_gepol_cavity_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
     cavity = new GePolCavity(Input);
-	cout << "before make cavity" << endl;
 	cavity->makeCavity(5000, 10000000);
-	cout << "after make cavity" << endl;
 	cavity->initPotChg();
 }
 

@@ -28,6 +28,7 @@ PCMSolver::PCMSolver(GreensFunction &gfi, GreensFunction &gfo){
 	greenInside = &gfi; 
 	greenOutside = &gfo;
 }
+
 PCMSolver::PCMSolver(GreensFunction *gfi, GreensFunction *gfo){
 	allocated = false;
 	builtIsotropicMatrix = false;

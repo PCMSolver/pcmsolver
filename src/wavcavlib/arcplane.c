@@ -10,7 +10,7 @@
  */
 
 #include <math.h>
-#include <malloc.h>
+//#include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "cavity.h"

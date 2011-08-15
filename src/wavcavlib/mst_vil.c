@@ -9,7 +9,7 @@
  *              Germany.
  */
 
-#include <malloc.h>
+#include <stdlib.h>
 #include "cavity.h"
 #include "splinemol.h"
 #include "pln_sph.h"

@@ -49,14 +49,18 @@ void WaveletCavity::writeInput(string &fileName){
     output.close();
 }
 
+extern "C" {
+	int waveletCavityDrv_(double probeRadius, double coarsity, 
+						  int patchLevel);
+
+}
+
 void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
 	string fileName = "cavity.inp";
 	writeInput(fileName);
-	check = bihp_test_romg(fileName.c_str(), probeRadius, coarsity, &dummy);
-	if (check == 1) {
-		return 0;
-	} else {
+	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel);
+	if (check != 1) {
 		cout << "Error in creating wavelet cavity" << endl; 
 		exit(1);
 	}

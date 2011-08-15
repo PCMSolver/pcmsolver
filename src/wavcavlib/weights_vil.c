@@ -11,7 +11,7 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdlib.h>
 #include "cavity.h"
 #include "splinemol.h"

@@ -10,7 +10,7 @@
  */
 
 #include <stdlib.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include "cavity.h"
 #include "pln_sph.h"

@@ -11,7 +11,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <math.h>
 #include "cavity.h"
 #include "pln_sph.h"

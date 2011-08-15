@@ -12,7 +12,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
+//#include <stdlib.h>
 #include "cavity.h"
 #include "splinemol.h"
 #include "geodesic.h"

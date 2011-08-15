@@ -90,6 +90,9 @@ extern"C" {
 							 double *avgArea, double* work, int* lwork);
 }
 
+void GePolCavity::makeCavity(){
+	makeCavity(10000, 10000000);
+}
 
 void GePolCavity::makeCavity(int maxts, int lwork){
 

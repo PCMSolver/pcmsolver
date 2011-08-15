@@ -22,7 +22,7 @@ class Cavity
  public:
     Cavity(){isBuilt = false;}
     ~Cavity(){}
-    virtual void makeCavity(int, int) = 0; // not nice, needs fix
+    virtual void makeCavity() = 0; // not nice, needs fix
     virtual void writeOutput(string &filename);
     virtual Matrix<double, 3, Dynamic> & getTessCenter(){return tessCenter;}
     virtual Vector3d getTessCenter(int i){return tessCenter.col(i);}

@@ -5,6 +5,7 @@ include_directories (metal)
 include_directories (green)
 
 add_subdirectory(solverlib)
+add_subdirectory(wavcavlib)
 add_subdirectory(cavitylib)
 add_subdirectory(pedralib)
 add_subdirectory(metal)

@@ -1,4 +1,5 @@
 include_directories (solverlib)
+include_directories (wavcavlib)
 include_directories (pedralib)
 include_directories (cavitylib)
 include_directories (metal)

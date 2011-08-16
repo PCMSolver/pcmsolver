@@ -36,6 +36,9 @@ class GePolCavity : public Cavity {
     Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
+
+    friend std::ostream& operator<<(std::ostream &o, const GePolCavity &c);
+
  private:
     bool readInput(string &filename);
     int nSpheres;

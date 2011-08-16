@@ -1,7 +1,7 @@
 set (solverlib_SOURCES PCMSolver.cpp interface.cpp)
 
 add_executable(pcmsolver.x test.cpp)
-target_link_libraries(pcmsolver.x getkw solver green cavity pedra metal wavcav)
+target_link_libraries(pcmsolver.x solver green cavity pedra metal wavcav getkw)
 target_link_libraries(pcmsolver.x ${LIBS})
 
 find_package(PythonInterp REQUIRED)

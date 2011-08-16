@@ -94,7 +94,7 @@ void GePolCavity::makeCavity(){
 	makeCavity(10000, 10000000);
 }
 
-void GePolCavity::makeCavity(int maxts, int lwork){
+void GePolCavity::makeCavity(int maxts, int lwork) {
 
 	double *xtscor  = new double[maxts];
 	double *ytscor  = new double[maxts];
@@ -150,5 +150,19 @@ void GePolCavity::makeCavity(int maxts, int lwork){
 	
 	isBuilt = true;
 
+}
+
+ostream & operator<<(ostream &os, const GePolCavity &cavity) {
+	os << "Molecular cavity" << endl;
+	os << "Nr. of spheres: " << cavity.nSpheres;
+    for(int i = 0; i < cavity.nSpheres; i++) {
+		os << endl;
+		os << i+1 << " ";
+		os << cavity.sphereCenter(0,i) << " ";
+		os << cavity.sphereCenter(1,i) << " ";
+		os << cavity.sphereCenter(2,i) << " ";
+		os << cavity.sphereRadius(i) << " ";
+    }
+	return os;
 }
 

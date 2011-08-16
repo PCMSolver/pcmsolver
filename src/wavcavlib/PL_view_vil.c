@@ -127,10 +127,12 @@ fprintf(fp,"%f  %f  %f\n",ter.absi,ter.ordo,ter.cote);
 
 void muwk_quer_kowd(megamanif MG,PL_curve *C,int nb_C,
 point str,point ter)
-{FILE *fp;
-fp=fopen("dumped2.dat","w");
-gapc_find_bawv_zemg(fp,MG,C,nb_C,str,ter);
-fclose(fp);
+{
+    FILE *fp;
+    printf("dumped 1 here\n");
+    fp=fopen("dumped2.dat","w");
+    gapc_find_bawv_zemg(fp,MG,C,nb_C,str,ter);
+    fclose(fp);
 }
 
 

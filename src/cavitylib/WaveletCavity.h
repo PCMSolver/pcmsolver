@@ -8,14 +8,6 @@
 
 #include "Getkw.h"
 #include "Cavity.h"
-//class Getkw;
-
-/*
-
-C++ inteface and wrapper for GePol cavity class
-written by Luca Frediani, 2011
-
-*/
 
 class Getkw;
 
@@ -32,6 +24,9 @@ class WaveletCavity : public Cavity {
     Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
+
+    friend std::ostream& operator<<(std::ostream &o, const WaveletCavity &c);
+
  private:
     void writeInput(string &fileName);
     int nSpheres;

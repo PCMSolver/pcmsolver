@@ -416,6 +416,7 @@ int waveletCavityDrv_(char * fileName, double probeRadius, double coarsity,
 
   char *infile = "cavity.inp";
   PATCH_LEVEL = patchLevel;
+  verbose_variable = VERBOSE;
 
   tmpout = fopen("create_cavity.out","w");
   test = bihp_test_romg(infile, probeRadius, coarsity, &dummy);

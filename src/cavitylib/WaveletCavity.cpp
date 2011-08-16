@@ -40,7 +40,7 @@ void WaveletCavity::writeInput(string &fileName){
     output.open(fileName.c_str(), fstream::out);
 
     output << nSpheres << endl;
-    for(int i=0; i < nTess; i++) {
+    for(int i=0; i < nSpheres; i++) {
 		output << sphereCenter(0,i) << " ";
 		output << sphereCenter(1,i) << " ";
 		output << sphereCenter(2,i) << " ";
@@ -55,9 +55,11 @@ extern "C" {
 
 }
 
+
 void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
 	string fileName = "cavity.inp";
+	cout << fileName << endl;
 	writeInput(fileName);
 	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel);
 	if (check != 1) {
@@ -65,3 +67,21 @@ void WaveletCavity::makeCavity() {
 		exit(1);
 	}
 }
+
+ostream & operator<<(ostream &os, const WaveletCavity &cavity) {
+	os << "Molecular cavity" << endl;
+	os << "Probe Radius:   " << cavity.probeRadius << endl;
+	os << "Coarsity:       " << cavity.coarsity << endl;
+	os << "Patch Level:    " << cavity.patchLevel << endl;
+	os << "Nr. of spheres: " << cavity.nSpheres;
+    for(int i = 0; i < cavity.nSpheres; i++) {
+		os << endl;
+		os << i+1 << " ";
+		os << cavity.sphereCenter(0,i) << " ";
+		os << cavity.sphereCenter(1,i) << " ";
+		os << cavity.sphereCenter(2,i) << " ";
+		os << cavity.sphereRadius(i) << " ";
+    }
+	return os;
+}
+

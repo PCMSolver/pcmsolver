@@ -14,6 +14,7 @@ using namespace Eigen;
 #include "GreensFunctionSum.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
+#include "WaveletCavity.h"
 #include "PCMSolver.h"
 
 int main(int argc, char** argv){
@@ -33,6 +34,14 @@ int main(int argc, char** argv){
 	int printl = Input.getInt("PRINTL");
 	double area = Input.getDbl("Cavity.Area");
 
+	WaveletCavity cavity(Input);
+
+	cavity.makeCavity();
+	cout << cavity << endl;
+	
+
+}
+/*
     GePolCavity cavity(Input);
 	cavity.makeCavity(5000, 10000000);
 	Vector3d p1(0.0, 10.1, 0.0);
@@ -55,3 +64,4 @@ int main(int argc, char** argv){
 	double eps = water.getEpsilon();
 	cout << "Green " <<  tot << " " << tot * eps/(1.0-eps) << endl;
 }
+*/

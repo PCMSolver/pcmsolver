@@ -62,10 +62,7 @@ void WaveletCavity::makeCavity() {
 	cout << fileName << endl;
 	writeInput(fileName);
 	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel);
-	if (check != 1) {
-		cout << "Error in creating wavelet cavity" << endl; 
-		exit(1);
-	}
+	cout << "Created wavelet cavity: " << check << endl;
 }
 
 ostream & operator<<(ostream &os, const WaveletCavity &cavity) {

@@ -203,7 +203,6 @@ free(unit_quad.entity);
 free(unit_tri.knot);
 free(unit_tri.entity);
 n_pat=MG.mw_grs;
- printf("Do i get here?\n"); 
 fp=fopen("dumped1.dat","w");
 fprintf(fp,"%d\n",n_pat);
 for(p=0;p<n_pat;p++)

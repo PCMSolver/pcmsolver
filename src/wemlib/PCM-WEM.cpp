@@ -223,7 +223,7 @@ void WaveletBEM::solveForPotential(VectorXd &potential, VectorXd &charges){
 }
 
 void WaveletBEM::writeChargesToDisk(VectorXd &charges){
-  if((uint)charges.rows() != nf_*(quadratureLevel_+1)*(quadratureLevel_+1)){
+  if((unsigned int)charges.rows() != nf_*(quadratureLevel_+1)*(quadratureLevel_+1)){
     std::cerr << "WaveletBEM::writeChargesToDisk: Charges do" 
 	      << " not match the operator definition." << std::endl;
     std::cerr << charges.rows() << " " << nf_ << " " << quadratureLevel_+1 << "\n";
@@ -235,10 +235,10 @@ void WaveletBEM::writeChargesToDisk(VectorXd &charges){
 
   file << nf_ << std::endl;
 
-  uint p = 0;
-  for(uint i = 0; i < nf_; i++){
+  unsigned int p = 0;
+  for(unsigned int i = 0; i < nf_; i++){
     double avg = 0.0;
-    for(uint j = 0; j < (quadratureLevel_+1)*(quadratureLevel_+1); j++){
+    for(unsigned int j = 0; j < (quadratureLevel_+1)*(quadratureLevel_+1); j++){
       avg += charges(p);
       p++;
     }

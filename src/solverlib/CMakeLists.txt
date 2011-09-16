@@ -1,4 +1,8 @@
-set (solverlib_SOURCES PCMSolver.cpp interface.cpp)
+set (solverlib_SOURCES 
+  IEFSolver.cpp 
+  interface.cpp
+  PCMSolver.cpp
+)
 
 add_executable(pcmsolver.x test.cpp)
 target_link_libraries(pcmsolver.x solver green cavity pedra metal wem wavcav getkw)

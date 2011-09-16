@@ -16,6 +16,7 @@ using namespace Eigen;
 #include "GePolCavity.h"
 #include "WaveletCavity.h"
 #include "PCMSolver.h"
+#include "IEFSolver.h"
 
 int main(int argc, char** argv){
 
@@ -52,7 +53,7 @@ int main(int argc, char** argv){
     UniformDielectric water(78.39);
     Vacuum vacuum;
 
-    PCMSolver waterSolver(vacuum, water); 
+    IEFSolver waterSolver(vacuum, water); 
 
     waterSolver.buildAnisotropicMatrix(cavity);
     VectorXd potential(cavity.size());

@@ -15,9 +15,10 @@ using namespace Eigen;
 #include "Vacuum.h"
 #include "UniformDielectric.h"
 #include "PCMSolver.h"
+#include "IEFSolver.h"
 
 GePolCavity *cavity;
-PCMSolver *solver;
+IEFSolver *solver;
 
 //      Subroutine PotExpVal(Density, Centers, Nts, Potential, Work, 
 //     $                     LWork)
@@ -100,7 +101,7 @@ extern "C" void init_pcmsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	solver = new PCMSolver(Medium);
+	solver = new IEFSolver(Medium);
 	solver->buildIsotropicMatrix(*cavity);
 }
 

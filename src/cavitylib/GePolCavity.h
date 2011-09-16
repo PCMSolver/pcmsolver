@@ -25,7 +25,8 @@ class GePolCavity : public Cavity {
     GePolCavity(string &filename){
         readInput(filename);
     }
-    GePolCavity(Getkw &Input);
+    GePolCavity(const Getkw & Input, const string path = "Cavity");
+    GePolCavity(const Section & cavity);
     ~GePolCavity(){};
     void makeCavity(int maxts, int lwork);
     void makeCavity();

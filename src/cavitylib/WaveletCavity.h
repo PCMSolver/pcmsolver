@@ -15,7 +15,8 @@ class WaveletCavity : public Cavity {
  public:
     WaveletCavity(){}
     //    WaveletCavity(string &filename);
-    WaveletCavity(Getkw &Input);
+    WaveletCavity(const Getkw & input, const string path = "Cavity");
+    WaveletCavity(const Section & cavity);
     ~WaveletCavity(){};
     void makeCavity();
     VectorXd & getTessRadius(){return tessRadius;};

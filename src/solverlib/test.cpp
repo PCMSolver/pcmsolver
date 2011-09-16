@@ -33,28 +33,26 @@ int main(int argc, char** argv){
 	Getkw Input = Getkw(infile, false, true);
 
 	int printl = Input.getInt("PRINTL");
-	double area = Input.getDbl("Cavity.Area");
 
-	WaveletCavity cavity(Input);
+	//	WaveletCavity wavcav(Input);
 
-	cavity.makeCavity();
-	cout << cavity << endl;
+	//	cavity.makeCavity();
+	//	cout << cavity << endl;
 	
-
-}
-/*
-    GePolCavity cavity(Input);
-	cavity.makeCavity(5000, 10000000);
 	Vector3d p1(0.0, 10.1, 0.0);
     Vector3d p2(0.0, 10.2, 0.0);
     Vector3d ps(0.0,  0.0, 0.0);
     
-    MetalSphere metal(20.0, 0.0, 10000.0, ps, 10.0);
-    UniformDielectric water(78.39);
-    Vacuum vacuum;
+	const Section &Medium = Input.getSect("Medium");
+	const Section &WaveletCavitySection = Input.getSect("Cavity<wavelet>");
+	const Section &GepolCavitySection = Input.getSect("Cavity<gepol>");
 
-    IEFSolver waterSolver(vacuum, water); 
+    GePolCavity cavity(GepolCavitySection);
+    WaveletCavity wavcav(WaveletCavitySection);
 
+	cavity.makeCavity();
+
+    IEFSolver waterSolver(Medium); 
     waterSolver.buildAnisotropicMatrix(cavity);
     VectorXd potential(cavity.size());
     VectorXd charges(cavity.size());
@@ -62,7 +60,7 @@ int main(int argc, char** argv){
     const MatrixXd &matrix = waterSolver.getPCMMatrix();
     charges = waterSolver.compCharge(potential);
 	double tot = charges.sum();
-	double eps = water.getEpsilon();
-	cout << "Green " <<  tot << " " << tot * eps/(1.0-eps) << endl;
+	cout << "Cavity " << endl << cavity << endl;
+	cout << "Cavity " << endl << cavity.size() << endl;
+	cout << "Green " <<  tot << " " << tot * 78.39/(1.0-78.39) << endl;
 }
-*/

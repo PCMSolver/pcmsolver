@@ -154,7 +154,7 @@ def verify_cavity(section):
 		a=area.get()
 		if (a < 0.01):
 			print "Area value is too small"
-			print "Minimum value: 0.1"
+			print "Minimum value: 0.01"
 			sys.exit(1)
 	elif (type.get() == 'Wavelet'):
 		key = section.get('PatchLevel')

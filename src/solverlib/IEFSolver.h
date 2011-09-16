@@ -19,9 +19,6 @@ class IEFSolver : public PCMSolver {
     IEFSolver(GreensFunction *gfi, GreensFunction *gfo);
     IEFSolver(Section solver);
     ~IEFSolver();
-    GreensFunction &getGreenInside();
-    GreensFunction &getGreenOutside();    
-    int getCavitySize() const {return cavitySize;};
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
     virtual void buildAnisotropicMatrix(GePolCavity cav);
     virtual void buildIsotropicMatrix(GePolCavity cav);
@@ -32,13 +29,9 @@ class IEFSolver : public PCMSolver {
     virtual VectorXd compCharge(const VectorXd & potential);
     virtual void compCharge(const VectorXd & potential, VectorXd & charge);
  private:
-    bool allocated;
     bool builtAnisotropicMatrix;
     bool builtIsotropicMatrix;
     static const double factor = 1.07;
-    int cavitySize;
-    GreensFunction *greenInside;
-    GreensFunction *greenOutside;
     MatrixXd PCMMatrix;
 };
 #endif

@@ -2,6 +2,7 @@ set (solverlib_SOURCES
   IEFSolver.cpp 
   interface.cpp
   PCMSolver.cpp
+  WEMSolver.cpp
 )
 
 add_executable(pcmsolver.x test.cpp)

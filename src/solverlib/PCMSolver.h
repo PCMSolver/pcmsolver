@@ -25,7 +25,7 @@ class PCMSolver{
     void setCavitySize(int size) {cavitySize = size;};
     virtual VectorXd compCharge(const VectorXd & potential) = 0;
     virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
- private:
+ protected:
     bool allocated;
     int cavitySize;
     GreensFunction *greenInside;

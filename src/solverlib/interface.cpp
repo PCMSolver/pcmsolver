@@ -101,7 +101,7 @@ extern "C" void init_pcmsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	solver = new IEFSolver(Medium);
+	Solver = new IEFSolver(Medium);
 	solver->buildIsotropicMatrix(*cavity);
 }
 

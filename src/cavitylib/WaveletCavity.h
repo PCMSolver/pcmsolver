@@ -19,6 +19,7 @@ class WaveletCavity : public Cavity {
     WaveletCavity(const Section & cavity);
     ~WaveletCavity(){};
     void makeCavity();
+    void readCavity(std::string & filename);
     VectorXd & getTessRadius(){return tessRadius;};
     VectorXd & getSphereRadius(){return sphereRadius;};
     int getNSpheres(){return nSpheres;};
@@ -29,6 +30,15 @@ class WaveletCavity : public Cavity {
     friend std::ostream& operator<<(std::ostream &o, const WaveletCavity &c);
 
  private:
+
+    std::vector<Vector3d> nodePoint;
+    std::vector<Vector3i> nodeIndex;
+    unsigned int nPatches;
+    unsigned int nLevels;
+    unsigned int nPoints;
+
+    bool uploadedDyadic;
+    
     void writeInput(string &fileName);
     int nSpheres;
     Matrix<double, 3, Dynamic> sphereCenter;
@@ -38,6 +48,8 @@ class WaveletCavity : public Cavity {
     int patchLevel;
     double probeRadius;
     double coarsity;
+
+
 };
 
 #endif

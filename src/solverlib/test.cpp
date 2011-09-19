@@ -51,6 +51,13 @@ int main(int argc, char** argv){
     WaveletCavity wavcav(WaveletCavitySection);
 
 	cavity.makeCavity();
+	wavcav.makeCavity();
+
+	string wavcavFile = "molec_dyadic.dat";
+
+	wavcav.readCavity(wavcavFile);
+
+	cout << wavcav << endl;
 
     IEFSolver waterSolver(Medium); 
     waterSolver.buildAnisotropicMatrix(cavity);

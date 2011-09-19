@@ -394,7 +394,7 @@ void cavity_create_(double *probe, double *coarsity, int *pl, int *info){
   * @param info Changed to 0 if all went fine.
   *
   */
-int waveletCavityDrv_(char * fileName, double probeRadius, double coarsity, 
+int waveletCavityDrv_(double probeRadius, double coarsity, 
                        int patchLevel) {
     int dummy, test, info = -1;
   /*
@@ -416,6 +416,7 @@ int waveletCavityDrv_(char * fileName, double probeRadius, double coarsity,
 
   char *infile = "cavity.inp";
   PATCH_LEVEL = patchLevel;
+  printf("this is the patch level %d %d \n", PATCH_LEVEL, patchLevel);
   verbose_variable = VERBOSE;
 
   tmpout = fopen("create_cavity.out","w");

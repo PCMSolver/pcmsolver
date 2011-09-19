@@ -33,6 +33,7 @@ WaveletCavity::WaveletCavity(const Getkw & Input, const string path){
 		sphereRadius(i)   = spheresInput[j+3];
 		j += 4;
 	}
+	uploadedDyadic = false;
 }
 
 WaveletCavity::WaveletCavity(const Section & cavity){
@@ -51,6 +52,7 @@ WaveletCavity::WaveletCavity(const Section & cavity){
 		sphereRadius(i)   = spheresInput[j+3];
 		j += 4;
 	}
+	uploadedDyadic = false;
 }
 
 void WaveletCavity::writeInput(string &fileName){
@@ -66,22 +68,50 @@ void WaveletCavity::writeInput(string &fileName){
 		output << sphereRadius(i) << endl;
     }
     output.close();
+	uploadedDyadic = false;
 }
 
 extern "C" {
 	int waveletCavityDrv_(double probeRadius, double coarsity, 
 						  int patchLevel);
-
 }
 
 
 void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
 	string fileName = "cavity.inp";
-	cout << fileName << endl;
+	cout << "makecavity " << fileName << " " << patchLevel << endl;
 	writeInput(fileName);
 	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel);
 	cout << "Created wavelet cavity: " << check << endl;
+}
+
+
+void WaveletCavity::readCavity(string & filename) {
+
+		int i, j, k;
+		double x, y, z;
+
+		ifstream file;
+		file.open(filename.c_str());
+
+		file >> nLevels >> nPatches;
+
+		int nNodes = (1 << nLevels) + 1;
+
+		nPoints = nPatches * nNodes * nNodes;
+		
+		for (int k = 0; k < nPoints; k++) {
+			file >> i >> j >> k >> x >> y >> z;
+			Vector3i index(i, j, k);
+			nodeIndex.push_back(index);
+			Vector3d point(x, y, z);
+			nodePoint.push_back(point);
+		}
+
+		file.close();
+
+		uploadedDyadic = true;
 }
 
 ostream & operator<<(ostream &os, const WaveletCavity &cavity) {
@@ -98,6 +128,13 @@ ostream & operator<<(ostream &os, const WaveletCavity &cavity) {
 		os << cavity.sphereCenter(2,i) << " ";
 		os << cavity.sphereRadius(i) << " ";
     }
+	if (cavity.uploadedDyadic) {
+		for(int i = 0; i < cavity.nPoints; i++) {
+			os << endl;
+			os << i+1 << " ";
+			os << cavity.nodeIndex[i].transpose() << " " << cavity.nodePoint[i].transpose() << " ";
+		}
+	}
 	return os;
 }
 

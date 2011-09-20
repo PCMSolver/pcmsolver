@@ -1,3 +1,5 @@
+#ifndef WEMRHS
+#define WEMRHS
 /**************
  *  WEMRHS.h  *
  **************/
@@ -18,3 +20,4 @@ void WEMRHS2(double **rhs, wavelet *W, element *E, vector3 ****T, unsigned int p
 
 void WEMRHS2M(double **rhs, wavelet *W, element *E, vector3 ****T, unsigned int p, unsigned int M, double *potential, unsigned int g);
 /* testet die Dirichlet-Daten des gegebenen Potentials */
+#endif

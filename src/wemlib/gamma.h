@@ -1,3 +1,5 @@
+#ifndef GAMMA
+#define GAMMA
 /*************
  *  Gamma.h  *
  *************/
@@ -31,3 +33,4 @@ void init_Chi(parametrix **Chi);
 
 void free_Chi(parametrix **Chi);
 /* gibt den Speicherplatz fuer die Parametrisierung frei */
+#endif

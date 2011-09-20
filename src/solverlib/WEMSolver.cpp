@@ -21,6 +21,8 @@ using namespace Eigen;
 #include "GePolCavity.h"
 #include "PCMSolver.h"
 #include "WEMSolver.h"
+#include "topology.h"
+#include "interpolate.h"
 
 WEMSolver::WEMSolver(GreensFunction & gfi, GreensFunction & gfo) : 
 	PCMSolver(gfi, gfo) {

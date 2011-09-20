@@ -1,3 +1,5 @@
+#ifndef WEMPCG
+#define WEMPCG
 /**************
  *  WEMPCG.h  *
  **************/
@@ -25,3 +27,4 @@
 
 
 unsigned int WEMPCG(sparse2 *A, double *b, double *x, double epsi, unsigned int p, unsigned int M);
+#endif

@@ -1,3 +1,5 @@
+#ifndef QUADRATURE
+#define QUADRATURE
 /******************
  *  Quadrature.h  *
  ******************/
@@ -14,3 +16,4 @@ typedef struct
    double	   *xi, *w;           /* Stuetzstellen/Gewichte der Quadratur-Formel */
    } quadrature;
 
+#endif

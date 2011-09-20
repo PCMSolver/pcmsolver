@@ -1,3 +1,5 @@
+#ifndef SPARSE2
+#define SPARSE2
 /**************
  *  sparse.h  *
  **************/
@@ -104,3 +106,4 @@ void garbage_collect(sparse2 *A);
  *==================*/
  
 void finish_pattern(sparse2 *A);
+#endif

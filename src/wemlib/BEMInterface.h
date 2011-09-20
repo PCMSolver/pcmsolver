@@ -1,3 +1,5 @@
+#ifndef BEMINTERFACE
+#define BEMINTERFACE
 #ifndef BEMINTERFACE_H
 #define BEMINTERFACE_H
 
@@ -88,4 +90,5 @@ class BEMInterface{
 
 };
 
+#endif
 #endif

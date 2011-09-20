@@ -1,3 +1,5 @@
+#ifndef INIT_POINTS
+#define INIT_POINTS
 /*******************
  *  init_points.h  *
  *******************/
@@ -9,3 +11,4 @@
 
 
 unsigned int init_points(vector3 **Q, unsigned int m);
+#endif

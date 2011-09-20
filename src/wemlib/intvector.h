@@ -1,3 +1,5 @@
+#ifndef INTVECTOR
+#define INTVECTOR
 /*****************
  *  IntVector.h  *
  *****************/
@@ -43,3 +45,4 @@ signed int search_integral(intvector *I, unsigned int i);
 
 void set_integral(intvector *I, unsigned int i, double *z);
 /* der Eintrag darf nicht vorhanden sein */
+#endif

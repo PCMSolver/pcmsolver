@@ -1,3 +1,5 @@
+#ifndef INTKON1
+#define INTKON1
 /***************
  *  IntKon1.h  *
  ***************/
@@ -35,3 +37,4 @@ void free_randwerte(randwerte **RW, unsigned int g_max);
 void IntKon1(double *c, element *element1, element *element2, randwerte *RW, 
 	cubature *Q1, cubature *Q2, vector3 ****P, unsigned int M, double (*SL)(), double (*DL)());
 /* No-Problem-Quadrature-Routine */
+#endif

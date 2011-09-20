@@ -1,3 +1,5 @@
+#ifndef WEMPGMRES
+#define WEMPGMRES
 /*****************
  *  WEMPGMRES.h  *
  *****************/
@@ -47,3 +49,4 @@ unsigned int WEMPGMRES2(sparse2 *A, double *b, double *x, double epsi, unsigned 
  *==============================================================*/
 
 unsigned int WEMPGMRES3(sparse2 *A, sparse2 *B, double *rhs, double *x, double epsi, unsigned int p, unsigned int M);
+#endif

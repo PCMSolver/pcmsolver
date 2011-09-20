@@ -1,3 +1,5 @@
+#ifndef READ_POINTS
+#define READ_POINTS
 /*******************
  *  read_points.h  *
  *******************/
@@ -20,4 +22,5 @@ void free_points(vector3 ****P, unsigned int p, unsigned int m);
 
 #ifdef __cplusplus
 }
+#endif
 #endif

@@ -1,3 +1,5 @@
+#ifndef DWT
+#define DWT
 /************
  *  dwt1.h  *
  ************/
@@ -15,3 +17,4 @@ void dwtKon(double *a, unsigned int M, unsigned int nf);
 
 void tdwtKon(double *a, unsigned int M, unsigned int nf);
 /* transformierte Diskrete Wavelet-Transformation */
+#endif

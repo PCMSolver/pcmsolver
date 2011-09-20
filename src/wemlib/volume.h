@@ -1,3 +1,5 @@
+#ifndef VOLUME
+#define VOLUME
 /**************
  *  Volume.h  *
  **************/
@@ -9,3 +11,4 @@
 
 
 double volume(unsigned int **F, vector3 ****T, unsigned int p, unsigned int m);
+#endif

@@ -1,3 +1,5 @@
+#ifndef MATLAB_C
+#define MATLAB_C
 /****************
  *  Matlab_C.h  *
  ****************/
@@ -36,3 +38,4 @@ unsigned int **matlab2c_patchlist(double *FF, unsigned int nf);
 
 void free_patchlist(unsigned int ***F, unsigned int nf);
 /* gibt den Speicherplatz der (nf,4)-(unsigned int)-Patchliste F frei */
+#endif

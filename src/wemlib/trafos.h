@@ -1,3 +1,5 @@
+#ifndef TRAFOS
+#define TRAFOS
 /**************
  *  Trafos.h  *
  **************/
@@ -37,3 +39,4 @@ void quadrature_grade_nonsmooth(signed int *g1, signed int *g2,
 /* bestimmt fuer Elemente der Level m1 und m2 
    mit dem Abstand dist die benoetigten Quadraturgrade
    -> beide Elemente leben auf verschiedenen Patches */
+#endif

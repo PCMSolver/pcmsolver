@@ -1,3 +1,5 @@
+#ifndef VECTOR3
+#define VECTOR3
 /***************
  *  vector3.h  *
  ***************/
@@ -38,3 +40,4 @@ double vector3_skalp(vector3 a, vector3 b);
 
 double vector3_norm(vector3 a);
 /* Euklid-Norm */
+#endif

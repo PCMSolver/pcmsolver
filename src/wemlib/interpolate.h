@@ -1,3 +1,5 @@
+#ifndef INTERPOLATE
+#define INTERPOLATE
 /*******************
  *  Interpolate.h  *
  *******************/
@@ -36,4 +38,5 @@ vector3 n_Chi(vector2 a, vector3 ***p, unsigned int m);
 
 #ifdef __cplusplus
 }
+#endif
 #endif

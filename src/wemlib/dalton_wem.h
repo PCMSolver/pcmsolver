@@ -1,3 +1,5 @@
+#ifndef DALTON_WEM
+#define DALTON_WEM
 
 /* 
  * Initializes the great WEM machine!
@@ -73,3 +75,4 @@ void dalton_wem_energy_(double *potential, double *energy);
 void dalton_wem_finalize_();
 
 
+#endif

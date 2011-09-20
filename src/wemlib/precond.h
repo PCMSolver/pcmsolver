@@ -1,3 +1,5 @@
+#ifndef PRECOND
+#define PRECOND
 /***************
  *  precond.h  *
  ***************/
@@ -17,3 +19,4 @@ void inv_G_times_x(double *x, unsigned int p, unsigned int M);
 void precond(double *a, double *b, unsigned int p, unsigned int M);
 /* Anwendung des Preconditioners auf den Vektor b, der 
    NICHT veraendert wird. Das Ergebnis wird in a gespeichert */
+#endif

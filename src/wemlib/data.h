@@ -1,3 +1,5 @@
+#ifndef DATA
+#define DATA
 /************
  *  data.h  *
  ************/
@@ -18,3 +20,4 @@ double f(vector3 a);
 
 
 vector3 df(vector3 a);
+#endif

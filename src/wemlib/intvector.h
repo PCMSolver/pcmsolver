@@ -1,5 +1,5 @@
-#ifndef INTVECTOR
-#define INTVECTOR
+#ifndef INTVECTOR_H_
+#define INTVECTOR_H_
 /*****************
  *  IntVector.h  *
  *****************/

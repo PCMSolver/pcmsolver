@@ -9,6 +9,7 @@
  
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "vector2.h"
 #include "vector3.h"
 #include "interpolate.h"
@@ -24,6 +25,9 @@ unsigned int	m;		/* Zahl der Level                           */
 unsigned int	n = 1<<(m-1);	/* n*n Elemente pro Patch                   */
 unsigned int	i1, i2, i3;	/* Laufindizes fuer Elemente                */
 vector3		q[9]; 		/* Interpolationspunkte                     */
+
+
+ printf("p & m %d %d %d\n", p, m, n);
 
 /* Initialisierung */
 (*P) = (vector3****) malloc(p*sizeof(vector3***));

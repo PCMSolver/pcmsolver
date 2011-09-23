@@ -1,5 +1,5 @@
-#ifndef INTERPOLATE
-#define INTERPOLATE
+#ifndef INTERPOLATE_H_
+#define INTERPOLATE_H_
 /*******************
  *  Interpolate.h  *
  *******************/
@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+#include "vector2.h"
 
 /*=============================================================*
  *  Enthaelt alle Routinen zur Interpolation der Oberflaeche.  *
@@ -39,4 +40,5 @@ vector3 n_Chi(vector2 a, vector3 ***p, unsigned int m);
 #ifdef __cplusplus
 }
 #endif
+
 #endif

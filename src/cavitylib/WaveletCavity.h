@@ -27,6 +27,12 @@ class WaveletCavity : public Cavity {
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
 
+    unsigned int getNPatches(){return nPatches;}
+    unsigned int getNLevels(){return nLevels;}
+    unsigned int getNPoints(){return nPoints;}
+    Vector3d getNodePoint(int i){return nodePoint[i];}
+    Vector3i getNodeIndex(int i){return nodeIndex[i];}
+
     friend std::ostream& operator<<(std::ostream &o, const WaveletCavity &c);
 
  private:

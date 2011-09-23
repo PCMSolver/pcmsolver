@@ -1,5 +1,5 @@
-#ifndef WEMPCG
-#define WEMPCG
+#ifndef WEMPCG_H_
+#define WEMPCG_H_
 /**************
  *  WEMPCG.h  *
  **************/

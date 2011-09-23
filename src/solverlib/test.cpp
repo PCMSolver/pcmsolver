@@ -17,6 +17,7 @@ using namespace Eigen;
 #include "WaveletCavity.h"
 #include "PCMSolver.h"
 #include "IEFSolver.h"
+#include "WEMSolver.h"
 
 int main(int argc, char** argv){
 
@@ -59,6 +60,13 @@ int main(int argc, char** argv){
 
 	cout << wavcav << endl;
 
+    WEMSolver waveletSolver(Medium);
+	cout << "wavelet solver initialized" << endl;
+	waveletSolver.uploadCavity(wavcav);
+	waveletSolver.constructSystemMatrix();
+	cout << "system matix built" << endl;
+
+	/*
     IEFSolver waterSolver(Medium); 
     waterSolver.buildAnisotropicMatrix(cavity);
     VectorXd potential(cavity.size());
@@ -70,4 +78,6 @@ int main(int argc, char** argv){
 	cout << "Cavity " << endl << cavity << endl;
 	cout << "Cavity " << endl << cavity.size() << endl;
 	cout << "Green " <<  tot << " " << tot * 78.39/(1.0-78.39) << endl;
+	*/
 }
+

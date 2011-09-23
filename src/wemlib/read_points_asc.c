@@ -69,11 +69,32 @@ unsigned int	m;		/* Zahl der Level                         */
 unsigned int	n = 1<<m;	/* n*n Elemente pro Patch auf dem Level m */
 unsigned int	k, l;		/* Laufindizes                            */
 
-for (k=0; k<p; k++)
-{  for (l=0; l<=n; l++) free((*P)[k][l]);
-   free((*P)[k]);
-   }
-free(*P);
-return;
+ for (k=0; k<p; k++) {  
+     for (l=0; l<=n; l++) {
+         free((*P)[k][l]);
+     }
+     free((*P)[k]);
+ }
+ free(*P);
+ return;
+}
+
+void alloc_points(P,p,m)
+     vector3		****P;		/* Knotenpunkte            	  	  */
+     unsigned int	p; 		/* Anzahl der Patches       	  	  */
+     unsigned int	m;		/* Zahl der Level                         */
+{
+    unsigned int	n = 1<<m;	/* n*n Elemente pro Patch auf dem Level m */
+    unsigned int	k, l;		/* Laufindizes                            */
+    
+    (*P) = (vector3***) malloc(p*sizeof(vector3**));
+    for (k = 0;  k < p; k++) {  
+        n = 1<<(m);
+        (*P)[k] = (vector3**) malloc((n+1)*sizeof(vector3*));
+        for (l=0; l<=n; l++) {
+            (*P)[k][l] = (vector3*) malloc((n+1)*sizeof(vector3));
+        } 
+    }
+    return;
 }
 

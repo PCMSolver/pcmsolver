@@ -1,5 +1,5 @@
-#ifndef INTKON1
-#define INTKON1
+#ifndef INTKON1_H_
+#define INTKON1_H_
 /***************
  *  IntKon1.h  *
  ***************/

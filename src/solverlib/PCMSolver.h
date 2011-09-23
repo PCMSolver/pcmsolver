@@ -19,8 +19,10 @@ class PCMSolver{
     PCMSolver(GreensFunction *gfi, GreensFunction *gfo);
     PCMSolver(Section solver);
     ~PCMSolver();
-    GreensFunction &getGreenInside();
-    GreensFunction &getGreenOutside();    
+    GreensFunction & getGreenInside();
+    GreensFunction & getGreenOutside();    
+    GreensFunction * getGreenInsideP();
+    GreensFunction * getGreenOutsideP();    
     int getCavitySize() const {return cavitySize;};
     void setCavitySize(int size) {cavitySize = size;};
     virtual VectorXd compCharge(const VectorXd & potential) = 0;

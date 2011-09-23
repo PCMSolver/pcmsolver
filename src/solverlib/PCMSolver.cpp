@@ -48,11 +48,20 @@ PCMSolver::~PCMSolver(){
 	}
 }
 
-GreensFunction& PCMSolver::getGreenInside(){
+GreensFunction & PCMSolver::getGreenInside(){
 	return *greenInside;
 }
 
-GreensFunction& PCMSolver::getGreenOutside(){
+GreensFunction & PCMSolver::getGreenOutside(){
 	return *greenOutside;
+}
+
+
+GreensFunction * PCMSolver::getGreenInsideP(){
+	return greenInside;
+}
+
+GreensFunction * PCMSolver::getGreenOutsideP(){
+	return greenOutside;
 }
 

@@ -49,20 +49,19 @@ vector3		***T;		/* Knotenpunkte                        */
 unsigned int	p;   		/* Anzahl der Patches                  */
 unsigned int	m;		/* 2^m*2^m Patches pro Parametergebiet */
 {
-unsigned int	n = 1 << m;	/* n = 2^m			       */
-unsigned int	i1, i2, i3;	/* Laufindizes 			       */
-unsigned int	pz, fz, kz;	/* Punkte-/Patch-/Kantenzaehler        */
-unsigned int	**K;            /* Kantenliste                         */
+    unsigned int	n = 1 << m;	/* n = 2^m			       */
+    unsigned int	i1, i2, i3;	/* Laufindizes 			       */
+    unsigned int	pz, fz, kz;	/* Punkte-/Patch-/Kantenzaehler        */
+    unsigned int	**K;            /* Kantenliste                         */
 
 /* Speicherplatz allokieren: worst case */
-K = (unsigned int**) malloc(4*p*sizeof(unsigned int*));
-(*P) = (vector3*) malloc(p*(n+1)*(n+1)*sizeof(vector3));
-(*F) = (unsigned int**) malloc(p*n*n*sizeof(unsigned int*));
-for (i1=0; i1<p*n*n; i1++)
-{  (*F)[i1] = (unsigned int*) calloc(4,sizeof(unsigned int));
-   }
-
-/* Eckpunkte und Kanten der Parametergebiete bestimmen */
+    K = (unsigned int**) malloc(4*p*sizeof(unsigned int*));
+    (*P) = (vector3*) malloc(p*(n+1)*(n+1)*sizeof(vector3));
+    (*F) = (unsigned int**) malloc(p*n*n*sizeof(unsigned int*));
+    for (i1=0; i1<p*n*n; i1++) {  
+        (*F)[i1] = (unsigned int*) calloc(4,sizeof(unsigned int));
+    }
+        /* Eckpunkte und Kanten der Parametergebiete bestimmen */
 pz = kz = 0;
 for (i1=0; i1<p; i1++)
 {  
@@ -148,15 +147,15 @@ for (i1=0; i1<p; i1++)
    } 
    
 /* Speicherplatz wieder freigeben */
-for (i1=0; i1<kz; i1++) free(K[i1]);
-free(K);
+//for (i1=0; i1<kz; i1++) free(K[i1]);
+//free(K);
 
 return(pz);
 }
 
 
 void free_patchlist(F,nf)
-/* gibt den Speicherplatz der (nf,4)-(unsigned int)-Patchliste F frei */
+/* Gibt den Speicherplatz der (nf,4)-(unsigned int)-Patchliste F frei */
 unsigned int	***F;
 unsigned int	nf;
 {

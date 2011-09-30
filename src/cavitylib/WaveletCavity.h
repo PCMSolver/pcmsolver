@@ -20,6 +20,7 @@ class WaveletCavity : public Cavity {
     ~WaveletCavity(){};
     void makeCavity();
     void readCavity(std::string & filename);
+    void uploadPoints(int quadLevel, vector3 **** T_);
     VectorXd & getTessRadius(){return tessRadius;};
     VectorXd & getSphereRadius(){return sphereRadius;};
     int getNSpheres(){return nSpheres;};
@@ -39,8 +40,10 @@ class WaveletCavity : public Cavity {
 
     std::vector<Vector3d> nodePoint;
     std::vector<Vector3i> nodeIndex;
+
     unsigned int nPatches;
     unsigned int nLevels;
+
     unsigned int nPoints;
 
     bool uploadedDyadic;

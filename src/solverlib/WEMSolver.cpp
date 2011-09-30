@@ -11,17 +11,11 @@
 using namespace std;
 using namespace Eigen;
 
-#include "Getkw.h"
-#include "GreensFunction.h"
-#include "Vacuum.h"
-#include "UniformDielectric.h"
-#include "GreensFunctionSum.h"
-#include "MetalSphere.h"
-#include "Cavity.h"
-#include "WaveletCavity.h"
-#include "PCMSolver.h"
-#include "WEMSolver.h"
 extern "C"{
+#include "vector3.h"
+#include "sparse2.h"
+#include "intvector.h"
+#include "basis.h"
 #include "WEM.h"
 #include "read_points.h"
 #include "vector2.h"
@@ -38,6 +32,17 @@ extern "C"{
 #include "gauss_square.h"
 #include "constants.h"
 }
+
+#include "Getkw.h"
+#include "GreensFunction.h"
+#include "Vacuum.h"
+#include "UniformDielectric.h"
+#include "GreensFunctionSum.h"
+#include "MetalSphere.h"
+#include "Cavity.h"
+#include "WaveletCavity.h"
+#include "PCMSolver.h"
+#include "WEMSolver.h"
 
 static GreensFunction *gf = NULL;
 
@@ -120,16 +125,24 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 	nFunctions = nPatches * n * n;
 	alloc_points(&U, nPatches, nLevels);
 	int kk = 0;
+	cout << "Input init interpolate " << nPatches << " " << nLevels <<endl;
 	for (int i = 0; i < nPatches; i++) {
 		for (int j = 0; j < n; j++) {
 			for (int k = 0; k < n; k++) {
 				Vector3d p = cavity.getNodePoint(kk);
-				cout << i<< " " << j<< " "<< k<< " "<< kk<< " "<< p.transpose() << endl;
-				U[i][j][k] = vector3_make(p(0), p(1), p(2));
+				U[i][k][j] = vector3_make(p(0), p(1), p(2));
 				kk++;
 			}
 		}
 	}	
+	for (int i = 0; i < nPatches; i++) {
+		for (int j = 0; j < n; j++) {
+			for (int k = 0; k < n; k++) {
+				std::cout << " " << i << " " << " " << j << " " << k << " ";
+				std::cout << U[i][j][k].x << " " << U[i][j][k].y << " " << U[i][j][k].z << std::endl;
+			}
+		}
+	}
 	init_interpolate(&T_, U, nPatches, nLevels);
 	nNodes = gennet(&nodeList, &elementList, U, nPatches, nLevels);
 	free_points(&U, nPatches, nLevels);

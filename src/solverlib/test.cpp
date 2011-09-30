@@ -6,6 +6,30 @@
 using namespace std;
 using namespace Eigen;
 
+extern "C"{
+#include "vector3.h"
+#include "sparse2.h"
+#include "intvector.h"
+#include "basis.h"
+#include "WEM.h"
+#include "read_points.h"
+#include "vector2.h"
+#include "interpolate.h"
+#include "topology.h"
+#include "kern.h"
+#include "compression.h"
+#include "postproc.h"
+#include "WEMRHS.h"
+#include "WEMPCG.h"
+#include "WEMPGMRES.h"
+#include "dwt.h"
+#include "cubature.h"
+#include "gauss_square.h"
+#include "constants.h"
+}
+
+
+
 #include "Getkw.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
@@ -51,20 +75,25 @@ int main(int argc, char** argv){
     GePolCavity cavity(GepolCavitySection);
     WaveletCavity wavcav(WaveletCavitySection);
 
+
 	cavity.makeCavity();
 	wavcav.makeCavity();
 
 	string wavcavFile = "molec_dyadic.dat";
 
 	wavcav.readCavity(wavcavFile);
-
 	cout << wavcav << endl;
 
     WEMSolver waveletSolver(Medium);
 	cout << "wavelet solver initialized" << endl;
 	waveletSolver.uploadCavity(wavcav);
+
 	waveletSolver.constructSystemMatrix();
 	cout << "system matix built" << endl;
+
+	wavcav.uploadPoints(waveletSolver.getQuadratureLevel(),
+						waveletSolver.getT_());
+
 
 	/*
     IEFSolver waterSolver(Medium); 

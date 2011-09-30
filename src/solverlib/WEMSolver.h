@@ -26,6 +26,8 @@ class WEMSolver : public PCMSolver {
     WEMSolver(GreensFunction *gfi, GreensFunction *gfo);
     WEMSolver(Section solver);
     ~WEMSolver();
+    vector3 **** getT_(){return T_;}
+    int getQuadratureLevel(){return quadratureLevel_;}
     virtual void constructSystemMatrix();
     virtual void uploadCavity(WaveletCavity cavity);
     virtual VectorXd compCharge(const VectorXd & potential);

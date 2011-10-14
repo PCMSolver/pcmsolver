@@ -153,6 +153,13 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 	tessNormal.resize(NoChange, nTess);
 	tessArea.resize(nTess);
 
+	nuclearPotential.resize(nTess);
+	nuclearCharge.resize(nTess);
+	electronicPotential.resize(nTess);
+	electronicCharge.resize(nTess);
+
+	nuclearPotential.setOnes(nTess);
+
 	cout << " Ntess " << nTess << endl;
 
 	int j = 0;
@@ -168,7 +175,13 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 					Vector3d center(point.x, point.y, point.z);	 
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
-					cout << " " << i1 << " " << i2 << " " << i3 << " " << k << " " << center.transpose() << " " << normal.transpose() << " " << area << endl;
+					cout << " " << i1 
+						 << " " << i2 
+						 << " " << i3 
+						 << " " << k 
+						 << " " << center.transpose() 
+						 << " " << normal.transpose() 
+						 << " " << area << endl;
 					tessCenter.col(j) = center.transpose();
 					tessNormal.col(j) = normal.transpose();
 					tessArea(j) = area;

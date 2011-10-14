@@ -30,7 +30,10 @@ endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
 
-include(Compilers) # check dalton version.....
+include(SaveCompilerFlags)
+include(FCompilers)
+include(CCompilers)
+include(CXXCompilers)
 
 find_package(Git)
 include(ExternalProject)
@@ -38,7 +41,7 @@ include(ExternalProject)
 add_custom_command(
 	OUTPUT ${PROJECT_SOURCE_DIR}/external/git-submodule-done
 	COMMAND ${CMAKE_COMMAND} -E touch 
-		${PROJECT_SOURCE_DIR}/external/git-submodule-done
+     	${PROJECT_SOURCE_DIR}/external/git-submodule-done
 	COMMAND git submodule init
 	COMMAND git submodule update
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}

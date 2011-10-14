@@ -93,7 +93,12 @@ int main(int argc, char** argv){
 
 	wavcav.uploadPoints(waveletSolver.getQuadratureLevel(),
 						waveletSolver.getT_());
+	cout << "points uploaded" << endl;
 
+	waveletSolver.compCharge(wavcav.getPot(Cavity::Nuclear), wavcav.getChg(Cavity::Nuclear));
+
+	cout << " charges computed" << endl;
+	cout << wavcav.getChg(Cavity::Nuclear) << endl;
 
 	/*
     IEFSolver waterSolver(Medium); 

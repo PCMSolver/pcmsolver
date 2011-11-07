@@ -121,14 +121,14 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 
 	cout << "nPatches " << nPatches << endl;
 	cout << "nLevels " << nLevels << endl;
-	int n = (1<<nLevels) + 1;
+	int n = 1<<nLevels;
 	nFunctions = nPatches * n * n;
 	alloc_points(&U, nPatches, nLevels);
 	int kk = 0;
 	cout << "Input init interpolate " << nPatches << " " << nLevels <<endl;
 	for (int i = 0; i < nPatches; i++) {
-		for (int j = 0; j < n; j++) {
-			for (int k = 0; k < n; k++) {
+		for (int j = 0; j <= n; j++) {
+			for (int k = 0; k <= n; k++) {
 				Vector3d p = cavity.getNodePoint(kk);
 				U[i][k][j] = vector3_make(p(0), p(1), p(2));
 				kk++;
@@ -136,7 +136,7 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 		}
 	}	
 	for (int i = 0; i < nPatches; i++) {
-		for (int j = 0; j < n; j++) {
+		for (int j = 0; j <= n; j++) {
 			for (int k = 0; k < n; k++) {
 				std::cout << " " << i << " " << " " << j << " " << k << " ";
 				std::cout << U[i][j][k].x << " " << U[i][j][k].y << " " << U[i][j][k].z << std::endl;
@@ -204,21 +204,20 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	cout << "comp charges 4" << endl;
 	for(unsigned int i = 0; i < nFunctions; i++) {
 		cout << i << " " << S_e_.row_number[i] << " " << nFunctions << endl; 
-		//		for(unsigned int j = 0; j < S_e_.row_number[i]; j++)  {
-		//			rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
-		//			cout << "comp charges ij " << i << " " << j << " " << rhs[i] << endl;
-		//		}
+		for(unsigned int j = 0; j < S_e_.row_number[i]; j++)  {
+			rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
+			cout << "comp charges ij " << i << " " << j << " " << rhs[i] << endl;
+		}
 	}
 
 
-	cout << "comp charges 4" << endl;
-	exit(-1);
-	iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, nPatches, nLevels);
 	cout << "comp charges 5" << endl;
-	for(unsigned int i=0; i<nFunctions; i++) u[i] -= 4*M_PI*v[i];
+	iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, nPatches, nLevels);
 	cout << "comp charges 6" << endl;
-	tdwtKon(u, nLevels, nFunctions);
+	for(unsigned int i=0; i<nFunctions; i++) u[i] -= 4*M_PI*v[i];
 	cout << "comp charges 7" << endl;
+	tdwtKon(u, nLevels, nFunctions);
+	cout << "comp charges 8" << endl;
 
   // Interpolate charges
 

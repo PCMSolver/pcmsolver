@@ -30,7 +30,7 @@ MetalSphere::MetalSphere(double eps, double epsRe, double epsIm, Vector3d &pos,
 MetalSphere::MetalSphere(Section green){
 	epsSolvent = green.getDbl("Eps");
 	epsMetal = dcomplex(green.getDbl("EpsRe"), green.getDbl("EpsImg"));
-	sphRadius = green.getDbl("Radius");
+	sphRadius = green.getDbl("SphereRadius");
 	const vector<double> &pos_ = green.getDblVec("SpherePosition");
 
 	Vector3d pos(pos_[0], pos_[1], pos_[2]);
@@ -56,7 +56,7 @@ double MetalSphere::evalf(Vector3d &p1, Vector3d &p2) {
     return greenre;
 }
 
-double MetalSphere::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta) {
-    return epsSolvent * derivative(direction, p1, p2, delta);
+double MetalSphere::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
+    return epsSolvent * derivative(direction, p1, p2);
 }
 

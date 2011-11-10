@@ -22,41 +22,8 @@ GreensFunctionSum::GreensFunctionSum(GreensFunction &first,
 };
 
 GreensFunctionSum::GreensFunctionSum(Section green){
-
 	greenFirst  = allocateGreensFunction(green.getSect("Green<one>"));
 	greenSecond = allocateGreensFunction(green.getSect("Green<two>"));
-	/*
-	GreensFunction *gf;
-	{
-		const Section greenPart = green.getSect("Green<one>");
-		const string greenType = greenPart.getStr("Type");
-		if (greenType == "Vacuum") {
-			gf = new Vacuum();
-		} else if (greenType == "UniformDielectric") {
-			gf = new UniformDielectric(greenPart);
-		} else if (greenType == "MetalSphere") {
-			gf = new MetalSphere(greenPart);
-		} else {
-			cout << "Unknown Greens function" << endl;
-			exit(1);
-		}
-		greenFirst = gf;
-	}
-
-	greenPart = green.getSect("Green<two>");
-	greenType = greenPart.getStr("Type");
-	if (greenType == "Vacuum") {
-		gf = new Vacuum();
-	} else if (greenType == "UniformDielectric") {
-		gf = new UniformDielectric(greenPart);
-	} else if (greenType == "MetalSphere") {
-		gf = new MetalSphere(greenPart);
-	} else {
-		cout << "Unknown Greens function" << endl;
-		exit(1);
-	}
-	greenSecond = gf;
-	*/
 	uniformFlag = greenFirst->isUniform() && greenSecond->isUniform();
 };
 
@@ -66,22 +33,22 @@ double GreensFunctionSum::evalf(Vector3d &p1, Vector3d &p2) {
     return valFirst + valSecond;
 }
 
-double GreensFunctionSum::derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta) {
-    double derFirst = greenFirst->derivative(direction, p1, p2, delta);
-    double derSecond = greenSecond->derivative(direction, p1, p2, delta);
+double GreensFunctionSum::derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
+    double derFirst = greenFirst->derivative(direction, p1, p2);
+    double derSecond = greenSecond->derivative(direction, p1, p2);
     return derFirst + derSecond;
 }
 
-double GreensFunctionSum::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta) {
-    double derFirst = greenFirst->evald(direction, p1, p2, delta);
-    double derSecond = greenSecond->evald(direction, p1, p2, delta);
+double GreensFunctionSum::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
+    double derFirst = greenFirst->evald(direction, p1, p2);
+    double derSecond = greenSecond->evald(direction, p1, p2);
     return derFirst + derSecond;
 }
 
-void GreensFunctionSum::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2, double delta) {
+void GreensFunctionSum::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2) {
     Vector3d gradFirst, gradSecond;
-    greenFirst->gradient(gradFirst, p1, p2, delta);
-    greenSecond->gradient(gradSecond, p1, p2, delta);
+    greenFirst->gradient(gradFirst, p1, p2);
+    greenSecond->gradient(gradSecond, p1, p2);
     gradient = gradFirst + gradSecond;
     return;
 }

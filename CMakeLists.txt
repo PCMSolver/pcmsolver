@@ -28,7 +28,7 @@ if(NOT cmake_build_type_tolower STREQUAL "debug"
   message(FATAL_ERROR "Unknown build type \"${CMAKE_BUILD_TYPE}\". Allowed values are Debug, Release (case-insensitive).")
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
 
 include(Compilers) # check dalton version.....
 
@@ -71,18 +71,11 @@ ExternalProject_Add(libgetkw
 
 add_dependencies(external libgetkw)
 
+include(Math)
+
 find_package(Eigen3)
-find_package(BLAS)
-find_package(LAPACK)
-if(BLAS_FOUND AND LAPACK_FOUND) # check new versions of this stuff in Dalton
-    set(MATH_LIBS
-        blas
-        lapack
-        )
-    message("-- Set system default math libraries: ${MATH_LIBS} (${LAPACK_lapack_LIBRARY} ${BLAS_f77blas_LIBRARY})")
-    set(MATH_FOUND TRUE)
-endif()
-set (LIBS ${MATH_LIBS})
+
+#cmake should exit gracefully if math libs are not found
 
 add_definitions(-DSYS_LINUX)
 

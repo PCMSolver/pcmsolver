@@ -28,7 +28,7 @@ if(NOT cmake_build_type_tolower STREQUAL "debug"
   message(FATAL_ERROR "Unknown build type \"${CMAKE_BUILD_TYPE}\". Allowed values are Debug, Release (case-insensitive).")
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
 
 include(Compilers) # check dalton version.....
 
@@ -72,6 +72,9 @@ ExternalProject_Add(libgetkw
 add_dependencies(external libgetkw)
 
 include(Math)
+
+find_package(Eigen3)
+
 #cmake should exit gracefully if math libs are not found
 
 add_definitions(-DSYS_LINUX)

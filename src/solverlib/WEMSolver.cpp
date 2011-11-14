@@ -206,8 +206,8 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 		cout << i << " " << S_e_.row_number[i] << " " << nFunctions << endl; 
 		for(unsigned int j = 0; j < S_e_.row_number[i]; j++)  {
 			rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
-			cout << "comp charges ij " << i << " " << j << " " << rhs[i] << endl;
 		}
+		cout << "comp charges i " << i << " " << rhs[i] << endl;
 	}
 
 

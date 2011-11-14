@@ -71,18 +71,8 @@ ExternalProject_Add(libgetkw
 
 add_dependencies(external libgetkw)
 
-find_package(Eigen3)
-find_package(BLAS)
-find_package(LAPACK)
-if(BLAS_FOUND AND LAPACK_FOUND) # check new versions of this stuff in Dalton
-    set(MATH_LIBS
-        blas
-        lapack
-        )
-    message("-- Set system default math libraries: ${MATH_LIBS} (${LAPACK_lapack_LIBRARY} ${BLAS_f77blas_LIBRARY})")
-    set(MATH_FOUND TRUE)
-endif()
-set (LIBS ${MATH_LIBS})
+include(Math)
+#cmake should exit gracefully if math libs are not found
 
 add_definitions(-DSYS_LINUX)
 

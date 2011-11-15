@@ -1,9 +1,10 @@
 #!@PYTHON_EXECUTABLE@
+# -*- python -*-
 # -*- coding: utf-8 -*-
 # vim:filetype=python:
 #
 # Written by Jonas Juselius <jonas.juselius@chem.uit.no> 
-# University of Tromsø, 2008
+# University of Tromso, 2008
 #
 # Adapted to PCMSolver by Luca Frediani, 2011
 #
@@ -17,11 +18,6 @@ printlevel=0
 dryrun=False
 libdir="@INST_LIBDIR@"
 
-# Roberto's Add
-errfile=open('@PCMSOLVER_ERROR_LOG@','w') # This MUST BE revised
-errors=False
-#
-
 import sys, re, optparse, os, string, subprocess, tempfile
 from copy import deepcopy
 
@@ -29,10 +25,8 @@ sys.path.append(libdir)
 import getkw
 
 def main():
-	global topsect, debug, executable, printlevel, dryrun, errors
+	global topsect, debug, executable, printlevel, dryrun
         
-#        errors=False
-
         if debug == ON:
 		debug = True
 	else:
@@ -54,10 +48,6 @@ def main():
 	topsect=inkw.get_topsect()
 	inkw.run_callbacks(valid_keywords)
 
-        if (errors == True):
-            print "Errors occurred. Look at pcmsolver.err"
-            sys.exit(1)
-
 	if dryrun:
 		xfile='@' + inpfil
 		fd=open(xfile,'w')
@@ -69,7 +59,6 @@ def main():
 			fd.seek(0)
 			p = subprocess.Popen(executable, stdin=fd)
 			fd.close()
-        print errors
 
 def parse_cmdline(valid_keywords):
 	global debug, executable, printlevel, dryrun
@@ -132,13 +121,11 @@ def	setup_keywords():
 
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
 	cavity.add_kw('Area','DBL', 0.3)
-#	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
-# Roberto's Add
-        cavity.add_kw('Mode','STR_ARRAY','[Explicit]')
+        cavity.add_kw('Mode','STR','Explicit')
         cavity.add_kw('Atoms','INT_ARRAY')
         cavity.add_kw('Radii','DBL_ARRAY')
 	cavity.add_kw('Spheres','DBL_ARRAY')
-#
+
 	top.add_sect(cavity)
         
 	return top
@@ -152,26 +139,17 @@ def verify_top(section):
 	allowed_units = ('AU', 'Angstrom')
 	key = section.get('Units')
 	val = key.get()
-	if (val not in allowed_units):    # This MUST BE revised
-                errfile.write("Allowed units are: ")
-                for i in range(len(allowed_units)):
-                    errfile.write(str(allowed_units[i]) )
-                errfile.write("\n")
-                errors=True
-                print errors, "prova"
-        #	print "Allowed units are: ", allowed_units
-	#	sys.exit(1)
+	if (val not in allowed_units):
+	    	print "Allowed units are: ", allowed_units
+		sys.exit(1)
 
 def verify_cavity(section):
 	area=section.get('Area')
 	a=area.get()
 	if (a < 0.01):
-            errfile.write("Area value is too small. Minimum value: 0.1\n")
-            errors=True
-#		print "Area value is too small"
-#		print "Minimum value: 0.1"
-#		sys.exit(1)
-# Roberto's Add
+		print "Area value is too small"
+		print "Minimum value: 0.1"
+		sys.exit(1)
         mode=section.get('Mode')
         m=mode.get()
 
@@ -183,48 +161,27 @@ def verify_cavity(section):
        
        	spheres=section.get('Spheres')
         s=spheres.get()
-# Check Mode
-# 1. check the number of options
-        if (len(m) > 2):
-            errfile.write("Incoherent input for Mode keyword. Too many options specified\n")
-            errors=True
-#            print "Incoherent input for Mode keyword."
-#            print "Too many options specified."
-#            sys.exit(1)
-# 2. check that Explicit and Implicit are not specified at the same time
-        if (m[0] == 'Explicit' and m[1] == 'Implicit'):
-            errfile.write("Incoherent input for Mode keyword. Cavity can be either Explicit or Implicit\n")
-            errors=True
-#            print "Incoherent input for Mode keyword."
-#            print "Cavity can be either Explicit or Implicit, not both."
-#            sys.exit(1)
-# 3. check that a non-empty and coherent Spheres list exists
-        if (m[0] == 'Explicit'):
+        if (m == ''):
+            print "Incoherent input for Mode keyword."
+            print "You must always specify an option for this keyword."
+            sys.exit(1)
+        if (m == 'Explicit'):
             if (len(s)%4 != 0):
-                errfile.write("Incoherent input for Mode keyword. Empty or incoherent Spheres list\n")
-                errors=True
-#                print "Incoherent input for Mode keyword."
-#                print "Empty or incoherent Spheres list."
-#                sys.exit(1)
-# 4. check that a non-empty Atoms list exists
-        if (m[1] == 'Atoms'):
+                print "Incoherent input for Mode keyword."
+                print "Empty or incoherent Spheres list."
+                sys.exit(1)
+        if (m == 'Atoms'):
             if (len(at) == 0):
-                errfile.write("Incoherent input for Atoms keyword. No atoms specified\n")
-                errors=True
-#                print "Incoherent input for Atoms keyword."
-#                print "No atoms specified."
-#                sys.exit(1)
-# 5. check that a non-empty radii list exists
+                print "Incoherent input for Atoms keyword."
+                print "No atoms specified."
+                sys.exit(1)
             if (len(r) != len(at) or len(r) == 0):
-                errfile.write("Incoherent input for Radii keyword. Not enough or no radii specified\n")
-                errors=True
-#                print "Incoherent input for Atoms keyword."
-#                print "No radii for the atoms specified."
-#                sys.exit(1)
-            
-            
-            
-#
+                print "Incoherent input for Atoms keyword."
+                print "Check that Atoms and Radii are consistent."
+                sys.exit(1)
+	if (m == 'Implicit'):
+            print "Tell me what to do!"		
+            sys.exit(1) 
 
 def verify_medium(section):
 	solvent=section.get('Solvent')
@@ -273,11 +230,6 @@ def verify_green(section):
 			print "One or both components not defined for GreensFunctionSum"
 			sys.exit(1)
 
-#def verify_spheres(keyword):
-#	spheres=keyword.get()
-#	if (len(spheres)%4 != 0):
-#		print "Incoherent input for Spheres keyword"
-#		sys.exit(1)
 
 if __name__ == '__main__':
 	main()

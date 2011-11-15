@@ -7,7 +7,13 @@
 
 using namespace Eigen;
 
+#include "Getkw.h"
 #include "GreensFunction.h"
+#include "Vacuum.h"
+#include "UniformDielectric.h"
+#include "MetalSphere.h"
+#include "GreensFunctionSum.h"
+
 
 /** Computes numerically the directional derivative of the Green's function
 
@@ -35,5 +41,23 @@ void GreensFunction::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2, do
     gradient(1) = derivative(ydir, p1, p2, delta);
     gradient(2) = derivative(zdir, p1, p2, delta);
     return;
+}
+
+GreensFunction* GreensFunction::allocateGreensFunction(const Section &green) {
+	GreensFunction *gf;
+	const string greenType = green.getStr("Type");
+	if (greenType == "Vacuum") {
+		gf = new Vacuum();
+	} else if (greenType == "UniformDielectric") {
+		gf = new UniformDielectric(green);
+	} else if (greenType == "MetalSphere") {
+		gf = new MetalSphere(green);
+	} else if (greenType == "GreensFunctionSum") {
+		gf = new GreensFunctionSum(green);
+	} else {
+		cout << "Unknown Greens function" << endl;
+		exit(1);
+	}
+	return gf;
 }
 

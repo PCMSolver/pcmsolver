@@ -40,7 +40,7 @@ CX
      &                 PMASS,EMASS,CCM
       DOUBLE PRECISION FPEPS0 
 #endif
-#include <pi.h>
+#include <pcm_pi.h>
 C
 CXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 CX codata 2002
@@ -64,7 +64,7 @@ C
 C
       PARAMETER ( PMASS = 1.007276470D0, EMASS = 9.10938188D-31)
 C
-#include <alphac.h>
+#include <pcm_alphac.h>
 C -- 4*pi*epsilon0
       PARAMETER ( FPEPS0 = 1.0D7/(CCM**2) )
 C -- conversion from hartree (au) to:

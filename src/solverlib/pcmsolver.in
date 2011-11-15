@@ -100,6 +100,23 @@ def	setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
 	top.add_kw('PRINTL',    'INT', 0)
+	top.add_kw('Units',     'STR', 'AU')
+
+	medium=getkw.Section('Medium', callback=verify_medium)
+	medium.add_kw('Solvent', 'STR', 'water')
+	top.add_sect(medium)
+	
+	green=getkw.Section('Green', callback=verify_green)
+	green.add_kw('Type', 'STR', 'Vacuum')
+	green.add_kw('Eps', 'DBL', 1.0)
+	green.add_kw('EpsRe', 'DBL', 1.0)
+	green.add_kw('EpsImg', 'DBL', 1.0)
+	green.add_kw('SphereRadius', 'DBL', 1.0)
+	green.add_kw('SpherePosition', 'DBL_ARRAY')
+	medium.add_sect(green)
+
+	green_part = deepcopy(green)
+	green.add_sect(green_part)
 
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
 	cavity.add_kw('Area','DBL', 0.3)
@@ -109,27 +126,79 @@ def	setup_keywords():
 	return top
 		
 def verify_top(section):
-	printl=section.get('PRINTL')
-	pr=printl.get()
-	if (pr < 0):
-		sys.exit(1)
+	key = section.get('PRINTL')
+	val = key.get()
+	if (val < 0):
+		val = 0
 	
+	allowed_units = ('AU', 'Angstrom')
+	key = section.get('Units')
+	val = key.get()
+	if (val not in allowed_units):
+		print "Allowed units are: ", allowed_units
+		sys.exit(1)
+
 def verify_cavity(section):
 	area=section.get('Area')
 	a=area.get()
-	if (a < 0.1):
+	if (a < 0.01):
 		print "Area value is too small"
 		print "Minimum value: 0.1"
 		sys.exit(1)
 	
+def verify_medium(section):
+	solvent=section.get('Solvent')
+	if (solvent.get() != 'water'):
+		print "Only water defined for now, sorry!"
+		sys.exit(1)
+	
+def verify_green(section):
+	required = ('Type',)
+	allowed = ('Vacuum', 'UniformDielectric', 'MetalSphere', 'GreensFunctionSum')
+
+
+	green1 = section.fetch_sect('Green<one>')
+	green2 = section.fetch_sect('Green<two>')
+	eps = section.get('Eps')
+	epsimg = section.get('EpsImg')
+	epsre = section.get('EpsRe')
+        position = section.get('SpherePosition')
+        radius = section.get('SphereRadius')
+
+	type=section.get('Type')
+	if (type.get() not in allowed):
+		print "Allowed Green's functions are:", allowed
+		sys.exit(1)
+
+	if (type.get() == 'UniformDielectric'):
+		if not eps.is_set():
+			print "Eps not defined for UniformDielectric"
+			sys.exit(1)
+
+	if (type.get() == 'MetalSphere'):
+		if not (eps.is_set() and epsre.is_set and epsimg.is_set()):
+			print "Eps and/or EpsImg not defined for MetalSphere"
+			sys.exit(1)
+		if not (position.is_set() and radius.is_set()):
+			print "SpherePosition and/or SphereRadius not defined for MetalSphere"
+			sys.exit(1)
+		if (len(position.get()) != 3):
+			print "SpherePosition error"
+			sys.exit(1)
+		if (radius.get()  < 0.1):
+			print "Minimum value allowed for Radius is 0.1"
+
+	if (type.get() == 'GreensFunctionSum'):
+		if not (green1.is_set() and green2.is_set()):
+			print "One or both components not defined for GreensFunctionSum"
+			sys.exit(1)
+
+
 def verify_spheres(keyword):
-	print "verifying spheres array"
 	spheres=keyword.get()
 	if (len(spheres)%4 != 0):
 		print "Incoherent input for Spheres keyword"
 		sys.exit(1)
-	for i in range(3,len(spheres),4):
-		print i, spheres[i]
 	
 if __name__ == '__main__':
 	main()

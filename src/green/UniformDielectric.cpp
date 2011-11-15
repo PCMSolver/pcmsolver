@@ -4,12 +4,19 @@
 
 using namespace Eigen;
 
+#include "Getkw.h"
 #include "GreensFunction.h"
 #include "UniformDielectric.h"
 
 UniformDielectric::UniformDielectric(double dielConst) 
 {
     epsilon = dielConst;
+    uniformFlag = true;
+}
+
+UniformDielectric::UniformDielectric(Section green) 
+{
+    epsilon = green.getDbl("Eps");
     uniformFlag = true;
 }
 

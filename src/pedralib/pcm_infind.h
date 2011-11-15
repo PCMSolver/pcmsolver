@@ -25,7 +25,7 @@ C     Definition of readable codes for orbital types and 2-index orbital types
 C
       INTEGER IROW, ISMO, ISAO, ISW, ISX, ICH, IOBTYP,
      &        NSM, IACTYP, ISSMO, ISSORD
-      COMMON /INFIND/ IROW(LIROW),  ISMO(MXCORB),ISAO(MXCORB),
+      COMMON /PCM_INFIND/ IROW(LIROW),  ISMO(MXCORB),ISAO(MXCORB),
      &                ISW(MXCORB),  ISX(MXCORB),
      &                ICH(MXCORB),  IOBTYP(MXCORB),
      &                NSM(MAXASH),  IACTYP(MAXASH),

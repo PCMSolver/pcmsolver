@@ -17,75 +17,51 @@ C     Creader works regardless of Clog and Creader.
 C
 C if you don't want to use external (c++) input comment out lines between Cex
 C
-      subroutine makecav_(work,lwork,xtscor_,ytscor_,ztscor_,ar_,
+      subroutine makecav_(xtscor_,ytscor_,ztscor_,ar_,
      & xsphcor_,ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_,
-     & rin_)
+     & rin_, avgarea_, work2, lwork2)
 
-#include <implicit.h>
-#include <maxorb.h>
-#include <maxaqn.h>
-#include <priunit.h>
-#include <iratdef.h>
-#include <pcmdef.h>
-#include <mxcent.h>
-#include <infpri.h>
-#include <pcm.h>
-#include <pcmlog.h>
-#include <symmet.h>
-#include <pgroup.h>
+#include <pcm_implicit.h>
+#include <pcm_maxorb.h>
+#include <pcm_maxaqn.h>
+#include <pcm_priunit.h>
+#include <pcm_iratdef.h>
+#include <pcm_pcmdef.h>
+#include <pcm_mxcent.h>
+#include <pcm_infpri.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
+#include <pcm_symmet.h>
+#include <pcm_pgroup.h>
 
-      DIMENSION WORK(*)
-
+      dimension work2(*)
       double precision xtscor_(*), ytscor_(*), ztscor_(*)
       double precision xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
       double precision ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
+      double precision avgarea_
       integer nts_, nesfp_
 
-
-Creader      open(1,file='cavity.inp', STATUS='OLD', IOSTAT=INFO)
-      LUPRI = 3
-Clog      open(LUPRI,file='cavity.log', STATUS='REPLACE')
+      LVPRI = 121201
+      OPEN(LVPRI,
+     $     FILE   = 'PEDRA.OUT',
+     $     ACCESS = 'APPEND',
+     $     STATUS = 'UNKNOWN')
       MAXREP=0
       NSYM=1
-      AREATS=100000000.05
+      AREATS=avgArea_
       ICESPH=1
       IPRPCM=20
       GROUP = 'C1'
       RSOLV = 0.0D0
       RET = 100.0D0
-C      NESF=2
-
-C
-C     In principle this should exit the program if there is no cavity  input file, but it's not working. Therefore, it's commented out.
-C
-Clog      IF (INFO.EQ.1) then
-Clog        write(LUPRI,*) 'Input cavity file does not exist. Exiting...'
-clog        STOP
-clog      end if
-Creader      read(1,*) NESFP
-
-Cex
       NESFP = nesfp_
-Cex
-
-Clog      write(LUPRI,*) 'Number of spheres=', NESFP
       do i=1, NESFP
-Clog         write(LUPRI,*) 'Reading coordinates or sphere nr', i
-Creader         read(1,*) XE(i), YE(i), ZE(i), RIN(i)
-
-Cex
          XE(i) = xe_(i)
          YE(i) = ye_(i)
          ZE(i) = ze_(i)
          RIN(i) = rin_(i)
-Cex
-
          ALPHA(i)=1
-Clog         write(LUPRI,*) 'x=',XE(i),'y=',YE(i), 'z=', ZE(i),'rad=',RIN(I)
       enddo
-Clog      write(LUPRI,*) 'Succesfully read the file !'
-Creader      close(1)
-      
       
       NESF=NESFP
 
@@ -97,16 +73,11 @@ Creader      close(1)
       PT(5) =  1
       PT(6) =  1
       PT(7) =  1
-         
-      CALL PEDRA_M_(WORK, LWORK)
-      
-Cwriter      open(2, file='cavity.out', STATUS="REPLACE", Iostat=INFO)
-      nts_=nts
-Cwriter      write(2,*) NTS
-      do i=1,NTS
-Cwriter         write(2,*) XTSCOR(i), YTSCOR(i), ZTSCOR(i), AS(i), 
-Cweiter     &        XE(ISPHE(i)), YE(ISPHE(i)), ZE(ISPHE(i)), RE(ISPHE(i))
 
+      CALL PEDRA_M_(WORK2, LWORK2)
+
+      nts_=nts
+      do i=1,NTS
          xtscor_(i) = xtscor(i)
          ytscor_(i) = ytscor(i)
          ztscor_(i) = ztscor(i)
@@ -116,8 +87,6 @@ Cweiter     &        XE(ISPHE(i)), YE(ISPHE(i)), ZE(ISPHE(i)), RE(ISPHE(i))
          zsphcor_(i) = ze(isphe(i))
          rsph_(i) = re(isphe(i))
       enddo
-Cwriter      close(2)
 
-Clog      close(LUPRI)
       return
       END

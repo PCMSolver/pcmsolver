@@ -1,9 +1,3 @@
-#if defined (__CVERSION__)
-  real pi = 3.14159265358979323846;
-#define pi2 pi*pi
-  real sqrtpi = 1.77245385090551602730;
-  real r2pi52 = 5.91496717279561287782;
-#else
 C File: pi.h
 C
       REAL*8     PI, PI2, SQRTPI, R2PI52
@@ -12,4 +6,3 @@ C
      &           R2PI52 = 5.91496 71727 95612 87782 D00)
 C     R2PI52 = sqrt(2 * sqrt(PI^5) ) -- used in calc. of 2-el. integrals
 C -- end of pi.h --
-#endif

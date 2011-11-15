@@ -7,14 +7,25 @@
 using namespace std;
 using namespace Eigen;
 
+#include "Getkw.h"
 #include "GreensFunction.h"
+#include "Vacuum.h"
+#include "UniformDielectric.h"
+#include "MetalSphere.h"
 #include "GreensFunctionSum.h"
 
-GreensFunctionSum::GreensFunctionSum(GreensFunction &first, GreensFunction &second){
-        greenFirst  = &first;
-        greenSecond = &second;
+GreensFunctionSum::GreensFunctionSum(GreensFunction &first, 
+									 GreensFunction &second){
+	greenFirst  = &first;
+	greenSecond = &second;
 	uniformFlag = greenFirst->isUniform() && greenSecond->isUniform();
-    };
+};
+
+GreensFunctionSum::GreensFunctionSum(Section green){
+	greenFirst  = allocateGreensFunction(green.getSect("Green<one>"));
+	greenSecond = allocateGreensFunction(green.getSect("Green<two>"));
+	uniformFlag = greenFirst->isUniform() && greenSecond->isUniform();
+};
 
 double GreensFunctionSum::evalf(Vector3d &p1, Vector3d &p2) {
     double valFirst = greenFirst->evalf(p1, p2);
@@ -41,3 +52,4 @@ void GreensFunctionSum::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2,
     gradient = gradFirst + gradSecond;
     return;
 }
+

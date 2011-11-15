@@ -1,12 +1,12 @@
 c/* Deck Deriva */
       SUBROUTINE CAVDER_(NSJ,NSJR,ICOORD,INTSPH,NEWSPH)
 C
-#include <implicit.h>
-#include <mxcent.h>
-#include <nuclei.h>
-#include <pcmdef.h>
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_implicit.h>
+#include <pcm_mxcent.h>
+#include <pcm_nuclei.h>
+#include <pcm_pcmdef.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
 C
       INTEGER ALGE(63),CASCA(10)
       DIMENSION INTSPH(MXTS,10), NEWSPH(MXSP,2)
@@ -171,12 +171,12 @@ C***********************************************************************
 c/* Deck Dcdr */
       SUBROUTINE DRCNRD_(JJ,NSI,NSJ,DC,NEWSPH)
 C
-#include <implicit.h>
-#include <mxcent.h>
-#include <nuclei.h>
-#include <pcmdef.h>
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_implicit.h>
+#include <pcm_mxcent.h>
+#include <pcm_nuclei.h>
+#include <pcm_pcmdef.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
       DIMENSION COORDJ(3), COORDK(3)
       DIMENSION INTSPH(MXTS,10), NEWSPH(MXSP,2)
       PARAMETER (D0=0.D0)
@@ -228,12 +228,12 @@ C
 c/* Deck Dcdc */
       SUBROUTINE DRCNCN_(JJ,NSI,ICOORD,NSJ,DC,NEWSPH)
 C
-#include <implicit.h>
-#include <mxcent.h>
-#include <nuclei.h>
-#include <pcmdef.h>
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_implicit.h>
+#include <pcm_mxcent.h>
+#include <pcm_nuclei.h>
+#include <pcm_pcmdef.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
       DIMENSION COORDJ(3), COORDK(3)
       DIMENSION NEWSPH(MXSP,2)
       PARAMETER (D0=0.D0)
@@ -292,12 +292,12 @@ C
 c/* Deck Drdr */
       SUBROUTINE DRRDRD_(NSI,NSJ,DR1,NEWSPH)
 C
-#include <implicit.h>
-#include <mxcent.h>
-#include <nuclei.h>
-#include <pcmdef.h>
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_implicit.h>
+#include <pcm_mxcent.h>
+#include <pcm_nuclei.h>
+#include <pcm_pcmdef.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
       DIMENSION NEWSPH(MXSP,2)
       PARAMETER (D0=0.D0)
 C
@@ -353,12 +353,12 @@ C
 c/* Deck Drdc */
       SUBROUTINE DRRDCN_(NSI,ICOORD,NSJ,DR1,NEWSPH)
 C
-#include <implicit.h>
-#include <mxcent.h>
-#include <nuclei.h>
-#include <pcmdef.h>
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_implicit.h>
+#include <pcm_mxcent.h>
+#include <pcm_nuclei.h>
+#include <pcm_pcmdef.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
       DIMENSION NEWSPH(MXSP,2)
       DIMENSION COORDJ(3),COORDK(3)
       PARAMETER (D0=0.D0)

@@ -5,19 +5,17 @@ C
 C/* Deck pedram */
       SUBROUTINE PEDRA_M_(WORK,LWORK)
 C
-#include <implicit.h>
-#include <priunit.h>
-#include <iratdef.h>
-#include <pcmdef.h>
-#include <mxcent.h>
-#include <infpri.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_iratdef.h>
+#include <pcm_pcmdef.h>
+#include <pcm_mxcent.h>
+#include <pcm_infpri.h>
 C
       LOGICAL SOME
-      DIMENSION WORK(LWORK)
-#include <pcm.h>
-#include <pcmlog.h>
-C
-Ckm      CALL QENTER_('PEDRA_')
+      DIMENSION WORK(*)
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
 C
 C     ----- set memory pointers for polyhedra setup -----
 C
@@ -45,9 +43,9 @@ C
       LCV    = LJTR   + NUMTS*3
       LNPERM = LCV    + NUMVER*3
       LAST   = LNPERM + NUMSPH*8
-      IF (LAST .GT. LWORK) CALL STOPIT_('PEDRA_M_',' ',LAST,LWORK)
+      IF (LAST .GT. LWORK) CALL ERRWRK_('PEDRA_M_',LAST,LWORK)
       LWRK   = LWORK - LAST + 1
-      IF(SOME) WRITE(LUPRI,910) LAST
+      IF(SOME) WRITE(LVPRI,910) LAST
 C
       CALL PEDRA_(WORK(LINTSP),WORK(LVERT),WORK(LCENTR),WORK(LNEWSP),
      $     WORK(LICAV1),WORK(LICAV2),WORK(LX),WORK(LY),WORK(LZ),
@@ -63,22 +61,22 @@ c/* Deck pedra*/
       SUBROUTINE PEDRA_(INTSPH,VERT,CENTR,NEWSPH,ICAV1,ICAV2, XVAL,YVAL,
      $      ZVAL,JTR,CV,NUMTS,NUMSPH,NUMVER,NATM,SOME,WORK,LWORK,NPERM)
 C
-#include <implicit.h>
-#include <maxorb.h>
-#include <maxaqn.h>
-#include <priunit.h>
-#include <pcmdef.h>
-#include <codata.h>
-#include <mxcent.h>
-#include <infpri.h>
-#include <symmet.h>
+#include <pcm_implicit.h>
+#include <pcm_maxorb.h>
+#include <pcm_maxaqn.h>
+#include <pcm_priunit.h>
+#include <pcm_pcmdef.h>
+#include <pcm_codata.h>
+#include <pcm_mxcent.h>
+#include <pcm_infpri.h>
+#include <pcm_symmet.h>
 C
       LOGICAL SOME
 C
-#include <pcm.h>
-#include <pcmlog.h>
-#include <nuclei.h>
-#include <pcmnuclei.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
+#include <pcm_nuclei.h>
+#include <pcm_pcmnuclei.h>
 C
       PARAMETER (ANTOAU=1.0D+00/XTANG)
 C
@@ -101,8 +99,8 @@ C     Se stiamo costruendo una nuova cavita' per il calcolo del
 C     contributo dispersivo e repulsivo:
 C
       IDISREP = 0
-      IPRCAV = 10
-C
+      IPRCAV = 0
+C     
 C
 C se icesph=0
 C     legge i raggi dall'input e fa coincidere i centri con gli atomi
@@ -119,7 +117,7 @@ Clf
 Clfc           XE(J)=CORD(1,J)
 Clfc           YE(J)=CORD(2,J)
 Clfc           ZE(J)=CORD(3,J)
-ClfClf            write(lupri,*) 'icesph',icesph,nesfp
+ClfClf            write(lvpri,*) 'icesph',icesph,nesfp
 Clf            XE(J)=PCMCORD(1,J)
 Clf            YE(J)=PCMCORD(2,J)
 Clf            ZE(J)=PCMCORD(3,J)
@@ -136,21 +134,22 @@ Clf         ENDDO
 Clf      END IF
 Clf      NESF=NESFP
 C      print * ,'at the beginning of pedra', nesf
-C      write(lupri,*) 'at the beginning of pedra', nesf
+C      write(lvpri,*) 'at the beginning of pedra', nesf
 C      do i=1,nesf
-C         write(lupri,1111) xe(i), ye(i), ze(i), re(i)
+C         write(lvpri,1111) xe(i), ye(i), ze(i), re(i)
 C      enddo 
 C
 C  PEDRA_ prevede che i dati geometrici siano espressi in ANGSTROM :
 C  vengono trasformati, e solo alla fine i risultati tornano in bohr.
 C
    90 CONTINUE
+      write (lvpri,*) 'spheres in pedra', xtang
       DO I=1,NESFP
-         RE(I)=RIN(I)
-         XE(I)=XE(I)*XTANG
-         YE(I)=YE(I)*XTANG
-         ZE(I)=ZE(I)*XTANG
-         RE(I) = RE(I) * ALPHA(I)
+         XE(I)=XE(I)
+         YE(I)=YE(I)
+         ZE(I)=ZE(I)
+         RE(I) = RIN(I) * ALPHA(I)
+         write (lvpri,*) xe(i), ye(i), ze(i), re(i)
       ENDDO
       DR = DR*XTANG
 C
@@ -181,13 +180,14 @@ C
 C
 C     check on the number of spheres
 C
-      WRITE(LUPRI,*) 'Number of extra spheres = ', NE
+      WRITE(LVPRI,*) 'Number of extra spheres = ', NE
       IF (NE .GT. MXSP) THEN
-        WRITE(LUPRI,*) NE
-        WRITE(LUPRI,*) 'Too many spheres (Greater than MXSP=200).'
+        WRITE(LVPRI,*) NE
+        WRITE(LVPRI,*) 'Too many spheres (Greater than MXSP=200).'
         STOP
       ENDIF
 C
+
       DO 120 I=NN,NE
          NES=I-1
          DO 130 J=1,NES
@@ -287,7 +287,7 @@ C
 C
 c     costruzione della tabella di permutazione delle sfere
 C
-Clf      WRITE(LUPRI,*)'MAXREP', MAXREP
+Clf      WRITE(LVPRI,*)'MAXREP', MAXREP
 C
       CALL SPHPER_(NESF,NESFP,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
 C
@@ -301,7 +301,7 @@ C     Modification by Ville & Chris for new cavity gen
       LMASS = LGEOM + 3 * KATOM
       LEND  = LMASS + KATOM
       LWRK =  LWORK - LEND
-Clf      write(lupri,*) 'katom',katom,lgeom,lmass,lend
+Clf      write(lvpri,*) 'katom',katom,lgeom,lmass,lend
       IF (LWRK .LT. 0) THEN
       WRITE(*,*) '2'
       STOP
@@ -325,8 +325,8 @@ C
          ZEN = ZE(NSFE)
          REN = RE(NSFE)
          IF(IPRCAV.GE.10) THEN
-            WRITE(LUPRI,1242) NSFE
-            WRITE(LUPRI,1243) XEN,YEN,ZEN,REN
+            WRITE(LVPRI,1242) NSFE
+            WRITE(LVPRI,1243) XEN,YEN,ZEN,REN
          END IF
 C     Default options (same as traditional GEPOL)
          IPtype = 2
@@ -342,7 +342,7 @@ C            TsAre = -1.0D-03*IPolyg
 Clf         ENDIF
          Call POLYGEN_(IPFLAG,AREATS,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF,
      $        CV,JTR,NPerm,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
-         IF(IPRCAV.GE.10) WRITE(LUPRI,*)'AFTER POLYGEN_. ITSEFF=',ITSEFF
+         IF(IPRCAV.GE.10) WRITE(LVPRI,*)'AFTER POLYGEN_. ITSEFF=',ITSEFF
          DO 310 ITS = 1, ITSEFF
             N1 = JTR(ITS,1)
             N2 = JTR(ITS,2)
@@ -358,9 +358,9 @@ Clf         ENDIF
             PTS(3,3)=CV(N3,3)
             NV=3
             IF(IPRCAV.GE.10) THEN
-               WRITE(LUPRI,1244) N1,N2,N3
-               WRITE(LUPRI,*) 'VERTICES'' COORDINATES'
-               CALL OUTPUT_(PTS,1,3,1,3,3,3,1,LUPRI)
+               WRITE(LVPRI,1244) N1,N2,N3
+               WRITE(LVPRI,*) 'VERTICES'' COORDINATES'
+               CALL OUTPUT_(PTS,1,3,1,3,3,3,1,LVPRI)
             END IF
             DO JJ = 1, 3
                PP(JJ) = D0
@@ -379,25 +379,25 @@ C     In INTSPH(MxTs,10) sono registrate le sfere a cui appartengono i lati
 C     delle tessere.
 C
             IF (IPRCAV.GT.15) THEN
-               write(lupri,9100) NN + 1
+               write(lvpri,9100) NN + 1
                DO IVER = 1, 3
-                  WRITE(LUPRI,9110) IVER, (PTS(JCOR,IVER),JCOR=1,3)
+                  WRITE(LVPRI,9110) IVER, (PTS(JCOR,IVER),JCOR=1,3)
                END DO
             END IF
             CALL TESSERA_(NSFE,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
             IF(IPRCAV.GE.10) THEN
-               WRITE(LUPRI,*) 'AFTER TESSERA_ ROUTINE'
-               WRITE(LUPRI,1245) NV
-               WRITE(LUPRI,*) 'VERTICES'' COORDINATES'
-               CALL OUTPUT_(PTS,1,3,1,NV,3,NV,1,LUPRI)
+               WRITE(LVPRI,*) 'AFTER TESSERA_ ROUTINE'
+               WRITE(LVPRI,1245) NV
+               WRITE(LVPRI,*) 'VERTICES'' COORDINATES'
+               CALL OUTPUT_(PTS,1,3,1,NV,3,NV,1,LVPRI)
             END IF
             IF(AREA.EQ.D0) THEN 
-               WRITE(LUPRI,*) 'ZERO AREA IN TESSERA_', NN + 1
+               WRITE(LVPRI,*) 'ZERO AREA IN TESSERA_', NN + 1
                GOTO 310
             END IF
             IF (NN.GE.MXTS) THEN
-               WRITE(LUPRI,*) 'TOO MANY TESSERA_E IN PEDRA_'
-               WRITE(LUPRI,*) 'NN=',NN,'  MXTS=',MXTS
+               WRITE(LVPRI,*) 'TOO MANY TESSERA_E IN PEDRA_'
+               WRITE(LVPRI,*) 'NN=',NN,'  MXTS=',MXTS
                STOP
             END IF
             NN = NN + 1
@@ -420,10 +420,10 @@ C
                INTSPH(NN,IV) = INTSPH(NUMTS,IV)
             ENDDO
             IF(IPRCAV.GE.10) THEN
-               WRITE(LUPRI,1246) NN
-               WRITE(LUPRI,1247) XTSCOR(NN),YTSCOR(NN),ZTSCOR(NN)
-               WRITE(LUPRI,1248) XVAL(NN),YVAL(NN),ZVAL(NN)
-               WRITE(LUPRI,1249) AS(NN),ISPHE(NN),NVERT(NN)
+               WRITE(LVPRI,1246) NN
+               WRITE(LVPRI,1247) XTSCOR(NN),YTSCOR(NN),ZTSCOR(NN)
+               WRITE(LVPRI,1248) XVAL(NN),YVAL(NN),ZVAL(NN)
+               WRITE(LVPRI,1249) AS(NN),ISPHE(NN),NVERT(NN)
             END IF
  310        CONTINUE
 Clf
@@ -453,7 +453,7 @@ C     Verifica se due tessere sono troppo vicine
             ZJ = ZTSCOR(J)
             RIJ = (XI-XJ)**2 + (YI-YJ)**2 + (ZI-ZJ)**2
             IF(RIJ.GT.TEST2) GOTO 410
-            WRITE(LUPRI,9010) I,J,RIJ,TEST2
+            WRITE(LVPRI,9010) I,J,RIJ,TEST2
 Cda vedere  IF(AS(I).LT.AS(J)) AS(I) = D0
 Cda vedere  IF(AS(I).GE.AS(J)) AS(J) = D0
  410     CONTINUE
@@ -462,60 +462,32 @@ C
 Clf Replication of geometrical parameters according to simmetry
 C
       CALL REPCAV_(VERT,CENTR,NPERM,NUMTS,NUMSPH)
-      IF (NRWCAV .EQ. 1) THEN
-         LUCAVD = -8675
-         CALL GPOPEN_(LUCAVD,'CAVDATA','OLD','SEQUENTIAL'
-     $        ,'UNFORMATTED',IDUMMY,.FALSE.)
-         READ(LUCAVD) NTS
-         READ(LUCAVD) ISPHE
-         READ(LUCAVD) XTSCOR
-         READ(LUCAVD) YTSCOR
-         READ(LUCAVD) ZTSCOR
-         READ(LUCAVD) AS
-         CALL GPCLOSE_(LUCAVD,'KEEP')
-         NTSIRR = NTS / (MAXREP + 1)
-      ELSE IF (NRWCAV .EQ. 2) THEN
-         LUCAVD = -8675
-         CALL GPOPEN_(LUCAVD,'CAVDATA','UNKNOWN','SEQUENTIAL'
-     $        ,'UNFORMATTED',IDUMMY,.FALSE.)
-         WRITE(LUCAVD) NTS
-         WRITE(LUCAVD) ISPHE
-         WRITE(LUCAVD) XTSCOR
-         WRITE(LUCAVD) YTSCOR
-         WRITE(LUCAVD) ZTSCOR
-         WRITE(LUCAVD) AS
-         CALL GPCLOSE_(LUCAVD,'KEEP')
-      ELSE IF (NRWCAV .EQ. 0) THEN
-         CONTINUE
-      ELSE
-         WRITE(LUPRI,*) 'SIRCAV: WRONG VALUE OF NRWCAV'
-         STOP
-      END IF
 C
 C Prepare data for geomview
 C
-Clf      write(lupri,*) 'vertici delle tessere'
+Clf      write(lvpri,*) 'vertici delle tessere'
 C      do i=1,nts
 C         do j=1,nvert(i)
-C            write(lupri,1241) i,j,(vert(i,j,k),k=1,3)
+C            write(lvpri,1241) i,j,(vert(i,j,k),k=1,3)
 C         enddo
 C      enddo
-C      write(lupri,*) 'centers of tesserae'
+C      write(lvpri,*) 'centers of tesserae'
 C      do i=1,nts
-C         write(lupri,1240) i, xtscor(i),ytscor(i),ztscor(i),as(i)
+C         write(lvpri,1240) i, xtscor(i),ytscor(i),ztscor(i),as(i)
 C      enddo
-C      call flshfo(lupri)
+C      call flshfo(lvpri)
 
-      IF (IPRPCM .GT. 10) THEN
+Clf      IF (IPRPCM .GT. 10) THEN
+      IF (.true.) THEN
          KORD  = 1
          KIDX  = KORD + 4 * NTS
          KLAST = KIDX + NTS
          IF (KLAST.LT.LWORK) THEN
             CALL DZERO_(WORK,KLAST)
-            call ORDPCM_(lupri,nts,xtscor,ytscor,ztscor,as,work(kord),
+            call ORDPCM_(lvpri,nts,xtscor,ytscor,ztscor,as,work(kord),
      $           work(kidx),work(klast),lwork)
          ELSE
-            WRITE(LUPRI,*)
+            WRITE(LVPRI,*)
      $           'WARNING: NOT ENOUGH MEM IN PEDRA_ TO PRINT THE CAVITY'
          END IF
       END IF
@@ -537,7 +509,6 @@ C      call flshfo(lupri)
  1248 FORMAT('BOH???: ',3F15.11)
  1249 FORMAT('AREA=',F10.8,'ISPHE=',I4,'NVERT=',I3)
       CALL PLOTCAV_(VERT,NUMTS)
-      call FLSHFO_(lupri)
 C
 C***********************************************************
 C     Calcola il volume della cavita' con la formula (t. di Gauss):
@@ -568,12 +539,12 @@ C***********************************************************
       ENDDO
 C
       IF(SOME) THEN
-	 WRITE(LUPRI,9020) NESF
+	 WRITE(LVPRI,9020) NESF
 	 DO 520 I=1,NESF
-	    WRITE(LUPRI,9030) I,XE(I),YE(I),ZE(I),RE(I),SSFE(I)
+	    WRITE(LVPRI,9030) I,XE(I),YE(I),ZE(I),RE(I),SSFE(I)
 	    STOT=STOT+SSFE(I)
   520    CONTINUE
-	 WRITE(LUPRI,9040) NTS,STOT,VOL
+	 WRITE(LVPRI,9040) NTS,STOT,VOL
       END IF
 C
 C     ----- set up for possible gradient calculation -----
@@ -582,7 +553,7 @@ C
       IF(ICESPH.NE.1) THEN
 C
 	 IF(NESFP.GT.NUCDEP) THEN
-	    WRITE(LUPRI,9050) NESFP,NUCDEP
+	    WRITE(LVPRI,9050) NESFP,NUCDEP
             WRITE(*,*) '3'
 	    STOP
 	 END IF
@@ -601,7 +572,7 @@ C
                   ENDIF
                ENDDO
             ENDIF
-            IF(NATSPH.EQ.0)then
+            IF(NATSPH.EQ.0) then
                DO ICOORD = 1, 3
                   CALL CAVDER_(NSFE,NSFER,ICOORD,INTSPH,NEWSPH)
                ENDDO
@@ -633,8 +604,8 @@ C Probably they will not be used anymore. If this happen I will remove them.
       DR = DR * ANTOAU
 C
       IF(IPRSOL .GT. 5) THEN
-         WRITE(LUPRI,9070)
-         WRITE(LUPRI,9090) (I,ISPHE(I),AS(I),XTSCOR(I),YTSCOR(I),
+         WRITE(LVPRI,9070)
+         WRITE(LVPRI,9090) (I,ISPHE(I),AS(I),XTSCOR(I),YTSCOR(I),
      *                   ZTSCOR(I),XTSCOR(NTS+I),YTSCOR(NTS+I),
      *                   ZTSCOR(NTS+I), I=1,NTS)
       END IF
@@ -675,19 +646,19 @@ C
 C/* Deck SphPer */
       SUBROUTINE SPHPER_(NESF,NESF0,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
 C
-#include <implicit.h>
-#include <maxorb.h>
-#include <maxaqn.h>
-#include <mxcent.h> 
-#include <priunit.h>
-#include <symmet.h>
+#include <pcm_implicit.h>
+#include <pcm_maxorb.h>
+#include <pcm_maxaqn.h>
+#include <pcm_mxcent.h> 
+#include <pcm_priunit.h>
+#include <pcm_symmet.h>
 C
-Clf#include <trans.h>
+Clf#include <pcm_trans.h>
 C
       DIMENSION XE(*),YE(*),ZE(*),RE(*),V1(3),V2(3)
       DIMENSION NPERM(NUMSPH,*),NEWSPH(NUMSPH,2)
 C
-#include <ibtfun.h>
+#include <pcm_ibtfun.h>
 C
 c  crea la tabella di permutazione delle sfere
 c  e completa per simmetria le sfere aggiunte
@@ -727,7 +698,7 @@ C  caso in cui occorre completare la creazione di sfere aggiunte
 C  oppure le sfere iniziali sono messe male
 C
           If (I.LT.NESF0) THEN
-             WRITE(LUPRI,*) 'CAVITIY IS NOT CONSISTENT WITH SYMMETRY'
+             WRITE(LVPRI,*) 'CAVITIY IS NOT CONSISTENT WITH SYMMETRY'
              STOP
           ELSE
             NESF1=NESF1+1
@@ -744,7 +715,7 @@ C
             ENDIF 
             NewSph(NESF1,1)=N1
             NewSph(NESF1,2)=N2
-            WRITE(LUPRI,*) 'new!',NESF1,N1,N2
+            WRITE(LVPRI,*) 'new!',NESF1,N1,N2
           ENDIF
  10       CONTINUE
         ENDDO
@@ -803,16 +774,16 @@ C/* Deck Polygen */
       SUBROUTINE POLYGEN_(IPFLAG,TSARE,ITSNUM,XEN,YEN,ZEN,REN,
      $  ITSEFF,CV,JTR,NPERM,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       integer ITRVO(60,3),ITREO(60,3),IEDO(90,2)
       integer oldtr(100,100),ednew(90,100),trnew(60,100,100)
-#include <priunit.h>
-#include <pcmdef.h>
-#include <pi.h>
-#include <mxcent.h>
-#include <maxaqn.h>
-#include <maxorb.h>
-#include <symmet.h>
+#include <pcm_priunit.h>
+#include <pcm_pcmdef.h>
+#include <pcm_pi.h>
+#include <pcm_mxcent.h>
+#include <pcm_maxaqn.h>
+#include <pcm_maxorb.h>
+#include <pcm_symmet.h>
 C
 C Polygen: a program to generate spherical polyhedra with triangular
 C faces. An equilater division algorithm is used.
@@ -826,7 +797,7 @@ C
 C
 c  Se la sfera non deve essere tassellata ritorna a pedra con 0 tessere
 c
-#include <ibtfun.h>
+#include <pcm_ibtfun.h>
 Clf      IF (NPerm(NSFE,1).EQ.0.or.nsfe.ne.2) THEN      
       IF (NPerm(NSFE,1).EQ.0) THEN
          ITsEff=0
@@ -888,10 +859,10 @@ c
       
       NF = INT(DSQRT(D1 * ITSNUM / ( D1 * NT0  * 8 )) + 0.5d0)
       IF (NF.le.1) NF=2
-      IF (NF.LE.2) WRITE(LUPRI,1000)
-      IF (NF.GE.8) WRITE(LUPRI,1100)
+      IF (NF.LE.2) WRITE(LVPRI,1000)
+      IF (NF.GE.8) WRITE(LVPRI,1100)
       DNF = DFLOAT(NF)
-check WRITE(LUPRI,*) 'dopo polydata',NT0,NE0,NV,NF
+check WRITE(LVPRI,*) 'dopo polydata',NT0,NE0,NV,NF
 C
       ITsEff=NT0*NF**2
 C
@@ -1052,8 +1023,8 @@ C
          CV(I,1) = V1(1)
          CV(I,2) = V1(2)
          CV(I,3) = V1(3)
-Clf         WRITE(LUPRI,*)'CV',I
-Clf         WRITE(LUPRI,'(3F10.4)')  (CV(i,II),II=1,3)
+Clf         WRITE(LVPRI,*)'CV',I
+Clf         WRITE(LVPRI,'(3F10.4)')  (CV(i,II),II=1,3)
       ENDDO
 
 c
@@ -1107,14 +1078,14 @@ c
 C
 c scrittura della CV
 C
-CcheckWRITE(LUPRI,*) 'OFF'
-CcheckWRITE(LUPRI,*) NV,ITsEff,NV
+CcheckWRITE(LVPRI,*) 'OFF'
+CcheckWRITE(LVPRI,*) NV,ITsEff,NV
       DO i=1,NV
          CV(I,1) = CV(I,1) * REN + XEN
          CV(I,2) = CV(I,2) * REN + YEN
          CV(I,3) = CV(I,3) * REN + ZEN
-Clf         WRITE(LUPRI,*)'CV',I
-Clf         WRITE(LUPRI,'(3F10.4)')  (CV(i,II),II=1,3)
+Clf         WRITE(LVPRI,*)'CV',I
+Clf         WRITE(LVPRI,'(3F10.4)')  (CV(i,II),II=1,3)
       ENDDO
 C
       RETURN
@@ -1127,18 +1098,18 @@ C
 c/* Deck Repcav */
       SUBROUTINE REPCAV_(VERT,CENTR,NPERM,NUMTS,NUMSPH)
 C
-#include <implicit.h>
-#include <priunit.h>
-#include <pcmdef.h>
-#include <mxcent.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_pcmdef.h>
+#include <pcm_mxcent.h>
 C
-#include <maxaqn.h>
-#include <maxorb.h>
-#include <pcm.h>
-#include <pcmlog.h>
-#include <nuclei.h>
-#include <symmet.h>
-Clf#include <trans.h>
+#include <pcm_maxaqn.h>
+#include <pcm_maxorb.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
+#include <pcm_nuclei.h>
+#include <pcm_symmet.h>
+Clf#include <pcm_trans.h>
 c
 c  reproduce the irreducibile part of the cavity
 c
@@ -1146,11 +1117,11 @@ c
       DIMENSION NPERM(NUMSPH,*)
       DATA D0/0.0D0/
 C
-#include <ibtfun.h>
+#include <pcm_ibtfun.h>
 C
 c  replication of the cavity
 c
-CcheckWRITE(LUPRI,*)'IN REPCAV_',NTS
+CcheckWRITE(LVPRI,*)'IN REPCAV_',NTS
       NTSIRR = NTS
       NTS = NTS * (MAXREP + 1)
 
@@ -1185,7 +1156,7 @@ C
         ZTSCOR(II2)=ZTSCOR(II)
       ENDDO
 C
-Clf      write(lupri,*) 'see if the pt are correct',nts
+Clf      write(lvpri,*) 'see if the pt are correct',nts
       DO ISYMOP=1,MAXREP
          DO I=1,NTSIRR
             II=I+NTSIRR*ISYMOP
@@ -1206,7 +1177,7 @@ C            distance=sqrt((xtscor(j)-xtscor(i))**2
 C     $                   +(ytscor(j)-ytscor(i))**2
 C     $                   +(ztscor(j)-ztscor(i))**2)
 C            if(i.ne.j .and. distance.lt.1.0d-8) then
-C               write(lupri,*) 'tesserae too close:',i,j
+C               write(lvpri,*) 'tesserae too close:',i,j
 C            endif
 C         enddo
 C      enddo
@@ -1216,11 +1187,11 @@ Clf
 C/* Deck tessera */
       SUBROUTINE TESSERA_(NS,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
 C
-#include <implicit.h>
-#include <priunit.h>
-#include <pcmdef.h>
-#include <mxcent.h>
-#include <infpri.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_pcmdef.h>
+#include <pcm_mxcent.h>
+#include <pcm_infpri.h>
 C
       DIMENSION PTS(3,10),CCC(3,10),PP(3),PP1(3),INTSPH(NUMTS,10)
       DIMENSION P1(3),P2(3),P3(3),P4(3),P4BIS(3),POINT(3),P5(3),P6(3),
@@ -1229,8 +1200,8 @@ C
       LOGICAL LAN
       DIMENSION DISTCK(10,10)
       CHARACTER*16 TYPLAB_
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
 C
 C     Coord. del centro che sottende l`arco tra i vertici
 C     n e n+1 (per i primi tre vertici e' sicuramente il centro della
@@ -1238,12 +1209,6 @@ C     sfera) e sfera alla cui intersezione con NS appartiene l'arco (se
 C     appartiene alla sfera originaria INTSPH(numts,N)=NS)
 C
 C
-Clf LAN determines if the analytical algorithm is used to calculate
-C     the intersection between a sphere and a tessera. For the time
-C     beeing the analytical algorithm is not used because I'm already
-C     debugging it. In the future it will be the only option.
-C
-C      LAN = .TRUE.
       IPRCAV = 0
       LAN = .FALSE.
       AREA = 0.0D+00
@@ -1254,11 +1219,11 @@ C      LAN = .TRUE.
       ENDDO
       IF(IPRCAV.GE.10) THEN
          CALL AROUND_('INPUT DATA IN TESSERA_')
-         WRITE(LUPRI,1000) NS,NV,NUMTS
-         WRITE(LUPRI,*) '=======PTS=======' 
-         CALL OUTPUT_(PTS,1,3,1,3,3,3,1,LUPRI)
-         WRITE(LUPRI,*) '=======CCC=======' 
-         CALL OUTPUT_(CCC,1,3,1,3,3,3,1,LUPRI)
+         WRITE(LVPRI,1000) NS,NV,NUMTS
+         WRITE(LVPRI,*) '=======PTS=======' 
+         CALL OUTPUT_(PTS,1,3,1,3,3,3,1,LVPRI)
+         WRITE(LVPRI,*) '=======CCC=======' 
+         CALL OUTPUT_(CCC,1,3,1,3,3,3,1,LVPRI)
       END IF
 C     
 C     INTSPH viene riferito alla tessera -numts-, e in seguito riceve il
@@ -1273,8 +1238,8 @@ C
       DO 150 NSFE1=1,NESF
          IF(NSFE1.EQ.NS) GO TO 150
          IF(IPRCAV.GE.10) THEN
-            WRITE(LUPRI,1005) NSFE1
-            WRITE(LUPRI,1010) XE(NSFE1),YE(NSFE1),ZE(NSFE1),RE(NSFE1)
+            WRITE(LVPRI,1005) NSFE1
+            WRITE(LVPRI,1010) XE(NSFE1),YE(NSFE1),ZE(NSFE1),RE(NSFE1)
          END IF
 C     
 C     Memorizza i vertici e i centri che sottendono gli archi
@@ -1288,11 +1253,11 @@ C
          ENDDO
          IF(IPRCAV.GE.10) THEN
             CALL AROUND_('ACTUAL TESSERA_ STATUS')
-            WRITE(LUPRI,1000) NS,NV,NUMTS
-            WRITE(LUPRI,*) '=======PSCR=======' 
-            CALL OUTPUT_(PSCR,1,3,1,NV,3,NV,1,LUPRI)
-            WRITE(LUPRI,*) '=======CCCP=======' 
-            CALL OUTPUT_(CCCP,1,3,1,NV,3,NV,1,LUPRI)
+            WRITE(LVPRI,1000) NS,NV,NUMTS
+            WRITE(LVPRI,*) '=======PSCR=======' 
+            CALL OUTPUT_(PSCR,1,3,1,NV,3,NV,1,LVPRI)
+            WRITE(LVPRI,*) '=======CCCP=======' 
+            CALL OUTPUT_(CCCP,1,3,1,NV,3,NV,1,LVPRI)
          END IF
          
 C     
@@ -1309,7 +1274,7 @@ C
      *           (PTS(3,I)-ZE(NSFE1))**2
             DELR=SQRT(DELR2)
             IF (IPRPCM.GE.10) THEN
-               WRITE(LUPRI,1015) DELR,RE(NSFE1)
+               WRITE(LVPRI,1015) DELR,RE(NSFE1)
             ENDIF
             DIFFDR = DELR - RE(NSFE1)
             IF(DIFFDR.LT.0.0D0) THEN
@@ -1319,7 +1284,7 @@ C
  100     CONTINUE
 C     Se la tessera e' completamente coperta, la trascura
          IF(ICOP.EQ.NV) THEN
-            IF(IPRCAV.GE.10) WRITE(LUPRI,1020) NSFE1
+            IF(IPRCAV.GE.10) WRITE(LVPRI,1020) NSFE1
             RETURN
 C           ******
          END IF
@@ -1379,7 +1344,7 @@ C     IF(DIST.LT.RE(NSFE1)) then
             END IF
  160        CONTINUE
             IF(IPRCAV.GE.10) THEN
-               WRITE(LUPRI,1025) L,TYPLAB_(LTYP(L))
+               WRITE(LVPRI,1025) L,TYPLAB_(LTYP(L))
             END IF
          ENDDO
 C
@@ -1392,7 +1357,7 @@ C
          ENDDO
          ICUT = ICUT / 2
          IF(ICUT.GT.1) THEN
-            WRITE(LUPRI,*) 'Tessera cut in pieces and removed.'
+            WRITE(LVPRI,*) 'Tessera cut in pieces and removed.'
             RETURN
          END IF
 C     
@@ -1400,7 +1365,7 @@ C     Creazione dei nuovi vertici e lati della tessera
 C     Loop sui lati
 C     
          N = 1
-         IF(IPRCAV.GE.10) WRITE(LUPRI,*) 
+         IF(IPRCAV.GE.10) WRITE(LVPRI,*) 
      $        'NOW CREATING NEW VERTICES AND EDGES IF NEED BE....'
          DO 300 L = 1, NV
 C     Se il lato L e' coperto:
@@ -1409,8 +1374,8 @@ C     Se il lato L e' coperto:
             IV2 = L+1
             IF(L.EQ.NV) IV2 = 1
             IF (IPRCAV.GE.10) THEN
-               WRITE(LUPRI,1030) L,TYPLAB_(LTYP(L)),LTYP(L)
-               WRITE(LUPRI,1035) IV1,IV2
+               WRITE(LVPRI,1030) L,TYPLAB_(LTYP(L)),LTYP(L)
+               WRITE(LVPRI,1035) IV1,IV2
             ENDIF
 C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C     Se il lato L e' tagliato (con il I vertice scoperto):
@@ -1438,19 +1403,19 @@ C
                ENDDO
                INTCAS=0
                IF(IPRCAV.GE.10) THEN
-                  WRITE(LUPRI,1040) INTCAS,NSFE1
-                  WRITE(LUPRI,1045) 1,(P1(I),I=1,3)
-                  WRITE(LUPRI,1045) 2,(P2(I),I=1,3)
-                  WRITE(LUPRI,1045) 3,(P3(I),I=1,3)
-                  WRITE(LUPRI,1045) 4,(P4(I),I=1,3)
+                  WRITE(LVPRI,1040) INTCAS,NSFE1
+                  WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
+                  WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
+                  WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
+                  WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                END IF
                CALL INTER_(P1,P2,P3,P4,NSFE1,INTCAS)
                IF(IPRCAV.GE.10) THEN
-                  WRITE(LUPRI,1050) 
-                  WRITE(LUPRI,1045) 1,(P1(I),I=1,3)
-                  WRITE(LUPRI,1045) 2,(P2(I),I=1,3)
-                  WRITE(LUPRI,1045) 3,(P3(I),I=1,3)
-                  WRITE(LUPRI,1045) 4,(P4(I),I=1,3)
+                  WRITE(LVPRI,1050) 
+                  WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
+                  WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
+                  WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
+                  WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                END IF
                DIST1 = DSQRT((P4(1)-P1(1))**2 + (P4(2)-P1(2))**2 +
      $                       (P4(3)-P1(3))**2)
@@ -1496,19 +1461,19 @@ C
                ENDDO
                INTCAS=1
                IF(IPRCAV.GE.10) THEN
-                  WRITE(LUPRI,1040) INTCAS,NSFE1
-                  WRITE(LUPRI,1045) 1,(P1(I),I=1,3)
-                  WRITE(LUPRI,1045) 2,(P2(I),I=1,3)
-                  WRITE(LUPRI,1045) 3,(P3(I),I=1,3)
-                  WRITE(LUPRI,1045) 4,(P4(I),I=1,3)
+                  WRITE(LVPRI,1040) INTCAS,NSFE1
+                  WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
+                  WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
+                  WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
+                  WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                END IF
                CALL INTER_(P1,P2,P3,P4,NSFE1,INTCAS)
                IF(IPRCAV.GE.10) THEN
-                  WRITE(LUPRI,1050) 
-                  WRITE(LUPRI,1045) 1,(P1(I),I=1,3)
-                  WRITE(LUPRI,1045) 2,(P2(I),I=1,3)
-                  WRITE(LUPRI,1045) 3,(P3(I),I=1,3)
-                  WRITE(LUPRI,1045) 4,(P4(I),I=1,3)
+                  WRITE(LVPRI,1050) 
+                  WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
+                  WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
+                  WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
+                  WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                END IF
 C     Aggiorna i vertici della tessera e il centro dell'arco
                DO JJ = 1,3
@@ -1544,19 +1509,19 @@ C
                ENDDO
                INTCAS=0
                IF(IPRCAV.GE.10) THEN
-                  WRITE(LUPRI,1040) INTCAS,NSFE1
-                  WRITE(LUPRI,1045) 1,(P1(I),I=1,3)
-                  WRITE(LUPRI,1045) 2,(P2(I),I=1,3)
-                  WRITE(LUPRI,1045) 3,(P3(I),I=1,3)
-                  WRITE(LUPRI,1045) 4,(P4(I),I=1,3)
+                  WRITE(LVPRI,1040) INTCAS,NSFE1
+                  WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
+                  WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
+                  WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
+                  WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                END IF
                CALL INTER_(P1,P2,P3,P4,NSFE1,INTCAS)
                IF(IPRCAV.GE.10) THEN
-                  WRITE(LUPRI,1050) 
-                  WRITE(LUPRI,1045) 1,(P1(I),I=1,3)
-                  WRITE(LUPRI,1045) 2,(P2(I),I=1,3)
-                  WRITE(LUPRI,1045) 3,(P3(I),I=1,3)
-                  WRITE(LUPRI,1045) 4,(P4(I),I=1,3)
+                  WRITE(LVPRI,1050) 
+                  WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
+                  WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
+                  WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
+                  WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                END IF
 C     Aggiorna i vertici della tessera e il centro dell'arco
                DO JJ = 1,3
@@ -1595,19 +1560,19 @@ C
                ENDDO
                INTCAS=1
                IF(IPRCAV.GE.10) THEN
-                  WRITE(LUPRI,1040) INTCAS,NSFE1
-                  WRITE(LUPRI,1045) 1,(P1(I),I=1,3)
-                  WRITE(LUPRI,1045) 2,(P2(I),I=1,3)
-                  WRITE(LUPRI,1045) 3,(P3(I),I=1,3)
-                  WRITE(LUPRI,1045) 4,(P4(I),I=1,3)
+                  WRITE(LVPRI,1040) INTCAS,NSFE1
+                  WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
+                  WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
+                  WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
+                  WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                END IF
                CALL INTER_(P1,P2,P3,P4,NSFE1,INTCAS)
                IF(IPRCAV.GE.10) THEN
-                  WRITE(LUPRI,1050) 
-                  WRITE(LUPRI,1045) 1,(P1(I),I=1,3)
-                  WRITE(LUPRI,1045) 2,(P2(I),I=1,3)
-                  WRITE(LUPRI,1045) 3,(P3(I),I=1,3)
-                  WRITE(LUPRI,1045) 4,(P4(I),I=1,3)
+                  WRITE(LVPRI,1050) 
+                  WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
+                  WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
+                  WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
+                  WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                END IF
                DIST1 = DSQRT((P4(1)-P1(1))**2 + (P4(2)-P1(2))**2 +
      $              (P4(3)-P1(3))**2)
@@ -1636,11 +1601,11 @@ C     Se il lato e' scoperto:
          NV = N - 1
          IF(IPRCAV.GE.10) THEN
             CALL AROUND_('AFTER INTER_SECTION TESSERA_ STATUS')
-            WRITE(LUPRI,1000) NS,NV,NUMTS
-            WRITE(LUPRI,*) '=======PTS=======' 
-            CALL OUTPUT_(PTS,1,3,1,NV,3,NV,1,LUPRI)
-            WRITE(LUPRI,*) '=======CCC=======' 
-            CALL OUTPUT_(CCC,1,3,1,NV,3,NV,1,LUPRI)
+            WRITE(LVPRI,1000) NS,NV,NUMTS
+            WRITE(LVPRI,*) '=======PTS=======' 
+            CALL OUTPUT_(PTS,1,3,1,NV,3,NV,1,LVPRI)
+            WRITE(LVPRI,*) '=======CCC=======' 
+            CALL OUTPUT_(CCC,1,3,1,NV,3,NV,1,LVPRI)
             DO IDX=1,NV
                IDX2=IDX+1
                IF (IDX2.GT.NV) IDX2=1
@@ -1651,22 +1616,22 @@ C     Se il lato e' scoperto:
                   DIST2 = DIST2 + (PTS(IC,IDX2) - CCC(IC,IDX))**2
                END DO
                DCHECK=DIST1-DIST2
-               WRITE(LUPRI,1055) IDX,DCHECK
+               WRITE(LVPRI,1055) IDX,DCHECK
             END DO
          END IF
 C     Controlla che il numero di vertici creati non sia eccessivo
          IF(NV.GT.10) THEN
-            WRITE(LUPRI,*)'TOO MANY VERTICES IN TESSERA_: BYE BYE...'
+            WRITE(LVPRI,*)'TOO MANY VERTICES IN TESSERA_: BYE BYE...'
             STOP
          END IF
  150  CONTINUE
       IF(IPRCAV.GE.10) THEN
          CALL AROUND_('FINAL TESSERA_ STATUS')
-         WRITE(LUPRI,1000) NS,NV,NUMTS
-         WRITE(LUPRI,*) '=======PSCR=======' 
-         CALL OUTPUT_(PSCR,1,3,1,NV,3,NV,1,LUPRI)
-         WRITE(LUPRI,*) '=======CCCP=======' 
-         CALL OUTPUT_(CCCP,1,3,1,NV,3,NV,1,LUPRI)
+         WRITE(LVPRI,1000) NS,NV,NUMTS
+         WRITE(LVPRI,*) '=======PSCR=======' 
+         CALL OUTPUT_(PSCR,1,3,1,NV,3,NV,1,LVPRI)
+         WRITE(LVPRI,*) '=======CCCP=======' 
+         CALL OUTPUT_(CCCP,1,3,1,NV,3,NV,1,LVPRI)
       END IF
 C     
 C     Se la tessera non e' stata scartata, a questo punto ne troviamo
@@ -1699,7 +1664,7 @@ C If we end up with a tessera with less than three long enough edges
 C we discard it.
 C
       IF (NVLEFT .LT. 3) THEN
-         WRITE(LUPRI,*) '*******WARNING*******\\',
+         WRITE(LVPRI,*) '*******WARNING*******\\',
      $        ' NEGLECTED TESSERA_: TOO FEW ACCEPTABLE EDGES'
          RETURN
 C
@@ -1720,7 +1685,7 @@ C
             END IF
          END DO
          IF (IVNEW .NE. NVLEFT) THEN
-            WRITE(LUPRI,*) 'SIRCAV: BADLY MADE ALGORITHM!'
+            WRITE(LVPRI,*) 'SIRCAV: BADLY MADE ALGORITHM!'
             STOP
          ENDIF
          NV = NVLEFT
@@ -1747,17 +1712,17 @@ C
 C/* Deck inter */
       SUBROUTINE INTER_(P1,P2,P3,P4,NS,I)
 C
-#include <implicit.h>
-#include <priunit.h>
-#include <mxcent.h>
-#include <pcmdef.h>
-#include <infpri.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_mxcent.h>
+#include <pcm_pcmdef.h>
+#include <pcm_infpri.h>
 C
       DIMENSION P1(3),P2(3),P3(3),P4(3)
       LOGICAL LALOW,LBLOW
 C
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
       IPRCAV = 0
 C
 C     Trova il punto P4, sull`arco P1-P2 sotteso dal centro P3, che
@@ -1775,7 +1740,7 @@ Clf Check distances of P1 and P2 from P3
       P1P3 = SQRT((P1(1)-P3(1))**2+(P1(2)-P3(2))**2+(P1(3)-P3(3))**2)
       P2P3 = SQRT((P2(1)-P3(1))**2+(P2(2)-P3(2))**2+(P2(3)-P3(3))**2)
       IF(IPRCAV.GE.10) THEN
-         WRITE(LUPRI,1000) P1P3-P2P3
+         WRITE(LVPRI,1000) P1P3-P2P3
       END IF
 Clf Check if one or both starting points are below the threshold
       LALOW=.FALSE.
@@ -1787,7 +1752,7 @@ Clf Check if one or both starting points are below the threshold
       LALOW=(DIFFA.LT.TOL)
       LBLOW=(DIFFB.LT.TOL)
       IF(LALOW.AND..NOT.LBLOW) THEN
-         IF(IPRCAV.GE.10) WRITE (LUPRI,*) 
+         IF(IPRCAV.GE.10) WRITE (LVPRI,*) 
      $        'INTER_: TAKEN FIRST POINT'
          DO J=1,3
             P4(J)=P1(J)
@@ -1795,7 +1760,7 @@ Clf Check if one or both starting points are below the threshold
          GOTO 100
       END IF
       IF(LBLOW.AND..NOT.LALOW) THEN
-         IF(IPRCAV.GE.10) WRITE (LUPRI,*) 
+         IF(IPRCAV.GE.10) WRITE (LVPRI,*) 
      $        'INTER_: TAKEN SECOND POINT'
          DO J=1,3
             P4(J)=P2(J)
@@ -1804,13 +1769,13 @@ Clf Check if one or both starting points are below the threshold
       END IF
       IF(LALOW.AND.LBLOW) THEN
          IF(DIFFA.LE.DIFFB) THEN
-            IF(IPRCAV.GE.10) WRITE (LUPRI,*) 
+            IF(IPRCAV.GE.10) WRITE (LVPRI,*) 
      $           'INTER_: TAKEN FIRST POINT'
             DO J=1,3
                P4(J)=P1(J)
             END DO
          ELSE
-            IF(IPRCAV.GE.10) WRITE (LUPRI,*) 
+            IF(IPRCAV.GE.10) WRITE (LVPRI,*) 
      $           'INTER_: TAKEN SECOND POINT'
             DO J=1,3
                P4(J)=P2(J)
@@ -1849,12 +1814,12 @@ C
          STOP
         END IF
         IF (M.GT.300)THEN
-         WRITE(LUPRI,*)'Too many iterations in INTER_! BYE BYE ...'
-         WRITE(LUPRI,*)'P1',P1(1),P1(2),P1(3),DIFFA,LALOW
-         WRITE(LUPRI,*)'P2',P2(1),P2(2),P2(3),DIFFB,LBLOW
-         WRITE(LUPRI,*)'P3',P3(1),P3(2),P3(3)
-         WRITE(LUPRI,*)'P4',P4(1),P4(2),P4(3),DIFF,I
-         WRITE(LUPRI,*)'SPHERE',XE(NS),YE(NS),ZE(NS),RE(NS)
+         WRITE(LVPRI,*)'Too many iterations in INTER_! BYE BYE ...'
+         WRITE(LVPRI,*)'P1',P1(1),P1(2),P1(3),DIFFA,LALOW
+         WRITE(LVPRI,*)'P2',P2(1),P2(2),P2(3),DIFFB,LBLOW
+         WRITE(LVPRI,*)'P3',P3(1),P3(2),P3(3)
+         WRITE(LVPRI,*)'P4',P4(1),P4(2),P4(3),DIFF,I
+         WRITE(LVPRI,*)'SPHERE',XE(NS),YE(NS),ZE(NS),RE(NS)
          WRITE(*,*) '8'
          STOP
         END IF
@@ -1864,12 +1829,12 @@ C Final printing and return
 C
  100  CONTINUE
       IF(IPRPCM.GE.10) THEN
-         WRITE(LUPRI,1005)
-         WRITE(LUPRI,1010) 1,P1(1),P1(2),P1(3)
-         WRITE(LUPRI,1010) 2,P2(1),P2(2),P2(3)
-         WRITE(LUPRI,1010) 3,P3(1),P3(2),P3(3)
-         WRITE(LUPRI,1010) 4,P4(1),P4(2),P4(3)
-         WRITE(LUPRI,1015) XE(NS),YE(NS),ZE(NS),RE(NS)
+         WRITE(LVPRI,1005)
+         WRITE(LVPRI,1010) 1,P1(1),P1(2),P1(3)
+         WRITE(LVPRI,1010) 2,P2(1),P2(2),P2(3)
+         WRITE(LVPRI,1010) 3,P3(1),P3(2),P3(3)
+         WRITE(LVPRI,1010) 4,P4(1),P4(2),P4(3)
+         WRITE(LVPRI,1015) XE(NS),YE(NS),ZE(NS),RE(NS)
       END IF
       RETURN
 
@@ -1882,20 +1847,20 @@ C
 C/* Deck gaubon */
       SUBROUTINE GAUBON_(NV,NS,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
       PARAMETER (D0 = 0.0D0, DP5 = 0.5D0, D1 = 1.0D0)
-#include <priunit.h>
-#include <pcmdef.h>      
-#include <mxcent.h>
-#include <pi.h>
-#include <infpri.h>
+#include <pcm_priunit.h>
+#include <pcm_pcmdef.h>      
+#include <pcm_mxcent.h>
+#include <pcm_pi.h>
+#include <pcm_infpri.h>
 C
       DIMENSION PTS(3,10),CCC(3,10),PP(3),PP1(3),INTSPH(NUMTS,10),
      $     NTRHSO(10),BETA(10)
       DIMENSION P1(3),P2(3),P3(3),U1(3),U2(3),PHIN(10),WEIGHT(0:10)
 C
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
 C
 C     Sfrutta il teorema di Gauss-Bonnet per calcolare l'area
 C     della tessera con vertici PTS(3,NV). Consideriamo sempre
@@ -2009,14 +1974,14 @@ C
 Clf 220     CONTINUE
          N0 = MOD(NV+N0-1,NV)
          IF(N0 .EQ. 0) N0 = NV
-Clf         write(lupri,*) "N0 is", N0, NTRHSO(N0)
+Clf         write(lvpri,*) "N0 is", N0, NTRHSO(N0)
 Clf         IF(NTRHSO(N0).EQ.1) GOTO 220
          N2 = N
 Clf         NCONT = 0
 Clf 230     CONTINUE
          N2 = MOD(N2+1,NV)
          IF(N2 .EQ. 0) N2 = NV
-Clf         write(lupri,*) "N2 is", N2, NTRHSO(N1)
+Clf         write(lvpri,*) "N2 is", N2, NTRHSO(N1)
 Clf         IF(NTRHSO(N1 + NCONT).EQ.1) THEN
 Clf            NCONT = NCONT + 1
 Clf            GOTO 230
@@ -2092,7 +2057,7 @@ C
 C     A causa delle approssimazioni numeriche, l'area di alcune piccole
 C     tessere puo' risultare negativa, e viene in questo caso trascurata
       IF(AREA.LT.0.0D+00) THEN
-         WRITE(LUPRI,1000) NS,area
+         WRITE(LVPRI,1000) NS,area
          AREA = 0.0D+00
  1000    FORMAT(/,'WARNING: THE AEREA OF ONE TESSERA_ ON SPHERE ',I3,
      *  ' IS IGNORED',F16.10)
@@ -2102,7 +2067,7 @@ C     tessere puo' risultare negativa, e viene in questo caso trascurata
 C/* Deck vecp */
       SUBROUTINE VECP_(P1,P2,P3,DNORM3)
 C
-#include <implicit.h>
+#include <pcm_implicit.h>
 C
       DIMENSION P1(3),P2(3),P3(3)
 C
@@ -2117,18 +2082,18 @@ C
 C/* Deck cavspl */
       SUBROUTINE CAVSPL_(ICAV1,ICAV2,NCAV1,NCAV2,NATM,SOME)
 C
-#include <implicit.h>
-#include <priunit.h>
-#include <mxcent.h>
-#include <pcmdef.h>
-#include <infpri.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_mxcent.h>
+#include <pcm_pcmdef.h>
+#include <pcm_infpri.h>
 C
       LOGICAL SOME
 C
       DIMENSION ICAV1(MXCENT),ICAV2(MXCENT)
 C
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
 C
 C  QUESTA ROUTINE CONTROLLA SE IL SOLUTO E' CONTENUTO IN UNA
 C  UNICA CAVITA' O IN CAVITA' DISTINTE: IN TAL CASO I NUMERI
@@ -2179,13 +2144,13 @@ C
       NCAV2=NESF-NCAV1
       IF(SOME) THEN
          IF(NCAV2.EQ.0) THEN
-           WRITE(LUPRI,200)
+           WRITE(LVPRI,200)
          ELSE
-            WRITE(LUPRI,300) NCAV1,NCAV2
-            WRITE(LUPRI,400)
-            WRITE(LUPRI,*) (ICAV1(I),I=1,NCAV1)
-            WRITE(LUPRI,500)
-            WRITE(LUPRI,*) (ICAV2(I),I=1,NCAV2)
+            WRITE(LVPRI,300) NCAV1,NCAV2
+            WRITE(LVPRI,400)
+            WRITE(LVPRI,*) (ICAV1(I),I=1,NCAV1)
+            WRITE(LVPRI,500)
+            WRITE(LVPRI,*) (ICAV2(I),I=1,NCAV2)
          END IF
       END IF
       RETURN
@@ -2199,33 +2164,35 @@ C
 C/* Deck plotcav */
       SUBROUTINE PLOTCAV_(Vert,NUMTS)
 C
-#include <implicit.h>
-#include <priunit.h>
-#include <iratdef.h>
-#include <pcmdef.h>
-#include <mxcent.h>
-#include <infpri.h>
-#include <pcm.h>
-#include <pcmlog.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_iratdef.h>
+#include <pcm_pcmdef.h>
+#include <pcm_mxcent.h>
+#include <pcm_infpri.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
       DIMENSION VERT(NUMTS,10,*),IVTS(MXTS,10)
 C
 C     Prepare the input file for GeomView (coloured polyhedra)
 C
       IF (ICESPH .EQ. 0 .OR. ICESPH .EQ. 2 .OR. ICESPH .EQ. 3) INDEX = 1
-      IPUNCH=-4
-      CALL GPOPEN_(IPUNCH,'cavity.off','UNKNOWN',' ','FORMATTED',
-     *            IDUMMY,.FALSE.)
-      NUMV = 0
+      LUCAV = 12121201
+      OPEN(UNIT   = LUCAV,
+     $     FILE   = 'cavity.off',
+     $     ACCESS = 'SEQUENTIAL',
+     $     STATUS = 'UNKNOWN')
+      Numv = 0
       DO 10 I = 1, NTs
   10    NUMV = NUMV + NVert(i)
-      WRITE(IPUNCH,500)'COFF'
-      WRITE(IPUNCH,1000)NUMV, NTs, NumV
+      WRITE(LUCAV,500)'COFF'
+      WRITE(LUCAV,1000)NUMV, NTs, NumV
       K = 0
       LAST = 0
  100  CONTINUE
       DO 2010 I = 1, NTs
         N=ISphe(I)
-        IF(N.ne.Last) WRITE(IPUNCH,1500)N
+        IF(N.ne.Last) WRITE(LUCAV,1500)N
         Last = N
         IF(Index.EQ.1) THEN
            Call COLOUR_(N,C1,C2,C3)
@@ -2237,13 +2204,12 @@ C
         Do 2020 j = 1, NVert(i)
           IVTS(I,J) = K
           K = K + 1
-          WRITE(IPUNCH,2001)(VERT(I,J,JCORD),JCORD=1,3),
+          WRITE(LUCAV,2001)(VERT(I,J,JCORD),JCORD=1,3),
      $         C1,C2,C3,0.75,I
  2020 CONTINUE
  2010 CONTINUE
       Do 20 I = 1, NTs
-  20    WRITE(IPUNCH,3000)NVert(I),(IVTS(I,J),J=1,NVERT(I))
-      CALL GPCLOSE_(IPUNCH,'KEEP')
+ 20      WRITE(LUCAV,3000)NVert(I),(IVTS(I,J),J=1,NVERT(I))
  500  FORMAT(1x,a)
 1000  FORMAT(3i10)
 1500  FORMAT('# Sphere number ',i4)
@@ -2253,15 +2219,15 @@ C
       END
 C/* Deck Colour */
       SUBROUTINE COLOUR_(N,C1,C2,C3)
-#include <implicit.h>
-#include <priunit.h>
-#include <pcmdef.h>
-#include <mxcent.h>
-#include <nuclei.h>
-#include <pcmnuclei.h>
-#include <pcm.h>
-#include <pcmlog.h>
-#include <codata.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_pcmdef.h>
+#include <pcm_mxcent.h>
+#include <pcm_nuclei.h>
+#include <pcm_pcmnuclei.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
+#include <pcm_codata.h>
       Character*20 Col
       Data Col /'                    '/
 C
@@ -2365,17 +2331,17 @@ C
       END
 C/*DECK PREREP_*/
       SUBROUTINE PREREP_(NV,NT,ITS,CV,JTR,NVERT,NUMTS)
-#include <implicit.h>
-#include <priunit.h>
-#include <maxaqn.h>
-#include <maxorb.h>
-#include <mxcent.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_maxaqn.h>
+#include <pcm_maxorb.h>
+#include <pcm_mxcent.h>
 C
-#include <symmet.h>
-#include <pgroup.h>
+#include <pcm_symmet.h>
+#include <pcm_pgroup.h>
       LOGICAL LSYMOP(0:7)
       DIMENSION JTR(NUMTS,*),CV(NVERT,*)
-#include <ibtfun.h>
+#include <pcm_ibtfun.h>
 C
 C      SYMOP(0) = ' E '
 C      SYMOP(1) = 'Oyz'
@@ -2419,7 +2385,7 @@ c
      $              PT(IBTAND(ISYMOP,2**(K-1))) * CV(I,K)
                ENDDO
             ENDDO
-Clf            WRITE(LUPRI,*) 'I,II,JJ,K,JTR(II,K),JTR(I,K)'
+Clf            WRITE(LVPRI,*) 'I,II,JJ,K,JTR(II,K),JTR(I,K)'
 c     
 c     riproduzione topologia 
 c     
@@ -2428,7 +2394,7 @@ c
                JJ = NV
                Do K = 1,3
                   JTR(II,K) = JTR(I,K) + JJ
-Clf                  WRITE(LUPRI,*) I,II,JJ,K,JTR(II,K),JTR(I,K)
+Clf                  WRITE(LVPRI,*) I,II,JJ,K,JTR(II,K),JTR(I,K)
                ENDDO
             ENDDO
 c
@@ -2437,37 +2403,37 @@ c
             NT = NT * 2
             NV = NV * 2
             ITS = ITS * 2
-Clf            write(lupri,*) 'nt,nv,its',nt,nv,its
+Clf            write(lvpri,*) 'nt,nv,its',nt,nv,its
          ENDIF
       END DO
       DO I = 1,ITS
          DO J = 1,3
-Clf            WRITE(LUPRI,*) I,JTR(I,J),(CV(JTR(I,J),K),K=1,3)
+Clf            WRITE(LVPRI,*) I,JTR(I,J),(CV(JTR(I,J),K),K=1,3)
          ENDDO
       ENDDO
       RETURN
       END
 C  /* Deck pcmtns */ 
       SUBROUTINE PCMTNS_(VMAT,GEOM,AMASS,KATOM)
-#include <implicit.h>
-#include <priunit.h>
-#include <mxcent.h>
-#include <maxaqn.h>
-#include <maxorb.h>
-#include <iratdef.h>
-#include <infpri.h>
-#include <pcmdef.h>
-#include <pcm.h>
-#include <pcmlog.h>
-#include <symmet.h>
-#include <nuclei.h>
-#include <orgcom.h>
+#include <pcm_implicit.h>
+#include <pcm_priunit.h>
+#include <pcm_mxcent.h>
+#include <pcm_maxaqn.h>
+#include <pcm_maxorb.h>
+#include <pcm_iratdef.h>
+#include <pcm_infpri.h>
+#include <pcm_pcmdef.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
+#include <pcm_symmet.h>
+#include <pcm_nuclei.h>
+#include <pcm_orgcom.h>
       DIMENSION EIGVAL(3),EIGVEC(3,3),GEOM(KATOM,*),AMASS(*),TINERT(3,3)
       DIMENSION ANGMOM(3),OMEGAD(3),EIGINV(3,3),VMAT(3,3),SCAL(3)
       DIMENSION IAX(6),NORDER_(3)
       LOGICAL PLANAR, LINEAR
       DATA IAX/1,2,3,3,2,1/
-#include <ibtfun.h>      
+#include <pcm_ibtfun.h>      
       JATOM = 1
 C
 C As correctly pointed out by Kenneth, we want two molecules
@@ -2484,7 +2450,7 @@ C               DO 120 ICOOR = 1, 3
 C                  GEOM(JATOM,ICOOR) = PT(IBTAND(ISYMAX(ICOOR,1),ISYMOP))
 C     &                               *CORD(ICOOR,IATOM) - CMXYZ(ICOOR)
 C 120           CONTINUE
-Clf               WRITE(LUPRI,*) 'NATTYP, NUMIS,JATOM,AMASS',
+Clf               WRITE(LVPRI,*) 'NATTYP, NUMIS,JATOM,AMASS',
 Clf     $              NATTYP, NUMIS,JATOM,AMASS(JATOM)
 C               JATOM = JATOM + 1
 C            END IF
@@ -2492,7 +2458,7 @@ C 110     CONTINUE
 C 100  CONTINUE
 Clf
 C      DO I=1,JATOM-1
-C         WRITE(LUPRI,*) 'ATOM ',I,' COORD ',(GEOM(I,J),J=1,3),AMASS(I)
+C         WRITE(LVPRI,*) 'ATOM ',I,' COORD ',(GEOM(I,J),J=1,3),AMASS(I)
 C      ENDDO 
 Clf
       DO I = 1, NESFP
@@ -2507,15 +2473,15 @@ Clf
       ANGMOM(3) = 1.0D0
       CALL WLKDIN(GEOM,AMASS,NESFP,ANGMOM,TINERT,OMEGAD,EIGVAL,EIGVEC,
      &            .TRUE.,PLANAR,LINEAR)
-Clf      WRITE(LUPRI,*) 'INERTIA TENSOR EIGENVECTORS AND EIGENVALUES'
+Clf      WRITE(LVPRI,*) 'INERTIA TENSOR EIGENVECTORS AND EIGENVALUES'
       DO I = 1, 3
          DO J = 1, 3
             EIGINV(I,J) = EIGVEC(J,I)
          ENDDO
-Clf         WRITE(LUPRI,*) (EIGINV(I,J),J=1,3), EIGVAL(I), OMEGA(I), QUAD
+Clf         WRITE(LVPRI,*) (EIGINV(I,J),J=1,3), EIGVAL(I), OMEGA(I), QUAD
       ENDDO
 C      do i=1,3
-C         write(lupri,*) 'tinert',(tinert(i,j),j=1,3)
+C         write(lvpri,*) 'tinert',(tinert(i,j),j=1,3)
 C      enddo
       DO I = 1,3
          DO J= 1,3
@@ -2528,7 +2494,7 @@ C      enddo
       NORDER_(3) = 3
       IF (NOPAX.GE.3) THEN
          DO I = 1,3
-C            write(lupri,*) 'iax',i,isop(i),iax(isop(i))
+C            write(lvpri,*) 'iax',i,isop(i),iax(isop(i))
             DO J = 1,3
                DIJ = 0.0D0
                IF (I.EQ.J) DIJ = 1.0D0
@@ -2572,8 +2538,8 @@ ClfC     numeric algorithm. It is necessary in order to get a good
 ClfC     symmetric cavity.
 ClfC      
 ClfC
-Clf#include <implicit.h>
-Clf#include <priunit.h>
+Clf#include <pcm_implicit.h>
+Clf#include <pcm_priunit.h>
 ClfC
 Clf      DOUBLE PRECISION MAT(3,3),W(3),V(3)
 Clf      DOUBLE PRECISION H(3), A(3), B(3), P(3), Q(3)
@@ -2603,7 +2569,7 @@ ClfC
 Clf      W(1) = A(2) * B(3) - A(3) * B(2)
 Clf      W(2) = A(3) * B(1) - A(1) * B(3)
 Clf      W(3) = A(1) * B(2) - A(2) * B(1)
-Clf      write(lupri,*) 'normal vector', (w(i),i=1,3)
+Clf      write(lvpri,*) 'normal vector', (w(i),i=1,3)
 Clf      WM2  = W(1) ** 2 + W(2) ** 2 + W(3) ** 2
 Clf      WM   = DSQRT ( WM2 )
 Clf      WMXY = DSQRT ( W(1) ** 2 + W(2) ** 2 )
@@ -2618,20 +2584,20 @@ Clf      PM  = DSQRT ( PM2 )
 Clf      QM  = DSQRT ( QM2 )
 Clf      AM  = DSQRT ( AM2 )
 Clf      BM  = DSQRT ( BM2 )
-ClfC      write(lupri,*) 'moduli'
-ClfC      write(lupri,*) pm2,qm2,am2,bm2
-ClfC      write(lupri,*) pm,qm,am,bm
+ClfC      write(lvpri,*) 'moduli'
+ClfC      write(lvpri,*) pm2,qm2,am2,bm2
+ClfC      write(lvpri,*) pm,qm,am,bm
 ClfC
 ClfClf determination of sines and cosines of the euler angles
 ClfC
 Clf      IF(WMXY.GT.1.0D-12) THEN
-Clf         write(lupri,*) 'wmxy grande'
+Clf         write(lvpri,*) 'wmxy grande'
 Clf         COSA = W(1) / DSQRT( W(1) ** 2 + W(2) ** 2 )
 Clf         SINA = W(2) / DSQRT( W(1) ** 2 + W(2) ** 2 )
 Clf         COSB = W(3) / WM
 Clf         SINB = DSQRT( 1 - COSB ** 2 )
 Clf      ELSEIF(WM.GT.1.0D-8) THEN
-Clf         write(lupri,*) 'wm grande'
+Clf         write(lvpri,*) 'wm grande'
 Clf         COSA = 1.0D0
 Clf         SINA = 0.0D0
 Clf         COSB = W(3)/DABS(W(3))
@@ -2646,7 +2612,7 @@ Clf      V(3) = SINB * COSA * W(1) + SINB * SINA * W(2) + COSB * W(3)
 Clf      IF(DABS(V(1)).GT.1.0D-8.OR.DABS(V(2)).GT.1.0D-8) 
 Clf     $     CALL QUIT('ANLINT: ROTATION ERROR 1')
 Clf      IF(V(3).LE.0.0D0) THEN 
-Clf         WRITE(LUPRI,*) 'ROT ERR 2', (V(I),I=1,3)
+Clf         WRITE(LVPRI,*) 'ROT ERR 2', (V(I),I=1,3)
 Clf         CALL QUIT('ANLINT: ROTATION ERROR 2')
 Clf      ENDIF
 ClfC
@@ -2656,11 +2622,11 @@ Clf      W(3) = SINB * COSA * A(1) + SINB * SINA * A(2) + COSB * A(3)
 Clf      COSG = W(1) / AM
 Clf      SING = W(2) / AM
 Clf      IF(DABS(W(3)).GT.1.0D-8) CALL QUIT('ANLINT: ROTATION ERROR 3')
-Clf      write(lupri,*) 'DOPO a e b rot',(w(i),i=1,3)
-Clf      write(lupri,*) 'rp e rq', rp,rq
-Clf      write(lupri,*) 'sin e cos'
-Clf      write(lupri,*) sina,sinb,sing
-Clf      write(lupri,*) cosa,cosb,cosg
+Clf      write(lvpri,*) 'DOPO a e b rot',(w(i),i=1,3)
+Clf      write(lvpri,*) 'rp e rq', rp,rq
+Clf      write(lvpri,*) 'sin e cos'
+Clf      write(lvpri,*) sina,sinb,sing
+Clf      write(lvpri,*) cosa,cosb,cosg
 ClfC
 ClfClf rotation matrix
 ClfC
@@ -2673,20 +2639,20 @@ Clf      MAT(2,3) =   SING * SINB
 Clf      MAT(3,1) =   SINB * COSA
 Clf      MAT(3,2) =   SINB * SINA
 Clf      MAT(3,3) =   COSB
-Clf      write(lupri,*)'mat'
+Clf      write(lvpri,*)'mat'
 Clf      do i=1,3
-Clf         write(lupri,*) (mat(I,J),J=1,3)
+Clf         write(lvpri,*) (mat(I,J),J=1,3)
 Clf      enddo
 ClfC
 ClfClf rotation of vectors and intersection calculations
 ClfC
-Clf      write(lupri,*)'AAAAAA',AM2
+Clf      write(lvpri,*)'AAAAAA',AM2
 Clf      CALL TRIROT(MAT,A)
-Clf      write(lupri,*)'BBBBBB',BM2
+Clf      write(lvpri,*)'BBBBBB',BM2
 Clf      CALL TRIROT(MAT,B)
-Clf      write(lupri,*)'PPPPPP',PM2
+Clf      write(lvpri,*)'PPPPPP',PM2
 Clf      CALL TRIROT(MAT,P)
-Clf      write(lupri,*)'QQQQQQ',QM2
+Clf      write(lvpri,*)'QQQQQQ',QM2
 Clf      CALL TRIROT(MAT,Q)
 Clf      R1R1 = RP**2 - PM2
 Clf      R1 = DSQRT(R1R1)
@@ -2699,19 +2665,19 @@ Clf         CALL SECGRA_(COST,R1,Q(1),Q(2),X1,Y1,X2,Y2,NSOL)
 Clf      ELSE
 Clf         CALL SECGRA_(COST,R1,Q(2),Q(1),Y1,X1,Y2,X2,NSOL)
 Clf      END IF
-Clf      WRITE(LUPRI,*) 'SOL1',X1,Y1,X1**2+Y1**2
-Clf      WRITE(LUPRI,*) 'SOL2',X2,Y2,X2**2+Y2**2
+Clf      WRITE(LVPRI,*) 'SOL1',X1,Y1,X1**2+Y1**2
+Clf      WRITE(LVPRI,*) 'SOL2',X2,Y2,X2**2+Y2**2
 Clf      IF(NSOL.EQ.-1) THEN
 Clf         CALL QUIT('ANLINT: SECGRA_ EXITED ABNORMALLY')
 Clf      ELSE IF (NSOL.EQ.0) THEN
-Clf         WRITE(LUPRI,*) 
+Clf         WRITE(LVPRI,*) 
 Clf     $        'NO INTER_SECTION BETWEEN THIS EDGE AND THIS SPHERE'
 ClfC
 ClfC     PUT SOME CODE HERE!!!
 ClfC
 Clf         RETURN
 Clf      ELSE IF (NSOL.EQ.1) THEN
-Clf         WRITE(LUPRI,*) 'THE TWO SPHERES ARE (ALMOST) TANGENT'
+Clf         WRITE(LVPRI,*) 'THE TWO SPHERES ARE (ALMOST) TANGENT'
 ClfC
 ClfC     PUT SOME CODE HERE!!!
 ClfC
@@ -2747,7 +2713,7 @@ Clf            NCASE = NCASE + 8
 Clf         ELSE IF(.NOT.INT2)
 Clf            NCASE = NCASE + 4
 Clf         END IF
-Clf         WRITE(LUPRI,*) 'NCASE =' NCASE
+Clf         WRITE(LVPRI,*) 'NCASE =' NCASE
 Clf         GO TO (100,101,102,103,104,105,106,107,108,109,
 Clf     $          110,111,112,113,114,115), NCASE
 Clf 100     
@@ -2773,9 +2739,9 @@ Clf      MAT(1,2) = - SING * COSB * COSA - COSG * SINA
 Clf      MAT(3,2) =   SING * SINB
 Clf      MAT(1,3) =   SINB * COSA
 Clf      MAT(2,3) =   SINB * SINA
-Clf      write(lupri,*)'matinv'
+Clf      write(lvpri,*)'matinv'
 Clf      do i=1,3
-Clf         write(lupri,*) (mat(I,J),J=1,3)
+Clf         write(lvpri,*) (mat(I,J),J=1,3)
 Clf      enddo
 Clf      CALL TRIROT(MAT,H)
 Clf      DO I = 1,3
@@ -2787,34 +2753,34 @@ ClfC
 ClfC
 ClfC/* Deck TRIROT*/
 Clf      SUBROUTINE TRIROT(M,V)
-Clf#include <implicit.h>
-Clf#include <priunit.h>
+Clf#include <pcm_implicit.h>
+Clf#include <pcm_priunit.h>
 Clf      DOUBLE PRECISION M(3,*),V(*),W(3)
-Clf      write(lupri,*) 'PRIMA', (V(I),I=1,3)
+Clf      write(lvpri,*) 'PRIMA', (V(I),I=1,3)
 Clf      DO I = 1,3
 Clf         W(I) = M(I,1) * V(1) + M(I,2) * V(2) + M(I,3) * V(3)
 Clf      ENDDO
 Clf      DO I = 1,3
 Clf         V(I) = W(I)
 Clf      ENDDO
-Clf      write(lupri,*) 'DOPO', (V(I),I=1,3)
+Clf      write(lvpri,*) 'DOPO', (V(I),I=1,3)
 Clf      RETURN
 Clf      END
 
 C/* Deck UPDCAV_*/
       SUBROUTINE UPDCAV_(COORD)
-#include <implicit.h>
-#include <mxcent.h>
-#include <maxaqn.h>
-#include <maxorb.h>
-#include <pcmdef.h>
-#include <pcm.h>
-#include <pcmlog.h>
-#include <nuclei.h>
-#include <pcmnuclei.h>
-#include <symmet.h>
+#include <pcm_implicit.h>
+#include <pcm_mxcent.h>
+#include <pcm_maxaqn.h>
+#include <pcm_maxorb.h>
+#include <pcm_pcmdef.h>
+#include <pcm_pcm.h>
+#include <pcm_pcmlog.h>
+#include <pcm_nuclei.h>
+#include <pcm_pcmnuclei.h>
+#include <pcm_symmet.h>
       DIMENSION COORD(3,*)
-#include <ibtfun.h>
+#include <pcm_ibtfun.h>
       IF (ICESPH .EQ. 0 .OR. ICESPH .EQ. 2) THEN
          JATOM = 0
          DO I = 1, NUCIND
@@ -2834,9 +2800,9 @@ C/* Deck UPDCAV_*/
       RETURN
       END
 C/* Deck ordpcm*/
-      SUBROUTINE ORDPCM_(lupri,nts,xtscor,ytscor,ztscor,as,privec,
+      SUBROUTINE ORDPCM_(lvpri,nts,xtscor,ytscor,ztscor,as,privec,
      $     idxpri,work,lwork)
-#include <implicit.h>
+#include <pcm_implicit.h>
       DIMENSION PRIVEC(4,*), XTSCOR(*), YTSCOR(*), ZTSCOR(*),
      &          WORK(*), AS(*)
       DIMENSION IDXPRI(*)
@@ -2878,10 +2844,7 @@ C/* Deck ordpcm*/
          GOTO 222
       ENDIF
       DO I = 1, NTS
-         WRITE(LUPRI,1250) (dabs(PRIVEC(J,I)),J=1,4)
-      ENDDO
-      DO I = 1, NTS
-         WRITE(LUPRI,1240) idxpri(I),(dabs(PRIVEC(J,I)),J=1,4)
+         WRITE(LVPRI,1250) (dabs(PRIVEC(J,I)),J=1,4)
       ENDDO
       RETURN
  1240 format(i3,4f15.9)
@@ -2890,7 +2853,7 @@ C/* Deck ordpcm*/
 
 C/* Deck chktss*/
       LOGICAL FUNCTION CHKTSS_(X1,Y1,Z1,A1,X2,Y2,Z2,A2)
-#include <implicit.h>
+#include <pcm_implicit.h>
       IF(DABS(X1).LT.DABS(X2)) THEN
          CHKTSS_ = .TRUE.
          RETURN
@@ -2920,7 +2883,7 @@ C/* Deck chktss*/
       
 C/* Deck SECGRA_*/
       SUBROUTINE SECGRA_(COST,RP,Q1,Q2,X1,Y1,X2,Y2,NSOL)
-#include <implicit.h>
+#include <pcm_implicit.h>
       PARAMETER (D0 =0.0D0)
       THRESH = 1.0D-20
       A = Q1 ** 2 + Q2 ** 2

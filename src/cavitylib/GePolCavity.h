@@ -25,9 +25,11 @@ class GePolCavity : public Cavity {
     GePolCavity(string &filename){
         readInput(filename);
     }
-    GePolCavity(Getkw &Input);
+    GePolCavity(const Getkw & Input, const string path = "Cavity");
+    GePolCavity(const Section & cavity);
     ~GePolCavity(){};
     void makeCavity(int maxts, int lwork);
+    void makeCavity();
     void writeOutput(string &filename);
     VectorXd & getTessRadius(){return tessRadius;};
     VectorXd & getSphereRadius(){return sphereRadius;};
@@ -35,6 +37,9 @@ class GePolCavity : public Cavity {
     Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
+
+    friend std::ostream& operator<<(std::ostream &o, const GePolCavity &c);
+
  private:
     bool readInput(string &filename);
     int nSpheres;

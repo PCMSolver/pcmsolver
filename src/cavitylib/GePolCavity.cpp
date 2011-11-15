@@ -17,9 +17,26 @@ using namespace Eigen;
 #include "Cavity.h"
 #include "GePolCavity.h"
 
-GePolCavity::GePolCavity(Getkw &Input){
-	vector<double> spheresInput = Input.getDblVec("Cavity.Spheres");
-	averageArea = Input.getDbl("Cavity.Area");
+GePolCavity::GePolCavity(const Getkw & Input, const string path){
+	Section cavity = Input.getSect(path);
+	vector<double> spheresInput = cavity.getDblVec("Spheres");
+	averageArea = cavity.getDbl("Area");
+	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
+    sphereCenter.resize(NoChange, nSpheres);
+    sphereRadius.resize(nSpheres);
+	int j = 0;
+	for (int i = 0; i < nSpheres; i++) {
+		sphereCenter(0,i) = spheresInput[j];
+		sphereCenter(1,i) = spheresInput[j+1];
+		sphereCenter(2,i) = spheresInput[j+2];
+		sphereRadius(i)   = spheresInput[j+3];
+		j += 4;
+	}
+}
+
+GePolCavity::GePolCavity(const Section & cavity){
+	vector<double> spheresInput = cavity.getDblVec("Spheres");
+	averageArea = cavity.getDbl("Area");
 	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
     sphereCenter.resize(NoChange, nSpheres);
     sphereRadius.resize(nSpheres);
@@ -90,8 +107,11 @@ extern"C" {
 							 double *avgArea, double* work, int* lwork);
 }
 
+void GePolCavity::makeCavity(){
+	makeCavity(10000, 10000000);
+}
 
-void GePolCavity::makeCavity(int maxts, int lwork){
+void GePolCavity::makeCavity(int maxts, int lwork) {
 
 	double *xtscor  = new double[maxts];
 	double *ytscor  = new double[maxts];
@@ -105,9 +125,14 @@ void GePolCavity::makeCavity(int maxts, int lwork){
 
     int nts;
 
-	double *xe = sphereCenter.row(0).data();
-	double *ye = sphereCenter.row(1).data();
-	double *ze = sphereCenter.row(2).data();
+	VectorXd xv = sphereCenter.row(0);
+	VectorXd yv = sphereCenter.row(1);
+	VectorXd zv = sphereCenter.row(2);
+
+	double *xe = xv.data();
+	double *ye = yv.data();
+	double *ze = zv.data();
+
 	double *rin = sphereRadius.data();
 
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
@@ -147,5 +172,19 @@ void GePolCavity::makeCavity(int maxts, int lwork){
 	
 	isBuilt = true;
 
+}
+
+ostream & operator<<(ostream &os, const GePolCavity &cavity) {
+	os << "Molecular cavity" << endl;
+	os << "Nr. of spheres: " << cavity.nSpheres;
+    for(int i = 0; i < cavity.nSpheres; i++) {
+		os << endl;
+		os << i+1 << " ";
+		os << cavity.sphereCenter(0,i) << " ";
+		os << cavity.sphereCenter(1,i) << " ";
+		os << cavity.sphereCenter(2,i) << " ";
+		os << cavity.sphereRadius(i) << " ";
+    }
+	return os;
 }
 

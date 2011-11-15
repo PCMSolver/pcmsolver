@@ -89,7 +89,7 @@ int main(int argc, char** argv){
 	waveletSolver.uploadCavity(wavcav);
 
 	waveletSolver.constructSystemMatrix();
-	cout << "system matix built" << endl;
+	cout << "system matrix built" << endl;
 
 	wavcav.uploadPoints(waveletSolver.getQuadratureLevel(),
 						waveletSolver.getT_());

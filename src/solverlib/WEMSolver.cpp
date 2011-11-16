@@ -187,21 +187,15 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	//next line is just a quick fix but i do not like it...
     VectorXd pot = potential;
 
-	cout << "comp charges 1" << endl;
-
 	cout << " " << nPatches << " " << nLevels << " " << quadratureLevel_ << endl;
 	cout << pot.transpose() << endl;
 
 	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
 			 pot.data(), quadratureLevel_);
 
-	cout << "comp charges 2" << endl;
-
 	int iters = WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);
-	cout << "comp charges 3" << endl;
 
 	memset(rhs, 0, nFunctions*sizeof(double));
-	cout << "comp charges 4" << endl;
 	for(unsigned int i = 0; i < nFunctions; i++) {
 		cout << i << " " << S_e_.row_number[i] << " " << nFunctions << endl; 
 		for(unsigned int j = 0; j < S_e_.row_number[i]; j++)  {
@@ -211,13 +205,9 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	}
 
 
-	cout << "comp charges 5" << endl;
 	iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, nPatches, nLevels);
-	cout << "comp charges 6" << endl;
 	for(unsigned int i=0; i<nFunctions; i++) u[i] -= 4*M_PI*v[i];
-	cout << "comp charges 7" << endl;
 	tdwtKon(u, nLevels, nFunctions);
-	cout << "comp charges 8" << endl;
 
   // Interpolate charges
 

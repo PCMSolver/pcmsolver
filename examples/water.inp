@@ -1,4 +1,4 @@
-Units = AU
+Units = Angstrom
 PRINTL = 1
 Medium {
 		Solvent = water

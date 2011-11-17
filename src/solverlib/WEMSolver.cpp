@@ -52,8 +52,8 @@ static double SingleLayer(vector3 x, vector3 y){
   Vector3d vy(y.x, y.y, y.z);
   double value = gf->evalf(vx, vy);
 
-  printf ("%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
-		  value, x.x, x.y, x.z, y.x, y.y, y.z);
+  //  printf ("%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
+  //		  value, x.x, x.y, x.z, y.x, y.y, y.z);
   return value;
 }
 
@@ -64,8 +64,8 @@ static double DoubleLayer(vector3 x, vector3 y, vector3 n_y){
   Vector3d vn_y(n_y.x, n_y.y, n_y.z);
   double value = gf->evald(vn_y, vx, vy);
   
-  printf ("%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
-		  value, x.x, x.y, x.z, y.x, y.y, y.z, n_y.x, n_y.y, n_y.z);
+  //  printf ("%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
+  //		  value, x.x, x.y, x.z, y.x, y.y, y.z, n_y.x, n_y.y, n_y.z);
   return -1.0 * value;
 }
 
@@ -126,13 +126,11 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 	nPatches = cavity.getNPatches();
 	nLevels = cavity.getNLevels();
 
-	cout << "nPatches " << nPatches << endl;
-	cout << "nLevels " << nLevels << endl;
 	int n = (1<<nLevels);
 	nFunctions = nPatches * n * n;
 	alloc_points(&U, nPatches, nLevels);
 	int kk = 0;
-	cout << "Input init interpolate " << nPatches << " " << nLevels <<endl;
+	// Ask Helmut about index switch
 	for (int i = 0; i < nPatches; i++) {
 		for (int j = 0; j <= n; j++) {
 			for (int k = 0; k <= n; k++) {
@@ -142,14 +140,6 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 			}
 		}
 	}	
-	for (int i = 0; i < nPatches; i++) {
-		for (int j = 0; j <= n; j++) {
-			for (int k = 0; k <= n; k++) {
-				std::cout << " " << i << " " << " " << j << " " << k << " ";
-				std::cout << U[i][j][k].x << " " << U[i][j][k].y << " " << U[i][j][k].z << std::endl;
-			}
-		}
-	}
 	init_interpolate(&T_, U, nPatches, nLevels);
 	nNodes = gennet(&nodeList, &elementList, U, nPatches, nLevels);
 	free_points(&U, nPatches, nLevels);
@@ -166,12 +156,7 @@ void WEMSolver::constructSystemMatrix(){
   gf = getGreenInsideP();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
   WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
-  cout << "Printing sparse matrix 2" << endl;
-  print_sparse2(&S_i_);
-  exit(-1);
   aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
-  cout << "Printing sparse matrix 3" << endl;
-  print_sparse2(&S_i_);
 
   gf = getGreenOutsideP();
   apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
@@ -197,41 +182,21 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	//next line is just a quick fix but i do not like it...
     VectorXd pot = potential;
 
-	cout << " " << nPatches << " " << nLevels << " " << quadratureLevel_ << endl;
-	cout << pot.transpose() << endl;
-
 	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
 			 pot.data(), quadratureLevel_);
 
-	for(unsigned int i=0; i<nFunctions; i++) {
-		cout << "start u and v " << i << 
-			" " << rhs[i] << 
-			" " << u[i] << 
-			" " << v[i] << endl;
-	}
-
 	int iters = WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);
-
-	for(unsigned int i=0; i<nFunctions; i++) {
-		cout << "after WEMPGS u and v " << i << 
-			" " << rhs[i] << 
-			" " << u[i] << 
-			" " << v[i] << endl;
-	}
 
 	memset(rhs, 0, nFunctions*sizeof(double));
 	for(unsigned int i = 0; i < nFunctions; i++) {
-		cout << i << " " << S_e_.row_number[i] << " " << nFunctions << endl; 
 		for(unsigned int j = 0; j < S_e_.row_number[i]; j++)  {
 			rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
 		}
-		//		cout << "comp charges i " << i << " " << rhs[i] << endl;
 	}
 
 	iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, nPatches, nLevels);
 	for(unsigned int i=0; i<nFunctions; i++) {
 		u[i] -= 4*M_PI*v[i];
-		cout << "u and v" << i << " " << u[i] << " " << v[i] << endl;
 	}
 	tdwtKon(u, nLevels, nFunctions);
 

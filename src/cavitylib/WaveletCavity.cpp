@@ -101,10 +101,8 @@ extern "C" {
 void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
 	string fileName = "cavity.inp";
-	cout << "makecavity " << fileName << " " << patchLevel << endl;
 	writeInput(fileName);
 	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel);
-	cout << "Created wavelet cavity: " << check << endl;
 }
 
 
@@ -160,8 +158,6 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 
 	nuclearPotential.setOnes(nTess);
 
-	cout << " Ntess " << nTess << endl;
-
 	int j = 0;
 	for (int i1 = 0; i1 < nPatches; i1++){
 		for (int i2 = 0; i2 < n; i2++){
@@ -175,13 +171,6 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 					Vector3d center(point.x, point.y, point.z);	 
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
-					cout << " " << i1 
-						 << " " << i2 
-						 << " " << i3 
-						 << " " << k 
-						 << " " << center.transpose() 
-						 << " " << normal.transpose() 
-						 << " " << area << endl;
 					tessCenter.col(j) = center.transpose();
 					tessNormal.col(j) = normal.transpose();
 					tessArea(j) = area;

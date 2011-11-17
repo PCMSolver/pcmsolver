@@ -156,6 +156,8 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 	electronicPotential.resize(nTess);
 	electronicCharge.resize(nTess);
 
+	//   	nuclearPotential.setConstant(1.0);
+
 	int j = 0;
 	for (int i1 = 0; i1 < nPatches; i1++){
 		for (int i2 = 0; i2 < n; i2++){

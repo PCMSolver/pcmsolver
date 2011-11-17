@@ -18,7 +18,6 @@ dryrun=False
 libdir="@INST_LIBDIR@"
 
 # Roberto's Add
-errfile=open('@PCMSOLVER_ERROR_LOG@','w') # This MUST BE revised
 errors=False
 #
 
@@ -69,8 +68,6 @@ def main():
 			fd.seek(0)
 			p = subprocess.Popen(executable, stdin=fd)
 			fd.close()
-        print errors
-
 def parse_cmdline(valid_keywords):
 	global debug, executable, printlevel, dryrun
 	usage="usage: %prog [options] [config] inpfile"
@@ -157,20 +154,14 @@ def verify_top(section):
 	key = section.get('Units')
 	val = key.get()
 	if (val not in allowed_units):    # This MUST BE revised
-                errfile.write("Allowed units are: ")
-                for i in range(len(allowed_units)):
-                    errfile.write(str(allowed_units[i]) )
-                errfile.write("\n")
-                errors=True
-                print errors, "prova"
-        #	print "Allowed units are: ", allowed_units
-	#	sys.exit(1)
+                print "Allowed units are: ", allowed_units
+		sys.exit(1)
 
 def verify_cavity(section):
 	allowed = ('GePol', 'Wavelet')
 	type = section.get('Type')
 	if (type.get() not in allowed):
-		print "Allowed types are: ", allowed_units
+		print "Allowed types are: ", allowed
 		sys.exit(1)
 
 	if (type.get() == 'GePol'):
@@ -288,11 +279,11 @@ def verify_green(section):
 			print "One or both components not defined for GreensFunctionSum"
 			sys.exit(1)
 
-#def verify_spheres(keyword):
-#	spheres=keyword.get()
-#	if (len(spheres)%4 != 0):
-#		print "Incoherent input for Spheres keyword"
-#		sys.exit(1)
+def verify_spheres(keyword):
+	spheres=keyword.get()
+	if (len(spheres)%4 != 0):
+		print "Incoherent input for Spheres keyword"
+		sys.exit(1)
 
 if __name__ == '__main__':
 	main()

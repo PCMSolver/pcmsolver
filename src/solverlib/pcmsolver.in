@@ -100,6 +100,7 @@ def parse_cmdline(valid_keywords):
 def	setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
+	top.add_kw('SolverType','STR', 'Traditional')
 	top.add_kw('PRINTL',    'INT', 0)
 	top.add_kw('Units',     'STR', 'AU')
 
@@ -120,12 +121,16 @@ def	setup_keywords():
 	green.add_sect(green_part)
 
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
+	cavity.add_kw('Type','STR')
+	cavity.add_kw('PatchLevel', 'INT', 2)
+	cavity.add_kw('ProbeRadius', 'DBL', 1.3)
+	cavity.add_kw('Coarsity', 'DBL', 0.5)
 	cavity.add_kw('Area','DBL', 0.3)
         cavity.add_kw('Mode','STR','Explicit')
         cavity.add_kw('Atoms','INT_ARRAY')
         cavity.add_kw('Radii','DBL_ARRAY')
-	cavity.add_kw('Spheres','DBL_ARRAY')
 
+	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
 	top.add_sect(cavity)
         
 	return top
@@ -143,34 +148,54 @@ def verify_top(section):
 	    	print "Allowed units are: ", allowed_units
 		sys.exit(1)
 
-def verify_cavity(section):
-	area=section.get('Area')
-	a=area.get()
-	if (a < 0.01):
-		print "Area value is too small"
-		print "Minimum value: 0.1"
-		sys.exit(1)
-        mode=section.get('Mode')
-        m=mode.get()
+	allowed_types = ('Traditional', 'Wavelet')
+        key = section.get('SolverType')
+        val = key.get()
+        if (val not in allowed_types):  
+                print "Allowed types are: ", allowed_types
+        	sys.exit(1)
 
+def verify_cavity(section):
+	allowed = ('GePol', 'Wavelet')
+        type = section.get('Type')
+        if (type.get() not in allowed):
+        	print "Allowed types are: ", allowed
+        	sys.exit(1)
+
+	if (type.get() == 'GePol'):
+        	area=section.get('Area')
+        	a=area.get()
+        	if (a < 0.01):
+        		print "Area value is too small"
+        		print "Minimum value: 0.01"
+        		sys.exit(1)
+        elif (type.get() == 'Wavelet'):
+        	key = section.get('PatchLevel')
+        	if (key.get() < 0):
+        		print "Negative patch level not allowed"
+        		sys.exit(1)
+        	key = section.get('Coarsity')
+        	if (key.get() < 0.0 or key.get() >= 1.0):
+        		print "Coarsity has to be within ]0,1["
+        		sys.exit(1)
+        	key = section.get('ProbeRadius')
+        	if (key.get() < 0.0):
+        		print "Negative probe radius not allowed"
+        		sys.exit(1)
+	
+	allowed_modes = ('Explicit', 'Atoms', 'Implicit')
+        mode = section.get('Mode')
+        if (mode.get() not in allowed_modes):
+        	print "Allowed modes are: ", allowed_modes
+        	sys.exit(1)                         
+	
         atoms=section.get('Atoms')
         at=atoms.get()
                                    
         radii=section.get('Radii')
         r=radii.get()
        
-       	spheres=section.get('Spheres')
-        s=spheres.get()
-        if (m == ''):
-            print "Incoherent input for Mode keyword."
-            print "You must always specify an option for this keyword."
-            sys.exit(1)
-        if (m == 'Explicit'):
-            if (len(s)%4 != 0):
-                print "Incoherent input for Mode keyword."
-                print "Empty or incoherent Spheres list."
-                sys.exit(1)
-        if (m == 'Atoms'):
+        if (mode.get() == 'Atoms'):
             if (len(at) == 0):
                 print "Incoherent input for Atoms keyword."
                 print "No atoms specified."
@@ -179,7 +204,7 @@ def verify_cavity(section):
                 print "Incoherent input for Atoms keyword."
                 print "Check that Atoms and Radii are consistent."
                 sys.exit(1)
-	if (m == 'Implicit'):
+	if (mode.get() == 'Implicit'):
             print "Tell me what to do!"		
             sys.exit(1) 
 
@@ -192,7 +217,6 @@ def verify_medium(section):
 def verify_green(section):
 	required = ('Type',)
 	allowed = ('Vacuum', 'UniformDielectric', 'MetalSphere', 'GreensFunctionSum')
-
 
 	green1 = section.fetch_sect('Green<one>')
 	green2 = section.fetch_sect('Green<two>')
@@ -230,6 +254,12 @@ def verify_green(section):
 			print "One or both components not defined for GreensFunctionSum"
 			sys.exit(1)
 
+def verify_spheres(keyword):
+	spheres=keyword.get()
+	if (len(spheres)%4 != 0):
+		print "Incoherent input for Mode keyword."
+                print "Empty or incoherent Spheres list."
+		sys.exit(1)
 
 if __name__ == '__main__':
 	main()

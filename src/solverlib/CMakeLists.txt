@@ -1,13 +1,20 @@
-set (solverlib_SOURCES PCMSolver.cpp interface.cpp)
+set (solverlib_SOURCES 
+  IEFSolver.cpp 
+  interface.cpp
+  PCMSolver.cpp
+  WEMSolver.cpp
+)
 
-add_executable(pcmsolver.x test.cpp)
-target_link_libraries(pcmsolver.x solver green cavity pedra metal getkw)
-target_link_libraries(pcmsolver.x ${LIBS})
+#add_executable(pcmsolver.x test.cpp)
+#
+#target_link_libraries(pcmsolver.x solver green cavity pedra metal wem wavcav getkw)
+#target_link_libraries(pcmsolver.x ${LIBS})
 
 find_package(PythonInterp REQUIRED)
 
 set (INST_LIBDIR ${PROJECT_SOURCE_DIR}/external/share/libgetkw)
-set (PCMSOLVER_ERROR_LOG ${PROJECT_BINARY_DIR}/pcmsolver.err)
+set (PCMSOLVER_EXECUTABLE pcmsolver.x)
+#set (PCMSOLVER_ERROR_LOG ${PROJECT_BINARY_DIR}/pcmsolver.err)
 #set (PCMSOLVER_EXECUTABLE ${PROJECT_BINARY_DIR}/pcmsolver.x)
 Option (PCMSOLVER_DRIVER_DEBUG "Debug the driver (extmod)" OFF)
 #ask jonas about path
@@ -19,11 +26,11 @@ add_library(solver ${solverlib_SOURCES})
 install(TARGETS solver
 	ARCHIVE DESTINATION lib)
 
-install(TARGETS pcmsolver.x
-	RUNTIME DESTINATION bin
-	)
+#install(TARGETS pcmsolver.x
+#	RUNTIME DESTINATION bin
+#	)
 
-install(PROGRAMS ${PROJECT_BINARY_DIR}/pcmsolver 
-	DESTINATION bin
-	)
+#install(PROGRAMS ${PROJECT_BINARY_DIR}/pcmsolver 
+#	DESTINATION bin
+#	)
 

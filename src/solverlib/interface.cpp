@@ -15,9 +15,10 @@ using namespace Eigen;
 #include "Vacuum.h"
 #include "UniformDielectric.h"
 #include "PCMSolver.h"
+#include "IEFSolver.h"
 
 GePolCavity *cavity;
-PCMSolver *solver;
+IEFSolver *solver;
 
 //      Subroutine PotExpVal(Density, Centers, Nts, Potential, Work, 
 //     $                     LWork)
@@ -30,6 +31,12 @@ extern "C" void nuc_pot_pcm_(double* centers, int *nts, double *potential);
 //     $                     LWork)
 extern "C" void fock_pcm_(double *fock, double* centers, int *nts, 
 								 double *charges, double *work, int *lwork);
+
+extern "C" void init_gepol_cavity_();
+
+extern "C" void init_pcmsolver_();
+
+extern "C" void init_pcm_();
 
 extern "C" void get_cavity_size_(int * nts) {
 	*nts = cavity->size();
@@ -86,11 +93,24 @@ extern "C" void comp_pol_ene_pcm_(double * energy) {
 	* energy = cavity->compPolarizationEnergy();
 }
 
+extern "C" void init_pcm_() {
+	const char *infile = 0;
+	infile = "@pcmsolver.inp";
+	Getkw Input = Getkw(infile, false, true);
+	const string modelType = Input.getStr("SolverType");
+	if (modelType == "Traditional") {
+		init_gepol_cavity_();
+		init_pcmsolver_();
+	} else if (modelType == "Wavelet") {
+		exit(-1);
+	} 
+}
+
 extern "C" void init_gepol_cavity_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
-    cavity = new GePolCavity(Input);
+    cavity = new GePolCavity(Input, "Cavity<gepol>");
 	cavity->makeCavity(5000, 10000000);
 	cavity->initPotChg();
 }
@@ -100,7 +120,7 @@ extern "C" void init_pcmsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	solver = new PCMSolver(Medium);
+	solver = new IEFSolver(Medium);
 	solver->buildIsotropicMatrix(*cavity);
 }
 

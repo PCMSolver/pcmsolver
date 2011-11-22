@@ -145,6 +145,15 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 	free_points(&U, nPatches, nLevels);
 }
 
+void WEMSolver::buildSystemMatrix(Cavity & cavity) {
+    if (WaveletCavity *waveletCavity = dynamic_cast<WaveletCavity*> (&cavity)) {
+		this->uploadCavity(*waveletCavity);
+		this->constructSystemMatrix();
+	} else {
+		exit(-1);
+	}
+}
+
 void WEMSolver::constructSystemMatrix(){
 
   generate_elementlist(&elementTree,nodeList,elementList,nPatches,nLevels);

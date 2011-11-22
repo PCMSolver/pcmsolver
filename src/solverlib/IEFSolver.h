@@ -20,6 +20,8 @@ class IEFSolver : public PCMSolver {
     IEFSolver(Section solver);
     ~IEFSolver();
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
+
+    virtual void buildSystemMatrix(Cavity & cavity);
     virtual void buildAnisotropicMatrix(GePolCavity cav);
     virtual void buildIsotropicMatrix(GePolCavity cav);
     virtual double compDiagonalElementSoper(GreensFunction *green, int i, 

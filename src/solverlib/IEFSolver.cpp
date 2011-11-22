@@ -42,6 +42,18 @@ IEFSolver::IEFSolver(Section solver) : PCMSolver(solver) {
 IEFSolver::~IEFSolver(){
 }
 
+void IEFSolver::buildSystemMatrix(Cavity & cavity) {
+    if (GePolCavity *gePolCavity = dynamic_cast<GePolCavity*> (&cavity)) {
+		if (greenInside->isUniform() && greenOutside->isUniform()) {
+			buildIsotropicMatrix(*gePolCavity);
+		} else {
+			buildAnisotropicMatrix(*gePolCavity);
+		}
+	} else {
+		exit(-1);
+	}
+}
+
 double IEFSolver::compDiagonalElementSoper(GreensFunction *green, int i, GePolCavity cav) {
     double s;
     if (UniformDielectric *uniform = dynamic_cast<UniformDielectric*> (green)) {

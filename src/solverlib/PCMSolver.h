@@ -26,17 +26,23 @@ class PCMSolver{
     int getCavitySize() const {return cavitySize;};
     void setCavitySize(int size) {cavitySize = size;};
 
+    virtual void buildSystemMatrix(Cavity & cavity) = 0;
+
     virtual VectorXd compCharge(const VectorXd & potential) = 0;
     virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
 
-    virtual void setSolverType(string type) { solverType = type; }
-    virtual string getSolverType() { return solverType; }
+    virtual void setSolverType(const string & type);
+    virtual void setSolverType(int type);
+
+    virtual int getSolverType() { return solverType; }
+
+    enum solverTypes{Traditional, Wavelet};
 
  protected:
     bool allocated;
     int cavitySize;
     GreensFunction *greenInside;
     GreensFunction *greenOutside;
-    string solverType;
+    int solverType;
 };
 #endif

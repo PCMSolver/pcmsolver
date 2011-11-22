@@ -37,9 +37,7 @@ class GePolCavity : public Cavity {
     Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
-    void init_atoms(int & nSpheres, vector<int> & atomsInput, 
-		    Matrix<double, 3, Dynamic> & sphereCenter);
-
+  
     friend std::ostream& operator<<(std::ostream &o, const GePolCavity &c);
 
  private:

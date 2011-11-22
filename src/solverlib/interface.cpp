@@ -32,6 +32,14 @@ extern "C" void nuc_pot_pcm_(double* centers, int *nts, double *potential);
 extern "C" void fock_pcm_(double *fock, double* centers, int *nts, 
 								 double *charges, double *work, int *lwork);
 
+extern "C" void collect_atoms_(int * nSpheres, int * idx, double * centers);
+
+extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput, Matrix<double, 3, Dynamic> & sphereCenter);
+
+extern "C" void collect_implicit_(double * centers);
+
+extern "C" void init_implicit_(Matrix<double, 3, Dynamic> & sphereCenter);
+
 extern "C" void init_gepol_cavity_();
 
 extern "C" void init_pcmsolver_();
@@ -110,7 +118,13 @@ extern "C" void init_gepol_cavity_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
-    cavity = new GePolCavity(Input, "Cavity<gepol>");
+	cavity = new GePolCavity(Input, "Cavity<gepol>");
+	if ( Input.getStr("Cavity<gepol>.Mode") == "Atoms" ){
+	  vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
+	  vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
+	  init_atoms_(cavity->getNSpheres(), atomsInput, cavity->getSphereCenter());
+	}
+	//	cout << cavity->getSphereCenter() << endl;
 	cavity->makeCavity(5000, 10000000);
 	cavity->initPotChg();
 }
@@ -150,8 +164,16 @@ extern "C" void print_gepol_cavity_(){
 	cout << "Cavity size" << cavity->size() << endl;
 }
 
-extern "C" void collect_atoms_(int & nSpheres, vector<int> & atomsInput, 
+extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput, 
 			       Matrix<double, 3, Dynamic> & sphereCenter){
-  cavity->init_atoms(nSpheres, atomsInput, sphereCenter);
-}
+  double * coord = sphereCenter.data();
+    int * idx = new int[nSpheres];
+  for ( int i = 0; i < nSpheres; i++ ){
+    idx[i] = atomsInput[i];
+  }
+  collect_atoms_(& nSpheres, idx, coord);
+  cout << sphereCenter << endl;
+ }
 
+extern "C" void init_implicit_(Matrix<double, 3, Dynamic> & sphereCenter){
+}

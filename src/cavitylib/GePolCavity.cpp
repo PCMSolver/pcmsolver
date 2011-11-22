@@ -22,13 +22,13 @@ GePolCavity::GePolCavity(const Getkw & Input, const string path){
 	Section cavity = Input.getSect(path);
 	string mode = cavity.getStr("Mode");
         averageArea = cavity.getDbl("Area");
+	cout << "this is mode..... " << mode << endl;
 	if ( mode == "Atoms" ){
-	  vector<int> atomsInput = cavity.getIntVec("Atoms");
+	  //vector<int> atomsInput = cavity.getIntVec("Atoms");
 	  vector<double> radiiInput = cavity.getDblVec("Radii");
 	  nSpheres = radiiInput.size();
 	  sphereCenter.resize(NoChange, nSpheres);
 	  sphereRadius.resize(nSpheres);
-	  init_atoms(nSpheres, atomsInput, sphereCenter);
 	}
 	else if ( mode == "Implicit" ){
 	  cout << "Not yet implemented!" << endl;
@@ -50,19 +50,6 @@ GePolCavity::GePolCavity(const Getkw & Input, const string path){
 	}
 }
 
-void GePolCavity::init_atoms(int & nSpheres, vector<int> & atomsInput,
-			Matrix<double, 3, Dynamic> & sphereCenter){
-  sphereCenter.resize(NoChange, nSpheres);
-  int j = 0;
-  for ( int i = 0; i < nSpheres; i++ ){
-     sphereCenter(0, i) = atomsInput[j] * i;
-     sphereCenter(1, i) = atomsInput[j+1] * i;
-     sphereCenter(2, i) = atomsInput[j+2] * i;
-     j += 3;
-  }
-  cout << "Roberto" << endl;
-  cout << sphereCenter << endl;
-}
 
 GePolCavity::GePolCavity(const Section & cavity){
 	vector<double> spheresInput = cavity.getDblVec("Spheres");

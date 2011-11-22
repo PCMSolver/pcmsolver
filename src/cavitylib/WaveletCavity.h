@@ -6,6 +6,7 @@
 
 #include <Eigen/Dense>
 
+#include "vector3.h"
 #include "Getkw.h"
 #include "Cavity.h"
 
@@ -19,7 +20,7 @@ class WaveletCavity : public Cavity {
     WaveletCavity(const Section & cavity);
     ~WaveletCavity(){};
     void makeCavity();
-    void readCavity(std::string & filename);
+    void readCavity(const string & filename);
     void uploadPoints(int quadLevel, vector3 **** T_);
     VectorXd & getTessRadius(){return tessRadius;};
     VectorXd & getSphereRadius(){return sphereRadius;};

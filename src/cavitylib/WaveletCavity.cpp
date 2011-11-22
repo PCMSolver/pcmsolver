@@ -106,7 +106,7 @@ void WaveletCavity::makeCavity() {
 }
 
 
-void WaveletCavity::readCavity(string & filename) {
+void WaveletCavity::readCavity(const string & filename) {
 
 		int i, j, k;
 		double x, y, z;

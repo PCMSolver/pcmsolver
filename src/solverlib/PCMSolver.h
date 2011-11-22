@@ -25,12 +25,18 @@ class PCMSolver{
     GreensFunction * getGreenOutsideP();    
     int getCavitySize() const {return cavitySize;};
     void setCavitySize(int size) {cavitySize = size;};
+
     virtual VectorXd compCharge(const VectorXd & potential) = 0;
     virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
+
+    virtual void setSolverType(string type) { solverType = type; }
+    virtual string getSolverType() { return solverType; }
+
  protected:
     bool allocated;
     int cavitySize;
     GreensFunction *greenInside;
     GreensFunction *greenOutside;
+    string solverType;
 };
 #endif

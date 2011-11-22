@@ -37,6 +37,8 @@ class GePolCavity : public Cavity {
     Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
+    void init_atoms(int & nSpheres, vector<int> & atomsInput, 
+		    Matrix<double, 3, Dynamic> & sphereCenter);
 
     friend std::ostream& operator<<(std::ostream &o, const GePolCavity &c);
 
@@ -47,6 +49,7 @@ class GePolCavity : public Cavity {
     Matrix<double, 3, Dynamic> sphereCenter;
     Matrix<double, 3, Dynamic> tessSphereCenter;
     VectorXd tessRadius;
+   
     // Variables needed for communication with pedra cavity
     // if one would require more thatn 300 spheres it needs to be changed here
 };

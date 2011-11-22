@@ -119,7 +119,7 @@ extern "C" void init_pcmsolver_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
-	const Section &Medium = Input.getSect("Medium<Medium>");
+	const Section &Medium = Input.getSect("Medium");
 	solver = new IEFSolver(Medium);
 	solver->buildIsotropicMatrix(*cavity);
 }
@@ -148,5 +148,10 @@ extern "C" void comp_charge_(double *potential_, double *charge_) {
 
 extern "C" void print_gepol_cavity_(){
 	cout << "Cavity size" << cavity->size() << endl;
+}
+
+extern "C" void collect_atoms_(int & nSpheres, vector<int> & atomsInput, 
+			       Matrix<double, 3, Dynamic> & sphereCenter){
+  cavity->init_atoms(nSpheres, atomsInput, sphereCenter);
 }
 

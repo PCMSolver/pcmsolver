@@ -13,9 +13,9 @@ set (solverlib_SOURCES
 find_package(PythonInterp REQUIRED)
 
 set (INST_LIBDIR ${PROJECT_SOURCE_DIR}/external/share/libgetkw)
-set (PCMSOLVER_EXECUTABLE pcmsolver.x)
+#set (PCMSOLVER_EXECUTABLE pcmsolver.x)
 #set (PCMSOLVER_ERROR_LOG ${PROJECT_BINARY_DIR}/pcmsolver.err)
-#set (PCMSOLVER_EXECUTABLE ${PROJECT_BINARY_DIR}/pcmsolver.x)
+set (PCMSOLVER_EXECUTABLE ${PROJECT_BINARY_DIR}/pcmsolver.x)
 Option (PCMSOLVER_DRIVER_DEBUG "Debug the driver (extmod)" OFF)
 #ask jonas about path
 configure_file(${PROJECT_SOURCE_DIR}/src/solverlib/pcmsolver.in pcmsolver)

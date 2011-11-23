@@ -22,7 +22,6 @@ GePolCavity::GePolCavity(const Getkw & Input, const string path){
 	Section cavity = Input.getSect(path);
 	string mode = cavity.getStr("Mode");
         averageArea = cavity.getDbl("Area");
-	cout << "this is mode..... " << mode << endl;
 	if ( mode == "Atoms" ){
 	  //vector<int> atomsInput = cavity.getIntVec("Atoms");
 	  vector<double> radiiInput = cavity.getDblVec("Radii");

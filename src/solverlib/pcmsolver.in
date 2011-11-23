@@ -200,6 +200,13 @@ def verify_cavity(section):
                 print "Incoherent input for Atoms keyword."
                 print "No atoms specified."
                 sys.exit(1)
+	    else:
+		for i,v in enumerate(at):
+			if (at.count(v) > 1):
+				print "Incoherent input for Atoms keyword."
+				print "Too many spheres on the same atom(s)."
+				sys.exit(1)
+				break
             if (len(r) != len(at) or len(r) == 0):
                 print "Incoherent input for Atoms keyword."
                 print "Check that Atoms and Radii are consistent."

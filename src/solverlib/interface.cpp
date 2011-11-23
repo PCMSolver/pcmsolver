@@ -36,6 +36,7 @@ extern "C" void collect_atoms_(int * nSpheres, int * idx, double * centers);
 
 extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput, Matrix<double, 3, Dynamic> & sphereCenter);
 
+// Implicit cavity initialization must be revised
 extern "C" void collect_implicit_(double * centers);
 
 extern "C" void init_implicit_(Matrix<double, 3, Dynamic> & sphereCenter);
@@ -167,7 +168,7 @@ extern "C" void print_gepol_cavity_(){
 extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput, 
 			       Matrix<double, 3, Dynamic> & sphereCenter){
   double * coord = sphereCenter.data();
-    int * idx = new int[nSpheres];
+  int * idx = new int[nSpheres];
   for ( int i = 0; i < nSpheres; i++ ){
     idx[i] = atomsInput[i];
   }

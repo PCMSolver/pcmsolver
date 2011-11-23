@@ -62,8 +62,10 @@ void PCMSolver::setSolverType(int type) {
 	switch (type) {
 	case Traditional :
 		this->solverType = Traditional;
+		break;
 	case Wavelet :
 		this->solverType = Wavelet;
+		break;
 	default : 
 		exit(-1);
 	}

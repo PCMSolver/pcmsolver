@@ -109,10 +109,15 @@ extern "C" void init_pcm_() {
 	Getkw Input = Getkw(infile, false, true);
 	const string modelType = Input.getStr("SolverType");
 	if (modelType == "Traditional") {
+		cout << "Traditional chosen" << endl;
 		init_gepol_cavity_();
+		cout << "Cavity made" << endl;
 		init_iefsolver_();
+		cout << "Solver made" << endl;
 		_cavity = _gePolCavity;
+		cout << "cavity pointer" << endl;
 		_solver = _IEFSolver;
+		cout << "solver pointer" << endl;
 	} else if (modelType == "Wavelet") {
 		init_wavelet_cavity_();
 		init_wemsolver_();

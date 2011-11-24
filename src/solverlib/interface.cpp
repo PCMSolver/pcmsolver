@@ -109,15 +109,10 @@ extern "C" void init_pcm_() {
 	Getkw Input = Getkw(infile, false, true);
 	const string modelType = Input.getStr("SolverType");
 	if (modelType == "Traditional") {
-		cout << "Traditional chosen" << endl;
 		init_gepol_cavity_();
-		cout << "Cavity made" << endl;
 		init_iefsolver_();
-		cout << "Solver made" << endl;
 		_cavity = _gePolCavity;
-		cout << "cavity pointer" << endl;
 		_solver = _IEFSolver;
-		cout << "solver pointer" << endl;
 	} else if (modelType == "Wavelet") {
 		init_wavelet_cavity_();
 		init_wemsolver_();
@@ -126,6 +121,7 @@ extern "C" void init_pcm_() {
 		_cavity = _waveletCavity;
 		_solver = _WEMSolver;
 	} 
+	_cavity->initPotChg();
 	_solver->setSolverType(modelType);
 }
 
@@ -135,7 +131,6 @@ extern "C" void init_gepol_cavity_() {
 	Getkw Input = Getkw(infile, false, true);
     _gePolCavity = new GePolCavity(Input, "Cavity<gepol>");
 	_gePolCavity->makeCavity(5000, 10000000);
-	_gePolCavity->initPotChg();
 }
 
 extern "C" void init_wavelet_cavity_() {
@@ -145,7 +140,6 @@ extern "C" void init_wavelet_cavity_() {
     _waveletCavity = new WaveletCavity(Input, "Cavity<wavelet>");
 	_waveletCavity->makeCavity();
 	_waveletCavity->readCavity("molec_dyadic.dat");
-	_waveletCavity->initPotChg();
 }
 
 extern "C" void init_iefsolver_() {

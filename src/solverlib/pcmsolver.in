@@ -210,9 +210,6 @@ def verify_cavity(section):
                 print "Incoherent input for Atoms keyword."
                 print "Check that Atoms and Radii are consistent."
                 sys.exit(1)
-#	if (mode.get() == 'Implicit'):
-#            print "Tell me what to do!"		
-#            sys.exit(1) 
 
 def verify_medium(section):
 	solvent=section.get('Solvent')

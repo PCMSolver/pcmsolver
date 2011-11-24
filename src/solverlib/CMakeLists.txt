@@ -1,6 +1,6 @@
 set (solverlib_SOURCES 
   IEFSolver.cpp 
-  interface.cpp
+  Interface.cpp
   PCMSolver.cpp
   WEMSolver.cpp
 )
@@ -26,6 +26,7 @@ add_library(solver ${solverlib_SOURCES})
 install(TARGETS solver
 	ARCHIVE DESTINATION lib)
 
+install(FILES Interface.h DESTINATION include)
 #install(TARGETS pcmsolver.x
 #	RUNTIME DESTINATION bin
 #	)

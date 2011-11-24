@@ -206,14 +206,13 @@ def verify_cavity(section):
 				print "Incoherent input for Atoms keyword."
 				print "Too many spheres on the same atom(s)."
 				sys.exit(1)
-				break
             if (len(r) != len(at) or len(r) == 0):
                 print "Incoherent input for Atoms keyword."
                 print "Check that Atoms and Radii are consistent."
                 sys.exit(1)
-	if (mode.get() == 'Implicit'):
-            print "Tell me what to do!"		
-            sys.exit(1) 
+#	if (mode.get() == 'Implicit'):
+#            print "Tell me what to do!"		
+#            sys.exit(1) 
 
 def verify_medium(section):
 	solvent=section.get('Solvent')

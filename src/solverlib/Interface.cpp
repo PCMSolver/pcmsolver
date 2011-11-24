@@ -34,19 +34,19 @@ IEFSolver *solver;
 */
 
 extern "C" void init_gepol_cavity_() {
-	const char *infile = 0;
+  	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	cavity = new GePolCavity(Input, "Cavity<gepol>");
-	if ( Input.getStr("Cavity<gepol>.Mode") == "Atoms" ){
+       	if ( Input.getStr("Cavity<gepol>.Mode") == "Atoms" ){
 	  vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
 	  vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
 	  init_atoms_(cavity->getNSpheres(), atomsInput, cavity->getSphereCenter());
 	}
-	VectorXd rob1;
-	Matrix<double, 3, Dynamic> rob2;
-	init_implicit_(rob1, rob2);
-	//	cout << cavity->getSphereCenter() << endl;
+	else if ( Input.getStr("Cavity<gepol>.Mode") == "Implicit" ){
+	  init_implicit_(cavity->getSphereRadius(), cavity->getCharges(), cavity->getSphereCenter());
+	}
+	cout << cavity->getSphereCenter() << endl;
 	cavity->makeCavity(5000, 10000000);
 	cavity->initPotChg();
 }
@@ -59,19 +59,21 @@ extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput,
     idx[i] = atomsInput[i];
   }
   collect_atoms_(& nSpheres, idx, centers);
-  //  cout << sphereCenter << endl;
  }
 
-extern "C" void init_implicit_(VectorXd & chg, Matrix<double, 3, Dynamic> & sphereCenter){
+extern "C" void init_implicit_(VectorXd & sphereRadius, 
+			       VectorXd & charges, Matrix<double, 3, Dynamic> & sphereCenter){
   int nuclei;
   collect_nctot_(&nuclei);
-  chg.resize(nuclei);
+  cavity->setNSpheres(nuclei);
+  sphereRadius.resize(nuclei);
+  charges.resize(nuclei);
   sphereCenter.resize(NoChange, nuclei);
-  double * charges = chg.data();
+  double * chg = charges.data();
   double * centers = sphereCenter.data();
-  collect_implicit_(charges, centers);
-  cout << chg << endl;
-  cout << sphereCenter << endl;
+  collect_implicit_(chg, centers);
+  sphereRadius = charges;
+  cout << sphereRadius << endl;
 }
 
 extern "C" void get_cavity_size_(int * nts) {

@@ -30,9 +30,7 @@ GePolCavity::GePolCavity(const Getkw & Input, const string path){
 	  sphereRadius.resize(nSpheres);
 	}
 	else if ( mode == "Implicit" ){
-	  cout << "Not yet implemented!" << endl;
-	  exit(1);
-	}
+	  } 
 	else{
 	  vector<double> spheresInput = cavity.getDblVec("Spheres");
 	  nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
@@ -139,7 +137,7 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	double *rsph    = new double[maxts];
 	double *work    = new double[lwork];
 
-    int nts;
+	int nts;
 
 	VectorXd xv = sphereCenter.row(0);
 	VectorXd yv = sphereCenter.row(1);
@@ -153,7 +151,6 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, work, &lwork);
-
     nTess = int(nts);
     tessCenter.resize(NoChange, nTess);
     tessSphereCenter.resize(NoChange, nTess);

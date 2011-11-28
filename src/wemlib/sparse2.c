@@ -334,7 +334,7 @@ void print_sparse2(sparse2 *A) {
     for (i = 0; i < A->m; i++) {
         for (j = 0; j < A->max_row_number[i]; j++) {
             printf("%d %d %d %18.6f %18.6f\n",
-                   i, j, A->index[i], A->value1[i][j], A->value2[i][j]);
+                   i, j, A->index[i][j], A->value1[i][j], A->value2[i][j]);
         }
     }
 }

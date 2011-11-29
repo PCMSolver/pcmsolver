@@ -119,6 +119,7 @@ extern "C" void init_pcm_() {
 		_cavity = _waveletCavity;
 		_solver = _WEMSolver;
 	} 
+	_cavity->initPotChg();
 	_solver->setSolverType(modelType);
 }
 
@@ -128,7 +129,6 @@ extern "C" void init_gepol_cavity_() {
 	Getkw Input = Getkw(infile, false, true);
     _gePolCavity = new GePolCavity(Input, "Cavity<gepol>");
 	_gePolCavity->makeCavity(5000, 10000000);
-	_gePolCavity->initPotChg();
 }
 
 extern "C" void init_wavelet_cavity_() {
@@ -138,7 +138,6 @@ extern "C" void init_wavelet_cavity_() {
     _waveletCavity = new WaveletCavity(Input, "Cavity<wavelet>");
 	_waveletCavity->makeCavity();
 	_waveletCavity->readCavity("molec_dyadic.dat");
-	_waveletCavity->initPotChg();
 }
 
 extern "C" void init_iefsolver_() {

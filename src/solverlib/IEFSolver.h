@@ -33,7 +33,7 @@ class IEFSolver : public PCMSolver {
  private:
     bool builtAnisotropicMatrix;
     bool builtIsotropicMatrix;
-    static const double factor = 1.07;
+    static const double factor = 1.0694;
     MatrixXd PCMMatrix;
 };
 #endif

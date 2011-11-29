@@ -24,6 +24,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "sparse2.h"
 #include "precond.h"
@@ -392,7 +393,9 @@ for (l=0; rn>epsi; l++)
    /* v = precond(V(0,:)) und rn = sqrt(v'*v) */ 	 
    rn = 0;
    precond(v,V[0],p,M);
-   for (i=0; i<A->n; i++) rn += v[i]*v[i];
+   for (i=0; i<A->n; i++) {
+       rn += v[i]*v[i];
+   }
    rn = sqrt(rn);
 
    /* v = V(0,:)/rn */

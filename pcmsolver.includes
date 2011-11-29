@@ -1,0 +1,10 @@
+external/include
+external/libgetkw/C
+external/libgetkw/C++
+external/libgetkw-build
+src/cavitylib
+src/green
+src/pedralib
+src/solverlib
+src/wavcavlib
+src/wemlib

@@ -24,8 +24,8 @@ extern "C" void collect_implicit_(double * charges, double * centers);
 extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput, 
 			    Matrix<double, 3, Dynamic> & sphereCenter);
 
-extern "C" void init_implicit_(VectorXd & sphereRadius, VectorXd & charges, 
-			       Matrix<double, 3, Dynamic> & sphereCenter);
+extern "C" void init_implicit_(VectorXd & sphereRadius, 
+                               Matrix<double, 3, Dynamic> & sphereCenter);
 
 extern "C" void get_cavity_size_(int * nts);
 

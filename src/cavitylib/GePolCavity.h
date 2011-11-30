@@ -3,11 +3,13 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <Eigen/Dense>
 
 #include "Getkw.h"
 #include "Cavity.h"
+#include "Atom.h"
 //class Getkw;
 
 /*
@@ -39,7 +41,8 @@ class GePolCavity : public Cavity {
     Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;}
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;}
     double getTessRadius(int i){return tessRadius(i);}
-  
+    vector<Atom> init_Bondi();
+
     friend std::ostream& operator<<(std::ostream &o, const GePolCavity &c);
 
  private:

@@ -1,6 +1,6 @@
 /*
 
-Interface functions implementation
+  Interface functions implementation
 
 */
 
@@ -19,10 +19,13 @@ Interface functions implementation
 #include "UniformDielectric.h"
 #include "PCMSolver.h"
 #include "IEFSolver.h"
+#include "Atom.h"
+#include "Sphere.h"
 #include "Interface.h"
 
 using namespace std;
 using namespace Eigen;
+
 
 GePolCavity *cavity;
 IEFSolver *solver;
@@ -34,47 +37,53 @@ IEFSolver *solver;
 */
 
 extern "C" void init_gepol_cavity_() {
-  	const char *infile = 0;
+	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	cavity = new GePolCavity(Input, "Cavity<gepol>");
-       	if ( Input.getStr("Cavity<gepol>.Mode") == "Atoms" ){
-	  vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
-	  vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
-	  init_atoms_(cavity->getNSpheres(), atomsInput, cavity->getSphereCenter());
+	if ( Input.getStr("Cavity<gepol>.Mode") == "Atoms" ){
+		vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
+		vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
+		init_atoms_(cavity->getNSpheres(), atomsInput, cavity->getSphereCenter());
 	}
 	else if ( Input.getStr("Cavity<gepol>.Mode") == "Implicit" ){
-	  init_implicit_(cavity->getSphereRadius(), cavity->getCharges(), cavity->getSphereCenter());
+		init_implicit_(cavity->getSphereRadius(), cavity->getSphereCenter());
 	}
-	cout << cavity->getSphereCenter() << endl;
 	cavity->makeCavity(5000, 10000000);
 	cavity->initPotChg();
 }
 
 extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput, 
-			    Matrix<double, 3, Dynamic> & sphereCenter){
-  double * centers = sphereCenter.data();
-  int * idx = new int[nSpheres];
-  for ( int i = 0; i < nSpheres; i++ ){
-    idx[i] = atomsInput[i];
-  }
-  collect_atoms_(& nSpheres, idx, centers);
- }
+							Matrix<double, 3, Dynamic> & sphereCenter){
+	double * centers = sphereCenter.data();
+	int * idx = new int[nSpheres];
+	for ( int i = 0; i < nSpheres; i++ ){
+		idx[i] = atomsInput[i];
+	}
+	collect_atoms_(& nSpheres, idx, centers);
+}
 
 extern "C" void init_implicit_(VectorXd & sphereRadius, 
-			       VectorXd & charges, Matrix<double, 3, Dynamic> & sphereCenter){
-  int nuclei;
-  collect_nctot_(&nuclei);
-  cavity->setNSpheres(nuclei);
-  sphereRadius.resize(nuclei);
-  charges.resize(nuclei);
-  sphereCenter.resize(NoChange, nuclei);
-  double * chg = charges.data();
-  double * centers = sphereCenter.data();
-  collect_implicit_(chg, centers);
-  sphereRadius = charges;
-  cout << sphereRadius << endl;
-}
+							   Matrix<double, 3, Dynamic> & sphereCenter) {
+	vector<Atom> Bondi = cavity->init_Bondi();
+	VectorXd charges;
+	int nuclei;
+	collect_nctot_(&nuclei);
+	cavity->setNSpheres(nuclei);
+	sphereRadius.resize(nuclei);
+	sphereCenter.resize(NoChange, nuclei);
+	charges.resize(nuclei);
+	double * chg = charges.data();
+	double * centers = sphereCenter.data();
+	collect_implicit_(chg, centers);
+	for ( int i = 0; i < nuclei; i++ ) {
+		for ( int j = 0; j < Bondi.size(); j++ ) {
+			if ( charges(i) == Bondi[j].getAtomCharge() ) {
+				sphereRadius(i) = Bondi[j].getAtomRadius();
+			}
+		}
+	}
+} 
 
 extern "C" void get_cavity_size_(int * nts) {
 	*nts = cavity->size();
@@ -83,7 +92,7 @@ extern "C" void get_cavity_size_(int * nts) {
 extern "C" void get_total_surface_charge_(double * charge) {
 	for (int i = 0; i < cavity->size(); i++) {
 		charge[i] = cavity->getChg(Cavity::Nuclear, i) + 
-			        cavity->getChg(Cavity::Electronic, i);
+			cavity->getChg(Cavity::Electronic, i);
 	}
 }
 
@@ -116,13 +125,13 @@ extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
 	nuc_pot_pcm_(cavity->getTessCenter().data(), &nts, 
 				 cavity->getPot(Cavity::Nuclear).data());
 	ele_pot_pcm_(density, cavity->getTessCenter().data(), &nts, 
-		     cavity->getPot(Cavity::Electronic).data(), work, lwork);
-
+				 cavity->getPot(Cavity::Electronic).data(), work, lwork);
+  
 	solver->compCharge(cavity->getPot(Cavity::Nuclear),    
-			   cavity->getChg(Cavity::Nuclear));
+					   cavity->getChg(Cavity::Nuclear));
 	solver->compCharge(cavity->getPot(Cavity::Electronic), 
-			   cavity->getChg(Cavity::Electronic));
-
+					   cavity->getChg(Cavity::Electronic));
+  
 	double totElChg = cavity->getChg(Cavity::Electronic).sum();
 	double totNuChg = cavity->getChg(Cavity::Nuclear).sum();
 }

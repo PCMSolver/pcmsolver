@@ -24,6 +24,7 @@
 #include "Atom.h"
 #include "Sphere.h"
 #include "Interface.h"
+#include "Constants.h"
 
 using namespace std;
 using namespace Eigen;
@@ -64,10 +65,15 @@ extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput,
 							Matrix<double, 3, Dynamic> & sphereCenter){
 	double * centers = sphereCenter.data();
 	int * idx = new int[nSpheres];
-	for ( int i = 0; i < nSpheres; i++ ){
+	int flag;
+	for ( int i = 0; i < nSpheres; i++ ) {
 		idx[i] = atomsInput[i];
 	}
-	collect_atoms_(& nSpheres, idx, centers);
+	collect_atoms_(& nSpheres, idx, centers, & flag);
+	delete idx;
+	if ( flag == 0 ) {
+		sphereCenter *= ToAngstrom;
+	}
 }
 
 extern "C" void init_implicit_(VectorXd & sphereRadius, 
@@ -75,6 +81,7 @@ extern "C" void init_implicit_(VectorXd & sphereRadius,
 	vector<Atom> Bondi = _gePolCavity->init_Bondi();
 	VectorXd charges;
 	int nuclei;
+	int flag;
 	collect_nctot_(&nuclei);
 	_gePolCavity->setNSpheres(nuclei);
 	sphereRadius.resize(nuclei);
@@ -82,7 +89,10 @@ extern "C" void init_implicit_(VectorXd & sphereRadius,
 	charges.resize(nuclei);
 	double * chg = charges.data();
 	double * centers = sphereCenter.data();
-	collect_implicit_(chg, centers);
+	collect_implicit_(chg, centers, & flag);
+	if ( flag == 0 ) {
+		sphereCenter *= ToAngstrom;
+	}
 	for ( int i = 0; i < nuclei; i++ ) {
 		for ( int j = 0; j < Bondi.size(); j++ ) {
 			if ( charges(i) == Bondi[j].getAtomCharge() ) {
@@ -226,10 +236,6 @@ extern "C" void build_anisotropic_matrix_() {
 
 extern "C" void build_isotropic_matrix_() {
 	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
-}
-
-extern "C" void build_anisotropic_matrix_() {
-	solver->buildAnisotropicMatrix(*cavity);
 }
 
 //copying mechanism of the following routine needs to be revised

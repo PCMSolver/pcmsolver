@@ -12,6 +12,7 @@
  
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "constants.h"
 #include "vector2.h"
@@ -47,7 +48,9 @@ for (i=0; i<nf; i++)
    d[i] = r[i];
    u += r[i] * r[i];
    }
-u_start = u;
+
+ if(sqrt(u) > eps) {
+     u_start = u;
 
 /* Iteration */
 while (sqrt(u/u_start)>eps)
@@ -74,7 +77,12 @@ while (sqrt(u/u_start)>eps)
    /* d = r +  u/v * d */
    omg = u/v;
    for (i=0; i<nf; i++) d[i] = r[i] + omg * d[i];
-   }
+ }
+ } else {
+     for(i=0; i < nf; i++) {
+         x[i] = 0.0l;
+     }
+ }
 
 free(Ad);
 free(r);

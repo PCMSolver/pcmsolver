@@ -27,6 +27,8 @@ extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput,
 extern "C" void init_implicit_(VectorXd & sphereRadius, 
                                Matrix<double, 3, Dynamic> & sphereCenter);
 
+extern "C" void init_wavelet_cavity_();
+
 extern "C" void get_cavity_size_(int * nts);
 
 extern "C" void get_total_surface_charge_(double * charge);
@@ -52,7 +54,9 @@ extern "C" void print_gepol_cavity_();
 
 extern "C" void init_pcm_();
 
-extern "C" void init_pcmsolver_();
+extern "C" void init_iefsolver_();
+
+extern "C" void init_wemsolver_();
 
 extern "C" void build_isotropic_matrix_();
 

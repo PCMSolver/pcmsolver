@@ -20,6 +20,8 @@ class IEFSolver : public PCMSolver {
     IEFSolver(Section solver);
     ~IEFSolver();
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
+
+    virtual void buildSystemMatrix(Cavity & cavity);
     virtual void buildAnisotropicMatrix(GePolCavity cav);
     virtual void buildIsotropicMatrix(GePolCavity cav);
     virtual double compDiagonalElementSoper(GreensFunction *green, int i, 
@@ -31,7 +33,7 @@ class IEFSolver : public PCMSolver {
  private:
     bool builtAnisotropicMatrix;
     bool builtIsotropicMatrix;
-    static const double factor = 1.07;
+    static const double factor = 1.0694;
     MatrixXd PCMMatrix;
 };
 #endif

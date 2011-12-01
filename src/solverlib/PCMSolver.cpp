@@ -48,6 +48,29 @@ PCMSolver::~PCMSolver(){
 	}
 }
 
+void PCMSolver::setSolverType(const string & type) {
+	if (type == "Traditional") {
+		this->setSolverType(Traditional);
+	} else if (type == "Wavelet") {
+		this->setSolverType(Wavelet);
+	} else {
+		exit(-1);
+	}
+}
+
+void PCMSolver::setSolverType(int type) {
+	switch (type) {
+	case Traditional :
+		this->solverType = Traditional;
+		break;
+	case Wavelet :
+		this->solverType = Wavelet;
+		break;
+	default : 
+		exit(-1);
+	}
+}
+
 GreensFunction & PCMSolver::getGreenInside(){
 	return *greenInside;
 }

@@ -31,6 +31,7 @@ extern "C"{
 #include "constants.h"
 }
 
+#include "Constants.h"
 #include "Getkw.h"
 #include "Cavity.h"
 #include "WaveletCavity.h"
@@ -106,7 +107,7 @@ void WaveletCavity::makeCavity() {
 }
 
 
-void WaveletCavity::readCavity(string & filename) {
+void WaveletCavity::readCavity(const string & filename) {
 
 		int i, j, k;
 		double x, y, z;
@@ -170,6 +171,8 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 					norm = n_Chi(t,T_[i1], nLevels);
 					Vector3d center(point.x, point.y, point.z);	 
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
+					normal.normalize();
+					center = center / ToAngstrom;
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
 					tessCenter.col(j) = center.transpose();
 					tessNormal.col(j) = normal.transpose();
@@ -182,6 +185,7 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 		}
 	}
 	free_Gauss_Square(&Q,quadLevel+1);  
+	isBuilt = true;
 }
 
 ostream & operator<<(ostream &os, const WaveletCavity &cavity) {

@@ -33,6 +33,7 @@ extern "C"{
 #include "constants.h"
 }
 
+#include "Constants.h"
 #include "Getkw.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
@@ -145,6 +146,15 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 	free_points(&U, nPatches, nLevels);
 }
 
+void WEMSolver::buildSystemMatrix(Cavity & cavity) {
+    if (WaveletCavity *waveletCavity = dynamic_cast<WaveletCavity*> (&cavity)) {
+		this->uploadCavity(*waveletCavity);
+		this->constructSystemMatrix();
+	} else {
+		exit(-1);
+	}
+}
+
 void WEMSolver::constructSystemMatrix(){
 
   generate_elementlist(&elementTree,nodeList,elementList,nPatches,nLevels);
@@ -152,7 +162,7 @@ void WEMSolver::constructSystemMatrix(){
   set_quadrature_level(waveletList,elementTree,nPatches,nLevels);
   simplify_waveletlist(waveletList,elementTree,nPatches,nLevels);
   complete_elementlist(waveletList,elementTree,nPatches,nLevels);
-  
+
   gf = getGreenInsideP();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
   WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
@@ -194,6 +204,7 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 		}
 	}
 
+	
 	iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, nPatches, nLevels);
 	for(unsigned int i=0; i<nFunctions; i++) {
 		u[i] -= 4*M_PI*v[i];
@@ -233,4 +244,8 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	free(rhs);
 	free(u);
 	free(v);
+
+
+	charge /= -ToAngstrom;
+
 }

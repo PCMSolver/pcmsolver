@@ -5,6 +5,8 @@
 #include <string>
 #include <Eigen/Dense>
 
+#include "Atom.h"
+
 using namespace Eigen;
 using namespace std;
 
@@ -45,6 +47,8 @@ class Cavity
     double compPolarizationEnergy();
 
     enum chargeType{Nuclear, Electronic};
+
+    vector<Atom> init_Bondi();
 
     friend std::ostream& operator<<(std::ostream &o, const Cavity &c);
 

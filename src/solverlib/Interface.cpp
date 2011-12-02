@@ -94,11 +94,8 @@ extern "C" void init_implicit_(VectorXd & sphereRadius,
 		sphereCenter *= ToAngstrom;
 	}
 	for ( int i = 0; i < nuclei; i++ ) {
-		for ( int j = 0; j < Bondi.size(); j++ ) {
-			if ( charges(i) == Bondi[j].getAtomCharge() ) {
-				sphereRadius(i) = Bondi[j].getAtomRadius();
-			}
-		}
+		int j = charges(i)-1;
+		sphereRadius(i) = Bondi[j].getAtomRadius();
 	}
 } 
 

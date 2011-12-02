@@ -11,6 +11,8 @@
 #include <iostream>
 #include <complex>
 
+#include "Solvent.h"
+
 using namespace std;
 
 class PCMSolver{
@@ -37,6 +39,8 @@ class PCMSolver{
     virtual int getSolverType() { return solverType; }
 
     enum solverTypes{Traditional, Wavelet};
+
+    vector<Solvent> init_Solvent();
 
  protected:
     bool allocated;

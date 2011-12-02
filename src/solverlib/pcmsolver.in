@@ -105,10 +105,11 @@ def	setup_keywords():
 	top.add_kw('Units',     'STR', 'AU')
 
 	medium=getkw.Section('Medium', callback=verify_medium)
-	medium.add_kw('Solvent', 'STR', 'water')
+	medium.add_kw('Solvent', 'STR', 'Water')
 	top.add_sect(medium)
 	
-	green=getkw.Section('Green', callback=verify_green)
+	#green=getkw.Section('Green', callback=verify_green)
+	green=getkw.Section('Green')
 	green.add_kw('Type', 'STR', 'Vacuum')
 	green.add_kw('Eps', 'DBL', 1.0)
 	green.add_kw('EpsRe', 'DBL', 1.0)
@@ -212,8 +213,21 @@ def verify_cavity(section):
                 sys.exit(1)
 
 def verify_medium(section):
+	allowed_solvents = ('Water', 'Methanol', 'Ethanol', 'Chloroform', 'Methylenechloride', '1,2-Dichloroethane', 
+			    'Carbon tetrachloride', 'Benzene', 'Toluene', 'Chlorobenzene', 'Nitromethane', 
+			    'N-heptane', 'Cyclohexane', 'Aniline', 'Acetone', 'Tetrahydrofurane', 
+			    'Dimethylsulfoxide', 'Acetonitrile')
 	solvent=section.get('Solvent')
-	if (solvent.get() != 'water'):
+	if (solvent.get() not in allowed_solvents):
+		# The Green section correctness is verified inside the Medium section callback.
+		# Check if it is possible to pass a bool variable errors = False to the verify_green function.
+		# The idea is that the exception will be raised with the following message, together with
+		# all the messages written by the verify_green function.
+		verify_green(section.fetch_sect()) 
+		print "Allowed solvents are: ", allowed_solvents, "..." 
+		print "... or you could specify the dielectric constant!"
+		sys.exit(1)
+	if (solvent.get() != 'Water'):
 		print "Only water defined for now, sorry!"
 		sys.exit(1)
 	

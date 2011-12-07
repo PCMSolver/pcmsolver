@@ -41,6 +41,10 @@ class PCMSolver{
     enum solverTypes{Traditional, Wavelet};
 
     vector<Solvent> init_Solvent();
+    string & getSolvent(){ return solvent; }
+    void setSolvent(string & solvent);
+
+    friend std::ostream & operator<<(std::ostream & o, PCMSolver & c);
 
  protected:
     bool allocated;
@@ -48,5 +52,7 @@ class PCMSolver{
     GreensFunction *greenInside;
     GreensFunction *greenOutside;
     int solverType;
+    virtual ostream & printSolver(ostream & os);
+    string solvent;
 };
 #endif

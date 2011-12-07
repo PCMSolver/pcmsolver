@@ -30,11 +30,13 @@ class IEFSolver : public PCMSolver {
                                             GePolCavity cav);
     virtual VectorXd compCharge(const VectorXd & potential);
     virtual void compCharge(const VectorXd & potential, VectorXd & charge);
+
  private:
     bool builtAnisotropicMatrix;
     bool builtIsotropicMatrix;
     //    static const double factor = 1.0694;
     static const double factor = 1.07;
     MatrixXd PCMMatrix;
+    virtual ostream & printSolver(ostream & os);
 };
 #endif

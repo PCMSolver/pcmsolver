@@ -215,6 +215,7 @@ extern "C" void init_iefsolver_() {
 	const Section &Medium = Input.getSect("Medium<Medium>");
 	_IEFSolver = new IEFSolver(Medium);
 	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
+	cout << *_IEFSolver << endl;
 }
 
 extern "C" void init_wemsolver_() {

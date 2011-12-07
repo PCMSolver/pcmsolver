@@ -35,11 +35,29 @@ PCMSolver::PCMSolver(GreensFunction *gfi, GreensFunction *gfo){
 }
 
 PCMSolver::PCMSolver(Section solver) {
-	allocated = true;
-	greenInside  = 
-		greenInside->allocateGreensFunction(solver.getSect("Green<inside>"));
-	greenOutside = 
-		greenOutside->allocateGreensFunction(solver.getSect("Green<outside>"));
+	vector<Solvent> SolventData = PCMSolver::init_Solvent();
+	int solventIndex = solver.getInt("SolIndex");
+	solvent = solver.getStr("Solvent");
+	if ( solventIndex > SolventData.size() ) { // The solventIndex is not less than zero: we checked at input parsing!
+		// Print solvent name and use Green's Function specification in the input.
+		solvent += " (User defined)";
+		cout << "You are working with " << solvent << " overriding the built-in solvents." << endl;
+		cout << "Good luck!" << endl;
+		allocated = true;
+		greenInside  = 
+			greenInside->allocateGreensFunction(solver.getSect("Green<inside>"));
+		greenOutside = 
+			greenOutside->allocateGreensFunction(solver.getSect("Green<outside>"));
+	} else { // Use built-in solvents.
+		cout << "You are working with the built-in specification for " << solvent << endl;
+		cout << "EpsStatic " << SolventData[solventIndex].getSolventEpsStatic() << endl;
+		allocated = true;
+		greenInside = 
+			greenInside->allocateGreensFunction();
+		greenOutside = 
+			greenOutside->allocateGreensFunction(SolventData[solventIndex].getSolventEpsStatic());
+	} 
+	// One possibility missing!! Override a predefined solvent specifying the Green's Functions (inside and/or outside)
 }
 
 PCMSolver::~PCMSolver(){
@@ -125,4 +143,26 @@ vector<Solvent> PCMSolver::init_Solvent() {
   // ------------------------------------------------------------
 
   return SolventData;
+}
+
+void PCMSolver::setSolvent(string & solv) {
+	solvent = solv;
+}
+
+ostream & operator<<(ostream & os, PCMSolver & solver) {
+	return solver.printSolver(os);
+}
+
+ostream & PCMSolver::printSolver(ostream & os) {
+	string type;
+	if ( solverType == Traditional ) {
+		type = "Traditional";
+	} else {
+		type = "Wavelet";
+	}
+	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
+	os << "========== Solver section" << endl;
+	os << "Solver Type: " << type << endl;
+	os << "Solvent: " << solvent << endl;
+	return os;
 }

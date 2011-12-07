@@ -22,7 +22,9 @@ class GreensFunction
     void setDelta(double value);
     double getDelta(){return delta;}
     bool isUniform(){ return uniformFlag; }
-    GreensFunction* allocateGreensFunction(const Section &green);
+    GreensFunction * allocateGreensFunction(const Section &green);
+    GreensFunction * allocateGreensFunction(double dielConst);
+    GreensFunction * allocateGreensFunction();
  protected:
     double delta;
 	bool uniformFlag;	

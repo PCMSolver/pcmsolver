@@ -70,3 +70,14 @@ GreensFunction* GreensFunction::allocateGreensFunction(const Section &green) {
 	return gf;
 }
 
+GreensFunction* GreensFunction::allocateGreensFunction(double dielConst) {
+	GreensFunction *gf;
+	gf = new UniformDielectric(dielConst);
+	return gf;
+}
+
+GreensFunction* GreensFunction::allocateGreensFunction() {
+	GreensFunction *gf;
+	gf = new Vacuum();
+	return gf;
+}

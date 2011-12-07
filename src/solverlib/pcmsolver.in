@@ -106,10 +106,11 @@ def	setup_keywords():
 
 	medium=getkw.Section('Medium', callback=verify_medium)
 	medium.add_kw('Solvent', 'STR', 'Water')
+	medium.add_kw('SolIndex', 'INT', 0)
+	medium.add_kw('SolRadius','DBL', 1.0)
 	top.add_sect(medium)
 	
-	#green=getkw.Section('Green', callback=verify_green)
-	green=getkw.Section('Green')
+	green=getkw.Section('Green', callback=verify_green)
 	green.add_kw('Type', 'STR', 'Vacuum')
 	green.add_kw('Eps', 'DBL', 1.0)
 	green.add_kw('EpsRe', 'DBL', 1.0)
@@ -213,24 +214,45 @@ def verify_cavity(section):
                 sys.exit(1)
 
 def verify_medium(section):
-	allowed_solvents = ('Water', 'Methanol', 'Ethanol', 'Chloroform', 'Methylenechloride', '1,2-Dichloroethane', 
-			    'Carbon tetrachloride', 'Benzene', 'Toluene', 'Chlorobenzene', 'Nitromethane', 
-			    'N-heptane', 'Cyclohexane', 'Aniline', 'Acetone', 'Tetrahydrofurane', 
-			    'Dimethylsulfoxide', 'Acetonitrile')
-	solvent=section.get('Solvent')
-	if (solvent.get() not in allowed_solvents):
-		# The Green section correctness is verified inside the Medium section callback.
-		# Check if it is possible to pass a bool variable errors = False to the verify_green function.
-		# The idea is that the exception will be raised with the following message, together with
-		# all the messages written by the verify_green function.
-		verify_green(section.fetch_sect()) 
-		print "Allowed solvents are: ", allowed_solvents, "..." 
-		print "... or you could specify the dielectric constant!"
+	# A dictionary. We will pass the numeric key to the C++ code.
+	allowed_solvents_dict = {0: ('Water', 'water', 'H2O'),
+				 1: ('Methanol', 'methanol', 'CH3OH'),
+				 2: ('Ethanol', 'ethanol', 'CH3CH2OH'),
+				 3: ('Chloroform','chloroform','CHCl3'),
+				 4: ('Methylenechloride', 'methylenechloride', 'CH2Cl2'),
+				 6: ('1,2-Dichloroethane', '1,2-dichloroethane', 'C2H4Cl2'),
+				 7: ('Carbon Tetrachloride', 'carbon tetrachloride', 'CCl4'),
+				 8: ('Benzene', 'benzene', 'C6H6'),
+				 9: ('Toluene', 'toluene', 'C6H5CH3'),
+				 10: ('Chlorobenzene', 'chlorobenzene', 'C6H5Cl'),
+				 11: ('Nitromethane', 'nitromethane', 'CH3NO2'),
+				 12: ('N-heptane', 'n-heptane', 'C7H16'),
+				 13: ('Cyclohexane', 'cyclohexane', 'C6H12'),
+				 14: ('Aniline', 'aniline', 'C6H5NH2'),
+				 15: ('Acetone', 'acetone', 'C2H6CO'),
+				 16: ('Tetrahydrofurane', 'tetrahydrofurane', 'THF'),
+				 17: ('Dimethylsulfoxide', 'dimethylsulfoxide', 'DMSO'),
+				 18: ('Acetonitrile', 'acetonitrile', 'CH3CN')}
+	solvent = section.get('Solvent')
+	aList = allowed_solvents_dict.values()
+	for i, v in enumerate(aList):
+		aList[i] = aList[i][0]
+	allowed_solvents_tuple = tuple(aList)
+	solvent_index = -1
+	for i in allowed_solvents_dict:
+		if (solvent.get() in allowed_solvents_dict[i]):
+			solvent_index = i
+			break
+	if (solvent_index not in range(19)):
+		print "Allowed solvents are: ", allowed_solvents_tuple
+		print "Overriding built-in solvents (if Green's Functions specified!)"
+	idx = section.get('SolIndex')
+	idx.set(solvent_index)
+	solradius = section.get('SolRadius')
+	if (solradius.get() < 0.1 or solradius.get() > 100):
+		print "Solvent probe radius has to be within [0.1,100]"
 		sys.exit(1)
-	if (solvent.get() != 'Water'):
-		print "Only water defined for now, sorry!"
-		sys.exit(1)
-	
+			
 def verify_green(section):
 	required = ('Type',)
 	allowed = ('Vacuum', 'UniformDielectric', 'MetalSphere', 'GreensFunctionSum')
@@ -265,6 +287,7 @@ def verify_green(section):
 			sys.exit(1)
 		if (radius.get()  < 0.1):
 			print "Minimum value allowed for Radius is 0.1"
+			sys.exit(1)
 
 	if (type.get() == 'GreensFunctionSum'):
 		if not (green1.is_set() and green2.is_set()):

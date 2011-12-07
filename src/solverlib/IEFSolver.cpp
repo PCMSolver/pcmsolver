@@ -201,7 +201,7 @@ VectorXd IEFSolver::compCharge(const VectorXd &potential) {
 	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
 		charge = - PCMMatrix * potential;
 	} else {
-		cout << "PCM matrtix not initialized" << endl;
+		cout << "PCM matrix not initialized" << endl;
 		exit(1);
 	}
 	return charge;
@@ -211,9 +211,16 @@ void IEFSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
 		charge = - PCMMatrix * potential;
 	} else {
-		cout << "PCM matrtix not initialized" << endl;
+		cout << "PCM matrix not initialized" << endl;
 		exit(1);
 	}
 }
 
-
+ostream & IEFSolver::printSolver(ostream & os) {
+	string type = "Traditional";
+	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
+	os << "========== Solver section" << endl;
+	os << "Solver Type: " << type << endl;
+	os << "Solvent: " << solvent << endl;
+	return os;
+}

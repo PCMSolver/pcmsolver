@@ -108,39 +108,43 @@ double Cavity::compPolarizationEnergy() {
 	return 0.5 * (EEE + EEN + ENE + ENN);
 }
 
-ostream & operator<<(ostream &os, const Cavity &cavity) {
+ostream & operator<<(ostream & os, Cavity & cavity) {
+	return cavity.printObject(os);
+}
+
+ostream & Cavity::printObject(ostream & os) {
 	os << "Molecular cavity" << endl;
-	os << "Nr. of tesserae: " << cavity.nTess;
-    for(int i = 0; i < cavity.nTess; i++) {
+	os << "Nr. of tesserae: " << nTess;
+    for(int i = 0; i < nTess; i++) {
 		os << endl;
 		os << i+1 << " ";
-		os << cavity.tessCenter(0,i) << " ";
-		os << cavity.tessCenter(1,i) << " ";
-		os << cavity.tessCenter(2,i) << " ";
-		os << cavity.tessArea(i);
+		os << tessCenter(0,i) << " ";
+		os << tessCenter(1,i) << " ";
+		os << tessCenter(2,i) << " ";
+		os << tessArea(i);
     }
 	return os;
 }
 
-vector<Atom> Cavity::init_Bondi() {
+vector<Atom> Cavity::initBondi() {
 	/*
 
-    vector<Atom> Bondi() contains the van der Waals radii taken from
-    --- A. Bondi, J. Phys. Chem. 68, 441-451 (1964) ---
+	  vector<Atom> Bondi() contains the van der Waals radii taken from
+	  --- A. Bondi, J. Phys. Chem. 68, 441-451 (1964) ---
   
-  */
+	*/
 
-  vector<Atom> Bondi(54);
-  Vector3d Origin;
+	vector<Atom> Bondi(54);
+	Vector3d Origin;
 
-  // ------------------------------------------------------------
+	// ------------------------------------------------------------
 
-  Origin << 0.0, 0.0, 0.0;
+	Origin << 0.0, 0.0, 0.0;
   
-  Bondi[0] = Atom("Hydrogen", "H", 1.0, 1.20, Origin);
-  Bondi[1] = Atom("Helium", "He", 2.0, 1.40, Origin);
-  Bondi[2] = Atom("Lithium", "Li", 3.0, 0.0, Origin);
-  Bondi[3] = Atom("Beryllium", "Be", 4.0, 0.0, Origin);
+	Bondi[0] = Atom("Hydrogen", "H", 1.0, 1.20, Origin);
+	Bondi[1] = Atom("Helium", "He", 2.0, 1.40, Origin);
+	Bondi[2] = Atom("Lithium", "Li", 3.0, 0.0, Origin);
+	Bondi[3] = Atom("Beryllium", "Be", 4.0, 0.0, Origin);
   Bondi[4] = Atom("Boron", "B", 5.0, 0.0, Origin);
   Bondi[5] = Atom("Carbon", "C", 6.0, 1.70, Origin);
   Bondi[6] = Atom("Nitrogen", "N", 7.0, 1.55, Origin);

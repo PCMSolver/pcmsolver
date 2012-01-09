@@ -128,10 +128,13 @@ def	setup_keywords():
 	cavity.add_kw('ProbeRadius', 'DBL', 1.3)
 	cavity.add_kw('Coarsity', 'DBL', 0.5)
 	cavity.add_kw('Area','DBL', 0.3)
+	cavity.add_kw('Scaling', 'DBL', 1.0)
+	cavity.add_kw('AddSpheres', 'STR', 'Yes')
+	cavity.add_kw('SolventRadius', 'DBL', 0.0)
         cavity.add_kw('Mode','STR','Explicit')
+	cavity.add_kw('ModeIndex', 'INT', 0)
         cavity.add_kw('Atoms','INT_ARRAY')
         cavity.add_kw('Radii','DBL_ARRAY')
-
 	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
 	top.add_sect(cavity)
         
@@ -184,19 +187,33 @@ def verify_cavity(section):
         	if (key.get() < 0.0):
         		print "Negative probe radius not allowed"
         		sys.exit(1)
-	
-	allowed_modes = ('Explicit', 'Atoms', 'Implicit')
-        mode = section.get('Mode')
-        if (mode.get() not in allowed_modes):
-        	print "Allowed modes are: ", allowed_modes
-        	sys.exit(1)                         
-	
+	scaling = section.get('Scaling')
+	if (scaling.get() <= 0.0):
+		print "Incoherent input for radii scaling constant."
+		print "Scaling must be > 0.0"
+		sys.exit(1)
+	allowed_modes_dict = {0: "Explicit", 1: "Atoms", 2: "Implicit"}
+	mode = section.get('Mode')
+	aList = allowed_modes_dict.values()
+	allowed_modes_tuple = tuple(aList)
+	mode_index = -1
+	for i in allowed_modes_dict:
+		if (mode.get() in allowed_modes_dict[i]):
+			mode_index = i
+			break
+	if (mode_index not in range(3)):
+		print "Allowed modes are: ", allowed_modes_tuple
+		sys.exit(1)                         
+	idx = section.get('ModeIndex')
+	idx.set(mode_index)
+
         atoms=section.get('Atoms')
         at=atoms.get()
                                    
         radii=section.get('Radii')
         r=radii.get()
-       
+	
+	atoms_radii_dict = dict(zip(at, r))
         if (mode.get() == 'Atoms'):
             if (len(at) == 0):
                 print "Incoherent input for Atoms keyword."
@@ -212,6 +229,8 @@ def verify_cavity(section):
                 print "Incoherent input for Atoms keyword."
                 print "Check that Atoms and Radii are consistent."
                 sys.exit(1)
+	
+	
 
 def verify_medium(section):
 	# A dictionary. We will pass the numeric key to the C++ code.

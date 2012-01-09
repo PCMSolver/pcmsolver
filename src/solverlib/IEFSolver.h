@@ -37,6 +37,6 @@ class IEFSolver : public PCMSolver {
     //    static const double factor = 1.0694;
     static const double factor = 1.07;
     MatrixXd PCMMatrix;
-    virtual ostream & printSolver(ostream & os);
+    virtual ostream & printObject(ostream & os);
 };
 #endif

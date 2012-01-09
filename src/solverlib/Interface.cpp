@@ -23,6 +23,7 @@
 #include "WEMSolver.h"
 #include "Atom.h"
 #include "Sphere.h"
+#include "Solvent.h"
 #include "Interface.h"
 #include "Constants.h"
 
@@ -37,6 +38,9 @@ WEMSolver * _WEMSolver;
 Cavity * _cavity;
 PCMSolver * _solver;
 
+vector<Atom> Bondi = _gePolCavity->initBondi();
+vector<Solvent> solventData = _solver->initSolvent();
+
 /*
 
   Cavity related functions
@@ -45,57 +49,74 @@ PCMSolver * _solver;
 
 extern "C" void init_gepol_cavity_() {
 	const char *infile = 0;
+	enum {Explicit, Atoms, Implicit};
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
-	_gePolCavity = new GePolCavity(Input, "Cavity<gepol>");
-	if ( Input.getStr("Cavity<gepol>.Mode") == "Atoms" ){
+	int mode = Input.getInt("Cavity<gepol>.ModeIndex");
+	double scaling = Input.getDbl("Cavity<gepol>.Scaling");
+	int solventIndex = Input.getInt("Medium.SolIndex");
+	_gePolCavity = new GePolCavity(Input, mode, "Cavity<gepol>");
+	int nNuclei;
+	Matrix<double, 3, Dynamic> sphereCenter;
+	VectorXd charges;
+	if (Input.getStr("Cavity<gepol>.AddSpheres") == "Yes"){
+		if (Input.getDbl("Cavity<gepol>.SolventRadius")) {
+			_gePolCavity->setRSolv(Input.getDbl("Cavity<gepol>.SolventRadius"));
+		} else {
+			_gePolCavity->setRSolv(solventData[solventIndex].getSolventRadius());
+		}
+	} else {
+		_gePolCavity->setRSolv(0.0);
+	}
+	init_atoms_(charges, sphereCenter);
+	nNuclei = charges.size();
+	_gePolCavity->setNSpheres(nNuclei);
+	if ( mode == Atoms ){
 		vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
 		vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
-		init_atoms_(_gePolCavity->getNSpheres(), atomsInput, 
-					_gePolCavity->getSphereCenter());
-	}
-	else if ( Input.getStr("Cavity<gepol>.Mode") == "Implicit" ){
-		init_implicit_(_gePolCavity->getSphereRadius(), _gePolCavity->getSphereCenter());
+		int nsph = atomsInput.size();	
+		for ( int i = 0; i < nNuclei; i++ ) {
+			for ( int j = 0; j < nsph; j++ ) {
+				if ( i + 1 == atomsInput[j] ) {
+					charges(i) = 0;
+				}
+			}
+		}
+		for ( int i = 0; i < nNuclei; i++ ) {
+			Vector3d center = sphereCenter.col(i);
+			if ( charges(i) == 0 ) {
+				Sphere sph(center, radiiInput[i]*scaling);
+				_gePolCavity->getVectorSpheres().push_back(sph);
+			} else {
+				int k = charges(i) - 1;
+				Sphere sph(center, Bondi[k].getAtomRadius()*scaling);
+				_gePolCavity->getVectorSpheres().push_back(sph);
+			}
+		}
+	} else if ( mode == Implicit ) {
+		for ( int i = 0; i < nNuclei; i++ ) {
+			int j = charges(i)-1;
+			Vector3d center = sphereCenter.col(i);
+			Sphere sph(center, Bondi[j].getAtomRadius()*scaling);
+			_gePolCavity->getVectorSpheres().push_back(sph);
+		}
 	}
 	_gePolCavity->makeCavity(5000, 10000000);
 	_gePolCavity->initPotChg();
 }
 
-extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput, 
-							Matrix<double, 3, Dynamic> & sphereCenter){
-	double * centers = sphereCenter.data();
-	int * idx = new int[nSpheres];
-	int flag;
-	for ( int i = 0; i < nSpheres; i++ ) {
-		idx[i] = atomsInput[i];
-	}
-	collect_atoms_(& nSpheres, idx, centers, & flag);
-	delete idx;
-	if ( flag == 0 ) {
-		sphereCenter *= ToAngstrom;
-	}
-}
-
-extern "C" void init_implicit_(VectorXd & sphereRadius, 
-							   Matrix<double, 3, Dynamic> & sphereCenter) {
-	vector<Atom> Bondi = _gePolCavity->init_Bondi();
-	VectorXd charges;
+extern "C" void init_atoms_(VectorXd & charges,
+							Matrix<double, 3, Dynamic> & sphereCenter) {
 	int nuclei;
 	int flag;
 	collect_nctot_(&nuclei);
-	_gePolCavity->setNSpheres(nuclei);
-	sphereRadius.resize(nuclei);
 	sphereCenter.resize(NoChange, nuclei);
 	charges.resize(nuclei);
 	double * chg = charges.data();
 	double * centers = sphereCenter.data();
-	collect_implicit_(chg, centers, & flag);
+	collect_atoms_(chg, centers, & flag);
 	if ( flag == 0 ) {
 		sphereCenter *= ToAngstrom;
-	}
-	for ( int i = 0; i < nuclei; i++ ) {
-		int j = charges(i)-1;
-		sphereRadius(i) = Bondi[j].getAtomRadius();
 	}
 } 
 
@@ -172,7 +193,6 @@ extern "C" void print_gepol_cavity_(){
   Solver related functions
 
 */
-
 
 extern "C" void init_pcm_() {
 	const char *infile = 0;

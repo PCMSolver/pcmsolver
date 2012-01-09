@@ -17,16 +17,10 @@ extern "C" void init_gepol_cavity_();
 
 extern "C" void collect_nctot_(int * nuclei);
 
-extern "C" void collect_atoms_(int * nSpheres, int * idx, 
-                               double * centers, int * flag);
+extern "C" void collect_atoms_(double * charges, double * centers, int * flag);
 
-extern "C" void collect_implicit_(double * charges, double * centers, int * flag);
-
-extern "C" void init_atoms_(int nSpheres, vector<int> & atomsInput, 
-			    Matrix<double, 3, Dynamic> & sphereCenter);
-
-extern "C" void init_implicit_(VectorXd & sphereRadius, 
-                               Matrix<double, 3, Dynamic> & sphereCenter);
+extern "C" void init_atoms_(VectorXd & charges, 
+                            Matrix<double, 3, Dynamic> & sphereCenter);
 
 extern "C" void init_wavelet_cavity_();
 

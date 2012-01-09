@@ -13,17 +13,27 @@ using namespace Eigen;
 
 /*
 
-Methods for Sphere class
-written by Roberto Di Remigio, 2011
+  Methods for Sphere class
+  written by Roberto Di Remigio, 2011
 
 */
 
-Sphere::Sphere( double radius, Vector3d & center) {
-  sphereRadius = radius;
-  sphereCenter = center;
+Sphere::Sphere( Vector3d & center, double radius ) {
+	sphereCenter = center;
+	sphereRadius = radius;
 }
 
 Sphere::Sphere( Atom & atom ) {
-  sphereRadius = atom.getAtomRadius();
-  sphereCenter = atom.getAtomCoord();
+	sphereCenter = atom.getAtomCoord();
+	sphereRadius = atom.getAtomRadius();
+}
+
+ostream & operator<<(ostream & os, Sphere & sphere) {
+	return sphere.printObject(os);
+} 
+
+ostream & Sphere::printObject(ostream & os) {
+	os << "Sphere radius " << sphereRadius << endl;
+	os << "Sphere center\n" << sphereCenter;
+	return os;
 }

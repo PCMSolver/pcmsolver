@@ -4,7 +4,7 @@ C     written by Krzysztof Mozgawa, 2010
 C
       subroutine generatecavity_cpp(xtscor,ytscor,ztscor,ar,xsphcor,
      &     ysphcor, zsphcor, rsph, nts, nesfp, xe, ye, ze, rin, avgArea,
-     $     work, lwork)
+     $     rsolv, work, lwork)
 
       implicit real*8 (a-h, o-z)
       double precision xtscor(*), ytscor(*), ztscor(*)
@@ -14,7 +14,7 @@ C
 
       call makecav_(xtscor,ytscor,ztscor,ar,xsphcor,
      &     ysphcor, zsphcor, rsph, nts, nesfp, xe, ye, ze, rin, avgArea,
-     $     work, lwork)
+     $     rsolv, work, lwork)
 
       end
 

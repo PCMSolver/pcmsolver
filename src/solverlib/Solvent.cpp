@@ -24,4 +24,3 @@ Solvent::Solvent( const string & name, double epsstatic,
 	solventEpsOptical = epsoptical;
 	solventRadius = radius;
 }
-

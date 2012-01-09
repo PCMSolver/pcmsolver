@@ -28,31 +28,26 @@ class Cavity
     virtual void writeOutput(string &filename);
     virtual Matrix<double, 3, Dynamic> & getTessCenter(){return tessCenter;}
     virtual Vector3d getTessCenter(int i){return tessCenter.col(i);}
-
     virtual Matrix<double, 3, Dynamic> & getTessNormal(){return tessNormal;}
     virtual Vector3d getTessNormal(int i){return tessNormal.col(i);}
-
     virtual VectorXd & getTessArea(){return tessArea;}
     virtual double getTessArea(int i){return tessArea(i);}
-
     virtual int size(){return nTess;}
-
     virtual void initPotChg();
-
     VectorXd & getChg(int type);
     VectorXd & getPot(int type);
     double getChg(int type, int i);
     double getPot(int type, int i);
-
     double compPolarizationEnergy();
-
+    
     enum chargeType{Nuclear, Electronic};
 
-    vector<Atom> init_Bondi();
+    vector<Atom> initBondi();
 
-    friend std::ostream& operator<<(std::ostream &o, const Cavity &c);
-
+    friend std::ostream& operator<<(std::ostream & o, Cavity & c);
+    
  protected:
+    virtual ostream & printObject(ostream & os);
     int nTess;
     bool isBuilt;
     Matrix<double, 3, Dynamic> tessCenter;

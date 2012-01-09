@@ -35,7 +35,7 @@ PCMSolver::PCMSolver(GreensFunction *gfi, GreensFunction *gfo){
 }
 
 PCMSolver::PCMSolver(Section solver) {
-	vector<Solvent> SolventData = PCMSolver::init_Solvent();
+	vector<Solvent> SolventData = PCMSolver::initSolvent();
 	int solventIndex = solver.getInt("SolIndex");
 	solvent = solver.getStr("Solvent");
 	if ( solventIndex > SolventData.size() ) { // The solventIndex is not less than zero: we checked at input parsing!
@@ -107,7 +107,7 @@ GreensFunction * PCMSolver::getGreenOutsideP(){
 	return greenOutside;
 }
 
-vector<Solvent> PCMSolver::init_Solvent() {
+vector<Solvent> PCMSolver::initSolvent() {
 	/*
 	  vector<Solvent> SolventData[] should contain all the solvent-related
 	  data needed to set up the Green's functions and the non-electrostatic
@@ -150,10 +150,10 @@ void PCMSolver::setSolvent(string & solv) {
 }
 
 ostream & operator<<(ostream & os, PCMSolver & solver) {
-	return solver.printSolver(os);
+	return solver.printObject(os);
 }
 
-ostream & PCMSolver::printSolver(ostream & os) {
+ostream & PCMSolver::printObject(ostream & os) {
 	string type;
 	if ( solverType == Traditional ) {
 		type = "Traditional";

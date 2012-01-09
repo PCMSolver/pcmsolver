@@ -25,19 +25,23 @@ class Sphere
  private:
   double sphereRadius;
   Vector3d sphereCenter;
-     
+       
+ protected:
+  virtual ostream & printObject(ostream & os);
+
  public:
   Sphere(){}
-  Sphere( double sphereRadius, Vector3d & sphereCenter );
+  Sphere( Vector3d & sphereCenter, double sphereRadius );
   Sphere( Atom & atom );
   //  Sphere( Atom & atom, double charge );
   ~Sphere(){}
   double getSphereRadius(){ return sphereRadius; }
   void setSphereRadius( double radius ){ sphereRadius = radius; }
-  Vector3d getSphereCenter(){ return sphereCenter; }
+  Vector3d & getSphereCenter(){ return sphereCenter; }
+  double getSphereCenter(int i){ return sphereCenter(i); }
   void setSphereCenter( Vector3d & coord ){ sphereCenter = coord; }
-
-  //friend std::ostream& operator<<(std::ostream &o, const Cavity &c);
+  
+  friend std::ostream& operator<<(std::ostream & o, Sphere & s);
 };
 
 #endif

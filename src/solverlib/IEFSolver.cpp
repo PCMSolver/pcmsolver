@@ -216,7 +216,7 @@ void IEFSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	}
 }
 
-ostream & IEFSolver::printSolver(ostream & os) {
+ostream & IEFSolver::printObject(ostream & os) {
 	string type = "Traditional";
 	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
 	os << "========== Solver section" << endl;

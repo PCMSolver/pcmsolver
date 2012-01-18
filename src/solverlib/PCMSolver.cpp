@@ -1,4 +1,4 @@
-/*! \file PCMSolver.cpp 
+/*! \file IEFSolver.cpp 
 \brief PCM solver
 */
 
@@ -20,31 +20,44 @@ using namespace Eigen;
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "PCMSolver.h"
+#include "Solvent.h"
 
 PCMSolver::PCMSolver(GreensFunction &gfi, GreensFunction &gfo){
 	allocated = false;
-	builtIsotropicMatrix = false;
-	builtAnisotropicMatrix = false;
 	greenInside = &gfi; 
 	greenOutside = &gfo;
 }
 
 PCMSolver::PCMSolver(GreensFunction *gfi, GreensFunction *gfo){
 	allocated = false;
-	builtIsotropicMatrix = false;
-	builtAnisotropicMatrix = false;
 	greenInside = gfi; 
 	greenOutside = gfo;
 }
 
 PCMSolver::PCMSolver(Section solver) {
-	allocated = true;
-	builtIsotropicMatrix = false;
-	builtAnisotropicMatrix = false;
-	greenInside  = 
-		greenInside->allocateGreensFunction(solver.getSect("Green<inside>"));
-	greenOutside = 
-		greenOutside->allocateGreensFunction(solver.getSect("Green<outside>"));
+	vector<Solvent> SolventData = PCMSolver::init_Solvent();
+	int solventIndex = solver.getInt("SolIndex");
+	solvent = solver.getStr("Solvent");
+	if ( solventIndex > SolventData.size() ) { // The solventIndex is not less than zero: we checked at input parsing!
+		// Print solvent name and use Green's Function specification in the input.
+		solvent += " (User defined)";
+		cout << "You are working with " << solvent << " overriding the built-in solvents." << endl;
+		cout << "Good luck!" << endl;
+		allocated = true;
+		greenInside  = 
+			greenInside->allocateGreensFunction(solver.getSect("Green<inside>"));
+		greenOutside = 
+			greenOutside->allocateGreensFunction(solver.getSect("Green<outside>"));
+	} else { // Use built-in solvents.
+		cout << "You are working with the built-in specification for " << solvent << endl;
+		cout << "EpsStatic " << SolventData[solventIndex].getSolventEpsStatic() << endl;
+		allocated = true;
+		greenInside = 
+			greenInside->allocateGreensFunction();
+		greenOutside = 
+			greenOutside->allocateGreensFunction(SolventData[solventIndex].getSolventEpsStatic());
+	} 
+	// One possibility missing!! Override a predefined solvent specifying the Green's Functions (inside and/or outside)
 }
 
 PCMSolver::~PCMSolver(){
@@ -54,174 +67,102 @@ PCMSolver::~PCMSolver(){
 	}
 }
 
-GreensFunction& PCMSolver::getGreenInside(){
+void PCMSolver::setSolverType(const string & type) {
+	if (type == "Traditional") {
+		this->setSolverType(Traditional);
+	} else if (type == "Wavelet") {
+		this->setSolverType(Wavelet);
+	} else {
+		exit(-1);
+	}
+}
+
+void PCMSolver::setSolverType(int type) {
+	switch (type) {
+	case Traditional :
+		this->solverType = Traditional;
+		break;
+	case Wavelet :
+		this->solverType = Wavelet;
+		break;
+	default : 
+		exit(-1);
+	}
+}
+
+GreensFunction & PCMSolver::getGreenInside(){
 	return *greenInside;
 }
 
-GreensFunction& PCMSolver::getGreenOutside(){
+GreensFunction & PCMSolver::getGreenOutside(){
 	return *greenOutside;
 }
 
-double PCMSolver::compDiagonalElementSoper(GreensFunction *green, int i, GePolCavity cav) {
-    double s;
-    if (UniformDielectric *uniform = dynamic_cast<UniformDielectric*> (green)) {
-	    double eps = uniform->getEpsilon();
-	    s = factor * sqrt(4 * M_PI / (cav.getTessArea)(i)) / eps;   
-    }
-    else if (Vacuum *vacuum = dynamic_cast<Vacuum *>(green)) {
-		s = factor * sqrt(4 * M_PI / (cav.getTessArea)(i));   
-    }
-    else {
-	    cout << "Not uniform dielectric" << endl;
-	    cout << "Not yet implemented" << endl;
-	    exit(-1);
-    }
-    return s;
+
+GreensFunction * PCMSolver::getGreenInsideP(){
+	return greenInside;
 }
 
-double PCMSolver::compDiagonalElementDoper(GreensFunction *green, int i, GePolCavity cav) {
-    double s, d;
-    if (UniformDielectric *uniform = dynamic_cast<UniformDielectric *>(green)) {
-        s = factor * sqrt(4 * M_PI / cav.getTessArea(i));   
-		d = -s / (2*cav.getTessRadius(i));
-    }
-    else if (Vacuum *vacuum = dynamic_cast<Vacuum *>(green)) {
-		s = factor * sqrt(4 * M_PI / cav.getTessArea(i));   
-		d = -s / (2*cav.getTessRadius(i));
-    }
-    else {
-		cout << "Not uniform dielectric" << endl;
-		cout << "Not yet implemented" << endl;
-		exit(-1);
-    }
-    return d;
+GreensFunction * PCMSolver::getGreenOutsideP(){
+	return greenOutside;
 }
 
-void PCMSolver::buildAnisotropicMatrix(GePolCavity cav){
+vector<Solvent> PCMSolver::init_Solvent() {
+	/*
+	  vector<Solvent> SolventData[] should contain all the solvent-related
+	  data needed to set up the Green's functions and the non-electrostatic
+	  terms calculations.
+	  
+	  These data are taken from the DALTON2011 internal implementation of
+	  the Polarizable Continuum Model.
+	*/
 
-    cavitySize = cav.size();
+	vector<Solvent> SolventData(18);
 
-    MatrixXd SI(cavitySize, cavitySize);
-    MatrixXd SE(cavitySize, cavitySize);
-    MatrixXd DI(cavitySize, cavitySize);
-    MatrixXd DE(cavitySize, cavitySize);
-    
-    for(int i = 0; i < cavitySize; i++){
-		Vector3d p1 = cav.getTessCenter(i);
-		Vector3d n1 = cav.getTessNormal(i);
-		SI(i,i) =  compDiagonalElementSoper(greenInside,  i, cav); 
-		SE(i,i) =  compDiagonalElementSoper(greenOutside, i, cav);
-		DI(i,i) =  compDiagonalElementDoper(greenInside,  i, cav); 
-		DE(i,i) =  compDiagonalElementDoper(greenOutside, i, cav); 
-		for (int j = 0; j < cavitySize; j++){
-			Vector3d p2 = cav.getTessCenter(j);
-			Vector3d n2 = cav.getTessNormal(j);
-			if (i != j) {
-				SI(i,j) = greenInside->evalf(p1, p2);
-				SE(i,j) = greenOutside->evalf(p1, p2);
-				DI(i,j) = -greenInside->evald(n2, p1, p2);
-				DE(i,j) = -greenOutside->evald(n2, p1, p2);
-			}
-		}
-    }
+	// ------------------------------------------------------------
+
+	SolventData[0] = Solvent("Water", 78.39, 1.776, 1.385);
+	SolventData[1] = Solvent("Methanol", 32.63, 1.758, 1.855);
+	SolventData[2] = Solvent("Ethanol", 24.55, 1.847, 2.18);
+	SolventData[3] = Solvent("Chloroform", 4.90, 2.085, 2.48);
+	SolventData[4] = Solvent("Methylenechloride", 8.93, 2.020, 2.27);
+	SolventData[5] = Solvent("1,2-Dichloroethane", 10.36, 2.085, 2.505);
+	SolventData[6] = Solvent("Carbon tetrachloride", 2.228, 2.129, 2.685);
+	SolventData[7] = Solvent("Benzene", 2.247, 2.244, 2.630);
+	SolventData[8] = Solvent("Toluene", 2.379, 2.232, 2.82);
+	SolventData[9] = Solvent("Chlorobenzene", 5.621, 2.320, 2.805);
+	SolventData[10] = Solvent("Nitromethane", 38.20, 1.904, 2.155);
+	SolventData[11] = Solvent("N-heptane", 1.92, 1.918, 3.125);
+	SolventData[12] = Solvent("Cyclohexane", 2.023, 2.028, 2.815);
+	SolventData[13] = Solvent("Aniline", 6.89, 2.506, 2.80);
+	SolventData[14] = Solvent("Acetone", 20.7, 1.841, 2.38);
+	SolventData[15] = Solvent("Tetrahydrofurane", 7.58, 1.971, 2.9);
+	SolventData[16] = Solvent("Dimethylsulfoxide", 46.7, 2.179, 2.455);
+	SolventData[17] = Solvent("Acetonitrile", 36.64, 1.806, 2.155);	
   
-    MatrixXd a(cavitySize, cavitySize);
-    MatrixXd aInv(cavitySize, cavitySize);
-    a.setZero();
-    aInv.setZero();
+  // ------------------------------------------------------------
 
-    for (int i = 0; i < cavitySize; i++) {
-		a(i,i) = cav.getTessArea(i);
-		aInv(i,i) = 2 * M_PI / cav.getTessArea(i);
-    }
-
-    PCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose()));
-    PCMMatrix = PCMMatrix.inverse();
-    PCMMatrix *= ((aInv - DE) - SE * SI.inverse() * (aInv - DI));
-    PCMMatrix = PCMMatrix * a;
-	
-	builtAnisotropicMatrix = true;
-	builtIsotropicMatrix = false;
-
+  return SolventData;
 }
 
-void PCMSolver::buildIsotropicMatrix(GePolCavity cav){
-
-
-	double epsilon;
-    if (UniformDielectric *uniform = 
-		dynamic_cast<UniformDielectric *>(greenOutside)) {
-		epsilon = uniform->getEpsilon();
-	} else {
-		cout << "Need uniform dielectric outside" << endl;
-		exit(1);
-	}
-    if (Vacuum *vacuum = dynamic_cast<Vacuum *>(greenInside)) {
-	} else {
-		cout << "Need vacuum inside" << endl;
-		exit(1);
-	}
-
-    cavitySize = cav.size();
-
-    MatrixXd SI(cavitySize, cavitySize);
-    MatrixXd DI(cavitySize, cavitySize);
-    
-    for(int i = 0; i < cavitySize; i++){
-		Vector3d p1 = cav.getTessCenter(i);
-		Vector3d n1 = cav.getTessNormal(i);
-		SI(i,i) =  compDiagonalElementSoper(greenInside,  i, cav); 
-		DI(i,i) =  compDiagonalElementDoper(greenInside,  i, cav);
-		for (int j = 0; j < cavitySize; j++){
-			Vector3d p2 = cav.getTessCenter(j);
-			Vector3d n2 = cav.getTessNormal(j);
-			if (i != j) {
-				SI(i,j) = greenInside->evalf(p1, p2);
-				DI(i,j) = -greenInside->evald(n2, p1, p2);
-			}
-		}
-    }
-  
-    MatrixXd a(cavitySize, cavitySize);
-    MatrixXd aInv(cavitySize, cavitySize);
-    a.setZero();
-    aInv.setZero();
-
-    for (int i = 0; i < cavitySize; i++) {
-		a(i,i) = cav.getTessArea(i);
-		aInv(i,i) = 2 * M_PI / cav.getTessArea(i);
-    }
-
-	double fact = (epsilon+1.0)/(epsilon-1.0);
-
-    PCMMatrix = (fact * aInv - DI) * a * SI;
-    PCMMatrix = PCMMatrix.inverse();
-    PCMMatrix *= (aInv - DI);
-    PCMMatrix = PCMMatrix * a;
-	
-	builtIsotropicMatrix = true;
-	builtAnisotropicMatrix = false;
-
+void PCMSolver::setSolvent(string & solv) {
+	solvent = solv;
 }
 
-VectorXd PCMSolver::compCharge(const VectorXd &potential) {
-	VectorXd charge;
-	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
-		charge = - PCMMatrix * potential;
-	} else {
-		cout << "PCM matrtix not initialized" << endl;
-		exit(1);
-	}
-	return charge;
+ostream & operator<<(ostream & os, PCMSolver & solver) {
+	return solver.printSolver(os);
 }
 
-void PCMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
-	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
-		charge = - PCMMatrix * potential;
+ostream & PCMSolver::printSolver(ostream & os) {
+	string type;
+	if ( solverType == Traditional ) {
+		type = "Traditional";
 	} else {
-		cout << "PCM matrtix not initialized" << endl;
-		exit(1);
+		type = "Wavelet";
 	}
+	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
+	os << "========== Solver section" << endl;
+	os << "Solver Type: " << type << endl;
+	os << "Solvent: " << solvent << endl;
+	return os;
 }
-
-

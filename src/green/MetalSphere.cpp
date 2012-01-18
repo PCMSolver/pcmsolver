@@ -56,7 +56,7 @@ double MetalSphere::evalf(Vector3d &p1, Vector3d &p2) {
     return greenre;
 }
 
-double MetalSphere::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta) {
-    return epsSolvent * derivative(direction, p1, p2, delta);
+double MetalSphere::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
+    return epsSolvent * derivative(direction, p1, p2);
 }
 

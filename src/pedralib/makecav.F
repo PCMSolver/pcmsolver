@@ -50,7 +50,7 @@ C
       NSYM=1
       AREATS=avgArea_
       ICESPH=1
-      IPRPCM=20
+      IPRPCM=3
       GROUP = 'C1'
       RSOLV = 0.0D0
       RET = 100.0D0
@@ -87,6 +87,8 @@ C
          zsphcor_(i) = ze(isphe(i))
          rsph_(i) = re(isphe(i))
       enddo
+
+      close(lvpri)
 
       return
       END

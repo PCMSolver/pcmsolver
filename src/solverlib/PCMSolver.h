@@ -11,6 +11,8 @@
 #include <iostream>
 #include <complex>
 
+#include "Solvent.h"
+
 using namespace std;
 
 class PCMSolver{
@@ -19,26 +21,38 @@ class PCMSolver{
     PCMSolver(GreensFunction *gfi, GreensFunction *gfo);
     PCMSolver(Section solver);
     ~PCMSolver();
-    GreensFunction &getGreenInside();
-    GreensFunction &getGreenOutside();    
+    GreensFunction & getGreenInside();
+    GreensFunction & getGreenOutside();    
+    GreensFunction * getGreenInsideP();
+    GreensFunction * getGreenOutsideP();    
     int getCavitySize() const {return cavitySize;};
-    const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
-    virtual void buildAnisotropicMatrix(GePolCavity cav);
-    virtual void buildIsotropicMatrix(GePolCavity cav);
-    virtual double compDiagonalElementSoper(GreensFunction *green, int i, 
-                                            GePolCavity cav);
-    virtual double compDiagonalElementDoper(GreensFunction *green, int i, 
-                                            GePolCavity cav);
-    virtual VectorXd compCharge(const VectorXd & potential);
-    virtual void compCharge(const VectorXd & potential, VectorXd & charge);
- private:
+    void setCavitySize(int size) {cavitySize = size;};
+
+    virtual void buildSystemMatrix(Cavity & cavity) = 0;
+
+    virtual VectorXd compCharge(const VectorXd & potential) = 0;
+    virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
+
+    virtual void setSolverType(const string & type);
+    virtual void setSolverType(int type);
+
+    virtual int getSolverType() { return solverType; }
+
+    enum solverTypes{Traditional, Wavelet};
+
+    vector<Solvent> init_Solvent();
+    string & getSolvent(){ return solvent; }
+    void setSolvent(string & solvent);
+
+    friend std::ostream & operator<<(std::ostream & o, PCMSolver & c);
+
+ protected:
     bool allocated;
-    bool builtAnisotropicMatrix;
-    bool builtIsotropicMatrix;
-    static const double factor = 1.07;
     int cavitySize;
     GreensFunction *greenInside;
     GreensFunction *greenOutside;
-    MatrixXd PCMMatrix;
+    int solverType;
+    virtual ostream & printSolver(ostream & os);
+    string solvent;
 };
 #endif

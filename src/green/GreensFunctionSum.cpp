@@ -33,22 +33,22 @@ double GreensFunctionSum::evalf(Vector3d &p1, Vector3d &p2) {
     return valFirst + valSecond;
 }
 
-double GreensFunctionSum::derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta) {
-    double derFirst = greenFirst->derivative(direction, p1, p2, delta);
-    double derSecond = greenSecond->derivative(direction, p1, p2, delta);
+double GreensFunctionSum::derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
+    double derFirst = greenFirst->derivative(direction, p1, p2);
+    double derSecond = greenSecond->derivative(direction, p1, p2);
     return derFirst + derSecond;
 }
 
-double GreensFunctionSum::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta) {
-    double derFirst = greenFirst->evald(direction, p1, p2, delta);
-    double derSecond = greenSecond->evald(direction, p1, p2, delta);
+double GreensFunctionSum::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
+    double derFirst = greenFirst->evald(direction, p1, p2);
+    double derSecond = greenSecond->evald(direction, p1, p2);
     return derFirst + derSecond;
 }
 
-void GreensFunctionSum::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2, double delta) {
+void GreensFunctionSum::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2) {
     Vector3d gradFirst, gradSecond;
-    greenFirst->gradient(gradFirst, p1, p2, delta);
-    greenSecond->gradient(gradSecond, p1, p2, delta);
+    greenFirst->gradient(gradFirst, p1, p2);
+    greenSecond->gradient(gradSecond, p1, p2);
     gradient = gradFirst + gradSecond;
     return;
 }

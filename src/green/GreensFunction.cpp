@@ -22,7 +22,16 @@ using namespace Eigen;
     @param delta derivative step
 
  */
-double GreensFunction::derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta) {
+
+void GreensFunction::setDelta(double value) {
+	if (value <= 1.0e-10) {
+		cout << "Delta value must be larger than 1.0e-10 " << endl;
+		exit(-1);
+	}
+	delta = value;
+}
+
+double GreensFunction::derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
     Vector3d deltaPlus, deltaMinus;
     double norm = sqrt(direction.dot(direction));
     deltaPlus  = p1 + direction * delta / norm;
@@ -33,13 +42,13 @@ double GreensFunction::derivative(Vector3d &direction, Vector3d &p1, Vector3d &p
     return numDer;
 }
 
-void GreensFunction::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2, double delta) {
+void GreensFunction::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2) {
     Vector3d xdir(1.0, 0.0, 0.0);
     Vector3d ydir(0.0, 1.0, 0.0);
     Vector3d zdir(0.0, 0.0, 1.0);
-    gradient(0) = derivative(xdir, p1, p2, delta);
-    gradient(1) = derivative(ydir, p1, p2, delta);
-    gradient(2) = derivative(zdir, p1, p2, delta);
+    gradient(0) = derivative(xdir, p1, p2);
+    gradient(1) = derivative(ydir, p1, p2);
+    gradient(2) = derivative(zdir, p1, p2);
     return;
 }
 
@@ -61,3 +70,14 @@ GreensFunction* GreensFunction::allocateGreensFunction(const Section &green) {
 	return gf;
 }
 
+GreensFunction* GreensFunction::allocateGreensFunction(double dielConst) {
+	GreensFunction *gf;
+	gf = new UniformDielectric(dielConst);
+	return gf;
+}
+
+GreensFunction* GreensFunction::allocateGreensFunction() {
+	GreensFunction *gf;
+	gf = new Vacuum();
+	return gf;
+}

@@ -28,9 +28,12 @@ if(NOT cmake_build_type_tolower STREQUAL "debug"
   message(FATAL_ERROR "Unknown build type \"${CMAKE_BUILD_TYPE}\". Allowed values are Debug, Release (case-insensitive).")
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
 
-include(Compilers) # check dalton version.....
+include(SaveCompilerFlags)
+include(FCompilers)
+include(CCompilers)
+include(CXXCompilers)
 
 find_package(Git)
 include(ExternalProject)
@@ -38,7 +41,7 @@ include(ExternalProject)
 add_custom_command(
 	OUTPUT ${PROJECT_SOURCE_DIR}/external/git-submodule-done
 	COMMAND ${CMAKE_COMMAND} -E touch 
-		${PROJECT_SOURCE_DIR}/external/git-submodule-done
+     	${PROJECT_SOURCE_DIR}/external/git-submodule-done
 	COMMAND git submodule init
 	COMMAND git submodule update
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -71,18 +74,11 @@ ExternalProject_Add(libgetkw
 
 add_dependencies(external libgetkw)
 
+include(Math)
+
 find_package(Eigen3)
-find_package(BLAS)
-find_package(LAPACK)
-if(BLAS_FOUND AND LAPACK_FOUND) # check new versions of this stuff in Dalton
-    set(MATH_LIBS
-        blas
-        lapack
-        )
-    message("-- Set system default math libraries: ${MATH_LIBS} (${LAPACK_lapack_LIBRARY} ${BLAS_f77blas_LIBRARY})")
-    set(MATH_FOUND TRUE)
-endif()
-set (LIBS ${MATH_LIBS})
+
+#cmake should exit gracefully if math libs are not found
 
 add_definitions(-DSYS_LINUX)
 
@@ -95,4 +91,15 @@ include_directories (${PROJECT_SOURCE_DIR}/external/include)
 
 add_subdirectory(src)
 
+include_directories (src/solverlib)
+include_directories (src/wavcavlib)
+include_directories (src/wemlib)
+include_directories (src/pedralib)
+include_directories (src/cavitylib)
+include_directories (src/metal)
+include_directories (src/green)
+
+add_executable(pcmsolver.x EXCLUDE_FROM_ALL src/pcmsolver.cpp)
+
+target_link_libraries(pcmsolver.x solver green cavity pedra metal wem wavcav getkw ${LIBS})
 

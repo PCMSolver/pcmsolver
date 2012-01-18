@@ -13,15 +13,20 @@ A generic green´s function to reprensent the electrostatic potential for a give
 class GreensFunction
 {
  public:
-    GreensFunction(){};
+    GreensFunction(){delta = 1.0e-4;}
     virtual ~GreensFunction(){};
     virtual double evalf(Vector3d &p1, Vector3d &p2) = 0;
-    virtual double evald(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta = 0.001) = 0;
-    virtual double derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2, double delta = 0.001);
-    virtual void gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2, double delta = 0.001);    
-    bool isUniform(){ return uniformFlag; };
-    GreensFunction* allocateGreensFunction(const Section &green);
+    virtual double evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) = 0;
+    virtual double derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2);
+    virtual void gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2);
+    void setDelta(double value);
+    double getDelta(){return delta;}
+    bool isUniform(){ return uniformFlag; }
+    GreensFunction * allocateGreensFunction(const Section &green);
+    GreensFunction * allocateGreensFunction(double dielConst);
+    GreensFunction * allocateGreensFunction();
  protected:
+    double delta;
 	bool uniformFlag;	
 };
 #endif

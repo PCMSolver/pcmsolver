@@ -5,6 +5,8 @@
 #include <string>
 #include <Eigen/Dense>
 
+#include "Atom.h"
+
 using namespace Eigen;
 using namespace std;
 
@@ -20,9 +22,9 @@ written by Krzysztof Mozgawa, 2011
 class Cavity
 {
  public:
-    Cavity(){isBuilt = false;}
+    Cavity(){isBuilt = false; nTess = 0;}
     ~Cavity(){}
-    virtual void makeCavity(int, int) = 0; // not nice, needs fix
+    virtual void makeCavity() = 0;
     virtual void writeOutput(string &filename);
     virtual Matrix<double, 3, Dynamic> & getTessCenter(){return tessCenter;}
     virtual Vector3d getTessCenter(int i){return tessCenter.col(i);}
@@ -45,6 +47,8 @@ class Cavity
     double compPolarizationEnergy();
 
     enum chargeType{Nuclear, Electronic};
+
+    vector<Atom> init_Bondi();
 
     friend std::ostream& operator<<(std::ostream &o, const Cavity &c);
 

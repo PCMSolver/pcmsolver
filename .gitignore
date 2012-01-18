@@ -7,3 +7,9 @@ Release*
 Makefile
 Debug*
 .DS_Store
+src/pcmsolver.cpp
+build
+debug
+TAGS
+*/TAGS
+*/*/TAGS

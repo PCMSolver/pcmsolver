@@ -1,9 +1,10 @@
 #!@PYTHON_EXECUTABLE@
+# -*- python -*-
 # -*- coding: utf-8 -*-
 # vim:filetype=python:
 #
 # Written by Jonas Juselius <jonas.juselius@chem.uit.no> 
-# University of Tromsø, 2008
+# University of Tromso, 2008
 #
 # Adapted to PCMSolver by Luca Frediani, 2011
 #
@@ -25,8 +26,8 @@ import getkw
 
 def main():
 	global topsect, debug, executable, printlevel, dryrun
-
-	if debug == ON:
+        
+        if debug == ON:
 		debug = True
 	else:
 		debug = False
@@ -46,7 +47,7 @@ def main():
 	inkw.sanitize(valid_keywords)
 	topsect=inkw.get_topsect()
 	inkw.run_callbacks(valid_keywords)
-	
+
 	if dryrun:
 		xfile='@' + inpfil
 		fd=open(xfile,'w')
@@ -99,11 +100,14 @@ def parse_cmdline(valid_keywords):
 def	setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
+	top.add_kw('SolverType','STR', 'Traditional')
 	top.add_kw('PRINTL',    'INT', 0)
 	top.add_kw('Units',     'STR', 'AU')
 
 	medium=getkw.Section('Medium', callback=verify_medium)
-	medium.add_kw('Solvent', 'STR', 'water')
+	medium.add_kw('Solvent', 'STR', 'Water')
+	medium.add_kw('SolIndex', 'INT', 0)
+	medium.add_kw('SolRadius','DBL', 1.0)
 	top.add_sect(medium)
 	
 	green=getkw.Section('Green', callback=verify_green)
@@ -119,10 +123,18 @@ def	setup_keywords():
 	green.add_sect(green_part)
 
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
+	cavity.add_kw('Type','STR')
+	cavity.add_kw('PatchLevel', 'INT', 2)
+	cavity.add_kw('ProbeRadius', 'DBL', 1.3)
+	cavity.add_kw('Coarsity', 'DBL', 0.5)
 	cavity.add_kw('Area','DBL', 0.3)
+        cavity.add_kw('Mode','STR','Explicit')
+        cavity.add_kw('Atoms','INT_ARRAY')
+        cavity.add_kw('Radii','DBL_ARRAY')
+
 	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
 	top.add_sect(cavity)
-
+        
 	return top
 		
 def verify_top(section):
@@ -135,27 +147,115 @@ def verify_top(section):
 	key = section.get('Units')
 	val = key.get()
 	if (val not in allowed_units):
-		print "Allowed units are: ", allowed_units
+	    	print "Allowed units are: ", allowed_units
 		sys.exit(1)
 
+	allowed_types = ('Traditional', 'Wavelet')
+        key = section.get('SolverType')
+        val = key.get()
+        if (val not in allowed_types):  
+                print "Allowed types are: ", allowed_types
+        	sys.exit(1)
+
 def verify_cavity(section):
-	area=section.get('Area')
-	a=area.get()
-	if (a < 0.01):
-		print "Area value is too small"
-		print "Minimum value: 0.1"
-		sys.exit(1)
+	allowed = ('GePol', 'Wavelet')
+        type = section.get('Type')
+        if (type.get() not in allowed):
+        	print "Allowed types are: ", allowed
+        	sys.exit(1)
+
+	if (type.get() == 'GePol'):
+        	area=section.get('Area')
+        	a=area.get()
+        	if (a < 0.01):
+        		print "Area value is too small"
+        		print "Minimum value: 0.01"
+        		sys.exit(1)
+        elif (type.get() == 'Wavelet'):
+        	key = section.get('PatchLevel')
+        	if (key.get() < 0):
+        		print "Negative patch level not allowed"
+        		sys.exit(1)
+        	key = section.get('Coarsity')
+        	if (key.get() < 0.0 or key.get() >= 1.0):
+        		print "Coarsity has to be within ]0,1["
+        		sys.exit(1)
+        	key = section.get('ProbeRadius')
+        	if (key.get() < 0.0):
+        		print "Negative probe radius not allowed"
+        		sys.exit(1)
 	
+	allowed_modes = ('Explicit', 'Atoms', 'Implicit')
+        mode = section.get('Mode')
+        if (mode.get() not in allowed_modes):
+        	print "Allowed modes are: ", allowed_modes
+        	sys.exit(1)                         
+	
+        atoms=section.get('Atoms')
+        at=atoms.get()
+                                   
+        radii=section.get('Radii')
+        r=radii.get()
+       
+        if (mode.get() == 'Atoms'):
+            if (len(at) == 0):
+                print "Incoherent input for Atoms keyword."
+                print "No atoms specified."
+                sys.exit(1)
+	    else:
+		for i,v in enumerate(at):
+			if (at.count(v) > 1):
+				print "Incoherent input for Atoms keyword."
+				print "Too many spheres on the same atom(s)."
+				sys.exit(1)
+            if (len(r) != len(at) or len(r) == 0):
+                print "Incoherent input for Atoms keyword."
+                print "Check that Atoms and Radii are consistent."
+                sys.exit(1)
+
 def verify_medium(section):
-	solvent=section.get('Solvent')
-	if (solvent.get() != 'water'):
-		print "Only water defined for now, sorry!"
+	# A dictionary. We will pass the numeric key to the C++ code.
+	allowed_solvents_dict = {0: ('Water', 'water', 'H2O'),
+				 1: ('Methanol', 'methanol', 'CH3OH'),
+				 2: ('Ethanol', 'ethanol', 'CH3CH2OH'),
+				 3: ('Chloroform','chloroform','CHCl3'),
+				 4: ('Methylenechloride', 'methylenechloride', 'CH2Cl2'),
+				 6: ('1,2-Dichloroethane', '1,2-dichloroethane', 'C2H4Cl2'),
+				 7: ('Carbon Tetrachloride', 'carbon tetrachloride', 'CCl4'),
+				 8: ('Benzene', 'benzene', 'C6H6'),
+				 9: ('Toluene', 'toluene', 'C6H5CH3'),
+				 10: ('Chlorobenzene', 'chlorobenzene', 'C6H5Cl'),
+				 11: ('Nitromethane', 'nitromethane', 'CH3NO2'),
+				 12: ('N-heptane', 'n-heptane', 'C7H16'),
+				 13: ('Cyclohexane', 'cyclohexane', 'C6H12'),
+				 14: ('Aniline', 'aniline', 'C6H5NH2'),
+				 15: ('Acetone', 'acetone', 'C2H6CO'),
+				 16: ('Tetrahydrofurane', 'tetrahydrofurane', 'THF'),
+				 17: ('Dimethylsulfoxide', 'dimethylsulfoxide', 'DMSO'),
+				 18: ('Acetonitrile', 'acetonitrile', 'CH3CN')}
+	solvent = section.get('Solvent')
+	aList = allowed_solvents_dict.values()
+	for i, v in enumerate(aList):
+		aList[i] = aList[i][0]
+	allowed_solvents_tuple = tuple(aList)
+	solvent_index = -1
+	for i in allowed_solvents_dict:
+		if (solvent.get() in allowed_solvents_dict[i]):
+			solvent_index = i
+			break
+	if (solvent_index not in range(19)):
+		print "Allowed solvents are: ", allowed_solvents_tuple
+		print "Overriding built-in solvents (if Green's Functions specified!)"
+	idx = section.get('SolIndex')
+	idx.set(solvent_index)
+	solradius = section.get('SolRadius')
+	if (solradius.get() < 0.1 or solradius.get() > 100):
+		print "Solvent probe radius has to be within [0.1,100]"
 		sys.exit(1)
-	
+			
 def verify_green(section):
 	required = ('Type',)
 	allowed = ('Vacuum', 'UniformDielectric', 'MetalSphere', 'GreensFunctionSum')
-
 
 	green1 = section.fetch_sect('Green<one>')
 	green2 = section.fetch_sect('Green<two>')
@@ -187,19 +287,19 @@ def verify_green(section):
 			sys.exit(1)
 		if (radius.get()  < 0.1):
 			print "Minimum value allowed for Radius is 0.1"
+			sys.exit(1)
 
 	if (type.get() == 'GreensFunctionSum'):
 		if not (green1.is_set() and green2.is_set()):
 			print "One or both components not defined for GreensFunctionSum"
 			sys.exit(1)
 
-
 def verify_spheres(keyword):
 	spheres=keyword.get()
 	if (len(spheres)%4 != 0):
-		print "Incoherent input for Spheres keyword"
+		print "Incoherent input for Mode keyword."
+                print "Empty or incoherent Spheres list."
 		sys.exit(1)
-	
+
 if __name__ == '__main__':
 	main()
-

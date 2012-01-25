@@ -62,6 +62,15 @@ set (ExternalProjectCMakeArgs
   -DEIGEN3_ROOT=${EIGEN3_ROOT}
   )
 
+ExternalProject_Add(libtaylor
+	DOWNLOAD_COMMAND svn checkout http://libtaylor.googlecode.com/svn/trunk/ ${PROJECT_SOURCE_DIR}/external/libtaylor
+	PREFIX ${PROJECT_SOURCE_DIR}/external
+	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
+	BINARY_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor-build
+	INSTALL_DIR ${PROJECT_SOURCE_DIR}/external
+	CMAKE_ARGS ${ExternalProjectCMakeArgs}
+	)
+
 ExternalProject_Add(libgetkw
 	DOWNLOAD_COMMAND git submodule update
 	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
@@ -72,7 +81,7 @@ ExternalProject_Add(libgetkw
 	CMAKE_ARGS ${ExternalProjectCMakeArgs}
 	)
 
-add_dependencies(external libgetkw)
+add_dependencies(external libgetkw libtaylor)
 
 include(Math)
 

@@ -83,17 +83,14 @@ void WEMSolver<T>::fixPointersInside() {
 		globalSolverD = dynamic_cast<WEMSolver<double> * > (this);
 		SingleLayer = &SingleLayerD;
 		DoubleLayer = &DoubleLayerD;
-		std::cout << "this is a double "<< std::endl;
 	} else if (typeid(this) == typeid(WEMSolver<T1> *)) {
 		globalSolverT1 = dynamic_cast<WEMSolver<T1> * > (this);
 		SingleLayer = &SingleLayerT1;
 		DoubleLayer = &DoubleLayerT1;
-		std::cout << "this is a T1 "<< std::endl;
     } else if (typeid(this) == typeid(WEMSolver<T2> *)) {
 		globalSolverT2 = dynamic_cast<WEMSolver<T2> * > (this);
 		SingleLayer = &SingleLayerT2;
 		DoubleLayer = &DoubleLayerT2;
-		std::cout << "this is a T2 "<< std::endl;
 	} else {
 		std::cout << "this is not good! "<< std::endl;
 		exit(-1);

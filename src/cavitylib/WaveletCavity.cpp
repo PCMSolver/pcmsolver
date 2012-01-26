@@ -98,6 +98,19 @@ extern "C" {
 						  int patchLevel);
 }
 
+void WaveletCavity::compFakePotential()
+{
+	initPotChg();
+	nuclearPotential.setZero();
+	for (int i = 0; i < tessArea.size(); i++) {
+		for (int j = 0; j < sphereRadius.size(); j++) {
+			Vector3d p1 = tessCenter.col(i);
+			Vector3d p2 = sphereCenter.col(j);
+			double potential = 1.0/(p1-p2).norm();
+			nuclearPotential(i) += potential;
+		}
+	}
+}
 
 void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;

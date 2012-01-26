@@ -28,27 +28,20 @@ class WaveletCavity : public Cavity {
     Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
-
     unsigned int getNPatches(){return nPatches;}
     unsigned int getNLevels(){return nLevels;}
     unsigned int getNPoints(){return nPoints;}
     Vector3d getNodePoint(int i){return nodePoint[i];}
     Vector3i getNodeIndex(int i){return nodeIndex[i];}
-
     friend std::ostream& operator<<(std::ostream &o, const WaveletCavity &c);
-
+    void compFakePotential();
  private:
-
     std::vector<Vector3d> nodePoint;
     std::vector<Vector3i> nodeIndex;
-
     unsigned int nPatches;
     unsigned int nLevels;
-
     unsigned int nPoints;
-
     bool uploadedDyadic;
-    
     void writeInput(string &fileName);
     int nSpheres;
     Matrix<double, 3, Dynamic> sphereCenter;
@@ -58,8 +51,6 @@ class WaveletCavity : public Cavity {
     int patchLevel;
     double probeRadius;
     double coarsity;
-
-
 };
 
 #endif

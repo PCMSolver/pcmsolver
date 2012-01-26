@@ -75,7 +75,8 @@ int main(int argc, char** argv){
     GePolCavity cavity(GepolCavitySection);
     WaveletCavity wavcav(WaveletCavitySection);
 
-
+}
+/*
 	cavity.makeCavity();
 	wavcav.makeCavity();
 
@@ -100,7 +101,6 @@ int main(int argc, char** argv){
 	cout << " charges computed" << endl;
 	cout << wavcav.getChg(Cavity::Nuclear) << endl;
 
-	/*
     IEFSolver waterSolver(Medium); 
     waterSolver.buildAnisotropicMatrix(cavity);
     VectorXd potential(cavity.size());

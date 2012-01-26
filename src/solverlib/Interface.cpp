@@ -12,6 +12,7 @@
 #include <Eigen/Dense>
 
 #include "Getkw.h"
+#include "taylor.hpp"
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "WaveletCavity.h"
@@ -30,13 +31,14 @@
 using namespace std;
 using namespace Eigen;
 
+typedef taylor<double, 3, 1> T;
 
 GePolCavity * _gePolCavity;
-IEFSolver * _IEFSolver;
+IEFSolver<T> * _IEFSolver;
 WaveletCavity * _waveletCavity;
-WEMSolver * _WEMSolver;
+WEMSolver<T> * _WEMSolver;
 Cavity * _cavity;
-PCMSolver * _solver;
+PCMSolver<T> * _solver;
 
 vector<Atom> Bondi = _gePolCavity->initBondi();
 vector<Solvent> solventData = _solver->initSolvent();
@@ -233,7 +235,7 @@ extern "C" void init_iefsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_IEFSolver = new IEFSolver(Medium);
+	_IEFSolver = new IEFSolver<T>(Medium);
 	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
 	cout << *_IEFSolver << endl;
 }
@@ -243,7 +245,7 @@ extern "C" void init_wemsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_WEMSolver = new WEMSolver(Medium);
+	_WEMSolver = new WEMSolver<T>(Medium);
 	_WEMSolver->uploadCavity(*_waveletCavity);
 	_WEMSolver->constructSystemMatrix();
 }

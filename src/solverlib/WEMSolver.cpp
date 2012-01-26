@@ -35,6 +35,7 @@ extern "C"{
 
 #include "Constants.h"
 #include "Getkw.h"
+#include "taylor.hpp"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
@@ -45,33 +46,105 @@ extern "C"{
 #include "PCMSolver.h"
 #include "WEMSolver.h"
 
-static GreensFunction *gf = NULL;
+static double (*SingleLayer) (vector3 x, vector3 y);
+static double (*DoubleLayer) (vector3 x, vector3 y, vector3 n_y);
 
-static double SingleLayer(vector3 x, vector3 y){
-  
-  Vector3d vx(x.x, x.y, x.z);
-  Vector3d vy(y.x, y.y, y.z);
-  double value = gf->evalf(vx, vy);
+typedef taylor<double, 3, 1> T1;
+typedef taylor<double, 3, 2> T2;
 
-  //  printf ("%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
-  //		  value, x.x, x.y, x.z, y.x, y.y, y.z);
-  return value;
+static WEMSolver<double> * globalSolverD;
+static WEMSolver<T1> * globalSolverT1;
+static WEMSolver<T2> * globalSolverT2;
+
+
+static double SingleLayerD (vector3 x, vector3 y) {
+	return globalSolverD->SL(x, y);
+}
+static double DoubleLayerD (vector3 x, vector3 y, vector3 n_y) {
+	return globalSolverD->DL(x, y, n_y);
+}
+static double SingleLayerT1 (vector3 x, vector3 y) {
+	return globalSolverT1->SL(x, y);
+}
+static double DoubleLayerT1 (vector3 x, vector3 y, vector3 n_y) {
+	return globalSolverT1->DL(x, y, n_y);
+}
+static double SingleLayerT2 (vector3 x, vector3 y) {
+	return globalSolverT2->SL(x, y);
+}
+static double DoubleLayerT2 (vector3 x, vector3 y, vector3 n_y) {
+	return globalSolverT2->DL(x, y, n_y);
 }
 
-static double DoubleLayer(vector3 x, vector3 y, vector3 n_y){
-  
+template <class T>
+void WEMSolver<T>::fixPointersInside() {
+	this->gf = this->greenInside;
+	if (typeid(this) == typeid(WEMSolver<double> *)) {
+		globalSolverD = dynamic_cast<WEMSolver<double> * > (this);
+		SingleLayer = &SingleLayerD;
+		DoubleLayer = &DoubleLayerD;
+		std::cout << "this is a double "<< std::endl;
+	} else if (typeid(this) == typeid(WEMSolver<T1> *)) {
+		globalSolverT1 = dynamic_cast<WEMSolver<T1> * > (this);
+		SingleLayer = &SingleLayerT1;
+		DoubleLayer = &DoubleLayerT1;
+		std::cout << "this is a T1 "<< std::endl;
+    } else if (typeid(this) == typeid(WEMSolver<T2> *)) {
+		globalSolverT2 = dynamic_cast<WEMSolver<T2> * > (this);
+		SingleLayer = &SingleLayerT2;
+		DoubleLayer = &DoubleLayerT2;
+		std::cout << "this is a T2 "<< std::endl;
+	} else {
+		std::cout << "this is not good! "<< std::endl;
+		exit(-1);
+	}
+}
+
+template <class T>
+void WEMSolver<T>::fixPointersOutside() {
+	this->gf = this->greenOutside;
+	if (typeid(this) == typeid(WEMSolver<double> *)) {
+		globalSolverD = dynamic_cast<WEMSolver<double> * > (this);
+		SingleLayer = &SingleLayerD;
+		DoubleLayer = &DoubleLayerD;
+	} else if (typeid(this) == typeid(WEMSolver<T1> *)) {
+		globalSolverT1 = dynamic_cast<WEMSolver<T1> * > (this);
+		SingleLayer = &SingleLayerT1;
+		DoubleLayer = &DoubleLayerT1;
+	} else if (typeid(this) == typeid(WEMSolver<T2> *)) {
+		globalSolverT2 = dynamic_cast<WEMSolver<T2> * > (this);
+		SingleLayer = &SingleLayerT2;
+		DoubleLayer = &DoubleLayerT2;
+	} else {
+		std::cout << "this is not good! "<< std::endl;
+		exit(-1);
+	}
+}
+
+template <class T>
+double WEMSolver<T>::SL(vector3 x, vector3 y){
+  Vector3d vx(x.x, x.y, x.z);
+  Vector3d vy(y.x, y.y, y.z);
+  std::cout << "SL Vx " << vx.transpose() << " Vy " << vy.transpose() << std::endl;;
+  double value = this->gf->evalf(vx, vy);
+  return value;
+  return 0.0;
+}
+
+template <class T>
+double WEMSolver<T>::DL(vector3 x, vector3 y, vector3 n_y){  
   Vector3d vx(x.x, x.y, x.z);
   Vector3d vy(y.x, y.y, y.z);
   Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-  double value = gf->evald(vn_y, vx, vy);
-  
-  //  printf ("%8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
-  //		  value, x.x, x.y, x.z, y.x, y.y, y.z, n_y.x, n_y.y, n_y.z);
-  return -1.0 * value;
+  std::cout << "DL Vx " << vx.transpose() << " Vy " << vy.transpose() << std::endl;;
+  double value = this->gf->evald(vn_y, vx, vy);
+  //return -1.0 * value; //WARNING WARNING WARNING
+  return 0.0;
 }
 
-WEMSolver::WEMSolver(GreensFunction & gfi, GreensFunction & gfo) : 
-	PCMSolver(gfi, gfo) {
+template <class T>
+WEMSolver<T>::WEMSolver(GreensFunction<T> & gfi, GreensFunction<T> & gfo) : 
+	PCMSolver<T>(gfi, gfo) {
 	nodeList = NULL;
 	elementList = NULL;
 	T_ = NULL;
@@ -83,8 +156,9 @@ WEMSolver::WEMSolver(GreensFunction & gfi, GreensFunction & gfo) :
 	nQuadPoints = 0;
 }
 
-WEMSolver::WEMSolver(GreensFunction * gfi, GreensFunction * gfo) :
-	PCMSolver(gfi, gfo) {
+template <class T>
+WEMSolver<T>::WEMSolver(GreensFunction<T> * gfi, GreensFunction<T> * gfo) :
+	PCMSolver<T>(gfi, gfo) {
 	nodeList = NULL;
 	elementList = NULL;
 	T_ = NULL;
@@ -96,7 +170,8 @@ WEMSolver::WEMSolver(GreensFunction * gfi, GreensFunction * gfo) :
 	nQuadPoints = 0;
 }
 
-WEMSolver::WEMSolver(Section solver) : PCMSolver(solver) {
+template <class T>
+WEMSolver<T>::WEMSolver(Section solver) : PCMSolver<T>(solver) {
 	nodeList = NULL;
 	elementList = NULL;
 	T_ = NULL;
@@ -108,7 +183,8 @@ WEMSolver::WEMSolver(Section solver) : PCMSolver(solver) {
 	nQuadPoints = 0;
 }
 
-WEMSolver::~WEMSolver(){
+template <class T>
+WEMSolver<T>::~WEMSolver(){
 	if(nodeList != NULL) free(nodeList);
 	if(elementList != NULL) free_patchlist(&elementList,nFunctions);
 	if(T_ != NULL) free_interpolate(&T_,nPatches,nLevels);
@@ -121,7 +197,8 @@ WEMSolver::~WEMSolver(){
 	}
 }
 
-void WEMSolver::uploadCavity(WaveletCavity cavity) {
+template <class T>
+void WEMSolver<T>::uploadCavity(WaveletCavity cavity) {
 	
 	vector3 ***U = NULL;
 	nPatches = cavity.getNPatches();
@@ -146,7 +223,8 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 	free_points(&U, nPatches, nLevels);
 }
 
-void WEMSolver::buildSystemMatrix(Cavity & cavity) {
+template <class T>
+void WEMSolver<T>::buildSystemMatrix(Cavity & cavity) {
     if (WaveletCavity *waveletCavity = dynamic_cast<WaveletCavity*> (&cavity)) {
 		this->uploadCavity(*waveletCavity);
 		this->constructSystemMatrix();
@@ -155,7 +233,8 @@ void WEMSolver::buildSystemMatrix(Cavity & cavity) {
 	}
 }
 
-void WEMSolver::constructSystemMatrix(){
+template <class T>
+void WEMSolver<T>::constructSystemMatrix(){
 
   generate_elementlist(&elementTree,nodeList,elementList,nPatches,nLevels);
   generate_waveletlist(&waveletList,elementTree,nPatches,nLevels);
@@ -163,12 +242,12 @@ void WEMSolver::constructSystemMatrix(){
   simplify_waveletlist(waveletList,elementTree,nPatches,nLevels);
   complete_elementlist(waveletList,elementTree,nPatches,nLevels);
 
-  gf = getGreenInsideP();
+  this->fixPointersInside();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
   WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
   aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
 
-  gf = getGreenOutsideP();
+  this->fixPointersOutside();
   apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
   WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
   aposteriori2_ = postproc(&S_e_,waveletList,elementTree,nPatches,nLevels);
@@ -177,14 +256,16 @@ void WEMSolver::constructSystemMatrix(){
 }
 
 
-VectorXd WEMSolver::compCharge(const VectorXd &potential) {
+template <class T>
+VectorXd WEMSolver<T>::compCharge(const VectorXd &potential) {
 	VectorXd charge;
 	cout << "WEM solver not yet implemented" << endl;
 	exit(1);
 	return charge;
 }
 
-void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
+template <class T>
+void WEMSolver<T>::compCharge(const VectorXd & potential, VectorXd & charge) {
 	double *rhs;
 	double *u = (double*) calloc(nFunctions, sizeof(double));
 	double *v = (double*) calloc(nFunctions, sizeof(double));
@@ -249,3 +330,8 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	charge /= -ToAngstrom;
 
 }
+
+template class WEMSolver <double>;
+template class WEMSolver <taylor<double, 3, 1> >;
+template class WEMSolver <taylor<double, 3 ,2> >;
+

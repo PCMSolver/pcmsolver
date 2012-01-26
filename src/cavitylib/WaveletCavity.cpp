@@ -104,6 +104,11 @@ void WaveletCavity::makeCavity() {
 	string fileName = "cavity.inp";
 	writeInput(fileName);
 	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel);
+	if (check == 0) {
+		std::cout << "Wavelet cavity correctly generated" << std::endl;
+	} else {
+		std::cout << "Problem with the wavelet cavity!" << std::endl;
+	}
 }
 
 

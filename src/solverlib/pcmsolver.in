@@ -57,7 +57,7 @@ def main():
 		with tempfile.TemporaryFile(mode='w+r') as fd:
 			fd.write(str(inkw.top))
 			fd.seek(0)
-			p = subprocess.Popen(executable, stdin=fd)
+			p = subprocess.call(executable, stdin=fd)
 			fd.close()
 
 def parse_cmdline(valid_keywords):

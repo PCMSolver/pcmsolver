@@ -13,10 +13,11 @@
 
 using namespace std;
 
-class IEFSolver : public PCMSolver {
+template <class T>
+class IEFSolver : public PCMSolver<T> {
  public:
-    IEFSolver(GreensFunction &gfi, GreensFunction &gfo);
-    IEFSolver(GreensFunction *gfi, GreensFunction *gfo);
+    IEFSolver(GreensFunction<T> &gfi, GreensFunction<T> &gfo);
+    IEFSolver(GreensFunction<T> *gfi, GreensFunction<T> *gfo);
     IEFSolver(Section solver);
     ~IEFSolver();
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
@@ -24,9 +25,9 @@ class IEFSolver : public PCMSolver {
     virtual void buildSystemMatrix(Cavity & cavity);
     virtual void buildAnisotropicMatrix(GePolCavity cav);
     virtual void buildIsotropicMatrix(GePolCavity cav);
-    virtual double compDiagonalElementSoper(GreensFunction *green, int i, 
+    virtual double compDiagonalElementSoper(GreensFunction<T> *green, int i, 
                                             GePolCavity cav);
-    virtual double compDiagonalElementDoper(GreensFunction *green, int i, 
+    virtual double compDiagonalElementDoper(GreensFunction<T> *green, int i, 
                                             GePolCavity cav);
     virtual VectorXd compCharge(const VectorXd & potential);
     virtual void compCharge(const VectorXd & potential, VectorXd & charge);

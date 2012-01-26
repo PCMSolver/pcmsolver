@@ -12,6 +12,7 @@ using namespace std;
 using namespace Eigen;
 
 #include "Getkw.h"
+#include "taylor.hpp"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
@@ -22,19 +23,22 @@ using namespace Eigen;
 #include "PCMSolver.h"
 #include "Solvent.h"
 
-PCMSolver::PCMSolver(GreensFunction &gfi, GreensFunction &gfo){
+template <class T>
+PCMSolver<T>::PCMSolver(GreensFunction<T> &gfi, GreensFunction<T> &gfo){
 	allocated = false;
 	greenInside = &gfi; 
 	greenOutside = &gfo;
 }
 
-PCMSolver::PCMSolver(GreensFunction *gfi, GreensFunction *gfo){
+template <class T>
+PCMSolver<T>::PCMSolver(GreensFunction<T> *gfi, GreensFunction<T> *gfo){
 	allocated = false;
 	greenInside = gfi; 
 	greenOutside = gfo;
 }
 
-PCMSolver::PCMSolver(Section solver) {
+template <class T>
+PCMSolver<T>::PCMSolver(Section solver) {
 	vector<Solvent> SolventData = PCMSolver::initSolvent();
 	int solventIndex = solver.getInt("SolIndex");
 	solvent = solver.getStr("Solvent");
@@ -60,14 +64,16 @@ PCMSolver::PCMSolver(Section solver) {
 	// One possibility missing!! Override a predefined solvent specifying the Green's Functions (inside and/or outside)
 }
 
-PCMSolver::~PCMSolver(){
+template <class T>
+PCMSolver<T>::~PCMSolver(){
 	if(allocated) {
 		delete greenInside; 
 		delete greenOutside;
 	}
 }
 
-void PCMSolver::setSolverType(const string & type) {
+template <class T>
+void PCMSolver<T>::setSolverType(const string & type) {
 	if (type == "Traditional") {
 		this->setSolverType(Traditional);
 	} else if (type == "Wavelet") {
@@ -77,7 +83,8 @@ void PCMSolver::setSolverType(const string & type) {
 	}
 }
 
-void PCMSolver::setSolverType(int type) {
+template <class T>
+void PCMSolver<T>::setSolverType(int type) {
 	switch (type) {
 	case Traditional :
 		this->solverType = Traditional;
@@ -90,24 +97,29 @@ void PCMSolver::setSolverType(int type) {
 	}
 }
 
-GreensFunction & PCMSolver::getGreenInside(){
+template <class T>
+GreensFunction<T> & PCMSolver<T>::getGreenInside(){
 	return *greenInside;
 }
 
-GreensFunction & PCMSolver::getGreenOutside(){
+template <class T>
+GreensFunction<T> & PCMSolver<T>::getGreenOutside(){
 	return *greenOutside;
 }
 
 
-GreensFunction * PCMSolver::getGreenInsideP(){
+template <class T>
+GreensFunction<T> * PCMSolver<T>::getGreenInsideP(){
 	return greenInside;
 }
 
-GreensFunction * PCMSolver::getGreenOutsideP(){
+template <class T>
+GreensFunction<T> * PCMSolver<T>::getGreenOutsideP(){
 	return greenOutside;
 }
 
-vector<Solvent> PCMSolver::initSolvent() {
+template <class T>
+vector<Solvent> PCMSolver<T>::initSolvent() {
 	/*
 	  vector<Solvent> SolventData[] should contain all the solvent-related
 	  data needed to set up the Green's functions and the non-electrostatic
@@ -145,15 +157,13 @@ vector<Solvent> PCMSolver::initSolvent() {
   return SolventData;
 }
 
-void PCMSolver::setSolvent(string & solv) {
+template <class T>
+void PCMSolver<T>::setSolvent(string & solv) {
 	solvent = solv;
 }
 
-ostream & operator<<(ostream & os, PCMSolver & solver) {
-	return solver.printObject(os);
-}
-
-ostream & PCMSolver::printObject(ostream & os) {
+template <class T>
+ostream & PCMSolver<T>::printObject(ostream & os) {
 	string type;
 	if ( solverType == Traditional ) {
 		type = "Traditional";
@@ -166,3 +176,7 @@ ostream & PCMSolver::printObject(ostream & os) {
 	os << "Solvent: " << solvent << endl;
 	return os;
 }
+
+template class PCMSolver<double>;
+template class PCMSolver<taylor<double, 3, 1> >;
+template class PCMSolver<taylor<double, 3 ,2> >;

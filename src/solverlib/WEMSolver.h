@@ -20,10 +20,11 @@ extern "C"{
 
 using namespace std;
 
-class WEMSolver : public PCMSolver {
+template<class T>
+class WEMSolver : public PCMSolver<T> {
  public:
-    WEMSolver(GreensFunction &gfi, GreensFunction &gfo);
-    WEMSolver(GreensFunction *gfi, GreensFunction *gfo);
+    WEMSolver(GreensFunction<T> &gfi, GreensFunction<T> &gfo);
+    WEMSolver(GreensFunction<T> *gfi, GreensFunction<T> *gfo);
     WEMSolver(Section solver);
     ~WEMSolver();
     vector3 **** getT_(){return T_;}
@@ -35,6 +36,13 @@ class WEMSolver : public PCMSolver {
     virtual void uploadCavity(WaveletCavity cavity);
     virtual VectorXd compCharge(const VectorXd & potential);
     virtual void compCharge(const VectorXd & potential, VectorXd & charge);
+
+    GreensFunction<T> * gf;
+    double SL(vector3 x, vector3 y);
+    double DL(vector3 x, vector3 y, vector3 n_y);
+    void fixPointersInside();
+    void fixPointersOutside();
+
  protected:
   // Parameters
     

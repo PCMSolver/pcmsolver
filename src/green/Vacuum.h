@@ -1,17 +1,15 @@
 #ifndef VACUUM
 #define VACUUM
 
-class Vacuum : public GreensFunction
+template<typename T>
+class Vacuum : public GreensFunction<T>
 {
  public:
-    Vacuum(){uniformFlag = true;};
+    Vacuum(){GreensFunction<T>::uniformFlag = true;};
     ~Vacuum(){};
-    double evalf(Vector3d & p1, Vector3d & p2);
     double evald(Vector3d & direction, Vector3d & p1, Vector3d & p2);
-    double derivative(Vector3d & direction, Vector3d & p1, Vector3d & p2);
-    void gradient(Vector3d & gradient, Vector3d & p1, Vector3d & p2);
-    // private:
-    //    double def;
+ private:
+    T evalGreensFunction(T * source, T * probe);
 };
 
 #endif

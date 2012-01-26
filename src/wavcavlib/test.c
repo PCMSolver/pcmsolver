@@ -397,39 +397,22 @@ void cavity_create_(double *probe, double *coarsity, int *pl, int *info){
 int waveletCavityDrv_(double probeRadius, double coarsity, 
                        int patchLevel) {
     int dummy, test, info = -1;
-  /*
-  if(probe < 0.0){
-      info = -1;
-      return info;
-  }
-
-  if(coarsity <= 0.0 || coarsity >= 1.0){
-      info = -2;
-      return info;
-  }
-
-  if(pl <  0){
-    info = - 3;
-    return;
-  }
-  */
-
-  char *infile = "cavity.inp";
-  PATCH_LEVEL = patchLevel;
-  printf("this is the patch level %d %d \n", PATCH_LEVEL, patchLevel);
-  verbose_variable = VERBOSE;
-
-  tmpout = fopen("create_cavity.out","w");
-  test = bihp_test_romg(infile, probeRadius, coarsity, &dummy);
-  fclose(tmpout);
-
-  if(test == 1){
-      info = 0;
-  } else {
-      info = -4;
-  }
-
-  return info;
+    char *infile = "cavity.inp";
+    PATCH_LEVEL = patchLevel;
+    printf("this is the patch level %d %d \n", PATCH_LEVEL, patchLevel);
+    verbose_variable = VERBOSE;
+    
+    tmpout = fopen("create_cavity.out","w");
+    test = bihp_test_romg(infile, probeRadius, coarsity, &dummy);
+    fclose(tmpout);
+    
+    if(test == 1){
+        info = 0;
+    } else {
+        info = -1;
+    }
+    
+    return info;
 };
   
 

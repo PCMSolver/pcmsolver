@@ -49,26 +49,21 @@ extern "C"{
 static double (*SingleLayer) (vector3 x, vector3 y);
 static double (*DoubleLayer) (vector3 x, vector3 y, vector3 n_y);
 
-static double SLInt(vector3 x, vector3 y)
-{  
-	return(1/sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z)));
-}
-
-
-static double SLExt(vector3 x, vector3 y)
-{
-	double 		r = sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z));
-	return(1.0)/(r*78.39);
-}
-
 static double DLUni(vector3 x, vector3 y, vector3 n_y)
 {  
 	vector3		c;
 	double		r;
+	Vector3d grad, dir;
 	c.x = x.x-y.x;
 	c.y = x.y-y.y;
 	c.z = x.z-y.z;
 	r = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
+	grad(0) = c.x/(r*r*r);
+	grad(1) = c.y/(r*r*r);
+	grad(2) = c.z/(r*r*r);
+	dir << n_y.x, n_y.y, n_y.z;
+	std::cout << "Analytic  " << grad.transpose() << std::endl; 
+	std::cout << "Direction " << dir.transpose() << std::endl; 
 	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
 }
 
@@ -85,19 +80,31 @@ static double SingleLayerD (vector3 x, vector3 y) {
 	return globalSolverD->SL(x, y);
 }
 static double DoubleLayerD (vector3 x, vector3 y, vector3 n_y) {
-	return globalSolverD->DL(x, y, n_y);
+	double ref = DLUni(x, y, n_y);
+	double val = globalSolverD->DL(x, y, n_y);
+	std::cout << "differerence " << val - ref << std::endl;
+	return val;
 }
 static double SingleLayerT1 (vector3 x, vector3 y) {
 	return globalSolverT1->SL(x, y);
 }
 static double DoubleLayerT1 (vector3 x, vector3 y, vector3 n_y) {
-	return globalSolverT1->DL(x, y, n_y);
+	double ref = DLUni(x, y, n_y);
+	double val = globalSolverT1->DL(x, y, n_y);
+	std::cout << "differerence " << val - ref << std::endl;
+	return val;
 }
 static double SingleLayerT2 (vector3 x, vector3 y) {
 	return globalSolverT2->SL(x, y);
 }
 static double DoubleLayerT2 (vector3 x, vector3 y, vector3 n_y) {
-	return globalSolverT2->DL(x, y, n_y);
+	double ref = DLUni(x, y, n_y);
+	double val = globalSolverT2->DL(x, y, n_y);
+	//	printf("%15.8e %15.8e %15.8e\n", x.x, x.y, x.z);
+	//	printf("%15.8e %15.8e %15.8e\n", y.x, y.y, y.z);
+	//	printf("%15.8e %15.8e %15.8e\n", n_y.x, n_y.y, n_y.z);
+	std::cout << "differerence " << val << " " << ref << " " << val - ref << " " << val + ref << std::endl;
+	return ref;
 }
 
 template <class T>
@@ -261,12 +268,14 @@ void WEMSolver<T>::constructSystemMatrix(){
 
   this->fixPointersInside();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
-  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DLUni,2*M_PI);
+  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
   aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
+
+  exit(-1);
 
   this->fixPointersOutside();
   apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
-  WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DLUni,-2*M_PI);
+  WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
   aposteriori2_ = postproc(&S_e_,waveletList,elementTree,nPatches,nLevels);
   
   systemMatricesInitialized_ = true;

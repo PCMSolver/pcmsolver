@@ -122,7 +122,6 @@ template <class T>
 double WEMSolver<T>::SL(vector3 x, vector3 y){
   Vector3d vx(x.x, x.y, x.z);
   Vector3d vy(y.x, y.y, y.z);
-  std::cout << "SL Vx " << vx.transpose() << " Vy " << vy.transpose() << std::endl;;
   double value = this->gf->evalf(vx, vy);
   return value;
   return 0.0;
@@ -133,9 +132,7 @@ double WEMSolver<T>::DL(vector3 x, vector3 y, vector3 n_y){
   Vector3d vx(x.x, x.y, x.z);
   Vector3d vy(y.x, y.y, y.z);
   Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-  std::cout << "DL Vx " << vx.transpose() << " Vy " << vy.transpose() << std::endl;;
   double value = this->gf->evald(vn_y, vx, vy);
-  //return -1.0 * value; //WARNING WARNING WARNING
   return 0.0;
 }
 

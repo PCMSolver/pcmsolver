@@ -235,5 +235,6 @@ ostream & IEFSolver<T>::printObject(ostream & os) {
 }
 
 template class IEFSolver<double>;
+template class IEFSolver<taylor<double, 1, 1> >;
 template class IEFSolver<taylor<double, 3, 1> >;
 template class IEFSolver<taylor<double, 3 ,2> >;

@@ -22,12 +22,11 @@ T Vacuum<T>::evalGreensFunction(T * sp, T * pp) {
 
 template<class T>
 double Vacuum<T>::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2){
-	Vector3d g = this->gradientProbe(p1, p2);
-	std::cout << "Grad Probe " << g.transpose() << std::endl;
-	std::cout << "Direction  " << direction.transpose() << " " << direction.norm() << std::endl;
-    return direction.dot(g)/direction.norm();
+	return this->derivativeProbe(direction, p1, p2);
+	//    return direction.dot(g);  // NORMALIZTION TEMPORARY REMOVED /direction.norm();
 }
 
 template class Vacuum<double>;
+template class Vacuum< taylor<double, 1, 1> >;
 template class Vacuum< taylor<double, 3, 1> >;
 template class Vacuum< taylor<double, 3, 2> >;

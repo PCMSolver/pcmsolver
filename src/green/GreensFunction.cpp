@@ -54,7 +54,7 @@ double GreensFunction<double>::evalf(Vector3d & source, Vector3d & probe) {
 template <class T>
 double GreensFunction<T>::derivativeSource(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
 	T t1[3], t2[3], derivative;
-	direction.normalize();
+	//	direction.normalize();
 	t1[0] = p1(0); t1[0][1] = direction(0);
 	t1[1] = p1(1); t1[1][1] = direction(1);
 	t1[2] = p1(2); t1[2][1] = direction(2);
@@ -77,7 +77,7 @@ double GreensFunction<double>::derivativeSource(Vector3d &direction, Vector3d &p
 template <class T>
 double GreensFunction<T>::derivativeProbe(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
 	T t1[3], t2[3], derivative;
-	direction.normalize();
+	//	direction.normalize();
 	t1[0] = p1(0);
 	t1[1] = p1(1);
 	t1[2] = p1(2);
@@ -129,6 +129,17 @@ void GreensFunction<double>::gradientSource(Vector3d &g, Vector3d &p1, Vector3d 
 	g(2) = derivativeSource(direction, p1, p2);
 }
 
+template <>
+void GreensFunction< taylor<double, 1, 1> >::gradientSource(Vector3d &g, Vector3d &p1, Vector3d &p2) {
+	Vector3d direction;
+	direction << 1.0, 0.0, 0.0;
+	g(0) = derivativeSource(direction, p1, p2);
+	direction << 0.0, 1.0, 0.0;
+	g(1) = derivativeSource(direction, p1, p2);
+	direction << 0.0, 0.0, 1.0;
+	g(2) = derivativeSource(direction, p1, p2);
+}
+
 template <class T>
 Vector3d GreensFunction<T>::gradientProbe(Vector3d &p1, Vector3d &p2) {
 	Vector3d g;
@@ -161,6 +172,17 @@ void GreensFunction<double>::gradientProbe(Vector3d &g, Vector3d &p1, Vector3d &
 	g(2) = derivativeProbe(direction, p1, p2);
 }
 
+template <>
+void GreensFunction<taylor<double, 1, 1> >::gradientProbe(Vector3d &g, Vector3d &p1, Vector3d &p2) {
+	Vector3d direction;
+	direction << 1.0, 0.0, 0.0;
+	g(0) = derivativeProbe(direction, p1, p2);
+	direction << 0.0, 1.0, 0.0;
+	g(1) = derivativeProbe(direction, p1, p2);
+	direction << 0.0, 0.0, 1.0;
+	g(2) = derivativeProbe(direction, p1, p2);
+}
+
 template <class T>
 GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(const Section &green) {
 	GreensFunction<T> *gf = 0;
@@ -169,8 +191,8 @@ GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(const Section &gree
 		gf = new Vacuum<T>();
 	} else if (greenType == "UniformDielectric") {
 		gf = new UniformDielectric<T>(green);
-	} else if (greenType == "MetalSphere") {
-		std::cout << "Only numerical implementation for metal sphere" << std::endl;
+		//	} else if (greenType == "MetalSphere") {
+		//		std::cout << "Only numerical implementation for metal sphere" << std::endl;
 	} else if (greenType == "GreensFunctionSum") {
 		gf = new GreensFunctionSum<T>(green);
 	} else {
@@ -222,5 +244,6 @@ std::ostream & GreensFunction<T>::printObject(std::ostream &os) {
 }
 
 template class GreensFunction<double>;
-template class GreensFunction< taylor <double, 3, 1> >;
-template class GreensFunction< taylor <double, 3, 2> >;
+template class GreensFunction<taylor <double, 1, 1> >;
+template class GreensFunction<taylor <double, 3, 1> >;
+template class GreensFunction<taylor <double, 3, 2> >;

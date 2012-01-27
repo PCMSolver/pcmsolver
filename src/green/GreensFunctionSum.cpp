@@ -45,5 +45,6 @@ T GreensFunctionSum<T>::evalGreensFunction(T * sp, T * pp) {
 }
 
 template class GreensFunctionSum<double>;
+template class GreensFunctionSum< taylor <double, 1, 1> >;
 template class GreensFunctionSum< taylor <double, 3, 1> >;
 template class GreensFunctionSum< taylor <double, 3, 2> >;

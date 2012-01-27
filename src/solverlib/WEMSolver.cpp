@@ -49,6 +49,19 @@ extern "C"{
 static double (*SingleLayer) (vector3 x, vector3 y);
 static double (*DoubleLayer) (vector3 x, vector3 y, vector3 n_y);
 
+static double SLInt(vector3 x, vector3 y)
+{  
+	return(1.0l/sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z)));
+}
+
+
+static double SLExt(vector3 x, vector3 y)
+{
+	double 		r = sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z));
+	return 1.0l/(r*78.39l);
+}
+
+
 static double DLUni(vector3 x, vector3 y, vector3 n_y)
 {  
 	vector3		c;
@@ -62,49 +75,47 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 	grad(1) = c.y/(r*r*r);
 	grad(2) = c.z/(r*r*r);
 	dir << n_y.x, n_y.y, n_y.z;
-	std::cout << "Analytic  " << grad.transpose() << std::endl; 
-	std::cout << "Direction " << dir.transpose() << std::endl; 
 	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
 }
 
 
 typedef taylor<double, 3, 1> T1;
 typedef taylor<double, 3, 2> T2;
+typedef taylor<double, 1, 1> T3;
 
 static WEMSolver<double> * globalSolverD;
 static WEMSolver<T1> * globalSolverT1;
 static WEMSolver<T2> * globalSolverT2;
+static WEMSolver<T3> * globalSolverT3;
 
 
 static double SingleLayerD (vector3 x, vector3 y) {
 	return globalSolverD->SL(x, y);
 }
 static double DoubleLayerD (vector3 x, vector3 y, vector3 n_y) {
-	double ref = DLUni(x, y, n_y);
 	double val = globalSolverD->DL(x, y, n_y);
-	std::cout << "differerence " << val - ref << std::endl;
 	return val;
 }
 static double SingleLayerT1 (vector3 x, vector3 y) {
 	return globalSolverT1->SL(x, y);
 }
 static double DoubleLayerT1 (vector3 x, vector3 y, vector3 n_y) {
-	double ref = DLUni(x, y, n_y);
 	double val = globalSolverT1->DL(x, y, n_y);
-	std::cout << "differerence " << val - ref << std::endl;
 	return val;
 }
 static double SingleLayerT2 (vector3 x, vector3 y) {
 	return globalSolverT2->SL(x, y);
 }
 static double DoubleLayerT2 (vector3 x, vector3 y, vector3 n_y) {
-	double ref = DLUni(x, y, n_y);
 	double val = globalSolverT2->DL(x, y, n_y);
-	//	printf("%15.8e %15.8e %15.8e\n", x.x, x.y, x.z);
-	//	printf("%15.8e %15.8e %15.8e\n", y.x, y.y, y.z);
-	//	printf("%15.8e %15.8e %15.8e\n", n_y.x, n_y.y, n_y.z);
-	std::cout << "differerence " << val << " " << ref << " " << val - ref << " " << val + ref << std::endl;
-	return ref;
+	return val;
+}
+static double SingleLayerT3 (vector3 x, vector3 y) {
+	return globalSolverT3->SL(x, y);
+}
+static double DoubleLayerT3 (vector3 x, vector3 y, vector3 n_y) {
+	double val = globalSolverT3->DL(x, y, n_y);
+	return val;
 }
 
 template <class T>
@@ -122,6 +133,10 @@ void WEMSolver<T>::fixPointersInside() {
 		globalSolverT2 = dynamic_cast<WEMSolver<T2> * > (this);
 		SingleLayer = &SingleLayerT2;
 		DoubleLayer = &DoubleLayerT2;
+    } else if (typeid(this) == typeid(WEMSolver<T3> *)) {
+		globalSolverT3 = dynamic_cast<WEMSolver<T3> * > (this);
+		SingleLayer = &SingleLayerT3;
+		DoubleLayer = &DoubleLayerT3;
 	} else {
 		std::cout << "this is not good! "<< std::endl;
 		exit(-1);
@@ -143,6 +158,10 @@ void WEMSolver<T>::fixPointersOutside() {
 		globalSolverT2 = dynamic_cast<WEMSolver<T2> * > (this);
 		SingleLayer = &SingleLayerT2;
 		DoubleLayer = &DoubleLayerT2;
+	} else if (typeid(this) == typeid(WEMSolver<T3> *)) {
+		globalSolverT3 = dynamic_cast<WEMSolver<T3> * > (this);
+		SingleLayer = &SingleLayerT3;
+		DoubleLayer = &DoubleLayerT3;
 	} else {
 		std::cout << "this is not good! "<< std::endl;
 		exit(-1);
@@ -163,7 +182,7 @@ double WEMSolver<T>::DL(vector3 x, vector3 y, vector3 n_y){
   Vector3d vy(y.x, y.y, y.z);
   Vector3d vn_y(n_y.x, n_y.y, n_y.z);
   double value = this->gf->evald(vn_y, vx, vy);
-  return value; // WARNING WARNING WARNING
+  return value;
 }
 
 template <class T>
@@ -268,13 +287,13 @@ void WEMSolver<T>::constructSystemMatrix(){
 
   this->fixPointersInside();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
+  //  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLInt,DLUni,2*M_PI);
   WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
   aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
 
-  exit(-1);
-
   this->fixPointersOutside();
   apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
+  //  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,2*M_PI);
   WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
   aposteriori2_ = postproc(&S_e_,waveletList,elementTree,nPatches,nLevels);
   
@@ -358,6 +377,7 @@ void WEMSolver<T>::compCharge(const VectorXd & potential, VectorXd & charge) {
 }
 
 template class WEMSolver <double>;
+template class WEMSolver <taylor<double, 1, 1> >;
 template class WEMSolver <taylor<double, 3, 1> >;
 template class WEMSolver <taylor<double, 3 ,2> >;
 

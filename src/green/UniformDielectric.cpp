@@ -25,8 +25,7 @@ UniformDielectric<T>::UniformDielectric(Section green)
 
 template<class T>
 double UniformDielectric<T>::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2){
-    double der =  direction.dot(this->gradientProbe(p1, p2))/direction.norm();
-    return der * epsilon;
+    return epsilon * (this->derivativeProbe(direction, p1, p2));  // NORMALIZTION TEMPORARY REMOVED /direction.norm();
 }
 
 template<class T>
@@ -47,5 +46,6 @@ std::ostream & UniformDielectric<T>::printObject(std::ostream &os) {
 }
 
 template class UniformDielectric<double>;
+template class UniformDielectric< taylor <double, 1, 1> >;
 template class UniformDielectric< taylor <double, 3, 1> >;
 template class UniformDielectric< taylor <double, 3, 2> >;

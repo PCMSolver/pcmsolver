@@ -178,5 +178,6 @@ ostream & PCMSolver<T>::printObject(ostream & os) {
 }
 
 template class PCMSolver<double>;
+template class PCMSolver<taylor<double, 1, 1> >;
 template class PCMSolver<taylor<double, 3, 1> >;
 template class PCMSolver<taylor<double, 3 ,2> >;

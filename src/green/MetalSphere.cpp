@@ -57,7 +57,6 @@ double MetalSphere::evalGreensFunction(double * source, double * probe) {
 }
 
 double MetalSphere::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
-    double der =  direction.dot(this->gradientProbe(p1, p2))/direction.norm();
-    return epsSolvent * der;
+    return epsSolvent * (this->derivativeProbe(direction, p1, p2));  // NORMALIZTION TEMPORARY REMOVED /direction.norm();
 }
 

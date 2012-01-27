@@ -124,7 +124,6 @@ double WEMSolver<T>::SL(vector3 x, vector3 y){
   Vector3d vy(y.x, y.y, y.z);
   double value = this->gf->evalf(vx, vy);
   return value;
-  return 0.0;
 }
 
 template <class T>
@@ -133,7 +132,7 @@ double WEMSolver<T>::DL(vector3 x, vector3 y, vector3 n_y){
   Vector3d vy(y.x, y.y, y.z);
   Vector3d vn_y(n_y.x, n_y.y, n_y.z);
   double value = this->gf->evald(vn_y, vx, vy);
-  return 0.0;
+  return value; // WARNING WARNING WARNING
 }
 
 template <class T>

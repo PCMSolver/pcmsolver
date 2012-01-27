@@ -163,7 +163,7 @@ void GreensFunction<double>::gradientProbe(Vector3d &g, Vector3d &p1, Vector3d &
 
 template <class T>
 GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(const Section &green) {
-	GreensFunction<T> *gf;
+	GreensFunction<T> *gf = 0;
 	const string greenType = green.getStr("Type");
 	if (greenType == "Vacuum") {
 		gf = new Vacuum<T>();

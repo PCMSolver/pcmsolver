@@ -12,6 +12,7 @@ class UniformDielectric : public GreensFunction<T>
     void setEpsilon(double dielConst) {epsilon = dielConst; };
     double getEpsilon() {return epsilon; };
  private:
+    virtual std::ostream & printObject(std::ostream & os);
     T evalGreensFunction(T * source, T * probe);
     double epsilon;
 };

@@ -49,6 +49,30 @@ extern "C"{
 static double (*SingleLayer) (vector3 x, vector3 y);
 static double (*DoubleLayer) (vector3 x, vector3 y, vector3 n_y);
 
+static double SLInt(vector3 x, vector3 y)
+{  
+	return(1/sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z)));
+}
+
+
+static double SLExt(vector3 x, vector3 y)
+{
+	double 		r = sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z));
+	return(1.0)/(r*78.39);
+}
+
+static double DLUni(vector3 x, vector3 y, vector3 n_y)
+{  
+	vector3		c;
+	double		r;
+	c.x = x.x-y.x;
+	c.y = x.y-y.y;
+	c.z = x.z-y.z;
+	r = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
+	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
+}
+
+
 typedef taylor<double, 3, 1> T1;
 typedef taylor<double, 3, 2> T2;
 
@@ -237,12 +261,12 @@ void WEMSolver<T>::constructSystemMatrix(){
 
   this->fixPointersInside();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
-  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
+  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DLUni,2*M_PI);
   aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
 
   this->fixPointersOutside();
   apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
-  WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
+  WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DLUni,-2*M_PI);
   aposteriori2_ = postproc(&S_e_,waveletList,elementTree,nPatches,nLevels);
   
   systemMatricesInitialized_ = true;

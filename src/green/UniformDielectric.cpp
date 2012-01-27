@@ -37,6 +37,15 @@ T UniformDielectric<T>::evalGreensFunction(T * sp, T * pp) {
 	return 1/(epsilon * distance);
 }
 
+template <class T>
+std::ostream & UniformDielectric<T>::printObject(std::ostream &os) {
+	os << "Green's Function" << std::endl;
+	os << "Delta = " << this->delta << std::endl;
+	os << "Uniform = " << this->uniformFlag << std::endl;
+	os << "Epsilon = " << this->epsilon;
+	return os;
+}
+
 template class UniformDielectric<double>;
 template class UniformDielectric< taylor <double, 3, 1> >;
 template class UniformDielectric< taylor <double, 3, 2> >;

@@ -287,14 +287,14 @@ void WEMSolver<T>::constructSystemMatrix(){
 
   this->fixPointersInside();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
-  //  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLInt,DLUni,2*M_PI);
-  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
+  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLInt,DLUni,2*M_PI);
+  //WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
   aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
 
   this->fixPointersOutside();
   apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
-  //  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,2*M_PI);
-  WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
+  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,2*M_PI);
+  //WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
   aposteriori2_ = postproc(&S_e_,waveletList,elementTree,nPatches,nLevels);
   
   systemMatricesInitialized_ = true;

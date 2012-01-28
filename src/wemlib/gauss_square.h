@@ -1,5 +1,5 @@
-#ifndef GAUSS_SQUARE_H_
-#define GAUSS_SQUARE_H_
+#ifndef GAUSS_SQUARE
+#define GAUSS_SQUARE
 /********************
  *  Gauss_Square.h  *
  ********************/

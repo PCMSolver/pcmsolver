@@ -1,3 +1,5 @@
+#ifndef COMPRESSION
+#define COMPRESSION
 /*******************
  *  Compression.h  *
  *******************/
@@ -10,3 +12,4 @@
  *===========================================*/
  
 double compression(sparse2 *T, wavelet *W, element *E, unsigned int p, unsigned int M, unsigned int np);
+#endif

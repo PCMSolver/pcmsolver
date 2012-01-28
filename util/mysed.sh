@@ -2,6 +2,6 @@
 for file in `ls *.c *.h` ;
 do
 	echo $file
-	sed s/"malloc.h"/"stdlib.h"/ $file > abc
+	sed s/"$1"/"$2"/ $file > abc
 	cp abc $file
 done

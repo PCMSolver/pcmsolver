@@ -1,3 +1,5 @@
+#ifndef DWT
+#define DWT
 /************
  *  dwt1.h  *
  ************/
@@ -22,3 +24,4 @@ void dwtLin(double *a, unsigned int **F, unsigned int M, unsigned int p, unsigne
 
 void tdwtLin(double *a, unsigned int **F, unsigned int M, unsigned int p, unsigned int np);
 /* transformierte Diskrete Wavelet-Transformation */
+#endif

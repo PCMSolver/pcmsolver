@@ -1,3 +1,5 @@
+#ifndef CUBATURE
+#define CUBATURE
 /****************
  *  Cubature.h  *
  ****************/
@@ -15,3 +17,4 @@ typedef struct
    double	   *w;                /* Gewichte der Kubatur-Formel         */
    } cubature;
 
+#endif

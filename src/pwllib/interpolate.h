@@ -1,3 +1,5 @@
+#ifndef INTERPOLATE
+#define INTERPOLATE
 /*******************
  *  Interpolate.h  *
  *******************/
@@ -30,3 +32,4 @@ vector3 dChi_dy(vector2 a, vector3 ***p, unsigned int m);
 
 vector3 n_Chi(vector2 a, vector3 ***p, unsigned int m);
 /* definiert die Normalableitung des Interpolationspolynoms p */
+#endif

@@ -1,3 +1,5 @@
+#ifndef PRECOND
+#define PRECOND
 /***************
  *  precond.h  *
  ***************/
@@ -23,3 +25,4 @@ void single_scale_gram(sparse *G, unsigned int **F, unsigned int p, unsigned int
 void precond(double *a, double *b, sparse *G, wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
 /* Anwendung des Preconditioners auf den Vektor b, der
    NICHT veraendert wird. Das Ergebnis wird in a gespeichert */
+#endif

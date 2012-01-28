@@ -1,3 +1,5 @@
+#ifndef BASIS
+#define BASIS
 /*************
  *  Basis.h  *
  *************/
@@ -79,3 +81,4 @@ void print_waveletlist(wavelet *W, unsigned int nw);
 
 double distance(element *element1, element *element2);
 /* Berechnet den Abstand zwischen den Elementen element1 und element2 */
+#endif

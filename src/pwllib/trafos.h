@@ -1,3 +1,5 @@
+#ifndef TRAFOS
+#define TRAFOS
 /**************
  *  Trafos.h  *
  **************/
@@ -31,3 +33,4 @@ void quadrature_grade(signed int *g1, signed int *g2,
    mit dem Abstand dist die benoetigten Quadraturgrade */
 
 
+#endif

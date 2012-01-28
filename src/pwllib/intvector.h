@@ -1,3 +1,5 @@
+#ifndef INTVECTOR
+#define INTVECTOR
 /*****************
  *  IntVector.h  *
  *****************/
@@ -50,3 +52,4 @@ void set_integral(intvector *I, unsigned int i, double *z);
  *=======================================*/
 
 void permutate(double *a, double *b);
+#endif

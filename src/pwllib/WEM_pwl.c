@@ -1,5 +1,5 @@
 /***********
- *  WEM.c  *
+ *  WEM_pwl.c  *
  ***********/
 
 
@@ -24,7 +24,7 @@
 #include "WEM.h"
 
 
-void WEM(S,W,P,E,T,p,M,SingleLayer,DoubleLayer,Identity)
+void WEM_pwl(S,W,P,E,T,p,M,SingleLayer,DoubleLayer,Identity)
 sparse2		*S;			/* zu berechnende Steifigkeitsmatrix            */
 wavelet		*W;			/* Waveletliste                                 */
 vector3		*P;			/* Punkteliste				        */

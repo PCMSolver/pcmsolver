@@ -1,3 +1,5 @@
+#ifndef CONSTANTS
+#define CONSTANTS
 /*****************
  *  Constants.h  *
  *****************/
@@ -34,3 +36,4 @@ extern const unsigned int	delta;
 
 /* Genaugikeit bei Punktevergleich */
 extern const double            	tol;
+#endif

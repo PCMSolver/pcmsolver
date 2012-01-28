@@ -1,5 +1,5 @@
-#ifndef INTERPOLATE_H_
-#define INTERPOLATE_H_
+#ifndef INTERPOLATE
+#define INTERPOLATE
 /*******************
  *  Interpolate.h  *
  *******************/

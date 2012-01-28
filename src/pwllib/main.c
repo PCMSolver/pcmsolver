@@ -110,8 +110,8 @@ printf("Computation time:                %g secs.\n\n",difftime(t2,t1));
 /* erstes Paar Steifigkeitsmatrizen aufstellen */
 printf("Computing the 1st pair of system matrices: \n");
 compression(&S_i,W,E,p,M,np);
-if (CASE < 3) WEM(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi*(1+epsilon)/(1-epsilon));
-else          WEM(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi);
+if (CASE < 3) WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi*(1+epsilon)/(1-epsilon));
+else          WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi);
 postproc(&S_i,W,E,p,M);
 time(&t3);      /* Zwischenzeit */
 printf("Computation time:                %g secs.\n\n",difftime(t3,t2));
@@ -122,7 +122,7 @@ if ((CASE == 3) || (CASE == 4))
    printf("Computing the 2nd pair of system matrices: \n");
    compression(&S_e,W,E,p,M,np);
    if (CASE == 3) 
-   {  WEM(&S_e,W,P,E,T,p,M,SingleLayerExt,DoubleLayerExt,-2*pi);
+   {  WEM_pwl(&S_e,W,P,E,T,p,M,SingleLayerExt,DoubleLayerExt,-2*pi);
       for (i=0; i<np; i++)	/* correct scaling */
       {  for (j=0; j<S_e.row_number[i]; j++) S_e.value1[i][j] /= epsilon;
          }
@@ -130,7 +130,7 @@ if ((CASE == 3) || (CASE == 4))
    else
    {  det = sqrt( epsilon11*epsilon22*epsilon33 + epsilon12*epsilon23*epsilon31 + epsilon13*epsilon21*epsilon32 \
                 - epsilon11*epsilon32*epsilon23 - epsilon21*epsilon12*epsilon33 - epsilon31*epsilon22*epsilon13 );   
-      WEM(&S_e,W,P,E,T,p,M,SingleLayerAni,DoubleLayerAni,-2*pi/det);
+      WEM_pwl(&S_e,W,P,E,T,p,M,SingleLayerAni,DoubleLayerAni,-2*pi/det);
       for (i=0; i<np; i++)	/* correct scaling */
       {  for (j=0; j<S_e.row_number[i]; j++) 
          {  S_e.value1[i][j] *= det;

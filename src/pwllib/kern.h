@@ -1,3 +1,5 @@
+#ifndef KERN
+#define KERN
 /**********
  * kern.h *
  **********/
@@ -42,3 +44,4 @@ double DoubleLayerExt(vector3 x, vector3 y, vector3 n_y);
 
 
 double DoubleLayerAni(vector3 x, vector3 y, vector3 n_y);
+#endif

@@ -1,3 +1,5 @@
+#ifndef SPARSE
+#define SPARSE
 /**************
  *  sparse.h  *
  **************/
@@ -67,3 +69,4 @@ void add_sparse(sparse *A, unsigned int i, unsigned int j, double z);
  *===============*/ 
 
 double get_sparse(sparse *A, unsigned int i, unsigned int j);
+#endif

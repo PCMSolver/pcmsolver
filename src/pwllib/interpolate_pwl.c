@@ -11,10 +11,10 @@
 #include <stdlib.h>
 #include "vector2.h"
 #include "vector3.h"
-#include "interpolate.h"
+#include "interpolate_pwl.h"
 
 
-void init_interpolate(P,Q,p,m)
+void init_interpolate_pwl(P,Q,p,m)
 /* berechnet die Koeffizienten des Interpolationspolynoms */
 vector3 	*****P;		/* Koeffizienten des Interpolationspolynoms */
 vector3 	***Q;		/* gegebene Knotenpunkte                    */
@@ -73,7 +73,7 @@ return;
 }
 
 
-void free_interpolate(P,p,m)
+void free_interpolate_pwl(P,p,m)
 /* gibt die Koeffizienten des Interpolationspolynoms frei */
 vector3 	*****P;		/* Koeffizienten des Interpolationspolynoms */
 unsigned int	p;	 	/* Anzahl der Pataches  		    */
@@ -94,7 +94,7 @@ return;
 }
 
 
-vector3 Chi(a,p,m)
+vector3 Chi_pwl(a,p,m)
 /* wertet das durch p gegebene Interpolationspolynom in a aus */
 vector2		a;
 vector3		***p;
@@ -132,7 +132,7 @@ return(c);
 }
 
 
-vector3 dChi_dx(a,p,m)
+vector3 dChi_dx_pwl(a,p,m)
 /* definiert die Ableitung nach x des Interpolationspolynoms p */
 vector2		a;
 vector3		***p;
@@ -172,7 +172,7 @@ return(c);
 }
 
 
-vector3 dChi_dy(a,p,m)
+vector3 dChi_dy_pwl(a,p,m)
 /* definiert die Ableitung nach y des Interpolationspolynoms p */
 vector2		a;
 vector3		***p;
@@ -209,7 +209,7 @@ return(c);
 }
 
 
-vector3 n_Chi(a,p,m)
+vector3 n_Chi_pwl(a,p,m)
 /* definiert die Normalableitung des Interpolationspolynoms p */
 vector2		a;
 vector3		***p;

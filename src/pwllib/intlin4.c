@@ -12,7 +12,7 @@
 #include "trafos.h"
 #include "kern.h"
 #include "phi.h"
-#include "interpolate.h"
+#include "interpolate_pwl.h"
 #include "cubature.h"
 #include "intlin4.h"
 
@@ -47,28 +47,28 @@ for (i=0; i<Q->nop; i++)
    b2 = Tau(xi.y,xi.x,ind_t);
    
    u = Kappa(s,a1,h);
-   x1 = Chi(u,P[element1->patch],M);
-   n_x1 = n_Chi(u,P[element1->patch],M);
+   x1 = Chi_pwl(u,P[element1->patch],M);
+   n_x1 = n_Chi_pwl(u,P[element1->patch],M);
    
    u = Kappa(s,a2,h);
-   x2 = Chi(u,P[element1->patch],M);
-   n_x2 = n_Chi(u,P[element1->patch],M);
+   x2 = Chi_pwl(u,P[element1->patch],M);
+   n_x2 = n_Chi_pwl(u,P[element1->patch],M);
       
    u = Kappa(t,b1,h);
-   y1 = Chi(u,P[element2->patch],M);
-   n_y1 = n_Chi(u,P[element2->patch],M);
+   y1 = Chi_pwl(u,P[element2->patch],M);
+   n_y1 = n_Chi_pwl(u,P[element2->patch],M);
    
    u = Kappa(t,b2,h);
-   y2 = Chi(u,P[element2->patch],M);
-   n_y2 = n_Chi(u,P[element2->patch],M);
+   y2 = Chi_pwl(u,P[element2->patch],M);
+   n_y2 = n_Chi_pwl(u,P[element2->patch],M);
 
    for (j=0; j<Q->nop; j++)  
    {  eta = vector2_Smul(xi.x,Q->xi[j]);
             
       a = Tau(eta.x,eta.y,ind_t);
       u = Kappa(t,a,h);
-      z = Chi(u,P[element2->patch],M);
-      n_z = n_Chi(u,P[element2->patch],M);
+      z = Chi_pwl(u,P[element2->patch],M);
+      n_z = n_Chi_pwl(u,P[element2->patch],M);
 
       d1 = w * Q->w[j] * SingleLayer(x1,z);
       d2 = w * Q->w[j] * DoubleLayer(x1,z,n_z );
@@ -86,8 +86,8 @@ for (i=0; i<Q->nop; i++)
 
       a = Tau(eta.x,eta.y,ind_s);
       u = Kappa(s,a,h);
-      z = Chi(u,P[element1->patch],M);
-      n_z = n_Chi(u,P[element1->patch],M);
+      z = Chi_pwl(u,P[element1->patch],M);
+      n_z = n_Chi_pwl(u,P[element1->patch],M);
       
       d1 = w * Q->w[j] * SingleLayer(z,y1);
       d2 = w * Q->w[j] * DoubleLayer(z,y1,n_y1);

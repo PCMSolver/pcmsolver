@@ -21,7 +21,7 @@
 #include "phi.h"
 #include "cubature.h"
 #include "gauss_square.h"
-#include "interpolate.h"
+#include "interpolate_pwl.h"
 #include "intlin1.h"
 #include "integrate_pwl.h"
 
@@ -36,7 +36,7 @@ unsigned int	i;
 (*RW) = (randwerte*) malloc(g_max*sizeof(randwerte));
 for (i=0; i<g_max; i++) 
 {  (*RW)[i].Chi      = (vector3*) malloc((i+1)*(i+1)*sizeof(vector3));
-   (*RW)[i].n_Chi    = (vector3*) malloc((i+1)*(i+1)*sizeof(vector3));
+   (*RW)[i].n_Chi_pwl    = (vector3*) malloc((i+1)*(i+1)*sizeof(vector3));
    (*RW)[i].det_dChi = (double*)  malloc((i+1)*(i+1)*sizeof(double ));
    }
 return;
@@ -63,7 +63,7 @@ unsigned int	i;
 
 for (i=0; i<g_max; i++) 
 {  free((*RW)[i].Chi);
-   free((*RW)[i].n_Chi);
+   free((*RW)[i].n_Chi_pwl);
    free((*RW)[i].det_dChi);
    }
 free(*RW);
@@ -94,8 +94,8 @@ if (RW->nop == 0)
    for (i=0; i<Q1->nop; i++)
    {  xi.x = h_s*(element1->index_s+Q1->xi[i].x);
       xi.y = h_s*(element1->index_t+Q1->xi[i].y);
-      RW->Chi[i] = Chi(xi,P[element1->patch],M);
-      RW->n_Chi[i] = n_Chi(xi,P[element1->patch],M);
+      RW->Chi[i] = Chi_pwl(xi,P[element1->patch],M);
+      RW->n_Chi_pwl[i] = n_Chi_pwl(xi,P[element1->patch],M);
       RW->det_dChi[i] = h_s * Q1->w[i];
       }
    }
@@ -105,12 +105,12 @@ memset(c,0,48*sizeof(double));
 for (i=0; i<Q2->nop; i++)
 {  eta.x = h_t * (element2->index_s + Q2->xi[i].x);
    eta.y = h_t * (element2->index_t + Q2->xi[i].y);
-   y = Chi(eta,P[element2->patch],M);
-   n_y = n_Chi(eta,P[element2->patch],M);
+   y = Chi_pwl(eta,P[element2->patch],M);
+   n_y = n_Chi_pwl(eta,P[element2->patch],M);
    for (j=0; j<RW->nop; j++) 
    {  d1 = h_t * Q2->w[i] * RW->det_dChi[j] * SingleLayer(RW->Chi[j],y);
       d2 = h_t * Q2->w[i] * RW->det_dChi[j] * DoubleLayer(RW->Chi[j],y,n_y);
-      d3 = h_t * Q2->w[i] * RW->det_dChi[j] * DoubleLayer(y,RW->Chi[j],RW->n_Chi[j]);
+      d3 = h_t * Q2->w[i] * RW->det_dChi[j] * DoubleLayer(y,RW->Chi[j],RW->n_Chi_pwl[j]);
       Phi_times_Phi(&c[ 0],d1,Q1->xi[j],Q2->xi[i]);
       Phi_times_Phi(&c[16],d2,Q1->xi[j],Q2->xi[i]);
       Phi_times_Phi(&c[32],d3,Q1->xi[j],Q2->xi[i]);

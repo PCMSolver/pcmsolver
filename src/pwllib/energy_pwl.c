@@ -14,7 +14,7 @@
 #include "vector3.h"
 #include "data.h"
 #include "cubature.h"
-#include "interpolate.h"
+#include "interpolate_pwl.h"
 #include "gauss_square.h"
 #include "energy_pwl.h"
 #include "kern.h"
@@ -63,7 +63,7 @@ for (i1=0; i1<p; i1++)
               + u[F[zi][1]] * Phi1(Q[g].xi[l]) \
 	      + u[F[zi][2]] * Phi2(Q[g].xi[l]) \
 	      + u[F[zi][3]] * Phi3(Q[g].xi[l]) ;
-	    E += Q[g].w[l]*U*f(Chi(t,T[i1],m));
+	    E += Q[g].w[l]*U*f(Chi_pwl(t,T[i1],m));
 	    C += Q[g].w[l]*U;
 	    }
 	 s.x += h;

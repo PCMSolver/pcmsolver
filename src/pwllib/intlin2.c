@@ -11,7 +11,7 @@
 #include "kern.h"
 #include "phi.h"
 #include "cubature.h"
-#include "interpolate.h"
+#include "interpolate_pwl.h"
 #include "intlin2.h"
 
 
@@ -49,11 +49,11 @@ for (i=0; i<Q->nop; i++)
       a.y = s.y + h*t2;
       b.x = s.x + h*t3;
       b.y = s.y + h*t4;
-      x = Chi(a,P[element1->patch],M);
-      y = Chi(b,P[element1->patch],M);
+      x = Chi_pwl(a,P[element1->patch],M);
+      y = Chi_pwl(b,P[element1->patch],M);
       d1 = w * Q->w[j] * SingleLayer(x,y);
-      d2 = w * Q->w[j] * DoubleLayer(x,y,n_Chi(b,P[element1->patch],M));
-      d3 = w * Q->w[j] * DoubleLayer(y,x,n_Chi(a,P[element1->patch],M));
+      d2 = w * Q->w[j] * DoubleLayer(x,y,n_Chi_pwl(b,P[element1->patch],M));
+      d3 = w * Q->w[j] * DoubleLayer(y,x,n_Chi_pwl(a,P[element1->patch],M));
       Phi_times_Phi(&c[ 0],d1,vector2_make(t1,t2),vector2_make(t3,t4));
       Phi_times_Phi(&c[ 0],d1,vector2_make(t3,t4),vector2_make(t1,t2));
       Phi_times_Phi(&c[16],d2,vector2_make(t1,t2),vector2_make(t3,t4));
@@ -61,11 +61,11 @@ for (i=0; i<Q->nop; i++)
 
       a.y = s.y + h*t4;
       b.y = s.y + h*t2;
-      x = Chi(a,P[element1->patch],M);
-      y = Chi(b,P[element1->patch],M);
+      x = Chi_pwl(a,P[element1->patch],M);
+      y = Chi_pwl(b,P[element1->patch],M);
       d1 = w * Q->w[j] * SingleLayer(x,y);
-      d2 = w * Q->w[j] * DoubleLayer(x,y,n_Chi(b,P[element1->patch],M));
-      d3 = w * Q->w[j] * DoubleLayer(y,x,n_Chi(a,P[element1->patch],M));
+      d2 = w * Q->w[j] * DoubleLayer(x,y,n_Chi_pwl(b,P[element1->patch],M));
+      d3 = w * Q->w[j] * DoubleLayer(y,x,n_Chi_pwl(a,P[element1->patch],M));
       Phi_times_Phi(&c[ 0],d1,vector2_make(t1,t4),vector2_make(t3,t2));
       Phi_times_Phi(&c[ 0],d1,vector2_make(t3,t2),vector2_make(t1,t4));
       Phi_times_Phi(&c[16],d2,vector2_make(t1,t4),vector2_make(t3,t2));
@@ -75,11 +75,11 @@ for (i=0; i<Q->nop; i++)
       a.y = s.y + h*t1;
       b.x = s.x + h*t4;
       b.y = s.y + h*t3;
-      x = Chi(a,P[element1->patch],M);
-      y = Chi(b,P[element1->patch],M);
+      x = Chi_pwl(a,P[element1->patch],M);
+      y = Chi_pwl(b,P[element1->patch],M);
       d1 = w * Q->w[j] * SingleLayer(x,y);
-      d2 = w * Q->w[j] * DoubleLayer(x,y,n_Chi(b,P[element1->patch],M));
-      d3 = w * Q->w[j] * DoubleLayer(y,x,n_Chi(a,P[element1->patch],M));
+      d2 = w * Q->w[j] * DoubleLayer(x,y,n_Chi_pwl(b,P[element1->patch],M));
+      d3 = w * Q->w[j] * DoubleLayer(y,x,n_Chi_pwl(a,P[element1->patch],M));
       Phi_times_Phi(&c[ 0],d1,vector2_make(t2,t1),vector2_make(t4,t3));
       Phi_times_Phi(&c[ 0],d1,vector2_make(t4,t3),vector2_make(t2,t1));
       Phi_times_Phi(&c[16],d2,vector2_make(t2,t1),vector2_make(t4,t3));
@@ -87,11 +87,11 @@ for (i=0; i<Q->nop; i++)
 
       a.y = s.y + h*t3;
       b.y = s.y + h*t1;
-      x = Chi(a,P[element1->patch],M);
-      y = Chi(b,P[element1->patch],M);
+      x = Chi_pwl(a,P[element1->patch],M);
+      y = Chi_pwl(b,P[element1->patch],M);
       d1 = w * Q->w[j] * SingleLayer(x,y);
-      d2 = w * Q->w[j] * DoubleLayer(x,y,n_Chi(b,P[element1->patch],M));
-      d3 = w * Q->w[j] * DoubleLayer(y,x,n_Chi(a,P[element1->patch],M));
+      d2 = w * Q->w[j] * DoubleLayer(x,y,n_Chi_pwl(b,P[element1->patch],M));
+      d3 = w * Q->w[j] * DoubleLayer(y,x,n_Chi_pwl(a,P[element1->patch],M));
       Phi_times_Phi(&c[ 0],d1,vector2_make(t2,t3),vector2_make(t4,t1));
       Phi_times_Phi(&c[ 0],d1,vector2_make(t4,t1),vector2_make(t2,t3));
       Phi_times_Phi(&c[16],d2,vector2_make(t2,t3),vector2_make(t4,t1));

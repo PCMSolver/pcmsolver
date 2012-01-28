@@ -13,7 +13,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "cubature.h"
-#include "interpolate.h"
+#include "interpolate_pwl.h"
 #include "gauss_square.h"
 #include "volume.h"
 
@@ -46,7 +46,7 @@ for (i1=0; i1<p; i1++)
       for (i3=0; i3<n; i3++) 	/* zeilenweise Durchnumerierung der Patches zi = (i1,i2,i3) */
       {  for (l=0; l<Q[g].nop; l++)
          {  t = vector2_add(s,vector2_Smul(h,Q[g].xi[l]));
-	    V += Q[g].w[l]*vector3_skalp(Chi(t,T[i1],m),n_Chi(t,T[i1],m));
+	    V += Q[g].w[l]*vector3_skalp(Chi_pwl(t,T[i1],m),n_Chi_pwl(t,T[i1],m));
 	    }
 	 s.x += h;
 	 }

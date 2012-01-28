@@ -81,20 +81,20 @@ return;
 }
 
 
-void Curl_Phi_times_Curl_Phi(c,weight,xi,eta,dChi_dx_s,dChi_dy_s,dChi_dx_t,dChi_dy_t)
+void Curl_Phi_times_Curl_Phi(c,weight,xi,eta,dChi_dx_pwl_s,dChi_dy_pwl_s,dChi_dx_t,dChi_dy_t)
 /* updated c_{i,j} um weight * < curl[phi_i(xi)],curl[phi_j(eta)] > */ 
 double		*c, weight;
 vector2		xi, eta;
-vector3		dChi_dx_s, dChi_dy_s, dChi_dx_t, dChi_dy_t;
+vector3		dChi_dx_pwl_s, dChi_dy_pwl_s, dChi_dx_t, dChi_dy_t;
 {
 double		a0, a1, a2, a3;
 double		b0, b1, b2, b3;
 double		c0, c1, c2, c3;
 
-a0 = weight*vector3_skalp(dChi_dy_s,dChi_dy_t);
-a1 = weight*vector3_skalp(dChi_dy_s,dChi_dx_t);
-a2 = weight*vector3_skalp(dChi_dx_s,dChi_dy_t);
-a3 = weight*vector3_skalp(dChi_dx_s,dChi_dx_t);
+a0 = weight*vector3_skalp(dChi_dy_pwl_s,dChi_dy_t);
+a1 = weight*vector3_skalp(dChi_dy_pwl_s,dChi_dx_pwl_t);
+a2 = weight*vector3_skalp(dChi_dx_pwl_s,dChi_dy_pwl_t);
+a3 = weight*vector3_skalp(dChi_dx_pwl_s,dChi_dx_t);
 
 b0 = (1-eta.y)*a0 - (1-eta.x)*a1;
 b1 = (1-eta.y)*a0 +    eta.x *a1;

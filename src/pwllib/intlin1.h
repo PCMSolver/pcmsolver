@@ -15,7 +15,7 @@
 
 typedef struct
 {
-vector3		*Chi, *n_Chi;
+vector3		*Chi, *n_Chi_pwl;
 double		*det_dChi;
 unsigned int	nop;
 }  

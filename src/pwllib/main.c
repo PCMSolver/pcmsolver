@@ -26,7 +26,7 @@
 #include "WEMPCG_pwl.h"
 #include "WEMPGMRES_pwl.h"
 #include "compression_pwl.h"
-#include "interpolate.h"
+#include "interpolate_pwl.h"
 #include "read_points.h"
 #include "postproc.h"
 #include "topology.h"
@@ -89,7 +89,7 @@ nf = p*(1<<M)*(1<<M);	        /* Anzahl der Patches */
 time(&t1);
 
 /* Topologie bestimmen */
-init_interpolate(&T,U,p,M);
+init_interpolate_pwl(&T,U,p,M);
 np = gennet(&P,&F,U,p,M);
 free_points(&U,p,M);
 volume(F,T,p,M);
@@ -196,7 +196,7 @@ printf("\n\n\n");
 if ((CASE == 3) || (CASE == 4)) free_sparse2(&S_e);
 free_waveletlist(&W,np);
 free_elementlist(&E,p,M);
-free_interpolate(&T,p,M);
+free_interpolate_pwl(&T,p,M);
 free_patchlist(&F,nf);
 free_sparse2(&S_i);
 free(rhs);

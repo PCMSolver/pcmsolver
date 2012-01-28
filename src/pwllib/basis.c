@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "constants.h"
-#include "intvector.h"
+#include "intvector_pwl.h"
 #include "vector2.h"
 #include "vector3.h"
 #include "sparse.h"
@@ -390,7 +390,7 @@ G = (wavelet*) calloc(nw,sizeof(wavelet));
 /* 2. Schleife ueber die Gitter */
 for (m=M; m>=minLevel; m--)
 {  
-   dwt_mask(&T,&L,m,m);	/* berechne die Masken T und L      */
+   dwt_mask_pwl(&T,&L,m,m);	/* berechne die Masken T und L      */
    n = 1 << m;		/* p*n*n Elemente auf Level m       */
    S = 1 << (M-m);	/* Schrittweite zum naechsten Punkt */
 

@@ -25,7 +25,7 @@ unsigned int	father;		/* Index des Vaterelements                 */
 unsigned int	son[4];		/* Indizes der vier Soehne                 */
 unsigned int	wavelet_number;	/* Zahl der Wavelets mit diesem Element    */
 unsigned int	*wavelet;	/* Indizes der Wavelets mit diesem Element */
-intvector	interaction;	/* sparse-Vektor fuer Integrale            */
+intvector_pwl	interaction;	/* sparse-Vektor fuer Integrale            */
 }
 element;
 

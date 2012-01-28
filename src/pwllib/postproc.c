@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include "constants.h"
 #include "sparse2.h"
-#include "intvector.h"
+#include "intvector_pwl.h"
 #include "vector2.h"
 #include "vector3.h"
 #include "basis.h"

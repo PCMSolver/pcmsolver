@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "constants.h"
-#include "intvector.h"
+#include "intvector_pwl.h"
 #include "vector2.h"
 #include "vector3.h"
 #include "basis.h"
@@ -54,14 +54,14 @@ double		e[4];		/* Interpolationswerte im Kantenmittelpunkt	 */
 
 /* untersuche zuerst, ob das Integral schon berechnet worden ist */
 if (ind1 >= ind2) 
-{  j = search_integral(&E[ind1].interaction,ind2);
+{  j = search_integral_pwl(&E[ind1].interaction,ind2);
    if (j != -1) 
    {  memcpy(c,E[ind1].interaction.value[j].sub,48*sizeof(double));
       return;
       }
    }
 else 
-{  j = search_integral(&E[ind2].interaction,ind1);
+{  j = search_integral_pwl(&E[ind2].interaction,ind1);
    if (j != -1) 
    {  permutate(c,E[ind2].interaction.value[j].sub);
       return;
@@ -124,10 +124,10 @@ else 		/* (E[ind1].level > E[ind2].level) */
    }
 
 /* Abspeichern des Integrals */
-if (ind1 >= ind2) set_integral(&E[ind1].interaction,ind2,c);
+if (ind1 >= ind2) set_integral_pwl(&E[ind1].interaction,ind2,c);
 else 
 {  permutate(a,c);
-   set_integral(&E[ind2].interaction,ind1,a);
+   set_integral_pwl(&E[ind2].interaction,ind1,a);
    }
 return;
 }

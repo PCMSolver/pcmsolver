@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <string.h>
-#include "intvector.h"
+#include "intvector_pwl.h"
 #include "vector2.h"
 #include "vector3.h"
 #include "basis.h"

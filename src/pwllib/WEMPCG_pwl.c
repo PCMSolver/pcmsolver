@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include "sparse.h"
 #include "sparse2.h"
-#include "intvector.h"
+#include "intvector_pwl.h"
 #include "vector3.h"
 #include "basis.h"
 #include "kern.h"

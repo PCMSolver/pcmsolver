@@ -10,7 +10,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "intvector.h"
+#include "intvector_pwl.h"
 #include "constants.h"
 
 
@@ -20,8 +20,8 @@
  *  bzw. -1 falls es nicht vorhanden.            *
  *===============================================*/
 
-signed int search_integral(I,i)
-intvector	*I;
+signed int search_integral_pwl(I,i)
+intvector_pwl	*I;
 unsigned int	i;
 {
 unsigned int	low, mid, high;
@@ -47,9 +47,9 @@ else                    return(-1); 	/* Eintrag nicht vorhanden */
  *  I(i) := z  *
  *=============*/
 
-void set_integral(I,i,z)
+void set_integral_pwl(I,i,z)
 /* der Eintrag darf nicht vorhanden sein */
-intvector       *I;
+intvector_pwl       *I;
 unsigned int    i;
 double		*z;
 {
@@ -60,14 +60,14 @@ rn = I->integral_number++;
 if (rn%delta == 0)
 {  if (rn == 0)
    {  I->index = (unsigned int*) malloc(delta*sizeof(unsigned int));
-      I->value = (integral*) malloc(delta*sizeof(integral));
+      I->value = (integral_pwl*) malloc(delta*sizeof(integral_pwl));
       I->index[0] = i;
       memcpy(I->value[0].sub,z,48*sizeof(double));
       return;
       }
    else
    {  I->index = (unsigned int*) realloc(I->index,(rn+delta)*sizeof(unsigned int));
-      I->value = (integral*) realloc(I->value,(rn+delta)*sizeof(integral));
+      I->value = (integral_pwl*) realloc(I->value,(rn+delta)*sizeof(integral_pwl));
       }
    }
 
@@ -89,7 +89,7 @@ while (low < high)
    
 /* schreibe Eintrag in die Liste */
 memmove(&I->index[low+1],&I->index[low],(rn-low)*sizeof(unsigned int));
-memmove(&I->value[low+1],&I->value[low],(rn-low)*sizeof(integral));
+memmove(&I->value[low+1],&I->value[low],(rn-low)*sizeof(integral_pwl));
 I->index[low] = i;
 memcpy(I->value[low].sub,z,48*sizeof(double));
 return;

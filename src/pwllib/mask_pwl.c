@@ -131,7 +131,7 @@ return;
 }
 
 
-void dwt_mask(T,L,m,M)
+void dwt_mask_pwl(T,L,m,M)
 /* waehlt in Abhaengigkeit von m und M die richtige Masken */
 sparse		*T, *L;
 unsigned int	m, M;

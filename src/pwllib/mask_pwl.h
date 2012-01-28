@@ -1,5 +1,5 @@
-#ifndef MASK
-#define MASK
+#ifndef MASK_PWL
+#define MASK_PWL
 /*==========*
  *  Mask.h  *
  *==========*/
@@ -10,6 +10,6 @@
  *================================================================*/
  
 
-void dwt_mask(sparse *T, sparse *L, unsigned int m, unsigned int M);
+void dwt_mask_pwl(sparse *T, sparse *L, unsigned int m, unsigned int M);
 /* waehlt in Abhaengigkeit von m die richtige Maske */
 #endif

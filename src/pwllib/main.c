@@ -24,7 +24,7 @@
 #include "WEM.h"
 #include "WEMRHS.h"
 #include "WEMPCG_pwl.h"
-#include "WEMPGMRES.h"
+#include "WEMPGMRES_pwl.h"
 #include "compression.h"
 #include "interpolate.h"
 #include "read_points.h"
@@ -148,12 +148,12 @@ u = (double*) calloc(np,sizeof(double));
 v = (double*) calloc(np,sizeof(double));
 if (CASE == 1)
 {  WEMRHS1(&rhs,W,E,T,p,M,np);
-   i = WEMPGMRES1(&S_i,rhs,u,eps,W,F,p,M);
+   i = WEMPGMRES_pwl1(&S_i,rhs,u,eps,W,F,p,M);
    printf("Solving the linear system:       %d iterations\n",i);
    }
 else if (CASE == 2)
 {  WEMRHS2(&rhs,W,E,T,p,M,np);		/* compute correct rhs: b-G*A2^(-1)*b */
-   i = WEMPGMRES2(&S_i,rhs,v,eps,W,F,p,M);
+   i = WEMPGMRES_pwl2(&S_i,rhs,v,eps,W,F,p,M);
    printf("Solving the 1st linear system:   %d iterations\n",i);
    init_sparse(&G,np,np,10);
    single_scale_gram(&G,F,p,M);
@@ -177,7 +177,7 @@ else if ((CASE == 3) || (CASE == 4))
    for (i=0; i<np; i++)			   	/* rhs = V_e*u */
    {  for (j=0; j<S_e.row_number[i]; j++) rhs[i] += S_e.value1[i][j] * u[S_e.index[i][j]];
       }
-   i = WEMPGMRES3(&S_i,&S_e,rhs,v,eps,W,F,p,M);	/* solve complicated_system u = A^(-1)*rhs */ 
+   i = WEMPGMRES_pwl3(&S_i,&S_e,rhs,v,eps,W,F,p,M);	/* solve complicated_system u = A^(-1)*rhs */ 
    printf("Solving the 2nd linear system:   %d iterations\n",i);   
    for (i=0; i<np; i++) u[i] -= 4*pi*v[i]; 	/* u = u - 4*pi*v */ 
    }

@@ -1,10 +1,10 @@
 /*****************
- *  WEMPGMRES.c  *
+ *  WEMPGMRES_pwl.c  *
  *****************/
 
 
 /*==============================================================*
- *  WEMPGMRES(A,b,x,epsi,W,F,p,M)                               *
+ *  WEMPGMRES_pwl(A,b,x,epsi,W,F,p,M)                               *
  *	                                                        *
  *  GMRES-Verfahren zur Loesung des linearen Gleichungssystems  *
  *	                                                        *
@@ -34,7 +34,7 @@
 #include "vector3.h"
 #include "basis.h"
 #include "precond.h"
-#include "WEMPGMRES.h"
+#include "WEMPGMRES_pwl.h"
 
 
 const unsigned int 	maxiter = 100;		/* Restart - Parameter */
@@ -44,7 +44,7 @@ const unsigned int 	maxiter = 100;		/* Restart - Parameter */
  *  Hauptprogramm  *
  *=================*/
  
-unsigned int WEMPGMRES1(A,b,x,epsi,W,F,p,M)
+unsigned int WEMPGMRES_pwl1(A,b,x,epsi,W,F,p,M)
 /* loest A2'*x = b */
 sparse2 	*A;
 double          *b, *x, epsi;
@@ -183,7 +183,7 @@ return((l-1)*maxiter+k);
 }
 
 
-unsigned int WEMPGMRES2(A,b,x,epsi,W,F,p,M)
+unsigned int WEMPGMRES_pwl2(A,b,x,epsi,W,F,p,M)
 /* loest A2*x = b */
 sparse2 	*A;
 double          *b, *x, epsi;
@@ -321,7 +321,7 @@ return((l-1)*maxiter+k);;
 
 
 /*==============================================================*
- *  WEMPGMRES(A,B,rhs,x,epsi,W,F,p,M)                           *
+ *  WEMPGMRES_pwl(A,B,rhs,x,epsi,W,F,p,M)                           *
  *	                                                        *
  *  GMRES-Verfahren zur Loesung des linearen Gleichungssystems  *
  *	                                                        *
@@ -340,7 +340,7 @@ return((l-1)*maxiter+k);;
  *		M    : Zahl der Level                           *
  *==============================================================*/
 
-unsigned int WEMPGMRES3(A,B,rhs,x,epsi,W,F,p,M)
+unsigned int WEMPGMRES_pwl3(A,B,rhs,x,epsi,W,F,p,M)
 /* loest (B1*G^(-1)*A2'-B2*G^(-1)*A1)*x = rhs */
 sparse2 	*A, *B;
 double          *rhs, *x, epsi;

@@ -1,12 +1,12 @@
-#ifndef WEMPGMRES
-#define WEMPGMRES
+#ifndef WEMPGMRES_pwl
+#define WEMPGMRES_pwl
 /*****************
- *  WEMPGMRES.h  *
+ *  WEMPGMRES_pwl.h  *
  *****************/
 
 
 /*==============================================================*
- *  WEMPGMRES(A,b,x,epsi,W,F,p,M)                               *
+ *  WEMPGMRES_pwl(A,b,x,epsi,W,F,p,M)                               *
  *	                                                        *
  *  GMRES-Verfahren zur Loesung des linearen Gleichungssystems  *
  *	                                                        *
@@ -26,16 +26,16 @@
  *==============================================================*/
 
 
-unsigned int WEMPGMRES1(sparse2 *A, double *b, double *x, double epsi, 
+unsigned int WEMPGMRES_pwl1(sparse2 *A, double *b, double *x, double epsi, 
 	wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
 
 
-unsigned int WEMPGMRES2(sparse2 *A, double *b, double *x, double epsi, 
+unsigned int WEMPGMRES_pwl2(sparse2 *A, double *b, double *x, double epsi, 
 	wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
 
 
 /*==============================================================*
- *  WEMPGMRES(A,B,rhs,x,epsi,W,F,p,M)                           *
+ *  WEMPGMRES_pwl(A,B,rhs,x,epsi,W,F,p,M)                           *
  *	                                                        *
  *  GMRES-Verfahren zur Loesung des linearen Gleichungssystems  *
  *	                                                        *
@@ -54,6 +54,6 @@ unsigned int WEMPGMRES2(sparse2 *A, double *b, double *x, double epsi,
  *		M    : Zahl der Level                           *
  *==============================================================*/
 
-unsigned int WEMPGMRES3(sparse2 *A, sparse2 *B, double *rhs, double *x, double epsi, 
+unsigned int WEMPGMRES_pwl3(sparse2 *A, sparse2 *B, double *rhs, double *x, double epsi, 
 	wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
 #endif

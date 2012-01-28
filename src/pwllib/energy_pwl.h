@@ -10,5 +10,5 @@
  *=====================================*/
 
 
-double energy(double *u, unsigned int **F, vector3 ****T, unsigned int p, unsigned int m);
+double energy_pwl(double *u, unsigned int **F, vector3 ****T, unsigned int p, unsigned int m);
 #endif

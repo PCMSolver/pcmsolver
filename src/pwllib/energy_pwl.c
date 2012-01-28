@@ -16,7 +16,7 @@
 #include "cubature.h"
 #include "interpolate.h"
 #include "gauss_square.h"
-#include "energy.h"
+#include "energy_pwl.h"
 #include "kern.h"
 #include "phi.h"
 
@@ -26,7 +26,7 @@
 #endif  
 
 
-double energy(u,F,T,p,m)
+double energy_pwl(u,F,T,p,m)
 double		*u; 		/* vorgegebene Dichte			       */
 unsigned int	**F;		/* Patchliste				       */
 vector3		****T;		/* Koeffizienten zur Oberflaecheninterpolation */
@@ -75,7 +75,7 @@ for (i1=0; i1<p; i1++)
 E = -0.5*h*E;	/* correct scaling */
 
 /* Datenausgabe */
-printf("Computing the energy:            %g\n",E);
+printf("Computing the energy_pwl:            %g\n",E);
 
 for (l=0; l<k; l++) D += alpha[l];	/* total charge */
 /* C = total charge * (epsilon-1)/epsilon */

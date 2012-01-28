@@ -31,7 +31,7 @@
 #include "postproc.h"
 #include "topology.h"
 #include "precond.h"
-#include "energy.h"
+#include "energy_pwl.h"
 #include "volume.h"
 #include "kern.h"
 
@@ -187,7 +187,7 @@ printf("Computation time:                %g secs.\n\n",difftime(t2,t3));
 
 /* Energie-Berechnung */
 tdwtLin(u,F,M,p,np);
-res = energy(u,F,T,p,M);
+res = energy_pwl(u,F,T,p,M);
 time(&t2);
 printf("Over-all computation time:       %g secs.\n",difftime(t2,t1));
 

@@ -13,6 +13,7 @@
 #include <string.h>
 #include "sparse.h"
 #include "mask.h"
+#include "dwt_pwl.h"
 
 
 extern const unsigned int 	minLevel;

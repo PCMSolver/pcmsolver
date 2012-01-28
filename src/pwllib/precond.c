@@ -20,7 +20,7 @@
 #include "sparse.h"
 #include "basis.h"  
 #include "precond.h"
-#include "dwt.h"
+#include "dwt_pwl.h"
 
 
 void inv_A_times_x(sparse *A, double *x, unsigned int **F, unsigned int p, unsigned int M);

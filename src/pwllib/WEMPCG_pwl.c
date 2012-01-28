@@ -35,7 +35,7 @@
 #include "vector3.h"
 #include "basis.h"
 #include "kern.h"
-#include "dwt.h"
+#include "dwt_pwl.h"
 #include "precond.h"
 #include "WEMPCG_pwl.h"
 

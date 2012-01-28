@@ -1,5 +1,5 @@
-#ifndef DWT
-#define DWT
+#ifndef DWT_PWL
+#define DWT_PWL
 /************
  *  dwt1.h  *
  ************/
@@ -18,10 +18,12 @@ void multiple(unsigned int ****C, unsigned int **Z, unsigned int **F,
    und eine Vielfachheitenliste der Punkte */
 
 
-void dwtLin(double *a, unsigned int **F, unsigned int M, unsigned int p, unsigned int np);
+void dwtLin(double *a, unsigned int **F, unsigned int M, unsigned int p, 
+            unsigned int np);
 /* Diskrete Wavelet-Transformation */
 
 
-void tdwtLin(double *a, unsigned int **F, unsigned int M, unsigned int p, unsigned int np);
+void tdwtLin(double *a, unsigned int **F, unsigned int M, unsigned int p, 
+             unsigned int np);
 /* transformierte Diskrete Wavelet-Transformation */
 #endif

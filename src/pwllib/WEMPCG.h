@@ -1,12 +1,12 @@
-#ifndef WEMPCG
-#define WEMPCG
+#ifndef WEMPCG_pwl
+#define WEMPCG_pwl
 /**************
- *  WEMPCG.h  *
+ *  WEMPCG_pwl.h  *
  **************/
 
 
 /*=============================================================*
- *  WEMPCG(A,b,x,epsi,W,F,p,M)                                 *
+ *  WEMPCG_pwl(A,b,x,epsi,W,F,p,M)                                 *
  *	                                                       *
  *  Verfahren der konjugierten Gradienten zur Loesung des      *
  *  linearen Gleichungssystems                                 *
@@ -28,6 +28,6 @@
  *=============================================================*/
 
 
-unsigned int WEMPCG(sparse2 *A, double *b, double *x, double epsi, 
+unsigned int WEMPCG_pwl(sparse2 *A, double *b, double *x, double epsi, 
 	wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
 #endif

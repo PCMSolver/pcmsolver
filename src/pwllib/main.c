@@ -23,7 +23,7 @@
 #include "dwt.h"
 #include "WEM.h"
 #include "WEMRHS.h"
-#include "WEMPCG.h"
+#include "WEMPCG_pwl.h"
 #include "WEMPGMRES.h"
 #include "compression.h"
 #include "interpolate.h"
@@ -166,12 +166,12 @@ else if (CASE == 2)
    dwtLin(u,F,M,p,np);
    for (i=0; i<np; i++) rhs[i] += 4*pi*u[i]/(epsilon-1);
    memset(u,0,np*sizeof(double));
-   i = WEMPCG(&S_i,rhs,u,eps,W,F,p,M);
+   i = WEMPCG_pwl(&S_i,rhs,u,eps,W,F,p,M);
    printf("Solving the 2nd linear system:   %d iterations\n",i);
    }
 else if ((CASE == 3) || (CASE == 4))
 {  WEMRHS2(&rhs,W,E,T,p,M,np);
-   i = WEMPCG(&S_i,rhs,u,eps,W,F,p,M);		/* u = V_i^(-1)*N_f */
+   i = WEMPCG_pwl(&S_i,rhs,u,eps,W,F,p,M);		/* u = V_i^(-1)*N_f */
    printf("Solving the 1st linear system:   %d iterations\n",i);
    memset(rhs,0,np*sizeof(double));
    for (i=0; i<np; i++)			   	/* rhs = V_e*u */

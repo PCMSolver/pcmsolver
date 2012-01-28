@@ -1,10 +1,10 @@
 /**************
- *  WEMPCG.c  *
+ *  WEMPCG_pwl.c  *
  **************/
 
 
 /*=============================================================*
- *  WEMPCG(A,b,x,epsi,W,F,p,M)                                 *
+ *  WEMPCG_pwl(A,b,x,epsi,W,F,p,M)                                 *
  *	                                                       *
  *  Verfahren der konjugierten Gradienten zur Loesung des      *
  *  linearen Gleichungssystems                                 *
@@ -37,10 +37,10 @@
 #include "kern.h"
 #include "dwt.h"
 #include "precond.h"
-#include "WEMPCG.h"
+#include "WEMPCG_pwl.h"
 
 
-unsigned int WEMPCG(A,b,x,epsi,W,F,p,M)
+unsigned int WEMPCG_pwl(A,b,x,epsi,W,F,p,M)
 sparse2 	*A;
 double          *b, *x, epsi;
 wavelet		*W;

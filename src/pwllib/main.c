@@ -25,7 +25,7 @@
 #include "WEMRHS_pwl.h"
 #include "WEMPCG_pwl.h"
 #include "WEMPGMRES_pwl.h"
-#include "compression.h"
+#include "compression_pwl.h"
 #include "interpolate.h"
 #include "read_points.h"
 #include "postproc.h"
@@ -109,7 +109,7 @@ printf("Computation time:                %g secs.\n\n",difftime(t2,t1));
 
 /* erstes Paar Steifigkeitsmatrizen aufstellen */
 printf("Computing the 1st pair of system matrices: \n");
-compression(&S_i,W,E,p,M,np);
+compression_pwl(&S_i,W,E,p,M,np);
 if (CASE < 3) WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi*(1+epsilon)/(1-epsilon));
 else          WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi);
 postproc(&S_i,W,E,p,M);
@@ -120,7 +120,7 @@ printf("Computation time:                %g secs.\n\n",difftime(t3,t2));
 if ((CASE == 3) || (CASE == 4))
 {  time(&t2);
    printf("Computing the 2nd pair of system matrices: \n");
-   compression(&S_e,W,E,p,M,np);
+   compression_pwl(&S_e,W,E,p,M,np);
    if (CASE == 3) 
    {  WEM_pwl(&S_e,W,P,E,T,p,M,SingleLayerExt,DoubleLayerExt,-2*pi);
       for (i=0; i<np; i++)	/* correct scaling */

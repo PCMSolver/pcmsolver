@@ -1,5 +1,5 @@
-#ifndef COMPRESSION
-#define COMPRESSION
+#ifndef COMPRESSION_pwl
+#define COMPRESSION_pwl
 /*******************
  *  Compression.h  *
  *******************/
@@ -11,5 +11,5 @@
  *  berechnenden Eintraege.                  *
  *===========================================*/
  
-double compression(sparse2 *T, wavelet *W, element *E, unsigned int p, unsigned int M, unsigned int np);
+double compression_pwl(sparse2 *T, wavelet *W, element *E, unsigned int p, unsigned int M, unsigned int np);
 #endif

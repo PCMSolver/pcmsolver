@@ -19,7 +19,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "basis.h"
-#include "compression.h"
+#include "compression_pwl.h"
 
 
 /*========================================================*
@@ -144,7 +144,7 @@ return(0);
  *  Hauptprogramm  *
  *=================*/
 
-double compression(T,W,E,p,M,np)
+double compression_pwl(T,W,E,p,M,np)
 sparse2         *T;	      	/* komprimierte Steifigkeitsmatrix               */
 wavelet		*W;		/* Liste der Wavelets                            */
 element		*E;		/* hierarchische Elementliste                    */
@@ -248,7 +248,7 @@ for (i=0; i<np; i++)
    
 /* Speicherplatz wieder freigeben */
 /*
-printf("A-priori compression:            %.5f %%\n",100.0*nnz/np/np);
+printf("A-priori Compression:            %.5f %%\n",100.0*nnz/np/np);
 */
 finish_pattern(T);
 for (i=0; i<=M; i++)

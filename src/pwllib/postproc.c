@@ -90,7 +90,7 @@ for (i=0; i<T->n; i++)
    
 /* Speicherplatz wieder freigeben */
 /*
-printf("A-posteriori compression:        %.5f%%\n",100.0*nnz/T->n/T->n);
+printf("A-posteriori Compression:        %.5f%%\n",100.0*nnz/T->n/T->n);
 */
 for (i=0; i<=M; i++) free(c[i]);
 free(D1);

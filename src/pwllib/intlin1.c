@@ -23,7 +23,7 @@
 #include "gauss_square.h"
 #include "interpolate.h"
 #include "intlin1.h"
-#include "integrate.h"
+#include "integrate_pwl.h"
 
 
 void init_randwerte(RW,g_max)

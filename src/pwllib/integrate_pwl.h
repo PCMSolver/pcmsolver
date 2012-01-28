@@ -1,5 +1,5 @@
-#ifndef INTEGRATE
-#define INTEGRATE
+#ifndef INTEGRATE_PWL
+#define INTEGRATE_PWL
 /*****************
  *  Integrate.h  *
  *****************/
@@ -11,7 +11,9 @@
  *=============================================================*/
  
 
-void element_element_interaction(double *c, vector3 *P, element *E, unsigned int ind1, unsigned int ind2, 
-	randwerte *RW, cubature *Q, vector3 ****R, unsigned int M, double prec, double SL(), double DL(), double I);
+void element_element_interaction_pwl_pwl(double *c, vector3 *P, element *E, unsigned int ind1, 
+                                     unsigned int ind2, randwerte *RW, cubature *Q, 
+                                     vector3 ****R, unsigned int M, double prec, 
+                                     double SL(), double DL(), double I);
 /* Zerlegungsalgorithmus fuer die Integration Element ind1 mit Element ind2 */
 #endif

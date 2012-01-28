@@ -20,7 +20,7 @@
 #include "cubature.h"
 #include "gauss_square.h"
 #include "intlin1.h"
-#include "integrate.h"
+#include "integrate_pwl.h"
 #include "WEM.h"
 
 
@@ -88,12 +88,12 @@ for (i=0; i<ne; i++)
       memset(s,0,12*sizeof(double));
       for (j=0; j<W[test_wavelet].element_number; j++)
       {  if (i > W[test_wavelet].element[j])
-         {  element_element_interaction(c,P,E,i,W[test_wavelet].element[j],RW,Q,T,M,\
+         {  element_element_interaction_pwl(c,P,E,i,W[test_wavelet].element[j],RW,Q,T,M,\
 	 	prec[E[i].level][W[test_wavelet].level],SingleLayer,DoubleLayer,Identity);
 	    for (k=0; k<48; k++) s[k/4] += W[test_wavelet].weight[j][k%4] * c[k];
             }
 	 else if (i == W[test_wavelet].element[j])
-         {  element_element_interaction(c,P,E,i,W[test_wavelet].element[j],RW,Q,T,M,\
+         {  element_element_interaction_pwl(c,P,E,i,W[test_wavelet].element[j],RW,Q,T,M,\
 	 	prec[E[i].level][W[test_wavelet].level],SingleLayer,DoubleLayer,Identity);
 	    for (k=0; k<48; k++) s[k/4] += 0.5 * W[test_wavelet].weight[j][k%4] * c[k];
             }

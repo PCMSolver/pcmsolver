@@ -23,10 +23,11 @@
 #include "intlin2.h"
 #include "intlin3.h"
 #include "intlin4.h"
-#include "integrate.h"
+#include "integrate_pwl.h"
 
 
-void element_element_interaction(c,P,E,ind1,ind2,RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity)
+void element_element_interaction_pwl_pwl(c,P,E,ind1,ind2,RW,Q,R,M,prec,SingleLayer,
+                                     DoubleLayer,Identity)
 /* Zerlegungsalgorithmus fuer die Integration Element ind1 mit Element ind2 */
 double		*c;		/* zu berechnende Integrale                      */
 vector3		*P;		/* Punkteliste                                   */
@@ -101,10 +102,10 @@ else 		/* (E[ind1].level > E[ind2].level) */
       IntLin1(c,&E[ind1],&E[ind2],&RW[g1],&Q[g1],&Q[g2],R,M,SingleLayer,DoubleLayer);
       }
    else		/* unterteile */
-   {  element_element_interaction(&a[  0],P,E,ind1,E[ind2].son[0],RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity);
-      element_element_interaction(&a[ 48],P,E,ind1,E[ind2].son[1],RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity);
-      element_element_interaction(&a[ 96],P,E,ind1,E[ind2].son[2],RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity);
-      element_element_interaction(&a[144],P,E,ind1,E[ind2].son[3],RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity);
+   {  element_element_interaction_pwl(&a[  0],P,E,ind1,E[ind2].son[0],RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity);
+      element_element_interaction_pwl(&a[ 48],P,E,ind1,E[ind2].son[1],RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity);
+      element_element_interaction_pwl(&a[ 96],P,E,ind1,E[ind2].son[2],RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity);
+      element_element_interaction_pwl(&a[144],P,E,ind1,E[ind2].son[3],RW,Q,R,M,prec,SingleLayer,DoubleLayer,Identity);
 
       /* bilde die jeweils vier Integrale */
       for (k=0; k<48; k+=4)

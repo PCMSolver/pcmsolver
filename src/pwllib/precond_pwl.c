@@ -1,5 +1,5 @@
 /*******************
- *  precond_mod.c  *
+ *  precond_pwl_mod.c  *
  *******************/
  
 
@@ -19,14 +19,14 @@
 #include "vector3.h"
 #include "sparse.h"
 #include "basis.h"  
-#include "precond.h"
+#include "precond_pwl.h"
 #include "dwt_pwl.h"
 
 
-void inv_A_times_x(sparse *A, double *x, unsigned int **F, unsigned int p, unsigned int M);
+void inv_A_times_x_pwl(sparse *A, double *x, unsigned int **F, unsigned int p, unsigned int M);
 
 
-void single_scale_gram(G,F,p,M)
+void single_scale_gram_pwl(G,F,p,M)
 /* berechnet die Massenmatrix in der Einskalenbasis. */
 sparse		*G;             /* zu berechnende Gram-Matrix im sparse-Format */
 unsigned int	**F;		/* Elementliste der Einskalenbasis             */
@@ -52,7 +52,7 @@ return;
 }
 
 
-void inv_A_times_x(A,x,F,p,M)
+void inv_A_times_x_pwl(A,x,F,p,M)
 /* Loest das lineare Gleichungssystem T*A*T'*y = x,
    wobei der Nullvektor als Startvektor verwendet 
    und die Loesung y in x geschrieben wird. */
@@ -125,7 +125,7 @@ return;
 }
 
 
-void precond(a,b,G,W,F,p,M)
+void precond_pwl(a,b,G,W,F,p,M)
 /* Anwendung des Preconditioners auf den Vektor b, der 
    NICHT veraendert wird. Das Ergebnis wird in a gespeichert */
 double		*a;		/* gesuchter Koeffizientenvektor   */
@@ -143,7 +143,7 @@ unsigned int	i;		/* Laufindex durch ein Level       */
 for (i=0; i<np; i++) a[i] = pow(2,0.5*W[i].level) * b[i];
 
 /* Multipliziere mit der Wavelet-Massenmatrix */
-inv_A_times_x(G,a,F,p,M);
+inv_A_times_x_pwl(G,a,F,p,M);
 
 /* wende Wavelet-Preconditioner an */
 for (i=0; i<np; i++) a[i] *= pow(2,0.5*W[i].level);

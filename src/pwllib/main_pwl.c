@@ -30,7 +30,7 @@
 #include "read_points.h"
 #include "postproc_pwl.h"
 #include "topology.h"
-#include "precond.h"
+#include "precond_pwl.h"
 #include "energy_pwl.h"
 #include "volume.h"
 #include "kern.h"
@@ -156,7 +156,7 @@ else if (CASE == 2)
    i = WEMPGMRES_pwl2(&S_i,rhs,v,eps,W,F,p,M);
    printf("Solving the 1st linear system:   %d iterations\n",i);
    init_sparse(&G,np,np,10);
-   single_scale_gram(&G,F,p,M);
+   single_scale_gram_pwl(&G,F,p,M);
    tdwtLin(v,F,M,p,np);
    for (i=0; i<np; i++)
    {  for (j=0; j<G.row_number[i]; j++)

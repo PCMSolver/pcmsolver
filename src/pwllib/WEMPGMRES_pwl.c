@@ -33,7 +33,7 @@
 #include "intvector_pwl.h"
 #include "vector3.h"
 #include "basis.h"
-#include "precond.h"
+#include "precond_pwl.h"
 #include "WEMPGMRES_pwl.h"
 
 
@@ -355,7 +355,7 @@ sparse		G;
 
 /* berechne Gram'sche Matrix */
 init_sparse(&G,A->n,A->n,10);
-single_scale_gram(&G,F,p,M);
+single_scale_gram_pwl(&G,F,p,M);
 
 /* Speicherplatz allokieren */
 V = (double**) malloc((maxiter+1)*sizeof(double*));
@@ -387,7 +387,7 @@ for (l=0; rn>epsi; l++)
       {  v[A->index[i][j]] += A->value2[i][j] * x[i];
          }
       }
-   inv_A_times_x(&G,v,F,p,M);
+   inv_A_times_x_pwl(&G,v,F,p,M);
    for (i=0; i<B->n; i++)
    {  for (j=0; j<B->row_number[i]; j++)
       {  V[0][i] -= B->value1[i][j] * v[B->index[i][j]];
@@ -399,16 +399,16 @@ for (l=0; rn>epsi; l++)
       {  v[i] += A->value1[i][j] * x[A->index[i][j]];
          }
       }
-   inv_A_times_x(&G,v,F,p,M);
+   inv_A_times_x_pwl(&G,v,F,p,M);
    for (i=0; i<B->n; i++)
    {  for (j=0; j<B->row_number[i]; j++)
       {  V[0][i] += B->value2[i][j] * v[B->index[i][j]];
          }
       }	 
    	 
-   /* v = precond(V(0,:)) und rn = sqrt(v'*v) */ 	 
+   /* v = precond_pwl(V(0,:)) und rn = sqrt(v'*v) */ 	 
    rn = 0;
-   precond(v,V[0],&G,W,F,p,M);
+   precond_pwl(v,V[0],&G,W,F,p,M);
    for (i=0; i<A->n; i++) rn += v[i]*v[i];
    rn = sqrt(rn);
 
@@ -428,7 +428,7 @@ for (l=0; rn>epsi; l++)
          {  v[A->index[i][j]] += A->value2[i][j] * V[k][i];
             }
          }
-      inv_A_times_x(&G,v,F,p,M);
+      inv_A_times_x_pwl(&G,v,F,p,M);
       for (i=0; i<B->n; i++)
       {  for (j=0; j<B->row_number[i]; j++)
          {  V[k+1][i] += B->value1[i][j] * v[B->index[i][j]];
@@ -440,15 +440,15 @@ for (l=0; rn>epsi; l++)
          {  v[i] += A->value1[i][j] * V[k][A->index[i][j]];
             }
          }
-      inv_A_times_x(&G,v,F,p,M); 
+      inv_A_times_x_pwl(&G,v,F,p,M); 
       for (i=0; i<B->n; i++)
       {  for (j=0; j<B->row_number[i]; j++)
          {  V[k+1][i] -= B->value2[i][j] * v[B->index[i][j]];
             }
          }
 
-      /* v = precond(V(k+1,:) */
-      precond(v,V[k+1],&G,W,F,p,M);
+      /* v = precond_pwl(V(k+1,:) */
+      precond_pwl(v,V[k+1],&G,W,F,p,M);
       
       /* Berechnung der Skalps f = V(0:k,:)*v */
       memset(f,0,(k+1)*sizeof(double));

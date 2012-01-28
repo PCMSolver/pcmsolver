@@ -36,7 +36,7 @@
 #include "basis.h"
 #include "kern.h"
 #include "dwt_pwl.h"
-#include "precond.h"
+#include "precond_pwl.h"
 #include "WEMPCG_pwl.h"
 
 
@@ -59,7 +59,7 @@ Ad = (double*) malloc(A->n*sizeof(double));
 
 /* berechne Gram'sche Matrix */
 init_sparse(&G,A->n,A->n,10);
-single_scale_gram(&G,F,p,M);
+single_scale_gram_pwl(&G,F,p,M);
 
 /* r = b-A1*x */
 memcpy(r,b,A->n*sizeof(double));
@@ -69,8 +69,8 @@ for (i=0; i<A->n; i++)
       }
    }
 
-/* d = precond(r,M) */
-precond(d,r,&G,W,F,p,M);
+/* d = precond_pwl(r,M) */
+precond_pwl(d,r,&G,W,F,p,M);
 
 /* u = (r,d) */
 u = 0;
@@ -99,8 +99,8 @@ for (k=0; sqrt(u)>epsi; k++)
       r[i] -= omg * Ad[i];
       }
 
-   /* z = precond(r,M) */
-   precond(z,r,&G,W,F,p,M);
+   /* z = precond_pwl(r,M) */
+   precond_pwl(z,r,&G,W,F,p,M);
 
    /* u = (r,z) */
    u = 0;

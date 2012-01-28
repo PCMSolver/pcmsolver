@@ -1,5 +1,5 @@
 /**************
- *  WEMRHS.c  *
+ *  WEMRHS_pwl.c  *
  **************/
 
 
@@ -19,12 +19,12 @@
 #include "cubature.h"
 #include "gauss_square.h"
 #include "interpolate.h"
-#include "WEMRHS.h"
+#include "WEMRHS_pwl.h"
 #include "data.h"
 #include "phi.h"
 
 
-void WEMRHS1(rhs,W,E,T,p,M,nw)
+void WEMRHS_pwl1(rhs,W,E,T,p,M,nw)
 /* testet die Neumann-Daten des gegebenen Potentials */
 double		**rhs;		/* zu berechnende rechte Seite                */
 wavelet		*W;		/* Waveletliste                               */
@@ -108,7 +108,7 @@ return;
 }
 
 
-void WEMRHS2(rhs,W,E,T,p,M,nw)
+void WEMRHS_pwl2(rhs,W,E,T,p,M,nw)
 /* testet die Dirichlet-Daten des gegebenen Potentials */
 double		**rhs;		/* zu berechnende rechte Seite                */
 wavelet		*W;		/* Waveletliste                               */
@@ -195,7 +195,7 @@ free(y);
 return;
 }
 
-void WEMRHS2M(rhs,W,E,T,p,M,nw,potential,g)
+void WEMRHS_pwl2M(rhs,W,E,T,p,M,nw,potential,g)
 /* testet die Dirichlet-Daten des gegebenen Potentials */
 double		**rhs;		/* zu berechnende rechte Seite                */
 wavelet		*W;		/* Waveletliste                               */

@@ -22,7 +22,7 @@
 #include "basis.h"
 #include "dwt.h"
 #include "WEM.h"
-#include "WEMRHS.h"
+#include "WEMRHS_pwl.h"
 #include "WEMPCG_pwl.h"
 #include "WEMPGMRES_pwl.h"
 #include "compression.h"
@@ -147,12 +147,12 @@ if ((CASE == 3) || (CASE == 4))
 u = (double*) calloc(np,sizeof(double));
 v = (double*) calloc(np,sizeof(double));
 if (CASE == 1)
-{  WEMRHS1(&rhs,W,E,T,p,M,np);
+{  WEMRHS_pwl1(&rhs,W,E,T,p,M,np);
    i = WEMPGMRES_pwl1(&S_i,rhs,u,eps,W,F,p,M);
    printf("Solving the linear system:       %d iterations\n",i);
    }
 else if (CASE == 2)
-{  WEMRHS2(&rhs,W,E,T,p,M,np);		/* compute correct rhs: b-G*A2^(-1)*b */
+{  WEMRHS_pwl2(&rhs,W,E,T,p,M,np);		/* compute correct rhs: b-G*A2^(-1)*b */
    i = WEMPGMRES_pwl2(&S_i,rhs,v,eps,W,F,p,M);
    printf("Solving the 1st linear system:   %d iterations\n",i);
    init_sparse(&G,np,np,10);
@@ -170,7 +170,7 @@ else if (CASE == 2)
    printf("Solving the 2nd linear system:   %d iterations\n",i);
    }
 else if ((CASE == 3) || (CASE == 4))
-{  WEMRHS2(&rhs,W,E,T,p,M,np);
+{  WEMRHS_pwl2(&rhs,W,E,T,p,M,np);
    i = WEMPCG_pwl(&S_i,rhs,u,eps,W,F,p,M);		/* u = V_i^(-1)*N_f */
    printf("Solving the 1st linear system:   %d iterations\n",i);
    memset(rhs,0,np*sizeof(double));

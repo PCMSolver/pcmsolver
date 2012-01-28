@@ -1,5 +1,5 @@
-#ifndef POSTPROC
-#define POSTPROC
+#ifndef POSTPROC_PWL
+#define POSTPROC_PWL
 /****************
  *  PostProc.h  *
  ****************/
@@ -12,5 +12,5 @@
  *===============================================*/
 
 
-double postproc(sparse2 *T, wavelet *W, element *E, unsigned int p, unsigned int M);
+double postproc_pwl(sparse2 *T, wavelet *W, element *E, unsigned int p, unsigned int M);
 #endif

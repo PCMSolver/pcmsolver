@@ -28,7 +28,7 @@
 #include "compression_pwl.h"
 #include "interpolate_pwl.h"
 #include "read_points.h"
-#include "postproc.h"
+#include "postproc_pwl.h"
 #include "topology.h"
 #include "precond.h"
 #include "energy_pwl.h"
@@ -112,7 +112,7 @@ printf("Computing the 1st pair of system matrices: \n");
 compression_pwl(&S_i,W,E,p,M,np);
 if (CASE < 3) WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi*(1+epsilon)/(1-epsilon));
 else          WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi);
-postproc(&S_i,W,E,p,M);
+postproc_pwl(&S_i,W,E,p,M);
 time(&t3);      /* Zwischenzeit */
 printf("Computation time:                %g secs.\n\n",difftime(t3,t2));
 
@@ -138,7 +138,7 @@ if ((CASE == 3) || (CASE == 4))
 	    } 
          }
       }
-   postproc(&S_e,W,E,p,M);
+   postproc_pwl(&S_e,W,E,p,M);
    time(&t3);      /* Zwischenzeit */
    printf("Computation time:                %g secs.\n\n",difftime(t3,t2));
    }

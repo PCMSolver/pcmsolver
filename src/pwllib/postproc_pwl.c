@@ -20,10 +20,10 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "basis.h"
-#include "postproc.h"
+#include "postproc_pwl.h"
 
 
-double postproc(T,W,E,p,M)
+double postproc_pwl(T,W,E,p,M)
 sparse2         *T;	      	/* komprimierte Steifigkeitsmatrix */
 wavelet		*W;		/* Liste der Wavelets              */
 element		*E;		/* hierarchische Elementliste      */

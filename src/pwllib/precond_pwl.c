@@ -131,7 +131,7 @@ void precond_pwl(a,b,G,W,F,p,M)
 double		*a;		/* gesuchter Koeffizientenvektor   */
 double		*b;		/* gegebener Koeffizientenvektor   */
 sparse		*G;		/* Gram'sche Matrix                */
-wavelet		*W;		/* Liste der Wavelets              */
+wavelet_pwl		*W;		/* Liste der Wavelets              */
 unsigned int	**F;		/* Elementliste der Einskalenbasis */
 unsigned int	p;		/* Anzahl der Patches              */
 unsigned int	M;		/* (2^M*2^M) Elemente pro Patch    */

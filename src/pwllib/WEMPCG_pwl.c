@@ -43,7 +43,7 @@
 unsigned int WEMPCG_pwl(A,b,x,epsi,W,F,p,M)
 sparse2 	*A;
 double          *b, *x, epsi;
-wavelet		*W;
+wavelet_pwl		*W;
 unsigned int	**F, p, M;
 {
 unsigned int    i, j, k;

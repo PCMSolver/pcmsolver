@@ -33,10 +33,10 @@ typedef struct		/* Typdeklaration bounding box */
 bounding_box;
 
 
-void compute_bounding_boxes(bounding_box **B, wavelet *W, element *E, unsigned int np);
+void compute_bounding_boxes(bounding_box **B, wavelet_pwl *W, element_pwl *E, unsigned int np);
 
 
-unsigned int wavelet_wavelet_criterion(bounding_box *B, wavelet *W, element *E,
+unsigned int wavelet_wavelet_criterion(bounding_box *B, wavelet_pwl *W, element_pwl *E,
 	unsigned int ind1, unsigned int ind2, double c1, double c2);
 
 
@@ -46,8 +46,8 @@ unsigned int wavelet_wavelet_criterion(bounding_box *B, wavelet *W, element *E,
 
 void compute_bounding_boxes(B,W,E,np)
 bounding_box	**B;			/* bounding boxes             */
-wavelet		*W;			/* Liste der Wavelets         */
-element         *E;			/* hierarchische Elementliste */
+wavelet_pwl		*W;			/* Liste der Wavelets         */
+element_pwl         *E;			/* hierarchische Elementliste */
 unsigned int	np;			/* Anzahl der Basisfunktionen */
 {
 unsigned int	i, j, k;		/* Laufindizes                */
@@ -87,8 +87,8 @@ return;
 
 unsigned int wavelet_wavelet_criterion(B,W,E,ind1,ind2,c1,c2)
 bounding_box	*B;		/* bounding boxes                                */
-wavelet		*W;		/* Liste der Wavelets                            */
-element         *E;		/* hierarchische Elementliste                    */
+wavelet_pwl		*W;		/* Liste der Wavelets                            */
+element_pwl         *E;		/* hierarchische Elementliste                    */
 unsigned int	ind1, ind2;	/* Indizes der beiden Wavelets                   */
 double		c1, c2;		/* Abschneideparameter 1./2.  Kompression        */
 {
@@ -146,8 +146,8 @@ return(0);
 
 double compression_pwl(T,W,E,p,M,np)
 sparse2         *T;	      	/* komprimierte Steifigkeitsmatrix               */
-wavelet		*W;		/* Liste der Wavelets                            */
-element		*E;		/* hierarchische Elementliste                    */
+wavelet_pwl		*W;		/* Liste der Wavelets                            */
+element_pwl		*E;		/* hierarchische Elementliste                    */
 unsigned int	p;		/* Zahl der Patches                              */
 unsigned int	M;	      	/* 2^M*2^M Patches pro Parametergebiet           */
 unsigned int	np;		/* Anzahl der Basisfunktionen                    */

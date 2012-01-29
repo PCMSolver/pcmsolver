@@ -18,7 +18,7 @@
 void IntLin2(c,element1,Q,P,M,SingleLayer,DoubleLayer,Identity)
 /* GLEICHE PATCHES [0,1]^2 -> modifiziertes Skalarprodukt */
 double		*c;
-element		*element1;
+element_pwl		*element1;
 cubature	*Q;
 vector3		****P;
 unsigned int	M;

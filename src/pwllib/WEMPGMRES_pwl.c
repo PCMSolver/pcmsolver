@@ -48,7 +48,7 @@ unsigned int WEMPGMRES_pwl1(A,b,x,epsi,W,F,p,M)
 /* loest A2'*x = b */
 sparse2 	*A;
 double          *b, *x, epsi;
-wavelet		*W;
+wavelet_pwl		*W;
 unsigned int	**F, p, M;
 {
 signed int    	i, j;
@@ -187,7 +187,7 @@ unsigned int WEMPGMRES_pwl2(A,b,x,epsi,W,F,p,M)
 /* loest A2*x = b */
 sparse2 	*A;
 double          *b, *x, epsi;
-wavelet		*W;
+wavelet_pwl		*W;
 unsigned int	**F, p, M;
 {
 signed int    	i, j;
@@ -344,7 +344,7 @@ unsigned int WEMPGMRES_pwl3(A,B,rhs,x,epsi,W,F,p,M)
 /* loest (B1*G^(-1)*A2'-B2*G^(-1)*A1)*x = rhs */
 sparse2 	*A, *B;
 double          *rhs, *x, epsi;
-wavelet		*W;
+wavelet_pwl		*W;
 unsigned int	**F, p, M;
 {
 signed int    	i, j;

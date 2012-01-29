@@ -29,5 +29,5 @@
 
 
 unsigned int WEMPCG_pwl(sparse2 *A, double *b, double *x, double epsi, 
-	wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
+	wavelet_pwl *W, unsigned int **F, unsigned int p, unsigned int M);
 #endif

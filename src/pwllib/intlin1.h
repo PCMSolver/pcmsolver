@@ -34,7 +34,7 @@ void free_randwerte(randwerte **RW, unsigned int g_max);
 /* Gibt den Speicherplatz fuer die Randwerte frei */
 
 
-void IntLin1(double *c, element *element1, element *element2, randwerte *RW, 
+void IntLin1(double *c, element_pwl *element1, element_pwl *element2, randwerte *RW, 
 	cubature *Q1, cubature *Q2, vector3 ****P, unsigned int M, double SL(), double DL());
 /* No-Problem-Quadrature-Routine */
 #endif

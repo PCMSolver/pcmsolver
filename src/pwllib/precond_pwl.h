@@ -22,7 +22,7 @@ void single_scale_gram_pwl(sparse *G, unsigned int **F, unsigned int p, unsigned
    Fuer die Quadratur wird die Mittelpunktsregel verwendet. */
 
 
-void precond_pwl(double *a, double *b, sparse *G, wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
+void precond_pwl(double *a, double *b, sparse *G, wavelet_pwl *W, unsigned int **F, unsigned int p, unsigned int M);
 /* Anwendung des Preconditioners auf den Vektor b, der
    NICHT veraendert wird. Das Ergebnis wird in a gespeichert */
 #endif

@@ -11,7 +11,7 @@
  *=============================================================*/
  
 
-void element_element_interaction_pwl_pwl(double *c, vector3 *P, element *E, unsigned int ind1, 
+void element_element_interaction_pwl_pwl(double *c, vector3 *P, element_pwl *E, unsigned int ind1, 
                                      unsigned int ind2, randwerte *RW, cubature *Q, 
                                      vector3 ****R, unsigned int M, double prec, 
                                      double SL(), double DL(), double I);

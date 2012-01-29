@@ -28,22 +28,22 @@
  *  D E K L A R A T I O N   D E R   H I L F S F U N K T I O N E N  *
  *=================================================================*/
 
-void generate_topology_pwl(unsigned int ****C, element *E, unsigned int p, unsigned int M, unsigned int nw);
+void generate_topology_pwl(unsigned int ****C, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* Hilfsfunktion zur Wavelet-Transformation: Berechnet aus der 
    Elementliste E eine Liste der lokalen Gitterpunkte (Basisliste) */
 
 
-void generate_canonical_single_scale_basis(wavelet *W, 
-		unsigned int ***C, element *E, unsigned int p, unsigned int m, unsigned int M);
+void generate_canonical_single_scale_basis(wavelet_pwl *W, 
+		unsigned int ***C, element_pwl *E, unsigned int p, unsigned int m, unsigned int M);
 /* erstellt die kanonische Einskalenbasis des Levels m */
 
 
-void add_element(wavelet *w, element *E,
+void add_element(wavelet_pwl *w, element_pwl *E,
 	double weight0, double weight1, double weight2, double weight3, unsigned int index);
 /* fuegt zum Wavelet w das mit weight gewichtete Element index hinzu */
 
 
-void add_wavelet(wavelet *w1, wavelet *w2, element *E, double weight);
+void add_wavelet(wavelet_pwl *w1, wavelet_pwl *w2, element_pwl *E, double weight);
 /* fuegt zum Wavelet w1 das mit weight gewichtete Wavelet w2 hinzu */
 
 
@@ -86,7 +86,7 @@ void generate_topology_pwl(C,E,p,M,nw)
 /* Hilfsfunktion zur Wavelet-Transformation: Berechnet aus der 
    Elementliste E eine Liste der lokalen Gitterpunkte (Basisliste) */
 unsigned int	****C;		/* lokale Basisliste		*/
-element		*E;		/* hierarchische Elementliste   */
+element_pwl		*E;		/* hierarchische Elementliste   */
 unsigned int	p;		/* Anzahl der Patches           */
 unsigned int	M;	        /* (2^M*2^M) Elemente pro Patch */
 unsigned int	nw;	        /* number of basic functions	*/
@@ -122,9 +122,9 @@ return;
 
 void generate_canonical_single_scale_basis(W,C,E,p,m,M)
 /* erstellt die kanonische Einskalenbasis des Levels m */
-wavelet		*W;		/* Liste der kanonischen Einskalenbasis   */
+wavelet_pwl		*W;		/* Liste der kanonischen Einskalenbasis   */
 unsigned int	***C;		/* lokale Basisliste		          */
-element		*E;		/* hierarchische Elementliste             */
+element_pwl		*E;		/* hierarchische Elementliste             */
 unsigned int	p;		/* Anzahl der Patches                     */
 unsigned int	m;		/* 2^m*2^m Elemente pro Patch auf Level m */
 unsigned int	M;		/* 2^M*2^M Elemente pro Patch auf Level M */
@@ -163,8 +163,8 @@ return;
 
 void add_element(w,E,weight0,weight1,weight2,weight3,index)
 /* fuegt zum Wavelet w das mit weight gewichtete Element index hinzu */
-wavelet		*w;		/* gegebenes Wavelet                        */
-element		*E;		/* hierarchische Elementliste               */
+wavelet_pwl		*w;		/* gegebenes Wavelet                        */
+element_pwl		*E;		/* hierarchische Elementliste               */
 double		weight0;	/* Gewicht im Eckpunkt 0 des Elements index */
 double		weight1;	/* Gewicht im Eckpunkt 1 des Elements index */
 double		weight2;	/* Gewicht im Eckpunkt 2 des Elements index */
@@ -202,8 +202,8 @@ return;
 
 void add_wavelet(w1,w2,E,weight)
 /* fuegt zum Wavelet p1 das mit weight gewichtete Wavelet p2 hinzu */
-wavelet		*w1, *w2;	/* gegebene Wavelets                                */
-element		*E;		/* hierarchische Elementliste                       */
+wavelet_pwl		*w1, *w2;	/* gegebene Wavelets                                */
+element_pwl		*E;		/* hierarchische Elementliste                       */
 double		weight;		/* Gewicht der zu addierenden Skalierungsfunktion   */
 {
 unsigned int	k;		/* Laufindizes zur Suche nach gemeinsamen Elementen */
@@ -222,7 +222,7 @@ return;
 
 unsigned int generate_elementlist(E,P,F,p,M)
 /* erstellt die hierarchsische Elementliste E */
-element		**E;		/* hierarchische Elementliste             */
+element_pwl		**E;		/* hierarchische Elementliste             */
 vector3		*P;		/* Punkteliste der Einskalenbasis         */
 unsigned int	**F;		/* Elementliste der Einskalenbasis        */
 unsigned int	p;		/* Anzahl der Patches                     */
@@ -238,7 +238,7 @@ vector3		d1, d2;		/* Umkreismittelpunkt von Element 0 und 2 */
 double		r1, r2;		/* Umkreisradius      von Element 1 und 3 */
 
 ne = p*(4*N*N-1)/3;	/* Laenge von E */
-(*E) = (element*) calloc(ne,sizeof(element));
+(*E) = (element_pwl*) calloc(ne,sizeof(element_pwl));
 
 /* initialisiere feinstes Gitter */
 zf = 0;
@@ -314,8 +314,8 @@ return(ne);
 
 void complete_elementlist(W,E,p,M,nw)
 /* erstellt die hierarchsische Elementliste E */
-wavelet		*W;		/* Liste der Wavelets                 */
-element		*E;		/* hierarchische Elementliste         */
+wavelet_pwl		*W;		/* Liste der Wavelets                 */
+element_pwl		*E;		/* hierarchische Elementliste         */
 unsigned int	p;		/* Anzahl der Patches                 */
 unsigned int	M;		/* 2^M*2^M Elemente pro Patch         */
 unsigned int	nw;		/* Anzahl der Wavelets                */
@@ -344,7 +344,7 @@ return;
 
 void free_elementlist(E,p,M)
 /* gibt den Speicherplatz der hierarchischen Elementliste E frei */
-element		**E;		/* hierarchische Elementliste */
+element_pwl		**E;		/* hierarchische Elementliste */
 unsigned int	p;		/* Anzahl der Patches         */
 unsigned int	M;		/* 2^M*2^M Elemente pro Patch */
 {
@@ -364,8 +364,8 @@ free(*E);
 
 void generate_waveletlist(W,E,p,M,nw)
 /* erstellt die Waveletliste W */
-wavelet		**W;		/* Liste der Wavelets                   */
-element		*E;		/* hierarchische Elementliste           */
+wavelet_pwl		**W;		/* Liste der Wavelets                   */
+element_pwl		*E;		/* hierarchische Elementliste           */
 unsigned int	p;		/* Anzahl der Patches                   */
 unsigned int	M;		/* 2^M*2^M Elemente pro Patch           */
 unsigned int	nw;		/* Laenge von W				*/
@@ -375,17 +375,17 @@ unsigned int	N = 1 << M;	/* p*N*N Elemente auf Level M           */
 unsigned int	n;		/* p*n*n Elemente auf Level m           */
 signed int	m;		/* Laufindex fuer das Level             */
 unsigned int    i1, i2, i3;	/* Laufindizes durch Gitter m           */
-wavelet		*w;		/* Zeiger auf zu bearbeitendes Wavelet  */
+wavelet_pwl		*w;		/* Zeiger auf zu bearbeitendes Wavelet  */
 sparse		T, L;		/* Maskenmatrizen                       */
 unsigned int	s, t;		/* Laufindizes durch die Maskenmatrizen */
 unsigned int	S;		/* Schrittweite zum naechsten Patch     */
 unsigned int 	arg;		/* temporaere Groesse		        */
-wavelet		*G;		/* temporaere Waveletliste              */
+wavelet_pwl		*G;		/* temporaere Waveletliste              */
 
 /* 1. Initialisierung */
 generate_topology_pwl(&C,E,p,M,nw);
-G = (wavelet*) calloc(nw,sizeof(wavelet));
-(*W) = (wavelet*) calloc(nw,sizeof(wavelet));
+G = (wavelet_pwl*) calloc(nw,sizeof(wavelet_pwl));
+(*W) = (wavelet_pwl*) calloc(nw,sizeof(wavelet_pwl));
 
 /* 2. Schleife ueber die Gitter */
 for (m=M; m>=minLevel; m--)
@@ -478,8 +478,8 @@ return;
 
 void set_quadrature_level(W,E,p,M,nw)
 /* verfeinert Grobgitterelemente */
-wavelet		*W;			/* Liste der Wavelets                     */
-element		*E;			/* hierarchische Elementliste             */
+wavelet_pwl		*W;			/* Liste der Wavelets                     */
+element_pwl		*E;			/* hierarchische Elementliste             */
 unsigned int	p;			/* Anzahl der Patches                     */
 unsigned int	M;			/* 2^M*2^M Elemente pro Patch             */
 unsigned int	nw;			/* Laenge von W                           */
@@ -529,8 +529,8 @@ return;
 
 void simplify_waveletlist(W,E,p,M,nw)
 /* optimiert die Waveletliste W */
-wavelet		*W;			/* Liste der Wavelets                          */
-element		*E;			/* hierarchische Elementliste                  */
+wavelet_pwl		*W;			/* Liste der Wavelets                          */
+element_pwl		*E;			/* hierarchische Elementliste                  */
 unsigned int	p;			/* Anzahl der Patches                          */
 unsigned int	M;			/* 2^M*2^M Elemente pro Patch                  */
 unsigned int	nw;			/* Laenge von W                                */
@@ -636,9 +636,9 @@ return;
 }
 
 
-void free_waveletlist(W,nw)
+void free_wavelet_list(W,nw)
 /* gibt den Speicherplatz der Waveletliste W frei */
-wavelet		**W;		/* Liste der Wavelets  */
+wavelet_pwl		**W;		/* Liste der Wavelets  */
 unsigned int	nw;		/* Anzahl der Wavelets */
 {
 unsigned int	i;			/* Laufindex durch W          		      */
@@ -672,7 +672,7 @@ free(*W);
 
 void print_waveletlist(W,nw)
 /* gibt die in der Waveletliste W definierten Wavelets aus */
-wavelet		*W;		/* Waveletliste */
+wavelet_pwl		*W;		/* Waveletliste */
 unsigned int	nw;		/* Laenge von W */
 {
 unsigned int	i, j;		/* Laufindizes  */
@@ -698,7 +698,7 @@ return;
  
 double distance(element1,element2)
 /* Berechnet den Abstand zwischen den Elementen element1 und element2 */
-element 	*element1, *element2;	/* Pointer auf die zwei Elemente */
+element_pwl 	*element1, *element2;	/* Pointer auf die zwei Elemente */
 {
 double		dx, dy, dz;		/* x/y/z-Abstand zweier Elemente */
 double		c1, c2;			/* Skalierungsfaktoren           */

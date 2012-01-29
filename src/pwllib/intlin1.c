@@ -74,7 +74,7 @@ return;
 void IntLin1(c,element1,element2,RW,Q1,Q2,P,M,SingleLayer,DoubleLayer)
 /* No-Problem-Quadrature-Routine -> modifiziertes Skalarprodukt */
 double		*c;
-element		*element1, *element2;
+element_pwl		*element1, *element2;
 randwerte	*RW;
 cubature	*Q1, *Q2;
 vector3		****P;

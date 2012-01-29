@@ -53,8 +53,8 @@ unsigned int	nf;           	/* Laenge von F  	      	      */
 unsigned int	np;           	/* Laenge von P  	      	      */
 unsigned int	p;		/* Anzahl der Patches                 */
 unsigned int	M;	      	/* 2^M*2^M Elemente pro Patch         */
-element		*E;		/* hierarchische Elementliste         */
-wavelet		*W;		/* Liste der Wavelets                 */
+element_pwl		*E;		/* hierarchische Elementliste         */
+wavelet_pwl		*W;		/* Liste der Wavelets                 */
 double		*u, *v;		/* approximierter Dichtevektor        */
 double		*rhs;		/* rechte Seite des Gleichungssystems */
 double		res;		/* berechnete Austauschenergien       */ 

@@ -31,7 +31,7 @@ void element_element_interaction_pwl_pwl(c,P,E,ind1,ind2,RW,Q,R,M,prec,SingleLay
 /* Zerlegungsalgorithmus fuer die Integration Element ind1 mit Element ind2 */
 double		*c;		/* zu berechnende Integrale                      */
 vector3		*P;		/* Punkteliste                                   */
-element		*E;		/* hierarchische Elemntliste                     */
+element_pwl		*E;		/* hierarchische Elemntliste                     */
 unsigned int	ind1, ind2;	/* Indizes der Integranden                       */
 randwerte	*RW;		/* Randwerte bezueglich Element ind1             */
 cubature	*Q; 		/* Kubatur-Formeln                               */

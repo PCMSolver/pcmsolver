@@ -27,11 +27,11 @@
 
 
 unsigned int WEMPGMRES_pwl1(sparse2 *A, double *b, double *x, double epsi, 
-	wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
+	wavelet_pwl *W, unsigned int **F, unsigned int p, unsigned int M);
 
 
 unsigned int WEMPGMRES_pwl2(sparse2 *A, double *b, double *x, double epsi, 
-	wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
+	wavelet_pwl *W, unsigned int **F, unsigned int p, unsigned int M);
 
 
 /*==============================================================*
@@ -55,5 +55,5 @@ unsigned int WEMPGMRES_pwl2(sparse2 *A, double *b, double *x, double epsi,
  *==============================================================*/
 
 unsigned int WEMPGMRES_pwl3(sparse2 *A, sparse2 *B, double *rhs, double *x, double epsi, 
-	wavelet *W, unsigned int **F, unsigned int p, unsigned int M);
+	wavelet_pwl *W, unsigned int **F, unsigned int p, unsigned int M);
 #endif

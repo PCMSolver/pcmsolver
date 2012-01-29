@@ -25,8 +25,8 @@
 
 double postproc_pwl(T,W,E,p,M)
 sparse2         *T;	      	/* komprimierte Steifigkeitsmatrix */
-wavelet		*W;		/* Liste der Wavelets              */
-element		*E;		/* hierarchische Elementliste      */
+wavelet_pwl		*W;		/* Liste der Wavelets              */
+element_pwl		*E;		/* hierarchische Elementliste      */
 unsigned int	p;	      	/* Anzahl der Paramtergebiete      */
 unsigned int	M;	      	/* 2^M*2^M Elemente pro Patch      */
 {

@@ -19,7 +19,7 @@
 void IntLin3(c,element1,element2,ind_s,ind_t,Q,P,M,SingleLayer,DoubleLayer)
 /* GEMEINSAME KANTE [0,1] -> modifiziertes Skalarprodukt */
 double		*c;
-element		*element1, *element2;
+element_pwl		*element1, *element2;
 unsigned int	ind_s, ind_t;
 cubature	*Q;
 vector3		****P;

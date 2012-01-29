@@ -26,9 +26,9 @@
 
 void WEM_pwl(S,W,P,E,T,p,M,SingleLayer,DoubleLayer,Identity)
 sparse2		*S;			/* zu berechnende Steifigkeitsmatrix            */
-wavelet		*W;			/* Waveletliste                                 */
+wavelet_pwl		*W;			/* Waveletliste                                 */
 vector3		*P;			/* Punkteliste				        */
-element		*E;			/* hierarchische Elementliste                   */
+element_pwl		*E;			/* hierarchische Elementliste                   */
 vector3		****T;			/* Koeffizienten zur Oberflaecheninterpolation  */
 unsigned int	p;			/* Zahl der Patches                             */
 unsigned int	M;			/* Zahl der Level                               */

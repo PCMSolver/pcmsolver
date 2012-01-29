@@ -27,8 +27,8 @@
 void WEMRHS_pwl1(rhs,W,E,T,p,M,nw)
 /* testet die Neumann-Daten des gegebenen Potentials */
 double		**rhs;		/* zu berechnende rechte Seite                */
-wavelet		*W;		/* Waveletliste                               */
-element		*E;		/* hierarchische Elementliste                 */
+wavelet_pwl		*W;		/* Waveletliste                               */
+element_pwl		*E;		/* hierarchische Elementliste                 */
 vector3		****T;		/* Oberflaecheninterpolation                  */
 unsigned int	p;		/* Zahl der Patches                           */
 unsigned int	M;		/* Zahl der Level                             */
@@ -111,8 +111,8 @@ return;
 void WEMRHS_pwl2(rhs,W,E,T,p,M,nw)
 /* testet die Dirichlet-Daten des gegebenen Potentials */
 double		**rhs;		/* zu berechnende rechte Seite                */
-wavelet		*W;		/* Waveletliste                               */
-element		*E;		/* hierarchische Elementliste                 */
+wavelet_pwl		*W;		/* Waveletliste                               */
+element_pwl		*E;		/* hierarchische Elementliste                 */
 vector3		****T;		/* Oberflaecheninterpolation                  */
 unsigned int	p;		/* Zahl der Patches                           */
 unsigned int	M;		/* Zahl der Level                             */
@@ -198,8 +198,8 @@ return;
 void WEMRHS_pwl2M(rhs,W,E,T,p,M,nw,potential,g)
 /* testet die Dirichlet-Daten des gegebenen Potentials */
 double		**rhs;		/* zu berechnende rechte Seite                */
-wavelet		*W;		/* Waveletliste                               */
-element		*E;		/* hierarchische Elementliste                 */
+wavelet_pwl		*W;		/* Waveletliste                               */
+element_pwl		*E;		/* hierarchische Elementliste                 */
 vector3		****T;		/* Oberflaecheninterpolation                  */
 unsigned int	p;		/* Zahl der Patches                           */
 unsigned int	M;		/* Zahl der Level                             */

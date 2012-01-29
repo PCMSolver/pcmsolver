@@ -1,123 +1,55 @@
-set (wem_CXX_SOURCES
-  PCM-WEM.cpp
-)
-
-set (wem_C_SOURCES 
-  WEM.c
-  WEMPCG.c
-  WEMPGMRES.c
-  WEMRHS.c
-  basis.c
-  compression.c
-  constants.c
-  data.c
-  dwt.c
-  energy.c
-  gauss_legendre.c
-  gauss_square.c
-  integrate.c
-  interpolate2.c
-  intkon1.c
-  intkon2.c
-  intkon3.c
-  intkon4.c
-  intvector.c
-  kern.c
-  mask.c
-  postproc.c
-  precond.c
-  read_points_asc.c
-  sparse.c
-  sparse2.c
-  topology.c
-  trafos.c
-  vector2.c
-  vector3.c
-  volume.c
+set (pwl_C_SOURCES 
+  WEMPCG_pwl.c
+  WEMPGMRES_pwl.c
+  WEMRHS_pwl.c
+  WEM_pwl.c
+  basis_pwl.c
+  compression_pwl.c
+  det.c
+  dwt_pwl.c
+  energy_pwl.c
+  integrate_pwl.c
+  interpolate_pwl.c
+  intlin1.c
+  intlin2.c
+  intlin3.c
+  intlin4.c
+  intvector_pwl.c
+  main_pwl.c
+  mask_pwl.c
+  phi.c
+  postproc_pwl.c
+  precond_pwl.c
+  topology_pwl.c
+  trafos_pwl.c
+  volume_pwl.c
   )
 
-add_library(wem ${wem_C_SOURCES} ${wem_CXX_SOURCES})
+add_library(pwl ${pwl_C_SOURCES} ${pwl_CXX_SOURCES})
 
-install(FILES PCM-WEM.h        DESTINATION include)
-install(FILES WEM.h            DESTINATION include)
-install(FILES WEMPCG.h         DESTINATION include)
-install(FILES WEMPGMRES.h      DESTINATION include)
-install(FILES WEMRHS.h         DESTINATION include)
-install(FILES basis.h          DESTINATION include)
-install(FILES compression.h    DESTINATION include)
-install(FILES constants.h      DESTINATION include)
-install(FILES cubature.h       DESTINATION include)
-install(FILES dalton_wem.h     DESTINATION include)
-install(FILES data.h           DESTINATION include)
-install(FILES dwt.h            DESTINATION include)
-install(FILES energy.h         DESTINATION include)
-install(FILES gamma.h          DESTINATION include)
-install(FILES gauss_legendre.h DESTINATION include)
-install(FILES gauss_square.h   DESTINATION include)
-install(FILES init_points.h    DESTINATION include)
-install(FILES integrate.h      DESTINATION include)
-install(FILES interpolate.h    DESTINATION include)
-install(FILES intkon1.h        DESTINATION include)
-install(FILES intkon2.h        DESTINATION include)
-install(FILES intkon3.h        DESTINATION include)
-install(FILES intkon4.h        DESTINATION include)
-install(FILES intvector.h      DESTINATION include)
-install(FILES kern.h           DESTINATION include)
-install(FILES mask.h           DESTINATION include)
-install(FILES postproc.h       DESTINATION include)
-install(FILES pot.h            DESTINATION include)
-install(FILES precond.h        DESTINATION include)
-install(FILES quadrature.h     DESTINATION include)
-install(FILES read_points.h    DESTINATION include)
-install(FILES sparse.h         DESTINATION include)
-install(FILES sparse2.h        DESTINATION include)
-install(FILES topology.h       DESTINATION include)
-install(FILES trafos.h         DESTINATION include)
-install(FILES vector2.h        DESTINATION include)
-install(FILES vector3.h        DESTINATION include)
-install(FILES volume.h         DESTINATION include)
-install(FILES BEMInterface.h   DESTINATION include)
-install(FILES GreensFunctionInterface.h  DESTINATION include)
+install(FILES WEMPCG_pwl.h       DESTINATION include)
+install(FILES WEMPGMRES_pwl.h    DESTINATION include)
+install(FILES WEMRHS_pwl.h       DESTINATION include)
+install(FILES WEM_pwl.h          DESTINATION include)
+install(FILES basis_pwl.h        DESTINATION include)
+install(FILES compression_pwl.h  DESTINATION include)
+install(FILES dwt_pwl.h          DESTINATION include)
+install(FILES energy_pwl.h       DESTINATION include)
+install(FILES integrate_pwl.h    DESTINATION include)
+install(FILES interpolate_pwl.h  DESTINATION include)
+install(FILES intlin1.h          DESTINATION include)
+install(FILES intlin2.h          DESTINATION include)
+install(FILES intlin3.h          DESTINATION include)
+install(FILES intlin4.h          DESTINATION include)
+install(FILES intvector_pwl.h    DESTINATION include)
+install(FILES mask_pwl.h         DESTINATION include)
+install(FILES phi.h              DESTINATION include)
+install(FILES postproc_pwl.h     DESTINATION include)
+install(FILES precond_pwl.h      DESTINATION include)
+install(FILES topology_pwl.h     DESTINATION include)
+install(FILES trafos_pwl.h       DESTINATION include)
+install(FILES volume_pwl.h       DESTINATION include)
 
-install(TARGETS wem
-	ARCHIVE DESTINATION lib)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+install(TARGETS pwl
+    ARCHIVE DESTINATION lib)
 

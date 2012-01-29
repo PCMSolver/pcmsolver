@@ -38,7 +38,6 @@ set (wem_C_SOURCES
 
 add_library(wem ${wem_C_SOURCES} ${wem_CXX_SOURCES})
 
-install(FILES PCM-WEM.h        DESTINATION include)
 install(FILES WEM.h            DESTINATION include)
 install(FILES WEMPCG.h         DESTINATION include)
 install(FILES WEMPGMRES.h      DESTINATION include)
@@ -76,11 +75,8 @@ install(FILES trafos.h         DESTINATION include)
 install(FILES vector2.h        DESTINATION include)
 install(FILES vector3.h        DESTINATION include)
 install(FILES volume.h         DESTINATION include)
-install(FILES BEMInterface.h   DESTINATION include)
-install(FILES GreensFunctionInterface.h  DESTINATION include)
 
-install(TARGETS wem
-	ARCHIVE DESTINATION lib)
+install(TARGETS wem ARCHIVE DESTINATION lib)
 
 
 

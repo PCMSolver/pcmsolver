@@ -28,7 +28,7 @@
  *  D E K L A R A T I O N   D E R   H I L F S F U N K T I O N E N  *
  *=================================================================*/
 
-void generate_topology(unsigned int ****C, element *E, unsigned int p, unsigned int M, unsigned int nw);
+void generate_topology_pwl(unsigned int ****C, element *E, unsigned int p, unsigned int M, unsigned int nw);
 /* Hilfsfunktion zur Wavelet-Transformation: Berechnet aus der 
    Elementliste E eine Liste der lokalen Gitterpunkte (Basisliste) */
 
@@ -82,7 +82,7 @@ return;
 }
 
 
-void generate_topology(C,E,p,M,nw)
+void generate_topology_pwl(C,E,p,M,nw)
 /* Hilfsfunktion zur Wavelet-Transformation: Berechnet aus der 
    Elementliste E eine Liste der lokalen Gitterpunkte (Basisliste) */
 unsigned int	****C;		/* lokale Basisliste		*/
@@ -383,7 +383,7 @@ unsigned int 	arg;		/* temporaere Groesse		        */
 wavelet		*G;		/* temporaere Waveletliste              */
 
 /* 1. Initialisierung */
-generate_topology(&C,E,p,M,nw);
+generate_topology_pwl(&C,E,p,M,nw);
 G = (wavelet*) calloc(nw,sizeof(wavelet));
 (*W) = (wavelet*) calloc(nw,sizeof(wavelet));
 

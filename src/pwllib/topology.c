@@ -13,18 +13,18 @@
 #include <string.h>
 #include "vector2.h"
 #include "vector3.h"
-#include "topology.h"
+#include "topology_pwl.h"
 
 
-void init_grid(vector3 **P, unsigned int ***F, vector3 ***U,
+void init_grid_pwl(vector3 **P, unsigned int ***F, vector3 ***U,
 		unsigned int p, unsigned int m, unsigned int *np, unsigned int *nf);
 
 
-void refine_grid(vector3 **P, unsigned int ***F, vector3 ***U,
+void refine_grid_pwl(vector3 **P, unsigned int ***F, vector3 ***U,
 		unsigned int p, unsigned int m, unsigned int M, unsigned int *np, unsigned int *nf);
 
 
-void init_grid(P,F,U,p,m,np,nf)
+void init_grid_pwl(P,F,U,p,m,np,nf)
 /* Erstellt die Punkte- und Indexliste fuer Level 0. */
 vector3		**P;    	/* Zeiger auf die Punkteliste 	       */
 unsigned int	***F;   	/* Zeiger auf die lokale Basisliste    */
@@ -61,7 +61,7 @@ return;
 }
 
 
-void refine_grid(P,F,U,p,m,M,np,nf)
+void refine_grid_pwl(P,F,U,p,m,M,np,nf)
 /* Erstellt die Punkte- und Indexliste fuer alle zusaetzlichen
    Gitterpunkte des Level m. */
 vector3		**P;    	/* Zeiger auf die Punkteliste 	 */
@@ -120,7 +120,7 @@ return;
 }
 
 
-unsigned int gennet(P,F,U,p,M)
+unsigned int gennet_pwl(P,F,U,p,M)
 /* Erstellt die Punkte- und Patchliste in hierarchischer Weise
    und liefert als Funktionsergebnis die Laenge der Punkteliste,
    die vom Geschlecht der Oberflaeche abhaengig ist. */
@@ -134,13 +134,13 @@ unsigned int	m;		/* Laufindex fuer das Level            */
 unsigned int	np;		/* Laenge von P                        */
 unsigned int	nf;		/* Laenge von F                        */
 
-init_grid(P,F,U,p,M,&np,&nf);
-for (m=1; m<=M; m++) refine_grid(P,F,U,p,m,M,&np,&nf);
+init_grid_pwl(P,F,U,p,M,&np,&nf);
+for (m=1; m<=M; m++) refine_grid_pwl(P,F,U,p,m,M,&np,&nf);
 return(np);
 }
 
 
-void free_patchlist(F,nf)
+void free_patchlist_pwl(F,nf)
 /* gibt den Speicherplatz der (nf,4)-(unsigned int)-Patchliste F frei */
 unsigned int	***F;
 unsigned int	nf;

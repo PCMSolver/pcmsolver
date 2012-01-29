@@ -42,43 +42,43 @@ unsigned int	*son;		/* Indizes der Soehne   */
 wavelet_pwl;
 
 
-void unify(vector3 *d, double *r, vector3 d1, double r1, vector3 d2, double r2);
+void unify_pwl(vector3 *d, double *r, vector3 d1, double r1, vector3 d2, double r2);
 /* bildet die Vereinigung K(d,r) = K(d1,r1) \cup K(d2,r2) */
 
 
-unsigned int generate_elementlist(element_pwl **E, 
+unsigned int generate_elementlist_pwl(element_pwl **E, 
 	vector3 *P, unsigned int **F, unsigned int p, unsigned int M);
 /* erstellt die hierarchische Elementliste E */
 
 
-void complete_elementlist(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
+void complete_elementlist_pwl(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* erstellt die Liste zum Zugriff auf die Wavelets */
 
 
-void generate_waveletlist(wavelet **W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
+void generate_waveletlist_pwl(wavelet **W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* erstellt die Waveletliste W */
 
 
-void simplify_waveletlist(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
+void simplify_waveletlist_pwl(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* optimiert die Waveletliste W */
 
 
-void set_quadrature_level(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
+void set_quadrature_level_pwl(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* verfeinert Grobgitterelemente */
 
 
-void free_elementlist(element_pwl **E, unsigned int p, unsigned int M);
+void free_elementlist_pwl(element_pwl **E, unsigned int p, unsigned int M);
 /* gibt den Speicherplatz der hierarchischen Elementliste E frei */
 
 
-void free_waveletlist(wavelet **W, unsigned int nw);
+void free_waveletlist_pwl(wavelet **W, unsigned int nw);
 /* gibt den Speicherplatz der Waveletliste W frei */
 
 
-void print_waveletlist(wavelet *W, unsigned int nw);
+void print_waveletlist_pwl(wavelet *W, unsigned int nw);
 /* gibt die in der Waveletliste W definierten Wavelets aus */
 
 
-double distance(element_pwl *element1, element_pwl *element2);
+double distance_pwl(element_pwl *element1, element_pwl *element2);
 /* Berechnet den Abstand zwischen den Elementen element1 und element2 */
 #endif

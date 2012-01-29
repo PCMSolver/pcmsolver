@@ -69,7 +69,7 @@ else
    }
 
 /* bestimme den Abstand zwischen den Elementen */
-dist = distance(&E[ind1],&E[ind2]);
+dist = distance_pwl(&E[ind1],&E[ind2]);
 
 /* Quadratur mit Genauigkeit prec */
 if (E[ind1].level == E[ind2].level)	/* nicht unterteilen, da beide Elemente auf gleichem Level */

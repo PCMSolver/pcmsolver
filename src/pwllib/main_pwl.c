@@ -99,11 +99,11 @@ printf("Number of levels:                %d \n",M);
 printf("Number of parameter domains:     %d \n",p);
 printf("Number of ansatz functions:      %d \n",np);
 printf("Computing the overhead:          ");
-generate_elementlist(&E,P,F,p,M);
-generate_waveletlist(&W,E,p,M,np);
-set_quadrature_level(W,E,p,M,np);
-simplify_waveletlist(W,E,p,M,np);
-complete_elementlist(W,E,p,M,np);
+generate_elementlist_pwl(&E,P,F,p,M);
+generate_waveletlist_pwl(&W,E,p,M,np);
+set_quadrature_level_pwl(W,E,p,M,np);
+simplify_waveletlist_pwl(W,E,p,M,np);
+complete_elementlist_pwl(W,E,p,M,np);
 time(&t2);
 printf("Computation time:                %g secs.\n\n",difftime(t2,t1));
 
@@ -194,8 +194,8 @@ printf("Over-all computation time:       %g secs.\n",difftime(t2,t1));
 /* Speicherplatz freigeben */
 printf("\n\n\n");
 if ((CASE == 3) || (CASE == 4)) free_sparse2(&S_e);
-free_waveletlist(&W,np);
-free_elementlist(&E,p,M);
+free_waveletlist_pwl(&W,np);
+free_elementlist_pwl(&E,p,M);
 free_interpolate_pwl(&T,p,M);
 free_patchlist_pwl(&F,nf);
 free_sparse2(&S_i);

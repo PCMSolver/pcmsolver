@@ -51,7 +51,7 @@ void add_wavelet(wavelet_pwl *w1, wavelet_pwl *w2, element_pwl *E, double weight
  *  D E F I N I T I O N   D E R   H I L F S F U N K T I O N E N  *
  *===============================================================*/
 
-void unify(d,r,d1,r1,d2,r2)
+void unify_pwl(d,r,d1,r1,d2,r2)
 /* bildet die Vereinigung K(d,r) = K(d1,r1) \cup K(d2,r2) */
 vector3		*d, d1, d2;
 double		*r, r1, r2;
@@ -220,7 +220,7 @@ return;
  *  E L E M E N T L I S T E  *
  *===========================*/
 
-unsigned int generate_elementlist(E,P,F,p,M)
+unsigned int generate_elementlist_pwl(E,P,F,p,M)
 /* erstellt die hierarchsische Elementliste E */
 element_pwl		**E;		/* hierarchische Elementliste             */
 vector3		*P;		/* Punkteliste der Einskalenbasis         */
@@ -260,9 +260,9 @@ for (i1=0; i1<p; i1++)
 	 (*E)[ze].son[0] = (*E)[ze].son[1] = (*E)[ze].son[2] = (*E)[ze].son[3] = ne;
 
 	 /* bestimme Mittelpunkt und Radius des Elementumkreises */
-	 unify(&d1,&r1,P[F[zf][0]],0,P[F[zf][2]],0);
-	 unify(&d2,&r2,P[F[zf][1]],0,P[F[zf][3]],0);
-	 unify(&(*E)[ze].midpoint,&(*E)[ze].radius,d1,r1,d2,r2);
+	 unify_pwl(&d1,&r1,P[F[zf][0]],0,P[F[zf][2]],0);
+	 unify_pwl(&d2,&r2,P[F[zf][1]],0,P[F[zf][3]],0);
+	 unify_pwl(&(*E)[ze].midpoint,&(*E)[ze].radius,d1,r1,d2,r2);
 
 	 ze++;
 	 zf++;
@@ -297,9 +297,9 @@ for (m=M-1; m>=0; m--)
 	    (*E)[zf].father = (*E)[zf+1].father = (*E)[zf+2*n].father = (*E)[zf+2*n+1].father = ze;
 	    
 	    /* bestimme Mittelpunkt und Radius des Elementumkreises */
-	    unify(&d1,&r1,(*E)[zf  ].midpoint,(*E)[zf  ].radius,(*E)[zf+2*n+1].midpoint,(*E)[zf+2*n+1].radius);
-	    unify(&d2,&r2,(*E)[zf+1].midpoint,(*E)[zf+1].radius,(*E)[zf+2*n  ].midpoint,(*E)[zf+2*n  ].radius);
-	    unify(&(*E)[ze].midpoint,&(*E)[ze].radius,d1,r1,d2,r2);
+	    unify_pwl(&d1,&r1,(*E)[zf  ].midpoint,(*E)[zf  ].radius,(*E)[zf+2*n+1].midpoint,(*E)[zf+2*n+1].radius);
+	    unify_pwl(&d2,&r2,(*E)[zf+1].midpoint,(*E)[zf+1].radius,(*E)[zf+2*n  ].midpoint,(*E)[zf+2*n  ].radius);
+	    unify_pwl(&(*E)[ze].midpoint,&(*E)[ze].radius,d1,r1,d2,r2);
 
 	    zf += 2;
 	    ze++;
@@ -312,7 +312,7 @@ return(ne);
 }
 
 
-void complete_elementlist(W,E,p,M,nw)
+void complete_elementlist_pwl(W,E,p,M,nw)
 /* erstellt die hierarchsische Elementliste E */
 wavelet_pwl		*W;		/* Liste der Wavelets                 */
 element_pwl		*E;		/* hierarchische Elementliste         */
@@ -342,7 +342,7 @@ return;
 }
 
 
-void free_elementlist(E,p,M)
+void free_elementlist_pwl(E,p,M)
 /* gibt den Speicherplatz der hierarchischen Elementliste E frei */
 element_pwl		**E;		/* hierarchische Elementliste */
 unsigned int	p;		/* Anzahl der Patches         */
@@ -362,7 +362,7 @@ free(*E);
  *  W A V E L E T L I S T E  *
  *===========================*/
 
-void generate_waveletlist(W,E,p,M,nw)
+void generate_waveletlist_pwl(W,E,p,M,nw)
 /* erstellt die Waveletliste W */
 wavelet_pwl		**W;		/* Liste der Wavelets                   */
 element_pwl		*E;		/* hierarchische Elementliste           */
@@ -476,7 +476,7 @@ return;
 }
 
 
-void set_quadrature_level(W,E,p,M,nw)
+void set_quadrature_level_pwl(W,E,p,M,nw)
 /* verfeinert Grobgitterelemente */
 wavelet_pwl		*W;			/* Liste der Wavelets                     */
 element_pwl		*E;			/* hierarchische Elementliste             */
@@ -527,7 +527,7 @@ return;
 }
 
 
-void simplify_waveletlist(W,E,p,M,nw)
+void simplify_waveletlist_pwl(W,E,p,M,nw)
 /* optimiert die Waveletliste W */
 wavelet_pwl		*W;			/* Liste der Wavelets                          */
 element_pwl		*E;			/* hierarchische Elementliste                  */
@@ -670,7 +670,7 @@ free(*W);
 }
 
 
-void print_waveletlist(W,nw)
+void print_waveletlist_pwl(W,nw)
 /* gibt die in der Waveletliste W definierten Wavelets aus */
 wavelet_pwl		*W;		/* Waveletliste */
 unsigned int	nw;		/* Laenge von W */
@@ -696,7 +696,7 @@ return;
  *  A B S T A N D S F U N K T I O N  *
  *===================================*/
  
-double distance(element1,element2)
+double distance_pwl(element1,element2)
 /* Berechnet den Abstand zwischen den Elementen element1 und element2 */
 element_pwl 	*element1, *element2;	/* Pointer auf die zwei Elemente */
 {

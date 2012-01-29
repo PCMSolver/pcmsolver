@@ -133,7 +133,7 @@ for (i=0; i<W[ind1].element_number; i++)
          }
 
       /* oder Elemente liegen auf verschiedenen Patches */
-      else if (distance(&E[k],&E[l]) < c2) return(1);
+      else if (distance_pwl(&E[k],&E[l]) < c2) return(1);
       }
    }
 return(0);

@@ -18,7 +18,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "sparse.h"
-#include "basis.h"  
+#include "basis_pwl.h"  
 #include "precond_pwl.h"
 #include "dwt_pwl.h"
 

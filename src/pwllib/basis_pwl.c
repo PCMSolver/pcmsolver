@@ -21,7 +21,7 @@
 #include "sparse.h"
 #include "mask.h"
 #include "kern.h"
-#include "basis.h"
+#include "basis_pwl.h"
 
 
 /*=================================================================*

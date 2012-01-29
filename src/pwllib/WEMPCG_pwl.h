@@ -28,6 +28,12 @@
  *=============================================================*/
 
 
-unsigned int WEMPCG_pwl(sparse2 *A, double *b, double *x, double epsi, 
-	wavelet_pwl *W, unsigned int **F, unsigned int p, unsigned int M);
+unsigned int WEMPCG_pwl(sparse2 *A, 
+                        double *b, 
+                        double *x, 
+                        double epsi, 
+                        wavelet_pwl *W, 
+                        unsigned int **F, 
+                        unsigned int p, 
+                        unsigned int M);
 #endif

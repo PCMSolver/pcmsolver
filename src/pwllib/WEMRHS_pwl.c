@@ -15,7 +15,7 @@
 #include "intvector_pwl.h"
 #include "vector2.h"
 #include "vector3.h"
-#include "basis.h"
+#include "basis_pwl.h"
 #include "cubature.h"
 #include "gauss_square.h"
 #include "interpolate_pwl.h"

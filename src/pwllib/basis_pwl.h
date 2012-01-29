@@ -1,5 +1,5 @@
-#ifndef BASIS
-#define BASIS
+#ifndef BASIS_PWL
+#define BASIS_PWL
 /*************
  *  Basis.h  *
  *************/
@@ -51,19 +51,19 @@ unsigned int generate_elementlist_pwl(element_pwl **E,
 /* erstellt die hierarchische Elementliste E */
 
 
-void complete_elementlist_pwl(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
+void complete_elementlist_pwl(wavelet_pwl *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* erstellt die Liste zum Zugriff auf die Wavelets */
 
 
-void generate_waveletlist_pwl(wavelet **W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
+void generate_waveletlist_pwl(wavelet_pwl **W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* erstellt die Waveletliste W */
 
 
-void simplify_waveletlist_pwl(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
+void simplify_waveletlist_pwl(wavelet_pwl *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* optimiert die Waveletliste W */
 
 
-void set_quadrature_level_pwl(wavelet *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
+void set_quadrature_level_pwl(wavelet_pwl *W, element_pwl *E, unsigned int p, unsigned int M, unsigned int nw);
 /* verfeinert Grobgitterelemente */
 
 
@@ -71,11 +71,11 @@ void free_elementlist_pwl(element_pwl **E, unsigned int p, unsigned int M);
 /* gibt den Speicherplatz der hierarchischen Elementliste E frei */
 
 
-void free_waveletlist_pwl(wavelet **W, unsigned int nw);
+void free_waveletlist_pwl(wavelet_pwl **W, unsigned int nw);
 /* gibt den Speicherplatz der Waveletliste W frei */
 
 
-void print_waveletlist_pwl(wavelet *W, unsigned int nw);
+void print_waveletlist_pwl(wavelet_pwl *W, unsigned int nw);
 /* gibt die in der Waveletliste W definierten Wavelets aus */
 
 

@@ -32,7 +32,7 @@
 #include "sparse2.h"
 #include "intvector_pwl.h"
 #include "vector3.h"
-#include "basis.h"
+#include "basis_pwl.h"
 #include "precond_pwl.h"
 #include "WEMPGMRES_pwl.h"
 

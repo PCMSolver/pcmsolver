@@ -15,13 +15,13 @@
 #include "intvector_pwl.h"
 #include "vector2.h"
 #include "vector3.h"
-#include "basis.h"
+#include "basis_pwl.h"
 #include "sparse2.h"
 #include "cubature.h"
 #include "gauss_square.h"
 #include "intlin1.h"
 #include "integrate_pwl.h"
-#include "WEM.h"
+#include "WEM_pwl.h"
 
 
 void WEM_pwl(S,W,P,E,T,p,M,SingleLayer,DoubleLayer,Identity)

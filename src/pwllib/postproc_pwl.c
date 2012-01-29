@@ -19,7 +19,7 @@
 #include "intvector_pwl.h"
 #include "vector2.h"
 #include "vector3.h"
-#include "basis.h"
+#include "basis_pwl.h"
 #include "postproc_pwl.h"
 
 

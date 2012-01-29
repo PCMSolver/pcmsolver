@@ -77,11 +77,11 @@ if (E[ind1].level == E[ind2].level)	/* nicht unterteilen, da beide Elemente auf 
   /* Falleinteilung fuer Quadratur */
    if (dist > eps)         CASE = 1;  		  		/* keine Gemeinsamkeiten   */
    else if (ind1 == ind2)  CASE = 2;  				/* gleiches Patch          */ 
-   else CASE = compare(P,E[ind1].vertex,E[ind2].vertex,&s,&t);	/* gemeinsame Kante/Punkt? */
+   else CASE = compare_pwl(P,E[ind1].vertex,E[ind2].vertex,&s,&t);	/* gemeinsame Kante/Punkt? */
 
    /* Quadratur mit Genauigkeit prec */
    if (dist*(1<<E[ind1].level) < 1) dist = 1./(1<<E[ind1].level);
-   quadrature_grade(&g1,&g2,E[ind1].level,E[ind2].level,dist,prec);
+   quadrature_grade_pwl(&g1,&g2,E[ind1].level,E[ind2].level,dist,prec);
 
    /* Wahl der Quadraturroutine aufgrund der Falleinteilung */
    switch (CASE)
@@ -98,7 +98,7 @@ if (E[ind1].level == E[ind2].level)	/* nicht unterteilen, da beide Elemente auf 
    }
 else 		/* (E[ind1].level > E[ind2].level) */
 {  if (dist*(1<<E[ind2].level) >= q)		/* Quadratur */
-   {  quadrature_grade(&g1,&g2,E[ind1].level,E[ind2].level,dist,prec);
+   {  quadrature_grade_pwl(&g1,&g2,E[ind1].level,E[ind2].level,dist,prec);
       IntLin1(c,&E[ind1],&E[ind2],&RW[g1],&Q[g1],&Q[g2],R,M,SingleLayer,DoubleLayer);
       }
    else		/* unterteile */

@@ -15,7 +15,7 @@
 #include "trafos.h"
 
 
-vector2 Kappa(a,b,h)
+vector2 Kappa_pwl(a,b,h)
 /* Abbildung vom Einheitsquadrat auf das Element */
 vector2		a, b;
 double		h;
@@ -27,7 +27,7 @@ return(c);
 }
 
 
-vector2 Tau(b_x,b_y,CASE)
+vector2 Tau_pwl(b_x,b_y,CASE)
 /* definiert die Drehungen fuer den Duffy-Trick */
 double		b_x, b_y;
 unsigned int	CASE;
@@ -41,7 +41,7 @@ switch (CASE)
 }
 
 
-unsigned int compare(P,F1,F2,ind1,ind2)
+unsigned int compare_pwl(P,F1,F2,ind1,ind2)
 /* Untersucht zwei Patches (F1[0],...,F1[3]) und (F2[0],...,F2[3])
    auf eine gemeinsame Kante (Funktionsergebnis: 3) oder einen 
    gemeinsamen Punkt (Funktionsergebnis: 4), wobei in diesen Faellen 
@@ -86,7 +86,7 @@ return(1);
 }
 
 
-void quadrature_grade(g1,g2,m1,m2,dist,prec)
+void quadrature_grade_pwl(g1,g2,m1,m2,dist,prec)
 /* bestimmt fuer Elemente der Level m1 und m2 
    mit dem Abstand dist die benoetigten Quadraturgrade */
 signed int	*g1, *g2;		/* benoetigter Quadraturgrad      */

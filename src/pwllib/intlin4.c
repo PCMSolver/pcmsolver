@@ -41,32 +41,32 @@ for (i=0; i<Q->nop; i++)
 {  xi = Q->xi[i];
    w  = h * h * pow(xi.x,3) * Q->w[i];
    xi.y *= xi.x;
-   a1 = Tau(xi.x,xi.y,ind_s);
-   a2 = Tau(xi.y,xi.x,ind_s);
-   b1 = Tau(xi.x,xi.y,ind_t);
-   b2 = Tau(xi.y,xi.x,ind_t);
+   a1 = Tau_pwl(xi.x,xi.y,ind_s);
+   a2 = Tau_pwl(xi.y,xi.x,ind_s);
+   b1 = Tau_pwl(xi.x,xi.y,ind_t);
+   b2 = Tau_pwl(xi.y,xi.x,ind_t);
    
-   u = Kappa(s,a1,h);
+   u = Kappa_pwl(s,a1,h);
    x1 = Chi_pwl(u,P[element1->patch],M);
    n_x1 = n_Chi_pwl(u,P[element1->patch],M);
    
-   u = Kappa(s,a2,h);
+   u = Kappa_pwl(s,a2,h);
    x2 = Chi_pwl(u,P[element1->patch],M);
    n_x2 = n_Chi_pwl(u,P[element1->patch],M);
       
-   u = Kappa(t,b1,h);
+   u = Kappa_pwl(t,b1,h);
    y1 = Chi_pwl(u,P[element2->patch],M);
    n_y1 = n_Chi_pwl(u,P[element2->patch],M);
    
-   u = Kappa(t,b2,h);
+   u = Kappa_pwl(t,b2,h);
    y2 = Chi_pwl(u,P[element2->patch],M);
    n_y2 = n_Chi_pwl(u,P[element2->patch],M);
 
    for (j=0; j<Q->nop; j++)  
    {  eta = vector2_Smul(xi.x,Q->xi[j]);
             
-      a = Tau(eta.x,eta.y,ind_t);
-      u = Kappa(t,a,h);
+      a = Tau_pwl(eta.x,eta.y,ind_t);
+      u = Kappa_pwl(t,a,h);
       z = Chi_pwl(u,P[element2->patch],M);
       n_z = n_Chi_pwl(u,P[element2->patch],M);
 
@@ -84,8 +84,8 @@ for (i=0; i<Q->nop; i++)
       Phi_times_Phi(&c[16],d2,a2,a);
       Phi_times_Phi(&c[32],d3,a2,a);
 
-      a = Tau(eta.x,eta.y,ind_s);
-      u = Kappa(s,a,h);
+      a = Tau_pwl(eta.x,eta.y,ind_s);
+      u = Kappa_pwl(s,a,h);
       z = Chi_pwl(u,P[element1->patch],M);
       n_z = n_Chi_pwl(u,P[element1->patch],M);
       

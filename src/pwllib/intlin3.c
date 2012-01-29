@@ -47,10 +47,10 @@ for (i=0; i<Q->nop; i++)
       t3 = xi.x*(1-eta.x);
       t4 = (1-xi.x)*(1-eta.x);
 
-      a = Tau(t1,eta.x,ind_s);
-      b = Tau(t2,eta.y,ind_t);
-      u = Kappa(s,a,h);
-      v = Kappa(t,b,h);
+      a = Tau_pwl(t1,eta.x,ind_s);
+      b = Tau_pwl(t2,eta.y,ind_t);
+      u = Kappa_pwl(s,a,h);
+      v = Kappa_pwl(t,b,h);
       x = Chi_pwl(u,P[element1->patch],M);
       y = Chi_pwl(v,P[element2->patch],M);
       d1 = w * Q->w[j] * (1-xi.y) * SingleLayer(x,y);
@@ -60,10 +60,10 @@ for (i=0; i<Q->nop; i++)
       Phi_times_Phi(&c[16],d2,a,b);
       Phi_times_Phi(&c[32],d3,a,b);
 
-      a = Tau(1-t1,eta.x,ind_s);
-      b = Tau(1-t2,eta.y,ind_t);
-      u = Kappa(s,a,h);
-      v = Kappa(t,b,h);
+      a = Tau_pwl(1-t1,eta.x,ind_s);
+      b = Tau_pwl(1-t2,eta.y,ind_t);
+      u = Kappa_pwl(s,a,h);
+      v = Kappa_pwl(t,b,h);
       x = Chi_pwl(u,P[element1->patch],M);
       y = Chi_pwl(v,P[element2->patch],M);
       d1 = w * Q->w[j] * (1-xi.y) * SingleLayer(x,y);
@@ -73,10 +73,10 @@ for (i=0; i<Q->nop; i++)
       Phi_times_Phi(&c[16],d2,a,b);
       Phi_times_Phi(&c[32],d3,a,b);
 
-      a = Tau(t3, xi.y,ind_s);
-      b = Tau(t4,eta.y,ind_t);
-      u = Kappa(s,a,h);
-      v = Kappa(t,b,h);
+      a = Tau_pwl(t3, xi.y,ind_s);
+      b = Tau_pwl(t4,eta.y,ind_t);
+      u = Kappa_pwl(s,a,h);
+      v = Kappa_pwl(t,b,h);
       x = Chi_pwl(u,P[element1->patch],M);
       y = Chi_pwl(v,P[element2->patch],M);
       d1 = w * Q->w[j] * (1-eta.x) * SingleLayer(x,y);
@@ -86,10 +86,10 @@ for (i=0; i<Q->nop; i++)
       Phi_times_Phi(&c[16],d2,a,b);
       Phi_times_Phi(&c[32],d3,a,b);
 
-      a = Tau(1-t3, xi.y,ind_s);
-      b = Tau(1-t4,eta.y,ind_t);
-      u = Kappa(s,a,h);
-      v = Kappa(t,b,h);
+      a = Tau_pwl(1-t3, xi.y,ind_s);
+      b = Tau_pwl(1-t4,eta.y,ind_t);
+      u = Kappa_pwl(s,a,h);
+      v = Kappa_pwl(t,b,h);
       x = Chi_pwl(u,P[element1->patch],M);
       y = Chi_pwl(v,P[element2->patch],M);
       d1 = w * Q->w[j] * (1-eta.x) * SingleLayer(x,y);
@@ -99,10 +99,10 @@ for (i=0; i<Q->nop; i++)
       Phi_times_Phi(&c[16],d2,a,b);
       Phi_times_Phi(&c[32],d3,a,b);
 
-      a = Tau(t4,eta.y,ind_s);
-      b = Tau(t3, xi.y,ind_t);
-      u = Kappa(s,a,h);
-      v = Kappa(t,b,h);
+      a = Tau_pwl(t4,eta.y,ind_s);
+      b = Tau_pwl(t3, xi.y,ind_t);
+      u = Kappa_pwl(s,a,h);
+      v = Kappa_pwl(t,b,h);
       x = Chi_pwl(u,P[element1->patch],M);
       y = Chi_pwl(v,P[element2->patch],M);
       d1 = w * Q->w[j] * (1-eta.x) * SingleLayer(x,y);
@@ -112,10 +112,10 @@ for (i=0; i<Q->nop; i++)
       Phi_times_Phi(&c[16],d2,a,b);
       Phi_times_Phi(&c[32],d3,a,b);
 
-      a = Tau(1-t4,eta.y,ind_s);
-      b = Tau(1-t3, xi.y,ind_t);
-      u = Kappa(s,a,h);
-      v = Kappa(t,b,h);
+      a = Tau_pwl(1-t4,eta.y,ind_s);
+      b = Tau_pwl(1-t3, xi.y,ind_t);
+      u = Kappa_pwl(s,a,h);
+      v = Kappa_pwl(t,b,h);
       x = Chi_pwl(u,P[element1->patch],M);
       y = Chi_pwl(v,P[element2->patch],M);
       d1 = w * Q->w[j] * (1-eta.x) * SingleLayer(x,y);

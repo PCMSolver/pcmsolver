@@ -1,7 +1,3 @@
-set (wem_CXX_SOURCES
-  PCM-WEM.cpp
-)
-
 set (wem_C_SOURCES 
   WEM.c
   WEMPCG.c

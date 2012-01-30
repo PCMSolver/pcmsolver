@@ -25,7 +25,7 @@ extern "C"{
 
 // From the PCM module
 #include "BEMInterface.h"
-#include "GreensFunctionInterface.h"
+#include "GreensFunctionInterface_old.h"
 
 using namespace Eigen;
 

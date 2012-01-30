@@ -36,18 +36,11 @@ extern "C"{
 #include "Constants.h"
 #include "Getkw.h"
 #include "taylor.hpp"
-#include "GreensFunction.h"
-#include "Vacuum.h"
-#include "UniformDielectric.h"
-#include "GreensFunctionSum.h"
-#include "MetalSphere.h"
+#include "GreensFunctionInterface.h"
 #include "Cavity.h"
 #include "WaveletCavity.h"
 #include "PCMSolver.h"
 #include "WEMSolver.h"
-
-static double (*SingleLayer) (vector3 x, vector3 y);
-static double (*DoubleLayer) (vector3 x, vector3 y, vector3 n_y);
 
 static double SLInt(vector3 x, vector3 y)
 {  
@@ -78,111 +71,31 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
 }
 
+static GreensFunctionInterface *gf = 0;
 
-typedef taylor<double, 3, 1> T1;
-typedef taylor<double, 3, 2> T2;
-typedef taylor<double, 1, 1> T3;
+static double SingleLayer (vector3 x, vector3 y) {
+  Vector3d vx(x.x, x.y, x.z);
+  Vector3d vy(y.x, y.y, y.z);
+  double value = gf->evalf(vx, vy);
+  return value;
+}
 
-static WEMSolver<double> * globalSolverD;
-static WEMSolver<T1> * globalSolverT1;
-static WEMSolver<T2> * globalSolverT2;
-static WEMSolver<T3> * globalSolverT3;
-
-
-static double SingleLayerD (vector3 x, vector3 y) {
-	return globalSolverD->SL(x, y);
-}
-static double DoubleLayerD (vector3 x, vector3 y, vector3 n_y) {
-	double val = globalSolverD->DL(x, y, n_y);
-	return val;
-}
-static double SingleLayerT1 (vector3 x, vector3 y) {
-	return globalSolverT1->SL(x, y);
-}
-static double DoubleLayerT1 (vector3 x, vector3 y, vector3 n_y) {
-	double val = globalSolverT1->DL(x, y, n_y);
-	return val;
-}
-static double SingleLayerT2 (vector3 x, vector3 y) {
-	return globalSolverT2->SL(x, y);
-}
-static double DoubleLayerT2 (vector3 x, vector3 y, vector3 n_y) {
-	double val = globalSolverT2->DL(x, y, n_y);
-	return val;
-}
-static double SingleLayerT3 (vector3 x, vector3 y) {
-	return globalSolverT3->SL(x, y);
-}
-static double DoubleLayerT3 (vector3 x, vector3 y, vector3 n_y) {
-	double val = globalSolverT3->DL(x, y, n_y);
-	return val;
+static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) {
+  Vector3d vx(x.x, x.y, x.z);
+  Vector3d vy(y.x, y.y, y.z);
+  Vector3d vn_y(n_y.x, n_y.y, n_y.z);
+  double value = gf->evald(vn_y, vx, vy);
+  return value;
 }
 
 template <class T>
 void WEMSolver<T>::fixPointersInside() {
-	this->gf = this->greenInside;
-	if (typeid(this) == typeid(WEMSolver<double> *)) {
-		globalSolverD = dynamic_cast<WEMSolver<double> * > (this);
-		SingleLayer = &SingleLayerD;
-		DoubleLayer = &DoubleLayerD;
-	} else if (typeid(this) == typeid(WEMSolver<T1> *)) {
-		globalSolverT1 = dynamic_cast<WEMSolver<T1> * > (this);
-		SingleLayer = &SingleLayerT1;
-		DoubleLayer = &DoubleLayerT1;
-    } else if (typeid(this) == typeid(WEMSolver<T2> *)) {
-		globalSolverT2 = dynamic_cast<WEMSolver<T2> * > (this);
-		SingleLayer = &SingleLayerT2;
-		DoubleLayer = &DoubleLayerT2;
-    } else if (typeid(this) == typeid(WEMSolver<T3> *)) {
-		globalSolverT3 = dynamic_cast<WEMSolver<T3> * > (this);
-		SingleLayer = &SingleLayerT3;
-		DoubleLayer = &DoubleLayerT3;
-	} else {
-		std::cout << "this is not good! "<< std::endl;
-		exit(-1);
-	}
+	gf = this->greenInside;
 }
 
 template <class T>
 void WEMSolver<T>::fixPointersOutside() {
-	this->gf = this->greenOutside;
-	if (typeid(this) == typeid(WEMSolver<double> *)) {
-		globalSolverD = dynamic_cast<WEMSolver<double> * > (this);
-		SingleLayer = &SingleLayerD;
-		DoubleLayer = &DoubleLayerD;
-	} else if (typeid(this) == typeid(WEMSolver<T1> *)) {
-		globalSolverT1 = dynamic_cast<WEMSolver<T1> * > (this);
-		SingleLayer = &SingleLayerT1;
-		DoubleLayer = &DoubleLayerT1;
-	} else if (typeid(this) == typeid(WEMSolver<T2> *)) {
-		globalSolverT2 = dynamic_cast<WEMSolver<T2> * > (this);
-		SingleLayer = &SingleLayerT2;
-		DoubleLayer = &DoubleLayerT2;
-	} else if (typeid(this) == typeid(WEMSolver<T3> *)) {
-		globalSolverT3 = dynamic_cast<WEMSolver<T3> * > (this);
-		SingleLayer = &SingleLayerT3;
-		DoubleLayer = &DoubleLayerT3;
-	} else {
-		std::cout << "this is not good! "<< std::endl;
-		exit(-1);
-	}
-}
-
-template <class T>
-double WEMSolver<T>::SL(vector3 x, vector3 y){
-  Vector3d vx(x.x, x.y, x.z);
-  Vector3d vy(y.x, y.y, y.z);
-  double value = this->gf->evalf(vx, vy);
-  return value;
-}
-
-template <class T>
-double WEMSolver<T>::DL(vector3 x, vector3 y, vector3 n_y){  
-  Vector3d vx(x.x, x.y, x.z);
-  Vector3d vy(y.x, y.y, y.z);
-  Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-  double value = this->gf->evald(vn_y, vx, vy);
-  return value;
+	gf = this->greenOutside;
 }
 
 template <class T>

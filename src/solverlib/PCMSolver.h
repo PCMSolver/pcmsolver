@@ -11,6 +11,7 @@
 #include <iostream>
 #include <complex>
 
+#include "GreensFunction.h"
 #include "Solvent.h"
 
 using namespace std;

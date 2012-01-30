@@ -10,7 +10,7 @@
 #include <iostream>
 #include <Eigen/Core>
 
-#include "GreensFunctionInterface.h"
+#include "GreensFunctionInterface_old.h"
 
 using namespace Eigen;
 

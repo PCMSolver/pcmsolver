@@ -12,7 +12,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "constants.h"
-#include "trafos.h"
+#include "trafos_pwl.h"
 
 
 vector2 Kappa_pwl(a,b,h)

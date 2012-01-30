@@ -8,7 +8,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "basis_pwl.h"
-#include "trafos.h"
+#include "trafos_pwl.h"
 #include "kern.h"
 #include "phi.h"
 #include "interpolate_pwl.h"

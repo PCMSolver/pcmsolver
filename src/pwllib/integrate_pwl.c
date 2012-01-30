@@ -17,7 +17,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "basis_pwl.h"
-#include "trafos.h"
+#include "trafos_pwl.h"
 #include "cubature.h"
 #include "intlin1.h"
 #include "intlin2.h"
@@ -26,7 +26,7 @@
 #include "integrate_pwl.h"
 
 
-void element_element_interaction_pwl_pwl(c,P,E,ind1,ind2,RW,Q,R,M,prec,SingleLayer,
+void element_element_interaction_pwl(c,P,E,ind1,ind2,RW,Q,R,M,prec,SingleLayer,
                                      DoubleLayer,Identity)
 /* Zerlegungsalgorithmus fuer die Integration Element ind1 mit Element ind2 */
 double		*c;		/* zu berechnende Integrale                      */

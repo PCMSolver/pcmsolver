@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 #include "sparse.h"
-#include "mask.h"
+#include "mask_pwl.h"
  
 
 const unsigned int	td = 4;

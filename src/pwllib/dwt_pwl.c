@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sparse.h"
-#include "mask.h"
+#include "mask_pwl.h"
 #include "dwt_pwl.h"
 
 

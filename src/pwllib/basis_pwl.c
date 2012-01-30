@@ -19,7 +19,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "sparse.h"
-#include "mask.h"
+#include "mask_pwl.h"
 #include "kern.h"
 #include "basis_pwl.h"
 

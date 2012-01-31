@@ -23,31 +23,26 @@ using namespace Eigen;
 #include "PCMSolver.h"
 #include "IEFSolver.h"
 
-template <class T>
 IEFSolver<T>::IEFSolver(GreensFunction<T> & gfi, GreensFunction<T> & gfo) : 
 	PCMSolver<T>(gfi, gfo) {
 	builtIsotropicMatrix = false;
 	builtAnisotropicMatrix = false;
 }
 
-template <class T>
 IEFSolver<T>::IEFSolver(GreensFunction<T> * gfi, GreensFunction<T> * gfo) :
 	PCMSolver<T>(gfi, gfo) {
 	builtIsotropicMatrix = false;
 	builtAnisotropicMatrix = false;
 }
 
-template <class T>
 IEFSolver<T>::IEFSolver(Section solver) : PCMSolver<T>(solver) {
 	builtIsotropicMatrix = false;
 	builtAnisotropicMatrix = false;
 }
 
-template <class T>
 IEFSolver<T>::~IEFSolver(){
 }
 
-template <class T>
 void IEFSolver<T>::buildSystemMatrix(Cavity & cavity) {
     if (GePolCavity *gePolCavity = dynamic_cast<GePolCavity*> (&cavity)) {
 		if (this->greenInside->isUniform() && this->greenOutside->isUniform()) {
@@ -61,7 +56,6 @@ void IEFSolver<T>::buildSystemMatrix(Cavity & cavity) {
 	}
 }
 
-template <class T>
 double IEFSolver<T>::compDiagonalElementSoper(GreensFunction<T> *green, int i, GePolCavity cav) {
     double s;
     if (UniformDielectric<T> * uniform = dynamic_cast<UniformDielectric<T> * > (green)) {
@@ -77,7 +71,6 @@ double IEFSolver<T>::compDiagonalElementSoper(GreensFunction<T> *green, int i, G
     return s;
 }
 
-template <class T>
 double IEFSolver<T>::compDiagonalElementDoper(GreensFunction<T> *green, int i, GePolCavity cav) {
     double s, d;
     if (UniformDielectric<T> *uniform = dynamic_cast<UniformDielectric<T> *>(green)) {
@@ -95,7 +88,6 @@ double IEFSolver<T>::compDiagonalElementDoper(GreensFunction<T> *green, int i, G
     return d;
 }
 
-template <class T>
 void IEFSolver<T>::buildAnisotropicMatrix(GePolCavity cav){
 
     this->cavitySize = cav.size();
@@ -144,7 +136,6 @@ void IEFSolver<T>::buildAnisotropicMatrix(GePolCavity cav){
 
 }
 
-template <class T>
 void IEFSolver<T>::buildIsotropicMatrix(GePolCavity cav){
 	double epsilon;
     if (UniformDielectric<T> *uniform = 
@@ -154,7 +145,7 @@ void IEFSolver<T>::buildIsotropicMatrix(GePolCavity cav){
 		cout << "Need uniform dielectric outside" << endl;
 		exit(1);
 	}
-if (Vacuum<T> *vacuum = dynamic_cast<Vacuum<T> *>(this->greenInside)) {
+	if (Vacuum<T> *vacuum = dynamic_cast<Vacuum<T> *>(this->greenInside)) {
 	} else {
 		cout << "Need vacuum inside" << endl;
 		exit(1);

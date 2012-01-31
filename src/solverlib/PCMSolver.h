@@ -16,17 +16,16 @@
 
 using namespace std;
 
-template <class T>
 class PCMSolver{
  public:
-    PCMSolver(GreensFunction<T> &gfi, GreensFunction<T> &gfo);
-    PCMSolver(GreensFunction<T> *gfi, GreensFunction<T> *gfo);
+    PCMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
+    PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
     PCMSolver(Section solver);
     ~PCMSolver();
-    GreensFunction<T> & getGreenInside();
-    GreensFunction<T> & getGreenOutside();    
-    GreensFunction<T> * getGreenInsideP();
-    GreensFunction<T> * getGreenOutsideP();    
+    GreensFunctionInterface & getGreenInside();
+    GreensFunctionInterface & getGreenOutside();    
+    GreensFunctionInterface * getGreenInsideP();
+    GreensFunctionInterface * getGreenOutsideP();    
     int getCavitySize() const {return cavitySize;};
     void setCavitySize(int size) {cavitySize = size;};
 
@@ -53,8 +52,8 @@ class PCMSolver{
  protected:
     bool allocated;
     int cavitySize;
-    GreensFunction<T> *greenInside;
-    GreensFunction<T> *greenOutside;
+    GreensFunctionInterface *greenInside;
+    GreensFunctionInterface *greenOutside;
     int solverType;
     virtual ostream & printObject(ostream & os);
     string solvent;

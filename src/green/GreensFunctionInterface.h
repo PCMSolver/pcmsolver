@@ -23,8 +23,14 @@ class GreensFunctionInterface
     virtual Vector3d gradientProbe(Vector3d &p1, Vector3d &p2) = 0;
     virtual void gradientSource(Vector3d &gradient, Vector3d &p1, Vector3d &p2) = 0;
     virtual void gradientProbe(Vector3d &gradient, Vector3d &p1, Vector3d &p2) = 0;
+    GreensFunctionInterface * allocateGreensFunctionInterface(const Section &green);
+    GreensFunctionInterface * allocateGreensFunctionInterface(double dielConst);
+    GreensFunctionInterface * allocateGreensFunctionInterface();
 
     bool isUniform(){ return uniformFlag; }
+
+    enum derivativeType{Numerical, Directional, Gradient, Hessian};
+    enum greensFunctionType{Vacuum, UniformDielectric, MetalSphere};
 
  protected:
     bool uniformFlag;

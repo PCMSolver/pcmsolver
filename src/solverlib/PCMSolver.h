@@ -39,7 +39,7 @@ class PCMSolver{
 
     virtual int getSolverType() { return solverType; }
 
-    enum solverTypes{Traditional, Wavelet};
+    enum solverTypes{Traditional, Wavelet, Linear};
 
     vector<Solvent> initSolvent();
     string & getSolvent(){ return solvent; }

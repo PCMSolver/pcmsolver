@@ -153,7 +153,7 @@ def verify_top(section):
 	    	print "Allowed units are: ", allowed_units
 		sys.exit(1)
 
-	allowed_types = ('Traditional', 'Wavelet')
+	allowed_types = ('Traditional', 'Wavelet', 'Linear')
         key = section.get('SolverType')
         val = key.get()
         if (val not in allowed_types):  

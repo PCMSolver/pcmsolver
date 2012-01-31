@@ -78,6 +78,8 @@ void PCMSolver<T>::setSolverType(const string & type) {
 		this->setSolverType(Traditional);
 	} else if (type == "Wavelet") {
 		this->setSolverType(Wavelet);
+	} else if (type == "Linear") {
+		this->setSolverType(Wavelet);
 	} else {
 		exit(-1);
 	}
@@ -91,6 +93,9 @@ void PCMSolver<T>::setSolverType(int type) {
 		break;
 	case Wavelet :
 		this->solverType = Wavelet;
+		break;
+	case Linear :
+		this->solverType = Linear;
 		break;
 	default : 
 		exit(-1);
@@ -165,10 +170,14 @@ void PCMSolver<T>::setSolvent(string & solv) {
 template <class T>
 ostream & PCMSolver<T>::printObject(ostream & os) {
 	string type;
-	if ( solverType == Traditional ) {
+	if (solverType == Traditional) {
 		type = "Traditional";
+	} else if (solverType == Wavelet) {
+		type = "Wavelets with piecewise constants";
+	} else if (solverType == Linear) {
+		type = "Wavelet with piecewise linears";
 	} else {
-		type = "Wavelet";
+		type = "Unknown";
 	}
 	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
 	os << "========== Solver section" << endl;

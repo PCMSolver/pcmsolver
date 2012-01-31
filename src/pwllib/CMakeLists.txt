@@ -5,7 +5,6 @@ set (pwl_C_SOURCES
   WEM_pwl.c
   basis_pwl.c
   compression_pwl.c
-  det.c
   dwt_pwl.c
   energy_pwl.c
   integrate_pwl.c

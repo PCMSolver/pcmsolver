@@ -49,11 +49,23 @@ double MetalSphere::evalGreensFunction(double * source, double * probe) {
     sphere[0] = sphPosition(0);
     sphere[1] = sphPosition(1);
     sphere[2] = sphPosition(2);
-    epsre =  epsMetal.real();
-    epsim =  epsMetal.imag();
+    epsre = epsMetal.real();
+    epsim = epsMetal.imag();
     gsfera_cpp_(&epsSolvent, &epsre, &epsim, &sphRadius,
 	       sphere, point1, point2, &greenre, &greenim);
     return greenre;
+}
+
+double MetalSphere::compDiagonalElementS(double area){
+	std::cout << "Not Yet Implemented" << std::endl;
+	exit(-1);
+	return 0;
+}
+
+double MetalSphere::compDiagonalElementD(double area, double radius){
+	std::cout << "Not Yet Implemented" << std::endl;
+	exit(-1);
+	return 0;
 }
 
 double MetalSphere::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) {

@@ -37,11 +37,30 @@ double GreensFunctionSum<T>::evald(Vector3d &direction, Vector3d &p1, Vector3d &
 }
 
 template<class T>
+double GreensFunctionSum<T>::evalf(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
+    double valFirst = greenFirst->evalf(direction, p1, p2);
+    double valSecond = greenSecond->evalf(direction, p1, p2);
+    return valFirst + valSecond;
+}
+
+template<class T>
+double GreensFunctionSum<T>::compDiagonalElementS(double area){
+	double s1 = greenFirst->compDiagonalElement(area);
+	double s2 = greenSecond->compDiagonalElement(area);
+	return s1 + s2;
+}
+
+template<class T>
+double GreensFunctionSum<T>::compDiagonalElementD(double area, double radius){
+	double s1 = greenFirst->compDiagonalElement(area, radius);
+	double s2 = greenSecond->compDiagonalElement(area, radius);
+	return s1 + s2;
+}
+
+template<class T>
 T GreensFunctionSum<T>::evalGreensFunction(T * sp, T * pp) {
 	std::cout << "NYI" << std::endl;
 	exit(-1);
-	//	return greenFirst->evalGreensFunction(sp, pp)
-	//		+ greenSecond->evalGreensFunction(sp, pp);
 }
 
 template class GreensFunctionSum<double>;

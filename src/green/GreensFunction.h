@@ -39,6 +39,9 @@ class GreensFunction: public GreensFunctionInterface
     GreensFunction<T> * allocateGreensFunction(double dielConst);
     GreensFunction<T> * allocateGreensFunction();
 
+    virtual void compDiagonalElementS(double area) = 0;
+    virtual void compDiagonalElementD(double area, double radius) = 0;
+
     friend std::ostream& operator<<(std::ostream &os, GreensFunction<T> &gf){
         return gf.printObject(os);
     };

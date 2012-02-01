@@ -13,9 +13,11 @@ class GreensFunctionSum : public GreensFunction<T>
     GreensFunctionSum(Section green);
     ~GreensFunctionSum(){delete greenFirst; delete greenSecond;}
     double evald(Vector3d &direction, Vector3d &p1, Vector3d &p2);
+    void compDiagonalElementS(double area);
+    void compDiagonalElementD(double area, double radius);
  protected:
     T evalGreensFunction(T * source, T * probe);
-    GreensFunction<T>* greenFirst;
-    GreensFunction<T>* greenSecond;
+    GreensFunctionInterface* greenFirst;
+    GreensFunctionInterface* greenSecond;
 };
 #endif

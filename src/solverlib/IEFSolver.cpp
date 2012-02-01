@@ -57,22 +57,21 @@ void IEFSolver::buildSystemMatrix(Cavity & cavity) {
 	}
 }
 
-void IEFSolver::buildAnisotropicMatrix(GePolCavity cav){
-
+void IEFSolver::buildAnisotropicMatrix(GePolCavity & cav){
     cavitySize = cav.size();
-
     MatrixXd SI(cavitySize, cavitySize);
     MatrixXd SE(cavitySize, cavitySize);
     MatrixXd DI(cavitySize, cavitySize);
     MatrixXd DE(cavitySize, cavitySize);
-    
     for(int i = 0; i < cavitySize; i++){
 		Vector3d p1 = cav.getTessCenter(i);
 		Vector3d n1 = cav.getTessNormal(i);
-		SI(i,i) = greenInside->compDiagonalElementS(cav.tessArea(i)); 
-		SE(i,i) = greenOutside->compDiagonalElementS(cav.tessArea(i)); 
-		DI(i,i) = greenInside->compDiagonalElementD(cav.tessArea(i)); 
-		DE(i,i) = greenOutside->compDiagonalElementD(cav.tessArea(i)); 
+		double area = cav.getTessArea(i);
+		double radius = cav.getTessRadius(i);
+		SI(i,i) =  greenInside->compDiagonalElementS(area); 
+		SE(i,i) = greenOutside->compDiagonalElementS(area); 
+		DI(i,i) =  greenInside->compDiagonalElementD(area, radius); 
+		DE(i,i) = greenOutside->compDiagonalElementD(area, radius); 
 		for (int j = 0; j < cavitySize; j++){
 			Vector3d p2 = cav.getTessCenter(j);
 			Vector3d n2 = cav.getTessNormal(j);
@@ -84,52 +83,46 @@ void IEFSolver::buildAnisotropicMatrix(GePolCavity cav){
 			}
 		}
     }
-  
     MatrixXd a(cavitySize, cavitySize);
     MatrixXd aInv(cavitySize, cavitySize);
     a.setZero();
     aInv.setZero();
-
     for (int i = 0; i < cavitySize; i++) {
 		a(i,i) = cav.getTessArea(i);
 		aInv(i,i) = 2 * M_PI / cav.getTessArea(i);
     }
-
     PCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose()));
     PCMMatrix = PCMMatrix.inverse();
     PCMMatrix *= ((aInv - DE) - SE * SI.inverse() * (aInv - DI));
     PCMMatrix = PCMMatrix * a;
-	
 	builtAnisotropicMatrix = true;
 	builtIsotropicMatrix = false;
-
 }
 
-void IEFSolver::buildIsotropicMatrix(GePolCavity cav){
+void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
 	double epsilon;
-    if (UniformDielectric *uniform = 
-		dynamic_cast<UniformDielectric *>(greenOutside)) {
-		epsilon = uniform->getEpsilon();
-	} else {
-		cout << "Need uniform dielectric outside" << endl;
+    if (UniformDielectric<class T> *uniform = 
+		dynamic_cast<UniformDielectric<class T> *>(greenOutside)) {
+	    epsilon = uniform->getEpsilon();
+    } else {
+	    cout << "Need uniform dielectric outside" << endl;
 		exit(1);
-	}
-	if (Vacuum *vacuum = dynamic_cast<Vacuum *>(greenInside)) {
+    }
+    if (Vacuum<class T> *vacuum = dynamic_cast<Vacuum<class T> *>(greenInside)) {
 	} else {
 		cout << "Need vacuum inside" << endl;
 		exit(1);
 	}
-
     cavitySize = cav.size();
-
     MatrixXd SI(cavitySize, cavitySize);
     MatrixXd DI(cavitySize, cavitySize);
-    
     for(int i = 0; i < cavitySize; i++){
 		Vector3d p1 = cav.getTessCenter(i);
 		Vector3d n1 = cav.getTessNormal(i);
-		SI(i,i) = greenInside->compDiagonalElementS(cav.tessArea(i)); 
-		DI(i,i) = greenInside->compDiagonalElementD(cav.tessArea(i)); 
+		double area = cav.getTessArea(i);
+		double radius = cav.getTessRadius(i);
+		SI(i,i) = greenInside->compDiagonalElementS(area); 
+		DI(i,i) = greenInside->compDiagonalElementD(area, radius); 
 		for (int j = 0; j < cavitySize; j++){
 			Vector3d p2 = cav.getTessCenter(j);
 			Vector3d n2 = cav.getTessNormal(j);
@@ -139,27 +132,21 @@ void IEFSolver::buildIsotropicMatrix(GePolCavity cav){
 			}
 		}
     }
-  
     MatrixXd a(cavitySize, cavitySize);
     MatrixXd aInv(cavitySize, cavitySize);
     a.setZero();
     aInv.setZero();
-
     for (int i = 0; i < cavitySize; i++) {
 		a(i,i) = cav.getTessArea(i);
 		aInv(i,i) = 2 * M_PI / cav.getTessArea(i);
     }
-
 	double fact = (epsilon+1.0)/(epsilon-1.0);
-
     PCMMatrix = (fact * aInv - DI) * a * SI;
     PCMMatrix = PCMMatrix.inverse();
     PCMMatrix *= (aInv - DI);
     PCMMatrix = PCMMatrix * a;
-	
 	builtIsotropicMatrix = true;
 	builtAnisotropicMatrix = false;
-
 }
 
 VectorXd IEFSolver::compCharge(const VectorXd &potential) {
@@ -191,6 +178,14 @@ ostream & IEFSolver::printObject(ostream & os) {
 	return os;
 }
 
+template class UniformDielectric<double>;
+template class UniformDielectric< taylor <double, 1, 1> >;
+template class UniformDielectric< taylor <double, 3, 1> >;
+template class UniformDielectric< taylor <double, 3, 2> >;
+template class Vacuum<double>;
+template class Vacuum< taylor <double, 1, 1> >;
+template class Vacuum< taylor <double, 3, 1> >;
+template class Vacuum< taylor <double, 3, 2> >;
 
 /*
 double IEFSolver::compDiagonalElementSoper(GreensFunctionInterface *green, int i, GePolCavity cav) {

@@ -88,19 +88,16 @@ static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) {
   return value;
 }
 
-template <class T>
-void WEMSolver<T>::fixPointersInside() {
+void WEMSolver::fixPointersInside() {
 	gf = this->greenInside;
 }
 
-template <class T>
-void WEMSolver<T>::fixPointersOutside() {
+void WEMSolver::fixPointersOutside() {
 	gf = this->greenOutside;
 }
 
-template <class T>
-WEMSolver<T>::WEMSolver(GreensFunction<T> & gfi, GreensFunction<T> & gfo) : 
-	PCMSolver<T>(gfi, gfo) {
+WEMSolver::WEMSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
+	PCMSolver(gfi, gfo) {
 	nodeList = NULL;
 	elementList = NULL;
 	T_ = NULL;
@@ -112,9 +109,8 @@ WEMSolver<T>::WEMSolver(GreensFunction<T> & gfi, GreensFunction<T> & gfo) :
 	nQuadPoints = 0;
 }
 
-template <class T>
-WEMSolver<T>::WEMSolver(GreensFunction<T> * gfi, GreensFunction<T> * gfo) :
-	PCMSolver<T>(gfi, gfo) {
+WEMSolver::WEMSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
+	PCMSolver(gfi, gfo) {
 	nodeList = NULL;
 	elementList = NULL;
 	T_ = NULL;
@@ -126,8 +122,7 @@ WEMSolver<T>::WEMSolver(GreensFunction<T> * gfi, GreensFunction<T> * gfo) :
 	nQuadPoints = 0;
 }
 
-template <class T>
-WEMSolver<T>::WEMSolver(Section solver) : PCMSolver<T>(solver) {
+WEMSolver::WEMSolver(Section solver) : PCMSolver(solver) {
 	nodeList = NULL;
 	elementList = NULL;
 	T_ = NULL;
@@ -139,8 +134,7 @@ WEMSolver<T>::WEMSolver(Section solver) : PCMSolver<T>(solver) {
 	nQuadPoints = 0;
 }
 
-template <class T>
-WEMSolver<T>::~WEMSolver(){
+WEMSolver::~WEMSolver(){
 	if(nodeList != NULL) free(nodeList);
 	if(elementList != NULL) free_patchlist(&elementList,nFunctions);
 	if(T_ != NULL) free_interpolate(&T_,nPatches,nLevels);
@@ -153,8 +147,7 @@ WEMSolver<T>::~WEMSolver(){
 	}
 }
 
-template <class T>
-void WEMSolver<T>::uploadCavity(WaveletCavity cavity) {
+void WEMSolver::uploadCavity(WaveletCavity cavity) {
 	
 	vector3 ***U = NULL;
 	nPatches = cavity.getNPatches();
@@ -179,8 +172,7 @@ void WEMSolver<T>::uploadCavity(WaveletCavity cavity) {
 	free_points(&U, nPatches, nLevels);
 }
 
-template <class T>
-void WEMSolver<T>::buildSystemMatrix(Cavity & cavity) {
+void WEMSolver::buildSystemMatrix(Cavity & cavity) {
     if (WaveletCavity *waveletCavity = dynamic_cast<WaveletCavity*> (&cavity)) {
 		this->uploadCavity(*waveletCavity);
 		this->constructSystemMatrix();
@@ -189,8 +181,7 @@ void WEMSolver<T>::buildSystemMatrix(Cavity & cavity) {
 	}
 }
 
-template <class T>
-void WEMSolver<T>::constructSystemMatrix(){
+void WEMSolver::constructSystemMatrix(){
 
   generate_elementlist(&elementTree,nodeList,elementList,nPatches,nLevels);
   generate_waveletlist(&waveletList,elementTree,nPatches,nLevels);
@@ -214,16 +205,14 @@ void WEMSolver<T>::constructSystemMatrix(){
 }
 
 
-template <class T>
-VectorXd WEMSolver<T>::compCharge(const VectorXd &potential) {
+VectorXd WEMSolver::compCharge(const VectorXd &potential) {
 	VectorXd charge;
 	cout << "WEM solver not yet implemented" << endl;
 	exit(1);
 	return charge;
 }
 
-template <class T>
-void WEMSolver<T>::compCharge(const VectorXd & potential, VectorXd & charge) {
+void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	double *rhs;
 	double *u = (double*) calloc(nFunctions, sizeof(double));
 	double *v = (double*) calloc(nFunctions, sizeof(double));
@@ -289,8 +278,4 @@ void WEMSolver<T>::compCharge(const VectorXd & potential, VectorXd & charge) {
 
 }
 
-template class WEMSolver <double>;
-template class WEMSolver <taylor<double, 1, 1> >;
-template class WEMSolver <taylor<double, 3, 1> >;
-template class WEMSolver <taylor<double, 3 ,2> >;
 

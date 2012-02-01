@@ -45,6 +45,7 @@ PCMSolver::PCMSolver(Section solver) {
 		greenInside = greenInside->allocateGreensFunctionInterface(solver.getSect("Green<inside>"));
 	} else {
 		greenInside = greenInside->allocateGreensFunctionInterface();
+	}
 	if (greenOutsideSet) {
 		greenOutside = greenOutside->allocateGreensFunctionInterface(solver.getSect("Green<outside>"));
 	} else {

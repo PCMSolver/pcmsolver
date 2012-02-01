@@ -22,12 +22,8 @@ class IEFSolver : public PCMSolver {
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
 
     virtual void buildSystemMatrix(Cavity & cavity);
-    virtual void buildAnisotropicMatrix(GePolCavity cav);
-    virtual void buildIsotropicMatrix(GePolCavity cav);
-    virtual double compDiagonalElementSoper(GreensFunctionInterface *green, int i, 
-                                            GePolCavity cav);
-    virtual double compDiagonalElementDoper(GreensFunctionInterface *green, int i, 
-                                            GePolCavity cav);
+    virtual void buildAnisotropicMatrix(GePolCavity & cav);
+    virtual void buildIsotropicMatrix(GePolCavity & cav);
     virtual VectorXd compCharge(const VectorXd & potential);
     virtual void compCharge(const VectorXd & potential, VectorXd & charge);
 

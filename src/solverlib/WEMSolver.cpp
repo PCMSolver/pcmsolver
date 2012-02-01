@@ -66,15 +66,10 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 {  
 	vector3		c;
 	double		r;
-	Vector3d grad, dir;
 	c.x = x.x-y.x;
 	c.y = x.y-y.y;
 	c.z = x.z-y.z;
 	r = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
-	grad(0) = c.x/(r*r*r);
-	grad(1) = c.y/(r*r*r);
-	grad(2) = c.z/(r*r*r);
-	dir << n_y.x, n_y.y, n_y.z;
 	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
 }
 
@@ -287,14 +282,14 @@ void WEMSolver<T>::constructSystemMatrix(){
 
   this->fixPointersInside();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
-  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLInt,DLUni,2*M_PI);
-  //WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
+  //WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLInt,DLUni,2*M_PI);
+  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
   aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
 
   this->fixPointersOutside();
   apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
-  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,2*M_PI);
-  //WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
+  //WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,-2*M_PI);
+  WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
   aposteriori2_ = postproc(&S_e_,waveletList,elementTree,nPatches,nLevels);
   
   systemMatricesInitialized_ = true;

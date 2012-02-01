@@ -72,6 +72,16 @@ PCMSolver<T>::~PCMSolver(){
 	}
 }
 
+/*
+template <class T>
+VectorXd PCMSolver<T>::compCharge(const VectorXd potential)
+{
+	VectorXd charge(potential.size);
+	compCharge(potential, charge);
+	return charge;
+}
+*/
+
 template <class T>
 void PCMSolver<T>::setSolverType(const string & type) {
 	if (type == "Traditional") {

@@ -28,12 +28,6 @@ using namespace Eigen;
 */
 
 class Solvent {
- private:
-    string solventName;
-    double solventEpsStatic;
-    double solventEpsOptical;
-    double solventRadius;
-       
  public:
     Solvent(){}
     Solvent( const string & name, double epsstatic, 
@@ -47,6 +41,11 @@ class Solvent {
     void setSolventEpsOptical( double epsoptical ){ solventEpsOptical = epsoptical; }
     double getSolventRadius(){ return solventRadius; }
     void setSolventRadius( double radius ){ solventRadius = radius; }
+ private:
+    string solventName;
+    double solventEpsStatic;
+    double solventEpsOptical;
+    double solventRadius;
 };
 
 #endif

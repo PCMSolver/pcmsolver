@@ -186,14 +186,12 @@ double WEMSolver<T>::DL(vector3 x, vector3 y, vector3 n_y){
 }
 
 template <class T>
-WEMSolver<T>::initWEMMembers() : 
+void WEMSolver<T>::initWEMMembers()
 {
 	pointList = NULL;
 	nodeList = NULL;
 	elementList = NULL;
 	T_ = NULL;
-	elementTree = NULL;
-	waveletList = NULL;
 	systemMatricesInitialized_ = false;
 	threshold = 1e-10;
 	quadratureLevel_ = 1;
@@ -222,9 +220,7 @@ WEMSolver<T>::~WEMSolver(){
 	if(nodeList != NULL)    free(nodeList);
 	if(elementList != NULL) free_patchlist(&elementList,nFunctions);
 	if(T_ != NULL)          free_interpolate(&T_,nPatches,nLevels);
-	if(elementTree != NULL) free_elementlist(&elementTree,nPatches,nLevels);
-	if(waveletList != NULL) free_waveletlist(&waveletList,nPatches,nLevels);
-	if(pointList != NULL)   free_points(&U, nPatches, nLevels);
+	if(pointList != NULL)   free_points(&pointList, nPatches, nLevels);
 	if(systemMatricesInitialized_){
 		free_sparse2(&S_i_);
 		free_sparse2(&S_e_);
@@ -237,14 +233,14 @@ void WEMSolver<T>::uploadCavity(WaveletCavity cavity) {
 	nLevels = cavity.getNLevels();
 	int n = (1<<nLevels);
 	nFunctions = nPatches * n * n;
-	alloc_points(&U, nPatches, nLevels);
+	alloc_points(&pointList, nPatches, nLevels);
 	int kk = 0;
 	// Ask Helmut about index switch
 	for (int i = 0; i < nPatches; i++) {
 		for (int j = 0; j <= n; j++) {
 			for (int k = 0; k <= n; k++) {
 				Vector3d p = cavity.getNodePoint(kk);
-				U[i][k][j] = vector3_make(p(0), p(1), p(2));
+				pointList[i][k][j] = vector3_make(p(0), p(1), p(2));
 				kk++;
 			}
 		}
@@ -262,14 +258,6 @@ void WEMSolver<T>::buildSystemMatrix(Cavity & cavity) {
 				  << std::endl;
 		exit(-1);
 	}
-}
-
-template <class T>
-VectorXd WEMSolver<T>::compCharge(const VectorXd &potential) {
-	VectorXd charge(potential.size());
-	compCharge(potential, charge) {
-	exit(1);
-	return charge;
 }
 
 template class WEMSolver <double>;

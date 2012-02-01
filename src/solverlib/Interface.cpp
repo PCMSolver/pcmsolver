@@ -22,6 +22,7 @@
 #include "PCMSolver.h"
 #include "IEFSolver.h"
 #include "WEMSolver.h"
+#include "PWCSolver.h"
 #include "Atom.h"
 #include "Sphere.h"
 #include "Solvent.h"
@@ -36,7 +37,7 @@ typedef taylor<double, 3, 1> T;
 GePolCavity * _gePolCavity;
 IEFSolver<T> * _IEFSolver;
 WaveletCavity * _waveletCavity;
-WEMSolver<T> * _WEMSolver;
+PWCSolver<T> * _PWCSolver;
 Cavity * _cavity;
 PCMSolver<T> * _solver;
 
@@ -209,10 +210,10 @@ extern "C" void init_pcm_() {
 	} else if (modelType == "Wavelet") {
 		init_wavelet_cavity_();
 		init_wemsolver_();
-		_waveletCavity->uploadPoints(_WEMSolver->getQuadratureLevel(),
-									 _WEMSolver->getT_());
+		_waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(),
+									 _PWCSolver->getT_());
 		_cavity = _waveletCavity;
-		_solver = _WEMSolver;
+		_solver = _PWCSolver;
 	} 
 	_cavity->initPotChg();
 	_solver->setSolverType(modelType);
@@ -245,9 +246,9 @@ extern "C" void init_wemsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_WEMSolver = new WEMSolver<T>(Medium);
-	_WEMSolver->uploadCavity(*_waveletCavity);
-	_WEMSolver->constructSystemMatrix();
+	_PWCSolver = new PWCSolver<T>(Medium);
+	_PWCSolver->uploadCavity(*_waveletCavity);
+	_PWCSolver->constructSystemMatrix();
 }
 
 extern "C" void build_anisotropic_matrix_() {
@@ -266,7 +267,7 @@ extern "C" void comp_charge_(double *potential_, double *charge_) {
 	for (int i = 0; i < nts; i++) {
 		potential(i) = potential_[i];
 	}
-	charge = _solver->compCharge(potential);
+	_solver->compCharge(potential, charge);
 	for (int i = 0; i < nts; i++) {
 		charge_[i] = charge(i);
 	}

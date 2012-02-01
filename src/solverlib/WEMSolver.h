@@ -31,8 +31,7 @@ class WEMSolver : public PCMSolver<T> {
     virtual void constructSystemMatrix() = 0;
     virtual void initInterpolation() = 0;
     virtual void uploadCavity(WaveletCavity cavity); // different interpolation
-    virtual VectorXd compCharge(const VectorXd & potential, VectorXd & charge) = 0;
-    virtual VectorXd compCharge(const VectorXd & potential);
+    virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
     double SL(vector3 x, vector3 y);
     double DL(vector3 x, vector3 y, vector3 n_y);
     void fixPointersInside();
@@ -54,5 +53,7 @@ class WEMSolver : public PCMSolver<T> {
     int nQuadPoints; // nPoints_;    // Number of quadrature points
     double apriori1_, aposteriori1_;    // System matrix sparsities
     double apriori2_, aposteriori2_;    // System matrix sparsities
+ private:
+    void initWEMMembers();
 };
 #endif

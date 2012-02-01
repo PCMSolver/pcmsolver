@@ -203,18 +203,6 @@ if (Vacuum<T> *vacuum = dynamic_cast<Vacuum<T> *>(this->greenInside)) {
 }
 
 template<class T>
-VectorXd IEFSolver<T>::compCharge(const VectorXd &potential) {
-	VectorXd charge;
-	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
-		charge = - PCMMatrix * potential;
-	} else {
-		cout << "PCM matrix not initialized" << endl;
-		exit(1);
-	}
-	return charge;
-}
-
-template<class T>
 void IEFSolver<T>::compCharge(const VectorXd & potential, VectorXd & charge) {
 	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
 		charge = - PCMMatrix * potential;

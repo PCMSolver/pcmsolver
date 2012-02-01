@@ -139,8 +139,8 @@ void PWCSolver<T>::constructSystemMatrix(){
 	this->fixPointersOutside();
 	this->apriori2_ = compression(&this->S_e_,waveletList,elementTree,
 								  this->nPatches,this->nLevels);
-	WEM(&this->S_i_,waveletList,elementTree,this->T_,this->nPatches,
-		this->nLevels,SLExt,DLUni,2*M_PI);
+	WEM(&this->S_e_,waveletList,elementTree,this->T_,this->nPatches,
+		this->nLevels,SLExt,DLUni,-2*M_PI);
 	this->aposteriori2_ = postproc(&this->S_e_,waveletList,elementTree,
 							 this->nPatches,this->nLevels);
 	this->systemMatricesInitialized_ = true;

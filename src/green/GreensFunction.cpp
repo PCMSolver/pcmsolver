@@ -228,18 +228,25 @@ GreensFunction<double>* GreensFunction<double>::allocateGreensFunction(const Sec
 	GreensFunction<double> *gf;
 	const string greenType = green.getStr("Type");
 	if (greenType == "Vacuum") {
-		gf = new V_DBL();
+		gf = new Vacuum<double>();
 	} else if (greenType == "UniformDielectric") {
-		gf = new U_DBL(green);
+		gf = new UniformDielectric<double>(green);
 	} else if (greenType == "MetalSphere") {
 		gf = new MetalSphere::MetalSphere(green);
 	} else if (greenType == "GreensFunctionSum") {
-		gf = new S_DBL(green);
+		gf = new GreensFunctionSum<double>(green);
 	} else {
 		cout << "Unknown Greens function" << endl;
 		exit(1);
 	}
 	return gf;
+}
+
+template <class T>
+double GreensFunction<T>::getDielectricConstant() {
+	std::cout << "Dielectric constant not defined for this Green's Function" << std::endl;
+	exit(-1);
+	return 0;
 }
 
 template <class T>
@@ -268,7 +275,3 @@ template class GreensFunction<double>;
 template class GreensFunction<taylor <double, 1, 1> >;
 template class GreensFunction<taylor <double, 3, 1> >;
 template class GreensFunction<taylor <double, 3, 2> >;
-template class Vacuum<double>;
-template class Vacuum<taylor <double, 1, 1> >;
-template class Vacuum<taylor <double, 3, 1> >;
-template class Vacuum<taylor <double, 3, 2> >;

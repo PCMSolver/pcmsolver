@@ -101,19 +101,7 @@ void IEFSolver::buildAnisotropicMatrix(GePolCavity & cav){
 
 
 void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
-	double epsilon;
-    if (UniformDielectric<double> *uniform = 
-		dynamic_cast<UniformDielectric<double> *>(greenOutside)) {
-	    epsilon = uniform->getEpsilon();
-    } else {
-	    cout << "Need uniform dielectric outside" << endl;
-		exit(1);
-    }
-    if (Vacuum<double> *vacuum = dynamic_cast<Vacuum<double> *>(greenInside)) {
-	} else {
-		cout << "Need vacuum inside" << endl;
-		exit(1);
-	}
+	double epsilon = this->greenOutside->getDielectricConstant();
     cavitySize = cav.size();
     MatrixXd SI(cavitySize, cavitySize);
     MatrixXd DI(cavitySize, cavitySize);
@@ -192,7 +180,7 @@ template class Vacuum< taylor <double, 3, 2> >;
 double IEFSolver::compDiagonalElementSoper(GreensFunctionInterface *green, int i, GePolCavity cav) {
     double s;
     if (UniformDielectric * uniform = dynamic_cast<UniformDielectric * > (green)) {
-	    double eps = uniform->getEpsilon();
+	    double eps = uniform->getDielectricConstant();
 		s = factor * sqrt(4 * M_PI / (cav.getTessArea)(i)) / eps;   
     } else if (Vacuum *vacuum = dynamic_cast<Vacuum * >(green) ) {
 		s = factor * sqrt(4 * M_PI / (cav.getTessArea)(i));   

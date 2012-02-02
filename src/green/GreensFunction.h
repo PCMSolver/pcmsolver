@@ -29,6 +29,7 @@ class GreensFunction: public GreensFunctionInterface
     virtual double derivativeProbe(Vector3d &direction, Vector3d &p1, Vector3d &p2);
     virtual Vector3d gradientSource(Vector3d &p1, Vector3d &p2);
     virtual Vector3d gradientProbe(Vector3d &p1, Vector3d &p2);
+    virtual double getDielectricConstant();
     virtual void gradientSource(Vector3d &gradient, Vector3d &p1, Vector3d &p2);
     virtual void gradientProbe(Vector3d &gradient, Vector3d &p1, Vector3d &p2);
     virtual bool isUniform();

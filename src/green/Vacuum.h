@@ -10,6 +10,7 @@ class Vacuum : public GreensFunction<T>
     double evald(Vector3d & direction, Vector3d & p1, Vector3d & p2);
     double compDiagonalElementS(double area);
     double compDiagonalElementD(double area, double radius);
+    double getDielectricConstant(){return 1.0;}
  private:
     T evalGreensFunction(T * source, T * probe);
 };

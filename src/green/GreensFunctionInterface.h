@@ -25,6 +25,7 @@ class GreensFunctionInterface
     virtual Vector3d gradientProbe(Vector3d &p1, Vector3d &p2) = 0;
     virtual void gradientSource(Vector3d &gradient, Vector3d &p1, Vector3d &p2) = 0;
     virtual void gradientProbe(Vector3d &gradient, Vector3d &p1, Vector3d &p2) = 0;
+    virtual double getDielectricConstant() = 0;
     virtual double compDiagonalElementS(double area) = 0;
     virtual double compDiagonalElementD(double area, double radius) = 0;
     GreensFunctionInterface * allocateGreensFunctionInterface(const Section &green);

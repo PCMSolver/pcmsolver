@@ -191,8 +191,6 @@ GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(const Section &gree
 		gf = new Vacuum<T>();
 	} else if (greenType == "UniformDielectric") {
 		gf = new UniformDielectric<T>(green);
-		//	} else if (greenType == "MetalSphere") {
-		//		std::cout << "Only numerical implementation for metal sphere" << std::endl;
 	} else if (greenType == "GreensFunctionSum") {
 		gf = new GreensFunctionSum<T>(green);
 	} else {

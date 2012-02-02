@@ -13,6 +13,8 @@ class MetalSphere : public GreensFunction<double>
     MetalSphere(Section green);
     ~MetalSphere(){};
     double evald(Vector3d &direction, Vector3d &p1, Vector3d &p2);
+    double compDiagonalElementS(double area);
+    double compDiagonalElementD(double area, double radius);
  private:
     double evalGreensFunction(double * source, double * probe);
     double sphRadius;

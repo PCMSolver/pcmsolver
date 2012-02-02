@@ -18,11 +18,10 @@ extern "C"{
 
 using namespace std;
 
-template<class T>
-class WEMSolver : public PCMSolver<T> {
+class WEMSolver : public PCMSolver {
  public:
-    WEMSolver(GreensFunction<T> &gfi, GreensFunction<T> &gfo);
-    WEMSolver(GreensFunction<T> *gfi, GreensFunction<T> *gfo);
+    WEMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
+    WEMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
     WEMSolver(Section solver);
     ~WEMSolver();
     vector3 **** getT_(){return T_;}
@@ -32,12 +31,7 @@ class WEMSolver : public PCMSolver<T> {
     virtual void initInterpolation() = 0;
     virtual void uploadCavity(WaveletCavity cavity); // different interpolation
     virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
-    double SL(vector3 x, vector3 y);
-    double DL(vector3 x, vector3 y, vector3 n_y);
-    void fixPointersInside();
-    void fixPointersOutside();
  protected:
-    GreensFunction<T> * gf;
     double threshold;
     unsigned int quadratureLevel_;
     sparse2 S_i_, S_e_; // System matrices

@@ -10,6 +10,7 @@ using namespace Eigen;
 #include "Getkw.h"
 #include "taylor.hpp"
 //#include "TaylorSupport.h"
+#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
@@ -209,7 +210,7 @@ GreensFunction<double>* GreensFunction<double>::allocateGreensFunction(const Sec
 	} else if (greenType == "UniformDielectric") {
 		gf = new UniformDielectric<double>(green);
 	} else if (greenType == "MetalSphere") {
-		gf = new MetalSphere(green);
+		gf = new MetalSphere::MetalSphere(green);
 	} else if (greenType == "GreensFunctionSum") {
 		gf = new GreensFunctionSum<double>(green);
 	} else {
@@ -220,8 +221,15 @@ GreensFunction<double>* GreensFunction<double>::allocateGreensFunction(const Sec
 }
 
 template <class T>
+double GreensFunction<T>::getDielectricConstant() {
+	std::cout << "Dielectric constant not defined for this Green's Function" << std::endl;
+	exit(-1);
+	return 0;
+}
+
+template <class T>
 GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(double dielConst) {
-	GreensFunction<T> *gf;
+	GreensFunction<T> *gf = 0;
 	gf = new UniformDielectric<T>(dielConst);
 	return gf;
 }

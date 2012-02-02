@@ -20,11 +20,10 @@ extern "C"{
 
 using namespace std;
 
-template<class T>
-class PWCSolver : public WEMSolver<T> {
+class PWCSolver : public WEMSolver {
  public:
-    PWCSolver(GreensFunction<T> &gfi, GreensFunction<T> &gfo);
-    PWCSolver(GreensFunction<T> *gfi, GreensFunction<T> *gfo);
+    PWCSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo);
+    PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo);
     PWCSolver(Section solver);
     ~PWCSolver();
     virtual void constructSystemMatrix();

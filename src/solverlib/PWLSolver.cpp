@@ -36,94 +36,127 @@ extern "C"{
 #include "Constants.h"
 #include "Getkw.h"
 #include "taylor.hpp"
-#include "GreensFunction.h"
-#include "Vacuum.h"
-#include "UniformDielectric.h"
-#include "GreensFunctionSum.h"
-#include "MetalSphere.h"
+#include "GreensFunctionInterface.h"
 #include "Cavity.h"
 #include "WaveletCavity.h"
 #include "PCMSolver.h"
 #include "WEMSolver.h"
 #include "PWLSolver.h"
 
-template <class T>
-PWLSolver<T>::initPointers(GreensFunction<T> & gfi, GreensFunction<T> & gfo) : 
+static GreensFunctionInterface * gf;
+
+static double SLInt(vector3 x, vector3 y)
+{  
+	return(1.0l/sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z)));
+}
+
+
+static double SLExt(vector3 x, vector3 y)
+{
+	double 		r = sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z));
+	return 1.0l/(r*78.39l);
+}
+
+
+static double DLUni(vector3 x, vector3 y, vector3 n_y)
+{  
+	vector3		c;
+	double		r;
+	Vector3d grad, dir;
+	c.x = x.x-y.x;
+	c.y = x.y-y.y;
+	c.z = x.z-y.z;
+	r = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
+	grad(0) = c.x/(r*r*r);
+	grad(1) = c.y/(r*r*r);
+	grad(2) = c.z/(r*r*r);
+	dir << n_y.x, n_y.y, n_y.z;
+	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
+}
+
+static double SingleLayer (vector3 x, vector3 y) {
+	Vector3d vx(x.x, x.y, x.z);
+	Vector3d vy(y.x, y.y, y.z);
+	double value = gf->evalf(vx, vy);
+	return value;
+}
+
+static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) {
+	Vector3d vx(x.x, x.y, x.z);
+	Vector3d vy(y.x, y.y, y.z);
+	Vector3d vn_y(n_y.x, n_y.y, n_y.z);
+	double value = gf->evald(vn_y, vx, vy);
+	return value;
+}
+
+void PWLSolver::initPointers()
 {
 	elementTree = NULL;
 	waveletList = NULL;
 }
 
-template <class T>
-PWLSolver<T>::PWLSolver(GreensFunction<T> & gfi, GreensFunction<T> & gfo) : 
-	WEMSolver<T>(gfi, gfo) {
+PWLSolver::PWLSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
+	WEMSolver(gfi, gfo) {
 	initPointers();
 }
 
-template <class T>
-PWLSolver<T>::PWLSolver(GreensFunction<T> * gfi, GreensFunction<T> * gfo) :
-	WEMSolver<T>(gfi, gfo) {
+PWLSolver::PWLSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
+	WEMSolver(gfi, gfo) {
 	initPointers();
 }
 
-template <class T>
-PWLSolver<T>::PWLSolver(Section solver) : WEMSolver<T>(solver) {
+PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
 	initPointers();
 }
 
-template <class T>
-PWLSolver<T>::~PWLSolver(){
-	if(elementTree != NULL) free_elementlist(&elementTree,nPatches,nLevels);
-	if(waveletList != NULL) free_waveletlist(&waveletList,nPatches,nLevels);
+PWLSolver::~PWLSolver(){
+	if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches,nLevels);
+	if(waveletList != NULL) free_waveletlist_pwl(&waveletList, nPatches,nLevels);
 }
 
-template <class T>
-void PWLSolver<T>::initInterpolation(WaveletCavity cavity) {
-	init_interpolate(&T_, U, nPatches, nLevels);
-	nNodes = gennet(&nodeList, &elementList, U, nPatches, nLevels);
+void PWLSolver::initInterpolation() {
+	init_interpolate(&T_, pointList, nPatches, nLevels);
+	nNodes = gennet(&nodeList, &elementList, pointList, 
+					nPatches, nLevels);
 }
 
-template <class T>
-void WEMSolver<T>::constructSystemMatrix(){
-	generate_elementlist(&elementTree,nodeList,elementList,nPatches,nLevels);
-	generate_waveletlist(&waveletList,elementTree,nPatches,nLevels);
-	set_quadrature_level(waveletList,elementTree,nPatches,nLevels);
-	simplify_waveletlist(waveletList,elementTree,nPatches,nLevels);
-	complete_elementlist(waveletList,elementTree,nPatches,nLevels);
+void PWLSolver::constructSystemMatrix(){
+	generate_elementlist_pwl(&elementTree, nodeList, elementList, nPatches, nLevels);
+	generate_waveletlist_pwl(&waveletList, elementTree, nPatches, nLevels);
+	set_quadrature_level_pwl(waveletList,elementTree,nPatches, nLevels);
+	simplify_waveletlist_pwl(waveletList,elementTree,nPatches, nLevels);
+	complete_elementlist_pwl(waveletList,elementTree,nPatches, nLevels);
 	
-	this->fixPointersInside();
-	apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
-	WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLInt,DLUni,2*M_PI);
-	//WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
-	aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
+	gf = greenInside; // sets the global pointer to pass GF to C code
+	apriori1_ = compression_pwl(&S_i_,waveletList,elementTree, nPatches,nLevels);
+	WEM_pwl(&S_i_,waveletList,elementTree,T_,nPatches, nLevels,SLInt,DLUni,2*M_PI);
+	aposteriori1_ = postproc_pwl(&S_i_,waveletList,elementTree, nPatches,nLevels);
 	
-	this->fixPointersOutside();
-	apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
-	WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,2*M_PI);
-	//WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
-	aposteriori2_ = postproc(&S_e_,waveletList,elementTree,nPatches,nLevels);
+	gf = greenOutside; // sets the global pointer to pass GF to C code
+	apriori2_ = compression_pwl(&S_e_,waveletList,elementTree, nPatches,nLevels);
+	WEM_pwl(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,-2*M_PI);
+	aposteriori2_ = postproc_pwl(&S_e_,waveletList,elementTree, nPatches,nLevels);
 	systemMatricesInitialized_ = true;
 }
 
-
-template <class T>
-void PWLSolver<T>::compCharge(const VectorXd & potential, VectorXd & charge) {
+void PWLSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	double *rhs;
 	double *u = (double*) calloc(nFunctions, sizeof(double));
 	double *v = (double*) calloc(nFunctions, sizeof(double));
 	//next line is just a quick fix but i do not like it...
     VectorXd pot = potential;
-	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
+	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
 			 pot.data(), quadratureLevel_);
-	int iters = WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);
+	int iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, nPatches, nLevels);
 	memset(rhs, 0, nFunctions*sizeof(double));
 	for(unsigned int i = 0; i < nFunctions; i++) {
 		for(unsigned int j = 0; j < S_e_.row_number[i]; j++)  {
 			rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
 		}
 	}
-	iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, nPatches, nLevels);
-	for(unsigned int i=0; i<nFunctions; i++) {
+	iters = WEMPGMRES3_pwl(&S_i_, &S_e_, rhs, v, threshold, 
+					   nPatches, nLevels);
+	for(unsigned int i = 0; i < nFunctions; i++) {
 		u[i] -= 4*M_PI*v[i];
 	}
 	tdwtKon(u, nLevels, nFunctions);
@@ -157,9 +190,4 @@ void PWLSolver<T>::compCharge(const VectorXd & potential, VectorXd & charge) {
 	free(v);
 	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
 }
-
-template class PWLSolver <double>;
-template class PWLSolver <taylor<double, 1, 1> >;
-template class PWLSolver <taylor<double, 3, 1> >;
-template class PWLSolver <taylor<double, 3 ,2> >;
 

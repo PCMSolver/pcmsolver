@@ -1,10 +1,10 @@
 set (solverlib_SOURCES 
   IEFSolver.cpp 
-  Interface.cpp
   PCMSolver.cpp
   WEMSolver.cpp
   Solvent.cpp
 )
+#  Interface.cpp
 
 #add_executable(pcmsolver.x test.cpp)
 #

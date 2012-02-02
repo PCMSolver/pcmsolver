@@ -23,11 +23,11 @@ class GreensFunctionInterface
     virtual Vector3d gradientProbe(Vector3d &p1, Vector3d &p2) = 0;
     virtual void gradientSource(Vector3d &gradient, Vector3d &p1, Vector3d &p2) = 0;
     virtual void gradientProbe(Vector3d &gradient, Vector3d &p1, Vector3d &p2) = 0;
-    virtual void compDiagonalElementS(double area) = 0;
-    virtual void compDiagonalElementD(double area, double radius) = 0;
+    virtual double compDiagonalElementS(double area) = 0;
+    virtual double compDiagonalElementD(double area, double radius) = 0;
     GreensFunctionInterface * allocateGreensFunctionInterface(const Section &green);
-    GreensFunctionInterface * allocateGreensFunctionInterface(double dielConst);
-    GreensFunctionInterface * allocateGreensFunctionInterface();
+    GreensFunctionInterface * allocateGreensFunctionInterface(double dielConst, const string greenDer = "Derivative");
+    GreensFunctionInterface * allocateGreensFunctionInterface(const string greenDer = "Derivative");
 
     bool isUniform(){ return uniformFlag; }
 

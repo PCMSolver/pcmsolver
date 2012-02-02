@@ -10,11 +10,34 @@ using namespace Eigen;
 #include "Getkw.h"
 #include "taylor.hpp"
 //#include "TaylorSupport.h"
+#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
 #include "MetalSphere.h"
 #include "GreensFunctionSum.h"
+
+template<class T> class Vacuum;
+
+typedef taylor <double, 1, 1> T_DER;
+typedef taylor <double, 3, 1> T_GRA;
+typedef taylor <double, 3, 2> T_HES;
+typedef GreensFunction<double>    G_DBL;
+typedef GreensFunction<T_DER>     G_DER; 
+typedef GreensFunction<T_GRA>     G_GRA;
+typedef GreensFunction<T_HES>     G_HES;
+typedef Vacuum<double>            V_DBL;
+typedef Vacuum<T_DER>             V_DER; 
+typedef Vacuum<T_GRA>             V_GRA;
+typedef Vacuum<T_HES>             V_HES;
+typedef UniformDielectric<double> U_DBL;
+typedef UniformDielectric<T_DER>  U_DER; 
+typedef UniformDielectric<T_GRA>  U_GRA;
+typedef UniformDielectric<T_HES>  U_HES;
+typedef GreensFunctionSum<double> S_DBL;
+typedef GreensFunctionSum<T_DER>  S_DER; 
+typedef GreensFunctionSum<T_GRA>  S_GRA;
+typedef GreensFunctionSum<T_HES>  S_HES;
 
 template <class T>
 void GreensFunction<T>::setDelta(double value) {
@@ -191,8 +214,6 @@ GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(const Section &gree
 		gf = new Vacuum<T>();
 	} else if (greenType == "UniformDielectric") {
 		gf = new UniformDielectric<T>(green);
-		//	} else if (greenType == "MetalSphere") {
-		//		std::cout << "Only numerical implementation for metal sphere" << std::endl;
 	} else if (greenType == "GreensFunctionSum") {
 		gf = new GreensFunctionSum<T>(green);
 	} else {
@@ -247,3 +268,7 @@ template class GreensFunction<double>;
 template class GreensFunction<taylor <double, 1, 1> >;
 template class GreensFunction<taylor <double, 3, 1> >;
 template class GreensFunction<taylor <double, 3, 2> >;
+template class Vacuum<double>;
+template class Vacuum<taylor <double, 1, 1> >;
+template class Vacuum<taylor <double, 3, 1> >;
+template class Vacuum<taylor <double, 3, 2> >;

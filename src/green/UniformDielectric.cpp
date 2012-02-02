@@ -6,10 +6,11 @@ using namespace Eigen;
 
 #include "Getkw.h"
 #include "taylor.hpp"
+#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 #include "UniformDielectric.h"
 
-static double factior = 1.07;
+static double factor = 1.07;
 
 template<class T>
 UniformDielectric<T>::UniformDielectric(double dielConst) 
@@ -45,8 +46,8 @@ double UniformDielectric<T>::compDiagonalElementS(double area){
 
 template<class T>
 double UniformDielectric<T>::compDiagonalElementD(double area, double radius){
-	s = factor * sqrt(4 * M_PI / area);   
-	return = s / (2 * radius);
+	double s = factor * sqrt(4 * M_PI / area);   
+	return s / (2 * radius);
 }
 
 template <class T>

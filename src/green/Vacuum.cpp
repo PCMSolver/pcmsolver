@@ -6,6 +6,7 @@ using namespace Eigen;
 
 #include "taylor.hpp"
 //#include "TaylorSupport.h"
+#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 
@@ -35,8 +36,8 @@ double Vacuum<T>::compDiagonalElementS(double area){
 
 template<class T>
 double Vacuum<T>::compDiagonalElementD(double area, double radius){
-	s = factor * sqrt(4 * M_PI / area);   
-	return = s / (2 * radius);
+	double s = factor * sqrt(4 * M_PI / area);   
+	return s / (2 * radius);
 }
 
 template class Vacuum<double>;

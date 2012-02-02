@@ -9,6 +9,7 @@ using namespace Eigen;
 using namespace std;
 
 #include "Getkw.h"
+#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 #include "MetalSphere.h"
 

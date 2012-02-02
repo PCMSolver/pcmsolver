@@ -99,16 +99,17 @@ void IEFSolver::buildAnisotropicMatrix(GePolCavity & cav){
 	builtIsotropicMatrix = false;
 }
 
+
 void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
 	double epsilon;
-    if (UniformDielectric<class T> *uniform = 
-		dynamic_cast<UniformDielectric<class T> *>(greenOutside)) {
+    if (UniformDielectric<double> *uniform = 
+		dynamic_cast<UniformDielectric<double> *>(greenOutside)) {
 	    epsilon = uniform->getEpsilon();
     } else {
 	    cout << "Need uniform dielectric outside" << endl;
 		exit(1);
     }
-    if (Vacuum<class T> *vacuum = dynamic_cast<Vacuum<class T> *>(greenInside)) {
+    if (Vacuum<double> *vacuum = dynamic_cast<Vacuum<double> *>(greenInside)) {
 	} else {
 		cout << "Need vacuum inside" << endl;
 		exit(1);

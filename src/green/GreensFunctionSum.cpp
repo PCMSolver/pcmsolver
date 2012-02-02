@@ -9,6 +9,7 @@ using namespace Eigen;
 
 #include "Getkw.h"
 #include "taylor.hpp"
+#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 #include "GreensFunctionSum.h"
 
@@ -37,23 +38,23 @@ double GreensFunctionSum<T>::evald(Vector3d &direction, Vector3d &p1, Vector3d &
 }
 
 template<class T>
-double GreensFunctionSum<T>::evalf(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
-    double valFirst = greenFirst->evalf(direction, p1, p2);
-    double valSecond = greenSecond->evalf(direction, p1, p2);
+double GreensFunctionSum<T>::evalf(Vector3d &p1, Vector3d &p2) {
+    double valFirst = this->greenFirst->evalf(p1, p2);
+    double valSecond = this->greenSecond->evalf(p1, p2);
     return valFirst + valSecond;
 }
 
 template<class T>
 double GreensFunctionSum<T>::compDiagonalElementS(double area){
-	double s1 = greenFirst->compDiagonalElement(area);
-	double s2 = greenSecond->compDiagonalElement(area);
+	double s1 = this->greenFirst->compDiagonalElementS(area);
+	double s2 = this->greenSecond->compDiagonalElementS(area);
 	return s1 + s2;
 }
 
 template<class T>
 double GreensFunctionSum<T>::compDiagonalElementD(double area, double radius){
-	double s1 = greenFirst->compDiagonalElement(area, radius);
-	double s2 = greenSecond->compDiagonalElement(area, radius);
+	double s1 = this->greenFirst->compDiagonalElementD(area, radius);
+	double s2 = this->greenSecond->compDiagonalElementD(area, radius);
 	return s1 + s2;
 }
 

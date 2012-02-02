@@ -228,13 +228,13 @@ GreensFunction<double>* GreensFunction<double>::allocateGreensFunction(const Sec
 	GreensFunction<double> *gf;
 	const string greenType = green.getStr("Type");
 	if (greenType == "Vacuum") {
-		gf = new Vacuum<double>();
+		gf = new V_DBL();
 	} else if (greenType == "UniformDielectric") {
-		gf = new UniformDielectric<double>(green);
+		gf = new U_DBL(green);
 	} else if (greenType == "MetalSphere") {
-		gf = new MetalSphere(green);
+		gf = new MetalSphere::MetalSphere(green);
 	} else if (greenType == "GreensFunctionSum") {
-		gf = new GreensFunctionSum<double>(green);
+		gf = new S_DBL(green);
 	} else {
 		cout << "Unknown Greens function" << endl;
 		exit(1);
@@ -244,7 +244,7 @@ GreensFunction<double>* GreensFunction<double>::allocateGreensFunction(const Sec
 
 template <class T>
 GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(double dielConst) {
-	GreensFunction<T> *gf;
+	GreensFunction<T> *gf = 0;
 	gf = new UniformDielectric<T>(dielConst);
 	return gf;
 }

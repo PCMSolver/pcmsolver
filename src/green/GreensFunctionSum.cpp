@@ -24,8 +24,8 @@ GreensFunctionSum<T>::GreensFunctionSum(GreensFunction<T> &first,
 
 template<class T>
 GreensFunctionSum<T>::GreensFunctionSum(Section green){
-	greenFirst  = this->allocateGreensFunction(green.getSect("Green<one>"));
-	greenSecond = this->allocateGreensFunction(green.getSect("Green<two>"));
+	greenFirst  = this->allocateGreensFunctionInterface(green.getSect("Green<one>"));
+	greenSecond = this->allocateGreensFunctionInterface(green.getSect("Green<two>"));
 	this->uniformFlag = greenFirst->isUniform() && greenSecond->isUniform();
 }
 

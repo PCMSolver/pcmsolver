@@ -31,12 +31,14 @@ class GreensFunctionInterface
     GreensFunctionInterface * allocateGreensFunctionInterface(const Section &green);
     GreensFunctionInterface * allocateGreensFunctionInterface(double dielConst, const std::string greenDer = "Derivative");
     GreensFunctionInterface * allocateGreensFunctionInterface(const std::string greenDer = "Derivative");
-
     bool isUniform(){ return uniformFlag; }
-
     enum derivativeType{Numerical, Directional, Gradient, Hessian};
+    friend std::ostream & operator<<(std::ostream & os, GreensFunctionInterface &gf){
+        return gf.printObject(os);
+    };
 
  protected:
+    virtual std::ostream & printObject(std::ostream & os) = 0;
     bool uniformFlag;
 };
 

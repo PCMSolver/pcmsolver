@@ -32,21 +32,13 @@ class GreensFunction: public GreensFunctionInterface
     virtual double getDielectricConstant();
     virtual void gradientSource(Vector3d &gradient, Vector3d &p1, Vector3d &p2);
     virtual void gradientProbe(Vector3d &gradient, Vector3d &p1, Vector3d &p2);
-    virtual bool isUniform();
-
     void setDelta(double value);
     double getDelta(){return delta;}
     GreensFunction<T> * allocateGreensFunction(const Section &green);
     GreensFunction<T> * allocateGreensFunction(double dielConst);
     GreensFunction<T> * allocateGreensFunction();
-
     virtual double compDiagonalElementS(double area) = 0;
     virtual double compDiagonalElementD(double area, double radius) = 0;
-
-    friend std::ostream& operator<<(std::ostream &os, GreensFunction<T> &gf){
-        return gf.printObject(os);
-    };
-
  protected:
     virtual T evalGreensFunction(T * source, T * probe) = 0;
     std::ostream & printObject(std::ostream & os);

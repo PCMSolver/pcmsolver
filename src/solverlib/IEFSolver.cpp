@@ -14,11 +14,6 @@ using namespace Eigen;
 #include "Getkw.h"
 #include "taylor.hpp"
 #include "GreensFunctionInterface.h"
-#include "GreensFunction.h"
-#include "Vacuum.h"
-#include "UniformDielectric.h"
-#include "GreensFunctionSum.h"
-#include "MetalSphere.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "PCMSolver.h"
@@ -46,7 +41,7 @@ IEFSolver::~IEFSolver(){
 
 void IEFSolver::buildSystemMatrix(Cavity & cavity) {
     if (GePolCavity *gePolCavity = dynamic_cast<GePolCavity*> (&cavity)) {
-		if (greenInside->isUniform() && greenOutside->isUniform()) {
+		if (this->greenInside->isUniform() && this->greenOutside->isUniform()) {
 			buildIsotropicMatrix(*gePolCavity);
 		} else {
 			buildAnisotropicMatrix(*gePolCavity);
@@ -167,45 +162,3 @@ ostream & IEFSolver::printObject(ostream & os) {
 	return os;
 }
 
-template class UniformDielectric<double>;
-template class UniformDielectric< taylor <double, 1, 1> >;
-template class UniformDielectric< taylor <double, 3, 1> >;
-template class UniformDielectric< taylor <double, 3, 2> >;
-template class Vacuum<double>;
-template class Vacuum< taylor <double, 1, 1> >;
-template class Vacuum< taylor <double, 3, 1> >;
-template class Vacuum< taylor <double, 3, 2> >;
-
-/*
-double IEFSolver::compDiagonalElementSoper(GreensFunctionInterface *green, int i, GePolCavity cav) {
-    double s;
-    if (UniformDielectric * uniform = dynamic_cast<UniformDielectric * > (green)) {
-	    double eps = uniform->getDielectricConstant();
-		s = factor * sqrt(4 * M_PI / (cav.getTessArea)(i)) / eps;   
-    } else if (Vacuum *vacuum = dynamic_cast<Vacuum * >(green) ) {
-		s = factor * sqrt(4 * M_PI / (cav.getTessArea)(i));   
-    } else {
-	    cout << "Not uniform dielectric" << endl;
-	    cout << "Not yet implemented" << endl;
-	    exit(-1);
-    }
-    return s;
-}
-
-double IEFSolver::compDiagonalElementDoper(GreensFunctionInterface *green, int i, GePolCavity cav) {
-    double s, d;
-    if (UniformDielectric *uniform = dynamic_cast<UniformDielectric *>(green)) {
-        s = factor * sqrt(4 * M_PI / cav.getTessArea(i));   
-		d = -s / (2*cav.getTessRadius(i));
-    } else if (Vacuum* vacuum = dynamic_cast<Vacuum *>(green)) {
-		s = factor * sqrt(4 * M_PI / cav.getTessArea(i));   
-		d = -s / (2*cav.getTessRadius(i));
-    }
-    else {
-		cout << "Not uniform dielectric" << endl;
-		cout << "Not yet implemented" << endl;
-		exit(-1);
-    }
-    return d;
-}
-*/

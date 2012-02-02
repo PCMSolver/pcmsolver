@@ -74,18 +74,18 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 static GreensFunctionInterface *gf = 0;
 
 static double SingleLayer (vector3 x, vector3 y) {
-  Vector3d vx(x.x, x.y, x.z);
-  Vector3d vy(y.x, y.y, y.z);
-  double value = gf->evalf(vx, vy);
-  return value;
+	Vector3d vx(x.x, x.y, x.z);
+	Vector3d vy(y.x, y.y, y.z);
+	double value = gf->evalf(vx, vy);
+	return value;
 }
 
 static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) {
-  Vector3d vx(x.x, x.y, x.z);
-  Vector3d vy(y.x, y.y, y.z);
-  Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-  double value = gf->evald(vn_y, vx, vy);
-  return value;
+	Vector3d vx(x.x, x.y, x.z);
+	Vector3d vy(y.x, y.y, y.z);
+	Vector3d vn_y(n_y.x, n_y.y, n_y.z);
+	double value = gf->evald(vn_y, vx, vy);
+	return value;
 }
 
 void WEMSolver::fixPointersInside() {
@@ -191,14 +191,14 @@ void WEMSolver::constructSystemMatrix(){
 
   this->fixPointersInside();
   apriori1_ = compression(&S_i_,waveletList,elementTree,nPatches,nLevels);
-  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLInt,DLUni,2*M_PI);
-  //WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
+  //WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLInt,DLUni,2*M_PI);
+  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,2*M_PI);
   aposteriori1_ = postproc(&S_i_,waveletList,elementTree,nPatches,nLevels);
 
   this->fixPointersOutside();
   apriori2_ = compression(&S_e_,waveletList,elementTree,nPatches,nLevels);
-  WEM(&S_i_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,2*M_PI);
-  //WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
+  //WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,-2*M_PI);
+  WEM(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SingleLayer,DoubleLayer,-2*M_PI);
   aposteriori2_ = postproc(&S_e_,waveletList,elementTree,nPatches,nLevels);
   
   systemMatricesInitialized_ = true;

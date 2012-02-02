@@ -22,14 +22,14 @@ typedef GreensFunction<T_DERIVATIVE>  G_DERIVATIVE;
 typedef GreensFunction<T_GRADIENT>  G_GRADIENT;
 typedef GreensFunction<T_HESSIAN>  G_HESSIAN;
 
-G_DOUBLE     * g0;
-G_DERIVATIVE * g1;
-G_GRADIENT   * g2;
-G_HESSIAN    * g3;
+G_DOUBLE     * g0 = 0;
+G_DERIVATIVE * g1 = 0;
+G_GRADIENT   * g2 = 0;
+G_HESSIAN    * g3 = 0;
 
 GreensFunctionInterface* 
 GreensFunctionInterface::allocateGreensFunctionInterface(const Section &green) {
-	GreensFunctionInterface *gf;
+	GreensFunctionInterface *gf = 0;
 	const string greenDer = green.getStr("Der");
 	if (greenDer == "Numerical") {
 		gf = g0->allocateGreensFunction(green);
@@ -45,7 +45,7 @@ GreensFunctionInterface::allocateGreensFunctionInterface(const Section &green) {
 
 GreensFunctionInterface* 
 GreensFunctionInterface::allocateGreensFunctionInterface(double epsilon, const string greenDer) {
- 	GreensFunctionInterface *gf;
+ 	GreensFunctionInterface *gf = 0;
 	if (greenDer == "Numerical") {
 		gf = g0->allocateGreensFunction(epsilon);
 	} else if (greenDer == "Derivative") {
@@ -60,7 +60,7 @@ GreensFunctionInterface::allocateGreensFunctionInterface(double epsilon, const s
 
 GreensFunctionInterface* 
 GreensFunctionInterface::allocateGreensFunctionInterface(const string greenDer) {
-	GreensFunctionInterface *gf;
+	GreensFunctionInterface *gf = 0;
 	if (greenDer == "Numerical") {
 		gf = g0->allocateGreensFunction();
 	} else if (greenDer == "Derivative") {
@@ -72,36 +72,3 @@ GreensFunctionInterface::allocateGreensFunctionInterface(const string greenDer) 
 	}
 	return gf;
 }
-
-/*
-GreensFunctionInterface* 
-GreensFunctionInterface::allocateGreensFunctionInterface(const string greenDer="Derivative", double epsilon) { 
-	GreensFunctionInterface *gfi;
-	const string greenDer = green.getStr("Derivative");
-	if (greenDer == "Numerical") {
-		gf = allocateGreensFunction<double>(epsilon);
-	} else if (greenDer == "Derivative") {
-		gf = allocateGreensFunction< taylor <double, 1, 1> >(epsilon);
-	} else if (greenDer == "Gradient") {
-		gf = allocateGreensFunction< taylor <double, 3, 1> >(epsilon);
-	} else if (greenDer == "Hessian") {
-		gf = allocateGreensFunction< taylor <double, 3, 2> >(epsilon);
-	}
-	return gf;
-}
-
-GreensFunctionInterface* 
-GreensFunctionInterface::allocateGreensFunctionInterface(const string greenDer="Derivative") {
-	GreensFunctionInterface *gfi;
-	if (greenDer == "Numerical") {
-		gf = allocateGreensFunction<double>();
-	} else if (greenDer == "Derivative") {
-		gf = allocateGreensFunction< taylor <double, 1, 1> >();
-	} else if (greenDer == "Gradient") {
-		gf = allocateGreensFunction< taylor <double, 3, 1> >();
-	} else if (greenDer == "Hessian") {
-		gf = allocateGreensFunction< taylor <double, 3, 2> >();
-	}
-	return gf;
-}
-*/

@@ -36,7 +36,6 @@ class WEMSolver : public PCMSolver {
     virtual VectorXd compCharge(const VectorXd & potential);
     virtual void compCharge(const VectorXd & potential, VectorXd & charge);
 
-    GreensFunctionInterface * gf;
     double SL(vector3 x, vector3 y);
     double DL(vector3 x, vector3 y, vector3 n_y);
     void fixPointersInside();

@@ -110,32 +110,32 @@ PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
 }
 
 PWLSolver::~PWLSolver(){
-	if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches,nLevels);
-	if(waveletList != NULL) free_waveletlist_pwl(&waveletList, nPatches,nLevels);
+	if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches, nLevels);
+	if(waveletList != NULL) free_waveletlist_pwl(&waveletList, nPatches, nLevels);
 }
 
 void PWLSolver::initInterpolation() {
-	init_interpolate(&T_, pointList, nPatches, nLevels);
-	nNodes = gennet(&nodeList, &elementList, pointList, 
+	init_interpolate_pwl(&T_, pointList, nPatches, nLevels);
+	nNodes = gennet_pwl(&nodeList, &elementList, pointList, 
 					nPatches, nLevels);
 }
 
 void PWLSolver::constructSystemMatrix(){
 	generate_elementlist_pwl(&elementTree, nodeList, elementList, nPatches, nLevels);
-	generate_waveletlist_pwl(&waveletList, elementTree, nPatches, nLevels);
-	set_quadrature_level_pwl(waveletList,elementTree,nPatches, nLevels);
-	simplify_waveletlist_pwl(waveletList,elementTree,nPatches, nLevels);
-	complete_elementlist_pwl(waveletList,elementTree,nPatches, nLevels);
+	generate_waveletlist_pwl(&waveletList, elementTree, nPatches, nLevels, nNodes);
+	set_quadrature_level_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
+	simplify_waveletlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
+	complete_elementlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
 	
 	gf = greenInside; // sets the global pointer to pass GF to C code
-	apriori1_ = compression_pwl(&S_i_,waveletList,elementTree, nPatches,nLevels);
-	WEM_pwl(&S_i_,waveletList,elementTree,T_,nPatches, nLevels,SLInt,DLUni,2*M_PI);
-	aposteriori1_ = postproc_pwl(&S_i_,waveletList,elementTree, nPatches,nLevels);
+	apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
+	WEM_pwl(&S_i_, waveletList, elementTree, T_, nPatches, nLevels, SLInt, DLUni, 2*M_PI);
+	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
 	
 	gf = greenOutside; // sets the global pointer to pass GF to C code
-	apriori2_ = compression_pwl(&S_e_,waveletList,elementTree, nPatches,nLevels);
-	WEM_pwl(&S_e_,waveletList,elementTree,T_,nPatches,nLevels,SLExt,DLUni,-2*M_PI);
-	aposteriori2_ = postproc_pwl(&S_e_,waveletList,elementTree, nPatches,nLevels);
+	apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
+	WEM_pwl(&S_e_, waveletList, elementTree, T_, nPatches, nLevels, SLExt, DLUni, -2*M_PI);
+	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
 	systemMatricesInitialized_ = true;
 }
 

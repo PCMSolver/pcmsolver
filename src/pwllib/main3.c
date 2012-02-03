@@ -63,7 +63,7 @@ int main()
     double		det;		/* Determinante im anistropen Fall    */
 
     /*========================================================*/
-    unsigned int	CASE = 1;	/* FLAG FOR CHOICE OF BIE */
+    unsigned int	CASE = 3;	/* FLAG FOR CHOICE OF BIE */
     /*========================================================*/
 
     /* Ausgabe */
@@ -110,77 +110,40 @@ int main()
     /* erstes Paar Steifigkeitsmatrizen aufstellen */
     printf("Computing the 1st pair of system matrices: \n");
     compression_pwl(&S_i,W,E,p,M,np);
-    if (CASE < 3) WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi*(1+epsilon)/(1-epsilon));
-    else          WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi);
+    WEM_pwl(&S_i,W,P,E,T,p,M,SingleLayerInt,DoubleLayerInt,2*pi);
     postproc_pwl(&S_i,W,E,p,M);
     time(&t3);      /* Zwischenzeit */
     printf("Computation time:                %g secs.\n\n",difftime(t3,t2));
 
     /* zweites Paar Steifigkeitsmatrizen aufstellen */
-    if ((CASE == 3) || (CASE == 4))
-        {  time(&t2);
-            printf("Computing the 2nd pair of system matrices: \n");
-            compression_pwl(&S_e,W,E,p,M,np);
-            if (CASE == 3) 
-                {  WEM_pwl(&S_e,W,P,E,T,p,M,SingleLayerExt,DoubleLayerExt,-2*pi);
-                    for (i=0; i<np; i++)	/* correct scaling */
-                        {  for (j=0; j<S_e.row_number[i]; j++) S_e.value1[i][j] /= epsilon;
-                        }
-                }
-            else
-                {  det = sqrt( epsilon11*epsilon22*epsilon33 + epsilon12*epsilon23*epsilon31 + epsilon13*epsilon21*epsilon32 \
-                               - epsilon11*epsilon32*epsilon23 - epsilon21*epsilon12*epsilon33 - epsilon31*epsilon22*epsilon13 );   
-                    WEM_pwl(&S_e,W,P,E,T,p,M,SingleLayerAni,DoubleLayerAni,-2*pi/det);
-                    for (i=0; i<np; i++)	/* correct scaling */
-                        {  for (j=0; j<S_e.row_number[i]; j++) 
-                                {  S_e.value1[i][j] *= det;
-                                    S_e.value2[i][j] *= det;
-                                } 
-                        }
-                }
-            postproc_pwl(&S_e,W,E,p,M);
-            time(&t3);      /* Zwischenzeit */
-            printf("Computation time:                %g secs.\n\n",difftime(t3,t2));
-        }
+    time(&t2);
+    printf("Computing the 2nd pair of system matrices: \n");
+    compression_pwl(&S_e,W,E,p,M,np);
+    WEM_pwl(&S_e,W,P,E,T,p,M,SingleLayerExt,DoubleLayerExt,-2*pi);
+    for (i=0; i<np; i++)  {  
+        for (j=0; j<S_e.row_number[i]; j++) {
+            S_e.value1[i][j] /= epsilon;
+        }        
+    }
+    postproc_pwl(&S_e,W,E,p,M);
+    time(&t3);      /* Zwischenzeit */
+    printf("Computation time:                %g secs.\n\n",difftime(t3,t2));
 
     /* loese Gleichungssystem */
     u = (double*) calloc(np,sizeof(double));
     v = (double*) calloc(np,sizeof(double));
-    if (CASE == 1)
-        {  WEMRHS_pwl1(&rhs,W,E,T,p,M,np);
-            i = WEMPGMRES_pwl1(&S_i,rhs,u,eps,W,F,p,M);
-            printf("Solving the linear system:       %d iterations\n",i);
+    WEMRHS_pwl2(&rhs,W,E,T,p,M,np);
+    i = WEMPCG_pwl(&S_i,rhs,u,eps,W,F,p,M);		/* u = V_i^(-1)*N_f */
+    printf("Solving the 1st linear system:   %d iterations\n",i);
+    memset(rhs,0,np*sizeof(double));
+    for (i=0; i<np; i++){			   	/* rhs = V_e*u */
+        for (j=0; j<S_e.row_number[i]; j++) {
+            rhs[i] += S_e.value1[i][j] * u[S_e.index[i][j]];
         }
-    else if (CASE == 2)
-        {  WEMRHS_pwl2(&rhs,W,E,T,p,M,np);		/* compute correct rhs: b-G*A2^(-1)*b */
-            i = WEMPGMRES_pwl2(&S_i,rhs,v,eps,W,F,p,M);
-            printf("Solving the 1st linear system:   %d iterations\n",i);
-            init_sparse(&G,np,np,10);
-            single_scale_gram_pwl(&G,F,p,M);
-            tdwtLin(v,F,M,p,np);
-            for (i=0; i<np; i++)
-                {  for (j=0; j<G.row_number[i]; j++)
-                        {  u[i] += G.value[i][j] * v[G.index[i][j]];
-                        }
-                }
-            dwtLin(u,F,M,p,np);
-            for (i=0; i<np; i++) rhs[i] += 4*pi*u[i]/(epsilon-1);
-            memset(u,0,np*sizeof(double));
-            i = WEMPCG_pwl(&S_i,rhs,u,eps,W,F,p,M);
-            printf("Solving the 2nd linear system:   %d iterations\n",i);
-        }
-    else if ((CASE == 3) || (CASE == 4))
-        {  WEMRHS_pwl2(&rhs,W,E,T,p,M,np);
-            i = WEMPCG_pwl(&S_i,rhs,u,eps,W,F,p,M);		/* u = V_i^(-1)*N_f */
-            printf("Solving the 1st linear system:   %d iterations\n",i);
-            memset(rhs,0,np*sizeof(double));
-            for (i=0; i<np; i++)			   	/* rhs = V_e*u */
-                {  for (j=0; j<S_e.row_number[i]; j++) rhs[i] += S_e.value1[i][j] * u[S_e.index[i][j]];
-                }
-            i = WEMPGMRES_pwl3(&S_i,&S_e,rhs,v,eps,W,F,p,M);	/* solve complicated_system u = A^(-1)*rhs */ 
-            printf("Solving the 2nd linear system:   %d iterations\n",i);   
-            for (i=0; i<np; i++) u[i] -= 4*pi*v[i]; 	/* u = u - 4*pi*v */ 
-        }
+    }
+    i = WEMPGMRES_pwl3(&S_i,&S_e,rhs,v,eps,W,F,p,M);	/* solve complicated_system u = A^(-1)*rhs */ 
+    printf("Solving the 2nd linear system:   %d iterations\n",i);   
+    for (i=0; i<np; i++) u[i] -= 4*pi*v[i]; 	/* u = u - 4*pi*v */ 
 
     time(&t2);
     printf("Computation time:                %g secs.\n\n",difftime(t2,t3));

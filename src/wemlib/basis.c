@@ -476,33 +476,36 @@ wavelet		**W;			/* Liste der Wavelets                         */
 unsigned int	p;			/* Anzahl der Patches                         */
 unsigned int	M;			/* 2^M*2^M Elemente pro Patch 		      */
 {
-unsigned int	nw;			/* Laenge von W               		      */
-unsigned int	i;			/* Laufindex durch W          		      */
-unsigned int	*prototype;		/* Liste fuer den Zugriff Prototyp -> Wavelet */
-unsigned int	prototype_number;	/* Anzahl der diversen Protptypen	      */
-signed int	j;			/* Laufindex durch die Liste der Prototypen   */
-
-prototype = NULL;
-prototype_number = 0;
-nw = p*(1<<M)*(1<<M);	/* Anzahl der Wavelets */
-
-for (i=0; i<nw; i++)
-{  free((*W)[i].element);
-
-   /* suche nach passendem Prototypen */
-   for (j=prototype_number-1; j>=0; j--)
-   {  if ((*W)[i].weight == (*W)[prototype[j]].weight) break;
-      }
-
-   if (j == -1)		/* keinen passenden Prototyp gefunden */
-   {  if (prototype_number%delta == 0) prototype = (unsigned int*) realloc(prototype,(prototype_number+delta)*sizeof(unsigned int));
-      prototype[prototype_number++] = i;
-      }
-   }
-
-for (i=0; i<prototype_number; i++) free((*W)[prototype[i]].weight);
-free(prototype);
-free(*W);
+    unsigned int	nw;			/* Laenge von W               		      */
+    unsigned int	i;			/* Laufindex durch W          		      */
+    unsigned int	*prototype;		/* Liste fuer den Zugriff Prototyp -> Wavelet */
+    unsigned int	prototype_number;	/* Anzahl der diversen Protptypen	      */
+    signed int	j;			/* Laufindex durch die Liste der Prototypen   */
+    
+    prototype = NULL;
+    prototype_number = 0;
+    nw = p*(1<<M)*(1<<M);	/* Anzahl der Wavelets */
+    for (i=0; i<nw; i++) {  
+        free((*W)[i].element);
+        /* suche nach passendem Prototypen */
+        for (j=prototype_number-1; j>=0; j--) {
+            if ((*W)[i].weight == (*W)[prototype[j]].weight) break;
+        }
+        if (j == -1) {		/* keinen passenden Prototyp gefunden */
+            if (prototype_number%delta == 0) {
+                prototype = (unsigned int*) 
+                    realloc(prototype,
+                            (prototype_number+delta)*sizeof(unsigned int));
+            }
+            prototype[prototype_number++] = i;
+        }
+    }
+    
+    for (i=0; i<prototype_number; i++) {
+        free((*W)[prototype[i]].weight);
+    }
+    free(prototype);
+    free(*W);
 }
 
 

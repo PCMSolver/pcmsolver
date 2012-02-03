@@ -16,16 +16,14 @@
 
 
 typedef struct {
-	double          sub[3];
-}
-integral;
+    double sub[3];
+} integral;
 
 typedef struct {
-	integral       *value;
-	unsigned int   *index;
-	unsigned int    integral_number;
-}
-intvector;
+    integral *value;
+    unsigned int *index;
+    unsigned int integral_number;
+} intvector;
 
 
 /*===============================================*
@@ -34,13 +32,13 @@ intvector;
  *  bzw. -1 falls es nicht vorhanden.            *
  *===============================================*/
 
-signed int      search_integral(intvector *I, unsigned int i);
+signed int search_integral(intvector *I, unsigned int i);
 
 
 /*=============*
  *  I(i) := z  *
  *=============*/
 
-void            set_integral(intvector *I, unsigned int i, double *z);
+void set_integral(intvector *I, unsigned int i, double *z);
 /* der Eintrag darf nicht vorhanden sein */
 #endif

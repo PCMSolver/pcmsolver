@@ -11,8 +11,8 @@
  *=======================================*/
 
 
-void            init_Gauss_Legendre(quadrature **Q, unsigned int g);
+void init_Gauss_Legendre(quadrature **Q, unsigned int g);
 
 
-void            free_Gauss_Legendre(quadrature **Q, unsigned int g);
+void free_Gauss_Legendre(quadrature **Q, unsigned int g);
 #endif

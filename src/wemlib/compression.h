@@ -11,6 +11,6 @@
  *===========================================*/
 
 
-double          compression(sparse2 *T, wavelet *W, element *E, unsigned int p, unsigned int M);
+double compression(sparse2 *T, wavelet *W, element *E, unsigned int p, unsigned int M);
 
 #endif

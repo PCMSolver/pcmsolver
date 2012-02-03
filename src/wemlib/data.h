@@ -16,8 +16,8 @@ extern const vector3 x[];
 extern const double alpha[];
 
 
-double          f(vector3 a);
+double f(vector3 a);
 
 
-vector3         df(vector3 a);
+vector3 df(vector3 a);
 #endif

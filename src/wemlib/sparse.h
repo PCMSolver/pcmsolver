@@ -15,10 +15,10 @@
  *====================*/
 
 typedef struct {
-	unsigned int    m, n;
-	unsigned int   *row_number, *max_row_number;
-	unsigned int  **index;
-	double        **value;
+    unsigned int m, n;
+    unsigned int *row_number, *max_row_number;
+    unsigned int **index;
+    double **value;
 } sparse;
 
 
@@ -29,7 +29,7 @@ typedef struct {
  *  Index >= dem gesuchten Index j.         *
  *==========================================*/
 
-unsigned int    search_sparse(unsigned int *array, unsigned int rn, unsigned int j);
+unsigned int search_sparse(unsigned int *array, unsigned int rn, unsigned int j);
  /*
   * array = A->index[i] rn = Ende des Arrays, meist: A->row_number[i]
   */
@@ -39,9 +39,7 @@ unsigned int    search_sparse(unsigned int *array, unsigned int rn, unsigned int
  *  Initialisierung der sparse-Matrix  *
  *=====================================*/
 
-void 
-init_sparse(sparse *A,
-	    unsigned int m, unsigned int n, unsigned int n_max);
+void init_sparse(sparse *A, unsigned int m, unsigned int n, unsigned int n_max);
  /* fuer jede Zeile werden n_max Elemente belegt */
 
 
@@ -49,26 +47,26 @@ init_sparse(sparse *A,
  *  Freigeben der sparse-Matrix  *
  *===============================*/
 
-void            free_sparse(sparse *A);
+void free_sparse(sparse *A);
 
 
 /*===============*
  *  A(i,j) := z  *
  *===============*/
 
-void            set_sparse(sparse *A, unsigned int i, unsigned int j, double z);
+void set_sparse(sparse *A, unsigned int i, unsigned int j, double z);
 
 
 /*===============*
  *  A(i,j) += z  *
  *===============*/
 
-void            add_sparse(sparse *A, unsigned int i, unsigned int j, double z);
+void add_sparse(sparse *A, unsigned int i, unsigned int j, double z);
 
 
 /*===============*
  *  z := A(i,j)  *
  *===============*/
 
-double          get_sparse(sparse *A, unsigned int i, unsigned int j);
+double get_sparse(sparse *A, unsigned int i, unsigned int j);
 #endif

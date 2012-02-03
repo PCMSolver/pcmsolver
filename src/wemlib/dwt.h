@@ -11,10 +11,10 @@
  *===========================================*/
 
 
-void            dwtKon(double *a, unsigned int M, unsigned int nf);
+void dwtKon(double *a, unsigned int M, unsigned int nf);
 /* Diskrete Wavelet-Transformation */
 
 
-void            tdwtKon(double *a, unsigned int M, unsigned int nf);
+void tdwtKon(double *a, unsigned int M, unsigned int nf);
 /* transformierte Diskrete Wavelet-Transformation */
 #endif

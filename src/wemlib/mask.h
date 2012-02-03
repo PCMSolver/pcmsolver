@@ -10,6 +10,6 @@
  *================================================================*/
 
 
-void            dwt_mask(sparse *T, sparse *L, unsigned int m);
+void dwt_mask(sparse *T, sparse *L, unsigned int m);
 /* waehlt in Abhaengigkeit von m die richtige Maske */
 #endif

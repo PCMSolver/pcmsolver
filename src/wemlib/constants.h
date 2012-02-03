@@ -23,10 +23,10 @@ extern const double b;
 extern const double dp;
 
 /* Quadratur */
-extern const unsigned int g_max;/* maximaler Quadraturgrad             */
-extern const unsigned int min_quadrature_level;	/* minimales Quadraturlevel            */
-extern const double q;		/* Unterteilungskonstante q > 0.25     */
-extern const double scaling_factor;	/* Groesse des relativen Umkreisradius */
+extern const unsigned int g_max;        /* maximaler Quadraturgrad             */
+extern const unsigned int min_quadrature_level; /* minimales Quadraturlevel            */
+extern const double q;          /* Unterteilungskonstante q > 0.25     */
+extern const double scaling_factor;     /* Groesse des relativen Umkreisradius */
 
 /* Genaugikeit der iterativen Loesung */
 extern const double eps;

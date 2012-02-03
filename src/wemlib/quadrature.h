@@ -12,8 +12,8 @@
 
 
 typedef struct {
-	unsigned int    nop;	/* Zahl der Stuetzstellen und Gewichte         */
-	double         *xi, *w;	/* Stuetzstellen/Gewichte der Quadratur-Formel */
+    unsigned int nop;           /* Zahl der Stuetzstellen und Gewichte         */
+    double *xi, *w;             /* Stuetzstellen/Gewichte der Quadratur-Formel */
 } quadrature;
 
 #endif

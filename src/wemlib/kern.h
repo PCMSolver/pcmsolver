@@ -5,8 +5,8 @@
  **********/
 
 
-extern const double epsilon;	/* dielectric constant of the solvent */
-extern const double kappa;	/* constant related to ion screening  */
+extern const double epsilon;    /* dielectric constant of the solvent */
+extern const double kappa;      /* constant related to ion screening  */
 
 /* inverse dielectric tensor of the solvent */
 extern const double epsilon11;
@@ -24,24 +24,24 @@ extern const double epsilon33;
  *  Einfachschichtpotential  *
  *===========================*/
 
-double          SingleLayerInt(vector3 x, vector3 y);
+double SingleLayerInt(vector3 x, vector3 y);
 
 
-double          SingleLayerExt(vector3 x, vector3 y);
+double SingleLayerExt(vector3 x, vector3 y);
 
 
-double          SingleLayerAni(vector3 x, vector3 y);
+double SingleLayerAni(vector3 x, vector3 y);
 
 
 /*==========================*
  *  Doppelschichtpotential  *
  *==========================*/
 
-double          DoubleLayerInt(vector3 x, vector3 y, vector3 n_y);
+double DoubleLayerInt(vector3 x, vector3 y, vector3 n_y);
 
 
-double          DoubleLayerExt(vector3 x, vector3 y, vector3 n_y);
+double DoubleLayerExt(vector3 x, vector3 y, vector3 n_y);
 
 
-double          DoubleLayerAni(vector3 x, vector3 y, vector3 n_y);
+double DoubleLayerAni(vector3 x, vector3 y, vector3 n_y);
 #endif

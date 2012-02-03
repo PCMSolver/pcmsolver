@@ -18,73 +18,72 @@
 #endif
 
 
-void 
-IntKon2(c, element1, Q, P, M, SingleLayer, DoubleLayer, Identity)
+void IntKon2(c, element1, Q, P, M, SingleLayer, DoubleLayer, Identity)
 /* GLEICHE PATCHES [0,1]^2 -> modifiziertes Skalarprodukt */
-	double         *c;
-	element        *element1;
-	cubature       *Q;
-	vector3     ****P;
-	unsigned int    M;
-	double          SingleLayer(), DoubleLayer();
-	double          Identity;
+double *c;
+element *element1;
+cubature *Q;
+vector3 ****P;
+unsigned int M;
+double SingleLayer(), DoubleLayer();
+double Identity;
 {
-	unsigned int    i, j;
-	double          w, d1, d2;
-	double          t1, t2, t3, t4;
-	vector2         s, eta, xi, a, b;
-	vector3         x, y;
-	double          h = 1. / (1 << element1->level);
+    unsigned int i, j;
+    double w, d1, d2;
+    double t1, t2, t3, t4;
+    vector2 s, eta, xi, a, b;
+    vector3 x, y;
+    double h = 1. / (1 << element1->level);
 
-	c[0] = c[1] = 0;
-	s = vector2_make(h * element1->index_s, h * element1->index_t);
-	for (i = 0; i < Q->nop; i++) {
-		xi = Q->xi[i];
-		w = h * h * Q->w[i] * xi.x * (1 - xi.x) * (1 - xi.x * xi.y);
-		for (j = 0; j < Q->nop; j++) {
-			eta = Q->xi[j];
-			t1 = h * eta.x * (1 - xi.x);
-			t2 = h * eta.y * (1 - xi.x * xi.y);
-			t3 = t1 + h * xi.x;
-			t4 = t2 + h * xi.x * xi.y;
+    c[0] = c[1] = 0;
+    s = vector2_make(h * element1->index_s, h * element1->index_t);
+    for (i = 0; i < Q->nop; i++) {
+        xi = Q->xi[i];
+        w = h * h * Q->w[i] * xi.x * (1 - xi.x) * (1 - xi.x * xi.y);
+        for (j = 0; j < Q->nop; j++) {
+            eta = Q->xi[j];
+            t1 = h * eta.x * (1 - xi.x);
+            t2 = h * eta.y * (1 - xi.x * xi.y);
+            t3 = t1 + h * xi.x;
+            t4 = t2 + h * xi.x * xi.y;
 
-			a.x = s.x + t1;
-			a.y = s.y + t2;
-			b.x = s.x + t3;
-			b.y = s.y + t4;
-			x = Chi(a, P[element1->patch], M);
-			y = Chi(b, P[element1->patch], M);
-			d1 = SingleLayer(x, y);
-			d2 = DoubleLayer(x, y, n_Chi(b, P[element1->patch], M)) + DoubleLayer(y, x, n_Chi(a, P[element1->patch], M));
+            a.x = s.x + t1;
+            a.y = s.y + t2;
+            b.x = s.x + t3;
+            b.y = s.y + t4;
+            x = Chi(a, P[element1->patch], M);
+            y = Chi(b, P[element1->patch], M);
+            d1 = SingleLayer(x, y);
+            d2 = DoubleLayer(x, y, n_Chi(b, P[element1->patch], M)) + DoubleLayer(y, x, n_Chi(a, P[element1->patch], M));
 
-			a.y = s.y + t4;
-			b.y = s.y + t2;
-			x = Chi(a, P[element1->patch], M);
-			y = Chi(b, P[element1->patch], M);
-			d1 += SingleLayer(x, y);
-			d2 += DoubleLayer(x, y, n_Chi(b, P[element1->patch], M)) + DoubleLayer(y, x, n_Chi(a, P[element1->patch], M));
+            a.y = s.y + t4;
+            b.y = s.y + t2;
+            x = Chi(a, P[element1->patch], M);
+            y = Chi(b, P[element1->patch], M);
+            d1 += SingleLayer(x, y);
+            d2 += DoubleLayer(x, y, n_Chi(b, P[element1->patch], M)) + DoubleLayer(y, x, n_Chi(a, P[element1->patch], M));
 
-			a.x = s.x + t2;
-			a.y = s.y + t1;
-			b.x = s.x + t4;
-			b.y = s.y + t3;
-			x = Chi(a, P[element1->patch], M);
-			y = Chi(b, P[element1->patch], M);
-			d1 += SingleLayer(x, y);
-			d2 += DoubleLayer(x, y, n_Chi(b, P[element1->patch], M)) + DoubleLayer(y, x, n_Chi(a, P[element1->patch], M));
+            a.x = s.x + t2;
+            a.y = s.y + t1;
+            b.x = s.x + t4;
+            b.y = s.y + t3;
+            x = Chi(a, P[element1->patch], M);
+            y = Chi(b, P[element1->patch], M);
+            d1 += SingleLayer(x, y);
+            d2 += DoubleLayer(x, y, n_Chi(b, P[element1->patch], M)) + DoubleLayer(y, x, n_Chi(a, P[element1->patch], M));
 
-			a.y = s.y + t3;
-			b.y = s.y + t1;
-			x = Chi(a, P[element1->patch], M);
-			y = Chi(b, P[element1->patch], M);
-			d1 += SingleLayer(x, y);
-			d2 += DoubleLayer(x, y, n_Chi(b, P[element1->patch], M)) + DoubleLayer(y, x, n_Chi(a, P[element1->patch], M));
+            a.y = s.y + t3;
+            b.y = s.y + t1;
+            x = Chi(a, P[element1->patch], M);
+            y = Chi(b, P[element1->patch], M);
+            d1 += SingleLayer(x, y);
+            d2 += DoubleLayer(x, y, n_Chi(b, P[element1->patch], M)) + DoubleLayer(y, x, n_Chi(a, P[element1->patch], M));
 
-			c[0] += 2 * w * Q->w[j] * d1;
-			c[1] += w * Q->w[j] * d2;
-		}
-	}
-	c[1] += Identity;	/* bilde +Identity */
-	c[2] = c[1];
-	return;
+            c[0] += 2 * w * Q->w[j] * d1;
+            c[1] += w * Q->w[j] * d2;
+        }
+    }
+    c[1] += Identity;           /* bilde +Identity */
+    c[2] = c[1];
+    return;
 }

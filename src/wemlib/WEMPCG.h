@@ -26,5 +26,5 @@
  *=============================================================*/
 
 
-unsigned int WEMPCG(sparse2 *A, double *b, double *x, double epsi, unsigned int p, unsigned int M);
+unsigned int    WEMPCG(sparse2 *A, double *b, double *x, double epsi, unsigned int p, unsigned int M);
 #endif

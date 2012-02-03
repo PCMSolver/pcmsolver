@@ -4,7 +4,7 @@
  *  Topology.h  *
  ****************/
 #ifdef __cplusplus
-extern "C" {
+extern          "C" {
 #endif
 
 
@@ -13,11 +13,11 @@ extern "C" {
  *====================================*/
 
 
-unsigned int gennet(vector3 **P, unsigned int ***F, vector3 ***T, unsigned int p, unsigned int m);
+	unsigned int    gennet(vector3 **P, unsigned int ***F, vector3 ***T, unsigned int p, unsigned int m);
 /* berechnet Punkt- und Patchliste */
 
 
-void free_patchlist(unsigned int ***F, unsigned int nf);
+	void            free_patchlist(unsigned int ***F, unsigned int nf);
 /* gibt den Speicherplatz der Patchliste frei */
 
 #ifdef __cplusplus

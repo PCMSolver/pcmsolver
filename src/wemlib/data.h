@@ -4,7 +4,7 @@
  *  data.h  *
  ************/
 
- 
+
 /* number of charges */
 extern const unsigned int k;
 
@@ -13,11 +13,11 @@ extern const vector3 x[];
 
 
 /* charges: double values */
-extern const double alpha[]; 
+extern const double alpha[];
 
 
-double f(vector3 a);
+double          f(vector3 a);
 
 
-vector3 df(vector3 a);
+vector3         df(vector3 a);
 #endif

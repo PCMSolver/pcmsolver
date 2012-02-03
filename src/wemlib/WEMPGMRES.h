@@ -24,10 +24,10 @@
 *===============================================================*/
 
 
-unsigned int WEMPGMRES1(sparse2 *A, double *b, double *x, double epsi, unsigned int p, unsigned int M);
+unsigned int    WEMPGMRES1(sparse2 *A, double *b, double *x, double epsi, unsigned int p, unsigned int M);
 
 
-unsigned int WEMPGMRES2(sparse2 *A, double *b, double *x, double epsi, unsigned int p, unsigned int M);
+unsigned int    WEMPGMRES2(sparse2 *A, double *b, double *x, double epsi, unsigned int p, unsigned int M);
 
 
 /*==============================================================*
@@ -48,5 +48,5 @@ unsigned int WEMPGMRES2(sparse2 *A, double *b, double *x, double epsi, unsigned 
  *		M    : Zahl der Level                           *
  *==============================================================*/
 
-unsigned int WEMPGMRES3(sparse2 *A, sparse2 *B, double *rhs, double *x, double epsi, unsigned int p, unsigned int M);
+unsigned int    WEMPGMRES3(sparse2 *A, sparse2 *B, double *rhs, double *x, double epsi, unsigned int p, unsigned int M);
 #endif

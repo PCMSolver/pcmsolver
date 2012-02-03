@@ -10,8 +10,9 @@
  *=============================================*/
 
 
-void pot(double **Pot, vector3 *R, unsigned int nr, 
-	double *u, vector3 ****T, unsigned int p, unsigned int m);
+void 
+pot(double **Pot, vector3 *R, unsigned int nr,
+    double *u, vector3 ****T, unsigned int p, unsigned int m);
 
 
 #endif

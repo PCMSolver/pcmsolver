@@ -3,7 +3,7 @@
 /*****************
  *  IntVector.h  *
  *****************/
- 
+
 
 /*================================*
  *  Definiert den Integralvektor  *  
@@ -13,21 +13,17 @@
 /*====================*
  *  Typendeklaration  *
  *====================*/
- 
 
-typedef struct 
-{  
-double		sub[48];
-}
-integral_pwl;
 
-typedef struct 
-{  
-integral_pwl	*value;
-unsigned int	*index;
-unsigned int    integral_number;
-}
-intvector_pwl;
+typedef struct {
+    double sub[48];
+} integral_pwl;
+
+typedef struct {
+    integral_pwl *value;
+    unsigned int *index;
+    unsigned int integral_number;
+} intvector_pwl;
 
 
 /*===============================================*
@@ -36,14 +32,14 @@ intvector_pwl;
  *  bzw. -1 falls es nicht vorhanden.            *
  *===============================================*/
 
-signed int search_integral_pwl(intvector_pwl *I, unsigned int i);
+signed int search_integral_pwl(intvector_pwl * I, unsigned int i);
 
 
 /*=============*
  *  I(i) := z  *
  *=============*/
 
-void set_integral_pwl(intvector_pwl *I, unsigned int i, double *z);
+void set_integral_pwl(intvector_pwl * I, unsigned int i, double *z);
 /* der Eintrag darf nicht vorhanden sein */
 
 

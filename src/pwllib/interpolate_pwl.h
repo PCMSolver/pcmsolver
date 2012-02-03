@@ -8,7 +8,7 @@
 /*=============================================================*
  *  Enthaelt alle Routinen zur Interpolation der Oberflaeche.  *
  *=============================================================*/
- 
+
 
 void init_interpolate_pwl(vector3 *****P, vector3 ***Q, unsigned int p, unsigned int m);
 /* berechnet die Koeffizienten des Interpolationspolynoms */

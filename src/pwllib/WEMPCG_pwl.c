@@ -40,81 +40,84 @@
 #include "WEMPCG_pwl.h"
 
 
-unsigned int WEMPCG_pwl(A,b,x,epsi,W,F,p,M)
-sparse2 	*A;
-double          *b, *x, epsi;
-wavelet_pwl		*W;
-unsigned int	**F, p, M;
+unsigned int WEMPCG_pwl(A, b, x, epsi, W, F, p, M)
+sparse2 *A;
+double *b, *x, epsi;
+wavelet_pwl *W;
+unsigned int **F, p, M;
 {
-unsigned int    i, j, k;
-double  	u, v, omg;
-double  	*z, *r, *d, *Ad;
-sparse		G;
+    unsigned int i, j, k;
+    double u, v, omg;
+    double *z, *r, *d, *Ad;
+    sparse G;
 
 /* Speicherplatz allokieren */
-r  = (double*) calloc(A->n,sizeof(double));
-d  = (double*) calloc(A->n,sizeof(double));
-z  = (double*) malloc(A->n*sizeof(double));
-Ad = (double*) malloc(A->n*sizeof(double));
+    r = (double *) calloc(A->n, sizeof(double));
+    d = (double *) calloc(A->n, sizeof(double));
+    z = (double *) malloc(A->n * sizeof(double));
+    Ad = (double *) malloc(A->n * sizeof(double));
 
 /* berechne Gram'sche Matrix */
-init_sparse(&G,A->n,A->n,10);
-single_scale_gram_pwl(&G,F,p,M);
+    init_sparse(&G, A->n, A->n, 10);
+    single_scale_gram_pwl(&G, F, p, M);
 
 /* r = b-A1*x */
-memcpy(r,b,A->n*sizeof(double));
-for (i=0; i<A->n; i++)
-{  for (j=0; j<A->row_number[i]; j++)
-   {  r[i] -= A->value1[i][j] * x[A->index[i][j]];
-      }
-   }
+    memcpy(r, b, A->n * sizeof(double));
+    for (i = 0; i < A->n; i++) {
+        for (j = 0; j < A->row_number[i]; j++) {
+            r[i] -= A->value1[i][j] * x[A->index[i][j]];
+        }
+    }
 
 /* d = precond_pwl(r,M) */
-precond_pwl(d,r,&G,W,F,p,M);
+    precond_pwl(d, r, &G, W, F, p, M);
 
 /* u = (r,d) */
-u = 0;
-for (i=0; i<A->n; i++) u += r[i] * d[i];
+    u = 0;
+    for (i = 0; i < A->n; i++)
+        u += r[i] * d[i];
 
 /* Iteration */
-for (k=0; sqrt(u)>epsi; k++)
-{  
-   /* Ad = A*d */
-   memset(Ad,0,A->n*sizeof(double));
-   for (i=0; i<A->n; i++)
-   {  for (j=0; j<A->row_number[i]; j++)
-      {  Ad[i] += A->value1[i][j] * d[A->index[i][j]];
-         }
-      }
+    for (k = 0; sqrt(u) > epsi; k++) {
+        /* Ad = A*d */
+        memset(Ad, 0, A->n * sizeof(double));
+        for (i = 0; i < A->n; i++) {
+            for (j = 0; j < A->row_number[i]; j++) {
+                Ad[i] += A->value1[i][j] * d[A->index[i][j]];
+            }
+        }
 
-   /* omg = u / (d,Ad) und v = u */
-   omg = 0;
-   for (i=0; i<A->n; i++) omg += d[i] * Ad[i];
-   omg = u/omg;
-   v = u;
+        /* omg = u / (d,Ad) und v = u */
+        omg = 0;
+        for (i = 0; i < A->n; i++)
+            omg += d[i] * Ad[i];
+        omg = u / omg;
+        v = u;
 
-   /* x = x + omg * d, r = r - omg * Ad */
-   for (i=0; i<A->n; i++)
-   {  x[i] += omg *  d[i];
-      r[i] -= omg * Ad[i];
-      }
+        /* x = x + omg * d, r = r - omg * Ad */
+        for (i = 0; i < A->n; i++) {
+            x[i] += omg * d[i];
+            r[i] -= omg * Ad[i];
+        }
 
-   /* z = precond_pwl(r,M) */
-   precond_pwl(z,r,&G,W,F,p,M);
+        /* z = precond_pwl(r,M) */
+        precond_pwl(z, r, &G, W, F, p, M);
 
-   /* u = (r,z) */
-   u = 0;
-   for (i=0; i<A->n; i++) u += r[i] * z[i];
+        /* u = (r,z) */
+        u = 0;
+        for (i = 0; i < A->n; i++)
+            u += r[i] * z[i];
 
-   /* d = z + u/v * d */
-   omg = u/v;
-   for (i=0; i<A->n; i++) d[i] = z[i] + omg * d[i];
-   }
+        /* d = z + u/v * d */
+        omg = u / v;
+        for (i = 0; i < A->n; i++)
+            d[i] = z[i] + omg * d[i];
+    }
 
-free_sparse(&G);
-free(Ad);
-free(r);
-free(d);
-free(z);
-return(k);
+    free_sparse(&G);
+    free(Ad);
+    free(r);
+    free(d);
+    free(z);
+    return (k);
 }

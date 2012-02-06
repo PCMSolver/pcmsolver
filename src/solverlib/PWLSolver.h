@@ -20,7 +20,7 @@ extern "C"{
 
 using namespace std;
 
-class PWLSolver : public WEMSolver<T> {
+class PWLSolver : public WEMSolver {
  public:
     PWLSolver(GreensFunction<T> &gfi, GreensFunction<T> &gfo);
     PWLSolver(GreensFunction<T> *gfi, GreensFunction<T> *gfo);
@@ -31,6 +31,7 @@ class PWLSolver : public WEMSolver<T> {
     virtual void compCharge(const VectorXd & potential, VectorXd & charge);
     virtual void initPointers();
  protected:
+    int equation; 
     element_pwl *elementTree; //*E_; Hierarchical element list
     wavelet_pwl *waveletList; //*W_; List of wavelets
 };

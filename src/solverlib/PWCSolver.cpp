@@ -93,16 +93,22 @@ void PWCSolver::initPointers()
 {
 	elementTree = NULL;
 	waveletList = NULL;
+	setSolverType("Wavelet");
+	setEquationType("Full");
 }
 
 PWCSolver::PWCSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
 	WEMSolver(gfi, gfo) {
 	initPointers();
+	setSolverType("Wavelet");
+	setEquationType("Full");
 }
 
 PWCSolver::PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
 	WEMSolver(gfi, gfo) {
 	initPointers();
+	setSolverType("Wavelet");
+	setEquationType("Full");
 }
 
 PWCSolver::PWCSolver(Section solver) : WEMSolver(solver) {
@@ -143,7 +149,7 @@ void PWCSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	double *rhs;
 	double *u = (double*) calloc(nFunctions, sizeof(double));
 	double *v = (double*) calloc(nFunctions, sizeof(double));
-	//next line is just a quick fix but i do not like it...
+	//next line is just a quick fix to avoid problems with const but i do not like it...
     VectorXd pot = potential;
 	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
 			 pot.data(), quadratureLevel_);

@@ -24,7 +24,7 @@
 #include "phi.h"
 
 
-void WEMRHS_pwl1(rhs, W, E, T, p, M, nw)
+void WEMRHS1_pwl(rhs, W, E, T, p, M, nw)
 /* testet die Neumann-Daten des gegebenen Potentials */
 double **rhs;                   /* zu berechnende rechte Seite                */
 wavelet_pwl *W;                 /* Waveletliste                               */
@@ -108,7 +108,7 @@ unsigned int nw;                /* Laenge von W                               */
 }
 
 
-void WEMRHS_pwl2(rhs, W, E, T, p, M, nw)
+void WEMRHS2_pwl(rhs, W, E, T, p, M, nw)
 /* testet die Dirichlet-Daten des gegebenen Potentials */
 double **rhs;                   /* zu berechnende rechte Seite                */
 wavelet_pwl *W;                 /* Waveletliste                               */
@@ -195,7 +195,7 @@ unsigned int nw;                /* Laenge von W                               */
     return;
 }
 
-void WEMRHS_pwl2M(rhs, W, E, T, p, M, nw, potential, g)
+void WEMRHS2_pwlM(rhs, W, E, T, p, M, nw, potential, g)
 /* testet die Dirichlet-Daten des gegebenen Potentials */
 double **rhs;                   /* zu berechnende rechte Seite                */
 wavelet_pwl *W;                 /* Waveletliste                               */

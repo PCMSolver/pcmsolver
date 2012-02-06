@@ -189,7 +189,7 @@ unsigned int **F, p, M;
 }
 
 
-unsigned int WEMPGMRES_pwl2(A, b, x, epsi, W, F, p, M)
+unsigned int WEMPGMRES2_pwl(A, b, x, epsi, W, F, p, M)
 /* loest A2*x = b */
 sparse2 *A;
 double *b, *x, epsi;

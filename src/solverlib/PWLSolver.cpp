@@ -98,11 +98,15 @@ void PWLSolver::initPointers()
 PWLSolver::PWLSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
 	WEMSolver(gfi, gfo) {
 	initPointers();
+	setSolverType("Linear");
+	setEquationType("Full");
 }
 
 PWLSolver::PWLSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
 	WEMSolver(gfi, gfo) {
 	initPointers();
+	setSolverType("Linear");
+	setEquationType("Full");
 }
 
 PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
@@ -137,6 +141,68 @@ void PWLSolver::constructSystemMatrix(){
 	WEM_pwl(&S_e_, waveletList, elementTree, T_, nPatches, nLevels, SLExt, DLUni, -2*M_PI);
 	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
 	systemMatricesInitialized_ = true;
+}
+
+void PWLSolver::constructSi() {
+	double factor = 0;
+	switch (integralEquation) {
+	case FirstKind:
+	case SecondKind:
+		double epsilon = greenOutside->getEpsilon();
+		factor = 2 * M_PI * (epsilon + 1) / (epsilon - 1);
+		break;
+	case Full
+		factor = 2 * M_PI;
+		break;
+	default:
+		exit(-1);
+	}
+	gf = greenInside;
+	apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
+	WEM_pwl(&S_i_, waveletList, elementTree, T_, nPatches, nLevels, 
+			SingleLayer, DoubleLayer, factor);
+	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
+}
+
+void PWLSolver::constructSe() {
+	gf = greenOutside; // sets the global pointer to pass GF to C code
+	apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
+	WEM_pwl(&S_e_, waveletList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer, -2*M_PI);
+	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
+}
+
+int PWLSolver::solveSecondKind() {
+	sparse * G;
+	double * rhs;
+	double * u = (double*) calloc(nFunctions, sizeof(double));
+	double * v = (double*) calloc(nFunctions, sizeof(double));
+	//next line is just a quick fix but i do not like it...
+    VectorXd pot = potential;
+	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
+			 pot.data(), quadratureLevel_);
+	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList,
+							   elementList, nPatches, nLevels);
+	init_sparse(G, nPoints, nPoints, 10);
+	single_scale_gram_pwl(G, elementList, nPatches, nLevels);
+	tdwtLin(v, elementList, nLevels, nPatches, nPoints);
+	for (int i = 0; i < nPoints; i++) {
+		for (int j = 0; j < G.row_number[i]; j++) {
+			u[i] += G.value[i][j] * v[G.index[i][j]];
+		}
+	}
+	dwtLin(u, elementList, nLevels, nPatches, nPoints);
+	for (i = 0; i < np; i++) {
+		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
+	}
+	memset(u, 0, np * sizeof(double));
+	iters = WEMPCG_pwl(&S_i, rhs, u, threshold, waveletList, elementList,
+					   nPatches, nLevels);
+	free_Gauss_Square(&Q, quadratureLevel_ + 1);
+	free(rhs);
+	free(u);
+	free(v);
+	free_sparse(G);
+	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
 }
 
 void PWLSolver::compCharge(const VectorXd & potential, VectorXd & charge) {

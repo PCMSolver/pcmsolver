@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <Eigen/Dense>
 
@@ -27,25 +28,34 @@ using namespace Eigen;
 
 */
 
+class Solvent;
+
+typedef std::map< std::string, const Solvent * > SolventMap;
+
 class Solvent {
  public:
     Solvent(){}
     Solvent( const string & name, double epsstatic, 
              double epsoptical, double radius );
     ~Solvent(){}
-    string getSolventName(){ return solventName; }
-    void setSolventName( const string & name ){ solventName = name; }
-    double getSolventEpsStatic(){ return solventEpsStatic; }
-    void setSolventEpsStatic( double epsstatic ){ solventEpsStatic = epsstatic; }
-    double getSolventEpsOptical(){ return solventEpsOptical; }
-    void setSolventEpsOptical( double epsoptical ){ solventEpsOptical = epsoptical; }
-    double getSolventRadius(){ return solventRadius; }
-    void setSolventRadius( double radius ){ solventRadius = radius; }
+    const string getName(){ return name; }
+    double getEpsStatic(){ return epsStatic; }
+    double getEpsOptical(){ return epsOptical; }
+    double getRadius(){ return radius; }
+    void setRadius(double r){ radius = r; }
+    static SolventMap initSolventMap();
+    friend std::ostream & operator<<(std::ostream & os, Solvent & obj) {
+        return obj.printObject(os);
+    }
  private:
-    string solventName;
-    double solventEpsStatic;
-    double solventEpsOptical;
-    double solventRadius;
+    ostream & printObject(ostream & os);
+    static vector<Solvent> initSolventVector();
+    string name;
+    double epsStatic;
+    double epsOptical;
+    double radius;
 };
+
+
 
 #endif

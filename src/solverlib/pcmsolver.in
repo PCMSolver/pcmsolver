@@ -101,13 +101,12 @@ def	setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
 	top.add_kw('SolverType','STR', 'Traditional')
-	top.add_kw('PRINTL',    'INT', 0)
+	top.add_kw('EquationType','STR', 'SecondKind')
 	top.add_kw('Units',     'STR', 'AU')
 
 	medium=getkw.Section('Medium', callback=verify_medium)
 	medium.add_kw('Solvent', 'STR', 'Water')
-	medium.add_kw('SolIndex', 'INT', 0)
-	medium.add_kw('SolRadius','DBL', 1.0)
+	medium.add_kw('ProbeRadius','DBL', 1.0)
 	top.add_sect(medium)
 	
 	green=getkw.Section('Green', callback=verify_green)
@@ -234,45 +233,57 @@ def verify_cavity(section):
 	
 
 def verify_medium(section):
-	# A dictionary. We will pass the numeric key to the C++ code.
-	allowed_solvents_dict = {0: ('Water', 'water', 'H2O'),
-				 1: ('Methanol', 'methanol', 'CH3OH'),
-				 2: ('Ethanol', 'ethanol', 'CH3CH2OH'),
-				 3: ('Chloroform','chloroform','CHCl3'),
-				 4: ('Methylenechloride', 'methylenechloride', 'CH2Cl2'),
-				 6: ('1,2-Dichloroethane', '1,2-dichloroethane', 'C2H4Cl2'),
-				 7: ('Carbon Tetrachloride', 'carbon tetrachloride', 'CCl4'),
-				 8: ('Benzene', 'benzene', 'C6H6'),
-				 9: ('Toluene', 'toluene', 'C6H5CH3'),
-				 10: ('Chlorobenzene', 'chlorobenzene', 'C6H5Cl'),
-				 11: ('Nitromethane', 'nitromethane', 'CH3NO2'),
-				 12: ('N-heptane', 'n-heptane', 'C7H16'),
-				 13: ('Cyclohexane', 'cyclohexane', 'C6H12'),
-				 14: ('Aniline', 'aniline', 'C6H5NH2'),
-				 15: ('Acetone', 'acetone', 'C2H6CO'),
-				 16: ('Tetrahydrofurane', 'tetrahydrofurane', 'THF'),
-				 17: ('Dimethylsulfoxide', 'dimethylsulfoxide', 'DMSO'),
-				 18: ('Acetonitrile', 'acetonitrile', 'CH3CN')}
+	allowedSolvents = {'Water':                ('Water',                'water',                'H2O'),
+			   'Methanol':             ('Methanol',             'methanol',             'CH3OH'),
+			   'Ethanol':              ('Ethanol',              'ethanol',              'CH3CH2OH'),
+			   'Chloroform':           ('Chloroform',           'chloroform',           'CHCl3'),
+			   'Methylenechloride':    ('Methylenechloride',    'methylenechloride',    'CH2Cl2'),
+			   '1,2-Dichloroethane':   ('1,2-Dichloroethane',   '1,2-dichloroethane',   'C2H4Cl2'),
+			   'Carbon Tetrachloride': ('Carbon Tetrachloride', 'carbon tetrachloride', 'CCl4'),
+			   'Benzene':              ('Benzene',              'benzene',              'C6H6'),
+			   'Toluene':              ('Toluene',              'toluene',              'C6H5CH3'),
+			   'Chlorobenzene':        ('Chlorobenzene',        'chlorobenzene',        'C6H5Cl'),
+			   'Nitromethane':         ('Nitromethane',         'nitromethane',         'CH3NO2'),
+			   'N-heptane':            ('N-heptane',            'n-heptane',            'C7H16'),
+			   'Cyclohexane':          ('Cyclohexane',          'cyclohexane',          'C6H12'),
+			   'Aniline':              ('Aniline',              'aniline',              'C6H5NH2'),
+			   'Acetone':              ('Acetone',              'acetone',              'C2H6CO'),
+			   'Tetrahydrofurane':     ('Tetrahydrofurane',     'tetrahydrofurane',     'THF'),
+			   'Dimethylsulfoxide':    ('Dimethylsulfoxide',    'dimethylsulfoxide',    'DMSO'),
+			   'Acetonitrile':         ('Acetonitrile',         'acetonitrile',         'CH3CN'),
+			   'Explicit':             ('Explicit',             'explicit')}
 	solvent = section.get('Solvent')
-	aList = allowed_solvents_dict.values()
-	for i, v in enumerate(aList):
-		aList[i] = aList[i][0]
-	allowed_solvents_tuple = tuple(aList)
-	solvent_index = -1
-	for i in allowed_solvents_dict:
-		if (solvent.get() in allowed_solvents_dict[i]):
-			solvent_index = i
+	explicitSolvent = solvent.get() in allowedSolvents['Explicit']
+	if(explicitSolvent):
+		PRF = section.is_set('ProbeRadius')
+		GIF = section.is_set('Green<inside>')
+		GOF = section.is_set('Green<outside>')
+		if (not PRF):
+			print "Error: Explicit solvent chosen but ProbeRadius not specified"
+		if (not GIF):
+			print "Error: Explicit solvent chosen but Green<inside> not specified"
+		if (not GOF):
+			print "Error: Explicit solvent chosen but Green<outside> not specified"
+		if (not GIF or not GOF or not PRF):
+			sys.exit(1)
+	solventFound = False
+	for i, v in allowedSolvents.iteritems():
+		if (solvent.get() in v):
+			solventName = i
+			solventFound = True
 			break
-	if (solvent_index not in range(19)):
-		print "Allowed solvents are: ", allowed_solvents_tuple
-		print "Overriding built-in solvents (if Green's Functions specified!)"
-	idx = section.get('SolIndex')
-	idx.set(solvent_index)
-	solradius = section.get('SolRadius')
-	if (solradius.get() < 0.1 or solradius.get() > 100):
-		print "Solvent probe radius has to be within [0.1,100]"
+	if (not solventFound):
+		print "Unknown solvent"
+		print "Choose a solvent from the following list: "
+		print allowedSolvents.keys()
+		print "or specify the solvent data explicitly."
 		sys.exit(1)
-			
+	radius = section.get('ProbeRadius')
+	if (radius.get() < 0.1 or radius.get() > 100):
+		print "Probe radius has to be within [0.1,100]"
+		sys.exit(1)
+
+
 def verify_green(section):
 	required = ('Type',)
 	allowed = ('Vacuum', 'UniformDielectric', 'MetalSphere', 'GreensFunctionSum')
@@ -329,3 +340,5 @@ def verify_spheres(keyword):
 
 if __name__ == '__main__':
 	main()
+
+

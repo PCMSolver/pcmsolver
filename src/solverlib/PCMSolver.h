@@ -18,8 +18,10 @@ using namespace std;
 
 class PCMSolver{
  public:
-    PCMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
-    PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
+    PCMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo, 
+              int equation=SecondKind, int solver=Traditional);
+    PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo, 
+              int equation=SecondKind, int solver=Traditional);
     PCMSolver(Section solver);
     ~PCMSolver();
     GreensFunctionInterface & getGreenInside();
@@ -34,21 +36,25 @@ class PCMSolver{
     virtual void setSolverType(const string & type);
     virtual void setSolverType(int type);
     virtual int getSolverType() { return solverType; }
-    enum solverTypes{Traditional, Wavelet, Linear};
+    virtual void setEquationType(const string & type);
+    virtual void setEquationType(int type);
+    virtual int getEquationType() { return integralEquation; }
     vector<Solvent> initSolvent();
-    string & getSolvent(){ return solvent; }
-    void setSolvent(string & solvent);
+    Solvent getSolvent(){ return solvent; }
+    void setSolvent(Solvent & solvent);
     friend std::ostream & operator<<(std::ostream & os, PCMSolver & obj) {
         return obj.printObject(os);
     }
-
+    enum EquationType {FirstKind, SecondKind, Full};
+    enum SolverType {Traditional, Wavelet, Linear};
  protected:
     bool allocated;
     int cavitySize;
     GreensFunctionInterface *greenInside;
     GreensFunctionInterface *greenOutside;
-    int solverType;
+    SolverType solverType;
+    EquationType integralEquation;
     virtual ostream & printObject(ostream & os);
-    string solvent;
+    Solvent solvent;
 };
 #endif

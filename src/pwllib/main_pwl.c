@@ -136,7 +136,12 @@ int main()
                     S_e.value1[i][j] /= epsilon;
             }
         } else {
-            det = sqrt(epsilon11 * epsilon22 * epsilon33 + epsilon12 * epsilon23 * epsilon31 + epsilon13 * epsilon21 * epsilon32 - epsilon11 * epsilon32 * epsilon23 - epsilon21 * epsilon12 * epsilon33 - epsilon31 * epsilon22 * epsilon13);
+            det = sqrt(epsilon11 * epsilon22 * epsilon33 + 
+                       epsilon12 * epsilon23 * epsilon31 + 
+                       epsilon13 * epsilon21 * epsilon32 - 
+                       epsilon11 * epsilon32 * epsilon23 - 
+                       epsilon21 * epsilon12 * epsilon33 - 
+                       epsilon31 * epsilon22 * epsilon13);
             WEM_pwl(&S_e, W, P, E, T, p, M, SingleLayerAni, DoubleLayerAni, -2 * pi / det);
             for (i = 0; i < np; i++) {  /* correct scaling */
                 for (j = 0; j < S_e.row_number[i]; j++) {
@@ -154,12 +159,12 @@ int main()
     u = (double *) calloc(np, sizeof(double));
     v = (double *) calloc(np, sizeof(double));
     if (CASE == 1) {
-        WEMRHS_pwl1(&rhs, W, E, T, p, M, np);
+        WEMRHS1_pwl(&rhs, W, E, T, p, M, np);
         i = WEMPGMRES_pwl1(&S_i, rhs, u, eps, W, F, p, M);
         printf("Solving the linear system:       %d iterations\n", i);
     } else if (CASE == 2) {
-        WEMRHS_pwl2(&rhs, W, E, T, p, M, np);   /* compute correct rhs: b-G*A2^(-1)*b */
-        i = WEMPGMRES_pwl2(&S_i, rhs, v, eps, W, F, p, M);
+        WEMRHS2_pwl(&rhs, W, E, T, p, M, np);   /* compute correct rhs: b-G*A2^(-1)*b */
+        i = WEMPGMRES2_pwl(&S_i, rhs, v, eps, W, F, p, M);
         printf("Solving the 1st linear system:   %d iterations\n", i);
         init_sparse(&G, np, np, 10);
         single_scale_gram_pwl(&G, F, p, M);
@@ -176,7 +181,7 @@ int main()
         i = WEMPCG_pwl(&S_i, rhs, u, eps, W, F, p, M);
         printf("Solving the 2nd linear system:   %d iterations\n", i);
     } else if ((CASE == 3) || (CASE == 4)) {
-        WEMRHS_pwl2(&rhs, W, E, T, p, M, np);
+        WEMRHS2_pwl(&rhs, W, E, T, p, M, np);
         i = WEMPCG_pwl(&S_i, rhs, u, eps, W, F, p, M);  /* u = V_i^(-1)*N_f */
         printf("Solving the 1st linear system:   %d iterations\n", i);
         memset(rhs, 0, np * sizeof(double));

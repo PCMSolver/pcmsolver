@@ -124,7 +124,7 @@ int main()
     /* loese Gleichungssystem */
     u = (double *) calloc(np, sizeof(double));
     v = (double *) calloc(np, sizeof(double));
-    WEMRHS_pwl1(&rhs, W, E, T, p, M, np);
+    WEMRHS1_pwl(&rhs, W, E, T, p, M, np);
     i = WEMPGMRES_pwl1(&S_i, rhs, u, eps, W, F, p, M);
     printf("Solving the linear system:       %d iterations\n", i);
 

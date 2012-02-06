@@ -124,8 +124,8 @@ int main()
     /* loese Gleichungssystem */
     u = (double *) calloc(np, sizeof(double));
     v = (double *) calloc(np, sizeof(double));
-    WEMRHS_pwl2(&rhs, W, E, T, p, M, np);       /* compute correct rhs: b-G*A2^(-1)*b */
-    i = WEMPGMRES_pwl2(&S_i, rhs, v, eps, W, F, p, M);
+    WEMRHS2_pwl(&rhs, W, E, T, p, M, np);       /* compute correct rhs: b-G*A2^(-1)*b */
+    i = WEMPGMRES2_pwl(&S_i, rhs, v, eps, W, F, p, M);
     printf("Solving the 1st linear system:   %d iterations\n", i);
     init_sparse(&G, np, np, 10);
     single_scale_gram_pwl(&G, F, p, M);

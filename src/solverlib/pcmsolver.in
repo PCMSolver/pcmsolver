@@ -33,7 +33,6 @@ def main():
 		debug = False
 
 	valid_keywords = setup_keywords()
-	printl = int(valid_keywords.getkw('PRINTL')[0])
 	inpfil = parse_cmdline(valid_keywords)
 
 	if printlevel > 1:
@@ -141,11 +140,6 @@ def	setup_keywords():
 	return top
 		
 def verify_top(section):
-	key = section.get('PRINTL')
-	val = key.get()
-	if (val < 0):
-		val = 0
-	
 	allowed_units = ('AU', 'Angstrom')
 	key = section.get('Units')
 	val = key.get()

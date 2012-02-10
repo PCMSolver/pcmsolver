@@ -22,7 +22,7 @@ class PCMSolver{
               int equation=SecondKind, int solver=Traditional);
     PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo, 
               int equation=SecondKind, int solver=Traditional);
-    PCMSolver(Section solver);
+    PCMSolver(const Section & solver);
     ~PCMSolver();
     GreensFunctionInterface & getGreenInside();
     GreensFunctionInterface & getGreenOutside();    

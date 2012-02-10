@@ -36,25 +36,25 @@ vector<Solvent> Solvent::initSolventVector() {
 	*/
 
 	vector<Solvent> solventData;
-	solventData[0]  = Solvent("Water", 78.39, 1.776, 1.385);
-	solventData[1]  = Solvent("Methanol", 32.63, 1.758, 1.855);
-	solventData[2]  = Solvent("Ethanol", 24.55, 1.847, 2.18);
-	solventData[3]  = Solvent("Chloroform", 4.90, 2.085, 2.48);
-	solventData[4]  = Solvent("Methylenechloride", 8.93, 2.020, 2.27);
-	solventData[5]  = Solvent("1,2-Dichloroethane", 10.36, 2.085, 2.505);
-	solventData[6]  = Solvent("Carbon tetrachloride", 2.228, 2.129, 2.685);
-	solventData[7]  = Solvent("Benzene", 2.247, 2.244, 2.630);
-	solventData[8]  = Solvent("Toluene", 2.379, 2.232, 2.82);
-	solventData[9]  = Solvent("Chlorobenzene", 5.621, 2.320, 2.805);
-	solventData[10] = Solvent("Nitromethane", 38.20, 1.904, 2.155);
-	solventData[11] = Solvent("N-heptane", 1.92, 1.918, 3.125);
-	solventData[12] = Solvent("Cyclohexane", 2.023, 2.028, 2.815);
-	solventData[13] = Solvent("Aniline", 6.89, 2.506, 2.80);
-	solventData[14] = Solvent("Acetone", 20.7, 1.841, 2.38);
-	solventData[15] = Solvent("Tetrahydrofurane", 7.58, 1.971, 2.9);
-	solventData[16] = Solvent("Dimethylsulfoxide", 46.7, 2.179, 2.455);
-	solventData[17] = Solvent("Acetonitrile", 36.64, 1.806, 2.155);	
-	solventData[18] = Solvent("External", 0.0, 0.0, 0.0);	
+	solventData.push_back(Solvent("Water", 78.39, 1.776, 1.385));
+	solventData.push_back(Solvent("Methanol", 32.63, 1.758, 1.855));
+	solventData.push_back(Solvent("Ethanol", 24.55, 1.847, 2.18));
+	solventData.push_back(Solvent("Chloroform", 4.90, 2.085, 2.48));
+	solventData.push_back(Solvent("Methylenechloride", 8.93, 2.020, 2.27));
+	solventData.push_back(Solvent("1,2-Dichloroethane", 10.36, 2.085, 2.505));
+	solventData.push_back(Solvent("Carbon tetrachloride", 2.228, 2.129, 2.685));
+	solventData.push_back(Solvent("Benzene", 2.247, 2.244, 2.630));
+	solventData.push_back(Solvent("Toluene", 2.379, 2.232, 2.82));
+	solventData.push_back(Solvent("Chlorobenzene", 5.621, 2.320, 2.805));
+	solventData.push_back(Solvent("Nitromethane", 38.20, 1.904, 2.155));
+	solventData.push_back(Solvent("N-heptane", 1.92, 1.918, 3.125));
+	solventData.push_back(Solvent("Cyclohexane", 2.023, 2.028, 2.815));
+	solventData.push_back(Solvent("Aniline", 6.89, 2.506, 2.80));
+	solventData.push_back(Solvent("Acetone", 20.7, 1.841, 2.38));
+	solventData.push_back(Solvent("Tetrahydrofurane", 7.58, 1.971, 2.9));
+	solventData.push_back(Solvent("Dimethylsulfoxide", 46.7, 2.179, 2.455));
+	solventData.push_back(Solvent("Acetonitrile", 36.64, 1.806, 2.155));	
+	solventData.push_back(Solvent("Explicit", 0.0, 0.0, 0.0));	
   
   // ------------------------------------------------------------
 

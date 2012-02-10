@@ -22,7 +22,7 @@ class WEMSolver : public PCMSolver {
  public:
     WEMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
     WEMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
-    WEMSolver(Section solver);
+    WEMSolver(const Section & solver);
     ~WEMSolver();
     vector3 **** getT_(){return T_;}
     int getQuadratureLevel(){return quadratureLevel_;}

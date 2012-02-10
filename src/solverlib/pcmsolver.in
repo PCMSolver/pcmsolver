@@ -99,13 +99,13 @@ def parse_cmdline(valid_keywords):
 def	setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
-	top.add_kw('SolverType','STR', 'Traditional')
-	top.add_kw('EquationType','STR', 'SecondKind')
 	top.add_kw('Units',     'STR', 'AU')
 
 	medium=getkw.Section('Medium', callback=verify_medium)
-	medium.add_kw('Solvent', 'STR', 'Water')
-	medium.add_kw('ProbeRadius','DBL', 1.0)
+	medium.add_kw('Solvent',     'STR', 'Water')
+	medium.add_kw('SolverType',  'STR', 'Traditional')
+	medium.add_kw('EquationType','STR', 'SecondKind')
+	medium.add_kw('ProbeRadius', 'DBL', 1.0)
 	top.add_sect(medium)
 	
 	green=getkw.Section('Green', callback=verify_green)
@@ -146,13 +146,6 @@ def verify_top(section):
 	if (val not in allowed_units):
 	    	print "Allowed units are: ", allowed_units
 		sys.exit(1)
-
-	allowed_types = ('Traditional', 'Wavelet', 'Linear')
-        key = section.get('SolverType')
-        val = key.get()
-        if (val not in allowed_types):  
-                print "Allowed types are: ", allowed_types
-        	sys.exit(1)
 
 def verify_cavity(section):
 	allowed = ('GePol', 'Wavelet')
@@ -276,6 +269,19 @@ def verify_medium(section):
 	if (radius.get() < 0.1 or radius.get() > 100):
 		print "Probe radius has to be within [0.1,100]"
 		sys.exit(1)
+	allowed_types = ('Traditional', 'Wavelet', 'Linear')
+        key = section.get('SolverType')
+        val = key.get()
+        if (val not in allowed_types):  
+                print "Allowed types are: ", allowed_types
+        	sys.exit(1)
+	allowed_equations = ('FirstKind', 'SecondKind', 'Full')
+        key = section.get('EquationType')
+        val = key.get()
+        if (val not in allowed_equations):  
+                print "Allowed equations are: ", allowed_equations
+        	sys.exit(1)
+
 
 
 def verify_green(section):

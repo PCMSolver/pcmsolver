@@ -17,7 +17,7 @@ class IEFSolver : public PCMSolver {
  public:
     IEFSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
     IEFSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
-    IEFSolver(Section solver);
+    IEFSolver(const Section & solver);
     ~IEFSolver();
     const MatrixXd& getPCMMatrix() const {return PCMMatrix;};
 

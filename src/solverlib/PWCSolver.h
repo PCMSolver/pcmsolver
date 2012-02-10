@@ -24,7 +24,7 @@ class PWCSolver : public WEMSolver {
  public:
     PWCSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo);
     PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo);
-    PWCSolver(Section solver);
+    PWCSolver(const Section & solver);
     ~PWCSolver();
  protected:
     virtual void initInterpolation();

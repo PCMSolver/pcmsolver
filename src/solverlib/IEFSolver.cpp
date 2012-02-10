@@ -31,7 +31,7 @@ IEFSolver::IEFSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gf
 	builtAnisotropicMatrix = false;
 }
 
-IEFSolver::IEFSolver(Section solver) : PCMSolver(solver) {
+IEFSolver::IEFSolver(const Section & solver) : PCMSolver(solver) {
 	builtIsotropicMatrix = false;
 	builtAnisotropicMatrix = false;
 }

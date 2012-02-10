@@ -64,7 +64,7 @@ WEMSolver::WEMSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gf
 	initWEMMembers();
 }
 
-WEMSolver::WEMSolver(Section solver) : PCMSolver(solver) {
+WEMSolver::WEMSolver(const Section & solver) : PCMSolver(solver) {
 	initWEMMembers();
 }
 
@@ -119,13 +119,13 @@ void WEMSolver::constructSystemMatrix(){
 }
 
 void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
+
+	std::cout << "Integral Equation " << integralEquation << std::endl;
 	switch (integralEquation) {
 	case FirstKind:
 		solveFirstKind(potential, charge);
 		break;
 	case SecondKind:
-		std::cout << "Second Kind NYI" << std::endl;
-		exit(-1);
 		solveSecondKind(potential, charge);
 	case Full:
 		solveFull(potential, charge);

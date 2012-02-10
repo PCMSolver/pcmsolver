@@ -41,10 +41,11 @@ PCMSolver::PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo,
 	setEquationType(equation);
 }
 
-PCMSolver::PCMSolver(Section solver) {
+PCMSolver::PCMSolver(const Section & solver) {
 	SolventMap solvents = Solvent::initSolventMap();
 	string name = solver.getStr("Solvent");
-	this->solvent = *solvents[name];
+	this->solvent = *solvents["Water"];
+	std::cout << this->solvent << std::endl;
 	bool greenInsideSet  = solver.getSect("Green<inside>").isDefined();
 	bool greenOutsideSet = solver.getSect("Green<outside>").isDefined();
 	//	string PR = "ProbeRadius";
@@ -79,11 +80,11 @@ PCMSolver::~PCMSolver(){
 
 void PCMSolver::setSolverType(const string & type) {
 	if (type == "Traditional") {
-		this->setSolverType(Traditional);
+		setSolverType(Traditional);
 	} else if (type == "Wavelet") {
-		this->setSolverType(Wavelet);
+		setSolverType(Wavelet);
 	} else if (type == "Linear") {
-		this->setSolverType(Wavelet);
+		setSolverType(Linear);
 	} else {
 		exit(-1);
 	}
@@ -107,17 +108,18 @@ void PCMSolver::setSolverType(int type) {
 
 void PCMSolver::setEquationType(const string & type) {
 	if (type == "FirstKind") {
-		this->setEquationType(FirstKind);
+		setEquationType(FirstKind);
 	} else if (type == "SecondKind") {
-		this->setEquationType(SecondKind);
+		setEquationType(SecondKind);
 	} else if (type == "Full") {
-		this->setSolverType(Full);
+		setEquationType(Full);
 	} else {
 		exit(-1);
 	}
 }
 
 void PCMSolver::setEquationType(int type) {
+	std::cout << "Setting eq type NUM" << type << std::endl; 
 	switch (type) {
 	case FirstKind :
 		integralEquation = FirstKind;

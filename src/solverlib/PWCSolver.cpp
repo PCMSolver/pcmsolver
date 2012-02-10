@@ -93,25 +93,19 @@ void PWCSolver::initPointers()
 {
 	elementTree = NULL;
 	waveletList = NULL;
-	setSolverType("Wavelet");
-	setEquationType("Full");
 }
 
 PWCSolver::PWCSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
 	WEMSolver(gfi, gfo) {
 	initPointers();
-	setSolverType("Wavelet");
-	setEquationType("Full");
 }
 
 PWCSolver::PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
 	WEMSolver(gfi, gfo) {
 	initPointers();
-	setSolverType("Wavelet");
-	setEquationType("Full");
 }
 
-PWCSolver::PWCSolver(Section solver) : WEMSolver(solver) {
+PWCSolver::PWCSolver(const Section & solver) : WEMSolver(solver) {
 	initPointers();
 }
 
@@ -164,12 +158,12 @@ void PWCSolver::constructSe() {
 }
 
 void PWCSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
-	std::cout << "NYI" << std::endl;
+	std::cout << "First kind NYI" << std::endl;
 	exit(-1);
 }
 
 void PWCSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
-	std::cout << "NYI" << std::endl;
+	std::cout << "Second kind NYI" << std::endl;
 	exit(-1);
 }
 

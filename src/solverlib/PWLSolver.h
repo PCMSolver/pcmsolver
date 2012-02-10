@@ -27,6 +27,7 @@ class PWLSolver : public WEMSolver {
     PWLSolver(Section solver);
     ~PWLSolver();
     virtual void constructSystemMatrix();
+    virtual void constructWavelets();
     virtual void initInterpolation();
     virtual void compCharge(const VectorXd & potential, VectorXd & charge);
     virtual void initPointers();

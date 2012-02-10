@@ -160,28 +160,28 @@ int main()
     v = (double *) calloc(np, sizeof(double));
     if (CASE == 1) {
         WEMRHS1_pwl(&rhs, W, E, T, p, M, np);
-        i = WEMPGMRES_pwl1(&S_i, rhs, u, eps, W, F, p, M);
+        i = WEMPGMRES1_pwl(&S_i, rhs, u, eps, W, F, p, M);
         printf("Solving the linear system:       %d iterations\n", i);
     } else if (CASE == 2) {
-        WEMRHS2_pwl(&rhs, W, E, T, p, M, np);   /* compute correct rhs: b-G*A2^(-1)*b */
-        i = WEMPGMRES2_pwl(&S_i, rhs, v, eps, W, F, p, M);
+        WEMRHS2_pwl(&rhs, W, E, T, p, M, np); //compute N_\rho  /* compute correct rhs: b-G*A2^(-1)*b */
+        i = WEMPGMRES2_pwl(&S_i, rhs, v, eps, W, F, p, M); // result in v=A2^(-1)*rhs
         printf("Solving the 1st linear system:   %d iterations\n", i);
         init_sparse(&G, np, np, 10);
-        single_scale_gram_pwl(&G, F, p, M);
-        tdwtLin(v, F, M, p, np);
+        single_scale_gram_pwl(&G, F, p, M); // compute mass matrix
+        tdwtLin(v, F, M, p, np); // wavelet transform
         for (i = 0; i < np; i++) {
             for (j = 0; j < G.row_number[i]; j++) {
                 u[i] += G.value[i][j] * v[G.index[i][j]];
             }
         }
-        dwtLin(u, F, M, p, np);
+        dwtLin(u, F, M, p, np); //inverse transform
         for (i = 0; i < np; i++)
-            rhs[i] += 4 * pi * u[i] / (epsilon - 1);
+            rhs[i] += 4 * pi * u[i] / (epsilon - 1);  // RHS equation (2.7)
         memset(u, 0, np * sizeof(double));
-        i = WEMPCG_pwl(&S_i, rhs, u, eps, W, F, p, M);
+        i = WEMPCG_pwl(&S_i, rhs, u, eps, W, F, p, M); //V \sigma = RHS
         printf("Solving the 2nd linear system:   %d iterations\n", i);
     } else if ((CASE == 3) || (CASE == 4)) {
-        WEMRHS2_pwl(&rhs, W, E, T, p, M, np);
+        WEMRHS2_pwl(&rhs, W, E, T, p, M, np); // comp potential
         i = WEMPCG_pwl(&S_i, rhs, u, eps, W, F, p, M);  /* u = V_i^(-1)*N_f */
         printf("Solving the 1st linear system:   %d iterations\n", i);
         memset(rhs, 0, np * sizeof(double));
@@ -189,7 +189,7 @@ int main()
             for (j = 0; j < S_e.row_number[i]; j++)
                 rhs[i] += S_e.value1[i][j] * u[S_e.index[i][j]];
         }
-        i = WEMPGMRES_pwl3(&S_i, &S_e, rhs, v, eps, W, F, p, M);        /* solve complicated_system u = A^(-1)*rhs */
+        i = WEMPGMRES3_pwl(&S_i, &S_e, rhs, v, eps, W, F, p, M);        /* solve complicated_system u = A^(-1)*rhs */
         printf("Solving the 2nd linear system:   %d iterations\n", i);
         for (i = 0; i < np; i++)
             u[i] -= 4 * pi * v[i];      /* u = u - 4*pi*v */
@@ -219,3 +219,4 @@ int main()
     free(v);
     return (0);
 }
+

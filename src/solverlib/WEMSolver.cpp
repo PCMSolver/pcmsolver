@@ -42,30 +42,6 @@ extern "C"{
 #include "PCMSolver.h"
 #include "WEMSolver.h"
 
-static double SLInt(vector3 x, vector3 y)
-{  
-	return(1.0l/sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z)));
-}
-
-
-static double SLExt(vector3 x, vector3 y)
-{
-	double 		r = sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z));
-	return 1.0l/(r*78.39l);
-}
-
-
-static double DLUni(vector3 x, vector3 y, vector3 n_y)
-{  
-	vector3		c;
-	double		r;
-	c.x = x.x-y.x;
-	c.y = x.y-y.y;
-	c.z = x.z-y.z;
-	r = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
-	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
-}
-
 void WEMSolver::initWEMMembers()
 {
 	pointList = NULL;
@@ -99,7 +75,7 @@ WEMSolver::~WEMSolver(){
 	if(pointList != NULL)   free_points(&pointList, nPatches, nLevels);
 	if(systemMatricesInitialized_){
 		free_sparse2(&S_i_);
-		free_sparse2(&S_e_);
+		if(integralEquation == Full) free_sparse2(&S_e_);
 	}
 }
 
@@ -126,11 +102,38 @@ void WEMSolver::buildSystemMatrix(Cavity & cavity) {
     if (WaveletCavity *waveletCavity = dynamic_cast<WaveletCavity*> (&cavity)) {
 		this->uploadCavity(*waveletCavity);
 		this->initInterpolation();
+		this->constructWavelets();
 		this->constructSystemMatrix();
 	} else {
 		std::cout << "Wavelet-type cavity needed for wavelet solver." 
 				  << std::endl;
 		exit(-1);
 	}
+}
+
+void WEMSolver::constructSystemMatrix(){
+	constructSi();
+	if(integralEquation == Full) {
+		constructSe();
+	}
+}
+
+void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
+	switch (integralEquation) {
+	case FirstKind:
+		solveFirstKind(potential, charge);
+		break;
+	case SecondKind:
+		std::cout << "Second Kind NYI" << std::endl;
+		exit(-1);
+		solveSecondKind(potential, charge);
+	case Full:
+		solveFull(potential, charge);
+		break;
+	default:
+		std::cout << "Invalid case" << std::endl;
+		exit(-1);
+	}
+	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
 }
 

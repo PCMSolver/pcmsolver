@@ -124,23 +124,19 @@ void PWLSolver::initInterpolation() {
 					nPatches, nLevels);
 }
 
-void PWLSolver::constructSystemMatrix(){
+void PWLSolver::constructWavelets(){
 	generate_elementlist_pwl(&elementTree, nodeList, elementList, nPatches, nLevels);
 	generate_waveletlist_pwl(&waveletList, elementTree, nPatches, nLevels, nNodes);
 	set_quadrature_level_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
 	simplify_waveletlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
 	complete_elementlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
-	
-	gf = greenInside; // sets the global pointer to pass GF to C code
-	apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
-	WEM_pwl(&S_i_, waveletList, elementTree, T_, nPatches, nLevels, SLInt, DLUni, 2*M_PI);
-	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
-	
-	gf = greenOutside; // sets the global pointer to pass GF to C code
-	apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
-	WEM_pwl(&S_e_, waveletList, elementTree, T_, nPatches, nLevels, SLExt, DLUni, -2*M_PI);
-	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
-	systemMatricesInitialized_ = true;
+}	
+
+void PWLSolver::constructSystemMatrix(){
+	constructSi();
+	if(integralEquation == Full) {
+		constructSe();
+	}
 }
 
 void PWLSolver::constructSi() {
@@ -171,7 +167,7 @@ void PWLSolver::constructSe() {
 	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
 }
 
-int PWLSolver::solveSecondKind() {
+int PWLSolver::solveFirstKind() {
 	sparse * G;
 	double * rhs;
 	double * u = (double*) calloc(nFunctions, sizeof(double));
@@ -179,9 +175,9 @@ int PWLSolver::solveSecondKind() {
 	//next line is just a quick fix but i do not like it...
     VectorXd pot = potential;
 	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
-			 pot.data(), quadratureLevel_);
+				 pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
 	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList,
-							   elementList, nPatches, nLevels);
+							   elementList, nPatches, nLevels); // v = A^{-1} * rhs
 	init_sparse(G, nPoints, nPoints, 10);
 	single_scale_gram_pwl(G, elementList, nPatches, nLevels);
 	tdwtLin(v, elementList, nLevels, nPatches, nPoints);
@@ -192,7 +188,7 @@ int PWLSolver::solveSecondKind() {
 	}
 	dwtLin(u, elementList, nLevels, nPatches, nPoints);
 	for (i = 0; i < np; i++) {
-		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
+		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1); // assembling RHS equation (2.7) Computing, 2009, 86, 1-22
 	}
 	memset(u, 0, np * sizeof(double));
 	iters = WEMPCG_pwl(&S_i, rhs, u, threshold, waveletList, elementList,
@@ -202,58 +198,38 @@ int PWLSolver::solveSecondKind() {
 	free(u);
 	free(v);
 	free_sparse(G);
-	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
 }
 
-void PWLSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
-	double *rhs;
-	double *u = (double*) calloc(nFunctions, sizeof(double));
-	double *v = (double*) calloc(nFunctions, sizeof(double));
+int PWLSolver::solveFull() {
+	sparse * G;
+	double * rhs;
+	double * u = (double*) calloc(nFunctions, sizeof(double));
+	double * v = (double*) calloc(nFunctions, sizeof(double));
 	//next line is just a quick fix but i do not like it...
     VectorXd pot = potential;
 	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
-			 pot.data(), quadratureLevel_);
-	int iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, nPatches, nLevels);
-	memset(rhs, 0, nFunctions*sizeof(double));
-	for(unsigned int i = 0; i < nFunctions; i++) {
-		for(unsigned int j = 0; j < S_e_.row_number[i]; j++)  {
-			rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
+				 pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
+	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList,
+							   elementList, nPatches, nLevels); // v = A^{-1} * rhs
+	init_sparse(G, nPoints, nPoints, 10);
+	single_scale_gram_pwl(G, elementList, nPatches, nLevels);
+	tdwtLin(v, elementList, nLevels, nPatches, nPoints);
+	for (int i = 0; i < nPoints; i++) {
+		for (int j = 0; j < G.row_number[i]; j++) {
+			u[i] += G.value[i][j] * v[G.index[i][j]];
 		}
 	}
-	iters = WEMPGMRES3_pwl(&S_i_, &S_e_, rhs, v, threshold, 
+	dwtLin(u, elementList, nLevels, nPatches, nPoints);
+	for (i = 0; i < np; i++) {
+		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1); // assembling RHS equation (2.7) Computing, 2009, 86, 1-22
+	}
+	memset(u, 0, np * sizeof(double));
+	iters = WEMPCG_pwl(&S_i, rhs, u, threshold, waveletList, elementList,
 					   nPatches, nLevels);
-	for(unsigned int i = 0; i < nFunctions; i++) {
-		u[i] -= 4*M_PI*v[i];
-	}
-	tdwtKon(u, nLevels, nFunctions);
-  // Interpolate charges
-	cubature *Q;
-	init_Gauss_Square(&Q, quadratureLevel_+1);
-	vector2 s;
-	vector2 t;
-	int index = 0;
-	int zi = 0;
-	double h = 1.0/(1<<nLevels);
-	for (unsigned int i1=0; i1<nPatches; i1++) {
-	    s.y = 0;
-		for (int i2=0; i2<(1<<nLevels); i2++) {
-			s.x = 0;
-			for (int i3=0; i3<(1<<nLevels); i3++) {
-				for (unsigned int k=0; k<Q[quadratureLevel_].nop; k++) {
-					t = vector2_add(s, vector2_Smul(h, Q[quadratureLevel_].xi[k]));
-					charge(index) = Q[quadratureLevel_].w[k]*u[zi] * h;
-					index ++;
-				}
-				s.x += h;
-				zi++;
-			}
-			s.y += h;
-		}
-	}
 	free_Gauss_Square(&Q, quadratureLevel_ + 1);
 	free(rhs);
 	free(u);
 	free(v);
-	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
+	free_sparse(G);
 }
 

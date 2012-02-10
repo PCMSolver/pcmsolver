@@ -44,7 +44,7 @@ const unsigned int maxiter = 100;       /* Restart - Parameter */
  *  Hauptprogramm  *
  *=================*/
 
-unsigned int WEMPGMRES_pwl1(A, b, x, epsi, W, F, p, M)
+unsigned int WEMPGMRES1_pwl(A, b, x, epsi, W, F, p, M)
 /* loest A2'*x = b */
 sparse2 *A;
 double *b, *x, epsi;

@@ -27,11 +27,17 @@ class WEMSolver : public PCMSolver {
     vector3 **** getT_(){return T_;}
     int getQuadratureLevel(){return quadratureLevel_;}
     virtual void buildSystemMatrix(Cavity & cavity);
-    virtual void constructSystemMatrix() = 0;
-    virtual void initInterpolation() = 0;
-    virtual void uploadCavity(WaveletCavity cavity); // different interpolation
-    virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
+    virtual void compCharge(const VectorXd & potential, VectorXd & charge);
  protected:
+    virtual void constructSystemMatrix();
+    virtual void uploadCavity(WaveletCavity cavity); // different interpolation
+    virtual void constructSi() = 0;
+    virtual void constructSe() = 0;
+    virtual void solveFirstKind(const VectorXd & potential, VectorXd & charge) = 0;
+    virtual void solveSecondKind(const VectorXd & potential, VectorXd & charge) = 0;
+    virtual void solveFull(const VectorXd & potential, VectorXd & charge) = 0;
+    virtual void constructWavelets() = 0;
+    virtual void initInterpolation() = 0;
     double threshold;
     unsigned int quadratureLevel_;
     sparse2 S_i_, S_e_; // System matrices

@@ -351,7 +351,7 @@ unsigned int **F, p, M;
  *		M    : Zahl der Level                           *
  *==============================================================*/
 
-unsigned int WEMPGMRES_pwl3(A, B, rhs, x, epsi, W, F, p, M)
+unsigned int WEMPGMRES3_pwl(A, B, rhs, x, epsi, W, F, p, M)
 /* loest (B1*G^(-1)*A2'-B2*G^(-1)*A1)*x = rhs */
 sparse2 *A, *B;
 double *rhs, *x, epsi;

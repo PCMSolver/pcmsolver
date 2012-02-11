@@ -13,6 +13,7 @@ using namespace Eigen;
 
 extern "C"{
 #include "vector3.h"
+#include "sparse.h"
 #include "sparse2.h"
 #include "intvector_pwl.h"
 #include "basis_pwl.h"
@@ -31,6 +32,7 @@ extern "C"{
 #include "cubature.h"
 #include "gauss_square.h"
 #include "constants.h"
+#include "precond_pwl.h"
 }
 
 #include "Constants.h"
@@ -115,7 +117,7 @@ PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
 
 PWLSolver::~PWLSolver(){
 	if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches, nLevels);
-	if(waveletList != NULL) free_waveletlist_pwl(&waveletList, nPatches, nLevels);
+	if(waveletList != NULL) free_waveletlist_pwl(&waveletList, nNodes);
 }
 
 void PWLSolver::initInterpolation() {
@@ -132,104 +134,79 @@ void PWLSolver::constructWavelets(){
 	complete_elementlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
 }	
 
-void PWLSolver::constructSystemMatrix(){
-	constructSi();
-	if(integralEquation == Full) {
-		constructSe();
-	}
-}
-
 void PWLSolver::constructSi() {
 	double factor = 0;
+	double epsilon = 0;
 	switch (integralEquation) {
 	case FirstKind:
 	case SecondKind:
-		double epsilon = greenOutside->getEpsilon();
+		epsilon = greenOutside->getDielectricConstant();
 		factor = 2 * M_PI * (epsilon + 1) / (epsilon - 1);
 		break;
-	case Full
+	case Full:
 		factor = 2 * M_PI;
-		break;
+	break;
 	default:
 		exit(-1);
 	}
 	gf = greenInside;
-	apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
-	WEM_pwl(&S_i_, waveletList, elementTree, T_, nPatches, nLevels, 
+	apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, 
+								nPatches, nLevels, nNodes);
+	WEM_pwl(&S_i_, waveletList, nodeList, elementTree, T_, nPatches, nLevels, 
 			SingleLayer, DoubleLayer, factor);
-	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
+	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, 
+								 nPatches, nLevels);
 }
 
 void PWLSolver::constructSe() {
 	gf = greenOutside; // sets the global pointer to pass GF to C code
-	apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
-	WEM_pwl(&S_e_, waveletList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer, -2*M_PI);
-	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
+	apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches,
+								nLevels, nNodes);
+	WEM_pwl(&S_e_, waveletList, nodeList, elementTree, T_, nPatches, nLevels,
+			SingleLayer, DoubleLayer, -2*M_PI);
+	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches,
+								 nLevels);
 }
 
-int PWLSolver::solveFirstKind() {
-	sparse * G;
-	double * rhs;
+void PWLSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
+	std::cout << "First kind NYI" << std::endl;
+	exit(-1);
+}
+
+void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
+	sparse * G = 0;
+	double * rhs = 0;
 	double * u = (double*) calloc(nFunctions, sizeof(double));
 	double * v = (double*) calloc(nFunctions, sizeof(double));
 	//next line is just a quick fix but i do not like it...
     VectorXd pot = potential;
 	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
-				 pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
+				 nNodes, pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
 	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList,
 							   elementList, nPatches, nLevels); // v = A^{-1} * rhs
-	init_sparse(G, nPoints, nPoints, 10);
+	init_sparse(G, nNodes, nNodes, 10);
 	single_scale_gram_pwl(G, elementList, nPatches, nLevels);
-	tdwtLin(v, elementList, nLevels, nPatches, nPoints);
-	for (int i = 0; i < nPoints; i++) {
-		for (int j = 0; j < G.row_number[i]; j++) {
-			u[i] += G.value[i][j] * v[G.index[i][j]];
+	tdwtLin(v, elementList, nLevels, nPatches, nNodes);
+	for (int i = 0; i < nNodes; i++) {
+		for (int j = 0; j < G->row_number[i]; j++) {
+			u[i] += G->value[i][j] * v[G->index[i][j]];
 		}
 	}
-	dwtLin(u, elementList, nLevels, nPatches, nPoints);
-	for (i = 0; i < np; i++) {
+	dwtLin(u, elementList, nLevels, nPatches, nNodes);
+	for (int i = 0; i < nNodes; i++) {
 		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1); // assembling RHS equation (2.7) Computing, 2009, 86, 1-22
 	}
-	memset(u, 0, np * sizeof(double));
-	iters = WEMPCG_pwl(&S_i, rhs, u, threshold, waveletList, elementList,
+	memset(u, 0, nNodes * sizeof(double));
+	iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList,
 					   nPatches, nLevels);
-	free_Gauss_Square(&Q, quadratureLevel_ + 1);
 	free(rhs);
 	free(u);
 	free(v);
 	free_sparse(G);
 }
 
-int PWLSolver::solveFull() {
-	sparse * G;
-	double * rhs;
-	double * u = (double*) calloc(nFunctions, sizeof(double));
-	double * v = (double*) calloc(nFunctions, sizeof(double));
-	//next line is just a quick fix but i do not like it...
-    VectorXd pot = potential;
-	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
-				 pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
-	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList,
-							   elementList, nPatches, nLevels); // v = A^{-1} * rhs
-	init_sparse(G, nPoints, nPoints, 10);
-	single_scale_gram_pwl(G, elementList, nPatches, nLevels);
-	tdwtLin(v, elementList, nLevels, nPatches, nPoints);
-	for (int i = 0; i < nPoints; i++) {
-		for (int j = 0; j < G.row_number[i]; j++) {
-			u[i] += G.value[i][j] * v[G.index[i][j]];
-		}
-	}
-	dwtLin(u, elementList, nLevels, nPatches, nPoints);
-	for (i = 0; i < np; i++) {
-		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1); // assembling RHS equation (2.7) Computing, 2009, 86, 1-22
-	}
-	memset(u, 0, np * sizeof(double));
-	iters = WEMPCG_pwl(&S_i, rhs, u, threshold, waveletList, elementList,
-					   nPatches, nLevels);
-	free_Gauss_Square(&Q, quadratureLevel_ + 1);
-	free(rhs);
-	free(u);
-	free(v);
-	free_sparse(G);
+void PWLSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
+	std::cout << "Second kind NYI" << std::endl;
+	exit(-1);
 }
 

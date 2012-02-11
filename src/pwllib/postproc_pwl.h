@@ -12,5 +12,6 @@
  *===============================================*/
 
 
-double postproc_pwl(sparse2 *T, wavelet_pwl * W, element_pwl * E, unsigned int p, unsigned int M);
+double postproc_pwl(sparse2 *T, wavelet_pwl * W, element_pwl * E, 
+                    unsigned int p, unsigned int M);
 #endif

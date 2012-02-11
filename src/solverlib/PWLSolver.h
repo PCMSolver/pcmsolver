@@ -22,17 +22,19 @@ using namespace std;
 
 class PWLSolver : public WEMSolver {
  public:
-    PWLSolver(GreensFunction<T> &gfi, GreensFunction<T> &gfo);
-    PWLSolver(GreensFunction<T> *gfi, GreensFunction<T> *gfo);
+    PWLSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
+    PWLSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
     PWLSolver(Section solver);
     ~PWLSolver();
-    virtual void constructSystemMatrix();
-    virtual void constructWavelets();
+ private:
     virtual void initInterpolation();
-    virtual void compCharge(const VectorXd & potential, VectorXd & charge);
+    virtual void constructWavelets();
+    virtual void constructSi();
+    virtual void constructSe();
+    virtual void solveFirstKind(const VectorXd & potential, VectorXd & charge);
+    virtual void solveSecondKind(const VectorXd & potential, VectorXd & charge);
+    virtual void solveFull(const VectorXd & potential, VectorXd & charge);
     virtual void initPointers();
- protected:
-    int equation; 
     element_pwl *elementTree; //*E_; Hierarchical element list
     wavelet_pwl *waveletList; //*W_; List of wavelets
 };

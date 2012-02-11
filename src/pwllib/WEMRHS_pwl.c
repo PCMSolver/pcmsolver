@@ -195,7 +195,7 @@ unsigned int nw;                /* Laenge von W                               */
     return;
 }
 
-void WEMRHS2_pwlM(rhs, W, E, T, p, M, nw, potential, g)
+void WEMRHS2M_pwl(rhs, W, E, T, p, M, nw, potential, g)
 /* testet die Dirichlet-Daten des gegebenen Potentials */
 double **rhs;                   /* zu berechnende rechte Seite                */
 wavelet_pwl *W;                 /* Waveletliste                               */

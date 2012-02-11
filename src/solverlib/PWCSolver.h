@@ -26,7 +26,7 @@ class PWCSolver : public WEMSolver {
     PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo);
     PWCSolver(const Section & solver);
     ~PWCSolver();
- protected:
+ private: 
     virtual void initInterpolation();
     virtual void constructWavelets();
     virtual void constructSi();
@@ -34,7 +34,6 @@ class PWCSolver : public WEMSolver {
     virtual void solveFirstKind(const VectorXd & potential, VectorXd & charge);
     virtual void solveSecondKind(const VectorXd & potential, VectorXd & charge);
     virtual void solveFull(const VectorXd & potential, VectorXd & charge);
- private: 
     virtual void initPointers();
     element *elementTree; //*E_; Hierarchical element list
     wavelet *waveletList; //*W_; List of wavelets

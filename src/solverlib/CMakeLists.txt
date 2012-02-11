@@ -3,6 +3,7 @@ set (solverlib_SOURCES
   PCMSolver.cpp
   WEMSolver.cpp
   PWCSolver.cpp
+  PWLSolver.cpp
   Solvent.cpp
 )
 #  Interface.cpp

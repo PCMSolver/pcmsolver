@@ -26,7 +26,7 @@
  *==============================================================*/
 
 
-unsigned int WEMPGMRES_pwl1(sparse2 *A, double *b, double *x, double epsi, wavelet_pwl * W, unsigned int **F, unsigned int p, unsigned int M);
+unsigned int WEMPGMRES1_pwl(sparse2 *A, double *b, double *x, double epsi, wavelet_pwl * W, unsigned int **F, unsigned int p, unsigned int M);
 
 
 unsigned int WEMPGMRES2_pwl(sparse2 *A, double *b, double *x, double epsi, wavelet_pwl * W, unsigned int **F, unsigned int p, unsigned int M);
@@ -52,5 +52,5 @@ unsigned int WEMPGMRES2_pwl(sparse2 *A, double *b, double *x, double epsi, wavel
  *		M    : Zahl der Level                           *
  *==============================================================*/
 
-unsigned int WEMPGMRES_pwl3(sparse2 *A, sparse2 *B, double *rhs, double *x, double epsi, wavelet_pwl * W, unsigned int **F, unsigned int p, unsigned int M);
+unsigned int WEMPGMRES3_pwl(sparse2 *A, sparse2 *B, double *rhs, double *x, double epsi, wavelet_pwl * W, unsigned int **F, unsigned int p, unsigned int M);
 #endif

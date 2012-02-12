@@ -71,7 +71,6 @@ WEMSolver::WEMSolver(const Section & solver) : PCMSolver(solver) {
 WEMSolver::~WEMSolver(){
 	if(nodeList != NULL)    free(nodeList);
 	if(elementList != NULL) free_patchlist(&elementList,nFunctions);
-	if(T_ != NULL)          free_interpolate(&T_,nPatches,nLevels);
 	if(pointList != NULL)   free_points(&pointList, nPatches, nLevels);
 	if(systemMatricesInitialized_){
 		free_sparse2(&S_i_);
@@ -101,9 +100,13 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 void WEMSolver::buildSystemMatrix(Cavity & cavity) {
     if (WaveletCavity *waveletCavity = dynamic_cast<WaveletCavity*> (&cavity)) {
 		this->uploadCavity(*waveletCavity);
+		std::cout << "cavity uploaded" << std::endl;
 		this->initInterpolation();
+		std::cout << "interpolation built" << std::endl;
 		this->constructWavelets();
+		std::cout << "wavelets built" << std::endl;
 		this->constructSystemMatrix();
+		std::cout << "matrix built" << std::endl;
 	} else {
 		std::cout << "Wavelet-type cavity needed for wavelet solver." 
 				  << std::endl;
@@ -127,6 +130,7 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 		break;
 	case SecondKind:
 		solveSecondKind(potential, charge);
+		break;
 	case Full:
 		solveFull(potential, charge);
 		break;

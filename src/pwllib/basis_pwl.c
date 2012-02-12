@@ -627,7 +627,7 @@ unsigned int nw;                /* Laenge von W                                *
 }
 
 
-void free_wavelet_list(W, nw)
+void free_waveletlist_pwl(W, nw)
 /* gibt den Speicherplatz der Waveletliste W frei */
 wavelet_pwl **W;                /* Liste der Wavelets  */
 unsigned int nw;                /* Anzahl der Wavelets */

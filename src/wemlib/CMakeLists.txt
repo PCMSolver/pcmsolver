@@ -32,7 +32,7 @@ set (wem_C_SOURCES
   volume.c
   )
 
-add_library(wem ${wem_C_SOURCES} ${wem_CXX_SOURCES})
+add_library(wem ${wem_C_SOURCES})
 
 install(FILES WEM.h            DESTINATION include)
 install(FILES WEMPCG.h         DESTINATION include)

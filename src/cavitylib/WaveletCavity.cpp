@@ -18,6 +18,7 @@ extern "C"{
 #include "vector2.h"
 #include "vector3.h"
 #include "interpolate.h"
+#include "interpolate_pwl.h"
 //#include "topology.h"
 //#include "kern.h"
 //#include "compression.h"
@@ -185,21 +186,19 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 				s.x = h * i3;
 				for (int k = 0; k < Q[quadLevel].nop; k++){
 					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
-					point = Chi(t,T_[i1], nLevels);
-					norm = n_Chi(t,T_[i1], nLevels);
+					point = Chi_pwl(t,T_[i1], nLevels);
+					norm = n_Chi_pwl(t,T_[i1], nLevels);
 					Vector3d center(point.x, point.y, point.z);	 
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
 					center = center / ToAngstrom;
-					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
+					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi_pwl(t, T_[i1], nLevels));
 					tessCenter.col(j) = center.transpose();
 					tessNormal.col(j) = normal.transpose();
 					tessArea(j) = area;
 					j++;
 				}
-				s.x += h;
 			}
-			s.y += h;
 		}
 	}
 	free_Gauss_Square(&Q,quadLevel+1);  

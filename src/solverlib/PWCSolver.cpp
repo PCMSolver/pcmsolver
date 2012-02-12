@@ -112,6 +112,7 @@ PWCSolver::PWCSolver(const Section & solver) : WEMSolver(solver) {
 PWCSolver::~PWCSolver(){
 	if(elementTree != NULL) free_elementlist(&elementTree, nPatches,nLevels);
 	if(waveletList != NULL) free_waveletlist(&waveletList, nPatches,nLevels);
+	if(T_ != NULL)          free_interpolate(&T_,nPatches,nLevels);
 }
 
 void PWCSolver::initInterpolation() {

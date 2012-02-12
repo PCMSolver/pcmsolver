@@ -118,6 +118,7 @@ PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
 PWLSolver::~PWLSolver(){
 	if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches, nLevels);
 	if(waveletList != NULL) free_waveletlist_pwl(&waveletList, nNodes);
+	if(T_ != NULL)          free_interpolate_pwl(&T_,nPatches,nLevels);
 }
 
 void PWLSolver::initInterpolation() {
@@ -174,22 +175,22 @@ void PWLSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
 }
 
 void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
-	sparse * G = 0;
+	sparse G;
 	double * rhs = 0;
-	double * u = (double*) calloc(nFunctions, sizeof(double));
-	double * v = (double*) calloc(nFunctions, sizeof(double));
+	double * u = (double*) calloc(nNodes, sizeof(double));
+	double * v = (double*) calloc(nNodes, sizeof(double));
 	//next line is just a quick fix but i do not like it...
     VectorXd pot = potential;
 	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
 				 nNodes, pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
 	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList,
 							   elementList, nPatches, nLevels); // v = A^{-1} * rhs
-	init_sparse(G, nNodes, nNodes, 10);
-	single_scale_gram_pwl(G, elementList, nPatches, nLevels);
+	init_sparse(&G, nNodes, nNodes, 10);
+	single_scale_gram_pwl(&G, elementList, nPatches, nLevels);
 	tdwtLin(v, elementList, nLevels, nPatches, nNodes);
 	for (int i = 0; i < nNodes; i++) {
-		for (int j = 0; j < G->row_number[i]; j++) {
-			u[i] += G->value[i][j] * v[G->index[i][j]];
+		for (int j = 0; j < G.row_number[i]; j++) {
+			u[i] += G.value[i][j] * v[G.index[i][j]];
 		}
 	}
 	dwtLin(u, elementList, nLevels, nPatches, nNodes);
@@ -202,11 +203,11 @@ void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
 	free(rhs);
 	free(u);
 	free(v);
-	free_sparse(G);
+	free_sparse(&G);
 }
 
 void PWLSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
-	std::cout << "Second kind NYI" << std::endl;
+	std::cout << "Full equation NYI" << std::endl;
 	exit(-1);
 }
 

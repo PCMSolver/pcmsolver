@@ -9,6 +9,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "vector2.h"
 #include "vector3.h"
 #include "interpolate_pwl.h"
@@ -21,6 +22,10 @@ vector3 ***Q;                   /* gegebene Knotenpunkte                    */
 unsigned int p;                 /* Anzahl der Pataches                      */
 unsigned int m;                 /* Zahl der Level                           */
 {
+    if (m < 2) {
+        printf("Cannot interpolate\n");
+        exit(-1);
+    }
     unsigned int n = 1 << (m - 2);      /* n*n Elemente pro Patch                   */
     unsigned int i1, i2, i3;    /* Laufindizes fuer Elemente                */
     unsigned int j1, j2, j3;    /* Laufindizes fuer Punkte                  */
@@ -170,7 +175,7 @@ unsigned int m;
                         + a.y * ((p[y][x][11].z + a.x * (2 * p[y][x][12].z + a.x * (3 * p[y][x][13].z + a.x * 4 * p[y][x][14].z)))
                                  + a.y * ((p[y][x][16].z + a.x * (2 * p[y][x][17].z + a.x * (3 * p[y][x][18].z + a.x * 4 * p[y][x][19].z)))
                                           + a.y * (p[y][x][21].z + a.x * (2 * p[y][x][22].z + a.x * (3 * p[y][x][23].z + a.x * 4 * p[y][x][24].z)))))));
-
+    
     return (c);
 }
 

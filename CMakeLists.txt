@@ -103,6 +103,7 @@ add_subdirectory(src)
 include_directories (src/solverlib)
 include_directories (src/wavcavlib)
 include_directories (src/wemlib)
+include_directories (src/pwllib)
 include_directories (src/pedralib)
 include_directories (src/cavitylib)
 include_directories (src/metal)
@@ -110,5 +111,5 @@ include_directories (src/green)
 
 add_executable(pcmsolver.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pcmsolver.cpp)
 
-target_link_libraries(pcmsolver.x solver green cavity pedra metal wem wavcav getkw ${LIBS})
+target_link_libraries(pcmsolver.x solver green cavity pedra metal pwl wem wavcav getkw ${LIBS})
 

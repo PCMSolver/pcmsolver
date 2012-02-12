@@ -26,8 +26,10 @@ unsigned int m;                 /* Zahl der Level                           */
     unsigned int i1, i2, i3;    /* Laufindizes fuer Elemente                */
     vector3 q[9];               /* Interpolationspunkte                     */
 
-
-    printf("p & m %d %d %d\n", p, m, n);
+    if (m < 1) {
+        printf("Cannot interpolate\n");
+        exit(-1);
+    }
 
 /* Initialisierung */
     (*P) = (vector3 ****) malloc(p * sizeof(vector3 ***));
@@ -133,9 +135,15 @@ unsigned int m;
     a.y -= y;
 
 /* Interpolation */
-    c.x = (a.y * ((p[y][x][0].x * a.x + p[y][x][1].x) * a.x + p[y][x][2].x) + (p[y][x][3].x * a.x + p[y][x][4].x) * a.x + p[y][x][5].x) * a.y + (p[y][x][6].x * a.x + p[y][x][7].x) * a.x + p[y][x][8].x;
-    c.y = (a.y * ((p[y][x][0].y * a.x + p[y][x][1].y) * a.x + p[y][x][2].y) + (p[y][x][3].y * a.x + p[y][x][4].y) * a.x + p[y][x][5].y) * a.y + (p[y][x][6].y * a.x + p[y][x][7].y) * a.x + p[y][x][8].y;
-    c.z = (a.y * ((p[y][x][0].z * a.x + p[y][x][1].z) * a.x + p[y][x][2].z) + (p[y][x][3].z * a.x + p[y][x][4].z) * a.x + p[y][x][5].z) * a.y + (p[y][x][6].z * a.x + p[y][x][7].z) * a.x + p[y][x][8].z;
+    c.x = (a.y * ((p[y][x][0].x * a.x + p[y][x][1].x) * a.x + p[y][x][2].x) 
+                + (p[y][x][3].x * a.x + p[y][x][4].x) * a.x + p[y][x][5].x) * a.y 
+                + (p[y][x][6].x * a.x + p[y][x][7].x) * a.x + p[y][x][8].x;
+    c.y = (a.y * ((p[y][x][0].y * a.x + p[y][x][1].y) * a.x + p[y][x][2].y) 
+                + (p[y][x][3].y * a.x + p[y][x][4].y) * a.x + p[y][x][5].y) * a.y 
+                + (p[y][x][6].y * a.x + p[y][x][7].y) * a.x + p[y][x][8].y;
+    c.z = (a.y * ((p[y][x][0].z * a.x + p[y][x][1].z) * a.x + p[y][x][2].z) 
+                + (p[y][x][3].z * a.x + p[y][x][4].z) * a.x + p[y][x][5].z) * a.y 
+                + (p[y][x][6].z * a.x + p[y][x][7].z) * a.x + p[y][x][8].z;
 
     return (c);
 }

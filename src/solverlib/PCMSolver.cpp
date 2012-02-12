@@ -119,12 +119,12 @@ void PCMSolver::setEquationType(const string & type) {
 }
 
 void PCMSolver::setEquationType(int type) {
-	std::cout << "Setting eq type NUM" << type << std::endl; 
 	switch (type) {
 	case FirstKind :
 		integralEquation = FirstKind;
 		break;
 	case SecondKind :
+		std::cout << "Setting eq type NUM " << type << std::endl; 
 		integralEquation = SecondKind;
 		break;
 	case Full :

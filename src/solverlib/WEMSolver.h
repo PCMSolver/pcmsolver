@@ -45,7 +45,7 @@ class WEMSolver : public PCMSolver {
     vector3 *** pointList; // the old U
     vector3 *nodeList; //*P_; --     // Point list
     unsigned int **elementList; //**F_;     // Element list
-    vector3 ****T_; //--    // Something 1 
+    vector3 ****T_; // interpolation polynomial coefficients
     unsigned int nNodes; //np_; --    // Number of knot points or something
     unsigned int nFunctions; //nf_; --    // Number of ansatz functions
     unsigned int nPatches; // p_; --    // Number of points 

@@ -200,6 +200,10 @@ void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
 	memset(u, 0, nNodes * sizeof(double));
 	iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList,
 					   nPatches, nLevels);
+	tdwtLin(u, elementList, nLevels, nPatches, nNodes);
+	
+
+
 	free(rhs);
 	free(u);
 	free(v);

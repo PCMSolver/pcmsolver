@@ -164,7 +164,7 @@ extern "C" void get_tess_centers_(double * centers) {
 	
 }
 
-extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
+/*extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
 	int nts = _cavity->size();
 	nuc_pot_pcm_(_cavity->getTessCenter().data(), &nts, 
 				 _cavity->getPot(Cavity::Nuclear).data());
@@ -178,7 +178,7 @@ extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
 
 	double totElChg = _cavity->getChg(Cavity::Electronic).sum();
 	double totNuChg = _cavity->getChg(Cavity::Nuclear).sum();
-}
+}*/
 
 extern "C" void comp_pol_ene_pcm_(double * energy) {
 	* energy = _cavity->compPolarizationEnergy();

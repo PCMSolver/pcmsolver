@@ -20,8 +20,11 @@ using namespace Eigen;
 
   vector<Atom> Bondi[] should contain the van der Waals radii taken from 
   A. Bondi, J. Phys. Chem. 68, 441-451 (1964).
-  It should be declared as a constant array, with all the
-  atomCoord data members set to void.
+  vector<Atom> Tatewaki[] should contain the effective atomic radii taken
+  from H. Tatewaki et al. Bull. Chem. Soc. Jpn. 83, 1203-1210 (2010).
+
+  They should be declared as constant vectors, with all the atomCoord 
+  data members set to void.
 
 */
 
@@ -32,13 +35,14 @@ class Atom {
   Vector3d atomCoord;
   double atomCharge;
   double atomRadius;
+  string atomColour;
        
  public:
   Atom(){}
   Atom( const string & element, const string & symbol, double charge, 
-	double radius, Vector3d & coord );
+        double radius, Vector3d & coord, const string & colour = "Violet" );
   Atom( const string & element, const string & symbol, double charge, 
-	double radius );
+        double radius );
   ~Atom(){}
   string getAtomElement(){ return atomElement; }
   void setAtomElement( const string & element ){ atomElement = element; }
@@ -50,6 +54,8 @@ class Atom {
   void setAtomCharge( double charge ){ atomCharge = charge; }
   double getAtomRadius(){ return atomRadius; }
   void setAtomRadius( double radius ){ atomRadius = radius; }
+  string getAtomColour(){ return atomColour; }
+  void setAtomColour( const string & colour ){ atomColour = colour; }
 };
 
 #endif

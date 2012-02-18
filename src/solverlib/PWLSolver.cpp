@@ -33,6 +33,7 @@ extern "C"{
 #include "gauss_square.h"
 #include "constants.h"
 #include "precond_pwl.h"
+#include "energy_pwl.h"
 }
 
 #include "Constants.h"
@@ -170,11 +171,6 @@ void PWLSolver::constructSe() {
 }
 
 void PWLSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
-	std::cout << "First kind NYI" << std::endl;
-	exit(-1);
-}
-
-void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
 	sparse G;
 	double * rhs = 0;
 	double * u = (double*) calloc(nNodes, sizeof(double));
@@ -201,13 +197,17 @@ void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
 	iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList,
 					   nPatches, nLevels);
 	tdwtLin(u, elementList, nLevels, nPatches, nNodes);
-	
-
-
+	double tot_charge = charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
+	double sol_energy = energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
 	free(rhs);
 	free(u);
 	free(v);
 	free_sparse(&G);
+}
+
+void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
+	std::cout << "Second kind (Electric field) NYI" << std::endl;
+	exit(-1);
 }
 
 void PWLSolver::solveFull(const VectorXd & potential, VectorXd & charge) {

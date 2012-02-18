@@ -91,7 +91,7 @@ find_package(Eigen3)
 
 add_definitions(-DSYS_LINUX)
 
-link_directories (${PROJECT_SOURCE_DIR}/lib)
+#link_directories (${PROJECT_SOURCE_DIR}/lib)
 link_directories (${PROJECT_SOURCE_DIR}/external/lib)
 
 include_directories (${EIGEN3_INCLUDE_DIR})

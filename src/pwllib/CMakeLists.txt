@@ -14,7 +14,6 @@ set (pwl_C_SOURCES
   intlin3.c
   intlin4.c
   intvector_pwl.c
-  main_pwl.c
   mask_pwl.c
   phi.c
   postproc_pwl.c

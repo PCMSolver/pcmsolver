@@ -16,6 +16,8 @@ extern const double op;
 /* Konstanten bezueglich der verwendeteten Wavelet-Basis */
 extern const unsigned int td;
 extern const unsigned int minLevel;
+extern const unsigned int td_pwl;
+extern const unsigned int minLevel_pwl;
 
 /* Kompression: a > 1, 0 < b < 1, d < dp < td-op */
 extern const double a;

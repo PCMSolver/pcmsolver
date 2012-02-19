@@ -191,7 +191,6 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 					Vector3d center(point.x, point.y, point.z);	 
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
-					center = center / ToAngstrom;
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
 					tessCenter.col(j) = center.transpose();
 					tessNormal.col(j) = normal.transpose();

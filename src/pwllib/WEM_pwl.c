@@ -59,7 +59,7 @@ double Identity;                /* correctly scaled identity operator           
     for (i = 0; i <= M; i++) {
         prec[i] = (double *) malloc((M + 1) * sizeof(double));
         for (j = 0; j <= M; j++) {
-            prec[i][j] = (2 * M - (i + j)) * (op - 2 * dp) / (2 * td + op);
+            prec[i][j] = (2 * M - (i + j)) * (op - 2 * dp) / (2 * td_pwl + op);
             if (prec[i][j] > -fabs(i - j))
                 prec[i][j] = -fabs(i - j);
             prec[i][j] += op * M - dp * (2 * M - (i + j));

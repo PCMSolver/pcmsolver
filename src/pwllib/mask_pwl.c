@@ -15,8 +15,8 @@
 #include "mask_pwl.h"
 
 
-const unsigned int td = 4;
-const unsigned int minLevel = 2;
+const unsigned int td_pwl = 4;
+const unsigned int minLevel_pwl = 2;
 
 
 void mask_T22(T, m, M)

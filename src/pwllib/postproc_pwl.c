@@ -51,7 +51,7 @@ unsigned int M;                 /* 2^M*2^M Elemente pro Patch      */
     for (i = 0; i <= M; i++) {
         c[i] = (double *) malloc((M + 1) * sizeof(double));
         for (j = 0; j <= M; j++) {
-            c[i][j] = pow(0.5, (M - 0.5 * (i + j)) * (2 * dp - op) / (2 * td + op));
+            c[i][j] = pow(0.5, (M - 0.5 * (i + j)) * (2 * dp - op) / (2 * td_pwl + op));
             if (c[i][j] > pow(0.5, fabs(i - j)))
                 c[i][j] = pow(0.5, fabs(i - j));
             c[i][j] *= b * pow(0.5, dp * (2 * M - (i + j)));

@@ -184,9 +184,9 @@ unsigned int np;                /* Anzahl der Basisfunktionen                   
         c1[i] = (double *) malloc((i + 1) * sizeof(double));
         c2[i] = (double *) malloc((i + 1) * sizeof(double));
         for (j = 0; j <= i; j++) {
-            c1[i][j] = a * pow(2, (M * (2 * dp - op) - (i + j) * (dp + td)) / (2 * td + op));
-            d1 = pow(2, (M * (2 * dp - op) - (i + j) * dp - i * td) / (td + op));       /* alter Parameter */
-            d2 = pow(2, (2 * M - (i + j)) * (2 * dp - op) / ((2 * td + op) * (td + op))) * pow(2, (M * (2 * dp - op) - i * (dp + td + 1) - j * (dp - 1)) / (td + op));
+            c1[i][j] = a * pow(2, (M * (2 * dp - op) - (i + j) * (dp + td_pwl)) / (2 * td_pwl + op));
+            d1 = pow(2, (M * (2 * dp - op) - (i + j) * dp - i * td_pwl) / (td_pwl + op));       /* alter Parameter */
+            d2 = pow(2, (2 * M - (i + j)) * (2 * dp - op) / ((2 * td_pwl + op) * (td_pwl + op))) * pow(2, (M * (2 * dp - op) - i * (dp + td_pwl + 1) - j * (dp - 1)) / (td_pwl + op));
             if (d1 > d2)
                 c2[i][j] = a * d1;
             else
@@ -195,17 +195,17 @@ unsigned int np;                /* Anzahl der Basisfunktionen                   
                 c1[i][j] = a / (1 << j);
             if (c2[i][j] < a / (1 << i))
                 c2[i][j] = a / (1 << i);
-            if ((i < minLevel) || (j < minLevel))
+            if ((i < minLevel_pwl) || (j < minLevel))
                 c1[i][j] = c2[i][j];
             c1[i][j] *= max_radius / scaling_factor;    /* Gebiet relativieren */
         }
     }
 
 /* Initialisierung: belege den Block 
-   (minLevel-1:minLevel,minLevel-1:minLevel) mit 1 */
+   (minLevel_pwl-1:minLevel,minLevel-1:minLevel) mit 1 */
     init_pattern(T, np, np, 20);
     compute_bounding_boxes(&B, W, E, np);
-    for (i = 0; (i < np) && (W[i].level < minLevel); i++) {
+    for (i = 0; (i < np) && (W[i].level < minLevel_pwl); i++) {
         for (j = 0; j <= i; j++)
             set_pattern(T, i, j);
     }

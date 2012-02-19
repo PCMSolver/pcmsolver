@@ -16,7 +16,7 @@
 #include "dwt_pwl.h"
 
 
-extern const unsigned int minLevel;
+extern const unsigned int minLevel_pwl;
 
 
 void multiple(C, Z, F, M, p, np)
@@ -103,7 +103,7 @@ unsigned int np;                /* number of basic functions               */
     N = 1 << M;
     multiple(&C, &Z, F, M, p, np);
     b = (double *) calloc(np, sizeof(double));
-    for (m = M; m >= minLevel; m--) {
+    for (m = M; m >= minLevel_pwl; m--) {
         dwt_mask_pwl(&T, &L, m, M);     /* berechne die Masken T und L      */
         n = 1 << m;             /* p*n*n Elemente auf Level m       */
         S = 1 << (M - m);       /* Schrittweite zum naechsten Punkt */
@@ -185,7 +185,7 @@ unsigned int np;                /* number of basic functions               */
     N = 1 << M;
     multiple(&C, &Z, F, M, p, np);
     b = (double *) malloc(np * sizeof(double));
-    for (m = minLevel; m <= M; m++) {
+    for (m = minLevel_pwl; m <= M; m++) {
         dwt_mask_pwl(&T, &L, m, M);     /* berechne die Masken T und L      */
         n = 1 << m;             /* p*n*n Elemente auf Level m       */
         S = 1 << (M - m);       /* Schrittweite zum naechsten Punkt */

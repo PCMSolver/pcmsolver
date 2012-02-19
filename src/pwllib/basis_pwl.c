@@ -388,7 +388,7 @@ unsigned int nw;                /* Laenge von W                         */
     (*W) = (wavelet_pwl *) calloc(nw, sizeof(wavelet_pwl));
 
 /* 2. Schleife ueber die Gitter */
-    for (m = M; m >= minLevel; m--) {
+    for (m = M; m >= minLevel_pwl; m--) {
         dwt_mask_pwl(&T, &L, m, m);     /* berechne die Masken T und L      */
         n = 1 << m;             /* p*n*n Elemente auf Level m       */
         S = 1 << (M - m);       /* Schrittweite zum naechsten Punkt */
@@ -453,7 +453,7 @@ unsigned int nw;                /* Laenge von W                         */
     }
 
 /* 3. Skalierungsfunktionen hinzufuegen */
-    generate_canonical_single_scale_basis(*W, C, E, p, minLevel - 1, M);
+    generate_canonical_single_scale_basis(*W, C, E, p, minLevel_pwl - 1, M);
 
 /* 4. Speicherplatz wieder freigeben */
     for (i1 = 0; i1 < nw; i1++) {
@@ -481,20 +481,20 @@ unsigned int nw;                /* Laenge von W                           */
 {
     unsigned int i, j, k, l;    /* Laufindizes durch Wavelet/Elementliste */
     unsigned int ind;           /* Index des zu untersuchenden Elements   */
-    unsigned int minLevel;      /* Minimales Level fuer die Quadratur     */
+    unsigned int minLevel_pwl;      /* Minimales Level fuer die Quadratur     */
     unsigned int noe;           /* number of elements eines Wavelets      */
     double w[4];                /* Gewichte der Elementfunktionen         */
 
-    minLevel = min_quadrature_level;    /* minimales Quadraturlevel */
-    if (minLevel > M)
-        minLevel = M;           /* sonst gibt's Aerger      */
+    minLevel_pwl = min_quadrature_level;    /* minimales Quadraturlevel */
+    if (minLevel_pwl > M)
+        minLevel_pwl = M;           /* sonst gibt's Aerger      */
 
-    for (i = 0; (i < nw) && (W[i].level <= minLevel); i++) {
-        for (j = W[i].level; (j <= minLevel); j++) {
+    for (i = 0; (i < nw) && (W[i].level <= minLevel_pwl); i++) {
+        for (j = W[i].level; (j <= minLevel_pwl); j++) {
             noe = W[i].element_number;
             for (k = 0; k < noe; k++) {
                 ind = W[i].element[k];  /* zu untersuchendes Element  */
-                if (E[ind].level < minLevel) {  /* also zu grob -> verfeinere */
+                if (E[ind].level < minLevel_pwl) {  /* also zu grob -> verfeinere */
                     W[i].element[k] = E[ind].son[0];
                     memcpy(w, W[i].weight[k], 4 * sizeof(double));
                     W[i].element = (unsigned int *) realloc(W[i].element, (W[i].element_number + 3) * sizeof(unsigned int));
@@ -537,13 +537,13 @@ unsigned int nw;                /* Laenge von W                                *
     unsigned int noe;           /* number of elements eines Wavelets           */
     unsigned int *prototype;    /* Liste fuer den Zugriff Prototyp -> Wavelet  */
     unsigned int prototype_number;      /* Anzahl der diversen Protptypen              */
-    unsigned int minLevel;      /* Minimales Level fuer die Quadratur          */
+    unsigned int minLevel_pwl;      /* Minimales Level fuer die Quadratur          */
 
 /* 1. Untersuche, ob Feingitterelemente durch ihren Vater ersetzt werden   */
 /*    koennen. Falls ja, tue dies, und setze das Gewicht der Soehne auf 0. */
-    minLevel = min_quadrature_level;    /* minimales Quadraturlevel */
+    minLevel_pwl = min_quadrature_level;    /* minimales Quadraturlevel */
     for (i = 0; i < nw; i++) {
-        if (W[i].level > minLevel) {
+        if (W[i].level > minLevel_pwl) {
             noe = W[i].element_number;  /* Zahl der Eintraege in der Elementliste des Wavelets */
             for (s0 = 0; s0 < noe; s0++) {
                 j = W[i].element[s0];   /* zu untersuchendes Element */

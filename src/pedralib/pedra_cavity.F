@@ -539,12 +539,12 @@ C***********************************************************
       ENDDO
 C
       IF(SOME) THEN
-	 WRITE(LVPRI,9020) NESF
-	 DO 520 I=1,NESF
-	    WRITE(LVPRI,9030) I,XE(I),YE(I),ZE(I),RE(I),SSFE(I)
-	    STOT=STOT+SSFE(I)
-  520    CONTINUE
-	 WRITE(LVPRI,9040) NTS,STOT,VOL
+         WRITE(LVPRI,9020) NESF
+          DO 520 I=1,NESF
+            WRITE(LVPRI,9030) I,XE(I),YE(I),ZE(I),RE(I),SSFE(I)
+            STOT=STOT+SSFE(I)
+  520     CONTINUE
+         WRITE(LVPRI,9040) NTS,STOT,VOL
       END IF
 C
 C     ----- set up for possible gradient calculation -----
@@ -552,11 +552,11 @@ C           DONE ONLY IF WE HAVE SPHERES ON ATOMS
 C
       IF(ICESPH.NE.1) THEN
 C
-	 IF(NESFP.GT.NUCDEP) THEN
-	    WRITE(LVPRI,9050) NESFP,NUCDEP
+        IF(NESFP.GT.NUCDEP) THEN
+            WRITE(LVPRI,9050) NESFP,NUCDEP
             WRITE(*,*) '3'
-	    STOP
-	 END IF
+            STOP
+         END IF
 C
          CALL DZERO_(DERCEN,MXSP*MXCENT*3*3)
          CALL DZERO_(DERRAD,MXSP*MXCENT*3)

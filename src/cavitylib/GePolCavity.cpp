@@ -74,7 +74,7 @@ void GePolCavity::writeOutput(string &filename){
     output.close();
 }
 
-extern"C" {
+extern "C" {
     void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, 
 							 double *ar, double *xsphcor, double *ysphcor, 
 							 double *zsphcor, double *rsph, int *nts, int *nesfp,
@@ -210,6 +210,8 @@ ostream & GePolCavity::printObject(ostream & os) {
 			os << "Primary Spheres" << endl;
 			os << "Sphere " << i+1 << endl;
 			os << spheres[i] << endl;
+                        os << "Sphere Colour" << endl;
+                        os << spheres[i].getSphereColour() << endl;
 		} else {
 			os << endl;
 			os << "Secondary Spheres" << endl;

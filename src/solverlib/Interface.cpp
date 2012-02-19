@@ -97,7 +97,7 @@ extern "C" void init_gepol_cavity_() {
 		for ( int i = 0; i < nNuclei; i++ ) {
 			int j = charges(i)-1;
 			Vector3d center = sphereCenter.col(i);
-			Sphere sph(center, Bondi[j].getAtomRadius()*scaling);
+			Sphere sph(center, Bondi[j].getAtomRadius()*scaling, Bondi[j].getAtomColour());
 			_gePolCavity->getVectorSpheres().push_back(sph);
 		}
 	}

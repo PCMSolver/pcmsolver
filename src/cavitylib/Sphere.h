@@ -25,13 +25,14 @@ class Sphere
  private:
   double sphereRadius;
   Vector3d sphereCenter;
+  string sphereColour;
        
  protected:
   virtual ostream & printObject(ostream & os);
 
  public:
   Sphere(){}
-  Sphere( Vector3d & sphereCenter, double sphereRadius );
+  Sphere( Vector3d & sphereCenter, double sphereRadius, const string & sphereColour = "Violet" );
   Sphere( Atom & atom );
   //  Sphere( Atom & atom, double charge );
   ~Sphere(){}
@@ -40,6 +41,8 @@ class Sphere
   Vector3d & getSphereCenter(){ return sphereCenter; }
   double getSphereCenter(int i){ return sphereCenter(i); }
   void setSphereCenter( Vector3d & coord ){ sphereCenter = coord; }
+  string & getSphereColour(){ return sphereColour; }
+  void setSphereColour( string & colour ){ sphereColour = colour; }
   
   friend std::ostream& operator<<(std::ostream & o, Sphere & s);
 };

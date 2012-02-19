@@ -51,14 +51,14 @@ vector<Solvent> solventData = _solver->initSolvent();
 */
 
 extern "C" void init_gepol_cavity_() {
+	exit(-1)
+		/* this needs to be revised in light of the unit probelm */
 	const char *infile = 0;
 	enum {Explicit, Atoms, Implicit};
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
-	int mode = Input.getInt("Cavity<gepol>.ModeIndex");
-	double scaling = Input.getDbl("Cavity<gepol>.Scaling");
 	int solventIndex = Input.getInt("Medium.SolIndex");
-	_gePolCavity = new GePolCavity(Input, mode, "Cavity<gepol>");
+	_gePolCavity = new GePolCavity(Input.getSect("Cavity<gepol>"));
 	int nNuclei;
 	Matrix<double, 3, Dynamic> sphereCenter;
 	VectorXd charges;

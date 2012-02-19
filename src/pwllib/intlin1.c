@@ -26,52 +26,6 @@
 #include "integrate_pwl.h"
 
 
-void init_randwerte(RW, g_max)
-/* Initialisiert die Randwerte */
-randwerte **RW;
-unsigned int g_max;
-{
-    unsigned int i;
-
-    (*RW) = (randwerte *) malloc(g_max * sizeof(randwerte));
-    for (i = 0; i < g_max; i++) {
-        (*RW)[i].Chi = (vector3 *) malloc((i + 1) * (i + 1) * sizeof(vector3));
-        (*RW)[i].n_Chi_pwl = (vector3 *) malloc((i + 1) * (i + 1) * sizeof(vector3));
-        (*RW)[i].det_dChi = (double *) malloc((i + 1) * (i + 1) * sizeof(double));
-    }
-    return;
-}
-
-
-void reset_randwerte(RW, g_max)
-/* Resetted die Randwerte */
-randwerte *RW;
-unsigned int g_max;
-{
-    unsigned int i;
-    for (i = 0; i < g_max; i++)
-        RW[i].nop = 0;
-    return;
-}
-
-
-void free_randwerte(RW, g_max)
-/* Gibt den Speicherplatz der Randwerte frei */
-randwerte **RW;
-unsigned int g_max;
-{
-    unsigned int i;
-
-    for (i = 0; i < g_max; i++) {
-        free((*RW)[i].Chi);
-        free((*RW)[i].n_Chi_pwl);
-        free((*RW)[i].det_dChi);
-    }
-    free(*RW);
-    return;
-}
-
-
 void IntLin1(c, element1, element2, RW, Q1, Q2, P, M, SingleLayer, DoubleLayer)
 /* No-Problem-Quadrature-Routine -> modifiziertes Skalarprodukt */
 double *c;
@@ -96,7 +50,7 @@ double SingleLayer(), DoubleLayer();
             xi.x = h_s * (element1->index_s + Q1->xi[i].x);
             xi.y = h_s * (element1->index_t + Q1->xi[i].y);
             RW->Chi[i] = Chi_pwl(xi, P[element1->patch], M);
-            RW->n_Chi_pwl[i] = n_Chi_pwl(xi, P[element1->patch], M);
+            RW->n_Chi[i] = n_Chi_pwl(xi, P[element1->patch], M);
             RW->det_dChi[i] = h_s * Q1->w[i];
         }
     }
@@ -111,7 +65,7 @@ double SingleLayer(), DoubleLayer();
         for (j = 0; j < RW->nop; j++) {
             d1 = h_t * Q2->w[i] * RW->det_dChi[j] * SingleLayer(RW->Chi[j], y);
             d2 = h_t * Q2->w[i] * RW->det_dChi[j] * DoubleLayer(RW->Chi[j], y, n_y);
-            d3 = h_t * Q2->w[i] * RW->det_dChi[j] * DoubleLayer(y, RW->Chi[j], RW->n_Chi_pwl[j]);
+            d3 = h_t * Q2->w[i] * RW->det_dChi[j] * DoubleLayer(y, RW->Chi[j], RW->n_Chi[j]);
             Phi_times_Phi(&c[0], d1, Q1->xi[j], Q2->xi[i]);
             Phi_times_Phi(&c[16], d2, Q1->xi[j], Q2->xi[i]);
             Phi_times_Phi(&c[32], d3, Q1->xi[j], Q2->xi[i]);

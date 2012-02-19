@@ -13,24 +13,7 @@
  *===========================================================*/
 
 
-typedef struct {
-    vector3 *Chi, *n_Chi_pwl;
-    double *det_dChi;
-    unsigned int nop;
-} randwerte;
-
-
-void init_randwerte(randwerte **RW, unsigned int g_max);
-/* Initialisiert die Randwerte */
-
-
-void reset_randwerte(randwerte *RW, unsigned int g_max);
-/* Resetted die Randwerte */
-
-
-void free_randwerte(randwerte **RW, unsigned int g_max);
-/* Gibt den Speicherplatz fuer die Randwerte frei */
-
+#include "randwerte.h"
 
 void IntLin1(double *c, element_pwl * element1, element_pwl * element2, randwerte *RW, cubature *Q1, cubature *Q2, vector3 ****P, unsigned int M, double SL(), double DL());
 /* No-Problem-Quadrature-Routine */

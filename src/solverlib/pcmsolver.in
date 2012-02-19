@@ -9,6 +9,12 @@
 # Adapted to PCMSolver by Luca Frediani, 2011
 #
 
+#
+# Conventions
+# routine names my_perfect_routine
+# keyword names MyPerfectKeyword
+#
+
 ON=1
 OFF=0
 
@@ -17,6 +23,10 @@ debug=@PCMSOLVER_DRIVER_DEBUG@
 printlevel=0
 dryrun=False
 libdir="@INST_LIBDIR@"
+isAngstrom = False
+
+toAngstrom =  0.5291772108;
+toAtomicUnits = 1.0/toAngstrom;
 
 import sys, re, optparse, os, string, subprocess, tempfile
 from copy import deepcopy
@@ -25,7 +35,7 @@ sys.path.append(libdir)
 import getkw
 
 def main():
-	global topsect, debug, executable, printlevel, dryrun
+	global topsect, debug, executable, printlevel, dryrun, isAngstrom
         
         if debug == ON:
 		debug = True
@@ -101,6 +111,20 @@ def	setup_keywords():
 	top.set_status(True)
 	top.add_kw('Units',     'STR', 'AU')
 
+	cavity=getkw.Section('Cavity', callback=verify_cavity)
+	cavity.add_kw('Type','STR')
+	cavity.add_kw('PatchLevel', 'INT', 2)
+	cavity.add_kw('ProbeRadius', 'DBL', 1.3)
+	cavity.add_kw('Coarsity', 'DBL', 0.5)
+	cavity.add_kw('Area','DBL', 0.3)
+	cavity.add_kw('Scaling', 'DBL', 1.0)
+	cavity.add_kw('AddSpheres', 'STR', 'Yes')
+        cavity.add_kw('Mode','STR','Explicit')
+        cavity.add_kw('Atoms','INT_ARRAY')
+        cavity.add_kw('Radii','DBL_ARRAY')
+	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
+	top.add_sect(cavity)
+        
 	medium=getkw.Section('Medium', callback=verify_medium)
 	medium.add_kw('Solvent',     'STR', 'Water')
 	medium.add_kw('SolverType',  'STR', 'Traditional')
@@ -121,31 +145,18 @@ def	setup_keywords():
 	green_part = deepcopy(green)
 	green.add_sect(green_part)
 
-	cavity=getkw.Section('Cavity', callback=verify_cavity)
-	cavity.add_kw('Type','STR')
-	cavity.add_kw('PatchLevel', 'INT', 2)
-	cavity.add_kw('ProbeRadius', 'DBL', 1.3)
-	cavity.add_kw('Coarsity', 'DBL', 0.5)
-	cavity.add_kw('Area','DBL', 0.3)
-	cavity.add_kw('Scaling', 'DBL', 1.0)
-	cavity.add_kw('AddSpheres', 'STR', 'Yes')
-	cavity.add_kw('SolventRadius', 'DBL', 0.0)
-        cavity.add_kw('Mode','STR','Explicit')
-	cavity.add_kw('ModeIndex', 'INT', 0)
-        cavity.add_kw('Atoms','INT_ARRAY')
-        cavity.add_kw('Radii','DBL_ARRAY')
-	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
-	top.add_sect(cavity)
-        
 	return top
 		
 def verify_top(section):
+	global isAngstrom
 	allowed_units = ('AU', 'Angstrom')
 	key = section.get('Units')
 	val = key.get()
 	if (val not in allowed_units):
 	    	print "Allowed units are: ", allowed_units
 		sys.exit(1)
+	if (val == 'Angstrom'):
+		isAngstrom = True
 
 def verify_cavity(section):
 	allowed = ('GePol', 'Wavelet')
@@ -154,6 +165,8 @@ def verify_cavity(section):
         	print "Allowed types are: ", allowed
         	sys.exit(1)
 
+	if section['Area'].is_set(): convert_area_scalar(section['Area'])
+	if section['ProbeRadius'].is_set(): convert_length_scalar(section['ProbeRadius'])
 	if (type.get() == 'GePol'):
         	area=section.get('Area')
         	a=area.get()
@@ -163,8 +176,8 @@ def verify_cavity(section):
         		sys.exit(1)
         elif (type.get() == 'Wavelet'):
         	key = section.get('PatchLevel')
-        	if (key.get() < 0):
-        		print "Negative patch level not allowed"
+        	if (key.get() < 1):
+        		print "Patch level must be > 0"
         		sys.exit(1)
         	key = section.get('Coarsity')
         	if (key.get() < 0.0 or key.get() >= 1.0):
@@ -179,43 +192,29 @@ def verify_cavity(section):
 		print "Incoherent input for radii scaling constant."
 		print "Scaling must be > 0.0"
 		sys.exit(1)
-	allowed_modes_dict = {0: "Explicit", 1: "Atoms", 2: "Implicit"}
+	allowed_modes = ("Explicit", "Atoms", "Implicit")
 	mode = section.get('Mode')
-	aList = allowed_modes_dict.values()
-	allowed_modes_tuple = tuple(aList)
-	mode_index = -1
-	for i in allowed_modes_dict:
-		if (mode.get() in allowed_modes_dict[i]):
-			mode_index = i
-			break
-	if (mode_index not in range(3)):
-		print "Allowed modes are: ", allowed_modes_tuple
+	if (mode.get() not in allowed_modes):
+		print "Allowed modes are: ", allowed_modes
 		sys.exit(1)                         
-	idx = section.get('ModeIndex')
-	idx.set(mode_index)
 
         atoms=section.get('Atoms')
         at=atoms.get()
-                                   
-        radii=section.get('Radii')
-        r=radii.get()
+        radii = section.get('Radii')
+	convert_length_array(radii);
+        r = radii.get()
 	
-	atoms_radii_dict = dict(zip(at, r))
         if (mode.get() == 'Atoms'):
-            if (len(at) == 0):
-                print "Incoherent input for Atoms keyword."
-                print "No atoms specified."
-                sys.exit(1)
-	    else:
-		for i,v in enumerate(at):
-			if (at.count(v) > 1):
-				print "Incoherent input for Atoms keyword."
-				print "Too many spheres on the same atom(s)."
-				sys.exit(1)
-            if (len(r) != len(at) or len(r) == 0):
-                print "Incoherent input for Atoms keyword."
-                print "Check that Atoms and Radii are consistent."
-                sys.exit(1)
+		if (len(r) != len(at) or len(at) == 0):
+			print "Incoherent input for Atoms keyword."
+			print "Check that Atoms and Radii are consistent."
+			sys.exit(1)
+		else:
+			for i, v in enumerate(at):
+				if (at.count(v) > 1):
+					print "Incoherent input for Atoms keyword."
+					print "Too many spheres on the same atom(s)."
+					sys.exit(1)
 	
 	
 
@@ -265,10 +264,13 @@ def verify_medium(section):
 		print allowedSolvents.keys()
 		print "or specify the solvent data explicitly."
 		sys.exit(1)
+
+	convert_length_scalar(section.get('ProbeRadius'))
 	radius = section.get('ProbeRadius')
 	if (radius.get() < 0.1 or radius.get() > 100):
-		print "Probe radius has to be within [0.1,100]"
+		print "Probe radius has to be within [0.1,100] Atomic Units"
 		sys.exit(1)
+
 	allowed_types = ('Traditional', 'Wavelet', 'Linear')
         key = section.get('SolverType')
         val = key.get()
@@ -294,7 +296,10 @@ def verify_green(section):
 	eps = section.get('Eps')
 	epsimg = section.get('EpsImg')
 	epsre = section.get('EpsRe')
+
+	convert_length_array(section.get('SpherePosition'))
         position = section.get('SpherePosition')
+	convert_length_scalar(section.get('SphereRadius'))
         radius = section.get('SphereRadius')
 
 	type=section.get('Type')
@@ -332,11 +337,28 @@ def verify_green(section):
 			sys.exit(1)
 
 def verify_spheres(keyword):
-	spheres=keyword.get()
-	if (len(spheres)%4 != 0):
-		print "Incoherent input for Mode keyword."
+	length=len(keyword.get())
+	if (length % 4 != 0):
                 print "Empty or incoherent Spheres list."
 		sys.exit(1)
+	convert_length_array(keyword)
+
+def convert_length_array(keyword):
+	length=len(keyword.get())
+	if (isAngstrom):
+		for i in range(length):
+			keyword[i] *= toAtomicUnits
+
+def convert_length_scalar(keyword):
+	if (isAngstrom):
+		keyword[0] *= toAtomicUnits
+
+def convert_area_scalar(keyword):
+	if (isAngstrom):
+		keyword[0] *= toAtomicUnits * toAtomicUnits
+
+
+
 
 if __name__ == '__main__':
 	main()

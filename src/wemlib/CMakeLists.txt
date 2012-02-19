@@ -22,6 +22,7 @@ set (wem_C_SOURCES
   mask.c
   postproc.c
   precond.c
+  randwerte.c
   read_points_asc.c
   sparse.c
   sparse2.c
@@ -62,6 +63,7 @@ install(FILES postproc.h       DESTINATION include)
 install(FILES pot.h            DESTINATION include)
 install(FILES precond.h        DESTINATION include)
 install(FILES quadrature.h     DESTINATION include)
+install(FILES randwerte.h      DESTINATION include)
 install(FILES read_points.h    DESTINATION include)
 install(FILES sparse.h         DESTINATION include)
 install(FILES sparse2.h        DESTINATION include)
@@ -72,43 +74,3 @@ install(FILES vector3.h        DESTINATION include)
 install(FILES volume.h         DESTINATION include)
 
 install(TARGETS wem ARCHIVE DESTINATION lib)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

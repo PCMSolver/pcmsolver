@@ -5,3 +5,4 @@ do
 	sed s/"$1"/"$2"/ $file > abc
 	cp abc $file
 done
+rm abc

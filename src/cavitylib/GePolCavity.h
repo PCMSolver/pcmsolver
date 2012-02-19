@@ -27,7 +27,6 @@ class GePolCavity : public Cavity
 {
  public:
     GePolCavity(){}
-    GePolCavity(const Getkw & Input, int mode, const string path = "Cavity");
     GePolCavity(const Section & cavity);
     ~GePolCavity(){};
     void makeCavity(int maxts, int lwork);
@@ -42,11 +41,16 @@ class GePolCavity : public Cavity
     double getRSolv() { return rSolv; };
     void setRSolv( double rsolv );
     vector<Sphere> & getVectorSpheres(){ return spheres; }
+    int getMode(){return mode;}
+    enum SphereMode {Explicit, Atoms, Implicit};
 
  protected:
     virtual ostream & printObject(ostream & os);
         
  private:
+    SphereMode mode;
+    void setMode(const std::string & mode);
+    void setMode(int mode);
     int nSpheres;
     int maxAddedSpheres;
     int addedSpheres;
@@ -55,7 +59,6 @@ class GePolCavity : public Cavity
     Matrix<double, 3, Dynamic> tessSphereCenter;
     VectorXd tessRadius;
     vector<Sphere> spheres;
-    enum {Explicit, Atoms, Implicit};
 };
 
 

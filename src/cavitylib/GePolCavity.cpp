@@ -20,14 +20,11 @@ using namespace Eigen;
 #include "Cavity.h"
 #include "GePolCavity.h"
 
-GePolCavity::GePolCavity(const Getkw & Input, int mode, const string path) {
-	Section cavity = Input.getSect(path);
+GePolCavity::GePolCavity(const Section & cavity){
 	averageArea = cavity.getDbl("Area");
-	if ( mode == Explicit ) {
-		/*
-		  Mode = Explicit
-		  cavity generation is completely carried out at module level.
-		*/
+	std::string modeString = cavity.getStr("Mode");
+	setMode(modeString);
+	if (mode == Explicit) {
 		vector<double> spheresInput = cavity.getDblVec("Spheres");
 		nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
 		int j = 0;
@@ -38,20 +35,6 @@ GePolCavity::GePolCavity(const Getkw & Input, int mode, const string path) {
 			spheres.push_back(sph);
 			j += 4;
 		}
-	}
-}
-
-GePolCavity::GePolCavity(const Section & cavity){
-	vector<double> spheresInput = cavity.getDblVec("Spheres");
-	averageArea = cavity.getDbl("Area");
-	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
-	int j = 0;
-	for (int i = 0; i < nSpheres; i++) {
-		Vector3d center; 
-		center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
-		Sphere sph(center, spheresInput[j+3]);
-		spheres.push_back(sph);
-		j += 4;
 	}
 }
 
@@ -195,6 +178,34 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	
 	isBuilt = true;
 
+}
+
+void GePolCavity::setMode(const string & type) {
+	if (type == "Atoms") {
+		setMode(Atoms);
+	} else if (type == "Implicit") {
+		setMode(Implicit);
+	} else if (type == "Explicit") {
+		setMode(Explicit);
+	} else {
+		exit(-1);
+	}
+}
+
+void GePolCavity::setMode(int type) {
+	switch (type) {
+	case Atoms :
+		mode = Atoms;
+		break;
+	case Implicit :
+		mode = Implicit;
+		break;
+	case Explicit :
+		mode = Explicit;
+		break;
+	default :
+		exit(-1);
+	}
 }
 
 ostream & GePolCavity::printObject(ostream & os) {

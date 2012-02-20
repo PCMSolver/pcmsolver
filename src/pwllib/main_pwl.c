@@ -63,7 +63,7 @@ int main()
     double det;                 /* Determinante im anistropen Fall    */
 
     /*========================================================*/
-    unsigned int CASE = 3;      /* FLAG FOR CHOICE OF BIE */
+    unsigned int CASE = 1;      /* FLAG FOR CHOICE OF BIE */
     /*========================================================*/
 
     /* Ausgabe */

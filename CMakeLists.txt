@@ -110,6 +110,11 @@ include_directories (src/metal)
 include_directories (src/green)
 
 add_executable(pcmsolver.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pcmsolver.cpp)
-
 target_link_libraries(pcmsolver.x solver green cavity pedra metal pwl wem wavcav getkw ${LIBS})
+
+add_executable(pwl.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pwllib/main_pwl.c)
+target_link_libraries(pwl.x pwl wem ${LIBS})
+
+add_executable(pwc.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wemlib/main.c)
+target_link_libraries(pwc.x wem ${LIBS})
 

@@ -101,7 +101,7 @@ extern "C" void init_gepol_cavity_() {
 			_gePolCavity->getVectorSpheres().push_back(sph);
 		}
 	}
-	_gePolCavity->makeCavity(5000, 10000000);
+        _gePolCavity->makeCavity(5000, 10000000);
 	_gePolCavity->initPotChg();
 }
 

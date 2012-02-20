@@ -72,7 +72,7 @@ unsigned int m;                 /* Zahl der Level                              *
     }
     E = -0.5 * h * E; /* correct scaling */
     printf("Computed energy:            %g\n", E);
-    printf("Computed charge:            %g\n", C);
+    printf("Computed charge:            %g\n", C*h);
     free_Gauss_Square(&Q, g + 1);
     return (E);
 }

@@ -69,11 +69,8 @@ unsigned int m;                 /* Zahl der Level                              *
     E = -0.5 * h * E;           /* correct scaling */
 
 /* Datenausgabe */
-    printf("Computing the energy:            %f10\n", E);
-    for (l = 0; l < k; l++)
-        D += alpha[l];          /* total charge */
-/* C = total charge * (epsilon-1)/epsilon */
-/* printf("Testing total charge (= 0):      %g\n",h*C-D*(epsilon-1)/epsilon);*/
+    printf("PWC Computed energy:            %f10\n", E);
+    printf("PWC Computed charge:            %f10\n", C*h*epsilon/(epsilon-1));
     free_Gauss_Square(&Q, g + 1);
     return (E);
 }

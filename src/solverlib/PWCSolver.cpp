@@ -31,6 +31,7 @@ extern "C"{
 #include "cubature.h"
 #include "gauss_square.h"
 #include "constants.h"
+#include "energy.h"
 }
 
 #include "Constants.h"
@@ -189,6 +190,7 @@ void PWCSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
 		u[i] -= 4*M_PI*v[i];
 	}
 	tdwtKon(u, nLevels, nFunctions);
+	energy(u, elementList, T_, nPatches, nLevels);
   // Interpolate charges
 	cubature *Q;
 	init_Gauss_Square(&Q, quadratureLevel_+1);

@@ -60,7 +60,7 @@ time_t		t1, t2, t3;	/* Sartzeit/Zwischenzeit/Endzeit      */
 unsigned int	i, j;		/* Laufindizes                        */
 
 /*========================================================*/
-unsigned int	CASE = 4;	/* FLAG FOR CHOICE OF BIE */
+unsigned int	CASE = 3;	/* FLAG FOR CHOICE OF BIE */
 /*========================================================*/
 
 /* Ausgabe */

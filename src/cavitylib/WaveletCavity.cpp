@@ -151,7 +151,15 @@ void WaveletCavity::readCavity(const string & filename) {
 
 }
 
-void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
+void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_, bool isPWL) {
+	if(isPWL) {
+		uploadPointsPWL(quadLevel, T_);
+	} else {
+		uploadPointsPWC(quadLevel, T_);
+	}
+}
+
+void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 	if (not uploadedDyadic) {
 		cout << "Error: upload dyadic file first" << endl;
 		exit(-1);
@@ -191,6 +199,58 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
+					tessCenter.col(j) = center.transpose();
+					tessNormal.col(j) = normal.transpose();
+					tessArea(j) = area;
+					j++;
+				}
+			}
+		}
+	}
+	free_Gauss_Square(&Q,quadLevel+1);  
+	isBuilt = true;
+}
+
+void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
+	if (not uploadedDyadic) {
+		cout << "Error: upload dyadic file first" << endl;
+		exit(-1);
+	}
+	vector2 s, t;
+	vector3 point;
+	vector3 norm;
+	int n = 1 << nLevels;
+	double h = 1.0 / n;
+	cubature *Q;
+	init_Gauss_Square(&Q, quadLevel + 1);
+
+	nTess = nPatches * n * n * Q[quadLevel].nop;
+
+	tessCenter.resize(NoChange, nTess);
+	tessNormal.resize(NoChange, nTess);
+	tessArea.resize(nTess);
+
+	nuclearPotential.resize(nTess);
+	nuclearCharge.resize(nTess);
+	electronicPotential.resize(nTess);
+	electronicCharge.resize(nTess);
+
+	//   	nuclearPotential.setConstant(1.0);
+
+	int j = 0;
+	for (int i1 = 0; i1 < nPatches; i1++){
+		for (int i2 = 0; i2 < n; i2++){
+			s.y = h * i2;
+			for (int i3=0; i3 < n; i3++){
+				s.x = h * i3;
+				for (int k = 0; k < Q[quadLevel].nop; k++){
+					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
+					point = Chi_pwl(t,T_[i1], nLevels);
+					norm = n_Chi_pwl(t,T_[i1], nLevels);
+					Vector3d center(point.x, point.y, point.z);	 
+					Vector3d normal(norm.x,  norm.y,  norm.z);	 
+					normal.normalize();
+					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi_pwl(t, T_[i1], nLevels));
 					tessCenter.col(j) = center.transpose();
 					tessNormal.col(j) = normal.transpose();
 					tessArea(j) = area;

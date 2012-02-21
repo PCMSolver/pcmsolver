@@ -47,6 +47,7 @@ class PCMSolver{
     }
     enum EquationType {FirstKind, SecondKind, Full};
     enum SolverType {Traditional, Wavelet, Linear};
+    bool isPWL(){return (solverType == Linear);}
  protected:
     bool allocated;
     int cavitySize;

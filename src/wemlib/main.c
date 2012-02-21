@@ -172,7 +172,7 @@ int main()
 
 /* Energie-Berechnung */
     tdwtKon(u, M, nf);
-    res = energy(u, F, T, p, M);
+    res = energy_orig(u, F, T, p, M);
     time(&t2);
     printf("Over-all computation time:       %g secs.\n", difftime(t2, t1));
 

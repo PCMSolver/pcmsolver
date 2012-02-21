@@ -21,7 +21,7 @@ class WaveletCavity : public Cavity {
     ~WaveletCavity(){};
     void makeCavity();
     void readCavity(const string & filename);
-    void uploadPoints(int quadLevel, vector3 **** T_);
+    void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
     VectorXd & getTessRadius(){return tessRadius;};
     VectorXd & getSphereRadius(){return sphereRadius;};
     int getNSpheres(){return nSpheres;};
@@ -36,6 +36,8 @@ class WaveletCavity : public Cavity {
     friend std::ostream& operator<<(std::ostream &o, const WaveletCavity &c);
     void compFakePotential();
  private:
+    void uploadPointsPWC(int quadLevel, vector3 **** T_);
+    void uploadPointsPWL(int quadLevel, vector3 **** T_);
     std::vector<Vector3d> nodePoint;
     std::vector<Vector3i> nodeIndex;
     unsigned int nPatches;

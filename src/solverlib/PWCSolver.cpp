@@ -99,15 +99,20 @@ void PWCSolver::initPointers()
 PWCSolver::PWCSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
 	WEMSolver(gfi, gfo) {
 	initPointers();
+	setSolverType("Wavelet");
+	setEquationType("Full");
 }
 
 PWCSolver::PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
 	WEMSolver(gfi, gfo) {
 	initPointers();
+	setSolverType("Wavelet");
+	setEquationType("Full");
 }
 
 PWCSolver::PWCSolver(const Section & solver) : WEMSolver(solver) {
 	initPointers();
+	setSolverType("Wavelet");
 }
 
 PWCSolver::~PWCSolver(){
@@ -160,8 +165,24 @@ void PWCSolver::constructSe() {
 }
 
 void PWCSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
-	std::cout << "First kind NYI" << std::endl;
-	exit(-1);
+	double *rhs;
+	double *u = (double*) calloc(nFunctions, sizeof(double));
+    double * pot = const_cast<double *>(potential.data());
+    double * chg = charge.data();
+	double epsilon = greenOutside->getDielectricConstant();
+	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, pot,
+			 quadratureLevel_);
+	WEMPGMRES2(&S_i_, rhs, u, threshold, nPatches, nLevels);
+	tdwtKon(u, nLevels, nFunctions);
+	dwtKon(u, nLevels, nFunctions);
+	for (int i = 0; i < nFunctions; i++) {
+		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
+	}
+	memset(u, 0, nFunctions * sizeof(double));
+	WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);
+    tdwtKon(u, nLevels, nFunctions);
+	energy_ext(u, pot, elementList, T_, nPatches, nLevels);
+	charge_ext(u, chg, elementList, T_, nPatches, nLevels);
 }
 
 void PWCSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
@@ -190,7 +211,8 @@ void PWCSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
 		u[i] -= 4*M_PI*v[i];
 	}
 	tdwtKon(u, nLevels, nFunctions);
-	energy(u, elementList, T_, nPatches, nLevels);
+	energy_orig(u, elementList, T_, nPatches, nLevels);
+	energy_ext(u, pot, elementList, T_, nPatches, nLevels);
   // Interpolate charges
 	cubature *Q;
 	init_Gauss_Square(&Q, quadratureLevel_+1);

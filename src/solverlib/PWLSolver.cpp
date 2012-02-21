@@ -1,3 +1,4 @@
+
 /*! \file PWLSolver.cpp 
 \brief PWL solver
 */
@@ -102,18 +103,19 @@ PWLSolver::PWLSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gf
 	WEMSolver(gfi, gfo) {
 	initPointers();
 	setSolverType("Linear");
-	setEquationType("Full");
+	setEquationType("FirstKind");
 }
 
 PWLSolver::PWLSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
 	WEMSolver(gfi, gfo) {
 	initPointers();
 	setSolverType("Linear");
-	setEquationType("Full");
+	setEquationType("FirstKind");
 }
 
 PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
 	initPointers();
+	setSolverType("Linear");
 }
 
 PWLSolver::~PWLSolver(){

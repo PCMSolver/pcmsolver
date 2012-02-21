@@ -108,4 +108,6 @@ void finish_pattern(sparse2 *A);
 
 void print_sparse2(sparse2 *A);
 
+void fprint_sparse2(sparse2 *A, char * infile);
+
 #endif

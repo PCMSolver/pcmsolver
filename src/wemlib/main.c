@@ -60,7 +60,7 @@ int main()
     unsigned int i, j;          /* Laufindizes                        */
 
 /*========================================================*/
-    unsigned int CASE = 3;      /* FLAG FOR CHOICE OF BIE */
+    unsigned int CASE = 2;      /* FLAG FOR CHOICE OF BIE */
 /*========================================================*/
 
 /* Ausgabe */

@@ -142,7 +142,7 @@ void PWCSolver::constructSi() {
 	case FirstKind:
 	case SecondKind:
 		epsilon = greenOutside->getDielectricConstant();
-		factor = 2 * M_PI * (epsilon + 1) / (epsilon - 1);
+		factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
 		break;
 	case Full:
 		factor = 2 * M_PI;
@@ -172,15 +172,16 @@ void PWCSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
 	double epsilon = greenOutside->getDielectricConstant();
 	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, pot,
 			 quadratureLevel_);
-	WEMPGMRES2(&S_i_, rhs, u, threshold, nPatches, nLevels);
+	int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, nPatches, nLevels);
 	tdwtKon(u, nLevels, nFunctions);
 	dwtKon(u, nLevels, nFunctions);
 	for (int i = 0; i < nFunctions; i++) {
 		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
 	}
 	memset(u, 0, nFunctions * sizeof(double));
-	WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);
+	iter = WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);
     tdwtKon(u, nLevels, nFunctions);
+	energy_orig(u, elementList, T_, nPatches, nLevels);
 	energy_ext(u, pot, elementList, T_, nPatches, nLevels);
 	charge_ext(u, chg, elementList, T_, nPatches, nLevels);
 }

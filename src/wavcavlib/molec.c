@@ -138,6 +138,7 @@ int vofr_numb_qimf(char *filename, atom ** S)
         return -1;
     }
     status = fscanf(fp, "%d", &nb_sph);
+    fprintf(tmpout, "Coordinates \n");
     if (status != 1) {
         perror("nb_sph");
         return -2;
@@ -154,6 +155,7 @@ int vofr_numb_qimf(char *filename, atom ** S)
         (*S)[i].zent.cote = z;
         fscanf(fp, "%lf", &rad);
         (*S)[i].rad = rad;
+        fprintf(tmpout, "%24.16f %24.16f %24.16f %24.16f\n",x,y,z,rad);
     }
 
     fclose(fp);

@@ -71,8 +71,8 @@ unsigned int m;                 /* Zahl der Level                              *
         }
     }
     E = -0.5 * h * E; /* correct scaling */
-    printf("Computed energy:            %g\n", E);
-    printf("Computed charge:            %g\n", C*h);
+    printf("    Computed energy:            %20.15f\n", E);
+    printf("    Computed charge:            %20.15f\n", C*h);
     free_Gauss_Square(&Q, g + 1);
     return (E);
 }
@@ -112,7 +112,7 @@ unsigned int m;                 /* Zahl der Level                              *
                         + u[F[zi][1]] * Phi1(Q[g].xi[l])
                         + u[F[zi][2]] * Phi2(Q[g].xi[l])
                         + u[F[zi][3]] * Phi3(Q[g].xi[l]);
-                    E += Q[g].w[l] * U * potential[zi];
+                    E += Q[g].w[l] * U * potential[Q[g].nop*zi+l];
                 }
                 s.x += h;
                 zi++;
@@ -121,7 +121,7 @@ unsigned int m;                 /* Zahl der Level                              *
         }
     }
     E = -0.5 * h * E; /* correct scaling */
-    printf("Computing the energy_pwl:            %g\n", E);
+    printf("PWL Computed energy:            %20.15f\n", E);
     free_Gauss_Square(&Q, g + 1);
     return (E);
 }
@@ -161,8 +161,8 @@ unsigned int m;                 /* Zahl der Level                              *
                         + u[F[zi][1]] * Phi1(Q[g].xi[l])
                         + u[F[zi][2]] * Phi2(Q[g].xi[l])
                         + u[F[zi][3]] * Phi3(Q[g].xi[l]);
-                    charge[zi] = h * Q[g].w[l] * U;
-                    C += charge[zi];
+                    charge[zi * Q[g].nop + l] = h * Q[g].w[l] * U;
+                    C += charge[zi * Q[g].nop + l];
                 }
                 s.x += h;
                 zi++;
@@ -172,7 +172,7 @@ unsigned int m;                 /* Zahl der Level                              *
     }
     
     /* Datenausgabe */
-    printf("Testing total charge: %g\n", C);
+    printf("PWL Computed charge:            %20.15f\n", C*h);
     free_Gauss_Square(&Q, g + 1);
     return (C);
 }

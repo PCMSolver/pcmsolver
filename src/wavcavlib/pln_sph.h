@@ -505,7 +505,7 @@ void gotq_norm_bitg(point, point, point, vect3D *);
 double biqh_norm_dapf(vect3D);
 void mivn_norm_metj(vect2D *);
 void qubr_norm_foqk(vect3D *);
-int vofr_numb_qimf(char *, atom **);
+int vofr_numb_qimf(const char *, atom **);
 int sogf_para_lekj(double, sphere, sphere, circle3D *, circle3D *);
 void qezj_find_tukd_wesg(prop_ccurve *);
 int bosr_plan_revg(point, vect3D, sphere, point *, double *);

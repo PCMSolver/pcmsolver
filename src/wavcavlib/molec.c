@@ -127,7 +127,7 @@ void qubf_choo_kumw(int ex, char *r)
         sprintf(r, "%s", "INPUT/W_120_mod.cav");
 }
 
-int vofr_numb_qimf(char *filename, atom ** S)
+int vofr_numb_qimf(const char *filename, atom ** S)
 {
     int i, status, nb_sph;
     double x, y, z, rad;

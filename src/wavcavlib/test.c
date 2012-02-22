@@ -217,7 +217,7 @@ void hetc_glob_kaqc(double probe, double c_param, sphere * S, int nb_sph, adj_ha
 }
 
 
-int bihp_test_romg(char *filename, double probe, double c_param, int *n_size)
+int bihp_test_romg(const char *filename, double probe, double c_param, int *n_size)
 {
     int nb_sph, new_nb, *list, res;
     int i, z, ts, dummy, nb_I, k, f_trm;
@@ -393,10 +393,11 @@ void cavity_create_(double *probe, double *coarsity, int *pl, int *info)
   * @param info Changed to 0 if all went fine.
   *
   */
-int waveletCavityDrv_(double probeRadius, double coarsity, int patchLevel)
+int waveletCavityDrv_(double probeRadius, double coarsity, int patchLevel, 
+                      const char* infile)
 {
     int dummy, test, info = -1;
-    char *infile = "cavity.inp";
+    //    char *infile = "cavity.inp";
     PATCH_LEVEL = patchLevel;
     verbose_variable = VERBOSE;
 

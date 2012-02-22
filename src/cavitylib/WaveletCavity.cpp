@@ -96,7 +96,7 @@ void WaveletCavity::writeInput(string &fileName){
 
 extern "C" {
 	int waveletCavityDrv_(double probeRadius, double coarsity, 
-						  int patchLevel);
+						  int patchLevel, const char* infile);
 }
 
 void WaveletCavity::compFakePotential()
@@ -115,9 +115,10 @@ void WaveletCavity::compFakePotential()
 
 void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
-	string fileName = "cavity.inp";
-	writeInput(fileName);
-	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel);
+	string infile = "cavity.inp";
+	writeInput(infile);
+	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, 
+							  infile.c_str());
 	if (check != 0) {
 		std::cout << "Problem with the wavelet cavity!" << std::endl;
 		exit(-1);

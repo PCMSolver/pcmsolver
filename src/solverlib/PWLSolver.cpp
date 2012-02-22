@@ -218,7 +218,33 @@ void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
 }
 
 void PWLSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
-	std::cout << "Full equation NYI" << std::endl;
-	exit(-1);
+	double * rhs = 0;
+	double * u = (double*) calloc(nNodes, sizeof(double));
+	double * v = (double*) calloc(nNodes, sizeof(double));
+	//next line is just a quick fix but i do not like it...
+    VectorXd pot = potential;
+	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
+				 nNodes, pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
+	int iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList, 
+				   nPatches, nLevels);  /* u = V_i^(-1)*N_f */
+	memset(rhs, 0, nNodes * sizeof(double));
+	for (int i = 0; i < nNodes; i++) {      /* rhs = V_e*u */
+		for (int j = 0; j < S_e_.row_number[i]; j++) {
+			rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
+		}
+	}
+	iters = WEMPGMRES3_pwl(&S_i_, &S_e_, rhs, v, threshold, waveletList,
+						   elementList, nPatches, nLevels); // v = A^{-1} * rhs
+	for (int i = 0; i < nNodes; i++) {
+		u[i] -= 4 * M_PI * v[i];      /* u = u - 4*pi*v */
+	}
+	tdwtLin(u, elementList, nLevels, nPatches, nNodes);
+	double tot_charge = charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
+	double sol_energy = energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
+	free(rhs);
+	free(u);
+	free(v);
 }
+
+
 

@@ -145,7 +145,7 @@ void PWLSolver::constructSi() {
 	case FirstKind:
 	case SecondKind:
 		epsilon = greenOutside->getDielectricConstant();
-		factor = 2 * M_PI * (epsilon + 1) / (epsilon - 1);
+		factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
 		break;
 	case Full:
 		factor = 2 * M_PI;
@@ -158,6 +158,8 @@ void PWLSolver::constructSi() {
 								nPatches, nLevels, nNodes);
 	WEM_pwl(&S_i_, waveletList, nodeList, elementTree, T_, nPatches, nLevels, 
 			SingleLayer, DoubleLayer, factor);
+	fprint_sparse2(&S_i_, "new.dat");
+	std::cout << "Printed S_i_ matrix" << std::endl;
 	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, 
 								 nPatches, nLevels);
 }
@@ -183,6 +185,7 @@ void PWLSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
 				 nNodes, pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
 	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList,
 							   elementList, nPatches, nLevels); // v = A^{-1} * rhs
+	fprint_vec(v, nNodes, "v_new.dat");
 	init_sparse(&G, nNodes, nNodes, 10);
 	single_scale_gram_pwl(&G, elementList, nPatches, nLevels);
 	tdwtLin(v, elementList, nLevels, nPatches, nNodes);
@@ -196,9 +199,11 @@ void PWLSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
 		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1); // assembling RHS equation (2.7) Computing, 2009, 86, 1-22
 	}
 	memset(u, 0, nNodes * sizeof(double));
+	fprint_vec(rhs, nNodes, "rhs_new2.dat");
 	iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList,
 					   nPatches, nLevels);
 	tdwtLin(u, elementList, nLevels, nPatches, nNodes);
+	fprint_vec(u, nNodes, "u_new.dat");
 	double tot_charge = charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
 	double sol_energy = energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
 	free(rhs);

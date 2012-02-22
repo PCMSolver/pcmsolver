@@ -11,6 +11,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "constants.h"
 #include "intvector_pwl.h"
 #include "vector2.h"
@@ -123,7 +124,7 @@ unsigned int nw;                /* Laenge von W                               */
     signed int i, j;            /* Laufindizes durch die Wavelet/Elementliste */
     double h;                   /* Schrittweite                               */
     cubature *Q;                /* Kubatur-Formeln                            */
-    unsigned int g = 0;         /* benoetigter Quadraturgrad                  */
+    unsigned int g = 1;         /* benoetigter Quadraturgrad                  */
     double c0, c1, c2, c3;      /* Werte der Integrale                        */
     vector2 t;                  /* Stuetzpunkt der Gauss-Quadratur auf Q      */
     unsigned int k;             /* Laufindex fuer die Quadratur               */
@@ -132,11 +133,15 @@ unsigned int nw;                /* Laenge von W                               */
     double m;                   /* Interpolationswert im Mittelpunkt          */
     double e[4];                /* Interpolationswerte im Kantenmittelpunkt   */
 
+    FILE *fp = fopen("rhs_old.dat", "w"); 
+
 /* Initialisierung */
     ne = p * (4 * N * N - 1) / 3;       /* Anzahl der Elemente */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln     */
     y = (double (*)[4]) malloc(ne * sizeof(double[4]));
     (*rhs) = (double *) malloc(nw * sizeof(double));
+
+    fprintf(fp, "Integers %d %d %d\n", p, M, nw);
 
 /* 1. Quadratur auf dem feinsten Level */
     h = 1. / N;
@@ -149,13 +154,20 @@ unsigned int nw;                /* Laenge von W                               */
         c3 = 0.25 * f(Chi_pwl(vector2_make(t.x, t.y + h - 1e-14), T[E[i].patch], M));
         c0 = c1 = c2 = c3 = 0;
         for (k = 0; k < Q[g].nop; k++) {
+            int index = (E[i].patch * N * N + 
+                         E[i].index_t * N + 
+                         E[i].index_s) * Q[g].nop + k;
             t.x = h * (E[i].index_s + Q[g].xi[k].x);
             t.y = h * (E[i].index_t + Q[g].xi[k].y);
-            w = Q[g].w[k] * f(Chi_pwl(t, T[E[i].patch], M));
+            vector3 pos = Chi_pwl(t, T[E[i].patch], M);
+            w = Q[g].w[k] * f(pos);
             c0 += w * Phi0(Q[g].xi[k]);
             c1 += w * Phi1(Q[g].xi[k]);
             c2 += w * Phi2(Q[g].xi[k]);
             c3 += w * Phi3(Q[g].xi[k]);
+            fprintf(fp, "%15.8f %15.8f %15.8f %15.8f %15.8f", 
+                    t.x, t.y, pos.x, pos.y, pos.z); 
+            fprintf(fp, "%4d %15.8f\n", index, f(Chi_pwl(t, T[E[i].patch], M))); 
         }
         y[i][0] = h * c0;
         y[i][1] = h * c1;
@@ -192,6 +204,7 @@ unsigned int nw;                /* Laenge von W                               */
 /* Speicherplatz wieder freigeben */
     free_Gauss_Square(&Q, g + 1);
     free(y);
+    fclose(fp);
     return;
 }
 
@@ -221,11 +234,17 @@ double *potential;
     double e[4];                /* Interpolationswerte im Kantenmittelpunkt   */
     unsigned int index;
 
+    FILE *fp = fopen("rhs_new.dat", "w");
+
 /* Initialisierung */
     ne = p * (4 * N * N - 1) / 3;       /* Anzahl der Elemente */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln     */
     y = (double (*)[4]) malloc(ne * sizeof(double[4]));
     (*rhs) = (double *) malloc(nw * sizeof(double));
+
+    fprintf(fp, "Integers %d %d %d\n", p, M, nw);
+
+    // 4^N-1 can be divided by three
 
 /* 1. Quadratur auf dem feinsten Level */
     h = 1. / N;
@@ -243,12 +262,17 @@ double *potential;
                t.y = h * (E[i].index_t + Q[g].xi[k].y);
                w = Q[g].w[k] * f(Chi_pwl(t,T[E[i].patch],M));
              */
+            vector2 t2 = vector2_add(t, vector2_Smul(h, Q[g].xi[k]));
+            vector3 pos = Chi_pwl(t2, T[E[i].patch], M);
             index = (E[i].patch * N * N + E[i].index_t * N + E[i].index_s) * Q[g].nop + k;
             w = Q[g].w[k] * potential[index];
             c0 += w * Phi0(Q[g].xi[k]);
             c1 += w * Phi1(Q[g].xi[k]);
             c2 += w * Phi2(Q[g].xi[k]);
             c3 += w * Phi3(Q[g].xi[k]);
+            fprintf(fp, "%15.8f %15.8f %15.8f %15.8f %15.8f", 
+                    t2.x, t2.y, pos.x, pos.y, pos.z); 
+            fprintf(fp, "%4d %15.8f\n", index, potential[index]); 
         }
         y[i][0] = h * c0;
         y[i][1] = h * c1;
@@ -285,5 +309,6 @@ double *potential;
 /* Speicherplatz wieder freigeben */
     free_Gauss_Square(&Q, g + 1);
     free(y);
+    fclose(fp);
     return;
 }

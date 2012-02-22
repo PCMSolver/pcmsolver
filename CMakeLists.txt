@@ -121,3 +121,6 @@ target_link_libraries(pwl.x pwl wem ${LIBS})
 add_executable(pwc.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wemlib/main.c)
 target_link_libraries(pwc.x wem ${LIBS})
 
+add_executable(cav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcavlib/main.c)
+target_link_libraries(cav.x wavcav ${LIBS})
+

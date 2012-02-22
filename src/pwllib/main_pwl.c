@@ -120,6 +120,7 @@ int main()
         WEM_pwl(&S_i, W, P, E, T, p, M, SingleLayerInt, DoubleLayerInt, 2 * pi * (1 + epsilon) / (1 - epsilon));
     else
         WEM_pwl(&S_i, W, P, E, T, p, M, SingleLayerInt, DoubleLayerInt, 2 * pi);
+	fprint_sparse2(&S_i, "old.dat");
     postproc_pwl(&S_i, W, E, p, M);
     time(&t3);                  /* Zwischenzeit */
     printf("Computation time:                %g secs.\n\n", difftime(t3, t2));
@@ -165,6 +166,7 @@ int main()
     } else if (CASE == 2) {
         WEMRHS2_pwl(&rhs, W, E, T, p, M, np); //compute N_\rho  /* compute correct rhs: b-G*A2^(-1)*b */
         i = WEMPGMRES2_pwl(&S_i, rhs, v, eps, W, F, p, M); // result in v=A2^(-1)*rhs
+        fprint_vec(v, np, "v_old.dat");
         printf("Solving the 1st linear system:   %d iterations\n", i);
         init_sparse(&G, np, np, 10);
         single_scale_gram_pwl(&G, F, p, M); // compute mass matrix
@@ -178,6 +180,7 @@ int main()
         for (i = 0; i < np; i++)
             rhs[i] += 4 * pi * u[i] / (epsilon - 1);  // RHS equation (2.7)
         memset(u, 0, np * sizeof(double));
+        fprint_vec(rhs, np, "rhs_old2.dat");
         i = WEMPCG_pwl(&S_i, rhs, u, eps, W, F, p, M); //V \sigma = RHS
         printf("Solving the 2nd linear system:   %d iterations\n", i);
     } else if ((CASE == 3) || (CASE == 4)) {
@@ -200,6 +203,7 @@ int main()
 
     /* Energie-Berechnung */
     tdwtLin(u, F, M, p, np);
+    fprint_vec(u, np, "u_old.dat");
     res = energy_orig_pwl(u, F, T, p, M);
     time(&t2);
     printf("Over-all computation time:       %g secs.\n", difftime(t2, t1));

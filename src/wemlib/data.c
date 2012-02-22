@@ -9,7 +9,7 @@
 
 
 /* number of charges */
-const unsigned int k = 12;
+const unsigned int k = 3;
 
 /* position of charges: vectors (x,y,z) */
 const vector3 x[12] = {

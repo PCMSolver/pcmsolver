@@ -110,4 +110,6 @@ void print_sparse2(sparse2 *A);
 
 void fprint_sparse2(sparse2 *A, char * infile);
 
+void fprint_vec(double *A, int elements, char * infile);
+
 #endif

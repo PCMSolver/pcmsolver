@@ -347,3 +347,12 @@ void fprint_sparse2(sparse2 *A, char * infile)
     fclose(fp);
 }
 
+void fprint_vec(double *A, int elements, char * infile)
+{
+    FILE *fp = fopen(infile, "w");
+    for (int i = 0; i < elements; i++) {
+        fprintf(fp, "%d %18.6f\n", i, A[i]);
+    }
+    fclose(fp);
+}
+

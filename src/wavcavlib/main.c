@@ -1,6 +1,6 @@
 #include "test.h"
 
-void main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     char* infile = "cavity.inp";
     double probeRadius = 0.4;
@@ -19,13 +19,14 @@ void main(int argc, char* argv[])
         infile = argv[1];
         break;
     default :
-        printf("Usage:", argc); 
-        printf("cav.x input_file [patchLevel[probeRadius[coarsity]]]", argc); 
+        printf("Usage:\n"); 
+        printf("cav.x input_file [patchLevel[probeRadius[coarsity]]]\n"); 
         exit(-1);
     }
     printf ("Calling cavity generator with the following input\n");
     printf ("Input file: %s Patch Level: %2d   Radius: %7.4f   Coarsity: %7.4f\n",
             infile, patchLevel, probeRadius, coarsity);
     info = waveletCavityDrv_(probeRadius, coarsity, patchLevel, infile);
+    return info;
 };
 

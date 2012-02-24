@@ -43,12 +43,9 @@ unsigned int m;                 /* Zahl der Level                              *
     double E = 0;               /* Energie                                     */
     double h = 1. / n;          /* Schrittweite                                */
     double C = 0;               /* surface meassure                            */
-    double D = 0;               /* total charge                                */
 
 /* Initialisierung */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln */
-
-    FILE *fp = fopen("energy_orig.dat", "w");
 
 /* Berechnung des Fehlers */
     for (i1 = 0; i1 < p; i1++) {
@@ -60,7 +57,6 @@ unsigned int m;                 /* Zahl der Level                              *
                     t = vector2_add(s, vector2_Smul(h, Q[g].xi[l]));
                     E += Q[g].w[l] * u[zi] * f(Chi(t, T[i1], m));
                     C += Q[g].w[l] * u[zi];
-                    fprintf(fp, "%5d %12.5f", zi, Q[g].w[l] * u[zi]);
                 }
                 s.x += h;
                 zi++;
@@ -74,7 +70,6 @@ unsigned int m;                 /* Zahl der Level                              *
     printf("    Computed energy:            %f10\n", E);
     printf("    Computed charge:            %f10\n", C*h);
     free_Gauss_Square(&Q, g + 1);
-    fclose(fp);
     return (E);
 }
 
@@ -100,8 +95,6 @@ unsigned int m;                 /* Zahl der Level                              *
 /* Initialisierung */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln */
 
-    FILE *fp = fopen("energy_new.dat", "w");
-
 /* Berechnung des Fehlers */
     for (i1 = 0; i1 < p; i1++) {
         s.y = 0;
@@ -111,8 +104,6 @@ unsigned int m;                 /* Zahl der Level                              *
                 for (l = 0; l < Q[g].nop; l++) {
                     t = vector2_add(s, vector2_Smul(h, Q[g].xi[l]));
                     E += Q[g].w[l] * u[zi] * potential[Q[g].nop*zi+l];
-                    fprintf(fp, "%5d %12.5f %12.5f\n", zi, Q[g].w[l] * u[zi],
-                            potential[Q[g].nop*zi+l]);
                 }
                 s.x += h;
                 zi++;
@@ -125,7 +116,6 @@ unsigned int m;                 /* Zahl der Level                              *
 /* Datenausgabe */
     printf("PWC Computed energy:            %f10\n", E);
     free_Gauss_Square(&Q, g + 1);
-    fclose(fp);
     return (E);
 }
 
@@ -151,8 +141,6 @@ unsigned int m;                 /* Zahl der Level                              *
 /* Initialisierung */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln */
 
-    FILE *fp = fopen("charge.dat", "w");
-
 /* Berechnung des Fehlers */
     for (i1 = 0; i1 < p; i1++) {
         s.y = 0;
@@ -163,8 +151,6 @@ unsigned int m;                 /* Zahl der Level                              *
                     t = vector2_add(s, vector2_Smul(h, Q[g].xi[l]));
                     charge[Q[g].nop*zi+l] = Q[g].w[l] * u[zi];
                     C += charge[Q[g].nop*zi+l];
-                    fprintf(fp, "%5d %12.5f", zi, Q[g].w[l] * u[zi],
-                           f(Chi(t, T[i1], m)));
                 }
                 s.x += h;
                 zi++;
@@ -177,6 +163,5 @@ unsigned int m;                 /* Zahl der Level                              *
 /* Datenausgabe */
     printf("PWC Computed charge:            %f10\n", C);
     free_Gauss_Square(&Q, g + 1);
-    fclose(fp);
     return (C);
 }

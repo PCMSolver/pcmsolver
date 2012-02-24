@@ -109,8 +109,6 @@ unsigned int m;                 /* Zahl der Level                              *
 
 /* Initialisierung */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln */
-    FILE *fp = fopen("energy_new.dat","w");
-
 /* Berechnung des Fehlers */
     for (i1 = 0; i1 < p; i1++) {
         s.y = 0;
@@ -125,10 +123,6 @@ unsigned int m;                 /* Zahl der Level                              *
                         + u[F[zi][2]] * Phi2(Q[g].xi[l])
                         + u[F[zi][3]] * Phi3(Q[g].xi[l]);
                     E += Q[g].w[l] * U * potential[index];
-                    vector3 position = Chi_pwl(t, T[i1], m);
-                    //fprintf(fp, "%16.10f %16.10f %16.10f %16.10f %16.10f", 
-                    //        t.x, t.y, position.x, position.y, position.z);
-                    fprintf(fp, "%4d %16.10f %16.10f\n", index, U, potential[index]);
                 }
                 s.x += h;
                 zi++;
@@ -139,7 +133,6 @@ unsigned int m;                 /* Zahl der Level                              *
     E = -0.5 * h * E; /* correct scaling */
     printf("PWL Computed energy:            %20.15f\n", E);
     free_Gauss_Square(&Q, g + 1);
-    fclose(fp);
     return (E);
 }
 
@@ -158,7 +151,6 @@ unsigned int m;                 /* Zahl der Level                              *
     unsigned int g = 1;         /* Quadraturgrad                               */
     unsigned int l;             /* Laufindex fuer Quadratur                    */
     vector2 s;                  /* Linker, unterer Eckpunkt des Patches zi     */
-    vector2 t;                  /* Auswertepunkte der Gaussquadratur           */
     double U;                   /* Auswertung der Dichte im Quadraturpunkt     */
     double h = 1. / n;          /* Schrittweite                                */
     double C = 0;               /* surface meassure                            */

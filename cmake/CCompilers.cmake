@@ -1,7 +1,7 @@
 if (NOT DEFINED HAVE_C_FLAGS)
   if(CMAKE_C_COMPILER_ID MATCHES GNU)
-    set(CMAKE_C_FLAGS         "-std=c99 -DRESTRICT=restrict -DFUNDERSCORE=1")
-    set(CMAKE_C_FLAGS_DEBUG   "-O0 -g")
+    set(CMAKE_C_FLAGS         "-Wall -std=c99 -DRESTRICT=restrict -DFUNDERSCORE=1")
+    set(CMAKE_C_FLAGS_DEBUG   "-O0 -g3")
     set(CMAKE_C_FLAGS_RELEASE "-O2 -ffast-math -funroll-loops -ftree-vectorize -Wno-unused")
   endif()
   

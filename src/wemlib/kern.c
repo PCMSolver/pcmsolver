@@ -85,7 +85,6 @@ vector3 x, y, n_y;
     return (exp(-kappa * r) * (c.x * n_y.x + c.y * n_y.y + c.z * n_y.z) * (1 + kappa * r) / (r * r * r));
 /*
 return(exp(-kappa*r)*(c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)*(1+kappa*r)/(r*r*r)/epsilon);
-/*
    /epsilon ?
 */
 }

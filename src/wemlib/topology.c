@@ -147,9 +147,9 @@ unsigned int m;                 /* 2^m*2^m Patches pro Parametergebiet */
     }
 
 /* Speicherplatz wieder freigeben */
-    //for (i1 = 0; i1 < kz; i1++)
-    free(K[i1]);
-    //free(K);
+    for (i1 = 0; i1 < kz; i1++)
+        free(K[i1]);
+    free(K);
 
     return (pz);
 }

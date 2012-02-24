@@ -55,7 +55,7 @@ vector3 ****P;                  /* Knotenpunkte                           */
 unsigned int *p;                /* Anzahl der Patches                     */
 unsigned int *m;                /* Zahl der Level */
 {
-    int ret = read_points1(P, p, m, "molec_dyadic.dat");
+    read_points1(P, p, m, "molec_dyadic.dat");
     return;
 }
 

@@ -23,6 +23,7 @@
 #include "IEFSolver.h"
 #include "WEMSolver.h"
 #include "PWCSolver.h"
+#include "PWLSolver.h"
 #include "Atom.h"
 #include "Sphere.h"
 #include "Solvent.h"
@@ -34,15 +35,17 @@ using namespace Eigen;
 
 typedef taylor<double, 3, 1> T;
 
-GePolCavity * _gePolCavity;
-IEFSolver<T> * _IEFSolver;
+Cavity        * _cavity;
+GePolCavity   * _gePolCavity;
 WaveletCavity * _waveletCavity;
-PWCSolver<T> * _PWCSolver;
-Cavity * _cavity;
-PCMSolver<T> * _solver;
+
+IEFSolver * _IEFSolver;
+PWCSolver * _PWCSolver;
+PWLSolver * _PWLSolver;
+PCMSolver * _solver;
 
 vector<Atom> Bondi = _gePolCavity->initBondi();
-vector<Solvent> solventData = _solver->initSolvent();
+//vector<Solvent> solventData = _solver->initSolvent();
 
 /*
 
@@ -51,59 +54,41 @@ vector<Solvent> solventData = _solver->initSolvent();
 */
 
 extern "C" void init_gepol_cavity_() {
-	exit(-1)
-		/* this needs to be revised in light of the unit probelm */
-	const char *infile = 0;
-	enum {Explicit, Atoms, Implicit};
-	infile = "@pcmsolver.inp";
+	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
-	int solventIndex = Input.getInt("Medium.SolIndex");
-	_gePolCavity = new GePolCavity(Input.getSect("Cavity<gepol>"));
-	int nNuclei;
-	Matrix<double, 3, Dynamic> sphereCenter;
-	VectorXd charges;
-	if (Input.getStr("Cavity<gepol>.AddSpheres") == "Yes"){
-		if (Input.getDbl("Cavity<gepol>.SolventRadius")) {
-			_gePolCavity->setRSolv(Input.getDbl("Cavity<gepol>.SolventRadius"));
-		} else {
-			_gePolCavity->setRSolv(solventData[solventIndex].getSolventRadius());
-		}
+	string solvent = Input.getStr("Medium.Solvent");
+	//	int solventIndex = Input.getInt("Medium.SolIndex");
+	Section cavSect = Input.getSect("Cavity<gepol>");
+	_gePolCavity = new GePolCavity(cavSect);
+	const Keyword<double> & cavProbeRad = cavSect.getKey<double>("Cavity<gepol>.ProbeRadius");
+	//	const Keyword<double> & cavityProbeRadius = Input.getKeyword<double>("Cavity<gepol>.ProbeRadius");
+	if (cavProbeRad.isDefined()) {
+		_gePolCavity->setRSolv(Input.getDbl("Cavity<gepol>.ProbeRadius"));
+	} else if (solvent != "Explicit") {
+		SolventMap solvents = Solvent::initSolventMap();
+		_gePolCavity->setRSolv(solvents[solvent]->getRadius());
 	} else {
-		_gePolCavity->setRSolv(0.0);
+		std::cout << "Should not really get here..." << std::endl;
+		exit(-1);
 	}
-	init_atoms_(charges, sphereCenter);
-	nNuclei = charges.size();
-	_gePolCavity->setNSpheres(nNuclei);
-	if ( mode == Atoms ){
-		vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
-		vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
-		int nsph = atomsInput.size();	
-		for ( int i = 0; i < nNuclei; i++ ) {
-			for ( int j = 0; j < nsph; j++ ) {
-				if ( i + 1 == atomsInput[j] ) {
-					charges(i) = 0;
-				}
-			}
-		}
-		for ( int i = 0; i < nNuclei; i++ ) {
-			Vector3d center = sphereCenter.col(i);
-			if ( charges(i) == 0 ) {
-				Sphere sph(center, radiiInput[i]*scaling);
-				_gePolCavity->getVectorSpheres().push_back(sph);
-			} else {
-				int k = charges(i) - 1;
-				Sphere sph(center, Bondi[k].getAtomRadius()*scaling);
-				_gePolCavity->getVectorSpheres().push_back(sph);
-			}
-		}
-	} else if ( mode == Implicit ) {
-		for ( int i = 0; i < nNuclei; i++ ) {
-			int j = charges(i)-1;
-			Vector3d center = sphereCenter.col(i);
-			Sphere sph(center, Bondi[j].getAtomRadius()*scaling);
-			_gePolCavity->getVectorSpheres().push_back(sph);
-		}
+
+	VectorXd charges;
+	Matrix<double, 3, Dynamic> centers;
+	init_atoms_(charges, centers);
+	int nAtoms = charges.size();
+
+	switch (_gePolCavity->getMode()) {
+	case GePolCavity::Atoms:
+		init_spheres_atoms_(charges, centers);
+		break;
+	case GePolCavity::Implicit:
+		init_spheres_implicit_(charges, centers);
+		break;
+	default:
+		std::cout << "Case unknown" << std::endl;
+		exit(-1);
 	}
+
 	_gePolCavity->makeCavity(5000, 10000000);
 	_gePolCavity->initPotChg();
 }
@@ -118,9 +103,11 @@ extern "C" void init_atoms_(VectorXd & charges,
 	double * chg = charges.data();
 	double * centers = sphereCenter.data();
 	collect_atoms_(chg, centers, & flag);
+	/*
 	if ( flag == 0 ) {
 		sphereCenter *= ToAngstrom;
 	}
+	*/
 } 
 
 extern "C" void init_wavelet_cavity_() {
@@ -198,10 +185,10 @@ extern "C" void print_gepol_cavity_(){
 */
 
 extern "C" void init_pcm_() {
-	const char *infile = 0;
-	infile = "@pcmsolver.inp";
+	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
-	const string modelType = Input.getStr("SolverType");
+	const Section & Medium = Input.getSect("Medium");
+	const string modelType = Input.getStr("Medium.SolverType");
 	if (modelType == "Traditional") {
 		init_gepol_cavity_();
 		init_iefsolver_();
@@ -209,11 +196,18 @@ extern "C" void init_pcm_() {
 		_solver = _IEFSolver;
 	} else if (modelType == "Wavelet") {
 		init_wavelet_cavity_();
-		init_wemsolver_();
+		init_pwcsolver_();
 		_waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(),
-									 _PWCSolver->getT_());
+									 _PWCSolver->getT_(), false);
 		_cavity = _waveletCavity;
 		_solver = _PWCSolver;
+	} else if (modelType == "Linear") {
+		init_wavelet_cavity_();
+		init_pwlsolver_();
+		_waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),
+									 _PWLSolver->getT_(), true);
+		_cavity = _waveletCavity;
+		_solver = _PWLSolver;
 	} 
 	_cavity->initPotChg();
 	_solver->setSolverType(modelType);
@@ -236,19 +230,27 @@ extern "C" void init_iefsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_IEFSolver = new IEFSolver<T>(Medium);
+	_IEFSolver = new IEFSolver(Medium);
 	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
 	cout << *_IEFSolver << endl;
 }
 
-extern "C" void init_wemsolver_() {
+extern "C" void init_pwcsolver_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_PWCSolver = new PWCSolver<T>(Medium);
-	_PWCSolver->uploadCavity(*_waveletCavity);
-	_PWCSolver->constructSystemMatrix();
+	_PWCSolver = new PWCSolver(Medium);
+	_PWLSolver->buildSystemMatrix(*_waveletCavity);
+}
+
+extern "C" void init_pwlsolver_() {
+	const char *infile = 0;
+	infile = "@pcmsolver.inp";
+	Getkw Input = Getkw(infile, false, true);
+	const Section &Medium = Input.getSect("Medium<Medium>");
+	_PWLSolver = new PWLSolver(Medium);
+	_PWLSolver->buildSystemMatrix(*_waveletCavity);
 }
 
 extern "C" void build_anisotropic_matrix_() {
@@ -273,3 +275,31 @@ extern "C" void comp_charge_(double *potential_, double *charge_) {
 	}
 }
   
+extern "C" void init_spheres_atoms_(VectorXd & charges, 
+						 Matrix<double, 3, Dynamic> & centers) {
+	const char *infile = "@pcmsolver.inp";
+	Getkw Input = Getkw(infile, false, true);
+	vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
+	vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
+	for (int i = 0; i < atomsInput.size(); i++) {
+		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
+		Vector3d center = centers.col(index);
+		Sphere sphere(center, radiiInput[i]);
+		_gePolCavity->getSpheres().push_back(sphere);
+	}
+}
+
+extern "C" void init_spheres_implicit_(VectorXd & charges, 
+							Matrix<double, 3, Dynamic> & centers)
+{
+	const char *infile = "@pcmsolver.inp";
+	Getkw Input = Getkw(infile, false, true);
+	double scaling = Input.getDbl("Cavity<gepol>.Scaling");
+	for (int i = 0; i < charges.size(); i++) {
+		int index = charges(i) - 1;
+		double radius = Bondi[index].getAtomRadius() * scaling;
+		Vector3d center = centers.col(i);
+		Sphere sphere(center, radius);
+		_gePolCavity->getSpheres().push_back(sphere);
+	}
+}

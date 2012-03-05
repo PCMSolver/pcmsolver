@@ -37,7 +37,7 @@ void generate_canonical_single_scale_basis(wavelet_pwl * W, unsigned int ***C, e
 /* erstellt die kanonische Einskalenbasis des Levels m */
 
 
-void add_element(wavelet_pwl * w, element_pwl * E, double weight0, double weight1, double weight2, double weight3, unsigned int index);
+void add_element_pwl(wavelet_pwl * w, element_pwl * E, double weight0, double weight1, double weight2, double weight3, unsigned int index);
 /* fuegt zum Wavelet w das mit weight gewichtete Element index hinzu */
 
 
@@ -150,10 +150,10 @@ unsigned int M;                 /* 2^M*2^M Elemente pro Patch auf Level M */
     for (i1 = 0; i1 < p; i1++) {
         for (i2 = 0; i2 < n; i2++) {
             for (i3 = 0; i3 < n; i3++) {
-                add_element(&W[C[i1][S * i2][S * i3]], E, 1, 0, 0, 0, ze);
-                add_element(&W[C[i1][S * i2][S * (i3 + 1)]], E, 0, 1, 0, 0, ze);
-                add_element(&W[C[i1][S * (i2 + 1)][S * (i3 + 1)]], E, 0, 0, 1, 0, ze);
-                add_element(&W[C[i1][S * (i2 + 1)][S * i3]], E, 0, 0, 0, 1, ze);
+                add_element_pwl(&W[C[i1][S * i2][S * i3]], E, 1, 0, 0, 0, ze);
+                add_element_pwl(&W[C[i1][S * i2][S * (i3 + 1)]], E, 0, 1, 0, 0, ze);
+                add_element_pwl(&W[C[i1][S * (i2 + 1)][S * (i3 + 1)]], E, 0, 0, 1, 0, ze);
+                add_element_pwl(&W[C[i1][S * (i2 + 1)][S * i3]], E, 0, 0, 0, 1, ze);
                 ze++;
             }
         }
@@ -162,7 +162,7 @@ unsigned int M;                 /* 2^M*2^M Elemente pro Patch auf Level M */
 }
 
 
-void add_element(w, E, weight0, weight1, weight2, weight3, index)
+void add_element_pwl(w, E, weight0, weight1, weight2, weight3, index)
 /* fuegt zum Wavelet w das mit weight gewichtete Element index hinzu */
 wavelet_pwl *w;                 /* gegebenes Wavelet                        */
 element_pwl *E;                 /* hierarchische Elementliste               */
@@ -210,7 +210,7 @@ double weight;                  /* Gewicht der zu addierenden Skalierungsfunktio
     unsigned int k;             /* Laufindizes zur Suche nach gemeinsamen Elementen */
 
     for (k = 0; k < w2->element_number; k++) {
-        add_element(w1, E, weight * w2->weight[k][0], weight * w2->weight[k][1], weight * w2->weight[k][2], weight * w2->weight[k][3], w2->element[k]);
+        add_element_pwl(w1, E, weight * w2->weight[k][0], weight * w2->weight[k][1], weight * w2->weight[k][2], weight * w2->weight[k][3], w2->element[k]);
     }
     return;
 }

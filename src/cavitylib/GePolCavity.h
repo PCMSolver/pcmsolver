@@ -40,7 +40,7 @@ class GePolCavity : public Cavity
     void setMaxAddedSpheres(bool add = true, int maxAdd = 100);
     double getRSolv() { return rSolv; };
     void setRSolv( double rsolv );
-    vector<Sphere> & getVectorSpheres(){ return spheres; }
+    vector<Sphere> & getSpheres(){ return spheres; }
     int getMode(){return mode;}
     enum SphereMode {Explicit, Atoms, Implicit};
 

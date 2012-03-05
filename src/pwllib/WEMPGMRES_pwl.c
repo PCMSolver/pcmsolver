@@ -37,7 +37,7 @@
 #include "WEMPGMRES_pwl.h"
 
 
-const unsigned int maxiter = 100;       /* Restart - Parameter */
+static const unsigned int maxiter = 100;       /* Restart - Parameter */
 
 
 /*=================*

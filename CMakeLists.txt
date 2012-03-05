@@ -63,7 +63,7 @@ set (ExternalProjectCMakeArgs
   )
 
 ExternalProject_Add(libtaylor
-	DOWNLOAD_COMMAND svn checkout http://libtaylor.googlecode.com/svn/trunk/ ${PROJECT_SOURCE_DIR}/external/libtaylor
+#	DOWNLOAD_COMMAND svn checkout http://libtaylor.googlecode.com/svn/trunk/ ${PROJECT_SOURCE_DIR}/external/libtaylor
 	PREFIX ${PROJECT_SOURCE_DIR}/external
 	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
 	BINARY_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor-build

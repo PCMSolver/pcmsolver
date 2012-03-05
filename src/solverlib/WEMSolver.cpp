@@ -100,13 +100,9 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 void WEMSolver::buildSystemMatrix(Cavity & cavity) {
     if (WaveletCavity *waveletCavity = dynamic_cast<WaveletCavity*> (&cavity)) {
 		this->uploadCavity(*waveletCavity);
-		std::cout << "cavity uploaded" << std::endl;
 		this->initInterpolation();
-		std::cout << "interpolation built" << std::endl;
 		this->constructWavelets();
-		std::cout << "wavelets built" << std::endl;
 		this->constructSystemMatrix();
-		std::cout << "matrix built" << std::endl;
 	} else {
 		std::cout << "Wavelet-type cavity needed for wavelet solver." 
 				  << std::endl;

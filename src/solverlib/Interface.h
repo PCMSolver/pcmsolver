@@ -51,7 +51,9 @@ extern "C" void init_pcm_();
 
 extern "C" void init_iefsolver_();
 
-extern "C" void init_wemsolver_();
+extern "C" void init_pwcsolver_();
+
+extern "C" void init_pwlsolver_();
 
 extern "C" void build_isotropic_matrix_();
 
@@ -71,6 +73,12 @@ extern "C" void nuc_pot_pcm_(double* centers, int *nts, double *potential);
 //     $                     LWork)
 extern "C" void fock_pcm_(double *fock, double* centers, int *nts, 
 			  double *charges, double *work, int *lwork);
+
+extern "C" void init_spheres_implicit_(VectorXd & charges, 
+                            Matrix<double, 3, Dynamic> & centers);
+
+extern "C" void init_spheres_atoms_(VectorXd & charges, 
+                                    Matrix<double, 3, Dynamic> & centers);
 
 #endif
 

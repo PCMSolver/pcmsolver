@@ -56,6 +56,7 @@ def main():
 	inkw.sanitize(valid_keywords)
 	topsect=inkw.get_topsect()
 	inkw.run_callbacks(valid_keywords)
+	consistency_check(inkw)
 
 	if dryrun:
 		xfile='@' + inpfil
@@ -357,8 +358,11 @@ def convert_area_scalar(keyword):
 	if (isAngstrom):
 		keyword[0] *= toAtomicUnits * toAtomicUnits
 
-
-
+def consistency_check(inkw):
+	medRad = inkw.get("Medium.ProbeRadius")
+	cavRad = inkw.get("Cavity<gepol>")
+	if medRad.is_set() 
+		cavRad.set(medRad.get())
 
 if __name__ == '__main__':
 	main()

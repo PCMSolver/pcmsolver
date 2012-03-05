@@ -35,7 +35,7 @@ typedef struct {                /* Typdeklaration bounding box */
 void compute_bounding_boxes(bounding_box ** B, wavelet_pwl * W, element_pwl * E, unsigned int np);
 
 
-unsigned int wavelet_wavelet_criterion(bounding_box * B, wavelet_pwl * W, element_pwl * E, unsigned int ind1, unsigned int ind2, double c1, double c2);
+unsigned int wavelet_wavelet_criterion_pwl(bounding_box * B, wavelet_pwl * W, element_pwl * E, unsigned int ind1, unsigned int ind2, double c1, double c2);
 
 
 /*==================================================*
@@ -84,12 +84,12 @@ unsigned int np;                /* Anzahl der Basisfunktionen */
 
 
 /*=========================================================*
- *  wavelet_wavelet_criterion: 1.+2. Kompression	   *
+ *  wavelet_wavelet_criterion_pwl: 1.+2. Kompression	   *
  *  result = 0: T(ind,ind2) = 0 gemaess 1./2. Kompression  *
  *  result = 1: sonst 					   *
  *=========================================================*/
 
-unsigned int wavelet_wavelet_criterion(B, W, E, ind1, ind2, c1, c2)
+unsigned int wavelet_wavelet_criterion_pwl(B, W, E, ind1, ind2, c1, c2)
 bounding_box *B;                /* bounding boxes                                */
 wavelet_pwl *W;                 /* Liste der Wavelets                            */
 element_pwl *E;                 /* hierarchische Elementliste                    */
@@ -219,11 +219,11 @@ unsigned int np;                /* Anzahl der Basisfunktionen                   
             m2 = W[ind2].level;
             for (k = 0; k < W[i].son_number; k++) {
                 ind1 = W[i].son[k];
-                if (wavelet_wavelet_criterion(B, W, E, ind1, ind2, c1[m1][m2], c2[m1][m2])) {
+                if (wavelet_wavelet_criterion_pwl(B, W, E, ind1, ind2, c1[m1][m2], c2[m1][m2])) {
                     set_pattern(T, ind1, ind2);
                     if (m1 == m2 + 1) {
                         for (l = 0; l < W[ind2].son_number; l++) {
-                            if ((W[ind2].son[l] <= ind1) && (wavelet_wavelet_criterion(B, W, E, ind1, W[ind2].son[l], c1[m1][m1], c2[m1][m1]))) {
+                            if ((W[ind2].son[l] <= ind1) && (wavelet_wavelet_criterion_pwl(B, W, E, ind1, W[ind2].son[l], c1[m1][m1], c2[m1][m1]))) {
                                 set_pattern(T, ind1, W[ind2].son[l]);
                             }
                         }
@@ -234,11 +234,11 @@ unsigned int np;                /* Anzahl der Basisfunktionen                   
             /* wegen halbem Diagonalblock */
             if (m1 == m2 + 1) {
                 for (k = 0; k < W[ind2].son_number; k++) {
-                    if (wavelet_wavelet_criterion(B, W, E, W[ind2].son[k], i, c1[m1][m2], c2[m1][m2])) {
+                    if (wavelet_wavelet_criterion_pwl(B, W, E, W[ind2].son[k], i, c1[m1][m2], c2[m1][m2])) {
                         set_pattern(T, W[ind2].son[k], i);
                         {
                             for (l = 0; l < W[i].son_number; l++) {
-                                if ((W[i].son[l] <= W[ind2].son[k]) && (wavelet_wavelet_criterion(B, W, E, W[ind2].son[k], W[i].son[l], c1[m1][m1], c2[m1][m1]))) {
+                                if ((W[i].son[l] <= W[ind2].son[k]) && (wavelet_wavelet_criterion_pwl(B, W, E, W[ind2].son[k], W[i].son[l], c1[m1][m1], c2[m1][m1]))) {
                                     set_pattern(T, W[ind2].son[k], W[i].son[l]);
                                 }
                             }

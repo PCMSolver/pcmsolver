@@ -1,10 +1,11 @@
 set (solverlib_SOURCES 
   IEFSolver.cpp 
+  Interface.cpp
   PCMSolver.cpp
-  WEMSolver.cpp
   PWCSolver.cpp
   PWLSolver.cpp
   Solvent.cpp
+  WEMSolver.cpp
 )
 #  Interface.cpp
 
@@ -31,11 +32,3 @@ install(TARGETS solver
 
 install(FILES Interface.h DESTINATION include)
 install(FILES Solvent.h DESTINATION include)
-#install(TARGETS pcmsolver.x
-#	RUNTIME DESTINATION bin
-#	)
-
-#install(PROGRAMS ${PROJECT_BINARY_DIR}/pcmsolver 
-#	DESTINATION bin
-#	)
-

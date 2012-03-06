@@ -65,7 +65,8 @@ extern "C" void comp_charge_(double *potential_, double *charge_);
 extern "C" void ele_pot_pcm_(double *density, double* centers, int *nts, 
 			     double *potential, double *work, int *lwork);
 
-extern "C" void nuc_pot_pcm_(double* centers, int *nts, double *potential);
+//extern "C" void nuc_pot_pcm_(double* centers, int *nts, double *potential);
+extern "C" void nuc_pot_pcm_(double * tess_cent, double * nuc_pot);
 
 //      Subroutine Fock_PCMModule(Fock, Centers, Nts, Charges, Work, 
 //     $                     LWork)

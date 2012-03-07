@@ -60,7 +60,6 @@ void IEFSolver::buildAnisotropicMatrix(GePolCavity & cav){
     MatrixXd DE(cavitySize, cavitySize);
     for(int i = 0; i < cavitySize; i++){
 		Vector3d p1 = cav.getTessCenter(i);
-		Vector3d n1 = cav.getTessNormal(i);
 		double area = cav.getTessArea(i);
 		double radius = cav.getTessRadius(i);
 		SI(i,i) =  greenInside->compDiagonalElementS(area); 
@@ -70,6 +69,7 @@ void IEFSolver::buildAnisotropicMatrix(GePolCavity & cav){
 		for (int j = 0; j < cavitySize; j++){
 			Vector3d p2 = cav.getTessCenter(j);
 			Vector3d n2 = cav.getTessNormal(j);
+			n2.normalize();
 			if (i != j) {
 				SI(i,j) = greenInside->evalf(p1, p2);
 				SE(i,j) = greenOutside->evalf(p1, p2);
@@ -102,7 +102,6 @@ void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
     MatrixXd DI(cavitySize, cavitySize);
     for(int i = 0; i < cavitySize; i++){
 		Vector3d p1 = cav.getTessCenter(i);
-		Vector3d n1 = cav.getTessNormal(i);
 		double area = cav.getTessArea(i);
 		double radius = cav.getTessRadius(i);
 		SI(i,i) = greenInside->compDiagonalElementS(area); 
@@ -110,6 +109,7 @@ void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
 		for (int j = 0; j < cavitySize; j++){
 			Vector3d p2 = cav.getTessCenter(j);
 			Vector3d n2 = cav.getTessNormal(j);
+			n2.normalize();
 			if (i != j) {
 				SI(i,j) = greenInside->evalf(p1, p2);
 				DI(i,j) = greenInside->evald(n2, p1, p2);

@@ -60,7 +60,7 @@ C
          YE(i) = ye_(i)
          ZE(i) = ze_(i)
          RIN(i) = rin_(i)
-         ALPHA(i)=1
+         ALPHA(i)=1.0d0
       enddo
       
       NESF=NESFP

@@ -102,9 +102,9 @@ double Cavity::compPolarizationEnergy() {
 	double ENE = nuclearPotential.dot(electronicCharge);
 	double ENN = nuclearPotential.dot(nuclearCharge);
 
-	cout << "E_ee " << EEE << "E_en " << EEN 
-		 << "E_ne " << ENE << "E_nn " << ENN << endl;
-	
+	cout << " E_ee " << EEE << " E_en " << EEN
+		 << " E_ne " << ENE << " E_nn " << ENN << endl;
+
 	return 0.5 * (EEE + EEN + ENE + ENN);
 }
 

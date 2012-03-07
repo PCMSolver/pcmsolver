@@ -46,8 +46,9 @@ double UniformDielectric<T>::compDiagonalElementS(double area){
 
 template<class T>
 double UniformDielectric<T>::compDiagonalElementD(double area, double radius){
-	double s = factor * sqrt(4 * M_PI / area);   
-	return s / (2 * radius);
+	//	double s = factor * sqrt(4 * M_PI / area);   
+	//	return s / (2 * radius);
+	return - factor * sqrt(M_PI / area) / radius;   
 }
 
 template <class T>

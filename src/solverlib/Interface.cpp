@@ -60,9 +60,11 @@ extern "C" void init_gepol_cavity_() {
 	//	int solventIndex = Input.getInt("Medium.SolIndex");
 	Section cavSect = Input.getSect("Cavity<gepol>");
 	_gePolCavity = new GePolCavity(cavSect);
-	const Keyword<double> & cavProbeRad = cavSect.getKey<double>("Cavity<gepol>.ProbeRadius");
+	//	const Keyword<double> & cavProbeRad = cavSect.getKey<double>("Cavity<gepol>.ProbeRadius");
 	//	const Keyword<double> & cavityProbeRadius = Input.getKeyword<double>("Cavity<gepol>.ProbeRadius");
-	if (cavProbeRad.isDefined()) {
+	//	if (cavProbeRad.isDefined()) {
+	if (true) {
+		std::cout << "This needs to be fixed..." << std::endl;
 		_gePolCavity->setRSolv(Input.getDbl("Cavity<gepol>.ProbeRadius"));
 	} else if (solvent != "Explicit") {
 		SolventMap solvents = Solvent::initSolventMap();
@@ -84,13 +86,14 @@ extern "C" void init_gepol_cavity_() {
 	case GePolCavity::Implicit:
 		init_spheres_implicit_(charges, centers);
 		break;
+	case GePolCavity::Explicit:
+		break;
 	default:
 		std::cout << "Case unknown" << std::endl;
 		exit(-1);
 	}
-
 	_gePolCavity->makeCavity(5000, 10000000);
-	_gePolCavity->initPotChg();
+	//	_gePolCavity->initPotChg();
 }
 
 extern "C" void init_atoms_(VectorXd & charges,
@@ -156,10 +159,11 @@ extern "C" void get_tess_centers_(double * centers) {
 
 extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
 	int nts = _cavity->size();
-	nuc_pot_pcm_(_cavity->getTessCenter().data(), &nts, 
+	nuc_pot_pcm_(&nts, _cavity->getTessCenter().data(),  
 				 _cavity->getPot(Cavity::Nuclear).data());
-	ele_pot_pcm_(density, _cavity->getTessCenter().data(), &nts, 
-				 _cavity->getPot(Cavity::Electronic).data(), work, lwork);
+	ele_pot_pcm_(&nts, _cavity->getTessCenter().data(),  
+				 _cavity->getPot(Cavity::Electronic).data(), 
+				 density, work, lwork);
 
 	_solver->compCharge(_cavity->getPot(Cavity::Nuclear),    
 					   _cavity->getChg(Cavity::Nuclear));
@@ -188,7 +192,7 @@ extern "C" void init_pcm_() {
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section & Medium = Input.getSect("Medium");
-	const string modelType = Input.getStr("Medium.SolverType");
+	const string modelType = Medium.getStr("SolverType");
 	if (modelType == "Traditional") {
 		init_gepol_cavity_();
 		init_iefsolver_();

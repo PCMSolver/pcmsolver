@@ -85,5 +85,8 @@ extern "C" void init_spheres_atoms_(VectorXd & charges,
 
 extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork);
 
+extern "C" void comp_chg_pcm_();
+
+extern "C" void set_potential_(int * nts, double * potential, int * flag);
 #endif
 

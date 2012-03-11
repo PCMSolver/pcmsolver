@@ -174,6 +174,17 @@ extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
 	double totNuChg = _cavity->getChg(Cavity::Nuclear).sum();
 }
 
+extern "C" void comp_chg_pcm_() {
+	_solver->compCharge(_cavity->getPot(Cavity::Nuclear),    
+					   _cavity->getChg(Cavity::Nuclear));
+
+	_solver->compCharge(_cavity->getPot(Cavity::Electronic), 
+					   _cavity->getChg(Cavity::Electronic));
+
+	double totElChg = _cavity->getChg(Cavity::Electronic).sum();
+	double totNuChg = _cavity->getChg(Cavity::Nuclear).sum();
+}
+
 extern "C" void comp_pol_ene_pcm_(double * energy) {
 	* energy = _cavity->compPolarizationEnergy();
 }
@@ -181,6 +192,18 @@ extern "C" void comp_pol_ene_pcm_(double * energy) {
 extern "C" void print_gepol_cavity_(){
 	cout << "Cavity size" << _cavity->size() << endl;
 }
+
+extern "C" void set_potential_(int * nts, double * potential, int * flag) {
+    int nTess = _cavity->size();
+	if (nTess != *nts) {
+		std::cout << "Inconsistent input" << std::endl;
+	}
+	VectorXd & pot = _cavity->getPot(*flag);
+	for (int i = 0; i < nTess; i++) {
+		pot(i) = potential[i];
+	}
+}
+
 
 /*
 

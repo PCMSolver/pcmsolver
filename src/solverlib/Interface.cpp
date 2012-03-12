@@ -268,7 +268,7 @@ extern "C" void init_pwcsolver_() {
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
 	_PWCSolver = new PWCSolver(Medium);
-	_PWLSolver->buildSystemMatrix(*_waveletCavity);
+	_PWCSolver->buildSystemMatrix(*_waveletCavity);
 }
 
 extern "C" void init_pwlsolver_() {

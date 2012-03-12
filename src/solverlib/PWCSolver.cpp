@@ -140,12 +140,12 @@ void PWCSolver::constructSi() {
 	double epsilon = 0;
 	switch (integralEquation) {
 	case FirstKind:
-		std::cout << "First Kind NYI" << std::endl; //careful to the double layer sign when implementing it....
-		exit(-1);
-		break;
-	case SecondKind:
 		epsilon = greenOutside->getDielectricConstant();
 		factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
+		break;
+	case SecondKind:
+		std::cout << "Second Kind NYI" << std::endl; //careful to the double layer sign when implementing it....
+		exit(-1);
 		break;
 	case Full:
 		factor = 2 * M_PI;

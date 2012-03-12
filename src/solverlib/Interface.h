@@ -59,21 +59,15 @@ extern "C" void build_isotropic_matrix_();
 
 extern "C" void build_anisotropic_matrix_();
 
-//copying mechanism of the following routine needs to be revised
 extern "C" void comp_charge_(double *potential_, double *charge_);
 
-//      Subroutine PotExpVal(Density, Centers, Nts, Potential, Work, 
-//     $                     LWork)
 extern "C" void ele_pot_pcm_(int * nts, double * centers, 
                              double * potential, double * density, 
                              double * work, int * lwork);
 
-//extern "C" void nuc_pot_pcm_(double* centers, int *nts, double *potential);
 extern "C" void nuc_pot_pcm_(int * nts, double * tess_cent, 
                              double * nuc_pot);
 
-//      Subroutine Fock_PCMModule(Fock, Centers, Nts, Charges, Work, 
-//     $                     LWork)
 extern "C" void fock_pcm_(double * fock, double * centers, int * nts, 
 			  double * charges, double * work, int * lwork);
 

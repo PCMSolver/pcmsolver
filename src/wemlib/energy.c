@@ -149,8 +149,9 @@ unsigned int m;                 /* Zahl der Level                              *
             for (i3 = 0; i3 < n; i3++) {        /* zeilenweise Durchnumerierung der Patches zi = (i1,i2,i3) */
                 for (l = 0; l < Q[g].nop; l++) {
                     t = vector2_add(s, vector2_Smul(h, Q[g].xi[l]));
-                    charge[Q[g].nop*zi+l] = Q[g].w[l] * u[zi];
-                    C += charge[Q[g].nop*zi+l];
+                    int index = Q[g].nop*zi+l;
+                    charge[index] = Q[g].w[l] * u[zi] * h;
+                    C += charge[index];
                 }
                 s.x += h;
                 zi++;
@@ -158,7 +159,6 @@ unsigned int m;                 /* Zahl der Level                              *
             s.y += h;
         }
     }
-    C *= h;           /* correct scaling */
 
 /* Datenausgabe */
     printf("PWC Computed charge:            %f10\n", C);

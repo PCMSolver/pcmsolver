@@ -134,6 +134,7 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 		std::cout << "Invalid case" << std::endl;
 		exit(-1);
 	}
+	charge *= -1.0;
 	//	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
 }
 

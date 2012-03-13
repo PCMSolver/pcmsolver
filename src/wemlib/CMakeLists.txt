@@ -20,6 +20,7 @@ set (wem_C_SOURCES
   intvector.c
   kern.c
   mask.c
+  molecule.c
   postproc.c
   precond.c
   randwerte.c
@@ -59,6 +60,7 @@ install(FILES intkon4.h        DESTINATION include)
 install(FILES intvector.h      DESTINATION include)
 install(FILES kern.h           DESTINATION include)
 install(FILES mask.h           DESTINATION include)
+install(FILES molecule.h       DESTINATION include)
 install(FILES postproc.h       DESTINATION include)
 install(FILES pot.h            DESTINATION include)
 install(FILES precond.h        DESTINATION include)

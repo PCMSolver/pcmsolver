@@ -158,7 +158,6 @@ void PWLSolver::constructSi() {
 								nPatches, nLevels, nNodes);
 	WEM_pwl(&S_i_, waveletList, nodeList, elementTree, T_, nPatches, nLevels, 
 			SingleLayer, DoubleLayer, factor);
-	std::cout << "Printed S_i_ matrix" << std::endl;
 	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, 
 								 nPatches, nLevels);
 }
@@ -200,8 +199,8 @@ void PWLSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
 	iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList,
 					   nPatches, nLevels);
 	tdwtLin(u, elementList, nLevels, nPatches, nNodes);
-	double tot_charge = charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
-	double sol_energy = energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
+	charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
+	energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
 	free(rhs);
 	free(u);
 	free(v);
@@ -235,8 +234,8 @@ void PWLSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
 		u[i] -= 4 * M_PI * v[i];      /* u = u - 4*pi*v */
 	}
 	tdwtLin(u, elementList, nLevels, nPatches, nNodes);
-	double tot_charge = charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
-	double sol_energy = energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
+	charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
+	energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
 	free(rhs);
 	free(u);
 	free(v);

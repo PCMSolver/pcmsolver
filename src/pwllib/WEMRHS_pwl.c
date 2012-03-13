@@ -23,7 +23,7 @@
 #include "WEMRHS_pwl.h"
 #include "data.h"
 #include "phi.h"
-
+#include "molecule.h"
 
 void WEMRHS1_pwl(rhs, W, E, T, p, M, nw)
 /* testet die Neumann-Daten des gegebenen Potentials */
@@ -64,7 +64,7 @@ unsigned int nw;                /* Laenge von W                               */
             t.x = h * (E[i].index_s + Q[g].xi[k].x);
             t.y = h * (E[i].index_t + Q[g].xi[k].y);
             n_t = n_Chi_pwl(t, T[E[i].patch], M);
-            w = Q[g].w[k] * vector3_skalp(df(Chi_pwl(t, T[E[i].patch], M)), n_t);
+            w = Q[g].w[k] * vector3_skalp(field(Chi_pwl(t, T[E[i].patch], M)), n_t);
             c0 += w * Phi0(Q[g].xi[k]);
             c1 += w * Phi1(Q[g].xi[k]);
             c2 += w * Phi2(Q[g].xi[k]);
@@ -148,10 +148,6 @@ unsigned int nw;                /* Laenge von W                               */
     for (i = p * (N * N - 1) / 3; i < ne; i++) {
         t.x = h * E[i].index_s;
         t.y = h * E[i].index_t;
-        c0 = 0.25 * f(Chi_pwl(vector2_make(t.x, t.y), T[E[i].patch], M));
-        c1 = 0.25 * f(Chi_pwl(vector2_make(t.x + h - 1e-14, t.y), T[E[i].patch], M));
-        c2 = 0.25 * f(Chi_pwl(vector2_make(t.x + h - 1e-14, t.y + h - 1e-14), T[E[i].patch], M));
-        c3 = 0.25 * f(Chi_pwl(vector2_make(t.x, t.y + h - 1e-14), T[E[i].patch], M));
         c0 = c1 = c2 = c3 = 0;
         for (k = 0; k < Q[g].nop; k++) {
             int index = (E[i].patch * N * N + 
@@ -160,7 +156,7 @@ unsigned int nw;                /* Laenge von W                               */
             t.x = h * (E[i].index_s + Q[g].xi[k].x);
             t.y = h * (E[i].index_t + Q[g].xi[k].y);
             vector3 pos = Chi_pwl(t, T[E[i].patch], M);
-            w = Q[g].w[k] * f(pos);
+            w = Q[g].w[k] * potmol(pos);
             c0 += w * Phi0(Q[g].xi[k]);
             c1 += w * Phi1(Q[g].xi[k]);
             c2 += w * Phi2(Q[g].xi[k]);
@@ -251,10 +247,6 @@ double *potential;
     for (i = p * (N * N - 1) / 3; i < ne; i++) {
         t.x = h * E[i].index_s;
         t.y = h * E[i].index_t;
-        c0 = 0.25 * f(Chi_pwl(vector2_make(t.x, t.y), T[E[i].patch], M));
-        c1 = 0.25 * f(Chi_pwl(vector2_make(t.x + h - 1e-14, t.y), T[E[i].patch], M));
-        c2 = 0.25 * f(Chi_pwl(vector2_make(t.x + h - 1e-14, t.y + h - 1e-14), T[E[i].patch], M));
-        c3 = 0.25 * f(Chi_pwl(vector2_make(t.x, t.y + h - 1e-14), T[E[i].patch], M));
         c0 = c1 = c2 = c3 = 0;
         for (k = 0; k < Q[g].nop; k++) {
             /*

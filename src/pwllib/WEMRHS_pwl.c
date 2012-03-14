@@ -21,7 +21,7 @@
 #include "gauss_square.h"
 #include "interpolate_pwl.h"
 #include "WEMRHS_pwl.h"
-#include "data.h"
+//#include "data.h"
 #include "phi.h"
 #include "molecule.h"
 
@@ -150,9 +150,6 @@ unsigned int nw;                /* Laenge von W                               */
         t.y = h * E[i].index_t;
         c0 = c1 = c2 = c3 = 0;
         for (k = 0; k < Q[g].nop; k++) {
-            int index = (E[i].patch * N * N + 
-                         E[i].index_t * N + 
-                         E[i].index_s) * Q[g].nop + k;
             t.x = h * (E[i].index_s + Q[g].xi[k].x);
             t.y = h * (E[i].index_t + Q[g].xi[k].y);
             vector3 pos = Chi_pwl(t, T[E[i].patch], M);
@@ -161,9 +158,6 @@ unsigned int nw;                /* Laenge von W                               */
             c1 += w * Phi1(Q[g].xi[k]);
             c2 += w * Phi2(Q[g].xi[k]);
             c3 += w * Phi3(Q[g].xi[k]);
-            fprintf(fp, "%15.8f %15.8f %15.8f %15.8f %15.8f", 
-                    t.x, t.y, pos.x, pos.y, pos.z); 
-            fprintf(fp, "%4d %15.8f\n", index, f(Chi_pwl(t, T[E[i].patch], M))); 
         }
         y[i][0] = h * c0;
         y[i][1] = h * c1;

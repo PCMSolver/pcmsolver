@@ -6,7 +6,6 @@ set (wem_C_SOURCES
   basis.c
   compression.c
   constants.c
-  data.c
   dwt.c
   energy.c
   gauss_legendre.c
@@ -44,7 +43,6 @@ install(FILES basis.h          DESTINATION include)
 install(FILES compression.h    DESTINATION include)
 install(FILES constants.h      DESTINATION include)
 install(FILES cubature.h       DESTINATION include)
-install(FILES data.h           DESTINATION include)
 install(FILES dwt.h            DESTINATION include)
 install(FILES energy.h         DESTINATION include)
 install(FILES gamma.h          DESTINATION include)

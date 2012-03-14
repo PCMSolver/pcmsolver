@@ -1,5 +1,5 @@
 /************
- *  data.c  *
+ *  molecule.c  *
  ************/
 
 
@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "vector3.h"
-#include "data.h"
+#include "molecule.h"
 
 
 /* number of charges */
@@ -29,7 +29,7 @@ int read_molecule(char * filename)
         center = (vector3 *) malloc(nAtoms * sizeof(vector3));
         charge = (double *) malloc(nAtoms * sizeof(double));
         for (int i = 0; i < nAtoms; i++) {
-            fscanf(fp, "%g %g %g %g\n", &(charge[i]), &(center[i].x),  &(center[i].y),  &(center[i].z));
+            fscanf(fp, "%lg %lg %lg %lg\n", &(charge[i]), &(center[i].x),  &(center[i].y),  &(center[i].z));
         }
     }
     fclose(fp);
@@ -51,7 +51,7 @@ vector3 field(vector3 a)
     c.x = c.y = c.z = 0;
     for (int i = 0; i < nAtoms; i++) {
         r = vector3_make(a.x - center[i].x, a.y - center[i].y, a.z - center[i].z);
-        v = vector3_Smul(alpha[i] / pow(vector3_norm(r), 3), r);
+        v = vector3_Smul(charge[i] / pow(vector3_norm(r), 3), r);
         c.x -= v.x;
         c.y -= v.y;
         c.z -= v.z;

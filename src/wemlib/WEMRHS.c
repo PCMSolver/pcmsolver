@@ -21,8 +21,8 @@
 #include "gauss_square.h"
 #include "interpolate.h"
 #include "WEMRHS.h"
-#include "data.h"
-
+//#include "data.h"
+#include "molecule.h"
 
 void WEMRHS1(rhs, W, E, T, p, M)
 /* testet die Neumann-Daten des gegebenen Potentials */
@@ -60,7 +60,7 @@ unsigned int M;                 /* Zahl der Level                             */
             t.x = h * (E[i].index_s + Q[g].xi[k].x);
             t.y = h * (E[i].index_t + Q[g].xi[k].y);
             n_t = n_Chi(t, T[E[i].patch], M);
-            c += Q[g].w[k] * vector3_skalp(df(Chi(t, T[E[i].patch], M)), n_t);
+            c += Q[g].w[k] * vector3_skalp(field(Chi(t, T[E[i].patch], M)), n_t);
         }
         y[i] = h * c;
     }
@@ -119,7 +119,7 @@ unsigned int M;                 /* Zahl der Level                             */
         for (k = 0; k < Q[g].nop; k++) {
             t.x = h * (E[i].index_s + Q[g].xi[k].x);
             t.y = h * (E[i].index_t + Q[g].xi[k].y);
-            c += Q[g].w[k] * f(Chi(t, T[E[i].patch], M));
+            c += Q[g].w[k] * potmol(Chi(t, T[E[i].patch], M));
         }
         y[i] = h * c;
     }

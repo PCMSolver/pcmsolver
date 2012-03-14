@@ -1,7 +1,7 @@
 #ifndef MOLECULE_H_
 #define MOLECULE_H_
 /************
- *  data.h  *
+ *  molecule.h  *
  ************/
 
 

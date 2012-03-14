@@ -33,6 +33,7 @@
 #include "volume.h"
 #include "energy.h"
 #include "kern.h"
+#include "molecule.h"
 
 
 #if !defined pi
@@ -88,6 +89,7 @@ int main()
 
 /* Initialisierung */
     read_points(&U, &p, &M);
+    read_molecule("molecule.inp");
     nf = p * (1 << M) * (1 << M);       /* Anzahl der Patches */
     time(&t1);
 
@@ -189,5 +191,6 @@ int main()
     free(P);
     free(u);
     free(v);
+    free_molecule();
     return (0);
 }

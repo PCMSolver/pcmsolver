@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "vector2.h"
 #include "vector3.h"
-#include "data.h"
+#include "molecule.h"
 #include "cubature.h"
 #include "interpolate_pwl.h"
 #include "gauss_square.h"
@@ -64,7 +64,7 @@ unsigned int m;                 /* Zahl der Level                              *
                         + u[F[zi][2]] * Phi2(Q[g].xi[l])
                         + u[F[zi][3]] * Phi3(Q[g].xi[l]);
                     vector3 position = Chi_pwl(t, T[i1], m);
-                    double potential = f(position);
+                    double potential = potmol(position);
                     
                     E += Q[g].w[l] * U * potential;
                     C += Q[g].w[l] * U;

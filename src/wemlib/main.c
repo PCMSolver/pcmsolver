@@ -41,7 +41,7 @@
 #endif
 
 
-int main()
+int main(int argc, char* argv[])
 {
     sparse2 S_i, S_e;           /* komprimierte Steifigkeitsmatrizen  */
     vector3 *P;                 /* Punkteliste der Einskalenbasis     */
@@ -60,9 +60,26 @@ int main()
     time_t t1, t2, t3;          /* Sartzeit/Zwischenzeit/Endzeit      */
     unsigned int i, j;          /* Laufindizes                        */
 
-/*========================================================*/
+    char* infile = "molecule.inp";
     unsigned int CASE = 2;      /* FLAG FOR CHOICE OF BIE */
-/*========================================================*/
+
+    switch (argc) {
+    case 3:
+        CASE = atoi(argv[2]);
+    case 2:
+        infile = argv[1];
+    case 1:
+        break;
+    default :
+        printf("Usage:\n"); 
+        printf("pwl.x [input_file[case]]\n");
+        printf("Cases\n");
+        printf("1: Second kind integral equation (field)\n");
+        printf("2: First kind integral equation (potential)\n");
+        printf("3: Full Second kind integral equation (isotropic)\n");
+        printf("4: Full Second kind integral equation (anisotropic)\n");
+        exit(-1);
+    }
 
 /* Ausgabe */
     switch (CASE) {

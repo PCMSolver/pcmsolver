@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
         patchLevel = atoi(argv[2]);
     case 2:
         infile = argv[1];
+    case 1:
         break;
     default :
         printf("Usage:\n"); 

@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 
     /* Initialisierung */
     read_points(&U, &p, &M);
-    read_molecule("molecule.inp");
+    read_molecule(infile);
     nf = p * (1 << M) * (1 << M);       /* Anzahl der Patches */
     time(&t1);
 
@@ -151,10 +151,6 @@ int main(int argc, char* argv[])
         compression_pwl(&S_e, W, E, p, M, np);
         if (CASE == 3) {
             WEM_pwl(&S_e, W, P, E, T, p, M, SingleLayerExt, DoubleLayerExt, -2 * pi);
-            for (i = 0; i < np; i++) {  /* correct scaling */
-                for (j = 0; j < S_e.row_number[i]; j++)
-                    S_e.value1[i][j] /= epsilon;
-            }
         } else {
             det = sqrt(epsilon11 * epsilon22 * epsilon33 + 
                        epsilon12 * epsilon23 * epsilon31 + 

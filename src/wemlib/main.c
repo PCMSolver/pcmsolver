@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
         break;
     default :
         printf("Usage:\n"); 
-        printf("pwl.x [input_file[case]]\n");
+        printf("pwc.x [input_file[case]]\n");
         printf("Cases\n");
         printf("1: Second kind integral equation (field)\n");
         printf("2: First kind integral equation (potential)\n");
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 
 /* Initialisierung */
     read_points(&U, &p, &M);
-    read_molecule("molecule.inp");
+    read_molecule(infile);
     nf = p * (1 << M) * (1 << M);       /* Anzahl der Patches */
     time(&t1);
 

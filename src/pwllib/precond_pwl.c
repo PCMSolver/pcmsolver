@@ -88,39 +88,47 @@ unsigned int p, M;
     }
     u_start = u;
 
+    if (sqrt(u) > eps) {
+        u_start = u;
+
 /* Iteration */
-    while (sqrt(u / u_start) > eps) {
-        /* Ad = A*d */
-        memcpy(z, d, A->n * sizeof(double));
-        memset(Ad, 0, A->n * sizeof(double));
-        tdwtLin(z, F, M, p, A->n);
-        for (i = 0; i < A->n; i++) {
-            for (j = 0; j < A->row_number[i]; j++)
-                Ad[i] += A->value[i][j] * z[A->index[i][j]];
-        }
-        dwtLin(Ad, F, M, p, A->n);
-
-        /* omg = u / (d,Ad) und v = u */
-        omg = 0;
-        for (i = 0; i < A->n; i++)
-            omg += d[i] * Ad[i];
-        omg = u / omg;
-        v = u;
-
-        /* x = x + omg * d, r = r - omg * Ad und u = (r,r) */
-        u = 0;
-        for (i = 0; i < A->n; i++) {
-            x[i] += omg * d[i];
-            r[i] -= omg * Ad[i];
-            u += r[i] * r[i];
-        }
+        while (sqrt(u / u_start) > eps) {
+            /* Ad = A*d */
+            memcpy(z, d, A->n * sizeof(double));
+            memset(Ad, 0, A->n * sizeof(double));
+            tdwtLin(z, F, M, p, A->n);
+            for (i = 0; i < A->n; i++) {
+                for (j = 0; j < A->row_number[i]; j++)
+                    Ad[i] += A->value[i][j] * z[A->index[i][j]];
+            }
+            dwtLin(Ad, F, M, p, A->n);
+            
+            /* omg = u / (d,Ad) und v = u */
+            omg = 0;
+            for (i = 0; i < A->n; i++)
+                omg += d[i] * Ad[i];
+            omg = u / omg;
+            v = u;
+            
+            /* x = x + omg * d, r = r - omg * Ad und u = (r,r) */
+            u = 0;
+            for (i = 0; i < A->n; i++) {
+                x[i] += omg * d[i];
+                r[i] -= omg * Ad[i];
+                u += r[i] * r[i];
+            }
 
         /* d = r +  u/v * d */
         omg = u / v;
         for (i = 0; i < A->n; i++)
             d[i] = r[i] + omg * d[i];
+        }
+    } else {
+        for (i = 0; i < A->n; i++) {
+            x[i] = 0.0l;
+        }
     }
-
+    
     free(Ad);
     free(z);
     free(r);

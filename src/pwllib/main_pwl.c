@@ -139,7 +139,6 @@ int main(int argc, char* argv[])
         WEM_pwl(&S_i, W, P, E, T, p, M, SingleLayerInt, DoubleLayerInt, 2 * pi * (1 + epsilon) / (1 - epsilon));
     else
         WEM_pwl(&S_i, W, P, E, T, p, M, SingleLayerInt, DoubleLayerInt, 2 * pi);
-	fprint_sparse2(&S_i, "old.dat");
     postproc_pwl(&S_i, W, E, p, M);
     time(&t3);                  /* Zwischenzeit */
     printf("Computation time:                %g secs.\n\n", difftime(t3, t2));
@@ -181,7 +180,6 @@ int main(int argc, char* argv[])
     } else if (CASE == 2) {
         WEMRHS2_pwl(&rhs, W, E, T, p, M, np); //compute N_\rho  /* compute correct rhs: b-G*A2^(-1)*b */
         i = WEMPGMRES2_pwl(&S_i, rhs, v, eps, W, F, p, M); // result in v=A2^(-1)*rhs
-        fprint_vec(v, np, "v_old.dat");
         printf("Solving the 1st linear system:   %d iterations\n", i);
         init_sparse(&G, np, np, 10);
         single_scale_gram_pwl(&G, F, p, M); // compute mass matrix
@@ -195,7 +193,6 @@ int main(int argc, char* argv[])
         for (i = 0; i < np; i++)
             rhs[i] += 4 * pi * u[i] / (epsilon - 1);  // RHS equation (2.7)
         memset(u, 0, np * sizeof(double));
-        fprint_vec(rhs, np, "rhs_old2.dat");
         i = WEMPCG_pwl(&S_i, rhs, u, eps, W, F, p, M); //V \sigma = RHS
         printf("Solving the 2nd linear system:   %d iterations\n", i);
     } else if ((CASE == 3) || (CASE == 4)) {
@@ -204,13 +201,15 @@ int main(int argc, char* argv[])
         printf("Solving the 1st linear system:   %d iterations\n", i);
         memset(rhs, 0, np * sizeof(double));
         for (i = 0; i < np; i++) {      /* rhs = V_e*u */
-            for (j = 0; j < S_e.row_number[i]; j++)
+            for (j = 0; j < S_e.row_number[i]; j++) {
                 rhs[i] += S_e.value1[i][j] * u[S_e.index[i][j]];
+            }
         }
         i = WEMPGMRES3_pwl(&S_i, &S_e, rhs, v, eps, W, F, p, M);        /* solve complicated_system u = A^(-1)*rhs */
         printf("Solving the 2nd linear system:   %d iterations\n", i);
-        for (i = 0; i < np; i++)
+        for (i = 0; i < np; i++) {
             u[i] -= 4 * pi * v[i];      /* u = u - 4*pi*v */
+        }
     }
 
     time(&t2);

@@ -194,6 +194,14 @@ extern "C" void print_gepol_cavity_(){
 
 */
 
+extern "C" void get_epsilon_static_(double * epsilon) {
+	const char *infile = 0;
+	infile = "@pcmsolver.inp";
+	Getkw Input = Getkw(infile, false, true);
+	int solventIndex = Input.getInt("Medium.SolIndex");
+        * epsilon = solventData[solventIndex].getSolventEpsStatic();
+}
+
 extern "C" void init_pcm_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";

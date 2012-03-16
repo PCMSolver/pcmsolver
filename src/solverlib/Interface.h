@@ -47,6 +47,8 @@ extern "C" void print_gepol_cavity_();
 
  */
 
+extern "C" void get_epsilon_static_(double * epsilon);
+
 extern "C" void init_pcm_();
 
 extern "C" void init_iefsolver_();

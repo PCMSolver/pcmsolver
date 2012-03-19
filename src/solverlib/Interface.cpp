@@ -265,16 +265,39 @@ extern "C" void build_isotropic_matrix_() {
 }
 
 //copying mechanism of the following routine needs to be revised
-extern "C" void comp_charge_(double *potential_, double *charge_) {
+extern "C" void comp_charge_(double *potential_, double *charge_, int & store) {
+	enum {No, Nuclear, Electronic, Total};
 	int nts = _solver->getCavitySize(); 
-	VectorXd potential(nts);
-	VectorXd charge(nts);
-	for (int i = 0; i < nts; i++) {
-		potential(i) = potential_[i];
-	}
-	charge = _solver->compCharge(potential);
-	for (int i = 0; i < nts; i++) {
-		charge_[i] = charge(i);
-	}
+        switch(store) {
+            case No: {
+                        VectorXd potential(nts);
+                        VectorXd charge(nts);
+                        for (int i = 0; i < nts; i++) {
+	    	                potential(i) = potential_[i];
+	                }
+                        charge = _solver->compCharge(potential);
+	                for (int i = 0; i < nts; i++) {
+                                charge_[i] = charge(i);
+  	                }
+                        break;
+                     }
+            case Nuclear: for (int i = 0; i < nts; i++) {
+                              _cavity->setPot(potential_[i], Cavity::Nuclear, i); 
+                          }
+                          _cavity->getChg(Cavity::Nuclear) = _solver->compCharge(_cavity->getPot(Cavity::Nuclear));
+                          for (int i = 0; i < nts; i++) {
+                              charge_[i] = _cavity->getChg(Cavity::Nuclear, i);
+                          }
+                          break;
+            case Electronic: for (int i = 0; i < nts; i++) {
+                              _cavity->setPot(potential_[i], Cavity::Electronic, i); 
+                          }
+                          _cavity->getChg(Cavity::Electronic) = _solver->compCharge(_cavity->getPot(Cavity::Electronic));
+                          for (int i = 0; i < nts; i++) {
+                              charge_[i] = _cavity->getChg(Cavity::Electronic, i);
+                          }
+                          break;
+            case Total: cout << "Total potential and charge coming soon!" << endl;
+                        break;
+        }
 }
-  

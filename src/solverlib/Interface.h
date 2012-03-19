@@ -60,7 +60,7 @@ extern "C" void build_isotropic_matrix_();
 extern "C" void build_anisotropic_matrix_();
 
 //copying mechanism of the following routine needs to be revised
-extern "C" void comp_charge_(double *potential_, double *charge_);
+extern "C" void comp_charge_(double *potential_, double *charge_, int & type);
 
 //      Subroutine PotExpVal(Density, Centers, Nts, Potential, Work, 
 //     $                     LWork)

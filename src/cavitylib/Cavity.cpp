@@ -70,6 +70,36 @@ double Cavity::getPot(const int type, const int i) {
 		}
 }
 
+void Cavity::setPot(VectorXd & potential, const int type) {
+	switch (type) 
+		{
+		case Nuclear :
+                        nuclearPotential = potential;
+			break;
+		case Electronic :
+                        electronicPotential = potential;
+			break;
+		default :
+			cout << "Invalid request" << endl;
+			exit(1);
+		}
+}
+
+void Cavity::setPot(const double potential, const int i, const int type) {
+	switch (type) 
+		{
+		case Nuclear :
+                        nuclearPotential(i) = potential;
+			break;
+		case Electronic :
+                        electronicPotential(i) = potential;
+			break;
+		default :
+			cout << "Invalid request" << endl;
+			exit(1);
+		}
+}
+
 VectorXd & Cavity::getChg(const int type) {
 	switch (type) 
 		{
@@ -96,15 +126,46 @@ double Cavity::getChg(const int type, const int i) {
 		}
 }
 
+void Cavity::setChg(VectorXd & charge, const int type) {
+	switch (type) 
+		{
+		case Nuclear :
+                        nuclearCharge = charge;
+			break;
+		case Electronic :
+                        electronicCharge = charge;
+			break;
+		default :
+			cout << "Invalid request" << endl;
+			exit(1);
+		}
+}
+
+void Cavity::setChg(const double charge, const int i, const int type) {
+	switch (type) 
+		{
+		case Nuclear :
+                        nuclearCharge(i) = charge;
+			break;
+		case Electronic :
+                        electronicCharge(i) = charge;
+			break;
+		default :
+			cout << "Invalid request" << endl;
+			exit(1);
+		}
+}
+
 double Cavity::compPolarizationEnergy() {
 	double EEE = electronicPotential.dot(electronicCharge);
 	double EEN = electronicPotential.dot(nuclearCharge);
 	double ENE = nuclearPotential.dot(electronicCharge);
 	double ENN = nuclearPotential.dot(nuclearCharge);
 
-	cout << "E_ee " << EEE << "E_en " << EEN 
-		 << "E_ne " << ENE << "E_nn " << ENN << endl;
-	
+	cout << "E_ee " << EEE << "; E_en " << EEN 
+		 << "; E_ne " << ENE << "; E_nn " << ENN << endl;
+
+        cout << "E_pol" << 0.5 * (EEE + EEN + ENE + ENN) << endl;
 	return 0.5 * (EEE + EEN + ENE + ENN);
 }
 

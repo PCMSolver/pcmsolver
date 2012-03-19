@@ -40,6 +40,7 @@ extern "C" void comp_pol_ene_pcm_(double * energy);
 
 extern "C" void print_gepol_cavity_();
 
+extern "C" void get_tess_cent_coord_(int * its, double * center);
 
 /*
 

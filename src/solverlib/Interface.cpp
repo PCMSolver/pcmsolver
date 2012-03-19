@@ -157,6 +157,14 @@ extern "C" void get_tess_centers_(double * centers) {
 	
 }
 
+extern "C" void get_tess_cent_coord_(int * its, double * center) {
+	Vector3d tess = _cavity->getTessCenter(*its-1);
+	std::cout << tess.transpose() << std::endl;
+	center[0] = tess(0);
+	center[1] = tess(1);
+	center[2] = tess(2);
+}
+
 /*extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
 	int nts = _cavity->size();
 	nuc_pot_pcm_(&nts, _cavity->getTessCenter().data(),  

@@ -148,11 +148,17 @@ void Cavity::createFunction(const std::string & name) {
 		delete function;
 	}
 }
-/*
-void Cavity::setFunction(const std::string name, double * values) {
 
+void Cavity::setFunction(const std::string & name, double * values) {
+	if(functions.count(name) == 0) {
+		createFunction(name);
+	}
+	SurfaceFunctionMap::iterator it = functions.find(name);
+	SurfaceFunction * func = it->second;
+	func->setValues(values);
 }
 
+/*
 SurfaceFunction & Cavity::getFunction(const std::string name) {
 
 }

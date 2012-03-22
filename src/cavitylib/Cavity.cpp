@@ -85,7 +85,7 @@ void Cavity::setPot(VectorXd & potential, const int type) {
 		}
 }
 
-void Cavity::setPot(const double potential, const int i, const int type) {
+void Cavity::setPot(const double potential, const int type, const int i) {
 	switch (type) 
 		{
 		case Nuclear :
@@ -141,7 +141,7 @@ void Cavity::setChg(VectorXd & charge, const int type) {
 		}
 }
 
-void Cavity::setChg(const double charge, const int i, const int type) {
+void Cavity::setChg(const double charge, const int type, const int i) {
 	switch (type) 
 		{
 		case Nuclear :

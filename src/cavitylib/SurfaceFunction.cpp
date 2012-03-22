@@ -30,14 +30,14 @@ SurfaceFunction::SurfaceFunction(std::string & name, int nPoints, double * value
 }
 
 void SurfaceFunction::setValues(double * values) {
-	for (int i = 0; i < functionValues.size(); i++) {
+	for (int i = 0; i < this->values.size(); i++) {
 		this->values(i) = values[i];
 	}
 }
 
 void SurfaceFunction::getValues(double * values) {
-	for (int i = 0; i < functionValues.size(); i++) {
-		values[i] = functionValues(i);
+	for (int i = 0; i < this->values.size(); i++) {
+		values[i] = this->values(i);
 	}
 }
 

@@ -22,8 +22,8 @@ class SurfaceFunction
     SurfaceFunction(std::string & name, int nPoints, double * values);
     ~SurfaceFunction(){}
 
-    void setValue(int index, double value) {functionValue(index) = value;}
-    double getValue(int index) {return functionValue(index);}
+    void setValue(int index, double value) {values(index) = value;}
+    double getValue(int index) {return values(index);}
     VectorXd getVector(){return values;}
     void allocate(int nPoints){values.resize(nPoints);}
     bool isAllocated(){return allocated;}
@@ -32,7 +32,7 @@ class SurfaceFunction
     void getValues(double * value);
  private:
     bool allocated;
-    std::string functionName;
+    std::string name;
     VectorXd values;
 };
 

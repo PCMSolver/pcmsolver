@@ -22,8 +22,10 @@ written by Krzysztof Mozgawa, 2011
 
 class SurfaceFunction;
 
-typedef std::pair< std::string, SurfaceFunction * > SurfaceFunctionPair;
-typedef std::map< std::string, SurfaceFunction * > SurfaceFunctionMap;
+//typedef std::pair< std::string, SurfaceFunction * > SurfaceFunctionPair;
+//typedef std::map< std::string, SurfaceFunction * > SurfaceFunctionMap;
+typedef std::pair<char,int> TestPair;
+typedef std::map<char,int> TestMap;
 
 class Cavity
 {
@@ -47,7 +49,7 @@ class Cavity
     double compPolarizationEnergy();
 
     //    double compPolarizationEnergy(std::string pot, std::string chg);
-    void createFunction(const std::string name);
+    void createFunction(char c, int i);
     //    void setFunction(const std::string name, double * values);
     //    SurfaceFunction & getFunction(const std::string name);
 
@@ -69,7 +71,8 @@ class Cavity
     VectorXd nuclearCharge;
     VectorXd electronicPotential;
     VectorXd electronicCharge;
-    SurfaceFunctionMap functions;
+    //    SurfaceFunctionMap functions;
+    TestMap functions;
 };
 
 

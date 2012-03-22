@@ -132,15 +132,18 @@ double Cavity::compPolarizationEnergy(std::string pot, std::string chg) {
 
 }
 */
-void Cavity::createFunction(const std::string name) {
-	VectorXd * function = new VectorXd(size);
-	SurfaceFunctionMap::iterator it;
-	pair<SurfaceFunctionMap::iterator, bool> retval;
-	retval = functions.insert(SurfaceFunctionPair(name, function));
+//void Cavity::createFunction(const std::string name) {
+void Cavity::createFunction(char c, int i) {
+	//	VectorXd * function = new VectorXd();
+	//  function->resize(nTess);
+	TestMap::iterator it;
+	pair<TestMap::iterator, bool> retval;
+	retval = functions.insert(TestPair(c, i));
+	//	  retval = functions.insert(SurfaceFunctionPair(name, function));
 	if (retval.second) {
 		std::cout << "Function successfully created" << std::endl;
 	} else	{
-		std::cout << "Warning::function " << name << "existed";
+		std::cout << "Warning::function existed " << std::endl;
 	}
 }
 /*

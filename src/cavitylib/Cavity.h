@@ -39,13 +39,7 @@ class Cavity
     virtual VectorXd & getTessArea(){return tessArea;}
     virtual double getTessArea(int i){return tessArea(i);}
     virtual int size(){return nTess;}
-    virtual void initPotChg();
-    VectorXd & getChg(int type);
-    VectorXd & getPot(int type);
-    double getChg(int type, int i);
-    double getPot(int type, int i);
     bool isBuilt(){return built;}
-
     double compPolarizationEnergy();
     double compPolarizationEnergy(const std::string & potential, 
                                   const std::string & charge);

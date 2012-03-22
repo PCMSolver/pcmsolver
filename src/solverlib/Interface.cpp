@@ -94,7 +94,6 @@ extern "C" void init_gepol_cavity_() {
 		exit(-1);
 	}
 	_gePolCavity->makeCavity(5000, 10000000);
-	//	_gePolCavity->initPotChg();
 }
 
 extern "C" void init_atoms_(VectorXd & charges,
@@ -125,25 +124,6 @@ extern "C" void init_wavelet_cavity_() {
 
 extern "C" void get_cavity_size_(int * nts) {
 	*nts = _cavity->size();
-}
-
-extern "C" void get_total_surface_charge_(double * charge) {
-	for (int i = 0; i < _cavity->size(); i++) {
-		charge[i] = _cavity->getChg(Cavity::Nuclear, i) + 
-			        _cavity->getChg(Cavity::Electronic, i);
-	}
-}
-
-extern "C" void get_nuclear_surface_charge_(double * charge) {
-	for (int i = 0; i < _cavity->size(); i++) {
-		charge[i] = _cavity->getChg(Cavity::Nuclear, i);
-	}
-}
-
-extern "C" void get_electronic_surface_charge_(double * charge) {
-	for (int i = 0; i < _cavity->size(); i++) {
-		charge[i] = _cavity->getChg(Cavity::Electronic, i);
-	}
 }
 
 extern "C" void get_tess_centers_(double * centers) {
@@ -217,7 +197,6 @@ extern "C" void init_pcm_() {
 		_cavity = _waveletCavity;
 		_solver = _PWLSolver;
 	} 
-	_cavity->initPotChg();
 	_solver->setSolverType(modelType);
 }
 

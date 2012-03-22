@@ -24,8 +24,6 @@ class SurfaceFunction;
 
 typedef std::pair< std::string, SurfaceFunction * > SurfaceFunctionPair;
 typedef std::map< std::string, SurfaceFunction * > SurfaceFunctionMap;
-//typedef std::pair<char,int> TestPair;
-//typedef std::map<char,int> TestMap;
 
 class Cavity
 {
@@ -46,13 +44,14 @@ class Cavity
     VectorXd & getPot(int type);
     double getChg(int type, int i);
     double getPot(int type, int i);
-    double compPolarizationEnergy();
     bool isBuilt(){return built;}
 
-    //    double compPolarizationEnergy(std::string pot, std::string chg);
+    double compPolarizationEnergy();
+    double compPolarizationEnergy(const std::string & potential, 
+                                  const std::string & charge);
     void createFunction(const std::string & name);
     void setFunction(const std::string & name, double * values);
-    //    SurfaceFunction & getFunction(const std::string name);
+    SurfaceFunction & getFunction(const std::string & name);
 
     enum chargeType{Nuclear, Electronic};
 
@@ -68,12 +67,7 @@ class Cavity
     Matrix<double, 3, Dynamic> tessNormal;
     VectorXd tessArea;
     double averageArea;
-    VectorXd nuclearPotential;
-    VectorXd nuclearCharge;
-    VectorXd electronicPotential;
-    VectorXd electronicCharge;
     SurfaceFunctionMap functions;
-    //TestMap functions;
 };
 
 

@@ -13,6 +13,7 @@
 
 #include "Getkw.h"
 #include "taylor.hpp"
+#include "SurfaceFunction.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "WaveletCavity.h"
@@ -157,32 +158,14 @@ extern "C" void get_tess_centers_(double * centers) {
 	
 }
 
-/*extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork) {
-	int nts = _cavity->size();
-	nuc_pot_pcm_(&nts, _cavity->getTessCenter().data(),  
-				 _cavity->getPot(Cavity::Nuclear).data());
-	ele_pot_pcm_(&nts, _cavity->getTessCenter().data(),  
-				 _cavity->getPot(Cavity::Electronic).data(), 
-				 density, work, lwork);
-
-	_solver->compCharge(_cavity->getPot(Cavity::Nuclear),    
-					   _cavity->getChg(Cavity::Nuclear));
-	_solver->compCharge(_cavity->getPot(Cavity::Electronic), 
-					   _cavity->getChg(Cavity::Electronic));
-
-	double totElChg = _cavity->getChg(Cavity::Electronic).sum();
-	double totNuChg = _cavity->getChg(Cavity::Nuclear).sum();
-}*/
-
-extern "C" void comp_chg_pcm_() {
-	_solver->compCharge(_cavity->getPot(Cavity::Nuclear),    
-					   _cavity->getChg(Cavity::Nuclear));
-
-	_solver->compCharge(_cavity->getPot(Cavity::Electronic), 
-					   _cavity->getChg(Cavity::Electronic));
-
-	double totElChg = _cavity->getChg(Cavity::Electronic).sum();
-	double totNuChg = _cavity->getChg(Cavity::Nuclear).sum();
+extern "C" void comp_chg_pcm_(char * potName, char * chgName) {
+	string potFuncName(potName);
+	string chgFuncName(chgName);
+	_cavity->createFunction(chgFuncName);
+	VectorXd & charge    = _cavity->getFunction(chgName).getVector();
+	VectorXd & potential = _cavity->getFunction(potName).getVector();
+	_solver->compCharge(potential, charge);
+	double totalChg = charge.sum();
 }
 
 extern "C" void comp_pol_ene_pcm_(double * energy) {
@@ -193,15 +176,13 @@ extern "C" void print_gepol_cavity_(){
 	cout << "Cavity size" << _cavity->size() << endl;
 }
 
-extern "C" void set_potential_(int * nts, double * potential, int * flag) {
+extern "C" void set_surface_function_(int * nts, double * values, char * name) {
     int nTess = _cavity->size();
 	if (nTess != *nts) {
 		std::cout << "Inconsistent input" << std::endl;
 	}
-	VectorXd & pot = _cavity->getPot(*flag);
-	for (int i = 0; i < nTess; i++) {
-		pot(i) = potential[i];
-	}
+	std::string functionName(name);
+	_cavity->setFunction(name, values);
 }
 
 
@@ -290,6 +271,9 @@ extern "C" void build_isotropic_matrix_() {
 
 //copying mechanism of the following routine needs to be revised
 extern "C" void comp_charge_(double *potential_, double *charge_) {
+	std::cout << "FIXME!!" << std::endl;
+	exit(-1);
+	/*
 	int nts = _solver->getCavitySize(); 
 	VectorXd potential(nts);
 	VectorXd charge(nts);
@@ -300,6 +284,7 @@ extern "C" void comp_charge_(double *potential_, double *charge_) {
 	for (int i = 0; i < nts; i++) {
 		charge_[i] = charge(i);
 	}
+	*/
 }
   
 extern "C" void init_spheres_atoms_(VectorXd & charges, 

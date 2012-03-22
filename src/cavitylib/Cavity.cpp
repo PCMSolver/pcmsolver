@@ -32,80 +32,21 @@ void Cavity::writeOutput(string &filename){
     output.close();
 }
 
-void Cavity::initPotChg() {
-	if (isBuilt()) {
-		nuclearPotential.resize(nTess);
-		nuclearCharge.resize(nTess);
-		electronicPotential.resize(nTess);
-		electronicCharge.resize(nTess);
-	} else {
-		cout << "Cannot initalize Potentials and Charges" << endl;
-		cout << "Cavity not yet created" << endl;
-		exit(1);
-	}
+double Cavity::compPolarizationEnergy(const std::string & potName, 
+									  const std::string & chgName) 
+{
+	VectorXd & potVec = getFunction(potName).getVector();
+	VectorXd & chgVec = getFunction(chgName).getVector();
+	return potVec.dot(chgVec);
 }
-
-VectorXd & Cavity::getPot(const int type) {
-	switch (type) 
-		{
-		case Nuclear :
-			return nuclearPotential;
-		case Electronic :
-			return electronicPotential;
-		default :
-			cout << "Invalid request" << endl;
-			exit(1);
-		}
-}
-
-double Cavity::getPot(const int type, const int i) {
-	switch (type) 
-		{
-		case Nuclear :
-			return nuclearPotential(i);
-		case Electronic :
-			return electronicPotential(i);
-		default :
-			cout << "Invalid request" << endl;
-			exit(1);
-		}
-}
-
-VectorXd & Cavity::getChg(const int type) {
-	switch (type) 
-		{
-		case Nuclear :
-			return nuclearCharge;
-		case Electronic :
-			return electronicCharge;
-		default :
-			cout << "Invalid request" << endl;
-			exit(1);
-		}
-}
-
-double Cavity::getChg(const int type, const int i) {
-	switch (type) 
-		{
-		case Nuclear :
-			return nuclearCharge(i);
-		case Electronic :
-			return electronicCharge(i);
-		default :
-			cout << "Invalid request" << endl;
-			exit(1);
-		}
-}
-
+	
 double Cavity::compPolarizationEnergy() {
-	double EEE = electronicPotential.dot(electronicCharge);
-	double EEN = electronicPotential.dot(nuclearCharge);
-	double ENE = nuclearPotential.dot(electronicCharge);
-	double ENN = nuclearPotential.dot(nuclearCharge);
-
+	double ENN = compPolarizationEnergy("NucPot", "NucChg");
+	double ENE = compPolarizationEnergy("NucPot", "EleChg");
+	double EEN = compPolarizationEnergy("ElePot", "NucChg");
+	double EEE = compPolarizationEnergy("ElePot", "EleChg");
 	cout << " E_ee " << EEE << " E_en " << EEN
 		 << " E_ne " << ENE << " E_nn " << ENN << endl;
-
 	return 0.5 * (EEE + EEN + ENE + ENN);
 }
 
@@ -153,16 +94,20 @@ void Cavity::setFunction(const std::string & name, double * values) {
 	if(functions.count(name) == 0) {
 		createFunction(name);
 	}
-	SurfaceFunctionMap::iterator it = functions.find(name);
-	SurfaceFunction * func = it->second;
+	SurfaceFunction * func = functions.find(name)->second;
 	func->setValues(values);
 }
 
-/*
-SurfaceFunction & Cavity::getFunction(const std::string name) {
 
+SurfaceFunction & Cavity::getFunction(const std::string & name) {
+	if(functions.count(name) == 0) {
+		std::cout << "Function " << name << " does not exist" << std::endl;
+		exit(-1);
+	}
+	SurfaceFunction * func = functions.find(name)->second;
+	return * func;
 }
-*/
+
 
 
 vector<Atom> Cavity::initBondi() {

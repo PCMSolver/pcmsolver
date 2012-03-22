@@ -34,6 +34,7 @@ extern "C"{
 
 #include "Constants.h"
 #include "Getkw.h"
+#include "SurfaceFunction.h"
 #include "Cavity.h"
 #include "WaveletCavity.h"
 
@@ -101,14 +102,15 @@ extern "C" {
 
 void WaveletCavity::compFakePotential()
 {
-	initPotChg();
-	nuclearPotential.setZero();
+	this->createFunction("NucPot");
+	VectorXd & potential = this->getFunction("NucPot").getVector();
+	potential.setZero();
 	for (int i = 0; i < tessArea.size(); i++) {
 		for (int j = 0; j < sphereRadius.size(); j++) {
 			Vector3d p1 = tessCenter.col(i);
 			Vector3d p2 = sphereCenter.col(j);
-			double potential = 1.0/(p1-p2).norm();
-			nuclearPotential(i) += potential;
+			double pot = 1.0/(p1-p2).norm();
+			potential(i) += pot;
 		}
 	}
 }
@@ -179,13 +181,6 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 	tessNormal.resize(NoChange, nTess);
 	tessArea.resize(nTess);
 
-	nuclearPotential.resize(nTess);
-	nuclearCharge.resize(nTess);
-	electronicPotential.resize(nTess);
-	electronicCharge.resize(nTess);
-
-	//   	nuclearPotential.setConstant(1.0);
-
 	int j = 0;
 	for (int i1 = 0; i1 < nPatches; i1++){
 		for (int i2 = 0; i2 < n; i2++){
@@ -230,13 +225,6 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 	tessCenter.resize(NoChange, nTess);
 	tessNormal.resize(NoChange, nTess);
 	tessArea.resize(nTess);
-
-	nuclearPotential.resize(nTess);
-	nuclearCharge.resize(nTess);
-	electronicPotential.resize(nTess);
-	electronicCharge.resize(nTess);
-
-	//   	nuclearPotential.setConstant(1.0);
 
 	int j = 0;
 	for (int i1 = 0; i1 < nPatches; i1++){

@@ -24,7 +24,7 @@ class SurfaceFunction
 
     void setValue(int index, double value) {values(index) = value;}
     double getValue(int index) {return values(index);}
-    VectorXd getVector(){return values;}
+    VectorXd & getVector(){return values;}
     void allocate(int nPoints){values.resize(nPoints);}
     bool isAllocated(){return allocated;}
 

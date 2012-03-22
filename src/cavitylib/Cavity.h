@@ -22,15 +22,15 @@ written by Krzysztof Mozgawa, 2011
 
 class SurfaceFunction;
 
-//typedef std::pair< std::string, SurfaceFunction * > SurfaceFunctionPair;
-//typedef std::map< std::string, SurfaceFunction * > SurfaceFunctionMap;
-typedef std::pair<char,int> TestPair;
-typedef std::map<char,int> TestMap;
+typedef std::pair< std::string, SurfaceFunction * > SurfaceFunctionPair;
+typedef std::map< std::string, SurfaceFunction * > SurfaceFunctionMap;
+//typedef std::pair<char,int> TestPair;
+//typedef std::map<char,int> TestMap;
 
 class Cavity
 {
  public:
-    Cavity(){isBuilt = false; nTess = 0;}
+    Cavity(){built = false; nTess = 0;}
     ~Cavity(){}
     virtual void makeCavity() = 0;
     virtual void writeOutput(string &filename);
@@ -47,9 +47,10 @@ class Cavity
     double getChg(int type, int i);
     double getPot(int type, int i);
     double compPolarizationEnergy();
+    bool isBuilt(){return built;}
 
     //    double compPolarizationEnergy(std::string pot, std::string chg);
-    void createFunction(char c, int i);
+    void createFunction(const std::string & name);
     //    void setFunction(const std::string name, double * values);
     //    SurfaceFunction & getFunction(const std::string name);
 
@@ -62,7 +63,7 @@ class Cavity
  protected:
     virtual ostream & printObject(ostream & os);
     int nTess;
-    bool isBuilt;
+    bool built;
     Matrix<double, 3, Dynamic> tessCenter;
     Matrix<double, 3, Dynamic> tessNormal;
     VectorXd tessArea;
@@ -71,8 +72,8 @@ class Cavity
     VectorXd nuclearCharge;
     VectorXd electronicPotential;
     VectorXd electronicCharge;
-    //    SurfaceFunctionMap functions;
-    TestMap functions;
+    SurfaceFunctionMap functions;
+    //TestMap functions;
 };
 
 

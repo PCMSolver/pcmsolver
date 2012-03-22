@@ -17,9 +17,9 @@ written by L. Frediani 2012
 class SurfaceFunction
 {
  public:
-    SurfaceFunction(std::string & name);
-    SurfaceFunction(std::string & name, int nPoints);
-    SurfaceFunction(std::string & name, int nPoints, double * values);
+    SurfaceFunction(const std::string & name);
+    SurfaceFunction(const std::string & name, int nPoints);
+    SurfaceFunction(const std::string & name, int nPoints, double * values);
     ~SurfaceFunction(){}
 
     void setValue(int index, double value) {values(index) = value;}

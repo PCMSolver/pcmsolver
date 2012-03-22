@@ -33,7 +33,7 @@ void Cavity::writeOutput(string &filename){
 }
 
 void Cavity::initPotChg() {
-	if (isBuilt) {
+	if (isBuilt()) {
 		nuclearPotential.resize(nTess);
 		nuclearCharge.resize(nTess);
 		electronicPotential.resize(nTess);
@@ -132,18 +132,20 @@ double Cavity::compPolarizationEnergy(std::string pot, std::string chg) {
 
 }
 */
-//void Cavity::createFunction(const std::string name) {
-void Cavity::createFunction(char c, int i) {
-	//	VectorXd * function = new VectorXd();
-	//  function->resize(nTess);
-	TestMap::iterator it;
-	pair<TestMap::iterator, bool> retval;
-	retval = functions.insert(TestPair(c, i));
-	//	  retval = functions.insert(SurfaceFunctionPair(name, function));
+void Cavity::createFunction(const std::string & name) {
+	if(not this->isBuilt()) {
+		std::cout << "Cavity not yet built!" << std::endl;
+		exit(-1);
+	}
+	SurfaceFunction * function = new SurfaceFunction(name, nTess);
+	SurfaceFunctionMap::iterator it;
+	pair<SurfaceFunctionMap::iterator, bool> retval;
+	retval = functions.insert(SurfaceFunctionPair(name, function));
 	if (retval.second) {
-		std::cout << "Function successfully created" << std::endl;
+		std::cout << "Function " << name << " successfully created." << std::endl;
 	} else	{
-		std::cout << "Warning::function existed " << std::endl;
+		std::cout << "Warning::function " << name << " existed. " << std::endl;
+		delete function;
 	}
 }
 /*

@@ -9,18 +9,18 @@ using namespace std;
 using namespace Eigen;
 
 
-SurfaceFunction::SurfaceFunction(std::string & name) {
+SurfaceFunction::SurfaceFunction(const std::string & name) {
 	this->name = name;
 	allocated = false;
 }
 
-SurfaceFunction::SurfaceFunction(std::string & name, int nPoints) {
+SurfaceFunction::SurfaceFunction(const std::string & name, int nPoints) {
 	this->name = name;
 	this->values.resize(nPoints);
 	allocated = true;
 }
 
-SurfaceFunction::SurfaceFunction(std::string & name, int nPoints, double * values) {
+SurfaceFunction::SurfaceFunction(const std::string & name, int nPoints, double * values) {
 	this->name = name;
 	this->values.resize(nPoints);
 	allocated = true;

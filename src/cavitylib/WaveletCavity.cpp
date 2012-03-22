@@ -209,7 +209,7 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 		}
 	}
 	free_Gauss_Square(&Q,quadLevel+1);  
-	isBuilt = true;
+	built = true;
 }
 
 void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
@@ -261,7 +261,7 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 		}
 	}
 	free_Gauss_Square(&Q,quadLevel+1);  
-	isBuilt = true;
+	built = true;
 }
 
 ostream & operator<<(ostream &os, const WaveletCavity &cavity) {

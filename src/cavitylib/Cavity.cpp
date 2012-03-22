@@ -8,6 +8,7 @@ using namespace std;
 using namespace Eigen;
 
 #include "Getkw.h"
+#include "SurfaceFunction.h"
 #include "Cavity.h"
 #include "Atom.h"
 
@@ -125,6 +126,33 @@ ostream & Cavity::printObject(ostream & os) {
     }
 	return os;
 }
+
+/*
+double Cavity::compPolarizationEnergy(std::string pot, std::string chg) {
+
+}
+*/
+void Cavity::createFunction(const std::string name) {
+	VectorXd * function = new VectorXd(size);
+	SurfaceFunctionMap::iterator it;
+	pair<SurfaceFunctionMap::iterator, bool> retval;
+	retval = functions.insert(SurfaceFunctionPair(name, function));
+	if (retval.second) {
+		std::cout << "Function successfully created" << std::endl;
+	} else	{
+		std::cout << "Warning::function " << name << "existed";
+	}
+}
+/*
+void Cavity::setFunction(const std::string name, double * values) {
+
+}
+
+SurfaceFunction & Cavity::getFunction(const std::string name) {
+
+}
+*/
+
 
 vector<Atom> Cavity::initBondi() {
 	/*

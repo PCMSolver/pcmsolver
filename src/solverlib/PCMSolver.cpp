@@ -82,6 +82,7 @@ PCMSolver::~PCMSolver(){
 void PCMSolver::buildCharge(Cavity & cavity, 
 						   const std::string & potName, 
 						   const std::string & chgName) {
+	cavity.createFunction(chgName);
 	VectorXd & potVec = cavity.getFunction(potName).getVector();
 	VectorXd & chgVec = cavity.getFunction(chgName).getVector();
 	compCharge(potVec, chgVec);

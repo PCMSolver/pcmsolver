@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 #include <Eigen/Dense>
 
 #include "Atom.h"
@@ -19,10 +20,15 @@ written by Krzysztof Mozgawa, 2011
 
 */
 
+class SurfaceFunction;
+
+typedef std::pair< std::string, SurfaceFunction * > SurfaceFunctionPair;
+typedef std::map< std::string, SurfaceFunction * > SurfaceFunctionMap;
+
 class Cavity
 {
  public:
-    Cavity(){isBuilt = false; nTess = 0;}
+    Cavity(){built = false; nTess = 0;}
     ~Cavity(){}
     virtual void makeCavity() = 0;
     virtual void writeOutput(string &filename);
@@ -33,13 +39,14 @@ class Cavity
     virtual VectorXd & getTessArea(){return tessArea;}
     virtual double getTessArea(int i){return tessArea(i);}
     virtual int size(){return nTess;}
-    virtual void initPotChg();
-    VectorXd & getChg(int type);
-    VectorXd & getPot(int type);
-    double getChg(int type, int i);
-    double getPot(int type, int i);
+    bool isBuilt(){return built;}
     double compPolarizationEnergy();
-    
+    double compPolarizationEnergy(const std::string & potential, 
+                                  const std::string & charge);
+    void createFunction(const std::string & name);
+    void setFunction(const std::string & name, double * values);
+    SurfaceFunction & getFunction(const std::string & name);
+
     enum chargeType{Nuclear, Electronic};
 
     vector<Atom> initBondi();
@@ -49,15 +56,12 @@ class Cavity
  protected:
     virtual ostream & printObject(ostream & os);
     int nTess;
-    bool isBuilt;
+    bool built;
     Matrix<double, 3, Dynamic> tessCenter;
     Matrix<double, 3, Dynamic> tessNormal;
     VectorXd tessArea;
     double averageArea;
-    VectorXd nuclearPotential;
-    VectorXd nuclearCharge;
-    VectorXd electronicPotential;
-    VectorXd electronicCharge;
+    SurfaceFunctionMap functions;
 };
 
 

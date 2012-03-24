@@ -26,12 +26,6 @@ extern "C" void init_wavelet_cavity_();
 
 extern "C" void get_cavity_size_(int * nts);
 
-extern "C" void get_total_surface_charge_(double * charge);
-
-extern "C" void get_nuclear_surface_charge_(double * charge);
-
-extern "C" void get_electronic_surface_charge_(double * charge);
-
 extern "C" void get_tess_centers_(double * centers);
 
 extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork);
@@ -80,8 +74,9 @@ extern "C" void init_spheres_atoms_(VectorXd & charges,
 
 extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork);
 
-extern "C" void comp_chg_pcm_();
+extern "C" void comp_chg_pcm_(char* potString, char* chgString);
 
-extern "C" void set_potential_(int * nts, double * potential, int * flag);
+extern "C" void set_surface_function_(int * nts, double * potential, char * flag);
+
 #endif
 

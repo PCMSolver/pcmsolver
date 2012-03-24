@@ -18,6 +18,7 @@ using namespace Eigen;
 #include "UniformDielectric.h"
 #include "GreensFunctionSum.h"
 #include "MetalSphere.h"
+#include "SurfaceFunction.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "PCMSolver.h"
@@ -77,6 +78,16 @@ PCMSolver::~PCMSolver(){
 		delete greenOutside;
 	}
 }
+
+void PCMSolver::buildCharge(Cavity & cavity, 
+						   const std::string & potName, 
+						   const std::string & chgName) {
+	cavity.createFunction(chgName);
+	VectorXd & potVec = cavity.getFunction(potName).getVector();
+	VectorXd & chgVec = cavity.getFunction(chgName).getVector();
+	compCharge(potVec, chgVec);
+}
+
 
 void PCMSolver::setSolverType(const string & type) {
 	if (type == "Traditional") {

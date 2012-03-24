@@ -1,9 +1,10 @@
 set(cavity_SOURCES 
+    Atom.cpp
     Cavity.cpp
     GePolCavity.cpp
-    WaveletCavity.cpp
-    Atom.cpp
     Sphere.cpp
+	SurfaceFunction.cpp
+    WaveletCavity.cpp
 )
 
 add_library(cavity ${cavity_SOURCES})

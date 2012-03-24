@@ -176,7 +176,7 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	delete rsph;
 	delete work;
 	
-	isBuilt = true;
+	built = true;
 
 }
 

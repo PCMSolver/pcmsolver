@@ -98,7 +98,6 @@ void Cavity::setFunction(const std::string & name, double * values) {
 	func->setValues(values);
 }
 
-
 SurfaceFunction & Cavity::getFunction(const std::string & name) {
 	if(functions.count(name) == 0) {
 		std::cout << "Function " << name << " does not exist" << std::endl;

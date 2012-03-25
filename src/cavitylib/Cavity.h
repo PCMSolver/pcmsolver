@@ -46,7 +46,6 @@ class Cavity
     void createFunction(const std::string & name);
     void setFunction(const std::string & name, double * values);
     SurfaceFunction & getFunction(const std::string & name);
-
     enum chargeType{Nuclear, Electronic};
 
     vector<Atom> initBondi();

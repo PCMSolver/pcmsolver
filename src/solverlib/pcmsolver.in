@@ -360,11 +360,12 @@ def convert_area_scalar(keyword):
 
 def consistency_check(section):
 	Medium = section.fetch_sect("Medium")
-	Cavity = section.fetch_sect("Cavity<gepol>")
 	medRad = Medium.get("ProbeRadius")
-	cavRad = Cavity.get("ProbeRadius")
-	if medRad.is_set():
-		cavRad.set(medRad.get())
+	if medRad.is_set(): # if medium rad is set we update cavity rad
+		s = section.get_sects()['Cavity']
+		for k, v in s.iteritems():
+			cavRad = v.get("ProbeRadius")
+			cavRad.set(medRad.get())
 
 if __name__ == '__main__':
 	main()

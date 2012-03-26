@@ -43,6 +43,8 @@ extern "C"{
 #include "PCMSolver.h"
 #include "IEFSolver.h"
 #include "WEMSolver.h"
+#include "PWCSolver.h"
+#include "PWLSolver.h"
 
 
 int main(int argc, char** argv){
@@ -60,55 +62,43 @@ int main(int argc, char** argv){
 	}
 	
 	Getkw Input = Getkw(infile, false, true);
-
-	int printl = Input.getInt("PRINTL");
-
-	//	WaveletCavity wavcav(Input);
-
-	//	cavity.makeCavity();
-	//	cout << cavity << endl;
 	
 	Vector3d p1(0.0, 10.1, 0.0);
     Vector3d p2(0.0, 10.2, 0.0);
     Vector3d ps(0.0,  0.0, 0.0);
     
-	const Section &Medium = Input.getSect("Medium");
-	const Section &WaveletCavitySection = Input.getSect("Cavity<wavelet>");
-	const Section &GepolCavitySection = Input.getSect("Cavity<gepol>");
+	const Section & Medium = Input.getSect("Medium");
+	const Section & WaveletCavitySection = Input.getSect("Cavity<wavelet>");
+	const Section & GepolCavitySection = Input.getSect("Cavity<gepol>");
 
     GePolCavity cavity(GepolCavitySection);
     WaveletCavity wavcav(WaveletCavitySection);
-
-	cavity.makeCavity();
+	
 	wavcav.makeCavity();
-
 	string wavcavFile = "molec_dyadic.dat";
-
 	wavcav.readCavity(wavcavFile);
 
-    WEMSolver<T> waveletSolver(Medium);
+
+    PWCSolver waveletSolver(Medium);
 	cout << "wavelet solver initialized" << endl;
-	waveletSolver.uploadCavity(wavcav);
+	waveletSolver.buildSystemMatrix(wavcav);
+	cout << "system matrix built  " << endl;
 
-	waveletSolver.constructSystemMatrix();
-	cout << "system matrix built" << endl;
-
-	wavcav.uploadPoints(waveletSolver.getQuadratureLevel(),
-						waveletSolver.getT_());
+   	wavcav.uploadPoints(waveletSolver.getQuadratureLevel(), 
+						waveletSolver.getT_(), waveletSolver.isPWL());
 	cout << "points uploaded" << endl;
 
 	wavcav.compFakePotential();
-
-	waveletSolver.compCharge(wavcav.getPot(Cavity::Nuclear), wavcav.getChg(Cavity::Nuclear));
-
+	waveletSolver.buildCharge(wavcav, "NucPot", "NucChg");
+	double energy = wavcav.compPolarizationEnergy("NucPot","NucChg");
+	cout << "Energy: " << energy << endl;
 	cout << waveletSolver.getGreenInside() << endl;
-	cout << waveletSolver.getGreenOutside() << endl;
-	
+	cout << waveletSolver.getGreenOutside() << endl;	
+}
+/*
 	double factor = 78.39/77.39;
 	double q = factor * (wavcav.getChg(Cavity::Nuclear)).sum();
 	cout << " charges computed " << q << endl;
-}
-/*
     IEFSolver waterSolver(Medium); 
     waterSolver.buildAnisotropicMatrix(cavity);
     VectorXd potential(cavity.size());

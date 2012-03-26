@@ -76,7 +76,13 @@ extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork);
 
 extern "C" void comp_chg_pcm_(char* potString, char* chgString);
 
-extern "C" void set_surface_function_(int * nts, double * potential, char * flag);
+extern "C" void set_surface_function_(int * nts, double * values, char * name);
+
+extern "C" void get_surface_function_(int * nts, double * values, char * name);
+
+extern "C" void add_surface_function_(char * result, double * coeff, char * part);
+
+extern "C" void print_surface_function_(char * name);
 
 #endif
 

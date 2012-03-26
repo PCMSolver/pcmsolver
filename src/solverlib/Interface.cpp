@@ -149,7 +149,10 @@ extern "C" void get_tess_cent_coord_(int * its, double * center) {
 extern "C" void comp_chg_pcm_(char * potName, char * chgName) {
 	string potFuncName(potName);
 	string chgFuncName(chgName);
-	_cavity->createFunction(chgFuncName);
+	if(not _cavity->functionExists(chgFuncName)) {
+		_cavity->appendNewFunction(chgFuncName);
+	}
+	_cavity->getFunction(chgName).clear();
 	VectorXd & charge    = _cavity->getFunction(chgName).getVector();
 	VectorXd & potential = _cavity->getFunction(potName).getVector();
 	_solver->compCharge(potential, charge);
@@ -170,9 +173,40 @@ extern "C" void set_surface_function_(int * nts, double * values, char * name) {
 		std::cout << "Inconsistent input" << std::endl;
 	}
 	std::string functionName(name);
-	_cavity->setFunction(name, values);
+	_cavity->setFunction(functionName, values);
 }
 
+extern "C" bool surf_func_exists_(char * name) {
+	std::string functionName(name);
+	return _cavity->functionExists(functionName);
+}
+
+extern "C" void get_surface_function_(int * nts, double * values, char * name) {
+    int nTess = _cavity->size();
+	if (nTess != *nts) {
+		std::cout << "Inconsistent input" << std::endl;
+	}
+	std::string functionName(name);
+	VectorXd & surfaceVector = _cavity->getFunction(functionName).getVector();
+	for (int i = 0; i < nTess; i++) {
+		values[i] = surfaceVector(i); 
+	}
+}
+
+extern "C" void print_surface_function_(char * name) {
+	std::string functionName(name);
+	SurfaceFunction & func = _cavity->getFunction(functionName);
+	std::cout << func << std::endl;
+}
+
+extern "C" void add_surface_function_(char * result, double * coeff, char * part) {
+	std::string resultName(result);
+	std::string partName(part);
+	_cavity->appendNewFunction(resultName);
+	VectorXd & resultVector = _cavity->getFunction(resultName).getVector();
+	VectorXd & partVector = _cavity->getFunction(partName).getVector();
+	resultVector = resultVector + (*coeff) * partVector;
+}
 
 /*
 
@@ -302,3 +336,15 @@ extern "C" void init_spheres_implicit_(VectorXd & charges,
 		_gePolCavity->getSpheres().push_back(sphere);
 	}
 }
+
+extern "C" void clear_surf_func_(char* name) {
+	std::string functionName(name);
+	SurfaceFunction & func = _cavity->getFunction(functionName);
+	func.clear();
+}
+
+extern "C" void append_surf_func_(char* name) {
+	std::string functionName(name);
+	_cavity->appendNewFunction(functionName);
+}
+

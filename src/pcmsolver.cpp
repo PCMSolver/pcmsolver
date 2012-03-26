@@ -46,11 +46,10 @@ extern "C"{
 #include "PWCSolver.h"
 #include "PWLSolver.h"
 
+void IEFTest(const Getkw & input);
+template <class SolverClass> void WEMTest(const Getkw & input);
 
 int main(int argc, char** argv){
-
-	typedef taylor<double, 1, 1> T;
-
 	const char *infile = 0;
 	if (argc == 1) {
 		infile = "STDIN";
@@ -60,41 +59,44 @@ int main(int argc, char** argv){
 		cout << "Invalid nr. of arguments" << endl;
 		exit(1);
 	}
-	
-	Getkw Input = Getkw(infile, false, true);
-	
-	Vector3d p1(0.0, 10.1, 0.0);
-    Vector3d p2(0.0, 10.2, 0.0);
-    Vector3d ps(0.0,  0.0, 0.0);
-    
-	const Section & Medium = Input.getSect("Medium");
-	const Section & WaveletCavitySection = Input.getSect("Cavity<wavelet>");
-	const Section & GepolCavitySection = Input.getSect("Cavity<gepol>");
+	Getkw input = Getkw(infile, false, true);
+	std::string solverType = input.getStr("Medium.SolverType");
+	if (solverType == "Traditional") {
+		IEFTest(input);
+	} else if (solverType == "Wavelet") {
+		std::cout << "PWC solver...." << std::endl;
+		WEMTest<PWCSolver>(input);
+	} else if (solverType == "Linear") {
+		std::cout << "PWL solver...." << std::endl;
+		WEMTest<PWLSolver>(input);
+	}
+}
 
-    GePolCavity cavity(GepolCavitySection);
+void IEFTest(const Getkw & input) {
+	std::cout << "IEFTest NYI" << std::endl;
+}
+
+template<class SolverClass>
+void WEMTest(const Getkw & input) {
+	const Section & Medium = input.getSect("Medium");
+	const Section & WaveletCavitySection = input.getSect("Cavity<wavelet>");
     WaveletCavity wavcav(WaveletCavitySection);
-	
 	wavcav.makeCavity();
 	string wavcavFile = "molec_dyadic.dat";
 	wavcav.readCavity(wavcavFile);
-
-
-    PWCSolver waveletSolver(Medium);
-	cout << "wavelet solver initialized" << endl;
+    SolverClass waveletSolver(Medium);
 	waveletSolver.buildSystemMatrix(wavcav);
-	cout << "system matrix built  " << endl;
-
    	wavcav.uploadPoints(waveletSolver.getQuadratureLevel(), 
 						waveletSolver.getT_(), waveletSolver.isPWL());
-	cout << "points uploaded" << endl;
-
 	wavcav.compFakePotential();
 	waveletSolver.buildCharge(wavcav, "NucPot", "NucChg");
 	double energy = wavcav.compPolarizationEnergy("NucPot","NucChg");
 	cout << "Energy: " << energy << endl;
-	cout << waveletSolver.getGreenInside() << endl;
-	cout << waveletSolver.getGreenOutside() << endl;	
 }
+
+template void WEMTest<PWCSolver>(const Getkw & input);
+template void WEMTest<PWLSolver>(const Getkw & input);
+
 /*
 	double factor = 78.39/77.39;
 	double q = factor * (wavcav.getChg(Cavity::Nuclear)).sum();

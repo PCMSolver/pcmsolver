@@ -102,7 +102,7 @@ extern "C" {
 
 void WaveletCavity::compFakePotential()
 {
-	this->createFunction("NucPot");
+	this->appendNewFunction("NucPot");
 	VectorXd & potential = this->getFunction("NucPot").getVector();
 	potential.setZero();
 	for (int i = 0; i < tessArea.size(); i++) {

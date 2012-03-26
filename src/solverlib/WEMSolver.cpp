@@ -119,7 +119,6 @@ void WEMSolver::constructSystemMatrix(){
 
 void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 
-	std::cout << "Integral Equation " << integralEquation << std::endl;
 	switch (integralEquation) {
 	case FirstKind:
 		solveFirstKind(potential, charge);
@@ -137,4 +136,3 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 	charge *= -1.0;
 	//	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
 }
-

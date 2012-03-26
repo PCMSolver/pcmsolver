@@ -27,10 +27,15 @@ class SurfaceFunction
     VectorXd & getVector(){return values;}
     void allocate(int nPoints){values.resize(nPoints);}
     bool isAllocated(){return allocated;}
+    void clear();
 
     void setValues(double * value);
     void getValues(double * value);
+
+    friend std::ostream & operator<<(std::ostream & o, SurfaceFunction & s);
+
  private:
+    virtual std::ostream & printObject(std::ostream & os);
     bool allocated;
     std::string name;
     VectorXd values;

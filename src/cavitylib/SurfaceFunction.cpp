@@ -41,3 +41,19 @@ void SurfaceFunction::getValues(double * values) {
 	}
 }
 
+void SurfaceFunction::clear() {
+	this->values.setZero();
+}
+
+ostream & operator<<(ostream & os, SurfaceFunction & sf) {
+	return sf.printObject(os);
+}
+
+ostream & SurfaceFunction::printObject(ostream & os) {
+	os << "Surface Function " << this->name << endl;
+	if (this->isAllocated()) {
+		os << values.transpose() << endl;
+	}
+	return os;
+}
+

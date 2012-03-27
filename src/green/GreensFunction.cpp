@@ -9,7 +9,6 @@ using namespace Eigen;
 
 #include "Getkw.h"
 #include "taylor.hpp"
-//#include "TaylorSupport.h"
 #include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
@@ -210,7 +209,7 @@ GreensFunction<double>* GreensFunction<double>::allocateGreensFunction(const Sec
 	} else if (greenType == "UniformDielectric") {
 		gf = new UniformDielectric<double>(green);
 	} else if (greenType == "MetalSphere") {
-		gf = new MetalSphere::MetalSphere(green);
+		gf = new MetalSphere(green);
 	} else if (greenType == "GreensFunctionSum") {
 		gf = new GreensFunctionSum<double>(green);
 	} else {

@@ -180,8 +180,8 @@ extern "C" void get_tess_centers_(double * centers) {
 	double totNuChg = _cavity->getChg(Cavity::Nuclear).sum();
 }*/
 
-extern "C" void comp_pol_ene_pcm_(double * energy) {
-	* energy = _cavity->compPolarizationEnergy();
+extern "C" void comp_pol_ene_pcm_(double * energy, int & printlevel) {
+	* energy = _cavity->compPolarizationEnergy(printlevel);
 }
 
 extern "C" void print_gepol_cavity_(){

@@ -156,17 +156,20 @@ void Cavity::setChg(const double charge, const int type, const int i) {
 		}
 }
 
-double Cavity::compPolarizationEnergy() {
+double Cavity::compPolarizationEnergy(int printlevel) {
 	double EEE = electronicPotential.dot(electronicCharge);
 	double EEN = electronicPotential.dot(nuclearCharge);
 	double ENE = nuclearPotential.dot(electronicCharge);
 	double ENN = nuclearPotential.dot(nuclearCharge);
+        if (printlevel > 0) {
+		cout << "E_ee " << EEE << "; E_en " << EEN 
+		 	<< "; E_ne " << ENE << "; E_nn " << ENN << endl;
 
-	cout << "E_ee " << EEE << "; E_en " << EEN 
-		 << "; E_ne " << ENE << "; E_nn " << ENN << endl;
-
-        cout << "E_pol" << 0.5 * (EEE + EEN + ENE + ENN) << endl;
-	return 0.5 * (EEE + EEN + ENE + ENN);
+	        cout << "E_pol" << 0.5 * (EEE + EEN + ENE + ENN) << endl;
+		return 0.5 * (EEE + EEN + ENE + ENN);
+        } else {
+		return 0.5 * (EEE + EEN + ENE + ENN);
+        }
 }
 
 ostream & operator<<(ostream & os, Cavity & cavity) {

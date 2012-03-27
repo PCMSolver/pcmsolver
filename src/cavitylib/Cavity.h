@@ -42,7 +42,7 @@ class Cavity
     void setPot(VectorXd & potential, int type);
     void setChg(double charge, int type, int i);
     void setPot(double potential, int type, int i);
-    double compPolarizationEnergy();
+    double compPolarizationEnergy(int printlevel);
     
     enum chargeType{Nuclear, Electronic};
 

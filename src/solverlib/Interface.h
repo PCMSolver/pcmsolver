@@ -36,7 +36,7 @@ extern "C" void get_tess_centers_(double * centers);
 
 extern "C" void comp_pot_chg_pcm_(double *density, double *work, int *lwork);
 
-extern "C" void comp_pol_ene_pcm_(double * energy);
+extern "C" void comp_pol_ene_pcm_(double * energy, int & printlevel);
 
 extern "C" void print_gepol_cavity_();
 

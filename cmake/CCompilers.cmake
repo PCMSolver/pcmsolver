@@ -6,7 +6,7 @@ if (NOT DEFINED HAVE_C_FLAGS)
   endif()
   
   if(CMAKE_C_COMPILER_ID MATCHES Intel)
-    set(CMAKE_C_FLAGS         "-g -wd981 -wd279 -wd383 -vec-report0 -wd1572 -wd177 -restrict -DRESTRICT=restrict")
+    set(CMAKE_C_FLAGS         "-g -wd981 -wd279 -wd383 -vec-report0 -wd1572 -wd177 -restrict -DRESTRICT=restrict -std=c99")
     set(CMAKE_C_FLAGS_DEBUG   "-O0 -g")
     set(CMAKE_C_FLAGS_RELEASE "-O2 -ip")
     set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -shared-intel")

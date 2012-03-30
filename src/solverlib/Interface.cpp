@@ -159,8 +159,8 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName) {
 	double totalChg = charge.sum();
 }
 
-extern "C" void comp_pol_ene_pcm_(double * energy, int & printlevel) {
-	* energy = _cavity->compPolarizationEnergy(printlevel);
+extern "C" void comp_pol_ene_pcm_(double * energy) {
+	* energy = _cavity->compPolarizationEnergy();
 }
 
 extern "C" void print_gepol_cavity_(){
@@ -214,13 +214,13 @@ extern "C" void add_surface_function_(char * result, double * coeff, char * part
 
 */
 
-extern "C" void get_epsilon_static_(double * epsilon) {
+/*extern "C" void get_epsilon_static_(double * epsilon) {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	int solventIndex = Input.getInt("Medium.SolIndex");
         * epsilon = solventData[solventIndex].getSolventEpsStatic();
-}
+}*/
 
 extern "C" void init_pcm_() {
 	const char *infile = "@pcmsolver.inp";

@@ -42,7 +42,7 @@ extern "C" void get_tess_cent_coord_(int * its, double * center);
 
  */
 
-extern "C" void get_epsilon_static_(double * epsilon);
+//extern "C" void get_epsilon_static_(double * epsilon);
 
 extern "C" void init_pcm_();
 

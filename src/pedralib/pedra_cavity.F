@@ -78,8 +78,6 @@ C
 #include <pcm_nuclei.h>
 #include <pcm_pcmnuclei.h>
 C
-      PARAMETER (ANTOAU=1.0D+00/XTANG)
-C
       DIMENSION INTSPH(NUMTS,10),VERT(NUMTS,10,3),CENTR(NUMTS,10,3),
      *          NEWSPH(NUMSPH,2),ICAV1(NATM),ICAV2(NATM),
      *          XVAL(NUMTS),YVAL(NUMTS),ZVAL(NUMTS)
@@ -143,7 +141,6 @@ C  PEDRA_ prevede che i dati geometrici siano espressi in ANGSTROM :
 C  vengono trasformati, e solo alla fine i risultati tornano in bohr.
 C
    90 CONTINUE
-      write (lvpri,*) 'spheres in pedra', xtang
       DO I=1,NESFP
          XE(I)=XE(I)
          YE(I)=YE(I)
@@ -151,7 +148,6 @@ C
          RE(I) = RIN(I) * ALPHA(I)
          write (lvpri,*) xe(i), ye(i), ze(i), re(i)
       ENDDO
-      DR = DR*XTANG
 C
       CALL DZERO_(VERT,NUMTS*10*3)
       CALL DZERO_(CENTR,NUMTS*10*3)
@@ -579,30 +575,6 @@ C
             ENDIF
          ENDDO
       END IF
-C
-C     Trasforma i risultati in bohr
-C
-      DO I=1,NESF
-         RE(I)=RE(I)*ANTOAU
-         XE(I)=XE(I)*ANTOAU
-         YE(I)=YE(I)*ANTOAU
-         ZE(I)=ZE(I)*ANTOAU
-      ENDDO
-
-      DO I=1,NTS
-         AS(I)=AS(I)*ANTOAU*ANTOAU
-         XTSCOR(I)=XTSCOR(I)*ANTOAU
-         YTSCOR(I)=YTSCOR(I)*ANTOAU
-         ZTSCOR(I)=ZTSCOR(I)*ANTOAU
-Clf XVAL, YVAL and ZVAL of the tessera I are the coordinates of a point located
-C inside the cavity on the normal direction from the tessera center
-C Probably they will not be used anymore. If this happen I will remove them.
-         XTSCOR(I+NTS)=XVAL(I)*ANTOAU
-         YTSCOR(I+NTS)=YVAL(I)*ANTOAU
-         ZTSCOR(I+NTS)=ZVAL(I)*ANTOAU
-      ENDDO
-      DR = DR * ANTOAU
-C
       IF(IPRSOL .GT. 5) THEN
          WRITE(LVPRI,9070)
          WRITE(LVPRI,9090) (I,ISPHE(I),AS(I),XTSCOR(I),YTSCOR(I),
@@ -627,7 +599,7 @@ C
  9000 FORMAT(10X,'-- CENTER OF CHARGE --'/
      *        ' X =',F8.4,' A  Y =',F8.4,' A  Z =',F8.4,' A')
  9010 FORMAT(/' WARNING: The distance between center of tessera',I4,
-     *         'and',I4,' is ',F8.6,', less than ',F8.6,' A'/)
+     *         'and',I4,' is ',F8.6,', less than ',F8.6,' AU'/)
  9020 FORMAT(/' Total number of spheres =',I5/
      *        ' Sphere             Center  (X,Y,Z) (A)            ',
      *           '   Radius (A)      Area (A^2)')
@@ -635,7 +607,7 @@ C
  9040 FORMAT(/' Total number of tesserae =',I8
      *       /' Surface area =',F14.8,' (A^2)    Cavity volume =',
      *            F14.8,' (A^3)')
- 9050 FORMAT( ' PEDRA_: CONFUSION ABOUT SPHERE COUNTS. NESFP,NATM=',2I6)
+ 9050 FORMAT( ' PEDRA: CONFUSION ABOUT SPHERE COUNTS. NESFP, NATM=',2I6)
  9060 FORMAT(/' ADDITIONAL MEMORY NEEDED TO SETUP GRADIENT RUN=',I10)
  9061 FORMAT(/' ADDITIONAL MEMORY NEEDED TO SETUP IEF RUN=',I10)
  9070 FORMAT(/' ***  PARTITION OF THE SURFACE  ***'
@@ -2243,9 +2215,9 @@ C
       END IF
       NUM = 0
       DO I = 1, NUCDEP
-         DIFF=( PCMCORD(1,I)*XTANG - XE(N) )**2
-     $       +( PCMCORD(2,I)*XTANG - YE(N) )**2
-     *       +( PCMCORD(3,I)*XTANG - ZE(N) )**2
+         DIFF=( PCMCORD(1,I) - XE(N) )**2
+     $       +( PCMCORD(2,I) - YE(N) )**2
+     *       +( PCMCORD(3,I) - ZE(N) )**2
          DDIFF=Sqrt(DIFF)
          IF(DDIFF.LE.Delta) THEN
             NUM=INT(PCMCHG(I))

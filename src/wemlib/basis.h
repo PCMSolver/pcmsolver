@@ -3,50 +3,45 @@
 /*************
  *  Basis.h  *
  *************/
- 
+
 
 /*===========================================*
  *  Hier werden alle Daten bereitgestellt,   *
  *  die fuer das Wavelet-Galerkin-Verfahren  *
- *  benoetigt werden.		             * 
+ *  benoetigt werden.		             *
  *===========================================*/
- 
-
-typedef struct  	/* Typdefinition Element */
-{
-unsigned int	level;		/* Level des Elements		           */
-unsigned int	patch;		/* Patch auf dem das Element lebt          */
-unsigned int	index_s;   	/* Index des Elements in s-Richtung        */
-unsigned int	index_t;   	/* Index des Elements in t-Richtung        */
-vector3		midpoint;	/* Umkreismittelpunkt                      */
-double		radius;		/* Umkreisradius                           */
-unsigned int	vertex[4];	/* Indizes der vier Eckpunkte              */
-unsigned int	father;		/* Index des Vaterelements                 */
-unsigned int	son[4];		/* Indizes der vier Soehne                 */
-unsigned int	wavelet_number;	/* Zahl der Wavelets mit diesem Element    */
-unsigned int	*wavelet;	/* Indizes der Wavelets mit diesem Element */
-intvector	interaction;	/* sparse-Vektor fuer Integrale            */
-}
-element;
 
 
-typedef struct		/* Typdefinition Wavelet */
-{
-unsigned int	level;		/* Level des Wavelets      */
-unsigned int	element_number;	/* number of elements      */
-unsigned int	*element;	/* Indizes der Elemente    */
-double		*weight;	/* Gewicht der Elemente    */
-unsigned int	son[4];		/* Indizes der vier Soehne */
-}
-wavelet;
+typedef struct {                /* Typdefinition Element */
+    unsigned int level;         /* Level des Elements                      */
+    unsigned int patch;         /* Patch auf dem das Element lebt          */
+    unsigned int index_s;       /* Index des Elements in s-Richtung        */
+    unsigned int index_t;       /* Index des Elements in t-Richtung        */
+    vector3 midpoint;           /* Umkreismittelpunkt                      */
+    double radius;              /* Umkreisradius                           */
+    unsigned int vertex[4];     /* Indizes der vier Eckpunkte              */
+    unsigned int father;        /* Index des Vaterelements                 */
+    unsigned int son[4];        /* Indizes der vier Soehne                 */
+    unsigned int wavelet_number;        /* Zahl der Wavelets mit diesem Element    */
+    unsigned int *wavelet;      /* Indizes der Wavelets mit diesem Element */
+    intvector interaction;      /* sparse-Vektor fuer Integrale            */
+} element;
+
+
+typedef struct {                /* Typdefinition Wavelet */
+    unsigned int level;         /* Level des Wavelets      */
+    unsigned int element_number;        /* number of elements      */
+    unsigned int *element;      /* Indizes der Elemente    */
+    double *weight;             /* Gewicht der Elemente    */
+    unsigned int son[4];        /* Indizes der vier Soehne */
+} wavelet;
 
 
 void unify(vector3 *d, double *r, vector3 d1, double r1, vector3 d2, double r2);
 /* bildet die Vereinigung K(d,r) = K(d1,r1) \cup K(d2,r2) */
 
 
-unsigned int generate_elementlist(element **E, 
-		vector3 *P, unsigned int **F, unsigned int p, unsigned int M);
+unsigned int generate_elementlist(element **E, vector3 *P, unsigned int **F, unsigned int p, unsigned int M);
 /* erstellt die hierarchsische Elementliste E */
 
 

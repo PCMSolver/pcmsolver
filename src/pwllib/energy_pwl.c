@@ -48,7 +48,6 @@ unsigned int m;                 /* Zahl der Level                              *
 
 /* Initialisierung */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln */
-    FILE *fp = fopen("energy_old.dat", "w");
 
     int index = 0;
 /* Berechnung des Fehlers */
@@ -68,9 +67,6 @@ unsigned int m;                 /* Zahl der Level                              *
                     
                     E += Q[g].w[l] * U * potential;
                     C += Q[g].w[l] * U;
-                    //fprintf(fp, "%16.10f %16.10f %16.10f %16.10f %16.10f", 
-                    //        t.x, t.y, position.x, position.y, position.z);
-                    fprintf(fp, "%4d %16.10f %16.10f\n", index, U, potential);
                     index++;
                 }
                 s.x += h;
@@ -83,7 +79,6 @@ unsigned int m;                 /* Zahl der Level                              *
     printf("    Computed energy:            %20.15f\n", E);
     printf("    Computed charge:            %20.15f\n", C*h);
     free_Gauss_Square(&Q, g + 1);
-    fclose(fp);
     return (E);
 }
 
@@ -131,7 +126,7 @@ unsigned int m;                 /* Zahl der Level                              *
         }
     }
     E = -0.5 * h * E; /* correct scaling */
-    printf("PWL Computed energy:            %20.15f\n", E);
+    //    printf("PWL Computed energy:            %20.15f\n", E);
     free_Gauss_Square(&Q, g + 1);
     return (E);
 }
@@ -181,7 +176,7 @@ unsigned int m;                 /* Zahl der Level                              *
     }
     
     /* Datenausgabe */
-    printf("PWL Computed charge:            %20.15f\n", C);
+    //    printf("PWL Computed charge:            %20.15f\n", C);
     free_Gauss_Square(&Q, g + 1);
     return (C);
 }

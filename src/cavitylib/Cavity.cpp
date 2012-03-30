@@ -73,31 +73,25 @@ double Cavity::compPolarizationEnergy(std::string pot, std::string chg) {
 
 }
 */
-void Cavity::createFunction(const std::string & name) {
+void Cavity::appendNewFunction(const std::string & name) {
 	if(not this->isBuilt()) {
 		std::cout << "Cavity not yet built!" << std::endl;
 		exit(-1);
 	}
-	SurfaceFunction * function = new SurfaceFunction(name, nTess);
-	SurfaceFunctionMap::iterator it;
-	pair<SurfaceFunctionMap::iterator, bool> retval;
-	retval = functions.insert(SurfaceFunctionPair(name, function));
-	if (retval.second) {
-		std::cout << "Function " << name << " successfully created." << std::endl;
-	} else	{
-		std::cout << "Warning::function " << name << " existed. " << std::endl;
-		delete function;
+	if (functions.count(name) == 0) {
+		SurfaceFunction * function = new SurfaceFunction(name, nTess);
+		pair<SurfaceFunctionMap::iterator, bool> retval;
+		retval = functions.insert(SurfaceFunctionPair(name, function));
 	}
 }
 
 void Cavity::setFunction(const std::string & name, double * values) {
 	if(functions.count(name) == 0) {
-		createFunction(name);
+		appendNewFunction(name);
 	}
 	SurfaceFunction * func = functions.find(name)->second;
 	func->setValues(values);
 }
-
 
 SurfaceFunction & Cavity::getFunction(const std::string & name) {
 	if(functions.count(name) == 0) {

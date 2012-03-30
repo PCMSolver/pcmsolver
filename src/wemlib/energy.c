@@ -67,8 +67,8 @@ unsigned int m;                 /* Zahl der Level                              *
     E = -0.5 * h * E;           /* correct scaling */
 
 /* Datenausgabe */
-    printf("    Computed energy:            %f10\n", E);
-    printf("    Computed charge:            %f10\n", C*h);
+//    printf("    Computed energy:            %f10\n", E);
+//    printf("    Computed charge:            %f10\n", C*h);
     free_Gauss_Square(&Q, g + 1);
     return (E);
 }
@@ -114,7 +114,7 @@ unsigned int m;                 /* Zahl der Level                              *
     E = -0.5 * h * E;           /* correct scaling */
 
 /* Datenausgabe */
-    printf("PWC Computed energy:            %f10\n", E);
+//    printf("PWC Computed energy:            %f10\n", E);
     free_Gauss_Square(&Q, g + 1);
     return (E);
 }
@@ -161,7 +161,7 @@ unsigned int m;                 /* Zahl der Level                              *
     }
 
 /* Datenausgabe */
-    printf("PWC Computed charge:            %f10\n", C);
+//    printf("PWC Computed charge:            %f10\n", C);
     free_Gauss_Square(&Q, g + 1);
     return (C);
 }

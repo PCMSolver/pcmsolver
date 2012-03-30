@@ -133,15 +133,11 @@ unsigned int nw;                /* Laenge von W                               */
     double m;                   /* Interpolationswert im Mittelpunkt          */
     double e[4];                /* Interpolationswerte im Kantenmittelpunkt   */
 
-    FILE *fp = fopen("rhs_old.dat", "w"); 
-
 /* Initialisierung */
     ne = p * (4 * N * N - 1) / 3;       /* Anzahl der Elemente */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln     */
     y = (double (*)[4]) malloc(ne * sizeof(double[4]));
     (*rhs) = (double *) malloc(nw * sizeof(double));
-
-    fprintf(fp, "Integers %d %d %d\n", p, M, nw);
 
 /* 1. Quadratur auf dem feinsten Level */
     h = 1. / N;
@@ -194,7 +190,6 @@ unsigned int nw;                /* Laenge von W                               */
 /* Speicherplatz wieder freigeben */
     free_Gauss_Square(&Q, g + 1);
     free(y);
-    fclose(fp);
     return;
 }
 
@@ -224,15 +219,11 @@ double *potential;
     double e[4];                /* Interpolationswerte im Kantenmittelpunkt   */
     unsigned int index;
 
-    FILE *fp = fopen("rhs_new.dat", "w");
-
 /* Initialisierung */
     ne = p * (4 * N * N - 1) / 3;       /* Anzahl der Elemente */
     init_Gauss_Square(&Q, g + 1);       /* Kubatur-Formeln     */
     y = (double (*)[4]) malloc(ne * sizeof(double[4]));
     (*rhs) = (double *) malloc(nw * sizeof(double));
-
-    fprintf(fp, "Integers %d %d %d\n", p, M, nw);
 
     // 4^N-1 can be divided by three
 
@@ -256,9 +247,6 @@ double *potential;
             c1 += w * Phi1(Q[g].xi[k]);
             c2 += w * Phi2(Q[g].xi[k]);
             c3 += w * Phi3(Q[g].xi[k]);
-            fprintf(fp, "%15.8f %15.8f %15.8f %15.8f %15.8f", 
-                    t2.x, t2.y, pos.x, pos.y, pos.z); 
-            fprintf(fp, "%4d %15.8f\n", index, potential[index]); 
         }
         y[i][0] = h * c0;
         y[i][1] = h * c1;
@@ -295,6 +283,5 @@ double *potential;
 /* Speicherplatz wieder freigeben */
     free_Gauss_Square(&Q, g + 1);
     free(y);
-    fclose(fp);
     return;
 }

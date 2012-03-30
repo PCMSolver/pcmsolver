@@ -11,48 +11,54 @@
 #include <iostream>
 #include <complex>
 
+#include "GreensFunction.h"
 #include "Solvent.h"
 
 using namespace std;
 
 class PCMSolver{
  public:
-    PCMSolver(GreensFunction &gfi, GreensFunction &gfo);
-    PCMSolver(GreensFunction *gfi, GreensFunction *gfo);
-    PCMSolver(Section solver);
+    PCMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo, 
+              int equation=SecondKind, int solver=Traditional);
+    PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo, 
+              int equation=SecondKind, int solver=Traditional);
+    PCMSolver(const Section & solver);
     ~PCMSolver();
-    GreensFunction & getGreenInside();
-    GreensFunction & getGreenOutside();    
-    GreensFunction * getGreenInsideP();
-    GreensFunction * getGreenOutsideP();    
+    GreensFunctionInterface & getGreenInside();
+    GreensFunctionInterface & getGreenOutside();    
+    GreensFunctionInterface * getGreenInsideP();
+    GreensFunctionInterface * getGreenOutsideP();    
     int getCavitySize() const {return cavitySize;};
     void setCavitySize(int size) {cavitySize = size;};
-
     virtual void buildSystemMatrix(Cavity & cavity) = 0;
-
-    virtual VectorXd compCharge(const VectorXd & potential) = 0;
+    // ask jonas virtual VectorXd compCharge(const VectorXd & potential);
     virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
-
+    void buildCharge(Cavity & cavity, 
+                    const std::string & potName, 
+                    const std::string & chgName);
     virtual void setSolverType(const string & type);
     virtual void setSolverType(int type);
-
     virtual int getSolverType() { return solverType; }
-
-    enum solverTypes{Traditional, Wavelet};
-
+    virtual void setEquationType(const string & type);
+    virtual void setEquationType(int type);
+    virtual int getEquationType() { return integralEquation; }
     vector<Solvent> initSolvent();
-    string & getSolvent(){ return solvent; }
-    void setSolvent(string & solvent);
-
-    friend std::ostream & operator<<(std::ostream & o, PCMSolver & c);
-
+    Solvent getSolvent(){ return solvent; }
+    void setSolvent(Solvent & solvent);
+    friend std::ostream & operator<<(std::ostream & os, PCMSolver & obj) {
+        return obj.printObject(os);
+    }
+    enum EquationType {FirstKind, SecondKind, Full};
+    enum SolverType {Traditional, Wavelet, Linear};
+    bool isPWL(){return (solverType == Linear);}
  protected:
     bool allocated;
     int cavitySize;
-    GreensFunction *greenInside;
-    GreensFunction *greenOutside;
-    int solverType;
+    GreensFunctionInterface *greenInside;
+    GreensFunctionInterface *greenOutside;
+    SolverType solverType;
+    EquationType integralEquation;
     virtual ostream & printObject(ostream & os);
-    string solvent;
+    Solvent solvent;
 };
 #endif

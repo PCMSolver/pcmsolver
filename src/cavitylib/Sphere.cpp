@@ -18,14 +18,16 @@ using namespace Eigen;
 
 */
 
-Sphere::Sphere( Vector3d & center, double radius ) {
+Sphere::Sphere( Vector3d & center, double radius, const string & colour ) {
 	sphereCenter = center;
 	sphereRadius = radius;
+        sphereColour = colour;
 }
 
 Sphere::Sphere( Atom & atom ) {
 	sphereCenter = atom.getAtomCoord();
 	sphereRadius = atom.getAtomRadius();
+        sphereColour = atom.getAtomColour();
 }
 
 ostream & operator<<(ostream & os, Sphere & sphere) {

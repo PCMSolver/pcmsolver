@@ -3,37 +3,39 @@
 /*****************
  *  Constants.h  *
  *****************/
- 
- 
+
+
 /*================================================*
  *  Hier werden alle Paramter gesetzt, die im     *
  *  Wavelet-Galerkin-Verfahren benoetigt werden.  *
  *================================================*/
- 
+
 /* Operatorordnung */
-extern const double		op;
+extern const double op;
 
 /* Konstanten bezueglich der verwendeteten Wavelet-Basis */
-extern const unsigned int	td;
-extern const unsigned int	minLevel;
+extern const unsigned int td;
+extern const unsigned int minLevel;
+extern const unsigned int td_pwl;
+extern const unsigned int minLevel_pwl;
 
 /* Kompression: a > 1, 0 < b < 1, d < dp < td-op */
-extern const double		a;
-extern const double		b;
-extern const double		dp;
+extern const double a;
+extern const double b;
+extern const double dp;
 
 /* Quadratur */
-extern const unsigned int	g_max;			/* maximaler Quadraturgrad             */
-extern const unsigned int	min_quadrature_level;	/* minimales Quadraturlevel            */
-extern const double		q;			/* Unterteilungskonstante q > 0.25     */
-extern const double		scaling_factor;		/* Groesse des relativen Umkreisradius */
+extern const unsigned int g_max;        /* maximaler Quadraturgrad             */
+extern const unsigned int min_quadrature_level; /* minimales Quadraturlevel            */
+extern const double q;          /* Unterteilungskonstante q > 0.25     */
+extern const double scaling_factor;     /* Groesse des relativen Umkreisradius */
 
 /* Genaugikeit der iterativen Loesung */
-extern const double		eps;
+extern const double eps;
 
 /* Konstante fuer Feldverlaengerung */
-extern const unsigned int	delta;
+extern const unsigned int delta;
 
 /* Genaugikeit bei Punktevergleich */
-extern const double		tol;
+extern const double tol;
 #endif

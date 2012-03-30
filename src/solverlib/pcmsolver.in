@@ -9,6 +9,12 @@
 # Adapted to PCMSolver by Luca Frediani, 2011
 #
 
+#
+# Conventions
+# routine names my_perfect_routine
+# keyword names MyPerfectKeyword
+#
+
 ON=1
 OFF=0
 
@@ -17,6 +23,10 @@ debug=@PCMSOLVER_DRIVER_DEBUG@
 printlevel=0
 dryrun=False
 libdir="@INST_LIBDIR@"
+isAngstrom = False
+
+toAngstrom =  0.5291772108;
+toAtomicUnits = 1.0/toAngstrom;
 
 import sys, re, optparse, os, string, subprocess, tempfile
 from copy import deepcopy
@@ -25,7 +35,7 @@ sys.path.append(libdir)
 import getkw
 
 def main():
-	global topsect, debug, executable, printlevel, dryrun
+	global topsect, debug, executable, printlevel, dryrun, isAngstrom
         
         if debug == ON:
 		debug = True
@@ -33,7 +43,6 @@ def main():
 		debug = False
 
 	valid_keywords = setup_keywords()
-	printl = int(valid_keywords.getkw('PRINTL')[0])
 	inpfil = parse_cmdline(valid_keywords)
 
 	if printlevel > 1:
@@ -47,6 +56,7 @@ def main():
 	inkw.sanitize(valid_keywords)
 	topsect=inkw.get_topsect()
 	inkw.run_callbacks(valid_keywords)
+	consistency_check(topsect)
 
 	if dryrun:
 		xfile='@' + inpfil
@@ -57,7 +67,7 @@ def main():
 		with tempfile.TemporaryFile(mode='w+r') as fd:
 			fd.write(str(inkw.top))
 			fd.seek(0)
-			p = subprocess.Popen(executable, stdin=fd)
+			p = subprocess.call(executable, stdin=fd)
 			fd.close()
 
 def parse_cmdline(valid_keywords):
@@ -100,27 +110,7 @@ def parse_cmdline(valid_keywords):
 def	setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
-	top.add_kw('SolverType','STR', 'Traditional')
-	top.add_kw('PRINTL',    'INT', 0)
 	top.add_kw('Units',     'STR', 'AU')
-
-	medium=getkw.Section('Medium', callback=verify_medium)
-	medium.add_kw('Solvent', 'STR', 'Water')
-	medium.add_kw('SolIndex', 'INT', 0)
-	medium.add_kw('SolRadius','DBL', 1.0)
-	top.add_sect(medium)
-	
-	green=getkw.Section('Green', callback=verify_green)
-	green.add_kw('Type', 'STR', 'Vacuum')
-	green.add_kw('Eps', 'DBL', 1.0)
-	green.add_kw('EpsRe', 'DBL', 1.0)
-	green.add_kw('EpsImg', 'DBL', 1.0)
-	green.add_kw('SphereRadius', 'DBL', 1.0)
-	green.add_kw('SpherePosition', 'DBL_ARRAY')
-	medium.add_sect(green)
-
-	green_part = deepcopy(green)
-	green.add_sect(green_part)
 
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
 	cavity.add_kw('Type','STR')
@@ -130,35 +120,44 @@ def	setup_keywords():
 	cavity.add_kw('Area','DBL', 0.3)
 	cavity.add_kw('Scaling', 'DBL', 1.0)
 	cavity.add_kw('AddSpheres', 'STR', 'Yes')
-	cavity.add_kw('SolventRadius', 'DBL', 0.0)
         cavity.add_kw('Mode','STR','Explicit')
-	cavity.add_kw('ModeIndex', 'INT', 0)
         cavity.add_kw('Atoms','INT_ARRAY')
         cavity.add_kw('Radii','DBL_ARRAY')
 	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
 	top.add_sect(cavity)
         
+	medium=getkw.Section('Medium', callback=verify_medium)
+	medium.add_kw('Solvent',     'STR', 'Water')
+	medium.add_kw('SolverType',  'STR', 'Traditional')
+	medium.add_kw('EquationType','STR', 'SecondKind')
+	medium.add_kw('ProbeRadius', 'DBL', 1.0)
+	top.add_sect(medium)
+	
+	green=getkw.Section('Green', callback=verify_green)
+	green.add_kw('Type',           'STR', 'Vacuum')
+	green.add_kw('Der',            'STR', 'Derivative')
+	green.add_kw('Eps',            'DBL', 1.0)
+	green.add_kw('EpsRe',          'DBL', 1.0)
+	green.add_kw('EpsImg',         'DBL', 1.0)
+	green.add_kw('SphereRadius',   'DBL', 1.0)
+	green.add_kw('SpherePosition', 'DBL_ARRAY')
+	medium.add_sect(green)
+
+	green_part = deepcopy(green)
+	green.add_sect(green_part)
+
 	return top
 		
 def verify_top(section):
-	key = section.get('PRINTL')
-	val = key.get()
-	if (val < 0):
-		val = 0
-	
+	global isAngstrom
 	allowed_units = ('AU', 'Angstrom')
 	key = section.get('Units')
 	val = key.get()
 	if (val not in allowed_units):
 	    	print "Allowed units are: ", allowed_units
 		sys.exit(1)
-
-	allowed_types = ('Traditional', 'Wavelet')
-        key = section.get('SolverType')
-        val = key.get()
-        if (val not in allowed_types):  
-                print "Allowed types are: ", allowed_types
-        	sys.exit(1)
+	if (val == 'Angstrom'):
+		isAngstrom = True
 
 def verify_cavity(section):
 	allowed = ('GePol', 'Wavelet')
@@ -167,6 +166,8 @@ def verify_cavity(section):
         	print "Allowed types are: ", allowed
         	sys.exit(1)
 
+	if section['Area'].is_set(): convert_area_scalar(section['Area'])
+	if section['ProbeRadius'].is_set(): convert_length_scalar(section['ProbeRadius'])
 	if (type.get() == 'GePol'):
         	area=section.get('Area')
         	a=area.get()
@@ -176,8 +177,8 @@ def verify_cavity(section):
         		sys.exit(1)
         elif (type.get() == 'Wavelet'):
         	key = section.get('PatchLevel')
-        	if (key.get() < 0):
-        		print "Negative patch level not allowed"
+        	if (key.get() < 1):
+        		print "Patch level must be > 0"
         		sys.exit(1)
         	key = section.get('Coarsity')
         	if (key.get() < 0.0 or key.get() >= 1.0):
@@ -192,101 +193,124 @@ def verify_cavity(section):
 		print "Incoherent input for radii scaling constant."
 		print "Scaling must be > 0.0"
 		sys.exit(1)
-	allowed_modes_dict = {0: "Explicit", 1: "Atoms", 2: "Implicit"}
+	allowed_modes = ("Explicit", "Atoms", "Implicit")
 	mode = section.get('Mode')
-	aList = allowed_modes_dict.values()
-	allowed_modes_tuple = tuple(aList)
-	mode_index = -1
-	for i in allowed_modes_dict:
-		if (mode.get() in allowed_modes_dict[i]):
-			mode_index = i
-			break
-	if (mode_index not in range(3)):
-		print "Allowed modes are: ", allowed_modes_tuple
+	if (mode.get() not in allowed_modes):
+		print "Allowed modes are: ", allowed_modes
 		sys.exit(1)                         
-	idx = section.get('ModeIndex')
-	idx.set(mode_index)
 
         atoms=section.get('Atoms')
         at=atoms.get()
-                                   
-        radii=section.get('Radii')
-        r=radii.get()
+        radii = section.get('Radii')
+	convert_length_array(radii);
+        r = radii.get()
 	
-	atoms_radii_dict = dict(zip(at, r))
         if (mode.get() == 'Atoms'):
-            if (len(at) == 0):
-                print "Incoherent input for Atoms keyword."
-                print "No atoms specified."
-                sys.exit(1)
-	    else:
-		for i,v in enumerate(at):
-			if (at.count(v) > 1):
-				print "Incoherent input for Atoms keyword."
-				print "Too many spheres on the same atom(s)."
-				sys.exit(1)
-            if (len(r) != len(at) or len(r) == 0):
-                print "Incoherent input for Atoms keyword."
-                print "Check that Atoms and Radii are consistent."
-                sys.exit(1)
+		if (len(r) != len(at) or len(at) == 0):
+			print "Incoherent input for Atoms keyword."
+			print "Check that Atoms and Radii are consistent."
+			sys.exit(1)
+		else:
+			for i, v in enumerate(at):
+				if (at.count(v) > 1):
+					print "Incoherent input for Atoms keyword."
+					print "Too many spheres on the same atom(s)."
+					sys.exit(1)
 	
 	
 
 def verify_medium(section):
-	# A dictionary. We will pass the numeric key to the C++ code.
-	allowed_solvents_dict = {0: ('Water', 'water', 'H2O'),
-				 1: ('Methanol', 'methanol', 'CH3OH'),
-				 2: ('Ethanol', 'ethanol', 'CH3CH2OH'),
-				 3: ('Chloroform','chloroform','CHCl3'),
-				 4: ('Methylenechloride', 'methylenechloride', 'CH2Cl2'),
-				 6: ('1,2-Dichloroethane', '1,2-dichloroethane', 'C2H4Cl2'),
-				 7: ('Carbon Tetrachloride', 'carbon tetrachloride', 'CCl4'),
-				 8: ('Benzene', 'benzene', 'C6H6'),
-				 9: ('Toluene', 'toluene', 'C6H5CH3'),
-				 10: ('Chlorobenzene', 'chlorobenzene', 'C6H5Cl'),
-				 11: ('Nitromethane', 'nitromethane', 'CH3NO2'),
-				 12: ('N-heptane', 'n-heptane', 'C7H16'),
-				 13: ('Cyclohexane', 'cyclohexane', 'C6H12'),
-				 14: ('Aniline', 'aniline', 'C6H5NH2'),
-				 15: ('Acetone', 'acetone', 'C2H6CO'),
-				 16: ('Tetrahydrofurane', 'tetrahydrofurane', 'THF'),
-				 17: ('Dimethylsulfoxide', 'dimethylsulfoxide', 'DMSO'),
-				 18: ('Acetonitrile', 'acetonitrile', 'CH3CN')}
+	allowedSolvents = {'Water':                ('Water',                'water',                'H2O'),
+			   'Methanol':             ('Methanol',             'methanol',             'CH3OH'),
+			   'Ethanol':              ('Ethanol',              'ethanol',              'CH3CH2OH'),
+			   'Chloroform':           ('Chloroform',           'chloroform',           'CHCl3'),
+			   'Methylenechloride':    ('Methylenechloride',    'methylenechloride',    'CH2Cl2'),
+			   '1,2-Dichloroethane':   ('1,2-Dichloroethane',   '1,2-dichloroethane',   'C2H4Cl2'),
+			   'Carbon Tetrachloride': ('Carbon Tetrachloride', 'carbon tetrachloride', 'CCl4'),
+			   'Benzene':              ('Benzene',              'benzene',              'C6H6'),
+			   'Toluene':              ('Toluene',              'toluene',              'C6H5CH3'),
+			   'Chlorobenzene':        ('Chlorobenzene',        'chlorobenzene',        'C6H5Cl'),
+			   'Nitromethane':         ('Nitromethane',         'nitromethane',         'CH3NO2'),
+			   'N-heptane':            ('N-heptane',            'n-heptane',            'C7H16'),
+			   'Cyclohexane':          ('Cyclohexane',          'cyclohexane',          'C6H12'),
+			   'Aniline':              ('Aniline',              'aniline',              'C6H5NH2'),
+			   'Acetone':              ('Acetone',              'acetone',              'C2H6CO'),
+			   'Tetrahydrofurane':     ('Tetrahydrofurane',     'tetrahydrofurane',     'THF'),
+			   'Dimethylsulfoxide':    ('Dimethylsulfoxide',    'dimethylsulfoxide',    'DMSO'),
+			   'Acetonitrile':         ('Acetonitrile',         'acetonitrile',         'CH3CN'),
+			   'Explicit':             ('Explicit',             'explicit')}
 	solvent = section.get('Solvent')
-	aList = allowed_solvents_dict.values()
-	for i, v in enumerate(aList):
-		aList[i] = aList[i][0]
-	allowed_solvents_tuple = tuple(aList)
-	solvent_index = -1
-	for i in allowed_solvents_dict:
-		if (solvent.get() in allowed_solvents_dict[i]):
-			solvent_index = i
+	explicitSolvent = solvent.get() in allowedSolvents['Explicit']
+	if(explicitSolvent):
+		PRF = section.is_set('ProbeRadius')
+		GIF = section.is_set('Green<inside>')
+		GOF = section.is_set('Green<outside>')
+		if (not PRF):
+			print "Error: Explicit solvent chosen but ProbeRadius not specified"
+		if (not GIF):
+			print "Error: Explicit solvent chosen but Green<inside> not specified"
+		if (not GOF):
+			print "Error: Explicit solvent chosen but Green<outside> not specified"
+		if (not GIF or not GOF or not PRF):
+			sys.exit(1)
+	solventFound = False
+	for i, v in allowedSolvents.iteritems():
+		if (solvent.get() in v):
+			solventName = i
+			solventFound = True
 			break
-	if (solvent_index not in range(19)):
-		print "Allowed solvents are: ", allowed_solvents_tuple
-		print "Overriding built-in solvents (if Green's Functions specified!)"
-	idx = section.get('SolIndex')
-	idx.set(solvent_index)
-	solradius = section.get('SolRadius')
-	if (solradius.get() < 0.1 or solradius.get() > 100):
-		print "Solvent probe radius has to be within [0.1,100]"
+	if (not solventFound):
+		print "Unknown solvent"
+		print "Choose a solvent from the following list: "
+		print allowedSolvents.keys()
+		print "or specify the solvent data explicitly."
 		sys.exit(1)
-			
+
+	convert_length_scalar(section.get('ProbeRadius'))
+	radius = section.get('ProbeRadius')
+	if (radius.get() < 0.1 or radius.get() > 100):
+		print "Probe radius has to be within [0.1,100] Atomic Units"
+		sys.exit(1)
+
+	allowed_types = ('Traditional', 'Wavelet', 'Linear')
+        key = section.get('SolverType')
+        val = key.get()
+        if (val not in allowed_types):  
+                print "Allowed types are: ", allowed_types
+        	sys.exit(1)
+	allowed_equations = ('FirstKind', 'SecondKind', 'Full')
+        key = section.get('EquationType')
+        val = key.get()
+        if (val not in allowed_equations):  
+                print "Allowed equations are: ", allowed_equations
+        	sys.exit(1)
+
+
+
 def verify_green(section):
 	required = ('Type',)
 	allowed = ('Vacuum', 'UniformDielectric', 'MetalSphere', 'GreensFunctionSum')
+	allowed_der = ('Numerical', 'Derivative', 'Gradient', 'Hessian')
 
 	green1 = section.fetch_sect('Green<one>')
 	green2 = section.fetch_sect('Green<two>')
 	eps = section.get('Eps')
 	epsimg = section.get('EpsImg')
 	epsre = section.get('EpsRe')
+
+	convert_length_array(section.get('SpherePosition'))
         position = section.get('SpherePosition')
+	convert_length_scalar(section.get('SphereRadius'))
         radius = section.get('SphereRadius')
 
 	type=section.get('Type')
 	if (type.get() not in allowed):
 		print "Allowed Green's functions are:", allowed
+		sys.exit(1)
+
+	type=section.get('Der')
+	if (type.get() not in allowed_der):
+		print "Allowed Derivatives are:", allowed
 		sys.exit(1)
 
 	if (type.get() == 'UniformDielectric'):
@@ -314,11 +338,35 @@ def verify_green(section):
 			sys.exit(1)
 
 def verify_spheres(keyword):
-	spheres=keyword.get()
-	if (len(spheres)%4 != 0):
-		print "Incoherent input for Mode keyword."
+	length=len(keyword.get())
+	if (length % 4 != 0):
                 print "Empty or incoherent Spheres list."
 		sys.exit(1)
+	convert_length_array(keyword)
+
+def convert_length_array(keyword):
+	length=len(keyword.get())
+	if (isAngstrom):
+		for i in range(length):
+			keyword[i] *= toAtomicUnits
+
+def convert_length_scalar(keyword):
+	if (isAngstrom):
+		keyword[0] *= toAtomicUnits
+
+def convert_area_scalar(keyword):
+	if (isAngstrom):
+		keyword[0] *= toAtomicUnits * toAtomicUnits
+
+def consistency_check(section):
+	Medium = section.fetch_sect("Medium")
+	Cavity = section.fetch_sect("Cavity<gepol>")
+	medRad = Medium.get("ProbeRadius")
+	cavRad = Cavity.get("ProbeRadius")
+	if medRad.is_set():
+		cavRad.set(medRad.get())
 
 if __name__ == '__main__':
 	main()
+
+

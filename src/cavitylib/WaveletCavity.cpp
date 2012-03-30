@@ -18,6 +18,7 @@ extern "C"{
 #include "vector2.h"
 #include "vector3.h"
 #include "interpolate.h"
+#include "interpolate_pwl.h"
 //#include "topology.h"
 //#include "kern.h"
 //#include "compression.h"
@@ -33,6 +34,7 @@ extern "C"{
 
 #include "Constants.h"
 #include "Getkw.h"
+#include "SurfaceFunction.h"
 #include "Cavity.h"
 #include "WaveletCavity.h"
 
@@ -95,15 +97,34 @@ void WaveletCavity::writeInput(string &fileName){
 
 extern "C" {
 	int waveletCavityDrv_(double probeRadius, double coarsity, 
-						  int patchLevel);
+						  int patchLevel, const char* infile);
 }
 
+void WaveletCavity::compFakePotential()
+{
+	this->createFunction("NucPot");
+	VectorXd & potential = this->getFunction("NucPot").getVector();
+	potential.setZero();
+	for (int i = 0; i < tessArea.size(); i++) {
+		for (int j = 0; j < sphereRadius.size(); j++) {
+			Vector3d p1 = tessCenter.col(i);
+			Vector3d p2 = sphereCenter.col(j);
+			double pot = 1.0/(p1-p2).norm();
+			potential(i) += pot;
+		}
+	}
+}
 
 void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
-	string fileName = "cavity.inp";
-	writeInput(fileName);
-	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel);
+	string infile = "cavity.inp";
+	writeInput(infile);
+	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, 
+							  infile.c_str());
+	if (check != 0) {
+		std::cout << "Problem with the wavelet cavity!" << std::endl;
+		exit(-1);
+	}
 }
 
 
@@ -133,7 +154,15 @@ void WaveletCavity::readCavity(const string & filename) {
 
 }
 
-void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
+void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_, bool isPWL) {
+	if(isPWL) {
+		uploadPointsPWL(quadLevel, T_);
+	} else {
+		uploadPointsPWC(quadLevel, T_);
+	}
+}
+
+void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 	if (not uploadedDyadic) {
 		cout << "Error: upload dyadic file first" << endl;
 		exit(-1);
@@ -152,13 +181,6 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 	tessNormal.resize(NoChange, nTess);
 	tessArea.resize(nTess);
 
-	nuclearPotential.resize(nTess);
-	nuclearCharge.resize(nTess);
-	electronicPotential.resize(nTess);
-	electronicCharge.resize(nTess);
-
-	//   	nuclearPotential.setConstant(1.0);
-
 	int j = 0;
 	for (int i1 = 0; i1 < nPatches; i1++){
 		for (int i2 = 0; i2 < n; i2++){
@@ -172,20 +194,62 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_) {
 					Vector3d center(point.x, point.y, point.z);	 
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
-					center = center / ToAngstrom;
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
 					tessCenter.col(j) = center.transpose();
 					tessNormal.col(j) = normal.transpose();
 					tessArea(j) = area;
 					j++;
 				}
-				s.x += h;
 			}
-			s.y += h;
 		}
 	}
 	free_Gauss_Square(&Q,quadLevel+1);  
-	isBuilt = true;
+	built = true;
+}
+
+void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
+	if (not uploadedDyadic) {
+		cout << "Error: upload dyadic file first" << endl;
+		exit(-1);
+	}
+	vector2 s, t;
+	vector3 point;
+	vector3 norm;
+	int n = 1 << nLevels;
+	double h = 1.0 / n;
+	cubature *Q;
+	init_Gauss_Square(&Q, quadLevel + 1);
+
+	nTess = nPatches * n * n * Q[quadLevel].nop;
+
+	tessCenter.resize(NoChange, nTess);
+	tessNormal.resize(NoChange, nTess);
+	tessArea.resize(nTess);
+
+	int j = 0;
+	for (int i1 = 0; i1 < nPatches; i1++){
+		for (int i2 = 0; i2 < n; i2++){
+			s.y = h * i2;
+			for (int i3=0; i3 < n; i3++){
+				s.x = h * i3;
+				for (int k = 0; k < Q[quadLevel].nop; k++){
+					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
+					point = Chi_pwl(t,T_[i1], nLevels);
+					norm = n_Chi_pwl(t,T_[i1], nLevels);
+					Vector3d center(point.x, point.y, point.z);	 
+					Vector3d normal(norm.x,  norm.y,  norm.z);	 
+					normal.normalize();
+					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi_pwl(t, T_[i1], nLevels));
+					tessCenter.col(j) = center.transpose();
+					tessNormal.col(j) = normal.transpose();
+					tessArea(j) = area;
+					j++;
+				}
+			}
+		}
+	}
+	free_Gauss_Square(&Q,quadLevel+1);  
+	built = true;
 }
 
 ostream & operator<<(ostream &os, const WaveletCavity &cavity) {

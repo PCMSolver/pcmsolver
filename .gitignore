@@ -3,6 +3,7 @@
 *.out
 output*
 external
+release*
 Release*
 Makefile
 Debug*

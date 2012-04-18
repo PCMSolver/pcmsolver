@@ -70,7 +70,7 @@ void GePolCavity::makeCavity(){
 }
 
 void GePolCavity::makeCavity(int maxts, int lwork) {
-	
+        
 	double *xtscor  = new double[maxts];
 	double *ytscor  = new double[maxts];
 	double *ztscor  = new double[maxts];
@@ -100,10 +100,9 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	double *ze = zv.data();
 
 	double *rin = sphereRadius.data();
-  
+ 
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
-						xe, ye, ze, rin, &averageArea, &rSolv, work, &lwork);
-	
+						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
 	
 	VectorXd rtmp(nSpheres + maxAddedSpheres);
 	VectorXd xtmp(nSpheres + maxAddedSpheres);
@@ -240,8 +239,8 @@ void GePolCavity::setMaxAddedSpheres(bool add, int maxAdd) {
 	addSpheres = true;
 }
 
-void GePolCavity::setRSolv( double rsolv ) {
-	rSolv = rsolv;
+void GePolCavity::setProbeRadius( double rsolv ) {
+	probeRadius = rsolv;
 	addSpheres = true;
 	maxAddedSpheres = 100;
 }

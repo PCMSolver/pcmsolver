@@ -38,8 +38,8 @@ class GePolCavity : public Cavity
     Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;}
     double getTessRadius(int i){return tessRadius(i);}
     void setMaxAddedSpheres(bool add = true, int maxAdd = 100);
-    double getRSolv() { return rSolv; };
-    void setRSolv( double rsolv );
+    double getProbeRadius() { return probeRadius; };
+    void setProbeRadius( double probeRadius );
     vector<Sphere> & getSpheres(){ return spheres; }
     int getMode(){return mode;}
     enum SphereMode {Explicit, Atoms, Implicit};
@@ -55,7 +55,7 @@ class GePolCavity : public Cavity
     int maxAddedSpheres;
     int addedSpheres;
     bool addSpheres;
-    double rSolv;
+    double probeRadius;
     Matrix<double, 3, Dynamic> tessSphereCenter;
     VectorXd tessRadius;
     vector<Sphere> spheres;

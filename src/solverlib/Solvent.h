@@ -41,8 +41,8 @@ class Solvent {
     const string getName(){ return name; }
     double getEpsStatic(){ return epsStatic; }
     double getEpsOptical(){ return epsOptical; }
-    const double getRadius() const { return radius; }
-    void setRadius(double r){ radius = r; }
+    const double getRadius() const { return probeRadius; }
+    void setRadius(double r){ probeRadius = r; }
     static SolventMap initSolventMap();
     friend std::ostream & operator<<(std::ostream & os, Solvent & obj) {
         return obj.printObject(os);
@@ -53,7 +53,7 @@ class Solvent {
     string name;
     double epsStatic;
     double epsOptical;
-    double radius;
+    double probeRadius;
 };
 
 

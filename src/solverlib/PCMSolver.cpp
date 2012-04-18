@@ -45,19 +45,17 @@ PCMSolver::PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo,
 PCMSolver::PCMSolver(const Section & solver) {
 	SolventMap solvents = Solvent::initSolventMap();
 	string name = solver.getStr("Solvent");
-	this->solvent = *solvents["Water"];
+	this->solvent = *solvents[name];
 	std::cout << this->solvent << std::endl;
-	bool greenInsideSet  = solver.getSect("Green<inside>").isDefined();
-	bool greenOutsideSet = solver.getSect("Green<outside>").isDefined();
 	//	string PR = "ProbeRadius";
 	//Keyword<double> radiusKeyword = solver.getKey(PR);
 	//bool radiusSet = radiusKeyword.isDefined();
-	if (greenInsideSet) {
+        if (name == "Explicit") {
 		greenInside = greenInside->allocateGreensFunctionInterface(solver.getSect("Green<inside>"));
 	} else {
 		greenInside = greenInside->allocateGreensFunctionInterface();
 	}
-	if (greenOutsideSet) {
+        if (name == "Explicit") {
 		greenOutside = greenOutside->allocateGreensFunctionInterface(solver.getSect("Green<outside>"));
 	} else {
 		greenOutside = greenOutside->allocateGreensFunctionInterface(this->solvent.getEpsStatic());

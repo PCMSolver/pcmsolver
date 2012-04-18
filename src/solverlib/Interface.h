@@ -17,7 +17,7 @@ extern "C" void init_gepol_cavity_();
 
 extern "C" void collect_nctot_(int * nuclei);
 
-extern "C" void collect_atoms_(double * charges, double * centers, int * flag);
+extern "C" void collect_atoms_(double * charges, double * centers);
 
 extern "C" void init_atoms_(VectorXd & charges, 
                             Matrix<double, 3, Dynamic> & sphereCenter);

@@ -29,7 +29,6 @@
 #include "Sphere.h"
 #include "Solvent.h"
 #include "Interface.h"
-#include "Constants.h"
 
 using namespace std;
 using namespace Eigen;
@@ -64,7 +63,7 @@ extern "C" void init_gepol_cavity_() {
 	//	const Keyword<double> & cavProbeRad = cavSect.getKey<double>("Cavity<gepol>.ProbeRadius");
 	//	const Keyword<double> & cavityProbeRadius = Input.getKeyword<double>("Cavity<gepol>.ProbeRadius");
 	//	if (cavProbeRad.isDefined()) {
-	if (true) {
+/*	if (true) {
 		std::cout << "This needs to be fixed..." << std::endl;
 		_gePolCavity->setRSolv(Input.getDbl("Cavity<gepol>.ProbeRadius"));
 	} else if (solvent != "Explicit") {
@@ -74,11 +73,20 @@ extern "C" void init_gepol_cavity_() {
 		std::cout << "Should not really get here..." << std::endl;
 		exit(-1);
 	}
+*/
+
+	if (solvent == "Explicit") {
+		_gePolCavity->setProbeRadius(Input.getDbl("Medium.ProbeRadius"));
+	} else {
+		SolventMap solvents = Solvent::initSolventMap();
+		_gePolCavity->setProbeRadius(solvents[solvent]->getRadius());
+	} // No need for further checks, we have input parsing!
 
 	VectorXd charges;
 	Matrix<double, 3, Dynamic> centers;
 	init_atoms_(charges, centers);
 	int nAtoms = charges.size();
+        _gePolCavity->setNSpheres(nAtoms);
 
 	switch (_gePolCavity->getMode()) {
 	case GePolCavity::Atoms:
@@ -99,18 +107,12 @@ extern "C" void init_gepol_cavity_() {
 extern "C" void init_atoms_(VectorXd & charges,
 							Matrix<double, 3, Dynamic> & sphereCenter) {
 	int nuclei;
-	int flag;
 	collect_nctot_(&nuclei);
 	sphereCenter.resize(NoChange, nuclei);
 	charges.resize(nuclei);
 	double * chg = charges.data();
 	double * centers = sphereCenter.data();
-	collect_atoms_(chg, centers, & flag);
-	/*
-	if ( flag == 0 ) {
-		sphereCenter *= ToAngstrom;
-	}
-	*/
+	collect_atoms_(chg, centers);
 } 
 
 extern "C" void init_wavelet_cavity_() {
@@ -249,18 +251,6 @@ extern "C" void init_pcm_() {
 	} 
 	_solver->setSolverType(modelType);
 }
-
-/*
-extern "C" void init_gepol_cavity_() {
-	const char *infile = 0;
-	infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-    _gePolCavity = new GePolCavity(Input, "Cavity<gepol>");
-	_gePolCavity->makeCavity(5000, 10000000);
-}
-*/
-
-
 
 extern "C" void init_iefsolver_() {
 	const char *infile = 0;

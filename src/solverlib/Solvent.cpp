@@ -22,7 +22,7 @@ Solvent::Solvent( const string & name, double epsStatic,
 	this->name = name;
 	this->epsStatic = epsStatic;
 	this->epsOptical = epsOptical;
-	this->radius = radius;
+	this->probeRadius = radius;
 }
 
 vector<Solvent> Solvent::initSolventVector() {
@@ -65,7 +65,7 @@ SolventMap Solvent::initSolventMap() {
 	SolventMap mapSolvents;
 	vector<Solvent> availSolvents = initSolventVector();
 	for (int i = 0; i < availSolvents.size(); i++) {
-		mapSolvents[availSolvents[i].getName()] = &(availSolvents[i]);
+		mapSolvents[availSolvents[i].getName()] = &availSolvents[i];
 	}
 	return mapSolvents;
 }
@@ -75,7 +75,7 @@ ostream & Solvent::printObject(ostream & os) {
 	os << "Solvent name:           " << name << endl;
 	os << "Static diel. constant:  " << epsStatic << endl;
 	os << "Optical diel. constant: " << epsStatic << endl;
-	os << "Solvent radius:         " << radius;
+	os << "Solvent radius:         " << probeRadius;
 	return os;
 }
 

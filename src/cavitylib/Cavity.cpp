@@ -102,8 +102,6 @@ SurfaceFunction & Cavity::getFunction(const std::string & name) {
 	return * func;
 }
 
-
-
 vector<Atom> Cavity::initBondi() {
 	/*
 

@@ -132,7 +132,7 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	yv.resize(nSpheres + addedSpheres);
 	zv.resize(nSpheres + addedSpheres);
 	sphereRadius = rtmp;
-    xv = xtmp;
+    	xv = xtmp;
 	yv = ytmp;
 	zv = ztmp;
 	
@@ -165,15 +165,15 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 		tessNormal.col(i) /= tessNormal.col(i).norm();
 	}
 
-	delete xtscor;
-	delete ytscor;
-	delete ztscor;
-	delete ar;
-	delete xsphcor;
-	delete ysphcor;
-	delete zsphcor;
-	delete rsph;
-	delete work;
+	delete[] xtscor;
+	delete[] ytscor;
+	delete[] ztscor;
+	delete[] ar;
+	delete[] xsphcor;
+	delete[] ysphcor;
+	delete[] zsphcor;
+	delete[] rsph;
+	delete[] work;
 	
 	built = true;
 

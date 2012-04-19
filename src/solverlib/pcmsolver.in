@@ -115,7 +115,7 @@ def	setup_keywords():
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
 	cavity.add_kw('Type','STR')
 	cavity.add_kw('PatchLevel', 'INT', 2)
-	cavity.add_kw('ProbeRadius', 'DBL', 1.3)
+	cavity.add_kw('ProbeRadius', 'DBL', 1.0)
 	cavity.add_kw('Coarsity', 'DBL', 0.5)
 	cavity.add_kw('Area','DBL', 0.3)
 	cavity.add_kw('Scaling', 'DBL', 1.0)

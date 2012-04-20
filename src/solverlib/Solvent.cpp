@@ -65,7 +65,7 @@ SolventMap Solvent::initSolventMap() {
 	SolventMap mapSolvents;
 	vector<Solvent> availSolvents = initSolventVector();
 	for (int i = 0; i < availSolvents.size(); i++) {
-		mapSolvents[availSolvents[i].getName()] = &availSolvents[i];
+		mapSolvents[availSolvents[i].getName()] = availSolvents[i];
 	}
 	return mapSolvents;
 }

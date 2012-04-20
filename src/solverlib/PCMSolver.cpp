@@ -45,7 +45,7 @@ PCMSolver::PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo,
 PCMSolver::PCMSolver(const Section & solver) {
 	SolventMap solvents = Solvent::initSolventMap();
 	string name = solver.getStr("Solvent");
-	this->solvent = *solvents[name];
+	this->solvent = solvents[name];
 	std::cout << this->solvent << std::endl;
 	//	string PR = "ProbeRadius";
 	//Keyword<double> radiusKeyword = solver.getKey(PR);
@@ -179,7 +179,7 @@ ostream & PCMSolver::printObject(ostream & os) {
 	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
 	os << "========== Solver section" << endl;
 	os << "Solver Type: " << type << endl;
-	os << "Solvent: " << solvent << endl;
+	os << solvent << endl; // Solvent has its own operator<< overloaded
 	return os;
 }
 

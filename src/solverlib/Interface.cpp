@@ -79,7 +79,7 @@ extern "C" void init_gepol_cavity_() {
 		_gePolCavity->setProbeRadius(Input.getDbl("Medium.ProbeRadius"));
 	} else {
 		SolventMap solvents = Solvent::initSolventMap();
-		_gePolCavity->setProbeRadius(solvents[solvent]->getRadius());
+		_gePolCavity->setProbeRadius(solvents[solvent].getRadius());
 	} // No need for further checks, we have input parsing!
 
 	VectorXd charges;

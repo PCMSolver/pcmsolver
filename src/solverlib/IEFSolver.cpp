@@ -147,7 +147,7 @@ ostream & IEFSolver::printObject(ostream & os) {
 	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
 	os << "========== Solver section" << endl;
 	os << "Solver Type: " << type << endl;
-	os << "Solvent: " << solvent << endl;
+	os << solvent << endl;
 	return os;
 }
 

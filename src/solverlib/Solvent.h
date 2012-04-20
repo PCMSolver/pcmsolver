@@ -30,7 +30,8 @@ using namespace Eigen;
 
 class Solvent;
 
-typedef std::map< std::string, const Solvent * > SolventMap;
+//typedef std::map< std::string, const Solvent * > SolventMap;
+typedef std::map< std::string, Solvent > SolventMap;
 
 class Solvent {
  public:

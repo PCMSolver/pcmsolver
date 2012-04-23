@@ -19,7 +19,7 @@ C if you don't want to use external (c++) input comment out lines between Cex
 C
       subroutine makecav_(xtscor_,ytscor_,ztscor_,ar_,
      & xsphcor_,ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_,
-     & rin_, avgarea_, work2, lwork2)
+     & rin_, avgarea_, rsolv_, work2, lwork2)
 
 #include <pcm_implicit.h>
 #include <pcm_maxorb.h>
@@ -38,7 +38,7 @@ C
       double precision xtscor_(*), ytscor_(*), ztscor_(*)
       double precision xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
       double precision ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
-      double precision avgarea_
+      double precision avgarea_, rsolv_
       integer nts_, nesfp_
 
       LVPRI = 121201
@@ -50,9 +50,9 @@ C
       NSYM=1
       AREATS=avgArea_
       ICESPH=1
-      IPRPCM=20
+      IPRPCM=3
       GROUP = 'C1'
-      RSOLV = 0.0D0
+      RSOLV = rsolv_
       RET = 100.0D0
       NESFP = nesfp_
       do i=1, NESFP
@@ -60,7 +60,7 @@ C
          YE(i) = ye_(i)
          ZE(i) = ze_(i)
          RIN(i) = rin_(i)
-         ALPHA(i)=1
+         ALPHA(i)=1.0d0
       enddo
       
       NESF=NESFP
@@ -73,7 +73,7 @@ C
       PT(5) =  1
       PT(6) =  1
       PT(7) =  1
-
+      
       CALL PEDRA_M_(WORK2, LWORK2)
 
       nts_=nts
@@ -87,6 +87,8 @@ C
          zsphcor_(i) = ze(isphe(i))
          rsph_(i) = re(isphe(i))
       enddo
+
+      close(lvpri)
 
       return
       END

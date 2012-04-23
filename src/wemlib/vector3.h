@@ -10,14 +10,17 @@
  *====================================================*/
 
 
-typedef struct {double x, y, z;} vector3;
+typedef struct {
+    double x, y, z;
+} vector3;
+
 /* Typdefinition */
 
 
 vector3 vector3_make(double x, double y, double z);
 /* Typkonvertierung: 3xREAL in vector3 */
 
-      
+
 vector3 vector3_add(vector3 a, vector3 b);
 /* Vektoraddition */
 

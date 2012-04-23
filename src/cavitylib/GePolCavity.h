@@ -3,52 +3,62 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <Eigen/Dense>
 
 #include "Getkw.h"
 #include "Cavity.h"
+#include "Atom.h"
+#include "Sphere.h"
+
 //class Getkw;
 
 /*
 
-C++ inteface and wrapper for GePol cavity class
-written by Krzysztof Mozgawa, 2011
+  C++ inteface and wrapper for GePol cavity class
+  written by Krzysztof Mozgawa, 2011
 
 */
 
 class Getkw;
 
-class GePolCavity : public Cavity {
+class GePolCavity : public Cavity 
+{
  public:
     GePolCavity(){}
-    GePolCavity(string &filename){
-        readInput(filename);
-    }
-    GePolCavity(const Getkw & Input, const string path = "Cavity");
     GePolCavity(const Section & cavity);
     ~GePolCavity(){};
     void makeCavity(int maxts, int lwork);
     void makeCavity();
     void writeOutput(string &filename);
-    VectorXd & getTessRadius(){return tessRadius;};
-    VectorXd & getSphereRadius(){return sphereRadius;};
-    int getNSpheres(){return nSpheres;};
-    Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
-    Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
-    double getTessRadius(int i){return tessRadius(i);};
+    VectorXd & getTessRadius(){return tessRadius;}
+    int getNSpheres(){return nSpheres;}
+    void setNSpheres(int n){nSpheres = n;}
+    Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;}
+    double getTessRadius(int i){return tessRadius(i);}
+    void setMaxAddedSpheres(bool add = true, int maxAdd = 100);
+    double getProbeRadius() { return probeRadius; };
+    void setProbeRadius( double probeRadius );
+    vector<Sphere> & getSpheres(){ return spheres; }
+    int getMode(){return mode;}
+    enum SphereMode {Explicit, Atoms, Implicit};
 
-    friend std::ostream& operator<<(std::ostream &o, const GePolCavity &c);
-
+ protected:
+    virtual ostream & printObject(ostream & os);
+        
  private:
-    bool readInput(string &filename);
+    SphereMode mode;
+    void setMode(const std::string & mode);
+    void setMode(int mode);
     int nSpheres;
-    VectorXd sphereRadius;
-    Matrix<double, 3, Dynamic> sphereCenter;
+    int maxAddedSpheres;
+    int addedSpheres;
+    bool addSpheres;
+    double probeRadius;
     Matrix<double, 3, Dynamic> tessSphereCenter;
     VectorXd tessRadius;
-    // Variables needed for communication with pedra cavity
-    // if one would require more thatn 300 spheres it needs to be changed here
+    vector<Sphere> spheres;
 };
 
 

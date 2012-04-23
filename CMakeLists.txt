@@ -28,7 +28,7 @@ if(NOT cmake_build_type_tolower STREQUAL "debug"
   message(FATAL_ERROR "Unknown build type \"${CMAKE_BUILD_TYPE}\". Allowed values are Debug, Release (case-insensitive).")
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
 
 include(SaveCompilerFlags)
 include(FCompilers)
@@ -62,6 +62,15 @@ set (ExternalProjectCMakeArgs
   -DEIGEN3_ROOT=${EIGEN3_ROOT}
   )
 
+ExternalProject_Add(libtaylor
+	DOWNLOAD_COMMAND svn checkout http://libtaylor.googlecode.com/svn/trunk/ ${PROJECT_SOURCE_DIR}/external/libtaylor
+	PREFIX ${PROJECT_SOURCE_DIR}/external
+	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
+	BINARY_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor-build
+	INSTALL_DIR ${PROJECT_SOURCE_DIR}/external
+	CMAKE_ARGS ${ExternalProjectCMakeArgs}
+	)
+
 ExternalProject_Add(libgetkw
 	DOWNLOAD_COMMAND git submodule update
 	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
@@ -72,24 +81,17 @@ ExternalProject_Add(libgetkw
 	CMAKE_ARGS ${ExternalProjectCMakeArgs}
 	)
 
-add_dependencies(external libgetkw)
+add_dependencies(external libgetkw libtaylor)
+
+include(Math)
 
 find_package(Eigen3)
-find_package(BLAS)
-find_package(LAPACK)
-if(BLAS_FOUND AND LAPACK_FOUND) # check new versions of this stuff in Dalton
-    set(MATH_LIBS
-        blas
-        lapack
-        )
-    message("-- Set system default math libraries: ${MATH_LIBS} (${LAPACK_lapack_LIBRARY} ${BLAS_f77blas_LIBRARY})")
-    set(MATH_FOUND TRUE)
-endif()
-set (LIBS ${MATH_LIBS})
+
+#cmake should exit gracefully if math libs are not found
 
 add_definitions(-DSYS_LINUX)
 
-link_directories (${PROJECT_SOURCE_DIR}/lib)
+#link_directories (${PROJECT_SOURCE_DIR}/lib)
 link_directories (${PROJECT_SOURCE_DIR}/external/lib)
 
 include_directories (${EIGEN3_INCLUDE_DIR})
@@ -98,4 +100,27 @@ include_directories (${PROJECT_SOURCE_DIR}/external/include)
 
 add_subdirectory(src)
 
+include_directories (src/solverlib)
+include_directories (src/wavcavlib)
+include_directories (src/wemlib)
+include_directories (src/pwllib)
+include_directories (src/pedralib)
+include_directories (src/cavitylib)
+include_directories (src/metal)
+include_directories (src/green)
+
+add_executable(wavcav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcav.cpp)
+target_link_libraries(wavcav.x cavity pedra wavcav pwl wem getkw ${LIBS})
+
+add_executable(pcmsolver.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pcmsolver.cpp)
+target_link_libraries(pcmsolver.x solver green cavity pedra metal pwl wem wavcav getkw ${LIBS})
+
+add_executable(pwl.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pwllib/main_pwl.c)
+target_link_libraries(pwl.x pwl wem ${LIBS})
+
+add_executable(pwc.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wemlib/main.c)
+target_link_libraries(pwc.x wem ${LIBS})
+
+add_executable(cav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcavlib/main.c)
+target_link_libraries(cav.x wavcav ${LIBS})
 

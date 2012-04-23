@@ -4,37 +4,42 @@
 
 using namespace Eigen;
 
-#include "Getkw.h"
+#include "taylor.hpp"
+//#include "TaylorSupport.h"
+#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
-#include "UniformDielectric.h"
-#include "MetalSphere.h"
-#include "GreensFunctionSum.h"
 
-double Vacuum::evalf(Vector3d &p1, Vector3d &p2) {
-    double dist = sqrt((p1 - p2).dot(p1 - p2));
-    return 1.0 / dist;
+class Section;
+
+static double factor = 1.07;
+
+template<class T>
+T Vacuum<T>::evalGreensFunction(T * sp, T * pp) {
+	T res;
+	res = 1.0/sqrt((sp[0]-pp[0])*(sp[0]-pp[0])+
+				   (sp[1]-pp[1])*(sp[1]-pp[1])+
+				   (sp[2]-pp[2])*(sp[2]-pp[2]));
+	return res;
 }
 
-void Vacuum::gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2){
-    double dist = sqrt((p1 - p2).dot(p1 - p2));
-    double distcube = dist * dist * dist;
-    gradient = (p2 - p1) / distcube;
-    std::cout << "analytical gradient" << std::endl;
-    return;
+template<class T>
+double Vacuum<T>::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2){
+	return this->derivativeProbe(direction, p1, p2);
+	//    return direction.dot(g);  // NORMALIZTION TEMPORARY REMOVED /direction.norm();
 }
 
-double Vacuum::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2){
-    double dist = sqrt((p1 - p2).dot(p1 - p2));
-    double distcube = dist * dist * dist;
-    double der = direction.dot(p2 - p1) / distcube;
-    return der;
-}
-double Vacuum::derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2){
-    double dist = sqrt((p1 - p2).dot(p1 - p2));
-    double distcube = dist * dist * dist;
-    double der = direction.dot(p2 - p1) / distcube;
-    std::cout << "analytical der" << std::endl;
-    return der;
+template<class T>
+double Vacuum<T>::compDiagonalElementS(double area){
+	return factor * sqrt(4 * M_PI / area);   
 }
 
+template<class T>
+double Vacuum<T>::compDiagonalElementD(double area, double radius){
+	return - factor * sqrt(M_PI / area) / radius;   
+}
+
+template class Vacuum<double>;
+template class Vacuum< taylor<double, 1, 1> >;
+template class Vacuum< taylor<double, 3, 1> >;
+template class Vacuum< taylor<double, 3, 2> >;

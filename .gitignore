@@ -3,7 +3,14 @@
 *.out
 output*
 external
+release*
 Release*
 Makefile
 Debug*
 .DS_Store
+build
+debug
+TAGS
+*/TAGS
+*/*/TAGS
+prof

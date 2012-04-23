@@ -7,7 +7,7 @@ build_type=Debug
 show=false
 
 config_flags=""
-enable_blas=true
+enable_blas=false
 enable_mpi=false
 enable_omp=false
 enable_cuda=false
@@ -52,6 +52,7 @@ parse_command_line () {
 			--enable-tests) enable_tests=true; shift ;;
 			--coverage) enable_coverage=true; shift ;;
 			--no-blas|--disable-blas) enable_blas=false; shift ;;
+			--enable-blas) enable_blas=true; shift ;;
 			-D*) config_flags="$config_flags $i"; shift ;;
 			--help|-h|-?) usage; shift ;;
 			--show) show=true; shift ;;
@@ -101,7 +102,9 @@ setup_config_flags() {
 		config_flags="$config_flags -DENABLE_CUDA=ON"
 	fi
 
-	[ "x$enable_blas" = "xtrue" ] && setup_blas
+	if [ "x$enable_blas" = "xtrue" ]; then
+		setup_blas
+	fi
 
 }
 
@@ -221,6 +224,7 @@ buildenv=""
 [ "x$FC" != "x" ] && buildenv="$buildenv Fortran=$FC"
 
 configure_cmd="$buildenv ${CMAKE:="cmake"} $install_prefix $config_flags"
+
 
 if [ "$show" = "true" ]; then
 	echo "$configure_cmd"

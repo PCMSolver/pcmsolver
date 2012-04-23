@@ -1,18 +1,24 @@
 #ifndef GREENSFUNCTIONSUM
 #define GREENSFUNCTIONSUM
 
-class GreensFunctionSum : public GreensFunction
+// I am for now limiting myself to one template parameter
+// In principle three templates are necessary here
+// The question is whether it is worth implementng the full version.
+
+template<class T>
+class GreensFunctionSum : public GreensFunction<T>
 {
  public:
-    GreensFunctionSum(GreensFunction &first, GreensFunction &second);
+    GreensFunctionSum(GreensFunction<T> &first, GreensFunction<T> &second);
     GreensFunctionSum(Section green);
     ~GreensFunctionSum(){delete greenFirst; delete greenSecond;}
     double evalf(Vector3d &p1, Vector3d &p2);
     double evald(Vector3d &direction, Vector3d &p1, Vector3d &p2);
-    double derivative(Vector3d &direction, Vector3d &p1, Vector3d &p2);
-    void gradient(Vector3d &gradient, Vector3d &p1, Vector3d &p2);
+    double compDiagonalElementS(double area);
+    double compDiagonalElementD(double area, double radius);
  protected:
-    GreensFunction* greenFirst;
-    GreensFunction* greenSecond;
+    T evalGreensFunction(T * source, T * probe);
+    GreensFunctionInterface* greenFirst;
+    GreensFunctionInterface* greenSecond;
 };
 #endif

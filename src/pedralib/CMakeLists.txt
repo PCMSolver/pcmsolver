@@ -2,9 +2,9 @@ set(pedra_SOURCES
   pcm_utils.F
   pcm_print.F
   pcm_inertia.F90
-  pcm_der.F
-  pcm_cav.F
-  pcm_cav_interface.F
+  cavity_derivatives.F
+  pedra_cavity.F
+  pedra_cavity_interface.F
   makecav.F
   pcm_dblas1.F
   )

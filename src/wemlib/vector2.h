@@ -10,7 +10,10 @@
  *====================================================*/
 
 
-typedef struct {double x, y;} vector2;
+typedef struct {
+    double x, y;
+} vector2;
+
 /* Typdefinition */
 
 

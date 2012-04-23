@@ -3,31 +3,27 @@
 /*****************
  *  IntVector.h  *
  *****************/
- 
+
 
 /*================================*
- *  Definiert den Integralvektor  *  
+ *  Definiert den Integralvektor  *
  *================================*/
 
 
 /*====================*
  *  Typendeklaration  *
  *====================*/
- 
 
-typedef struct 
-{  
-double		sub[3];
-}
-integral;
 
-typedef struct 
-{  
-integral	*value;
-unsigned int	*index;
-unsigned int    integral_number;
-}
-intvector;
+typedef struct {
+    double sub[3];
+} integral;
+
+typedef struct {
+    integral *value;
+    unsigned int *index;
+    unsigned int integral_number;
+} intvector;
 
 
 /*===============================================*

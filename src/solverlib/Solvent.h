@@ -30,7 +30,6 @@ using namespace Eigen;
 
 class Solvent;
 
-//typedef std::map< std::string, const Solvent * > SolventMap;
 typedef std::map< std::string, Solvent > SolventMap;
 
 class Solvent {
@@ -50,7 +49,6 @@ class Solvent {
     }
  private:
     ostream & printObject(ostream & os);
-    static vector<Solvent> initSolventVector();
     string name;
     double epsStatic;
     double epsOptical;

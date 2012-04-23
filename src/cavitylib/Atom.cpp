@@ -18,13 +18,14 @@ using namespace Eigen;
 */
 
 Atom::Atom( const string & element, const string & symbol, double charge, 
-			double radius, Vector3d & coord, const string & colour ) {
+			double radius, Vector3d & coord, double scaling, const string & colour ) {
   atomElement = element;
   atomSymbol = symbol;
   atomCharge = charge;
   atomRadius = radius;
   atomCoord = coord;
   atomColour = colour;
+  atomRadiusScaling = scaling;
 }
 
 Atom::Atom( const string & element, const string & symbol, double charge, 
@@ -37,4 +38,5 @@ Atom::Atom( const string & element, const string & symbol, double charge,
   atomRadius = radius;
   atomCoord = Origin;
   atomColour = colour;
+  atomRadiusScaling = 1.0;
 }

@@ -25,49 +25,43 @@ Solvent::Solvent( const string & name, double epsStatic,
 	this->probeRadius = radius;
 }
 
-vector<Solvent> Solvent::initSolventVector() {
+SolventMap Solvent::initSolventMap() {
+ 	
 	/*
-	  vector<Solvent> avaliableSolvents should contain all the solvent-related
+	  SolventMap avaliableSolvents should contain all the solvent-related
 	  data needed to set up the Green's functions and the non-electrostatic
 	  terms calculations.
+          
+          A SolventMap is defined as an associative array:
+	  typedef std::map< std::string, Solvent > SolventMap
 	  
 	  These data are taken from the DALTON2011 internal implementation of
 	  the Polarizable Continuum Model.
 	*/
 
-	vector<Solvent> solventData;
-	solventData.push_back(Solvent("Water", 78.39, 1.776, 1.385));
-	solventData.push_back(Solvent("Methanol", 32.63, 1.758, 1.855));
-	solventData.push_back(Solvent("Ethanol", 24.55, 1.847, 2.18));
-	solventData.push_back(Solvent("Chloroform", 4.90, 2.085, 2.48));
-	solventData.push_back(Solvent("Methylenechloride", 8.93, 2.020, 2.27));
-	solventData.push_back(Solvent("1,2-Dichloroethane", 10.36, 2.085, 2.505));
-	solventData.push_back(Solvent("Carbon tetrachloride", 2.228, 2.129, 2.685));
-	solventData.push_back(Solvent("Benzene", 2.247, 2.244, 2.630));
-	solventData.push_back(Solvent("Toluene", 2.379, 2.232, 2.82));
-	solventData.push_back(Solvent("Chlorobenzene", 5.621, 2.320, 2.805));
-	solventData.push_back(Solvent("Nitromethane", 38.20, 1.904, 2.155));
-	solventData.push_back(Solvent("N-heptane", 1.92, 1.918, 3.125));
-	solventData.push_back(Solvent("Cyclohexane", 2.023, 2.028, 2.815));
-	solventData.push_back(Solvent("Aniline", 6.89, 2.506, 2.80));
-	solventData.push_back(Solvent("Acetone", 20.7, 1.841, 2.38));
-	solventData.push_back(Solvent("Tetrahydrofurane", 7.58, 1.971, 2.9));
-	solventData.push_back(Solvent("Dimethylsulfoxide", 46.7, 2.179, 2.455));
-	solventData.push_back(Solvent("Acetonitrile", 36.64, 1.806, 2.155));	
-	solventData.push_back(Solvent("Explicit", 0.0, 0.0, 0.0));	
-  
+	SolventMap availableSolvents;
   // ------------------------------------------------------------
-
-  return solventData;
-}
-
-SolventMap Solvent::initSolventMap() {
-	SolventMap mapSolvents;
-	vector<Solvent> availSolvents = initSolventVector();
-	for (int i = 0; i < availSolvents.size(); i++) {
-		mapSolvents[availSolvents[i].getName()] = availSolvents[i];
-	}
-	return mapSolvents;
+        availableSolvents["Water"] = Solvent("Water", 78.39, 1.776, 1.385);
+	availableSolvents["Methanol"] = Solvent("Methanol", 32.63, 1.758, 1.855);
+	availableSolvents["Ethanol"] = Solvent("Ethanol", 24.55, 1.847, 2.18);
+	availableSolvents["Chloroform"] = Solvent("Chloroform", 4.90, 2.085, 2.48);
+	availableSolvents["Methylenechloride"] = Solvent("Methylenechloride", 8.93, 2.020, 2.27);
+	availableSolvents["1,2-Dichloroethane"] = Solvent("1,2-Dichloroethane", 10.36, 2.085, 2.505);
+	availableSolvents["Carbon tetrachloride"] = Solvent("Carbon tetrachloride", 2.228, 2.129, 2.685);
+	availableSolvents["Benzene"] = Solvent("Benzene", 2.247, 2.244, 2.630);
+	availableSolvents["Toluene"] = Solvent("Toluene", 2.379, 2.232, 2.82);
+	availableSolvents["Chlorobenzene"] = Solvent("Chlorobenzene", 5.621, 2.320, 2.805);
+	availableSolvents["Nitromethane"] = Solvent("Nitromethane", 38.20, 1.904, 2.155);
+	availableSolvents["N-heptane"] = Solvent("N-heptane", 1.92, 1.918, 3.125);
+	availableSolvents["Cyclohexane"] = Solvent("Cyclohexane", 2.023, 2.028, 2.815);
+	availableSolvents["Aniline"] = Solvent("Aniline", 6.89, 2.506, 2.80);
+	availableSolvents["Acetone"] = Solvent("Acetone", 20.7, 1.841, 2.38);
+	availableSolvents["Tetrahydrofurane"] = Solvent("Tetrahydrofurane", 7.58, 1.971, 2.9);
+	availableSolvents["Dimethylsulfoxide"] = Solvent("Dimethylsulfoxide", 46.7, 2.179, 2.455);
+	availableSolvents["Acetonitrile"] = Solvent("Acetonitrile", 36.64, 1.806, 2.155);	
+	availableSolvents["Explicit"] = Solvent("Explicit", 0.0, 0.0, 0.0);	
+  // ------------------------------------------------------------
+	return availableSolvents;
 }
 
 ostream & Solvent::printObject(ostream & os) {

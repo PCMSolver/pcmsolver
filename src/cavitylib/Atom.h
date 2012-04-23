@@ -36,11 +36,12 @@ class Atom {
   double atomCharge;
   double atomRadius;
   string atomColour;
+  double atomRadiusScaling;
        
  public:
   Atom(){}
   Atom( const string & element, const string & symbol, double charge, 
-        double radius, Vector3d & coord, const string & colour = "Violet" );
+        double radius, Vector3d & coord, double scaling = 1.0, const string & colour = "Violet" );
   Atom( const string & element, const string & symbol, double charge, 
         double radius );
   ~Atom(){}
@@ -54,6 +55,8 @@ class Atom {
   void setAtomCharge( double charge ){ atomCharge = charge; }
   double getAtomRadius(){ return atomRadius; }
   void setAtomRadius( double radius ){ atomRadius = radius; }
+  double getAtomRadiusScaling(){ return atomRadiusScaling; }
+  void setAtomRadiusScaling( double scaling ){ atomRadiusScaling = scaling; }
   string getAtomColour(){ return atomColour; }
   void setAtomColour( const string & colour ){ atomColour = colour; }
 };

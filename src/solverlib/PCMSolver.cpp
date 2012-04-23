@@ -46,10 +46,6 @@ PCMSolver::PCMSolver(const Section & solver) {
 	SolventMap solvents = Solvent::initSolventMap();
 	string name = solver.getStr("Solvent");
 	this->solvent = solvents[name];
-	std::cout << this->solvent << std::endl;
-	//	string PR = "ProbeRadius";
-	//Keyword<double> radiusKeyword = solver.getKey(PR);
-	//bool radiusSet = radiusKeyword.isDefined();
         if (name == "Explicit") {
 		greenInside = greenInside->allocateGreensFunctionInterface(solver.getSect("Green<inside>"));
 	} else {
@@ -60,11 +56,6 @@ PCMSolver::PCMSolver(const Section & solver) {
 	} else {
 		greenOutside = greenOutside->allocateGreensFunctionInterface(this->solvent.getEpsStatic());
 	}
-	/*
-	if (radiusSet) {
-		this->solvent.setRadius(solver.getDbl("ProbeRadius"));
-	}
-	*/
 	setSolverType(solver.getStr("SolverType"));
 	setEquationType(solver.getStr("EquationType"));
 	allocated = true;

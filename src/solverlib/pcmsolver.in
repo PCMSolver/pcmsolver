@@ -56,7 +56,6 @@ def main():
 	inkw.sanitize(valid_keywords)
 	topsect=inkw.get_topsect()
 	inkw.run_callbacks(valid_keywords)
-	consistency_check(topsect)
 
 	if dryrun:
 		xfile='@' + inpfil
@@ -115,10 +114,9 @@ def	setup_keywords():
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
 	cavity.add_kw('Type','STR')
 	cavity.add_kw('PatchLevel', 'INT', 2)
-	cavity.add_kw('ProbeRadius', 'DBL', 1.0)
 	cavity.add_kw('Coarsity', 'DBL', 0.5)
 	cavity.add_kw('Area','DBL', 0.3)
-	cavity.add_kw('Scaling', 'DBL', 1.0)
+	cavity.add_kw('Scaling', 'STR', 'Yes')
 	cavity.add_kw('AddSpheres', 'STR', 'Yes')
         cavity.add_kw('Mode','STR','Explicit')
         cavity.add_kw('Atoms','INT_ARRAY')
@@ -167,7 +165,6 @@ def verify_cavity(section):
         	sys.exit(1)
 
 	if section['Area'].is_set(): convert_area_scalar(section['Area'])
-	if section['ProbeRadius'].is_set(): convert_length_scalar(section['ProbeRadius'])
 	if (type.get() == 'GePol'):
         	area=section.get('Area')
         	a=area.get()
@@ -184,15 +181,6 @@ def verify_cavity(section):
         	if (key.get() < 0.0 or key.get() >= 1.0):
         		print "Coarsity has to be within ]0,1["
         		sys.exit(1)
-        	key = section.get('ProbeRadius')
-        	if (key.get() < 0.0):
-        		print "Negative probe radius not allowed"
-        		sys.exit(1)
-	scaling = section.get('Scaling')
-	if (scaling.get() <= 0.0):
-		print "Incoherent input for radii scaling constant."
-		print "Scaling must be > 0.0"
-		sys.exit(1)
 	allowed_modes = ("Explicit", "Atoms", "Implicit")
 	mode = section.get('Mode')
 	if (mode.get() not in allowed_modes):
@@ -357,15 +345,6 @@ def convert_length_scalar(keyword):
 def convert_area_scalar(keyword):
 	if (isAngstrom):
 		keyword[0] *= toAtomicUnits * toAtomicUnits
-
-def consistency_check(section):
-	Medium = section.fetch_sect("Medium")
-	medRad = Medium.get("ProbeRadius")
-	if medRad.is_set(): # if medium rad is set we update cavity rad
-		s = section.get_sects()['Cavity']
-		for k, v in s.iteritems():
-			cavRad = v.get("ProbeRadius")
-			cavRad.set(medRad.get())
 
 if __name__ == '__main__':
 	main()

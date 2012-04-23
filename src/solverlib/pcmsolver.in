@@ -20,7 +20,11 @@ libdir="@INST_LIBDIR@"
 import sys, re, optparse, os, string, subprocess, tempfile
 from copy import deepcopy
 
-sys.path.append(libdir)
+if 'LIBGETKW_LOCATION' in os.environ.keys():
+    sys.path.append(os.environ['LIBGETKW_LOCATION'])
+else:
+    sys.path.append(libdir)
+
 import getkw
 
 def main():

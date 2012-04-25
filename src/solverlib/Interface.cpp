@@ -44,7 +44,6 @@ PWCSolver * _PWCSolver;
 PWLSolver * _PWLSolver;
 PCMSolver * _solver;
 
-vector<Atom> Bondi = Atom::initBondi();
 
 /*
 
@@ -137,7 +136,7 @@ extern "C" void print_gepol_cavity_(){
 }
 
 extern "C" void set_surface_function_(int * nts, double * values, char * name) {
-    int nTess = _cavity->size();
+    	int nTess = _cavity->size();
 	if (nTess != *nts) {
 		std::cout << "Inconsistent input" << std::endl;
 	}
@@ -146,7 +145,7 @@ extern "C" void set_surface_function_(int * nts, double * values, char * name) {
 }
 
 extern "C" void get_surface_function_(int * nts, double * values, char * name) {
-    int nTess = _cavity->size();
+    	int nTess = _cavity->size();
 	if (nTess != *nts) {
 		std::cout << "Inconsistent input" << std::endl;
 	}
@@ -306,6 +305,7 @@ void init_spheres_implicit_(VectorXd & charges,	Matrix<double, 3, Dynamic> & cen
 	Getkw Input = Getkw(infile, false, true);
 	std::string scaling = Input.getStr("Cavity<gepol>.Scaling");
 	for (int i = 0; i < charges.size(); i++) {
+		vector<Atom> Bondi = Atom::initBondi();
 		int index = charges(i) - 1;
 		double radius = Bondi[index].getAtomRadius();
                 if (scaling == "Yes") {

@@ -6,8 +6,6 @@
 #include <map>
 #include <Eigen/Dense>
 
-#include "Atom.h"
-
 using namespace Eigen;
 using namespace std;
 
@@ -50,8 +48,6 @@ class Cavity
         return (functions.count(name) == 1);
     }
     enum chargeType{Nuclear, Electronic};
-
-    vector<Atom> initBondi();
 
     friend std::ostream& operator<<(std::ostream & o, Cavity & c);
     

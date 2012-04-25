@@ -59,6 +59,7 @@ class Atom {
   void setAtomRadiusScaling( double scaling ){ atomRadiusScaling = scaling; }
   string getAtomColour(){ return atomColour; }
   void setAtomColour( const string & colour ){ atomColour = colour; }
+  static vector<Atom> initBondi();
 };
 
 #endif

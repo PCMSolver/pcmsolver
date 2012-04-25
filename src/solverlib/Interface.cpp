@@ -44,7 +44,7 @@ PWCSolver * _PWCSolver;
 PWLSolver * _PWLSolver;
 PCMSolver * _solver;
 
-vector<Atom> Bondi = _gePolCavity->initBondi();
+vector<Atom> Bondi = Atom::initBondi();
 
 /*
 

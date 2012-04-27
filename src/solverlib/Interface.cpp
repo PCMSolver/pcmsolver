@@ -11,6 +11,7 @@
 
 #include <Eigen/Dense>
 
+#include "Constants.h"
 #include "Getkw.h"
 #include "taylor.hpp"
 #include "SurfaceFunction.h"
@@ -277,12 +278,16 @@ void build_anisotropic_matrix_() {
 void init_atoms_(VectorXd & charges,
 	         Matrix<double, 3, Dynamic> & sphereCenter) {
 	int nuclei;
+	int * units;
 	collect_nctot_(&nuclei);
 	sphereCenter.resize(NoChange, nuclei);
 	charges.resize(nuclei);
 	double * chg = charges.data();
 	double * centers = sphereCenter.data();
-	collect_atoms_(chg, centers);
+	collect_atoms_(chg, centers, units);
+        if (*units == 0) {
+		sphereCenter *= ToAngstrom
+        }
 } 
 
 void init_spheres_atoms_(VectorXd & charges, 

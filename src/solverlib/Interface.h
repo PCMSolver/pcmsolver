@@ -23,7 +23,7 @@ extern "C" void get_epsilon_static_(double * epsilon);
 
 extern "C" void collect_nctot_(int * nuclei);
 
-extern "C" void collect_atoms_(double * charges, double * centers, int * units);
+extern "C" void collect_atoms_(double * charges, double * centers);
 
 extern "C" void get_cavity_size_(int * nts);
 

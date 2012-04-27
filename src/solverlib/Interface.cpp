@@ -286,7 +286,7 @@ void init_atoms_(VectorXd & charges,
 	double * centers = sphereCenter.data();
 	collect_atoms_(chg, centers, units);
         if (*units == 0) {
-		sphereCenter *= ToAngstrom
+		sphereCenter *= ToAngstrom;
         }
 } 
 

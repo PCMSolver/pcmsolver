@@ -597,7 +597,7 @@ C
       RETURN
 C
  9000 FORMAT(10X,'-- CENTER OF CHARGE --'/
-     *        ' X =',F8.4,' A  Y =',F8.4,' A  Z =',F8.4,' A')
+     *        ' X =',F8.4,' AU  Y =',F8.4,' AU  Z =',F8.4,' AU')
  9010 FORMAT(/' WARNING: The distance between center of tessera',I4,
      *         'and',I4,' is ',F8.6,', less than ',F8.6,' AU'/)
  9020 FORMAT(/' Total number of spheres =',I5/
@@ -606,7 +606,7 @@ C
  9030 FORMAT(I4,4F15.9,F15.9)
  9040 FORMAT(/' Total number of tesserae =',I8
      *       /' Surface area =',F14.8,' (AU^2)    Cavity volume =',
-     *            F14.8,' (A^3)')
+     *            F14.8,' (AU^3)')
  9050 FORMAT( ' PEDRA: CONFUSION ABOUT SPHERE COUNTS. NESFP, NATM=',2I6)
  9060 FORMAT(/' ADDITIONAL MEMORY NEEDED TO SETUP GRADIENT RUN=',I10)
  9061 FORMAT(/' ADDITIONAL MEMORY NEEDED TO SETUP IEF RUN=',I10)

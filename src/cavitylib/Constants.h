@@ -6,4 +6,3 @@
 // CODATA 2010 recommended value
 // http://physics.nist.gov/cgi-bin/cuu/Value?bohrrada0|search_for=atomnuc!
 static const double ToAngstrom =  0.52917721092;
-static const double ToAtomicUnits /= ToAngstrom;

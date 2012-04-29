@@ -25,7 +25,7 @@ dryrun=False
 libdir="@INST_LIBDIR@"
 isAngstrom = False
 
-toAngstrom =  0.5291772108;
+toAngstrom =  0.52917721092; # CODATA 2010 recommended data
 toAtomicUnits = 1.0/toAngstrom;
 
 import sys, re, optparse, os, string, subprocess, tempfile

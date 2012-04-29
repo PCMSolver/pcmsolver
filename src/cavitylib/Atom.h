@@ -8,6 +8,8 @@
 
 #include <Eigen/Dense>
 
+#include "Constants.h"
+
 using namespace std;
 using namespace Eigen;
 
@@ -53,7 +55,7 @@ class Atom {
   void setAtomCoord( Vector3d & coord ){ atomCoord = coord; }
   double getAtomCharge(){ return atomCharge; }
   void setAtomCharge( double charge ){ atomCharge = charge; }
-  double getAtomRadius(){ return atomRadius; }
+  double getAtomRadius(){ return (atomRadius * ToAngstrom); }
   void setAtomRadius( double radius ){ atomRadius = radius; }
   double getAtomRadiusScaling(){ return atomRadiusScaling; }
   void setAtomRadiusScaling( double scaling ){ atomRadiusScaling = scaling; }

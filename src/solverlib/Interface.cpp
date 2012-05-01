@@ -227,6 +227,7 @@ void init_gepol_cavity_() {
 		exit(-1);
 	}
 	_gePolCavity->makeCavity(5000, 10000000);
+        std::cout << "Number of tesserae: " << _gePolCavity->size() << std::endl;
 }
 
 void init_wavelet_cavity_() {

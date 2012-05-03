@@ -17,7 +17,7 @@ extern "C" void init_pcm_();
 
 extern "C" void comp_chg_pcm_(char* potString, char* chgString);
 
-extern "C" void comp_pol_ene_pcm_(double * energy);
+extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total);
 
 extern "C" void get_epsilon_static_(double * epsilon);
 

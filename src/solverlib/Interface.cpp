@@ -94,8 +94,13 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName) {
 	double totalChg = charge.sum();
 }
 
-extern "C" void comp_pol_ene_pcm_(double * energy) {
-	* energy = _cavity->compPolarizationEnergy();
+// Revise this function. It's just a dirty hack now.
+extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total) {
+        if (*separate_or_total == 0) { // Using separate potentials and charges
+		* energy = _cavity->compPolarizationEnergy();
+        } else {
+		* energy = _cavity->compPolarizationEnergy("TotPot", "TotChg") * 0.5 ;
+        }
 }
 
 extern "C" void get_epsilon_static_(double * epsilon) {

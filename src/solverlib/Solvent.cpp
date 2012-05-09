@@ -68,7 +68,7 @@ ostream & Solvent::printObject(ostream & os) {
 	string type = "Traditional";
 	os << "Solvent name:           " << name << endl;
 	os << "Static diel. constant:  " << epsStatic << endl;
-	os << "Optical diel. constant: " << epsStatic << endl;
+	os << "Optical diel. constant: " << epsOptical << endl;
 	os << "Solvent radius:         " << probeRadius;
 	return os;
 }

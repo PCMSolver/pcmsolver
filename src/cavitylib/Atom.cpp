@@ -55,7 +55,7 @@ vector<Atom> Atom::initBondi() {
   
 	*/
 
-	vector<Atom> Bondi(67);
+	vector<Atom> Bondi(89);
 	Vector3d Origin;
 
 	Origin << 0.0, 0.0, 0.0;
@@ -117,17 +117,38 @@ vector<Atom> Atom::initBondi() {
 	Bondi[53] = Atom("Xenon", "Xe", 54.0, 2.16, Origin, 1.0);
 	Bondi[54] = Atom("Cesium", "Cs", 55.0, 3.43, Origin, 1.0);
 	Bondi[55] = Atom("Barium", "Ba", 56.0, 2.68, Origin, 1.0);
-	Bondi[56] = Atom("Platinum", "Pt", 78.0, 1.75, Origin, 1.0);
-	Bondi[57] = Atom("Gold", "Au", 79.0, 1.66, Origin, 1.0);
-	Bondi[58] = Atom("Mercury", "Hg",  80.0, 1.55, Origin, 1.0);
-	Bondi[59] = Atom("Tallium", "Tl", 81.0, 1.96, Origin, 1.0);
-        Bondi[60] = Atom("Lead", "Pb", 82, 2.02, Origin, 1.0);
-	Bondi[61] = Atom("Bismuth", "Bi", 83.0, 2.07, Origin, 1.0);
-	Bondi[62] = Atom("Polonium", "Po", 84.0, 1.97, Origin, 1.0);
-	Bondi[63] = Atom("Astatine", "At", 85.0, 2.02, Origin, 1.0);
-	Bondi[64] = Atom("Radon", "Rn", 86.0, 2.20, Origin, 1.0);
-	Bondi[65] = Atom("Francium", "Fr",  87.0, 3.48, Origin, 1.0);
-	Bondi[66] = Atom("Radium", "Ra", 88.0, 2.83, Origin, 1.0);
+	Bondi[56] = Atom("Lanthanum", "La", 57.0, 0.0, Origin, 1.0);
+	Bondi[57] = Atom("Cerium", "Ce", 58.0, 0.0, Origin, 1.0);
+	Bondi[58] = Atom("Praseodimium", "Pr", 59.0, 0.0, Origin, 1.0);
+	Bondi[59] = Atom("Neodymium", "Nd", 60.0, 0.0, Origin, 1.0);
+	Bondi[60] = Atom("Promethium", "Pm", 61.0, 0.0, Origin, 1.0);
+	Bondi[61] = Atom("Samarium", "Sm", 62.0, 0.0, Origin, 1.0);
+	Bondi[62] = Atom("Europium", "Eu", 63.0, 0.0, Origin, 1.0);
+	Bondi[63] = Atom("Gadolinium", "Gd", 64.0, 0.0, Origin, 1.0);
+	Bondi[64] = Atom("Terbium", "Tb", 65.0, 0.0, Origin, 1.0);
+	Bondi[65] = Atom("Dysprosium", "Dy", 66.0, 0.0, Origin, 1.0);
+	Bondi[66] = Atom("Holmium", "Ho", 67.0, 0.0, Origin, 1.0);
+	Bondi[67] = Atom("Erbium", "Er", 68.0, 0.0, Origin, 1.0);
+	Bondi[68] = Atom("Thulium", "Tm", 69.0, 0.0, Origin, 1.0);
+	Bondi[69] = Atom("Ytterbium", "Yb", 70.0, 0.0, Origin, 1.0);
+	Bondi[70] = Atom("Lutetium", "Lu", 71.0, 0.0, Origin, 1.0);
+	Bondi[71] = Atom("Hafnium", "Hf", 72.0, 0.0, Origin, 1.0);
+	Bondi[72] = Atom("Tantalum", "Ta", 73.0, 0.0, Origin, 1.0);
+	Bondi[73] = Atom("Tungsten", "W", 74.0, 0.0, Origin, 1.0);
+	Bondi[74] = Atom("Rhenium", "Re", 75.0, 0.0, Origin, 1.0);
+	Bondi[75] = Atom("Osmium", "Os", 76.0, 0.0, Origin, 1.0);
+	Bondi[76] = Atom("Iridium", "Ir", 77.0, 0.0, Origin, 1.0);
+	Bondi[77] = Atom("Platinum", "Pt", 78.0, 1.75, Origin, 1.0);
+	Bondi[78] = Atom("Gold", "Au", 79.0, 1.66, Origin, 1.0);
+	Bondi[79] = Atom("Mercury", "Hg",  80.0, 1.55, Origin, 1.0);
+	Bondi[80] = Atom("Tallium", "Tl", 81.0, 1.96, Origin, 1.0);
+        Bondi[81] = Atom("Lead", "Pb", 82.0, 2.02, Origin, 1.0);
+	Bondi[82] = Atom("Bismuth", "Bi", 83.0, 2.07, Origin, 1.0);
+	Bondi[83] = Atom("Polonium", "Po", 84.0, 1.97, Origin, 1.0);
+	Bondi[84] = Atom("Astatine", "At", 85.0, 2.02, Origin, 1.0);
+	Bondi[85] = Atom("Radon", "Rn", 86.0, 2.20, Origin, 1.0);
+	Bondi[86] = Atom("Francium", "Fr",  87.0, 3.48, Origin, 1.0);
+	Bondi[87] = Atom("Radium", "Ra", 88.0, 2.83, Origin, 1.0);
 // ------------------------------------------------------------
 	
 	return Bondi;

@@ -40,12 +40,24 @@ C
       double precision ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
       double precision avgarea_, rsolv_
       integer nts_, nesfp_
+      logical pedra_file_exists
 
       LVPRI = 121201
-      OPEN(LVPRI,
-     $     FILE   = 'PEDRA.OUT',
-     $     ACCESS = 'APPEND',
-     $     STATUS = 'UNKNOWN')
+      inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
+      if (pedra_file_exists) then
+         open(lvpri, 
+     &        file = 'PEDRA.OUT', 
+     &        status = 'unknown', 
+     &        form = 'formatted',
+     &        access = 'sequential')
+         close(lvpri, status = 'delete')
+      end if
+      open(lvpri,
+     &     file = 'PEDRA.OUT',
+     &     status = 'new',
+     &     form = 'formatted',
+     &     access = 'sequential')
+      rewind(lvpri)
       MAXREP=0
       NSYM=1
       AREATS=avgArea_

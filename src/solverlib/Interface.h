@@ -31,6 +31,8 @@ extern "C" void get_tess_centers_(double * centers);
 
 extern "C" void get_tess_cent_coord_(int * its, double * center);
 
+extern "C" void print_pcm_();
+
 extern "C" void print_gepol_cavity_();
 
 extern "C" void set_surface_function_(int * nts, double * values, char * name);

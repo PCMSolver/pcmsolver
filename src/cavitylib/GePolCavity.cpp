@@ -212,8 +212,11 @@ ostream & GePolCavity::printObject(ostream & os) {
 	  We should print the cavity.off file here, just to
 	  get a prettier cavity image.
 	*/
-	os << "Molecular cavity" << endl;
-	os << "Nr. of spheres: " << nSpheres;
+	os << "========== Cavity section" << endl;
+        os << "Cavity type: GePol" << endl;
+	os << "Number of spheres: " << nSpheres << endl;
+        os << "Number of tesserae: " << nTess << endl;
+/* RDR To be revised...
 	for(int i = 0; i < nSpheres + addedSpheres; i++) {
 		if ( i < nSpheres ) {
 			os << endl;
@@ -229,6 +232,7 @@ ostream & GePolCavity::printObject(ostream & os) {
 			os << spheres[i] << endl;
 		}
 	}
+*/
 	return os;
 }
 

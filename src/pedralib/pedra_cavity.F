@@ -2145,15 +2145,27 @@ C
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
       DIMENSION VERT(NUMTS,10,*),IVTS(MXTS,10)
+      logical cavity_file_exists
 C
 C     Prepare the input file for GeomView (coloured polyhedra)
 C
       IF (ICESPH .EQ. 0 .OR. ICESPH .EQ. 2 .OR. ICESPH .EQ. 3) INDEX = 1
       LUCAV = 12121201
-      OPEN(UNIT   = LUCAV,
-     $     FILE   = 'cavity.off',
-     $     ACCESS = 'SEQUENTIAL',
-     $     STATUS = 'UNKNOWN')
+      inquire(file = 'cavity.off', exist = cavity_file_exists)
+      if (cavity_file_exists) then
+         open(lucav, 
+     &        file = 'cavity.off', 
+     &        status = 'unknown', 
+     &        form = 'formatted',
+     &        access = 'sequential')
+         close(lucav, status = 'delete')
+      end if
+      open(lucav,
+     &     file = 'cavity.off',
+     &     status = 'new',
+     &     form = 'formatted',
+     &     access = 'sequential')
+      rewind(lucav)
       Numv = 0
       DO 10 I = 1, NTs
   10    NUMV = NUMV + NVert(i)

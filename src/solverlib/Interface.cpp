@@ -136,6 +136,11 @@ extern "C" void get_tess_cent_coord_(int * its, double * center) {
 	center[2] = tess(2);
 }
 
+extern "C" void print_pcm_(){
+	std::cout << *_IEFSolver << std::endl;
+        std::cout << *_gePolCavity << std::endl;
+}
+
 extern "C" void print_gepol_cavity_(){
 	cout << "Cavity size" << _cavity->size() << endl;
 }
@@ -232,7 +237,6 @@ void init_gepol_cavity_() {
 		exit(-1);
 	}
 	_gePolCavity->makeCavity(5000, 10000000);
-        std::cout << "Number of tesserae: " << _gePolCavity->size() << std::endl;
 }
 
 void init_wavelet_cavity_() {
@@ -251,7 +255,6 @@ void init_iefsolver_() {
 	const Section &Medium = Input.getSect("Medium<Medium>");
 	_IEFSolver = new IEFSolver(Medium);
 	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
-	cout << *_IEFSolver << endl;
 }
 
 void init_pwcsolver_() {

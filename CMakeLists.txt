@@ -34,6 +34,7 @@ include(SaveCompilerFlags)
 include(FCompilers)
 include(CCompilers)
 include(CXXCompilers)
+include(ConfigParentSettings)
 
 find_package(Git)
 include(ExternalProject)

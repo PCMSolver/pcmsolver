@@ -16,7 +16,7 @@ set (solverlib_SOURCES
 
 find_package(PythonInterp REQUIRED)
 
-set (INST_LIBDIR ${PROJECT_SOURCE_DIR}/external/share/libgetkw)
+set (INST_LIBDIR ${PARENT_BINARY_DIR}/external/share/libgetkw)
 #set (PCMSOLVER_EXECUTABLE pcmsolver.x)
 #set (PCMSOLVER_ERROR_LOG ${PROJECT_BINARY_DIR}/pcmsolver.err)
 set (PCMSOLVER_EXECUTABLE ${PROJECT_BINARY_DIR}/pcmsolver.x)

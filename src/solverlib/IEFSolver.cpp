@@ -129,6 +129,9 @@ void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
     PCMMatrix = PCMMatrix.inverse();
     PCMMatrix *= (aInv - DI);
     PCMMatrix = PCMMatrix * a;
+    MatrixXd PCMAdjoint(cavitySize, cavitySize); 
+    PCMAdjoint = PCMMatrix.adjoint().eval(); // See Eigen doc for the reason of this
+    PCMMatrix = 0.5 * (PCMMatrix + PCMAdjoint);
 	builtIsotropicMatrix = true;
 	builtAnisotropicMatrix = false;
 }

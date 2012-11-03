@@ -132,6 +132,17 @@ void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
     MatrixXd PCMAdjoint(cavitySize, cavitySize); 
     PCMAdjoint = PCMMatrix.adjoint().eval(); // See Eigen doc for the reason of this
     PCMMatrix = 0.5 * (PCMMatrix + PCMAdjoint);
+// PRINT TO FILE RELEVANT INFO ABOUT PCMMatrix
+    SelfAdjointEigenSolver<MatrixXd> solver(PCMMatrix);
+    if (solver.info() != Success) abort();
+    ofstream matrixOut("PCM_matrix");
+    matrixOut << "PCM matrix printout" << endl;
+    matrixOut << "Number of Tesserae: " << cavitySize << endl;
+    matrixOut << "Largest Eigenvalue: " << solver.eigenvalues()[cavitySize-1] << endl;
+    matrixOut << "Lowest Eigenvalue: " << solver.eigenvalues()[0] << endl;
+    matrixOut << "Average of Eigenvalues: " << (solver.eigenvalues().sum() / cavitySize)<< endl;
+    matrixOut << "List of Eigenvalues:\n" << solver.eigenvalues() << endl;
+    matrixOut.close();
 	builtIsotropicMatrix = true;
 	builtAnisotropicMatrix = false;
 }

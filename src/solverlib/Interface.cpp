@@ -51,6 +51,12 @@ PCMSolver * _solver;
 
 */
 
+extern "C" void hello_pcm_(int * a, double * b) {
+	std::cout << "Hello, PCM!" << std::endl;
+	std::cout << "The integer is: " << *a << std::endl;
+	std::cout << "The double is: " << *b << std::endl;
+}
+
 extern "C" void init_pcm_() {
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);

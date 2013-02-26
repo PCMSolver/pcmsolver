@@ -13,6 +13,8 @@
 
 */
 
+extern "C" void hello_pcm_(int * a, double * b);
+
 extern "C" void init_pcm_();
 
 extern "C" void comp_chg_pcm_(char* potString, char* chgString);

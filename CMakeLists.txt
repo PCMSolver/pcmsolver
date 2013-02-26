@@ -54,8 +54,8 @@ add_custom_target(git_submodules ALL
 
 add_custom_target(external)
 
-set (ExternalProjectCMakeArgs  
-  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+set (ExternalProjectCMakeArgs 
+  -DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/external 
   -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
   -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}

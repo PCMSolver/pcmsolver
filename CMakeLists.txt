@@ -86,7 +86,7 @@ add_dependencies(external libgetkw libtaylor)
 
 include(Math)
 
-find_package(Eigen3)
+find_package(Eigen3 3.0.0)
 
 #cmake should exit gracefully if math libs are not found
 

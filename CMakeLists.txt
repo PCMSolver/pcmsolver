@@ -1,14 +1,13 @@
-cmake_minimum_required (VERSION 2.8)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 
 message("${CMAKE_SOURCE_DIR}")
 
-project (pcmsolver)
-enable_language(CXX C Fortran)
+project (PCMSolver CXX C Fortran)
+
+option(BUILD_AS_LIBRARY  "Build as library"                                    OFF)
 
 set (pcmsolver_VERSION_MAJOR 0)
 set (pcmsolver_VERSION_MINOR 1)
-# build executable
 
 # guard against in-source builds
 
@@ -27,6 +26,14 @@ if(NOT cmake_build_type_tolower STREQUAL "debug"
    AND NOT cmake_build_type_tolower STREQUAL "release")
   message(FATAL_ERROR "Unknown build type \"${CMAKE_BUILD_TYPE}\". Allowed values are Debug, Release (case-insensitive).")
 endif()
+
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${CMAKE_SOURCE_DIR}/cmake
+    ${CMAKE_SOURCE_DIR}/cmake/compilers
+    ${CMAKE_SOURCE_DIR}/cmake/math
+    )
+
 
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${CMAKE_BUILD_TYPE}")
 

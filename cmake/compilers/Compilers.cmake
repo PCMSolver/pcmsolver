@@ -1,5 +1,6 @@
 message("-- Fortran compiler is  \"${CMAKE_Fortran_COMPILER}\" (\"${CMAKE_Fortran_COMPILER_ID}\") ")
 message("--       C compiler is  \"${CMAKE_C_COMPILER}\" (\"${CMAKE_C_COMPILER_ID}\") ")
+message("--     C++ compiler is  \"${CMAKE_CXX_COMPILER}\" (\"${CMAKE_CXX_COMPILER_ID}\") ")
 
 # Fortran compilers
 

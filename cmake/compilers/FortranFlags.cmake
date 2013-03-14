@@ -1,5 +1,4 @@
-
-if (NOT DEFINED HAVE_Fortran_FLAGS)
+if (NOT DEFINED DEFAULT_Fortran_FLAGS_SET OR RESET_FLAGS)
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) # this is gfortran
     set(CMAKE_Fortran_FLAGS         "-DVAR_GFORTRAN -DGFORTRAN=445")
@@ -104,5 +103,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES XL)
         "-qfixed"
         )
 endif()
-SaveCompilerFlags(Fortran)
+
+save_compiler_flags(Fortran)
+
 endif()

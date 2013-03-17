@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <Config.h>
+
 #include <Eigen/Dense>
 
 #include "Getkw.h"

@@ -1,4 +1,4 @@
-set (wem_C_SOURCES 
+set (wem_SOURCES 
   WEM.c
   WEMPCG.c
   WEMPGMRES.c
@@ -33,7 +33,7 @@ set (wem_C_SOURCES
   volume.c
   )
 
-add_library(wem ${wem_C_SOURCES})
+add_library(wem ${wem_SOURCES})
 
 install(FILES WEM.h            DESTINATION include)
 install(FILES WEMPCG.h         DESTINATION include)

@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 #include <map>
+
+#include "Config.h"
+
 #include <Eigen/Dense>
 
 using namespace Eigen;

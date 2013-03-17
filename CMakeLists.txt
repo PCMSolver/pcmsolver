@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-project(PCMSolver CXX C Fortran)
+project(PCMSolver)
+enable_language(CXX C Fortran)
 
-option(BUILD_AS_LIBRARY   "Build as library"                                    OFF)
 option(ENABLE_EIGEN_MKL   "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
 
-set(PCMSolver_VERSION_MAJOR 0)
-set(PCMSolver_VERSION_MINOR 1)
+set (PROJECT_VERSION_MAJOR 0)
+set (PROJECT_VERSION_MINOR 1)
+set (PROJECT_VERSION_PATCH 0)
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
@@ -20,18 +21,26 @@ set(LIBS)
 include(ConfigVersion)
 include(ConfigArchitecture)
 include(ConfigCompilerFlags)
-#include(ConfigDocumentation)
+include(ConfigDocumentation)
 include(ConfigExternal)
 include(ConfigMath)
 include(ConfigSafeGuards)
 include(GenericMacros)
+include(ConfigGitRevision)
+
 
 find_package(Eigen3 3.0.0)
+if(ENABLE_EIGEN_MKL)
+	message("-- This option requires at least Eigen 3.1.0 and Intel MKL 10.3, be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
+        set(EIGEN_USE_MKL_ALL ON)
+endif()
+
+find_package(PythonInterp REQUIRED)
 
 add_custom_target(external)
 
 set(ExternalProjectCMakeArgs
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_BUILD_TYPE="Release"
         -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}/external
         -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -58,38 +67,34 @@ ExternalProject_Add(libtaylor
 
 add_dependencies(external libgetkw libtaylor)
 
+configure_file (
+    ${PROJECT_SOURCE_DIR}/Config.h.in
+    ${PROJECT_SOURCE_DIR}/Config.h
+    )
+
+install(FILES Config.h DESTINATION include)
+
 include_directories(${EIGEN3_INCLUDE_DIR})
-include_directories(${PROJECT_BINARY_DIR}/external/libtaylor-build)
-include_directories(${PROJECT_BINARY_DIR}/external/libtaylor-build/modules)
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/external/include)
 
 link_directories(${PROJECT_BINARY_DIR}/external/lib)
-link_directories(${PROJECT_BINARY_DIR}/external/libtaylor-build/external/lib)
 
 add_subdirectory(src)
 
-include_directories (src/solverlib)
-include_directories (src/wavcavlib)
-include_directories (src/wemlib)
-include_directories (src/pwllib)
-include_directories (src/pedralib)
-include_directories (src/cavitylib)
-include_directories (src/metal)
-include_directories (src/green)
 
-add_executable(wavcav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcav.cpp)
-target_link_libraries(wavcav.x cavity pedra wavcav pwl wem getkw ${LIBS})
-
-add_executable(pcmsolver.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pcmsolver.cpp)
-target_link_libraries(pcmsolver.x solver green cavity pedra metal pwl wem wavcav getkw ${LIBS})
-
-add_executable(pwl.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pwllib/main_pwl.c)
-target_link_libraries(pwl.x pwl wem ${LIBS})
-
-add_executable(pwc.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wemlib/main.c)
-target_link_libraries(pwc.x wem ${LIBS})
-
-add_executable(cav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcavlib/main.c)
-target_link_libraries(cav.x wavcav ${LIBS})
+# add_executable(wavcav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcav.cpp)
+# target_link_libraries(wavcav.x cavity pedra wavcav pwl wem getkw ${LIBS})
+# 
+# add_executable(pcmsolver.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pcmsolver.cpp)
+# target_link_libraries(pcmsolver.x solver green cavity pedra metal pwl wem wavcav getkw ${LIBS})
+# 
+# add_executable(pwl.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pwllib/main_pwl.c)
+# target_link_libraries(pwl.x pwl wem ${LIBS})
+# 
+# add_executable(pwc.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wemlib/main.c)
+# target_link_libraries(pwc.x wem ${LIBS})
+# 
+# add_executable(cav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcavlib/main.c)
+# target_link_libraries(cav.x wavcav ${LIBS})
 

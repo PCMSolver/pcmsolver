@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <string>
+
+#include "Config.h"
+
 #include <Eigen/Dense>
 
 using namespace Eigen;

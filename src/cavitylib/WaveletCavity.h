@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+#include "Config.h"
+
 #include <Eigen/Dense>
 
 #include "vector3.h"

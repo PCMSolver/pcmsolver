@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 
+#include <Config.h>
+
 #include <Eigen/Dense>
 
 using namespace std;

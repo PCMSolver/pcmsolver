@@ -1,4 +1,4 @@
-set (pwl_C_SOURCES 
+set (pwl_SOURCES 
   WEMPCG_pwl.c
   WEMPGMRES_pwl.c
   WEMRHS_pwl.c
@@ -23,7 +23,7 @@ set (pwl_C_SOURCES
   volume_pwl.c
   )
 
-add_library(pwl ${pwl_C_SOURCES})
+add_library(pwl ${pwl_SOURCES})
 
 install(FILES WEMPCG_pwl.h       DESTINATION include)
 install(FILES WEMPGMRES_pwl.h    DESTINATION include)

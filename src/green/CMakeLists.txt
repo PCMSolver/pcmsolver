@@ -1,4 +1,4 @@
-set(green_source
+set(green_SOURCES
     GreensFunctionInterface.cpp
     GreensFunction.cpp
     Vacuum.cpp
@@ -7,7 +7,7 @@ set(green_source
     GreensFunctionSum.cpp
 )
 
-add_library(green ${green_source})
+add_library(green ${green_SOURCES})
 
 install(TARGETS green 
 	ARCHIVE DESTINATION lib)

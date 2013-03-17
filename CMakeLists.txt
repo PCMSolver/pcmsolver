@@ -3,11 +3,15 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(PCMSolver)
 enable_language(CXX C Fortran)
 
-option(ENABLE_EIGEN_MKL   "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
+# There still is  nothing going on inside the code regarding MPI, OpenMP and tests!!
+option(ENABLE_MPI       "Enable MPI parallelization"                                OFF)
+option(ENABLE_OPENMP    "Enable OpenMP parallelization"                             OFF)
+option(ENABLE_TESTS     "Enable compilation of unit tests"                          OFF)
+option(ENABLE_EIGEN_MKL "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
 
-set (PROJECT_VERSION_MAJOR 0)
-set (PROJECT_VERSION_MINOR 1)
-set (PROJECT_VERSION_PATCH 0)
+set(PROJECT_VERSION_MAJOR 0)
+set(PROJECT_VERSION_MINOR 1)
+set(PROJECT_VERSION_PATCH 0)
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
@@ -31,17 +35,26 @@ include(ConfigGitRevision)
 
 find_package(Eigen3 3.0.0)
 if(ENABLE_EIGEN_MKL)
-	message("-- This option requires at least Eigen 3.1.0 and Intel MKL 10.3, be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
+	message("-- ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3.\n Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
         set(EIGEN_USE_MKL_ALL ON)
 endif()
 
 find_package(PythonInterp REQUIRED)
 
+find_package(Boost)
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+#	message("CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT " ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT})
+	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
+else()
+	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+endif()
+
 add_custom_target(external)
 
 set(ExternalProjectCMakeArgs
         -DCMAKE_BUILD_TYPE="Release"
-        -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}/external
+        -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
         -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
@@ -58,7 +71,7 @@ ExternalProject_Add(libtaylor
        	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
 	PREFIX ${PROJECT_SOURCE_DIR}/external
 	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
-	BINARY_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor-build
+	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
         STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
         TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
@@ -69,16 +82,16 @@ add_dependencies(external libgetkw libtaylor)
 
 configure_file (
     ${PROJECT_SOURCE_DIR}/Config.h.in
-    ${PROJECT_SOURCE_DIR}/Config.h
+    ${PROJECT_BINARY_DIR}/include/Config.h
     )
 
-install(FILES Config.h DESTINATION include)
-
 include_directories(${EIGEN3_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/external/include)
+include_directories(${PROJECT_BINARY_DIR}/include)
+include_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 
-link_directories(${PROJECT_BINARY_DIR}/external/lib)
+link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib)
 
 add_subdirectory(src)
 

@@ -8,7 +8,7 @@ Release*
 Makefile
 Debug*
 .DS_Store
-build
+build*
 debug
 TAGS
 */TAGS

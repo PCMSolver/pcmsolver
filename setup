@@ -1,234 +1,369 @@
-#!/bin/bash -l
-set -e
+#!/usr/bin/env python
+# vim:ft=python
+#
+# primitive frontend to cmake
+# (c) Radovan Bast <radovan.bast@irsamc.ups-tlse.fr>
+# (c) Jonas Juselius <jonas.juselius@uit.no>
+# licensed under the GNU Lesser General Public License
 
-#defaults
-install_prefix=${install_prefix:="-DCMAKE_INSTALL_PREFIX=`pwd`"}
-build_type=Debug
-show=false
+import os
+import sys
+import string
+import re
+import subprocess
 
-config_flags=""
-enable_blas=false
-enable_mpi=false
-enable_omp=false
-enable_cuda=false
-enable_tests=false
-enable_coverage=false
-config_ok=false
+sys.path.append('cmake')
+from argparse import ArgumentParser
 
-usage() {
-cat << EOF
- Usage: setup [options] 
-   --prefix=DIR     Base install path
-   --debug          Configure the debugging version in (defautlt)
-   --release        Configure the fully optimized version
-   --para           Enable the OpenMP + MPI parallel version
-   --omp            Enable OpenMP
-   --mpi            Enable MPI
-   --cuda           Enable CUDA support
-   --enable-tests   Enable unit testing
-   --no-blas        Disable the BLAS back-end
-   --help           Print this message
-   --coverage       Compiler with code coverage
-   --show          	Show cmake command line
-   -D*              Any other options are passed directly to 'cmake'
+if sys.version < '2.4':
+    print('requires python version >= 2.4')
+    sys.exit(1)
 
- setup is a frontend to 'cmake'. It tries to automagically configure 
- some known standard and non-standard systems. If it fails, you must run 
- 'ccmake' by hand.
-EOF
-exit 0
-}
+root_directory = os.path.realpath(__file__)[:-5]
+default_path = root_directory + 'build/'
 
-parse_command_line () {
-	for i in $*; do
-		case $i in
-			--prefix=*) setup_install_prefix $i; shift ;;
-			--debug) build_type=Debug; shift ;;
-			--release) build_type=Release; shift ;;
-			--para*) enable_mpi=true; enable_omp=true; shift ;;
-			--omp) enable_omp=true; shift ;;
-			--mpi) enable_mpi=true; shift ;;
-			--cuda) enable_cuda=true; shift ;;
-			--enable-tests) enable_tests=true; shift ;;
-			--coverage) enable_coverage=true; shift ;;
-			--no-blas|--disable-blas) enable_blas=false; shift ;;
-			--enable-blas) enable_blas=true; shift ;;
-			-D*) config_flags="$config_flags $i"; shift ;;
-			--help|-h|-?) usage; shift ;;
-			--show) show=true; shift ;;
-			-*) echo "Invalid option: $i"; exit 1 ;;
-		esac
-	done
-}
+# initialize parser
 
-setup_install_prefix() {
-	prefix="`echo $1 |sed 's/--prefix=//'`"
-	install_prefix="-DCMAKE_INSTALL_PREFIX=$1"
-}
+parser = ArgumentParser(description="Setup build configurations.")
 
-setup_config_flags() {
-	config_flags="$config_flags -DCMAKE_BUILD_TYPE=$build_type"
+# define options
 
-	if [ "x$EIGEN3_ROOT" != x ]; then 
-		config_flags="$config_flags -DEIGEN3_ROOT=$EIGEN3_ROOT"
-	fi
-	
-	if [ "x$BOOST_ROOT" != x ]; then
-		config_flags="$config_flags -DBOOST_ROOT=$BOOST_ROOT"
-	fi
-	
-	if [ "x$enable_tests" = "xtrue" ]; then
-		config_flags="$config_flags -DENABLE_TESTS=ON"
-	fi
+parser.add_argument('builddir', nargs='?',
+        action='store',
+        default=default_path,
+        help='build directory [default: %(default)s]',
+        metavar='build path')
 
-	if [ "x$GTEST_ROOT" != x ]; then
-		config_flags="$config_flags -DGTEST_ROOT=$GTEST_ROOT"
-	fi
+group = parser.add_argument_group('Basic options')
+group.add_argument('--fc',
+        action='store',
+        default=None,
+        help='set the Fortran compiler [default: pick automatically or based on FC=...]',
+        metavar='STRING')
+group.add_argument('--cc',
+        action='store',
+        default=None,
+        help='set the C compiler [default: pick automatically or based on CC=...]',
+        metavar='STRING')
+group.add_argument('--cxx',
+        action='store',
+        default=None,
+        help='set the C++ compiler [default: pick automatically or based on CXX=...]',
+        metavar='STRING')
+group.add_argument('--mpi',
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='off',
+        const='on',
+        help='enable MPI [default: %(default)s]')
+group.add_argument('--openmp',
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='off',
+        const='on',
+        help='enable OpenMP [default: %(default)s]')
+group.add_argument('--blas',
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='on',
+        const='on',
+        help='enable BLAS [default: %(default)s]')
+group.add_argument('--lapack',
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='on',
+        const='on',
+        help='enable LAPACK [default: %(default)s]')
+group.add_argument('--blas-dir',
+        action='store',
+        default=None,
+        help='directory containing BLAS libraries [default: pick automatically based on BLAS_ROOT (see INSTALL)]',
+        metavar='PATH')
+group.add_argument('--lapack-dir',
+        action='store',
+        default=None,
+        help='directory containing LAPACK libraries [default: pick automatically based on LAPACK_ROOT (see INSTALL)]',
+        metavar='PATH')
+group.add_argument('--show',
+        action='store_true',
+        default=False,
+        help='show cmake command and exit [default: %(default)s]')
 
-	if [ "x$enable_coverage" = "xtrue" ]; then
-		config_flags="$config_flags -DENABLE_CODE_COVERAGE=ON"
-	fi
+group = parser.add_argument_group('Change default paths')
+group.add_argument('--prefix',
+        action='store',
+        default=None,
+        help='set the install path for make install [default: %(default)s]',
+        metavar='PATH')
+group.add_argument('--cmake',
+        action='store',
+        dest='alternative_cmake',
+        default=None,
+        help='give full path to alternative cmake binary (use this if default cmake is too old)',
+        metavar='PATH')
 
-	if [ "x$enable_mpi" = "xtrue" ]; then
-		config_flags="$config_flags -DENABLE_MPI=ON"
-		config_flags="$config_flags -DMPI_COMPILER=`which $CXX`"
-	fi
+group = parser.add_argument_group('Advanced options')
+group.add_argument('--force',
+        action='store_true',
+        default=False,
+        help='run setup even if build directory exists [default: %(default)s]')
+group.add_argument('--debug',
+        action='store_true',
+        default=False,
+        help='build in debug mode (no optimization) [default: %(default)s]')
+group.add_argument('--release',
+        action='store_false',
+        dest='debug',
+        help='build in release mode (full optimization) [default: %(default)s]')
+group.add_argument('--tests',
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='off',
+        const='on',
+        help='build test suite [default: %(default)s]')
+group.add_argument('--check',
+        action='store_true',
+        default=False,
+        help='enable bounds checking [default: %(default)s]')
+group.add_argument('--coverage',
+        action='store_true',
+        default=False,
+        help='enable code coverage [default: %(default)s]')
+group.add_argument('--profiling',
+        action='store_true',
+        default=False,
+        help='enable profiling [default: %(default)s]')
+group.add_argument('--nochecks',
+        action='store_true',
+        default=False,
+        help='disable compatibility checks [default: %(default)s]')
+group.add_argument('--static',
+        action='store_true',
+        default=False,
+        help='link statically [default: %(default)s]')
+group.add_argument('-D',
+        action="append",
+        dest='define',
+        default=[],
+        help='forward directly to cmake (example: -D ENABLE_THIS=1 -D ENABLE_THAT=1); \
+                you can also forward CPP defintions all the way to the program \
+                (example: -D CPP="-DDEBUG")',
+                metavar='STRING')
+group.add_argument('--host',
+        action='store',
+        default=None,
+        help="use predefined defaults for 'host'",
+        metavar='STRING')
+group.add_argument('--eigenmkl',
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='off',
+        const='on',
+        help='enable Eigen3 automatic fallback to Intel MKL [default: %(default)s]')
 
-	if [ "x$enable_omp" = "xtrue" ]; then
-		config_flags="$config_flags -DENABLE_OPENMP=ON"
-	fi
+# process input
 
-	if [ "x$enable_cuda" = "xtrue" ]; then
-		config_flags="$config_flags -DENABLE_CUDA=ON"
-	fi
+args = parser.parse_args()
 
-	if [ "x$enable_blas" = "xtrue" ]; then
-		setup_blas
-	fi
+def abspath(path):
+    path = os.path.expandvars(path)
+    path = os.path.expanduser(path)
+    return os.path.abspath(path)
 
-}
+def check_cmake_exists():
+    p = subprocess.Popen('cmake --version',
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE)
+    if not ('cmake version' in p.communicate()[0]):
+        print('   This code is built using CMake')
+        print('')
+        print('   CMake is not found')
+        print('   get CMake at http://www.cmake.org/')
+        print('   on many clusters CMake is installed')
+        print('   but you have to load it first:')
+        print('   $ module load cmake')
+        sys.exit()
 
-setup_blas() {
-	config_flags="$config_flags -DENABLE_BLAS=ON"
-	if [ "x$BLAS_TYPE" != "x" ]; then 
-		config_flags="$config_flags -DBLAS_TYPE=$BLAS_TYPE"
-	fi
-	if [ "x$BLAS_ROOT" != x ]; then 
-		config_flags="$config_flags -DBLAS_ROOT=$BLAS_ROOT"
-	fi
-}
+def gen_cmake_command():
+    # create cmake command from flags
 
-config_stallo() {
-	module load boost >/dev/null 2>&1
-	module load eigen/3.0.0 >/dev/null 2>&1
-	module load google-test >/dev/null 2>&1
-	CMAKE="$CMAKE_ROOT/bin/cmake"
-	if [ "x$enable_mpi" = "xtrue" ]; then
-		CXX=mpicxx
-		CC=mpicc
-		export MPIEXEC_PREFLAGS="--mca btl self,tcp"
-	else
-		CXX=${CXX:=icpc}
-		CC=${CC:=icc}
-	fi
-	case $CXX in
-		*g++) 
-		module unload mkl
-		module unload google-test
-		module load atlas
-		module load google-test/1.5.0_gcc
-		BLAS_TYPE=Atlas
-		BLAS_ROOT=${BLAS_ROOT:="$ATLAS_ROOT"}
-		;;
-		*) 
-		BLAS_TYPE=MKL
-		BLAS_ROOT=${BLAS_ROOT:="$MKL_ROOT"}
-		;;
-	esac	
-	BOOST_ROOT=${BOOST_ROOT:="$BOOSTHOME"}
-	enable_coverage=${enable_coverage:=false}
-	config_ok=true
-}
+    command = ''
 
-config_darwin_osx() {
-	BOOST_ROOT=${BOOST_ROOT:="/opt/local"}
-	if [ "x$enable_mpi" = "xtrue" ]; then
-		CXX=mpic++
-		CC=mpicc
-		FC=mpif90
-	fi
-	config_ok=true
-}
+    if args.fc:
+        command += ' FC=%s' % args.fc
+    if args.cc:
+        command += ' CC=%s' % args.cc
+    if args.cxx:
+        command += ' CXX=%s' % args.cxx
 
-config_fedora() {
-	if [ "x$enable_mpi" = "xtrue" ]; then
-		CXX=mpic++
-		CC=mpicc
-		FC=mpif90
-	fi
-	config_ok=true
-}
+    if args.alternative_cmake:
+        command += ' %s' % args.alternative_cmake
+    else:
+        command += ' cmake'
 
-config_ubuntu() {
-	EIGEN3_ROOT=${EIGEN3_ROOT:="/opt/eigen/3.0.0"}
-	if [ "x$enable_mpi" = "xtrue" ]; then
-		CXX=mpic++
-		CC=mpicc
-		FC=mpif90
-	fi
-	config_ok=true
-}
+    # if compiler starts with 'mp' turn on mpi
+    # it is possible to call compilers with long paths
+    if args.cc and (os.path.basename(args.cc)[:2].lower() == 'mp') or \
+        args.cxx and (os.path.basename(args.cxx)[:2].lower() == 'mp') or \
+        args.fc and (os.path.basename(args.fc)[:2].lower() == 'mp'):
+            args.mpi = 'on'
 
-try_config_host() {
-	if [ "x$SETUP_HOST" = "xstallo" ]; then
-		config_stallo 
-		return
-	fi
-	case `hostname` in
-		stallo*) config_stallo ;;
-		c*-*) config_stallo ;;
-	esac
-}
+#    command += ' -DENABLE_MPI=%s'    % args.mpi.upper()
+#    command += ' -DENABLE_OPENMP=%s' % args.openmp.upper()
+    command += ' -DENABLE_BLAS=%s'   % args.blas.upper()
+    command += ' -DENABLE_LAPACK=%s' % args.lapack.upper()
+#    command += ' -DENABLE_TESTS=%s'  % args.tests.upper()
+    command += ' -DENABLE_EIGEN_MKL=%s' % args.eigenmkl.upper()
 
-try_config_os() {
-	case `uname` in
-		Linux*)
+    if args.blas_dir:
+        command += ' -DBLAS_ROOT={0}'.format(abspath(args.blas_dir))
 
-		case `lsb_release -si` in
-			Ubuntu|Debian) config_ubuntu ;;
-			Fedora|CentOS) config_fedora ;;
-		esac
-		;;
-		Darwin) config_darwin_osx ;;
-	esac
-}
+    if args.lapack_dir:
+        command += ' -DLAPACK_ROOT={0}'.format(abspath(args.lapack_dir))
 
-get_srcdir() {
-	cd `dirname $0` >/dev/null 2>&1
-	srcdir=`pwd` 
-	cd - >/dev/null 2>&1
-}
+    if args.check:
+        command += ' -DENABLE_BOUNDS_CHECK=ON'
 
-get_srcdir
-parse_command_line $*
+    if args.coverage:
+        command += ' -DENABLE_CODE_COVERAGE=ON'
 
-[ "${config_ok}" = "false" ] && try_config_host
-[ "${config_ok}" = "false" ] && try_config_os
-[ "${config_ok}" = "false" ] && echo "Unknown system, using generic setup"
+    if args.profiling:
+        command += ' -DENABLE_PROFILING=ON'
 
-setup_config_flags
+    if args.nochecks:
+        command += ' -DENABLE_SANITY_CHECKS=OFF'
 
-buildenv=""
-[ "x$CXX" != "x" ] && buildenv="$buildenv CXX=$CXX"
-[ "x$CC" != "x" ] && buildenv="$buildenv CC=$CC"
-[ "x$FC" != "x" ] && buildenv="$buildenv Fortran=$FC"
+    if args.static:
+        command += ' -DENABLE_STATIC_LINKING=ON'
 
-configure_cmd="$buildenv ${CMAKE:="cmake"} $install_prefix $config_flags"
+    if args.prefix:
+        command += ' -DCMAKE_INSTALL_PREFIX=' + args.prefix
 
+    if args.debug:
+        command += ' -DCMAKE_BUILD_TYPE=Debug'
+    else:
+        command += ' -DCMAKE_BUILD_TYPE=Release'
 
-if [ "$show" = "true" ]; then
-	echo "$configure_cmd"
-else
-	eval "$configure_cmd $srcdir"
-fi
+    if args.define:
+        for definition in args.define:
+            command += ' -D%s' % definition
 
+    command += ' %s' % root_directory
+
+    print('%s\n' % command)
+    if args.show:
+        sys.exit()
+    return command
+
+def print_build_help(build_path):
+    print('   configure step is done')
+    print('   now you need to compile the sources')
+    print('')
+    print('   to compile with configured parameters (recommended):')
+    print('   $ cd ' + build_path)
+    print('   $ make')
+    print('')
+    print('   to modify configured parameters and then compile:')
+    print('   $ cd ' + build_path)
+    print('   $ ccmake ' + root_directory)
+    print('   $ make')
+
+def save_setup_command(argv, build_path):
+    file_name = os.path.join(build_path, 'setup_command')
+    f = open(file_name, 'w')
+    f.write(" ".join(sys.argv[:]))
+    f.close()
+
+def setup_build_path(build_path, only_show_command):
+    if args.show:
+        return
+    if os.path.isdir(build_path):
+        if not only_show_command:
+            if args.force:
+                fname = os.path.join(build_path, 'CMakeCache.txt')
+                if os.path.exists(fname):
+                    os.unlink(fname)
+            else:
+                print('aborting setup - build directory %s exists already' % build_path)
+                print('you have two options: first remove it and then rerun setup')
+                print('                      or force configuration with --force')
+                sys.exit()
+    else:
+        os.makedirs(build_path, 0755)
+
+def run_cmake(command, build_path):
+    topdir = os.getcwd()
+    os.chdir(build_path)
+    p = subprocess.Popen(command,
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE)
+    s = p.communicate()[0]
+    print(s)
+    os.chdir(topdir)
+    return s
+
+def main():
+    check_cmake_exists()
+    build_path = args.builddir
+    setup_build_path(build_path, args.show)
+    if not configure_host():
+        configure_default_compilers()
+    command = gen_cmake_command()
+    status = run_cmake(command, build_path)
+
+    if not 'Configuring incomplete' in status:
+        save_setup_command(sys.argv, build_path)
+        print_build_help(build_path)
+
+# host/system specific configurations
+def configure_host():
+    if args.host:
+        host = args.host
+    else:
+        u = os.uname()
+        host = string.join(u)
+    msg = None
+    # Generic systems
+    if re.search('ubuntu', host, re.I):
+        msg = "Configuring system: Ubuntu"
+        configure_ubuntu()
+    if re.search('fedora', host, re.I):
+        msg = "Configuring system: Fedora"
+        configure_fedora()
+    if re.search('osx', host, re.I):
+        msg = "Configuring system: MacOSX"
+        configure_osx()
+    if msg is None:
+        return False
+    if not args.show:
+        print msg
+    return True
+
+def configure_default_compilers():
+    if not args.cc:
+        args.cc = 'gcc'
+    if not args.cxx:
+        args.cxx = 'g++'
+    if not args.fc:
+        args.fc = 'gfortran'
+    if args.mpi == 'on':
+        args.fc = 'mpif90'
+        args.cc = 'mpicc'
+        args.cxx = 'mpicxx'
+
+configure_ubuntu = configure_default_compilers
+configure_fedora = configure_default_compilers
+configure_osx = configure_default_compilers
+
+if __name__ == '__main__':
+    main()
+
+# vim:et:ts=4:sw=4

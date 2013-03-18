@@ -85,6 +85,18 @@ configure_file (
     ${PROJECT_BINARY_DIR}/include/Config.h
     )
 
+set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
+#set(PCMSOLVER_EXECUTABLE pcmsolver.x)
+#set(PCMSOLVER_ERROR_LOG ${PROJECT_BINARY_DIR}/pcmsolver.err)
+set(PCMSOLVER_EXECUTABLE ${PROJECT_BINARY_DIR}/pcmsolver.x)
+option(PCMSOLVER_DRIVER_DEBUG "Debug the driver (extmod)" OFF)
+#ask jonas about path
+configure_file(pcmsolver.in pcmsolver)
+file(COPY ${PROJECT_BINARY_DIR}//pcmsolver 
+  DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/bin
+  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
+  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR})

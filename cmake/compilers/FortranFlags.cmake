@@ -22,7 +22,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) # this is gfortran
 endif()
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES G95)
-    set(CMAKE_Fortran_FLAGS         "-Wno=155 -fno-second-underscore -DVAR_G95 -fsloppy-char")
+    set(CMAKE_Fortran_FLAGS         "-Wno=155 -fno-second-underscore -DVAR_G95 -fsloppy-char -fPIC")
     set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -ftrace=full")
     set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
     if(ENABLE_64BIT_INTEGERS)
@@ -44,7 +44,7 @@ endif()
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
     add_definitions(-DVAR_IFORT)
-    set(CMAKE_Fortran_FLAGS         "-w -fpp -assume byterecl -traceback")
+    set(CMAKE_Fortran_FLAGS         "-w -fpp -assume byterecl -traceback -fPIC")
     set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g")
     set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -xW -ip")
     if(ENABLE_64BIT_INTEGERS)

@@ -16,6 +16,7 @@ set(solver_SOURCES
 
 
 add_library(solver ${solver_SOURCES})
+add_dependencies(solver external)
 
 install(TARGETS solver
 	ARCHIVE DESTINATION lib)

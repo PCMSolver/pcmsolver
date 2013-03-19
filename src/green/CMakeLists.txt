@@ -8,6 +8,7 @@ set(green_SOURCES
 )
 
 add_library(green ${green_SOURCES})
+add_dependencies(green external)
 
 install(TARGETS green 
 	ARCHIVE DESTINATION lib)

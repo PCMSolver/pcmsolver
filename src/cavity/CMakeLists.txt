@@ -8,6 +8,7 @@ set(cavity_SOURCES
 )
 
 add_library(cavity ${cavity_SOURCES})
+add_dependencies(cavity external)
 
 install(TARGETS cavity
  	ARCHIVE DESTINATION lib)

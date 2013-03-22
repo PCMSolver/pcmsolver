@@ -150,8 +150,23 @@ extern "C" void get_tess_cent_coord_(int * its, double * center) {
 }
 
 extern "C" void print_pcm_(){
-	std::cout << *_IEFSolver << std::endl;
-        std::cout << *_gePolCavity << std::endl;
+        const char *infile = "@pcmsolver.inp";
+        Getkw Input = Getkw(infile, false, true);
+        const Section & Medium = Input.getSect("Medium");
+        const string modelType = Medium.getStr("SolverType");
+	if (modelType == "IEFPCM") {
+		std::cout << *_IEFSolver << std::endl;
+	        std::cout << *_gePolCavity << std::endl;
+	} else if (modelType == "CPCM") {
+		std::cout << *_CPCMSolver << std::endl;
+	        std::cout << *_gePolCavity << std::endl;
+        } else if (modelType == "Wavelet") {
+		std::cout << *_PWCSolver << std::endl;
+	        std::cout << *_waveletCavity << std::endl;
+	} else if (modelType == "Linear") {
+		std::cout << *_PWLSolver << std::endl;
+	        std::cout << *_waveletCavity << std::endl;
+	}
 }
 
 extern "C" void print_gepol_cavity_(){

@@ -260,7 +260,7 @@ def verify_medium(section):
 		sys.exit(1)
 
         correction = section.get('Correction')
-	if (correction.get() < 0.0)
+	if (correction.get() < 0.0):
 		print "Correction for CPCM solver must be greater than 0.0"
 		sys.exit(1)
 

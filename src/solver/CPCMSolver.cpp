@@ -111,7 +111,7 @@ void CPCMSolver::buildIsotropicMatrix(GePolCavity & cav){
 			}
 		}
     }
-    double fact = (epsilon - 1.0)/(epsilon + this->correction);
+    double fact = (epsilon - 1.0)/(epsilon + correction);
     PCMMatrix = SI;
     PCMMatrix = fact * PCMMatrix.inverse();
     Eigen::MatrixXd PCMAdjoint(cavitySize, cavitySize); 

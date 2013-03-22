@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(PCMSolver)
 enable_language(CXX C Fortran)
 
-# There still is  nothing going on inside the code regarding MPI, OpenMP and tests!!
+# There still is nothing going on inside the code regarding MPI, OpenMP and tests!!
 option(ENABLE_MPI       "Enable MPI parallelization"                                OFF)
 option(ENABLE_OPENMP    "Enable OpenMP parallelization"                             OFF)
 option(ENABLE_TESTS     "Enable compilation of unit tests"                          OFF)

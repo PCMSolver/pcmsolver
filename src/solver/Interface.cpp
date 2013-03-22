@@ -22,6 +22,7 @@
 #include "UniformDielectric.h"
 #include "PCMSolver.h"
 #include "IEFSolver.h"
+#include "CPCMSolver.h"
 #include "WEMSolver.h"
 #include "PWCSolver.h"
 #include "PWLSolver.h"
@@ -40,6 +41,7 @@ GePolCavity   * _gePolCavity;
 WaveletCavity * _waveletCavity;
 
 IEFSolver * _IEFSolver;
+CPCMSolver * _CPCMSolver;
 PWCSolver * _PWCSolver;
 PWLSolver * _PWLSolver;
 PCMSolver * _solver;
@@ -62,12 +64,17 @@ extern "C" void init_pcm_() {
 	Getkw Input = Getkw(infile, false, true);
 	const Section & Medium = Input.getSect("Medium");
 	const string modelType = Medium.getStr("SolverType");
-	if (modelType == "Traditional") {
+	if (modelType == "IEFPCM") {
 		init_gepol_cavity_();
 		init_iefsolver_();
 		_cavity = _gePolCavity;
 		_solver = _IEFSolver;
-	} else if (modelType == "Wavelet") {
+	} else if (modelType == "CPCM") {
+		init_gepol_cavity_();
+		init_cpcmsolver_();
+		_cavity = _gePolCavity;
+		_solver = _CPCMSolver;
+        } else if (modelType == "Wavelet") {
 		init_wavelet_cavity_();
 		init_pwcsolver_();
 		_waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(),
@@ -261,6 +268,17 @@ void init_iefsolver_() {
 	const Section &Medium = Input.getSect("Medium<Medium>");
 	_IEFSolver = new IEFSolver(Medium);
 	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
+}
+
+void init_cpcmsolver_() {
+	const char *infile = 0;
+	infile = "@pcmsolver.inp";
+	Getkw Input = Getkw(infile, false, true);
+	const Section &Medium = Input.getSect("Medium<Medium>");
+	_CPCMSolver = new CPCMSolver(Medium);
+	double correction = Input.getDbl("Medium<Medium>.Correction");
+ 	_CPCMSolver->setCorrection(correction);
+	_CPCMSolver->buildIsotropicMatrix(*_gePolCavity);
 }
 
 void init_pwcsolver_() {

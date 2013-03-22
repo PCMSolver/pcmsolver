@@ -63,6 +63,8 @@ void init_wavelet_cavity_();
 
 void init_iefsolver_();
 
+void init_cpcmsolver_();
+
 void init_pwcsolver_();
 
 void init_pwlsolver_();

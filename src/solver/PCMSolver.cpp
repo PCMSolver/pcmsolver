@@ -79,8 +79,10 @@ void PCMSolver::buildCharge(Cavity & cavity,
 
 
 void PCMSolver::setSolverType(const string & type) {
-	if (type == "Traditional") {
-		setSolverType(Traditional);
+	if (type == "IEFPCM") {
+		setSolverType(IEFPCM);
+	} else if (type == "CPCM") {
+		setSolverType(CPCM);
 	} else if (type == "Wavelet") {
 		setSolverType(Wavelet);
 	} else if (type == "Linear") {
@@ -92,8 +94,11 @@ void PCMSolver::setSolverType(const string & type) {
 
 void PCMSolver::setSolverType(int type) {
 	switch (type) {
-	case Traditional :
-		solverType = Traditional;
+	case IEFPCM :
+		solverType = IEFPCM;
+		break;
+	case CPCM :
+		solverType = CPCM;
 		break;
 	case Wavelet :
 		solverType = Wavelet;
@@ -158,8 +163,10 @@ void PCMSolver::setSolvent(Solvent & solv) {
 
 ostream & PCMSolver::printObject(ostream & os) {
 	string type;
-	if (solverType == Traditional) {
-		type = "Traditional";
+	if (solverType == IEFPCM) {
+		type = "IEFPCM";
+	} else if (solverType == CPCM) {
+		type = "CPCM";
 	} else if (solverType == Wavelet) {
 		type = "Wavelets with piecewise constants";
 	} else if (solverType == Linear) {

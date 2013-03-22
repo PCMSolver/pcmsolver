@@ -130,8 +130,9 @@ def	setup_keywords():
         
 	medium=getkw.Section('Medium', callback=verify_medium)
 	medium.add_kw('Solvent',     'STR', 'Water')
-	medium.add_kw('SolverType',  'STR', 'Traditional')
+	medium.add_kw('SolverType',  'STR', 'IEFPCM')
 	medium.add_kw('EquationType','STR', 'SecondKind')
+	medium.add_kw('Correction', 'DBL', 0.0)
 	medium.add_kw('ProbeRadius', 'DBL', 1.0)
 	top.add_sect(medium)
 	
@@ -258,13 +259,18 @@ def verify_medium(section):
 		print "or specify the solvent data explicitly."
 		sys.exit(1)
 
+        correction = section.get('Correction')
+	if (correction.get() < 0.0)
+		print "Correction for CPCM solver must be greater than 0.0"
+		sys.exit(1)
+
 	convert_length_scalar(section.get('ProbeRadius'))
 	radius = section.get('ProbeRadius')
 	if (radius.get() < 0.1 or radius.get() > 100):
 		print "Probe radius has to be within [0.1,100] Atomic Units"
 		sys.exit(1)
 
-	allowed_types = ('Traditional', 'Wavelet', 'Linear')
+	allowed_types = ('IEFPCM', 'CPCM', 'Wavelet', 'Linear')
         key = section.get('SolverType')
         val = key.get()
         if (val not in allowed_types):  

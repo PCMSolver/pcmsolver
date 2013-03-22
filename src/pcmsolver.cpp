@@ -61,7 +61,7 @@ int main(int argc, char** argv){
 	}
 	Getkw input = Getkw(infile, false, true);
 	std::string solverType = input.getStr("Medium.SolverType");
-	if (solverType == "Traditional") {
+	if (solverType == "IEFPCM") {
 		IEFTest(input);
 	} else if (solverType == "Wavelet") {
 		std::cout << "PWC solver...." << std::endl;

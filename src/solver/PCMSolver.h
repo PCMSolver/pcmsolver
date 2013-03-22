@@ -19,9 +19,9 @@ using namespace std;
 class PCMSolver{
  public:
     PCMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo, 
-              int equation=SecondKind, int solver=Traditional);
+              int equation=SecondKind, int solver=IEFPCM);
     PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo, 
-              int equation=SecondKind, int solver=Traditional);
+              int equation=SecondKind, int solver=IEFPCM);
     PCMSolver(const Section & solver);
     ~PCMSolver();
     GreensFunctionInterface & getGreenInside();
@@ -49,8 +49,9 @@ class PCMSolver{
         return obj.printObject(os);
     }
     enum EquationType {FirstKind, SecondKind, Full};
-    enum SolverType {Traditional, Wavelet, Linear};
+    enum SolverType {IEFPCM, CPCM, Wavelet, Linear};
     bool isPWL(){return (solverType == Linear);}
+
  protected:
     bool allocated;
     int cavitySize;

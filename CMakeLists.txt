@@ -54,7 +54,7 @@ endif()
 add_custom_target(external)
 
 set(ExternalProjectCMakeArgs
-        -DCMAKE_BUILD_TYPE="Release"
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
         -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -95,7 +95,7 @@ option(PCMSOLVER_DRIVER_DEBUG "Debug the driver (extmod)" OFF)
 #ask jonas about path
 configure_file(pcmsolver.in pcmsolver)
 file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
-  DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/bin
+  DESTINATION ${PROJECT_BINARY_DIR}/bin
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
   GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 

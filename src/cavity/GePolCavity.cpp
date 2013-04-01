@@ -38,6 +38,12 @@ GePolCavity::GePolCavity(const Section & cavity){
 	}
 }
 
+GePolCavity::GePolCavity(const Section &cavity, const vector<Sphere> & _spheres){
+	averageArea = cavity.getDbl("Area");
+	nSpheres = _spheres.size();	
+	spheres = _spheres;
+}
+
 void GePolCavity::writeOutput(string &filename){
 
     ofstream output;

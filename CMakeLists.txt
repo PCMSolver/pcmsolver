@@ -135,16 +135,16 @@ if(ENABLE_TESTS)
 	file(GLOB_RECURSE TEST_SOURCE_FILES tests/*.cpp)
 	foreach(child ${TEST_SOURCE_FILES})
 		get_filename_component(test_name ${child} NAME_WE)
+                add_executable(${test_name}.x ${TEST_SOURCE_FILES})      	
+                add_dependencies(${test_name}.x googletest)
+                target_link_libraries(${test_name}.x 
+                solver green cavity pedra metal pwl wem wavcav getkw 
+                                      ${GTEST_LIBS_DIR}/libgtest.a
+                                      ${GTEST_LIBS_DIR}/libgtest_main.a
+	                              ${LIBS}
+	                             )
+                add_test(NAME ${test_name} COMMAND ${test_name}.x)
 	endforeach()
-	add_executable(${test_name}.x ${TEST_SOURCE_FILES})
-        add_dependencies(${test_name}.x googletest)
-        target_link_libraries(${test_name}.x 
-        solver green cavity pedra metal pwl wem wavcav getkw 
-                              ${GTEST_LIBS_DIR}/libgtest.a
-                              ${GTEST_LIBS_DIR}/libgtest_main.a
-	                      ${LIBS}
-	                     )
-        add_test(NAME ${test_name} COMMAND ${test_name}.x)
 endif()
 
 # add_executable(wavcav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcav.cpp)

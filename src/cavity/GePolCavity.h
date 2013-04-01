@@ -30,6 +30,7 @@ class GePolCavity : public Cavity
  public:
     GePolCavity(){}
     GePolCavity(const Section & cavity);
+    GePolCavity(const Section & cavity, const vector<Sphere> & _spheres);
     ~GePolCavity(){};
     void makeCavity(int maxts, int lwork);
     void makeCavity();

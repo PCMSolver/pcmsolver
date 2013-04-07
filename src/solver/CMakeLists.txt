@@ -5,7 +5,6 @@ set(solver_SOURCES
   PCMSolver.cpp
   PWCSolver.cpp
   PWLSolver.cpp
-  Solvent.cpp
   WEMSolver.cpp
 )
 
@@ -28,5 +27,4 @@ install(FILES Interface.h DESTINATION include)
 install(FILES PCMSolver.h DESTINATION include)
 install(FILES PWCSolver.h DESTINATION include)
 install(FILES PWLSolver.h DESTINATION include)
-install(FILES Solvent.h   DESTINATION include)
 install(FILES WEMSolver.h DESTINATION include)

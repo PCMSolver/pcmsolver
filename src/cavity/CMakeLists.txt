@@ -1,8 +1,6 @@
 set(cavity_SOURCES 
-    Atom.cpp
     Cavity.cpp
     GePolCavity.cpp
-    Sphere.cpp
     SurfaceFunction.cpp
     WaveletCavity.cpp
 )
@@ -16,5 +14,4 @@ install(TARGETS cavity
 install(FILES Cavity.h DESTINATION include)
 install(FILES GePolCavity.h DESTINATION include)
 install(FILES WaveletCavity.h DESTINATION include)
-install(FILES Atom.h DESTINATION include)
-install(FILES Sphere.h DESTINATION include)
+install(FILES SurfaceFunction.h DESTINATION include)

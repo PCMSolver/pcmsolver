@@ -31,6 +31,7 @@ class GePolCavity : public Cavity
     GePolCavity(){}
     GePolCavity(const Section & cavity);
     GePolCavity(const Section & cavity, const vector<Sphere> & _spheres);
+    GePolCavity(double area, const std::vector<Sphere> & _spheres, bool _addSpheres = false, double _probeRadius = 0.0);
     ~GePolCavity(){};
     void makeCavity(int maxts, int lwork);
     void makeCavity();

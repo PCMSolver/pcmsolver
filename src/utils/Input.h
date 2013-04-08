@@ -34,6 +34,7 @@ class Input
 		std::string solvent;
 		std::string solverType;
 		std::string equationType;
+		double correction;
 		double probeRadius;
 		std::string greenType;
 		std::string derivativeType;
@@ -51,28 +52,29 @@ class Input
         	~Input(){};
 		// Accessor methods
 		// Cavity section input
-		std::string getType();
-		int getPatchLevel();
-		double getCoarsity();
-		double getArea();
-		bool getScaling(); 
-		bool getAddSpheres();
-		std::string getMode(); // vector<Sphere> should be setup here. Could this work in Implicit mode?
-		std::vector<int> getAtoms();
-		std::vector<double> getRadii();
-		std::vector<Sphere> getSpheres();
+		std::string getType(){ return this->type; };
+		int getPatchLevel(){ return this->patchLevel; };
+		double getCoarsity(){ return this->coarsity; };
+		double getArea(){ return this->area; };
+		bool getScaling(){ return this->scaling; }; 
+		bool getAddSpheres(){ return this->addSpheres; };
+		std::string getMode(){ return this->mode; }; // vector<Sphere> should be setup here. Could this work in Implicit mode?
+		std::vector<int> getAtoms(){ return this->atoms; };
+		std::vector<double> getRadii(){ return this->radii; };
+		std::vector<Sphere> getSpheres(){ return this->spheres; };
 		// Medium section input
-		std::string getSolvent();
-		std::string getSolverType();
-		std::string getEquationType();
-		double getProbeRadius();
-		std::string getGreenType();
-		std::string getDerivativeType();
-		double getEpsilon(); 
-		double getEpsilonReal();
-		double getEpsilonImaginary();
-		std::vector<double> getSpherePosition();
-		double getSphereRadius();
+		std::string getSolvent(){ return this->solvent; };
+		std::string getSolverType(){ return this->solverType; };
+		std::string getEquationType(){ return this->equationType; };
+		double getCorrection(){ return this->correction; };
+		double getProbeRadius(){ return this->probeRadius; };
+		std::string getGreenType(){ return this->greenType; };
+		std::string getDerivativeType(){ return this->derivativeType; };
+		double getEpsilon(){ return this->epsilon; }; 
+		double getEpsilonReal(){ return this->epsilonReal; };
+		double getEpsilonImaginary(){ return this->epsilonImaginary; };
+		std::vector<double> getSpherePosition(){ return this->spherePosition; };
+		double getSphereRadius(){ return this->sphereRadius; };
 		/// Operators
 		/// Assignment operator.
 		Input & operator=(const Input &other);

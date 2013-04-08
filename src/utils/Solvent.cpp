@@ -17,12 +17,12 @@ using namespace Eigen;
 
 */
 
-Solvent::Solvent( const string & name, double epsStatic, 
-				  double epsOptical, double radius ) {
-	this->name = name;
-	this->epsStatic = epsStatic;
-	this->epsOptical = epsOptical;
-	this->probeRadius = radius;
+Solvent::Solvent( const string & _name, double _epsStatic, 
+				  double _epsOptical, double _radius ) {
+	this->name = _name;
+	this->epsStatic = _epsStatic;
+	this->epsOptical = _epsOptical;
+	this->probeRadius = _radius;
 }
 
 SolventMap Solvent::initSolventMap() {

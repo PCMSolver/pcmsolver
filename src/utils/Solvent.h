@@ -37,8 +37,8 @@ typedef std::map< std::string, Solvent > SolventMap;
 class Solvent {
  public:
     Solvent(){}
-    Solvent( const string & name, double epsstatic, 
-             double epsoptical, double radius );
+    Solvent( const string & _name, double _epsStatic, 
+             double _epsOptical, double _radius );
     ~Solvent(){}
     const string getName(){ return name; }
     double getEpsStatic(){ return epsStatic; }

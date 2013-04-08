@@ -44,6 +44,13 @@ GePolCavity::GePolCavity(const Section &cavity, const vector<Sphere> & _spheres)
 	spheres = _spheres;
 }
 
+GePolCavity::GePolCavity(double _area, const std::vector<Sphere> & _spheres, bool _addSpheres, double _probeRadius){
+	averageArea = _area;
+	spheres = _spheres;
+	addSpheres = _addSpheres;
+	probeRadius = _probeRadius;
+}
+
 void GePolCavity::writeOutput(string &filename){
 
     ofstream output;

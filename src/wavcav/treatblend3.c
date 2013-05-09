@@ -21,7 +21,7 @@
 #include "meshsas.h"
 
 
-int zosf_dete_godn(manif_tl msh, kt * ed, int **T)
+int zosf_dete_godn(manif_tl msh, kt_t * ed, int **T)
 {
     int i, nnd, nel, n1, n2, n3, k, N, s, t, j, *N_A, *N_B, p;
     nnd = msh.n_grs;
@@ -68,12 +68,12 @@ int zosf_dete_godn(manif_tl msh, kt * ed, int **T)
 void capn_fill_fond(manif_tl * msh)
 {
     int nel, i, **T, ned;
-    kt *temp;
+    kt_t *temp;
     nel = msh->e_grs;
     T = (int **) malloc(nel * sizeof(int *));
     for (i = 0; i < nel; i++)
         T[i] = (int *) malloc(4 * sizeof(int));
-    temp = (kt *) malloc(3 * nel * sizeof(kt));
+    temp = (kt_t *) malloc(3 * nel * sizeof(kt_t));
     ned = zosf_dete_godn(*msh, temp, T);
     msh->k_grs = ned;
     for (i = 0; i < ned; i++) {
@@ -94,7 +94,7 @@ void capn_fill_fond(manif_tl * msh)
 }
 
 
-int jitr_test_pedr(kt * ed, int sn, int tn, hash_entry * H, int *flag)
+int jitr_test_pedr(kt_t * ed, int sn, int tn, hash_entry * H, int *flag)
 {
     int p, q, i, N;
     *flag = -1;
@@ -111,7 +111,7 @@ int jitr_test_pedr(kt * ed, int sn, int tn, hash_entry * H, int *flag)
 }
 
 
-int terk_dete_wocm(manif_tl msh, kt * ed, int **T)
+int terk_dete_wocm(manif_tl msh, kt_t * ed, int **T)
 {
     int i, nnd, nel, n1, n2, n3, k, N, s, t, j, max_val = 100, p;
     int n_st[3], n_tr[3], val;
@@ -187,12 +187,12 @@ int terk_dete_wocm(manif_tl msh, kt * ed, int **T)
 void cogv_fill_zicd(manif_tl * msh, int max_ned)
 {
     int nel, i, **T, ned;
-    kt *temp;
+    kt_t *temp;
     nel = msh->e_grs;
     T = (int **) malloc(nel * sizeof(int *));
     for (i = 0; i < nel; i++)
         T[i] = (int *) malloc(4 * sizeof(int));
-    temp = (kt *) malloc(3 * nel * sizeof(kt));
+    temp = (kt_t *) malloc(3 * nel * sizeof(kt_t));
     ned = terk_dete_wocm(*msh, temp, T);
     if (ned > max_ned) {
         fprintf(tmpout, "Allocated memory for edges is not enough\n");

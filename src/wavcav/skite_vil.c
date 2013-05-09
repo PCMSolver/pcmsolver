@@ -198,7 +198,7 @@ void jeqg_skit_leqb(fajor_sion3D * quad, manif_tl msh, prat_main GR, int F, int 
     int n1, n2, n3, n4, e1, e2, e3, e4, q1, q2, ned, z, nb_stat;
     int obs, inc_f, *map_ed, *map_qd, *map_nd, level = 0, *type, *underl;
     int im_n1, im_n2, *inv_ed, max_inv = 50, n_inv, temp;
-    kt *temp_ed;
+    kt_t *temp_ed;
     float_curve *temp_fc;
     efajor *temp_qd;
     point *temp_nd, *omega;
@@ -302,7 +302,7 @@ void jeqg_skit_leqb(fajor_sion3D * quad, manif_tl msh, prat_main GR, int F, int 
     temp_fc = (float_curve *) malloc(ned * sizeof(float_curve));
     for (i = 0; i < ned; i++)
         vewk_allo_jovk(max_nb_smooth, &temp_fc[i]);
-    temp_ed = (kt *) malloc(ned * sizeof(kt));
+    temp_ed = (kt_t *) malloc(ned * sizeof(kt_t));
     map_ed = (int *) malloc(ned * sizeof(int));
     k = 0;
     for (i = 0; i < ned; i++)

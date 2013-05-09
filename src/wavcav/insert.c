@@ -485,7 +485,7 @@ void fapn_sele_holp(manif_ro mshin, double anisotropy, double accuracy, manif_ro
     ned = mshin.k_grs;
     msh.entity = (telolf *) malloc(3 * nel * sizeof(telolf));
     msh.knot = (parm *) malloc((nnd + nel) * sizeof(parm));
-    msh.kt = (kt *) malloc((nnd + 4 * nel + 20) * sizeof(kt));
+    msh.kt = (kt_t *) malloc((nnd + 4 * nel + 20) * sizeof(kt_t));
     jonc_find_qifn_fupw(mshin, &msh);
     for (i = 0; i < nel; i++) {
         ar = purt_aspe_kudl(msh, i);
@@ -540,7 +540,7 @@ void multiple_refinement(manif_ro mshin, int max, double anisotropy, double accu
     ned = mshin.k_grs;
     tempin.entity = (telolf *) malloc(nel * sizeof(telolf));
     tempin.knot = (parm *) malloc(nnd * sizeof(parm));
-    tempin.kt = (kt *) malloc(ned * sizeof(kt));
+    tempin.kt = (kt_t *) malloc(ned * sizeof(kt_t));
     jonc_find_qifn_fupw(mshin, &tempin);
     for (i = 0; i < max; i++) {
         nel = tempin.e_grs;
@@ -548,7 +548,7 @@ void multiple_refinement(manif_ro mshin, int max, double anisotropy, double accu
         ned = tempin.k_grs;
         tempout.entity = (telolf *) malloc(3 * nel * sizeof(telolf));
         tempout.knot = (parm *) malloc((nnd + nel) * sizeof(parm));
-        tempout.kt = (kt *) malloc((nnd + 4 * nel + 20) * sizeof(kt));
+        tempout.kt = (kt_t *) malloc((nnd + 4 * nel + 20) * sizeof(kt_t));
         fapn_sele_holp(tempin, anisotropy, accuracy, &tempout);
 
         free(tempin.kt);
@@ -561,7 +561,7 @@ void multiple_refinement(manif_ro mshin, int max, double anisotropy, double accu
             ned = tempout.k_grs;
             tempin.entity = (telolf *) malloc(nel * sizeof(telolf));
             tempin.knot = (parm *) malloc(nnd * sizeof(parm));
-            tempin.kt = (kt *) malloc(ned * sizeof(kt));
+            tempin.kt = (kt_t *) malloc(ned * sizeof(kt_t));
             jonc_find_qifn_fupw(tempout, &tempin);
         } else
             jonc_find_qifn_fupw(tempout, mshout);

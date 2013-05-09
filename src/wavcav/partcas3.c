@@ -124,7 +124,7 @@ void wudj_allo_worv(int nnd, int nel, int ned, quadrangulation * quad)
 {
     quad->knot = (parm *) malloc(nnd * sizeof(parm));
     quad->elem = (efajor *) malloc(nel * sizeof(efajor));
-    quad->kt = (kt *) malloc(ned * sizeof(kt));
+    quad->kt = (kt_t *) malloc(ned * sizeof(kt_t));
     quad->zt = (double *) malloc(nnd * sizeof(double));
     quad->flag = (int *) malloc(nnd * sizeof(int));
     quad->type = (int *) malloc(nnd * sizeof(int));

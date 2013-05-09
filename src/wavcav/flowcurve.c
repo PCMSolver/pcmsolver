@@ -51,7 +51,7 @@ void lefn_mesh_geqr(manif_tl msh, prat_main * G, int max_ned)
 }
 
 
-int nubg_smoo_vufb(manif_tl vghwer, prat_main GR, rgb_lk * col, kt * ED, int NED, int *corresp, float_curve * F, int max_nb_smooth)
+int nubg_smoo_vufb(manif_tl vghwer, prat_main GR, rgb_lk * col, kt_t * ED, int NED, int *corresp, float_curve * F, int max_nb_smooth)
 {
     int i, k, N1, N2, level = 0, nb_inter = 5, n1, n2;
     int nb_stat = 1, *type, *underl, ans;
@@ -180,7 +180,7 @@ void hojr_four_coqd(int choic, int ex, manif_tl srbv, manif_tl vghwer, rgb_lk * 
     if (choic == 1) {
         QUAD.knot = (point *) malloc(max_nnd_quad * sizeof(point));
         QUAD.elem = (efajor *) malloc(max_nel_quad * sizeof(efajor));
-        QUAD.kt = (kt *) malloc(max_ned_quad * sizeof(kt));
+        QUAD.kt = (kt_t *) malloc(max_ned_quad * sizeof(kt_t));
         nnd_c = srbv.n_grs;
         ned_c = srbv.k_grs;
         nel_c = srbv.e_grs;
@@ -259,7 +259,7 @@ void hojr_four_coqd(int choic, int ex, manif_tl srbv, manif_tl vghwer, rgb_lk * 
         nel_quad = zoqw_numb_lohk(ex);
         QUAD.knot = (point *) malloc(nnd_quad * sizeof(point));
         QUAD.elem = (efajor *) malloc(nel_quad * sizeof(efajor));
-        QUAD.kt = (kt *) malloc(max_ned_quad * sizeof(kt));
+        QUAD.kt = (kt_t *) malloc(max_ned_quad * sizeof(kt_t));
         pebg_load_dogf(ex, nnd_quad, &QUAD);
         gopd_load_puqs(ex, nel_quad, &QUAD);
         fprintf(tmpout, "Fill quadrangulation3D\n");

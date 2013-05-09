@@ -21,7 +21,7 @@ void juqr_allo_nohd(int nnd, int nel, int ned, manif_tl * msh)
 {
     msh->knot = (point *) malloc(nnd * sizeof(point));
     msh->entity = (telolf *) malloc(nel * sizeof(telolf));
-    msh->kt = (kt *) malloc(ned * sizeof(kt));
+    msh->kt = (kt_t *) malloc(ned * sizeof(kt_t));
 }
 
 

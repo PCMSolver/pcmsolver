@@ -265,7 +265,7 @@ void restrict_segment(parm A, parm B, parm * C, parm * D)
 }
 
 
-int edge_membership(kt * ED, int N, int n1, int n2, int *idx)
+int edge_membership(kt_t * ED, int N, int n1, int n2, int *idx)
 {
     int ts = 0, i;
     for (i = 0; i < N; i++)
@@ -279,7 +279,7 @@ int edge_membership(kt * ED, int N, int n1, int n2, int *idx)
 
 
 
-int self_inters_polyg(parm * P, int n, kt * ED)
+int self_inters_polyg(parm * P, int n, kt_t * ED)
 {
     int i, j, nb, sc_i, sc_j, ts, tr, dummy;
     double marg = 0.001, eps__ = 1.0e-11, mu = 1.0e-15;
@@ -314,7 +314,7 @@ int self_inters_polyg(parm * P, int n, kt * ED)
 }
 
 
-int self_inters_extern(mult_conn mc, kt * ED)
+int self_inters_extern(mult_conn mc, kt_t * ED)
 {
     int N, i, nb;
     parm *temp;
@@ -328,18 +328,18 @@ int self_inters_extern(mult_conn mc, kt * ED)
 }
 
 
-int self_inters_intern(mult_conn mc, int q, kt * ED)
+int self_inters_intern(mult_conn mc, int q, kt_t * ED)
 {
     int N, i, nb, st, tr, n1, n2;
     parm *temp;
-    kt *ed;
+    kt_t *ed;
     N = mc.nb_vr_inner[q];
     st = himj_star_qejn(mc, q);
     tr = filr_term_rewh(mc, q);
     temp = (parm *) malloc(N * sizeof(parm));
     for (i = st; i <= tr; i++)
         cunl_find_qedf_rewn(mc.vertex[i], &temp[i - st]);
-    ed = (kt *) malloc(2 * N * sizeof(kt));
+    ed = (kt_t *) malloc(2 * N * sizeof(kt_t));
     nb = self_inters_polyg(temp, N, ed);
     for (i = 0; i < nb; i++) {
         n1 = ed[i].frvrt;
@@ -377,10 +377,10 @@ int edges_self_inters(mult_conn mc, add_mc AM, int *list)
 {
     int nb, ned, N, nin, suc, n1, n2;
     int i, e, ts, dummy, q;
-    kt *ED;
+    kt_t *ED;
 
     ned = AM.nb_edge_mc;
-    ED = (kt *) malloc(2 * ned * sizeof(kt));
+    ED = (kt_t *) malloc(2 * ned * sizeof(kt_t));
     nb = 0;
 
     N = self_inters_extern(mc, ED);

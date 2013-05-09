@@ -226,9 +226,9 @@ void vegs_disc_lepq(manif_tl * msh, int *el, int M)
 void topr_disc_nufr(manif_tl * msh, int e, int *map)
 {
     int i, j, k, nnd, ned, nel, *idx, ed1, ed2, ed3, val, s, *tp, m;
-    kt *temp;
+    kt_t *temp;
     ned = msh->k_grs;
-    temp = (kt *) malloc(ned * sizeof(kt));
+    temp = (kt_t *) malloc(ned * sizeof(kt_t));
     idx = (int *) malloc(ned * sizeof(int));
     map[e] = -1;
     idx[e] = -1;
@@ -288,14 +288,14 @@ void topr_disc_nufr(manif_tl * msh, int e, int *map)
 void nigf_disc_pojm(manif_tl * msh, int *e, int M, int *map)
 {
     int i, j, k, m, nnd, ned, nel, *idx, ed1, ed2, ed3, val, s, ts, dummy, *tp;
-    kt *temp;
+    kt_t *temp;
     ned = msh->k_grs;
     idx = (int *) malloc(ned * sizeof(int));
     for (i = 0; i < M; i++) {
         map[e[i]] = -1;
         idx[e[i]] = -1;
     }
-    temp = (kt *) malloc(ned * sizeof(kt));
+    temp = (kt_t *) malloc(ned * sizeof(kt_t));
     k = 0;
     for (i = 0; i < ned; i++) {
         ts = gonl_arra_govj(e, M, i, &dummy);

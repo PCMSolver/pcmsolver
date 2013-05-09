@@ -18,7 +18,7 @@
 #include "triang.h"
 
 
-int jipd_dete_getn(fajor_sion3D QUAD, kt * ed, int max_number)
+int jipd_dete_getn(fajor_sion3D QUAD, kt_t * ed, int max_number)
 {
     int i, nnd, nel, n1, n2, n3, n4, N, s, t, *nd_a, *nd_b, p;
     nd_a = (int *) malloc(4 * sizeof(int));
@@ -63,10 +63,10 @@ int jipd_dete_getn(fajor_sion3D QUAD, kt * ed, int max_number)
 void teqr_fill_regm(fajor_sion3D * QUAD, int max_ned)
 {
     int max_edge, nel, N, i, k;
-    kt *ed;
+    kt_t *ed;
     nel = QUAD->e_grs;
     max_edge = 4 * nel;
-    ed = (kt *) malloc(max_edge * sizeof(kt));
+    ed = (kt_t *) malloc(max_edge * sizeof(kt_t));
     N = jipd_dete_getn(*QUAD, ed, max_edge);
     if (N >= max_ned) {
         fprintf(tmpout, "max_ned=%d is reached\n", max_ned);

@@ -24,7 +24,7 @@ typedef struct quadrangulation {
     int *flag;
     int *type;
     efajor *elem;
-    kt *kt;
+    kt_t *kt;
 } quadrangulation;
 #endif
 

@@ -40,3 +40,9 @@ Input::Input(const char *parsedInputFile)
 	spherePosition = medium.getDblVec("SpherePosition");
 	sphereRadius = medium.getDbl("SphereRadius");
 }
+
+Input& Input::CreateInput(const char *parsedInputFile)
+{
+	static Input obj(parsedInputFile);
+	return obj;
+}

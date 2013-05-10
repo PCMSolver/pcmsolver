@@ -6,6 +6,8 @@
 
 /**
  * The Input class is a wrapper class for the Getkw Library C++ bindings. 
+ * It is implemented as a Singleton: only one instance of it is needed 
+ * and therefore admitted (see Alexandrescu "Modern C++ Design").
  * It is to be used as the unique point of access to user-provided input:
  *  input ---> parsed input (Python script) ---> Input object (contains all the input data)
  * Definition of input parameters is to be done in the Python script and in this class.
@@ -21,6 +23,12 @@
 class Input 
 {
 	private:
+		Input();
+		Input(const char *parsedInputFile);
+		/// Copy constructor
+		Input(const Input &other);
+		Input& operator=(const Input &other);
+        	~Input(){};
 		std::string type;
 		int patchLevel;
 		double coarsity;
@@ -45,11 +53,7 @@ class Input
 		double sphereRadius;
 		
 	public:
-		Input();
-	        Input(const char *parsedInputFile);
-		/// Copy constructor
-		Input(const Input &other);
-        	~Input(){};
+		Input& CreateInput(const char *parsedInputFile);
 		// Accessor methods
 		// Cavity section input
 		std::string getType(){ return this->type; };
@@ -76,8 +80,6 @@ class Input
 		std::vector<double> getSpherePosition(){ return this->spherePosition; };
 		double getSphereRadius(){ return this->sphereRadius; };
 		/// Operators
-		/// Assignment operator.
-		Input & operator=(const Input &other);
 		/// operator<<
                 friend std::ostream & operator<<(std::ostream &os, const Input &input);
                 /// @}

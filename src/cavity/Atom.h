@@ -57,12 +57,13 @@ class Atom {
   void setAtomCoord( Vector3d & coord ){ atomCoord = coord; }
   double getAtomCharge(){ return atomCharge; }
   void setAtomCharge( double charge ){ atomCharge = charge; }
-  double getAtomRadius(){ return (atomRadius / ToAngstrom); }
+  double getAtomRadius(); 
   void setAtomRadius( double radius ){ atomRadius = radius; }
   double getAtomRadiusScaling(){ return atomRadiusScaling; }
   void setAtomRadiusScaling( double scaling ){ atomRadiusScaling = scaling; }
   string getAtomColour(){ return atomColour; }
   void setAtomColour( const string & colour ){ atomColour = colour; }
+  static vector<Atom> initUFF();
   static vector<Atom> initBondi();
 };
 

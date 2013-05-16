@@ -351,13 +351,20 @@ void init_spheres_implicit_(VectorXd & charges,	Matrix<double, 3, Dynamic> & cen
 {
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
+	std::string radiiSet = Input.getStr("Cavity<gepol>.RadiiSet");
+	// Only Bondi and UFF sets are allowed
+	std::vector<Atom> set;
+	if (radiiSet == "Bondi") {
+		set = Atom::initBondi();
+	} else {
+		set = Atom::initUFF(); 
+	}
 	std::string scaling = Input.getStr("Cavity<gepol>.Scaling");
 	for (int i = 0; i < charges.size(); i++) {
-		vector<Atom> Bondi = Atom::initBondi();
 		int index = charges(i) - 1;
-		double radius = Bondi[index].getAtomRadius();
+		double radius = set[index].getAtomRadius();
                 if (scaling == "Yes") {
-			radius *= Bondi[index].getAtomRadiusScaling();
+			radius *= set[index].getAtomRadiusScaling();
                 }
 		Vector3d center = centers.col(i);
 		Sphere sphere(center, radius);

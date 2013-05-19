@@ -41,8 +41,3 @@ Input::Input(const char *parsedInputFile)
 	sphereRadius = medium.getDbl("SphereRadius");
 }
 
-Input& Input::CreateInput(const char *parsedInputFile)
-{
-	static Input obj(parsedInputFile);
-	return obj;
-}

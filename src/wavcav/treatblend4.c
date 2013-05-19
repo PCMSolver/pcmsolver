@@ -602,7 +602,7 @@ void spherical_triangulate_mult_conn2(trmsrf surf, sphere S, mult_conn P, manif_
     manif_ro init;
     init.knot = (parm *) malloc(INI_MAX_NND * sizeof(parm));
     init.entity = (telolf *) malloc(INI_MAX_NEL * sizeof(telolf));
-    init.kt = (kt *) malloc((INI_MAX_NND + INI_MAX_NEL + 20) * sizeof(kt));
+    init.kt = (kt_t *) malloc((INI_MAX_NND + INI_MAX_NEL + 20) * sizeof(kt_t));
     suc = vorg_find_qach_nujt(P, &init, &f_dummy);
     if (suc == FAILURE) {
         fprintf(tmpout, "Unable to discretize current patch\n");
@@ -640,7 +640,7 @@ void non_spherical_triangulate_mult_conn2(trmsrf surf, mult_conn P, manif_ro * m
     manif_ro init;
     init.knot = (parm *) malloc(INI_MAX_NND * sizeof(parm));
     init.entity = (telolf *) malloc(INI_MAX_NEL * sizeof(telolf));
-    init.kt = (kt *) malloc((INI_MAX_NND + INI_MAX_NEL + 20) * sizeof(kt));
+    init.kt = (kt_t *) malloc((INI_MAX_NND + INI_MAX_NEL + 20) * sizeof(kt_t));
     suc = vorg_find_qach_nujt(P, &init, &f_dummy);
     dummy.rad = 1.0;
     dummy.zent.absi = 0.0;

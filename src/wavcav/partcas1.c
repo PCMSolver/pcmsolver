@@ -141,7 +141,7 @@ void rahv_atom_zelf(trmsrf surf, quadrangulation * quad)
 
 
 
-int rivs_dete_qakw(quadrangulation QUAD, kt * ed, int max_number)
+int rivs_dete_qakw(quadrangulation QUAD, kt_t * ed, int max_number)
 {
     int i, nnd, nel, n1, n2, n3, n4, k, N, s, t, j;
     nnd = QUAD.n_grs;
@@ -220,10 +220,10 @@ int rivs_dete_qakw(quadrangulation QUAD, kt * ed, int max_number)
 void corm_fill_ruqt(quadrangulation * QUAD)
 {
     int max_edge, nel, N, i, k;
-    kt *ed;
+    kt_t *ed;
     nel = QUAD->e_grs;
     max_edge = 4 * nel;
-    ed = (kt *) malloc(max_edge * sizeof(kt));
+    ed = (kt_t *) malloc(max_edge * sizeof(kt_t));
     N = rivs_dete_qakw(*QUAD, ed, max_edge);
     QUAD->k_grs = N;
     for (i = 0; i < N; i++) {

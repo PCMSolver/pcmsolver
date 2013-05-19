@@ -41,7 +41,7 @@ void volq_find_luvc_jurq(trmsrf * surf3, int nb_surf3)
     int nnd, nel, i, j, k, *exc, p, q, N = 7;
     int ts_interf, nb_pairs, *some;
     int id_0, id_1, id_2;
-    kt *E;
+    kt_t *E;
     manif_ro msh_tri;
     conc_model *CM;
 
@@ -61,7 +61,7 @@ void volq_find_luvc_jurq(trmsrf * surf3, int nb_surf3)
     fprintf(tmpout, "All triangulations are found\n");
 
     exc = (int *) malloc(nb_surf3 * sizeof(int));
-    E = (kt *) malloc(nb_surf3 * sizeof(kt));
+    E = (kt_t *) malloc(nb_surf3 * sizeof(kt_t));
     for (i = 0; i < nb_surf3; i++)
         exc[i] = 0;
     k = 0;

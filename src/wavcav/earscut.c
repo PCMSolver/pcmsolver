@@ -672,7 +672,7 @@ int vorg_find_qach_nujt(mult_conn P, manif_ro * msh, int *forc_term)
 
     msh_temp.knot = (parm *) malloc(10 * P.v_grs * sizeof(parm));
     msh_temp.entity = (telolf *) malloc(10 * P.v_grs * sizeof(telolf));
-    msh_temp.kt = (kt *) malloc(10 * P.v_grs * sizeof(kt));
+    msh_temp.kt = (kt_t *) malloc(10 * P.v_grs * sizeof(kt_t));
     suc = rofd_find_pumz_jetl(temp, &msh_temp, &f_trm);
     if (f_trm == 1) {
         *forc_term = 1;

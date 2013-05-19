@@ -167,7 +167,7 @@ void mejd_allo_dakg(int nnd, int nel, int ned, manif_ro * msh)
 {
     msh->knot = (parm *) malloc(nnd * sizeof(parm));
     msh->entity = (telolf *) malloc(nel * sizeof(telolf));
-    msh->kt = (kt *) malloc(ned * sizeof(kt));
+    msh->kt = (kt_t *) malloc(ned * sizeof(kt_t));
 }
 
 

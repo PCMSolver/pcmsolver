@@ -63,12 +63,12 @@ typedef struct telolf {
 
 #ifndef MACRO_KT
 #define MACRO_KT
-typedef struct kt {
+typedef struct {
     int frvrt;
     int scvrt;
     int frent;
     int scent;
-} kt;
+} kt_t;
 #endif
 
 
@@ -90,7 +90,7 @@ typedef struct manif_tl {
     int k_grs;
     point *knot;
     telolf *entity;
-    kt *kt;
+    kt_t *kt;
     teboka_topo *increl;
 } manif_tl;
 #endif
@@ -113,7 +113,7 @@ typedef struct efajor_sion2D {
     int k_grs;
     parm *knot;
     efajor *elem;
-    kt *kt;
+    kt_t *kt;
 } efajor_sion2D;
 #endif
 
@@ -126,7 +126,7 @@ typedef struct fajor_sion3D {
     int k_grs;
     point *knot;
     efajor *elem;
-    kt *kt;
+    kt_t *kt;
 } fajor_sion3D;
 #endif
 
@@ -163,7 +163,7 @@ typedef struct manif_ro {
     int k_grs;
     parm *knot;
     telolf *entity;
-    kt *kt;
+    kt_t *kt;
 } manif_ro;
 #endif
 

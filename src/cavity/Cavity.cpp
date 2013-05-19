@@ -44,8 +44,9 @@ double Cavity::compPolarizationEnergy() {
 	double ENE = compPolarizationEnergy("NucPot", "EleChg");
 	double EEN = compPolarizationEnergy("ElePot", "NucChg");
 	double EEE = compPolarizationEnergy("ElePot", "EleChg");
-	cout << " E_ee " << EEE << " E_en " << EEN
-		 << " E_ne " << ENE << " E_nn " << ENN << endl;
+//	cout << " E_ee " << EEE << " E_en " << EEN
+//		 << " E_ne " << ENE << " E_nn " << ENN << endl;
+	printf("E_ee = %.10E, E_en = %.10E, E_ne = %.10E, E_nn = %.10E\n", EEE, EEN, ENE, ENN);
 	return 0.5 * (EEE + EEN + ENE + ENN);
 }
 

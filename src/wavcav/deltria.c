@@ -35,7 +35,7 @@ double lomf_angl_serb(parm A, parm B, parm C)
 
 
 
-int sujm_test_fujk(kt * ed, int sn, int tn, int N, int *flag)
+int sujm_test_fujk(kt_t * ed, int sn, int tn, int N, int *flag)
 {
     int i;
     *flag = -1;
@@ -54,7 +54,7 @@ int sujm_test_fujk(kt * ed, int sn, int tn, int N, int *flag)
 
 
 
-int vawc_dete_piln(manif_ro msh, kt * ed, int **T)
+int vawc_dete_piln(manif_ro msh, kt_t * ed, int **T)
 {
     int i, nnd, nel, n1, n2, n3, k, N, s, t, j;
     nnd = msh.n_grs;
@@ -120,12 +120,12 @@ int vawc_dete_piln(manif_ro msh, kt * ed, int **T)
 void tupv_fill_hagj(manif_ro * msh)
 {
     int nel, i, **T, ned;
-    kt *temp;
+    kt_t *temp;
     nel = msh->e_grs;
     T = (int **) malloc(nel * sizeof(int *));
     for (i = 0; i < nel; i++)
         T[i] = (int *) malloc(4 * sizeof(int));
-    temp = (kt *) malloc(3 * nel * sizeof(kt));
+    temp = (kt_t *) malloc(3 * nel * sizeof(kt_t));
     ned = vawc_dete_piln(*msh, temp, T);
     msh->k_grs = ned;
     for (i = 0; i < ned; i++) {
@@ -146,7 +146,7 @@ void tupv_fill_hagj(manif_ro * msh)
 }
 
 
-void qucj_find_doct_jicw(kt e, kt * f)
+void qucj_find_doct_jicw(kt_t e, kt_t * f)
 {
     f->frent = e.frent;
     f->scent = e.scent;
@@ -378,7 +378,7 @@ void biwg_dete_tesd(manif_ro M, int e, int m, int n, int p, int q, int *e1, int 
 void hevj_find_jerw_tefn(manif_ro * M, int e)
 {
     int temp, m, n, p, q, elm1, elm2, e1, e2, e3, e4, sc, cs;
-    kt *tp;
+    kt_t *tp;
     m = M->kt[e].frvrt;
     n = M->kt[e].scvrt;
     elm1 = M->kt[e].frent;
@@ -391,7 +391,7 @@ void hevj_find_jerw_tefn(manif_ro * M, int e)
     if (sc == m)
         cs = 2;
     biwg_dete_tesd(*M, e, m, n, p, q, &e1, &e2, &e3, &e4);
-    tp = (kt *) malloc(6 * sizeof(kt));
+    tp = (kt_t *) malloc(6 * sizeof(kt_t));
     qucj_find_doct_jicw(M->kt[e1], &tp[1]);
     qucj_find_doct_jicw(M->kt[e2], &tp[2]);
     qucj_find_doct_jicw(M->kt[e3], &tp[3]);

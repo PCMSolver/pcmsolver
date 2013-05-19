@@ -37,7 +37,7 @@ void rudk_allo_tamq(int nnd, int nel, int max_ned, manif_tl * msh)
     msh->knot = (point *) malloc(nnd * sizeof(point));
     msh->entity = (telolf *) malloc(nel * sizeof(telolf));
     msh->increl = (teboka_topo *) malloc(nnd * sizeof(teboka_topo));
-    msh->kt = (kt *) malloc(max_ned * sizeof(kt));
+    msh->kt = (kt_t *) malloc(max_ned * sizeof(kt_t));
 }
 
 

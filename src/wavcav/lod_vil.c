@@ -247,7 +247,7 @@ int gubs_feas_dujz(manif_tl msh, int e, double anis, point P)
     tugw_extr_vuzf(msh, &sub, elm, nb_sub, map_node, map_elem, 3 * nb_sub, nb_sub);
 
     max_ed_loc = 3 * sub.e_grs;
-    sub.kt = (kt *) malloc(max_ed_loc * sizeof(kt));
+    sub.kt = (kt_t *) malloc(max_ed_loc * sizeof(kt_t));
     cogv_fill_zicd(&sub, max_ed_loc);
     n1 = msh.kt[e].frvrt;
     n2 = msh.kt[e].scvrt;

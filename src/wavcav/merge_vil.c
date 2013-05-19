@@ -97,7 +97,7 @@ void tolm_merg_wovm(fajor_sion3D * quad, int *corresp, int E, int F, float_curve
     int loc[4], ts1, ts2, dummy, ned, *map_ed, e1, e2, e3, e4;
     int *map_qd, *map_nd, n1, n2, n3, n4, z;
     float_curve *temp_fc;
-    kt *temp_ed;
+    kt_t *temp_ed;
     efajor *temp_qd;
     point *temp_nd;
 
@@ -166,7 +166,7 @@ void tolm_merg_wovm(fajor_sion3D * quad, int *corresp, int E, int F, float_curve
     temp_fc = (float_curve *) malloc(ned * sizeof(float_curve));
     for (i = 0; i < ned; i++)
         vewk_allo_jovk(max_nb_smooth, &temp_fc[i]);
-    temp_ed = (kt *) malloc(ned * sizeof(kt));
+    temp_ed = (kt_t *) malloc(ned * sizeof(kt_t));
     map_ed = (int *) malloc(ned * sizeof(int));
     k = 0;
     for (i = 0; i < ned; i++)

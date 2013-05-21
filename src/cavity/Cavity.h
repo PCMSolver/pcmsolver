@@ -61,7 +61,6 @@ class Cavity
     Matrix<double, 3, Dynamic> tessCenter;
     Matrix<double, 3, Dynamic> tessNormal;
     VectorXd tessArea;
-    double averageArea;
     SurfaceFunctionMap functions;
 };
 

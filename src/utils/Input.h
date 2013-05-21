@@ -3,6 +3,7 @@
 
 #include "Getkw.h"
 #include "Sphere.h"
+#include "Solvent.h"
 
 /**
  * The Input class is a wrapper class for the Getkw Library C++ bindings. 
@@ -25,7 +26,7 @@ class Input
 {
 	private:
 		Input();
-		Input(const char *parsedInputFile);
+		//Input(const char *parsedInputFile);
 		/// Copy constructor is made private
 		Input(const Input &other);
 		Input& operator=(const Input &other);
@@ -40,7 +41,7 @@ class Input
 		std::vector<int> atoms;
 		std::vector<double> radii;
 		std::vector<Sphere> spheres;
-		std::string solvent;
+		Solvent solvent;
 		std::string solverType;
 		std::string equationType;
 		double correction;
@@ -54,36 +55,38 @@ class Input
 		double sphereRadius;
 		
 	public:
-		static Input& CreateInput(const char *parsedInputFile) 
+		//static Input& CreateInput(const char *parsedInputFile) 
+		static Input& CreateInput() 
 		{
-			static Input obj(parsedInputFile);
+			static Input obj;
 			return obj;
 		}
 		// Accessor methods
 		// Cavity section input
-		std::string getType(){ return this->type; };
-		int getPatchLevel(){ return this->patchLevel; };
-		double getCoarsity(){ return this->coarsity; };
-		double getArea(){ return this->area; };
-		bool getScaling(){ return this->scaling; }; 
-		bool getAddSpheres(){ return this->addSpheres; };
-		std::string getMode(){ return this->mode; }; // vector<Sphere> should be setup here. Could this work in Implicit mode?
-		std::vector<int> getAtoms(){ return this->atoms; };
-		std::vector<double> getRadii(){ return this->radii; };
-		std::vector<Sphere> getSpheres(){ return this->spheres; };
+		std::string getType(){ return this->type; }
+		int getPatchLevel(){ return this->patchLevel; }
+		double getCoarsity(){ return this->coarsity; }
+		double getArea(){ return this->area; }
+		bool getScaling(){ return this->scaling; } 
+		bool getAddSpheres(){ return this->addSpheres; }
+		std::string getMode(){ return this->mode; }
+		std::vector<int> getAtoms(){ return this->atoms; }
+		std::vector<double> getRadii(){ return this->radii; }
+		std::vector<Sphere> getSpheres(){ return this->spheres; }
+		void setSpheres(const std::vector<Sphere> & _spheres){ spheres = _spheres; }
 		// Medium section input
-		std::string getSolvent(){ return this->solvent; };
-		std::string getSolverType(){ return this->solverType; };
-		std::string getEquationType(){ return this->equationType; };
-		double getCorrection(){ return this->correction; };
-		double getProbeRadius(){ return this->probeRadius; };
-		std::string getGreenType(){ return this->greenType; };
-		std::string getDerivativeType(){ return this->derivativeType; };
-		double getEpsilon(){ return this->epsilon; }; 
-		double getEpsilonReal(){ return this->epsilonReal; };
-		double getEpsilonImaginary(){ return this->epsilonImaginary; };
-		std::vector<double> getSpherePosition(){ return this->spherePosition; };
-		double getSphereRadius(){ return this->sphereRadius; };
+		Solvent getSolvent(){ return this->solvent; }
+		std::string getSolverType(){ return this->solverType; }
+		std::string getEquationType(){ return this->equationType; }
+		double getCorrection(){ return this->correction; }
+		double getProbeRadius(){ return this->probeRadius; }
+		std::string getGreenType(){ return this->greenType; }
+		std::string getDerivativeType(){ return this->derivativeType; }
+		double getEpsilon(){ return this->epsilon; } 
+		double getEpsilonReal(){ return this->epsilonReal; }
+		double getEpsilonImaginary(){ return this->epsilonImaginary; }
+		std::vector<double> getSpherePosition(){ return this->spherePosition; }
+		double getSphereRadius(){ return this->sphereRadius; }
 		/// Operators
 		/// operator<<
                 friend std::ostream & operator<<(std::ostream &os, const Input &input);

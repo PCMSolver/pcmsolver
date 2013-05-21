@@ -1,7 +1,8 @@
 #include "Input.h"
 
-Input::Input(const char *parsedInputFile)
+Input::Input()
 {
+	const char * parsedInputFile = "@pcmsolver.inp";
 	// Create a Getkw object from input file.
         Getkw input = Getkw(parsedInputFile, false, true);
  	
@@ -22,12 +23,24 @@ Input::Input(const char *parsedInputFile)
 	mode = cavity.getStr("Mode");
  	atoms = cavity.getIntVec("Atoms");
 	radii = cavity.getDblVec("Radii");
-	// spheres must be treated with some special care. Maybe move some interface level functions here?
-	//std::vector<Sphere> spheres;
+	if (mode == "Explicit") {
+		std::vector<double> spheresInput = cavity.getDblVec("Spheres");
+		int j = 0;
+		for (int i = 0; i < spheresInput.size(); ++i) {
+			Eigen::Vector3d center;
+			center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
+			Sphere sph(center, spheresInput[j+3]);
+			spheres.push_back(sph);
+			j += 4;
+		}
+	}
         
 	const Section & medium = input.getSect("Medium");
 	// Create a Solvent object here?
-	solvent = medium.getStr("Solvent");
+	std::string _name = medium.getStr("Solvent");
+	SolventMap solvents = Solvent::initSolventMap();
+	solvent = solvents[_name];
+
 	solverType = medium.getStr("SolverType");
 	equationType = medium.getStr("EquationType");
 	correction = medium.getDbl("Correction");

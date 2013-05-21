@@ -29,6 +29,7 @@
 #include "Atom.h"
 #include "Sphere.h"
 #include "Solvent.h"
+#include "Input.h"
 #include "Interface.h"
 
 using namespace std;
@@ -36,6 +37,8 @@ using namespace Eigen;
 
 typedef taylor<double, 3, 1> T;
 
+// We need globals as they must be accessible across all the functions defined
+// in this interface... Could we use singletons?
 Cavity        * _cavity;
 GePolCavity   * _gePolCavity;
 WaveletCavity * _waveletCavity;
@@ -231,6 +234,74 @@ extern "C" void append_surf_func_(char* name) {
 
 */
 
+void setupInput() {
+	/* Here we setup the input, meaning that we read the parsed file and store everything 
+	 * it contatins inside an Input object. 
+	 * This object will be unique (a Singleton) to each "run" of the module.
+	 *   *** WHAT HAPPENS IN NUMERICAL OPTIMIZATIONS? ***
+	 */
+	Input& parsedInput = Input::CreateInput();
+	// The only thing we can't create immediately is the vector of spheres
+	// from which the cavity is to be built.
+	std::string _mode = parsedInput.getMode();
+	// Get the total number of nuclei and the geometry anyway
+	Eigen::VectorXd charges;
+	Eigen::Matrix3Xd centers;
+	initAtoms(charges, centers);
+
+	if (_mode == "Implicit") {
+		vector<Sphere> spheres = initSpheresImplicit(charges, centers);
+		parsedInput.setSpheres(spheres);
+	} else if (_mode == "Atoms") {
+		vector<Sphere>  spheres = initSpheresAtoms(charges, centers);
+		parsedInput.setSpheres(spheres);
+	}
+}
+
+void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) {
+	int nuclei;
+	collect_nctot_(&nuclei);
+	_sphereCenter.resize(NoChange, nuclei);
+	_charges.resize(nuclei);
+	double * chg = _charges.data();
+	double * centers = _sphereCenter.data();
+	collect_atoms_(chg, centers);
+} 
+
+std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _centers) {
+	std::vector<Sphere> spheres;
+
+	vector<int> atomsInput = Input::CreateInput().getAtoms();
+	vector<double> radiiInput = Input::CreateInput().getRadii();
+	
+	for (int i = 0; i < atomsInput.size(); ++i) {
+		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
+		Vector3d center = _centers.col(index);
+		Sphere sph(center, radiiInput[i]);
+		spheres.push_back(sph);
+		_gePolCavity->getSpheres().push_back(sph);
+	}
+	return spheres;
+}
+
+std::vector<Sphere> initSpheresImplicit(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _centers) {
+	std::vector<Sphere> spheres;
+	bool scaling = Input::CreateInput().getScaling();
+
+	for (int i = 0; i < _charges.size(); ++i) {
+		std::vector<Atom> Bondi = Atom::initBondi();
+		int index = _charges(i) - 1;
+		double radius = Bondi[index].getAtomRadius();
+                if (scaling) {
+			radius *= Bondi[index].getAtomRadiusScaling();
+                }
+		Vector3d center = _centers.col(i);
+		Sphere sph(center, radius);
+		spheres.push_back(sph);
+		_gePolCavity->getSpheres().push_back(sph);
+	}
+	return spheres;
+}
 void init_gepol_cavity_() {
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
@@ -323,7 +394,7 @@ void build_anisotropic_matrix_() {
 }
 
 void init_atoms_(VectorXd & charges,
-	         Matrix<double, 3, Dynamic> & sphereCenter) {
+	         Matrix3Xd & sphereCenter) {
 	int nuclei;
 	collect_nctot_(&nuclei);
 	sphereCenter.resize(NoChange, nuclei);
@@ -334,7 +405,7 @@ void init_atoms_(VectorXd & charges,
 } 
 
 void init_spheres_atoms_(VectorXd & charges, 
-			Matrix<double, 3, Dynamic> & centers) {
+			Matrix3Xd & centers) {
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
@@ -347,7 +418,7 @@ void init_spheres_atoms_(VectorXd & charges,
 	}
 }
 
-void init_spheres_implicit_(VectorXd & charges,	Matrix<double, 3, Dynamic> & centers)
+void init_spheres_implicit_(VectorXd & charges,	Matrix3Xd & centers)
 {
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);

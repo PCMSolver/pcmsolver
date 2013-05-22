@@ -9,6 +9,7 @@ set(header_dir_list ${header_dir_list} PARENT_SCOPE)
 
 include_directories(${header_dir_list})
 
+add_subdirectory(interface)
 add_subdirectory(solver)
 add_subdirectory(wavcav)
 add_subdirectory(wem)

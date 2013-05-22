@@ -1,7 +1,6 @@
 set(solver_SOURCES 
   IEFSolver.cpp
   CPCMSolver.cpp 
-  Interface.cpp
   PCMSolver.cpp
   PWCSolver.cpp
   PWLSolver.cpp
@@ -23,7 +22,6 @@ install(TARGETS solver
 
 install(FILES IEFSolver.h DESTINATION include)
 install(FILES CPCMSolver.h DESTINATION include)
-install(FILES Interface.h DESTINATION include)
 install(FILES PCMSolver.h DESTINATION include)
 install(FILES PWCSolver.h DESTINATION include)
 install(FILES PWLSolver.h DESTINATION include)

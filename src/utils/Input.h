@@ -46,9 +46,12 @@ class Input
 		std::string equationType;
 		double correction;
 		double probeRadius;
-		std::string greenType;
-		std::string derivativeType;
-		double epsilon;
+		std::string greenInsideType;
+		std::string greenOutsideType;
+		std::string derivativeInsideType;
+		std::string derivativeOutsideType;
+		double epsilonInside;
+		double epsilonOutside;
 		double epsilonReal;
 		double epsilonImaginary;
 		std::vector<double> spherePosition;
@@ -63,30 +66,33 @@ class Input
 		}
 		// Accessor methods
 		// Cavity section input
-		std::string getType(){ return this->type; }
-		int getPatchLevel(){ return this->patchLevel; }
-		double getCoarsity(){ return this->coarsity; }
-		double getArea(){ return this->area; }
-		bool getScaling(){ return this->scaling; } 
-		bool getAddSpheres(){ return this->addSpheres; }
-		std::string getMode(){ return this->mode; }
-		std::vector<int> getAtoms(){ return this->atoms; }
-		std::vector<double> getRadii(){ return this->radii; }
-		std::vector<Sphere> getSpheres(){ return this->spheres; }
+		std::string getType(){ return type; }
+		int getPatchLevel(){ return patchLevel; }
+		double getCoarsity(){ return coarsity; }
+		double getArea(){ return area; }
+		bool getScaling(){ return scaling; } 
+		bool getAddSpheres(){ return addSpheres; }
+		std::string getMode(){ return mode; }
+		std::vector<int> getAtoms(){ return atoms; }
+		std::vector<double> getRadii(){ return radii; }
+		std::vector<Sphere> getSpheres(){ return spheres; }
 		void setSpheres(const std::vector<Sphere> & _spheres){ spheres = _spheres; }
 		// Medium section input
-		Solvent getSolvent(){ return this->solvent; }
-		std::string getSolverType(){ return this->solverType; }
-		std::string getEquationType(){ return this->equationType; }
-		double getCorrection(){ return this->correction; }
-		double getProbeRadius(){ return this->probeRadius; }
-		std::string getGreenType(){ return this->greenType; }
-		std::string getDerivativeType(){ return this->derivativeType; }
-		double getEpsilon(){ return this->epsilon; } 
-		double getEpsilonReal(){ return this->epsilonReal; }
-		double getEpsilonImaginary(){ return this->epsilonImaginary; }
-		std::vector<double> getSpherePosition(){ return this->spherePosition; }
-		double getSphereRadius(){ return this->sphereRadius; }
+		Solvent getSolvent(){ return solvent; }
+		std::string getSolverType(){ return solverType; }
+		std::string getEquationType(){ return equationType; }
+		double getCorrection(){ return correction; }
+		double getProbeRadius(){ return probeRadius; }
+		std::string getGreenInsideType(){ return greenInsideType; }
+		std::string getGreenOutsideType(){ return greenOutsideType; }
+		std::string getDerivativeInsideType(){ return derivativeInsideType; }
+		std::string getDerivativeOutsideType(){ return derivativeOutsideType; }
+		double getEpsilonInside(){ return epsilonInside; } 
+		double getEpsilonOutside(){ return epsilonOutside; }
+		double getEpsilonReal(){ return epsilonReal; }
+		double getEpsilonImaginary(){ return epsilonImaginary; }
+		std::vector<double> getSpherePosition(){ return spherePosition; }
+		double getSphereRadius(){ return sphereRadius; }
 		/// Operators
 		/// operator<<
                 friend std::ostream & operator<<(std::ostream &os, const Input &input);

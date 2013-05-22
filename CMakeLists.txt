@@ -142,7 +142,7 @@ if(ENABLE_TESTS)
                 add_executable(${test_name}.x ${TEST_SOURCE_FILES})      	
                 add_dependencies(${test_name}.x googletest)
                 target_link_libraries(${test_name}.x 
-                solver green cavity pedra metal pwl wem wavcav getkw 
+                interface solver green cavity pedra metal pwl wem wavcav utils getkw
                                       ${GTEST_LIBS_DIR}/libgtest.a
                                       ${GTEST_LIBS_DIR}/libgtest_main.a
 	                              ${LIBS}

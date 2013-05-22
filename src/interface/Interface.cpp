@@ -63,12 +63,15 @@ extern "C" void hello_pcm_(int * a, double * b) {
 }
 
 extern "C" void init_pcm_() {
-	const char *infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-	const Section & Medium = Input.getSect("Medium");
-	const string modelType = Medium.getStr("SolverType");
+	setupInput();
+//	const char *infile = "@pcmsolver.inp";
+//	Getkw Input = Getkw(infile, false, true);
+//	const Section & Medium = Input.getSect("Medium");
+//	const string modelType = Medium.getStr("SolverType");
+        std::string modelType = Input::CreateInput().getSolverType(); 
 	if (modelType == "IEFPCM") {
-		init_gepol_cavity_();
+		_gePolCavity = initGePolCavity();
+//		init_gepol_cavity_();
 		init_iefsolver_();
 		_cavity = _gePolCavity;
 		_solver = _IEFSolver;
@@ -279,7 +282,6 @@ std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eig
 		Vector3d center = _centers.col(index);
 		Sphere sph(center, radiiInput[i]);
 		spheres.push_back(sph);
-		_gePolCavity->getSpheres().push_back(sph);
 	}
 	return spheres;
 }
@@ -298,10 +300,21 @@ std::vector<Sphere> initSpheresImplicit(const Eigen::VectorXd & _charges, const 
 		Vector3d center = _centers.col(i);
 		Sphere sph(center, radius);
 		spheres.push_back(sph);
-		_gePolCavity->getSpheres().push_back(sph);
 	}
 	return spheres;
 }
+
+GePolCavity * initGePolCavity() 
+{
+ 	double area = Input::CreateInput().getArea();
+	std::vector<Sphere> spheres = Input::CreateInput().getSpheres();
+	bool addSpheres = Input::CreateInput().getAddSpheres();
+	double probeRadius = Input::CreateInput().getProbeRadius();
+        GePolCavity * gepolCavity = new GePolCavity(area, spheres, addSpheres, probeRadius);
+	gepolCavity->makeCavity(5000, 10000000);
+	return gepolCavity;
+}
+
 void init_gepol_cavity_() {
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);

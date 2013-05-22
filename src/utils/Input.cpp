@@ -21,9 +21,8 @@ Input::Input()
 	scaling = cavity.getBool("Scaling");
 	addSpheres = cavity.getBool("AddSpheres");
 	mode = cavity.getStr("Mode");
- 	atoms = cavity.getIntVec("Atoms");
-	radii = cavity.getDblVec("Radii");
-	if (mode == "Explicit") {
+	if (mode == "Explicit") 
+	{
 		std::vector<double> spheresInput = cavity.getDblVec("Spheres");
 		int j = 0;
 		for (int i = 0; i < spheresInput.size(); ++i) {
@@ -33,24 +32,48 @@ Input::Input()
 			spheres.push_back(sph);
 			j += 4;
 		}
+	} else if (mode == "Atoms")
+	{
+ 		atoms = cavity.getIntVec("Atoms");
+		radii = cavity.getDblVec("Radii");
 	}
-        
+       
+        // Get the contents of the Medium section	
 	const Section & medium = input.getSect("Medium");
-	// Create a Solvent object here?
+	// Get the name of the solvent
 	std::string _name = medium.getStr("Solvent");
-	SolventMap solvents = Solvent::initSolventMap();
-	solvent = solvents[_name];
-
+	if (_name == "Explicit") 
+	{
+		// Get the probe radius
+		probeRadius = medium.getDbl("ProbeRadius");
+		// Get the contents of the Green<inside> section...
+		const Section & _inside = medium.getSect("Green<inside>");
+		// ...and initialize the data members
+		greenInsideType = _inside.getStr("Type");
+		derivativeInsideType = _inside.getStr("Der");
+		epsilonInside = _inside.getDbl("Eps");
+		// Get the contents of the Green<outside> section...
+		const Section & _outside = medium.getSect("Green<outside>");
+		// ...and initialize the data members
+		greenOutsideType = _outside.getStr("Type");
+		derivativeOutsideType = _outside.getStr("Der");
+		epsilonOutside = _outside.getDbl("Eps");
+		// This will be needed for the metal sphere
+		epsilonReal = medium.getDbl("EpsRe");
+		epsilonImaginary = medium.getDbl("EpsImg");
+		spherePosition = medium.getDblVec("SpherePosition");
+		sphereRadius = medium.getDbl("SphereRadius");
+	} else // This part must be reviewed!! Some data members are not initialized... 
+	{       // Just initialize the solvent object in this class
+		SolventMap solvents = Solvent::initSolventMap();
+		solvent = solvents[_name];
+		probeRadius = solvent.getRadius();
+		// Specification of the solvent by name means isotropic PCM
+		epsilonInside = 1.0;
+		epsilonOutside = solvent.getEpsStatic();
+	}
 	solverType = medium.getStr("SolverType");
 	equationType = medium.getStr("EquationType");
 	correction = medium.getDbl("Correction");
-	probeRadius = medium.getDbl("ProbeRadius");
-	greenType = medium.getStr("Type");
-	derivativeType = medium.getStr("Der");
-	epsilon = medium.getDbl("Eps");
-	epsilonReal = medium.getDbl("EpsRe");
-	epsilonImaginary = medium.getDbl("EpsImg");
-	spherePosition = medium.getDblVec("SpherePosition");
-	sphereRadius = medium.getDbl("SphereRadius");
 }
 

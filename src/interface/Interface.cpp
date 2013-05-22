@@ -64,31 +64,26 @@ extern "C" void hello_pcm_(int * a, double * b) {
 
 extern "C" void init_pcm_() {
 	setupInput();
-//	const char *infile = "@pcmsolver.inp";
-//	Getkw Input = Getkw(infile, false, true);
-//	const Section & Medium = Input.getSect("Medium");
-//	const string modelType = Medium.getStr("SolverType");
         std::string modelType = Input::CreateInput().getSolverType(); 
 	if (modelType == "IEFPCM") {
 		_gePolCavity = initGePolCavity();
-//		init_gepol_cavity_();
 		init_iefsolver_();
 		_cavity = _gePolCavity;
 		_solver = _IEFSolver;
 	} else if (modelType == "CPCM") {
-		init_gepol_cavity_();
+		_gePolCavity = initGePolCavity();
 		init_cpcmsolver_();
 		_cavity = _gePolCavity;
 		_solver = _CPCMSolver;
         } else if (modelType == "Wavelet") {
-		init_wavelet_cavity_();
+		_waveletCavity = initWaveletCavity();
 		init_pwcsolver_();
 		_waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(),
 									 _PWCSolver->getT_(), false);
 		_cavity = _waveletCavity;
 		_solver = _PWCSolver;
 	} else if (modelType == "Linear") {
-		init_wavelet_cavity_();
+		_waveletCavity = initWaveletCavity();
 		init_pwlsolver_();
 		_waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),
 									 _PWLSolver->getT_(), true);
@@ -310,48 +305,21 @@ GePolCavity * initGePolCavity()
 	std::vector<Sphere> spheres = Input::CreateInput().getSpheres();
 	bool addSpheres = Input::CreateInput().getAddSpheres();
 	double probeRadius = Input::CreateInput().getProbeRadius();
-        GePolCavity * gepolCavity = new GePolCavity(area, spheres, addSpheres, probeRadius);
-	gepolCavity->makeCavity(5000, 10000000);
-	return gepolCavity;
+        GePolCavity * cav = new GePolCavity(area, spheres, addSpheres, probeRadius);
+	return cav;
 }
 
-void init_gepol_cavity_() {
-	const char *infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-	string solvent = Input.getStr("Medium.Solvent");
-	Section cavSect = Input.getSect("Cavity<gepol>");
-	_gePolCavity = new GePolCavity(cavSect);
+WaveletCavity * initWaveletCavity() {
+	int patchLevel = Input::CreateInput().getPatchLevel();
+	std::vector<Sphere> spheres = Input::CreateInput().getSpheres();
+	double coarsity = Input::CreateInput().getCoarsity();
+	double probeRadius = Input::CreateInput().getProbeRadius();
+    	WaveletCavity * cav = new WaveletCavity(patchLevel, spheres, coarsity, probeRadius);
+	cav->readCavity("molec_dyadic.dat");
+	return cav;
 
-	if (solvent == "Explicit") {
-		_gePolCavity->setProbeRadius(Input.getDbl("Medium.ProbeRadius"));
-	} else {
-		SolventMap solvents = Solvent::initSolventMap();
-		_gePolCavity->setProbeRadius(solvents[solvent].getRadius());
-	} // No need for further checks, we have input parsing!
-
-	VectorXd charges;
-	Matrix<double, 3, Dynamic> centers;
-	init_atoms_(charges, centers);
-	int nAtoms = charges.size();
-        _gePolCavity->setNSpheres(nAtoms);
-	enum {Explicit, Atoms, Implicit};
-
-	switch (_gePolCavity->getMode()) {
-	case Atoms:
-		init_spheres_atoms_(charges, centers);
-		break;
-	case Implicit:
-		init_spheres_implicit_(charges, centers);
-		break;
-	case Explicit:
-		break;
-	default:
-		std::cout << "Case unknown" << std::endl;
-		exit(-1);
-	}
-	_gePolCavity->makeCavity(5000, 10000000);
 }
-
+/*
 void init_wavelet_cavity_() {
 	const char *infile = 0;
 	infile = "@pcmsolver.inp";
@@ -360,6 +328,7 @@ void init_wavelet_cavity_() {
 	_waveletCavity->makeCavity();
 	_waveletCavity->readCavity("molec_dyadic.dat");
 }
+*/
 
 void init_iefsolver_() {
 	const char *infile = 0;

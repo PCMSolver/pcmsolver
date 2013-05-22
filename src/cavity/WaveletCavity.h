@@ -18,6 +18,22 @@ class WaveletCavity : public CavityOfSpheres {
     //    WaveletCavity(string &filename);
     WaveletCavity(const Getkw & input, const string path = "Cavity");
     WaveletCavity(const Section & cavity);
+    WaveletCavity(int _patchLevel, const std::vector<Sphere> & _spheres, double _coarsity, double _probeRadius) : 
+     patchLevel(_patchLevel), coarsity(_coarsity), probeRadius(_probeRadius) 
+           {
+		// Initialize data members inherited from CavityOfSpheres...
+		spheres = _spheres;
+                nSpheres = spheres.size();
+		sphereCenter.resize(Eigen::NoChange, nSpheres);
+		sphereRadius.resize(nSpheres);
+		for (int i = 0; i < nSpheres; ++i) {
+			sphereCenter.col(i) = spheres[i].getSphereCenter();
+			sphereRadius(i) = spheres[i].getSphereRadius();
+		}
+		uploadedDyadic = false;
+		// ...and build the cavity!
+		makeCavity();
+           }
     ~WaveletCavity(){};
     void makeCavity();
     void readCavity(const string & filename);

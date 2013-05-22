@@ -11,36 +11,12 @@
 
 #include <Eigen/Dense>
 
-using namespace std;
+using std::cout;
+using std::endl;
 using namespace Eigen;
 
-#include "Getkw.h"
-#include "CavityOfSpheres.h"
 #include "GePolCavity.h"
 
-GePolCavity::GePolCavity(const Section & cavity){
-	averageArea = cavity.getDbl("Area");
-	std::string modeString = cavity.getStr("Mode");
-	setMode(modeString);
-	if (mode == Explicit) {
-		vector<double> spheresInput = cavity.getDblVec("Spheres");
-		nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
-		int j = 0;
-		for (int i = 0; i < nSpheres; i++) {
-			Vector3d center; 
-			center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
-			Sphere sph(center, spheresInput[j+3]);
-			spheres.push_back(sph);
-			j += 4;
-		}
-	}
-}
-
-GePolCavity::GePolCavity(const Section &cavity, const vector<Sphere> & _spheres){
-	averageArea = cavity.getDbl("Area");
-	nSpheres = _spheres.size();	
-	spheres = _spheres;
-}
 
 void GePolCavity::writeOutput(string &filename){
 
@@ -182,35 +158,7 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	built = true;
 
 }
-/*
-void GePolCavity::setMode(const string & type) {
-	if (type == "Atoms") {
-		setMode(Atoms);
-	} else if (type == "Implicit") {
-		setMode(Implicit);
-	} else if (type == "Explicit") {
-		setMode(Explicit);
-	} else {
-		exit(-1);
-	}
-}
 
-void GePolCavity::setMode(int type) {
-	switch (type) {
-	case Atoms :
-		mode = Atoms;
-		break;
-	case Implicit :
-		mode = Implicit;
-		break;
-	case Explicit :
-		mode = Explicit;
-		break;
-	default :
-		exit(-1);
-	}
-}
-*/
 ostream & GePolCavity::printObject(ostream & os) {
 	/*
 	  We should print the cavity.off file here, just to

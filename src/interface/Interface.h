@@ -69,8 +69,6 @@ GePolCavity * initGePolCavity();
 
 WaveletCavity * initWaveletCavity();
 
-void init_gepol_cavity_();
-
 void init_wavelet_cavity_();
 
 void init_iefsolver_();

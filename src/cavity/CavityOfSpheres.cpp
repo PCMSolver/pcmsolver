@@ -5,15 +5,9 @@
 
 #include <Eigen/Dense>
 
-using namespace std;
-using namespace Eigen;
-
-#include "Atom.h"
-#include "Sphere.h"
-#include "Cavity.h"
 #include "CavityOfSpheres.h"
 
-void GePolCavity::setMode(const string & type) {
+void CavityOfSpheres::setMode(const string & type) {
 	if (type == "Atoms") {
 		setMode(Atoms);
 	} else if (type == "Implicit") {
@@ -25,7 +19,7 @@ void GePolCavity::setMode(const string & type) {
 	}
 }
 
-void GePolCavity::setMode(int type) {
+void CavityOfSpheres::setMode(int type) {
 	switch (type) {
 	case Atoms :
 		mode = Atoms;

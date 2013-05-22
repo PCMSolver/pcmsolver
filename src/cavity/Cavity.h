@@ -29,17 +29,17 @@ typedef std::map< std::string, SurfaceFunction * > SurfaceFunctionMap;
 class Cavity
 {
  public:
-    Cavity(){built = false; nTess = 0;}
+    Cavity(){built = false; nElements = 0;}
     ~Cavity(){}
     virtual void makeCavity() = 0;
     virtual void writeOutput(string &filename);
-    virtual Matrix3Xd & getTessCenter(){return tessCenter;}
-    virtual Vector3d getTessCenter(int i){return tessCenter.col(i);}
-    virtual Matrix3Xd & getTessNormal(){return tessNormal;}
-    virtual Vector3d getTessNormal(int i){return tessNormal.col(i);}
-    virtual VectorXd & getTessArea(){return tessArea;}
-    virtual double getTessArea(int i){return tessArea(i);}
-    virtual int size(){return nTess;}
+    virtual Matrix3Xd & getElementCenter(){return elementCenter;}
+    virtual Vector3d getElementCenter(int i){return elementCenter.col(i);}
+    virtual Matrix3Xd & getElementNormal(){return elementNormal;}
+    virtual Vector3d getElementNormal(int i){return elementNormal.col(i);}
+    virtual VectorXd & getElementArea(){return elementArea;}
+    virtual double getElementArea(int i){return elementArea(i);}
+    virtual int size(){return nElements;}
     bool isBuilt(){return built;}
     double compPolarizationEnergy();
     double compPolarizationEnergy(const std::string & potential, 
@@ -56,11 +56,11 @@ class Cavity
     
  protected:
     virtual ostream & printObject(ostream & os);
-    int nTess;
+    int nElements;
     bool built;
-    Matrix3Xd tessCenter;
-    Matrix3Xd tessNormal;
-    VectorXd tessArea;
+    Matrix3Xd elementCenter;
+    Matrix3Xd elementNormal;
+    VectorXd elementArea;
     SurfaceFunctionMap functions;
 };
 

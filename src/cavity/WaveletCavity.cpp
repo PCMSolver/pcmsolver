@@ -35,7 +35,7 @@ extern "C"{
 #include "PhysicalConstants.h"
 #include "Getkw.h"
 #include "SurfaceFunction.h"
-#include "Cavity.h"
+#include "CavityOfSpheres.h"
 #include "WaveletCavity.h"
 
 WaveletCavity::WaveletCavity(const Getkw & Input, const string path){
@@ -45,8 +45,10 @@ WaveletCavity::WaveletCavity(const Getkw & Input, const string path){
 	probeRadius = cavity.getDbl("ProbeRadius");
 	coarsity = cavity.getDbl("Coarsity");
 	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
-    sphereCenter.resize(NoChange, nSpheres);
-    sphereRadius.resize(nSpheres);
+	Eigen::Matrix3Xd sphereCenter;
+	Eigen::VectorXd sphereRadius;
+        sphereCenter.resize(NoChange, nSpheres);
+        sphereRadius.resize(nSpheres);
 	int j = 0;
 	for (int i = 0; i < nSpheres; i++) {
 		sphereCenter(0,i) = spheresInput[j];
@@ -64,8 +66,10 @@ WaveletCavity::WaveletCavity(const Section & cavity){
 	probeRadius = cavity.getDbl("ProbeRadius");
 	coarsity = cavity.getDbl("Coarsity");
 	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
-    sphereCenter.resize(NoChange, nSpheres);
-    sphereRadius.resize(nSpheres);
+	Eigen::Matrix3Xd sphereCenter;
+	Eigen::VectorXd sphereRadius;
+        sphereCenter.resize(NoChange, nSpheres);
+        sphereRadius.resize(nSpheres);
 	int j = 0;
 	for (int i = 0; i < nSpheres; i++) {
 		sphereCenter(0,i) = spheresInput[j];
@@ -76,6 +80,7 @@ WaveletCavity::WaveletCavity(const Section & cavity){
 	}
 	uploadedDyadic = false;
 }
+
 
 void WaveletCavity::writeInput(string &fileName){
 
@@ -105,9 +110,9 @@ void WaveletCavity::compFakePotential()
 	this->appendNewFunction("NucPot");
 	VectorXd & potential = this->getFunction("NucPot").getVector();
 	potential.setZero();
-	for (int i = 0; i < tessArea.size(); i++) {
+	for (int i = 0; i < elementArea.size(); i++) {
 		for (int j = 0; j < sphereRadius.size(); j++) {
-			Vector3d p1 = tessCenter.col(i);
+			Vector3d p1 = elementCenter.col(i);
 			Vector3d p2 = sphereCenter.col(j);
 			double pot = 1.0/(p1-p2).norm();
 			potential(i) += pot;
@@ -175,11 +180,11 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 	cubature *Q;
 	init_Gauss_Square(&Q, quadLevel + 1);
 
-	nTess = nPatches * n * n * Q[quadLevel].nop;
+	nElements = nPatches * n * n * Q[quadLevel].nop;
 
-	tessCenter.resize(NoChange, nTess);
-	tessNormal.resize(NoChange, nTess);
-	tessArea.resize(nTess);
+	elementCenter.resize(NoChange, nElements);
+	elementNormal.resize(NoChange, nElements);
+	elementArea.resize(nElements);
 
 	int j = 0;
 	for (int i1 = 0; i1 < nPatches; i1++){
@@ -195,9 +200,9 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
-					tessCenter.col(j) = center.transpose();
-					tessNormal.col(j) = normal.transpose();
-					tessArea(j) = area;
+					elementCenter.col(j) = center.transpose();
+					elementNormal.col(j) = normal.transpose();
+					elementArea(j) = area;
 					j++;
 				}
 			}
@@ -220,11 +225,11 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 	cubature *Q;
 	init_Gauss_Square(&Q, quadLevel + 1);
 
-	nTess = nPatches * n * n * Q[quadLevel].nop;
+	nElements = nPatches * n * n * Q[quadLevel].nop;
 
-	tessCenter.resize(NoChange, nTess);
-	tessNormal.resize(NoChange, nTess);
-	tessArea.resize(nTess);
+	elementCenter.resize(NoChange, nElements);
+	elementNormal.resize(NoChange, nElements);
+	elementArea.resize(nElements);
 
 	int j = 0;
 	for (int i1 = 0; i1 < nPatches; i1++){
@@ -240,9 +245,9 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 					Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi_pwl(t, T_[i1], nLevels));
-					tessCenter.col(j) = center.transpose();
-					tessNormal.col(j) = normal.transpose();
-					tessArea(j) = area;
+					elementCenter.col(j) = center.transpose();
+					elementNormal.col(j) = normal.transpose();
+					elementArea(j) = area;
 					j++;
 				}
 			}

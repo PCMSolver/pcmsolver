@@ -10,11 +10,9 @@
 
 #include "vector3.h"
 #include "Getkw.h"
-#include "Cavity.h"
+#include "CavityOfSpheres.h"
 
-class Getkw;
-
-class WaveletCavity : public Cavity {
+class WaveletCavity : public CavityOfSpheres {
  public:
     WaveletCavity(){}
     //    WaveletCavity(string &filename);
@@ -24,12 +22,12 @@ class WaveletCavity : public Cavity {
     void makeCavity();
     void readCavity(const string & filename);
     void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
-    VectorXd & getTessRadius(){return tessRadius;};
-    VectorXd & getSphereRadius(){return sphereRadius;};
-    int getNSpheres(){return nSpheres;};
-    Matrix3Xd & getSphereCenter(){return sphereCenter;};
-    Matrix3Xd & getTessSphereCenter(){return tessSphereCenter;};
-    double getTessRadius(int i){return tessRadius(i);};
+//    VectorXd & getTessRadius(){return tessRadius;};
+//    VectorXd & getSphereRadius(){return sphereRadius;};
+//    int getNSpheres(){return nSpheres;};
+//    Matrix3Xd & getSphereCenter(){return sphereCenter;};
+//    Matrix3Xd & getTessSphereCenter(){return tessSphereCenter;};
+//    double getTessRadius(int i){return tessRadius(i);};
     unsigned int getNPatches(){return nPatches;}
     unsigned int getNLevels(){return nLevels;}
     unsigned int getNPoints(){return nPoints;}
@@ -47,11 +45,11 @@ class WaveletCavity : public Cavity {
     unsigned int nPoints;
     bool uploadedDyadic;
     void writeInput(string &fileName);
-    int nSpheres;
-    Matrix3Xd sphereCenter;
-    Matrix3Xd tessSphereCenter;
-    VectorXd sphereRadius;
-    VectorXd tessRadius;
+ //   int nSpheres;
+ //   Matrix3Xd sphereCenter;
+ //   Matrix3Xd tessSphereCenter;
+ //   VectorXd sphereRadius;
+ //   VectorXd tessRadius;
     int patchLevel;
     double probeRadius;
     double coarsity;

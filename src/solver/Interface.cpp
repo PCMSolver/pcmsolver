@@ -135,7 +135,7 @@ extern "C" void get_cavity_size_(int * nts) {
 extern "C" void get_tess_centers_(double * centers) {
 	int j = 0;
 	for (int i = 0; i < _cavity->size(); i++) {
-		Vector3d tess = _cavity->getTessCenter(i);
+		Vector3d tess = _cavity->getElementCenter(i);
 		centers[j] = tess(0);
 		centers[j+1] = tess(1);
 		centers[j+2] = tess(2);
@@ -145,7 +145,7 @@ extern "C" void get_tess_centers_(double * centers) {
 }
 
 extern "C" void get_tess_cent_coord_(int * its, double * center) {
-	Vector3d tess = _cavity->getTessCenter(*its-1);
+	Vector3d tess = _cavity->getElementCenter(*its-1);
 	std::cout << tess.transpose() << std::endl;
 	center[0] = tess(0);
 	center[1] = tess(1);
@@ -321,15 +321,16 @@ void init_gepol_cavity_() {
 	init_atoms_(charges, centers);
 	int nAtoms = charges.size();
         _gePolCavity->setNSpheres(nAtoms);
+	enum {Explicit, Atoms, Implicit};
 
 	switch (_gePolCavity->getMode()) {
-	case GePolCavity::Atoms:
+	case Atoms:
 		init_spheres_atoms_(charges, centers);
 		break;
-	case GePolCavity::Implicit:
+	case Implicit:
 		init_spheres_implicit_(charges, centers);
 		break;
-	case GePolCavity::Explicit:
+	case Explicit:
 		break;
 	default:
 		std::cout << "Case unknown" << std::endl;

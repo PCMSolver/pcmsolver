@@ -18,22 +18,26 @@ class CavityOfSpheres : public Cavity
  public:
 	 CavityOfSpheres(){}
 	 ~CavityOfSpheres(){}
-         virtual VectorXd & getTessRadius(){return tessRadius;}
+     	 virtual vector<Sphere> & getSpheres(){ return spheres; }
 	 virtual int getNSpheres(){return nSpheres;}
      	 virtual void setNSpheres(int n){nSpheres = n;}
-     	 virtual Matrix3Xd & getTessSphereCenter(){return tessSphereCenter;}
-     	 virtual double getTessRadius(int i){return tessRadius(i);}
-     	 virtual vector<Sphere> & getSpheres(){ return spheres; }
+         virtual Eigen::VectorXd & getSphereRadius(){return sphereRadius;}
+         virtual Eigen::Matrix3Xd & getSphereCenter(){return sphereCenter;}
+         virtual Eigen::VectorXd & getElementRadius(){return elementRadius;}
+     	 virtual double getElementRadius(int i){return elementRadius(i);}
+     	 virtual Eigen::Matrix3Xd & getElementSphereCenter(){return elementSphereCenter;}
      	 virtual int getMode(){return mode;}
          virtual void setMode(const std::string & mode);
      	 virtual void setMode(int mode);
-
- private:
      	 enum SphereMode {Explicit, Atoms, Implicit};
+
+ protected:
 	 SphereMode mode;
      	 int nSpheres;
-     	 Matrix3Xd tessSphereCenter;
-     	 VectorXd tessRadius;
+	 Eigen::Matrix3Xd elementSphereCenter;
+	 Eigen::VectorXd elementRadius;
+	 Eigen::Matrix3Xd sphereCenter;
+	 Eigen::VectorXd sphereRadius;
      	 vector<Sphere> spheres;
 };
 

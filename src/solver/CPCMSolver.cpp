@@ -57,16 +57,16 @@ void CPCMSolver::buildAnisotropicMatrix(GePolCavity & cav){
     MatrixXd DI(cavitySize, cavitySize);
     MatrixXd DE(cavitySize, cavitySize);
     for(int i = 0; i < cavitySize; i++){
-		Vector3d p1 = cav.getTessCenter(i);
-		double area = cav.getTessArea(i);
-		double radius = cav.getTessRadius(i);
+		Vector3d p1 = cav.getElementCenter(i);
+		double area = cav.getElementArea(i);
+		double radius = cav.getElementRadius(i);
 		SI(i,i) =  greenInside->compDiagonalElementS(area); 
 		SE(i,i) = greenOutside->compDiagonalElementS(area); 
 		DI(i,i) =  greenInside->compDiagonalElementD(area, radius); 
 		DE(i,i) = greenOutside->compDiagonalElementD(area, radius); 
 		for (int j = 0; j < cavitySize; j++){
-			Vector3d p2 = cav.getTessCenter(j);
-			Vector3d n2 = cav.getTessNormal(j);
+			Vector3d p2 = cav.getElementCenter(j);
+			Vector3d n2 = cav.getElementNormal(j);
 			n2.normalize();
 			if (i != j) {
 				SI(i,j) = greenInside->evalf(p1, p2);
@@ -81,8 +81,8 @@ void CPCMSolver::buildAnisotropicMatrix(GePolCavity & cav){
     a.setZero();
     aInv.setZero();
     for (int i = 0; i < cavitySize; i++) {
-		a(i,i) = cav.getTessArea(i);
-		aInv(i,i) = 2 * M_PI / cav.getTessArea(i);
+		a(i,i) = cav.getElementArea(i);
+		aInv(i,i) = 2 * M_PI / cav.getElementArea(i);
     }
     PCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose()));
     PCMMatrix = PCMMatrix.inverse();
@@ -98,13 +98,13 @@ void CPCMSolver::buildIsotropicMatrix(GePolCavity & cav){
     cavitySize = cav.size();
     Eigen::MatrixXd SI(cavitySize, cavitySize);
     for(int i = 0; i < cavitySize; i++){
-		Eigen::Vector3d p1 = cav.getTessCenter(i);
-		double area = cav.getTessArea(i);
-		double radius = cav.getTessRadius(i);
+		Eigen::Vector3d p1 = cav.getElementCenter(i);
+		double area = cav.getElementArea(i);
+		double radius = cav.getElementRadius(i);
 		SI(i,i) = greenInside->compDiagonalElementS(area); 
 		for (int j = 0; j < cavitySize; j++){
-			Eigen::Vector3d p2 = cav.getTessCenter(j);
-			Eigen::Vector3d n2 = cav.getTessNormal(j);
+			Eigen::Vector3d p2 = cav.getElementCenter(j);
+			Eigen::Vector3d n2 = cav.getElementNormal(j);
 			n2.normalize();
 			if (i != j) {
 				SI(i,j) = greenInside->evalf(p1, p2);

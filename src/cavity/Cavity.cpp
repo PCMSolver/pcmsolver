@@ -21,12 +21,12 @@ written by Krzysztof Mozgawa, 2011
 void Cavity::writeOutput(string &filename){
     ofstream output;
     output.open(filename.c_str(), fstream::out);
-    output << nTess << endl;
-    for(int i=0; i < nTess; i++) {
-		output << tessCenter(0,i) << " ";
-		output << tessCenter(1,i) << " ";
-		output << tessCenter(2,i) << " ";
-		output << tessArea(i) << " ";
+    output << nElements << endl;
+    for(int i=0; i < nElements; i++) {
+		output << elementCenter(0,i) << " ";
+		output << elementCenter(1,i) << " ";
+		output << elementCenter(2,i) << " ";
+		output << elementArea(i) << " ";
     }
     output.close();
 }
@@ -56,14 +56,14 @@ ostream & operator<<(ostream & os, Cavity & cavity) {
 
 ostream & Cavity::printObject(ostream & os) {
 	os << "Molecular cavity" << endl;
-	os << "Nr. of tesserae: " << nTess;
-    for(int i = 0; i < nTess; i++) {
+	os << "Nr. of tesserae: " << nElements;
+    for(int i = 0; i < nElements; i++) {
 		os << endl;
 		os << i+1 << " ";
-		os << tessCenter(0,i) << " ";
-		os << tessCenter(1,i) << " ";
-		os << tessCenter(2,i) << " ";
-		os << tessArea(i);
+		os << elementCenter(0,i) << " ";
+		os << elementCenter(1,i) << " ";
+		os << elementCenter(2,i) << " ";
+		os << elementArea(i);
     }
 	return os;
 }
@@ -79,7 +79,7 @@ void Cavity::appendNewFunction(const std::string & name) {
 		exit(-1);
 	}
 	if (functions.count(name) == 0) {
-		SurfaceFunction * function = new SurfaceFunction(name, nTess);
+		SurfaceFunction * function = new SurfaceFunction(name, nElements);
 		pair<SurfaceFunctionMap::iterator, bool> retval;
 		retval = functions.insert(SurfaceFunctionPair(name, function));
 	}

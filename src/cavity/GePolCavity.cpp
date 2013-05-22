@@ -15,9 +15,7 @@ using namespace std;
 using namespace Eigen;
 
 #include "Getkw.h"
-#include "Atom.h"
-#include "Sphere.h"
-#include "Cavity.h"
+#include "CavityOfSpheres.h"
 #include "GePolCavity.h"
 
 GePolCavity::GePolCavity(const Section & cavity){
@@ -49,16 +47,16 @@ void GePolCavity::writeOutput(string &filename){
     ofstream output;
     output.open(filename.c_str(), fstream::out);
 
-    output << nTess << endl;
-    for(int i=0; i < nTess; i++) {
-		output << tessCenter(0,i) << " ";
-		output << tessCenter(1,i) << " ";
-		output << tessCenter(2,i) << " ";
-		output << tessArea(i) << " ";
-		output << tessSphereCenter(0,i) << " ";
-		output << tessSphereCenter(1,i) << " ";
-		output << tessSphereCenter(2,i) << " ";
-		output << tessRadius(i) << endl;
+    output << nElements << endl;
+    for(int i=0; i < nElements; i++) {
+		output << elementCenter(0,i) << " ";
+		output << elementCenter(1,i) << " ";
+		output << elementCenter(2,i) << " ";
+		output << elementArea(i) << " ";
+		output << elementSphereCenter(0,i) << " ";
+		output << elementSphereCenter(1,i) << " ";
+		output << elementSphereCenter(2,i) << " ";
+		output << elementRadius(i) << endl;
     }
     output.close();
 }
@@ -149,26 +147,26 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 		spheres[i].setSphereRadius(sphereRadius(i));
 	}
     	
-    nTess = int(nts);
-    tessCenter.resize(NoChange, nTess);
-    tessSphereCenter.resize(NoChange, nTess);
-    tessNormal.resize(NoChange, nTess);
-    tessArea.resize(nTess);
-    tessRadius.resize(nTess);
-    for(int i=0; i < nTess; i++){
-		tessCenter(0,i) = xtscor[i];
-		tessCenter(1,i) = ytscor[i];
-		tessCenter(2,i) = ztscor[i];
-		tessArea(i) = ar[i];
-		tessSphereCenter(0,i) = xsphcor[i];
-		tessSphereCenter(1,i) = ysphcor[i];
-		tessSphereCenter(2,i) = zsphcor[i];
-		tessRadius(i) = rsph[i];
+    nElements = int(nts);
+    elementCenter.resize(NoChange, nElements);
+    elementSphereCenter.resize(NoChange, nElements);
+    elementNormal.resize(NoChange, nElements);
+    elementArea.resize(nElements);
+    elementRadius.resize(nElements);
+    for(int i=0; i < nElements; i++){
+		elementCenter(0,i) = xtscor[i];
+		elementCenter(1,i) = ytscor[i];
+		elementCenter(2,i) = ztscor[i];
+		elementArea(i) = ar[i];
+		elementSphereCenter(0,i) = xsphcor[i];
+		elementSphereCenter(1,i) = ysphcor[i];
+		elementSphereCenter(2,i) = zsphcor[i];
+		elementRadius(i) = rsph[i];
     }
 
-    tessNormal = tessCenter - tessSphereCenter;
-    for(int i=0; i < nTess; i++){
-		tessNormal.col(i) /= tessNormal.col(i).norm();
+    elementNormal = elementCenter - elementSphereCenter;
+    for(int i=0; i < nElements; i++){
+		elementNormal.col(i) /= elementNormal.col(i).norm();
 	}
 
 	delete[] xtscor;
@@ -184,7 +182,7 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	built = true;
 
 }
-
+/*
 void GePolCavity::setMode(const string & type) {
 	if (type == "Atoms") {
 		setMode(Atoms);
@@ -212,7 +210,7 @@ void GePolCavity::setMode(int type) {
 		exit(-1);
 	}
 }
-
+*/
 ostream & GePolCavity::printObject(ostream & os) {
 	/*
 	  We should print the cavity.off file here, just to
@@ -221,7 +219,7 @@ ostream & GePolCavity::printObject(ostream & os) {
 	os << "========== Cavity section" << endl;
         os << "Cavity type: GePol" << endl;
 	os << "Number of spheres: " << nSpheres << endl;
-        os << "Number of tesserae: " << nTess << endl;
+        os << "Number of finite elements: " << nElements << endl;
 /* RDR To be revised...
 	for(int i = 0; i < nSpheres + addedSpheres; i++) {
 		if ( i < nSpheres ) {

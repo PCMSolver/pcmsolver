@@ -27,8 +27,8 @@ class WaveletCavity : public Cavity {
     VectorXd & getTessRadius(){return tessRadius;};
     VectorXd & getSphereRadius(){return sphereRadius;};
     int getNSpheres(){return nSpheres;};
-    Matrix<double, 3, Dynamic> & getSphereCenter(){return sphereCenter;};
-    Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;};
+    Matrix3Xd & getSphereCenter(){return sphereCenter;};
+    Matrix3Xd & getTessSphereCenter(){return tessSphereCenter;};
     double getTessRadius(int i){return tessRadius(i);};
     unsigned int getNPatches(){return nPatches;}
     unsigned int getNLevels(){return nLevels;}
@@ -48,9 +48,9 @@ class WaveletCavity : public Cavity {
     bool uploadedDyadic;
     void writeInput(string &fileName);
     int nSpheres;
-    Matrix<double, 3, Dynamic> sphereCenter;
+    Matrix3Xd sphereCenter;
+    Matrix3Xd tessSphereCenter;
     VectorXd sphereRadius;
-    Matrix<double, 3, Dynamic> tessSphereCenter;
     VectorXd tessRadius;
     int patchLevel;
     double probeRadius;

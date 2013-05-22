@@ -33,9 +33,9 @@ class Cavity
     ~Cavity(){}
     virtual void makeCavity() = 0;
     virtual void writeOutput(string &filename);
-    virtual Matrix<double, 3, Dynamic> & getTessCenter(){return tessCenter;}
+    virtual Matrix3Xd & getTessCenter(){return tessCenter;}
     virtual Vector3d getTessCenter(int i){return tessCenter.col(i);}
-    virtual Matrix<double, 3, Dynamic> & getTessNormal(){return tessNormal;}
+    virtual Matrix3Xd & getTessNormal(){return tessNormal;}
     virtual Vector3d getTessNormal(int i){return tessNormal.col(i);}
     virtual VectorXd & getTessArea(){return tessArea;}
     virtual double getTessArea(int i){return tessArea(i);}
@@ -58,8 +58,8 @@ class Cavity
     virtual ostream & printObject(ostream & os);
     int nTess;
     bool built;
-    Matrix<double, 3, Dynamic> tessCenter;
-    Matrix<double, 3, Dynamic> tessNormal;
+    Matrix3Xd tessCenter;
+    Matrix3Xd tessNormal;
     VectorXd tessArea;
     SurfaceFunctionMap functions;
 };

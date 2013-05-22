@@ -43,7 +43,7 @@ class GePolCavity : public Cavity
     VectorXd & getTessRadius(){return tessRadius;}
     int getNSpheres(){return nSpheres;}
     void setNSpheres(int n){nSpheres = n;}
-    Matrix<double, 3, Dynamic> & getTessSphereCenter(){return tessSphereCenter;}
+    Matrix3Xd & getTessSphereCenter(){return tessSphereCenter;}
     double getTessRadius(int i){return tessRadius(i);}
     void setMaxAddedSpheres(bool add = true, int maxAdd = 100);
     double getProbeRadius() { return probeRadius; };
@@ -64,7 +64,7 @@ class GePolCavity : public Cavity
     int addedSpheres;
     bool addSpheres;
     double probeRadius;
-    Matrix<double, 3, Dynamic> tessSphereCenter;
+    Matrix3Xd tessSphereCenter;
     double averageArea;
     VectorXd tessRadius;
     vector<Sphere> spheres;

@@ -58,8 +58,8 @@ class Input
 		double sphereRadius;
 		
 	public:
-		//static Input& CreateInput(const char *parsedInputFile) 
-		static Input& CreateInput() 
+		//static Input& TheInput(const char *parsedInputFile) 
+		static Input& TheInput() 
 		{
 			static Input obj;
 			return obj;

@@ -64,7 +64,7 @@ extern "C" void hello_pcm_(int * a, double * b) {
 
 extern "C" void init_pcm_() {
 	setupInput();
-        std::string modelType = Input::CreateInput().getSolverType(); 
+        std::string modelType = Input::TheInput().getSolverType(); 
 	if (modelType == "IEFPCM") {
 		_gePolCavity = initGePolCavity();
 		init_iefsolver_();
@@ -238,7 +238,7 @@ void setupInput() {
 	 * This object will be unique (a Singleton) to each "run" of the module.
 	 *   *** WHAT HAPPENS IN NUMERICAL OPTIMIZATIONS? ***
 	 */
-	Input& parsedInput = Input::CreateInput();
+	Input& parsedInput = Input::TheInput();
 	// The only thing we can't create immediately is the vector of spheres
 	// from which the cavity is to be built.
 	std::string _mode = parsedInput.getMode();
@@ -269,8 +269,8 @@ void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) {
 std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _centers) {
 	std::vector<Sphere> spheres;
 
-	vector<int> atomsInput = Input::CreateInput().getAtoms();
-	vector<double> radiiInput = Input::CreateInput().getRadii();
+	vector<int> atomsInput = Input::TheInput().getAtoms();
+	vector<double> radiiInput = Input::TheInput().getRadii();
 	
 	for (int i = 0; i < atomsInput.size(); ++i) {
 		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
@@ -283,7 +283,7 @@ std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eig
 
 std::vector<Sphere> initSpheresImplicit(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _centers) {
 	std::vector<Sphere> spheres;
-	bool scaling = Input::CreateInput().getScaling();
+	bool scaling = Input::TheInput().getScaling();
 
 	for (int i = 0; i < _charges.size(); ++i) {
 		std::vector<Atom> Bondi = Atom::initBondi();
@@ -301,19 +301,19 @@ std::vector<Sphere> initSpheresImplicit(const Eigen::VectorXd & _charges, const 
 
 GePolCavity * initGePolCavity() 
 {
- 	double area = Input::CreateInput().getArea();
-	std::vector<Sphere> spheres = Input::CreateInput().getSpheres();
-	bool addSpheres = Input::CreateInput().getAddSpheres();
-	double probeRadius = Input::CreateInput().getProbeRadius();
+ 	double area = Input::TheInput().getArea();
+	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
+	bool addSpheres = Input::TheInput().getAddSpheres();
+	double probeRadius = Input::TheInput().getProbeRadius();
         GePolCavity * cav = new GePolCavity(area, spheres, addSpheres, probeRadius);
 	return cav;
 }
 
 WaveletCavity * initWaveletCavity() {
-	int patchLevel = Input::CreateInput().getPatchLevel();
-	std::vector<Sphere> spheres = Input::CreateInput().getSpheres();
-	double coarsity = Input::CreateInput().getCoarsity();
-	double probeRadius = Input::CreateInput().getProbeRadius();
+	int patchLevel = Input::TheInput().getPatchLevel();
+	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
+	double coarsity = Input::TheInput().getCoarsity();
+	double probeRadius = Input::TheInput().getProbeRadius();
     	WaveletCavity * cav = new WaveletCavity(patchLevel, spheres, coarsity, probeRadius);
 	cav->readCavity("molec_dyadic.dat");
 	return cav;

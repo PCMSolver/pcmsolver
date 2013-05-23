@@ -7,7 +7,6 @@
 using namespace std;
 using namespace Eigen;
 
-#include "Getkw.h"
 #include "SurfaceFunction.h"
 #include "Cavity.h"
 

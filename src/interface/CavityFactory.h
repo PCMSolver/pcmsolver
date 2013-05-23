@@ -10,9 +10,6 @@
 #include <Eigen/Dense>
 
 #include "Cavity.h"
-#include "CavityOfSpheres.h"
-#include "GePolCavity.h"
-#include "WaveletCavity.h"
 
 /*
  * Factory method implementation shamelessly copied from
@@ -31,18 +28,18 @@ class CavityFactory {
 		// Returns 'true' if registration it the cavityType was registered before
 		bool UnregisterCavity(int cavityID);
 		Cavity * CreateCavity(int cavityID);
-		static CavityFactory& CreateCavityFactory() 
+		static CavityFactory& TheCavityFactory() 
 		{
 			static CavityFactory obj;
 			return obj;
 		}
 	private:
-		CavityFactory();
+		CavityFactory(){}
 		/// Copy constructor is made private
 		CavityFactory(const CavityFactory &other);
 		CavityFactory& operator=(const CavityFactory &other);
         	~CavityFactory(){}
 		CallbackMap callbacks;	
-}
+};
 
 #endif

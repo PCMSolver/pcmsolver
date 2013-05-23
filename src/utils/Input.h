@@ -30,7 +30,7 @@ class Input
 		/// Copy constructor is made private
 		Input(const Input &other);
 		Input& operator=(const Input &other);
-        	~Input(){};
+        	~Input(){}
 		std::string type;
 		int patchLevel;
 		double coarsity;

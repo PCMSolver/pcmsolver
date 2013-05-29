@@ -53,10 +53,16 @@ class SurfaceFunction
     friend SurfaceFunction operator+(const SurfaceFunction & left, const SurfaceFunction & right);
     /// Subtraction operator
     friend SurfaceFunction operator-(const SurfaceFunction & left, const SurfaceFunction & right);
+    /// Multiplication operator: uniform scaling of SurfaceFunction version
+    SurfaceFunction operator*(double scaling);
+    /// Multiplication operator: product of two SurfaceFunctions version (scalar product of the values vectors)
+    friend double operator*(const SurfaceFunction & left, const SurfaceFunction & right);
     /// Addition-assignment operator
     SurfaceFunction & operator+=(const SurfaceFunction & other);
     /// Subtraction-assignment operator
     SurfaceFunction & operator-=(const SurfaceFunction & other);
+    /// Multiplication-assignment operator. Defined only for the uniform scaling case of operator*
+    SurfaceFunction & operator*=(double scaling);
 
     inline void swap(SurfaceFunction & left, SurfaceFunction & right);
     inline void swap(SurfaceFunction & other);

@@ -64,6 +64,7 @@ class Atom {
   string getAtomColour(){ return atomColour; }
   void setAtomColour( const string & colour ){ atomColour = colour; }
   static vector<Atom> initBondi();
+  static vector<Atom> initUFF();
 };
 
 #endif

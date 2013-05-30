@@ -197,7 +197,7 @@ vector<Atom> Atom::initUFF() {
 	UFF[23] = Atom("Chromium", "Cr", 24.0, 1.5115, Origin, 1.0);
 	UFF[24] = Atom("Manganese", "Mn", 25.0, 1.4805, Origin, 1.0);
 	UFF[25] = Atom("Iron", "Fe", 26.0, 1.4560, Origin, 1.0);
-	UFF[26] = Atom("Cobalt", "Co", 27.0, 1.4360 Origin, 1.0);
+	UFF[26] = Atom("Cobalt", "Co", 27.0, 1.4360, Origin, 1.0);
 	UFF[27] = Atom("Nickel", "Ni", 28.0, 1.4170, Origin, 1.0);
 	UFF[28] = Atom("Copper", "Cu", 29.0, 1.7475, Origin, 1.0);
 	UFF[29] = Atom("Zinc", "Zn", 30.0, 1.3815, Origin, 1.0);

@@ -3,90 +3,62 @@
 
 #include "SurfaceFunction.h"
 
-SurfaceFunction & SurfaceFunction::operator=(const SurfaceFunction & other)
+inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
-    if (this == &other) // Check for self-assignment
-        throw std::runtime_error("Are you trying to self-assign?");
-    if (this->nPoints != other.nPoints) // Check if dimensions match
-        throw std::runtime_error("Incoherent dimensions!");
-
-    // Now swap this and other using the Copy-constructor and a non-throwing swap
-    SurfaceFunction(other).swap(*this);
-    // Old resources are released with the destruction of the temporary above
-    return *this;
-}
-
-SurfaceFunction operator+(const SurfaceFunction & left, const SurfaceFunction & right)
-{
-    if (left.nPoints != right.nPoints)
-        throw std::runtime_error("Incoherent dimensions of left and right operands!");
-    std::string resultName = left.name + "+" + right.name;
-    SurfaceFunction result(resultName, left.nPoints);
-    result.values = left.values + right.values;
-    return result;
-}
-
-SurfaceFunction operator-(const SurfaceFunction & left, const SurfaceFunction & right)
-{
-    if (left.nPoints != right.nPoints)
-	    throw std::runtime_error("Incoherent dimensions of left and right operands!");
-    std::string resultName = left.name + "-" + right.name;
-    SurfaceFunction result(resultName, left.nPoints);
-    result.values = left.values - right.values;
-    return result;
-}
-
-SurfaceFunction SurfaceFunction::operator*(double scaling)
-{
-	std::string resultName = std::to_string(scaling) + "*" + this->name;
-	SurfaceFunction result(resultName, this->nPoints);
-	result.values = scaling * this->values;
-	return result;
-}
-
-double operator*(const SurfaceFunction & left, const SurfaceFunction & right)
-{
-	if (left.nPoints != right.nPoints)
-		throw std::runtime_error("Incoherent dimensions of left and right operands!");
-	return left.values.dot(right.values);
-}
-
-SurfaceFunction & SurfaceFunction::operator+=(const SurfaceFunction & other)
-{
-    *this = *this + other;
-    return *this;
-}
-
-SurfaceFunction & SurfaceFunction::operator-=(const SurfaceFunction & other)
-{
-    *this = *this - other;
-    return *this;
-}
-
-SurfaceFunction & SurfaceFunction::operator*=(double scaling)
-{
-    *this = *this * scaling;
-    return *this;
+    using std::swap;
+    swap(left.name, right.name);
+    swap(left.nPoints, right.nPoints); // This is maybe redundant as nPoints must be the same...
+    swap(left.values, right.values);
 }
 
 inline void SurfaceFunction::swap(SurfaceFunction & other)
 {
-    if (this->nPoints != other.nPoints) // Check if dimensions match
-        throw std::runtime_error("Incoherent dimensions!");
     using std::swap;
     swap(this->name, other.name);
     swap(this->nPoints, other.nPoints); // This is maybe redundant
     swap(this->values, other.values);
 }
 
-inline void SurfaceFunction::swap(SurfaceFunction & left, SurfaceFunction & right)
+SurfaceFunction & SurfaceFunction::operator=(SurfaceFunction other)
 {
-    if (left.nPoints != right.nPoints) // Check if dimensions match
-        throw std::runtime_error("Incoherent dimensions!");
-    using std::swap;
-    swap(left.name, right.name);
-    swap(left.nPoints, right.nPoints); // This is maybe redundant
-    swap(left.values, right.values);
+    if (this == &other) // Check for self-assignment
+        throw std::runtime_error("Are you trying to self-assign?");
+    // No check on dimensions! This is assignment not comparison!!
+
+    ::swap(*this, other);
+    return *this;
+}
+
+double SurfaceFunction::operator*(const SurfaceFunction & other)
+{
+	if (this->nPoints != other.nPoints)
+		throw std::runtime_error("Incoherent dimensions of left and right operands!");
+	return this->values.dot(other.values);
+}
+
+SurfaceFunction & SurfaceFunction::operator+=(const SurfaceFunction & other)
+{
+	if (this->nPoints != other.nPoints)
+		throw std::runtime_error("Incoherent dimensions of left and right operands!");
+	this->name += "+" + other.name;
+	this->values = this->values + other.values;
+    	return *this;
+}
+
+SurfaceFunction & SurfaceFunction::operator-=(const SurfaceFunction & other)
+{
+	if (this->nPoints != other.nPoints)
+		throw std::runtime_error("Incoherent dimensions of left and right operands!");
+	this->name += "-" + other.name;
+	this->values = this->values - other.values;
+    	return *this;
+}
+
+SurfaceFunction & SurfaceFunction::operator*=(double scaling)
+{
+	this->name = std::to_string(scaling) + "*" + this->name;
+	this->values *= scaling;
+        return *this;
 }
 
 void SurfaceFunction::setValues(double * values_) 

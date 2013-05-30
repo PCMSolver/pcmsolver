@@ -9,6 +9,7 @@
 
 #include <Eigen/Dense>
 
+#include "Sphere.h"
 
 /** 
 
@@ -31,6 +32,8 @@ class Cavity
                 virtual ~Cavity(){}
                 virtual void makeCavity() = 0;                                         
                 virtual void writeOutput(std::string &filename);
+		
+		/// Functions related to the finite elements making up the cavity
                 virtual Eigen::Matrix3Xd & getElementCenter(){return elementCenter;}
                 virtual Eigen::Vector3d getElementCenter(int i){return elementCenter.col(i);}
                 virtual Eigen::Matrix3Xd & getElementNormal(){return elementNormal;}
@@ -38,10 +41,26 @@ class Cavity
                 virtual Eigen::VectorXd & getElementArea(){return elementArea;}
                 virtual double getElementArea(int i){return elementArea(i);}
                 virtual int size(){return nElements;}
-                bool isBuilt(){return built;}
+		
+		/// Functiona related to the spheres composing the cavity surface
+     	 	virtual vector<Sphere> & getSpheres(){ return spheres; }
+	  	virtual int getNSpheres(){return nSpheres;}
+     	 	virtual void setNSpheres(int n){nSpheres = n;}
+                virtual Eigen::VectorXd & getSphereRadius(){return sphereRadius;}                
+                virtual Eigen::Matrix3Xd & getSphereCenter(){return sphereCenter;}
+                virtual Eigen::VectorXd & getElementRadius(){return elementRadius;}
+     	        virtual double getElementRadius(int i){return elementRadius(i);}
+     	        virtual Eigen::Matrix3Xd & getElementSphereCenter(){return elementSphereCenter;}
+     	        virtual int getMode(){return mode;}
+                virtual void setMode(const std::string & mode);
+     	        virtual void setMode(int mode);
+               
+	       	bool isBuilt(){return built;}
                 double compPolarizationEnergy();
                 double compPolarizationEnergy(const std::string & potential, const std::string & charge);
-                void appendNewFunction(const std::string & name);
+                
+		/// Functions related to the SurfaceFuntionMap
+	      	void appendNewFunction(const std::string & name);
                 void setFunction(const std::string & name, double * values);
                 SurfaceFunction & getFunction(const std::string & name);
                 bool functionExists(const std::string & name) 
@@ -49,6 +68,7 @@ class Cavity
 			SurfaceFunctionMap::const_iterator i = functions.find(name);
 			return i != functions.end();	
                 }
+     	        enum SphereMode {Explicit, Atoms, Implicit};
                 enum chargeType{Nuclear, Electronic};
                                                                                        
                 friend std::ostream& operator<<(std::ostream & o, Cavity & c);
@@ -60,7 +80,14 @@ class Cavity
 		Eigen::Matrix3Xd elementCenter;
 		Eigen::Matrix3Xd elementNormal;
 		Eigen::VectorXd elementArea;
-                SurfaceFunctionMap functions;
+                static SurfaceFunctionMap functions;
+	        SphereMode mode;
+          	int nSpheres;
+	 	Eigen::Matrix3Xd elementSphereCenter;
+	 	Eigen::VectorXd elementRadius;
+	        Eigen::Matrix3Xd sphereCenter;
+	        Eigen::VectorXd sphereRadius;
+     	        vector<Sphere> spheres;
 };
 
 

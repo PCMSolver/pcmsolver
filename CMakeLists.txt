@@ -6,7 +6,7 @@ enable_language(CXX C Fortran)
 # There still is nothing going on inside the code regarding MPI, OpenMP and tests!!
 option(ENABLE_MPI       "Enable MPI parallelization"                                OFF)
 option(ENABLE_OPENMP    "Enable OpenMP parallelization"                             OFF)
-option(ENABLE_TESTS     "Enable compilation of unit tests"                          OFF)
+option(ENABLE_TESTS     "Enable compilation of unit tests"                          ON)
 option(ENABLE_EIGEN_MKL "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
 
 set(PROJECT_VERSION_MAJOR 0)
@@ -110,6 +110,7 @@ include_directories(${PROJECT_BINARY_DIR}/include)
 include_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 
 link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib)
+link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
 
 add_subdirectory(src)
 include_directories(${header_dir_list})
@@ -124,7 +125,7 @@ if(ENABLE_TESTS)
 	        STAMP_DIR ${PROJECT_BINARY_DIR}/external/googletest-stamp
         	TMP_DIR ${PROJECT_BINARY_DIR}/external/googletest-tmp
 	        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        	CMAKE_ARGS ${GenericExternalProjectCMakeArgs}
+        	CMAKE_ARGS ${ExternalProjectCMakeArgs}
 		# Disable install step.
 	        INSTALL_COMMAND ""
 		)
@@ -136,10 +137,10 @@ if(ENABLE_TESTS)
 	include_directories(${GTEST_INCLUDE_DIRS})
 
         enable_testing()
-	file(GLOB_RECURSE TEST_SOURCE_FILES tests/*.cpp)
+	file(GLOB_RECURSE TEST_SOURCE_FILES tests/*/*.cpp)
 	foreach(child ${TEST_SOURCE_FILES})
 		get_filename_component(test_name ${child} NAME_WE)
-                add_executable(${test_name}.x ${TEST_SOURCE_FILES})      	
+                add_executable(${test_name}.x ${child})      	
                 add_dependencies(${test_name}.x googletest)
                 target_link_libraries(${test_name}.x 
                 interface solver green cavity pedra metal pwl wem wavcav utils getkw

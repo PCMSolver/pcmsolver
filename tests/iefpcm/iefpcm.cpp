@@ -6,7 +6,7 @@
 #include "GePolCavity.h"
 #include "PCMSolver.h"
 #include "IEFSolver.h"
-#include "Interface.h"
+//#include "Interface.h"
 #include "gtest/gtest.h"
 
 TEST(iefpcm, pointCharge) {

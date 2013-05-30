@@ -7,7 +7,7 @@
 
 #include <Config.h>
 
-#include "CavityOfSpheres.h"
+#include "Cavity.h"
 
 
 /*
@@ -17,7 +17,7 @@
 
 */
 
-class GePolCavity : public CavityOfSpheres 
+class GePolCavity : public Cavity 
 {
  public:
     GePolCavity(){}

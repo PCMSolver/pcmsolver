@@ -10,9 +10,9 @@
 
 #include "vector3.h"
 #include "Getkw.h"
-#include "CavityOfSpheres.h"
+#include "Cavity.h"
 
-class WaveletCavity : public CavityOfSpheres {
+class WaveletCavity : public Cavity {
  public:
     WaveletCavity(){}
     //    WaveletCavity(string &filename);

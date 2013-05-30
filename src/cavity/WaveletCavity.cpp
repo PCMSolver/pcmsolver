@@ -35,7 +35,6 @@ extern "C"{
 #include "PhysicalConstants.h"
 #include "Getkw.h"
 #include "SurfaceFunction.h"
-#include "CavityOfSpheres.h"
 #include "WaveletCavity.h"
 
 WaveletCavity::WaveletCavity(const Getkw & Input, const string path){

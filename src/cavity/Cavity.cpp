@@ -17,6 +17,8 @@ written by Krzysztof Mozgawa, 2011
 
 */
 
+SurfaceFunctionMap Cavity::functions;
+
 void Cavity::writeOutput(string &filename){
     ofstream output;
     output.open(filename.c_str(), fstream::out);
@@ -99,6 +101,11 @@ SurfaceFunction & Cavity::getFunction(const std::string & name) {
 	}
 	SurfaceFunction * func = functions.find(name)->second;
 	return * func;
+}
+
+SurfaceFunctionMap & Cavity::initSurfaceFunctionMap()
+{
+	return functions;
 }
 
 void Cavity::setMode(const string & type) {

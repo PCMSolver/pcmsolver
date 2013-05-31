@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include "SurfaceFunction.h"
+#include "Cavity.h"
 
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
@@ -83,6 +84,18 @@ void SurfaceFunction::getValues(double * values_)
 void SurfaceFunction::clear() 
 {
 	values.setZero();
+}
+
+bool SurfaceFunction::Register()
+{
+	registered = Cavity::initSurfaceFunctionMap().insert(SurfaceFunctionMap::value_type(name, this)).second;
+	return registered;
+}
+
+bool SurfaceFunction::unRegister()
+{
+	registered = Cavity::initSurfaceFunctionMap().erase(name);
+	return registered;
 }
 
 std::ostream & operator<<(std::ostream & os, SurfaceFunction & sf) 

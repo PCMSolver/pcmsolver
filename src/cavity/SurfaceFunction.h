@@ -18,19 +18,15 @@ written by L. Frediani 2012
 class SurfaceFunction
 {
  public:
-    SurfaceFunction()
-    	{
-		nPoints = 0;
-		allocated = false;
-	}	 
-    SurfaceFunction(const std::string & name_) : name(name_)
-	{
-		allocated = false;
-	}
+    SurfaceFunction() : nPoints(0), allocated(false) {}
+    SurfaceFunction(const std::string & name_) : name(name_), allocated(false) {}
     SurfaceFunction(const std::string & name_, int nPoints_) : name(name_), nPoints(nPoints_) 
 	{
 		values.resize(nPoints);
 		allocated = true;
+		// The SurfaceFunction registers itself in the SurfaceFunctionMap
+		// static member of the Cavity class.
+		Register();
 	}							       
     SurfaceFunction(const std::string & name_, int nPoints_, double * values_) : name(name_), nPoints(nPoints_)
 	{
@@ -40,16 +36,25 @@ class SurfaceFunction
 		{
 			values(i) = values_[i];
 		}
+		// The SurfaceFunction registers itself in the SurfaceFunctionMap
+		// static member of the Cavity class.
+		Register();
 	}
     ~SurfaceFunction()
     {
         allocated = false;
+	// Upon destruction the SurfaceFunction unregisters itself from
+	// the SurfaceFunctionMap static member of the Cavity class.
+	// This should be enough to avoid dangling pointers...
     }
 
     /// Copy constructor
     SurfaceFunction(const SurfaceFunction & other) : name(other.name), nPoints(other.nPoints), values(other.values)
     {
         allocated = true;
+	// The SurfaceFunction registers itself in the SurfaceFunctionMap
+	// static member of the Cavity class.
+	Register();
     }
 
     friend inline void swap(SurfaceFunction & left, SurfaceFunction & right);
@@ -77,6 +82,9 @@ class SurfaceFunction
     void setValues(double * value);
     void getValues(double * value);
 
+    bool Register();
+    bool unRegister();
+
     friend std::ostream & operator<<(std::ostream & o, SurfaceFunction & s);
 
  private:
@@ -85,6 +93,7 @@ class SurfaceFunction
     int nPoints;
     Eigen::VectorXd values;
     bool allocated;
+    bool registered;
 };
 
 

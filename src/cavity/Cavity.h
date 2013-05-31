@@ -21,12 +21,12 @@ written by Krzysztof Mozgawa, 2011
 
 class SurfaceFunction;
 
+	        // Useful typedefs	
+		typedef std::pair<std::string, SurfaceFunction*> SurfaceFunctionPair;
+		typedef std::map<std::string, SurfaceFunction*> SurfaceFunctionMap;
 
 class Cavity
 {
-	protected:
-		typedef std::pair< std::string, SurfaceFunction * > SurfaceFunctionPair;
-		typedef std::map< std::string, SurfaceFunction * > SurfaceFunctionMap;
 	public:
 		Cavity() : nElements(0), built(false) {}
                 virtual ~Cavity(){}
@@ -58,8 +58,9 @@ class Cavity
 	       	bool isBuilt(){return built;}
                 double compPolarizationEnergy();
                 double compPolarizationEnergy(const std::string & potential, const std::string & charge);
-                
+               
 		/// Functions related to the SurfaceFuntionMap
+		static SurfaceFunctionMap & initSurfaceFunctionMap();
 	      	void appendNewFunction(const std::string & name);
                 void setFunction(const std::string & name, double * values);
                 SurfaceFunction & getFunction(const std::string & name);

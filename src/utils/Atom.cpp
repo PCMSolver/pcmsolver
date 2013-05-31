@@ -42,7 +42,7 @@ Atom::Atom( const string & element, const string & symbol, double charge,
 }
 
 
-vector<Atom> Atom::initBondi() {
+vector<Atom> & Atom::initBondi() {
 	/*
 
 	  vector<Atom> Bondi() contains the van der Waals radii taken from
@@ -55,7 +55,7 @@ vector<Atom> Atom::initBondi() {
   
 	*/
 
-	vector<Atom> Bondi(89);
+	static vector<Atom> Bondi(89);
 	Vector3d Origin;
 
 	Origin << 0.0, 0.0, 0.0;
@@ -154,7 +154,7 @@ vector<Atom> Atom::initBondi() {
 	return Bondi;
 }
 
-vector<Atom> Atom::initUFF() {
+vector<Atom> & Atom::initUFF() {
 	/*
 
 	  vector<Atom> UFF() contains the UFF set of radii obtained from
@@ -165,7 +165,7 @@ vector<Atom> Atom::initUFF() {
   
 	*/
 
-	vector<Atom> UFF(89);
+	static vector<Atom> UFF(89);
 	Vector3d Origin;
 
 	Origin << 0.0, 0.0, 0.0;

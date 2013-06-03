@@ -66,7 +66,7 @@ class Input
 		}
 		// Accessor methods
 		// Cavity section input
-		std::string getType(){ return type; }
+		std::string getCavityType(){ return type; }
 		int getPatchLevel(){ return patchLevel; }
 		double getCoarsity(){ return coarsity; }
 		double getArea(){ return area; }

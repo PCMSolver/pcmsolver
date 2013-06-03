@@ -17,6 +17,7 @@
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "WaveletCavity.h"
+#include "CavityFactory.h"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
@@ -64,11 +65,12 @@ extern "C" void hello_pcm_(int * a, double * b) {
 
 extern "C" void init_pcm_() {
 	setupInput();
-        std::string modelType = Input::TheInput().getSolverType(); 
+        std::string modelType = Input::TheInput().getSolverType();
+        initCavity();	
 	if (modelType == "IEFPCM") {
-		_gePolCavity = initGePolCavity();
+//		_gePolCavity = initGePolCavity();
 		init_iefsolver_();
-		_cavity = _gePolCavity;
+//		_cavity = _gePolCavity;
 		_solver = _IEFSolver;
 	} else if (modelType == "CPCM") {
 		_gePolCavity = initGePolCavity();
@@ -157,7 +159,8 @@ extern "C" void print_pcm_(){
         const string modelType = Medium.getStr("SolverType");
 	if (modelType == "IEFPCM") {
 		std::cout << *_IEFSolver << std::endl;
-	        std::cout << *_gePolCavity << std::endl;
+//	        std::cout << *_gePolCavity << std::endl;
+		std::cout << *_cavity << std::endl;
 	} else if (modelType == "CPCM") {
 		std::cout << *_CPCMSolver << std::endl;
 	        std::cout << *_gePolCavity << std::endl;
@@ -256,6 +259,23 @@ void setupInput() {
 	}
 }
 
+void initCavity()
+{
+	// Get the input data for generating the cavity
+	std::string cavityType = Input::TheInput().getCavityType();
+ 	double area = Input::TheInput().getArea();
+	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
+	bool addSpheres = Input::TheInput().getAddSpheres();
+	double probeRadius = Input::TheInput().getProbeRadius();
+	int patchLevel = Input::TheInput().getPatchLevel();
+	double coarsity = Input::TheInput().getCoarsity();
+
+	// Get the right cavity from Factory
+	_cavity = CavityFactory::TheCavityFactory().CreateCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
+	
+	//cav->readCavity("molec_dyadic.dat"); //WaveletCavity... maybe call this inside constructor???
+}
+
 void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) {
 	int nuclei;
 	collect_nctot_(&nuclei);
@@ -336,7 +356,8 @@ void init_iefsolver_() {
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
 	_IEFSolver = new IEFSolver(Medium);
-	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
+//	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
+	_IEFSolver->buildSystemMatrix(*_cavity);
 }
 
 void init_cpcmsolver_() {

@@ -18,23 +18,20 @@ class WaveletCavity : public Cavity {
     //    WaveletCavity(string &filename);
     WaveletCavity(const Getkw & input, const string path = "Cavity");
     WaveletCavity(const Section & cavity);
-    WaveletCavity(int _patchLevel, const std::vector<Sphere> & _spheres, double _coarsity, double _probeRadius) : 
-     patchLevel(_patchLevel), coarsity(_coarsity), probeRadius(_probeRadius) 
+    WaveletCavity(const std::vector<Sphere> & _spheres, double _probeRadius, int _patchLevel = 2, double _coarsity = 0.5) :
+	   Cavity(_spheres), probeRadius(_probeRadius), patchLevel(_patchLevel), coarsity(_coarsity) 
            {
-		// Initialize data members inherited from CavityOfSpheres...
-		spheres = _spheres;
-                nSpheres = spheres.size();
-		sphereCenter.resize(Eigen::NoChange, nSpheres);
-		sphereRadius.resize(nSpheres);
-		for (int i = 0; i < nSpheres; ++i) {
-			sphereCenter.col(i) = spheres[i].getSphereCenter();
-			sphereRadius(i) = spheres[i].getSphereRadius();
-		}
 		uploadedDyadic = false;
-		// ...and build the cavity!
 		makeCavity();
            }
     ~WaveletCavity(){};
+    static Cavity* Create(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
+		    bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
+    {
+	    return new WaveletCavity(_spheres, _probeRadius, _patchLevel, _coarsity);
+    }
+    static bool registered;
+    static bool Register();
     void makeCavity();
     void readCavity(const string & filename);
     void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
@@ -70,5 +67,11 @@ class WaveletCavity : public Cavity {
     double probeRadius;
     double coarsity;
 };
+
+#ifndef REGISTER
+#define REGISTER static const bool anonW = WaveletCavity::Register();
+REGISTER
+#endif
+#undef REGISTER
 
 #endif

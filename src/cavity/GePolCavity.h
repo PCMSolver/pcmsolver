@@ -21,22 +21,19 @@ class GePolCavity : public Cavity
 {
  public:
     GePolCavity(){}
-    GePolCavity(double _area, const std::vector<Sphere> & _spheres, bool _addSpheres = false, double _probeRadius = 0.0) : 
-     averageArea(_area), addSpheres(_addSpheres), probeRadius(_probeRadius) 
+    GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, bool _addSpheres = false) : 
+	Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), addSpheres(_addSpheres)  
            {
-		// Initialize data members inherited from CavityOfSpheres...
-		spheres = _spheres;
-                nSpheres = spheres.size();
-		sphereCenter.resize(Eigen::NoChange, nSpheres);
-		sphereRadius.resize(nSpheres);
-		for (int i = 0; i < nSpheres; ++i) {
-			sphereCenter.col(i) = spheres[i].getSphereCenter();
-			sphereRadius(i) = spheres[i].getSphereRadius();
-		}
-		// ...and build the cavity!
 		makeCavity(10000, 10000000);
            }
     ~GePolCavity(){}
+    static Cavity* Create(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
+		    bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
+    {
+	    return new GePolCavity(_spheres, _area, _probeRadius, _addSpheres);
+    }
+    static bool registered;
+    static bool Register();
     void makeCavity(int maxts, int lwork);
     void makeCavity();
     void writeOutput(string &filename);
@@ -55,5 +52,10 @@ class GePolCavity : public Cavity
     int addedSpheres;
 };
 
+#ifndef REGISTER
+#define REGISTER static const bool anonG = GePolCavity::Register();
+REGISTER
+#endif
+#undef REGISTER
 
 #endif

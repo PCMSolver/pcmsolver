@@ -3,6 +3,7 @@ set(cavity_SOURCES
     GePolCavity.cpp
     WaveletCavity.cpp
     SurfaceFunction.cpp
+    CavityFactory.cpp
 )
 
 add_library(cavity ${cavity_SOURCES})
@@ -15,3 +16,4 @@ install(FILES Cavity.h DESTINATION include)
 install(FILES GePolCavity.h DESTINATION include)
 install(FILES WaveletCavity.h DESTINATION include)
 install(FILES SurfaceFunction.h DESTINATION include)
+install(FILES CavityFactory.h DESTINATION include)

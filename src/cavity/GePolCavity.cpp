@@ -15,7 +15,16 @@ using std::cout;
 using std::endl;
 
 #include "GePolCavity.h"
+#include "CavityFactory.h"
 
+bool GePolCavity::registered = false;
+
+bool GePolCavity::Register()
+{
+	std::cout << "Register GePolCavity" << std::endl;
+	GePolCavity::registered = CavityFactory::TheCavityFactory().registerCavity("GePol", GePolCavity::Create);
+	return GePolCavity::registered;
+}
 
 void GePolCavity::writeOutput(string &filename){
 

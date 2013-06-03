@@ -305,7 +305,7 @@ GePolCavity * initGePolCavity()
 	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
 	bool addSpheres = Input::TheInput().getAddSpheres();
 	double probeRadius = Input::TheInput().getProbeRadius();
-        GePolCavity * cav = new GePolCavity(area, spheres, addSpheres, probeRadius);
+        GePolCavity * cav = new GePolCavity(spheres, area, probeRadius, addSpheres);
 	return cav;
 }
 
@@ -314,7 +314,7 @@ WaveletCavity * initWaveletCavity() {
 	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
 	double coarsity = Input::TheInput().getCoarsity();
 	double probeRadius = Input::TheInput().getProbeRadius();
-    	WaveletCavity * cav = new WaveletCavity(patchLevel, spheres, coarsity, probeRadius);
+    	WaveletCavity * cav = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
 	cav->readCavity("molec_dyadic.dat");
 	return cav;
 

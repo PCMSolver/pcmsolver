@@ -29,6 +29,18 @@ class Cavity
 {
 	public:
 		Cavity() : nElements(0), built(false) {}
+		Cavity(const std::vector<Sphere> & _spheres) : spheres(_spheres)
+			{
+				spheres = _spheres;
+                		nSpheres = spheres.size();
+				sphereCenter.resize(Eigen::NoChange, nSpheres);
+				sphereRadius.resize(nSpheres);
+				for (int i = 0; i < nSpheres; ++i) 
+				{
+					sphereCenter.col(i) = spheres[i].getSphereCenter();
+					sphereRadius(i) = spheres[i].getSphereRadius();
+				}
+			}
                 virtual ~Cavity(){}
                 virtual void makeCavity() = 0;                                         
                 virtual void writeOutput(std::string &filename);

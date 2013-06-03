@@ -19,15 +19,17 @@
 
 class CavityFactory {
 	public:
-		typedef Cavity * (*CreateCavityCallback)();
+		typedef Cavity * (*CreateCavityCallback)(const std::vector<Sphere> & _spheres, double _area, double _probeRadius, 
+							 bool _addSpheres, int _patchLevel, double _coarsity);
 	private:
-		typedef std::map<int, CreateCavityCallback> CallbackMap;
+		typedef std::map<std::string, CreateCavityCallback> CallbackMap;
 	public:
 		// Returns 'true' if registration was successful
-		bool RegisterCavity(int cavityID, CreateCavityCallback createFunction);
+		bool registerCavity(std::string cavityID, CreateCavityCallback createFunction);
 		// Returns 'true' if registration it the cavityType was registered before
-		bool UnregisterCavity(int cavityID);
-		Cavity * CreateCavity(int cavityID);
+		bool unRegisterCavity(std::string cavityID);
+		Cavity * CreateCavity(std::string cavityID, const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
+				      bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5);
 		static CavityFactory& TheCavityFactory() 
 		{
 			static CavityFactory obj;

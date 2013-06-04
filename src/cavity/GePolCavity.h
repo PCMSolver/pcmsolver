@@ -24,7 +24,8 @@ class GePolCavity : public Cavity
     GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, bool _addSpheres = false) : 
 	Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), addSpheres(_addSpheres)  
            {
-		makeCavity(10000, 10000000);
+		   setMaxAddedSpheres(addSpheres);
+		   makeCavity(10000, 10000000);
            }
     ~GePolCavity(){}
     static Cavity* Create(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 

@@ -58,7 +58,7 @@ void GePolCavity::makeCavity(){
 }
 
 void GePolCavity::makeCavity(int maxts, int lwork) {
-        
+       
 	// This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code PEDRA.
 	// Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow
 	// for the insertion of additional spheres as in the most general formulation of the
@@ -81,11 +81,11 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	// If this number is exceeded, then the algorithm crashes (should look into this...)
 	// After the cavity is generated we will update ALL the class data members, both related
 	// to spheres and finite elements so that the cavity is fully formed.
-
-	Eigen::VectorXd xv(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd yv(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd zv(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd sphereRadius_(nSpheres + maxAddedSpheres); // Not to be confused with the data member!!!
+	
+	Eigen::VectorXd xv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd yv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd zv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd sphereRadius_ = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres); // Not to be confused with the data member inherited from Cavity!!!
 	
 	for ( int i = 0; i < nSpheres; ++i ) 
 	{
@@ -95,14 +95,14 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 			yv(i) = sphereCenter(1, i);
 			zv(i) = sphereCenter(2, i);
 		}
-		sphereRadius_(i) = sphereCenter(i);
+		sphereRadius_(i) = sphereRadius(i);
 	}
 		
 	double *xe = xv.data();
 	double *ye = yv.data();
 	double *ze = zv.data();
 
-	double *rin = sphereRadius.data();
+	double *rin = sphereRadius_.data();
 
         // Go PEDRA, Go!	
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
@@ -111,10 +111,10 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
 	// coming out from generatecavity_cpp_
 	
-	Eigen::VectorXd rtmp(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd xtmp(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd ytmp(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd ztmp(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd rtmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd xtmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd ytmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd ztmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
 
 	// The first nSpheres elements of these temporaries will still be those of the original set of spheres	
 	rtmp = sphereRadius_.head(nSpheres);
@@ -126,7 +126,7 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	addedSpheres = 0;
 	for ( int i = nSpheres; i < nSpheres + maxAddedSpheres; i++ ) 
 	{
-		if ( sphereRadius_(i) != 0) 
+		if ( sphereRadius_(i) != 0.0) 
 		{
 			rtmp(i) = sphereRadius_(i);
 			xtmp(i) = xv(i);
@@ -136,11 +136,11 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 		}
 	}
 
-	std::cout << "The PEDRA algorithm added " << addedSpheres << " new spheres to the original list." << std::endl;
 	// The "intensive" part of updating the spheres related class data members will be of course
 	// executed iff addedSpheres != 0
 	if ( addedSpheres != 0 )
 	{
+		std::cout << "The PEDRA algorithm added " << addedSpheres << " new spheres to the original list." << std::endl;
 		// First of all update the nSpheres
 		nSpheres += addedSpheres;
 		// Resize sphereRadius and sphereCenter...
@@ -232,10 +232,14 @@ ostream & GePolCavity::printObject(ostream & os) {
 }
 
 void GePolCavity::setMaxAddedSpheres(bool add, int maxAdd) {
-	if ( add == true ) {
+	if ( add ) 
+	{
 		maxAddedSpheres = maxAdd;
 	}
-	addSpheres = true;
+	else
+	{
+		maxAddedSpheres = 0;
+	}
 }
 
 void GePolCavity::setProbeRadius( double rsolv ) {

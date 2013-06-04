@@ -54,7 +54,7 @@ class Cavity
                 virtual double getElementArea(int i){return elementArea(i);}
                 virtual int size(){return nElements;}
 		
-		/// Functiona related to the spheres composing the cavity surface
+		/// Functions related to the spheres composing the cavity surface
      	 	virtual vector<Sphere> & getSpheres(){ return spheres; }
 	  	virtual int getNSpheres(){return nSpheres;}
      	 	virtual void setNSpheres(int n){nSpheres = n;}

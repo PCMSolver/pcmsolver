@@ -66,7 +66,7 @@ extern "C" void hello_pcm_(int * a, double * b) {
 extern "C" void init_pcm_() {
 	setupInput();
         std::string modelType = Input::TheInput().getSolverType();
-        initCavity();	
+        initCavity();
 	if (modelType == "IEFPCM") {
 //		_gePolCavity = initGePolCavity();
 		init_iefsolver_();
@@ -270,8 +270,10 @@ void initCavity()
 	int patchLevel = Input::TheInput().getPatchLevel();
 	double coarsity = Input::TheInput().getCoarsity();
 
-	// Get the right cavity from Factory
+	// Get the right cavity from the Factory
 	_cavity = CavityFactory::TheCavityFactory().CreateCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
+	// Our use of inheritance breaks Liskov Principle, the Factory is pretty useless... 
+	// UNLESS one uses RTTI (which we do) although I don't know if it's a sign of ugly design strategy...
 	
 	//cav->readCavity("molec_dyadic.dat"); //WaveletCavity... maybe call this inside constructor???
 }

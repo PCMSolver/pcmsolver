@@ -3,6 +3,7 @@ set(utils_SOURCES
 	Solvent.cpp
 	Atom.cpp
 	Sphere.cpp	
+    	SurfaceFunction.cpp
 )
 
 add_library(utils ${utils_SOURCES})
@@ -12,7 +13,8 @@ install(TARGETS utils
 	ARCHIVE DESTINATION lib)
 
 install(FILES PhysicalConstants.h DESTINATION include)
+install(FILES Input.h DESTINATION include)
 install(FILES Solvent.h DESTINATION include)
 install(FILES Atom.h DESTINATION include)
 install(FILES Sphere.h DESTINATION include)
-install(FILES Input.h DESTINATION include)
+install(FILES SurfaceFunction.h DESTINATION include)

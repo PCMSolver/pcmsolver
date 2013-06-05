@@ -19,12 +19,6 @@ written by Krzysztof Mozgawa, 2011
 
 */
 
-class SurfaceFunction;
-
-	        // Useful typedefs	
-		typedef std::pair<std::string, SurfaceFunction*> SurfaceFunctionPair;
-		typedef std::map<std::string, SurfaceFunction*> SurfaceFunctionMap;
-
 class Cavity
 {
 	public:
@@ -71,16 +65,6 @@ class Cavity
                 double compPolarizationEnergy();
                 double compPolarizationEnergy(const std::string & potential, const std::string & charge);
                
-		/// Functions related to the SurfaceFuntionMap
-		static SurfaceFunctionMap & initSurfaceFunctionMap();
-	      	void appendNewFunction(const std::string & name);
-                void setFunction(const std::string & name, double * values);
-                SurfaceFunction & getFunction(const std::string & name);
-                bool functionExists(const std::string & name) 
-		{
-			SurfaceFunctionMap::const_iterator i = functions.find(name);
-			return i != functions.end();	
-                }
      	        enum SphereMode {Explicit, Atoms, Implicit};
                 enum chargeType{Nuclear, Electronic};
                                                                                        
@@ -93,7 +77,6 @@ class Cavity
 		Eigen::Matrix3Xd elementCenter;
 		Eigen::Matrix3Xd elementNormal;
 		Eigen::VectorXd elementArea;
-                static SurfaceFunctionMap functions;
 	        SphereMode mode;
           	int nSpheres;
 	 	Eigen::Matrix3Xd elementSphereCenter;

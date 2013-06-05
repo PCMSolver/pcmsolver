@@ -2,7 +2,6 @@ set(cavity_SOURCES
     Cavity.cpp
     GePolCavity.cpp
     WaveletCavity.cpp
-    SurfaceFunction.cpp
     CavityFactory.cpp
 )
 
@@ -15,5 +14,4 @@ install(TARGETS cavity
 install(FILES Cavity.h DESTINATION include)
 install(FILES GePolCavity.h DESTINATION include)
 install(FILES WaveletCavity.h DESTINATION include)
-install(FILES SurfaceFunction.h DESTINATION include)
 install(FILES CavityFactory.h DESTINATION include)

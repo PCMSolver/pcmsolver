@@ -33,9 +33,6 @@ class PCMSolver{
     virtual void buildSystemMatrix(Cavity & cavity) = 0;
     // ask jonas virtual VectorXd compCharge(const VectorXd & potential);
     virtual void compCharge(const VectorXd & potential, VectorXd & charge) = 0;
-    void buildCharge(Cavity & cavity, 
-                    const std::string & potName, 
-                    const std::string & chgName);
     virtual void setSolverType(const string & type);
     virtual void setSolverType(int type);
     virtual int getSolverType() { return solverType; }

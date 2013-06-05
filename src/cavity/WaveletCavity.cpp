@@ -34,7 +34,6 @@ extern "C"{
 
 #include "PhysicalConstants.h"
 #include "Getkw.h"
-#include "SurfaceFunction.h"
 #include "WaveletCavity.h"
 #include "CavityFactory.h"
 
@@ -112,21 +111,6 @@ void WaveletCavity::writeInput(string &fileName){
 extern "C" {
 	int waveletCavityDrv_(double probeRadius, double coarsity, 
 						  int patchLevel, const char* infile);
-}
-
-void WaveletCavity::compFakePotential()
-{
-	this->appendNewFunction("NucPot");
-	VectorXd & potential = this->getFunction("NucPot").getVector();
-	potential.setZero();
-	for (int i = 0; i < elementArea.size(); i++) {
-		for (int j = 0; j < sphereRadius.size(); j++) {
-			Vector3d p1 = elementCenter.col(i);
-			Vector3d p2 = sphereCenter.col(j);
-			double pot = 1.0/(p1-p2).norm();
-			potential(i) += pot;
-		}
-	}
 }
 
 void WaveletCavity::makeCavity() {

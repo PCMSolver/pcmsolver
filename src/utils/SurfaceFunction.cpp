@@ -88,13 +88,13 @@ void SurfaceFunction::clear()
 
 bool SurfaceFunction::Register()
 {
-	registered = Cavity::initSurfaceFunctionMap().insert(SurfaceFunctionMap::value_type(name, this)).second;
+	registered = SurfaceFunction::initSurfaceFunctionMap().insert(SurfaceFunctionMap::value_type(name, this)).second;
 	return registered;
 }
 
 bool SurfaceFunction::unRegister()
 {
-	registered = Cavity::initSurfaceFunctionMap().erase(name);
+	registered = SurfaceFunction::initSurfaceFunctionMap().erase(name);
 	return registered;
 }
 

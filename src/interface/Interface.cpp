@@ -15,6 +15,7 @@
 #include "Getkw.h"
 #include "taylor.hpp"
 #include "SurfaceFunction.h"
+#include "SurfaceMap.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
 #include "WaveletCavity.h"
@@ -38,6 +39,7 @@ using namespace std;
 using namespace Eigen;
 
 typedef taylor<double, 3, 1> T;
+typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
 
 // We need globals as they must be accessible across all the functions defined
 // in this interface... Could we use singletons?
@@ -100,18 +102,29 @@ extern "C" void init_pcm_() {
 
 extern "C" void comp_chg_pcm_(char * potName, char * chgName) 
 {
+	std::cout << "inside comp_chg_pcm_" << std::endl;
 	string potFuncName(potName);
 	string chgFuncName(chgName);
 
-	SurfaceFunctionMap& functions = SurfaceFunction::initSurfaceFunctionMap();
+	SurfaceFunctionMap& functions = SurfaceMap::TheMap();
+	std::cout << "map size is " << functions.size() << std::endl;
 	SurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
 	SurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
+	std::cout << "got the iterators"  << std::endl;
 
 	if(iter_chg == functions.end()) 
 	{
-		SurfaceFunction func(chgFuncName, _cavity->size());		
+		SurfaceFunction * func = new SurfaceFunction(chgFuncName, _cavity->size());
+		func->Register();	
 	//	_cavity->appendNewFunction(chgFuncName);
+	//	Update iter_chg
+		++iter_chg;
 	}
+	std::cout << "after chg map size is " << functions.size() << std::endl;
+
+	std::cout << "before compCharge: print potential\n" << iter_pot->second->getVector() << std::endl;
+	std::cout << "before compCharge: print charges\n" << iter_chg->second->getVector() << std::endl;
+
 //	_cavity->getFunction(chgName).clear();
 	VectorXd & charge = iter_chg->second->getVector();
 //		_cavity->getFunction(chgName).getVector();
@@ -119,12 +132,15 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName)
 //		_cavity->getFunction(potName).getVector();
 	_solver->compCharge(potential, charge);
 	double totalChg = charge.sum();
+	std::cout << "after compCharge: print potential\n" << iter_pot->second->getVector() << std::endl;
+	std::cout << "after compCharge: print charges\n" << iter_chg->second->getVector() << std::endl;
 }
 
 // Revise this function. It's just a dirty hack now.
 extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total) 
 {
-	SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	//SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	SurfaceFunctionMap& functions = SurfaceMap::TheMap();
         if (*separate_or_total == 0) 
 	{ // Using separate potentials and charges
 		SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucPot");
@@ -229,10 +245,23 @@ extern "C" void set_surface_function_(int * nts, double * values, char * name)
 		throw std::runtime_error("You are trying to allocate a SurfaceFunction bigger than the cavity!");
 	std::string functionName(name);
 // Shouldn't we check if the function already exists?
-//	SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
-//	SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
-//	if ( iter == functions.end() ) 
-	SurfaceFunction func(functionName, *nts, values);
+	SurfaceFunctionMap & functions = SurfaceMap::TheMap();
+	SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
+	if ( iter == functions.end() )
+	{
+	       std::cout << "Function " << functionName << " does not exist, adding to TheMap" << std::endl;
+	       std::cout << "in set_surface_function_, before creating func: map size is " << SurfaceMap::TheMap().size() << std::endl;
+	       SurfaceFunction * func = new SurfaceFunction(functionName, *nts, values);
+	       func->Register();
+	       std::cout << "in set_surface_function_, after creating func: map size is " << SurfaceMap::TheMap().size() << std::endl;
+	}
+	else
+	{
+	       std::cout << "Function " << functionName << " exists, updating values" << std::endl;
+	       std::cout << "in set_surface_function_, before creating func: map size is " << SurfaceMap::TheMap().size() << std::endl;
+	       iter->second->setValues(values);
+	       std::cout << "in set_surface_function_, after creating func: map size is " << SurfaceMap::TheMap().size() << std::endl;
+	}
 }
 
 extern "C" void get_surface_function_(int * nts, double * values, char * name) 
@@ -242,7 +271,8 @@ extern "C" void get_surface_function_(int * nts, double * values, char * name)
 		throw std::runtime_error("You are trying to access a SurfaceFunction bigger than the cavity!");
 	
 	std::string functionName(name);
-	SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	//SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	SurfaceFunctionMap& functions = SurfaceMap::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
 	Eigen::VectorXd surfaceVector = iter->second->getVector();
 //	VectorXd & surfaceVector = _cavity->getFunction(functionName).getVector();
@@ -257,7 +287,8 @@ extern "C" void add_surface_function_(char * result, double * coeff, char * part
 
 	append_surf_func_(result);
 //	_cavity->appendNewFunction(resultName);
-	SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	//SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	SurfaceFunctionMap& functions = SurfaceMap::TheMap();
 
 	SurfaceFunctionMap::const_iterator iter_part = functions.find(partName);
 	SurfaceFunctionMap::const_iterator iter_result = functions.find(resultName);
@@ -275,7 +306,8 @@ extern "C" void print_surface_function_(char * name)
 {
 	std::string functionName(name);
 
-	SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	//SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	SurfaceFunctionMap& functions = SurfaceMap::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(name);
 
 	std::cout << *(iter->second) << std::endl;
@@ -285,7 +317,9 @@ extern "C" bool surf_func_exists_(char * name)
 {
 	std::string functionName(name);
 
-	SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	//SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+
+	SurfaceFunctionMap& functions = SurfaceMap::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(name);
 
 // 	return _cavity->functionExists(functionName);
@@ -296,7 +330,8 @@ extern "C" void clear_surf_func_(char* name)
 {
 	std::string functionName(name);
 
-	SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	//SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	SurfaceFunctionMap& functions = SurfaceMap::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(name);
 
 	iter->second->clear();
@@ -307,10 +342,15 @@ extern "C" void append_surf_func_(char* name)
 	int nTess = _cavity->size();
 	std::string functionName(name);
 
-	SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+	//SurfaceFunctionMap & functions = SurfaceFunction::initSurfaceFunctionMap();
+
+	SurfaceFunctionMap& functions = SurfaceMap::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
 	if ( iter == functions.end() )
-		SurfaceFunction func(functionName, nTess);
+	{
+		SurfaceFunction * func = new SurfaceFunction(functionName, nTess);
+		func->Register();
+	}
 }
 /*
 extern "C" void set_surface_function_(int * nts, double * values, char * name) {

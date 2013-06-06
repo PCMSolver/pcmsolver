@@ -16,10 +16,9 @@ written by L. Frediani 2012
 
 */
 
-
 class SurfaceFunction
 {
- typedef std::map<std::string, SurfaceFunction*> SurfaceFunctionMap;
+ typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
 
  public:
          SurfaceFunction() : nPoints(0), allocated(false) {}
@@ -29,7 +28,7 @@ class SurfaceFunction
 			values = Eigen::VectorXd::Zero(nPoints);
 			allocated = true;
 			// The SurfaceFunction registers itself in the SurfaceFunctionMap
-			Register();
+//			Register();
 	 } 							       
          SurfaceFunction(const std::string & name_, int nPoints_, double * values_) : name(name_), nPoints(nPoints_)            	
 	 {
@@ -40,14 +39,15 @@ class SurfaceFunction
 	 			values(i) = values_[i];
 	 		}
 	 		// The SurfaceFunction registers itself in the SurfaceFunctionMap
-	 		Register();
+//	 		Register();
 	 }
          ~SurfaceFunction()                                                                                                     
          {
+	     std::cout << "Calling DTOR" << std::endl;
              allocated = false;
              // Upon destruction the SurfaceFunction unregisters itself from the SurfaceFunctionMap.
              // This should be enough to avoid dangling pointers...
-	     unRegister();
+//	     unRegister();
          }
                                                                                                                          
          /// Copy constructor
@@ -56,13 +56,13 @@ class SurfaceFunction
              allocated = true;
              // The SurfaceFunction registers itself in the SurfaceFunctionMap
              // static member of the Cavity class.
-             Register();
+  //           Register();
          }
                                                                                                                         
 	 static SurfaceFunctionMap & initSurfaceFunctionMap()
 	 {
-	 	static SurfaceFunctionMap functions;
-	 	return functions;
+	 	static SurfaceFunctionMap func;
+	 	return func;
 	 }	
                                                                                                                                  
          friend inline void swap(SurfaceFunction & left, SurfaceFunction & right);
@@ -102,6 +102,7 @@ class SurfaceFunction
          Eigen::VectorXd values;
          bool allocated;
          bool registered;
+	 static SurfaceFunctionMap functions;
 };
 
 

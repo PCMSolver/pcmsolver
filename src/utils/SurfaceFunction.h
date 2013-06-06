@@ -1,5 +1,5 @@
-#ifndef SURFACE_FUNCTION
-#define SURFACE_FUNCTION
+#ifndef SURFACEFUNCTION_H
+#define SURFACEFUNCTION_H
 
 #include <iostream>
 #include <string>
@@ -9,26 +9,31 @@
 
 #include <Eigen/Dense>
 
-/** 
+/*
+ *        A basic surface function class, L. Frediani 2012
+ * This class is basically a wrapper around vectors containing electrostatic potentials
+ * and apparent charges. Use judiciously, i.e. DO NOT use it directly in the core
+ * classes (cavities, solvers) to avoid high coupling.
+ *
+ *        Various improvements, R. Di Remigio 2013
+ * The client has responsibility for both allocation/de-allocation
+ * (this amounts to provide a pointer-to-double containing the values)
+ * and the concomitant registration/de-registration in the SurfaceFunctionMap
+ * (this amounts to call Register()/unRegister() member functions)
+ *
+ */ 
 
-A basic surface function class
-written by L. Frediani 2012
-
-*/
 
 class SurfaceFunction
 {
- typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
-
  public:
-         SurfaceFunction() : nPoints(0), allocated(false) {}
-         SurfaceFunction(const std::string & name_) : name(name_), allocated(false) {}
+ 	 typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
+         SurfaceFunction() : name(""), nPoints(0), allocated(false) {}
+         SurfaceFunction(const std::string & name_) : name(name_), nPoints(0), allocated(false) {}
          SurfaceFunction(const std::string & name_, int nPoints_) : name(name_), nPoints(nPoints_) 
 	 {
 			values = Eigen::VectorXd::Zero(nPoints);
 			allocated = true;
-			// The SurfaceFunction registers itself in the SurfaceFunctionMap
-//			Register();
 	 } 							       
          SurfaceFunction(const std::string & name_, int nPoints_, double * values_) : name(name_), nPoints(nPoints_)            	
 	 {
@@ -38,28 +43,19 @@ class SurfaceFunction
 	 		{
 	 			values(i) = values_[i];
 	 		}
-	 		// The SurfaceFunction registers itself in the SurfaceFunctionMap
-//	 		Register();
 	 }
          ~SurfaceFunction()                                                                                                     
          {
-	     std::cout << "Calling DTOR" << std::endl;
              allocated = false;
-             // Upon destruction the SurfaceFunction unregisters itself from the SurfaceFunctionMap.
-             // This should be enough to avoid dangling pointers...
-//	     unRegister();
          }
                                                                                                                          
          /// Copy constructor
          SurfaceFunction(const SurfaceFunction & other) : name(other.name), nPoints(other.nPoints), values(other.values)
          {
              allocated = true;
-             // The SurfaceFunction registers itself in the SurfaceFunctionMap
-             // static member of the Cavity class.
-  //           Register();
          }
                                                                                                                         
-	 static SurfaceFunctionMap & initSurfaceFunctionMap()
+	 static SurfaceFunctionMap & TheMap()
 	 {
 	 	static SurfaceFunctionMap func;
 	 	return func;
@@ -85,6 +81,7 @@ class SurfaceFunction
          Eigen::VectorXd & getVector(){ return values; }
          void allocate(int nPoints_){ values.resize(nPoints_); }
          bool isAllocated() { return allocated; }
+         bool isRegistered() { return registered; }
          void clear();
                                                                                                                          
          void setValues(double * value);
@@ -102,9 +99,7 @@ class SurfaceFunction
          Eigen::VectorXd values;
          bool allocated;
          bool registered;
-	 static SurfaceFunctionMap functions;
 };
-
 
 /// Addition operator
 inline SurfaceFunction operator+(SurfaceFunction left, const SurfaceFunction & right)

@@ -2,7 +2,6 @@
 #include <stdexcept>
 
 #include "SurfaceFunction.h"
-#include "SurfaceMap.h"
 
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
@@ -88,18 +87,13 @@ void SurfaceFunction::clear()
 
 bool SurfaceFunction::Register()
 {
-//	registered = SurfaceFunction::initSurfaceFunctionMap().insert(SurfaceFunctionMap::value_type(name, this)).second;
-	std::cout << "Register() " << name << std::endl;
-	registered = SurfaceMap::TheMap().insert(SurfaceFunctionMap::value_type(name, this)).second;
-	std::cout << "inside Register() map size is " << SurfaceMap::TheMap().size() << std::endl;
+	registered = SurfaceFunction::TheMap().insert(SurfaceFunctionMap::value_type(name, this)).second;
 	return registered;
 }
 
 bool SurfaceFunction::unRegister()
 {
-//	registered = SurfaceFunction::initSurfaceFunctionMap().erase(name);
-	std::cout << "unRegister() " << name << std::endl;
-	registered = SurfaceMap::TheMap().erase(name);
+	registered = SurfaceFunction::TheMap().erase(name);
 	return registered;
 }
 
@@ -117,4 +111,3 @@ std::ostream & SurfaceFunction::printObject(std::ostream & os) {
 	
 	return os;
 }
-

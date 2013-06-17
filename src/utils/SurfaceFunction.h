@@ -16,10 +16,8 @@
  * classes (cavities, solvers) to avoid high coupling.
  *
  *        Various improvements, R. Di Remigio 2013
- * The client has responsibility for both allocation/de-allocation
- * (this amounts to provide a pointer-to-double containing the values)
- * and the concomitant registration/de-registration in the SurfaceFunctionMap
- * (this amounts to call Register()/unRegister() member functions)
+ * The client has responsibility for both de-allocation and the concomitant de-registration 
+ * from the SurfaceFunctionMap.
  *
  */ 
 
@@ -34,6 +32,7 @@ class SurfaceFunction
 	 {
 			values = Eigen::VectorXd::Zero(nPoints);
 			allocated = true;
+			Register();
 	 } 							       
          SurfaceFunction(const std::string & name_, int nPoints_, double * values_) : name(name_), nPoints(nPoints_)            	
 	 {
@@ -43,6 +42,7 @@ class SurfaceFunction
 	 		{
 	 			values(i) = values_[i];
 	 		}
+			Register();
 	 }
          ~SurfaceFunction()                                                                                                     
          {
@@ -53,6 +53,7 @@ class SurfaceFunction
          SurfaceFunction(const SurfaceFunction & other) : name(other.name), nPoints(other.nPoints), values(other.values)
          {
              allocated = true;
+	     Register();
          }
                                                                                                                         
 	 static SurfaceFunctionMap & TheMap()

@@ -2,9 +2,7 @@
 
 #include "CavityFactory.h"
 
-;
-
-bool CavityFactory::registerCavity(std::string cavityID, CreateCavityCallback createFunction)
+bool CavityFactory::registerCavity(std::string cavityID, createCavityCallback createFunction)
 {
 	return callbacks.insert(CallbackMap::value_type(cavityID, createFunction)).second;
 }
@@ -14,7 +12,7 @@ bool CavityFactory::unRegisterCavity(std::string cavityID)
 	return callbacks.erase(cavityID) == 1;
 }
 
-Cavity * CavityFactory::CreateCavity(std::string cavityID, const std::vector<Sphere> & _spheres, double _area, double _probeRadius, 
+Cavity * CavityFactory::createCavity(std::string cavityID, const std::vector<Sphere> & _spheres, double _area, double _probeRadius, 
 				     bool _addSpheres, int _patchLevel, double _coarsity)
 {
 	CallbackMap::const_iterator i = callbacks.find(cavityID);

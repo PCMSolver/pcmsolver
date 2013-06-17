@@ -11,6 +11,7 @@
 #include "vector3.h"
 #include "Getkw.h"
 #include "Cavity.h"
+#include "CavityFactory.h"
 
 class WaveletCavity : public Cavity {
  public:
@@ -25,13 +26,6 @@ class WaveletCavity : public Cavity {
 		makeCavity();
            }
     ~WaveletCavity(){};
-    static Cavity* Create(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-		    bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
-    {
-	    return new WaveletCavity(_spheres, _probeRadius, _patchLevel, _coarsity);
-    }
-    static bool registered;
-    static bool Register();
     void makeCavity();
     void readCavity(const string & filename);
     void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
@@ -68,10 +62,15 @@ class WaveletCavity : public Cavity {
     double coarsity;
 };
 
-#ifndef REGISTER
-#define REGISTER static const bool anonW = WaveletCavity::Register();
-REGISTER
-#endif
-#undef REGISTER
+namespace
+{
+	Cavity* createWaveletCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
+		    bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
+	{
+		return new WaveletCavity(_spheres, _probeRadius, _patchLevel, _coarsity);
+        }
+	const std::string WAVELET("Wavelet");
+	const bool registeredWavelet = CavityFactory::TheCavityFactory().registerCavity(WAVELET, createWaveletCavity);
+}
 
 #endif

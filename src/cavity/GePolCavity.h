@@ -8,7 +8,7 @@
 #include <Config.h>
 
 #include "Cavity.h"
-
+#include "CavityFactory.h"
 
 /*
 
@@ -28,13 +28,6 @@ class GePolCavity : public Cavity
 		   makeCavity(10000, 10000000);
            }
     ~GePolCavity(){}
-    static Cavity* Create(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-		    bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
-    {
-	    return new GePolCavity(_spheres, _area, _probeRadius, _addSpheres);
-    }
-    static bool registered;
-    static bool Register();
     void makeCavity(int maxts, int lwork);
     void makeCavity();
     void writeOutput(string &filename);
@@ -53,10 +46,15 @@ class GePolCavity : public Cavity
     int addedSpheres;
 };
 
-#ifndef REGISTER
-#define REGISTER static const bool anonG = GePolCavity::Register();
-REGISTER
-#endif
-#undef REGISTER
+namespace
+{
+	Cavity* createGePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
+			bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
+	{
+		return new GePolCavity(_spheres, _area, _probeRadius, _addSpheres);
+	}
+	const std::string GEPOL("GePol");
+	const bool registeredGePol = CavityFactory::TheCavityFactory().registerCavity(GEPOL, createGePolCavity);
+}
 
 #endif

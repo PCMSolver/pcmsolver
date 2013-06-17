@@ -35,16 +35,6 @@ extern "C"{
 #include "PhysicalConstants.h"
 #include "Getkw.h"
 #include "WaveletCavity.h"
-#include "CavityFactory.h"
-
-bool WaveletCavity::registered = false;
-
-bool WaveletCavity::Register()
-{
-	std::cout << "Register WaveletCavity" << std::endl;
-	WaveletCavity::registered = CavityFactory::TheCavityFactory().registerCavity("Wavelet", WaveletCavity::Create);
-	return WaveletCavity::registered;
-}
 
 WaveletCavity::WaveletCavity(const Getkw & Input, const string path){
 	Section cavity = Input.getSect(path);

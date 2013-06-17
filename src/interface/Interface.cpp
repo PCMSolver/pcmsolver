@@ -114,9 +114,8 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName)
 	if( iter_chg == functions.end() ) 
 	{
 		SurfaceFunction * func = new SurfaceFunction(chgFuncName, _cavity->size());
-	//	It was not in the map, we register it. 
-		func->Register();	
-	//	We must update iter_chg, otherwise it will point somewhere else
+		// The SurfaceFunction automagically registers itself in the map.
+		// We must update iter_chg, otherwise it will point somewhere else
 		++iter_chg;
 	} 
 	// If it already exists there's no problem, we will pass a reference to its values to
@@ -229,7 +228,7 @@ extern "C" void set_surface_function_(int * nts, double * values, char * name)
 	if ( iter == functions.end() )
 	{	// If not create it!
 	        SurfaceFunction * func = new SurfaceFunction(functionName, *nts, values);
-	        func->Register();
+		// The SurfaceFunction automagically registers itself in the map.
 	}
 	else
 	{	// If yes just update the values!
@@ -312,7 +311,7 @@ extern "C" void append_surf_func_(char* name)
 	if ( iter == functions.end() )
 	{	// If not create it
 		SurfaceFunction * func = new SurfaceFunction(functionName, nTess);
-		func->Register();
+		// The SurfaceFunction automagically registers itself in the map.
 	} // What happens if it is already in the map?
 }
 
@@ -358,7 +357,7 @@ void initCavity()
 	double coarsity = Input::TheInput().getCoarsity();
 
 	// Get the right cavity from the Factory
-	_cavity = CavityFactory::TheCavityFactory().CreateCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
+	_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
 	// Our use of inheritance breaks Liskov Principle, the Factory is pretty useless... 
 	// UNLESS one uses RTTI (which we do) although I don't know if it's a sign of ugly design strategy...
 	

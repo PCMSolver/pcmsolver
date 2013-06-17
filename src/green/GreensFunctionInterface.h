@@ -31,7 +31,7 @@ class GreensFunctionInterface
     virtual double compDiagonalElementS(double area) = 0;
     virtual double compDiagonalElementD(double area, double radius) = 0;
     GreensFunctionInterface * allocateGreensFunctionInterface(const Section &green);
-    GreensFunctionInterface * allocateGreensFunctionInterface(double dielConst, const std::string greenDer = "Derivative");
+    GreensFunctionInterface * allocateGreensFunctionInterface(double epsilon, const std::string greenDer = "Derivative");
     GreensFunctionInterface * allocateGreensFunctionInterface(const std::string greenDer = "Derivative");
     bool isUniform(){ return uniformFlag; }
     enum derivativeType{Numerical, Directional, Gradient, Hessian};

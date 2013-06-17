@@ -44,14 +44,14 @@ PROJECT_BRIEF  = "Doxygen generated documentation of PCMSolver source code."
 # exceed 55 pixels and the maximum width should not exceed 200 pixels.
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO   = "@CMAKE_SOURCE_DIR@/doc/benzene.jpg" 
+PROJECT_LOGO   = "@CMAKE_SOURCE_DIR@/doc/_themes/logo.jpg" 
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY = "@CMAKE_BINARY_DIR@/_doxygen"
+OUTPUT_DIRECTORY = "@CMAKE_SOURCE_DIR@/doc/_doxygen"
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -479,12 +479,6 @@ MAX_INITIALIZER_LINES = 30
 
 SHOW_USED_FILES = YES
 
-# If the sources in your project are distributed over multiple directories 
-# then setting the SHOW_DIRECTORIES tag to YES will show the directory hierarchy 
-# in the documentation. The default is NO.
-
-SHOW_DIRECTORIES = NO
-
 # Set the SHOW_FILES tag to NO to disable the generation of the Files page. 
 # This will remove the Files entry from the Quick Index and from the 
 # Folder Tree View (if specified). The default is YES.
@@ -770,7 +764,7 @@ IGNORE_PREFIX =
 # If the GENERATE_HTML tag is set to YES (the default) Doxygen will 
 # generate HTML output.
 
-GENERATE_HTML = YES
+GENERATE_HTML = NO 
 
 # The HTML_OUTPUT tag is used to specify where the HTML docs will be put. 
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
@@ -804,12 +798,6 @@ HTML_FOOTER =
 # stylesheet in the HTML output directory as well, or it will be erased!
 
 HTML_STYLESHEET = 
-
-# If the HTML_ALIGN_MEMBERS tag is set to YES, the members of classes, 
-# files or namespaces will be aligned in HTML using tables. If set to 
-# NO a bullet list will be used.
-
-HTML_ALIGN_MEMBERS = YES
 
 # If the HTML_DYNAMIC_SECTIONS tag is set to YES then the generated HTML 
 # documentation will contain sections that can be hidden and shown after the 
@@ -1134,7 +1122,7 @@ MAN_LINKS = NO
 # generate an XML file that captures the structure of 
 # the code including all documentation.
 
-GENERATE_XML = NO 
+GENERATE_XML = YES 
 
 # The XML_OUTPUT tag is used to specify where the XML pages will be put. 
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 

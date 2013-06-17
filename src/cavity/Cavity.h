@@ -58,7 +58,7 @@ class Cavity
      	        virtual double getElementRadius(int i){return elementRadius(i);}
      	        virtual Eigen::Matrix3Xd & getElementSphereCenter(){return elementSphereCenter;}
      	        virtual int getMode(){return mode;}
-                virtual void setMode(const std::string & mode);
+                virtual void setMode(const std::string & type);
      	        virtual void setMode(int mode);
                
 	       	bool isBuilt(){return built;}

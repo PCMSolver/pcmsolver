@@ -48,7 +48,7 @@ ostream & Cavity::printObject(ostream & os) {
 	return os;
 }
 
-void Cavity::setMode(const string & type) {
+void Cavity::setMode(const std::string & type) {
 	if (type == "Atoms") {
 		setMode(Atoms);
 	} else if (type == "Implicit") {

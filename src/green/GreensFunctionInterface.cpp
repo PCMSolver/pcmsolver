@@ -44,7 +44,7 @@ GreensFunctionInterface::allocateGreensFunctionInterface(const Section &green) {
 }
 
 GreensFunctionInterface* 
-GreensFunctionInterface::allocateGreensFunctionInterface(double epsilon, const string greenDer) {
+GreensFunctionInterface::allocateGreensFunctionInterface(double epsilon, const std::string greenDer) {
  	GreensFunctionInterface *gf = 0;
 	if (greenDer == "Numerical") {
 		gf = g0->allocateGreensFunction(epsilon);
@@ -59,7 +59,7 @@ GreensFunctionInterface::allocateGreensFunctionInterface(double epsilon, const s
 }
 
 GreensFunctionInterface* 
-GreensFunctionInterface::allocateGreensFunctionInterface(const string greenDer) {
+GreensFunctionInterface::allocateGreensFunctionInterface(const std::string greenDer) {
 	GreensFunctionInterface *gf = 0;
 	if (greenDer == "Numerical") {
 		gf = g0->allocateGreensFunction();

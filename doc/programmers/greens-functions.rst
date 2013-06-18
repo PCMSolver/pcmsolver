@@ -53,3 +53,10 @@ MetalSphere
    :project: PCMSolver
    :members:
    :sections: public*, protected*, private*
+
+GreensFunctionFactory
+---------------------
+.. doxygenclass:: GreensFunctionFactory 
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*

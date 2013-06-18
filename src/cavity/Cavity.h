@@ -60,7 +60,7 @@ class Cavity
                 virtual int size(){return nElements;}
 		
 		/// Functions related to the spheres composing the cavity surface
-     	 	virtual vector<Sphere> & getSpheres(){ return spheres; }
+     	 	virtual std::vector<Sphere> & getSpheres(){ return spheres; }
 	  	virtual int getNSpheres(){return nSpheres;}
      	 	virtual void setNSpheres(int n){nSpheres = n;}
                 virtual Eigen::VectorXd & getSphereRadius(){return sphereRadius;}                
@@ -94,7 +94,7 @@ class Cavity
 	 	Eigen::VectorXd elementRadius;
 	        Eigen::Matrix3Xd sphereCenter;
 	        Eigen::VectorXd sphereRadius;
-     	        vector<Sphere> spheres;
+		std::vector<Sphere> spheres;
 };
 
 

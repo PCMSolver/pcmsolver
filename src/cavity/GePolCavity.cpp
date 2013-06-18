@@ -16,13 +16,14 @@ using std::endl;
 
 #include "GePolCavity.h"
 
-void GePolCavity::writeOutput(string &filename){
+void GePolCavity::writeOutput(std::string &filename)
+{
+	std::ofstream output;
+ 	output.open(filename.c_str(), std::fstream::out);
 
-    ofstream output;
-    output.open(filename.c_str(), fstream::out);
-
-    output << nElements << endl;
-    for(int i=0; i < nElements; i++) {
+    	output << nElements << endl;
+    	for(int i=0; i < nElements; i++) 
+	{
 		output << elementCenter(0,i) << " ";
 		output << elementCenter(1,i) << " ";
 		output << elementCenter(2,i) << " ";
@@ -31,16 +32,15 @@ void GePolCavity::writeOutput(string &filename){
 		output << elementSphereCenter(1,i) << " ";
 		output << elementSphereCenter(2,i) << " ";
 		output << elementRadius(i) << endl;
-    }
-    output.close();
+    	}
+    	output.close();
 }
 
-extern "C" {
-    void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, 
-							 double *ar, double *xsphcor, double *ysphcor, 
-							 double *zsphcor, double *rsph, int *nts, int *nesfp,
-							 double *xe, double *ye, double *ze, double *rin, 
-							 double *avgArea, double *rsolv, double* work, int* lwork);
+extern "C" 
+{
+	void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
+			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
+			     double *avgArea, double *rsolv, double* work, int* lwork);
 }
 
 void GePolCavity::makeCavity(){
@@ -148,7 +148,7 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 				sphereCenter(1, i) = ytmp(i);
 				sphereCenter(2, i) = ztmp(i);
 			}
-			Vector3d cent = sphereCenter.col(i);
+			Eigen::Vector3d cent = sphereCenter.col(i);
 			Sphere sph(cent, sphereRadius(i));
 			spheres.push_back(sph);
 		}
@@ -192,7 +192,7 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 
 }
 
-ostream & GePolCavity::printObject(ostream & os) {
+std::ostream & GePolCavity::printObject(std::ostream & os) {
 	/*
 	  We should print the cavity.off file here, just to
 	  get a prettier cavity image.

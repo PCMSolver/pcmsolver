@@ -8,7 +8,7 @@ class UniformDielectric : public GreensFunction<T>
     UniformDielectric(double dielConst);
     UniformDielectric(Section green);
     ~UniformDielectric(){};
-    double evald(Vector3d &direction, Vector3d &p1, Vector3d &p2);
+    double evald(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
     void setDielectricConstant(double dielConst) {epsilon = dielConst; };
     double getDielectricConstant(){return epsilon;}
     double compDiagonalElementS(double area);

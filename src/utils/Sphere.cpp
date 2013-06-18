@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -14,13 +15,16 @@
 
 */
 
-ostream & operator<<(ostream & os, Sphere & sphere) {
-	return sphere.printObject(os);
-} 
+std::ostream & operator<<(std::ostream & os, Sphere & sph) 
+{
+	return sph.printObject(os);
+}
 
-ostream & Sphere::printObject(ostream & os) {
-	os << "Sphere radius " << sphereRadius << endl;
+std::ostream & Sphere::printObject(std::ostream & os) 
+{
+	os << "Sphere radius " << sphereRadius << std::endl;
 	os << "Sphere center\n" << sphereCenter;
+
 	return os;
 }
 

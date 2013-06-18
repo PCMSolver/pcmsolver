@@ -108,7 +108,7 @@ class SurfaceFunction
          friend std::ostream & operator<<(std::ostream & o, SurfaceFunction & s);
 
  private:
-         virtual std::ostream & printObject(std::ostream & os); 
+         std::ostream & printObject(std::ostream & os); 
          std::string name;
          int nPoints;
          Eigen::VectorXd values;

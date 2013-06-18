@@ -23,15 +23,15 @@ class GreensFunction: public GreensFunctionInterface
     virtual ~GreensFunction(){};
 
     // From GreensFunctionInterface
-    virtual double evalf(Vector3d &p1, Vector3d &p2);
-    virtual double evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) = 0;
-    virtual double derivativeSource(Vector3d &direction, Vector3d &p1, Vector3d &p2);
-    virtual double derivativeProbe(Vector3d &direction, Vector3d &p1, Vector3d &p2);
-    virtual Vector3d gradientSource(Vector3d &p1, Vector3d &p2);
-    virtual Vector3d gradientProbe(Vector3d &p1, Vector3d &p2);
+    virtual double evalf(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
+    virtual double evald(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2) = 0;
+    virtual double derivativeSource(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
+    virtual double derivativeProbe(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
+    virtual Eigen::Vector3d gradientSource(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
+    virtual Eigen::Vector3d gradientProbe(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
     virtual double getDielectricConstant();
-    virtual void gradientSource(Vector3d &gradient, Vector3d &p1, Vector3d &p2);
-    virtual void gradientProbe(Vector3d &gradient, Vector3d &p1, Vector3d &p2);
+    virtual void gradientSource(Eigen::Vector3d &gradient, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
+    virtual void gradientProbe(Eigen::Vector3d &gradient, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
     void setDelta(double value);
     double getDelta(){return delta;}
     GreensFunction<T> * allocateGreensFunction(const Section &green);

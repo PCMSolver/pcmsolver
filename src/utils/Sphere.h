@@ -18,14 +18,6 @@
 
 class Sphere
 {
-	private:
-		Eigen::Vector3d sphereCenter;
-		double sphereRadius;
-		std::string sphereColour;
-
-        protected:
-		virtual ostream & printObject(ostream & os);
- 
   	public:
 		Sphere(){}
 		Sphere(Eigen::Vector3d & _center, double _radius, const std::string & _colour = "Violet" )
@@ -46,6 +38,13 @@ class Sphere
                 Sphere & operator=(Sphere other);
                 
                 friend std::ostream& operator<<(std::ostream & o, Sphere & s);
+	
+	private:
+		Eigen::Vector3d sphereCenter;
+		double sphereRadius;
+		std::string sphereColour;
+         	std::ostream & printObject(std::ostream & os); 
+ 
 };
 
 #endif

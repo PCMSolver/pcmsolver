@@ -30,13 +30,13 @@ class GePolCavity : public Cavity
     ~GePolCavity(){}
     void makeCavity(int maxts, int lwork);
     void makeCavity();
-    void writeOutput(string &filename);
+    void writeOutput(std::string &filename);
     void setMaxAddedSpheres(bool add = true, int maxAdd = 100);
     double getProbeRadius() { return probeRadius; }
     void setProbeRadius( double probeRadius );
 
  protected:
-    virtual ostream & printObject(ostream & os);
+    virtual std::ostream & printObject(std::ostream & os);
         
  private:
     double averageArea;

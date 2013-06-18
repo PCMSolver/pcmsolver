@@ -10,7 +10,6 @@ Wavelet Cavity c++ interface and wrapper methods
 #include <Eigen/Dense>
 
 using namespace std;
-using namespace Eigen;
 
 extern "C"{
 	//#include "WEM.h"
@@ -45,7 +44,7 @@ WaveletCavity::WaveletCavity(const Getkw & Input, const string path){
 	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
 	Eigen::Matrix3Xd sphereCenter;
 	Eigen::VectorXd sphereRadius;
-        sphereCenter.resize(NoChange, nSpheres);
+        sphereCenter.resize(Eigen::NoChange, nSpheres);
         sphereRadius.resize(nSpheres);
 	int j = 0;
 	for (int i = 0; i < nSpheres; i++) {
@@ -66,7 +65,7 @@ WaveletCavity::WaveletCavity(const Section & cavity){
 	nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
 	Eigen::Matrix3Xd sphereCenter;
 	Eigen::VectorXd sphereRadius;
-        sphereCenter.resize(NoChange, nSpheres);
+        sphereCenter.resize(Eigen::NoChange, nSpheres);
         sphereRadius.resize(nSpheres);
 	int j = 0;
 	for (int i = 0; i < nSpheres; i++) {
@@ -131,9 +130,9 @@ void WaveletCavity::readCavity(const string & filename) {
 		
 		for (int k = 0; k < nPoints; k++) {
 			file >> i >> j >> k >> x >> y >> z;
-			Vector3i index(i, j, k);
+			Eigen::Vector3i index(i, j, k);
 			nodeIndex.push_back(index);
-			Vector3d point(x, y, z);
+			Eigen::Vector3d point(x, y, z);
 			nodePoint.push_back(point);
 		}
 
@@ -165,8 +164,8 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 
 	nElements = nPatches * n * n * Q[quadLevel].nop;
 
-	elementCenter.resize(NoChange, nElements);
-	elementNormal.resize(NoChange, nElements);
+	elementCenter.resize(Eigen::NoChange, nElements);
+	elementNormal.resize(Eigen::NoChange, nElements);
 	elementArea.resize(nElements);
 
 	int j = 0;
@@ -179,8 +178,8 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
 					point = Chi(t,T_[i1], nLevels);
 					norm = n_Chi(t,T_[i1], nLevels);
-					Vector3d center(point.x, point.y, point.z);	 
-					Vector3d normal(norm.x,  norm.y,  norm.z);	 
+					Eigen::Vector3d center(point.x, point.y, point.z);	 
+					Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
 					elementCenter.col(j) = center.transpose();
@@ -210,8 +209,8 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 
 	nElements = nPatches * n * n * Q[quadLevel].nop;
 
-	elementCenter.resize(NoChange, nElements);
-	elementNormal.resize(NoChange, nElements);
+	elementCenter.resize(Eigen::NoChange, nElements);
+	elementNormal.resize(Eigen::NoChange, nElements);
 	elementArea.resize(nElements);
 
 	int j = 0;
@@ -224,8 +223,8 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
 					point = Chi_pwl(t,T_[i1], nLevels);
 					norm = n_Chi_pwl(t,T_[i1], nLevels);
-					Vector3d center(point.x, point.y, point.z);	 
-					Vector3d normal(norm.x,  norm.y,  norm.z);	 
+					Eigen::Vector3d center(point.x, point.y, point.z);	 
+					Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi_pwl(t, T_[i1], nLevels));
 					elementCenter.col(j) = center.transpose();

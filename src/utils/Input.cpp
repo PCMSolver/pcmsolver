@@ -63,9 +63,10 @@ Input::Input()
 		epsilonImaginary = medium.getDbl("EpsImg");
 		spherePosition = medium.getDblVec("SpherePosition");
 		sphereRadius = medium.getDbl("SphereRadius");
-	} else // This part must be reviewed!! Some data members are not initialized... 
+	} 
+	else // This part must be reviewed!! Some data members are not initialized... 
 	{       // Just initialize the solvent object in this class
-		SolventMap solvents = Solvent::initSolventMap();
+		std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
 		solvent = solvents[_name];
 		probeRadius = solvent.getRadius();
 		// Specification of the solvent by name means isotropic PCM

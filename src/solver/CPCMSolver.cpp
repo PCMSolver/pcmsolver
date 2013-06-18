@@ -52,12 +52,12 @@ void CPCMSolver::buildSystemMatrix(Cavity & cavity) {
 
 void CPCMSolver::buildAnisotropicMatrix(GePolCavity & cav){
     cavitySize = cav.size();
-    MatrixXd SI(cavitySize, cavitySize);
-    MatrixXd SE(cavitySize, cavitySize);
-    MatrixXd DI(cavitySize, cavitySize);
-    MatrixXd DE(cavitySize, cavitySize);
+    Eigen::MatrixXd SI(cavitySize, cavitySize);
+    Eigen::MatrixXd SE(cavitySize, cavitySize);
+    Eigen::MatrixXd DI(cavitySize, cavitySize);
+    Eigen::MatrixXd DE(cavitySize, cavitySize);
     for(int i = 0; i < cavitySize; i++){
-		Vector3d p1 = cav.getElementCenter(i);
+		Eigen::Vector3d p1 = cav.getElementCenter(i);
 		double area = cav.getElementArea(i);
 		double radius = cav.getElementRadius(i);
 		SI(i,i) =  greenInside->compDiagonalElementS(area); 
@@ -65,8 +65,8 @@ void CPCMSolver::buildAnisotropicMatrix(GePolCavity & cav){
 		DI(i,i) =  greenInside->compDiagonalElementD(area, radius); 
 		DE(i,i) = greenOutside->compDiagonalElementD(area, radius); 
 		for (int j = 0; j < cavitySize; j++){
-			Vector3d p2 = cav.getElementCenter(j);
-			Vector3d n2 = cav.getElementNormal(j);
+			Eigen::Vector3d p2 = cav.getElementCenter(j);
+			Eigen::Vector3d n2 = cav.getElementNormal(j);
 			n2.normalize();
 			if (i != j) {
 				SI(i,j) = greenInside->evalf(p1, p2);
@@ -76,8 +76,8 @@ void CPCMSolver::buildAnisotropicMatrix(GePolCavity & cav){
 			}
 		}
     }
-    MatrixXd a(cavitySize, cavitySize);
-    MatrixXd aInv(cavitySize, cavitySize);
+    Eigen::MatrixXd a(cavitySize, cavitySize);
+    Eigen::MatrixXd aInv(cavitySize, cavitySize);
     a.setZero();
     aInv.setZero();
     for (int i = 0; i < cavitySize; i++) {
@@ -119,7 +119,7 @@ void CPCMSolver::buildIsotropicMatrix(GePolCavity & cav){
     PCMMatrix = 0.5 * (PCMMatrix + PCMAdjoint);
 // PRINT TO FILE RELEVANT INFO ABOUT PCMMatrix
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(PCMMatrix);
-    if (solver.info() != Success) abort();
+    if (solver.info() != Eigen::Success) abort();
     ofstream matrixOut("PCM_matrix");
     matrixOut << "PCM matrix printout" << endl;
     matrixOut << "Number of Tesserae: " << cavitySize << endl;

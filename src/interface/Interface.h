@@ -90,13 +90,13 @@ std::vector<Sphere> initSpheresImplicit(const Eigen::VectorXd & _charges, const 
 std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _sphereCenter);
 
 void init_atoms_(Eigen::VectorXd & charges, 
-                 Matrix<double, 3, Dynamic> & sphereCenter);
+                 Eigen::Matrix3Xd & sphereCenter);
 
-void init_spheres_implicit_(VectorXd & charges, 
-                 Matrix<double, 3, Dynamic> & centers);
+void init_spheres_implicit_(Eigen::VectorXd & charges, 
+                 Eigen::Matrix3Xd & centers);
 
-void init_spheres_atoms_(VectorXd & charges, 
-                                    Matrix<double, 3, Dynamic> & centers);
+void init_spheres_atoms_(Eigen::VectorXd & charges, 
+                                    Eigen::Matrix3Xd & centers);
 
 
 #endif

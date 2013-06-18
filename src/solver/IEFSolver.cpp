@@ -134,7 +134,7 @@ void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
     PCMMatrix = 0.5 * (PCMMatrix + PCMAdjoint);
 // PRINT TO FILE RELEVANT INFO ABOUT PCMMatrix
     SelfAdjointEigenSolver<MatrixXd> solver(PCMMatrix);
-    if (solver.info() != Success) abort();
+    if (solver.info() != Eigen::Success) abort();
     ofstream matrixOut("PCM_matrix");
     matrixOut << "PCM matrix printout" << endl;
     matrixOut << "Number of Tesserae: " << cavitySize << endl;

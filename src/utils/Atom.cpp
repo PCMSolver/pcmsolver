@@ -5,9 +5,6 @@
 
 #include <Eigen/Dense>
 
-using namespace std;
-using namespace Eigen;
-
 #include "Atom.h"
 
 /*
@@ -17,48 +14,10 @@ using namespace Eigen;
 
 */
 
-Atom::Atom( const string & element, const string & symbol, double charge, 
-			double radius, Vector3d & coord, double scaling, const string & colour ) {
-  atomElement = element;
-  atomSymbol = symbol;
-  atomCharge = charge;
-  atomRadius = radius;
-  atomCoord = coord;
-  atomColour = colour;
-  atomRadiusScaling = scaling;
-}
-
-Atom::Atom( const string & element, const string & symbol, double charge, 
-			double radius ) {
-  Vector3d Origin(0.0, 0.0, 0.0);
-  string colour = "Violet";
-  atomElement = element;
-  atomSymbol = symbol;
-  atomCharge = charge;
-  atomRadius = radius;
-  atomCoord = Origin;
-  atomColour = colour;
-  atomRadiusScaling = 1.0;
-}
-
-
-vector<Atom> & Atom::initBondi() {
-	/*
-
-	  vector<Atom> Bondi() contains the van der Waals radii taken from
-	  --- A. Bondi, J. Phys. Chem. 68, 441-451 (1964) ---
-          complemented with the ones reported in
-          --- M. Mantina, A. C. Chamberlin, R. Valero, C. J. Cramer, D. G. Truhlar,
-              J. Phys. Chem. A, 113, 5806-5812 (2009)
-          We are here using Angstrom as in the papers.
-          The getAtomRadius method will perform the conversion Angstrom to AU.
-  
-	*/
-
-	static vector<Atom> Bondi(89);
-	Vector3d Origin;
-
-	Origin << 0.0, 0.0, 0.0;
+std::vector<Atom> & Atom::initBondi() {
+	
+	static std::vector<Atom> Bondi(89);
+	Eigen::Vector3d Origin = Eigen::Vector3d::Zero();
 
 // ------------------------------------------------------------
 	Bondi[0] = Atom("Hydrogen", "H", 1.0, 1.20, Origin, 1.0);
@@ -154,21 +113,10 @@ vector<Atom> & Atom::initBondi() {
 	return Bondi;
 }
 
-vector<Atom> & Atom::initUFF() {
-	/*
-
-	  vector<Atom> UFF() contains the UFF set of radii obtained from
-	  --- A. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard, W. M. Skiff ---
-	      J. Am. Chem. Soc., 114, 10024-10035 (1992)
-          We are here using Angstrom as in the paper. 
-          The getAtomRadius method will perform the conversion Angstrom to AU.
-  
-	*/
-
-	static vector<Atom> UFF(89);
-	Vector3d Origin;
-
-	Origin << 0.0, 0.0, 0.0;
+std::vector<Atom> & Atom::initUFF() {
+	
+	static std::vector<Atom> UFF(89);
+	Eigen::Vector3d Origin = Eigen::Vector3d::Zero();
 
 // ------------------------------------------------------------
 	UFF[0] = Atom("Hydrogen", "H", 1.0, 1.4430, Origin, 1.0);

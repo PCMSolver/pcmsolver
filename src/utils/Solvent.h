@@ -9,11 +9,6 @@
 
 #include <Config.h>
 
-#include <Eigen/Dense>
-
-using namespace std;
-using namespace Eigen;
-
 /*!
  * \brief Class describing a solvent
  * \author Roberto Di Remigio
@@ -21,37 +16,45 @@ using namespace Eigen;
  *
  * A Solvent object contains all the solvent-related experimental data
  * needed to set up the Green's functions and the non-electrostatic
- * terms calculations.
- * 
- * These data are taken from the DALTON2011 internal implementation of
- * the Polarizable Continuum Model.
+ * terms calculations. 
  */
 
-class Solvent;
+class Solvent 
+{
+	public:
+		/*!
+		 * typedef for the map between solvent name and Solvent object.
+		 */
+		typedef std::map< std::string, Solvent > SolventMap;
 
-typedef std::map< std::string, Solvent > SolventMap;
+		Solvent(){}
+                Solvent(const std::string & _name, double _epsStatic, double _epsOptical, double _radius )
+			: name(_name), epsStatic(_epsStatic), epsOptical(_epsOptical), probeRadius(_radius) {}
+                ~Solvent(){}
 
-class Solvent {
- public:
-    Solvent(){}
-    Solvent( const string & _name, double _epsStatic, 
-             double _epsOptical, double _radius );
-    ~Solvent(){}
-    const string getName(){ return name; }
-    double getEpsStatic(){ return epsStatic; }
-    double getEpsOptical(){ return epsOptical; }
-    double getRadius() const { return probeRadius; }
-    void setRadius(double r){ probeRadius = r; }
-    static SolventMap initSolventMap();
-    friend std::ostream & operator<<(std::ostream & os, Solvent & obj) {
-        return obj.printObject(os);
-    }
- private:
-    ostream & printObject(ostream & os);
-    string name;
-    double epsStatic;
-    double epsOptical;
-    double probeRadius;
+                const std::string getName(){ return name; }
+                double getEpsStatic(){ return epsStatic; }
+                double getEpsOptical(){ return epsOptical; }
+                double getRadius() const { return probeRadius; }
+                void setRadius(double _radius){ probeRadius = _radius; }
+
+		/*!
+		 * This map contains solvent data taken from the DALTON2011 internal 
+		 * implementation of the Polarizable Continuum Model.
+		 */
+                static SolventMap & initSolventMap();
+                
+		friend std::ostream & operator<<(std::ostream & os, Solvent & obj) 
+		{
+                    return obj.printObject(os);
+                }
+
+	private:
+		std::string name;        
+                double epsStatic;
+                double epsOptical;
+                double probeRadius;
+		std::ostream & printObject(std::ostream & os);
 };
 
 #endif

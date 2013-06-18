@@ -42,7 +42,7 @@ PCMSolver::PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo,
 }
 
 PCMSolver::PCMSolver(const Section & solver) {
-	SolventMap solvents = Solvent::initSolventMap();
+	std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
 	string name = solver.getStr("Solvent");
 	this->solvent = solvents[name];
         if (name == "Explicit") {

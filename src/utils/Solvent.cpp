@@ -5,9 +5,6 @@
 
 #include <Eigen/Dense>
 
-using namespace std;
-using namespace Eigen;
-
 #include "Solvent.h"
 
 /*
@@ -17,29 +14,9 @@ using namespace Eigen;
 
 */
 
-Solvent::Solvent( const string & _name, double _epsStatic, 
-				  double _epsOptical, double _radius ) {
-	this->name = _name;
-	this->epsStatic = _epsStatic;
-	this->epsOptical = _epsOptical;
-	this->probeRadius = _radius;
-}
-
-SolventMap Solvent::initSolventMap() {
+Solvent::SolventMap & Solvent::initSolventMap() {
  	
-	/*
-	  SolventMap avaliableSolvents should contain all the solvent-related
-	  data needed to set up the Green's functions and the non-electrostatic
-	  terms calculations.
-          
-          A SolventMap is defined as an associative array:
-	  typedef std::map< std::string, Solvent > SolventMap
-	  
-	  These data are taken from the DALTON2011 internal implementation of
-	  the Polarizable Continuum Model.
-	*/
-
-	SolventMap availableSolvents;
+	static SolventMap availableSolvents;
   // ------------------------------------------------------------
         availableSolvents["Water"] = Solvent("Water", 78.39, 1.776, 1.385);
 	availableSolvents["Methanol"] = Solvent("Methanol", 32.63, 1.758, 1.855);
@@ -64,10 +41,10 @@ SolventMap Solvent::initSolventMap() {
 	return availableSolvents;
 }
 
-ostream & Solvent::printObject(ostream & os) {
-	os << "Solvent name:           " << name << endl;
-	os << "Static diel. constant:  " << epsStatic << endl;
-	os << "Optical diel. constant: " << epsOptical << endl;
+std::ostream & Solvent::printObject(std::ostream & os) {
+	os << "Solvent name:           " << name << std::endl;
+	os << "Static diel. constant:  " << epsStatic << std::endl;
+	os << "Optical diel. constant: " << epsOptical << std::endl;
 	os << "Solvent radius:         " << probeRadius;
 	return os;
 }

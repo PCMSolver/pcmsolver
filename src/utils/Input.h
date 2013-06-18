@@ -5,11 +5,12 @@
 #include "Sphere.h"
 #include "Solvent.h"
 
-/**
- * The Input class is a wrapper class for the Getkw Library C++ bindings. 
- * It is implemented as a Singleton: only one instance of it is needed 
- * and therefore admitted (see Alexandrescu "Modern C++ Design").
- * 
+/*!
+ * \brief A wrapper class for the Getkw Library C++ bindings.
+ * \author Roberto Di Remigio
+ * \date 2013
+ *
+ * Implemented as a Singleton: only one instance of it is needed and therefore admitted.
  * It is to be used as the unique point of access to user-provided input:
  *  input ---> parsed input (Python script) ---> Input object (contains all the input data)
  * Definition of input parameters is to be done in the Python script and in this class.

@@ -51,7 +51,7 @@ PROJECT_LOGO   = "@CMAKE_SOURCE_DIR@/doc/_themes/logo.jpg"
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY = "@CMAKE_SOURCE_DIR@/doc/_doxygen"
+OUTPUT_DIRECTORY = "@CMAKE_BINARY_DIR@/doc/_doxygen"
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -764,7 +764,7 @@ IGNORE_PREFIX =
 # If the GENERATE_HTML tag is set to YES (the default) Doxygen will 
 # generate HTML output.
 
-GENERATE_HTML = NO 
+GENERATE_HTML = YES 
 
 # The HTML_OUTPUT tag is used to specify where the HTML docs will be put. 
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 

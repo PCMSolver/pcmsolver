@@ -11,18 +11,28 @@
 
 #include "Sphere.h"
 
-/** 
-
-A basic cavity class
-written by Krzysztof Mozgawa, 2011
-
-
-*/
+/*!
+ *	\file Cavity.h
+ *	\class Cavity
+ *
+ *	\brief Abstract Base Class for cavities. 
+ *	\author Krzysztof Mozgawa
+ *	\date 2011 
+ *
+ * 	This class represents a cavity made of spheres, its surface being discretized in
+ *      terms of finite elements.
+ *
+ */
 
 class Cavity
 {
 	public:
+		//! Default constructor
 		Cavity() : nElements(0), built(false) {}
+		//! Constructor from spheres
+		/*!
+		    \param _spheres an STL vector containing the spheres making up the cavity.
+		 */
 		Cavity(const std::vector<Sphere> & _spheres) : spheres(_spheres)
 			{
 				spheres = _spheres;
@@ -36,6 +46,7 @@ class Cavity
 				}
 			}
                 virtual ~Cavity(){}
+		//! Creates the cavity and discretize its surface. 
                 virtual void makeCavity() = 0;                                         
                 virtual void writeOutput(std::string &filename);
 		

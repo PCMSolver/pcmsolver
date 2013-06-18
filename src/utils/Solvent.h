@@ -14,21 +14,18 @@
 using namespace std;
 using namespace Eigen;
 
-/*
-
-  A Solvent class
-  written by Roberto Di Remigio, 2011
-
-  "Why use a structure when you can define a class?"
-  
-  vector<Solvent> SolventData[] should contain all the solvent-related
-  data needed to set up the Green's functions and the non-electrostatic
-  terms calculations.
-  
-  These data are taken from the DALTON2011 internal implementation of
-  the Polarizable Continuum Model.
-
-*/
+/*!
+ * \brief Class describing a solvent
+ * \author Roberto Di Remigio
+ * \date 2011
+ *
+ * A Solvent object contains all the solvent-related experimental data
+ * needed to set up the Green's functions and the non-electrostatic
+ * terms calculations.
+ * 
+ * These data are taken from the DALTON2011 internal implementation of
+ * the Polarizable Continuum Model.
+ */
 
 class Solvent;
 
@@ -56,7 +53,5 @@ class Solvent {
     double epsOptical;
     double probeRadius;
 };
-
-
 
 #endif

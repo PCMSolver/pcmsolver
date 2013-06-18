@@ -15,22 +15,20 @@
 using namespace std;
 using namespace Eigen;
 
-/*
-
-  An Atom class
-  written by Roberto Di Remigio, 2011
-
-  "Why use a structure when you can define a class?"
-
-  vector<Atom> Bondi[] should contain the van der Waals radii taken from 
-  A. Bondi, J. Phys. Chem. 68, 441-451 (1964).
-  vector<Atom> Tatewaki[] should contain the effective atomic radii taken
-  from H. Tatewaki et al. Bull. Chem. Soc. Jpn. 83, 1203-1210 (2010).
-
-  They should be declared as constant vectors, with all the atomCoord 
-  data members set to void.
-
-*/
+/*!
+ * \brief Class describing an atom.
+ * \author Roberto Di Remigio
+ * \date 2011
+ *
+ *
+ * vector<Atom> Bondi[] should contain the van der Waals radii taken from 
+ * A. Bondi, J. Phys. Chem. 68, 441-451 (1964).
+ * vector<Atom> Tatewaki[] should contain the effective atomic radii taken
+ * from H. Tatewaki et al. Bull. Chem. Soc. Jpn. 83, 1203-1210 (2010).
+ *
+ * They should be declared as constant vectors, with all the atomCoord 
+ * data members set to void.
+ */
 
 class Atom {
  private:

@@ -15,12 +15,12 @@
 using namespace std;
 using namespace Eigen;
 
-/*
-
-  A Sphere class
-  written by Roberto Di Remigio, 2011
-
-*/
+/*!
+ * \brief Class describing a sphere.
+ * \author Roberto Di Remigio
+ * \date 2011
+ *
+ */
 
 class Sphere
 {

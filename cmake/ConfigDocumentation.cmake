@@ -34,12 +34,7 @@ if(DOXYGEN_FOUND AND SPHINX_FOUND)
         	${CMAKE_SOURCE_DIR}/doc/Doxyfile.in
         	${PROJECT_BINARY_DIR}/Doxyfile
     	)
-        execute_process(
-		COMMAND ${DOXYGEN_EXECUTABLE}
-	        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-		OUTPUT_QUIET
-	)
-	set(DOXYGEN_XML_DIR ${CMAKE_SOURCE_DIR}/doc/_doxygen/xml)
+	set(DOXYGEN_XML_DIR ${PROJECT_BINARY_DIR}/doc/_doxygen/xml)
 	configure_file(
 		${CMAKE_SOURCE_DIR}/doc/conf.py.in
 		${CMAKE_SOURCE_DIR}/doc/conf.py
@@ -49,6 +44,7 @@ if(DOXYGEN_FOUND AND SPHINX_FOUND)
 		COMMAND sphinx-build -b html -d doc/doctrees ${CMAKE_SOURCE_DIR}/doc doc/html # This will generate docs with Sphinx
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
+	add_dependencies(docs doxygen)
 else()
 	message("Doxygen, Sphinx or both are missing...")
 endif()

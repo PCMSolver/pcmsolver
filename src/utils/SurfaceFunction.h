@@ -9,23 +9,33 @@
 
 #include <Eigen/Dense>
 
-/*
- *        A basic surface function class, L. Frediani 2012
+/*!
+ * \file SurfaceFunction.h
+ * \class SurfaceFunction
+ * \brief A basic surface function class
+ * \author Luca Frediani, Roberto Di Remigio
+ * \date 2012, 2013 
+ *
  * This class is basically a wrapper around vectors containing electrostatic potentials
  * and apparent charges. Use judiciously, i.e. DO NOT use it directly in the core
  * classes (cavities, solvers) to avoid high coupling.
- *
- *        Various improvements, R. Di Remigio 2013
+ * Surface functions are managed through a map. Upon construction automatic registration
+ * in the map occurs.
  * The client has responsibility for both de-allocation and the concomitant de-registration 
  * from the SurfaceFunctionMap.
- *
  */ 
 
 
 class SurfaceFunction
 {
  public:
+	 /*!
+	  * A map from the surface function identifier (a string) to a pointer-to-SurfaceFunction.
+	  */
  	 typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
+	 /*!
+	  * No argument constructor
+	  */
          SurfaceFunction() : name(""), nPoints(0), allocated(false) {}
          SurfaceFunction(const std::string & name_) : name(name_), nPoints(0), allocated(false) {}
          SurfaceFunction(const std::string & name_, int nPoints_) : name(name_), nPoints(nPoints_) 
@@ -55,7 +65,11 @@ class SurfaceFunction
              allocated = true;
 	     Register();
          }
-                                                                                                                        
+         
+
+         /*!
+	  * The unique point of access to the unique instance of SurfaceFunctionMap
+	  */ 	 
 	 static SurfaceFunctionMap & TheMap()
 	 {
 	 	static SurfaceFunctionMap func;
@@ -64,15 +78,15 @@ class SurfaceFunction
                                                                                                                                  
          friend inline void swap(SurfaceFunction & left, SurfaceFunction & right);
          inline void swap(SurfaceFunction & other);
-         /// Assignment operator
+         /// Assignment operator.
          SurfaceFunction & operator=(SurfaceFunction other);
-         /// Multiplication operator: product of two SurfaceFunctions version (scalar product of the values vectors)
+         /// Multiplication operator: product of two SurfaceFunctions version (scalar product of the values vectors).
          double operator*(const SurfaceFunction & other);
-         /// Addition-assignment operator
+         /// Addition-assignment operator.
          SurfaceFunction & operator+=(const SurfaceFunction & other);
-         /// Subtraction-assignment operator
+         /// Subtraction-assignment operator.
          SurfaceFunction & operator-=(const SurfaceFunction & other);
-         /// Multiplication-assignment operator. Defined only for the uniform scaling case of operator*
+         /// Multiplication-assignment operator. Defined only for the uniform scaling case.
          SurfaceFunction & operator*=(double scaling);
                                                                                                                          
          std::string & getName(){ return name; }
@@ -102,21 +116,36 @@ class SurfaceFunction
          bool registered;
 };
 
-/// Addition operator
+/*!
+ * \fn inline SurfaceFunction operator+(SurfaceFunction left, const SurfaceFunction & right)
+ * \brief Addition operator
+ * \param left the left hand side of the addition
+ * \param right the right hand side of the addition
+ */
 inline SurfaceFunction operator+(SurfaceFunction left, const SurfaceFunction & right)
 {
 	left += right;
 	return left;
 }
 
-/// Subtraction operator
+/*!
+ * \fn inline SurfaceFunction operator-(SurfaceFunction left, const SurfaceFunction & right)
+ * \brief Subtraction operator
+ * \param left the left hand side of the subtraction
+ * \param right the right hand side of the subtraction
+ */
 inline SurfaceFunction operator-(SurfaceFunction left, const SurfaceFunction & right)
 {
 	left -= right;
 	return left;
 }
 
-/// Multiplication operator: uniform scaling of SurfaceFunction version
+/*!
+ * \fn inline SurfaceFunction operator-(SurfaceFunction left, const SurfaceFunction & right)
+ * \brief Multiplication operator: uniform scaling of SurfaceFunction version
+ * \param scaling the scaling factor
+ * \param object the surface function to be scaled
+ */
 inline SurfaceFunction operator*(double scaling, SurfaceFunction & object)
 {
 	object *= scaling;

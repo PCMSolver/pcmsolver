@@ -21,7 +21,6 @@
  *
  * 	Factory method implementation shamelessly copied from "Modern C++ Design" of A. Alexandrescu.
  * 	It is implemented as a Singleton.
- *
  */
 
 class CavityFactory {

@@ -1,5 +1,5 @@
-#ifndef CAVITY
-#define CAVITY
+#ifndef CAVITY_H
+#define CAVITY_H
 
 #include <iostream>
 #include <string>
@@ -21,7 +21,6 @@
  *
  * 	This class represents a cavity made of spheres, its surface being discretized in
  *      terms of finite elements.
- *
  */
 
 class Cavity

@@ -28,47 +28,65 @@ G_GRADIENT   * g2 = 0;
 G_HESSIAN    * g3 = 0;
 
 GreensFunctionInterface* 
-GreensFunctionInterface::allocateGreensFunctionInterface(const Section &green) {
+GreensFunctionInterface::allocateGreensFunctionInterface(const Section &green) 
+{
+	std::cout << "Allocator from input section" << std::endl;
 	GreensFunctionInterface *gf = 0;
 	const string greenDer = green.getStr("Der");
 	if (greenDer == "Numerical") {
 		gf = g0->allocateGreensFunction(green);
+		std::cout << "Numerical der" << std::endl;
 	} else if (greenDer == "Derivative") {
 		gf = g1->allocateGreensFunction(green);
+		std::cout << "Analytical der" << std::endl;
 	} else if (greenDer == "Gradient") {
 		gf = g2->allocateGreensFunction(green);
+		std::cout << "Full gradient der" << std::endl;
 	} else if (greenDer == "Hessian") {
 		gf = g3->allocateGreensFunction(green);
+		std::cout << "Full hessian der" << std::endl;
 	}
 	return gf;
 }
 
 GreensFunctionInterface* 
-GreensFunctionInterface::allocateGreensFunctionInterface(double epsilon, const std::string greenDer) {
+GreensFunctionInterface::allocateGreensFunctionInterface(double epsilon, const std::string greenDer) 
+{
+	std::cout << "Allocator from epsilon and der type." << std::endl;
  	GreensFunctionInterface *gf = 0;
 	if (greenDer == "Numerical") {
 		gf = g0->allocateGreensFunction(epsilon);
+		std::cout << "Numerical der" << std::endl;
 	} else if (greenDer == "Derivative") {
 		gf = g1->allocateGreensFunction(epsilon);
+		std::cout << "Analytical der" << std::endl;
 	} else if (greenDer == "Gradient") {
 		gf = g2->allocateGreensFunction(epsilon);
+		std::cout << "Full gradient der" << std::endl;
 	} else if (greenDer == "Hessian") {
 		gf = g3->allocateGreensFunction(epsilon);
+		std::cout << "Full hessian der" << std::endl;
 	}
 	return gf;
 }
 
 GreensFunctionInterface* 
-GreensFunctionInterface::allocateGreensFunctionInterface(const std::string greenDer) {
+GreensFunctionInterface::allocateGreensFunctionInterface(const std::string greenDer) 
+{
+	std::cout << "Allocator from der type." << std::endl;
 	GreensFunctionInterface *gf = 0;
 	if (greenDer == "Numerical") {
 		gf = g0->allocateGreensFunction();
+		std::cout << "Numerical der" << std::endl;
 	} else if (greenDer == "Derivative") {
 		gf = g1->allocateGreensFunction();
+		std::cout << "Analytical der" << std::endl;
 	} else if (greenDer == "Gradient") {
 		gf = g2->allocateGreensFunction();
+		std::cout << "Full gradient der" << std::endl;
 	} else if (greenDer == "Hessian") {
 		gf = g3->allocateGreensFunction();
+		std::cout << "Full hessian der" << std::endl;
 	}
 	return gf;
 }

@@ -1,15 +1,14 @@
-/*! \file GreensFunction.h 
-\brief Abstract base class for the Green´s function generator.
-*/
+#ifndef GREENSFUNCTION_H
+#define GREENSFUNCTION_H
 
-#ifndef GREENSFUNCTION
-#define GREENSFUNCTION
-
-/** Green´s function Abstract base class 
-
-A generic green´s function to reprensent the electrostatic potential for a given environment
-
-*/
+/*! \file GreensFunction.h
+ *  \class GreensFunction
+ *  \brief Abstract base class for the Green's function generator. 
+ *  \author Luca Frediani
+ *  \date 2010
+ *  
+ *  A generic green´s function to reprensent the electrostatic potential for a given environment
+ */
 
 #include "GreensFunctionInterface.h"
 
@@ -25,7 +24,23 @@ class GreensFunction: public GreensFunctionInterface
     // From GreensFunctionInterface
     virtual double evalf(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
     virtual double evald(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2) = 0;
+    /*!
+     * \brief Directional derivative of the Green's function in a direction relative to the source point.
+     * \param direction the direction used to calculate the directional derivative.
+     * \param p1 the source point.
+     * \param p2 the probe point. 
+     *
+     * This function is used in computing the kernel of the \f$\mathcal{D}^\dagger\f$ integral operator.
+     */
     virtual double derivativeSource(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
+    /*!
+     * \brief Directional derivative of the Green's function in a direction relative to the probe point.
+     * \param direction the direction used to calculate the directional derivative.
+     * \param p1 the source point.
+     * \param p2 the probe point.
+     * 
+     * This function is used in computing the kernel of the \f$\mathcal{D}\f$ integral operator.
+     */
     virtual double derivativeProbe(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
     virtual Eigen::Vector3d gradientSource(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
     virtual Eigen::Vector3d gradientProbe(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
@@ -45,6 +60,5 @@ class GreensFunction: public GreensFunctionInterface
     double delta;
     bool uniformFlag;
 };
-
 
 #endif

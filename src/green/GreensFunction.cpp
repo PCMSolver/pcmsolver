@@ -38,6 +38,7 @@ double GreensFunction<T>::evalf(Vector3d & source, Vector3d & probe) {
 	return res[0];
 }
 
+// Template specialization for the case T = double (i.e. numerical derivative)
 template <>
 double GreensFunction<double>::evalf(Vector3d & source, Vector3d & probe) {
 	double sp[3], pp[3], res;
@@ -65,6 +66,7 @@ double GreensFunction<T>::derivativeSource(Vector3d &direction, Vector3d &p1, Ve
 	return derivative[1];
 }
 
+// Template specialization for the case T = double (i.e. numerical derivative)
 template <>
 double GreensFunction<double>::derivativeSource(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
     Vector3d deltaPlus  = p1 + direction * delta / direction.norm();
@@ -81,13 +83,17 @@ double GreensFunction<T>::derivativeProbe(Vector3d &direction, Vector3d &p1, Vec
 	t1[0] = p1(0);
 	t1[1] = p1(1);
 	t1[2] = p1(2);
+	std::cout << "t1 " << t1 << std::endl;
 	t2[0] = p2(0); t2[0][1] = direction(0);
 	t2[1] = p2(1); t2[1][1] = direction(1);
 	t2[2] = p2(2); t2[2][1] = direction(2);
+	std::cout << "t2 " << t2 << std::endl;
 	derivative = evalGreensFunction(t1, t2);
+	std::cout << "derivative " << derivative << std::endl;
 	return derivative[1];
 }
 
+// Template specialization for the case T = double (i.e. numerical derivative)
 template <>
 double GreensFunction<double>::derivativeProbe(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
     Vector3d deltaPlus  = p2 + direction * delta / direction.norm();
@@ -118,6 +124,7 @@ void GreensFunction<T>::gradientSource(Vector3d &g, Vector3d &p1, Vector3d &p2) 
     return;
 }
 
+// Template specialization for the case T = double (i.e. numerical derivative)
 template <>
 void GreensFunction<double>::gradientSource(Vector3d &g, Vector3d &p1, Vector3d &p2) {
 	Vector3d direction;
@@ -129,6 +136,7 @@ void GreensFunction<double>::gradientSource(Vector3d &g, Vector3d &p1, Vector3d 
 	g(2) = derivativeSource(direction, p1, p2);
 }
 
+// Template specialization for the case T = taylor<double, 1, 1> (i.e. analytical directional derivative)
 template <>
 void GreensFunction< taylor<double, 1, 1> >::gradientSource(Vector3d &g, Vector3d &p1, Vector3d &p2) {
 	Vector3d direction;

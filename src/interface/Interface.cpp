@@ -364,6 +364,11 @@ void initCavity()
 	//cav->readCavity("molec_dyadic.dat"); //WaveletCavity... maybe call this inside constructor???
 }
 
+void initSolver()
+{
+	// Get the input data for generating the inside & outside Green's functions
+}
+
 void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) {
 	int nuclei;
 	collect_nctot_(&nuclei);

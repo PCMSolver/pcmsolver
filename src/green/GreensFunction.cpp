@@ -83,11 +83,11 @@ double GreensFunction<T>::derivativeProbe(Vector3d &direction, Vector3d &p1, Vec
 	t1[0] = p1(0);
 	t1[1] = p1(1);
 	t1[2] = p1(2);
-	std::cout << "t1 " << t1 << std::endl;
+	std::cout << "t1 " << *t1 << std::endl;
 	t2[0] = p2(0); t2[0][1] = direction(0);
 	t2[1] = p2(1); t2[1][1] = direction(1);
 	t2[2] = p2(2); t2[2][1] = direction(2);
-	std::cout << "t2 " << t2 << std::endl;
+	std::cout << "t2 " << *t2 << std::endl;
 	derivative = evalGreensFunction(t1, t2);
 	std::cout << "derivative " << derivative << std::endl;
 	return derivative[1];
@@ -195,6 +195,7 @@ template <class T>
 GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(const Section &green) {
 	GreensFunction<T> *gf = 0;
 	const string greenType = green.getStr("Type");
+		std::cout << "Base class allocator will allocate " << greenType << std::endl;
 	if (greenType == "Vacuum") {
 		gf = new Vacuum<T>();
 	} else if (greenType == "UniformDielectric") {

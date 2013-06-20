@@ -111,7 +111,9 @@ void IEFSolver::buildIsotropicMatrix(GePolCavity & cav){
 			Vector3d n2 = cav.getElementNormal(j);
 			n2.normalize();
 			if (i != j) {
+				std::cout << "Call evalf to get SI(i,j)" << std::endl;
 				SI(i,j) = greenInside->evalf(p1, p2);
+				std::cout << "Call evald to get DI(i,j)" << std::endl;
 				DI(i,j) = greenInside->evald(n2, p1, p2);
 			}
 		}

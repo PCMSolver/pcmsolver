@@ -14,7 +14,6 @@
 /*!
  *	\file Cavity.h
  *	\class Cavity
- *
  *	\brief Abstract Base Class for cavities. 
  *	\author Krzysztof Mozgawa
  *	\date 2011 
@@ -30,7 +29,7 @@ class Cavity
 		Cavity() : nElements(0), built(false) {}
 		//! Constructor from spheres
 		/*!
-		    \param _spheres an STL vector containing the spheres making up the cavity.
+		    \param[in] _spheres an STL vector containing the spheres making up the cavity.
 		 */
 		Cavity(const std::vector<Sphere> & _spheres) : spheres(_spheres)
 			{

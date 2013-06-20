@@ -70,6 +70,8 @@ Input::Input()
 		solvent = solvents[_name];
 		probeRadius = solvent.getRadius();
 		// Specification of the solvent by name means isotropic PCM
+		// We have to initialize the Green's functions data here, Solvent class
+		// is an helper class and should not be used in the core classes.
 		epsilonInside = 1.0;
 		epsilonOutside = solvent.getEpsStatic();
 	}

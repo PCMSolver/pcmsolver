@@ -20,6 +20,8 @@ T Vacuum<T>::evalGreensFunction(T * sp, T * pp) {
 	res = 1.0/sqrt((sp[0]-pp[0])*(sp[0]-pp[0])+
 				   (sp[1]-pp[1])*(sp[1]-pp[1])+
 				   (sp[2]-pp[2])*(sp[2]-pp[2]));
+	std::cout << "evalGreensFunction in Vacuum.cpp" << std::endl;
+	std::cout << "res " << res << std::endl;
 	return res;
 }
 

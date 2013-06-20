@@ -36,6 +36,7 @@ T UniformDielectric<T>::evalGreensFunction(T * sp, T * pp) {
 	T distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
 						   (sp[1] - pp[1]) * (sp[1] - pp[1]) +
 						   (sp[2] - pp[2]) * (sp[2] - pp[2]));
+	std::cout << "In UniformDielectric " << 1/(epsilon * distance) << std::endl;
 	return 1/(epsilon * distance);
 }
 

@@ -29,3 +29,16 @@ or popular Google-Books web-space.
    *Modern C++ Design: Generic Programming and Design Patterns Applied*
    Addison-Wesley, 2001
    `[web] <http://books.google.no/books/about/Modern_C++_Design.html?id=aJ1av7UFBPwC&redir_esc=y>`_
+
+.. [Sutter2004] H. Sutter, A. Alexandrescu;
+   *C++ Coding Standards: 101 Rules, Guidelines, And Best Practices*
+   Addison-Wesley, 2004
+   `[web] <http://books.google.no/books/about/C++_Coding_Standards.html?id=mmjVIC6WolgC&redir_esc=y>`_
+
+.. [Cline1998] M. P. Cline, G. Lomow, M. Girou;
+   *C++ FAQs*
+   Addison-Wesley, 1998
+   `[web] <http://books.google.no/books/about/C++_FAQs.html?id=Z-G-sZy-1T8C&redir_esc=y>`_
+
+.. [CppFAQs] M. P. Cline;
+   `[web] <http://www.parashift.com/c++-faq-lite/>`_

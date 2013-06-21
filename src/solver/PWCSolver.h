@@ -6,6 +6,8 @@
 #include <iostream>
 #include <complex>
 
+#include "Config.h"
+
 extern "C"{
 #include "vector3.h"
 #include "sparse2.h"
@@ -25,7 +27,7 @@ class PWCSolver : public WEMSolver
 	public:
 		PWCSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo);
                 PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo); 
-                PWCSolver(const Section & solver);
+//                PWCSolver(const Section & solver);
                 ~PWCSolver();
 	
 	private: 

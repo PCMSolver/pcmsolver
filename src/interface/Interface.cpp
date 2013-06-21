@@ -67,11 +67,14 @@ extern "C" void hello_pcm_(int * a, double * b) {
 
 extern "C" void init_pcm_() {
 	setupInput();
-        std::string modelType = Input::TheInput().getSolverType();
+//        std::string modelType = Input::TheInput().getSolverType();
         initCavity();
+	initSolver();
+	/*
 	if (modelType == "IEFPCM") {
 //		_gePolCavity = initGePolCavity();
-		init_iefsolver_();
+		initSolver();
+//		init_iefsolver_();
 //		_cavity = _gePolCavity;
 		_solver = _IEFSolver;
 	} else if (modelType == "CPCM") {
@@ -94,7 +97,7 @@ extern "C" void init_pcm_() {
 		_cavity = _waveletCavity;
 		_solver = _PWLSolver;
 	} 
-	_solver->setSolverType(modelType);
+	_solver->setSolverType(modelType);*/
 }
 
 
@@ -325,7 +328,7 @@ void setupInput() {
 	/* Here we setup the input, meaning that we read the parsed file and store everything 
 	 * it contatins inside an Input object. 
 	 * This object will be unique (a Singleton) to each "run" of the module.
-	 *   *** WHAT HAPPENS IN NUMERICAL OPTIMIZATIONS? ***
+	 *   *** WHAT HAPPENS IN NUMERICAL GEOMETRY OPTIMIZATIONS? ***
 	 */
 	Input& parsedInput = Input::TheInput();
 	// The only thing we can't create immediately is the vector of spheres
@@ -359,14 +362,98 @@ void initCavity()
 	// Get the right cavity from the Factory
 	_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
 	// Our use of inheritance breaks Liskov Principle, the Factory is pretty useless... 
-	// UNLESS one uses RTTI (which we do) although I don't know if it's a sign of ugly design strategy...
-	
-	//cav->readCavity("molec_dyadic.dat"); //WaveletCavity... maybe call this inside constructor???
+	// UNLESS one uses RTTI (which we do) although I don't know if it's a sign of ugly design strategy... 
 }
 
 void initSolver()
 {
+	// Useful typedefs
+        typedef taylor <double, 1, 1> T_DERIVATIVE;
+        typedef taylor <double, 3, 1> T_GRADIENT;
+        typedef taylor <double, 3, 2> T_HESSIAN;
+        typedef GreensFunction<double> G_DOUBLE;
+        typedef GreensFunction<T_DERIVATIVE>  G_DERIVATIVE; 
+        typedef GreensFunction<T_GRADIENT>  G_GRADIENT;
+        typedef GreensFunction<T_HESSIAN>  G_HESSIAN;
+       
+        // Initialize NULL pointers to the actual instance of Green's function	
+        G_DOUBLE     * g0 = 0;
+        G_DERIVATIVE * g1 = 0;
+        G_GRADIENT   * g2 = 0;
+        G_HESSIAN    * g3 = 0;
+	// Initialize the pointer to interface Green's function object to NULL
+	GreensFunctionInterface * gfInside = 0;
+	GreensFunctionInterface * gfOutside = 0;
 	// Get the input data for generating the inside & outside Green's functions
+	// INSIDE
+	double epsilon = Input::TheInput().getEpsilonInside();
+	std::string greenType = Input::TheInput().getGreenInsideType();
+	std::string greenDer = Input::TheInput().getDerivativeInsideType();
+	std::cout << "INTERFACE: decide which fancy derivative you want inside." << std::endl;
+	std::cout << "         : decide which fancy Green's function type you want inside." << std::endl;
+	if (greenDer == "Numerical") {
+		gfInside = g0->allocateGreensFunction(epsilon, greenType);
+		std::cout << "Numerical der" << std::endl;
+	} else if (greenDer == "Derivative") {
+		gfInside = g1->allocateGreensFunction(epsilon, greenType);
+		std::cout << "Analytical der" << std::endl;
+	} else if (greenDer == "Gradient") {
+		gfInside = g2->allocateGreensFunction(epsilon, greenType);
+		std::cout << "Full gradient der" << std::endl;
+	} else if (greenDer == "Hessian") {
+		gfInside = g3->allocateGreensFunction(epsilon, greenType);
+		std::cout << "Full hessian der" << std::endl;
+	}
+	std::cout << "Green's function inside it's done!" << std::endl;
+	// OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
+	epsilon = Input::TheInput().getEpsilonOutside();
+	greenType = Input::TheInput().getGreenOutsideType();
+	greenDer = Input::TheInput().getDerivativeOutsideType();
+	std::cout << "INTERFACE: decide which fancy derivative you want outside." << std::endl;
+	std::cout << "         : decide which fancy Green's function type you want outside." << std::endl;
+	if (greenDer == "Numerical") {
+		gfOutside = g0->allocateGreensFunction(epsilon, greenType);
+		std::cout << "Numerical der" << std::endl;
+	} else if (greenDer == "Derivative") {
+		gfOutside = g1->allocateGreensFunction(epsilon, greenType);
+		std::cout << "Analytical der" << std::endl;
+	} else if (greenDer == "Gradient") {
+		gfOutside = g2->allocateGreensFunction(epsilon, greenType);
+		std::cout << "Full gradient der" << std::endl;
+	} else if (greenDer == "Hessian") {
+		gfOutside = g3->allocateGreensFunction(epsilon, greenType);
+		std::cout << "Full hessian der" << std::endl;
+	}
+	std::cout << "Green's function outside it's done!" << std::endl;
+	// And all this to finally create the solver! 
+	std::string modelType = Input::TheInput().getSolverType();
+	std::cout << "You are asking for this very fancy solver: " << modelType << std::endl;
+	if (modelType == "IEFPCM") {
+		_IEFSolver = new IEFSolver(gfInside, gfOutside);
+		_IEFSolver->buildSystemMatrix(*_cavity);
+		_solver = _IEFSolver;
+	} else if (modelType == "CPCM") {
+		_IEFSolver = new IEFSolver(gfInside, gfOutside);
+		double correction = Input::TheInput().getCorrection();
+        	_CPCMSolver->setCorrection(correction);
+		_CPCMSolver->buildSystemMatrix(*_cavity);
+		_solver = _CPCMSolver;
+        } else if (modelType == "Wavelet") {
+		_waveletCavity = initWaveletCavity();
+		_PWCSolver = new PWCSolver(gfInside, gfOutside);
+		_PWCSolver->buildSystemMatrix(*_waveletCavity);
+		_waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_(), false); // WTF is happening here???
+		_cavity = _waveletCavity;
+		_solver = _PWCSolver;
+	} else if (modelType == "Linear") {
+		_waveletCavity = initWaveletCavity();
+		_PWLSolver = new PWLSolver(gfInside, gfOutside);
+		_PWLSolver->buildSystemMatrix(*_waveletCavity);
+		_waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_(), true); // WTF is happening here???
+		_cavity = _waveletCavity;
+		_solver = _PWLSolver;
+	} 
+	_solver->setSolverType(modelType);
 }
 
 void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) {
@@ -448,9 +535,9 @@ void init_iefsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_IEFSolver = new IEFSolver(Medium);
+//	_IEFSolver = new IEFSolver(Medium);
 //	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
-	_IEFSolver->buildSystemMatrix(*_cavity);
+//	_IEFSolver->buildSystemMatrix(*_cavity);
 }
 
 void init_cpcmsolver_() {
@@ -458,10 +545,10 @@ void init_cpcmsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_CPCMSolver = new CPCMSolver(Medium);
-	double correction = Input.getDbl("Medium<Medium>.Correction");
- 	_CPCMSolver->setCorrection(correction);
-	_CPCMSolver->buildIsotropicMatrix(*_gePolCavity);
+//	_CPCMSolver = new CPCMSolver(Medium);
+//	double correction = Input.getDbl("Medium<Medium>.Correction");
+// 	_CPCMSolver->setCorrection(correction);
+//	_CPCMSolver->buildIsotropicMatrix(*_gePolCavity);
 }
 
 void init_pwcsolver_() {
@@ -469,8 +556,8 @@ void init_pwcsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_PWCSolver = new PWCSolver(Medium);
-	_PWCSolver->buildSystemMatrix(*_waveletCavity);
+	//_PWCSolver = new PWCSolver(Medium);
+	//_PWCSolver->buildSystemMatrix(*_waveletCavity);
 }
 
 void init_pwlsolver_() {
@@ -478,8 +565,8 @@ void init_pwlsolver_() {
 	infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	const Section &Medium = Input.getSect("Medium<Medium>");
-	_PWLSolver = new PWLSolver(Medium);
-	_PWLSolver->buildSystemMatrix(*_waveletCavity);
+	//_PWLSolver = new PWLSolver(Medium);
+	//_PWLSolver->buildSystemMatrix(*_waveletCavity);
 }
 
 void build_isotropic_matrix_() {

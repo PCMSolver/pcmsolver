@@ -1,18 +1,11 @@
-/*! \file IEFSolver.cpp 
-\brief PCM solver
-*/
-
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <Eigen/Dense>
 
-using namespace std;
-using namespace Eigen;
-
-#include "Getkw.h"
-#include "taylor.hpp"
+//#include "Getkw.h"
+//#include "taylor.hpp"
 #include "GreensFunction.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
@@ -41,6 +34,7 @@ PCMSolver::PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo,
 	setEquationType(equation);
 }
 
+/*
 PCMSolver::PCMSolver(const Section & solver) {
 	std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
 	string name = solver.getStr("Solvent");
@@ -58,7 +52,7 @@ PCMSolver::PCMSolver(const Section & solver) {
 	setSolverType(solver.getStr("SolverType"));
 	setEquationType(solver.getStr("EquationType"));
 	allocated = true;
-}
+}*/
 
 PCMSolver::~PCMSolver(){
 	if(allocated) {
@@ -67,7 +61,7 @@ PCMSolver::~PCMSolver(){
 	}
 }
 
-void PCMSolver::setSolverType(const string & type) {
+void PCMSolver::setSolverType(const std::string & type) {
 	if (type == "IEFPCM") {
 		setSolverType(IEFPCM);
 	} else if (type == "CPCM") {
@@ -100,7 +94,7 @@ void PCMSolver::setSolverType(int type) {
 	}
 }
 
-void PCMSolver::setEquationType(const string & type) {
+void PCMSolver::setEquationType(const std::string & type) {
 	if (type == "FirstKind") {
 		setEquationType(FirstKind);
 	} else if (type == "SecondKind") {
@@ -150,8 +144,8 @@ void PCMSolver::setSolvent(Solvent & solv) {
 	solvent = solv;
 }
 
-ostream & PCMSolver::printObject(ostream & os) {
-	string type;
+std::ostream & PCMSolver::printObject(std::ostream & os) {
+	std::string type;
 	if (solverType == IEFPCM) {
 		type = "IEFPCM";
 	} else if (solverType == CPCM) {
@@ -163,10 +157,10 @@ ostream & PCMSolver::printObject(ostream & os) {
 	} else {
 		type = "Unknown";
 	}
-	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
-	os << "========== Solver section" << endl;
-	os << "Solver Type: " << type << endl;
-	os << solvent << endl; // Solvent has its own operator<< overloaded
+	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << std::endl;
+	os << "========== Solver section" << std::endl;
+	os << "Solver Type: " << type << std::endl;
+	os << solvent; // Solvent has its own operator<< overloaded
 	return os;
 }
 

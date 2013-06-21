@@ -7,7 +7,7 @@
 
 using namespace Eigen;
 
-#include "Getkw.h"
+//#include "Getkw.h"
 #include "taylor.hpp"
 #include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
@@ -63,6 +63,8 @@ double GreensFunction<T>::derivativeSource(Vector3d &direction, Vector3d &p1, Ve
 	t2[1] = p2(1);
 	t2[2] = p2(2);
 	derivative = evalGreensFunction(t1, t2);
+	// derivative[0] is the value of the Green's function at the expansion point,
+	// derivative[1] is the value of the directional derivative at the expansion point.
 	return derivative[1];
 }
 
@@ -190,7 +192,7 @@ void GreensFunction<taylor<double, 1, 1> >::gradientProbe(Vector3d &g, Vector3d 
 	direction << 0.0, 0.0, 1.0;
 	g(2) = derivativeProbe(direction, p1, p2);
 }
-
+/*
 template <class T>
 GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(const Section &green) {
 	GreensFunction<T> *gf = 0;
@@ -223,6 +225,42 @@ GreensFunction<double>* GreensFunction<double>::allocateGreensFunction(const Sec
 		gf = new GreensFunctionSum<double>(green);
 	} else {
 		cout << "Unknown Greens function" << endl;
+		exit(1);
+	}
+	return gf;
+}
+*/
+template <typename T> 
+GreensFunction<T> * GreensFunction<T>::allocateGreensFunction(double dielConst, const std::string & greenType)
+{
+	GreensFunction<T> *gf = 0;
+	std::cout << "Base class allocator will allocate " << greenType << std::endl;
+	if (greenType == "Vacuum") {
+		gf = new Vacuum<T>();
+	} else if (greenType == "UniformDielectric") {
+		gf = new UniformDielectric<T>(dielConst);
+	} else if (greenType == "GreensFunctionSum") {
+		gf = new GreensFunctionSum<T>(); // "We'll cross that bridge when we come to it."
+	} else {
+		std::cout << "Unknown Greens function" << std::endl;
+		exit(1);
+	}
+	return gf;
+}
+
+template <> 
+GreensFunction<double> * GreensFunction<double>::allocateGreensFunction(double dielConst, const std::string & greenType)
+{
+	GreensFunction<double> *gf = 0;
+	std::cout << "Base class allocator will allocate " << greenType << std::endl;
+	if (greenType == "Vacuum") {
+		gf = new Vacuum<double>();
+	} else if (greenType == "UniformDielectric") {
+		gf = new UniformDielectric<double>(dielConst);
+	} else if (greenType == "GreensFunctionSum") {
+		gf = new GreensFunctionSum<double>(); // "We'll cross that bridge when we come to it."
+	} else {
+		std::cout << "Unknown Greens function" << std::endl;
 		exit(1);
 	}
 	return gf;

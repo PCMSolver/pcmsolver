@@ -1,7 +1,3 @@
-/*! \file WEMSolver.cpp 
-\brief WEM solver
-*/
-
 #include <string>
 #include <vector>
 #include <iostream>
@@ -34,8 +30,8 @@ extern "C"{
 }
 
 #include "PhysicalConstants.h"
-#include "Getkw.h"
-#include "taylor.hpp"
+//#include "Getkw.h"
+//#include "taylor.hpp"
 #include "GreensFunctionInterface.h"
 #include "Cavity.h"
 #include "WaveletCavity.h"
@@ -63,10 +59,10 @@ WEMSolver::WEMSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gf
 	PCMSolver(gfi, gfo) {
 	initWEMMembers();
 }
-
+/*
 WEMSolver::WEMSolver(const Section & solver) : PCMSolver(solver) {
 	initWEMMembers();
-}
+}*/
 
 WEMSolver::~WEMSolver(){
 	if(nodeList != NULL)    free(nodeList);

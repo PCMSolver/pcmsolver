@@ -1,19 +1,23 @@
-/*! \file PCMSolver.h 
-\brief PCM solver
-*/
-
-
-#ifndef PCMSOLVER
-#define PCMSOLVER
+#ifndef PCMSOLVER_H
+#define PCMSOLVER_H
 
 #include <string>
 #include <vector>
 #include <iostream>
 #include <complex>
 
+#include "Config.h"
+
 #include "GreensFunction.h"
 #include "Solvent.h"
 
+/*! 
+ * \file PCMSolver.h
+ * \class PCMSolver
+ * \brief Abstract Base Class for solvers inheritance hierarchy.
+ * \author Luca Frediani 
+ * \date 2011
+ */
 
 class PCMSolver
 {
@@ -22,7 +26,7 @@ class PCMSolver
               		int equation=SecondKind, int solver=IEFPCM);
 	         PCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo, 
              	 	int equation=SecondKind, int solver=IEFPCM);
-                 PCMSolver(const Section & solver);                                                        
+//                 PCMSolver(const Section & solver);                                                        
                  ~PCMSolver();
 
                  GreensFunctionInterface & getGreenInside();
@@ -62,4 +66,4 @@ class PCMSolver
                  Solvent solvent;
 };
 
-#endif
+#endif // PCMSOLVER_H

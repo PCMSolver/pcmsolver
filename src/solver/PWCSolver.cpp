@@ -110,10 +110,10 @@ PWCSolver::PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gf
 	setEquationType("Full");
 }
 
-PWCSolver::PWCSolver(const Section & solver) : WEMSolver(solver) {
+/*PWCSolver::PWCSolver(const Section & solver) : WEMSolver(solver) {
 	initPointers();
 	setSolverType("Wavelet");
-}
+}*/
 
 PWCSolver::~PWCSolver(){
 	if(elementTree != NULL) free_elementlist(&elementTree, nPatches,nLevels);

@@ -6,13 +6,15 @@
 #include <iostream>
 #include <complex>
 
+#include "Config.h"
+
 #include "PCMSolver.h"
 
 /*! \file CPCMSolver.h  
  *  \class CPCMSolver
  *  \brief Solver for conductor-like approximation: C-PCM (COSMO)
  *  \author Roberto Di Remigio
- *  \data 2013
+ *  \date 2013
  */
 
 class CPCMSolver : public PCMSolver 
@@ -20,7 +22,7 @@ class CPCMSolver : public PCMSolver
 	public:
 		CPCMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
                 CPCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);                
-                CPCMSolver(const Section & solver);
+        //        CPCMSolver(const Section & solver);
                 ~CPCMSolver();
 
                 const Eigen::MatrixXd &getPCMMatrix() const { return PCMMatrix; }
@@ -42,4 +44,4 @@ class CPCMSolver : public PCMSolver
     		virtual std::ostream & printObject(std::ostream & os);
 };
 
-#endif
+#endif // CPCMSOLVER_H

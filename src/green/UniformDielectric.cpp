@@ -2,9 +2,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-using namespace Eigen;
-
-#include "Getkw.h"
+//#include "Getkw.h"
 #include "taylor.hpp"
 #include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
@@ -18,16 +16,16 @@ UniformDielectric<T>::UniformDielectric(double dielConst)
     epsilon = dielConst;
     this->uniformFlag = true;
 }
-
+/*
 template<class T>
 UniformDielectric<T>::UniformDielectric(Section green) 
 {
     epsilon = green.getDbl("Eps");
     this->uniformFlag = true;
-}
+}*/
 
 template<class T>
-double UniformDielectric<T>::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2){
+double UniformDielectric<T>::evald(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2){
     return epsilon * (this->derivativeProbe(direction, p1, p2));  // NORMALIZTION TEMPORARY REMOVED /direction.norm();
 }
 

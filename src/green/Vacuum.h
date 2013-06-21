@@ -1,7 +1,21 @@
 #ifndef VACUUM_H
 #define VACUUM_H
 
+#include <Eigen/Dense>
+
+#include "Config.h"
+
 #include "GreensFunction.h"
+
+/*! \file Vacuum.h
+ *  \class Vacuum
+ *  \brief Class for the Green's function of vacuum.
+ *  \author Luca Frediani
+ *  \date 2011
+ *
+ *  This class represents the Green's function for the vacuum. 
+ *
+ */
 
 template<typename T>
 class Vacuum : public GreensFunction<T>

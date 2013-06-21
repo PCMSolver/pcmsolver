@@ -7,7 +7,7 @@
 using namespace std;
 using namespace Eigen;
 
-#include "Getkw.h"
+//#include "Getkw.h"
 #include "taylor.hpp"
 #include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
@@ -22,13 +22,13 @@ GreensFunctionSum<T>::GreensFunctionSum(GreensFunction<T> &first,
 	this->uniformFlag = this->greenFirst->isUniform() && 
 		                this->greenSecond->isUniform();
 }
-
+/*
 template<class T>
 GreensFunctionSum<T>::GreensFunctionSum(Section green){
 	greenFirst  = this->allocateGreensFunctionInterface(green.getSect("Green<one>"));
 	greenSecond = this->allocateGreensFunctionInterface(green.getSect("Green<two>"));
 	this->uniformFlag = greenFirst->isUniform() && greenSecond->isUniform();
-}
+}*/
 
 template<class T>
 double GreensFunctionSum<T>::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) {

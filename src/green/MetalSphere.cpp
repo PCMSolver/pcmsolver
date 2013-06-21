@@ -19,15 +19,7 @@ extern"C" {
 		     double* greenre, double* greenim);
 }
 
-MetalSphere::MetalSphere(double eps, double epsRe, double epsIm, Vector3d &pos,
-						 double radius){
-	epsSolvent = eps;
-	sphRadius = radius;
-	sphPosition = pos;
-	epsMetal = dcomplex(epsRe,epsIm);
-	uniformFlag = false;
-};
-
+/*
 MetalSphere::MetalSphere(Section green){
 	epsSolvent = green.getDbl("Eps");
 	epsMetal = dcomplex(green.getDbl("EpsRe"), green.getDbl("EpsImg"));
@@ -35,7 +27,7 @@ MetalSphere::MetalSphere(Section green){
 	const vector<double> &pos_ = green.getDblVec("SpherePosition");
 	Vector3d pos(pos_[0], pos_[1], pos_[2]);
 	uniformFlag = false;
-};
+};*/
 
 double MetalSphere::evalGreensFunction(double * source, double * probe) {
     double epsre, epsim;

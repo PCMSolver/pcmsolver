@@ -113,10 +113,10 @@ PWLSolver::PWLSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gf
 	setEquationType("FirstKind");
 }
 
-PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
+/*PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
 	initPointers();
 	setSolverType("Linear");
-}
+}*/
 
 PWLSolver::~PWLSolver(){
 	if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches, nLevels);

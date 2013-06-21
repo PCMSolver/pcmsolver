@@ -6,11 +6,16 @@
 #include <iostream>
 #include <complex>
 
+#include "Config.h"
+
+#include "PCMSolver.h"
+
 /*! 
  * \file IEFSolver.h
  * \class IEFSolver
  * \brief Traditional solver.
  * \author Luca Frediani 
+ * \date 2011
  */
 
 class IEFSolver : public PCMSolver 
@@ -18,7 +23,7 @@ class IEFSolver : public PCMSolver
 	public:
 		IEFSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
     		IEFSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
-                IEFSolver(const Section & solver);                                      
+//                IEFSolver(const Section & solver);                                      
                 ~IEFSolver();
 
                 const Eigen::MatrixXd & getPCMMatrix() const {return PCMMatrix;};
@@ -37,4 +42,5 @@ class IEFSolver : public PCMSolver
 		Eigen::MatrixXd PCMMatrix;
     		virtual std::ostream & printObject(std::ostream & os);
 };
-#endif
+
+#endif // IEFSOLVER_H

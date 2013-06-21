@@ -1,15 +1,11 @@
-/*! \file CPCMSolver.cpp 
-\brief Solver for conductor-like approximation: C-PCM (COSMO)
-*/
-
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <Eigen/Dense>
 
-#include "Getkw.h"
-#include "taylor.hpp"
+//#include "Getkw.h"
+//#include "taylor.hpp"
 #include "GreensFunctionInterface.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
@@ -28,10 +24,10 @@ CPCMSolver::CPCMSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * 
 	builtAnisotropicMatrix = false;
 }
 
-CPCMSolver::CPCMSolver(const Section & solver) : PCMSolver(solver) {
+/*CPCMSolver::CPCMSolver(const Section & solver) : PCMSolver(solver) {
 	builtIsotropicMatrix = false;
 	builtAnisotropicMatrix = false;
-}
+}*/
 
 CPCMSolver::~CPCMSolver(){
 }
@@ -120,13 +116,13 @@ void CPCMSolver::buildIsotropicMatrix(GePolCavity & cav){
 // PRINT TO FILE RELEVANT INFO ABOUT PCMMatrix
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(PCMMatrix);
     if (solver.info() != Eigen::Success) abort();
-    ofstream matrixOut("PCM_matrix");
-    matrixOut << "PCM matrix printout" << endl;
-    matrixOut << "Number of Tesserae: " << cavitySize << endl;
-    matrixOut << "Largest Eigenvalue: " << solver.eigenvalues()[cavitySize-1] << endl;
-    matrixOut << "Lowest Eigenvalue: " << solver.eigenvalues()[0] << endl;
-    matrixOut << "Average of Eigenvalues: " << (solver.eigenvalues().sum() / cavitySize)<< endl;
-    matrixOut << "List of Eigenvalues:\n" << solver.eigenvalues() << endl;
+    std::ofstream matrixOut("PCM_matrix");
+    matrixOut << "PCM matrix printout" << std::endl;
+    matrixOut << "Number of Tesserae: " << cavitySize << std::endl;
+    matrixOut << "Largest Eigenvalue: " << solver.eigenvalues()[cavitySize-1] << std::endl;
+    matrixOut << "Lowest Eigenvalue: " << solver.eigenvalues()[0] << std::endl;
+    matrixOut << "Average of Eigenvalues: " << (solver.eigenvalues().sum() / cavitySize)<< std::endl;
+    matrixOut << "List of Eigenvalues:\n" << solver.eigenvalues() << std::endl;
     matrixOut.close();
     builtIsotropicMatrix = true;
     builtAnisotropicMatrix = false;
@@ -136,7 +132,7 @@ void CPCMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd &
 	if (builtIsotropicMatrix or builtAnisotropicMatrix) {
 		charge = - PCMMatrix * potential;
 	} else {
-		cout << "PCM matrix not initialized" << endl;
+		std::cout << "PCM matrix not initialized" << std::endl;
 		exit(1);
 	}
 }
@@ -145,12 +141,12 @@ void CPCMSolver::setCorrection(double _correction){
 	correction = _correction;
 }
 
-std::ostream & CPCMSolver::printObject(ostream & os) {
+std::ostream & CPCMSolver::printObject(std::ostream & os) {
 	std::string type = "C-PCM";
-	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << endl;
-	os << "========== Solver section" << endl;
-	os << "Solver Type: " << type << endl;
-	os << solvent << endl;
+	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << std::endl;
+	os << "========== Solver section" << std::endl;
+	os << "Solver Type: " << type << std::endl;
+	os << solvent;
 	return os;
 }
 

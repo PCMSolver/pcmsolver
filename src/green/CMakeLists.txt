@@ -1,5 +1,5 @@
 set(green_SOURCES
-    GreensFunctionInterface.cpp
+	#    GreensFunctionInterface.cpp
     GreensFunction.cpp
     Vacuum.cpp
     MetalSphere.cpp

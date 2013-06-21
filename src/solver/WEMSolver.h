@@ -6,6 +6,8 @@
 #include <iostream>
 #include <complex>
 
+#include "Config.h"
+
 extern "C"{
 #include "vector3.h"
 #include "sparse2.h"
@@ -22,7 +24,7 @@ class WEMSolver : public PCMSolver
 	public:
 		WEMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
                 WEMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
-                WEMSolver(const Section & solver);
+//                WEMSolver(const Section & solver);
                 ~WEMSolver();
                 vector3 **** getT_(){return T_;}
                 int getQuadratureLevel(){return quadratureLevel_;}

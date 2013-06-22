@@ -29,7 +29,7 @@ extern "C"{
 //#include "dwt.h"
 #include "cubature.h"
 #include "gauss_square.h"
-#include "constants.h"
+//#include "constants.h"
 }
 
 #include "Constants.h"

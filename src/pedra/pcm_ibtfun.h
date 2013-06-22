@@ -1,4 +1,4 @@
-#if defined (SYS_AIX) || defined (SYS_PARAGON) || defined (SYS_DEC) || defined (SYS_IRIX) || defined (SYS_HPUX) || defined (SYS_SUN) || defined (SYS_NEC) || defined (SYS_HAL) || defined (SYS_LINUX)
+#if defined (SYS_AIX) || defined (SYS_PARAGON) || defined (SYS_DEC) || defined (SYS_IRIX) || defined (SYS_HPUX) || defined (SYS_SUN) || defined (SYS_NEC) || defined (SYS_HAL) || defined (SYS_LINUX) || 1
       IBTAND(I,J) = IAND(I,J)
       IBTOR(I,J)  = IOR(I,J)
       IBTSHL(I,J) = ISHFT(I,J)

@@ -42,3 +42,18 @@ or popular Google-Books web-space.
 
 .. [CppFAQs] M. P. Cline;
    `[web] <http://www.parashift.com/c++-faq-lite/>`_
+
+.. [Harbrecht2009] H. Harbrecht and M. Randrianarivony;
+   *Wavelet BEM on molecular surfaces: parametrization and implementation*
+   Computing **86**, 1 (2009)
+   `[web] <http://dx.doi.org/10.1007/s00607-009-0050-y>`_
+
+.. [Harbrecht2011a] H. Harbrecht and M. Randrianarivony;
+   *Wavelet BEM on molecular surfaces: solvent excluded surfaces*
+   Computing **92**, 335 (2011)
+   `[web] <http://dx.doi.org/10.1007/s00607-011-0147-y>`_
+
+.. [Weijio2010] V. Weijio, M. Randrianarivony, H. Harbrecht and L. Frediani;
+   *Wavelet Formulation of the Polarizable Continuum Model*
+   J. Comput. Chem. **31**, 1469 (2010)
+   `[web] <http://dx.doi.org/10.1002/jcc.21431>`_

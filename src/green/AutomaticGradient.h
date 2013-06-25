@@ -14,7 +14,7 @@
  *  This class implements the evaluation of the function and of its directinal
  *  derivative using automatic differentiation.
  *  The full gradient is calculated and contracted with the desired direction:
- *  @\f[ \mathbf{\nabla}_{\mathbf{u}} f(\mathbf{x}) = \mathbf{u}^{t} \mathbf{\nabla} f(\mathbf{x}) @\f]
+ *  \f$\mathbf{\nabla}_{\mathbf{u}} f(\mathbf{x}) = \mathbf{u}^{t} \mathbf{\nabla} f(\mathbf{x})\f$
  *  The automatic differentiation engine is Ulf Ekström's libtaylor library.
  */
 

@@ -28,6 +28,9 @@ CPCMSolver
 
 WEMSolver
 ---------
+   
+   This is the Abstract Base Class wrapping the wavelet solver of Harbrecht et al. [Harbrecht2009]_, [Harbrecht2011a]_, [Weijio2010]_
+   
 .. doxygenclass:: WEMSolver 
    :project: PCMSolver
    :members:

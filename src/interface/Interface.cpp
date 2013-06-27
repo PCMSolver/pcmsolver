@@ -20,6 +20,7 @@
 #include "WaveletCavity.h"
 #include "CavityFactory.h"
 #include "GreensFunction.h"
+#include "GreensFunctionFactory.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
 #include "PCMSolver.h"
@@ -368,13 +369,23 @@ void initCavity()
 void initSolver()
 {
 	// Useful typedefs
-        typedef taylor <double, 1, 1> T_DERIVATIVE;
-        typedef taylor <double, 3, 1> T_GRADIENT;
-        typedef taylor <double, 3, 2> T_HESSIAN;
+        typedef taylor<double, 1, 1> T_DERIVATIVE;
+        typedef taylor<double, 3, 1> T_GRADIENT;
+        typedef taylor<double, 3, 2> T_HESSIAN;
         typedef GreensFunction<double> G_DOUBLE;
         typedef GreensFunction<T_DERIVATIVE>  G_DERIVATIVE; 
         typedef GreensFunction<T_GRADIENT>  G_GRADIENT;
         typedef GreensFunction<T_HESSIAN>  G_HESSIAN;
+
+	/*std::cout << "Let us instantiate a wonderful GreensFunctionFactory" << std::endl;
+	GreensFunctionFactory<double> & factory1 = GreensFunctionFactory<double>::TheGreensFunctionFactory();
+	std::cout << "If you read this a GreensFunctionFactory<double> has been instantiated." << std::endl;
+	GreensFunctionFactory<T_DERIVATIVE> & factory2 = GreensFunctionFactory<T_DERIVATIVE>::TheGreensFunctionFactory();
+	std::cout << "If you read this a GreensFunctionFactory< taylor<double, 1, 1> > has been instantiated." << std::endl;
+	GreensFunctionFactory<T_GRADIENT> & factory3 = GreensFunctionFactory<T_GRADIENT>::TheGreensFunctionFactory();
+	std::cout << "If you read this a GreensFunctionFactory< taylor<double, 3, 1> > has been instantiated." << std::endl;
+	GreensFunctionFactory<T_HESSIAN> & factory4 = GreensFunctionFactory<T_HESSIAN>::TheGreensFunctionFactory();
+	std::cout << "If you read this a GreensFunctionFactory< taylor<double, 3, 2> > has been instantiated." << std::endl;*/
        
         // Initialize NULL pointers to the actual instance of Green's function	
         G_DOUBLE     * g0 = 0;
@@ -392,15 +403,19 @@ void initSolver()
 	std::cout << "INTERFACE: decide which fancy derivative you want inside." << std::endl;
 	std::cout << "         : decide which fancy Green's function type you want inside." << std::endl;
 	if (greenDer == "Numerical") {
+//		gfInside = factory1.createGreensFunction(greenType);
 		gfInside = g0->allocateGreensFunction(epsilon, greenType);
 		std::cout << "Numerical der" << std::endl;
 	} else if (greenDer == "Derivative") {
-		gfInside = g1->allocateGreensFunction(epsilon, greenType);
+//		gfInside = factory2.createGreensFunction(greenType);
+ 	        gfInside = g1->allocateGreensFunction(epsilon, greenType);
 		std::cout << "Analytical der" << std::endl;
 	} else if (greenDer == "Gradient") {
-		gfInside = g2->allocateGreensFunction(epsilon, greenType);
+//		gfInside = factory3.createGreensFunction(greenType);
+	        gfInside = g2->allocateGreensFunction(epsilon, greenType);
 		std::cout << "Full gradient der" << std::endl;
 	} else if (greenDer == "Hessian") {
+//		gfInside = factory4.createGreensFunction(greenType);
 		gfInside = g3->allocateGreensFunction(epsilon, greenType);
 		std::cout << "Full hessian der" << std::endl;
 	}

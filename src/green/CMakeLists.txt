@@ -1,5 +1,6 @@
 set(green_SOURCES
 	#    GreensFunctionInterface.cpp
+	GreensFunctionFactory.cpp
     GreensFunction.cpp
     Vacuum.cpp
     MetalSphere.cpp
@@ -14,6 +15,7 @@ install(TARGETS green
 	ARCHIVE DESTINATION lib)
 
 install(FILES GreensFunctionInterface.h DESTINATION include)
+install(FILES GreensFunctionFactory.h DESTINATION include)
 install(FILES GreensFunction.h DESTINATION include)
 install(FILES MetalSphere.h DESTINATION include)
 install(FILES Vacuum.h DESTINATION include)

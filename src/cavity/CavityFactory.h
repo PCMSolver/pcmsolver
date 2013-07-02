@@ -23,7 +23,8 @@
  * 	It is implemented as a Singleton.
  */
 
-class CavityFactory {
+class CavityFactory 
+{
 	public:
 		/*!
 		 * Callback function for cavity creation.

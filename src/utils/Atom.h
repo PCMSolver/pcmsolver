@@ -12,17 +12,18 @@
 
 #include "PhysicalConstants.h"
 
-/*!
- * \brief Class describing an atom.
- * \author Roberto Di Remigio
- * \date 2011
+/*! \file Atom.h
+ *  \class Atom
+ *  \brief Class describing an atom.
+ *  \author Roberto Di Remigio
+ *  \date 2011
  *
- * This class contains all the radii sets available in the module.
- * They can be obtained by the client through static functions initializing
- * the sets via the lazy evaluation idiom.
+ *  This class contains all the radii sets available in the module.
+ *  They can be obtained by the client through static functions initializing
+ *  the sets via the lazy evaluation idiom.
  */
 
-class Atom 
+class Atom final 
 {
 	public:
 		Atom(){}

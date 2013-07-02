@@ -5,26 +5,27 @@
 #include "Sphere.h"
 #include "Solvent.h"
 
-/*!
- * \brief A wrapper class for the Getkw Library C++ bindings.
- * \author Roberto Di Remigio
- * \date 2013
+/*! \file Input.h
+ *  \class Input
+ *  \brief A wrapper class for the Getkw Library C++ bindings.
+ *  \author Roberto Di Remigio
+ *  \date 2013
  *
- * Implemented as a Singleton: only one instance of it is needed and therefore admitted.
- * Constructors (default, non-default and copy), destructor and assignment operator are
- * made private. We use the lazy initialization idiom to initialize the unique Input
- * object. 
- * An Input object is to be used as the unique point of access to user-provided input:
- *  input ---> parsed input (Python script) ---> Input object (contains all the input data)
- * Definition of input parameters is to be done in the Python script and in this class.
- * At runtime a unique Input object in created, this object contains all input parameters
- * processed as to be directly usable in the module.
- * They must be specified as private data members with public accessor methods (get-ters).
- * In general, no mutator methods (set-ters) should be needed, exceptions to this rule
- * should be carefully considered.
+ *  Implemented as a Singleton: only one instance of it is needed and therefore admitted.    
+ *  Constructors (default, non-default and copy), destructor and assignment operator are
+ *  made private. We use the lazy initialization idiom to initialize the unique Input
+ *  object. 
+ *  An Input object is to be used as the unique point of access to user-provided input:
+ *   input ---> parsed input (Python script) ---> Input object (contains all the input data)
+ *  Definition of input parameters is to be done in the Python script and in this class.
+ *  At runtime a unique Input object in created, this object contains all input parameters
+ *  processed as to be directly usable in the module.
+ *  They must be specified as private data members with public accessor methods (get-ters).
+ *  In general, no mutator methods (set-ters) should be needed, exceptions to this rule
+ *  should be carefully considered.
  */
 
-class Input 
+class Input final 
 {
 	private:
 		Input();

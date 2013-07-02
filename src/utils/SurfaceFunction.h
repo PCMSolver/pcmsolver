@@ -26,7 +26,7 @@
  */ 
 
 
-class SurfaceFunction
+class SurfaceFunction final
 {
  public:
 	 /*!

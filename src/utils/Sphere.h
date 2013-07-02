@@ -10,13 +10,14 @@
 
 #include <Eigen/Dense>
 
-/*!
+/*! \file Sphere.h
+ * \class Sphere
  * \brief Class describing a sphere.
  * \author Roberto Di Remigio
  * \date 2011
  */
 
-class Sphere
+class Sphere final
 {
   	public:
 		Sphere(){}

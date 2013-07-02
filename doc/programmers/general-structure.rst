@@ -22,7 +22,7 @@ Including header files
 
 Do not include header files unnecessarily. Even if PCMSolver is not a big project, unnecessary include directives and/or forward declarations
 introduce nasty interdependencies among different parts of the code. 
-This reflects mainly in longer compilation times, but also in uglier looking code.
+This reflects mainly in longer compilation times, but also in uglier looking code (see also the discussion in [Sutter1999]_).
 
 Follow these guidelines to decide whether to include or forward declare:
         1. class A makes no reference to class B. Neither include nor forward declare B;

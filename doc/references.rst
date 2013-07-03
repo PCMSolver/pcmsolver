@@ -57,3 +57,8 @@ or popular Google-Books web-space.
    *Wavelet Formulation of the Polarizable Continuum Model*
    J. Comput. Chem. **31**, 1469 (2010)
    `[web] <http://dx.doi.org/10.1002/jcc.21431>`_
+
+.. [Sutter1999] H. Sutter;
+   *Exceptional C++: 47 Engineering Puzzles, Programming Problems, and Solutions*
+   Addison-Wesley, 1999
+   `[web] <http://books.google.no/books?id=58rZvOSuheEC&printsec=frontcover&hl=it&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false>`_

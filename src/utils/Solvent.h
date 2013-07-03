@@ -9,17 +9,18 @@
 
 #include <Config.h>
 
-/*!
- * \brief Class describing a solvent
- * \author Roberto Di Remigio
- * \date 2011
+/*! \file Solvent.h
+ *  \class Solvent
+ *  \brief Class describing a solvent.
+ *  \author Roberto Di Remigio
+ *  \date 2011
  *
  * A Solvent object contains all the solvent-related experimental data
  * needed to set up the Green's functions and the non-electrostatic
  * terms calculations. 
  */
 
-class Solvent 
+class Solvent final 
 {
 	public:
 		/*!

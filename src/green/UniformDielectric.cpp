@@ -1,65 +1,188 @@
-#include <iostream>
 #include <cmath>
-#include <Eigen/Dense>
 
-//#include "Getkw.h"
 #include "taylor.hpp"
-#include "GreensFunctionInterface.h"
-#include "GreensFunction.h"
-#include "UniformDielectric.h"
 
-static double factor = 1.07;
+#include "UniformDielectric.h" 
 
-template<class T>
-UniformDielectric<T>::UniformDielectric(double dielConst) 
+virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_)
 {
-    epsilon = dielConst;
-    this->uniformFlag = true;
-}
-/*
-template<class T>
-UniformDielectric<T>::UniformDielectric(Section green) 
+	int size = diagonalS_.size();
+	double factor = 1.07;
+
+	for (int i = 0; i < size; ++i)
+	{
+		diagonalS_(i) = factor * sqrt(4 * M_PI / elementArea_(i)) * (1 / epsilon);
+		diagonalD_(i) = - factor * sqrt(M_PI / elementArea_(i)) * (1 / elementRadius_(i));
+	}
+}	
+
+Eigen::Array4d UniformDielectric::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
 {
-    epsilon = green.getDbl("Eps");
-    this->uniformFlag = true;
-}*/
+	std::cout << "This evaluation strategy has no Hessian." << std::endl;
+	Eigen::Array4d result = Eigen::Array4d::Zero();
 
-template<class T>
-double UniformDielectric<T>::evald(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2){
-    return epsilon * (this->derivativeProbe(direction, p1, p2));  // NORMALIZTION TEMPORARY REMOVED /direction.norm();
+	// The finite difference step
+	double delta = 1.0e-4;
+
+	// Value of the function
+	result(0) = 1 / (epsilon * (source_ - probe_).norm());
+
+        Eigen::Vector3d deltaPlus = probe_ + (probeNormal_.normalized() * delta); 
+        Eigen::Vector3d deltaMinus = probe_ - (probeNormal_.normalized() * delta);
+
+	double funcPlus =  1 / (epsilon * (source_ - deltaPlus).norm());
+	double funcMinus = 1 / (epsilon * (source_ - deltaMinus).norm());
+	// Directional derivative wrt probe_
+	result(1) = (funcPlus - funcMinus)/(2.0 * delta); 
+
+        deltaPlus = source_ + (sourceNormal_.normalized() * delta); 
+        deltaMinus = source_ - (sourceNormal_.normalized() * delta);
+
+	funcPlus =  1 / (epsilon * (deltaPlus - probe_).norm());
+	funcMinus = 1 / (epsilon * (deltaMinus - probe_).norm());
+	// Directional derivative wrt source_
+	result(2) =  (funcPlus - funcMinus)/(2.0 * delta);
+
+	// Value of the Hessian
+	result(3) = 0;
+
+	return result;
 }
 
-template<class T>
-T UniformDielectric<T>::evalGreensFunction(T * sp, T * pp) {
-	T distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
-						   (sp[1] - pp[1]) * (sp[1] - pp[1]) +
-						   (sp[2] - pp[2]) * (sp[2] - pp[2]));
-	std::cout << "In UniformDielectric " << 1/(epsilon * distance) << std::endl;
-	return 1/(epsilon * distance);
+Eigen::Array4d UniformDielectric::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+{
+	Eigen::Array4d result = Eigen::Array4d::Zero();
+	double distance = (source_ - probe_).norm();
+	double distance_3 = pow(distance, 3.0);
+	double distance_5 = pow(distance, 5.0);
+	
+	// Value of the function
+	result(0) = 1 / (epsilon * distance); 
+	// Value of the directional derivative wrt probe_
+	result(1) = (source_ - probe_).dot(probeNormal_) / (epsilon * distance_3); 
+	// Directional derivative wrt source_
+	result(2) = - (source_ - probe_).dot(sourceNormal_) / (epsilon * distance_3); 
+	// Value of the Hessian
+	result(3) = sourceNormal_.dot(probeNormal_) / (epsilon * distance_3) 
+		  - 3 * ((source_ - probe_).dot(sourceNormal_))*((source_ - probe_).dot(probeNormal_)) / (epsilon * distance_5);
+
+	return result;
 }
 
-template<class T>
-double UniformDielectric<T>::compDiagonalElementS(double area){
-	return factor * sqrt(4 * M_PI / area) / epsilon;   
+Eigen::Array4d UniformDielectric::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+{
+	std::cout << "This evaluation strategy has no Hessian." << std::endl;
+	Eigen::Array4d result = Eigen::Array4d::Zero();
+	taylor<double, 3, 1> dx(0, 0), dy(0, 1), dz(0, 2);
+
+	taylor<double, 3, 1> tmp;
+
+	// Directional derivative wrt probe_
+	tmp = 1 / (epsilon * sqrt((source_(0) - (probe_(0) + probeNormal_(0) * dx)) * (source_(0) - (probe_(0) + probeNormal_(0) * dx))
+            + (source_(1) - (probe_(1) + probeNormal_(1) * dy)) * (source_(1) - (probe_(1) + probeNormal_(1) * dy))		
+            + (source_(2) - (probe_(2) + probeNormal_(2) * dz)) * (source_(2) - (probe_(2) + probeNormal_(2) * dz))));
+	tmp.deriv_facs();
+	
+	// Value of the function
+	result(0) = tmp[0]; 
+	// Value of the directional derivative wrt probe_
+	for (int i = 1; i < 4; ++i)
+	{
+		result(1) += tmp[i]; 
+	}
+	
+	// Directional derivative wrt source_
+	tmp = 1 / (epsilon * sqrt(((source_(0) + sourceNormal_(0) * dx) - probe_(0)) * ((source_(0) + sourceNormal_(0) * dx) - probe_(0))
+            + ((source_(1) + sourceNormal_(1) * dy) - probe_(1)) * ((source_(1) + sourceNormal_(1) * dy) - probe_(1))		
+            + ((source_(2) + sourceNormal_(2) * dz) - probe_(2)) * ((source_(2) + sourceNormal_(2) * dz) - probe_(2))));
+	tmp.deriv_facs();
+	
+	// Value of the directional derivative wrt source_
+	for (int i = 1; i < 4; ++i)
+	{
+		result(2) += tmp[i]; 
+	}
+	// Value of the Hessian
+	result(3) = 0; 
+	
+	return result;
 }
 
-template<class T>
-double UniformDielectric<T>::compDiagonalElementD(double area, double radius){
-	//	double s = factor * sqrt(4 * M_PI / area);   
-	//	return s / (2 * radius);
-	return - factor * sqrt(M_PI / area) / radius;   
+
+Eigen::Array4d UniformDielectric::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+{
+	std::cout << "This evaluation strategy has no Hessian." << std::endl;
+	Eigen::Array4d result = Eigen::Array4d::Zero();
+	taylor<double, 3, 1> dx(0, 0), dy(0, 1), dz(0, 2);
+
+	taylor<double, 3, 1> tmp;
+
+	tmp = 1 / (epsilon * sqrt((source_(0) - (probe_(0) + dx)) * (source_(0) - (probe_(0) + dx))
+            + (source_(1) - (probe_(1) + dy)) * (source_(1) - (probe_(1) + dy))		
+            + (source_(2) - (probe_(2) + dz)) * (source_(2) - (probe_(2) + dz))));
+	tmp.deriv_facs();
+
+	// Value of the function
+	result(0) = tmp[0];
+        // Value of the directional derivative wrt probe_
+	for (int i = 1; i < 4; ++i)
+	{
+		result(1) += tmp[i] * probeNormal_(i-1);
+	}
+        // Value of the directional derivative wrt source_	
+	for (int i = 1; i < 4; ++i)
+	{
+		result(2) += -tmp[i] * sourceNormal_(i-1);
+	}
+
+	// Value of the Hessian
+	result(3) = 0;
+	
+	return result;
 }
 
-template <class T>
-std::ostream & UniformDielectric<T>::printObject(std::ostream &os) {
-	os << "Green's Function" << std::endl;
-	os << "Delta = " << this->delta << std::endl;
-	os << "Uniform = " << this->uniformFlag << std::endl;
-	os << "Epsilon = " << this->epsilon;
-	return os;
-}
+Eigen::Array4d UniformDielectric::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+{
+	Eigen::Array4d result = Eigen::Array4d::Zero();
+	
+	taylor<double, 3, 2> dx(0, 0), dy(0, 1), dz(0, 2);
 
-template class UniformDielectric<double>;
-template class UniformDielectric< taylor <double, 1, 1> >;
-template class UniformDielectric< taylor <double, 3, 1> >;
-template class UniformDielectric< taylor <double, 3, 2> >;
+	taylor<double, 3, 2> tmp;
+
+	//  Gradient wrt probe_
+	tmp = 1 / (epsilon * sqrt((source_(0) - (probe_(0) + dx)) * (source_(0) - (probe_(0) + dx))
+            + (source_(1) - (probe_(1) + dy)) * (source_(1) - (probe_(1) + dy))		
+            + (source_(2) - (probe_(2) + dz)) * (source_(2) - (probe_(2) + dz))));
+
+	tmp.deriv_facs();
+	
+	// Value of the function
+	result(0) = tmp[0];
+	// Value of the directional derivative wrt probe_
+	for (int i = 1; i < 4; ++i)
+	{
+		result(1) += tmp[i] * probeNormal_(i-1); 
+	}
+	// Value of the directional derivative wrt source_
+	for (int i = 1; i < 4; ++i)
+	{
+		result(2) += -tmp[i] * sourceNormal_(i-1); 
+	}
+
+	Eigen::Matrix3d hessian = Eigen::Matrix3d::Zero();
+	// Yes, this is quite clumsy...
+	hessian(0, 0) = tmp[4];
+	hessian(0, 1) = tmp[5];
+	hessian(0, 2) = tmp[6];
+	hessian(1, 1) = tmp[7];
+	hessian(1, 2) = tmp[8];
+	hessian(2, 2) = tmp[9];
+	hessian(1, 0) = hessian(0, 1);
+	hessian(2, 0) = hessian(0, 2);
+	hessian(2, 1) = hessian(1, 2);
+	
+	// Value of the Hessian
+	result(3) = -sourceNormal_.transpose() * hessian * probeNormal_;
+
+	return result;
+}

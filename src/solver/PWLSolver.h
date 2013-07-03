@@ -8,12 +8,16 @@
 
 #include "Config.h"
 
+class GreensFunction;
+
 extern "C"{
 #include "vector3.h"
 #include "sparse2.h"
 #include "intvector_pwl.h"
 #include "basis_pwl.h"
 }
+
+#include "WEMSolver.h"
 
 /*! \file PWLSolver.h
  *  \class PWLSOlver
@@ -25,10 +29,20 @@ extern "C"{
 class PWLSolver : public WEMSolver 
 {
 	public:
-		PWLSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
-                PWLSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
-//                PWLSolver(Section solver);
-                ~PWLSolver();
+		PWLSolver(GreensFunction &gfi, GreensFunction &gfo) : WEMSolver(gfi, gfo)
+		{
+			initPointers();
+			setSolverType("Linear");
+			setEquationType("FirstKind");
+		}
+                PWLSolver(GreensFunction *gfi, GreensFunction *gfo) : WEMSolver(gfi, gfo)
+		{
+	                initPointers();
+	                setSolverType("Linear");
+	                setEquationType("FirstKind");
+		}
+		//PWLSolver(Section solver);
+                virtual ~PWLSolver();
 
  	private:
 		virtual void initInterpolation();

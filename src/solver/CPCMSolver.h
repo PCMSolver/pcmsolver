@@ -8,6 +8,10 @@
 
 #include "Config.h"
 
+class GreensFunction;
+class Cavity;
+class GePolCavity;
+
 #include "PCMSolver.h"
 
 /*! \file CPCMSolver.h  
@@ -19,29 +23,28 @@
 
 class CPCMSolver : public PCMSolver 
 {
-	public:
-		CPCMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
-                CPCMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);                
-        //        CPCMSolver(const Section & solver);
-                ~CPCMSolver();
-
-                const Eigen::MatrixXd &getPCMMatrix() const { return PCMMatrix; }
-                                                                                                      
-                virtual void buildSystemMatrix(Cavity & cavity);
-                virtual void buildAnisotropicMatrix(GePolCavity & cav);
-                virtual void buildIsotropicMatrix(GePolCavity & cav);
-                //    virtual VectorXd compCharge(const VectorXd & potential);
-                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-                virtual void setCorrection(double _correction);
-
 	private:
-    		bool builtAnisotropicMatrix;
     		bool builtIsotropicMatrix;
-//    		static const double factor = 1.0694;
-    		static const double factor = 1.07;
+    		bool builtAnisotropicMatrix;
     		double correction;
     		Eigen::MatrixXd PCMMatrix;
     		virtual std::ostream & printObject(std::ostream & os);
+//    		static const double factor = 1.0694;
+    		static const double factor = 1.07;
+	public:
+		CPCMSolver(GreensFunction &gfi, GreensFunction &gfo, double correction_ = 0.0) 
+			: PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}
+                CPCMSolver(GreensFunction *gfi, GreensFunction *gfo, double correction_ = 0.0) 
+			: PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}                
+                //CPCMSolver(const Section & solver);
+                virtual ~CPCMSolver() {}
+                const Eigen::MatrixXd & getPCMMatrix() const { return PCMMatrix; }
+                virtual void buildSystemMatrix(Cavity & cavity);
+                //virtual VectorXd compCharge(const VectorXd & potential);
+                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
+                void setCorrection(double correction_) { correction = correction_; }
+	private:
+                void buildIsotropicMatrix(GePolCavity & cav);
 };
 
 #endif // CPCMSOLVER_H

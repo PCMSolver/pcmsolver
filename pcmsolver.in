@@ -308,7 +308,7 @@ def verify_green(section):
 
 	type=section.get('Der')
 	if (type.get() not in allowed_der):
-		print "Allowed Derivatives are:", allowed
+		print "Allowed Derivatives are:", allowed_der
 		sys.exit(1)
 
 	if (type.get() == 'UniformDielectric'):

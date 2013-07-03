@@ -1,5 +1,5 @@
-#ifndef VACUUM_H
-#define VACUUM_H
+#ifndef IONICLIQUID_H
+#define IONICLIQUID_H
 
 #include <iostream>
 #include <string>
@@ -9,21 +9,23 @@
 #include "GreensFunction.h"
 #include "GreensFunctionFactory.h"
 
-/*! \file Vacuum.h
- *  \class Vacuum
- *  \brief Green's functions for vacuum.
+/*! \file IonicLiquid.h
+ *  \class IonicLiquid
+ *  \brief Green's functions for ionic liquid, described by the linearized Poisson-Boltzmann equation.
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2013
  */
 
-class Vacuum : public GreensFunction
+class IonicLiquid : public GreensFunction
 {
 	public:
-		Vacuum(const std::string & how_) : GreensFunction(how_, true) {} 
-		virtual ~Vacuum() {}
+		IonicLiquid(const std::string & how_, double epsilon_, double kappa_) : GreensFunction(how_), epsilon(epsilon_), kappa(kappa_) {}
+		virtual ~IonicLiquid() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_) const; 
 	private:
+		double epsilon;
+		double kappa;
 		virtual	Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				 			    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
 		virtual	Eigen::Array4d analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_,
@@ -38,12 +40,12 @@ class Vacuum : public GreensFunction
 
 namespace
 {
-	GreensFunction * createVacuum(const std::string & how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	GreensFunction * createIonicLiquid(const std::string & how_, double epsilon_ = 1.0, double kappa_ = 0.0)
 	{
-		return new Vacuum(how_);
+		return new IonicLiquid(how_, epsilon_, kappa_);
 	}
-	const std::string VACUUM("Vacuum");
-	const bool registeredVacuum = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(VACUUM, createVacuum);
+	const std::string IONICLIQUID("IonicLiquid");
+	const bool registeredIonicLiquid = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(IONICLIQUID, createIonicLiquid);
 }
 
-#endif // VACUUM_H
+#endif // IONICLIQUID_H

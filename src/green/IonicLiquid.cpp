@@ -2,21 +2,9 @@
 
 #include "taylor.hpp"
 
-#include "Vacuum.h" 
- 		
-virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_)
-{
-	int size = diagonalS_.size();
-	double factor = 1.07;
+#include "IonicLiquid.h" 
 
-	for (int i = 0; i < size; ++i)
-	{
-		diagonalS_(i) = factor * sqrt(4 * M_PI / elementArea_(i));
-		diagonalD_(i) = - factor * sqrt(M_PI / elementArea_(i)) * (1 / elementRadius_(i));
-	}
-}	
-
-Eigen::Array4d Vacuum::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
 {
 	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
@@ -25,21 +13,21 @@ Eigen::Array4d Vacuum::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eig
 	double delta = 1.0e-4;
 
 	// Value of the function
-	result(0) = 1 / ((source_ - probe_).norm());
+	result(0) = exp(- kappa * (source_ - probe_).norm()) / (epsilon * (source_ - probe_).norm());
 
         Eigen::Vector3d deltaPlus = probe_ + (probeNormal_.normalized() * delta); 
         Eigen::Vector3d deltaMinus = probe_ - (probeNormal_.normalized() * delta);
 
-	double funcPlus =  1 / ((source_ - deltaPlus).norm());
-	double funcMinus = 1 / ((source_ - deltaMinus).norm());
+	double funcPlus =  exp(- kappa * (source_ - deltaPlus).norm()) / (epsilon * (source_ - deltaPlus).norm());
+	double funcMinus = exp(- kappa * (source_ - deltaMinus).norm()) / (epsilon * (source_ - deltaMinus).norm());
 	// Directional derivative wrt probe_
 	result(1) = (funcPlus - funcMinus)/(2.0 * delta); 
 
         deltaPlus = source_ + (sourceNormal_.normalized() * delta); 
         deltaMinus = source_ - (sourceNormal_.normalized() * delta);
 
-	funcPlus =  1 / ((deltaPlus - probe_).norm());
-	funcMinus = 1 / ((deltaMinus - probe_).norm());
+	funcPlus =  exp(- kappa * (deltaPlus - probe_).norm()) / (epsilon * (deltaPlus - probe_).norm());
+	funcMinus = exp(- kappa * (deltaPlus - probe_).norm()) / (epsilon * (deltaMinus - probe_).norm());
 	// Directional derivative wrt source_
 	result(2) =  (funcPlus - funcMinus)/(2.0 * delta);
 
@@ -49,7 +37,7 @@ Eigen::Array4d Vacuum::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eig
 	return result;
 }
 
-Eigen::Array4d Vacuum::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
 {
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	double distance = (source_ - probe_).norm();
@@ -57,29 +45,32 @@ Eigen::Array4d Vacuum::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eige
 	double distance_5 = pow(distance, 5.0);
 	
 	// Value of the function
-	result(0) = 1 / distance; 
+	result(0) = exp(- kappa * distance) / (epsilon * distance); 
 	// Value of the directional derivative wrt probe_
-	result(1) = (source_ - probe_).dot(probeNormal_) / distance_3 ; 
+	result(1) = (source_ - probe_).dot(probeNormal_) * (1 + kappa * distance ) * exp(- kappa * distance) / (epsilon * distance_3); 
 	// Directional derivative wrt source_
-	result(2) = - (source_ - probe_).dot(sourceNormal_) / distance_3; 
+	result(2) = - (source_ - probe_).dot(sourceNormal_) * (1 + kappa * distance ) * exp(- kappa * distance) / (epsilon * distance_3); 
 	// Value of the Hessian
-	result(3) = sourceNormal_.dot(probeNormal_) / distance_3 - 3 * ((source_ - probe_).dot(sourceNormal_))*((source_ - probe_).dot(probeNormal_)) / distance_5;
+	result(3) = sourceNormal_.dot(probeNormal_) * (1 + kappa * distance) * exp(- kappa * distance) / (epsilon * distance_3)
+		  - pow(kappa, 2.0) * (source_ - probe_).dot(sourceNormal_) * (source_ - probe_).dot(probeNormal_) * exp(- kappa * distance) / (epsilon * distance_3)
+        - 3 * (source_ - probe_).dot(sourceNormal_) * (source_ - probe_).dot(probeNormal_) * (1 + kappa * distance) * exp(- kappa * distance) / (epsilon * distance_5);
 
 	return result;
 }
 
-Eigen::Array4d Vacuum::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
 {
 	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	taylor<double, 3, 1> dx(0, 0), dy(0, 1), dz(0, 2);
 
 	taylor<double, 3, 1> tmp;
-
-	// Directional derivative wrt probe_
-	tmp = 1 / sqrt((source_(0) - (probe_(0) + probeNormal_(0) * dx)) * (source_(0) - (probe_(0) + probeNormal_(0) * dx))
+	tmp = sqrt((source_(0) - (probe_(0) + probeNormal_(0) * dx)) * (source_(0) - (probe_(0) + probeNormal_(0) * dx))
             + (source_(1) - (probe_(1) + probeNormal_(1) * dy)) * (source_(1) - (probe_(1) + probeNormal_(1) * dy))		
             + (source_(2) - (probe_(2) + probeNormal_(2) * dz)) * (source_(2) - (probe_(2) + probeNormal_(2) * dz)));
+
+	// Directional derivative wrt probe_
+	tmp = exp(- kappa * tmp) / (epsilon * tmp); 
 	tmp.deriv_facs();
 	
 	// Value of the function
@@ -91,9 +82,10 @@ Eigen::Array4d Vacuum::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eig
 	}
 	
 	// Directional derivative wrt source_
-	tmp = 1 / sqrt(((source_(0) + sourceNormal_(0) * dx) - probe_(0)) * ((source_(0) + sourceNormal_(0) * dx) - probe_(0))
+	tmp = sqrt(((source_(0) + sourceNormal_(0) * dx) - probe_(0)) * ((source_(0) + sourceNormal_(0) * dx) - probe_(0))
             + ((source_(1) + sourceNormal_(1) * dy) - probe_(1)) * ((source_(1) + sourceNormal_(1) * dy) - probe_(1))		
             + ((source_(2) + sourceNormal_(2) * dz) - probe_(2)) * ((source_(2) + sourceNormal_(2) * dz) - probe_(2)));
+	tmp = exp(- kappa * tmp) / (epsilon * tmp); 
 	tmp.deriv_facs();
 	
 	// Value of the directional derivative wrt source_
@@ -108,17 +100,18 @@ Eigen::Array4d Vacuum::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eig
 }
 
 
-Eigen::Array4d Vacuum::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
 {
 	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	taylor<double, 3, 1> dx(0, 0), dy(0, 1), dz(0, 2);
 
 	taylor<double, 3, 1> tmp;
+	tmp = sqrt((source_(0) - (probe_(0) + dx)) * (source_(0) - (probe_(0) + dx))
+                 + (source_(1) - (probe_(1) + dy)) * (source_(1) - (probe_(1) + dy))		
+                 + (source_(2) - (probe_(2) + dz)) * (source_(2) - (probe_(2) + dz)));
 
-	tmp = 1 / sqrt((source_(0) - (probe_(0) + dx)) * (source_(0) - (probe_(0) + dx))
-            + (source_(1) - (probe_(1) + dy)) * (source_(1) - (probe_(1) + dy))		
-            + (source_(2) - (probe_(2) + dz)) * (source_(2) - (probe_(2) + dz)));
+	tmp = exp(- kappa * tmp) / (epsilon * tmp);
 	tmp.deriv_facs();
 
 	// Value of the function
@@ -140,7 +133,7 @@ Eigen::Array4d Vacuum::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen:
 	return result;
 }
 
-Eigen::Array4d Vacuum::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
 {
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	
@@ -148,10 +141,10 @@ Eigen::Array4d Vacuum::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::
 
 	taylor<double, 3, 2> tmp;
 
-	//  Gradient wrt probe_
-	tmp = 1 / sqrt((source_(0) - (probe_(0) + dx)) * (source_(0) - (probe_(0) + dx))
-            + (source_(1) - (probe_(1) + dy)) * (source_(1) - (probe_(1) + dy))		
-            + (source_(2) - (probe_(2) + dz)) * (source_(2) - (probe_(2) + dz)));
+	tmp = sqrt((source_(0) - (probe_(0) + dx)) * (source_(0) - (probe_(0) + dx))
+                 + (source_(1) - (probe_(1) + dy)) * (source_(1) - (probe_(1) + dy))		
+                 + (source_(2) - (probe_(2) + dz)) * (source_(2) - (probe_(2) + dz)));
+	tmp = exp(- kappa * tmp) / (epsilon * tmp);
 
 	tmp.deriv_facs();
 	

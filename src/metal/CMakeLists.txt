@@ -5,6 +5,5 @@ set(metal_SOURCES
 
 add_library(metal ${metal_SOURCES})
 
-install(TARGETS metal
-	ARCHIVE DESTINATION lib)
+install(TARGETS metal ARCHIVE DESTINATION lib)
 

@@ -8,29 +8,41 @@
 
 #include "Config.h"
 
+class GreensFunction;
+
 extern "C"{
 #include "vector3.h"
 #include "sparse2.h"
 }
 
+#include "PCMSolver.h"
+
 /*! \file WEMSolver.h 
  *  \class WEMSolver
  *  \brief WEMSolver
  *  \author Luca Frediani
+ *  \date 2011
  */
 
 class WEMSolver : public PCMSolver 
 {
+	private:
+		void initWEMMembers();
 	public:
-		WEMSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
-                WEMSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
+		WEMSolver(GreensFunction &gfi, GreensFunction &gfo) : PCMSolver(gfi, gfo)
+		{
+			initWEMMembers();
+		}
+                WEMSolver(GreensFunction *gfi, GreensFunction *gfo) : PCMSolver(gfi, gfo)
+		{
+			initWEMMembers();
+		}
 //                WEMSolver(const Section & solver);
-                ~WEMSolver();
+                virtual ~WEMSolver();
                 vector3 **** getT_(){return T_;}
                 int getQuadratureLevel(){return quadratureLevel_;}
                 virtual void buildSystemMatrix(Cavity & cavity);
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-	
 	protected:
 		virtual void constructSystemMatrix();
                 virtual void uploadCavity(WaveletCavity cavity); // different interpolation       
@@ -56,8 +68,5 @@ class WEMSolver : public PCMSolver
                 int nQuadPoints; // nPoints_;    // Number of quadrature points
                 double apriori1_, aposteriori1_;    // System matrix sparsities
                 double apriori2_, aposteriori2_;    // System matrix sparsities
-	
-	private:
-		void initWEMMembers();
 };
 #endif

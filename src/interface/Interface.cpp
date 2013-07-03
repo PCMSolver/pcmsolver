@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 
 #include "Getkw.h"
-#include "taylor.hpp"
+//#include "taylor.hpp"
 #include "SurfaceFunction.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
@@ -38,7 +38,6 @@
 using namespace std;
 using namespace Eigen;
 
-typedef taylor<double, 3, 1> T;
 typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
 
 // We need globals as they must be accessible across all the functions defined
@@ -368,33 +367,10 @@ void initCavity()
 
 void initSolver()
 {
-	// Useful typedefs
-        typedef taylor<double, 1, 1> T_DERIVATIVE;
-        typedef taylor<double, 3, 1> T_GRADIENT;
-        typedef taylor<double, 3, 2> T_HESSIAN;
-        typedef GreensFunction<double> G_DOUBLE;
-        typedef GreensFunction<T_DERIVATIVE>  G_DERIVATIVE; 
-        typedef GreensFunction<T_GRADIENT>  G_GRADIENT;
-        typedef GreensFunction<T_HESSIAN>  G_HESSIAN;
-
-	/*std::cout << "Let us instantiate a wonderful GreensFunctionFactory" << std::endl;
-	GreensFunctionFactory<double> & factory1 = GreensFunctionFactory<double>::TheGreensFunctionFactory();
-	std::cout << "If you read this a GreensFunctionFactory<double> has been instantiated." << std::endl;
-	GreensFunctionFactory<T_DERIVATIVE> & factory2 = GreensFunctionFactory<T_DERIVATIVE>::TheGreensFunctionFactory();
-	std::cout << "If you read this a GreensFunctionFactory< taylor<double, 1, 1> > has been instantiated." << std::endl;
-	GreensFunctionFactory<T_GRADIENT> & factory3 = GreensFunctionFactory<T_GRADIENT>::TheGreensFunctionFactory();
-	std::cout << "If you read this a GreensFunctionFactory< taylor<double, 3, 1> > has been instantiated." << std::endl;
-	GreensFunctionFactory<T_HESSIAN> & factory4 = GreensFunctionFactory<T_HESSIAN>::TheGreensFunctionFactory();
-	std::cout << "If you read this a GreensFunctionFactory< taylor<double, 3, 2> > has been instantiated." << std::endl;*/
+	std::cout << "Let us instantiate a wonderful GreensFunctionFactory" << std::endl;
+	GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
+	std::cout << "If you read this a GreensFunctionFactory has been instantiated." << std::endl;
        
-        // Initialize NULL pointers to the actual instance of Green's function	
-        G_DOUBLE     * g0 = 0;
-        G_DERIVATIVE * g1 = 0;
-        G_GRADIENT   * g2 = 0;
-        G_HESSIAN    * g3 = 0;
-	// Initialize the pointer to interface Green's function object to NULL
-	GreensFunctionInterface * gfInside = 0;
-	GreensFunctionInterface * gfOutside = 0;
 	// Get the input data for generating the inside & outside Green's functions
 	// INSIDE
 	double epsilon = Input::TheInput().getEpsilonInside();

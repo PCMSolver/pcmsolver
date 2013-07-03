@@ -32,10 +32,10 @@ extern "C"{
 #include "PhysicalConstants.h"
 //#include "Getkw.h"
 //#include "taylor.hpp"
-#include "GreensFunctionInterface.h"
+#include "GreensFunction.h"
 #include "Cavity.h"
 #include "WaveletCavity.h"
-#include "PCMSolver.h"
+//#include "PCMSolver.h"
 #include "WEMSolver.h"
 
 void WEMSolver::initWEMMembers()
@@ -50,21 +50,13 @@ void WEMSolver::initWEMMembers()
 	nQuadPoints = 0;
 }
 
-WEMSolver::WEMSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
-	PCMSolver(gfi, gfo) {
-	initWEMMembers();
-}
-
-WEMSolver::WEMSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
-	PCMSolver(gfi, gfo) {
-	initWEMMembers();
-}
 /*
 WEMSolver::WEMSolver(const Section & solver) : PCMSolver(solver) {
 	initWEMMembers();
 }*/
 
-WEMSolver::~WEMSolver(){
+WEMSolver::~WEMSolver()
+{
 	if(nodeList != NULL)    free(nodeList);
 	if(elementList != NULL) free_patchlist(&elementList,nFunctions);
 	if(pointList != NULL)   free_points(&pointList, nPatches, nLevels);

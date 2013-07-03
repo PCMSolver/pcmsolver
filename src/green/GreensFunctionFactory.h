@@ -2,64 +2,65 @@
 #define GREENSFUNCTIONFACTORY_H
 
 #include <iostream>
+#include <string>
 #include <map>
 
-//#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
 
-/*! \file GreensFunctionFactory.h
- *  \class GreensFunctionFactory
- *  \brief A templatized factory for Green's Functions.
- *  \author Roberto Di Remigio
- *  \date 2013
+/*!
+ *	\file GreensFunctionFactory.h
+ *	\class GreensFunctionFactory
+ *	\brief Implementation of the Factory Method for Green's functions. 
+ *	\author Roberto Di Remigio
+ *	\date 2013 
  *
- *  This factory is a Singleton.
+ * 	Factory method implementation shamelessly copied from "Modern C++ Design" of A. Alexandrescu.
+ * 	It is implemented as a Singleton.
  */
 
-template <typename T>
 class GreensFunctionFactory
 {
 	public:
 		/*!
 		 * Callback function for Green's function creation.
 		 */
-		typedef GreensFunction<T> * (*createGreensFunctionCallback)();
+		typedef GreensFunction * (*createGreensFunctionCallback)(const std::string & how_, double epsilon_, double kappa_);
 	private:
 		/*!
-		 * A map from the Green's function derivative strategy identifier (a string) to its callback function.
+		 * A map from the Green's function type identifier (a string) to its callback function.
 		 */
 		typedef std::map<std::string, createGreensFunctionCallback> CallbackMap;
 	public:
 		/*!
-		 * \brief Returns true if registration of the greenDerID was successful
+		 * \brief Returns true if registration of the greenID was successful
 		 * \param greenID the Green's function identification string
-		 * \param createFunction the creation function related to the identification string given
+		 * \param createFunction the creation function related to the Green's function type given
 		 */
-		bool registerGreensFunction(std::string greenID, createGreensFunctionCallback createFunction);
+		bool registerGreensFunction(const std::string & greenID, createGreensFunctionCallback createFunction);
 		/*!
-		 * \brief Returns true if greenDerID was already registered
-		 * \param[in] greenID the Green's function identification string
+		 * \brief Returns true if greenID was already registered
+		 * \param greenID the Green's function identification string
 		 */
-		bool unRegisterGreensFunction(std::string greenID);
+		bool unRegisterGreensFunction(const std::string & greenID);
 		/*! 
 		 * Calls the appropriate creation function, based on the passed greenID
 		 */
-		GreensFunction<T> * createGreensFunction(std::string greenDerID);
+		GreensFunction * createGreensFunction(const std::string & greenID, const std::string & how_, double epsilon_ = 1.0, double kappa_ = 0.0);
 		/*!
-		 * Unique point of access to the unique instance of the GreensFunctionFactory<T>
+		 * Unique point of access to the unique instance of the GreensFunctionFactory
 		 */
-		static GreensFunctionFactory<T>& TheGreensFunctionFactory() 
+		static GreensFunctionFactory& TheGreensFunctionFactory() 
 		{
 			static GreensFunctionFactory obj;
 			return obj;
 		}
-	
 	private:
-		GreensFunctionFactory<T>(){}
-		~GreensFunctionFactory<T>(){}
-		GreensFunctionFactory<T>(const GreensFunctionFactory<T> &other);
-		GreensFunctionFactory<T> & operator=(const GreensFunctionFactory<T> &other);
-		CallbackMap callbacks;
+		GreensFunctionFactory(){}
+		/// Copy constructor is made private
+		GreensFunctionFactory(const GreensFunctionFactory &other);
+		GreensFunctionFactory& operator=(const GreensFunctionFactory &other);
+        	~GreensFunctionFactory(){}
+		CallbackMap callbacks;	
 };
 
 #endif // GREENSFUNCTIONFACTORY_H

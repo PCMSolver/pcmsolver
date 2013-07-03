@@ -15,10 +15,9 @@ set(solver_SOURCES
 
 
 add_library(solver ${solver_SOURCES})
-add_dependencies(solver external)
+#add_dependencies(solver external)
 
-install(TARGETS solver
-	ARCHIVE DESTINATION lib)
+install(TARGETS solver ARCHIVE DESTINATION lib)
 
 install(FILES IEFSolver.h DESTINATION include)
 install(FILES CPCMSolver.h DESTINATION include)

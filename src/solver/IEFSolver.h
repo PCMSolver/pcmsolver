@@ -8,6 +8,10 @@
 
 #include "Config.h"
 
+class GreensFunction;
+class Cavity;
+class GePolCavity;
+
 #include "PCMSolver.h"
 
 /*! 
@@ -20,27 +24,28 @@
 
 class IEFSolver : public PCMSolver 
 {
-	public:
-		IEFSolver(GreensFunctionInterface &gfi, GreensFunctionInterface &gfo);
-    		IEFSolver(GreensFunctionInterface *gfi, GreensFunctionInterface *gfo);
-//                IEFSolver(const Section & solver);                                      
-                ~IEFSolver();
-
-                const Eigen::MatrixXd & getPCMMatrix() const {return PCMMatrix;};
-                                                                                        
-                virtual void buildSystemMatrix(Cavity & cavity);
-                virtual void buildAnisotropicMatrix(GePolCavity & cav);
-                virtual void buildIsotropicMatrix(GePolCavity & cav);
-                //    virtual VectorXd compCharge(const VectorXd & potential);
-                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-	
 	private:
-    		bool builtAnisotropicMatrix;
    	 	bool builtIsotropicMatrix;
+    		bool builtAnisotropicMatrix;
 //	 	static const double factor = 1.0694;
     		static const double factor = 1.07;
 		Eigen::MatrixXd PCMMatrix;
     		virtual std::ostream & printObject(std::ostream & os);
+	public:
+		IEFSolver(GreensFunction &gfi, GreensFunction &gfo) : PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {} 
+    		IEFSolver(GreensFunction *gfi, GreensFunction *gfo) : PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
+//                IEFSolver(const Section & solver);                                      
+                virtual ~IEFSolver() {}
+
+                const Eigen::MatrixXd & getPCMMatrix() const {return PCMMatrix;};
+                                                                                        
+                virtual void buildSystemMatrix(Cavity & cavity);
+                //virtual VectorXd compCharge(const VectorXd & potential);
+                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
+	private:
+                void buildAnisotropicMatrix(GePolCavity & cav);
+                void buildIsotropicMatrix(GePolCavity & cav);
+	
 };
 
 #endif // IEFSOLVER_H

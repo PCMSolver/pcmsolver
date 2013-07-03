@@ -1,24 +1,18 @@
 set(green_SOURCES
-	#    GreensFunctionInterface.cpp
+	GreensFunction.cpp
 	GreensFunctionFactory.cpp
-    GreensFunction.cpp
-    Vacuum.cpp
-    MetalSphere.cpp
-    UniformDielectric.cpp
-    GreensFunctionSum.cpp
-)
+	Vacuum.cpp
+	UniformDielectric.cpp
+	IonicLiquid.cpp
+   )
 
 add_library(green ${green_SOURCES})
-add_dependencies(green external)
+add_dependencies(green libtaylor)        		
+                                         
+install(TARGETS green ARCHIVE DESTINATION lib)		
 
-install(TARGETS green 
-	ARCHIVE DESTINATION lib)
-
-install(FILES GreensFunctionInterface.h DESTINATION include)
-install(FILES GreensFunctionFactory.h DESTINATION include)
-install(FILES GreensFunction.h DESTINATION include)
-install(FILES MetalSphere.h DESTINATION include)
-install(FILES Vacuum.h DESTINATION include)
-install(FILES PlanarInterface.h DESTINATION include)
-install(FILES UniformDielectric.h DESTINATION include)
-install(FILES GreensFunctionSum.h DESTINATION include)
+install(FILES GreensFunction.h DESTINATION include)         			
+install(FILES GreensFunctionFactory.h DESTINATION include)         			
+install(FILES Vacuum.h DESTINATION include)                 			
+install(FILES UniformDielectric.h DESTINATION include)      			
+install(FILES IonicLiquid.h DESTINATION include)      			

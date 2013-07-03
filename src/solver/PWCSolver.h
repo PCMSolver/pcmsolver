@@ -8,12 +8,16 @@
 
 #include "Config.h"
 
+class GreensFunction;
+
 extern "C"{
 #include "vector3.h"
 #include "sparse2.h"
 #include "intvector.h"
 #include "basis.h"
 }
+
+#include "WEMSolver.h"
 
 /*! \file PWCSolver.h
  *  \class PWCSOlver
@@ -25,10 +29,20 @@ extern "C"{
 class PWCSolver : public WEMSolver 
 {
 	public:
-		PWCSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo);
-                PWCSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo); 
-//                PWCSolver(const Section & solver);
-                ~PWCSolver();
+		PWCSolver(GreensFunction & gfi, GreensFunction & gfo) : WEMSolver(gfi, gfo)
+		{
+			initPointers();
+			setSolverType("Wavelet");
+			setEquationType("Full");
+		}
+                PWCSolver(GreensFunction * gfi, GreensFunction * gfo) : WEMSolver(gfi, gfo)
+		{
+			initPointers();
+			setSolverType("Wavelet");
+			setEquationType("Full");
+		}
+		//PWCSolver(const Section & solver);
+                virtual ~PWCSolver();
 	
 	private: 
 		virtual void initInterpolation();

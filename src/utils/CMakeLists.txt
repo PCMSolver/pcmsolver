@@ -7,10 +7,9 @@ set(utils_SOURCES
 )
 
 add_library(utils ${utils_SOURCES})
-add_dependencies(utils external)
+add_dependencies(utils libgetkw)
 
-install(TARGETS utils
-	ARCHIVE DESTINATION lib)
+install(TARGETS utils ARCHIVE DESTINATION lib)
 
 install(FILES PhysicalConstants.h DESTINATION include)
 install(FILES Input.h DESTINATION include)

@@ -32,9 +32,10 @@ extern "C"{
 }
 
 #include "PhysicalConstants.h"
-#include "Getkw.h"
+//#include "Getkw.h"
 #include "WaveletCavity.h"
 
+/*
 WaveletCavity::WaveletCavity(const Getkw & Input, const string path){
 	Section cavity = Input.getSect(path);
 	vector<double> spheresInput = cavity.getDblVec("Spheres");
@@ -76,7 +77,7 @@ WaveletCavity::WaveletCavity(const Section & cavity){
 		j += 4;
 	}
 	uploadedDyadic = false;
-}
+}*/
 
 
 void WaveletCavity::writeInput(string &fileName){

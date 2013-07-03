@@ -1,301 +1,70 @@
-/* \file GreensFunction.cpp ABC for green´s function: implemetation
+#include <map>
+#include <stdexcept>
 
- */
-#include <iostream>
-#include <cmath>
-#include <Eigen/Dense>
-
-using namespace Eigen;
-
-//#include "Getkw.h"
-#include "taylor.hpp"
-#include "GreensFunctionInterface.h"
 #include "GreensFunction.h"
-#include "Vacuum.h"
-#include "UniformDielectric.h"
-#include "MetalSphere.h"
-#include "GreensFunctionSum.h"
 
-template <class T>
-void GreensFunction<T>::setDelta(double value) {
-	if (value <= 1.0e-10) {
-		std::cout << "Delta value must be larger than 1.0e-10 " << std::endl;
-		exit(-1);
-	}
-	delta = value;
-}
-
-template <class T>
-double GreensFunction<T>::evalf(Vector3d & source, Vector3d & probe) {
-	T sp[3], pp[3], res;
-	sp[0] = source(0);
-	sp[1] = source(1);
-	sp[2] = source(2);
-	pp[0] = probe(0);
-	pp[1] = probe(1);
-	pp[2] = probe(2);
-	res = evalGreensFunction(sp, pp);
-	return res[0];
-}
-
-// Template specialization for the case T = double (i.e. numerical derivative)
-template <>
-double GreensFunction<double>::evalf(Vector3d & source, Vector3d & probe) {
-	double sp[3], pp[3], res;
-	sp[0] = source(0);
-	sp[1] = source(1);
-	sp[2] = source(2);
-	pp[0] = probe(0);
-	pp[1] = probe(1);
-	pp[2] = probe(2);
-	res = evalGreensFunction(sp, pp);
-	return res;
-}
-
-template <class T>
-double GreensFunction<T>::derivativeSource(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
-	T t1[3], t2[3], derivative;
-	//	direction.normalize();
-	t1[0] = p1(0); t1[0][1] = direction(0);
-	t1[1] = p1(1); t1[1][1] = direction(1);
-	t1[2] = p1(2); t1[2][1] = direction(2);
-	t2[0] = p2(0);
-	t2[1] = p2(1);
-	t2[2] = p2(2);
-	derivative = evalGreensFunction(t1, t2);
-	// derivative[0] is the value of the Green's function at the expansion point,
-	// derivative[1] is the value of the directional derivative at the expansion point.
-	return derivative[1];
-}
-
-// Template specialization for the case T = double (i.e. numerical derivative)
-template <>
-double GreensFunction<double>::derivativeSource(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
-    Vector3d deltaPlus  = p1 + direction * delta / direction.norm();
-    Vector3d deltaMinus = p1 - direction * delta / direction.norm();
-    double funcPlus  = evalf(deltaPlus,  p2);
-    double funcMinus = evalf(deltaMinus, p2);
-    return (funcPlus - funcMinus)/(2.0*delta);
-}
-
-template <class T>
-double GreensFunction<T>::derivativeProbe(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
-	T t1[3], t2[3], derivative;
-	//	direction.normalize();
-	t1[0] = p1(0);
-	t1[1] = p1(1);
-	t1[2] = p1(2);
-	std::cout << "t1 " << *t1 << std::endl;
-	t2[0] = p2(0); t2[0][1] = direction(0);
-	t2[1] = p2(1); t2[1][1] = direction(1);
-	t2[2] = p2(2); t2[2][1] = direction(2);
-	std::cout << "t2 " << *t2 << std::endl;
-	derivative = evalGreensFunction(t1, t2);
-	std::cout << "derivative " << derivative << std::endl;
-	return derivative[1];
-}
-
-// Template specialization for the case T = double (i.e. numerical derivative)
-template <>
-double GreensFunction<double>::derivativeProbe(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
-    Vector3d deltaPlus  = p2 + direction * delta / direction.norm();
-    Vector3d deltaMinus = p2 - direction * delta / direction.norm();
-    double funcPlus  = evalf(p1, deltaPlus);
-    double funcMinus = evalf(p1, deltaMinus);
-    return (funcPlus - funcMinus)/(2.0*delta);
-}
-
-template <class T>
-Vector3d GreensFunction<T>::gradientSource(Vector3d &p1, Vector3d &p2) {
-	Vector3d g;
-	gradientSource(g, p1, p2);
-    return g;
-}
-
-template <class T>
-void GreensFunction<T>::gradientSource(Vector3d &g, Vector3d &p1, Vector3d &p2) {
-	T t1[3], t2[3], grad;
-	t1[0] = p1(0); t1[0][1] = 1;
-	t1[1] = p1(1); t1[1][2] = 1;
-	t1[2] = p1(2); t1[2][3] = 1;
-	t2[0] = p2(0);
-	t2[1] = p2(1);
-	t2[2] = p2(2);
-	grad = evalGreensFunction(t1, t2);
-    g << grad[1], grad[2], grad[3];
-    return;
-}
-
-// Template specialization for the case T = double (i.e. numerical derivative)
-template <>
-void GreensFunction<double>::gradientSource(Vector3d &g, Vector3d &p1, Vector3d &p2) {
-	Vector3d direction;
-	direction << 1.0, 0.0, 0.0;
-	g(0) = derivativeSource(direction, p1, p2);
-	direction << 0.0, 1.0, 0.0;
-	g(1) = derivativeSource(direction, p1, p2);
-	direction << 0.0, 0.0, 1.0;
-	g(2) = derivativeSource(direction, p1, p2);
-}
-
-// Template specialization for the case T = taylor<double, 1, 1> (i.e. analytical directional derivative)
-template <>
-void GreensFunction< taylor<double, 1, 1> >::gradientSource(Vector3d &g, Vector3d &p1, Vector3d &p2) {
-	Vector3d direction;
-	direction << 1.0, 0.0, 0.0;
-	g(0) = derivativeSource(direction, p1, p2);
-	direction << 0.0, 1.0, 0.0;
-	g(1) = derivativeSource(direction, p1, p2);
-	direction << 0.0, 0.0, 1.0;
-	g(2) = derivativeSource(direction, p1, p2);
-}
-
-template <class T>
-Vector3d GreensFunction<T>::gradientProbe(Vector3d &p1, Vector3d &p2) {
-	Vector3d g;
-	gradientProbe(g, p1, p2);
-    return g;
-}
-
-template <class T>
-void GreensFunction<T>::gradientProbe(Vector3d &g, Vector3d &p1, Vector3d &p2) {
-	T t1[3], t2[3], grad;
-	t1[0] = p1(0);
-	t1[1] = p1(1);
-	t1[2] = p1(2);
-	t2[0] = p2(0); t2[0][1] = 1;
-	t2[1] = p2(1); t2[1][2] = 1;
-	t2[2] = p2(2); t2[2][3] = 1;
-	grad = evalGreensFunction(t1, t2);
-    g << grad[1], grad[2], grad[3];
-    return;
-}
-
-template <>
-void GreensFunction<double>::gradientProbe(Vector3d &g, Vector3d &p1, Vector3d &p2) {
-	Vector3d direction;
-	direction << 1.0, 0.0, 0.0;
-	g(0) = derivativeProbe(direction, p1, p2);
-	direction << 0.0, 1.0, 0.0;
-	g(1) = derivativeProbe(direction, p1, p2);
-	direction << 0.0, 0.0, 1.0;
-	g(2) = derivativeProbe(direction, p1, p2);
-}
-
-template <>
-void GreensFunction<taylor<double, 1, 1> >::gradientProbe(Vector3d &g, Vector3d &p1, Vector3d &p2) {
-	Vector3d direction;
-	direction << 1.0, 0.0, 0.0;
-	g(0) = derivativeProbe(direction, p1, p2);
-	direction << 0.0, 1.0, 0.0;
-	g(1) = derivativeProbe(direction, p1, p2);
-	direction << 0.0, 0.0, 1.0;
-	g(2) = derivativeProbe(direction, p1, p2);
-}
-/*
-template <class T>
-GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(const Section &green) {
-	GreensFunction<T> *gf = 0;
-	const string greenType = green.getStr("Type");
-		std::cout << "Base class allocator will allocate " << greenType << std::endl;
-	if (greenType == "Vacuum") {
-		gf = new Vacuum<T>();
-	} else if (greenType == "UniformDielectric") {
-		gf = new UniformDielectric<T>(green);
-	} else if (greenType == "GreensFunctionSum") {
-		gf = new GreensFunctionSum<T>(green);
-	} else {
-		cout << "Unknown Greens function" << endl;
-		exit(1);
-	}
-	return gf;
-}
-
-template <>
-GreensFunction<double>* GreensFunction<double>::allocateGreensFunction(const Section &green) {
-	GreensFunction<double> *gf;
-	const string greenType = green.getStr("Type");
-	if (greenType == "Vacuum") {
-		gf = new Vacuum<double>();
-	} else if (greenType == "UniformDielectric") {
-		gf = new UniformDielectric<double>(green);
-	} else if (greenType == "MetalSphere") {
-		gf = new MetalSphere(green);
-	} else if (greenType == "GreensFunctionSum") {
-		gf = new GreensFunctionSum<double>(green);
-	} else {
-		cout << "Unknown Greens function" << endl;
-		exit(1);
-	}
-	return gf;
-}
-*/
-template <typename T> 
-GreensFunction<T> * GreensFunction<T>::allocateGreensFunction(double dielConst, const std::string & greenType)
+Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
 {
-	GreensFunction<T> *gf = 0;
-	std::cout << "Base class allocator will allocate " << greenType << std::endl;
-	if (greenType == "Vacuum") {
-		gf = new Vacuum<T>();
-	} else if (greenType == "UniformDielectric") {
-		gf = new UniformDielectric<T>(dielConst);
-	} else if (greenType == "GreensFunctionSum") {
-		gf = new GreensFunctionSum<T>(); // "We'll cross that bridge when we come to it."
-	} else {
-		std::cout << "Unknown Greens function" << std::endl;
-		exit(1);
-	}
-	return gf;
-}
+        enum                           	 
+        {
+		NumericalDirectional, 
+        	AnalyticDirectional, 
+        	AutomaticDirectional, 
+        	AutomaticGradient,
+        	AutomaticHessian
+        };
+	std::map<std::string, int> StringToInt;
+	StringToInt.insert(std::map<std::string, int>::value_type("Numerical", 0));
+	StringToInt.insert(std::map<std::string, int>::value_type("Analytic", 1));
+	StringToInt.insert(std::map<std::string, int>::value_type("Derivative", 2));
+	StringToInt.insert(std::map<std::string, int>::value_type("Gradient", 3));
+	StringToInt.insert(std::map<std::string, int>::value_type("Hessian", 4));
 
-template <> 
-GreensFunction<double> * GreensFunction<double>::allocateGreensFunction(double dielConst, const std::string & greenType)
+	Eigen::Array4d result = Eigen::Array4d::Zero();
+
+	switch(StringToInt[how])                                                               			
+	{                                                                          			
+		case NumericalDirectional:                                         			
+			result = numericalDirectional(sourceNormal_, source_, probeNormal_, probe_);
+			break;
+		case AnalyticDirectional:                                          			
+			result = analyticDirectional(sourceNormal_, source_, probeNormal_, probe_); 			
+			break;
+		case AutomaticDirectional:                                         			
+			result = automaticDirectional(sourceNormal_, source_, probeNormal_, probe_);			
+			break;
+		case AutomaticGradient:                                            			
+			result = automaticGradient(sourceNormal_, source_, probeNormal_, probe_);   			
+			break;
+		case AutomaticHessian:                                             			
+			result = automaticHessian(sourceNormal_, source_, probeNormal_, probe_);     			
+			break;
+		default:
+			throw std::runtime_error("In GreensFunction.h an unknown Green's function evaluation strategy occurred.");
+	}                                                                          			
+	return result;                                                             			
+}                  
+
+void compOffDiagonal(const Eigen::Matrix3Xd & elementCenter_, const Eigen::Matrix3Xd & elementNormal_, Eigen::MatrixXd & offDiagonalS_, Eigen::MatrixXd & offDiagonalD_)
 {
-	GreensFunction<double> *gf = 0;
-	std::cout << "Base class allocator will allocate " << greenType << std::endl;
-	if (greenType == "Vacuum") {
-		gf = new Vacuum<double>();
-	} else if (greenType == "UniformDielectric") {
-		gf = new UniformDielectric<double>(dielConst);
-	} else if (greenType == "GreensFunctionSum") {
-		gf = new GreensFunctionSum<double>(); // "We'll cross that bridge when we come to it."
-	} else {
-		std::cout << "Unknown Greens function" << std::endl;
-		exit(1);
+	int size = offDiagonalS_.size();
+
+	for (int i = 0; i < size; ++i)
+	{
+		Eigen::Vector3d source = elementCenter_.col(i);
+		Eigen::Vector3d sourceNormal = elementNormal_.col(i);
+		sourceNormal.normalize();
+		for (int j = 0; j < size; ++j)
+		{
+			Eigen::Vector3d probe = elementCenter_.col(j);
+			Eigen::Vector3d probeNormal = elementNormal_.col(j);
+			probeNormal.normalize();
+			if (i != j)
+			{
+				Eigen::Array4d tmp = evaluate(sourceNormal, source, probeNormal, probe);
+				offDiagonalS_(i, j) = tmp(0);
+				offDiagonalD_(i, j) = tmp(1);
+			}
+		}
 	}
-	return gf;
 }
-
-template <class T>
-double GreensFunction<T>::getDielectricConstant() {
-	std::cout << "Dielectric constant not defined for this Green's Function" << std::endl;
-	exit(-1);
-	return 0;
-}
-
-template <class T>
-GreensFunction<T>* GreensFunction<T>::allocateGreensFunction(double dielConst) {
-	GreensFunction<T> *gf = 0;
-	gf = new UniformDielectric<T>(dielConst);
-	return gf;
-}
-
-template <class T>
-GreensFunction<T>* GreensFunction<T>::allocateGreensFunction() {
-	GreensFunction<T> *gf;
-	gf = new Vacuum<T>();
-	return gf;
-}
-
-template <class T>
-std::ostream & GreensFunction<T>::printObject(std::ostream &os) {
-	os << "Green's Function" << std::endl;
-	os << "Delta = " << delta << std::endl;
-	os << "Uniform = " << uniformFlag; 
-	return os;
-}
-
-template class GreensFunction<double>;
-template class GreensFunction<taylor <double, 1, 1> >;
-template class GreensFunction<taylor <double, 3, 1> >;
-template class GreensFunction<taylor <double, 3, 2> >;

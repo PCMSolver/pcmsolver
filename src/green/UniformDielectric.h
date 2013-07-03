@@ -1,38 +1,51 @@
 #ifndef UNIFORMDIELECTRIC_H
 #define UNIFORMDIELECTRIC_H
 
+#include <iostream>
+#include <string>
+
 #include <Eigen/Dense>
 
-#include "Config.h"
-
 #include "GreensFunction.h"
+#include "GreensFunctionFactory.h"
 
 /*! \file UniformDielectric.h
  *  \class UniformDielectric
- *  \brief Class for the Green's function of a uniform dielectric.
- *  \author Luca Frediani
- *  \date 2011
- *
- *  This class represents the Green's function for a uniform dielectric, 
- *  parametrized by the dielectric constant only.
+ *  \brief Green's functions for uniform dielectric.
+ *  \author Luca Frediani, Roberto Di Remigio
+ *  \date 2013
  */
 
-template<class T>
-class UniformDielectric : public GreensFunction<T>
+class UniformDielectric : public GreensFunction
 {
 	public:
-		UniformDielectric(double dielConst);
-//              UniformDielectric(Section green);
-    		~UniformDielectric(){};
-                double evald(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2); 
-                void setDielectricConstant(double dielConst) {epsilon = dielConst; };
-                double getDielectricConstant(){return epsilon;}
-                double compDiagonalElementS(double area);
-                double compDiagonalElementD(double area, double radius);
-	
+		UniformDielectric(const std::string & how_, double epsilon_) : GreensFunction(how_, true), epsilon(epsilon_) {}
+		virtual ~UniformDielectric() {}
+ 		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
+                                          Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_) const;
+	       	virtual double getDielectricConstant() const { return epsilon; }
 	private:
-		virtual std::ostream & printObject(std::ostream & os);
-    		T evalGreensFunction(T * source, T * probe);
-    		double epsilon;
+		double epsilon;
+		virtual	Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+				 			    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
+		virtual	Eigen::Array4d analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_,
+				 			   Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
+		virtual	Eigen::Array4d automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_,
+							    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;  
+		virtual	Eigen::Array4d automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+				                         Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
+		virtual	Eigen::Array4d automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+				                        Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
 };
+
+namespace
+{
+	GreensFunction * createUniformDielectric(const std::string & how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	{
+		return new UniformDielectric(how_, epsilon_);
+	}
+	const std::string UNIFORMDIELECTRIC("UniformDielectric");
+	const bool registeredUniformDielectric = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(UNIFORMDIELECTRIC, createUniformDielectric);
+}
+
 #endif // UNIFORMDIELECTRIC_H

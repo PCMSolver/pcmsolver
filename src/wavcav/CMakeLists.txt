@@ -130,6 +130,5 @@ install(FILES meshsas.h DESTINATION include)
 install(FILES eval.h DESTINATION include)
 install(FILES sas.h DESTINATION include)
 
-install(TARGETS wavcav
-	ARCHIVE DESTINATION lib)
+install(TARGETS wavcav ARCHIVE DESTINATION lib)
 

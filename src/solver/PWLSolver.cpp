@@ -38,16 +38,16 @@ extern "C"{
 }
 
 #include "PhysicalConstants.h"
-#include "Getkw.h"
-#include "taylor.hpp"
-#include "GreensFunctionInterface.h"
+//#include "Getkw.h"
+//#include "taylor.hpp"
+#include "GreensFunction.h"
 #include "Cavity.h"
 #include "WaveletCavity.h"
-#include "PCMSolver.h"
-#include "WEMSolver.h"
+//#include "PCMSolver.h"
+//#include "WEMSolver.h"
 #include "PWLSolver.h"
 
-static GreensFunctionInterface * gf;
+static GreensFunction * gf;
 
 static double SLInt(vector3 x, vector3 y)
 {  
@@ -81,7 +81,8 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 static double SingleLayer (vector3 x, vector3 y) {
 	Vector3d vx(x.x, x.y, x.z);
 	Vector3d vy(y.x, y.y, y.z);
-	double value = gf->evalf(vx, vy);
+	Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+	double value = gf->evaluate(foo, vx, foo, vy)(0);
 	return value;
 }
 
@@ -89,7 +90,8 @@ static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) {
 	Vector3d vx(x.x, x.y, x.z);
 	Vector3d vy(y.x, y.y, y.z);
 	Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-	double value = gf->evald(vn_y, vx, vy);
+	Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+	double value = gf->evaluate(foo, vx, vn_y, vy)(1);
 	return value;
 }
 
@@ -97,20 +99,6 @@ void PWLSolver::initPointers()
 {
 	elementTree = NULL;
 	waveletList = NULL;
-}
-
-PWLSolver::PWLSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
-	WEMSolver(gfi, gfo) {
-	initPointers();
-	setSolverType("Linear");
-	setEquationType("FirstKind");
-}
-
-PWLSolver::PWLSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
-	WEMSolver(gfi, gfo) {
-	initPointers();
-	setSolverType("Linear");
-	setEquationType("FirstKind");
 }
 
 /*PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {

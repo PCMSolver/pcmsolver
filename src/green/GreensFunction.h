@@ -1,116 +1,87 @@
 #ifndef GREENSFUNCTION_H
 #define GREENSFUNCTION_H
 
-#include "Config.h"
+#include <iostream>
+#include <string>
 
-#include "GreensFunctionInterface.h"
+#include <Eigen/Dense>
 
 /*! \file GreensFunction.h
  *  \class GreensFunction
- *  \brief Abstract base class for the Green's function generator. 
- *  \author Luca Frediani
- *  \date 2011
- *  
- *  A generic Green´s function to represent the electrostatic potential for a given environment
+ *  \brief An Abstract Base Class for Green's functions
+ *  \author Luca Frediani, Roberto Di Remigio
+ *  \date 2013
  */
 
-template<typename T>
-class GreensFunction: public GreensFunctionInterface
+class GreensFunction
 {
 	public:
-	       GreensFunction(){delta = 1.0e-4;}                                                                     	  
-               virtual ~GreensFunction(){};
-                                                                                                                      
-               // From GreensFunctionInterface
-               /*! 
-                * \brief Value of the Green's function for a pair of source and probe points.
-                * \param[in] p1 the source point.
-                * \param[in] p2 the probe point.
-                *
-                * This function is used in computing the kernel of the \f$\mathcal{S}\f$ integral operator.
-                */
-               virtual double evalf(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
-               /*!
-                * \brief Wrapper function for the evaluation of the derivative of the Green's function. 
-                * \param[in] direction the direction used to calculate the directional derivative.
-                * \param[in] p1 the source point.
-                * \param[in] p2 the probe point.
-                *
-                * This function is used in computing the kernel of both the \f$\mathcal{D}\f$ and 
-                * \f$\mathcal{D}^\dagger\f$ integral operators. It is a wrapper for the other derivative calculation
-                * functions provided in this Abstract Base Class.
-                */
-               virtual double evald(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2) = 0;
-               /*!
-                * \brief Directional derivative of the Green's function in a direction relative to the source point.
-                * \param[in] direction the direction used to calculate the directional derivative.
-                * \param[in] p1 the source point.
-                * \param[in] p2 the probe point. 
-                *
-                * This function is used in computing the kernel of the \f$\mathcal{D}^\dagger\f$ integral operator.
-                */
-               virtual double derivativeSource(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
-               /*!
-                * \brief Directional derivative of the Green's function in a direction relative to the probe point.
-                * \param[in] direction the direction used to calculate the directional derivative.
-                * \param[in] p1 the source point.
-                * \param[in] p2 the probe point.
-                *
-                * This function is used in computing the kernel of the \f$\mathcal{D}\f$ integral operator.
-                */
-               virtual double derivativeProbe(Eigen::Vector3d &direction, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
-                                                                                                                      
-               /*!
-                * \brief Gradient of the Green's function with respect to the source point.
-                * \param[in] p1 the source point.
-                * \param[in] p2 the probe point. 
-                *
-                * This function is used in computing the kernel of the \f$\mathcal{D}^\dagger\f$ integral operator.
-                */
-               virtual Eigen::Vector3d gradientSource(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
-               /*!
-                * \brief Gradient of the Green's function with respect to the probe point.
-                * \param[in] p1 the source point.
-                * \param[in] p2 the probe point.
-                *
-                * This function is used in computing the kernel of the \f$\mathcal{D}\f$ integral operator.
-                */
-               virtual Eigen::Vector3d gradientProbe(Eigen::Vector3d &p1, Eigen::Vector3d &p2);
-               virtual double getDielectricConstant();
-               /*!
-                * \brief Gradient of the Green's function with respect to the source point.
-                * \param[out] gradient a vector containing the gradient.
-                * \param[in] p1 the source point.
-                * \param[in] p2 the probe point.
-                *
-                * This function is used in computing the kernel of the \f$\mathcal{D}^\dagger\f$ integral operator.
-                * It is an overloaded version using the pass-by-reference semantics.
-                */
-               virtual void gradientSource(Eigen::Vector3d &gradient, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
-               /*!
-                * \brief Gradient of the Green's function with respect to the probe point.
-                * \param[out] gradient a vector containing the gradient.
-                * \param[in] p1 the source point.
-                * \param[in] p2 the probe point.
-                *
-                * This function is used in computing the kernel of the \f$\mathcal{D}\f$ integral operator.
-                * It is an overloaded version using the pass-by-reference semantics.
-                */
-               virtual void gradientProbe(Eigen::Vector3d &gradient, Eigen::Vector3d &p1, Eigen::Vector3d &p2);
-               void setDelta(double value);
-               double getDelta(){return delta;}
-               //GreensFunction<T> * allocateGreensFunction(const Section &green);
-               GreensFunction<T> * allocateGreensFunction(double dielConst);
-               GreensFunction<T> * allocateGreensFunction(double dielConst, const std::string & greenType);
-               GreensFunction<T> * allocateGreensFunction();
-               virtual double compDiagonalElementS(double area) = 0;
-               virtual double compDiagonalElementD(double area, double radius) = 0;
-
- 	protected:
-    	       virtual T evalGreensFunction(T * source, T * probe) = 0;
-    	       std::ostream & printObject(std::ostream & os);
-	       double delta;
-	       bool uniformFlag;
+		GreensFunction(const std::string & how_) : how(how_), uniform(false) {}
+		GreensFunction(const std::string & how_, bool uniform_) : how(how_), uniform(uniform_) {}
+		virtual ~GreensFunction() {}
+		Eigen::Array4d evaluate(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const; 
+		/*! \brief Compute the off-diagonal elements of the S and D matrices.
+                 *  \param[in] elementCenter_ the matrix containing the centers of the finite elements.
+                 *  \param[in] elementNormal_ the matrix containing the normal vectors to the centers of the finite elements.
+                 *  \param[out] offDiagonalS_ the off-diagonal part of the S matrix.
+                 *  \param[out] offDiagonalD_ the off-diagonal part of the D matrix.
+		 */
+		void compOffDiagonal(const Eigen::Matrix3Xd & elementCenter_, const Eigen::Matrix3Xd & elementNormal_, 
+                                             Eigen::MatrixXd & offDiagonalS_, Eigen::MatrixXd & offDiagonalD_) const;
+		/*! \brief Compute diagonal elements of the S and D matrices.
+                 *  \param[in] elementArea_ the vector containing the areas of the finite elements.
+                 *  \param[in] elementRadius_ the vector containing the radii of the spheres the finite element belongs to.
+                 *  \param[out] diagonalS_ the diagonal part of the S matrix.
+                 *  \param[out] diagonalD_ the diagonal part of the D matrix.
+                 */
+ 		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
+                                          Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_) const = 0;
+		bool isUniform() const { return uniform; }
+		virtual double getDielectricConstant() const; 
+	protected:
+		std::string how;
+		bool uniform;
+  	private:		
+	        /*! \brief Numerical evaluation strategy.
+		 *  \param[in] sourceNormal_ the normal vector relative to the source point.
+		 *  \param[in] source_ the source point.
+		 *  \param[in] probeNormal_ the normal vector relative to the probe point.
+		 *  \param[in] probe_ the probe point.
+		 */
+		virtual Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+							    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const = 0;
+	        /*! \brief Analytic evaluation strategy.
+		 *  \param[in] sourceNormal_ the normal vector relative to the source point.
+		 *  \param[in] source_ the source point.
+		 *  \param[in] probeNormal_ the normal vector relative to the probe point.
+		 *  \param[in] probe_ the probe point.
+		 */
+		virtual Eigen::Array4d analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+         						   Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const = 0;
+	        /*! \brief Automatic differentiation evaluation strategy. Calculates directional derivatives internally.
+		 *  \param[in] sourceNormal_ the normal vector relative to the source point.
+		 *  \param[in] source_ the source point.
+		 *  \param[in] probeNormal_ the normal vector relative to the probe point.
+		 *  \param[in] probe_ the probe point.
+		 */
+		virtual Eigen::Array4d automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+							    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const = 0;
+	        /*! \brief Automatic differentiation evaluation strategy. Calculates the full gradient internally.
+		 *  \param[in] sourceNormal_ the normal vector relative to the source point.
+		 *  \param[in] source_ the source point.
+		 *  \param[in] probeNormal_ the normal vector relative to the probe point.
+		 *  \param[in] probe_ the probe point.
+		 */
+		virtual Eigen::Array4d automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+						         Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const = 0;
+	        /*! \brief Automatic differentiation evaluation strategy. Calculates the full gradient and Hessian internally.
+		 *  \param[in] sourceNormal_ the normal vector relative to the source point.
+		 *  \param[in] source_ the source point.
+		 *  \param[in] probeNormal_ the normal vector relative to the probe point.
+		 *  \param[in] probe_ the probe point.
+		 */
+		virtual Eigen::Array4d automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+							Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const = 0;
 };
 
 #endif // GREENSFUNCTION_H

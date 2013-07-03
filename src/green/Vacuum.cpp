@@ -4,21 +4,21 @@
 
 #include "Vacuum.h" 
  		
-virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_)
+void Vacuum::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
 {
-	int size = diagonalS_.size();
+	int size = S_.rows();
+
 	double factor = 1.07;
 
 	for (int i = 0; i < size; ++i)
 	{
-		diagonalS_(i) = factor * sqrt(4 * M_PI / elementArea_(i));
-		diagonalD_(i) = - factor * sqrt(M_PI / elementArea_(i)) * (1 / elementRadius_(i));
+		S_(i, i) = factor * sqrt(4 * M_PI / elementArea_(i));
+		D_(i, i) = - factor * sqrt(M_PI / elementArea_(i)) * (1 / elementRadius_(i));
 	}
 }	
 
-Eigen::Array4d Vacuum::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d Vacuum::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
-	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 
 	// The finite difference step
@@ -49,7 +49,7 @@ Eigen::Array4d Vacuum::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eig
 	return result;
 }
 
-Eigen::Array4d Vacuum::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d Vacuum::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	double distance = (source_ - probe_).norm();
@@ -68,9 +68,8 @@ Eigen::Array4d Vacuum::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eige
 	return result;
 }
 
-Eigen::Array4d Vacuum::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d Vacuum::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
-	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	taylor<double, 3, 1> dx(0, 0), dy(0, 1), dz(0, 2);
 
@@ -108,9 +107,8 @@ Eigen::Array4d Vacuum::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eig
 }
 
 
-Eigen::Array4d Vacuum::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d Vacuum::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
-	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	taylor<double, 3, 1> dx(0, 0), dy(0, 1), dz(0, 2);
 
@@ -140,7 +138,7 @@ Eigen::Array4d Vacuum::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen:
 	return result;
 }
 
-Eigen::Array4d Vacuum::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d Vacuum::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	

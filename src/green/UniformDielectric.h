@@ -22,7 +22,7 @@ class UniformDielectric : public GreensFunction
 		UniformDielectric(const std::string & how_, double epsilon_) : GreensFunction(how_, true), epsilon(epsilon_) {}
 		virtual ~UniformDielectric() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
-                                          Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_) const;
+                                          Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
 	       	virtual double getDielectricConstant() const { return epsilon; }
 	private:
 		double epsilon;

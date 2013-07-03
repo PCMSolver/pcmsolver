@@ -22,7 +22,8 @@ class Vacuum : public GreensFunction
 		Vacuum(const std::string & how_) : GreensFunction(how_, true) {} 
 		virtual ~Vacuum() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
-                                          Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_) const; 
+                                          Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
+	        virtual double getDielectricConstant() const { return 1.0; }	
 	private:
 		virtual	Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				 			    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;

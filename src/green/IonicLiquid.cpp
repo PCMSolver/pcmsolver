@@ -4,9 +4,9 @@
 
 #include "IonicLiquid.h" 
 
-Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+						 Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
-	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 
 	// The finite difference step
@@ -37,7 +37,8 @@ Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_
 	return result;
 }
 
-Eigen::Array4d IonicLiquid::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+		                                Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	double distance = (source_ - probe_).norm();
@@ -58,9 +59,9 @@ Eigen::Array4d IonicLiquid::analyticDirectional(Eigen::Vector3d & sourceNormal_,
 	return result;
 }
 
-Eigen::Array4d IonicLiquid::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+		                                 Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
-	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	taylor<double, 3, 1> dx(0, 0), dy(0, 1), dz(0, 2);
 
@@ -100,9 +101,9 @@ Eigen::Array4d IonicLiquid::automaticDirectional(Eigen::Vector3d & sourceNormal_
 }
 
 
-Eigen::Array4d IonicLiquid::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+		                              Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
-	std::cout << "This evaluation strategy has no Hessian." << std::endl;
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	taylor<double, 3, 1> dx(0, 0), dy(0, 1), dz(0, 2);
 
@@ -133,7 +134,8 @@ Eigen::Array4d IonicLiquid::automaticGradient(Eigen::Vector3d & sourceNormal_, E
 	return result;
 }
 
-Eigen::Array4d IonicLiquid::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d IonicLiquid::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+		                             Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 	

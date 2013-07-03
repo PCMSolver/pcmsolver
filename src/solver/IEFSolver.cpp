@@ -15,7 +15,7 @@ void IEFSolver::buildSystemMatrix(Cavity & cavity)
     if (GePolCavity *gePolCavity = dynamic_cast<GePolCavity*> (&cavity)) 
     {
 	    if (greenInside->isUniform() && greenOutside->isUniform()) 
-            {                                            		
+            {                                          
 	    	buildIsotropicMatrix(*gePolCavity);      
 	    }                                                
 	    else                                             
@@ -25,7 +25,7 @@ void IEFSolver::buildSystemMatrix(Cavity & cavity)
     } 
     else 
     {
-	    std::runtime_error("No other cavity than GePol for traditional PCM");
+	    throw std::runtime_error("No other cavity than GePol for traditional PCM");
     }
 }
 
@@ -33,19 +33,15 @@ void IEFSolver::buildAnisotropicMatrix(GePolCavity & cav)
 {
 	int cavitySize = cav.size();
     	Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	Eigen::VectorXd SIdiag = SI.diagonal();
 	Eigen::MatrixXd SE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	Eigen::VectorXd SEdiag = SE.diagonal();
     	Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	Eigen::VectorXd DIdiag = DI.diagonal();
     	Eigen::MatrixXd DE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	Eigen::VectorXd DEdiag = DE.diagonal();
 
     	// This is the very core of PCMSolver
     	greenInside->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
-    	greenInside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SIdiag, DIdiag);
+    	greenInside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
     	greenOutside->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SE, DE);
-    	greenOutside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SEdiag, DEdiag);
+    	greenOutside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SE, DE);
 /*    for(int i = 0; i < cavitySize; i++)
     {
 	    Eigen::Vector3d p1 = cav.getElementCenter(i); 
@@ -90,41 +86,16 @@ void IEFSolver::buildIsotropicMatrix(GePolCavity & cav)
 	double epsilon = greenOutside->getDielectricConstant();
         int cavitySize = cav.size();
     	Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	Eigen::VectorXd SIdiag = SI.diagonal();
     	Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	Eigen::VectorXd DIdiag = DI.diagonal();
 
     	// This is the very core of PCMSolver
     	greenInside->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
-    	greenInside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SIdiag, DIdiag);
+    	greenInside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
 
-/*    for(int i = 0; i < cavitySize; i++){
-	        Eigen::Vector3d p1 = cav.getElementCenter(i);
-		double area = cav.getElementArea(i);
-		double radius = cav.getElementRadius(i);
-		SI(i,i) = greenInside->compDiagonalElementS(area); 
-		DI(i,i) = greenInside->compDiagonalElementD(area, radius); 
-		for (int j = 0; j < cavitySize; j++){
-			Eigen::Vector3d p2 = cav.getElementCenter(j);
-			Eigen::Vector3d n2 = cav.getElementNormal(j);
-			n2.normalize();
-			if (i != j) {
-				std::cout << "Call evalf to get SI(i,j)" << std::endl;
-				SI(i,j) = greenInside->evalf(p1, p2);
-				std::cout << "Call evald to get DI(i,j)" << std::endl;
-				DI(i,j) = greenInside->evald(n2, p1, p2);
-			}
-		}
-    }*/
-    	Eigen::MatrixXd a = cav.getElementArea().asDiagonal();// Eigen::MatrixXd::Zero(cavitySize, cavitySize);
+    	Eigen::MatrixXd a = cav.getElementArea().asDiagonal();
     	Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     	aInv = 2 * M_PI * a.inverse();
-    //a.setZero();
-    //aInv.setZero();
-/*    for (int i = 0; i < cavitySize; i++) {
-		a(i,i) = cav.getElementArea(i);
-		aInv(i,i) = 2 * M_PI / cav.getElementArea(i);
-    }*/
+	
 	double fact = (epsilon + 1.0)/(epsilon - 1.0);
     	PCMMatrix = (fact * aInv - DI) * a * SI;
     	PCMMatrix = PCMMatrix.inverse();
@@ -157,7 +128,7 @@ void IEFSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & 
 	} 
 	else 
 	{
-		std::runtime_error("PCM matrix not initialized!");
+		throw std::runtime_error("PCM matrix not initialized!");
 	}
 }
 
@@ -172,7 +143,6 @@ std::ostream & IEFSolver::printObject(std::ostream & os)
 	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << std::endl;
 	os << "========== Solver section" << std::endl;
 	os << "Solver Type: " << type << std::endl;
-	os << solvent;
 	return os;
 }
 

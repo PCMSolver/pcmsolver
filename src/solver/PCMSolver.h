@@ -12,8 +12,6 @@ class Cavity;
 
 #include "GreensFunction.h"
 
-#include "Solvent.h"
-
 /*! 
  * \file PCMSolver.h
  * \class PCMSolver
@@ -54,8 +52,6 @@ class PCMSolver
                 virtual void setEquationType(const std::string & type);                                   
                 virtual void setEquationType(int type);                                                   
                 virtual int getEquationType() { return integralEquation; }                                
-                Solvent getSolvent() { return solvent; }                                                  
-                void setSolvent(Solvent & solvent_) { solvent = solvent_; }
                 friend std::ostream & operator<<(std::ostream & os, PCMSolver & obj)                      
 		{                                                                                         
                     return obj.printObject(os);                                                           
@@ -69,7 +65,6 @@ class PCMSolver
                 int integralEquation;
 		bool allocated;
                 virtual std::ostream & printObject(std::ostream & os);
-                Solvent solvent;
                 enum EquationType {FirstKind, SecondKind, Full};                                          
                 enum SolverType {IEFPCM, CPCM, Wavelet, Linear};                                          
 };

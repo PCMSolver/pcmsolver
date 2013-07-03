@@ -23,21 +23,21 @@ class GreensFunction
 		/*! \brief Compute the off-diagonal elements of the S and D matrices.
                  *  \param[in] elementCenter_ the matrix containing the centers of the finite elements.
                  *  \param[in] elementNormal_ the matrix containing the normal vectors to the centers of the finite elements.
-                 *  \param[out] offDiagonalS_ the off-diagonal part of the S matrix.
-                 *  \param[out] offDiagonalD_ the off-diagonal part of the D matrix.
+                 *  \param[out] S_ the S matrix.
+                 *  \param[out] D_ the D matrix.
 		 */
 		void compOffDiagonal(const Eigen::Matrix3Xd & elementCenter_, const Eigen::Matrix3Xd & elementNormal_, 
-                                             Eigen::MatrixXd & offDiagonalS_, Eigen::MatrixXd & offDiagonalD_) const;
+                                             Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
 		/*! \brief Compute diagonal elements of the S and D matrices.
                  *  \param[in] elementArea_ the vector containing the areas of the finite elements.
                  *  \param[in] elementRadius_ the vector containing the radii of the spheres the finite element belongs to.
-                 *  \param[out] diagonalS_ the diagonal part of the S matrix.
-                 *  \param[out] diagonalD_ the diagonal part of the D matrix.
+                 *  \param[out] S_ the S matrix.
+                 *  \param[out] D_ the D matrix.
                  */
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
-                                          Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_) const = 0;
+                                          Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const = 0;
 		bool isUniform() const { return uniform; }
-		virtual double getDielectricConstant() const; 
+		virtual double getDielectricConstant() const = 0; 
 	protected:
 		std::string how;
 		bool uniform;

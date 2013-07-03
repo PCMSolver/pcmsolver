@@ -20,12 +20,12 @@ void CPCMSolver::buildSystemMatrix(Cavity & cavity)
 	    } 
 	    else 
 	    {
-		    std::runtime_error("C-PCM is defined only for isotropic environments!");
+		   throw std::runtime_error("C-PCM is defined only for isotropic environments!");
 	    }
     } 
     else 
     {
-	    std::runtime_error( "No other cavity than GePol for traditional PCM.");
+	    throw std::runtime_error( "No other cavity than GePol for traditional PCM.");
     }
 }
 
@@ -35,13 +35,11 @@ void CPCMSolver::buildIsotropicMatrix(GePolCavity & cav)
 	double epsilon = greenOutside->getDielectricConstant();
     	int cavitySize = cav.size();
     	Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	Eigen::VectorXd SIdiag = SI.diagonal();
 	Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	Eigen::VectorXd DIdiag = DI.diagonal();
     	
 	// This is the very core of PCMSolver
     	greenInside->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
-    	greenInside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SIdiag, DIdiag);
+    	greenInside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
     	
 	double fact = (epsilon - 1.0)/(epsilon + correction);
     	PCMMatrix = SI;
@@ -73,7 +71,7 @@ void CPCMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd &
 	} 
 	else 
 	{
-		std::runtime_error("PCM matrix not initialized!");
+		throw std::runtime_error("PCM matrix not initialized!");
 	}
 }
     
@@ -83,7 +81,6 @@ std::ostream & CPCMSolver::printObject(std::ostream & os)
 	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << std::endl;
 	os << "========== Solver section" << std::endl;
 	os << "Solver Type: " << type << std::endl;
-	os << solvent;
 	return os;
 }
 

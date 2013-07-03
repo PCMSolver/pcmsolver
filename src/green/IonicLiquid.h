@@ -22,7 +22,8 @@ class IonicLiquid : public GreensFunction
 		IonicLiquid(const std::string & how_, double epsilon_, double kappa_) : GreensFunction(how_), epsilon(epsilon_), kappa(kappa_) {}
 		virtual ~IonicLiquid() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
-                                          Eigen::VectorXd & diagonalS_, Eigen::VectorXd & diagonalD_) const; 
+                                          Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const; 
+	       	virtual double getDielectricConstant() const { return epsilon; }
 	private:
 		double epsilon;
 		double kappa;

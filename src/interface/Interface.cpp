@@ -367,58 +367,24 @@ void initCavity()
 
 void initSolver()
 {
-	std::cout << "Let us instantiate a wonderful GreensFunctionFactory" << std::endl;
 	GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
-	std::cout << "If you read this a GreensFunctionFactory has been instantiated." << std::endl;
-       
 	// Get the input data for generating the inside & outside Green's functions
 	// INSIDE
 	double epsilon = Input::TheInput().getEpsilonInside();
 	std::string greenType = Input::TheInput().getGreenInsideType();
 	std::string greenDer = Input::TheInput().getDerivativeInsideType();
-	std::cout << "INTERFACE: decide which fancy derivative you want inside." << std::endl;
-	std::cout << "         : decide which fancy Green's function type you want inside." << std::endl;
-	if (greenDer == "Numerical") {
-//		gfInside = factory1.createGreensFunction(greenType);
-		gfInside = g0->allocateGreensFunction(epsilon, greenType);
-		std::cout << "Numerical der" << std::endl;
-	} else if (greenDer == "Derivative") {
-//		gfInside = factory2.createGreensFunction(greenType);
- 	        gfInside = g1->allocateGreensFunction(epsilon, greenType);
-		std::cout << "Analytical der" << std::endl;
-	} else if (greenDer == "Gradient") {
-//		gfInside = factory3.createGreensFunction(greenType);
-	        gfInside = g2->allocateGreensFunction(epsilon, greenType);
-		std::cout << "Full gradient der" << std::endl;
-	} else if (greenDer == "Hessian") {
-//		gfInside = factory4.createGreensFunction(greenType);
-		gfInside = g3->allocateGreensFunction(epsilon, greenType);
-		std::cout << "Full hessian der" << std::endl;
-	}
-	std::cout << "Green's function inside it's done!" << std::endl;
+
+	GreensFunction * gfInside = factory.createGreensFunction(greenType, greenDer);
+	
 	// OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
 	epsilon = Input::TheInput().getEpsilonOutside();
 	greenType = Input::TheInput().getGreenOutsideType();
 	greenDer = Input::TheInput().getDerivativeOutsideType();
-	std::cout << "INTERFACE: decide which fancy derivative you want outside." << std::endl;
-	std::cout << "         : decide which fancy Green's function type you want outside." << std::endl;
-	if (greenDer == "Numerical") {
-		gfOutside = g0->allocateGreensFunction(epsilon, greenType);
-		std::cout << "Numerical der" << std::endl;
-	} else if (greenDer == "Derivative") {
-		gfOutside = g1->allocateGreensFunction(epsilon, greenType);
-		std::cout << "Analytical der" << std::endl;
-	} else if (greenDer == "Gradient") {
-		gfOutside = g2->allocateGreensFunction(epsilon, greenType);
-		std::cout << "Full gradient der" << std::endl;
-	} else if (greenDer == "Hessian") {
-		gfOutside = g3->allocateGreensFunction(epsilon, greenType);
-		std::cout << "Full hessian der" << std::endl;
-	}
-	std::cout << "Green's function outside it's done!" << std::endl;
+	
+	GreensFunction * gfOutside = factory.createGreensFunction(greenType, greenDer, epsilon);
+	
 	// And all this to finally create the solver! 
 	std::string modelType = Input::TheInput().getSolverType();
-	std::cout << "You are asking for this very fancy solver: " << modelType << std::endl;
 	if (modelType == "IEFPCM") {
 		_IEFSolver = new IEFSolver(gfInside, gfOutside);
 		_IEFSolver->buildSystemMatrix(*_cavity);
@@ -561,11 +527,11 @@ void init_pwlsolver_() {
 }
 
 void build_isotropic_matrix_() {
-	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
+//	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
 }
 
 void build_anisotropic_matrix_() {
-	_IEFSolver->buildAnisotropicMatrix(*_gePolCavity);
+//	_IEFSolver->buildAnisotropicMatrix(*_gePolCavity);
 }
 
 void init_atoms_(VectorXd & charges,

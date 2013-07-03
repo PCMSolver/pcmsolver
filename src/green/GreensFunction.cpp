@@ -3,7 +3,7 @@
 
 #include "GreensFunction.h"
 
-Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_)
+Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
         enum                           	 
         {
@@ -45,9 +45,10 @@ Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::
 	return result;                                                             			
 }                  
 
-void compOffDiagonal(const Eigen::Matrix3Xd & elementCenter_, const Eigen::Matrix3Xd & elementNormal_, Eigen::MatrixXd & offDiagonalS_, Eigen::MatrixXd & offDiagonalD_)
+void GreensFunction::compOffDiagonal(const Eigen::Matrix3Xd & elementCenter_, const Eigen::Matrix3Xd & elementNormal_, 
+		                     Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
 {
-	int size = offDiagonalS_.size();
+	int size = S_.rows(); // which is, of course, equal to S_.cols()
 
 	for (int i = 0; i < size; ++i)
 	{
@@ -62,8 +63,8 @@ void compOffDiagonal(const Eigen::Matrix3Xd & elementCenter_, const Eigen::Matri
 			if (i != j)
 			{
 				Eigen::Array4d tmp = evaluate(sourceNormal, source, probeNormal, probe);
-				offDiagonalS_(i, j) = tmp(0);
-				offDiagonalD_(i, j) = tmp(1);
+				S_(i, j) = tmp(0);
+				D_(i, j) = tmp(1);
 			}
 		}
 	}

@@ -5,17 +5,13 @@
 #include <string>
 #include <map>
 
-#include "Config.h"
-
 #include <Eigen/Dense>
 
+#include "Config.h"
+
+class GreensFunction;
 
 #include "PCMSolver.h"
-#include "IEFSolver.h"
-#include "CPCMSolver.h"
-#include "WEMSolver.h"
-#include "PWCSolver.h"
-#include "PWLSolver.h"
 
 /*!
  *	\file SolverFactory.h
@@ -34,7 +30,7 @@ class SolverFactory {
 		/*!
 		 * Callback function for solver creation.
 		 */
-		typedef PCMSolver * (*createSolverCallback)();
+		typedef PCMSolver * (*createSolverCallback)(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_, int integralEquation_);
 	private:
 		/*!
 		 * A map from the solver type identifier (a string) to its callback function.
@@ -55,7 +51,8 @@ class SolverFactory {
 		/*! 
 		 * Calls the appropriate creation function, based on the passed cavityID
 		 */
-		PCMSolver * createSolver(std::string solverID, GreensFunction * gfInside_, GreensFunction * gfOutside_);
+		PCMSolver * createSolver(std::string solverID, GreensFunction * gfInside_, GreensFunction * gfOutside_, 
+				         double correction_ = 0.0, int integralEquation_ = 1); // 1 stands for SecondKind
 		/*!
 		 * Unique point of access to the unique instance of the SolverFactory
 		 */

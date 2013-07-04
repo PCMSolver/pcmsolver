@@ -1,10 +1,10 @@
 #ifndef CPCMSOLVER_H
 #define CPCMSOLVER_H
 
-#include <string>
-#include <vector>
 #include <iostream>
-#include <complex>
+#include <string>
+
+#include <Eigen/Dense>
 
 #include "Config.h"
 
@@ -13,6 +13,7 @@ class Cavity;
 class GePolCavity;
 
 #include "PCMSolver.h"
+#include "SolverFactory.h"
 
 /*! \file CPCMSolver.h  
  *  \class CPCMSolver
@@ -32,8 +33,8 @@ class CPCMSolver : public PCMSolver
 //    		static const double factor = 1.0694;
     		static const double factor = 1.07;
 	public:
-                CPCMSolver(GreensFunction *gfi, GreensFunction *gfo, double correction_ = 0.0) 
-			: PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}                
+                CPCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0) 
+			: PCMSolver(gfInside_, gfOutside_), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}                
                 //CPCMSolver(const Section & solver);
                 virtual ~CPCMSolver() {}
                 const Eigen::MatrixXd & getPCMMatrix() const { return PCMMatrix; }
@@ -44,5 +45,15 @@ class CPCMSolver : public PCMSolver
 	private:
                 void buildIsotropicMatrix(GePolCavity & cav);
 };
+
+namespace
+{
+	PCMSolver * createCPCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0, int integralEquation_ = 1)
+	{
+		return new CPCMSolver(gfInside_, gfOutside_, correction_);
+	}
+	const std::string CPCMSOLVER("CPCMSolver");
+	const bool registeredCPCMSolver = SolverFactory::TheSolverFactory().registerSolver(CPCMSOLVER, createCPCMSolver);
+}
 
 #endif // CPCMSOLVER_H

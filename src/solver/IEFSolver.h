@@ -13,6 +13,7 @@ class Cavity;
 class GePolCavity;
 
 #include "PCMSolver.h"
+#include "SolverFactory.h"
 
 /*! 
  * \file IEFSolver.h
@@ -32,7 +33,8 @@ class IEFSolver : public PCMSolver
 		Eigen::MatrixXd PCMMatrix;
     		virtual std::ostream & printObject(std::ostream & os);
 	public:
-    		IEFSolver(GreensFunction *gfi, GreensFunction *gfo) : PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
+    		IEFSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) 
+			: PCMSolver(gfInside_, gfOutside_), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
                 virtual ~IEFSolver() {}
                 const Eigen::MatrixXd & getPCMMatrix() const { return PCMMatrix; }
                 virtual void buildSystemMatrix(Cavity & cavity);
@@ -43,5 +45,15 @@ class IEFSolver : public PCMSolver
                 void buildIsotropicMatrix(GePolCavity & cav);
 	
 };
+
+namespace
+{
+	PCMSolver * createIEFSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0, int integralEquation_ = 1)
+	{
+		return new IEFSolver(gfInside_, gfOutside_);
+	}
+	const std::string IEFSOLVER("IEFSolver");
+	const bool registeredIEFSolver = SolverFactory::TheSolverFactory().registerSolver(IEFSOLVER, createIEFSolver);
+}
 
 #endif // IEFSOLVER_H

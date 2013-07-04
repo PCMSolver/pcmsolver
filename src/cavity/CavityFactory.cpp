@@ -19,7 +19,7 @@ Cavity * CavityFactory::createCavity(std::string cavityID, const std::vector<Sph
 	if (i == callbacks.end()) 
 	{
 		// The cavityID was not found
-                throw std::runtime_error("Unknown cavity ID.");
+                throw std::runtime_error("The unknown cavity ID " + cavityID + " occurred in CavityFactory.");
 	}
 	// Invoke the creation function
 	return (i->second)(_spheres, _area, _probeRadius, _addSpheres, _patchLevel, _coarsity);

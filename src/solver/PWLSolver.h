@@ -1,10 +1,10 @@
 #ifndef PWLSOLVER_H
 #define PWLSOLVER_H
 
-#include <string>
-#include <vector>
 #include <iostream>
-#include <complex>
+#include <string>
+
+#include <Eigen/Dense>
 
 #include "Config.h"
 
@@ -18,6 +18,7 @@ extern "C"{
 }
 
 #include "WEMSolver.h"
+#include "SolverFactory.h"
 
 /*! \file PWLSolver.h
  *  \class PWLSOlver
@@ -53,4 +54,14 @@ class PWLSolver : public WEMSolver
                 element_pwl *elementTree; //*E_; Hierarchical element list
                 wavelet_pwl *waveletList; //*W_; List of wavelets
 };
-#endif
+
+namespace
+{
+	PCMSolver * createPWLSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0, int integralEquation_ = 1)
+	{
+		return new PWLSolver(gfInside_, gfOutside_, integralEquation_);
+	}
+	const std::string PWLSOLVER("PWLSolver");
+	const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(PWLSOLVER, createPWLSolver);
+}
+#endif // PWLSOLVER_H

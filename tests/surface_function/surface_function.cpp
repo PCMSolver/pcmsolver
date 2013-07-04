@@ -1,6 +1,6 @@
 #include <Eigen/Dense>
 
-#include "SurfaceFunction.h"
+#include "SurfaceFunction.hpp"
 #include "gtest/gtest.h"
 
 class SurfaceFunctionTest : public ::testing::Test

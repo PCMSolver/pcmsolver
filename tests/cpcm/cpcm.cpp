@@ -2,9 +2,9 @@
 
 #include <Eigen/Dense>
 
-#include "GePolCavity.h"
-#include "PCMSolver.h"
-#include "CPCMSolver.h"
+#include "GePolCavity.hpp"
+#include "PCMSolver.hpp"
+#include "CPCMSolver.hpp"
 #include "gtest/gtest.h"
 
 TEST(cpcm, pointCharge) {

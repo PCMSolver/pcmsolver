@@ -2,7 +2,6 @@ set(solver_SOURCES
 	SolverFactory.cpp
   	IEFSolver.cpp
 	CPCMSolver.cpp 
-  	PCMSolver.cpp
   	PWCSolver.cpp
   	PWLSolver.cpp
   	WEMSolver.cpp

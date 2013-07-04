@@ -24,10 +24,10 @@ class Sphere
 		~Sphere() {}
                 double getSphereRadius() const { return sphereRadius; }
                 void setSphereRadius( double _radius ) { sphereRadius = _radius; }
-		Eigen::Vector3d & getSphereCenter() const { return sphereCenter; }
+		Eigen::Vector3d & getSphereCenter() { return sphereCenter; }
                 double getSphereCenter(int i) const { return sphereCenter(i); }
                 void setSphereCenter( Eigen::Vector3d & _coord ){ sphereCenter = _coord; }
-		std::string & getSphereColour() const { return sphereColour; }
+		std::string & getSphereColour() { return sphereColour; }
                 void setSphereColour( std::string & _colour ){ sphereColour = _colour; }
          	friend inline void swap(Sphere & left, Sphere & right);
          	inline void swap(Sphere & other);

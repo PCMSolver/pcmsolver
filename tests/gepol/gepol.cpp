@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <cmath>
-#include "GePolCavity.h"
+#include "GePolCavity.hpp"
 #include "gtest/gtest.h"
 
 class GePolCavityTest : public ::testing::Test

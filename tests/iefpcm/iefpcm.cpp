@@ -3,10 +3,10 @@
 #include <Eigen/Dense>
 
 #include "Getkw.h"
-#include "GePolCavity.h"
-#include "PCMSolver.h"
-#include "IEFSolver.h"
-//#include "Interface.h"
+#include "GePolCavity.hpp"
+#include "PCMSolver.hpp"
+#include "IEFSolver.hpp"
+//#include "Interface.hpp"
 #include "gtest/gtest.h"
 
 TEST(iefpcm, pointCharge) {

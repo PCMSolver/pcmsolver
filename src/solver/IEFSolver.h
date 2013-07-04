@@ -52,7 +52,7 @@ namespace
 	{
 		return new IEFSolver(gfInside_, gfOutside_);
 	}
-	const std::string IEFSOLVER("IEFSolver");
+	const std::string IEFSOLVER("IEFPCM");
 	const bool registeredIEFSolver = SolverFactory::TheSolverFactory().registerSolver(IEFSOLVER, createIEFSolver);
 }
 

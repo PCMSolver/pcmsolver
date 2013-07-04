@@ -52,7 +52,7 @@ namespace
 	{
 		return new CPCMSolver(gfInside_, gfOutside_, correction_);
 	}
-	const std::string CPCMSOLVER("CPCMSolver");
+	const std::string CPCMSOLVER("CPCM");
 	const bool registeredCPCMSolver = SolverFactory::TheSolverFactory().registerSolver(CPCMSOLVER, createCPCMSolver);
 }
 

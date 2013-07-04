@@ -61,7 +61,7 @@ namespace
 	{
 		return new PWCSolver(gfInside_, gfOutside_, integralEquation_);
 	}
-	const std::string PWCSOLVER("PWCSolver");
+	const std::string PWCSOLVER("Wavelet");
 	const bool registeredPWCSolver = SolverFactory::TheSolverFactory().registerSolver(PWCSOLVER, createPWCSolver);
 }
 

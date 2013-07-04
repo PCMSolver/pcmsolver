@@ -61,7 +61,7 @@ namespace
 	{
 		return new PWLSolver(gfInside_, gfOutside_, integralEquation_);
 	}
-	const std::string PWLSOLVER("PWLSolver");
+	const std::string PWLSOLVER("Linear");
 	const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(PWLSOLVER, createPWLSolver);
 }
 #endif // PWLSOLVER_H

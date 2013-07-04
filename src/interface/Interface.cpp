@@ -19,15 +19,16 @@
 #include "WaveletCavity.h"
 #include "CavityFactory.h"
 #include "GreensFunction.h"
-#include "GreensFunctionFactory.h"
 #include "Vacuum.h"
 #include "UniformDielectric.h"
+#include "GreensFunctionFactory.h"
 #include "PCMSolver.h"
 #include "IEFSolver.h"
 #include "CPCMSolver.h"
 #include "WEMSolver.h"
 #include "PWCSolver.h"
 #include "PWLSolver.h"
+#include "SolverFactory.h"
 #include "Atom.h"
 #include "Sphere.h"
 #include "Solvent.h"
@@ -68,9 +69,7 @@ extern "C" void init_pcm_() {
 	setupInput();
 //        std::string modelType = Input::TheInput().getSolverType();
         initCavity();
-	std::cout << "Cavity done" << std::endl;
 	initSolver();
-	std::cout << "Solver done" << std::endl;
 	/*
 	if (modelType == "IEFPCM") {
 //		_gePolCavity = initGePolCavity();
@@ -127,7 +126,7 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName)
 
 	VectorXd & charge = iter_chg->second->getVector();
 	VectorXd & potential = iter_pot->second->getVector();
-
+	
 	_solver->compCharge(potential, charge);
 	double totalChg = charge.sum();
 }
@@ -383,10 +382,13 @@ void initSolver()
 	greenDer = Input::TheInput().getDerivativeOutsideType();
 	
 	GreensFunction * gfOutside = factory.createGreensFunction(greenType, greenDer, epsilon);
-	std::cout << "Green's functions done" << std::endl;	
 	// And all this to finally create the solver! 
 	std::string modelType = Input::TheInput().getSolverType();
-	if (modelType == "IEFPCM") {
+	double correction = Input::TheInput().getCorrection();
+	int eqType = Input::TheInput().getEquationType();
+	_solver = SolverFactory::TheSolverFactory().createSolver(modelType, gfInside, gfOutside, correction, eqType);
+	_solver->buildSystemMatrix(*_cavity);
+/*	if (modelType == "IEFPCM") {
 		_IEFSolver = new IEFSolver(gfInside, gfOutside);
 		std::cout << "solver done" << std::endl;
 		_IEFSolver->buildSystemMatrix(*_cavity);
@@ -398,7 +400,7 @@ void initSolver()
         	_CPCMSolver->setCorrection(correction);
 		_CPCMSolver->buildSystemMatrix(*_cavity);
 		_solver = _CPCMSolver;
-        } else if (modelType == "Wavelet") {
+        } else*/ if (modelType == "Wavelet") {
 		_waveletCavity = initWaveletCavity();
 		_PWCSolver = new PWCSolver(gfInside, gfOutside);
 		_PWCSolver->buildSystemMatrix(*_waveletCavity);
@@ -413,7 +415,6 @@ void initSolver()
 		_cavity = _waveletCavity;
 		_solver = _PWLSolver;
 	} 
-	//_solver->setSolverType(modelType);
 }
 
 void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) {

@@ -24,49 +24,41 @@ class PCMSolver
 {
 	public:
 		PCMSolver() {}
-		PCMSolver(GreensFunction &gfi, GreensFunction &gfo, int equation = SecondKind, int solver = IEFPCM)
-			: greenInside(&gfi), greenOutside(&gfo), solverType(solver), integralEquation(equation), allocated(false) {}
-	        PCMSolver(GreensFunction *gfi, GreensFunction *gfo, int equation = SecondKind, int solver = IEFPCM)
-			: greenInside(gfi), greenOutside(gfo), solverType(solver), integralEquation(equation), allocated(false) {}
-//                 PCMSolver(const Section & solver);                                                       
+	        PCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_)//, int solverType_ = IEFPCM)
+			: greenInside(gfInside_), greenOutside(gfOutside_), allocated(true) {} //, solverType(solverType_), allocated(false) {}
                 virtual ~PCMSolver()                                                                      
-		{                                                                                         
-		        if (allocated)                                                                    
-		        {                                                                                 
-		       	 delete greenInside;                                                       
-		       	 delete greenOutside;                                                      
+		{
+			if (allocated)                                                                    
+		        {
+				delete greenInside;                                                       
+		       	 	delete greenOutside;                                                      
 		        }                                                                                 
 		}                                                                                         
                                                                                                           
-                GreensFunction & getGreenInside() { return *greenInside; }			
-                GreensFunction & getGreenOutside() { return *greenOutside; }
-                GreensFunction * getGreenInsideP() { return greenInside; }                              
-                GreensFunction * getGreenOutsideP() { return greenOutside; }                                
+                GreensFunction * getGreenInside() { return greenInside; }                              
+                GreensFunction * getGreenOutside() { return greenOutside; }                                
                                                                                                           
                 virtual void buildSystemMatrix(Cavity & cavity) = 0;                                      
                 // ask jonas virtual VectorXd compCharge(const VectorXd & potential);                     
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) = 0; 
-                virtual void setSolverType(const std::string & type);                                     
+               /* virtual void setSolverType(const std::string & type);                                     
                 virtual void setSolverType(int type);                                                     
                 virtual int getSolverType() { return solverType; }                                        
                 virtual void setEquationType(const std::string & type);                                   
                 virtual void setEquationType(int type);                                                   
-                virtual int getEquationType() { return integralEquation; }                                
+                virtual int getEquationType() { return integralEquation; } */
                 friend std::ostream & operator<<(std::ostream & os, PCMSolver & obj)                      
 		{                                                                                         
                     return obj.printObject(os);                                                           
                 }                                                                                         
-                bool isPWL(){return (solverType == Linear);}                                              
-	
+                //bool isPWL(){return (solverType == Linear);}                                              
 	protected:
-                GreensFunction *greenInside;
-                GreensFunction *greenOutside;
-                int solverType;
-                int integralEquation;
+                GreensFunction * greenInside;
+                GreensFunction * greenOutside;
+                //int solverType;
 		bool allocated;
-                virtual std::ostream & printObject(std::ostream & os);
-                enum EquationType {FirstKind, SecondKind, Full};                                          
-                enum SolverType {IEFPCM, CPCM, Wavelet, Linear};                                          
+                virtual std::ostream & printObject(std::ostream & os) {}
+                //enum SolverType {IEFPCM, CPCM, Wavelet, Linear};                                          
 };
 
 #endif // PCMSOLVER_H

@@ -19,7 +19,7 @@
 class IonicLiquid : public GreensFunction
 {
 	public:
-		IonicLiquid(const std::string & how_, double epsilon_, double kappa_) : GreensFunction(how_), epsilon(epsilon_), kappa(kappa_) {}
+		IonicLiquid(int how_, double epsilon_, double kappa_) : GreensFunction(how_), epsilon(epsilon_), kappa(kappa_) {}
 		virtual ~IonicLiquid() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const; 
@@ -41,7 +41,7 @@ class IonicLiquid : public GreensFunction
 
 namespace
 {
-	GreensFunction * createIonicLiquid(const std::string & how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	GreensFunction * createIonicLiquid(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
 	{
 		return new IonicLiquid(how_, epsilon_, kappa_);
 	}

@@ -16,8 +16,8 @@
 class GreensFunction
 {
 	public:
-		GreensFunction(const std::string & how_) : how(how_), uniform(false) {}
-		GreensFunction(const std::string & how_, bool uniform_) : how(how_), uniform(uniform_) {}
+		GreensFunction(int how_) : how(how_), uniform(false) {}
+		GreensFunction(int how_, bool uniform_) : how(how_), uniform(uniform_) {}
 		virtual ~GreensFunction() {}
 		Eigen::Array4d evaluate(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const; 
 		/*! \brief Compute the off-diagonal elements of the S and D matrices.
@@ -39,7 +39,7 @@ class GreensFunction
 		bool isUniform() const { return uniform; }
 		virtual double getDielectricConstant() const = 0; 
 	protected:
-		std::string how;
+		int how;
 		bool uniform;
   	private:		
 	        /*! \brief Numerical evaluation strategy.

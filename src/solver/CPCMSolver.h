@@ -32,8 +32,6 @@ class CPCMSolver : public PCMSolver
 //    		static const double factor = 1.0694;
     		static const double factor = 1.07;
 	public:
-		CPCMSolver(GreensFunction &gfi, GreensFunction &gfo, double correction_ = 0.0) 
-			: PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}
                 CPCMSolver(GreensFunction *gfi, GreensFunction *gfo, double correction_ = 0.0) 
 			: PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}                
                 //CPCMSolver(const Section & solver);

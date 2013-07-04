@@ -29,11 +29,8 @@ class WEMSolver : public PCMSolver
 	private:
 		void initWEMMembers();
 	public:
-		WEMSolver(GreensFunction &gfi, GreensFunction &gfo) : PCMSolver(gfi, gfo)
-		{
-			initWEMMembers();
-		}
-                WEMSolver(GreensFunction *gfi, GreensFunction *gfo) : PCMSolver(gfi, gfo)
+                WEMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, int integralEquation_ = SecondKind ) 
+			: PCMSolver(gfInside_, gfOutside_), integralEquation(integralEquation_)
 		{
 			initWEMMembers();
 		}
@@ -68,5 +65,7 @@ class WEMSolver : public PCMSolver
                 int nQuadPoints; // nPoints_;    // Number of quadrature points
                 double apriori1_, aposteriori1_;    // System matrix sparsities
                 double apriori2_, aposteriori2_;    // System matrix sparsities
+                int integralEquation;
+                enum EquationType {FirstKind, SecondKind, Full};                                          
 };
 #endif

@@ -12,7 +12,7 @@ bool GreensFunctionFactory::unRegisterGreensFunction(const std::string & greenID
 	return callbacks.erase(greenID) == 1;
 }
 
-GreensFunction * GreensFunctionFactory::createGreensFunction(const std::string & greenID, const std::string & how_, double epsilon_, double kappa_) 
+GreensFunction * GreensFunctionFactory::createGreensFunction(const std::string & greenID, int how_, double epsilon_, double kappa_) 
 {
 	CallbackMap::const_iterator i = callbacks.find(greenID);
 	if (i == callbacks.end()) 

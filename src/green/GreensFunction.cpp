@@ -13,16 +13,9 @@ Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::
         	AutomaticGradient,
         	AutomaticHessian
         };
-	std::map<std::string, int> StringToInt;
-	StringToInt.insert(std::map<std::string, int>::value_type("Numerical", 0));
-	StringToInt.insert(std::map<std::string, int>::value_type("Analytic", 1));
-	StringToInt.insert(std::map<std::string, int>::value_type("Derivative", 2));
-	StringToInt.insert(std::map<std::string, int>::value_type("Gradient", 3));
-	StringToInt.insert(std::map<std::string, int>::value_type("Hessian", 4));
-
 	Eigen::Array4d result = Eigen::Array4d::Zero();
 
-	switch(StringToInt[how])                                                               			
+	switch(how)                                                               			
 	{                                                                          			
 		case NumericalDirectional:                                         			
 			result = numericalDirectional(sourceNormal_, source_, probeNormal_, probe_);

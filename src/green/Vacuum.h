@@ -19,7 +19,7 @@
 class Vacuum : public GreensFunction
 {
 	public:
-		Vacuum(const std::string & how_) : GreensFunction(how_, true) {} 
+		Vacuum(int how_) : GreensFunction(how_, true) {} 
 		virtual ~Vacuum() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
@@ -39,7 +39,7 @@ class Vacuum : public GreensFunction
 
 namespace
 {
-	GreensFunction * createVacuum(const std::string & how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	GreensFunction * createVacuum(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
 	{
 		return new Vacuum(how_);
 	}

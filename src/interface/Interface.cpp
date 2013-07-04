@@ -13,7 +13,6 @@
 #include <Eigen/Dense>
 
 #include "Getkw.h"
-//#include "taylor.hpp"
 #include "SurfaceFunction.h"
 #include "Cavity.h"
 #include "GePolCavity.h"
@@ -69,7 +68,9 @@ extern "C" void init_pcm_() {
 	setupInput();
 //        std::string modelType = Input::TheInput().getSolverType();
         initCavity();
+	std::cout << "Cavity done" << std::endl;
 	initSolver();
+	std::cout << "Solver done" << std::endl;
 	/*
 	if (modelType == "IEFPCM") {
 //		_gePolCavity = initGePolCavity();
@@ -372,7 +373,7 @@ void initSolver()
 	// INSIDE
 	double epsilon = Input::TheInput().getEpsilonInside();
 	std::string greenType = Input::TheInput().getGreenInsideType();
-	std::string greenDer = Input::TheInput().getDerivativeInsideType();
+	int greenDer = Input::TheInput().getDerivativeInsideType();
 
 	GreensFunction * gfInside = factory.createGreensFunction(greenType, greenDer);
 	
@@ -382,12 +383,14 @@ void initSolver()
 	greenDer = Input::TheInput().getDerivativeOutsideType();
 	
 	GreensFunction * gfOutside = factory.createGreensFunction(greenType, greenDer, epsilon);
-	
+	std::cout << "Green's functions done" << std::endl;	
 	// And all this to finally create the solver! 
 	std::string modelType = Input::TheInput().getSolverType();
 	if (modelType == "IEFPCM") {
 		_IEFSolver = new IEFSolver(gfInside, gfOutside);
+		std::cout << "solver done" << std::endl;
 		_IEFSolver->buildSystemMatrix(*_cavity);
+		std::cout << "system matrix done" << std::endl;
 		_solver = _IEFSolver;
 	} else if (modelType == "CPCM") {
 		_IEFSolver = new IEFSolver(gfInside, gfOutside);
@@ -410,7 +413,7 @@ void initSolver()
 		_cavity = _waveletCavity;
 		_solver = _PWLSolver;
 	} 
-	_solver->setSolverType(modelType);
+	//_solver->setSolverType(modelType);
 }
 
 void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) {

@@ -32,13 +32,9 @@ class IEFSolver : public PCMSolver
 		Eigen::MatrixXd PCMMatrix;
     		virtual std::ostream & printObject(std::ostream & os);
 	public:
-		IEFSolver(GreensFunction &gfi, GreensFunction &gfo) : PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {} 
     		IEFSolver(GreensFunction *gfi, GreensFunction *gfo) : PCMSolver(gfi, gfo), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
-//                IEFSolver(const Section & solver);                                      
                 virtual ~IEFSolver() {}
-
-                const Eigen::MatrixXd & getPCMMatrix() const {return PCMMatrix;};
-                                                                                        
+                const Eigen::MatrixXd & getPCMMatrix() const { return PCMMatrix; }
                 virtual void buildSystemMatrix(Cavity & cavity);
                 //virtual VectorXd compCharge(const VectorXd & potential);
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);

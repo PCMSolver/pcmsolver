@@ -12,7 +12,7 @@ bool SolverFactory::unRegisterSolver(std::string solverID)
 	return callbacks.erase(solverID) == 1;
 }
 
-Solver * SolverFactory::createSolver(std::string solverID)
+Solver * SolverFactory::createSolver(std::string solverID, GreensFunction * gfInside_, GreensFunction * gfOutside_)
 {
 	CallbackMap::const_iterator i = callbacks.find(solverID);
 	if (i == callbacks.end()) 
@@ -21,5 +21,5 @@ Solver * SolverFactory::createSolver(std::string solverID)
                 throw std::runtime_error("Unknown solver ID.");
 	}
 	// Invoke the creation function
-	return (i->second)();
+	return (i->second)(GreensFunction * gfInside_, GreensFunction * gfOutside_);
 }

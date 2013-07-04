@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 
 #include "PCMSolver.h"
-
+/*
 void PCMSolver::setSolverType(const std::string & type) {
 	if (type == "IEFPCM") {
 		setSolverType(IEFPCM);
@@ -85,5 +85,5 @@ std::ostream & PCMSolver::printObject(std::ostream & os) {
 	os << "========== Solver section" << std::endl;
 	os << "Solver Type: " << type << std::endl;
 	return os;
-}
+}*/
 

@@ -55,7 +55,7 @@ class SolverFactory {
 		/*! 
 		 * Calls the appropriate creation function, based on the passed cavityID
 		 */
-		PCMSolver * createSolver(std::string solverID);
+		PCMSolver * createSolver(std::string solverID, GreensFunction * gfInside_, GreensFunction * gfOutside_);
 		/*!
 		 * Unique point of access to the unique instance of the SolverFactory
 		 */

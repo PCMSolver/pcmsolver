@@ -19,7 +19,7 @@
 class UniformDielectric : public GreensFunction
 {
 	public:
-		UniformDielectric(const std::string & how_, double epsilon_) : GreensFunction(how_, true), epsilon(epsilon_) {}
+		UniformDielectric(int how_, double epsilon_) : GreensFunction(how_, true), epsilon(epsilon_) {}
 		virtual ~UniformDielectric() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
@@ -40,7 +40,7 @@ class UniformDielectric : public GreensFunction
 
 namespace
 {
-	GreensFunction * createUniformDielectric(const std::string & how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	GreensFunction * createUniformDielectric(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
 	{
 		return new UniformDielectric(how_, epsilon_);
 	}

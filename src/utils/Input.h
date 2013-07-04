@@ -1,6 +1,9 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#include <vector>
+#include <string>
+
 #include "Getkw.h"
 #include "Sphere.h"
 #include "Solvent.h"
@@ -44,13 +47,13 @@ class Input final
 		std::vector<Sphere> spheres;
 		Solvent solvent;
 		std::string solverType;
-		std::string equationType;
+		int equationType;
 		double correction;
 		double probeRadius;
 		std::string greenInsideType;
 		std::string greenOutsideType;
-		std::string derivativeInsideType;
-		std::string derivativeOutsideType;
+		int derivativeInsideType;
+		int derivativeOutsideType;
 		double epsilonInside;
 		double epsilonOutside;
 		double epsilonReal;
@@ -80,13 +83,13 @@ class Input final
 		// Medium section input
 		Solvent getSolvent(){ return solvent; }
 		std::string getSolverType(){ return solverType; }
-		std::string getEquationType(){ return equationType; }
+		int getEquationType(){ return equationType; }
 		double getCorrection(){ return correction; }
 		double getProbeRadius(){ return probeRadius; }
 		std::string getGreenInsideType(){ return greenInsideType; }
 		std::string getGreenOutsideType(){ return greenOutsideType; }
-		std::string getDerivativeInsideType(){ return derivativeInsideType; }
-		std::string getDerivativeOutsideType(){ return derivativeOutsideType; }
+		int getDerivativeInsideType(){ return derivativeInsideType; }
+		int getDerivativeOutsideType(){ return derivativeOutsideType; }
 		double getEpsilonInside(){ return epsilonInside; } 
 		double getEpsilonOutside(){ return epsilonOutside; }
 		double getEpsilonReal(){ return epsilonReal; }

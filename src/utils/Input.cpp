@@ -1,3 +1,5 @@
+#include <map>
+
 #include "Input.h"
 
 Input::Input()
@@ -42,6 +44,15 @@ Input::Input()
 	const Section & medium = input.getSect("Medium");
 	// Get the name of the solvent
 	std::string _name = medium.getStr("Solvent");
+	// A useful map to convert the Der string to an integer
+	// which will be passed to the Green's function CTOR.
+	std::map<std::string, int> mapStringToIntDerType;
+	mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Numerical", 0));
+	mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Analytic", 1));
+	mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Derivative", 2));
+	mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Gradient", 3));
+	mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Hessian", 4));
+
 	if (_name == "Explicit") 
 	{
 		// Get the probe radius
@@ -50,13 +61,13 @@ Input::Input()
 		const Section & _inside = medium.getSect("Green<inside>");
 		// ...and initialize the data members
 		greenInsideType = _inside.getStr("Type");
-		derivativeInsideType = _inside.getStr("Der");
+		derivativeInsideType = mapStringToIntDerType.find(_inside.getStr("Der"))->second;
 		epsilonInside = _inside.getDbl("Eps");
 		// Get the contents of the Green<outside> section...
 		const Section & _outside = medium.getSect("Green<outside>");
 		// ...and initialize the data members
 		greenOutsideType = _outside.getStr("Type");
-		derivativeOutsideType = _outside.getStr("Der");
+		derivativeOutsideType = mapStringToIntDerType.find(_outside.getStr("Der"))->second;
 		epsilonOutside = _outside.getDbl("Eps");
 		// This will be needed for the metal sphere
 		epsilonReal = medium.getDbl("EpsRe");
@@ -73,14 +84,21 @@ Input::Input()
 		// We have to initialize the Green's functions data here, Solvent class
 		// is an helper class and should not be used in the core classes.
 		greenInsideType = "Vacuum";
-		derivativeInsideType = "Derivative";
+		derivativeInsideType = mapStringToIntDerType.find("Derivative")->second;
 		epsilonInside = 1.0;
 	        greenOutsideType = "UniformDielectric";
-		derivativeOutsideType = "Derivative";	
+		derivativeOutsideType = mapStringToIntDerType.find("Derivative")->second;	
 		epsilonOutside = solvent.getEpsStatic();
 	}
+	// A useful map to convert the EquationType string to an integer
+	// which will be passed to the Solver CTOR.
+	std::map<std::string, int> mapStringToIntEquationType;
+	mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FirstKind", 0));
+	mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("SecondKind", 1));
+	mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("Full", 2));
+
 	solverType = medium.getStr("SolverType");
-	equationType = medium.getStr("EquationType");
+	equationType = mapStringToIntEquationType.find(medium.getStr("EquationType"))->second;
 	correction = medium.getDbl("Correction");
 }
 

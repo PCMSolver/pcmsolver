@@ -28,18 +28,16 @@ extern "C"{
 
 class PWCSolver : public WEMSolver 
 {
+	private:
+		virtual void initPointers();
 	public:
-		PWCSolver(GreensFunction & gfi, GreensFunction & gfo) : WEMSolver(gfi, gfo)
+                PWCSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) : WEMSolver(gfInside_, gfOutside_, Full)
 		{
-			initPointers();
-			setSolverType("Wavelet");
-			setEquationType("Full");
+	                initPointers();
 		}
-                PWCSolver(GreensFunction * gfi, GreensFunction * gfo) : WEMSolver(gfi, gfo)
+                PWCSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, int integralEquation_) : WEMSolver(gfInside_, gfOutside_, integralEquation_)
 		{
-			initPointers();
-			setSolverType("Wavelet");
-			setEquationType("Full");
+	                initPointers();
 		}
 		//PWCSolver(const Section & solver);
                 virtual ~PWCSolver();
@@ -52,7 +50,6 @@ class PWCSolver : public WEMSolver
                 virtual void solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
                 virtual void solveSecondKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
                 virtual void solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-                virtual void initPointers();
                 element *elementTree; //*E_; Hierarchical element list
                 wavelet *waveletList; //*W_; List of wavelets
 };

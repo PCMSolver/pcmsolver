@@ -1,20 +1,19 @@
-#ifndef CAVITYFACTORY_H
-#define CAVITYFACTORY_H
+#ifndef CAVITYFACTORY_HPP
+#define CAVITYFACTORY_HPP
 
 #include <iostream>
 #include <string>
 #include <map>
 
-#include "Config.h"
+#include "Config.hpp"
 
 #include <Eigen/Dense>
 
-#include "Cavity.h"
+#include "Cavity.hpp"
 
 /*!
- *	\file CavityFactory.h
+ *	\file CavityFactory.hpp
  *	\class CavityFactory
- *
  *	\brief Implementation of the Factory Method for cavities. 
  *	\author Roberto Di Remigio
  *	\date 2013 
@@ -70,4 +69,4 @@ class CavityFactory
 		CallbackMap callbacks;	
 };
 
-#endif
+#endif // CAVITYFACTORY_HPP

@@ -1,16 +1,16 @@
-#ifndef GEPOLCAVITY_H
-#define GEPOLCAVITY_H
+#ifndef GEPOLCAVITY_HPP
+#define GEPOLCAVITY_HPP
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include <Config.h>
+#include "Config.hpp"
 
-#include "Cavity.h"
-#include "CavityFactory.h"
+#include "Cavity.hpp"
+#include "CavityFactory.hpp"
 
-/*! \file GePolCavity.h
+/*! \file GePolCavity.hpp
  *  \class GePolCavity
  *  \brief A class for GePol cavity. 
  *  \author Krzysztof Mozgawa
@@ -60,4 +60,4 @@ namespace
 	const bool registeredGePol = CavityFactory::TheCavityFactory().registerCavity(GEPOL, createGePolCavity);
 }
 
-#endif
+#endif // GEPOLCAVITY_HPP

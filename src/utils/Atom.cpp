@@ -1,18 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-
-#include <Eigen/Dense>
-
-#include "Atom.h"
-
-/*
-
-  Methods for Atom class
-  written by Roberto Di Remigio, 2011
-
-*/
+#include "Atom.hpp"
 
 std::vector<Atom> & Atom::initBondi() {
 	

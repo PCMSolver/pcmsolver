@@ -1,14 +1,14 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef INPUT_HPP
+#define INPUT_HPP
 
 #include <vector>
 #include <string>
 
 #include "Getkw.h"
-#include "Sphere.h"
-#include "Solvent.h"
+#include "Sphere.hpp"
+#include "Solvent.hpp"
 
-/*! \file Input.h
+/*! \file Input.hpp
  *  \class Input
  *  \brief A wrapper class for the Getkw Library C++ bindings.
  *  \author Roberto Di Remigio
@@ -28,7 +28,7 @@
  *  should be carefully considered.
  */
 
-class Input final 
+class Input 
 {
 	private:
 		Input();
@@ -60,7 +60,6 @@ class Input final
 		double epsilonImaginary;
 		std::vector<double> spherePosition;
 		double sphereRadius;
-		
 	public:
 		static Input& TheInput() 
 		{
@@ -102,4 +101,4 @@ class Input final
                 /// @}
 };
 
-#endif // INPUT_H
+#endif // INPUT_HPP

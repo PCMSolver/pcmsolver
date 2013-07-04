@@ -1,7 +1,6 @@
-#include <fstream>
 #include <stdexcept>
 
-#include "SurfaceFunction.h"
+#include "SurfaceFunction.hpp"
 
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
@@ -95,11 +94,6 @@ bool SurfaceFunction::unRegister()
 {
 	registered = SurfaceFunction::TheMap().erase(name);
 	return registered;
-}
-
-std::ostream & operator<<(std::ostream & os, SurfaceFunction & sf) 
-{
-	return sf.printObject(os);
 }
 
 std::ostream & SurfaceFunction::printObject(std::ostream & os) {

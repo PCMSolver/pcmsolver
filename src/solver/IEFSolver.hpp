@@ -1,22 +1,20 @@
-#ifndef IEFSOLVER_H
-#define IEFSOLVER_H
+#ifndef IEFSOLVER_HPP
+#define IEFSOLVER_HPP
 
-#include <string>
-#include <vector>
 #include <iostream>
-#include <complex>
+#include <string>
 
-#include "Config.h"
+#include "Config.hpp"
 
 class GreensFunction;
 class Cavity;
 class GePolCavity;
 
-#include "PCMSolver.h"
-#include "SolverFactory.h"
+#include "PCMSolver.hpp"
+#include "SolverFactory.hpp"
 
 /*! 
- * \file IEFSolver.h
+ * \file IEFSolver.hpp
  * \class IEFSolver
  * \brief Traditional solver.
  * \author Luca Frediani 
@@ -56,4 +54,4 @@ namespace
 	const bool registeredIEFSolver = SolverFactory::TheSolverFactory().registerSolver(IEFSOLVER, createIEFSolver);
 }
 
-#endif // IEFSOLVER_H
+#endif // IEFSOLVER_HPP

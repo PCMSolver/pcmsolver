@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-#include "CavityFactory.h"
+#include "CavityFactory.hpp"
 
 bool CavityFactory::registerCavity(std::string cavityID, createCavityCallback createFunction)
 {

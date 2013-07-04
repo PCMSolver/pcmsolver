@@ -1,18 +1,17 @@
-#ifndef ATOM_H
-#define ATOM_H
+#ifndef ATOM_HPP
+#define ATOM_HPP
 
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
 
-#include "Config.h"
-
 #include <Eigen/Dense>
 
-#include "PhysicalConstants.h"
+#include "Config.hpp"
 
-/*! \file Atom.h
+#include "PhysicalConstants.hpp"
+
+/*! \file Atom.hpp
  *  \class Atom
  *  \brief Class describing an atom.
  *  \author Roberto Di Remigio
@@ -23,7 +22,7 @@
  *  the sets via the lazy evaluation idiom.
  */
 
-class Atom final 
+class Atom 
 {
 	public:
 		Atom(){}
@@ -58,10 +57,11 @@ class Atom final
 		std::string getAtomColour() { return atomColour; }
                 void setAtomColour(const std::string & _colour){ atomColour = _colour; }
                 
-                /*!                                                                         	
-	         * vector<Atom> Bondi() contains the van der Waals radii taken from
-	         * --- A. Bondi, J. Phys. Chem. 68, 441-451 (1964) ---
-                 * complemented with the ones reported in
+                /*! \brief Returns a reference to a vector<Atom> containing Bondi van der Waals radii.                                                                        	
+	         * 
+		 * The van der Waals radii are taken from:
+	         * --- A. Bondi, J. Phys. Chem. 68, 441-451 (1964) 
+                 * complemented with the ones reported in:
                  * --- M. Mantina, A. C. Chamberlin, R. Valero, C. J. Cramer, D. G. Truhlar,
                  *     J. Phys. Chem. A, 113, 5806-5812 (2009)
                  * We are here using Angstrom as in the papers.
@@ -69,15 +69,15 @@ class Atom final
 	         */
 		static std::vector<Atom> & initBondi();
 	
-                /*!
-	         * vector<Atom> UFF() contains the UFF set of radii obtained from
-	         * --- A. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard, W. M. Skiff ---
+                /*! \brief Returns a reference to a vector<Atom> containing UFF radii.
+	         * 
+		 * The UFF set of radii is taken from:
+	         * --- A. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard, W. M. Skiff,
                  *     J. Am. Chem. Soc., 114, 10024-10035 (1992)
                  * We are here using Angstrom as in the paper. 
                  * The getAtomRadius method will perform the conversion Angstrom to AU.
 	         */
                 static std::vector<Atom> & initUFF();
-	
  	private:
 		std::string atomElement;
 		std::string atomSymbol;
@@ -88,4 +88,4 @@ class Atom final
 		std::string atomColour;
 };
 
-#endif
+#endif // ATOM_HPP

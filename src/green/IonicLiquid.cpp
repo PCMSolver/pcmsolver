@@ -2,7 +2,7 @@
 
 #include "taylor.hpp"
 
-#include "IonicLiquid.h" 
+#include "IonicLiquid.hpp" 
 
 Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 						 Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const

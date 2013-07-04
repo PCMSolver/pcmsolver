@@ -4,7 +4,7 @@
 
 #include <Eigen/Dense>
 
-#include "Cavity.h"
+#include "Cavity.hpp"
 
 /*
 

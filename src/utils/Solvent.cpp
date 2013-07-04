@@ -1,18 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-
-#include <Eigen/Dense>
-
-#include "Solvent.h"
-
-/*
-
-  Methods for Solvent class
-  written by Roberto Di Remigio, 2011
-
-*/
+#include "Solvent.hpp"
 
 Solvent::SolventMap & Solvent::initSolventMap() {
  	
@@ -48,5 +34,3 @@ std::ostream & Solvent::printObject(std::ostream & os) {
 	os << "Solvent radius:         " << probeRadius;
 	return os;
 }
-
-

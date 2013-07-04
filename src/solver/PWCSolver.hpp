@@ -1,12 +1,12 @@
-#ifndef PWCSOLVER_H
-#define PWCSOLVER_H
+#ifndef PWCSOLVER_HPP
+#define PWCSOLVER_HPP
 
 #include <iostream>
 #include <string>
 
 #include <Eigen/Dense>
 
-#include "Config.h"
+#include "Config.hpp"
 
 class GreensFunction;
 
@@ -17,10 +17,10 @@ extern "C"{
 #include "basis.h"
 }
 
-#include "WEMSolver.h"
-#include "SolverFactory.h"
+#include "WEMSolver.hpp"
+#include "SolverFactory.hpp"
 
-/*! \file PWCSolver.h
+/*! \file PWCSolver.hpp
  *  \class PWCSOlver
  *  \brief Wavelet solver, piecewise constant.
  *  \author Luca Frediani
@@ -65,4 +65,4 @@ namespace
 	const bool registeredPWCSolver = SolverFactory::TheSolverFactory().registerSolver(PWCSOLVER, createPWCSolver);
 }
 
-#endif // PWCSOLVER_H
+#endif // PWCSOLVER_HPP

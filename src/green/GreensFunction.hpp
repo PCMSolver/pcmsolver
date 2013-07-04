@@ -1,12 +1,14 @@
-#ifndef GREENSFUNCTION_H
-#define GREENSFUNCTION_H
+#ifndef GREENSFUNCTION_HPP
+#define GREENSFUNCTION_HPP
 
 #include <iostream>
 #include <string>
 
 #include <Eigen/Dense>
 
-/*! \file GreensFunction.h
+#include "Config.hpp"
+
+/*! \file GreensFunction.hpp
  *  \class GreensFunction
  *  \brief An Abstract Base Class for Green's functions
  *  \author Luca Frediani, Roberto Di Remigio
@@ -84,4 +86,4 @@ class GreensFunction
 							Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const = 0;
 };
 
-#endif // GREENSFUNCTION_H
+#endif // GREENSFUNCTION_HPP

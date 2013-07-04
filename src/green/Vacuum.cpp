@@ -2,7 +2,7 @@
 
 #include "taylor.hpp"
 
-#include "Vacuum.h" 
+#include "Vacuum.hpp" 
  		
 void Vacuum::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
 {

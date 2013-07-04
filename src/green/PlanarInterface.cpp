@@ -5,8 +5,7 @@
 
 using namespace std;
 
-#include "GreensFunction.h"
-#include "PlanarInterface.h"
+#include "PlanarInterface.hpp"
 
 PlanarInterface::PlanarInterface(double eps1, double eps2, double pos, double width)
 {

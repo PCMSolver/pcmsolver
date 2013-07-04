@@ -1,8 +1,3 @@
-
-/*! \file PWLSolver.cpp 
-\brief PWL solver
-*/
-
 #include <string>
 #include <vector>
 #include <iostream>
@@ -37,15 +32,13 @@ extern "C"{
 #include "energy_pwl.h"
 }
 
-#include "PhysicalConstants.h"
+#include "PhysicalConstants.hpp"
 //#include "Getkw.h"
 //#include "taylor.hpp"
-#include "GreensFunction.h"
-#include "Cavity.h"
-#include "WaveletCavity.h"
-//#include "PCMSolver.h"
-//#include "WEMSolver.h"
-#include "PWLSolver.h"
+#include "GreensFunction.hpp"
+#include "Cavity.hpp"
+#include "WaveletCavity.hpp"
+#include "PWLSolver.hpp"
 
 static GreensFunction * gf;
 

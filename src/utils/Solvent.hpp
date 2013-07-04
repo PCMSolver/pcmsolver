@@ -1,15 +1,13 @@
-#ifndef SOLVENT_H
-#define SOLVENT_H
+#ifndef SOLVENT_HPP
+#define SOLVENT_HPP
 
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <vector>
 #include <map>
 
-#include <Config.h>
+#include <Config.hpp>
 
-/*! \file Solvent.h
+/*! \file Solvent.hpp
  *  \class Solvent
  *  \brief Class describing a solvent.
  *  \author Roberto Di Remigio
@@ -20,11 +18,10 @@
  * terms calculations. 
  */
 
-class Solvent final 
+class Solvent 
 {
 	public:
-		/*!
-		 * typedef for the map between solvent name and Solvent object.
+		/*! \brief typedef for the map between solvent name and Solvent object.
 		 */
 		typedef std::map< std::string, Solvent > SolventMap;
 
@@ -33,23 +30,22 @@ class Solvent final
 			: name(_name), epsStatic(_epsStatic), epsOptical(_epsOptical), probeRadius(_radius) {}
                 ~Solvent(){}
 
-                const std::string getName(){ return name; }
-                double getEpsStatic(){ return epsStatic; }
-                double getEpsOptical(){ return epsOptical; }
+                std::string getName() const { return name; }
+                double getEpsStatic() const { return epsStatic; }
+                double getEpsOptical() const { return epsOptical; }
                 double getRadius() const { return probeRadius; }
-                void setRadius(double _radius){ probeRadius = _radius; }
+                void setRadius(double _radius) { probeRadius = _radius; }
 
-		/*!
-		 * This map contains solvent data taken from the DALTON2011 internal 
-		 * implementation of the Polarizable Continuum Model.
+		/*! \brief Returns the map between solvent names and Solvent objects.
+		 *
+		 *  This map contains solvent data taken from the DALTON2011 internal 
+		 *  implementation of the Polarizable Continuum Model.
 		 */
                 static SolventMap & initSolventMap();
-                
 		friend std::ostream & operator<<(std::ostream & os, Solvent & obj) 
 		{
                     return obj.printObject(os);
                 }
-
 	private:
 		std::string name;        
                 double epsStatic;
@@ -58,4 +54,4 @@ class Solvent final
 		std::ostream & printObject(std::ostream & os);
 };
 
-#endif
+#endif // SOLVENT_HPP

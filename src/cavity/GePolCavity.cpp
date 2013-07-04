@@ -14,7 +14,7 @@
 using std::cout;
 using std::endl;
 
-#include "GePolCavity.h"
+#include "GePolCavity.hpp"
 
 void GePolCavity::writeOutput(std::string &filename)
 {

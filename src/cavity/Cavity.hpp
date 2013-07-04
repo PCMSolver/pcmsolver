@@ -1,18 +1,18 @@
-#ifndef CAVITY_H
-#define CAVITY_H
+#ifndef CAVITY_HPP
+#define CAVITY_HPP
 
 #include <iostream>
 #include <string>
 #include <map>
 
-#include "Config.h"
+#include "Config.hpp"
 
 #include <Eigen/Dense>
 
-#include "Sphere.h"
+#include "Sphere.hpp"
 
 /*!
- *	\file Cavity.h
+ *	\file Cavity.hpp
  *	\class Cavity
  *	\brief Abstract Base Class for cavities. 
  *	\author Krzysztof Mozgawa
@@ -95,5 +95,4 @@ class Cavity
 		std::vector<Sphere> spheres;
 };
 
-
-#endif
+#endif // CAVITY_HPP

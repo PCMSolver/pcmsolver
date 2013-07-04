@@ -1,16 +1,16 @@
-#ifndef SURFACEFUNCTION_H
-#define SURFACEFUNCTION_H
+#ifndef SURFACEFUNCTION_HPP
+#define SURFACEFUNCTION_HPP
 
 #include <iostream>
 #include <string>
 #include <map>
 
-#include "Config.h"
-
 #include <Eigen/Dense>
 
+#include "Config.hpp"
+
 /*!
- * \file SurfaceFunction.h
+ * \file SurfaceFunction.hpp
  * \class SurfaceFunction
  * \brief A basic surface function class
  * \author Luca Frediani, Roberto Di Remigio
@@ -26,7 +26,7 @@
  */ 
 
 
-class SurfaceFunction final
+class SurfaceFunction
 {
  public:
 	 /*!
@@ -105,7 +105,10 @@ class SurfaceFunction final
          bool Register();
          bool unRegister();
                                                                                                                          
-         friend std::ostream & operator<<(std::ostream & o, SurfaceFunction & s);
+         friend std::ostream & operator<<(std::ostream & os, SurfaceFunction & sf)
+	 {
+		return sf.printObject(os);
+	 }
 
  private:
          std::ostream & printObject(std::ostream & os); 
@@ -152,4 +155,4 @@ inline SurfaceFunction operator*(double scaling, SurfaceFunction & object)
 	return object;
 }
 
-#endif
+#endif // SURFACEFUNCTION_HPP

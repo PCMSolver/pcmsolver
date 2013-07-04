@@ -1,24 +1,6 @@
-#include <iostream>
-#include <fstream>
 #include <stdexcept>
-#include <string>
-#include <vector>
 
-#include <Eigen/Dense>
-
-#include "Sphere.h"
-
-/*
-
-  Methods for Sphere class
-  written by Roberto Di Remigio, 2011
-
-*/
-
-std::ostream & operator<<(std::ostream & os, Sphere & sph) 
-{
-	return sph.printObject(os);
-}
+#include "Sphere.hpp"
 
 std::ostream & Sphere::printObject(std::ostream & os) 
 {

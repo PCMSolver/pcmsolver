@@ -1,14 +1,13 @@
 #include <string>
-#include <vector>
-#include <iostream>
 #include <fstream>
 #include <stdexcept>
+
 #include <Eigen/Dense>
 
-#include "GreensFunction.h"
-#include "Cavity.h"
-#include "GePolCavity.h"
-#include "CPCMSolver.h"
+#include "GreensFunction.hpp"
+#include "Cavity.hpp"
+#include "GePolCavity.hpp"
+#include "CPCMSolver.hpp"
 
 void CPCMSolver::buildSystemMatrix(Cavity & cavity) 
 {

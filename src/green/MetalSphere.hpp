@@ -1,29 +1,40 @@
-#ifndef VACUUM_H
-#define VACUUM_H
+#ifndef METALSPHERE_HPP
+#define METALSPHERE_HPP
 
-#include <iostream>
-#include <string>
+#include <complex>
 
-#include <Eigen/Dense>
+#include "Config.hpp"
 
-#include "GreensFunction.h"
-#include "GreensFunctionFactory.h"
+#include "GreensFunction.hpp"
 
-/*! \file Vacuum.h
- *  \class Vacuum
- *  \brief Green's functions for vacuum.
- *  \author Luca Frediani, Roberto Di Remigio
- *  \date 2013
+/*! \file MetalSphere.hpp
+ *  \class MetalSphere
+ *  \brief Class to describe spherical metal nanoparticles.
+ *  \author Luca Frediani
+ *  \date 2011
+ *
+ *  This class is a wrapper around the FORTRAN routines written
+ *  by Stefano Corni et al. to take into account the presence
+ *  of metal nanoparticles.
  */
 
-class Vacuum : public GreensFunction
+
+class MetalSphere : public GreensFunction
 {
+	private:
+		typedef std::complex<double> dcomplex;
 	public:
-		Vacuum(int how_) : GreensFunction(how_, true) {} 
-		virtual ~Vacuum() {}
+		MetalSphere(int how_, double eps_, double epsRe_, double epsIm_, Eigen::Vector3d & pos_, double radius_)
+			: GreensFunction(how_, false), epsSolvent(eps_), epsMetal(dcomplex(epsRe_, epsIm_)), sphPosition(pos_), sphRadius(radius_) 
+                virtual ~MetalSphere() {}                                              
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
-	        virtual double getDielectricConstant() const { return 1.0; }	
+	        virtual double getDielectricConstant() const {}	
+	private:
+                double epsSolvent;
+                dcomplex epsMetal;
+                Eigen::Vector3d sphPosition;
+                double sphRadius;
 	private:
 		virtual	Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				 			    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
@@ -36,15 +47,4 @@ class Vacuum : public GreensFunction
 		virtual	Eigen::Array4d automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				                        Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
 };
-
-namespace
-{
-	GreensFunction * createVacuum(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
-	{
-		return new Vacuum(how_);
-	}
-	const std::string VACUUM("Vacuum");
-	const bool registeredVacuum = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(VACUUM, createVacuum);
-}
-
-#endif // VACUUM_H
+#endif // METALSPHERE_HPP

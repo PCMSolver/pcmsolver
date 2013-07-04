@@ -11,8 +11,8 @@ add_dependencies(green libtaylor)
                                          
 install(TARGETS green ARCHIVE DESTINATION lib)		
 
-install(FILES GreensFunction.h DESTINATION include)         			
-install(FILES GreensFunctionFactory.h DESTINATION include)         			
-install(FILES Vacuum.h DESTINATION include)                 			
-install(FILES UniformDielectric.h DESTINATION include)      			
-install(FILES IonicLiquid.h DESTINATION include)      			
+install(FILES GreensFunction.hpp DESTINATION include)         			
+install(FILES GreensFunctionFactory.hpp DESTINATION include)         			
+install(FILES Vacuum.hpp DESTINATION include)                 			
+install(FILES UniformDielectric.hpp DESTINATION include)      			
+install(FILES IonicLiquid.hpp DESTINATION include)      			

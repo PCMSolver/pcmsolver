@@ -31,9 +31,9 @@ extern "C"{
 #include "constants.h"
 }
 
-#include "PhysicalConstants.h"
+#include "PhysicalConstants.hpp"
 //#include "Getkw.h"
-#include "WaveletCavity.h"
+#include "WaveletCavity.hpp"
 
 /*
 WaveletCavity::WaveletCavity(const Getkw & Input, const string path){

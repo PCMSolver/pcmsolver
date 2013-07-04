@@ -1,11 +1,8 @@
-/*! \file PWCSolver.cpp 
-\brief PWC solver
-*/
-
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
+
 #include <Eigen/Dense>
 
 using namespace std;
@@ -34,15 +31,13 @@ extern "C"{
 #include "energy.h"
 }
 
-#include "PhysicalConstants.h"
+#include "PhysicalConstants.hpp"
 //#include "Getkw.h"
 //#include "taylor.hpp"
-#include "GreensFunction.h"
-#include "Cavity.h"
-#include "WaveletCavity.h"
-//#include "PCMSolver.h"
-//#include "WEMSolver.h"
-#include "PWCSolver.h"
+#include "GreensFunction.hpp"
+#include "Cavity.hpp"
+#include "WaveletCavity.hpp"
+#include "PWCSolver.hpp"
 
 static GreensFunction * gf;
 

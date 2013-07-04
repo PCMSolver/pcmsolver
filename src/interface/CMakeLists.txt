@@ -7,4 +7,4 @@ add_dependencies(interface libgetkw)
 
 install(TARGETS interface ARCHIVE DESTINATION lib)
 
-install(FILES Interface.h DESTINATION include)
+install(FILES Interface.hpp DESTINATION include)

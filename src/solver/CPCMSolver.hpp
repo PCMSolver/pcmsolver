@@ -1,21 +1,21 @@
-#ifndef CPCMSOLVER_H
-#define CPCMSOLVER_H
+#ifndef CPCMSOLVER_HPP
+#define CPCMSOLVER_HPP
 
 #include <iostream>
 #include <string>
 
 #include <Eigen/Dense>
 
-#include "Config.h"
+#include "Config.hpp"
 
 class GreensFunction;
 class Cavity;
 class GePolCavity;
 
-#include "PCMSolver.h"
-#include "SolverFactory.h"
+#include "PCMSolver.hpp"
+#include "SolverFactory.hpp"
 
-/*! \file CPCMSolver.h  
+/*! \file CPCMSolver.hpp  
  *  \class CPCMSolver
  *  \brief Solver for conductor-like approximation: C-PCM (COSMO)
  *  \author Roberto Di Remigio
@@ -56,4 +56,4 @@ namespace
 	const bool registeredCPCMSolver = SolverFactory::TheSolverFactory().registerSolver(CPCMSOLVER, createCPCMSolver);
 }
 
-#endif // CPCMSOLVER_H
+#endif // CPCMSOLVER_HPP

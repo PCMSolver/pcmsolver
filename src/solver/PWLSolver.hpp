@@ -1,12 +1,12 @@
-#ifndef PWLSOLVER_H
-#define PWLSOLVER_H
+#ifndef PWLSOLVER_HPP
+#define PWLSOLVER_HPP
 
 #include <iostream>
 #include <string>
 
 #include <Eigen/Dense>
 
-#include "Config.h"
+#include "Config.hpp"
 
 class GreensFunction;
 
@@ -17,10 +17,10 @@ extern "C"{
 #include "basis_pwl.h"
 }
 
-#include "WEMSolver.h"
-#include "SolverFactory.h"
+#include "WEMSolver.hpp"
+#include "SolverFactory.hpp"
 
-/*! \file PWLSolver.h
+/*! \file PWLSolver.hpp
  *  \class PWLSOlver
  *  \brief Wavelet solver, piecewise linear.
  *  \author Luca Frediani
@@ -64,4 +64,5 @@ namespace
 	const std::string PWLSOLVER("Linear");
 	const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(PWLSOLVER, createPWLSolver);
 }
-#endif // PWLSOLVER_H
+
+#endif // PWLSOLVER_HPP

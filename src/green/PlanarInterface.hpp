@@ -1,7 +1,9 @@
-#ifndef PLANARINTERFACE_H
-#define PLANARINTERFACE_H
+#ifndef PLANARINTERFACE_HPP
+#define PLANARINTERFACE_HPP
 
-#include "Config.h"
+#include "Config.hpp"
+
+#include "GreensFunction.hpp"
 
 class PlanarInterface : public GreensFunction
 {
@@ -18,4 +20,4 @@ class PlanarInterface : public GreensFunction
 		bool computed;
 };
 
-#endif // PLANARINTERFACE_H
+#endif // PLANARINTERFACE_HPP

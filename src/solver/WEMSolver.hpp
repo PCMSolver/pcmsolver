@@ -1,12 +1,10 @@
-#ifndef WEMSOLVER_H
-#define WEMSOLVER_H
+#ifndef WEMSOLVER_HPP
+#define WEMSOLVER_HPP
 
-#include <string>
-#include <vector>
 #include <iostream>
-#include <complex>
+#include <string>
 
-#include "Config.h"
+#include "Config.hpp"
 
 class GreensFunction;
 
@@ -15,9 +13,9 @@ extern "C"{
 #include "sparse2.h"
 }
 
-#include "PCMSolver.h"
+#include "PCMSolver.hpp"
 
-/*! \file WEMSolver.h 
+/*! \file WEMSolver.hpp 
  *  \class WEMSolver
  *  \brief WEMSolver
  *  \author Luca Frediani
@@ -68,4 +66,5 @@ class WEMSolver : public PCMSolver
                 int integralEquation;
                 enum EquationType {FirstKind, SecondKind, Full};                                          
 };
-#endif
+
+#endif // WEMSOLVER_HPP

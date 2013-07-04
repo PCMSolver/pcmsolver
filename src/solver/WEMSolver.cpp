@@ -29,14 +29,13 @@ extern "C"{
 #include "constants.h"
 }
 
-#include "PhysicalConstants.h"
+#include "PhysicalConstants.hpp"
 //#include "Getkw.h"
 //#include "taylor.hpp"
-#include "GreensFunction.h"
-#include "Cavity.h"
-#include "WaveletCavity.h"
-//#include "PCMSolver.h"
-#include "WEMSolver.h"
+#include "GreensFunction.hpp"
+#include "Cavity.hpp"
+#include "WaveletCavity.hpp"
+#include "WEMSolver.hpp"
 
 void WEMSolver::initWEMMembers()
 {

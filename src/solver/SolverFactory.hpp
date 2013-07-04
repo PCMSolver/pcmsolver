@@ -1,5 +1,5 @@
-#ifndef SOLVERFACTORY_H
-#define SOLVERFACTORY_H
+#ifndef SOLVERFACTORY_HPP
+#define SOLVERFACTORY_HPP
 
 #include <iostream>
 #include <string>
@@ -7,16 +7,15 @@
 
 #include <Eigen/Dense>
 
-#include "Config.h"
+#include "Config.hpp"
 
 class GreensFunction;
 
-#include "PCMSolver.h"
+#include "PCMSolver.hpp"
 
 /*!
- *	\file SolverFactory.h
+ *	\file SolverFactory.hpp
  *	\class SolverFactory
- *
  *	\brief Implementation of the Factory Method for solvers. 
  *	\author Roberto Di Remigio
  *	\date 2013 
@@ -70,4 +69,4 @@ class SolverFactory {
 		CallbackMap callbacks;	
 };
 
-#endif
+#endif // SOLVERFACTORY_HPP

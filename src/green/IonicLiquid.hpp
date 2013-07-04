@@ -1,31 +1,34 @@
-#ifndef UNIFORMDIELECTRIC_H
-#define UNIFORMDIELECTRIC_H
+#ifndef IONICLIQUID_HPP
+#define IONICLIQUID_HPP
 
 #include <iostream>
 #include <string>
 
 #include <Eigen/Dense>
 
-#include "GreensFunction.h"
-#include "GreensFunctionFactory.h"
+#include "Config.hpp"
 
-/*! \file UniformDielectric.h
- *  \class UniformDielectric
- *  \brief Green's functions for uniform dielectric.
+#include "GreensFunction.hpp"
+#include "GreensFunctionFactory.hpp"
+
+/*! \file IonicLiquid.hpp
+ *  \class IonicLiquid
+ *  \brief Green's functions for ionic liquid, described by the linearized Poisson-Boltzmann equation.
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2013
  */
 
-class UniformDielectric : public GreensFunction
+class IonicLiquid : public GreensFunction
 {
 	public:
-		UniformDielectric(int how_, double epsilon_) : GreensFunction(how_, true), epsilon(epsilon_) {}
-		virtual ~UniformDielectric() {}
+		IonicLiquid(int how_, double epsilon_, double kappa_) : GreensFunction(how_), epsilon(epsilon_), kappa(kappa_) {}
+		virtual ~IonicLiquid() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
-                                          Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
+                                          Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const; 
 	       	virtual double getDielectricConstant() const { return epsilon; }
 	private:
 		double epsilon;
+		double kappa;
 		virtual	Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				 			    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
 		virtual	Eigen::Array4d analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_,
@@ -40,12 +43,12 @@ class UniformDielectric : public GreensFunction
 
 namespace
 {
-	GreensFunction * createUniformDielectric(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	GreensFunction * createIonicLiquid(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
 	{
-		return new UniformDielectric(how_, epsilon_);
+		return new IonicLiquid(how_, epsilon_, kappa_);
 	}
-	const std::string UNIFORMDIELECTRIC("UniformDielectric");
-	const bool registeredUniformDielectric = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(UNIFORMDIELECTRIC, createUniformDielectric);
+	const std::string IONICLIQUID("IonicLiquid");
+	const bool registeredIonicLiquid = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(IONICLIQUID, createIonicLiquid);
 }
 
-#endif // UNIFORMDIELECTRIC_H
+#endif // IONICLIQUID_HPP

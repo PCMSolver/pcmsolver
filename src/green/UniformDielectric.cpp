@@ -2,7 +2,7 @@
 
 #include "taylor.hpp"
 
-#include "UniformDielectric.h" 
+#include "UniformDielectric.hpp" 
 
 void UniformDielectric::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, 
 		                     Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const

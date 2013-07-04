@@ -4,7 +4,7 @@
 
 #include <Eigen/Dense>
 
-#include "MetalSphere.h"
+#include "MetalSphere.hpp"
 
 extern"C" 
 {

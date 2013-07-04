@@ -1,17 +1,17 @@
-#ifndef WAVELETCAVITY
-#define WAVELETCAVITY
+#ifndef WAVELETCAVITY_HPP
+#define WAVELETCAVITY_HPP
 
 #include <iostream>
 #include <string>
 
-#include "Config.h"
+#include "Config.hpp"
 
 #include <Eigen/Dense>
 
 #include "vector3.h"
 //#include "Getkw.h"
-#include "Cavity.h"
-#include "CavityFactory.h"
+#include "Cavity.hpp"
+#include "CavityFactory.hpp"
 
 class WaveletCavity : public Cavity 
 {
@@ -74,4 +74,4 @@ namespace
 	const bool registeredWavelet = CavityFactory::TheCavityFactory().registerCavity(WAVELET, createWaveletCavity);
 }
 
-#endif
+#endif // WAVELETCAVITY_HPP

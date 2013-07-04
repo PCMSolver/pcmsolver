@@ -1,14 +1,13 @@
 #include <string>
-#include <vector>
-#include <iostream>
 #include <fstream>
 #include <stdexcept>
+
 #include <Eigen/Dense>
 
-#include "GreensFunction.h"
-#include "Cavity.h"
-#include "GePolCavity.h"
-#include "IEFSolver.h"
+#include "GreensFunction.hpp"
+#include "Cavity.hpp"
+#include "GePolCavity.hpp"
+#include "IEFSolver.hpp"
 
 void IEFSolver::buildSystemMatrix(Cavity & cavity) 
 {

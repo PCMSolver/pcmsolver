@@ -1,14 +1,16 @@
-#ifndef GREENSFUNCTIONFACTORY_H
-#define GREENSFUNCTIONFACTORY_H
+#ifndef GREENSFUNCTIONFACTORY_HPP
+#define GREENSFUNCTIONFACTORY_HPP
 
 #include <iostream>
 #include <string>
 #include <map>
 
-#include "GreensFunction.h"
+#include "Config.hpp"
+
+#include "GreensFunction.hpp"
 
 /*!
- *	\file GreensFunctionFactory.h
+ *	\file GreensFunctionFactory.hpp
  *	\class GreensFunctionFactory
  *	\brief Implementation of the Factory Method for Green's functions. 
  *	\author Roberto Di Remigio
@@ -63,4 +65,4 @@ class GreensFunctionFactory
 		CallbackMap callbacks;	
 };
 
-#endif // GREENSFUNCTIONFACTORY_H
+#endif // GREENSFUNCTIONFACTORY_HPP

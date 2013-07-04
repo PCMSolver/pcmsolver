@@ -1,6 +1,6 @@
 #include <map>
 
-#include "Input.h"
+#include "Input.hpp"
 
 Input::Input()
 {

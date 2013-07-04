@@ -1,7 +1,7 @@
 #include <map>
 #include <stdexcept>
 
-#include "GreensFunction.h"
+#include "GreensFunction.hpp"
 
 Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
@@ -33,7 +33,7 @@ Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::
 			result = automaticHessian(sourceNormal_, source_, probeNormal_, probe_);     			
 			break;
 		default:
-			throw std::runtime_error("In GreensFunction.h an unknown Green's function evaluation strategy occurred.");
+			throw std::runtime_error("In GreensFunction an unknown Green's function evaluation strategy occurred.");
 	}                                                                          			
 	return result;                                                             			
 }                  

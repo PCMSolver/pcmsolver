@@ -1,41 +1,33 @@
-#ifndef METALSPHERE_H
-#define METALSPHERE_H
+#ifndef UNIFORMDIELECTRIC_HPP
+#define UNIFORMDIELECTRIC_HPP
 
-#include <complex>
+#include <iostream>
+#include <string>
 
-#include "Config.h"
+#include <Eigen/Dense>
 
-#include "GreensFunction.h"
+#include "Config.hpp"
 
-/*! \file MetalSphere.h
- *  \class MetalSphere
- *  \brief Class to describe spherical metal nanoparticles.
- *  \author Luca Frediani
- *  \date 2011
- *
- *  This class is a wrapper around the FORTRAN routines written
- *  by Stefano Corni et al. to take into account the presence
- *  of metal nanoparticles.
+#include "GreensFunction.hpp"
+#include "GreensFunctionFactory.hpp"
+
+/*! \file UniformDielectric.hpp
+ *  \class UniformDielectric
+ *  \brief Green's functions for uniform dielectric.
+ *  \author Luca Frediani, Roberto Di Remigio
+ *  \date 2013
  */
 
-
-class MetalSphere : public GreensFunction
+class UniformDielectric : public GreensFunction
 {
-	private:
-		typedef std::complex<double> dcomplex;
 	public:
-		MetalSphere(int how_, double eps_, double epsRe_, double epsIm_, Eigen::Vector3d & pos_, double radius_)
-			: GreensFunction(how_, false), epsSolvent(eps_), epsMetal(dcomplex(epsRe_, epsIm_)), sphPosition(pos_), sphRadius(radius_) 
-                virtual ~MetalSphere() {}                                              
+		UniformDielectric(int how_, double epsilon_) : GreensFunction(how_, true), epsilon(epsilon_) {}
+		virtual ~UniformDielectric() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
-	        virtual double getDielectricConstant() const {}	
+	       	virtual double getDielectricConstant() const { return epsilon; }
 	private:
-                double epsSolvent;
-                dcomplex epsMetal;
-                Eigen::Vector3d sphPosition;
-                double sphRadius;
-	private:
+		double epsilon;
 		virtual	Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				 			    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
 		virtual	Eigen::Array4d analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_,
@@ -47,4 +39,15 @@ class MetalSphere : public GreensFunction
 		virtual	Eigen::Array4d automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				                        Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
 };
-#endif // METALSPHERE_H
+
+namespace
+{
+	GreensFunction * createUniformDielectric(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	{
+		return new UniformDielectric(how_, epsilon_);
+	}
+	const std::string UNIFORMDIELECTRIC("UniformDielectric");
+	const bool registeredUniformDielectric = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(UNIFORMDIELECTRIC, createUniformDielectric);
+}
+
+#endif // UNIFORMDIELECTRIC_HPP

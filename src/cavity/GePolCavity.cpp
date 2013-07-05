@@ -1,11 +1,4 @@
-/*
-
-  GePol c++ interface and wrapper methods
-  written by Krzysztof Mozgawa, 2011
-
-*/
 #include <iostream>
-#include <fstream> 
 #include <string>
 #include <vector>
 
@@ -16,26 +9,6 @@ using std::endl;
 
 #include "GePolCavity.hpp"
 
-void GePolCavity::writeOutput(std::string &filename)
-{
-	std::ofstream output;
- 	output.open(filename.c_str(), std::fstream::out);
-
-    	output << nElements << endl;
-    	for(int i=0; i < nElements; i++) 
-	{
-		output << elementCenter(0,i) << " ";
-		output << elementCenter(1,i) << " ";
-		output << elementCenter(2,i) << " ";
-		output << elementArea(i) << " ";
-		output << elementSphereCenter(0,i) << " ";
-		output << elementSphereCenter(1,i) << " ";
-		output << elementSphereCenter(2,i) << " ";
-		output << elementRadius(i) << endl;
-    	}
-    	output.close();
-}
-
 extern "C" 
 {
 	void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
@@ -43,11 +16,13 @@ extern "C"
 			     double *avgArea, double *rsolv, double* work, int* lwork);
 }
 
-void GePolCavity::makeCavity(){
+void GePolCavity::makeCavity()
+{
 	makeCavity(10000, 10000000);
 }
 
-void GePolCavity::makeCavity(int maxts, int lwork) {
+void GePolCavity::makeCavity(int maxts, int lwork) 
+{
        
 	// This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code PEDRA.
 	// Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow
@@ -192,47 +167,40 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 
 }
 
-std::ostream & GePolCavity::printObject(std::ostream & os) {
+std::ostream & GePolCavity::printCavity(std::ostream & os) 
+{
 	/*
 	  We should print the cavity.off file here, just to
 	  get a prettier cavity image.
 	*/
 	os << "========== Cavity section" << endl;
         os << "Cavity type: GePol" << endl;
-	os << "Number of spheres: " << nSpheres << endl;
-        os << "Number of finite elements: " << nElements << endl;
-/* RDR To be revised...
-	for(int i = 0; i < nSpheres + addedSpheres; i++) {
-		if ( i < nSpheres ) {
-			os << endl;
-			os << "Primary Spheres" << endl;
-			os << "Sphere " << i+1 << endl;
-			os << spheres[i] << endl;
-                        os << "Sphere Colour" << endl;
-                        os << spheres[i].getSphereColour() << endl;
-		} else {
-			os << endl;
-			os << "Secondary Spheres" << endl;
-			os << "Sphere " << i+1 << endl;
-			os << spheres[i] << endl;
-		}
-	}
-*/
-	return os;
-}
-
-void GePolCavity::setMaxAddedSpheres(bool add, int maxAdd) {
-	if ( add ) 
+	os << "Average area: " << averageArea << " AU^2" << endl;
+	if (addSpheres)
 	{
-		maxAddedSpheres = maxAdd;
+		os << "Addition of extra spheres enabled" << endl;
+		os << "Probe radius: " << probeRadius << endl;
+		os << "Number of spheres: " << nSpheres << " (primary, " << nSpheres - addedSpheres << "; secondary, " << addedSpheres << ")" << endl;
 	}
 	else
 	{
-		maxAddedSpheres = 0;
+		os << "Number of spheres: " << nSpheres << endl;
 	}
+        os << "Number of finite elements: " << nElements << endl;
+        /*for(int i = 0; i < nElements; i++) 
+	{
+		os << std::endl;
+		os << i+1 << " ";
+		os << elementCenter(0,i) << " ";
+		os << elementCenter(1,i) << " ";
+		os << elementCenter(2,i) << " ";
+		os << elementArea(i) << " ";
+        }*/
+	return os;
 }
 
-void GePolCavity::setProbeRadius( double rsolv ) {
+void GePolCavity::setProbeRadius(double rsolv) 
+{
 	probeRadius = rsolv;
 	addSpheres = true;
 	maxAddedSpheres = 100;

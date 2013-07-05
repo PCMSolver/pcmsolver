@@ -240,25 +240,40 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 	built = true;
 }
 
-ostream & operator<<(ostream &os, const WaveletCavity &cavity) {
-	os << "Molecular cavity" << endl;
-	os << "Probe Radius:   " << cavity.probeRadius << endl;
-	os << "Coarsity:       " << cavity.coarsity << endl;
-	os << "Patch Level:    " << cavity.patchLevel << endl;
-	os << "Nr. of spheres: " << cavity.nSpheres;
-    for(int i = 0; i < cavity.nSpheres; i++) {
+std::ostream & WaveletCavity::printCavity(std::ostream & os) 
+{
+	os << "========== Cavity section" << endl;
+        os << "Cavity type: Wavelet" << endl;
+	os << "Probe Radius:   " << probeRadius << endl;
+	os << "Coarsity:       " << coarsity << endl;
+	os << "Patch Level:    " << patchLevel << endl;
+	os << "Number of spheres: " << nSpheres;
+        os << "Number of finite elements: " << nElements << endl;
+        /*for(int i = 0; i < nElements; i++) 
+	{
+		os << std::endl;
+		os << i+1 << " ";
+		os << elementCenter(0,i) << " ";
+		os << elementCenter(1,i) << " ";
+		os << elementCenter(2,i) << " ";
+		os << elementArea(i) << " ";
+        }
+    	for(int i = 0; i < nSpheres; i++) 
+	{
 		os << endl;
 		os << i+1 << " ";
-		os << cavity.sphereCenter(0,i) << " ";
-		os << cavity.sphereCenter(1,i) << " ";
-		os << cavity.sphereCenter(2,i) << " ";
-		os << cavity.sphereRadius(i) << " ";
-    }
-	if (cavity.uploadedDyadic) {
-		for(int i = 0; i < cavity.nPoints; i++) {
+		os << sphereCenter(0,i) << " ";
+		os << sphereCenter(1,i) << " ";
+		os << sphereCenter(2,i) << " ";
+		os << sphereRadius(i) << " ";
+    	}*/
+	if (uploadedDyadic) 
+	{
+		for(int i = 0; i < nPoints; i++) 
+		{
 			os << endl;
 			os << i+1 << " ";
-			os << cavity.nodeIndex[i].transpose() << " " << cavity.nodePoint[i].transpose() << " ";
+			os << nodeIndex[i].transpose() << " " << nodePoint[i].transpose() << " ";
 		}
 	}
 	return os;

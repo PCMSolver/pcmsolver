@@ -25,28 +25,26 @@ class GePolCavity : public Cavity
 	public:
 		GePolCavity(){}
                 GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, bool _addSpheres = false) :  
-                    Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), addSpheres(_addSpheres)  
+                    Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), addSpheres(_addSpheres), maxAddedSpheres(100) 
                        {
-                    	   setMaxAddedSpheres(addSpheres);
                     	   makeCavity(10000, 10000000);
                        }
                 ~GePolCavity(){}
                 void makeCavity(int maxts, int lwork);
                 void makeCavity();
-                void writeOutput(std::string &filename);
-                void setMaxAddedSpheres(bool add = true, int maxAdd = 100);
                 double getProbeRadius() { return probeRadius; }
                 void setProbeRadius( double probeRadius );
-
- 	protected:
-		virtual std::ostream & printObject(std::ostream & os);
-        
+                friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity)
+		{
+			return cavity.printCavity(os);
+		}
 	private:
                 double averageArea;  
-                bool addSpheres;
                 double probeRadius;
+                bool addSpheres;
                 int maxAddedSpheres;
                 int addedSpheres;
+                virtual std::ostream & printCavity(std::ostream & os);  
 };
 
 namespace

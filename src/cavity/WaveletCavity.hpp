@@ -41,7 +41,10 @@ class WaveletCavity : public Cavity
                 unsigned int getNPoints(){return nPoints;}
                 Eigen::Vector3d getNodePoint(int i){return nodePoint[i];}
                 Eigen::Vector3i getNodeIndex(int i){return nodeIndex[i];}
-                friend std::ostream& operator<<(std::ostream &o, const WaveletCavity &c);
+                friend std::ostream & operator<<(std::ostream & os, WaveletCavity & cavity)
+		{
+			return cavity.printCavity(os);
+		}
                 void compFakePotential();
         private:                                                 
                 void uploadPointsPWC(int quadLevel, vector3 **** T_); 
@@ -61,6 +64,7 @@ class WaveletCavity : public Cavity
                 int patchLevel;
                 double probeRadius;
                 double coarsity;
+                virtual std::ostream & printCavity(std::ostream & os);  
 };
 
 namespace

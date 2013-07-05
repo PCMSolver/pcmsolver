@@ -1,7 +1,7 @@
 #ifndef VACUUM_HPP
 #define VACUUM_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 #include <Eigen/Dense>
@@ -26,6 +26,10 @@ class Vacuum : public GreensFunction
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
 	        virtual double getDielectricConstant() const { return 1.0; }	
+                friend std::ostream & operator<<(std::ostream & os, Vacuum & green)                      
+		{                                                                                         
+                    return green.printGreensFunction(os);                                                           
+                }                                                                                         
 	private:
 		virtual	Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				 			    Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
@@ -37,6 +41,7 @@ class Vacuum : public GreensFunction
 				                         Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
 		virtual	Eigen::Array4d automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				                        Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
+                virtual std::ostream & printGreensFunction(std::ostream & os); 
 };
 
 namespace

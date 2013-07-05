@@ -1,14 +1,15 @@
+#include "PWCSolver.hpp"
+
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 
 #include <Eigen/Dense>
+//#include "Getkw.h"
 
-using namespace std;
-using namespace Eigen;
-
-extern "C"{
+extern "C"
+{
 #include "vector3.h"
 #include "sparse2.h"
 #include "intvector.h"
@@ -31,13 +32,12 @@ extern "C"{
 #include "energy.h"
 }
 
-#include "PhysicalConstants.hpp"
-//#include "Getkw.h"
-//#include "taylor.hpp"
-#include "GreensFunction.hpp"
 #include "Cavity.hpp"
+#include "GreensFunction.hpp"
 #include "WaveletCavity.hpp"
-#include "PWCSolver.hpp"
+
+using namespace std;
+using namespace Eigen;
 
 static GreensFunction * gf;
 
@@ -207,3 +207,8 @@ void PWCSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
 	free(v);
 }
 
+std::ostream & PWCSolver::printSolver(std::ostream & os) 
+{
+	os << "Solver Type: Wavelet, piecewise constant functions";
+	return os;
+}

@@ -7,6 +7,7 @@ set(utils_SOURCES
 )
 
 add_library(utils ${utils_SOURCES})
+
 add_dependencies(utils libgetkw)
 
 install(TARGETS utils ARCHIVE DESTINATION lib)

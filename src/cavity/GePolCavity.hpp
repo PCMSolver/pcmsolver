@@ -1,7 +1,7 @@
 #ifndef GEPOLCAVITY_HPP
 #define GEPOLCAVITY_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 #include <vector>
 

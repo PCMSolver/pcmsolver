@@ -1,8 +1,8 @@
+#include "Vacuum.hpp" 
+
 #include <cmath>
 
 #include "taylor.hpp"
-
-#include "Vacuum.hpp" 
  		
 void Vacuum::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
 {
@@ -182,4 +182,10 @@ Eigen::Array4d Vacuum::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::
 	result(3) = -sourceNormal_.transpose() * hessian * probeNormal_;
 
 	return result;
+}
+                
+std::ostream & Vacuum::printGreensFunction(std::ostream & os)
+{
+	os << "Green's function type: vacuum";
+	return os;
 }

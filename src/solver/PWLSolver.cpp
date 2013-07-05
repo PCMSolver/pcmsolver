@@ -1,13 +1,15 @@
+#include "PWLSolver.hpp"
+
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
+
 #include <Eigen/Dense>
+//#include "Getkw.h"
 
-using namespace std;
-using namespace Eigen;
-
-extern "C"{
+extern "C"
+{
 #include "vector3.h"
 #include "sparse.h"
 #include "sparse2.h"
@@ -32,13 +34,12 @@ extern "C"{
 #include "energy_pwl.h"
 }
 
-#include "PhysicalConstants.hpp"
-//#include "Getkw.h"
-//#include "taylor.hpp"
-#include "GreensFunction.hpp"
 #include "Cavity.hpp"
+#include "GreensFunction.hpp"
 #include "WaveletCavity.hpp"
-#include "PWLSolver.hpp"
+
+using namespace std;
+using namespace Eigen;
 
 static GreensFunction * gf;
 
@@ -222,5 +223,8 @@ void PWLSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
 	free(v);
 }
 
-
-
+std::ostream & PWLSolver::printSolver(std::ostream & os) 
+{
+	os << "Solver Type: Wavelet, piecewise linear functions";
+	return os;
+}

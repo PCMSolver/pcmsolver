@@ -3,40 +3,44 @@
   Interface functions implementation
 
 */
+#include "Interface.hpp"
 
 #include <iostream>
-#include <iomanip>
-#include <fstream> 
 #include <string>
 #include <stdexcept>
+
+#include "Config.hpp"
 
 #include <Eigen/Dense>
 
 #include "Getkw.h"
-#include "SurfaceFunction.hpp"
+
+// Core classes
+//    1. Cavities
 #include "Cavity.hpp"
 #include "GePolCavity.hpp"
 #include "WaveletCavity.hpp"
-#include "CavityFactory.hpp"
+//    2. Green's functions
 #include "GreensFunction.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
-#include "GreensFunctionFactory.hpp"
-#include "PCMSolver.hpp"
+//    3. Solvers
 #include "IEFSolver.hpp"
 #include "CPCMSolver.hpp"
-#include "WEMSolver.hpp"
+#include "PCMSolver.hpp"
 #include "PWCSolver.hpp"
 #include "PWLSolver.hpp"
+#include "WEMSolver.hpp"
+// The factories
+#include "CavityFactory.hpp"
+#include "GreensFunctionFactory.hpp"
 #include "SolverFactory.hpp"
+// Helper classes
 #include "Atom.hpp"
-#include "Sphere.hpp"
-#include "Solvent.hpp"
 #include "Input.hpp"
-#include "Interface.hpp"
-
-using namespace std;
-using namespace Eigen;
+#include "Solvent.hpp"
+#include "Sphere.hpp"
+#include "SurfaceFunction.hpp"
 
 typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
 
@@ -104,8 +108,8 @@ extern "C" void init_pcm_() {
 
 extern "C" void comp_chg_pcm_(char * potName, char * chgName) 
 {
-	string potFuncName(potName);
-	string chgFuncName(chgName);
+	std::string potFuncName(potName);
+	std::string chgFuncName(chgName);
 
 	// Get the SurfaceFunctionMap
 	SurfaceFunctionMap& functions = SurfaceFunction::TheMap();
@@ -124,8 +128,8 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName)
 	// If it already exists there's no problem, we will pass a reference to its values to
 	// _solver->compCharge(*, *) so they will be automagically updated!
 
-	VectorXd & charge = iter_chg->second->getVector();
-	VectorXd & potential = iter_pot->second->getVector();
+	Eigen::VectorXd & charge = iter_chg->second->getVector();
+	Eigen::VectorXd & potential = iter_pot->second->getVector();
 	
 	_solver->compCharge(potential, charge);
 	double totalChg = charge.sum();
@@ -169,14 +173,17 @@ extern "C" void get_epsilon_static_(double * epsilon) {
         exit(-1); 
 }
 
-extern "C" void get_cavity_size_(int * nts) {
+extern "C" void get_cavity_size_(int * nts) 
+{
 	*nts = _cavity->size();
 }
 
-extern "C" void get_tess_centers_(double * centers) {
+extern "C" void get_tess_centers_(double * centers) 
+{
 	int j = 0;
-	for (int i = 0; i < _cavity->size(); i++) {
-		Vector3d tess = _cavity->getElementCenter(i);
+	for (int i = 0; i < _cavity->size(); i++) 
+	{
+		Eigen::Vector3d tess = _cavity->getElementCenter(i);
 		centers[j] = tess(0);
 		centers[j+1] = tess(1);
 		centers[j+2] = tess(2);
@@ -186,7 +193,7 @@ extern "C" void get_tess_centers_(double * centers) {
 }
 
 extern "C" void get_tess_cent_coord_(int * its, double * center) {
-	Vector3d tess = _cavity->getElementCenter(*its-1);
+	Eigen::Vector3d tess = _cavity->getElementCenter(*its-1);
 	std::cout << tess.transpose() << std::endl;
 	center[0] = tess(0);
 	center[1] = tess(1);
@@ -198,7 +205,25 @@ extern "C" void print_pcm_(){
         Getkw Input = Getkw(infile, false, true);
         const Section & Medium = Input.getSect("Medium");
         const string modelType = Medium.getStr("SolverType");
-	if (modelType == "IEFPCM") {
+	std::cout << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << std::endl;
+	std::cout << "========== Cavity " << std::endl;
+	std::cout << *_cavity << std::endl;
+	std::cout << "========== Solver " << std::endl;
+	std::cout << *_solver << std::endl;
+	std::cout << "============ Medium " << std::endl;
+	bool fromSolvent = Input::TheInput().fromSolvent();
+	if (fromSolvent)
+	{
+		std::cout << "Medium initialized from solvent built-in data." << std::endl;
+		Solvent solvent = Input::TheInput().getSolvent();
+		std::cout << solvent << std::endl;
+	}
+	std::cout << ".... Inside " << std::endl;
+	std::cout << *(_solver->getGreenInside()) << std::endl;
+	std::cout << ".... Outside " << std::endl;
+	std::cout << *(_solver->getGreenOutside()) << std::endl;
+	std::cout << std::endl;
+	/*if (modelType == "IEFPCM") {
 		std::cout << *_IEFSolver << std::endl;
 //	        std::cout << *_gePolCavity << std::endl;
 		std::cout << *_cavity << std::endl;
@@ -211,7 +236,7 @@ extern "C" void print_pcm_(){
 	} else if (modelType == "Linear") {
 		std::cout << *_PWLSolver << std::endl;
 	        std::cout << *_waveletCavity << std::endl;
-	}
+	}*/
 }
 
 extern "C" void print_gepol_cavity_(){
@@ -417,25 +442,28 @@ void initSolver()
 	} 
 }
 
-void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) {
+void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) 
+{
 	int nuclei;
 	collect_nctot_(&nuclei);
-	_sphereCenter.resize(NoChange, nuclei);
+	_sphereCenter.resize(Eigen::NoChange, nuclei);
 	_charges.resize(nuclei);
 	double * chg = _charges.data();
 	double * centers = _sphereCenter.data();
 	collect_atoms_(chg, centers);
 } 
 
-std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _centers) {
+std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _centers) 
+{
 	std::vector<Sphere> spheres;
 
 	vector<int> atomsInput = Input::TheInput().getAtoms();
 	vector<double> radiiInput = Input::TheInput().getRadii();
 	
-	for (int i = 0; i < atomsInput.size(); ++i) {
+	for (int i = 0; i < atomsInput.size(); ++i) 
+	{
 		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
-		Vector3d center = _centers.col(index);
+		Eigen::Vector3d center = _centers.col(index);
 		Sphere sph(center, radiiInput[i]);
 		spheres.push_back(sph);
 	}
@@ -446,31 +474,24 @@ std::vector<Sphere> initSpheresImplicit(const Eigen::VectorXd & _charges, const 
 	std::vector<Sphere> spheres;
 	bool scaling = Input::TheInput().getScaling();
 
-	for (int i = 0; i < _charges.size(); ++i) {
+	for (int i = 0; i < _charges.size(); ++i) 
+	{
 		std::vector<Atom> Bondi = Atom::initBondi();
 		int index = _charges(i) - 1;
 		double radius = Bondi[index].getAtomRadius();
-                if (scaling) {
+                if (scaling) 
+		{
 			radius *= Bondi[index].getAtomRadiusScaling();
                 }
-		Vector3d center = _centers.col(i);
+		Eigen::Vector3d center = _centers.col(i);
 		Sphere sph(center, radius);
 		spheres.push_back(sph);
 	}
 	return spheres;
 }
 
-GePolCavity * initGePolCavity() 
+WaveletCavity * initWaveletCavity()
 {
- 	double area = Input::TheInput().getArea();
-	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
-	bool addSpheres = Input::TheInput().getAddSpheres();
-	double probeRadius = Input::TheInput().getProbeRadius();
-        GePolCavity * cav = new GePolCavity(spheres, area, probeRadius, addSpheres);
-	return cav;
-}
-
-WaveletCavity * initWaveletCavity() {
 	int patchLevel = Input::TheInput().getPatchLevel();
 	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
 	double coarsity = Input::TheInput().getCoarsity();
@@ -538,44 +559,45 @@ void build_anisotropic_matrix_() {
 //	_IEFSolver->buildAnisotropicMatrix(*_gePolCavity);
 }
 
-void init_atoms_(VectorXd & charges,
-	         Matrix3Xd & sphereCenter) {
+void init_atoms_(Eigen::VectorXd & charges, Eigen::Matrix3Xd & sphereCenter) 
+{
 	int nuclei;
 	collect_nctot_(&nuclei);
-	sphereCenter.resize(NoChange, nuclei);
+	sphereCenter.resize(Eigen::NoChange, nuclei);
 	charges.resize(nuclei);
 	double * chg = charges.data();
 	double * centers = sphereCenter.data();
 	collect_atoms_(chg, centers);
 } 
 
-void init_spheres_atoms_(VectorXd & charges, 
-			Matrix3Xd & centers) {
+void init_spheres_atoms_(Eigen::VectorXd & charges, Eigen::Matrix3Xd & centers) 
+{
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
-	vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
-	vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
-	for (int i = 0; i < atomsInput.size(); i++) {
+	std::vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
+	std::vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
+	for (int i = 0; i < atomsInput.size(); i++) 
+	{
 		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
-		Vector3d center = centers.col(index);
+		Eigen::Vector3d center = centers.col(index);
 		Sphere sphere(center, radiiInput[i]);
 		_gePolCavity->getSpheres().push_back(sphere);
 	}
 }
 
-void init_spheres_implicit_(VectorXd & charges,	Matrix3Xd & centers)
+void init_spheres_implicit_(Eigen::VectorXd & charges, Eigen::Matrix3Xd & centers)
 {
 	const char *infile = "@pcmsolver.inp";
 	Getkw Input = Getkw(infile, false, true);
 	std::string scaling = Input.getStr("Cavity<gepol>.Scaling");
-	for (int i = 0; i < charges.size(); i++) {
-		vector<Atom> Bondi = Atom::initBondi();
+	for (int i = 0; i < charges.size(); i++) 
+	{
+		std::vector<Atom> Bondi = Atom::initBondi();
 		int index = charges(i) - 1;
 		double radius = Bondi[index].getAtomRadius();
-                if (scaling == "Yes") {
+                if (scaling == "Yes") 
 			radius *= Bondi[index].getAtomRadiusScaling();
-                }
-		Vector3d center = centers.col(i);
+		Eigen::Vector3d center = centers.col(i);
 		Sphere sphere(center, radius);
 		_gePolCavity->getSpheres().push_back(sphere);
 	}

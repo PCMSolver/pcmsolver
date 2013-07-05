@@ -1,10 +1,10 @@
+#include "MetalSphere.hpp"
+
 #include <iostream>
 #include <stdexcept>
 #include <cmath>
 
 #include <Eigen/Dense>
-
-#include "MetalSphere.hpp"
 
 extern"C" 
 {
@@ -69,4 +69,9 @@ Eigen::Array4d MetalSphere::automaticHessian(Eigen::Vector3d & sourceNormal_, Ei
 	 			             Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
 	throw std::runtime_error("Automatic Hessian is not available for MetalSphere.");
+}
+
+std::ostream & MetalSphere::printGreensFunction(std::ostream & os)
+{
+	return os;
 }

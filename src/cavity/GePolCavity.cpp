@@ -1,13 +1,10 @@
+#include "GePolCavity.hpp"
+
 #include <iostream>
 #include <string>
 #include <vector>
 
 #include <Eigen/Dense>
-
-using std::cout;
-using std::endl;
-
-#include "GePolCavity.hpp"
 
 extern "C" 
 {
@@ -173,20 +170,19 @@ std::ostream & GePolCavity::printCavity(std::ostream & os)
 	  We should print the cavity.off file here, just to
 	  get a prettier cavity image.
 	*/
-	os << "========== Cavity section" << endl;
-        os << "Cavity type: GePol" << endl;
-	os << "Average area: " << averageArea << " AU^2" << endl;
+        os << "Cavity type: GePol" << std::endl;
+	os << "Average area = " << averageArea << " AU^2" << std::endl;
 	if (addSpheres)
 	{
-		os << "Addition of extra spheres enabled" << endl;
-		os << "Probe radius: " << probeRadius << endl;
-		os << "Number of spheres: " << nSpheres << " (primary, " << nSpheres - addedSpheres << "; secondary, " << addedSpheres << ")" << endl;
+		os << "Addition of extra spheres enabled" << std::endl;
+		os << "Probe radius = " << probeRadius << std::endl;
+		os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
 	}
 	else
 	{
-		os << "Number of spheres: " << nSpheres << endl;
+		os << "Number of spheres = " << nSpheres << std::endl;
 	}
-        os << "Number of finite elements: " << nElements << endl;
+        os << "Number of finite elements = " << nElements;
         /*for(int i = 0; i < nElements; i++) 
 	{
 		os << std::endl;

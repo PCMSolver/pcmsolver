@@ -1,6 +1,11 @@
+#include "Input.hpp"
+
 #include <map>
 
-#include "Input.hpp"
+#include "Getkw.h"
+
+#include "Solvent.hpp"
+#include "Sphere.hpp"
 
 Input::Input()
 {
@@ -55,6 +60,7 @@ Input::Input()
 
 	if (_name == "Explicit") 
 	{
+		hasSolvent = false;
 		// Get the probe radius
 		probeRadius = medium.getDbl("ProbeRadius");
 		// Get the contents of the Green<inside> section...
@@ -77,6 +83,7 @@ Input::Input()
 	} 
 	else // This part must be reviewed!! Some data members are not initialized... 
 	{       // Just initialize the solvent object in this class
+		hasSolvent = true;
 		std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
 		solvent = solvents[_name];
 		probeRadius = solvent.getRadius();

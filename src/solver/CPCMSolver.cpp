@@ -1,13 +1,14 @@
+#include "CPCMSolver.hpp"
+
 #include <string>
 #include <fstream>
 #include <stdexcept>
 
 #include <Eigen/Dense>
 
-#include "GreensFunction.hpp"
 #include "Cavity.hpp"
 #include "GePolCavity.hpp"
-#include "CPCMSolver.hpp"
+#include "GreensFunction.hpp"
 
 void CPCMSolver::buildSystemMatrix(Cavity & cavity) 
 {
@@ -74,12 +75,9 @@ void CPCMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd &
 	}
 }
     
-std::ostream & CPCMSolver::printObject(std::ostream & os) 
+std::ostream & CPCMSolver::printSolver(std::ostream & os) 
 {
-	std::string type = "C-PCM";
-	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << std::endl;
-	os << "========== Solver section" << std::endl;
-	os << "Solver Type: " << type << std::endl;
+	os << "Solver Type: C-PCM";
 	return os;
 }
 

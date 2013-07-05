@@ -1,6 +1,6 @@
-#include <stdexcept>
-
 #include "SolverFactory.hpp"
+
+#include <stdexcept>
 
 bool SolverFactory::registerSolver(std::string solverID, createSolverCallback createFunction)
 {

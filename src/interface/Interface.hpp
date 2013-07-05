@@ -5,7 +5,14 @@
   Interface functions prototypes.
 
 */
+#include <vector>
 
+#include "Config.hpp"
+
+#include <Eigen/Dense>
+
+#include "Sphere.hpp"
+#include "WaveletCavity.hpp"
 
 /*
 
@@ -64,8 +71,6 @@ void initCavity();
 
 // 1. Declare a global PCMSolver * _solver; 2. use the factory inside here; 3. _solver = _theSolverYouWant
 void initSolver(); // The GreensFunctionFactory will be used here to generate the inside & outside Green's Functions
-
-GePolCavity * initGePolCavity();
 
 WaveletCavity * initWaveletCavity();
 

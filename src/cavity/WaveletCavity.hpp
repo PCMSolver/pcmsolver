@@ -1,15 +1,19 @@
 #ifndef WAVELETCAVITY_HPP
 #define WAVELETCAVITY_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-
-#include "vector3.h"
 //#include "Getkw.h"
+
+extern "C"
+{
+#include "vector3.h"
+}
+
 #include "Cavity.hpp"
 #include "CavityFactory.hpp"
 
@@ -28,7 +32,7 @@ class WaveletCavity : public Cavity
                        }
                 virtual ~WaveletCavity(){};
                 void makeCavity();
-                void readCavity(const string & filename);
+                void readCavity(const std::string & filename);
                 void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
                 //VectorXd & getTessRadius(){return tessRadius;};
                 //VectorXd & getSphereRadius(){return sphereRadius;};
@@ -36,11 +40,11 @@ class WaveletCavity : public Cavity
                 //Matrix3Xd & getSphereCenter(){return sphereCenter;};
                 //Matrix3Xd & getTessSphereCenter(){return tessSphereCenter;};
                 //double getTessRadius(int i){return tessRadius(i);};
-                unsigned int getNPatches(){return nPatches;}
-                unsigned int getNLevels(){return nLevels;}
-                unsigned int getNPoints(){return nPoints;}
-                Eigen::Vector3d getNodePoint(int i){return nodePoint[i];}
-                Eigen::Vector3i getNodeIndex(int i){return nodeIndex[i];}
+                unsigned int getNPatches() { return nPatches; }
+                unsigned int getNLevels() { return nLevels; }
+                unsigned int getNPoints() { return nPoints; }
+                Eigen::Vector3d getNodePoint(int i) { return nodePoint[i]; }
+                Eigen::Vector3i getNodeIndex(int i) { return nodeIndex[i]; }
                 friend std::ostream & operator<<(std::ostream & os, WaveletCavity & cavity)
 		{
 			return cavity.printCavity(os);
@@ -55,7 +59,7 @@ class WaveletCavity : public Cavity
                 unsigned int nLevels;
                 unsigned int nPoints;
                 bool uploadedDyadic;
-                void writeInput(string &fileName);
+                void writeInput(std::string &fileName);
                 //int nSpheres;               
                 //Matrix3Xd sphereCenter;
                 //Matrix3Xd tessSphereCenter;

@@ -1,13 +1,13 @@
 #ifndef SURFACEFUNCTION_HPP
 #define SURFACEFUNCTION_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 #include <map>
 
-#include <Eigen/Dense>
-
 #include "Config.hpp"
+
+#include <Eigen/Dense>
 
 /*!
  * \file SurfaceFunction.hpp
@@ -29,13 +29,9 @@
 class SurfaceFunction
 {
  public:
-	 /*!
-	  * A map from the surface function identifier (a string) to a pointer-to-SurfaceFunction.
+	 /*! \brief A map from the surface function identifier (a string) to a pointer-to-SurfaceFunction.
 	  */
  	 typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
-	 /*!
-	  * No argument constructor
-	  */
          SurfaceFunction() : name(""), nPoints(0), allocated(false) {}
          SurfaceFunction(const std::string & name_) : name(name_), nPoints(0), allocated(false) {}
          SurfaceFunction(const std::string & name_, int nPoints_) : name(name_), nPoints(nPoints_) 
@@ -65,10 +61,7 @@ class SurfaceFunction
              allocated = true;
 	     Register();
          }
-         
-
-         /*!
-	  * The unique point of access to the unique instance of SurfaceFunctionMap
+         /*! \brief The unique point of access to the unique instance of SurfaceFunctionMap
 	  */ 	 
 	 static SurfaceFunctionMap & TheMap()
 	 {

@@ -1,24 +1,25 @@
 #ifndef PWCSOLVER_HPP
 #define PWCSOLVER_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
-
-#include <Eigen/Dense>
 
 #include "Config.hpp"
 
-class GreensFunction;
+#include <Eigen/Dense>
 
-extern "C"{
+extern "C"
+{
 #include "vector3.h"
 #include "sparse2.h"
 #include "intvector.h"
 #include "basis.h"
 }
 
-#include "WEMSolver.hpp"
+class GreensFunction;
+
 #include "SolverFactory.hpp"
+#include "WEMSolver.hpp"
 
 /*! \file PWCSolver.hpp
  *  \class PWCSOlver
@@ -31,6 +32,7 @@ class PWCSolver : public WEMSolver
 {
 	private:
 		virtual void initPointers();
+    		virtual std::ostream & printSolver(std::ostream & os);
 	public:
                 PWCSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) : WEMSolver(gfInside_, gfOutside_, Full)
 		{
@@ -42,7 +44,10 @@ class PWCSolver : public WEMSolver
 		}
 		//PWCSolver(const Section & solver);
                 virtual ~PWCSolver();
-	
+                friend std::ostream & operator<<(std::ostream & os, PWCSolver & solver)                      
+		{                                                                                         
+                    return solver.printSolver(os);                                                           
+                }                                                                                         
 	private: 
 		virtual void initInterpolation();
                 virtual void constructWavelets();                                            

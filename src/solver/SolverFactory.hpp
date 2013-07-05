@@ -1,7 +1,6 @@
 #ifndef SOLVERFACTORY_HPP
 #define SOLVERFACTORY_HPP
 
-#include <iostream>
 #include <string>
 #include <map>
 
@@ -10,8 +9,7 @@
 #include "Config.hpp"
 
 class GreensFunction;
-
-#include "PCMSolver.hpp"
+class PCMSolver;
 
 /*!
  *	\file SolverFactory.hpp

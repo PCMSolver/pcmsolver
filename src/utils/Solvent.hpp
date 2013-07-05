@@ -1,11 +1,11 @@
 #ifndef SOLVENT_HPP
 #define SOLVENT_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 #include <map>
 
-#include <Config.hpp>
+#include "Config.hpp"
 
 /*! \file Solvent.hpp
  *  \class Solvent
@@ -42,16 +42,16 @@ class Solvent
 		 *  implementation of the Polarizable Continuum Model.
 		 */
                 static SolventMap & initSolventMap();
-		friend std::ostream & operator<<(std::ostream & os, Solvent & obj) 
+		friend std::ostream & operator<<(std::ostream & os, Solvent & solvent) 
 		{
-                    return obj.printObject(os);
+                    return solvent.printSolvent(os);
                 }
 	private:
 		std::string name;        
                 double epsStatic;
                 double epsOptical;
                 double probeRadius;
-		std::ostream & printObject(std::ostream & os);
+		std::ostream & printSolvent(std::ostream & os);
 };
 
 #endif // SOLVENT_HPP

@@ -1,8 +1,8 @@
+#include "UniformDielectric.hpp" 
+
 #include <cmath>
 
 #include "taylor.hpp"
-
-#include "UniformDielectric.hpp" 
 
 void UniformDielectric::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, 
 		                     Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
@@ -189,4 +189,11 @@ Eigen::Array4d UniformDielectric::automaticHessian(Eigen::Vector3d & sourceNorma
 	result(3) = -sourceNormal_.transpose() * hessian * probeNormal_;
 
 	return result;
+}
+
+std::ostream & UniformDielectric::printGreensFunction(std::ostream & os)
+{
+	os << "Green's function type: uniform dielectric" << std::endl;
+	os << "Permittivity = " << epsilon << std::endl;
+	return os;
 }

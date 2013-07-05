@@ -7,7 +7,6 @@ set(solver_SOURCES
   	WEMSolver.cpp
 )
 
-
 add_library(solver ${solver_SOURCES})
 
 install(TARGETS solver ARCHIVE DESTINATION lib)

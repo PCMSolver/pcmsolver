@@ -1,7 +1,7 @@
 #ifndef PCMSOLVER_HPP
 #define PCMSOLVER_HPP
 
-#include <iostream>
+#include <iosfwd>
 
 #include "Config.hpp"
 
@@ -19,6 +19,11 @@ class Cavity;
 
 class PCMSolver
 {
+	protected:
+                GreensFunction * greenInside;
+                GreensFunction * greenOutside;
+		bool allocated;
+                virtual std::ostream & printSolver(std::ostream & os) = 0; 
 	public:
 		PCMSolver() {}
 	        PCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) : greenInside(gfInside_), greenOutside(gfOutside_), allocated(true) {}
@@ -31,21 +36,16 @@ class PCMSolver
 		        }                                                                                 
 		}                                                                                         
                                                                                                           
-                GreensFunction * getGreenInside() { return greenInside; }                              
-                GreensFunction * getGreenOutside() { return greenOutside; }                                
+                GreensFunction * getGreenInside() const { return greenInside; }                              
+                GreensFunction * getGreenOutside() const { return greenOutside; }                                
                                                                                                           
                 virtual void buildSystemMatrix(Cavity & cavity) = 0;                                      
                 // ask jonas virtual VectorXd compCharge(const VectorXd & potential);                     
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) = 0; 
-                friend std::ostream & operator<<(std::ostream & os, PCMSolver & obj)                      
+                friend std::ostream & operator<<(std::ostream & os, PCMSolver & solver)                      
 		{                                                                                         
-                    return obj.printObject(os);                                                           
+                    return solver.printSolver(os);                                                           
                 }                                                                                         
-	protected:
-                GreensFunction * greenInside;
-                GreensFunction * greenOutside;
-		bool allocated;
-                virtual std::ostream & printObject(std::ostream & os) {}
 };
 
 #endif // PCMSOLVER_HPP

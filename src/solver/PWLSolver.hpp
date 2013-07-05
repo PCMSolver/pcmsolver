@@ -1,27 +1,28 @@
 #ifndef PWLSOLVER_HPP
 #define PWLSOLVER_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
-
-#include <Eigen/Dense>
 
 #include "Config.hpp"
 
-class GreensFunction;
+#include <Eigen/Dense>
 
-extern "C"{
+extern "C"
+{
 #include "vector3.h"
 #include "sparse2.h"
 #include "intvector_pwl.h"
 #include "basis_pwl.h"
 }
 
-#include "WEMSolver.hpp"
+class GreensFunction;
+
 #include "SolverFactory.hpp"
+#include "WEMSolver.hpp"
 
 /*! \file PWLSolver.hpp
- *  \class PWLSOlver
+ *  \class PWLSolver
  *  \brief Wavelet solver, piecewise linear.
  *  \author Luca Frediani
  *  \date 2012
@@ -31,6 +32,7 @@ class PWLSolver : public WEMSolver
 {
 	private:
 		virtual void initPointers();
+    		virtual std::ostream & printSolver(std::ostream & os);
 	public:
                 PWLSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) : WEMSolver(gfInside_, gfOutside_, FirstKind)
 		{
@@ -42,7 +44,10 @@ class PWLSolver : public WEMSolver
 		}
 		//PWLSolver(Section solver);
                 virtual ~PWLSolver();
-
+                friend std::ostream & operator<<(std::ostream & os, PWLSolver & solver)                      
+		{                                                                                         
+                    return solver.printSolver(os);                                                           
+                }                                                                                         
  	private:
 		virtual void initInterpolation();
                 virtual void constructWavelets();                                            

@@ -1,7 +1,6 @@
-#include <map>
-#include <stdexcept>
-
 #include "GreensFunction.hpp"
+
+#include <stdexcept>
 
 Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {

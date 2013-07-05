@@ -1,7 +1,7 @@
 #ifndef GREENSFUNCTION_HPP
 #define GREENSFUNCTION_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 #include <Eigen/Dense>
@@ -39,7 +39,11 @@ class GreensFunction
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const = 0;
 		bool isUniform() const { return uniform; }
-		virtual double getDielectricConstant() const = 0; 
+		virtual double getDielectricConstant() const = 0;
+                friend std::ostream & operator<<(std::ostream & os, GreensFunction & green)                      
+		{                                                                                         
+                    return green.printGreensFunction(os);                                                           
+                }                                                                                         
 	protected:
 		int how;
 		bool uniform;
@@ -84,6 +88,7 @@ class GreensFunction
 		 */
 		virtual Eigen::Array4d automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 							Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const = 0;
+                virtual std::ostream & printGreensFunction(std::ostream & os) = 0; 
 };
 
 #endif // GREENSFUNCTION_HPP

@@ -1,14 +1,14 @@
 #ifndef IEFSOLVER_HPP
 #define IEFSOLVER_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 #include "Config.hpp"
 
-class GreensFunction;
 class Cavity;
 class GePolCavity;
+class GreensFunction;
 
 #include "PCMSolver.hpp"
 #include "SolverFactory.hpp"
@@ -29,7 +29,9 @@ class IEFSolver : public PCMSolver
 //	 	static const double factor = 1.0694;
     		static const double factor = 1.07;
 		Eigen::MatrixXd PCMMatrix;
-    		virtual std::ostream & printObject(std::ostream & os);
+                void buildAnisotropicMatrix(GePolCavity & cav);
+                void buildIsotropicMatrix(GePolCavity & cav);
+    		virtual std::ostream & printSolver(std::ostream & os);
 	public:
     		IEFSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) 
 			: PCMSolver(gfInside_, gfOutside_), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
@@ -38,10 +40,10 @@ class IEFSolver : public PCMSolver
                 virtual void buildSystemMatrix(Cavity & cavity);
                 //virtual VectorXd compCharge(const VectorXd & potential);
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-	private:
-                void buildAnisotropicMatrix(GePolCavity & cav);
-                void buildIsotropicMatrix(GePolCavity & cav);
-	
+                friend std::ostream & operator<<(std::ostream & os, IEFSolver & solver)                      
+		{                                                                                         
+                    return solver.printSolver(os);                                                           
+                }                                                                                         
 };
 
 namespace

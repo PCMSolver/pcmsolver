@@ -4,6 +4,7 @@ foreach(file_path ${_listh})
 	get_filename_component(dir_path ${file_path} PATH)
 	set(header_dir_list ${header_dir_list} ${dir_path})
 endforeach()
+
 file(GLOB_RECURSE _listhpp *.hpp)
 foreach(file_path ${_listhpp})
 	get_filename_component(dir_path ${file_path} PATH)

@@ -1,12 +1,12 @@
 #ifndef SPHERE_HPP
 #define SPHERE_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
-#include <Eigen/Dense>
-
 #include "Config.hpp"
+
+#include <Eigen/Dense>
 
 /*! \file Sphere.hpp
  *  \class Sphere

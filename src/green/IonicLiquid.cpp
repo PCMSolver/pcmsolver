@@ -1,8 +1,8 @@
+#include "IonicLiquid.hpp" 
+
 #include <cmath>
 
 #include "taylor.hpp"
-
-#include "IonicLiquid.hpp" 
 
 Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 						 Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
@@ -179,4 +179,12 @@ Eigen::Array4d IonicLiquid::automaticHessian(Eigen::Vector3d & sourceNormal_, Ei
 	result(3) = -sourceNormal_.transpose() * hessian * probeNormal_;
 
 	return result;
+}
+
+std::ostream & IonicLiquid::printGreensFunction(std::ostream & os)
+{
+	os << "Green's function type: ionic liquid" << std::endl;
+	os << "Permittivity = " << epsilon << std::endl;
+	os << "Inverse Debye length = " << kappa;
+	return os;
 }

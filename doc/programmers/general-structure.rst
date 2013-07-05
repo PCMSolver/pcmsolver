@@ -34,8 +34,8 @@ Follow these guidelines to decide whether to include or forward declare:
 
 .. code-block:: cpp
     
-    #ifndef MYCLASS_H
-    #define MYCLASS_H
+    #ifndef MYCLASS_HPP
+    #define MYCLASS_HPP
 
     //==============================
     // Forward declared dependencies
@@ -45,7 +45,7 @@ Follow these guidelines to decide whether to include or forward declare:
     //==============================
     // Included dependencies
     #include <vector>
-    #include "Parent.h"
+    #include "Parent.hpp"
 
     //==============================
     // The actual class
@@ -60,8 +60,74 @@ Follow these guidelines to decide whether to include or forward declare:
                                           //    don't do anything about MyFriend
     };                                  
 
-    #endif // MYCLASS_H
+    #endif // MYCLASS_HPP
     
+
+Proper overloading of operator<<
+................................
+
+Suppose we have an inheritance hierarchy made of an abstract base class, Base, and 
+two derived classes, Derived1 and Derived2.
+In the Base class header file we will define a pure virtual private function printObject
+and provide a public friend overload of operator<<:
+
+.. code-block:: cpp
     
+    #include <iosfwd>
+
+    class Base
+    {
+        public:
+                // All your other very fancy public members
+                friend std::ostream & operator<<(std::ostream & os, Base & base)
+                {
+                        return base.printObject(os);
+                }
+        protected: 
+                // All your other very fancy protected members
+        private:
+                // All your other very fancy private members
+                virtual std::ostream & printObject(std::ostream & os) = 0;
+    }
+
+The printObject method can also be made (impure) virtual, it really depends on your class hierarchy.
+Derived1 and Derived2 header files will provide a public friend overload of operator<< (friendliness
+isn't inherited, transitive or reciprocal) and an override for the printObject method:
+
+.. code-block:: cpp
+
+    #include <iosfwd>
+
+    #include "Base.hpp"
+
+    class Derived1 : public Base
+    {
+        public:
+                // All your other very fancy public members
+                friend std::ostream & operator<<(std::ostream & os, Derived1 & derived)
+                {
+                        return derived.printObject(os);
+                }
+        protected: 
+                // All your other very fancy protected members
+        private:
+                // All your other very fancy private members
+                virtual std::ostream & printObject(std::ostream & os);
+    }
+    
+    class Derived2 : public Base
+    {
+        public:
+                // All your other very fancy public members
+                friend std::ostream & operator<<(std::ostream & os, Derived2 & derived)
+                {
+                        return derived.printObject(os);
+                }
+        protected: 
+                // All your other very fancy protected members
+        private:
+                // All your other very fancy private members
+                virtual std::ostream & printObject(std::ostream & os);
+    }
 
 

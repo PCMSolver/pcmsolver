@@ -1,13 +1,12 @@
 #ifndef ATOM_HPP
 #define ATOM_HPP
 
-#include <iostream>
 #include <string>
 #include <vector>
 
-#include <Eigen/Dense>
-
 #include "Config.hpp"
+
+#include <Eigen/Dense>
 
 #include "PhysicalConstants.hpp"
 
@@ -39,9 +38,7 @@ class Atom
   			atomColour = colour;
 			atomRadiusScaling = 1.0;
 		}
-
                 ~Atom(){}
-		
 		std::string getAtomElement() { return atomElement; }
                 void setAtomElement(const std::string & _element) { atomElement = _element; }
 		std::string getAtomSymbol() { return atomSymbol; }
@@ -56,7 +53,6 @@ class Atom
                 void setAtomRadiusScaling(double _scaling) { atomRadiusScaling = _scaling; }
 		std::string getAtomColour() { return atomColour; }
                 void setAtomColour(const std::string & _colour){ atomColour = _colour; }
-                
                 /*! \brief Returns a reference to a vector<Atom> containing Bondi van der Waals radii.                                                                        	
 	         * 
 		 * The van der Waals radii are taken from:
@@ -68,7 +64,6 @@ class Atom
                  * The getAtomRadius method will perform the conversion Angstrom to AU.
 	         */
 		static std::vector<Atom> & initBondi();
-	
                 /*! \brief Returns a reference to a vector<Atom> containing UFF radii.
 	         * 
 		 * The UFF set of radii is taken from:

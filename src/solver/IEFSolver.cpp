@@ -1,13 +1,14 @@
+#include "IEFSolver.hpp"
+
 #include <string>
 #include <fstream>
 #include <stdexcept>
 
 #include <Eigen/Dense>
 
-#include "GreensFunction.hpp"
 #include "Cavity.hpp"
 #include "GePolCavity.hpp"
-#include "IEFSolver.hpp"
+#include "GreensFunction.hpp"
 
 void IEFSolver::buildSystemMatrix(Cavity & cavity) 
 {
@@ -131,17 +132,17 @@ void IEFSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & 
 	}
 }
 
-std::ostream & IEFSolver::printObject(std::ostream & os) 
+std::ostream & IEFSolver::printSolver(std::ostream & os) 
 {
 	std::string type;
-	if (builtAnisotropicMatrix) {
+	if (builtAnisotropicMatrix) 
+	{
 		type = "IEFPCM, anisotropic";
-	} else {
+	} 
+	else 
+	{
 		type = "IEFPCM, isotropic";
 	}
-	os << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << std::endl;
-	os << "========== Solver section" << std::endl;
-	os << "Solver Type: " << type << std::endl;
+	os << "Solver Type: " << type;
 	return os;
 }
-

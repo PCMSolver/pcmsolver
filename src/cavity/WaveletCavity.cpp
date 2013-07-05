@@ -1,17 +1,14 @@
-/*
+#include "WaveletCavity.hpp"
 
-Wavelet Cavity c++ interface and wrapper methods
-
-*/
 #include <iostream>
 #include <fstream> 
 #include <string>
 
 #include <Eigen/Dense>
+//#include "Getkw.h"
 
-using namespace std;
-
-extern "C"{
+extern "C"
+{
 	//#include "WEM.h"
 	//#include "read_points.h"
 #include "vector2.h"
@@ -31,9 +28,7 @@ extern "C"{
 #include "constants.h"
 }
 
-#include "PhysicalConstants.hpp"
-//#include "Getkw.h"
-#include "WaveletCavity.hpp"
+using namespace std;
 
 /*
 WaveletCavity::WaveletCavity(const Getkw & Input, const string path){
@@ -242,13 +237,12 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 
 std::ostream & WaveletCavity::printCavity(std::ostream & os) 
 {
-	os << "========== Cavity section" << endl;
         os << "Cavity type: Wavelet" << endl;
-	os << "Probe Radius:   " << probeRadius << endl;
-	os << "Coarsity:       " << coarsity << endl;
-	os << "Patch Level:    " << patchLevel << endl;
-	os << "Number of spheres: " << nSpheres;
-        os << "Number of finite elements: " << nElements << endl;
+	os << "Probe Radius =  " << probeRadius << endl;
+	os << "Coarsity =      " << coarsity << endl;
+	os << "Patch Level =   " << patchLevel << endl;
+	os << "Number of spheres = " << nSpheres;
+        os << "Number of finite elements = " << nElements << endl;
         /*for(int i = 0; i < nElements; i++) 
 	{
 		os << std::endl;

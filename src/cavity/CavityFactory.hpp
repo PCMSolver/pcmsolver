@@ -1,7 +1,6 @@
 #ifndef CAVITYFACTORY_HPP
 #define CAVITYFACTORY_HPP
 
-#include <iostream>
 #include <string>
 #include <map>
 
@@ -9,7 +8,9 @@
 
 #include <Eigen/Dense>
 
-#include "Cavity.hpp"
+class Cavity;
+
+#include "Sphere.hpp"
 
 /*!
  *	\file CavityFactory.hpp

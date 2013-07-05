@@ -1,17 +1,22 @@
 #ifndef WEMSOLVER_HPP
 #define WEMSOLVER_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 #include "Config.hpp"
 
-class GreensFunction;
+#include <Eigen/Dense>
 
-extern "C"{
+extern "C"
+{
 #include "vector3.h"
 #include "sparse2.h"
 }
+
+class Cavity;
+class GreensFunction;
+class WaveletCavity;
 
 #include "PCMSolver.hpp"
 
@@ -26,6 +31,7 @@ class WEMSolver : public PCMSolver
 {
 	private:
 		void initWEMMembers();
+    		virtual std::ostream & printSolver(std::ostream & os) { return os; }
 	public:
                 WEMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, int integralEquation_ = SecondKind ) 
 			: PCMSolver(gfInside_, gfOutside_), integralEquation(integralEquation_)
@@ -38,9 +44,13 @@ class WEMSolver : public PCMSolver
                 int getQuadratureLevel(){return quadratureLevel_;}
                 virtual void buildSystemMatrix(Cavity & cavity);
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
+                friend std::ostream & operator<<(std::ostream & os, WEMSolver & solver)                      
+		{                                                                                         
+                    return solver.printSolver(os);                                                           
+                }                                                                                         
 	protected:
 		virtual void constructSystemMatrix();
-                virtual void uploadCavity(WaveletCavity cavity); // different interpolation       
+                virtual void uploadCavity(WaveletCavity & cavity); // different interpolation       
                 virtual void constructSi() = 0;
                 virtual void constructSe() = 0;
                 virtual void solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) = 0;

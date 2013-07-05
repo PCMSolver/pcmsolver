@@ -1,9 +1,8 @@
 #ifndef CAVITY_HPP
 #define CAVITY_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
-#include <map>
 
 #include "Config.hpp"
 

@@ -1,13 +1,12 @@
 #ifndef GREENSFUNCTIONFACTORY_HPP
 #define GREENSFUNCTIONFACTORY_HPP
 
-#include <iostream>
 #include <string>
 #include <map>
 
 #include "Config.hpp"
 
-#include "GreensFunction.hpp"
+class GreensFunction;
 
 /*!
  *	\file GreensFunctionFactory.hpp

@@ -1,13 +1,15 @@
+#include "WEMSolver.hpp"
+
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
+
 #include <Eigen/Dense>
+//#include "Getkw.h"
 
-using namespace std;
-using namespace Eigen;
-
-extern "C"{
+extern "C"
+{
 #include "vector3.h"
 #include "sparse2.h"
 #include "intvector.h"
@@ -29,13 +31,13 @@ extern "C"{
 #include "constants.h"
 }
 
-#include "PhysicalConstants.hpp"
-//#include "Getkw.h"
-//#include "taylor.hpp"
-#include "GreensFunction.hpp"
 #include "Cavity.hpp"
+#include "GreensFunction.hpp"
 #include "WaveletCavity.hpp"
-#include "WEMSolver.hpp"
+
+using namespace std;
+using namespace Eigen;
+
 
 void WEMSolver::initWEMMembers()
 {
@@ -65,7 +67,7 @@ WEMSolver::~WEMSolver()
 	}
 }
 
-void WEMSolver::uploadCavity(WaveletCavity cavity) {
+void WEMSolver::uploadCavity(WaveletCavity & cavity) {
 	nPatches = cavity.getNPatches();
 	nLevels = cavity.getNLevels();
 	int n = (1<<nLevels);

@@ -1,6 +1,6 @@
-#include <stdexcept>
-
 #include "SurfaceFunction.hpp"
+
+#include <stdexcept>
 
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
@@ -101,7 +101,7 @@ std::ostream & SurfaceFunction::printObject(std::ostream & os) {
 	if (!allocated) 
 		throw std::runtime_error("Surface function not allocated!");
 	
-	os << values.transpose() << std::endl;
+	os << values.transpose();
 	
 	return os;
 }

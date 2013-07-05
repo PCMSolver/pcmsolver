@@ -4,9 +4,12 @@
 #include <vector>
 #include <string>
 
+#include "Config.hpp"
+
 #include "Getkw.h"
-#include "Sphere.hpp"
+
 #include "Solvent.hpp"
+#include "Sphere.hpp"
 
 /*! \file Input.hpp
  *  \class Input
@@ -46,6 +49,7 @@ class Input
 		std::vector<double> radii;
 		std::vector<Sphere> spheres;
 		Solvent solvent;
+		bool hasSolvent;
 		std::string solverType;
 		int equationType;
 		double correction;
@@ -81,6 +85,7 @@ class Input
 		void setSpheres(const std::vector<Sphere> & _spheres){ spheres = _spheres; }
 		// Medium section input
 		Solvent getSolvent(){ return solvent; }
+		bool fromSolvent() { return hasSolvent; }
 		std::string getSolverType(){ return solverType; }
 		int getEquationType(){ return equationType; }
 		double getCorrection(){ return correction; }

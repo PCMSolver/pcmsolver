@@ -1,7 +1,9 @@
 #include "Solvent.hpp"
 
-Solvent::SolventMap & Solvent::initSolventMap() {
- 	
+#include <iostream>
+
+Solvent::SolventMap & Solvent::initSolventMap() 
+{
 	static SolventMap availableSolvents;
   // ------------------------------------------------------------
         availableSolvents["Water"] = Solvent("Water", 78.39, 1.776, 1.385);
@@ -27,10 +29,11 @@ Solvent::SolventMap & Solvent::initSolventMap() {
 	return availableSolvents;
 }
 
-std::ostream & Solvent::printObject(std::ostream & os) {
-	os << "Solvent name:           " << name << std::endl;
-	os << "Static diel. constant:  " << epsStatic << std::endl;
-	os << "Optical diel. constant: " << epsOptical << std::endl;
-	os << "Solvent radius:         " << probeRadius;
+std::ostream & Solvent::printSolvent(std::ostream & os) 
+{
+	os << "Solvent name:          " << name << std::endl;
+	os << "Static  permittivity = " << epsStatic << std::endl;
+	os << "Optical permittivity = " << epsOptical << std::endl;
+	os << "Solvent radius =       " << probeRadius;
 	return os;
 }

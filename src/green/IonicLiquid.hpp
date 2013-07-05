@@ -1,7 +1,7 @@
 #ifndef IONICLIQUID_HPP
 #define IONICLIQUID_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 #include <Eigen/Dense>
@@ -26,6 +26,10 @@ class IonicLiquid : public GreensFunction
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const; 
 	       	virtual double getDielectricConstant() const { return epsilon; }
+                friend std::ostream & operator<<(std::ostream & os, IonicLiquid & green)                      
+		{                                                                                         
+                    return green.printGreensFunction(os);                                                           
+                }                                                                                         
 	private:
 		double epsilon;
 		double kappa;
@@ -39,6 +43,7 @@ class IonicLiquid : public GreensFunction
 				                         Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
 		virtual	Eigen::Array4d automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 				                        Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
+                virtual std::ostream & printGreensFunction(std::ostream & os); 
 };
 
 namespace

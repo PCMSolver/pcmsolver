@@ -1,16 +1,16 @@
 #ifndef CPCMSOLVER_HPP
 #define CPCMSOLVER_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 #include <Eigen/Dense>
 
 #include "Config.hpp"
 
-class GreensFunction;
 class Cavity;
 class GePolCavity;
+class GreensFunction;
 
 #include "PCMSolver.hpp"
 #include "SolverFactory.hpp"
@@ -29,9 +29,10 @@ class CPCMSolver : public PCMSolver
     		bool builtAnisotropicMatrix;
     		double correction;
     		Eigen::MatrixXd PCMMatrix;
-    		virtual std::ostream & printObject(std::ostream & os);
 //    		static const double factor = 1.0694;
     		static const double factor = 1.07;
+                void buildIsotropicMatrix(GePolCavity & cav);
+    		virtual std::ostream & printSolver(std::ostream & os);
 	public:
                 CPCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0) 
 			: PCMSolver(gfInside_, gfOutside_), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}                
@@ -42,8 +43,10 @@ class CPCMSolver : public PCMSolver
                 //virtual VectorXd compCharge(const VectorXd & potential);
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
                 void setCorrection(double correction_) { correction = correction_; }
-	private:
-                void buildIsotropicMatrix(GePolCavity & cav);
+                friend std::ostream & operator<<(std::ostream & os, CPCMSolver & solver)                      
+		{                                                                                         
+                    return solver.printSolver(os);                                                           
+                }                                                                                         
 };
 
 namespace

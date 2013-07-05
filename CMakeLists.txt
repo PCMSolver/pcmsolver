@@ -51,8 +51,6 @@ else()
 	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT} CACHE INTERNAL "")
 endif()
 
-add_custom_target(external)
-
 set(ExternalProjectCMakeArgs
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
@@ -79,8 +77,6 @@ ExternalProject_Add(libtaylor
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
         CMAKE_ARGS ${ExternalProjectCMakeArgs}
 	)
-
-add_dependencies(external libgetkw libtaylor)
 
 configure_file (
     ${PROJECT_SOURCE_DIR}/Config.hpp.in

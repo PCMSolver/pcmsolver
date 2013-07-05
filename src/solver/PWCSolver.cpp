@@ -1,9 +1,12 @@
 #include "PWCSolver.hpp"
 
+#include <fstream>
+#include <ostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
+
+#include "Config.hpp"
 
 #include <Eigen/Dense>
 //#include "Getkw.h"
@@ -36,9 +39,6 @@ extern "C"
 #include "GreensFunction.hpp"
 #include "WaveletCavity.hpp"
 
-using namespace std;
-using namespace Eigen;
-
 static GreensFunction * gf;
 
 static double SLInt(vector3 x, vector3 y)
@@ -58,7 +58,7 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 {  
 	vector3		c;
 	double		r;
-	Vector3d grad, dir;
+	Eigen::Vector3d grad, dir;
 	c.x = x.x-y.x;
 	c.y = x.y-y.y;
 	c.z = x.z-y.z;
@@ -70,18 +70,20 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
 }
 
-static double SingleLayer (vector3 x, vector3 y) {
-	Vector3d vx(x.x, x.y, x.z);
-	Vector3d vy(y.x, y.y, y.z);
+static double SingleLayer (vector3 x, vector3 y) 
+{
+	Eigen::Vector3d vx(x.x, x.y, x.z);
+	Eigen::Vector3d vy(y.x, y.y, y.z);
 	Eigen::Vector3d foo = Eigen::Vector3d::Zero();
 	double value = gf->evaluate(foo, vx, foo, vy)(0);
 	return value;
 }
 
-static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) {
-	Vector3d vx(x.x, x.y, x.z);
-	Vector3d vy(y.x, y.y, y.z);
-	Vector3d vn_y(n_y.x, n_y.y, n_y.z);
+static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) 
+{
+	Eigen::Vector3d vx(x.x, x.y, x.z);
+	Eigen::Vector3d vy(y.x, y.y, y.z);
+	Eigen::Vector3d vn_y(n_y.x, n_y.y, n_y.z);
 	Eigen::Vector3d foo = Eigen::Vector3d::Zero();
 	double value = gf->evaluate(foo, vx, vn_y, vy)(1);
 	return value;
@@ -128,8 +130,7 @@ void PWCSolver::constructSi() {
 		factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
 		break;
 	case SecondKind:
-		std::cout << "Second Kind NYI" << std::endl; //careful to the double layer sign when implementing it....
-		exit(-1);
+		throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
 		break;
 	case Full:
 		factor = 2 * M_PI;
@@ -151,7 +152,7 @@ void PWCSolver::constructSe() {
 	aposteriori2_ = postproc(&S_e_, waveletList, elementTree, nPatches, nLevels);
 }
 
-void PWCSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
+void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) {
 	double *rhs;
 	double *u = (double*) calloc(nFunctions, sizeof(double));
     double * pot = const_cast<double *>(potential.data());
@@ -174,12 +175,12 @@ void PWCSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
 	free(u);
 }
 
-void PWCSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
-	std::cout << "Second kind NYI" << std::endl;
-	exit(-1);
+void PWCSolver::solveSecondKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
+{
+	throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
 }
 
-void PWCSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
+void PWCSolver::solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) {
 	double *rhs;
 	double *u = (double*) calloc(nFunctions, sizeof(double));
 	double *v = (double*) calloc(nFunctions, sizeof(double));

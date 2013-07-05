@@ -1,7 +1,11 @@
 #include "IonicLiquid.hpp" 
 
 #include <cmath>
+#include <ostream>
 
+#include "Config.hpp"
+
+#include <Eigen/Dense>
 #include "taylor.hpp"
 
 Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 

@@ -1,6 +1,9 @@
 #include "Sphere.hpp"
 
+#include <ostream>
 #include <stdexcept>
+
+#include "Config.hpp"
 
 std::ostream & Sphere::printObject(std::ostream & os) 
 {

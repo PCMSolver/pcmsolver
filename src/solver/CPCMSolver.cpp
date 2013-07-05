@@ -1,8 +1,11 @@
 #include "CPCMSolver.hpp"
 
-#include <string>
 #include <fstream>
+#include <ostream>
 #include <stdexcept>
+#include <string>
+
+#include "Config.hpp"
 
 #include <Eigen/Dense>
 

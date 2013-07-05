@@ -1,6 +1,12 @@
 #include "SurfaceFunction.hpp"
 
+#include <map>
+#include <string>
 #include <stdexcept>
+
+#include "Config.hpp"
+
+#include <Eigen/Dense>
 
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {

@@ -1,5 +1,5 @@
-#ifndef INTERFACE_H_
-#define INTERFACE_H_
+#ifndef INTERFACE_HPP
+#define INTERFACE_HPP
 /*
 
   Interface functions prototypes.
@@ -104,5 +104,5 @@ void init_spheres_atoms_(Eigen::VectorXd & charges,
                                     Eigen::Matrix3Xd & centers);
 
 
-#endif
+#endif // INTERFACE_HPP
 

@@ -1,6 +1,11 @@
 #include "SolverFactory.hpp"
 
 #include <stdexcept>
+#include <string>
+
+#include "Config.hpp"
+
+class GreensFunction;
 
 bool SolverFactory::registerSolver(std::string solverID, createSolverCallback createFunction)
 {

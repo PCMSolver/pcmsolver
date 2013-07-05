@@ -4,7 +4,11 @@
 #include <string>
 #include <vector>
 
+#include "Config.hpp"
+
 #include <Eigen/Dense>
+
+#include "Sphere.hpp"
 
 extern "C" 
 {

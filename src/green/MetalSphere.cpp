@@ -1,8 +1,10 @@
 #include "MetalSphere.hpp"
 
-#include <iostream>
-#include <stdexcept>
 #include <cmath>
+#include <ostream>
+#include <stdexcept>
+
+#include "Config.hpp"
 
 #include <Eigen/Dense>
 

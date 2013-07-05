@@ -1,6 +1,10 @@
 #include "Solvent.hpp"
 
-#include <iostream>
+#include <map>
+#include <ostream>
+#include <string>
+
+#include "Config.hpp"
 
 Solvent::SolventMap & Solvent::initSolventMap() 
 {

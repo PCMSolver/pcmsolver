@@ -1,6 +1,9 @@
 #include "GreensFunctionFactory.hpp"
 
 #include <stdexcept>
+#include <string>
+
+#include "Config.hpp"
 
 bool GreensFunctionFactory::registerGreensFunction(const std::string & greenID, createGreensFunctionCallback createFunction)
 {

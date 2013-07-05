@@ -4,6 +4,8 @@
 #include <fstream> 
 #include <string>
 
+#include "Config.hpp"
+
 #include <Eigen/Dense>
 //#include "Getkw.h"
 

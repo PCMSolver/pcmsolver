@@ -1,7 +1,7 @@
 #include "PlanarInterface.hpp"
 
-#include <stdexcept>
 #include <cmath>
+#include <stdexcept>
 
 double PlanarInterface::evalf(double* p1, double* p2) {
     if (computed) 

@@ -1,5 +1,11 @@
 #include "Atom.hpp"
 
+#include <vector>
+
+#include "Config.hpp"
+
+#include <Eigen/Dense>
+
 std::vector<Atom> & Atom::initBondi() {
 	
 	static std::vector<Atom> Bondi(89);

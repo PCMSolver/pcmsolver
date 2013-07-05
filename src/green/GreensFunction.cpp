@@ -2,6 +2,10 @@
 
 #include <stdexcept>
 
+#include "Config.hpp"
+
+#include <Eigen/Dense>
+
 Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
 {
         enum                           	 

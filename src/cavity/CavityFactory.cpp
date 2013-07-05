@@ -1,6 +1,12 @@
 #include "CavityFactory.hpp"
 
+#include <string>
 #include <stdexcept>
+#include <vector>
+
+#include "Config.hpp"
+
+#include "Sphere.hpp"
 
 bool CavityFactory::registerCavity(std::string cavityID, createCavityCallback createFunction)
 {

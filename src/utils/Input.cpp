@@ -1,7 +1,11 @@
 #include "Input.hpp"
 
 #include <map>
+#include <vector>
 
+#include "Config.hpp"
+
+#include <Eigen/Dense>
 #include "Getkw.h"
 
 #include "Solvent.hpp"

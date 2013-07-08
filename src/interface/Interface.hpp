@@ -66,43 +66,21 @@ extern "C" void append_surf_func_(char * name);
 
 void setupInput();
 
-// 1. Declare a global Cavity * _cavity; 2. use the factory inside here; 3. _cavity = _theCavityYouWant
 void initCavity(); 
 
-// 1. Declare a global PCMSolver * _solver; 2. use the factory inside here; 3. _solver = _theSolverYouWant
-void initSolver(); // The GreensFunctionFactory will be used here to generate the inside & outside Green's Functions
+void initSolver();
 
 WaveletCavity * initWaveletCavity();
-
-void init_wavelet_cavity_();
-
-void init_iefsolver_();
-
-void init_cpcmsolver_();
 
 void init_pwcsolver_();
 
 void init_pwlsolver_();
 
-void build_isotropic_matrix_();
+void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
 
-void build_anisotropic_matrix_();
+void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
-void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter);
-
-std::vector<Sphere> initSpheresImplicit(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _sphereCenter);
-
-std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _sphereCenter);
-
-void init_atoms_(Eigen::VectorXd & charges, 
-                 Eigen::Matrix3Xd & sphereCenter);
-
-void init_spheres_implicit_(Eigen::VectorXd & charges, 
-                 Eigen::Matrix3Xd & centers);
-
-void init_spheres_atoms_(Eigen::VectorXd & charges, 
-                                    Eigen::Matrix3Xd & centers);
-
+void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
 #endif // INTERFACE_HPP
 

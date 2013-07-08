@@ -44,14 +44,12 @@
 
 typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
 
-// We need globals as they must be accessible across all the functions defined
-// in this interface... Could we use singletons?
+// We need globals as they must be accessible across all the functions defined in this interface...
+// The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
+// then maybe manage them through "objectification" of this interface.
 Cavity        * _cavity;
-GePolCavity   * _gePolCavity;
 WaveletCavity * _waveletCavity;
 
-IEFSolver * _IEFSolver;
-CPCMSolver * _CPCMSolver;
 PWCSolver * _PWCSolver;
 PWLSolver * _PWLSolver;
 PCMSolver * _solver;
@@ -63,45 +61,18 @@ PCMSolver * _solver;
 
 */
 
-extern "C" void hello_pcm_(int * a, double * b) {
+extern "C" void hello_pcm_(int * a, double * b) 
+{
 	std::cout << "Hello, PCM!" << std::endl;
 	std::cout << "The integer is: " << *a << std::endl;
 	std::cout << "The double is: " << *b << std::endl;
 }
 
-extern "C" void init_pcm_() {
+extern "C" void init_pcm_() 
+{
 	setupInput();
-//        std::string modelType = Input::TheInput().getSolverType();
         initCavity();
 	initSolver();
-	/*
-	if (modelType == "IEFPCM") {
-//		_gePolCavity = initGePolCavity();
-		initSolver();
-//		init_iefsolver_();
-//		_cavity = _gePolCavity;
-		_solver = _IEFSolver;
-	} else if (modelType == "CPCM") {
-		_gePolCavity = initGePolCavity();
-		init_cpcmsolver_();
-		_cavity = _gePolCavity;
-		_solver = _CPCMSolver;
-        } else if (modelType == "Wavelet") {
-		_waveletCavity = initWaveletCavity();
-		init_pwcsolver_();
-		_waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(),
-									 _PWCSolver->getT_(), false);
-		_cavity = _waveletCavity;
-		_solver = _PWCSolver;
-	} else if (modelType == "Linear") {
-		_waveletCavity = initWaveletCavity();
-		init_pwlsolver_();
-		_waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),
-									 _PWLSolver->getT_(), true);
-		_cavity = _waveletCavity;
-		_solver = _PWLSolver;
-	} 
-	_solver->setSolverType(modelType);*/
 }
 
 
@@ -192,7 +163,8 @@ extern "C" void get_tess_centers_(double * centers)
 	
 }
 
-extern "C" void get_tess_cent_coord_(int * its, double * center) {
+extern "C" void get_tess_cent_coord_(int * its, double * center) 
+{
 	Eigen::Vector3d tess = _cavity->getElementCenter(*its-1);
 	std::cout << tess.transpose() << std::endl;
 	center[0] = tess(0);
@@ -200,12 +172,11 @@ extern "C" void get_tess_cent_coord_(int * its, double * center) {
 	center[2] = tess(2);
 }
 
-extern "C" void print_pcm_(){
-        const char *infile = "@pcmsolver.inp";
-        Getkw Input = Getkw(infile, false, true);
-        const Section & Medium = Input.getSect("Medium");
-        const string modelType = Medium.getStr("SolverType");
-	std::cout << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n" << std::endl;
+extern "C" void print_pcm_()
+{
+	// I don't think this will work with wavelets as of now (8/7/13)
+	// we should work towards this though: "Program to an interface, not an implementation."
+	std::cout << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
 	std::cout << "========== Cavity " << std::endl;
 	std::cout << *_cavity << std::endl;
 	std::cout << "========== Solver " << std::endl;
@@ -223,23 +194,10 @@ extern "C" void print_pcm_(){
 	std::cout << ".... Outside " << std::endl;
 	std::cout << *(_solver->getGreenOutside()) << std::endl;
 	std::cout << std::endl;
-	/*if (modelType == "IEFPCM") {
-		std::cout << *_IEFSolver << std::endl;
-//	        std::cout << *_gePolCavity << std::endl;
-		std::cout << *_cavity << std::endl;
-	} else if (modelType == "CPCM") {
-		std::cout << *_CPCMSolver << std::endl;
-	        std::cout << *_gePolCavity << std::endl;
-        } else if (modelType == "Wavelet") {
-		std::cout << *_PWCSolver << std::endl;
-	        std::cout << *_waveletCavity << std::endl;
-	} else if (modelType == "Linear") {
-		std::cout << *_PWLSolver << std::endl;
-	        std::cout << *_waveletCavity << std::endl;
-	}*/
 }
 
-extern "C" void print_gepol_cavity_(){
+extern "C" void print_gepol_cavity_()
+{
 	cout << "Cavity size" << _cavity->size() << endl;
 }
 
@@ -363,12 +321,16 @@ void setupInput() {
 	Eigen::VectorXd charges;
 	Eigen::Matrix3Xd centers;
 	initAtoms(charges, centers);
+	std::vector<Sphere> spheres;
 
-	if (_mode == "Implicit") {
-		vector<Sphere> spheres = initSpheresImplicit(charges, centers);
+	if (_mode == "Implicit") 
+	{
+		initSpheresImplicit(charges, centers, spheres);
 		parsedInput.setSpheres(spheres);
-	} else if (_mode == "Atoms") {
-		vector<Sphere>  spheres = initSpheresAtoms(charges, centers);
+	} 
+	else if (_mode == "Atoms") 
+	{
+		initSpheresAtoms(charges, centers, spheres);
 		parsedInput.setSpheres(spheres);
 	}
 }
@@ -385,9 +347,16 @@ void initCavity()
 	double coarsity = Input::TheInput().getCoarsity();
 
 	// Get the right cavity from the Factory
-	_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
-	// Our use of inheritance breaks Liskov Principle, the Factory is pretty useless... 
-	// UNLESS one uses RTTI (which we do) although I don't know if it's a sign of ugly design strategy... 
+	// TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
+	std::string modelType = Input::TheInput().getSolverType();
+        if (modelType == "Wavelet" || modelType == "Linear") 
+	{// Both PWC and PWL require a WaveletCavity
+		_waveletCavity = initWaveletCavity();
+	}
+        else
+	{// This means in practice that the CavityFactory is now working only for GePol.
+		_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
+	}	
 }
 
 void initSolver()
@@ -411,83 +380,74 @@ void initSolver()
 	std::string modelType = Input::TheInput().getSolverType();
 	double correction = Input::TheInput().getCorrection();
 	int eqType = Input::TheInput().getEquationType();
-	_solver = SolverFactory::TheSolverFactory().createSolver(modelType, gfInside, gfOutside, correction, eqType);
-	_solver->buildSystemMatrix(*_cavity);
-/*	if (modelType == "IEFPCM") {
-		_IEFSolver = new IEFSolver(gfInside, gfOutside);
-		std::cout << "solver done" << std::endl;
-		_IEFSolver->buildSystemMatrix(*_cavity);
-		std::cout << "system matrix done" << std::endl;
-		_solver = _IEFSolver;
-	} else if (modelType == "CPCM") {
-		_IEFSolver = new IEFSolver(gfInside, gfOutside);
-		double correction = Input::TheInput().getCorrection();
-        	_CPCMSolver->setCorrection(correction);
-		_CPCMSolver->buildSystemMatrix(*_cavity);
-		_solver = _CPCMSolver;
-        } else*/ if (modelType == "Wavelet") {
-		_waveletCavity = initWaveletCavity();
+	// This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
+	// it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
+	// (...not our fault, but should remedy somehow)
+        if (modelType == "Wavelet") 
+	{
 		_PWCSolver = new PWCSolver(gfInside, gfOutside);
 		_PWCSolver->buildSystemMatrix(*_waveletCavity);
 		_waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_(), false); // WTF is happening here???
 		_cavity = _waveletCavity;
 		_solver = _PWCSolver;
-	} else if (modelType == "Linear") {
-		_waveletCavity = initWaveletCavity();
+	} 
+	else if (modelType == "Linear") 
+	{
 		_PWLSolver = new PWLSolver(gfInside, gfOutside);
 		_PWLSolver->buildSystemMatrix(*_waveletCavity);
 		_waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_(), true); // WTF is happening here???
 		_cavity = _waveletCavity;
 		_solver = _PWLSolver;
-	} 
+	}
+        else
+	{// This means that the factory is properly working only for IEFSolver and CPCMSolver
+		_solver = SolverFactory::TheSolverFactory().createSolver(modelType, gfInside, gfOutside, correction, eqType);
+		_solver->buildSystemMatrix(*_cavity);
+	}	
 }
 
-void initAtoms(Eigen::VectorXd & _charges, Eigen::Matrix3Xd & _sphereCenter) 
+void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_) 
 {
 	int nuclei;
 	collect_nctot_(&nuclei);
-	_sphereCenter.resize(Eigen::NoChange, nuclei);
-	_charges.resize(nuclei);
-	double * chg = _charges.data();
-	double * centers = _sphereCenter.data();
+	sphereCenter_.resize(Eigen::NoChange, nuclei);
+	charges_.resize(nuclei);
+	double * chg = charges_.data();
+	double * centers = sphereCenter_.data();
 	collect_atoms_(chg, centers);
 } 
 
-std::vector<Sphere> initSpheresAtoms(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _centers) 
+void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_) 
 {
-	std::vector<Sphere> spheres;
-
 	vector<int> atomsInput = Input::TheInput().getAtoms();
 	vector<double> radiiInput = Input::TheInput().getRadii();
 	
 	for (int i = 0; i < atomsInput.size(); ++i) 
 	{
 		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
-		Eigen::Vector3d center = _centers.col(index);
+		Eigen::Vector3d center = sphereCenter_.col(index);
 		Sphere sph(center, radiiInput[i]);
-		spheres.push_back(sph);
+		spheres_.push_back(sph);
 	}
-	return spheres;
 }
 
-std::vector<Sphere> initSpheresImplicit(const Eigen::VectorXd & _charges, const Eigen::Matrix3Xd & _centers) {
-	std::vector<Sphere> spheres;
+void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_) 
+{
 	bool scaling = Input::TheInput().getScaling();
 
-	for (int i = 0; i < _charges.size(); ++i) 
+	for (int i = 0; i < charges_.size(); ++i) 
 	{
 		std::vector<Atom> Bondi = Atom::initBondi();
-		int index = _charges(i) - 1;
+		int index = charges_(i) - 1;
 		double radius = Bondi[index].getAtomRadius();
                 if (scaling) 
 		{
 			radius *= Bondi[index].getAtomRadiusScaling();
                 }
-		Eigen::Vector3d center = _centers.col(i);
+		Eigen::Vector3d center = sphereCenter_.col(i);
 		Sphere sph(center, radius);
-		spheres.push_back(sph);
+		spheres_.push_back(sph);
 	}
-	return spheres;
 }
 
 WaveletCavity * initWaveletCavity()
@@ -496,109 +456,10 @@ WaveletCavity * initWaveletCavity()
 	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
 	double coarsity = Input::TheInput().getCoarsity();
 	double probeRadius = Input::TheInput().getProbeRadius();
-    	WaveletCavity * cav = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
+    	
+	WaveletCavity * cav = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
 	cav->readCavity("molec_dyadic.dat");
+	
 	return cav;
 
-}
-/*
-void init_wavelet_cavity_() {
-	const char *infile = 0;
-	infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-    	_waveletCavity = new WaveletCavity(Input, "Cavity<wavelet>");
-	_waveletCavity->makeCavity();
-	_waveletCavity->readCavity("molec_dyadic.dat");
-}
-*/
-
-void init_iefsolver_() {
-	const char *infile = 0;
-	infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-	const Section &Medium = Input.getSect("Medium<Medium>");
-//	_IEFSolver = new IEFSolver(Medium);
-//	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
-//	_IEFSolver->buildSystemMatrix(*_cavity);
-}
-
-void init_cpcmsolver_() {
-	const char *infile = 0;
-	infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-	const Section &Medium = Input.getSect("Medium<Medium>");
-//	_CPCMSolver = new CPCMSolver(Medium);
-//	double correction = Input.getDbl("Medium<Medium>.Correction");
-// 	_CPCMSolver->setCorrection(correction);
-//	_CPCMSolver->buildIsotropicMatrix(*_gePolCavity);
-}
-
-void init_pwcsolver_() {
-	const char *infile = 0;
-	infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-	const Section &Medium = Input.getSect("Medium<Medium>");
-	//_PWCSolver = new PWCSolver(Medium);
-	//_PWCSolver->buildSystemMatrix(*_waveletCavity);
-}
-
-void init_pwlsolver_() {
-	const char *infile = 0;
-	infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-	const Section &Medium = Input.getSect("Medium<Medium>");
-	//_PWLSolver = new PWLSolver(Medium);
-	//_PWLSolver->buildSystemMatrix(*_waveletCavity);
-}
-
-void build_isotropic_matrix_() {
-//	_IEFSolver->buildIsotropicMatrix(*_gePolCavity);
-}
-
-void build_anisotropic_matrix_() {
-//	_IEFSolver->buildAnisotropicMatrix(*_gePolCavity);
-}
-
-void init_atoms_(Eigen::VectorXd & charges, Eigen::Matrix3Xd & sphereCenter) 
-{
-	int nuclei;
-	collect_nctot_(&nuclei);
-	sphereCenter.resize(Eigen::NoChange, nuclei);
-	charges.resize(nuclei);
-	double * chg = charges.data();
-	double * centers = sphereCenter.data();
-	collect_atoms_(chg, centers);
-} 
-
-void init_spheres_atoms_(Eigen::VectorXd & charges, Eigen::Matrix3Xd & centers) 
-{
-	const char *infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-	std::vector<int> atomsInput = Input.getIntVec("Cavity<gepol>.Atoms");
-	std::vector<double> radiiInput = Input.getDblVec("Cavity<gepol>.Radii");
-	for (int i = 0; i < atomsInput.size(); i++) 
-	{
-		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
-		Eigen::Vector3d center = centers.col(index);
-		Sphere sphere(center, radiiInput[i]);
-		_gePolCavity->getSpheres().push_back(sphere);
-	}
-}
-
-void init_spheres_implicit_(Eigen::VectorXd & charges, Eigen::Matrix3Xd & centers)
-{
-	const char *infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-	std::string scaling = Input.getStr("Cavity<gepol>.Scaling");
-	for (int i = 0; i < charges.size(); i++) 
-	{
-		std::vector<Atom> Bondi = Atom::initBondi();
-		int index = charges(i) - 1;
-		double radius = Bondi[index].getAtomRadius();
-                if (scaling == "Yes") 
-			radius *= Bondi[index].getAtomRadiusScaling();
-		Eigen::Vector3d center = centers.col(i);
-		Sphere sphere(center, radius);
-		_gePolCavity->getSpheres().push_back(sphere);
-	}
 }

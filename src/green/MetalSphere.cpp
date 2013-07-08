@@ -1,75 +1,79 @@
-#include <iostream>
-#include <ostream>
+#include "MetalSphere.hpp"
+
 #include <cmath>
-#include <cstdlib>
+#include <ostream>
+#include <stdexcept>
+
+#include "Config.hpp"
+
 #include <Eigen/Dense>
 
-using namespace Eigen;
-
-using namespace std;
-
-#include "Getkw.h"
-#include "GreensFunctionInterface.h"
-#include "GreensFunction.h"
-#include "MetalSphere.h"
-
-extern"C" {
-    void gsfera_cpp_(double* epssol, double* epsre, double* epsim, 
-		     double* sphRadius, double* ps, double* p1, double* p2,
-		     double* greenre, double* greenim);
+extern"C" 
+{
+void gsfera_cpp_(double* epssol, double* epsre, double* epsim, 
+		 double* sphRadius, double* ps, double* p1, double* p2,
+		 double* greenre, double* greenim);
 }
 
-MetalSphere::MetalSphere(double eps, double epsRe, double epsIm, Vector3d &pos,
-						 double radius){
-	epsSolvent = eps;
-	sphRadius = radius;
-	sphPosition = pos;
-	epsMetal = dcomplex(epsRe,epsIm);
-	uniformFlag = false;
-};
+void MetalSphere::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
+{
+	throw std::runtime_error("Green's function for a metal sphere has not yet been implemented!");
+}
 
-MetalSphere::MetalSphere(Section green){
-	epsSolvent = green.getDbl("Eps");
-	epsMetal = dcomplex(green.getDbl("EpsRe"), green.getDbl("EpsImg"));
-	sphRadius = green.getDbl("SphereRadius");
-	const vector<double> &pos_ = green.getDblVec("SpherePosition");
-	Vector3d pos(pos_[0], pos_[1], pos_[2]);
-	uniformFlag = false;
-};
-
-double MetalSphere::evalGreensFunction(double * source, double * probe) {
-    double epsre, epsim;
+Eigen::Array4d MetalSphere::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
+	            			         Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
+{
+	Eigen::Array4d result;
+	
+	// Calculation of the value of the Green's Function
+	double epsre, epsim;
 	double greenre, greenim;
-    double point1[3], point2[3], sphere[3];
-    point1[0] = source[0];
-    point1[1] = source[1];
-    point1[2] = source[2];
-    point2[0] =  probe[0];
-    point2[1] =  probe[1];
-    point2[2] =  probe[2];
-    sphere[0] = sphPosition(0);
-    sphere[1] = sphPosition(1);
-    sphere[2] = sphPosition(2);
-    epsre = epsMetal.real();
-    epsim = epsMetal.imag();
-    gsfera_cpp_(&epsSolvent, &epsre, &epsim, &sphRadius,
-	       sphere, point1, point2, &greenre, &greenim);
-    return greenre;
-}
+    	double point1[3], point2[3], sphere[3];
+    	point1[0] = source_(0);
+    	point1[1] = source_(1);
+    	point1[2] = source_(2);
+    	point2[0] =  probe_(0);
+    	point2[1] =  probe_(1);
+    	point2[2] =  probe_(2);
+    	sphere[0] = sphPosition(0);
+    	sphere[1] = sphPosition(1);
+    	sphere[2] = sphPosition(2);
+    	epsre = epsMetal.real();
+    	epsim = epsMetal.imag();
+    	gsfera_cpp_(&epsSolvent, &epsre, &epsim, &sphRadius, sphere, point1, point2, &greenre, &greenim);
 
-double MetalSphere::compDiagonalElementS(double area){
-	std::cout << "Not Yet Implemented" << std::endl;
-	exit(-1);
-	return 0;
-}
-
-double MetalSphere::compDiagonalElementD(double area, double radius){
-	std::cout << "Not Yet Implemented" << std::endl;
-	exit(-1);
-	return 0;
-}
-
+	result(0) = greenre;
+/* This is for the evaluation of the derivative...
 double MetalSphere::evald(Vector3d &direction, Vector3d &p1, Vector3d &p2) {
     return epsSolvent * (this->derivativeProbe(direction, p1, p2));  // NORMALIZTION TEMPORARY REMOVED /direction.norm();
+}*/
 }
 
+Eigen::Array4d MetalSphere::analyticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 	
+	 			                Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
+{
+	throw std::runtime_error("Analytic derivative is not available for MetalSphere.");
+}
+
+Eigen::Array4d MetalSphere::automaticDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_,	
+	 			                 Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
+{
+	throw std::runtime_error("Automatic directional derivative is not available for MetalSphere.");
+}
+
+Eigen::Array4d MetalSphere::automaticGradient(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_,   	
+	 			              Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
+{
+	throw std::runtime_error("Automatic gradient is not available for MetalSphere.");
+}
+
+Eigen::Array4d MetalSphere::automaticHessian(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_,    	
+	 			             Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const
+{
+	throw std::runtime_error("Automatic Hessian is not available for MetalSphere.");
+}
+
+std::ostream & MetalSphere::printGreensFunction(std::ostream & os)
+{
+	return os;
+}

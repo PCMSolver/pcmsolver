@@ -1,76 +1,35 @@
-/*
+#include "GePolCavity.hpp"
 
-  GePol c++ interface and wrapper methods
-  written by Krzysztof Mozgawa, 2011
-
-*/
 #include <iostream>
-#include <fstream> 
 #include <string>
 #include <vector>
 
+#include "Config.hpp"
+
 #include <Eigen/Dense>
 
-using namespace std;
-using namespace Eigen;
+#include "Sphere.hpp"
 
-#include "Getkw.h"
-#include "Atom.h"
-#include "Sphere.h"
-#include "Cavity.h"
-#include "GePolCavity.h"
-
-GePolCavity::GePolCavity(const Section & cavity){
-	averageArea = cavity.getDbl("Area");
-	std::string modeString = cavity.getStr("Mode");
-	setMode(modeString);
-	if (mode == Explicit) {
-		vector<double> spheresInput = cavity.getDblVec("Spheres");
-		nSpheres = spheresInput.size()/4; // the correctness of the size has ben checked at input parsing
-		int j = 0;
-		for (int i = 0; i < nSpheres; i++) {
-			Vector3d center; 
-			center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
-			Sphere sph(center, spheresInput[j+3]);
-			spheres.push_back(sph);
-			j += 4;
-		}
-	}
+extern "C" 
+{
+	void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
+			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
+			     double *avgArea, double *rsolv, double* work, int* lwork);
 }
 
-void GePolCavity::writeOutput(string &filename){
-
-    ofstream output;
-    output.open(filename.c_str(), fstream::out);
-
-    output << nTess << endl;
-    for(int i=0; i < nTess; i++) {
-		output << tessCenter(0,i) << " ";
-		output << tessCenter(1,i) << " ";
-		output << tessCenter(2,i) << " ";
-		output << tessArea(i) << " ";
-		output << tessSphereCenter(0,i) << " ";
-		output << tessSphereCenter(1,i) << " ";
-		output << tessSphereCenter(2,i) << " ";
-		output << tessRadius(i) << endl;
-    }
-    output.close();
-}
-
-extern "C" {
-    void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, 
-							 double *ar, double *xsphcor, double *ysphcor, 
-							 double *zsphcor, double *rsph, int *nts, int *nesfp,
-							 double *xe, double *ye, double *ze, double *rin, 
-							 double *avgArea, double *rsolv, double* work, int* lwork);
-}
-
-void GePolCavity::makeCavity(){
+void GePolCavity::makeCavity()
+{
 	makeCavity(10000, 10000000);
 }
 
-void GePolCavity::makeCavity(int maxts, int lwork) {
-        
+void GePolCavity::makeCavity(int maxts, int lwork) 
+{
+       
+	// This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code PEDRA.
+	// Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow
+	// for the insertion of additional spheres as in the most general formulation of the
+	// GePol algorithm.
+
 	double *xtscor  = new double[maxts];
 	double *ytscor  = new double[maxts];
 	double *ztscor  = new double[maxts];
@@ -83,88 +42,118 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 	
 	int nts;
 	
-   	VectorXd xv(nSpheres + maxAddedSpheres);
-	VectorXd yv(nSpheres + maxAddedSpheres);
-	VectorXd zv(nSpheres + maxAddedSpheres);
-	VectorXd sphereRadius(nSpheres + maxAddedSpheres);
+	// Allocate vectors of size equal to nSpheres + maxAddedSpheres where maxAddedSpheres is the 
+	// maximum number of spheres we allow the algorithm to add to our original set.
+	// If this number is exceeded, then the algorithm crashes (should look into this...)
+	// After the cavity is generated we will update ALL the class data members, both related
+	// to spheres and finite elements so that the cavity is fully formed.
 	
-	for ( int i = 0; i < nSpheres; i++ ) {
-		xv(i) = spheres[i].getSphereCenter(0);
-		yv(i) = spheres[i].getSphereCenter(1);
-		zv(i) = spheres[i].getSphereCenter(2);
-		sphereRadius(i) = spheres[i].getSphereRadius();
+	Eigen::VectorXd xv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd yv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd zv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd sphereRadius_ = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres); // Not to be confused with the data member inherited from Cavity!!!
+	
+	for ( int i = 0; i < nSpheres; ++i ) 
+	{
+		for ( int j = 0; j < 3; ++j )
+		{
+			xv(i) = sphereCenter(0, i);
+			yv(i) = sphereCenter(1, i);
+			zv(i) = sphereCenter(2, i);
+		}
+		sphereRadius_(i) = sphereRadius(i);
 	}
 		
 	double *xe = xv.data();
 	double *ye = yv.data();
 	double *ze = zv.data();
 
-	double *rin = sphereRadius.data();
- 
+	double *rin = sphereRadius_.data();
+
+        // Go PEDRA, Go!	
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
 	
-	VectorXd rtmp(nSpheres + maxAddedSpheres);
-	VectorXd xtmp(nSpheres + maxAddedSpheres);
-	VectorXd ytmp(nSpheres + maxAddedSpheres);
-	VectorXd ztmp(nSpheres + maxAddedSpheres);
+	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
+	// coming out from generatecavity_cpp_
 	
-	rtmp = sphereRadius.head(nSpheres);
+	Eigen::VectorXd rtmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd xtmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd ytmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd ztmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+
+	// The first nSpheres elements of these temporaries will still be those of the original set of spheres	
+	rtmp = sphereRadius_.head(nSpheres);
 	xtmp = xv.head(nSpheres);
 	ytmp = yv.head(nSpheres);
 	ztmp = zv.head(nSpheres);
+	// Traverse the sphereRadius vector (starting from the nSpheres index) and count the number of 
+	// additional spheres that the algorithm created (characterized by non-zero radius)
 	addedSpheres = 0;
-	for ( int i = nSpheres; i < nSpheres + addedSpheres; i++ ) {
-		if ( sphereRadius(i) != 0) {
-			rtmp << sphereRadius(i);
-			xtmp << xv(i);
-			ytmp << yv(i);
-			ztmp << zv(i);
+	for ( int i = nSpheres; i < nSpheres + maxAddedSpheres; i++ ) 
+	{
+		if ( sphereRadius_(i) != 0.0) 
+		{
+			rtmp(i) = sphereRadius_(i);
+			xtmp(i) = xv(i);
+			ytmp(i) = yv(i);
+			ztmp(i) = zv(i);
 			addedSpheres += 1;
 		}
 	}
-	rtmp.resize(nSpheres + addedSpheres);
-	xtmp.resize(nSpheres + addedSpheres);
-	ytmp.resize(nSpheres + addedSpheres);
-	ztmp.resize(nSpheres + addedSpheres);
-	sphereRadius.resize(nSpheres + addedSpheres);
-	xv.resize(nSpheres + addedSpheres);
-	yv.resize(nSpheres + addedSpheres);
-	zv.resize(nSpheres + addedSpheres);
-	sphereRadius = rtmp;
-    	xv = xtmp;
-	yv = ytmp;
-	zv = ztmp;
-	
-	for ( int i = 0; i < nSpheres + addedSpheres; i++ ) {
-		Vector3d coord; 
-		coord << xv(i), yv(i), zv(i);
-		spheres[i].setSphereCenter(coord);
-		spheres[i].setSphereRadius(sphereRadius(i));
+
+	// The "intensive" part of updating the spheres related class data members will be of course
+	// executed iff addedSpheres != 0
+	if ( addedSpheres != 0 )
+	{
+		std::cout << "The PEDRA algorithm added " << addedSpheres << " new spheres to the original list." << std::endl;
+		// First of all update the nSpheres
+		nSpheres += addedSpheres;
+		// Resize sphereRadius and sphereCenter...
+		sphereRadius.resize(nSpheres);
+		sphereCenter.resize(Eigen::NoChange, nSpheres);
+		// ...clear vector<Sphere> spheres...
+		spheres.clear();
+		// ...and update their content
+		for ( int i = 0; i < nSpheres; ++i )
+		{
+			sphereRadius(i) = rtmp(i);
+			for ( int j = 0; j < 3; ++j )
+			{
+				sphereCenter(0, i) = xtmp(i);
+				sphereCenter(1, i) = ytmp(i);
+				sphereCenter(2, i) = ztmp(i);
+			}
+			Eigen::Vector3d cent = sphereCenter.col(i);
+			Sphere sph(cent, sphereRadius(i));
+			spheres.push_back(sph);
+		}
 	}
     	
-    nTess = int(nts);
-    tessCenter.resize(NoChange, nTess);
-    tessSphereCenter.resize(NoChange, nTess);
-    tessNormal.resize(NoChange, nTess);
-    tessArea.resize(nTess);
-    tessRadius.resize(nTess);
-    for(int i=0; i < nTess; i++){
-		tessCenter(0,i) = xtscor[i];
-		tessCenter(1,i) = ytscor[i];
-		tessCenter(2,i) = ztscor[i];
-		tessArea(i) = ar[i];
-		tessSphereCenter(0,i) = xsphcor[i];
-		tessSphereCenter(1,i) = ysphcor[i];
-		tessSphereCenter(2,i) = zsphcor[i];
-		tessRadius(i) = rsph[i];
-    }
-
-    tessNormal = tessCenter - tessSphereCenter;
-    for(int i=0; i < nTess; i++){
-		tessNormal.col(i) /= tessNormal.col(i).norm();
-	}
-
+        nElements = int(nts);                                               
+        elementCenter.resize(Eigen::NoChange, nElements);
+        elementSphereCenter.resize(Eigen::NoChange, nElements);
+        elementNormal.resize(Eigen::NoChange, nElements);
+        elementArea.resize(nElements);
+        elementRadius.resize(nElements);
+        for( int i = 0; i < nElements; ++i )
+	{
+    		elementCenter(0,i) = xtscor[i];
+    		elementCenter(1,i) = ytscor[i];
+    		elementCenter(2,i) = ztscor[i];
+    		elementArea(i) = ar[i];
+    		elementSphereCenter(0,i) = xsphcor[i];
+    		elementSphereCenter(1,i) = ysphcor[i];
+    		elementSphereCenter(2,i) = zsphcor[i];
+    		elementRadius(i) = rsph[i];
+        }
+    
+        elementNormal = elementCenter - elementSphereCenter;
+        for( int i = 0; i < nElements; ++i)
+	{
+    		elementNormal.col(i) /= elementNormal.col(i).norm();
+    	}
+    
 	delete[] xtscor;
 	delete[] ytscor;
 	delete[] ztscor;
@@ -179,71 +168,39 @@ void GePolCavity::makeCavity(int maxts, int lwork) {
 
 }
 
-void GePolCavity::setMode(const string & type) {
-	if (type == "Atoms") {
-		setMode(Atoms);
-	} else if (type == "Implicit") {
-		setMode(Implicit);
-	} else if (type == "Explicit") {
-		setMode(Explicit);
-	} else {
-		exit(-1);
-	}
-}
-
-void GePolCavity::setMode(int type) {
-	switch (type) {
-	case Atoms :
-		mode = Atoms;
-		break;
-	case Implicit :
-		mode = Implicit;
-		break;
-	case Explicit :
-		mode = Explicit;
-		break;
-	default :
-		exit(-1);
-	}
-}
-
-ostream & GePolCavity::printObject(ostream & os) {
+std::ostream & GePolCavity::printCavity(std::ostream & os) 
+{
 	/*
 	  We should print the cavity.off file here, just to
 	  get a prettier cavity image.
 	*/
-	os << "========== Cavity section" << endl;
-        os << "Cavity type: GePol" << endl;
-	os << "Number of spheres: " << nSpheres << endl;
-        os << "Number of tesserae: " << nTess << endl;
-/* RDR To be revised...
-	for(int i = 0; i < nSpheres + addedSpheres; i++) {
-		if ( i < nSpheres ) {
-			os << endl;
-			os << "Primary Spheres" << endl;
-			os << "Sphere " << i+1 << endl;
-			os << spheres[i] << endl;
-                        os << "Sphere Colour" << endl;
-                        os << spheres[i].getSphereColour() << endl;
-		} else {
-			os << endl;
-			os << "Secondary Spheres" << endl;
-			os << "Sphere " << i+1 << endl;
-			os << spheres[i] << endl;
-		}
+        os << "Cavity type: GePol" << std::endl;
+	os << "Average area = " << averageArea << " AU^2" << std::endl;
+	if (addSpheres)
+	{
+		os << "Addition of extra spheres enabled" << std::endl;
+		os << "Probe radius = " << probeRadius << std::endl;
+		os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
 	}
-*/
+	else
+	{
+		os << "Number of spheres = " << nSpheres << std::endl;
+	}
+        os << "Number of finite elements = " << nElements;
+        /*for(int i = 0; i < nElements; i++) 
+	{
+		os << std::endl;
+		os << i+1 << " ";
+		os << elementCenter(0,i) << " ";
+		os << elementCenter(1,i) << " ";
+		os << elementCenter(2,i) << " ";
+		os << elementArea(i) << " ";
+        }*/
 	return os;
 }
 
-void GePolCavity::setMaxAddedSpheres(bool add, int maxAdd) {
-	if ( add == true ) {
-		maxAddedSpheres = maxAdd;
-	}
-	addSpheres = true;
-}
-
-void GePolCavity::setProbeRadius( double rsolv ) {
+void GePolCavity::setProbeRadius(double rsolv) 
+{
 	probeRadius = rsolv;
 	addSpheres = true;
 	maxAddedSpheres = 100;

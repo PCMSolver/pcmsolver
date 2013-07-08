@@ -1,29 +1,15 @@
-#include <iostream>
-#include <ostream>
+#include "PlanarInterface.hpp"
+
 #include <cmath>
-#include <cstdlib>
-
-using namespace std;
-
-#include "GreensFunction.h"
-#include "PlanarInterface.h"
-
-PlanarInterface::PlanarInterface(double eps1, double eps2, double pos, double width)
-{
-    this->eps1 = eps1;
-    this->eps2 = eps2;
-    this->pos = pos;
-    this->width = width;
-    computed = false;
-}
+#include <stdexcept>
 
 double PlanarInterface::evalf(double* p1, double* p2) {
-    if (computed) {
-	cout << "method not implemented yet" << endl;
-	exit(-1);
+    if (computed) 
+    {
+	throw std::runtime_error("Method not implemented yet");
     }
-    else {
-	cout << "compute green´s function before using it!" << endl;
-	exit(-1);
+    else 
+    {
+	throw std::runtime_error("Compute green´s function before using it!");
     }
 }

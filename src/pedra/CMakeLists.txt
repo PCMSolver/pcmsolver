@@ -11,5 +11,4 @@ set(pedra_SOURCES
 
 add_library(pedra ${pedra_SOURCES})
 
-install(TARGETS pedra
-  ARCHIVE DESTINATION lib)
+install(TARGETS pedra ARCHIVE DESTINATION lib)

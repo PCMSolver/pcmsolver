@@ -48,6 +48,5 @@ install(FILES topology_pwl.h     DESTINATION include)
 install(FILES trafos_pwl.h       DESTINATION include)
 install(FILES volume_pwl.h       DESTINATION include)
 
-install(TARGETS pwl
-    ARCHIVE DESTINATION lib)
+install(TARGETS pwl ARCHIVE DESTINATION lib)
 

@@ -1,18 +1,18 @@
+#include "PWLSolver.hpp"
 
-/*! \file PWLSolver.cpp 
-\brief PWL solver
-*/
-
+#include <fstream>
+#include <ostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
+
+#include "Config.hpp"
+
 #include <Eigen/Dense>
+//#include "Getkw.h"
 
-using namespace std;
-using namespace Eigen;
-
-extern "C"{
+extern "C"
+{
 #include "vector3.h"
 #include "sparse.h"
 #include "sparse2.h"
@@ -37,17 +37,11 @@ extern "C"{
 #include "energy_pwl.h"
 }
 
-#include "Constants.h"
-#include "Getkw.h"
-#include "taylor.hpp"
-#include "GreensFunctionInterface.h"
-#include "Cavity.h"
-#include "WaveletCavity.h"
-#include "PCMSolver.h"
-#include "WEMSolver.h"
-#include "PWLSolver.h"
+#include "Cavity.hpp"
+#include "GreensFunction.hpp"
+#include "WaveletCavity.hpp"
 
-static GreensFunctionInterface * gf;
+static GreensFunction * gf;
 
 static double SLInt(vector3 x, vector3 y)
 {  
@@ -66,7 +60,7 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 {  
 	vector3		c;
 	double		r;
-	Vector3d grad, dir;
+	Eigen::Vector3d grad, dir;
 	c.x = x.x-y.x;
 	c.y = x.y-y.y;
 	c.z = x.z-y.z;
@@ -79,17 +73,19 @@ static double DLUni(vector3 x, vector3 y, vector3 n_y)
 }
 
 static double SingleLayer (vector3 x, vector3 y) {
-	Vector3d vx(x.x, x.y, x.z);
-	Vector3d vy(y.x, y.y, y.z);
-	double value = gf->evalf(vx, vy);
+	Eigen::Vector3d vx(x.x, x.y, x.z);
+	Eigen::Vector3d vy(y.x, y.y, y.z);
+	Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+	double value = gf->evaluate(foo, vx, foo, vy)(0);
 	return value;
 }
 
 static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) {
-	Vector3d vx(x.x, x.y, x.z);
-	Vector3d vy(y.x, y.y, y.z);
-	Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-	double value = gf->evald(vn_y, vx, vy);
+	Eigen::Vector3d vx(x.x, x.y, x.z);
+	Eigen::Vector3d vy(y.x, y.y, y.z);
+	Eigen::Vector3d vn_y(n_y.x, n_y.y, n_y.z);
+	Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+	double value = gf->evaluate(foo, vx, vn_y, vy)(1);
 	return value;
 }
 
@@ -99,24 +95,10 @@ void PWLSolver::initPointers()
 	waveletList = NULL;
 }
 
-PWLSolver::PWLSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
-	WEMSolver(gfi, gfo) {
+/*PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
 	initPointers();
 	setSolverType("Linear");
-	setEquationType("FirstKind");
-}
-
-PWLSolver::PWLSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
-	WEMSolver(gfi, gfo) {
-	initPointers();
-	setSolverType("Linear");
-	setEquationType("FirstKind");
-}
-
-PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) {
-	initPointers();
-	setSolverType("Linear");
-}
+}*/
 
 PWLSolver::~PWLSolver(){
 	if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches, nLevels);
@@ -149,7 +131,7 @@ void PWLSolver::constructSi() {
 		break;
 	case Full:
 		factor = 2 * M_PI;
-	break;
+		break;
 	default:
 		exit(-1);
 	}
@@ -172,13 +154,13 @@ void PWLSolver::constructSe() {
 								 nLevels);
 }
 
-void PWLSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
+void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) {
 	sparse G;
 	double * rhs = 0;
 	double * u = (double*) calloc(nNodes, sizeof(double));
 	double * v = (double*) calloc(nNodes, sizeof(double));
 	//next line is just a quick fix but i do not like it...
-    VectorXd pot = potential;
+    	Eigen::VectorXd pot = potential;
 	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
 				 nNodes, pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
 	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList,
@@ -207,17 +189,17 @@ void PWLSolver::solveFirstKind(const VectorXd & potential, VectorXd & charge) {
 	free_sparse(&G);
 }
 
-void PWLSolver::solveSecondKind(const VectorXd & potential, VectorXd & charge) {
-	std::cout << "Second kind (Electric field) NYI" << std::endl;
-	exit(-1);
+void PWLSolver::solveSecondKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
+{
+	throw std::runtime_error("Second Kind (electric field) not yet implemented.");
 }
 
-void PWLSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
+void PWLSolver::solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) {
 	double * rhs = 0;
 	double * u = (double*) calloc(nNodes, sizeof(double));
 	double * v = (double*) calloc(nNodes, sizeof(double));
 	//next line is just a quick fix but i do not like it...
-    VectorXd pot = potential;
+        Eigen::VectorXd pot = potential;
 	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, 
 				 nNodes, pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
 	int iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList, 
@@ -241,5 +223,8 @@ void PWLSolver::solveFull(const VectorXd & potential, VectorXd & charge) {
 	free(v);
 }
 
-
-
+std::ostream & PWLSolver::printSolver(std::ostream & os) 
+{
+	os << "Solver Type: Wavelet, piecewise linear functions";
+	return os;
+}

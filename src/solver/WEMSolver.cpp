@@ -1,17 +1,18 @@
-/*! \file WEMSolver.cpp 
-\brief WEM solver
-*/
+#include "WEMSolver.hpp"
 
+#include <fstream>
+#include <ostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
+
+#include "Config.hpp"
+
 #include <Eigen/Dense>
+//#include "Getkw.h"
 
-using namespace std;
-using namespace Eigen;
-
-extern "C"{
+extern "C"
+{
 #include "vector3.h"
 #include "sparse2.h"
 #include "intvector.h"
@@ -33,14 +34,9 @@ extern "C"{
 #include "constants.h"
 }
 
-#include "Constants.h"
-#include "Getkw.h"
-#include "taylor.hpp"
-#include "GreensFunctionInterface.h"
-#include "Cavity.h"
-#include "WaveletCavity.h"
-#include "PCMSolver.h"
-#include "WEMSolver.h"
+#include "Cavity.hpp"
+#include "GreensFunction.hpp"
+#include "WaveletCavity.hpp"
 
 void WEMSolver::initWEMMembers()
 {
@@ -54,21 +50,13 @@ void WEMSolver::initWEMMembers()
 	nQuadPoints = 0;
 }
 
-WEMSolver::WEMSolver(GreensFunctionInterface & gfi, GreensFunctionInterface & gfo) : 
-	PCMSolver(gfi, gfo) {
-	initWEMMembers();
-}
-
-WEMSolver::WEMSolver(GreensFunctionInterface * gfi, GreensFunctionInterface * gfo) :
-	PCMSolver(gfi, gfo) {
-	initWEMMembers();
-}
-
+/*
 WEMSolver::WEMSolver(const Section & solver) : PCMSolver(solver) {
 	initWEMMembers();
-}
+}*/
 
-WEMSolver::~WEMSolver(){
+WEMSolver::~WEMSolver()
+{
 	if(nodeList != NULL)    free(nodeList);
 	if(elementList != NULL) free_patchlist(&elementList,nFunctions);
 	if(pointList != NULL)   free_points(&pointList, nPatches, nLevels);
@@ -78,7 +66,7 @@ WEMSolver::~WEMSolver(){
 	}
 }
 
-void WEMSolver::uploadCavity(WaveletCavity cavity) {
+void WEMSolver::uploadCavity(WaveletCavity & cavity) {
 	nPatches = cavity.getNPatches();
 	nLevels = cavity.getNLevels();
 	int n = (1<<nLevels);
@@ -89,7 +77,7 @@ void WEMSolver::uploadCavity(WaveletCavity cavity) {
 	for (int i = 0; i < nPatches; i++) {
 		for (int j = 0; j <= n; j++) {
 			for (int k = 0; k <= n; k++) {
-				Vector3d p = cavity.getNodePoint(kk);
+				Eigen::Vector3d p = cavity.getNodePoint(kk);
 				pointList[i][k][j] = vector3_make(p(0), p(1), p(2));
 				kk++;
 			}
@@ -104,9 +92,7 @@ void WEMSolver::buildSystemMatrix(Cavity & cavity) {
 		this->constructWavelets();
 		this->constructSystemMatrix();
 	} else {
-		std::cout << "Wavelet-type cavity needed for wavelet solver." 
-				  << std::endl;
-		exit(-1);
+		throw std::runtime_error("Wavelet type cavity needed for wavelet solver.");
 	}
 }
 
@@ -117,7 +103,7 @@ void WEMSolver::constructSystemMatrix(){
 	}
 }
 
-void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
+void WEMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) {
 
 	switch (integralEquation) {
 	case FirstKind:
@@ -130,8 +116,7 @@ void WEMSolver::compCharge(const VectorXd & potential, VectorXd & charge) {
 		solveFull(potential, charge);
 		break;
 	default:
-		std::cout << "Invalid case" << std::endl;
-		exit(-1);
+		throw std::runtime_error("Invalid case");
 	}
 	charge *= -1.0;
 	//	charge /= -ToAngstrom; //WARNING  WARNING  WARNING

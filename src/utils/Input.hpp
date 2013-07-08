@@ -43,6 +43,7 @@ class Input
 		double coarsity;
 		double area;
 		bool scaling;
+		std::string radiiSet;
 		bool addSpheres;
 		std::string mode;
 		std::vector<int> atoms;
@@ -76,7 +77,8 @@ class Input
 		int getPatchLevel(){ return patchLevel; }
 		double getCoarsity(){ return coarsity; }
 		double getArea(){ return area; }
-		bool getScaling(){ return scaling; } 
+		bool getScaling(){ return scaling; }
+		std::string getRadiiSet() { return radiiSet; }
 		bool getAddSpheres(){ return addSpheres; }
 		std::string getMode(){ return mode; }
 		std::vector<int> getAtoms(){ return atoms; }

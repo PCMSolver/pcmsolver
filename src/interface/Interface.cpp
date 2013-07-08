@@ -434,15 +434,25 @@ void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd &
 void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_) 
 {
 	bool scaling = Input::TheInput().getScaling();
+	std::string set = Input::TheInput().getRadiiSet();
+	
+	std::vector<Atom> radiiSet;
+	if ( set == "UFF" )
+	{
+		radiiSet = Atom::initUFF();
+	}
+	else
+	{
+		radiiSet = Atom::initBondi();
+	}
 
 	for (int i = 0; i < charges_.size(); ++i) 
 	{
-		std::vector<Atom> Bondi = Atom::initBondi();
 		int index = charges_(i) - 1;
-		double radius = Bondi[index].getAtomRadius();
+		double radius = radiiSet[index].getAtomRadius();
                 if (scaling) 
 		{
-			radius *= Bondi[index].getAtomRadiusScaling();
+			radius *= radiiSet[index].getAtomRadiusScaling();
                 }
 		Eigen::Vector3d center = sphereCenter_.col(i);
 		Sphere sph(center, radius);

@@ -30,6 +30,7 @@ Input::Input()
 		coarsity = cavity.getDbl("Coarsity");
 	}
 	scaling = cavity.getBool("Scaling");
+	radiiSet = cavity.getStr("RadiiSet");
 	addSpheres = cavity.getBool("AddSpheres");
 	mode = cavity.getStr("Mode");
 	if (mode == "Explicit") 

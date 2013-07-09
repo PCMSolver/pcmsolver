@@ -33,6 +33,7 @@ class IEFSolver : public PCMSolver
                 void buildIsotropicMatrix(GePolCavity & cav);
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
+		IEFSolver() {}
     		IEFSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) 
 			: PCMSolver(gfInside_, gfOutside_), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
                 virtual ~IEFSolver() {}

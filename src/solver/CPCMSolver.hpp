@@ -34,6 +34,7 @@ class CPCMSolver : public PCMSolver
                 void buildIsotropicMatrix(GePolCavity & cav);
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
+		CPCMSolver() {}
                 CPCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0) 
 			: PCMSolver(gfInside_, gfOutside_), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}                
                 //CPCMSolver(const Section & solver);

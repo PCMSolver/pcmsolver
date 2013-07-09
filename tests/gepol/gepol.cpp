@@ -40,7 +40,7 @@ TEST_F(GePolCavityTest, area)
 {
 	double area = 147.18581691164593;
  	double actualArea = cav.getElementArea().sum();
-	EXPECT_DOUBLE_EQ(area, actualArea);
+	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
 TEST_F(GePolCavityTest, volume)
@@ -54,5 +54,5 @@ TEST_F(GePolCavityTest, volume)
 		actualVolume += cav.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
-	EXPECT_DOUBLE_EQ(volume, actualVolume);
+	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
 }

@@ -3,8 +3,8 @@ find_package(Sphinx QUIET)
 if(SPHINX_FOUND)
     add_custom_target(
         html
-#        COMMAND ${CMAKE_SOURCE_DIR}/doc/preprocess_sphinx ${CMAKE_SOURCE_DIR}/doc ${PROJECT_BINARY_DIR};
-                sphinx-build -b html -d _build/doctrees ${CMAKE_SOURCE_DIR}/doc _build/html
+    #    COMMAND ${CMAKE_SOURCE_DIR}/doc/preprocess_sphinx ${CMAKE_SOURCE_DIR}/doc ${PROJECT_BINARY_DIR};
+         COMMAND sphinx-build -b html -d _build/doctrees ${CMAKE_SOURCE_DIR}/doc _build/html
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         )
 else()
@@ -34,6 +34,7 @@ if(DOXYGEN_FOUND AND SPHINX_FOUND)
         	${CMAKE_SOURCE_DIR}/doc/Doxyfile.in
         	${PROJECT_BINARY_DIR}/Doxyfile
     	)
+	execute_process(COMMAND mkdir -p ${PROJECT_BINARY_DIR}/doc/_doxygen/xml)	
 	set(DOXYGEN_XML_DIR ${PROJECT_BINARY_DIR}/doc/_doxygen/xml)
 	configure_file(
 		${CMAKE_SOURCE_DIR}/doc/conf.py.in

@@ -5,23 +5,9 @@ We will here describe the inheritance hierarchy for generating Green's functions
 The runtime creation of Green's functions objects relies on the Factory Method pattern [Gamma1994]_, [Alexandrescu2001]_, 
 implemented through the GreensFunctionFactory class.
 
-GreensFunctionInterface
------------------------
-.. doxygenclass:: GreensFunctionInterface
-   :project: PCMSolver
-   :members:
-   :sections: public*, protected*, private*
-
 GreensFunction
 --------------
 .. doxygenclass:: GreensFunction 
-   :project: PCMSolver
-   :members:
-   :sections: public*, protected*, private*
-
-GreensFunctionSum
------------------
-.. doxygenclass:: GreensFunctionSum
    :project: PCMSolver
    :members:
    :sections: public*, protected*, private*
@@ -40,9 +26,9 @@ UniformDielectric
    :members:
    :sections: public*, protected*, private*
 
-PlanarInterface
----------------
-.. doxygenclass:: PlanarInterface 
+IonicLiquid
+-----------
+.. doxygenclass:: IonicLiquid 
    :project: PCMSolver
    :members:
    :sections: public*, protected*, private*

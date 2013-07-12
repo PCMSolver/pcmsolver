@@ -16,7 +16,6 @@ Input::Input()
 	const char * parsedInputFile = "@pcmsolver.inp";
 	// Create a Getkw object from input file.
         Getkw input = Getkw(parsedInputFile, false, true);
- 	
 	const Section & cavity = input.getSect("Cavity");
 
         type = cavity.getStr("Type");
@@ -24,9 +23,11 @@ Input::Input()
 		area = cavity.getDbl("Area");
 		patchLevel = 0.0;
 		coarsity = 0.0;
-	} else {
+	} 
+	else 
+	{
 		area = 0.0;
-		patchLevel = cavity.getDbl("PatchLevel"); 
+		patchLevel = cavity.getInt("PatchLevel"); 
 		coarsity = cavity.getDbl("Coarsity");
 	}
 	scaling = cavity.getBool("Scaling");
@@ -44,7 +45,8 @@ Input::Input()
 			spheres.push_back(sph);
 			j += 4;
 		}
-	} else if (mode == "Atoms")
+	} 
+	else if (mode == "Atoms")
 	{
  		atoms = cavity.getIntVec("Atoms");
 		radii = cavity.getDblVec("Radii");

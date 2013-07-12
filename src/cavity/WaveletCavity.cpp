@@ -243,7 +243,7 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
 	os << "Probe Radius =  " << probeRadius << endl;
 	os << "Coarsity =      " << coarsity << endl;
 	os << "Patch Level =   " << patchLevel << endl;
-	os << "Number of spheres = " << nSpheres;
+	os << "Number of spheres = " << nSpheres << endl;
         os << "Number of finite elements = " << nElements << endl;
         /*for(int i = 0; i < nElements; i++) 
 	{
@@ -265,6 +265,7 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
     	}*/
 	if (uploadedDyadic) 
 	{
+		os << "Printing nodes" << endl;
 		for(int i = 0; i < nPoints; i++) 
 		{
 			os << endl;

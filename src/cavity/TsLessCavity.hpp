@@ -1,5 +1,5 @@
-#ifndef GEPOLCAVITY_HPP
-#define GEPOLCAVITY_HPP
+#ifndef TSLESSCAVITY_HPP
+#define TSLESSCAVITY_HPP
 
 #include <iosfwd>
 #include <string>
@@ -10,31 +10,28 @@
 #include "Cavity.hpp"
 #include "CavityFactory.hpp"
 
-/*! \file GePolCavity.hpp
- *  \class GePolCavity
- *  \brief A class for GePol cavity. 
- *  \author Krzysztof Mozgawa
- *  \date 2011
- *
- *  This class is an interface to the Fortran code PEDRA for the generation
- *  of cavities according to the GePol algorithm.
+/*! \file TsLessCavity.hpp
+ *  \class TsLessCavity
+ *  \brief A class for TsLess cavity. 
+ *  \author Roberto Di Remigio
+ *  \date 2013
  */
 
-class GePolCavity : public Cavity 
+class TsLessCavity : public Cavity 
 {
 	public:
-		GePolCavity(){}
-                GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, bool _addSpheres = false) :  
+		TsLessCavity(){}
+                TsLessCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, bool _addSpheres = false) :  
                     Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), addSpheres(_addSpheres), maxAddedSpheres(100) 
                        {
                     	   makeCavity(10000, 10000000);
                        }
-                virtual ~GePolCavity(){}
+                virtual ~TsLessCavity() {}
                 void makeCavity(int maxts, int lwork);
                 void makeCavity();
                 double getProbeRadius() { return probeRadius; }
                 void setProbeRadius( double probeRadius );
-                friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity)
+                friend std::ostream & operator<<(std::ostream & os, TsLessCavity & cavity)
 		{
 			return cavity.printCavity(os);
 		}
@@ -49,13 +46,13 @@ class GePolCavity : public Cavity
 
 namespace
 {
-	Cavity* createGePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
+	Cavity* createTsLessCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
 			bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
 	{
-		return new GePolCavity(_spheres, _area, _probeRadius, _addSpheres);
+		return new TsLessCavity(_spheres, _area, _probeRadius, _addSpheres);
 	}
-	const std::string GEPOL("GePol");
-	const bool registeredGePol = CavityFactory::TheCavityFactory().registerCavity(GEPOL, createGePolCavity);
+	const std::string TSLESS("TsLess");
+	const bool registeredTsLess = CavityFactory::TheCavityFactory().registerCavity(TSLESS, createTsLessCavity);
 }
 
-#endif // GEPOLCAVITY_HPP
+#endif // TSLESSCAVITY_HPP

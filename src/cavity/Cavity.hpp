@@ -40,7 +40,7 @@ class Cavity
 					sphereRadius(i) = spheres[i].getSphereRadius();
 				}
 			}
-                virtual ~Cavity(){}
+                virtual ~Cavity() {}
 		/*! \brief Creates the cavity and discretize its surface. 
 		 */
                 virtual void makeCavity() = 0;                                         

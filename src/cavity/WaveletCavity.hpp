@@ -7,7 +7,6 @@
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-//#include "Getkw.h"
 
 extern "C"
 {
@@ -21,9 +20,6 @@ class WaveletCavity : public Cavity
 {
 	public:
 		WaveletCavity(){}
-                //WaveletCavity(string &filename);
-                //WaveletCavity(const Getkw & input, const string path = "Cavity");                                                          
-                //WaveletCavity(const Section & cavity);
                 WaveletCavity(const std::vector<Sphere> & _spheres, double _probeRadius, int _patchLevel = 2, double _coarsity = 0.5) :
             	   Cavity(_spheres), probeRadius(_probeRadius), patchLevel(_patchLevel), coarsity(_coarsity) 
                        {
@@ -34,12 +30,6 @@ class WaveletCavity : public Cavity
                 void makeCavity();
                 void readCavity(const std::string & filename);
                 void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
-                //VectorXd & getTessRadius(){return tessRadius;};
-                //VectorXd & getSphereRadius(){return sphereRadius;};
-                //int getNSpheres(){return nSpheres;};
-                //Matrix3Xd & getSphereCenter(){return sphereCenter;};
-                //Matrix3Xd & getTessSphereCenter(){return tessSphereCenter;};
-                //double getTessRadius(int i){return tessRadius(i);};
                 unsigned int getNPatches() { return nPatches; }
                 unsigned int getNLevels() { return nLevels; }
                 unsigned int getNPoints() { return nPoints; }
@@ -60,11 +50,6 @@ class WaveletCavity : public Cavity
                 unsigned int nPoints;
                 bool uploadedDyadic;
                 void writeInput(std::string &fileName);
-                //int nSpheres;               
-                //Matrix3Xd sphereCenter;
-                //Matrix3Xd tessSphereCenter;
-                //VectorXd sphereRadius;
-                //VectorXd tessRadius;
                 int patchLevel;
                 double probeRadius;
                 double coarsity;

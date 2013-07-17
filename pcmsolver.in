@@ -164,7 +164,7 @@ def verify_top(section):
 		isAngstrom = True
 
 def verify_cavity(section):
-	allowed = ('GePol', 'Wavelet')
+	allowed = ('GePol', 'Wavelet', 'TsLess')
         type = section.get('Type')
         if (type.get() not in allowed):
         	print "Allowed types are: ", allowed

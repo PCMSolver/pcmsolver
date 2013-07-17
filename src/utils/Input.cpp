@@ -19,16 +19,20 @@ Input::Input()
 	const Section & cavity = input.getSect("Cavity");
 
         type = cavity.getStr("Type");
-	if (type == "GePol") { 
+	if (type == "GePol") 
+	{ // GePol cavity branch
 		area = cavity.getDbl("Area");
 		patchLevel = 0.0;
 		coarsity = 0.0;
 	} 
-	else 
-	{
+	else if (type == "Wavelet") 
+	{ // Wavelet cavity branch
 		area = 0.0;
 		patchLevel = cavity.getInt("PatchLevel"); 
 		coarsity = cavity.getDbl("Coarsity");
+	}
+	else
+	{ // TsLess cavity branch
 	}
 	scaling = cavity.getBool("Scaling");
 	radiiSet = cavity.getStr("RadiiSet");

@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -23,6 +24,20 @@
 
 class Cavity
 {
+	protected:
+		std::vector<Sphere> spheres;
+                int nElements;
+                bool built;
+		Eigen::Matrix3Xd elementCenter;
+		Eigen::Matrix3Xd elementNormal;
+		Eigen::VectorXd elementArea;
+          	int nSpheres;
+	 	Eigen::Matrix3Xd elementSphereCenter;
+	 	Eigen::VectorXd elementRadius;
+	        Eigen::Matrix3Xd sphereCenter;
+	        Eigen::VectorXd sphereRadius;
+	private:
+                virtual std::ostream & printCavity(std::ostream & os) = 0;  
 	public:
 		//! Default constructor
 		Cavity() : nElements(0), built(false) {}
@@ -66,20 +81,6 @@ class Cavity
 		{
 			return cavity.printCavity(os);
 		}
-	 protected:
-		std::vector<Sphere> spheres;
-                int nElements;
-                bool built;
-		Eigen::Matrix3Xd elementCenter;
-		Eigen::Matrix3Xd elementNormal;
-		Eigen::VectorXd elementArea;
-          	int nSpheres;
-	 	Eigen::Matrix3Xd elementSphereCenter;
-	 	Eigen::VectorXd elementRadius;
-	        Eigen::Matrix3Xd sphereCenter;
-	        Eigen::VectorXd sphereRadius;
-	 private:
-                virtual std::ostream & printCavity(std::ostream & os) = 0;  
 };
 
 #endif // CAVITY_HPP

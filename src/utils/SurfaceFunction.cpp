@@ -61,7 +61,11 @@ SurfaceFunction & SurfaceFunction::operator-=(const SurfaceFunction & other)
 
 SurfaceFunction & SurfaceFunction::operator*=(double scaling)
 {
-	this->name = std::to_string(scaling) + "*" + this->name;
+//	this->name = std::to_string(scaling) + "*" + this->name; // The C++11 way
+	std::ostringstream sstream;
+	sstream << scaling;
+	std::string scalingAsString = sstream.str();
+	this->name = scalingAsString + "*" + this->name;
 	this->values *= scaling;
         return *this;
 }

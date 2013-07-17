@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 #include "Config.hpp"
 

@@ -1,8 +1,9 @@
 #ifndef CAVITYFACTORY_HPP
 #define CAVITYFACTORY_HPP
 
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 #include "Config.hpp"
 

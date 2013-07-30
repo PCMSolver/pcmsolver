@@ -1,7 +1,7 @@
 if (NOT DEFINED DEFUALT_CXX_FLAGS_SET OR RESET_FLAGS)
   
   if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
-      set (CMAKE_CXX_FLAGS "-Wall -Wno-unknown-pragmas -Wno-sign-compare -Woverloaded-virtual -Wwrite-strings -Wno-unused -fPIC")# -std=c++11")
+      set (CMAKE_CXX_FLAGS "-Wall -Wno-unknown-pragmas -Wno-sign-compare -Woverloaded-virtual -Wwrite-strings -Wno-unused -fPIC") #-std=c++11")
       set (CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -DDEBUG")
       set (CMAKE_CXX_FLAGS_RELEASE "-O2 -march=native -DNDEBUG -Wno-unused")
       if (ENABLE_CODE_COVERAGE)

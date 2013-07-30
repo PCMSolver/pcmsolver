@@ -20,7 +20,7 @@ TEST(CPCMSolver, pointCharge)
 	// The point charge is located at the origin.
 	// The potential at cavity point s_I is Q/|s_I|
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Numerical directional derivative
+	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, correction);

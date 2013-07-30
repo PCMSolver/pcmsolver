@@ -2,51 +2,43 @@
 
 #include <Eigen/Dense>
 
-#include "Getkw.h"
 #include "GePolCavity.hpp"
-#include "PCMSolver.hpp"
+#include "Vacuum.hpp"
+#include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
-//#include "Interface.hpp"
 #include "gtest/gtest.h"
 
-TEST(iefpcm, pointCharge) {
-// This vector contains the potential of a point charge q at the sphere surface.
-	Eigen::Vector3d potential;
-// The exact total surface charge is given by (eps - 1)/eps * q
-	double totalCharge;
-	Eigen::Vector3d origin;
-	origin << 0.0, 0.0, 0.0;
-	double radius = 1.0;
-	Sphere point(origin, radius);
-        std::vector<Sphere> cavSpheres;
-	cavSpheres.push_back(point);
-	const char *infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-////////string solvent = Input.getStr("Medium.Solvent");
-	Section cavSect = Input.getSect("Cavity<gepol>");
-//        GePolCavity cavity(cavSect, cavSpheres);		
-// Read a dummy input that has already been parsed.
-//	init_pcm_();
-//  std::string name("foobar");
-//  Eigen::MatrixX3d geometry;
-//  geometry.resize(2, Eigen::NoChange);
-//  geometry << 0.0, 0.0, 0.0,
-//              1.0, 0.0, 0.0;
-//  Eigen::VectorXd charges;
-//  charges.resize(2);
-//  charges << 1.0, 1.0;
-//  Molecule foobar(charges, geometry, name);
-//  foobar.moveToCOM();
+TEST(IEFSolver, pointCharge) 
+{
+	// Set up cavity
+	Eigen::Vector3d N(0.0, 0.0, 0.0); 		
+	std::vector<Sphere> spheres;      		
+	Sphere sph1(N, 2.929075493);      		
+	spheres.push_back(sph1);          		
+	double area = 0.4;                		
+	GePolCavity cavity(spheres, area);		
+	// The point charge is located at the origin.
+	// The potential at cavity point s_I is Q/|s_I|
+	double permittivity = 78.39;
+	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
+	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	double correction = 0.0;
+	IEFSolver solver(gfInside, gfOutside);
+	solver.buildSystemMatrix(cavity);
 
-//  Eigen::Matrix3d inertia;
-//  foobar.moveToPAF();
-//  inertia = foobar.getInertiaTensor();
-//  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigenSolver(inertia);
-//  
-//  Eigen::Vector3d moments;
-//  moments << 0.0, 0.50397, 0.50397; 
-
-//  for(int i = 0; i < 3; ++i) {
-//      EXPECT_EQ(eigenSolver.eigenvalues()[i], moments[i]);
-//  }
+	double charge = 8.0;
+	int size = cavity.size();
+	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < size; ++i)
+	{
+		Eigen::Vector3d center = cavity.getElementCenter(i);
+		double distance = center.norm();
+		fake_mep(i) = charge / distance; 
+	}
+	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon}
+	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+	solver.compCharge(fake_mep, fake_asc);
+	double totalASC = - charge * (permittivity - 1) / permittivity;
+	double totalFakeASC = fake_asc.sum();
+	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <vector>
+#include <stdexcept>
 
 #include "Config.hpp"
 
@@ -19,7 +20,8 @@ Input::Input()
 	const Section & cavity = input.getSect("Cavity");
 
         type = cavity.getStr("Type");
-	if (type == "GePol") { 
+	if (type == "GePol") 
+	{ 
 		area = cavity.getDbl("Area");
 		patchLevel = 0.0;
 		coarsity = 0.0;
@@ -114,5 +116,21 @@ Input::Input()
 	solverType = medium.getStr("SolverType");
 	equationType = mapStringToIntEquationType.find(medium.getStr("EquationType"))->second;
 	correction = medium.getDbl("Correction");
+
+	// Now we have all input parameters, do some sanity checks
+        if ( type == "GePol")
+	{
+		if (solverType == "Wavelet" || solverType == "Linear") // User asked for GePol cavity with wavelet solvers
+		{
+	    		throw std::runtime_error("GePol cavity can be used only with traditional solvers.");
+		}
+	}
+	else 
+	{
+		if (solverType == "IEFPCM" || solverType == "CPCM") // User asked for wavelet cavity with traditional solvers
+		{
+	    		throw std::runtime_error("Wavelet cavity can be used only with wavelet solvers.");
+		}
+	}
 }
 

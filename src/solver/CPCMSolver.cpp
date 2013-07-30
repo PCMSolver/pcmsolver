@@ -28,7 +28,7 @@ void CPCMSolver::buildSystemMatrix(Cavity & cavity)
     } 
     else 
     {
-	    throw std::runtime_error( "No other cavity than GePol for traditional PCM.");
+	    throw std::runtime_error("No other cavity than GePol for traditional PCM.");
     }
 }
 

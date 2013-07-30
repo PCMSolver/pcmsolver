@@ -60,13 +60,8 @@ class WaveletCavity : public Cavity
                 unsigned int nPoints;
                 bool uploadedDyadic;
                 void writeInput(std::string &fileName);
-                //int nSpheres;               
-                //Matrix3Xd sphereCenter;
-                //Matrix3Xd tessSphereCenter;
-                //VectorXd sphereRadius;
-                //VectorXd tessRadius;
-                int patchLevel;
                 double probeRadius;
+                int patchLevel;
                 double coarsity;
                 virtual std::ostream & printCavity(std::ostream & os);  
 };

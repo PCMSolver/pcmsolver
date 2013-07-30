@@ -10,29 +10,21 @@
 #include <Eigen/Dense>
 
 #include "Cavity.hpp"
-#include "GePolCavity.hpp"
 #include "GreensFunction.hpp"
 
 void IEFSolver::buildSystemMatrix(Cavity & cavity) 
 {
-    if (GePolCavity *gePolCavity = dynamic_cast<GePolCavity*> (&cavity)) 
-    {
-	    if (greenInside->isUniform() && greenOutside->isUniform()) 
-            {                                          
-	    	buildIsotropicMatrix(*gePolCavity);      
-	    }                                                
-	    else                                             
-	    {                                                
-	    	buildAnisotropicMatrix(*gePolCavity);    
-	    }                                                
-    } 
-    else 
-    {
-	    throw std::runtime_error("No other cavity than GePol for traditional PCM");
-    }
+	if (greenInside->isUniform() && greenOutside->isUniform())
+	{
+		buildIsotropicMatrix(cavity);
+	}
+	else
+	{
+		buildAnisotropicMatrix(cavity);
+	}
 }
 
-void IEFSolver::buildAnisotropicMatrix(GePolCavity & cav)
+void IEFSolver::buildAnisotropicMatrix(Cavity & cav)
 {
 	int cavitySize = cav.size();
     	Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
@@ -84,7 +76,7 @@ void IEFSolver::buildAnisotropicMatrix(GePolCavity & cav)
 }
 
 
-void IEFSolver::buildIsotropicMatrix(GePolCavity & cav)
+void IEFSolver::buildIsotropicMatrix(Cavity & cav)
 {
 	double epsilon = greenOutside->getDielectricConstant();
         int cavitySize = cav.size();

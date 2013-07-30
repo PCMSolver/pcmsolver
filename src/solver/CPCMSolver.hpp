@@ -9,7 +9,6 @@
 #include "Config.hpp"
 
 class Cavity;
-class GePolCavity;
 class GreensFunction;
 
 #include "PCMSolver.hpp"
@@ -31,7 +30,7 @@ class CPCMSolver : public PCMSolver
     		Eigen::MatrixXd PCMMatrix;
 //    		static const double factor = 1.0694;
     		static const double factor = 1.07;
-                void buildIsotropicMatrix(GePolCavity & cav);
+                void buildIsotropicMatrix(Cavity & cav);
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
                 CPCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0) 

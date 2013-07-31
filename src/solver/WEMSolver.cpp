@@ -103,20 +103,21 @@ void WEMSolver::constructSystemMatrix(){
 	}
 }
 
-void WEMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) {
-
-	switch (integralEquation) {
-	case FirstKind:
-		solveFirstKind(potential, charge);
-		break;
-	case SecondKind:
-		solveSecondKind(potential, charge);
-		break;
-	case Full:
-		solveFull(potential, charge);
-		break;
-	default:
-		throw std::runtime_error("Invalid case");
+void WEMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
+{
+	switch (integralEquation) 
+	{
+		case FirstKind:
+			solveFirstKind(potential, charge);
+			break;
+		case SecondKind:
+			solveSecondKind(potential, charge);
+			break;
+		case Full:
+			solveFull(potential, charge);
+			break;
+		default:
+			throw std::runtime_error("Invalid case");
 	}
 	charge *= -1.0;
 	//	charge /= -ToAngstrom; //WARNING  WARNING  WARNING

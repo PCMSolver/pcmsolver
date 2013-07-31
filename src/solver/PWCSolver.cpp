@@ -152,23 +152,25 @@ void PWCSolver::constructSe() {
 	aposteriori2_ = postproc(&S_e_, waveletList, elementTree, nPatches, nLevels);
 }
 
-void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) {
+void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
+{
 	double *rhs;
 	double *u = (double*) calloc(nFunctions, sizeof(double));
-    double * pot = const_cast<double *>(potential.data());
-    double * chg = charge.data();
+    	double * pot = const_cast<double *>(potential.data());
+    	double * chg = charge.data();
 	double epsilon = greenOutside->getDielectricConstant();
 	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, pot,
 			 quadratureLevel_);
 	int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, nPatches, nLevels);
 	tdwtKon(u, nLevels, nFunctions);
 	dwtKon(u, nLevels, nFunctions);
-	for (int i = 0; i < nFunctions; i++) {
+	for (int i = 0; i < nFunctions; ++i) 
+	{
 		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
 	}
 	memset(u, 0, nFunctions * sizeof(double));
 	iter = WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);
-    tdwtKon(u, nLevels, nFunctions);
+    	tdwtKon(u, nLevels, nFunctions);
 	energy_ext(u, pot, elementList, T_, nPatches, nLevels);
 	charge_ext(u, chg, elementList, T_, nPatches, nLevels);
 	free(rhs);
@@ -185,7 +187,7 @@ void PWCSolver::solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & c
 	double *u = (double*) calloc(nFunctions, sizeof(double));
 	double *v = (double*) calloc(nFunctions, sizeof(double));
 	//next line is just a quick fix to avoid problems with const but i do not like it...
-    double * pot = const_cast<double *>(potential.data());
+        double * pot = const_cast<double *>(potential.data());
 	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, pot,
 			 quadratureLevel_);
 	int iters = WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);

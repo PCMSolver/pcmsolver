@@ -2,32 +2,43 @@
 
 #include <vector>
 #include <cmath>
-#include "TsLessCavity.hpp"
+#include "PWCSolver.hpp"
+#include "Vacuum.hpp"
+#include "UniformDielectric.hpp"
+#include "WaveletCavity.hpp"
 #include "gtest/gtest.h"
 
-class TsLessCavityTest : public ::testing::Test
+class WaveletCavityTest : public ::testing::Test
 {
 	protected:
-		TsLessCavity cav;
+		WaveletCavity cav;
 		virtual void SetUp()
 		{
-			Eigen::Vector3d origin(0.0, 0.0, 0.0);
+			Eigen::Vector3d N(0.0, 0.0, 0.0);
 			std::vector<Sphere> spheres;
-			Sphere sph1(origin,  1.0);
+			Sphere sph1(N, 1.0);
 			spheres.push_back(sph1);
-			double area = 0.4;
-			cav = TsLessCavity(spheres, area);
+			double probeRadius = 1.385; // Probe Radius for water
+			cav = WaveletCavity(spheres, probeRadius);
+			cav.readCavity("molec_dyadic.dat");
+			double permittivity = 78.39;
+			Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
+			UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+			int firstKind = 0;
+			PWCSolver solver(gfInside, gfOutside, firstKind);
+			solver.buildSystemMatrix(cav);
+			cav.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), false);
 		}
 };
 
-TEST_F(TsLessCavityTest, size)
+TEST_F(WaveletCavityTest, size)
 {
-	int size = 32;
+	int size = 4864;
 	int actualSize = cav.size();
 	EXPECT_EQ(size, actualSize);
 }
 
-TEST_F(TsLessCavityTest, area)
+TEST_F(WaveletCavityTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
  	double actualArea = cav.getElementArea().sum();
@@ -35,7 +46,7 @@ TEST_F(TsLessCavityTest, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
-TEST_F(TsLessCavityTest, volume)
+TEST_F(WaveletCavityTest, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
 	Eigen::Matrix3Xd elementCenter = cav.getElementCenter();
@@ -50,10 +61,10 @@ TEST_F(TsLessCavityTest, volume)
 //	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
 }
 
-class TsLessCavityNH3Test : public ::testing::Test
+class WaveletCavityNH3Test : public ::testing::Test
 {
 	protected:
-		TsLessCavity cav;
+		WaveletCavity cav;
 		virtual void SetUp()
 		{
 			Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
@@ -69,28 +80,36 @@ class TsLessCavityNH3Test : public ::testing::Test
 			spheres.push_back(sph2);
 			spheres.push_back(sph3);
 			spheres.push_back(sph4);
-			double area = 0.4;
-			cav = TsLessCavity(spheres, area);
+			double probeRadius = 1.385; // Probe Radius for water
+			cav = WaveletCavity(spheres, probeRadius);
+			cav.readCavity("molec_dyadic.dat");
+			double permittivity = 78.39;
+			Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
+			UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+			int firstKind = 0;
+			PWCSolver solver(gfInside, gfOutside, firstKind);
+			solver.buildSystemMatrix(cav);
+			cav.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), false);
 		}
 };
 
-TEST_F(TsLessCavityNH3Test, size)
+TEST_F(WaveletCavityNH3Test, size)
 {
-	int size = 544;
+	int size = 4864;
 	int actualSize = cav.size();
 	EXPECT_EQ(size, actualSize);
 }
 
-TEST_F(TsLessCavityNH3Test, area)
+TEST_F(WaveletCavityNH3Test, area)
 {
-	double area = 147.18581691164593;
+	double area = 146.41602862089889;
  	double actualArea = cav.getElementArea().sum();
 	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
-TEST_F(TsLessCavityNH3Test, volume)
+TEST_F(WaveletCavityNH3Test, volume)
 {
-	double volume = 152.81441857040116;
+	double volume = 153.3130201033002;
 	Eigen::Matrix3Xd elementCenter = cav.getElementCenter();
 	Eigen::Matrix3Xd elementNormal = cav.getElementNormal();
 	double actualVolume = 0;

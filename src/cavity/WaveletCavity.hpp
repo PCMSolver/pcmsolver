@@ -1,7 +1,8 @@
 #ifndef WAVELETCAVITY_HPP
 #define WAVELETCAVITY_HPP
 
-#include <iosfwd>
+//#include <iosfwd>
+#include <iostream>
 #include <string>
 
 #include "Config.hpp"
@@ -23,8 +24,10 @@ class WaveletCavity : public Cavity
                 WaveletCavity(const std::vector<Sphere> & _spheres, double _probeRadius, int _patchLevel = 2, double _coarsity = 0.5) :
             	   Cavity(_spheres), probeRadius(_probeRadius), patchLevel(_patchLevel), coarsity(_coarsity) 
                        {
-            		uploadedDyadic = false;
-            		makeCavity();
+			       std::cout << "Inside WaveletCavity CTOR" << std::endl;
+			       uploadedDyadic = false;
+            		       makeCavity();
+			       std::cout << "Exited normally from makeCavity method" << std::endl;
                        }
                 virtual ~WaveletCavity(){};
                 void makeCavity();
@@ -41,6 +44,9 @@ class WaveletCavity : public Cavity
 		}
                 void compFakePotential();
         private:                                                 
+                double probeRadius;
+                int patchLevel;
+                double coarsity;
                 void uploadPointsPWC(int quadLevel, vector3 **** T_); 
                 void uploadPointsPWL(int quadLevel, vector3 **** T_);
                 std::vector<Eigen::Vector3d> nodePoint;
@@ -50,9 +56,6 @@ class WaveletCavity : public Cavity
                 unsigned int nPoints;
                 bool uploadedDyadic;
                 void writeInput(std::string &fileName);
-                double probeRadius;
-                int patchLevel;
-                double coarsity;
                 virtual std::ostream & printCavity(std::ostream & os);  
 };
 

@@ -1,7 +1,8 @@
 #include "WaveletCavity.hpp"
 
 #include <iostream>
-#include <fstream> 
+#include <fstream>
+#include <stdexcept>
 #include <string>
 
 #include "Config.hpp"
@@ -29,82 +30,92 @@ extern "C"
 //#include "constants.h"
 }
 
-using namespace std;
+void WaveletCavity::writeInput(std::string &fileName)
+{
+	std::ofstream output;
+	output.open(fileName.c_str(), std::fstream::out);
 
-void WaveletCavity::writeInput(string &fileName){
-
-    ofstream output;
-    output.open(fileName.c_str(), fstream::out);
-
-    output << nSpheres << endl;
-	output.setf(ios_base::showpoint);
+        output << nSpheres << std::endl;
+	output.setf(std::ios_base::showpoint);
 	output.precision(12);
-    for(int i=0; i < nSpheres; i++) {
+        for(int i=0; i < nSpheres; i++) 
+	{
 		output << sphereCenter(0,i) << " ";
 		output << sphereCenter(1,i) << " ";
 		output << sphereCenter(2,i) << " ";
-		output << sphereRadius(i) << endl;
-    }
-    output.close();
+		output << sphereRadius(i) << std::endl;
+        }
+        output.close();
 	uploadedDyadic = false;
 }
 
-extern "C" {
-	int waveletCavityDrv_(double probeRadius, double coarsity, 
-						  int patchLevel, const char* infile);
+extern "C" 
+{
+	int waveletCavityDrv_(double probeRadius, double coarsity, int patchLevel, const char * infile);
 }
 
-void WaveletCavity::makeCavity() {
-	int dummy = 0, check = 0;
-	string infile = "cavity.inp";
+void WaveletCavity::makeCavity() 
+{
+	std::cout << "Inside makeCavity method" << std::endl;
+//	int dummy = 0; 
+	int check = 0;
+	std::cout << "check integer set" << std::endl;
+	std::string infile = "cavity.inp";
+	std::cout << "infile name set" << std::endl;
 	writeInput(infile);
-	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, 
-							  infile.c_str());
-	if (check != 0) {
-		std::cout << "Problem with the wavelet cavity!" << std::endl;
-		exit(-1);
+	std::cout << "exited writeInput normally" << std::endl;
+	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, infile.c_str());
+	std::cout << "check the check!" << std::endl;
+	if (check != 0) 
+	{
+		throw std::runtime_error("Problem with the wavelet cavity inside makeCavity method");
 	}
 }
 
 
-void WaveletCavity::readCavity(const string & filename) {
+void WaveletCavity::readCavity(const std::string & filename) 
+{
+	int i, j, k;
+	double x, y, z;
 
-		int i, j, k;
-		double x, y, z;
+	std::ifstream file;
+	file.open(filename.c_str());
+	file >> nLevels >> nPatches;
 
-		ifstream file;
-		file.open(filename.c_str());
-		file >> nLevels >> nPatches;
+	int nNodes = (1 << nLevels) + 1;
 
-		int nNodes = (1 << nLevels) + 1;
+	nPoints = nPatches * nNodes * nNodes;
+	
+	for (int k = 0; k < nPoints; ++k) 
+	{
+		file >> i >> j >> k >> x >> y >> z;
+		Eigen::Vector3i index(i, j, k);
+		nodeIndex.push_back(index);
+		Eigen::Vector3d point(x, y, z);
+		nodePoint.push_back(point);
+	}
 
-		nPoints = nPatches * nNodes * nNodes;
-		
-		for (int k = 0; k < nPoints; k++) {
-			file >> i >> j >> k >> x >> y >> z;
-			Eigen::Vector3i index(i, j, k);
-			nodeIndex.push_back(index);
-			Eigen::Vector3d point(x, y, z);
-			nodePoint.push_back(point);
-		}
-
-		file.close();
-		uploadedDyadic = true;
-
+	file.close();
+	uploadedDyadic = true;
 }
 
-void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_, bool isPWL) {
-	if(isPWL) {
+void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_, bool isPWL) 
+{
+	if(isPWL) 
+	{
 		uploadPointsPWL(quadLevel, T_);
-	} else {
+	} 
+	else 
+	{
 		uploadPointsPWC(quadLevel, T_);
 	}
 }
 
-void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
-	if (not uploadedDyadic) {
-		cout << "Error: upload dyadic file first" << endl;
-		exit(-1);
+void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) 
+{
+	if (not uploadedDyadic) 
+	{
+		throw std::runtime_error("Dyadic file must be uploaded first.");
 	}
 	vector2 s, t;
 	vector3 point;
@@ -121,12 +132,16 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 	elementArea.resize(nElements);
 
 	int j = 0;
-	for (int i1 = 0; i1 < nPatches; i1++){
-		for (int i2 = 0; i2 < n; i2++){
+	for (int i1 = 0; i1 < nPatches; ++i1)
+	{
+		for (int i2 = 0; i2 < n; ++i2)
+		{
 			s.y = h * i2;
-			for (int i3=0; i3 < n; i3++){
+			for (int i3=0; i3 < n; ++i3)
+			{
 				s.x = h * i3;
-				for (int k = 0; k < Q[quadLevel].nop; k++){
+				for (int k = 0; k < Q[quadLevel].nop; ++k)
+				{
 					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
 					point = Chi(t,T_[i1], nLevels);
 					norm = n_Chi(t,T_[i1], nLevels);
@@ -137,7 +152,7 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 					elementCenter.col(j) = center.transpose();
 					elementNormal.col(j) = normal.transpose();
 					elementArea(j) = area;
-					j++;
+					++j;
 				}
 			}
 		}
@@ -146,10 +161,11 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_) {
 	built = true;
 }
 
-void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
-	if (not uploadedDyadic) {
-		cout << "Error: upload dyadic file first" << endl;
-		exit(-1);
+void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) 
+{
+	if (not uploadedDyadic) 
+	{
+		throw std::runtime_error("Dyadic file must be uploaded first.");
 	}
 	vector2 s, t;
 	vector3 point;
@@ -166,12 +182,16 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 	elementArea.resize(nElements);
 
 	int j = 0;
-	for (int i1 = 0; i1 < nPatches; i1++){
-		for (int i2 = 0; i2 < n; i2++){
+	for (int i1 = 0; i1 < nPatches; ++i1)
+	{
+		for (int i2 = 0; i2 < n; ++i2)
+		{
 			s.y = h * i2;
-			for (int i3=0; i3 < n; i3++){
+			for (int i3=0; i3 < n; ++i3)
+			{
 				s.x = h * i3;
-				for (int k = 0; k < Q[quadLevel].nop; k++){
+				for (int k = 0; k < Q[quadLevel].nop; k++)
+				{
 					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
 					point = Chi_pwl(t,T_[i1], nLevels);
 					norm = n_Chi_pwl(t,T_[i1], nLevels);
@@ -182,7 +202,7 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 					elementCenter.col(j) = center.transpose();
 					elementNormal.col(j) = normal.transpose();
 					elementArea(j) = area;
-					j++;
+					++j;
 				}
 			}
 		}
@@ -193,12 +213,12 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_) {
 
 std::ostream & WaveletCavity::printCavity(std::ostream & os) 
 {
-        os << "Cavity type: Wavelet" << endl;
-	os << "Probe Radius =  " << probeRadius << endl;
-	os << "Coarsity =      " << coarsity << endl;
-	os << "Patch Level =   " << patchLevel << endl;
-	os << "Number of spheres = " << nSpheres << endl;
-        os << "Number of finite elements = " << nElements << endl;
+        os << "Cavity type: Wavelet" << std::endl;
+	os << "Probe Radius =  " << probeRadius << std::endl;
+	os << "Coarsity =      " << coarsity << std::endl;
+	os << "Patch Level =   " << patchLevel << std::endl;
+	os << "Number of spheres = " << nSpheres << std::endl;
+        os << "Number of finite elements = " << nElements << std::endl;
         /*for(int i = 0; i < nElements; i++) 
 	{
 		os << std::endl;
@@ -219,10 +239,10 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
     	}*/
 	if (uploadedDyadic) 
 	{
-		os << "Printing nodes" << endl;
+		os << "Printing nodes" << std::endl;
 		for(int i = 0; i < nPoints; i++) 
 		{
-			os << endl;
+			os << std::endl;
 			os << i+1 << " ";
 			os << nodeIndex[i].transpose() << " " << nodePoint[i].transpose() << " ";
 		}

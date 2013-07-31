@@ -1,6 +1,5 @@
 #include "WaveletCavity.hpp"
 
-#include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <string>
@@ -56,16 +55,11 @@ extern "C"
 
 void WaveletCavity::makeCavity() 
 {
-	std::cout << "Inside makeCavity method" << std::endl;
 //	int dummy = 0; 
 	int check = 0;
-	std::cout << "check integer set" << std::endl;
 	std::string infile = "cavity.inp";
-	std::cout << "infile name set" << std::endl;
 	writeInput(infile);
-	std::cout << "exited writeInput normally" << std::endl;
 	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, infile.c_str());
-	std::cout << "check the check!" << std::endl;
 	if (check != 0) 
 	{
 		throw std::runtime_error("Problem with the wavelet cavity inside makeCavity method");

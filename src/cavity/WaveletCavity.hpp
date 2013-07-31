@@ -1,8 +1,7 @@
 #ifndef WAVELETCAVITY_HPP
 #define WAVELETCAVITY_HPP
 
-//#include <iosfwd>
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 #include "Config.hpp"
@@ -24,10 +23,8 @@ class WaveletCavity : public Cavity
                 WaveletCavity(const std::vector<Sphere> & _spheres, double _probeRadius, int _patchLevel = 2, double _coarsity = 0.5) :
             	   Cavity(_spheres), probeRadius(_probeRadius), patchLevel(_patchLevel), coarsity(_coarsity) 
                        {
-			       std::cout << "Inside WaveletCavity CTOR" << std::endl;
 			       uploadedDyadic = false;
             		       makeCavity();
-			       std::cout << "Exited normally from makeCavity method" << std::endl;
                        }
                 virtual ~WaveletCavity(){};
                 void makeCavity();

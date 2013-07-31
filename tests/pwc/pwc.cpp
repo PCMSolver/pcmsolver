@@ -13,22 +13,14 @@ TEST(PWCSolver, pointCharge)
 {
 	// Set up cavity
 	Eigen::Vector3d N(0.0, 0.0, 0.0); 	
-	std::cout << "point created" << std::endl;
 	std::vector<Sphere> spheres;      	
-	std::cout << "vector of spheres created" << std::endl;
 	Sphere sph1(N, 2.929075493);      	
-	std::cout << "sphere created" << std::endl;
 	spheres.push_back(sph1);
-	std::cout << "sphere pushed back" << std::endl;
 	double probeRadius = 1.385;
-	std::cout << "probeRadius set" << std::endl;
 	int patchLevel = 2;
-	std::cout << "patchLevel set" << std::endl;
 	double coarsity = 0.5;
-	std::cout << "coarsity set" << std::endl;
 	WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
 	cavity.readCavity("molec_dyadic.dat");
-	std::cout << "cavity done" << std::endl;
 	// The point charge is located at the origin.
 	// The potential at cavity point s_I is Q/|s_I|
 	double permittivity = 78.39;

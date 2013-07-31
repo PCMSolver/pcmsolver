@@ -401,15 +401,10 @@ int waveletCavityDrv_(double probeRadius, double coarsity, int patchLevel,
     PATCH_LEVEL = patchLevel;
     verbose_variable = VERBOSE;
 
-    printf("In waveletCavityDrv_\n");
     tmpout = fopen("create_cavity.out", "w");
-    printf("tmpout created\n");
     fprintf(tmpout, "Probe Radius %20.12f Coarsity %20.12f Patch Level %3d\n", probeRadius, coarsity, patchLevel);
-    printf("printed some info to tmpout\n");
     test = bihp_test_romg(infile, probeRadius, coarsity, &dummy);
-    printf("run a test...\n");
     fclose(tmpout);
-    printf("tmpout closed\n");
 
     if (test == 1) {
         info = 0;

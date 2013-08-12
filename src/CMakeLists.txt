@@ -25,3 +25,5 @@ add_subdirectory(cavity)
 add_subdirectory(metal)
 add_subdirectory(green)
 add_subdirectory(utils)
+
+set(SOURCES ${SOURCES} PARENT_SCOPE)

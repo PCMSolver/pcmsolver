@@ -11,4 +11,12 @@ set(pedra_SOURCES
 
 add_library(pedra ${pedra_SOURCES})
 
+# Export the sources up to src directory level
+set(local_sources "")
+foreach(source ${pedra_SOURCES})
+	get_filename_component(sourcepath ${source} ABSOLUTE)
+  	set(local_sources ${sourcepath} ${local_sources})
+endforeach()
+set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
+
 install(TARGETS pedra ARCHIVE DESTINATION lib)

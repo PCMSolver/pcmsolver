@@ -7,7 +7,7 @@ set(green_SOURCES
    )
 
 add_library(green ${green_SOURCES})
-add_dependencies(green libtaylor)        		
+add_dependencies(green metal libtaylor)
 
 # Export the sources up to src directory level
 set(local_sources "")

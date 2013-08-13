@@ -5,6 +5,7 @@ set(cavity_SOURCES
 )
 
 add_library(cavity ${cavity_SOURCES})
+add_dependencies(cavity pedra wavcav)
 
 # Export the sources up to src directory level
 set(local_sources "")

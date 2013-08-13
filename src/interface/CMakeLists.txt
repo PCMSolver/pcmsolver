@@ -3,6 +3,7 @@ set(interface_SOURCES
 )
 
 add_library(interface ${interface_SOURCES})
+add_dependencies(interface utils solver)
 
 # Export the sources up to src directory level
 set(local_sources "")

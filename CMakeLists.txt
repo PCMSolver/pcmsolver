@@ -112,8 +112,8 @@ link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
 add_subdirectory(src)
 include_directories(${header_dir_list})
 
-add_library(pcmsolver ${SOURCES})
-install(TARGETS pcmsolver ARCHIVE DESTINATION lib)
+add_library(pcm ${SOURCES})
+install(TARGETS pcm ARCHIVE DESTINATION lib)
 
 if(ENABLE_TESTS)
 	ExternalProject_Add(googletest

@@ -13,8 +13,6 @@
 
 #include <Eigen/Dense>
 
-#include "Getkw.h"
-
 // Core classes
 //    1. Cavities
 #include "Cavity.hpp"

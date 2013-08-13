@@ -21,6 +21,7 @@ set(CMAKE_MODULE_PATH
     )
 
 set(LIBS)
+set(SOURCES)
 
 include(ConfigVersion)
 include(ConfigArchitecture)
@@ -110,6 +111,9 @@ link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
 
 add_subdirectory(src)
 include_directories(${header_dir_list})
+
+add_library(pcm ${SOURCES})
+install(TARGETS pcm ARCHIVE DESTINATION lib)
 
 if(ENABLE_TESTS)
 	ExternalProject_Add(googletest

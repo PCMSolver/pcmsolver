@@ -43,10 +43,10 @@ macro(add_external _project)
     endif()
 
   # # remove stamps for external builds so that they are rebuilt every time
-  # add_custom_command(
-  #     TARGET ${_project}
-  #     PRE_BUILD
-  #     COMMAND rm -rf ${PROJECT_BINARY_DIR}/external/${_project}-stamp
-  #     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-  #     )
+   add_custom_command(
+       TARGET ${_project}
+       PRE_BUILD
+       COMMAND rm -rf ${PROJECT_BINARY_DIR}/external/${_project}-stamp
+       WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+       )
 endmacro()

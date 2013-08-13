@@ -35,6 +35,16 @@ set (wem_SOURCES
 
 add_library(wem ${wem_SOURCES})
 
+# Export the sources up to src directory level
+set(local_sources "")
+foreach(source ${wem_SOURCES})
+	get_filename_component(sourcepath ${source} ABSOLUTE)
+  	set(local_sources ${sourcepath} ${local_sources})
+endforeach()
+set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
+
+install(TARGETS wem ARCHIVE DESTINATION lib)
+
 install(FILES WEM.h            DESTINATION include)
 install(FILES WEMPCG.h         DESTINATION include)
 install(FILES WEMPGMRES.h      DESTINATION include)
@@ -72,5 +82,3 @@ install(FILES trafos.h         DESTINATION include)
 install(FILES vector2.h        DESTINATION include)
 install(FILES vector3.h        DESTINATION include)
 install(FILES volume.h         DESTINATION include)
-
-install(TARGETS wem ARCHIVE DESTINATION lib)

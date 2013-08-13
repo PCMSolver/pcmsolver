@@ -7,7 +7,15 @@ set(green_SOURCES
    )
 
 add_library(green ${green_SOURCES})
-add_dependencies(green libtaylor)        		
+add_dependencies(green metal libtaylor)
+
+# Export the sources up to src directory level
+set(local_sources "")
+foreach(source ${green_SOURCES})
+	get_filename_component(sourcepath ${source} ABSOLUTE)
+  	set(local_sources ${sourcepath} ${local_sources})
+endforeach()
+set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
                                          
 install(TARGETS green ARCHIVE DESTINATION lib)		
 

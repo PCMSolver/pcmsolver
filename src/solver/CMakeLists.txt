@@ -8,6 +8,15 @@ set(solver_SOURCES
 )
 
 add_library(solver ${solver_SOURCES})
+add_dependencies(solver cavity green wem pwl)
+
+# Export the sources up to src directory level
+set(local_sources "")
+foreach(source ${solver_SOURCES})
+	get_filename_component(sourcepath ${source} ABSOLUTE)
+  	set(local_sources ${sourcepath} ${local_sources})
+endforeach()
+set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
 
 install(TARGETS solver ARCHIVE DESTINATION lib)
 

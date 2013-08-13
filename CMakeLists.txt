@@ -35,7 +35,7 @@ include(ConfigGitRevision)
 
 if(ENABLE_EIGEN_MKL)
 	find_package(Eigen3 3.1.0)
-	message("-- ENABLE_EIGEN_MKL option requires at Intel MKL 10.3.\n See http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
+	message("-- ENABLE_EIGEN_MKL option requires at least Intel MKL 10.3.\n See http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
         set(EIGEN_USE_MKL_ALL ON)
 else()
 	find_package(Eigen3 3.0.0)

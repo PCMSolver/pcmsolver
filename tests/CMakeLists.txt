@@ -1,0 +1,8 @@
+#add_subdirectory(cpcm)
+#add_subdirectory(gepol)
+#add_subdirectory(iefpcm)
+add_subdirectory(pwc)
+add_subdirectory(pwl)
+add_subdirectory(surface_function)
+#add_subdirectory(tsless)
+add_subdirectory(wavelet_cavity)

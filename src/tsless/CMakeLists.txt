@@ -4,4 +4,12 @@ set(tsless_SOURCES
 
 add_library(tsless ${tsless_SOURCES})
 
+# Export the sources up to src directory level
+set(local_sources "")
+foreach(source ${tsless_SOURCES})
+	get_filename_component(sourcepath ${source} ABSOLUTE)
+  	set(local_sources ${sourcepath} ${local_sources})
+endforeach()
+set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
+
 install(TARGETS tsless ARCHIVE DESTINATION lib)

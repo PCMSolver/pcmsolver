@@ -7,7 +7,7 @@ enable_language(CXX C Fortran)
 option(ENABLE_MPI       "Enable MPI parallelization"                                OFF)
 option(ENABLE_OPENMP    "Enable OpenMP parallelization"                             OFF)
 option(ENABLE_TESTS     "Enable compilation of unit tests"                          ON)
-option(ENABLE_EIGEN_MKL "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
+option(ENABLE_EIGEN_MKL "Enable Eigen3 fallback to some Intel MKL algorithms"       OFF)
 
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 1)
@@ -33,11 +33,12 @@ include(ConfigSafeGuards)
 include(GenericMacros)
 include(ConfigGitRevision)
 
-
-find_package(Eigen3 3.0.0)
 if(ENABLE_EIGEN_MKL)
-	message("-- ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3.\n Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
+	find_package(Eigen3 3.1.0)
+	message("-- ENABLE_EIGEN_MKL option requires at Intel MKL 10.3.\n See http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
         set(EIGEN_USE_MKL_ALL ON)
+else()
+	find_package(Eigen3 3.0.0)
 endif()
 
 find_package(PythonInterp REQUIRED)
@@ -135,21 +136,10 @@ if(ENABLE_TESTS)
         ExternalProject_Get_Property(googletest BINARY_DIR)
 	set(GTEST_LIBS_DIR ${BINARY_DIR})
 	include_directories(${GTEST_INCLUDE_DIRS})
-
+	link_directories(${GTEST_LIBS_DIR})
+	
         enable_testing()
-	file(GLOB_RECURSE TEST_SOURCE_FILES tests/*/*.cpp)
-	foreach(child ${TEST_SOURCE_FILES})
-		get_filename_component(test_name ${child} NAME_WE)
-                add_executable(${test_name}.x ${child})      	
-                add_dependencies(${test_name}.x googletest)
-                target_link_libraries(${test_name}.x 
-                interface solver green cavity tsless pedra metal pwl wem wavcav utils getkw
-                                      ${GTEST_LIBS_DIR}/libgtest.a
-                                      ${GTEST_LIBS_DIR}/libgtest_main.a
-	                              ${LIBS}
-	                             )
-                add_test(NAME ${test_name} COMMAND ${test_name}.x)
-	endforeach()
+	add_subdirectory(tests)
 endif()
 
 # add_executable(wavcav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcav.cpp)

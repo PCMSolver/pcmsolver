@@ -24,6 +24,8 @@ extern "C" void hello_pcm_(int * a, double * b);
 
 extern "C" void init_pcm_();
 
+extern "C" void tear_down_pcm_();
+
 extern "C" void comp_chg_pcm_(char* potString, char* chgString);
 
 extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total);

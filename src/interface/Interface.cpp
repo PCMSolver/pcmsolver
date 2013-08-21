@@ -163,10 +163,8 @@ extern "C" void get_tess_centers_(double * centers)
 		Eigen::Vector3d tess = _cavity->getElementCenter(i);
 		// centers is a vector with size (3 * nr_points)
 		// in which we store our tesserae centers COLUMN BY COLUMN
-		// i.e. column-major order as used in Fortran
-		// The shape of the matrix in Fortran is thus centers(nr_points, 3)
-		// but is actually unessential the way we declare it: it is
-		// laid in memory column-major! 
+		// i.e. column-major order as used in Fortran.
+		// The shape of the matrix in Fortran is thus centers(3, nr_points)
 		centers[j] = tess(0);
 		centers[j+1] = tess(1);
 		centers[j+2] = tess(2);

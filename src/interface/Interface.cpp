@@ -118,10 +118,10 @@ extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total)
 	SurfaceFunctionMap& functions = SurfaceFunction::TheMap();
         if (*separate_or_total == 0) 
 	{ // Using separate potentials and charges
-		SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucPot");
-		SurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucChg");
-		SurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("ElePot");
-		SurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleChg");
+		SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucMEP");
+		SurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucASC");
+		SurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("EleMEP");
+		SurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleASC");
 
 		double UNN = (*iter_nuc_pot->second) *  (*iter_nuc_chg->second);
 		double UEN = (*iter_ele_pot->second) *  (*iter_nuc_chg->second);
@@ -134,8 +134,8 @@ extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total)
         } 
 	else 
 	{
-		SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotPot");
-		SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotChg");
+		SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotMEP");
+		SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotASC");
 	
 		*energy = (*iter_pot->second) * (*iter_chg->second) * 0.5;
         }

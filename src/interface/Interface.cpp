@@ -75,12 +75,21 @@ extern "C" void init_pcm_()
 
 extern "C" void tear_down_pcm_()
 {// Delete all the global pointers, maybe in a more refined way...
+
+	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
+	SurfaceFunctionMap::iterator iter;
+
+	for (iter = functions.begin(); iter != functions.end(); ++iter)
+	{
+		(iter->second)->unRegister();
+	}
+	functions.clear();
+
 	delete _cavity;
 	delete _waveletCavity;
 	delete _PWCSolver;
 	delete _PWLSolver;
 	delete _solver;
-	std::cout << "Tear down successful!" << std::endl;
 }
 
 extern "C" void comp_chg_pcm_(char * potName, char * chgName) 

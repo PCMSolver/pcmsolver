@@ -102,11 +102,13 @@ bool SurfaceFunction::Register()
 
 bool SurfaceFunction::unRegister()
 {
-	registered = SurfaceFunction::TheMap().erase(name);
-	return registered;
+	delete ((SurfaceFunction::TheMap().find(name))->second);
+
+	return registered = (SurfaceFunction::TheMap().erase(name) == 1);
 }
 
-std::ostream & SurfaceFunction::printObject(std::ostream & os) {
+std::ostream & SurfaceFunction::printObject(std::ostream & os) 
+{
 	os << "Surface Function " << name << std::endl;
 	if (!allocated) 
 		throw std::runtime_error("Surface function not allocated!");

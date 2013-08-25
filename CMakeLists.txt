@@ -115,6 +115,8 @@ include_directories(${header_dir_list})
 add_library(pcm ${SOURCES})
 install(TARGETS pcm ARCHIVE DESTINATION lib)
 
+install(FILES ${PROJECT_BINARY_DIR}/include/Config.hpp DESTINATION include)
+
 if(ENABLE_TESTS)
 	ExternalProject_Add(googletest
 		SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk

@@ -2,8 +2,8 @@
 #define SURFACEFUNCTION_HPP
 
 #include <iosfwd>
-#include <string>
 #include <map>
+#include <string>
 
 #include "Config.hpp"
 
@@ -20,9 +20,9 @@
  * and apparent charges. Use judiciously, i.e. DO NOT use it directly in the core
  * classes (cavities, solvers) to avoid high coupling.
  * Surface functions are managed through a map. Upon construction automatic registration
- * in the map occurs.
+ * in the map occurs, via a call to the Register() function in the constructor.
  * The client has responsibility for both de-allocation and the concomitant de-registration 
- * from the SurfaceFunctionMap.
+ * from the SurfaceFunctionMap. This happens calling the unRegister() function.
  */ 
 
 

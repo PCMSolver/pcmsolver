@@ -114,12 +114,11 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName)
 	// If it already exists there's no problem, we will pass a reference to its values to
 	// _solver->compCharge(*, *) so they will be automagically updated!
 
-	Eigen::VectorXd & charge = iter_chg->second->getVector();
 	Eigen::VectorXd & potential = iter_pot->second->getVector();
+	Eigen::VectorXd & charge = iter_chg->second->getVector();
 	
 	_solver->compCharge(potential, charge);
-	double totalChg = charge.sum();
-}
+	}
 
 // Revise this function. It's just a dirty hack now.
 extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total) 
@@ -251,11 +250,15 @@ extern "C" void get_surface_function_(int * nts, double * values, char * name)
 	
 	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
+	if ( iter == functions.end() )
+		throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
+
+	Eigen::VectorXd & surfaceVector = iter->second->getVector();
 	
-	Eigen::VectorXd surfaceVector = iter->second->getVector();
-	
-	for ( int i = 0; i < nTess; ++i ) 
+	for ( int i = 0; i < nTess; ++i )
+	{
 		values[i] = surfaceVector(i); 
+	}
 }
 
 extern "C" void add_surface_function_(char * result, double * coeff, char * part) 

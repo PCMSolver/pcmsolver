@@ -13,6 +13,7 @@
 
 #include "Config.hpp"
 
+#include <boost/shared_ptr.hpp>
 #include <Eigen/Dense>
 
 // Core classes
@@ -42,8 +43,8 @@
 #include "Sphere.hpp"
 #include "SurfaceFunction.hpp"
 
-typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
-typedef std::pair<std::string, SurfaceFunction *> SurfaceFunctionPair;
+typedef std::map<std::string, boost::shared_ptr<SurfaceFunction> > SurfaceFunctionMap;
+typedef std::pair<std::string, boost::shared_ptr<SurfaceFunction> > SurfaceFunctionPair;
 
 // We need globals as they must be accessible across all the functions defined in this interface...
 // The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
@@ -80,11 +81,6 @@ extern "C" void init_pcm_()
 extern "C" void tear_down_pcm_()
 {// Delete all the global pointers, maybe in a more refined way...
 
-	for ( SurfaceFunctionMap::iterator iter = functions.begin(); iter != functions.end(); ++iter )
-	{// Delete all SurfaceFunction
-		delete iter->second;
-		functions.erase(iter);
-	}
 	functions.clear();
 
 	delete _cavity;
@@ -113,7 +109,7 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName)
 	        --iter_chg;
 
 	    // insert it
-		SurfaceFunction * func = new SurfaceFunction(chgFuncName, _cavity->size());
+		boost::shared_ptr<SurfaceFunction> func( new SurfaceFunction(chgFuncName, _cavity->size()) );
 		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(chgFuncName, func);
 		iter_chg = functions.insert(iter_chg, insertion);
     }
@@ -232,7 +228,7 @@ extern "C" void set_surface_function_(int * nts, double * values, char * name)
 	        --iter;
 
 	    // insert it
-		SurfaceFunction * func = new SurfaceFunction(functionName, *nts, values);
+		boost::shared_ptr<SurfaceFunction> func( new SurfaceFunction(functionName, *nts, values) );
 		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(functionName, func);
 		iter = functions.insert(iter, insertion);
     }
@@ -318,7 +314,7 @@ extern "C" void append_surf_func_(char* name)
 	        --iter;
 
 	    // insert it
-		SurfaceFunction * func = new SurfaceFunction(functionName, nTess);
+		boost::shared_ptr<SurfaceFunction> func( new SurfaceFunction(functionName, nTess) );
 		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(functionName, func);
 		iter = functions.insert(iter, insertion);
     }

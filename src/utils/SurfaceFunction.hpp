@@ -2,7 +2,6 @@
 #define SURFACEFUNCTION_HPP
 
 #include <iosfwd>
-#include <map>
 #include <string>
 
 #include "Config.hpp"
@@ -19,26 +18,18 @@
  * This class is basically a wrapper around vectors containing electrostatic potentials
  * and apparent charges. Use judiciously, i.e. DO NOT use it directly in the core
  * classes (cavities, solvers) to avoid high coupling.
- * Surface functions are managed through a map. Upon construction automatic registration
- * in the map occurs, via a call to the Register() function in the constructor.
- * The client has responsibility for both de-allocation and the concomitant de-registration 
- * from the SurfaceFunctionMap. This happens calling the unRegister() function.
  */ 
 
 
 class SurfaceFunction
 {
  public:
-	 /*! \brief A map from the surface function identifier (a string) to a pointer-to-SurfaceFunction.
-	  */
- 	 typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
          SurfaceFunction() : name(""), nPoints(0), allocated(false) {}
          SurfaceFunction(const std::string & name_) : name(name_), nPoints(0), allocated(false) {}
          SurfaceFunction(const std::string & name_, int nPoints_) : name(name_), nPoints(nPoints_) 
 	 {
 			values = Eigen::VectorXd::Zero(nPoints);
 			allocated = true;
-			Register();
 	 } 							       
          SurfaceFunction(const std::string & name_, int nPoints_, double * values_) : name(name_), nPoints(nPoints_)            	
 	 {
@@ -48,7 +39,6 @@ class SurfaceFunction
 	 		{
 	 			values(i) = values_[i];
 	 		}
-			Register();
 	 }
          ~SurfaceFunction()                                                                                                     
          {
@@ -59,15 +49,7 @@ class SurfaceFunction
          SurfaceFunction(const SurfaceFunction & other) : name(other.name), nPoints(other.nPoints), values(other.values)
          {
              allocated = true;
-	     Register();
          }
-         /*! \brief The unique point of access to the unique instance of SurfaceFunctionMap
-	  */ 	 
-	 static SurfaceFunctionMap & TheMap()
-	 {
-	 	static SurfaceFunctionMap func;
-	 	return func;
-	 }	
                                                                                                                                  
          friend inline void swap(SurfaceFunction & left, SurfaceFunction & right);
          inline void swap(SurfaceFunction & other);
@@ -89,14 +71,10 @@ class SurfaceFunction
          Eigen::VectorXd & getVector(){ return values; }
          void allocate(int nPoints_){ values.resize(nPoints_); }
          bool isAllocated() { return allocated; }
-         bool isRegistered() { return registered; }
          void clear();
                                                                                                                          
-         void setValues(double * value);
-         void getValues(double * value);
-                                                                                                                         
-         bool Register();
-         bool unRegister();
+         void setValues(double * values_);
+         void getValues(double * values_);
                                                                                                                          
          friend std::ostream & operator<<(std::ostream & os, SurfaceFunction & sf)
 	 {
@@ -109,7 +87,6 @@ class SurfaceFunction
          int nPoints;
          Eigen::VectorXd values;
          bool allocated;
-         bool registered;
 };
 
 /*!

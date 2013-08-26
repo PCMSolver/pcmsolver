@@ -82,7 +82,7 @@ extern "C" void tear_down_pcm_()
 
 	for ( SurfaceFunctionMap::iterator iter = functions.begin(); iter != functions.end(); ++iter )
 	{// Delete all SurfaceFunction
-		delete (iter->second);
+		delete iter->second;
 		functions.erase(iter);
 	}
 	functions.clear();
@@ -167,21 +167,11 @@ extern "C" void get_cavity_size_(int * nts)
 }
 
 extern "C" void get_tess_centers_(double * centers) 
-{
-	int j = 0;
-	for (int i = 0; i < _cavity->size(); i++) 
+{// Use some Eigen magic
+	for ( int i = 0; i < _cavity->getElementCenter().size(); ++i)
 	{
-		Eigen::Vector3d tess = _cavity->getElementCenter(i);
-		// centers is a vector with size (3 * nr_points)
-		// in which we store our tesserae centers COLUMN BY COLUMN
-		// i.e. column-major order as used in Fortran.
-		// The shape of the matrix in Fortran is thus centers(3, nr_points)
-		centers[j] = tess(0);
-		centers[j+1] = tess(1);
-		centers[j+2] = tess(2);
-		j += 3;
+		centers[i] = *(_cavity->getElementCenter().data() + i);
 	}
-	
 }
 
 extern "C" void get_tess_cent_coord_(int * its, double * center) 

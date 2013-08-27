@@ -120,10 +120,11 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName)
 	_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector());
 	}
 
-// Revise this function. It's just a dirty hack now.
-extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total) 
-{
-        if (*separate_or_total == 0) 
+extern "C" void comp_pol_ene_pcm_(double * energy)
+{// Check if NucMEP && EleASC surface functions exist.
+	bool is_separate = (surfaceFunctionExists("NucMEP") && surfaceFunctionExists("EleASC"));
+
+    if (is_separate) 
 	{ // Using separate potentials and charges
 		SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucMEP");
 		SurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucASC");
@@ -138,14 +139,14 @@ extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total)
 		printf("U_ee = %.10E, U_en = %.10E, U_ne = %.10E, U_nn = %.10E\n", UEE, UEN, UNE, UNN);
 
 		*energy = 0.5 * ( UNN + UEN + UNE + UEE );
-        } 
+    } 
 	else 
 	{
 		SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotMEP");
 		SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotASC");
 	
 		*energy = (*iter_pot->second) * (*iter_chg->second) * 0.5;
-        }
+    }
 }
 
 extern "C" void get_epsilon_static_(double * epsilon) {
@@ -277,15 +278,6 @@ extern "C" void print_surface_function_(char * name)
 	SurfaceFunctionMap::const_iterator iter = functions.find(name);
 
 	std::cout << *(iter->second) << std::endl;
-}
-
-extern "C" bool surf_func_exists_(char * name) 
-{
-	std::string functionName(name);
-
-	SurfaceFunctionMap::const_iterator iter = functions.find(name);
-
-	return iter != functions.end();
 }
 
 extern "C" void clear_surf_func_(char* name) 
@@ -495,4 +487,11 @@ WaveletCavity * initWaveletCavity()
 	cav->readCavity("molec_dyadic.dat");
 	
 	return cav;
+}
+
+bool surfaceFunctionExists(const std::string & name_) 
+{
+	SurfaceFunctionMap::const_iterator iter = functions.find(name_);
+
+	return iter != functions.end();
 }

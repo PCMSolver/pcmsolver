@@ -28,7 +28,7 @@ extern "C" void tear_down_pcm_();
 
 extern "C" void comp_chg_pcm_(char* potString, char* chgString);
 
-extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total);
+extern "C" void comp_pol_ene_pcm_(double * energy);
 
 extern "C" void get_epsilon_static_(double * epsilon);
 
@@ -53,8 +53,6 @@ extern "C" void get_surface_function_(int * nts, double * values, char * name);
 extern "C" void add_surface_function_(char * result, double * coeff, char * part);
 
 extern "C" void print_surface_function_(char * name);
-
-extern "C" bool surf_func_exists_(char * name);
 
 extern "C" void clear_surf_func_(char * name);
 
@@ -83,6 +81,8 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
 void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
 void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
+
+bool surfaceFunctionExists(const std::string & name);
 
 #endif // INTERFACE_HPP
 

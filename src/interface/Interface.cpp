@@ -6,11 +6,14 @@
 #include "Interface.hpp"
 
 #include <iostream>
+#include <map>
 #include <string>
 #include <stdexcept>
+#include <utility>
 
 #include "Config.hpp"
 
+#include <boost/shared_ptr.hpp>
 #include <Eigen/Dense>
 
 // Core classes
@@ -40,7 +43,8 @@
 #include "Sphere.hpp"
 #include "SurfaceFunction.hpp"
 
-typedef std::map<std::string, SurfaceFunction *> SurfaceFunctionMap;
+typedef std::map<std::string, boost::shared_ptr<SurfaceFunction> > SurfaceFunctionMap;
+typedef std::pair<std::string, boost::shared_ptr<SurfaceFunction> > SurfaceFunctionPair;
 
 // We need globals as they must be accessible across all the functions defined in this interface...
 // The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
@@ -52,6 +56,7 @@ PWCSolver * _PWCSolver;
 PWLSolver * _PWLSolver;
 PCMSolver * _solver;
 
+SurfaceFunctionMap functions;
 
 /*
 
@@ -73,47 +78,58 @@ extern "C" void init_pcm_()
 	initSolver();
 }
 
+extern "C" void tear_down_pcm_()
+{// Delete all the global pointers, maybe in a more refined way...
 
+	functions.clear();
+
+	delete _cavity;
+	delete _waveletCavity;
+	delete _PWCSolver;
+	delete _PWLSolver;
+	delete _solver;
+}
 
 extern "C" void comp_chg_pcm_(char * potName, char * chgName) 
 {
 	std::string potFuncName(potName);
 	std::string chgFuncName(chgName);
 
-	// Get the SurfaceFunctionMap
-	SurfaceFunctionMap& functions = SurfaceFunction::TheMap();
-	
 	// Get the proper iterators
 	SurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
-	SurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
+	// Here we check whether the function exists already or not
+	// 1. find the lower bound of the map
+	SurfaceFunctionMap::iterator iter_chg = functions.lower_bound(chgFuncName);
 
-	if( iter_chg == functions.end() ) 
-	{
-		SurfaceFunction * func = new SurfaceFunction(chgFuncName, _cavity->size());
-		// The SurfaceFunction automagically registers itself in the map.
-		// We must update iter_chg, otherwise it will point somewhere else
-		++iter_chg;
-	} 
-	// If it already exists there's no problem, we will pass a reference to its values to
-	// _solver->compCharge(*, *) so they will be automagically updated!
+    // 2. if iter_chg == end, or if iter_chg is not a match,
+    //    then this element was not in the map, so we need to insert it
+	if ( iter_chg == functions.end()  ||  iter_chg->first != chgFuncName )
+	{// move iter_chg to the element preceeding the insertion point
+	    if ( iter_chg != functions.begin() )
+	        --iter_chg;
 
-	Eigen::VectorXd & charge = iter_chg->second->getVector();
-	Eigen::VectorXd & potential = iter_pot->second->getVector();
+	    // insert it
+		boost::shared_ptr<SurfaceFunction> func( new SurfaceFunction(chgFuncName, _cavity->size()) );
+		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(chgFuncName, func);
+		iter_chg = functions.insert(iter_chg, insertion);
+    }
 	
-	_solver->compCharge(potential, charge);
-	double totalChg = charge.sum();
-}
+	// If it already exists there's no problem, we will pass a reference to its values to
+	// _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+	
+	_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector());
+	}
 
-// Revise this function. It's just a dirty hack now.
-extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total) 
-{
-	SurfaceFunctionMap& functions = SurfaceFunction::TheMap();
-        if (*separate_or_total == 0) 
+extern "C" void comp_pol_ene_pcm_(double * energy)
+{// Check if NucMEP && EleASC surface functions exist.
+	bool is_separate = (surfaceFunctionExists("NucMEP") && surfaceFunctionExists("EleASC"));
+
+    if (is_separate) 
 	{ // Using separate potentials and charges
-		SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucPot");
-		SurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucChg");
-		SurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("ElePot");
-		SurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleChg");
+		SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucMEP");
+		SurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucASC");
+		SurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("EleMEP");
+		SurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleASC");
 
 		double UNN = (*iter_nuc_pot->second) *  (*iter_nuc_chg->second);
 		double UEN = (*iter_ele_pot->second) *  (*iter_nuc_chg->second);
@@ -123,14 +139,14 @@ extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total)
 		printf("U_ee = %.10E, U_en = %.10E, U_ne = %.10E, U_nn = %.10E\n", UEE, UEN, UNE, UNN);
 
 		*energy = 0.5 * ( UNN + UEN + UNE + UEE );
-        } 
+    } 
 	else 
 	{
-		SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotPot");
-		SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotChg");
+		SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotMEP");
+		SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotASC");
 	
 		*energy = (*iter_pot->second) * (*iter_chg->second) * 0.5;
-        }
+    }
 }
 
 extern "C" void get_epsilon_static_(double * epsilon) {
@@ -148,17 +164,11 @@ extern "C" void get_cavity_size_(int * nts)
 }
 
 extern "C" void get_tess_centers_(double * centers) 
-{
-	int j = 0;
-	for (int i = 0; i < _cavity->size(); i++) 
+{// Use some Eigen magic
+	for ( int i = 0; i < _cavity->getElementCenter().size(); ++i)
 	{
-		Eigen::Vector3d tess = _cavity->getElementCenter(i);
-		centers[j] = tess(0);
-		centers[j+1] = tess(1);
-		centers[j+2] = tess(2);
-		j += 3;
+		centers[i] = *(_cavity->getElementCenter().data() + i);
 	}
-	
 }
 
 extern "C" void get_tess_cent_coord_(int * its, double * center) 
@@ -206,18 +216,27 @@ extern "C" void set_surface_function_(int * nts, double * values, char * name)
 		throw std::runtime_error("You are trying to allocate a SurfaceFunction bigger than the cavity!");
 
 	std::string functionName(name);
+
 	// Here we check whether the function exists already or not
-	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
-	SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
-	if ( iter == functions.end() )
-	{	// If not create it!
-	        SurfaceFunction * func = new SurfaceFunction(functionName, *nts, values);
-		// The SurfaceFunction automagically registers itself in the map.
-	}
-	else
-	{	// If yes just update the values!
-	        iter->second->setValues(values);
-	}
+	// 1. find the lower bound of the map
+	SurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
+
+    // 2. if iter == end, or if iter is not a match, 
+    //    then this element was not in the map, so we need to insert it
+	if ( iter == functions.end()  ||  iter->first != functionName )
+	{// move iter to the element preceeding the insertion point
+	    if ( iter != functions.begin() )
+	        --iter;
+
+	    // insert it
+		boost::shared_ptr<SurfaceFunction> func( new SurfaceFunction(functionName, *nts, values) );
+		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(functionName, func);
+		iter = functions.insert(iter, insertion);
+    }
+    else
+    {
+    	iter->second->setValues(values);
+    }
 }
 
 extern "C" void get_surface_function_(int * nts, double * values, char * name) 
@@ -228,13 +247,14 @@ extern "C" void get_surface_function_(int * nts, double * values, char * name)
 	
 	std::string functionName(name);
 	
-	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
-	
-	Eigen::VectorXd surfaceVector = iter->second->getVector();
-	
-	for ( int i = 0; i < nTess; ++i ) 
-		values[i] = surfaceVector(i); 
+	if ( iter == functions.end() )
+		throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
+
+	for ( int i = 0; i < nTess; ++i )
+	{
+		values[i] = iter->second->getValue(i); 
+	}
 }
 
 extern "C" void add_surface_function_(char * result, double * coeff, char * part) 
@@ -244,8 +264,6 @@ extern "C" void add_surface_function_(char * result, double * coeff, char * part
 
 	append_surf_func_(result);
 	
-	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
-
 	SurfaceFunctionMap::const_iterator iter_part = functions.find(partName);
 	SurfaceFunctionMap::const_iterator iter_result = functions.find(resultName);
 
@@ -257,27 +275,15 @@ extern "C" void print_surface_function_(char * name)
 {
 	std::string functionName(name);
 
-	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(name);
 
 	std::cout << *(iter->second) << std::endl;
-}
-
-extern "C" bool surf_func_exists_(char * name) 
-{
-	std::string functionName(name);
-
-	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
-	SurfaceFunctionMap::const_iterator iter = functions.find(name);
-
-	return iter != functions.end();
 }
 
 extern "C" void clear_surf_func_(char* name) 
 {
 	std::string functionName(name);
 
-	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
 	SurfaceFunctionMap::const_iterator iter = functions.find(name);
 
 	iter->second->clear();
@@ -288,15 +294,27 @@ extern "C" void append_surf_func_(char* name)
 	int nTess = _cavity->size();
 	std::string functionName(name);
 
-	SurfaceFunctionMap & functions = SurfaceFunction::TheMap();
+	// Here we check whether the function exists already or not
+	// 1. find the lower bound of the map
+	SurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
 
-	SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
-	// Check if function already exists in the map
-	if ( iter == functions.end() )
-	{	// If not create it
-		SurfaceFunction * func = new SurfaceFunction(functionName, nTess);
-		// The SurfaceFunction automagically registers itself in the map.
-	} // What happens if it is already in the map?
+    // 2. if iter == end, or if iter is not a match, 
+    //    then this element was not in the map, so we need to insert it
+	if ( iter == functions.end()  ||  iter->first != functionName )
+	{// move iter to the element preceeding the insertion point
+	    if ( iter != functions.begin() )
+	        --iter;
+
+	    // insert it
+		boost::shared_ptr<SurfaceFunction> func( new SurfaceFunction(functionName, nTess) );
+		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(functionName, func);
+		iter = functions.insert(iter, insertion);
+    }
+    else
+    {// What happens if it is already in the map? The values need to be updated.
+     // Nothing, I assume that if one calls append_surf_func_ will then also call
+     // set_surface_function_ somewhere else, hence the update will be done there.
+ 	} 
 }
 
 /*
@@ -469,5 +487,11 @@ WaveletCavity * initWaveletCavity()
 	cav->readCavity("molec_dyadic.dat");
 	
 	return cav;
+}
 
+bool surfaceFunctionExists(const std::string & name_) 
+{
+	SurfaceFunctionMap::const_iterator iter = functions.find(name_);
+
+	return iter != functions.end();
 }

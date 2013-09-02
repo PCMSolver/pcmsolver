@@ -1,6 +1,5 @@
 #include "SurfaceFunction.hpp"
 
-#include <map>
 #include <string>
 #include <stdexcept>
 
@@ -74,11 +73,13 @@ void SurfaceFunction::setValues(double * values_)
 {
 	if (!allocated)
 		throw std::runtime_error("Surface function not allocated!");
+	// Zero out any previous value
+	values.setZero();
 
 	for (int i = 0; i < nPoints; ++i) 
 	{
 		values(i) = values_[i];
-	}
+		}
 }
 
 void SurfaceFunction::getValues(double * values_) 
@@ -94,19 +95,8 @@ void SurfaceFunction::clear()
 	values.setZero();
 }
 
-bool SurfaceFunction::Register()
+std::ostream & SurfaceFunction::printObject(std::ostream & os) 
 {
-	registered = SurfaceFunction::TheMap().insert(SurfaceFunctionMap::value_type(name, this)).second;
-	return registered;
-}
-
-bool SurfaceFunction::unRegister()
-{
-	registered = SurfaceFunction::TheMap().erase(name);
-	return registered;
-}
-
-std::ostream & SurfaceFunction::printObject(std::ostream & os) {
 	os << "Surface Function " << name << std::endl;
 	if (!allocated) 
 		throw std::runtime_error("Surface function not allocated!");

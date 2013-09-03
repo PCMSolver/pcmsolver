@@ -2155,7 +2155,7 @@ C
       if (cavity_file_exists) then
          open(lucav, 
      &        file = 'cavity.off', 
-     &        status = 'unknown', 
+     &        status = 'old', 
      &        form = 'formatted',
      &        access = 'sequential')
          close(lucav, status = 'delete')

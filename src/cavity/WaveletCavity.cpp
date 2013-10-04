@@ -263,7 +263,7 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
 		os << sphereCenter(2,i) << " ";
 		os << sphereRadius(i) << " ";
     	}*/
-	if (uploadedDyadic) 
+/*	if (uploadedDyadic) 
 	{
 		os << "Printing nodes" << endl;
 		for(int i = 0; i < nPoints; i++) 
@@ -272,7 +272,7 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
 			os << i+1 << " ";
 			os << nodeIndex[i].transpose() << " " << nodePoint[i].transpose() << " ";
 		}
-	}
+	}*/
 	return os;
 }
 

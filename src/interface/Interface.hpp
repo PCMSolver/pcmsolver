@@ -84,5 +84,7 @@ void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd &
 
 bool surfaceFunctionExists(const std::string & name);
 
+inline template<typename T> void safe_delete( T *& ptr ); 
+
 #endif // INTERFACE_HPP
 

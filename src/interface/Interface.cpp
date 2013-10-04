@@ -49,12 +49,12 @@ typedef std::pair<std::string, boost::shared_ptr<SurfaceFunction> > SurfaceFunct
 // We need globals as they must be accessible across all the functions defined in this interface...
 // The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
 // then maybe manage them through "objectification" of this interface.
-Cavity        * _cavity;
-WaveletCavity * _waveletCavity;
+Cavity        * _cavity = NULL;
+WaveletCavity * _waveletCavity = NULL;
 
-PWCSolver * _PWCSolver;
-PWLSolver * _PWLSolver;
-PCMSolver * _solver;
+PWCSolver * _PWCSolver = NULL;
+PWLSolver * _PWLSolver = NULL;
+PCMSolver * _solver = NULL;
 
 SurfaceFunctionMap functions;
 
@@ -83,11 +83,8 @@ extern "C" void tear_down_pcm_()
 
 	functions.clear();
 
-	delete _cavity;
-	delete _waveletCavity;
-	delete _PWCSolver;
-	delete _PWLSolver;
-	delete _solver;
+	safe_delete(_cavity);
+	safe_delete(_solver);
 }
 
 extern "C" void comp_chg_pcm_(char * potName, char * chgName) 
@@ -494,4 +491,10 @@ bool surfaceFunctionExists(const std::string & name_)
 	SurfaceFunctionMap::const_iterator iter = functions.find(name_);
 
 	return iter != functions.end();
+}
+
+inline template<typename T> void safe_delete( T *& ptr ) 
+{
+	delete ptr;
+    	ptr = NULL;
 }

@@ -493,7 +493,7 @@ bool surfaceFunctionExists(const std::string & name_)
 	return iter != functions.end();
 }
 
-inline template<typename T> void safe_delete( T *& ptr ) 
+template<typename T> void safe_delete( T *& ptr ) 
 {
 	delete ptr;
     	ptr = NULL;

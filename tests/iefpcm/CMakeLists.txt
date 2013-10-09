@@ -3,10 +3,10 @@ set(iefpcm_SOURCES
 )
 
 set(test_name iefpcm)
-add_executable(${test_name}.x ${test_name}.cpp )      	
+add_executable(${test_name}.x ${test_name}.cpp)      	
 add_dependencies(${test_name}.x googletest)
 
-target_link_libraries(${test_name}.x gtest gtest_main)
+target_link_libraries(${test_name}.x gtest gtest_main pthread)
 target_link_libraries(${test_name}.x solver cavity green pedra tsless utils)
 target_link_libraries(${test_name}.x ${LIBS})
 

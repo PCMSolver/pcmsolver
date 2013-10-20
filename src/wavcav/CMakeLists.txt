@@ -116,7 +116,10 @@ set (wavcav_SOURCES
    weights_vil.c
   )
 
-add_library(wavcav ${wavcav_SOURCES})
+if(ENABLE_TESTS)
+	add_library(wavcav ${wavcav_SOURCES})
+	install(TARGETS wavcav ARCHIVE DESTINATION lib)
+endif()
 
 # Export the sources up to src directory level
 set(local_sources "")
@@ -125,8 +128,6 @@ foreach(source ${wavcav_SOURCES})
   	set(local_sources ${sourcepath} ${local_sources})
 endforeach()
 set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
-
-install(TARGETS wavcav ARCHIVE DESTINATION lib)
 
 install(FILES pln_sph.h DESTINATION include)
 install(FILES geodesic.h DESTINATION include)

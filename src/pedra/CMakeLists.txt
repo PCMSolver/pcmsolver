@@ -9,7 +9,10 @@ set(pedra_SOURCES
   pcm_dblas1.F
   )
 
-add_library(pedra ${pedra_SOURCES})
+if(ENABLE_TESTS)
+	add_library(pedra ${pedra_SOURCES})
+	install(TARGETS pedra ARCHIVE DESTINATION lib)
+endif()
 
 # Export the sources up to src directory level
 set(local_sources "")
@@ -18,5 +21,3 @@ foreach(source ${pedra_SOURCES})
   	set(local_sources ${sourcepath} ${local_sources})
 endforeach()
 set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
-
-install(TARGETS pedra ARCHIVE DESTINATION lib)

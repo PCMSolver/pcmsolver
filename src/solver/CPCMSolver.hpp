@@ -29,7 +29,7 @@ class CPCMSolver : public PCMSolver
     		double correction;
     		Eigen::MatrixXd PCMMatrix;
 //    		static const double factor = 1.0694;
-    		static const double factor = 1.07;
+//    		static const double factor = 1.07;
                 void buildIsotropicMatrix(Cavity & cav);
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:

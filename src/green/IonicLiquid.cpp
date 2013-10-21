@@ -2,11 +2,17 @@
 
 #include <cmath>
 #include <ostream>
+#include <stdexcept>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
 #include "taylor.hpp"
+
+void IonicLiquid::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
+{
+	throw std::runtime_error("Green's function for an ionic liquid has not yet been implemented!");
+}
 
 Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 						 Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const

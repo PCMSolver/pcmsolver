@@ -146,15 +146,6 @@ extern "C" void comp_pol_ene_pcm_(double * energy)
     }
 }
 
-extern "C" void get_epsilon_static_(double * epsilon) {
-// This is for Gauss Theorem test on computed polarization charges
-// meaningful only when there's Vacuum/UniformDielectric.
-// Need to think more about this
-//        * epsilon = _solver->solvent.getEpsStatic();
- 	std::cout << "Not yet implemented!" << std::endl;
-        exit(-1); 
-}
-
 extern "C" void get_cavity_size_(int * nts) 
 {
 	*nts = _cavity->size();

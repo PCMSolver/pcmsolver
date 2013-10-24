@@ -1,7 +1,7 @@
 if (NOT DEFINED DEFAULT_C_FLAGS_SET OR RESET_FLAGS)
 
   if(CMAKE_C_COMPILER_ID MATCHES GNU)
-    set (CMAKE_C_FLAGS "-Wall -Wextra -Winit-self -Woverloaded-virtual -Wuninitialized -Wmissing-declarations -Wwrite-strings -std=c99 -DRESTRICT=restrict -DFUNDERSCORE=1 -fPIC")
+    set (CMAKE_C_FLAGS "-Wall -Wextra -Winit-self -Wuninitialized -Wmissing-declarations -Wwrite-strings -std=c99 -DRESTRICT=restrict -DFUNDERSCORE=1 -fPIC")
     set(CMAKE_C_FLAGS_DEBUG   "-O0 -g3 -Wall")
     set(CMAKE_C_FLAGS_RELEASE "-O2 -ffast-math -funroll-loops -ftree-vectorize -Wno-unused")
   endif()

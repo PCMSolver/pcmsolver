@@ -30,8 +30,6 @@ extern "C" void comp_chg_pcm_(char* potString, char* chgString);
 
 extern "C" void comp_pol_ene_pcm_(double * energy);
 
-extern "C" void get_epsilon_static_(double * epsilon);
-
 extern "C" void collect_nctot_(int * nuclei);
 
 extern "C" void collect_atoms_(double * charges, double * centers);

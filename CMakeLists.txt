@@ -50,11 +50,12 @@ endif()
 #
 #  Eigen 3 stuff
 #
+message("ENABLE_EIGEN_OWN is" ${ENABLE_EIGEN_OWN})
 if(ENABLE_EIGEN_OWN)
 	set(EIGEN3_ROOT ${PROJECT_SOURCE_DIR}/external/eigen3)
 	set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include/eigen3)
 	install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/eigen3 DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX})
-	message("Eigen 3.2.0 is located here: " ${EXTERNAL_PROJECT_INSTALL_PREFIX}/eigen3)
+	message("Eigen 3.2.0 is located here: " ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include/eigen3)
 else()
 	find_package(Eigen3 3.0.0)
         message("Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
@@ -68,13 +69,8 @@ endif()
 set(ExternalProjectCMakeArgs
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
-        -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
-        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 	-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DPARENT_INCLUDE_DIR=${PROJECT_BINARY_DIR}/external/include
-        -DPARENT_MODULE_DIR=${PROJECT_BINARY_DIR}/modules
-        -DPARENT_DEFINITIONS=${PARENT_DEFINITIONS}
         -DPARENT_BINARY_DIR=${PROJECT_BINARY_DIR}
    )
 

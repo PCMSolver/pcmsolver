@@ -1,0 +1,14 @@
+Units = AU
+Medium 
+{
+                Solvent = Water
+}
+
+Cavity 
+{
+		Type = GePol
+		Area = 100.0
+		Spheres = [ 0.00,   0.00,  0.00,  1.80,
+			    0.00,  -0.96,  0.00,  1.44,
+			   -0.905,  0.32,  0.00,  1.44]
+}

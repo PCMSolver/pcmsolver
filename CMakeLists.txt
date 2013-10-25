@@ -50,11 +50,10 @@ endif()
 #
 #  Eigen 3 stuff
 #
-message("ENABLE_EIGEN_OWN is" ${ENABLE_EIGEN_OWN})
 if(ENABLE_EIGEN_OWN)
 	set(EIGEN3_ROOT ${PROJECT_SOURCE_DIR}/external/eigen3)
 	set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include/eigen3)
-	install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/eigen3 DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX})
+	install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/eigen3 DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 	message("Eigen 3.2.0 is located here: " ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include/eigen3)
 else()
 	find_package(Eigen3 3.0.0)

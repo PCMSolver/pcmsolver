@@ -132,8 +132,9 @@ extern "C" void comp_pol_ene_pcm_(double * energy)
 		double UEN = (*iter_ele_pot->second) *  (*iter_nuc_chg->second);
 		double UNE = (*iter_nuc_pot->second) *  (*iter_ele_chg->second);
 		double UEE = (*iter_ele_pot->second) *  (*iter_ele_chg->second);
-		
-		printf("U_ee = %.10E, U_en = %.10E, U_ne = %.10E, U_nn = %.10E\n", UEE, UEN, UNE, UNN);
+	
+		printf("Polarization energy components:\n");
+		printf("U_ee = %.10E, U_en = %.10E, U_ne = %.10E, U_nn = %.10E \n", UEE, UEN, UNE, UNN);
 
 		*energy = 0.5 * ( UNN + UEN + UNE + UEE );
     } 
@@ -144,6 +145,29 @@ extern "C" void comp_pol_ene_pcm_(double * energy)
 	
 		*energy = (*iter_pot->second) * (*iter_chg->second) * 0.5;
     }
+}
+
+extern "C" void dot_surface_functions_(double * result, const char * potString, const char * chgString)
+{// Convert C-style strings to std::string 
+	std::string potFuncName(potString);
+	std::string chgFuncName(chgString);
+
+// Setup iterators 
+	SurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
+	SurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
+
+	if ( iter_pot == functions.end()  ||  iter_chg == functions.end() )
+	{
+		throw std::runtime_error("One or both of the SurfaceFunction specified is non-existent.");
+	}
+	else
+        {
+// Calculate the dot product
+		*result = (*iter_pot->second) * (*iter_chg->second);
+		std::cout << "Taking dot product" << std::endl;
+	        std::cout << iter_pot->second->getName() << " * " << iter_chg->second->getName() << " = ";	
+		printf("%.10E \n", *result);
+	}
 }
 
 extern "C" void get_cavity_size_(int * nts) 

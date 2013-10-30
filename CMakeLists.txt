@@ -98,6 +98,7 @@ configure_file (
     ${PROJECT_BINARY_DIR}/include/Config.hpp
     )
 
+# ALL THIS STUFF NEEDS TO BE REVIEWED
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
 #set(PCMSOLVER_EXECUTABLE pcmsolver.x)
 #set(PCMSOLVER_ERROR_LOG ${PROJECT_BINARY_DIR}/pcmsolver.err)
@@ -105,14 +106,9 @@ set(PCMSOLVER_EXECUTABLE ${PROJECT_BINARY_DIR}/pcmsolver.x)
 option(PCMSOLVER_DRIVER_DEBUG "Debug the driver (extmod)" OFF)
 #ask jonas about path
 configure_file(pcmsolver.in pcmsolver)
-file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
-  DESTINATION ${PROJECT_BINARY_DIR}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+install(FILES ${PROJECT_BINARY_DIR}/pcmsolver 
+	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ
+	DESTINATION bin)
 
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
@@ -129,7 +125,9 @@ include_directories(${header_dir_list})
 add_library(pcm ${SOURCES})
 install(TARGETS pcm ARCHIVE DESTINATION lib)
 
-install(FILES ${PROJECT_BINARY_DIR}/include/Config.hpp DESTINATION include)
+install(FILES 
+	${PROJECT_BINARY_DIR}/include/Config.hpp 
+	DESTINATION include)
 
 
 if(ENABLE_TESTS)

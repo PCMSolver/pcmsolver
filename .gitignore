@@ -20,3 +20,10 @@ Config.h
 doc/Doxyfile
 doc/_doxygen
 doc/conf.py
+../doc/ext/breathe/breathe/*.pyc
+../doc/ext/breathe/breathe/finder/doxygen/*.pyc
+../doc/ext/breathe/breathe/parser/*.pyc
+../doc/ext/breathe/breathe/parser/doxygen/*.pyc
+../doc/ext/breathe/breathe/renderer/*.pyc
+../doc/ext/breathe/breathe/renderer/rst/*.pyc
+../doc/ext/breathe/breathe/renderer/rst/doxygen/*.pyc

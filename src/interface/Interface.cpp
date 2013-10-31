@@ -186,7 +186,6 @@ extern "C" void get_tess_centers_(double * centers)
 extern "C" void get_tess_cent_coord_(int * its, double * center) 
 {
 	Eigen::Vector3d tess = _cavity->getElementCenter(*its-1);
-	std::cout << tess.transpose() << std::endl;
 	center[0] = tess(0);
 	center[1] = tess(1);
 	center[2] = tess(2);

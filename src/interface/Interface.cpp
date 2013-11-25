@@ -493,7 +493,15 @@ WaveletCavity * initWaveletCavity()
 	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
 	double coarsity = Input::TheInput().getCoarsity();
 	double probeRadius = Input::TheInput().getProbeRadius();
-    	
+
+	// Just throw at this point if the user asked for a cavity for a single sphere...
+	// the wavelet code will die without any further notice anyway
+
+	if (spheres.size() == 1)
+	{
+		throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
+	}
+	 
 	WaveletCavity * cav = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
 	cav->readCavity("molec_dyadic.dat");
 	

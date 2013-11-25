@@ -133,8 +133,8 @@ extern "C" void comp_pol_ene_pcm_(double * energy)
 		double UNE = (*iter_nuc_pot->second) *  (*iter_ele_chg->second);
 		double UEE = (*iter_ele_pot->second) *  (*iter_ele_chg->second);
 	
-		printf("Polarization energy components:\n");
-		printf("U_ee = %.10E, U_en = %.10E, U_ne = %.10E, U_nn = %.10E \n", UEE, UEN, UNE, UNN);
+		//printf("Polarization energy components:\n");
+		//printf("U_ee = %.10E, U_en = %.10E, U_ne = %.10E, U_nn = %.10E \n", UEE, UEN, UNE, UNN);
 
 		*energy = 0.5 * ( UNN + UEN + UNE + UEE );
     } 
@@ -164,9 +164,9 @@ extern "C" void dot_surface_functions_(double * result, const char * potString, 
         {
 // Calculate the dot product
 		*result = (*iter_pot->second) * (*iter_chg->second);
-		std::cout << "Taking dot product" << std::endl;
-	        std::cout << iter_pot->second->getName() << " * " << iter_chg->second->getName() << " = ";	
-		printf("%.10E \n", *result);
+		//std::cout << "Taking dot product" << std::endl;
+	        //std::cout << iter_pot->second->getName() << " * " << iter_chg->second->getName() << " = ";	
+		//printf("%.10E \n", *result);
 	}
 }
 

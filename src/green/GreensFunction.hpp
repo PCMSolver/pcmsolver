@@ -4,9 +4,20 @@
 #include <iosfwd>
 #include <string>
 
-#include <Eigen/Dense>
-
 #include "Config.hpp"
+
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
+#include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 /*! \file GreensFunction.hpp
  *  \class GreensFunction

@@ -4,7 +4,19 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
+
 #include "taylor.hpp"
 
 void UniformDielectric::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, 

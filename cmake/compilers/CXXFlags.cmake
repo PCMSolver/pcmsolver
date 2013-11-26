@@ -2,7 +2,7 @@ if (NOT DEFINED DEFUALT_CXX_FLAGS_SET OR RESET_FLAGS)
   
   if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
       set (CMAKE_CXX_FLAGS "-std=gnu++98 -fPIC") #-std=c++11")
-      set (CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -DDEBUG -Wall -Wextra -Winit-self -Woverloaded-virtual -Wuninitialized -Wmissing-declarations -Wwrite-strings ")
+      set (CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -DDEBUG -Wall -Wextra -Winit-self -Woverloaded-virtual -Wuninitialized -Wmissing-declarations -Wwrite-strings")
       set (CMAKE_CXX_FLAGS_RELEASE "-O2 -march=native -DNDEBUG -Wno-unused")
       if (ENABLE_CODE_COVERAGE)
           set (CMAKE_CXX_FLAGS

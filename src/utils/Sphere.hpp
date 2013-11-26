@@ -10,7 +10,8 @@
 #if defined (__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
 #pragma GCC diagnostic pop
 #elif (__INTEL_COMPILER)

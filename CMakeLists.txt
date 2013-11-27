@@ -106,7 +106,7 @@ set(PCMSOLVER_EXECUTABLE ${PROJECT_BINARY_DIR}/pcmsolver.x)
 option(PCMSOLVER_DRIVER_DEBUG "Debug the driver (extmod)" OFF)
 #ask jonas about path
 configure_file(pcmsolver.in pcmsolver)
-install(FILES ${EXTERNAL_PROJECT_INSTALL_PREFIX}/bin/pcmsolver 
+install(FILES ${PROJECT_BINARY_DIR}/pcmsolver 
 	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_READ
 	DESTINATION bin)
 

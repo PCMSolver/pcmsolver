@@ -363,9 +363,15 @@ void setupInput() {
 	initAtoms(charges, centers);
 	std::vector<Sphere> spheres;
 
+	// We create an initial list of spheres as if we were in the Implicit mode
+	// regardless of what the user told us.
+	// If we are in the Implicit mode we just need to let the Input object know about
+	// the list of spheres.
+	// Some post-processing of the list is needed in the Atoms mode.
+	initSpheresImplicit(charges, centers, spheres);
+
 	if (_mode == "Implicit") 
 	{
-		initSpheresImplicit(charges, centers, spheres);
 		parsedInput.setSpheres(spheres);
 	} 
 	else if (_mode == "Atoms") 
@@ -461,13 +467,16 @@ void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd &
 {
 	vector<int> atomsInput = Input::TheInput().getAtoms();
 	vector<double> radiiInput = Input::TheInput().getRadii();
-	
+  
+	// Loop over the atomsInput array to get which atoms will have a user-given radius
 	for (int i = 0; i < atomsInput.size(); ++i) 
 	{
 		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
+		// Create the Sphere
 		Eigen::Vector3d center = sphereCenter_.col(index);
 		Sphere sph(center, radiiInput[i]);
-		spheres_.push_back(sph);
+		// Put the new Sphere in place of the implicit-generated one
+		spheres_[index] = sph;
 	}
 }
 

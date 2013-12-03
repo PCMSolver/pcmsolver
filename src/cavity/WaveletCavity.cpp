@@ -117,8 +117,12 @@ void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
 	string infile = "cavity.inp";
 	writeInput(infile);
+#if defined (WAVELET_RELEASE)    
 	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, 
 							  infile.c_str());
+#else
+    check = 1;
+#endif
 	if (check != 0) {
 		std::cout << "Problem with the wavelet cavity!" << std::endl;
 		exit(-1);

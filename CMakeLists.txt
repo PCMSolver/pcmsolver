@@ -32,7 +32,7 @@ include(ConfigExternal)
 include(ConfigMath)
 include(ConfigSafeGuards)
 include(GenericMacros)
-include(ConfigGitRevision)
+include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 
 find_package(PythonInterp REQUIRED)
 
@@ -81,6 +81,7 @@ set(ExternalProjectCMakeArgs
 
 add_external(libgetkw)
 
+if(DEVELOPMENT_CODE)
 ExternalProject_Add(libtaylor
 	SVN_REPOSITORY http://libtaylor.googlecode.com/svn/trunk/
        	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
@@ -92,6 +93,17 @@ ExternalProject_Add(libtaylor
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
         CMAKE_ARGS ${ExternalProjectCMakeArgs}
 	)
+else()
+ExternalProject_Add(libtaylor
+	PREFIX ${PROJECT_SOURCE_DIR}/external
+	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
+	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
+        STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
+        TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
+        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+        CMAKE_ARGS ${ExternalProjectCMakeArgs}
+	)
+endif()
 
 configure_file (
     ${PROJECT_SOURCE_DIR}/Config.hpp.in

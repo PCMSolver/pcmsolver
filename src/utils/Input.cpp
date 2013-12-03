@@ -130,6 +130,13 @@ Input::Input()
 	equationType = mapStringToIntEquationType.find(medium.getStr("EquationType"))->second;
 	correction = medium.getDbl("Correction");
 
+#if not defined (WAVELET_RELEASE)
+	if (solverType == "Wavelet" || solverType == "Linear")
+	{
+		throw std::runtime_error("Wavelet cavity generator and solver are not included in this release.");
+	}
+#endif
+
 	// Now we have all input parameters, do some sanity checks
         if ( type == "GePol")
 	{

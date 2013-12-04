@@ -6,7 +6,7 @@ enable_language(CXX C Fortran)
 # There still is nothing going on inside the code regarding MPI, OpenMP and tests!!
 option(ENABLE_MPI        "Enable MPI parallelization"                                OFF)
 option(ENABLE_OPENMP     "Enable OpenMP parallelization"                             OFF)
-option(ENABLE_TESTS      "Enable compilation of unit tests"                          ON)
+option(ENABLE_TESTS      "Enable compilation of unit tests"                          OFF)
 option(DISABLE_EIGEN_OWN "Do not use Eigen3 headers shipped with the module"         OFF)
 option(ENABLE_EIGEN_MKL  "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
 

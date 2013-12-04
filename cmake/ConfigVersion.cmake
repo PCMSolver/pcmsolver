@@ -6,9 +6,10 @@ set(GIT_REVISION)
 
 # if GIT_HASH exists then this is exported code
 # in this case we read git hash from this file and set DEVELOPMENT_CODE to false
-if(EXISTS "${CMAKE_SOURCE_DIR}/RELEASE")
+execute_process(COMMAND git rev-parse --abbrev-ref HEAD OUTPUT_VARIABLE is_release)
+if(${is_release} STREQUAL "release")
     set(DEVELOPMENT_CODE FALSE)
 else()
     set(DEVELOPMENT_CODE TRUE)
-    add_definitions(-DWAVELET_RELEASE)
+    add_definitions(-DWAVELET_DEVELOPMENT)
 endif()

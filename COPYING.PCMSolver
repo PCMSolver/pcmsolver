@@ -1,0 +1,13 @@
+PCMSolver is copyright 2011-2013 Roberto Di Remigio, Luca Frediani and contributors.
+It is licensed under the LGPL license.
+
+In addition to the rights granted to you under the LGPL license
+(described in COPYING and COPYING.LESSER) you may distribute the
+compiled PCMSolver library statically linked to an application. It is
+understood that doing so will prevent the end user from relinking the
+application to a newer version of the PCMSolver library, but static
+linking is explicitly allowed by this exception. This exception does
+not free you from your obligation under the LGPL to provide the full
+(possibly modified by you) source code of the PCMSolver library to anyone
+who receives a copy of the library or an application linked to the
+library.

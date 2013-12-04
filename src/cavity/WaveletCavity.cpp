@@ -117,9 +117,8 @@ void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
 	string infile = "cavity.inp";
 	writeInput(infile);
-#if defined (WAVELET_RELEASE)    
-	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, 
-							  infile.c_str());
+#if defined (WAVELET_DEVELOPMENT)    
+	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, infile.c_str());
 #else
     check = 1;
 #endif

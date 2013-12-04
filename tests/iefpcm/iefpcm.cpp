@@ -2,51 +2,90 @@
 
 #include <Eigen/Dense>
 
-#include "Getkw.h"
 #include "GePolCavity.hpp"
-#include "PCMSolver.hpp"
+#include "Vacuum.hpp"
+#include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
-//#include "Interface.hpp"
 #include "gtest/gtest.h"
 
-TEST(iefpcm, pointCharge) {
-// This vector contains the potential of a point charge q at the sphere surface.
-	Eigen::Vector3d potential;
-// The exact total surface charge is given by (eps - 1)/eps * q
-	double totalCharge;
-	Eigen::Vector3d origin;
-	origin << 0.0, 0.0, 0.0;
-	double radius = 1.0;
-	Sphere point(origin, radius);
-        std::vector<Sphere> cavSpheres;
-	cavSpheres.push_back(point);
-	const char *infile = "@pcmsolver.inp";
-	Getkw Input = Getkw(infile, false, true);
-////////string solvent = Input.getStr("Medium.Solvent");
-	Section cavSect = Input.getSect("Cavity<gepol>");
-//        GePolCavity cavity(cavSect, cavSpheres);		
-// Read a dummy input that has already been parsed.
-//	init_pcm_();
-//  std::string name("foobar");
-//  Eigen::MatrixX3d geometry;
-//  geometry.resize(2, Eigen::NoChange);
-//  geometry << 0.0, 0.0, 0.0,
-//              1.0, 0.0, 0.0;
-//  Eigen::VectorXd charges;
-//  charges.resize(2);
-//  charges << 1.0, 1.0;
-//  Molecule foobar(charges, geometry, name);
-//  foobar.moveToCOM();
+TEST(IEFSolver, pointChargeGePol) 
+{
+	// Set up cavity
+	Eigen::Vector3d N(0.0, 0.0, 0.0); 		
+	std::vector<Sphere> spheres;      		
+	Sphere sph1(N, 2.929075493);      		
+	spheres.push_back(sph1);          		
+	double area = 0.4;                		
+	GePolCavity cavity(spheres, area);		
+	
+	double permittivity = 78.39;
+	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
+	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	IEFSolver solver(gfInside, gfOutside);
+	solver.buildSystemMatrix(cavity);
 
-//  Eigen::Matrix3d inertia;
-//  foobar.moveToPAF();
-//  inertia = foobar.getInertiaTensor();
-//  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigenSolver(inertia);
-//  
-//  Eigen::Vector3d moments;
-//  moments << 0.0, 0.50397, 0.50397; 
+	double charge = 8.0;
+	int size = cavity.size();
+	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < size; ++i)
+	{
+		Eigen::Vector3d center = cavity.getElementCenter(i);
+		double distance = center.norm();
+		fake_mep(i) = charge / distance; 
+	}
+	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+	solver.compCharge(fake_mep, fake_asc);
+	double totalASC = - charge * (permittivity - 1) / permittivity;
+	double totalFakeASC = fake_asc.sum();
+	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
+	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+}
 
-//  for(int i = 0; i < 3; ++i) {
-//      EXPECT_EQ(eigenSolver.eigenvalues()[i], moments[i]);
-//  }
+TEST(IEFSolver, NH3GePol) 
+{
+	// Set up cavity
+	Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
+	Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
+        Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
+        Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
+	std::vector<Sphere> spheres;
+	Sphere sph1(N,  2.929075493);
+	Sphere sph2(H1, 2.267671349);
+	Sphere sph3(H2, 2.267671349);
+	Sphere sph4(H3, 2.267671349);
+	spheres.push_back(sph1);
+	spheres.push_back(sph2);
+	spheres.push_back(sph3);
+	spheres.push_back(sph4);
+	double area = 0.4;
+	GePolCavity cavity(spheres, area);		
+	
+	double permittivity = 78.39;
+	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
+	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	double correction = 0.0;
+	IEFSolver solver(gfInside, gfOutside);
+	solver.buildSystemMatrix(cavity);
+
+	double Ncharge = 7.0;
+	double Hcharge = 1.0;
+	int size = cavity.size();
+	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < size; ++i)
+	{
+		Eigen::Vector3d center = cavity.getElementCenter(i);
+		double Ndistance = (center - N).norm();
+		double H1distance = (center - H1).norm();
+		double H2distance = (center - H2).norm();
+		double H3distance = (center - H3).norm();
+		fake_mep(i) = Ncharge / Ndistance + Hcharge / H1distance + Hcharge / H2distance + Hcharge / H3distance; 
+	}
+	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+	solver.compCharge(fake_mep, fake_asc);
+	double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
+	double totalFakeASC = fake_asc.sum();
+	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
+	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }

@@ -52,8 +52,8 @@ TEST_F(SurfaceFunctionTest, multiply_by_scalar)
 {
 	SurfaceFunction scaled1 = 2.5 * func1;
 	func2 *= 0.5;
-	EXPECT_EQ("2.500000*TestFunction1", scaled1.getName());
-	EXPECT_EQ("0.500000*TestFunction2", func2.getName());
+	EXPECT_EQ("2.5*TestFunction1", scaled1.getName());
+	EXPECT_EQ("0.5*TestFunction2", func2.getName());
 	EXPECT_EQ(10, scaled1.getNPoints());
 	EXPECT_EQ(10, func2.getNPoints());
 	Eigen::VectorXd result1(10), result2(10);

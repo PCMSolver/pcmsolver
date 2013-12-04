@@ -6,7 +6,20 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 //#include "Getkw.h"
 
 extern "C"
@@ -60,13 +73,8 @@ class WaveletCavity : public Cavity
                 unsigned int nPoints;
                 bool uploadedDyadic;
                 void writeInput(std::string &fileName);
-                //int nSpheres;               
-                //Matrix3Xd sphereCenter;
-                //Matrix3Xd tessSphereCenter;
-                //VectorXd sphereRadius;
-                //VectorXd tessRadius;
-                int patchLevel;
                 double probeRadius;
+                int patchLevel;
                 double coarsity;
                 virtual std::ostream & printCavity(std::ostream & os);  
 };

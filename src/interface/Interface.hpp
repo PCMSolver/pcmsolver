@@ -9,7 +9,20 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 #include "Sphere.hpp"
 #include "WaveletCavity.hpp"
@@ -24,11 +37,13 @@ extern "C" void hello_pcm_(int * a, double * b);
 
 extern "C" void init_pcm_();
 
+extern "C" void tear_down_pcm_();
+
 extern "C" void comp_chg_pcm_(char* potString, char* chgString);
 
-extern "C" void comp_pol_ene_pcm_(double * energy, int * separate_or_total);
+extern "C" void comp_pol_ene_pcm_(double * energy);
 
-extern "C" void get_epsilon_static_(double * epsilon);
+extern "C" void dot_surface_functions_(double * result, const char * potString, const char * chgString);
 
 extern "C" void collect_nctot_(int * nuclei);
 
@@ -51,8 +66,6 @@ extern "C" void get_surface_function_(int * nts, double * values, char * name);
 extern "C" void add_surface_function_(char * result, double * coeff, char * part);
 
 extern "C" void print_surface_function_(char * name);
-
-extern "C" bool surf_func_exists_(char * name);
 
 extern "C" void clear_surf_func_(char * name);
 
@@ -81,6 +94,10 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
 void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
 void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
+
+bool surfaceFunctionExists(const std::string & name);
+
+template<typename T> void safe_delete( T *& ptr ); 
 
 #endif // INTERFACE_HPP
 

@@ -3,7 +3,15 @@ set(metal_SOURCES
     plgndr.F
    )
 
-add_library(metal ${metal_SOURCES})
+if(ENABLE_TESTS)
+	add_library(metal ${metal_SOURCES})
+	install(TARGETS metal ARCHIVE DESTINATION lib)
+endif()
 
-install(TARGETS metal ARCHIVE DESTINATION lib)
-
+# Export the sources up to src directory level
+set(local_sources "")
+foreach(source ${metal_SOURCES})
+	get_filename_component(sourcepath ${source} ABSOLUTE)
+  	set(local_sources ${sourcepath} ${local_sources})
+endforeach()
+set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)

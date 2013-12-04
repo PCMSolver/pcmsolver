@@ -159,6 +159,13 @@ group.add_argument('--host',
         default=None,
         help="use predefined defaults for 'host'",
         metavar='STRING')
+group.add_argument('--eigenown',
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='off',
+        const='on',
+        help='Disable usage of Eigen3 headers shipped with the module  [default: %(default)s]')
 group.add_argument('--eigenmkl',
         nargs='?',
         action='store',
@@ -219,7 +226,8 @@ def gen_cmake_command():
 #    command += ' -DENABLE_OPENMP=%s' % args.openmp.upper()
     command += ' -DENABLE_BLAS=%s'   % args.blas.upper()
     command += ' -DENABLE_LAPACK=%s' % args.lapack.upper()
-#    command += ' -DENABLE_TESTS=%s'  % args.tests.upper()
+    command += ' -DENABLE_TESTS=%s'  % args.tests.upper()
+    command += ' -DDISABLE_EIGEN_OWN=%s' % args.eigenown.upper()
     command += ' -DENABLE_EIGEN_MKL=%s' % args.eigenmkl.upper()
 
     if args.blas_dir:

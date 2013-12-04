@@ -4,12 +4,24 @@
 #include <iosfwd>
 #include <string>
 
-#include <Eigen/Dense>
-
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
+#include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
+
 class Cavity;
-class GePolCavity;
 class GreensFunction;
 
 #include "PCMSolver.hpp"
@@ -30,8 +42,8 @@ class CPCMSolver : public PCMSolver
     		double correction;
     		Eigen::MatrixXd PCMMatrix;
 //    		static const double factor = 1.0694;
-    		static const double factor = 1.07;
-                void buildIsotropicMatrix(GePolCavity & cav);
+//    		static const double factor = 1.07;
+                void buildIsotropicMatrix(Cavity & cav);
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
 		CPCMSolver() {}

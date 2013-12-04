@@ -4,10 +4,11 @@ project(PCMSolver)
 enable_language(CXX C Fortran)
 
 # There still is nothing going on inside the code regarding MPI, OpenMP and tests!!
-option(ENABLE_MPI       "Enable MPI parallelization"                                OFF)
-option(ENABLE_OPENMP    "Enable OpenMP parallelization"                             OFF)
-option(ENABLE_TESTS     "Enable compilation of unit tests"                          ON)
-option(ENABLE_EIGEN_MKL "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
+option(ENABLE_MPI        "Enable MPI parallelization"                                OFF)
+option(ENABLE_OPENMP     "Enable OpenMP parallelization"                             OFF)
+option(ENABLE_TESTS      "Enable compilation of unit tests"                          ON)
+option(DISABLE_EIGEN_OWN "Do not use Eigen3 headers shipped with the module"         OFF)
+option(ENABLE_EIGEN_MKL  "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
 
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 1)
@@ -21,6 +22,7 @@ set(CMAKE_MODULE_PATH
     )
 
 set(LIBS)
+set(SOURCES)
 
 include(ConfigVersion)
 include(ConfigArchitecture)
@@ -30,26 +32,44 @@ include(ConfigExternal)
 include(ConfigMath)
 include(ConfigSafeGuards)
 include(GenericMacros)
-include(ConfigGitRevision)
-
-
-find_package(Eigen3 3.0.0)
-if(ENABLE_EIGEN_MKL)
-	message("-- ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3.\n Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
-        set(EIGEN_USE_MKL_ALL ON)
-endif()
+include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 
 find_package(PythonInterp REQUIRED)
 
 find_package(Boost)
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
+	set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
+	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT} CACHE INTERNAL "")
 else()
 	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT} CACHE INTERNAL "")
 endif()
+
+#
+#  Eigen 3 stuff
+#
+if("${EIGEN3_ROOT}" STREQUAL "")
+	if(DISABLE_EIGEN_OWN)
+		find_package(Eigen3 3.0.0)
+	        message("Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
+	else()
+		set(EIGEN3_ROOT ${PROJECT_SOURCE_DIR}/external/eigen3)
+		set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include/eigen3)
+		install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/eigen3 DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
+		message("Eigen 3.2.0 is located here: " ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include/eigen3)
+	endif()
+else()
+	find_package(Eigen3 3.0.0)
+        message("Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
+endif()
+
+if(ENABLE_EIGEN_MKL)
+	message("-- ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3.\n Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
+        set(EIGEN_USE_MKL_ALL ON)
+endif()
+
 
 set(ExternalProjectCMakeArgs
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -57,15 +77,13 @@ set(ExternalProjectCMakeArgs
         -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DPARENT_INCLUDE_DIR=${PROJECT_BINARY_DIR}/external/include
-        -DPARENT_MODULE_DIR=${PROJECT_BINARY_DIR}/modules
-        -DPARENT_DEFINITIONS=${PARENT_DEFINITIONS}
+	-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DPARENT_BINARY_DIR=${PROJECT_BINARY_DIR}
    )
 
 add_external(libgetkw)
 
+if(DEVELOPMENT_CODE)
 ExternalProject_Add(libtaylor
 	SVN_REPOSITORY http://libtaylor.googlecode.com/svn/trunk/
        	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
@@ -77,12 +95,24 @@ ExternalProject_Add(libtaylor
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
         CMAKE_ARGS ${ExternalProjectCMakeArgs}
 	)
+else()
+ExternalProject_Add(libtaylor
+	PREFIX ${PROJECT_SOURCE_DIR}/external
+	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
+	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
+        STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
+        TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
+        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+        CMAKE_ARGS ${ExternalProjectCMakeArgs}
+	)
+endif()
 
-configure_file (
+configure_file(
     ${PROJECT_SOURCE_DIR}/Config.hpp.in
     ${PROJECT_BINARY_DIR}/include/Config.hpp
     )
 
+# ALL THIS STUFF NEEDS TO BE REVIEWED
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
 #set(PCMSOLVER_EXECUTABLE pcmsolver.x)
 #set(PCMSOLVER_ERROR_LOG ${PROJECT_BINARY_DIR}/pcmsolver.err)
@@ -110,6 +140,14 @@ link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
 
 add_subdirectory(src)
 include_directories(${header_dir_list})
+
+add_library(pcm ${SOURCES})
+install(TARGETS pcm ARCHIVE DESTINATION lib)
+
+install(FILES 
+	${PROJECT_BINARY_DIR}/include/Config.hpp 
+	DESTINATION include)
+
 
 if(ENABLE_TESTS)
 	ExternalProject_Add(googletest

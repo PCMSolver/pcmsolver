@@ -6,7 +6,20 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 //#include "Getkw.h"
 
 extern "C"
@@ -104,8 +117,11 @@ void WaveletCavity::makeCavity() {
 	int dummy = 0, check = 0;
 	string infile = "cavity.inp";
 	writeInput(infile);
-	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, 
-							  infile.c_str());
+#if defined (WAVELET_DEVELOPMENT)    
+	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, infile.c_str());
+#else
+    check = 1;
+#endif
 	if (check != 0) {
 		std::cout << "Problem with the wavelet cavity!" << std::endl;
 		exit(-1);
@@ -263,7 +279,7 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
 		os << sphereCenter(2,i) << " ";
 		os << sphereRadius(i) << " ";
     	}*/
-	if (uploadedDyadic) 
+/*	if (uploadedDyadic) 
 	{
 		os << "Printing nodes" << endl;
 		for(int i = 0; i < nPoints; i++) 
@@ -272,7 +288,7 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
 			os << i+1 << " ";
 			os << nodeIndex[i].transpose() << " " << nodePoint[i].transpose() << " ";
 		}
-	}
+	}*/
 	return os;
 }
 

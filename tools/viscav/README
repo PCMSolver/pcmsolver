@@ -1,0 +1,18 @@
+Required packages:
+
+Qt4 development files
+PyQt + PyOpenGL
+
+In Ubuntu (and possibly in other Debian derivatives):
+sudo apt-get install python-qt4 python-qt4-gl python-opengl
+
+Syntax for running the program:
+python CavityViewer.py examples/h2o.quad
+
+
+Controls:
+
+Left mouse button - rotate
+Right mouse button - translate
+Middle mouse button - zoom
+Mouse wheel - zoom

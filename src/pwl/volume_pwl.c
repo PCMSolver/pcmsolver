@@ -18,7 +18,7 @@
 #include "volume.h"
 
 
-double volume(F, T, p, m)
+double volume_pwl(F, T, p, m)
 unsigned int **F;               /* Patchliste                                  */
 vector3 ****T;                  /* Koeffizienten zur Oberflaecheninterpolation */
 unsigned int p;                 /* Anzahl der Parametergebiete                 */

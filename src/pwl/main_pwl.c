@@ -32,7 +32,7 @@
 #include "topology_pwl.h"
 #include "precond_pwl.h"
 #include "energy_pwl.h"
-#include "volume.h"
+#include "volume_pwl.h"
 #include "kern.h"
 #include "molecule.h"
 
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
     init_interpolate_pwl(&T, U, p, M);
     np = gennet_pwl(&P, &F, U, p, M);
     free_points(&U, p, M);
-    volume(F, T, p, M);
+    volume_pwl(F, T, p, M);
 
     /* erstelle Element-/Waveletliste */
     printf("Number of levels:                %d \n", M);

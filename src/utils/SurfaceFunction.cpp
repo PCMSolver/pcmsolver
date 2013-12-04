@@ -1,12 +1,24 @@
 #include "SurfaceFunction.hpp"
 
-#include <map>
 #include <string>
 #include <stdexcept>
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
@@ -61,7 +73,11 @@ SurfaceFunction & SurfaceFunction::operator-=(const SurfaceFunction & other)
 
 SurfaceFunction & SurfaceFunction::operator*=(double scaling)
 {
-	this->name = std::to_string(scaling) + "*" + this->name;
+//	this->name = std::to_string(scaling) + "*" + this->name; // The C++11 way
+	std::ostringstream sstream;
+	sstream << scaling;
+	std::string scalingAsString = sstream.str();
+	this->name = scalingAsString + "*" + this->name;
 	this->values *= scaling;
         return *this;
 }
@@ -70,11 +86,13 @@ void SurfaceFunction::setValues(double * values_)
 {
 	if (!allocated)
 		throw std::runtime_error("Surface function not allocated!");
+	// Zero out any previous value
+	values.setZero();
 
 	for (int i = 0; i < nPoints; ++i) 
 	{
 		values(i) = values_[i];
-	}
+		}
 }
 
 void SurfaceFunction::getValues(double * values_) 
@@ -90,19 +108,8 @@ void SurfaceFunction::clear()
 	values.setZero();
 }
 
-bool SurfaceFunction::Register()
+std::ostream & SurfaceFunction::printObject(std::ostream & os) 
 {
-	registered = SurfaceFunction::TheMap().insert(SurfaceFunctionMap::value_type(name, this)).second;
-	return registered;
-}
-
-bool SurfaceFunction::unRegister()
-{
-	registered = SurfaceFunction::TheMap().erase(name);
-	return registered;
-}
-
-std::ostream & SurfaceFunction::printObject(std::ostream & os) {
 	os << "Surface Function " << name << std::endl;
 	if (!allocated) 
 		throw std::runtime_error("Surface function not allocated!");

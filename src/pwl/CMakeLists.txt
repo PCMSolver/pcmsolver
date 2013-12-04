@@ -23,7 +23,18 @@ set (pwl_SOURCES
   volume_pwl.c
   )
 
-add_library(pwl ${pwl_SOURCES})
+if(ENABLE_TESTS)
+	add_library(pwl ${pwl_SOURCES})
+	install(TARGETS pwl ARCHIVE DESTINATION lib)
+endif()
+
+# Export the sources up to src directory level
+set(local_sources "")
+foreach(source ${pwl_SOURCES})
+	get_filename_component(sourcepath ${source} ABSOLUTE)
+  	set(local_sources ${sourcepath} ${local_sources})
+endforeach()
+set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
 
 install(FILES WEMPCG_pwl.h       DESTINATION include)
 install(FILES WEMPGMRES_pwl.h    DESTINATION include)
@@ -47,6 +58,4 @@ install(FILES precond_pwl.h      DESTINATION include)
 install(FILES topology_pwl.h     DESTINATION include)
 install(FILES trafos_pwl.h       DESTINATION include)
 install(FILES volume_pwl.h       DESTINATION include)
-
-install(TARGETS pwl ARCHIVE DESTINATION lib)
 

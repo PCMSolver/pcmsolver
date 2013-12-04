@@ -7,33 +7,38 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 #include "Cavity.hpp"
-#include "GePolCavity.hpp"
 #include "GreensFunction.hpp"
 
 void CPCMSolver::buildSystemMatrix(Cavity & cavity) 
 {
-    if (GePolCavity *gePolCavity = dynamic_cast<GePolCavity*> (&cavity)) 
-    {
-	    if (greenInside->isUniform() && greenOutside->isUniform()) 
-	    {
-		    buildIsotropicMatrix(*gePolCavity);
-	    } 
-	    else 
-	    {
-		   throw std::runtime_error("C-PCM is defined only for isotropic environments!");
-	    }
-    } 
-    else 
-    {
-	    throw std::runtime_error( "No other cavity than GePol for traditional PCM.");
-    }
+	if (greenInside->isUniform() && greenOutside->isUniform()) 
+	{
+		buildIsotropicMatrix(cavity);
+	} 
+	else 
+	{
+	        throw std::runtime_error("C-PCM is defined only for isotropic environments!");
+	}
 }
 
 
-void CPCMSolver::buildIsotropicMatrix(GePolCavity & cav)
+void CPCMSolver::buildIsotropicMatrix(Cavity & cav)
 {
 	double epsilon = greenOutside->getDielectricConstant();
     	int cavitySize = cav.size();
@@ -68,7 +73,7 @@ void CPCMSolver::buildIsotropicMatrix(GePolCavity & cav)
 
 void CPCMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
 {
-	if (builtIsotropicMatrix or builtAnisotropicMatrix) 
+	if (builtIsotropicMatrix) 
 	{
 		charge = - PCMMatrix * potential;
 	} 

@@ -2,11 +2,32 @@
 
 #include <cmath>
 #include <ostream>
+#include <stdexcept>
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from third-party headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
 #include "taylor.hpp"
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#pragma warning disable "-Weffc++"
+#include <Eigen/Dense>
+#include "taylor.hpp"
+#pragma warning pop
+#endif
+
+void IonicLiquid::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
+{
+	throw std::runtime_error("Green's function for an ionic liquid has not yet been implemented!");
+}
 
 Eigen::Array4d IonicLiquid::numericalDirectional(Eigen::Vector3d & sourceNormal_, Eigen::Vector3d & source_, 
 						 Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const

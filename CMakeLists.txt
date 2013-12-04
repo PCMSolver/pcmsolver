@@ -105,7 +105,7 @@ ExternalProject_Add(libtaylor
 	)
 endif()
 
-configure_file (
+configure_file(
     ${PROJECT_SOURCE_DIR}/Config.hpp.in
     ${PROJECT_BINARY_DIR}/include/Config.hpp
     )

@@ -29,7 +29,6 @@ include(ConfigArchitecture)
 include(ConfigCompilerFlags)
 include(ConfigDocumentation)
 include(ConfigExternal)
-include(ConfigMath)
 include(ConfigSafeGuards)
 include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
@@ -67,6 +66,7 @@ endif()
 
 if(ENABLE_EIGEN_MKL)
 	message("-- ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3.\n Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
+        include(ConfigMath)
         set(EIGEN_USE_MKL_ALL ON)
 endif()
 
@@ -150,6 +150,7 @@ install(FILES
 
 
 if(ENABLE_TESTS)
+	set(LIBS pthread ${LIBS})
 	ExternalProject_Add(googletest
 		SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk
 	       	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}

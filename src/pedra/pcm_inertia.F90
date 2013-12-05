@@ -2,64 +2,78 @@
 !    WLKDIN on the basis of ABACUS abawalk.F
 !    written and/or modified by Krzysztof Mozgawa 
 !    and Ville Weijo, 2010
+! 
+!    051213 revision. Remove call to LAPACK diagonalization
+!    subroutine. Replace with a custom function specialized
+!    for 3x3 matrices (thus avoiding having to link BLAS/LAPACK)
 !
 
-SUBROUTINE PCM_WLKDIN(COR, TMASS, N, ANGMOM, TINERT, OMEGA, CEPVAL, CEPVEC, DOCOPY, PLANAR, LINEAR)
+subroutine pcm_wlkdin(cor, tmass, n, angmom, tinert, omega, cepval, cepvec, docopy, planar, linear)
 
-  IMPLICIT NONE
-  REAL(8), DIMENSION(N,3), INTENT(IN) :: COR
-  REAL(8), DIMENSION(N), INTENT(IN) :: TMASS
-  INTEGER, INTENT(IN) :: N
-  REAL(8), DIMENSION(3), INTENT(IN) :: ANGMOM
-  REAL(8), DIMENSION(3,3), INTENT(OUT) :: TINERT, CEPVEC
-  real(8), dimension(3), INTENT(OUT) :: OMEGA, CEPVAL
-  LOGICAL, INTENT(OUT) :: PLANAR, LINEAR
-  LOGICAL, INTENT(IN) :: DOCOPY
+  implicit none
+  real(8), dimension(n,3), intent(in) :: cor
+  real(8), dimension(n), intent(in) :: tmass
+  integer, intent(in) :: n
+  real(8), dimension(3), intent(in) :: angmom
+  real(8), dimension(3,3), intent(out) :: tinert, cepvec
+  real(8), dimension(3), intent(out) :: omega, cepval
+  logical, intent(out) :: planar, linear
+  logical, intent(in) :: docopy
   
-  INTEGER :: i, j, k, INFO
-  REAL(8) :: EIGVAL(3), EIGVEC(3,3), IEIGVAL(3), WORK(15), TINVER(3,3), EIGVALINV(3,3), TEMP(3,3)
-  REAL(8), parameter :: TSTLIN = 1D-10
+  integer :: i, j, k, info
+  real(8) :: eigval(3), eigvec(3,3), ieigval(3), work(15), tinver(3,3), eigvalinv(3,3), temp(3,3)
+  real(8), parameter :: tstlin = 1d-10
+  real(8) :: average
 
-  TINERT = 0D0 
-  do i=1, N
-     do j=1,3
-        do k=1,3
-           TINERT(j,k) = TINERT(j,k)+ TMASS(i)*COR(i,j)*COR(i,k)
+  tinert = 0d0 
+  do i = 1, n
+     do j = 1,3
+        do k = 1,3
+           tinert(j,k) = tinert(j,k)+ tmass(i)*cor(i,j)*cor(i,k)
         enddo
      enddo
   enddo
-  TEMP = TINERT
+! Symmetrize the inertia tensor
+  do i = 1, 3
+     do j = 1, 3
+         average = 0.5d0 * (tinert(i, j) + tinert(j, i))
+         tinert(i, j) = average
+         tinert(j, i) = average
+     enddo
+  enddo
+  temp = tinert
 
-  call DGEEV('V','N',3,TEMP,3,EIGVAL,IEIGVAL,EIGVEC,3,1,1,WORK,15,INFO)
+! Now diagonalize it, we want back both the eigenvalues and eigenvectors
+  call dsyevv3(temp, eigvec, eigval)
 
-  IF ( ABS(EIGVAL(3)-EIGVAL(2)-EIGVAL(1)) .LT. TSTLIN) THEN
-     PLANAR = .TRUE.
-  ELSE
-     PLANAR = .FALSE.
-  END IF
-  IF (EIGVAL(3) .LT. TSTLIN) THEN
-     LINEAR = .TRUE.
-     PLANAR = .FALSE.
-     EIGVAL(3) = 0D0
-  ELSE
-     LINEAR = .FALSE.
-     EIGVAL(3) = 1D0/EIGVAL(3)
-  END IF
-  EIGVAL(2) = 1D0/EIGVAL(2)
-  EIGVAL(1) = 1D0/EIGVAL(1)
-  EIGVALINV = 0D0
-  EIGVALINV(1,1) = EIGVAL(1)
-  EIGVALINV(2,2) = EIGVAL(2)
-  EIGVALINV(3,3) = EIGVAL(3)
+  if ( abs(eigval(3)-eigval(2)-eigval(1)) .lt. tstlin) then
+     planar = .true.
+  else
+     planar = .false.
+  end if
+  if (eigval(3) .lt. tstlin) then
+     linear = .true.
+     planar = .false.
+     eigval(3) = 0d0
+  else
+     linear = .false.
+     eigval(3) = 1d0/eigval(3)
+  end if
+  eigval(2) = 1d0/eigval(2)
+  eigval(1) = 1d0/eigval(1)
+  eigvalinv = 0d0
+  eigvalinv(1,1) = eigval(1)
+  eigvalinv(2,2) = eigval(2)
+  eigvalinv(3,3) = eigval(3)
   
-  TINVER= matmul(matmul(EIGVEC, EIGVALINV), transpose(EIGVEC))
+  tinver= matmul(matmul(eigvec, eigvalinv), transpose(eigvec))
 
-  OMEGA = matmul(TINVER,ANGMOM)
+  omega = matmul(tinver, angmom)
 
-  if (DOCOPY) then
-     CEPVAL= EIGVAL
-     CEPVEC= EIGVEC 
+  if (docopy) then
+     cepval = eigval
+     cepvec = eigvec 
   endif
 
 
-END SUBROUTINE PCM_WLKDIN
+end subroutine pcm_wlkdin

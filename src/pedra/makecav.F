@@ -19,7 +19,7 @@ C if you don't want to use external (c++) input comment out lines between Cex
 C
       subroutine makecav_(xtscor_,ytscor_,ztscor_,ar_,
      & xsphcor_,ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_,
-     & rin_, avgarea_, rsolv_, work2, lwork2)
+     & rin_, avgarea_, rsolv_, work2, lwork2, done)
 
 #include <pcm_implicit.h>
 #include <pcm_maxorb.h>
@@ -40,7 +40,7 @@ C
       double precision ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
       double precision avgarea_, rsolv_
       integer nts_, nesfp_
-      logical pedra_file_exists
+      logical pedra_file_exists, done
 
       LVPRI = 121201
       inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
@@ -101,6 +101,8 @@ C
       enddo
 
       close(lvpri)
-
+  
+      done = .true.
+ 
       return
       END

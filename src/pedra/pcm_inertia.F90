@@ -46,8 +46,8 @@ subroutine pcm_wlkdin(cor, tmass, n, angmom, tinert, omega, cepval, cepvec, doco
 
 ! Now diagonalize it, we want back both the eigenvalues and eigenvectors
 !   call DGEEV('V','N',3,TEMP,3,EIGVAL,IEIGVAL,EIGVEC,3,1,1,WORK,15,INFO)
-!  call dsyevh3(temp, eigvec, eigval)
-  call dsyevv3(temp, eigvec, eigval) ! The analytical routine is buggy!!!
+  call dsyevh3(temp, eigvec, eigval)
+! call dsyevv3(temp, eigvec, eigval) ! The analytical routine is buggy!!!
 
   if ( abs(eigval(3)-eigval(2)-eigval(1)) .lt. tstlin) then
      planar = .true.

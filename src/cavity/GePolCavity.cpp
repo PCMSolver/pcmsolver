@@ -86,15 +86,16 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 
 	double *rin = sphereRadius_.data();
 
-    // Go PEDRA, Go!	
+        // Go PEDRA, Go!	
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork, &done);
 
-    if (not done)
-    {
-        std::cout << "Throwing?" << std::endl;
-        throw std::runtime_error("PEDRA just died! Check the PEDRA.OUT file.");
-    }
+       
+	done = false; 
+    	if (not done)
+    	{
+ 	        throw std::runtime_error("PEDRA just died! Check the PEDRA.OUT file.");
+    	}
 	
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
 	// coming out from generatecavity_cpp_

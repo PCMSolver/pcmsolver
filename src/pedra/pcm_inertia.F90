@@ -22,9 +22,8 @@ subroutine pcm_wlkdin(cor, tmass, n, angmom, tinert, omega, cepval, cepvec, doco
   
   integer :: i, j, k, info
   real(8) :: eigval(3), eigvec(3,3), ieigval(3), work(15), tinver(3,3), eigvalinv(3,3), temp(3,3)
-  real(8), parameter :: tstlin = 1d-10
+  real(8), parameter :: tstlin = 1.0d-10
   real(8) :: average
-  real(8) :: my_eigval(3), my_eigvec(3, 3), my_inertia(3, 3)
 
   tinert = 0.0d0 
   do i = 1, n
@@ -47,7 +46,6 @@ subroutine pcm_wlkdin(cor, tmass, n, angmom, tinert, omega, cepval, cepvec, doco
 ! Now diagonalize it, we want back both the eigenvalues and eigenvectors
 !   call DGEEV('V','N',3,TEMP,3,EIGVAL,IEIGVAL,EIGVEC,3,1,1,WORK,15,INFO)
   call dsyevh3(temp, eigvec, eigval)
-! call dsyevv3(temp, eigvec, eigval) ! The analytical routine is buggy!!!
 
   if ( abs(eigval(3)-eigval(2)-eigval(1)) .lt. tstlin) then
      planar = .true.

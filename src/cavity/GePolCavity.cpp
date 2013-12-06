@@ -28,7 +28,7 @@ extern "C"
 {
 	void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
 			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
-			     double *avgArea, double *rsolv, double* work, int* lwork, bool * done);
+			     double *avgArea, double *rsolv, double* work, int* lwork);
 }
 
 void GePolCavity::makeCavity()
@@ -54,8 +54,6 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 	double *rsph    = new double[maxts];
 	double *work    = new double[lwork];
 
-    bool done = false;
-	
 	int nts;
 	
 	// Allocate vectors of size equal to nSpheres + maxAddedSpheres where maxAddedSpheres is the 
@@ -86,16 +84,9 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 
 	double *rin = sphereRadius_.data();
 
-        // Go PEDRA, Go!	
+    // Go PEDRA, Go!	
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
-						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork, &done);
-
-       
-	done = false; 
-    	if (not done)
-    	{
- 	        throw std::runtime_error("PEDRA just died! Check the PEDRA.OUT file.");
-    	}
+						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
 	
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
 	// coming out from generatecavity_cpp_

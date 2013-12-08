@@ -6,7 +6,20 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 #include "Getkw.h"
 
 #include "Solvent.hpp"
@@ -119,6 +132,13 @@ Input::Input()
 	solverType = medium.getStr("SolverType");
 	equationType = mapStringToIntEquationType.find(medium.getStr("EquationType"))->second;
 	correction = medium.getDbl("Correction");
+
+#if not defined (WAVELET_DEVELOPMENT)
+	if (solverType == "Wavelet" || solverType == "Linear")
+	{
+		throw std::runtime_error("Wavelet cavity generator and solver are not included in this release.");
+	}
+#endif
 
 	// Now we have all input parameters, do some sanity checks
         if ( type == "GePol")

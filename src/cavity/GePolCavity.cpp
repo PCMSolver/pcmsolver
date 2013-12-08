@@ -1,12 +1,26 @@
 #include "GePolCavity.hpp"
 
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 #include "Sphere.hpp"
 
@@ -39,7 +53,7 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 	double *zsphcor = new double[maxts];
 	double *rsph    = new double[maxts];
 	double *work    = new double[lwork];
-	
+
 	int nts;
 	
 	// Allocate vectors of size equal to nSpheres + maxAddedSpheres where maxAddedSpheres is the 
@@ -70,7 +84,7 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 
 	double *rin = sphereRadius_.data();
 
-        // Go PEDRA, Go!	
+    // Go PEDRA, Go!	
 	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
 	

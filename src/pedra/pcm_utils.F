@@ -16,6 +16,7 @@ C
 C                                                                               
       RETURN
       END
+
       SUBROUTINE AROUND_(HEAD)
       CHARACTER HEAD*(*)
 #include <pcm_priunit.h>
@@ -31,6 +32,7 @@ Cx    WRITE (LVPRI,'(150A)')   (' ',I=1,IND), '`', ('-',I=1,LNG), ''''
       WRITE (LVPRI,'()')
       RETURN
       END
+
       FUNCTION DNORM2__(N,DX,INCX)
 C                                                                               
 C     Forms the two-norm of a vector.                                           
@@ -87,6 +89,7 @@ C                                       20 M = MOD(N,5)
  60       DNORM2__ = SQRT(DTEMP)
       RETURN
       END
+
       SUBROUTINE ERRWRK_ (STRING,LNEED,LAVAIL)
 C                                                                               
 C Version 6-Mar-1985 by hjaaj                                                   

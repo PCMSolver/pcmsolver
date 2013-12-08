@@ -2,7 +2,9 @@
 *#
 *.out
 output*
-external
+external/libgetkw
+external/libtaylor
+external/googletest
 release*
 Release*
 Makefile
@@ -18,3 +20,4 @@ Config.h
 doc/Doxyfile
 doc/_doxygen
 doc/conf.py
+*.pyc

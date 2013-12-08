@@ -6,7 +6,20 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 extern "C"
 {
@@ -23,8 +36,8 @@ class WaveletCavity : public Cavity
                 WaveletCavity(const std::vector<Sphere> & _spheres, double _probeRadius, int _patchLevel = 2, double _coarsity = 0.5) :
             	   Cavity(_spheres), probeRadius(_probeRadius), patchLevel(_patchLevel), coarsity(_coarsity) 
                        {
-			       uploadedDyadic = false;
-            		       makeCavity();
+            		uploadedDyadic = false;
+            		makeCavity();
                        }
                 virtual ~WaveletCavity(){};
                 void makeCavity();

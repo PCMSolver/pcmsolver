@@ -1,13 +1,37 @@
 #include <iostream>
 
+#include "Config.hpp"
+
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 #include "GePolCavity.hpp"
 #include "TsLessCavity.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
+
+// Disable obnoxious warnings from Google Test headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include "gtest/gtest.h"
+#pragma GCC diagnostic pop
+#endif
 
 TEST(IEFSolver, pointChargeGePol) 
 {

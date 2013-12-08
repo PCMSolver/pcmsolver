@@ -9,7 +9,20 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 #include "Sphere.hpp"
 #include "WaveletCavity.hpp"
@@ -30,7 +43,7 @@ extern "C" void comp_chg_pcm_(char* potString, char* chgString);
 
 extern "C" void comp_pol_ene_pcm_(double * energy);
 
-extern "C" void get_epsilon_static_(double * epsilon);
+extern "C" void dot_surface_functions_(double * result, const char * potString, const char * chgString);
 
 extern "C" void collect_nctot_(int * nuclei);
 

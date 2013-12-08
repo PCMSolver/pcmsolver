@@ -7,7 +7,11 @@ set(cavity_SOURCES
 
 if(ENABLE_TESTS)
 	add_library(cavity ${cavity_SOURCES})
-	add_dependencies(cavity pedra tsless wavcav)
+    if(DEVELOPMENT_CODE)
+ 	    add_dependencies(cavity pedra tsless wavcav)
+    else()
+ 	    add_dependencies(cavity pedra tsless)
+    endif()
 	install(TARGETS cavity ARCHIVE DESTINATION lib)
 endif()
 

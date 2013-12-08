@@ -4,8 +4,6 @@
 #include <string>
 #include <map>
 
-#include <Eigen/Dense>
-
 #include "Config.hpp"
 
 class GreensFunction;

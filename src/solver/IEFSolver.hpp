@@ -26,7 +26,7 @@ class IEFSolver : public PCMSolver
    	 	bool builtIsotropicMatrix;
     		bool builtAnisotropicMatrix;
 //	 	static const double factor = 1.0694;
-    		static const double factor = 1.07;
+//    		static const double factor = 1.07;
 		Eigen::MatrixXd PCMMatrix;
                 void buildAnisotropicMatrix(Cavity & cav);
                 void buildIsotropicMatrix(Cavity & cav);

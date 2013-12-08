@@ -4,9 +4,24 @@
 
 #include "Config.hpp"
 
+// Disable obnoxious warnings from third-party headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
 #include "taylor.hpp"
- 		
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#pragma warning disable "-Weffc++"
+#include <Eigen/Dense>
+#include "taylor.hpp"
+#pragma warning pop
+#endif
+
 void Vacuum::compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const
 {
 	int size = S_.rows();

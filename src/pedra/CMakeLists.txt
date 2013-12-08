@@ -7,6 +7,7 @@ set(pedra_SOURCES
   pedra_cavity_interface.F
   makecav.F
   pcm_dblas1.F
+  pcm_dlapack.F
   )
 
 if(ENABLE_TESTS)

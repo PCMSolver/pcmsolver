@@ -172,24 +172,7 @@ if(ENABLE_TESTS)
 	include_directories(${GTEST_INCLUDE_DIRS})
 
         enable_testing()
-	file(GLOB_RECURSE TEST_SOURCE_FILES tests/*/*.cpp)
-	foreach(child ${TEST_SOURCE_FILES})
-		get_filename_component(test_name ${child} NAME_WE)
-                add_executable(${test_name}.x ${child})      	
-                add_dependencies(${test_name}.x googletest)
-		if(DEVELOPMENT_CODE)
-			set(PCMLIBS interface solver green cavity tsless pedra metal pwl wem wavcav utils getkw)
-		else()
-			set(PCMLIBS interface solver green cavity tsless pedra metal pwl wem utils getkw)
-		endif()
-                target_link_libraries(${test_name}.x
-			              ${PCMLIBS}
-                                      ${GTEST_LIBS_DIR}/libgtest.a
-                                      ${GTEST_LIBS_DIR}/libgtest_main.a
-	                              ${LIBS}
-	                             )
-                add_test(NAME ${test_name} COMMAND ${test_name}.x)
-	endforeach()
+	add_subdirectory(tests) # This must come last!!
 endif()
 
 # add_executable(wavcav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcav.cpp)

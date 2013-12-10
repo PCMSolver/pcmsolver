@@ -1,5 +1,3 @@
-if(DEVELOPMENT_CODE)
-    set(list_of_libraries cavity tsless pedra utils)
-    add_googletest(tsless_point "${list_of_libraries}" "${LIBS}")
-    add_googletest(tsless_NH3 "${list_of_libraries}" "${LIBS}")
-endif()
+set(list_of_libraries cavity tsless pedra utils)
+add_googletest(tsless_point "${list_of_libraries}" "${LIBS}")
+add_googletest(tsless_NH3 "${list_of_libraries}" "${LIBS}")

@@ -1,0 +1,13 @@
+~~~~~~~~~~~~~~~~~~ PCMSolver TODO list ~~~~~~~~~~~~~~~~~~
+Add whatever you think needs work. Remove when it's done.
+Some items might be duplicated in Redmine. If you file
+also an issue for an item in this list, please include
+the issue number.
+
+10 December 2013
+----------------
+1. Document how to add unit tests (#576)
+2. Document the release process (#577)
+3. Define which part of the documentation goes into a
+   release (#578)
+4. Document how to run tests (#579)

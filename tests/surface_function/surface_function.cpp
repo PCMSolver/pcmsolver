@@ -29,16 +29,20 @@
 
 class SurfaceFunctionTest : public ::testing::Test
 {
+    public:
+        int nPoints;
+		Eigen::VectorXd values1;
+		Eigen::VectorXd values2;
 	protected:
 		SurfaceFunction func1;
 		SurfaceFunction func2;
 		virtual void SetUp()
 		{
-			int nPoints = 10;
-			Eigen::VectorXd values1(nPoints);
-			Eigen::VectorXd values2(nPoints);
-			values1 = Eigen::VectorXd::Constant(10,1,1.0);
-			values2 = Eigen::VectorXd::Constant(10,1,4.0);
+            nPoints = 1000;
+            values1.resize(nPoints);
+            values2.resize(nPoints);
+			values1 = Eigen::VectorXd::Random(nPoints);
+			values2 = Eigen::VectorXd::Random(nPoints);
 			double * values1_ptr = values1.data();
 			double * values2_ptr = values2.data();
 			func1 = SurfaceFunction("TestFunction1", nPoints, values1_ptr);
@@ -50,10 +54,10 @@ TEST_F(SurfaceFunctionTest, addition)
 {
 	SurfaceFunction addition = func1 + func2;
 	EXPECT_EQ("TestFunction1+TestFunction2", addition.getName());
-	EXPECT_EQ(10, addition.getNPoints());
-	Eigen::VectorXd result(10);
-	result = Eigen::VectorXd::Constant(10, 1, 5.0);
-	for (int i = 0; i < 10; ++i)
+	EXPECT_EQ(nPoints, addition.getNPoints());
+	Eigen::VectorXd result(nPoints);
+    result = values1 + values2;
+	for (int i = 0; i < nPoints; ++i)
 	{
 		EXPECT_EQ(result(i), addition.getValue(i));
 	}
@@ -63,10 +67,10 @@ TEST_F(SurfaceFunctionTest, subtraction)
 {
 	SurfaceFunction subtraction = func1 - func2;
 	EXPECT_EQ("TestFunction1-TestFunction2", subtraction.getName());
-	EXPECT_EQ(10, subtraction.getNPoints());
-	Eigen::VectorXd result(10);
-	result = Eigen::VectorXd::Constant(10, 1, -3.0);
-	for (int i = 0; i < 10; ++i)
+	EXPECT_EQ(nPoints, subtraction.getNPoints());
+	Eigen::VectorXd result(nPoints);
+    result = values1 - values2;
+	for (int i = 0; i < nPoints; ++i)
 	{
 		EXPECT_EQ(result(i), subtraction.getValue(i));
 	}
@@ -78,12 +82,12 @@ TEST_F(SurfaceFunctionTest, multiply_by_scalar)
 	func2 *= 0.5;
 	EXPECT_EQ("2.5*TestFunction1", scaled1.getName());
 	EXPECT_EQ("0.5*TestFunction2", func2.getName());
-	EXPECT_EQ(10, scaled1.getNPoints());
-	EXPECT_EQ(10, func2.getNPoints());
-	Eigen::VectorXd result1(10), result2(10);
-	result1 = Eigen::VectorXd::Constant(10, 1, 2.5);
-	result2 = Eigen::VectorXd::Constant(10, 1, 2.0);
-	for (int i = 0; i < 10; ++i)
+	EXPECT_EQ(nPoints, scaled1.getNPoints());
+	EXPECT_EQ(nPoints, func2.getNPoints());
+	Eigen::VectorXd result1(nPoints), result2(nPoints);
+    result1 = 2.5 * values1;
+    result2 = 0.5 * values2;
+	for (int i = 0; i < nPoints; ++i)
 	{
 		EXPECT_EQ(result1(i), scaled1.getValue(i));
 		EXPECT_EQ(result2(i), func2.getValue(i));
@@ -93,9 +97,6 @@ TEST_F(SurfaceFunctionTest, multiply_by_scalar)
 TEST_F(SurfaceFunctionTest, multiply)
 {
 	double product = func1 * func2;
-	Eigen::VectorXd result1(10), result2(10);
-	result1 = Eigen::VectorXd::Constant(10, 1, 1.0);
-	result2 = Eigen::VectorXd::Constant(10, 1, 4.0);
-	double expected_product = result1.dot(result2);
+	double expected_product = values1.dot(values2);
 	EXPECT_EQ(expected_product, product);
 }

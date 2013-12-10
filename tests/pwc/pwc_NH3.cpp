@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -17,10 +18,10 @@
 #pragma warning pop
 #endif
 
-#include "TsLessCavity.hpp"
-#include "Vacuum.hpp"
+#include "PWCSolver.hpp"
 #include "UniformDielectric.hpp"
-#include "IEFSolver.hpp"
+#include "Vacuum.hpp"
+#include "WaveletCavity.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -32,41 +33,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-TEST(IEFSolver, pointChargeTsLess) 
-{
-	// Set up cavity
-	Eigen::Vector3d N(0.0, 0.0, 0.0); 		
-	std::vector<Sphere> spheres;      		
-	Sphere sph1(N, 2.929075493);      		
-	spheres.push_back(sph1);          		
-	double area = 0.4;                		
-	TsLessCavity cavity(spheres, area);		
-	
-	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
-	solver.buildSystemMatrix(cavity);
-
-	double charge = 8.0;
-	int size = cavity.size();
-	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-	for (int i = 0; i < size; ++i)
-	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
-		double distance = center.norm();
-		fake_mep(i) = charge / distance; 
-	}
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-	solver.compCharge(fake_mep, fake_asc);
-	double totalASC = - charge * (permittivity - 1) / permittivity;
-	double totalFakeASC = fake_asc.sum();
-	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
-}
-
-TEST(IEFSolver, NH3TsLess) 
+TEST(PWCSolver, NH3) 
 {
 	// Set up cavity
 	Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
@@ -82,17 +49,20 @@ TEST(IEFSolver, NH3TsLess)
 	spheres.push_back(sph2);
 	spheres.push_back(sph3);
 	spheres.push_back(sph4);
-	double area = 0.4;                		
-	TsLessCavity cavity(spheres, area);		
-
+	double probeRadius = 1.385; // Probe Radius for water
+	int patchLevel = 2;
+	double coarsity = 0.5;
+	WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
+	cavity.readCavity("molec_dyadic.dat");
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	double correction = 0.0;
-	IEFSolver solver(gfInside, gfOutside);
+	int firstKind = 0;
+	PWCSolver solver(gfInside, gfOutside, firstKind);
 	solver.buildSystemMatrix(cavity);
-
-	double Ncharge = 7.0;
+	cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), false);
+	
+    double Ncharge = 7.0;
 	double Hcharge = 1.0;
 	int size = cavity.size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);

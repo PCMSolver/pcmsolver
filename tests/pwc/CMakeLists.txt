@@ -1,10 +1,6 @@
-get_filename_component(test_name pwc.cpp NAME_WE)
-add_executable(${test_name}.x pwc.cpp)      	
-add_dependencies(${test_name}.x googletest)
-target_link_libraries(${test_name}.x
-                      solver green cavity wem pwl wavcav utils
-                      ${GTEST_LIBS_DIR}/libgtest.a
-                      ${GTEST_LIBS_DIR}/libgtest_main.a
-                      ${LIBS}
-                     )
-add_test(NAME ${test_name} COMMAND ${test_name}.x)
+if(DEVELOPMENT_CODE)
+    set(list_of_libraries solver green cavity pwl wem wavcav utils)
+    # The pwc_point test is not compiled as it does not work: Issue #547
+    #    add_googletest(pwc_point "${list_of_libraries}" "${LIBS}")
+    add_googletest(pwc_NH3 "${list_of_libraries}" "${LIBS}")
+endif()

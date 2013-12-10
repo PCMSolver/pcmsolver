@@ -38,15 +38,24 @@ Input::Input()
 		area = cavity.getDbl("Area");
 		patchLevel = 0.0;
 		coarsity = 0.0;
-	} 
+	}
 	else if (type == "Wavelet") 
 	{ // Wavelet cavity branch
+#if defined (WAVELET_DEVELOPMENT)
 		area = 0.0;
 		patchLevel = cavity.getInt("PatchLevel"); 
 		coarsity = cavity.getDbl("Coarsity");
+#else
+		throw std::runtime_error("Wavelet cavity generator is not included in this release.");
+#endif
 	}
 	else
 	{ // TsLess cavity branch
+#if defined (TSLESS_DEVELOPMENT)
+		// Get the necessary input parameters to be passed to the TsLessCavity CTOR.
+#else
+		throw std::runtime_error("TsLess cavity generator is not included in this release.");
+#endif
 	}
 	scaling = cavity.getBool("Scaling");
 	radiiSet = cavity.getStr("RadiiSet");
@@ -141,9 +150,9 @@ Input::Input()
 #endif
 
 	// Now we have all input parameters, do some sanity checks
-        if ( type == "GePol")
+        if ( type == "GePol" || type == "TsLess" )
 	{
-		if (solverType == "Wavelet" || solverType == "Linear") // User asked for GePol cavity with wavelet solvers
+		if (solverType == "Wavelet" || solverType == "Linear") // User asked for GePol or TsLess cavity with wavelet solvers
 		{
 	    		throw std::runtime_error("GePol cavity can be used only with traditional solvers.");
 		}

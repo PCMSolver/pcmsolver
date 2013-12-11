@@ -2,6 +2,9 @@ README.rst
 setup.py
 breathe/__init__.py
 breathe/directives.py
+breathe/nodes.py
+breathe/process.py
+breathe/transforms.py
 breathe.egg-info/PKG-INFO
 breathe.egg-info/SOURCES.txt
 breathe.egg-info/dependency_links.txt

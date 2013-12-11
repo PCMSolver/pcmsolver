@@ -3,7 +3,7 @@ if (NOT DEFINED DEFAULT_Fortran_FLAGS_SET OR RESET_FLAGS)
 if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) # this is gfortran
     set(CMAKE_Fortran_FLAGS         "-DVAR_GFORTRAN -DGFORTRAN=445 -fPIC")
     set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -fbacktrace -Wall")
-    set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -ffast-math -funroll-loops -ftree-vectorize")
+    set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -funroll-all-loops -ftree-vectorize")
     if(ENABLE_64BIT_INTEGERS)
         set(CMAKE_Fortran_FLAGS
             "${CMAKE_Fortran_FLAGS} -fdefault-integer-8"
@@ -24,7 +24,7 @@ endif()
 if(CMAKE_Fortran_COMPILER_ID MATCHES G95)
     set(CMAKE_Fortran_FLAGS         "-Wno=155 -fno-second-underscore -DVAR_G95 -fsloppy-char -fPIC")
     set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -ftrace=full")
-    set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
+    set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
     if(ENABLE_64BIT_INTEGERS)
         set(CMAKE_Fortran_FLAGS
             "${CMAKE_Fortran_FLAGS} -i8"
@@ -46,7 +46,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
     add_definitions(-DVAR_IFORT)
     set(CMAKE_Fortran_FLAGS         "-w -fpp -assume byterecl -traceback -fPIC")
     set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g")
-    set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -xW -ip")
+    set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -ip")
     if(ENABLE_64BIT_INTEGERS)
         set(CMAKE_Fortran_FLAGS
             "${CMAKE_Fortran_FLAGS} -i8"

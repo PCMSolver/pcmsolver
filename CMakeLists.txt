@@ -32,6 +32,9 @@ include(ConfigExternal)
 include(ConfigSafeGuards)
 include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
+include(FortranCInterface)
+FortranCInterface_VERIFY(CXX)
+FortranCInterface_HEADER(include/FCMangle.hpp)
 
 find_package(PythonInterp REQUIRED)
 
@@ -146,6 +149,10 @@ install(TARGETS pcm ARCHIVE DESTINATION lib)
 
 install(FILES 
 	${PROJECT_BINARY_DIR}/include/Config.hpp 
+	DESTINATION include)
+
+install(FILES 
+	${PROJECT_BINARY_DIR}/include/FCMangle.hpp 
 	DESTINATION include)
 
 

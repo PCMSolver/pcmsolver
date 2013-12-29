@@ -77,21 +77,21 @@ SurfaceFunctionMap functions;
 
 */
 
-extern "C" void hello_pcm_(int * a, double * b) 
+extern "C" void hello_pcm(int * a, double * b) 
 {
 	std::cout << "Hello, PCM!" << std::endl;
 	std::cout << "The integer is: " << *a << std::endl;
 	std::cout << "The double is: " << *b << std::endl;
 }
 
-extern "C" void init_pcm_() 
+extern "C" void init_pcm() 
 {
 	setupInput();
         initCavity();
 	initSolver();
 }
 
-extern "C" void tear_down_pcm_()
+extern "C" void tear_down_pcm()
 {// Delete all the global pointers, maybe in a more refined way...
 
 	functions.clear();
@@ -100,7 +100,7 @@ extern "C" void tear_down_pcm_()
 	safe_delete(_solver);
 }
 
-extern "C" void comp_chg_pcm_(char * potName, char * chgName) 
+extern "C" void comp_chg_pcm(char * potName, char * chgName) 
 {
 	std::string potFuncName(potName);
 	std::string chgFuncName(chgName);
@@ -130,7 +130,7 @@ extern "C" void comp_chg_pcm_(char * potName, char * chgName)
 	_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector());
 	}
 
-extern "C" void comp_pol_ene_pcm_(double * energy)
+extern "C" void comp_pol_ene_pcm(double * energy)
 {// Check if NucMEP && EleASC surface functions exist.
 	bool is_separate = (surfaceFunctionExists("NucMEP") && surfaceFunctionExists("EleASC"));
 
@@ -160,7 +160,7 @@ extern "C" void comp_pol_ene_pcm_(double * energy)
     }
 }
 
-extern "C" void dot_surface_functions_(double * result, const char * potString, const char * chgString)
+extern "C" void dot_surface_functions(double * result, const char * potString, const char * chgString)
 {// Convert C-style strings to std::string 
 	std::string potFuncName(potString);
 	std::string chgFuncName(chgString);
@@ -183,12 +183,12 @@ extern "C" void dot_surface_functions_(double * result, const char * potString, 
 	}
 }
 
-extern "C" void get_cavity_size_(int * nts) 
+extern "C" void get_cavity_size(int * nts) 
 {
 	*nts = _cavity->size();
 }
 
-extern "C" void get_tess_centers_(double * centers) 
+extern "C" void get_tess_centers(double * centers) 
 {// Use some Eigen magic
 	for ( int i = 0; i < _cavity->getElementCenter().size(); ++i)
 	{
@@ -196,7 +196,7 @@ extern "C" void get_tess_centers_(double * centers)
 	}
 }
 
-extern "C" void get_tess_cent_coord_(int * its, double * center) 
+extern "C" void get_tess_cent_coord(int * its, double * center) 
 {
 	Eigen::Vector3d tess = _cavity->getElementCenter(*its-1);
 	center[0] = tess(0);
@@ -204,7 +204,7 @@ extern "C" void get_tess_cent_coord_(int * its, double * center)
 	center[2] = tess(2);
 }
 
-extern "C" void print_pcm_()
+extern "C" void print_pcm()
 {
 	// I don't think this will work with wavelets as of now (8/7/13)
 	// we should work towards this though: "Program to an interface, not an implementation."
@@ -228,12 +228,12 @@ extern "C" void print_pcm_()
 	std::cout << std::endl;
 }
 
-extern "C" void print_gepol_cavity_()
+extern "C" void print_gepol_cavity()
 {
 	cout << "Cavity size" << _cavity->size() << endl;
 }
 
-extern "C" void set_surface_function_(int * nts, double * values, char * name)
+extern "C" void set_surface_function(int * nts, double * values, char * name)
 {
 	int nTess = _cavity->size();
 	if ( nTess != *nts )
@@ -263,7 +263,7 @@ extern "C" void set_surface_function_(int * nts, double * values, char * name)
     }
 }
 
-extern "C" void get_surface_function_(int * nts, double * values, char * name) 
+extern "C" void get_surface_function(int * nts, double * values, char * name) 
 {
     	int nTess = _cavity->size();
 	if ( nTess != *nts ) 
@@ -281,7 +281,7 @@ extern "C" void get_surface_function_(int * nts, double * values, char * name)
 	}
 }
 
-extern "C" void add_surface_function_(char * result, double * coeff, char * part) 
+extern "C" void add_surface_function(char * result, double * coeff, char * part) 
 {
 	std::string resultName(result);
 	std::string partName(part);
@@ -295,7 +295,7 @@ extern "C" void add_surface_function_(char * result, double * coeff, char * part
 	(*iter_result->second) += (*coeff) * (*iter_part->second);
 }
 
-extern "C" void print_surface_function_(char * name) 
+extern "C" void print_surface_function(char * name) 
 {
 	std::string functionName(name);
 
@@ -304,7 +304,7 @@ extern "C" void print_surface_function_(char * name)
 	std::cout << *(iter->second) << std::endl;
 }
 
-extern "C" void clear_surf_func_(char* name) 
+extern "C" void clear_surf_func(char* name) 
 {
 	std::string functionName(name);
 
@@ -313,7 +313,7 @@ extern "C" void clear_surf_func_(char* name)
 	iter->second->clear();
 }
 
-extern "C" void append_surf_func_(char* name) 
+extern "C" void append_surf_func(char* name) 
 {
 	int nTess = _cavity->size();
 	std::string functionName(name);
@@ -455,12 +455,12 @@ void initSolver()
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_) 
 {
 	int nuclei;
-	collect_nctot_(&nuclei);
+	collect_nctot(&nuclei);
 	sphereCenter_.resize(Eigen::NoChange, nuclei);
 	charges_.resize(nuclei);
 	double * chg = charges_.data();
 	double * centers = sphereCenter_.data();
-	collect_atoms_(chg, centers);
+	collect_atoms(chg, centers);
 } 
 
 void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_) 

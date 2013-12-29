@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Config.hpp"
+#include "FCMangle.hpp"
 
 // Disable obnoxious warnings from Eigen headers
 #if defined (__GNUC__)
@@ -33,43 +34,77 @@
 
 */
 
-extern "C" void hello_pcm_(int * a, double * b);
+#define hello_pcm \
+	FortranCInterface_GLOBAL_(hello_pcm, HELLO_PCM)
+extern "C" void hello_pcm(int * a, double * b);
 
-extern "C" void init_pcm_();
+#define init_pcm \
+	FortranCInterface_GLOBAL_(init_pcm, INIT_PCM)
+extern "C" void init_pcm();
 
-extern "C" void tear_down_pcm_();
+#define tear_down_pcm \
+	FortranCInterface_GLOBAL_(tear_down_pcm, TEAR_DOWN_PCM)
+extern "C" void tear_down_pcm();
 
-extern "C" void comp_chg_pcm_(char* potString, char* chgString);
+#define comp_chg_pcm \
+	FortranCInterface_GLOBAL_(comp_chg_pcm, COMP_CHG_PCM)
+extern "C" void comp_chg_pcm(char* potString, char* chgString);
 
-extern "C" void comp_pol_ene_pcm_(double * energy);
+#define comp_pol_ene_pcm \
+	FortranCInterface_GLOBAL_(comp_pol_ene_pcm, COMP_POL_ENE_PCM)
+extern "C" void comp_pol_ene_pcm(double * energy);
 
-extern "C" void dot_surface_functions_(double * result, const char * potString, const char * chgString);
+#define dot_surface_functions \
+	FortranCInterface_GLOBAL_(dot_surface_functions, DOT_SURFACE_FUNCTIONS)
+extern "C" void dot_surface_functions(double * result, const char * potString, const char * chgString);
 
-extern "C" void collect_nctot_(int * nuclei);
+extern "C" void collect_nctot(int * nuclei);
 
-extern "C" void collect_atoms_(double * charges, double * centers);
+extern "C" void collect_atoms(double * charges, double * centers);
 
-extern "C" void get_cavity_size_(int * nts);
+#define get_cavity_size \
+	FortranCInterface_GLOBAL_(get_cavity_size, GET_CAVITY_SIZE)
+extern "C" void get_cavity_size(int * nts);
 
-extern "C" void get_tess_centers_(double * centers);
+#define get_tess_centers \
+	FortranCInterface_GLOBAL_(get_tess_centers, GET_TESS_CENTERS)
+extern "C" void get_tess_centers(double * centers);
 
-extern "C" void get_tess_cent_coord_(int * its, double * center);
+#define get_tess_cent_coord \
+	FortranCInterface_GLOBAL_(get_tess_cent_coord, GET_TESS_CENT_COORD)
+extern "C" void get_tess_cent_coord(int * its, double * center);
 
-extern "C" void print_pcm_();
+#define print_pcm \
+	FortranCInterface_GLOBAL_(print_pcm, PRINT_PCM)
+extern "C" void print_pcm();
 
-extern "C" void print_gepol_cavity_();
+#define print_gepol_cavity \
+	FortranCInterface_GLOBAL_(print_gepol_cavity, PRINT_GEPOL_CAVITY)
+extern "C" void print_gepol_cavity();
 
-extern "C" void set_surface_function_(int * nts, double * values, char * name);
+#define set_surface_function \
+	FortranCInterface_GLOBAL_(set_surface_function, SET_SURFACE_FUNCTION)
+extern "C" void set_surface_function(int * nts, double * values, char * name);
 
-extern "C" void get_surface_function_(int * nts, double * values, char * name);
+#define get_surface_function \
+	FortranCInterface_GLOBAL_(get_surface_function, GET_SURFACE_FUNCTION)
+extern "C" void get_surface_function(int * nts, double * values, char * name);
 
-extern "C" void add_surface_function_(char * result, double * coeff, char * part);
+#define add_surface_function \
+	FortranCInterface_GLOBAL_(add_surface_function, ADD_SURFACE_FUNCTION)
+extern "C" void add_surface_function(char * result, double * coeff, char * part);
 
-extern "C" void print_surface_function_(char * name);
+#define print_surface_function \
+	FortranCInterface_GLOBAL_(print_surface_function, PRINT_SURFACE_FUNCTION)
+extern "C" void print_surface_function(char * name);
 
-extern "C" void clear_surf_func_(char * name);
+#define clear_surf_func \
+	FortranCInterface_GLOBAL_(clear_surf_func, CLEAR_SURF_FUNC)
+extern "C" void clear_surf_func(char * name);
 
-extern "C" void append_surf_func_(char * name);
+#define append_surf_func \
+	FortranCInterface_GLOBAL_(append_surf_func, APPEND_SURF_FUNC)
+extern "C" void append_surf_func(char * name);
 
 /*
 

@@ -209,6 +209,7 @@ extern "C" void print_pcm()
 	// I don't think this will work with wavelets as of now (8/7/13)
 	// we should work towards this though: "Program to an interface, not an implementation."
 	// Initialize a stream
+	//
 	std::ostringstream out_stream;
 	out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
 	out_stream << "========== Cavity " << std::endl;
@@ -230,7 +231,6 @@ extern "C" void print_pcm()
 	out_stream << std::endl;
  	// Extract C++-style string from stream	
 	std::string message = out_stream.str();
-	std::cout << "message\n" << message;
 	// Extract C-style string from C++-style string and get its length
 	const char * message_C = message.c_str();
 	size_t message_length = strlen(message_C);

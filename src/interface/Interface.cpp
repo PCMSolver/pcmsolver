@@ -84,7 +84,7 @@ extern "C" void hello_pcm(int * a, double * b)
 	std::cout << "The double is: " << *b << std::endl;
 }
 
-extern "C" void init_pcm() 
+extern "C" void set_up_pcm() 
 {
 	setupInput();
         initCavity();
@@ -100,7 +100,7 @@ extern "C" void tear_down_pcm()
 	safe_delete(_solver);
 }
 
-extern "C" void comp_chg_pcm(char * potName, char * chgName) 
+extern "C" void compute_asc(char * potName, char * chgName) 
 {
 	std::string potFuncName(potName);
 	std::string chgFuncName(chgName);
@@ -130,7 +130,7 @@ extern "C" void comp_chg_pcm(char * potName, char * chgName)
 	_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector());
 	}
 
-extern "C" void comp_pol_ene_pcm(double * energy)
+extern "C" void compute_polarization_energy(double * energy)
 {// Check if NucMEP && EleASC surface functions exist.
 	bool is_separate = (surfaceFunctionExists("NucMEP") && surfaceFunctionExists("EleASC"));
 
@@ -188,7 +188,7 @@ extern "C" void get_cavity_size(int * nts)
 	*nts = _cavity->size();
 }
 
-extern "C" void get_tess_centers(double * centers) 
+extern "C" void get_tesserae(double * centers) 
 {// Use some Eigen magic
 	for ( int i = 0; i < _cavity->getElementCenter().size(); ++i)
 	{
@@ -196,7 +196,7 @@ extern "C" void get_tess_centers(double * centers)
 	}
 }
 
-extern "C" void get_tess_cent_coord(int * its, double * center) 
+extern "C" void get_tesserae_centers(int * its, double * center) 
 {
 	Eigen::Vector3d tess = _cavity->getElementCenter(*its-1);
 	center[0] = tess(0);
@@ -296,7 +296,7 @@ extern "C" void add_surface_function(char * result, double * coeff, char * part)
 	std::string resultName(result);
 	std::string partName(part);
 
-	append_surf_func_(result);
+	append_surface_function_(result);
 	
 	SurfaceFunctionMap::const_iterator iter_part = functions.find(partName);
 	SurfaceFunctionMap::const_iterator iter_result = functions.find(resultName);
@@ -314,7 +314,7 @@ extern "C" void print_surface_function(char * name)
 	std::cout << *(iter->second) << std::endl;
 }
 
-extern "C" void clear_surf_func(char* name) 
+extern "C" void clear_surface_function(char* name) 
 {
 	std::string functionName(name);
 
@@ -323,7 +323,7 @@ extern "C" void clear_surf_func(char* name)
 	iter->second->clear();
 }
 
-extern "C" void append_surf_func(char* name) 
+extern "C" void append_surface_function(char* name) 
 {
 	int nTess = _cavity->size();
 	std::string functionName(name);
@@ -346,7 +346,7 @@ extern "C" void append_surf_func(char* name)
     }
     else
     {// What happens if it is already in the map? The values need to be updated.
-     // Nothing, I assume that if one calls append_surf_func_ will then also call
+     // Nothing, I assume that if one calls append_surface_function_ will then also call
      // set_surface_function_ somewhere else, hence the update will be done there.
  	} 
 }

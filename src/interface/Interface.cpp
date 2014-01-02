@@ -208,24 +208,34 @@ extern "C" void print_pcm()
 {
 	// I don't think this will work with wavelets as of now (8/7/13)
 	// we should work towards this though: "Program to an interface, not an implementation."
-	std::cout << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
-	std::cout << "========== Cavity " << std::endl;
-	std::cout << *_cavity << std::endl;
-	std::cout << "========== Solver " << std::endl;
-	std::cout << *_solver << std::endl;
-	std::cout << "============ Medium " << std::endl;
+	// Initialize a stream
+	std::ostringstream out_stream;
+	out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
+	out_stream << "========== Cavity " << std::endl;
+	out_stream << *_cavity << std::endl;
+	out_stream << "========== Solver " << std::endl;
+	out_stream << *_solver << std::endl;
+	out_stream << "============ Medium " << std::endl;
 	bool fromSolvent = Input::TheInput().fromSolvent();
 	if (fromSolvent)
 	{
-		std::cout << "Medium initialized from solvent built-in data." << std::endl;
+		out_stream << "Medium initialized from solvent built-in data." << std::endl;
 		Solvent solvent = Input::TheInput().getSolvent();
-		std::cout << solvent << std::endl;
+		out_stream << solvent << std::endl;
 	}
-	std::cout << ".... Inside " << std::endl;
-	std::cout << *(_solver->getGreenInside()) << std::endl;
-	std::cout << ".... Outside " << std::endl;
-	std::cout << *(_solver->getGreenOutside()) << std::endl;
-	std::cout << std::endl;
+	out_stream << ".... Inside " << std::endl;
+	out_stream << *(_solver->getGreenInside()) << std::endl;
+	out_stream << ".... Outside " << std::endl;
+	out_stream << *(_solver->getGreenOutside()) << std::endl;
+	out_stream << std::endl;
+ 	// Extract C++-style string from stream	
+	std::string message = out_stream.str();
+	std::cout << "message\n" << message;
+	// Extract C-style string from C++-style string and get its length
+	const char * message_C = message.c_str();
+	size_t message_length = strlen(message_C);
+	// Call the host_writer
+	host_writer(message_C, &message_length);
 }
 
 extern "C" void print_gepol_cavity()

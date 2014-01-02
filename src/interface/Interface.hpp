@@ -62,6 +62,8 @@ extern "C" void collect_nctot(int * nuclei);
 
 extern "C" void collect_atoms(double * charges, double * centers);
 
+extern "C" void host_writer(const char * message, size_t * message_length);
+
 #define get_cavity_size \
 	FortranCInterface_GLOBAL_(get_cavity_size, GET_CAVITY_SIZE)
 extern "C" void get_cavity_size(int * nts);

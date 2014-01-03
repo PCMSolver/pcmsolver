@@ -12,10 +12,6 @@
 #include <utility>
 
 #include "Config.hpp"
-// This is to stringify the PROJECT_VERSION preprocessor constant
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define AT __FILE__ ":" TOSTRING(__LINE__)
 
 #include <boost/shared_ptr.hpp>
 // Disable obnoxious warnings from Eigen headers
@@ -55,6 +51,7 @@
 #include "SolverFactory.hpp"
 // Helper classes
 #include "Atom.hpp"
+#include "Citation.hpp"
 #include "Input.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
@@ -210,22 +207,7 @@ extern "C" void get_tesserae_centers(int * its, double * center)
 
 extern "C" void print_citation()
 {
-    std::string version(TOSTRING(PROJECT_VERSION)"\n");
-    std::ostringstream rest;
-    rest << " * PCMSolver, an API for the Polarizable Continuum Model electrostatic problem. Version " << version;
-    rest << "   Main authors: R. Di Remigio, L. Frediani, K. Mozgawa\n";
-    rest << "    With contributions from:\n";
-    rest << "     R. Bast            (CMake framework)\n";                           
-    rest << "     U. Ekstroem        (automatic differentiation library)\n";
-    rest << "     H. Harbrecht       (wavelet cavity and solvers libraries)\n";
-    rest << "     J. Juselius        (input parsing library and CMake framework)\n";
-    rest << "     M. Randrianarivony (wavelet cavity library)\n";
-    rest << "     V. Weijo           (wavelet libraries and cavity visualization scripts)\n";
-    rest << "   Theory: - J. Tomasi, B. Mennucci and R. Cammi:\n";
-    rest << "            \"Quantum Mechanical Continuum Solvation Models\", Chem. Rev., 105 (2005) 2999\n";
-    rest << "   PCMSolver is distributed under the terms of the GNU Lesser General Public License.\n";
-    std::string citation_message = rest.str();
-    const char * citation = citation_message.c_str();
+    const char * citation = citation_message().c_str();
     size_t citation_length = strlen(citation);
     host_writer(citation, &citation_length);
 }

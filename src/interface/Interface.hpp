@@ -76,6 +76,10 @@ extern "C" void get_tesserae(double * centers);
 	FortranCInterface_GLOBAL_(get_tesserae_centers, GET_TESSERAE_CENTERS)
 extern "C" void get_tesserae_centers(int * its, double * center);
 
+#define print_citation \
+    FortranCInterface_GLOBAL_(print_citation, PRINT_CITATION)
+extern "C" void print_citation();
+
 #define print_pcm \
 	FortranCInterface_GLOBAL_(print_pcm, PRINT_PCM)
 extern "C" void print_pcm();

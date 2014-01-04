@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Config.hpp"
+#include "FCMangle.hpp"
 
 // Disable obnoxious warnings from Eigen headers
 #if defined (__GNUC__)
@@ -24,12 +25,9 @@
 
 #include "Sphere.hpp"
 
-extern "C" 
-{
-	void generatecavity_cpp_(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
+extern "C" void generatecavity_cpp(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
 			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
 			     double *avgArea, double *rsolv, double* work, int* lwork);
-}
 
 void GePolCavity::makeCavity()
 {
@@ -39,7 +37,7 @@ void GePolCavity::makeCavity()
 void GePolCavity::makeCavity(int maxts, int lwork) 
 {
        
-	// This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code PEDRA.
+	// This is a wrapper for the generatecavity_cpp function defined in the Fortran code PEDRA.
 	// Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow
 	// for the insertion of additional spheres as in the most general formulation of the
 	// GePol algorithm.
@@ -85,7 +83,7 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 	double *rin = sphereRadius_.data();
 
     // Go PEDRA, Go!	
-	generatecavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
+	generatecavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
 	
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data

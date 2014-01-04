@@ -5,17 +5,28 @@
 #include <vector>
 
 #include "Config.hpp"
+#include "FCMangle.hpp"
 
+// Disable obnoxious warnings from Eigen headers
+#if defined (__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall" 
+#pragma GCC diagnostic ignored "-Weffc++" 
+#pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+#elif (__INTEL_COMPILER)
+#pragma warning push
+#pragma warning disable "-Wall"
+#include <Eigen/Dense>
+#pragma warning pop
+#endif
 
 #include "Sphere.hpp"
 
-extern "C" 
-{
-	void generate_tslesscavity_cpp_(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
+extern "C" void generate_tslesscavity_cpp(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
 			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
 			     double *avgArea, double *rsolv, double* work, int* lwork);
-}
 
 void TsLessCavity::makeCavity()
 {
@@ -71,7 +82,7 @@ void TsLessCavity::makeCavity(int maxts, int lwork)
 	double *rin = sphereRadius_.data();
 
         // Go TsLess, Go!	
-	generate_tslesscavity_cpp_(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
+	generate_tslesscavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
 	
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data

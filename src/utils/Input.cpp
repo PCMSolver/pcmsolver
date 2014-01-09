@@ -65,7 +65,8 @@ Input::Input()
 	{
 		std::vector<double> spheresInput = cavity.getDblVec("Spheres");
 		int j = 0;
-		for (int i = 0; i < spheresInput.size(); ++i) {
+		int upperBound = (int)spheresInput.size() / 4;
+		for (int i = 0; i < upperBound; ++i) {
 			Eigen::Vector3d center;
 			center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
 			Sphere sph(center, spheresInput[j+3]);

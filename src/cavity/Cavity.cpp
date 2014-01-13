@@ -28,31 +28,29 @@
 void Cavity::writeCavityFile(bool isNPY)
 {
 	std::ofstream cavity_file("cavity_spec.txt", std::ios_base::out);
-	cavity_file << nElements << std::endl;
-	cavity_file << elementArea << std::endl;
-	cavity_file << elementCenter << std::endl;
-	cavity_file << elementNormal << std::endl;
-
+	if (cavity_file.is_open())
+	{
+	//	cavity_file << nElements << std::endl;
+	//	cavity_file << elementArea << std::endl;
+	//	cavity_file << elementCenter << std::endl;
+		cavity_file << elementNormal << std::endl;
+	}
+	cavity_file.close();
+		
 	if (isNPY)	
 	{
 		// Write weights
-		std::ofstream weights_file ("weights.npy",std::ofstream::binary);
+		std::ofstream weights_file("weights.npy",std::ofstream::binary);
 		npy_write_matrix(weights_file, nElements, 1, elementArea.data());
 		// Write centers
-		std::ofstream centers_file ("centers.npy",std::ofstream::binary);
+		std::ofstream centers_file("centers.npy",std::ofstream::binary);
 		npy_write_matrix(centers_file, 3, nElements, elementCenter.data(), true);
 		// Write normals
-		std::ofstream normals_file ("normals.npy",std::ofstream::binary);
+		std::ofstream normals_file("normals.npy",std::ofstream::binary);
 		npy_write_matrix(normals_file, 3, nElements, elementNormal.data(), true);
 	}
 }
 
 void Cavity::readCavityFile(bool isNPY)
 {
-	if (!isNPY)
-	{
-	}
-	else
-	{
-	}
 }

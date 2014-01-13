@@ -183,21 +183,5 @@ if(ENABLE_TESTS)
 	add_subdirectory(tests) # This must come last!!
 endif()
 
-# add_executable(wavcav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcav.cpp)
-# target_link_libraries(wavcav.x cavity pedra wavcav pwl wem getkw ${LIBS})
-#
 #add_executable(debug_wavcav.x ${PROJECT_SOURCE_DIR}/src/debug_wavcav.cpp)
 #target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils ${LIBS})
-# 
-# add_executable(pcmsolver.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pcmsolver.cpp)
-# target_link_libraries(pcmsolver.x solver green cavity pedra metal pwl wem wavcav getkw ${LIBS})
-# 
-# add_executable(pwl.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/pwllib/main_pwl.c)
-# target_link_libraries(pwl.x pwl wem ${LIBS})
-# 
-# add_executable(pwc.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wemlib/main.c)
-# target_link_libraries(pwc.x wem ${LIBS})
-# 
-# add_executable(cav.x EXCLUDE_FROM_ALL ${PROJECT_SOURCE_DIR}/src/wavcavlib/main.c)
-# target_link_libraries(cav.x wavcav ${LIBS})
-

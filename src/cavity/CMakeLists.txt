@@ -1,4 +1,5 @@
-set(cavity_SOURCES 
+set(cavity_SOURCES
+    Cavity.cpp 
     GePolCavity.cpp 
     TsLessCavity.cpp
     WaveletCavity.cpp

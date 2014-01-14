@@ -158,7 +158,7 @@ install(FILES
 
 if(ENABLE_TESTS)
 	include(TestingMacros)
-	set(LIBS pthread ${LIBS})
+	set(LIBS pthread z ${LIBS})
 	ExternalProject_Add(googletest
 		SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk
 	       	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}

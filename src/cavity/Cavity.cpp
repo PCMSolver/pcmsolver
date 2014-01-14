@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <limits>
 #include <stdexcept>
 
 #include "Config.hpp"
@@ -23,34 +24,85 @@
 #pragma warning pop
 #endif
 
-#include "npy.hpp"
+#include "cnpy.hpp"
 
-void Cavity::writeCavityFile(bool isNPY)
+void Cavity::saveCavity()
 {
-	std::ofstream cavity_file("cavity_spec.txt", std::ios_base::out);
-	if (cavity_file.is_open())
-	{
-	//	cavity_file << nElements << std::endl;
-	//	cavity_file << elementArea << std::endl;
-	//	cavity_file << elementCenter << std::endl;
-		cavity_file << elementNormal << std::endl;
-	}
-	cavity_file.close();
+	std::ofstream weights("weights.txt", std::ios_base::out);
+	weights << std::setprecision(std::numeric_limits<double>::digits10) << elementArea << std::endl;
+	std::ofstream centers("centers.txt", std::ios_base::out);
+	centers << std::setprecision(std::numeric_limits<double>::digits10) << elementCenter << std::endl;
+	std::ofstream normals("normals.txt", std::ios_base::out);
+	normals << std::setprecision(std::numeric_limits<double>::digits10) << elementNormal << std::endl;
 		
-	if (isNPY)	
-	{
-		// Write weights
-		std::ofstream weights_file("weights.npy",std::ofstream::binary);
-		npy_write_matrix(weights_file, nElements, 1, elementArea.data());
-		// Write centers
-		std::ofstream centers_file("centers.npy",std::ofstream::binary);
-		npy_write_matrix(centers_file, 3, nElements, elementCenter.data(), true);
-		// Write normals
-		std::ofstream normals_file("normals.npy",std::ofstream::binary);
-		npy_write_matrix(normals_file, 3, nElements, elementNormal.data(), true);
-	}
+	// Write everything in a single .npz binary file
+	std::string cavity_file("cavity.npz");
+	// Write the number of elements, it will be used to check sanity of the save/load operations.
+	const unsigned int shape[] = {1};
+	cnpy::npz_save(cavity_file, "elements", &nElements, shape, 1, "w", false);
+	// Write weights
+	const unsigned int weights_shape[] = {nElements};
+	cnpy::npz_save(cavity_file, "weights", elementArea.data(), weights_shape, 1, "a", true);
+	// Write centers
+	const unsigned int centers_shape[] = {3, nElements};
+	cnpy::npz_save(cavity_file, "centers", elementCenter.data(), centers_shape, 2, "a", true);
+	// Write normals
+	const unsigned int normals_shape[] = {3, nElements};
+	cnpy::npz_save(cavity_file, "normals", elementNormal.data(), normals_shape, 2, "a", true);
 }
 
-void Cavity::readCavityFile(bool isNPY)
-{
+void Cavity::loadCavity()
+{	
+	// Load the .npz binary file and then traverse it to get the data
+	// needed to rebuild the cavity.
+	cnpy::npz_t loaded_cavity = cnpy::npz_load("cavity.npz");
+	// 0. Get the number of elements
+	cnpy::NpyArray raw_ele = loaded_cavity["elements"];
+	int * ne = reinterpret_cast<int*>(raw_ele.data);
+	nElements = *ne; 
+
+	// 1. Get the weights
+        cnpy::NpyArray raw_weights = loaded_cavity["weights"];
+	int dim = raw_weights.shape[0];
+	if (dim != nElements)
+	{
+		throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of weights vector!");
+	}
+	else
+	{
+		elementArea.resize(dim);
+		double * loaded_weights = reinterpret_cast<double*>(raw_weights.data);
+		Eigen::Map<Eigen::VectorXd> w(loaded_weights, dim, 1);
+		elementArea = w;
+	}
+
+	// 2. Get the centers
+	cnpy::NpyArray raw_centers = loaded_cavity["centers"];
+	dim = raw_centers.shape[1];
+	if (dim != nElements)
+	{
+		throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of centers matrix!");
+	}
+	else
+	{
+		elementCenter.resize(Eigen::NoChange, dim);
+		double * loaded_centers = reinterpret_cast<double*>(raw_centers.data);
+		Eigen::Map<Eigen::Matrix3Xd> c(loaded_centers, 3, dim);
+		elementCenter = c;
+	}
+
+	// 3. Get the normal vectors	
+	cnpy::NpyArray raw_normals = loaded_cavity["normals"];
+	dim = raw_normals.shape[1];
+	if (dim != nElements)
+	{
+		throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of normals matrix!");
+	}
+	else
+	{
+		elementNormal.resize(Eigen::NoChange, dim);
+		double * loaded_normals = reinterpret_cast<double*>(raw_normals.data);
+		Eigen::Map<Eigen::Matrix3Xd> n(loaded_normals, 3, dim);
+		elementNormal = n;
+	}
 }

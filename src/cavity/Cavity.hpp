@@ -87,20 +87,20 @@ class Cavity
                 virtual Eigen::VectorXd & getElementRadius() { return elementRadius; }
      	        virtual double getElementRadius(int i) { return elementRadius(i); }
      	        virtual Eigen::Matrix3Xd & getElementSphereCenter() { return elementSphereCenter; }
-		/*! \brief Write cavity specification to file.
-		 *  \param[in] isNPY whether to write a normal text file or three .npy binary files.
+		/*! \brief Save cavity specification to file.
 		 *
 		 *  The cavity specification contains:
-		 *   a. the number of finite elements, nElements;
-		 *   b. the weight of the finite elements, elementArea;
-		 *   c. the centers of the finite elements, elementCenter;
-		 *   d. the normal vectors relative to the centers, elementNormal.
+		 *   0. the number of finite elements, nElements;
+		 *   1. the weight of the finite elements, elementArea;
+		 *   2. the centers of the finite elements, elementCenter;
+		 *   3. the normal vectors relative to the centers, elementNormal.
+		 *  Each of these objects is saved in a separate .npy binary file
+		 *  and compressed into one .npz file.
 		 */
-		virtual void writeCavityFile(bool isNPY);
-		/*! \brief Read cavity specification from file.
-		 *  \param[in] isNPY whether to read a normal text file or three .npy binary files.
+		virtual void saveCavity();
+		/*! \brief Load cavity specification from file.
 		 */
-		virtual void readCavityFile(bool isNPY);
+		virtual void loadCavity();
 	       	bool isBuilt() { return built; }
                 friend std::ostream & operator<<(std::ostream & os, Cavity & cavity)
 		{

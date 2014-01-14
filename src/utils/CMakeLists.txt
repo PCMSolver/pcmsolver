@@ -4,6 +4,7 @@ set(utils_SOURCES
 	Atom.cpp
 	Sphere.cpp	
     	SurfaceFunction.cpp
+	cnpy.cpp
 )
 
 if(ENABLE_TESTS)
@@ -27,4 +28,4 @@ install(FILES Atom.hpp DESTINATION include)
 install(FILES Sphere.hpp DESTINATION include)
 install(FILES SurfaceFunction.hpp DESTINATION include)
 install(FILES Citation.hpp DESTINATION include)
-install(FILES npy.hpp DESTINATION include)
+install(FILES cnpy.hpp DESTINATION include)

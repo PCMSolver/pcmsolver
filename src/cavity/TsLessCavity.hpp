@@ -8,6 +8,7 @@
 #include "Config.hpp"
 
 #include "Cavity.hpp"
+#include "CavityData.hpp"
 #include "CavityFactory.hpp"
 
 /*! \file TsLessCavity.hpp

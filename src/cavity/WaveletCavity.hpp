@@ -27,7 +27,18 @@ extern "C"
 }
 
 #include "Cavity.hpp"
+#include "CavityData.hpp"
 #include "CavityFactory.hpp"
+
+/*! \file WaveletCavity.hpp
+ *  \class WaveletCavity
+ *  \brief A class for wavelet cavity. 
+ *  \author Luca Frediani
+ *  \date 2011
+ *
+ *  This class is an interface to the C code wavcav for the generation
+ *  of cavities according to the wavelet algorithms
+ */
 
 class WaveletCavity : public Cavity 
 {

@@ -3,7 +3,6 @@
 
 #include <map>
 #include <string>
-#include <vector>
 
 #include "Config.hpp"
 
@@ -23,8 +22,7 @@
 #endif
 
 class Cavity;
-
-#include "Sphere.hpp"
+struct cavityData;
 
 /*!
  *	\file CavityFactory.hpp
@@ -36,24 +34,6 @@ class Cavity;
  * 	Factory method implementation shamelessly copied from "Modern C++ Design" of A. Alexandrescu.
  * 	It is implemented as a Singleton.
  */
-
-struct cavityData
-{
-	std::vector<Sphere> spheres;
-	double area;
-	double probeRadius;
-	double minDistance;
-	int derOrder;
-	bool addSpheres;
-	int patchLevel;
-	double coarsity;
-	cavityData(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-		   double _minDistance = 0.1, int _derOrder = 4, bool _addSpheres = false, 
-		   int _patchLevel = 2, double _coarsity = 0.5) :
-	spheres(_spheres), area(_area), probeRadius(_probeRadius), 
-	minDistance(_minDistance), derOrder(_derOrder), addSpheres(_addSpheres), 
-	patchLevel(_patchLevel), coarsity(_coarsity) {}
-};
 
 class CavityFactory 
 {

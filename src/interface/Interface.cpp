@@ -51,6 +51,7 @@
 #include "SolverFactory.hpp"
 // Helper classes
 #include "Atom.hpp"
+#include "CavityData.hpp"
 #include "Citation.hpp"
 #include "Input.hpp"
 #include "Solvent.hpp"
@@ -423,7 +424,7 @@ void initCavity()
 	}
         else
 	{// This means in practice that the CavityFactory is now working only for GePol and TsLess.
-		_cavity = CavityFactory::TheCavityFactory().createCavity(cavInput);
+		_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
 	}	
 }
 

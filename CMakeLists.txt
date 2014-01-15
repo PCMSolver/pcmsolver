@@ -117,11 +117,6 @@ configure_file(
 
 # ALL THIS STUFF NEEDS TO BE REVIEWED
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
-#set(PCMSOLVER_EXECUTABLE pcmsolver.x)
-#set(PCMSOLVER_ERROR_LOG ${PROJECT_BINARY_DIR}/pcmsolver.err)
-set(PCMSOLVER_EXECUTABLE ${PROJECT_BINARY_DIR}/pcmsolver.x)
-option(PCMSOLVER_DRIVER_DEBUG "Debug the driver (extmod)" OFF)
-#ask jonas about path
 configure_file(pcmsolver.in pcmsolver)
 file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
   DESTINATION ${PROJECT_BINARY_DIR}/bin
@@ -185,3 +180,5 @@ endif()
 
 #add_executable(debug_wavcav.x ${PROJECT_SOURCE_DIR}/src/debug_wavcav.cpp)
 #target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils ${LIBS})
+add_executable(debug_load.x ${PROJECT_SOURCE_DIR}/src/debug_load.cpp)
+target_link_libraries(debug_load.x cavity pedra utils ${LIBS})

@@ -32,6 +32,8 @@ Input::Input()
         Getkw input = Getkw(parsedInputFile, false, true);
 	const Section & cavity = input.getSect("Cavity");
 
+	cavFilename = cavity.getStr("Restart");
+
         type = cavity.getStr("Type");
 	if (type == "GePol") 
 	{ // GePol cavity branch

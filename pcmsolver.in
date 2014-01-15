@@ -80,6 +80,7 @@ def	setup_keywords():
 	top.add_kw('Units',     'STR', 'AU')
 
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
+	cavity.add_kw('Restart', 'STR', '')
 	cavity.add_kw('Type','STR')
 	cavity.add_kw('PatchLevel', 'INT', 2)
 	cavity.add_kw('Coarsity', 'DBL', 0.5)
@@ -128,12 +129,16 @@ def verify_top(section):
 		isAngstrom = True
 
 def verify_cavity(section):
+	restart = section.get('Restart')
+	# Restart string is the filename, with extension, where the cavity specs were saved.
+ 	# We only get the filename here, either an empty or a non-empty string, 
+        # further management of input is then done C++-side.
 	allowed = ('GePol', 'Wavelet', 'TsLess')
-        type = section.get('Type')
+	type = section.get('Type')                                                           
         if (type.get() not in allowed):
         	print "Allowed types are: ", allowed
         	sys.exit(1)
-
+                                                                                      
 	if section['Area'].is_set(): convert_area_scalar(section['Area'])
 	if (type.get() == 'GePol'):
         	area=section.get('Area')
@@ -161,7 +166,7 @@ def verify_cavity(section):
 	if (mode.get() not in allowed_modes):
 		print "Allowed modes are: ", allowed_modes
 		sys.exit(1)                         
-
+                                                                                      
         atoms=section.get('Atoms')
         at=atoms.get()
         radii = section.get('Radii')
@@ -179,8 +184,6 @@ def verify_cavity(section):
 					print "Incoherent input for Atoms keyword."
 					print "Too many spheres on the same atom(s)."
 					sys.exit(1)
-	
-	
 
 def verify_medium(section):
 	allowedSolvents = {'Water':                ('Water',                'water',                'H2O'),

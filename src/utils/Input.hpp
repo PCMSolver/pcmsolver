@@ -38,6 +38,7 @@ class Input
 		Input(const Input &other);
 		Input& operator=(const Input &other);
         	~Input(){}
+		std::string cavFilename;
 		std::string type;
 		int patchLevel;
 		double coarsity;
@@ -73,6 +74,7 @@ class Input
 		}
 		// Accessor methods
 		// Cavity section input
+		std::string getCavityFilename(){ return cavFilename; }
 		std::string getCavityType(){ return type; }
 		int getPatchLevel(){ return patchLevel; }
 		double getCoarsity(){ return coarsity; }

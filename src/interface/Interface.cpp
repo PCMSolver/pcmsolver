@@ -402,27 +402,36 @@ void setupInput() {
 void initCavity()
 {
 	// Get the input data for generating the cavity
-	std::string cavityType = Input::TheInput().getCavityType();
- 	double area = Input::TheInput().getArea();
-	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
-	bool addSpheres = Input::TheInput().getAddSpheres();
-	double probeRadius = Input::TheInput().getProbeRadius();
-	int patchLevel = Input::TheInput().getPatchLevel();
-	double coarsity = Input::TheInput().getCoarsity();
+	std::string restart = Input::TheInput().getCavityFilename();
 
-	// Get the right cavity from the Factory
-	// TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
-	std::string modelType = Input::TheInput().getSolverType();
-        if (modelType == "Wavelet" || modelType == "Linear") 
-	{// Both PWC and PWL require a WaveletCavity
-		_waveletCavity = initWaveletCavity();
+	if ( not restart.empty() )
+	{
+		_cavity->loadCavity(restart);
 	}
-        else
-	{// This means in practice that the CavityFactory is now working only for GePol.
-		_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
+	else
+	{
+		std::string cavityType = Input::TheInput().getCavityType();                                                                                            	
+ 	        double area = Input::TheInput().getArea();
+	        std::vector<Sphere> spheres = Input::TheInput().getSpheres();
+	        bool addSpheres = Input::TheInput().getAddSpheres();
+	        double probeRadius = Input::TheInput().getProbeRadius();
+	        int patchLevel = Input::TheInput().getPatchLevel();
+	        double coarsity = Input::TheInput().getCoarsity();
+                                                                                                                                                                        
+	        // Get the right cavity from the Factory
+	        // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
+	        std::string modelType = Input::TheInput().getSolverType();
+                if (modelType == "Wavelet" || modelType == "Linear") 
+	        {// Both PWC and PWL require a WaveletCavity
+	        	_waveletCavity = initWaveletCavity();
+	        }
+                else
+	        {// This means in practice that the CavityFactory is now working only for GePol.
+	        	_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
+	        }
+ 	        // Always save the cavity in a cavity.npz binary file
+	        _cavity->saveCavity();	
 	}
- 	// Always save the cavity in a cavity.npz binary file
-	_cavity->saveCavity();	
 }
 
 void initSolver()

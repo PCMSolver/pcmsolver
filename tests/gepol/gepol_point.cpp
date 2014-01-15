@@ -42,6 +42,7 @@ class GePolCavityTest : public ::testing::Test
 			spheres.push_back(sph1);
 			double area = 0.4;
 			cavity = GePolCavity(spheres, area);
+			cavity.saveCavity("point.npz");
 		}
 };
 

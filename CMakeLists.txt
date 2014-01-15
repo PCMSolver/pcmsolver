@@ -180,5 +180,3 @@ endif()
 
 #add_executable(debug_wavcav.x ${PROJECT_SOURCE_DIR}/src/debug_wavcav.cpp)
 #target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils ${LIBS})
-add_executable(debug_load.x ${PROJECT_SOURCE_DIR}/src/debug_load.cpp)
-target_link_libraries(debug_load.x cavity pedra utils ${LIBS})

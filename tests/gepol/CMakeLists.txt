@@ -1,4 +1,6 @@
 set(list_of_libraries cavity pedra utils)
+# Order is important here, as the former two tests will produce the .npz files 
+# to be read by the latter two tests.
 add_googletest(gepol_point "${list_of_libraries}" "${LIBS}")
 add_googletest(gepol_NH3 "${list_of_libraries}" "${LIBS}") 
 add_googletest(gepol_point_from_file "${list_of_libraries}" "${LIBS}")

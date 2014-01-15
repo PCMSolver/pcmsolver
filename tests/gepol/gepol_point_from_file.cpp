@@ -36,7 +36,7 @@ class GePolCavityTest : public ::testing::Test
 		GePolCavity cavity;
 		virtual void SetUp()
 		{
-			cavity.loadCavity();
+			cavity.loadCavity("point.npz");
 		}
 };
 

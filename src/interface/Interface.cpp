@@ -420,7 +420,9 @@ void initCavity()
         else
 	{// This means in practice that the CavityFactory is now working only for GePol.
 		_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
-	}	
+	}
+ 	// Always save the cavity in a cavity.npz binary file
+	_cavity->saveCavity();	
 }
 
 void initSolver()

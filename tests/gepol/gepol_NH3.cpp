@@ -51,6 +51,7 @@ class GePolCavityNH3Test : public ::testing::Test
 			spheres.push_back(sph4);
 			double area = 0.4;
 			cavity = GePolCavity(spheres, area);
+			cavity.saveCavity("nh3.npz");
 		}
 };
 

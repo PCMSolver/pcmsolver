@@ -2,7 +2,6 @@
 #define CAVITY_HPP
 
 #include <iosfwd>
-#include <string>
 #include <vector>
 
 #include "Config.hpp"
@@ -97,10 +96,10 @@ class Cavity
 		 *  Each of these objects is saved in a separate .npy binary file
 		 *  and compressed into one .npz file.
 		 */
-		virtual void saveCavity();
+		virtual void saveCavity(const std::string & fname = "cavity.npz");
 		/*! \brief Load cavity specification from file.
 		 */
-		virtual void loadCavity();
+		virtual void loadCavity(const std::string & fname = "cavity.npz");
 	       	bool isBuilt() { return built; }
                 friend std::ostream & operator<<(std::ostream & os, Cavity & cavity)
 		{

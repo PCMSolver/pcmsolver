@@ -177,7 +177,6 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 	delete[] work;
 	
 	built = true;
-	saveCavity();
 }
 
 std::ostream & GePolCavity::printCavity(std::ostream & os) 

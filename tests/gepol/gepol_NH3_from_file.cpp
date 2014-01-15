@@ -36,7 +36,7 @@ class GePolCavityNH3Test : public ::testing::Test
 		GePolCavity cavity;
 		virtual void SetUp()
 		{
-			cavity.loadCavity();
+			cavity.loadCavity("nh3.npz");
 		}
 };
 

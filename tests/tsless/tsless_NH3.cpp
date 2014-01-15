@@ -50,7 +50,10 @@ class TsLessCavityNH3Test : public ::testing::Test
 			spheres.push_back(sph3);
 			spheres.push_back(sph4);
 			double area = 0.4;
-			cav = TsLessCavity(spheres, area);
+			double minDistance = 0.1;
+			double probeRadius = 0.0;
+			int derOrder = 4;
+			cav = TsLessCavity(spheres, area, probeRadius, minDistance, derOrder);
 		}
 };
 

@@ -26,7 +26,7 @@
 
 extern "C" void generate_tslesscavity_cpp(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
 			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
-			     double *avgArea, double *rsolv, double* work, int* lwork);
+			     double *avgArea, double *rsolv, double * dmin, int * nord, double* work, int* lwork);
 
 void TsLessCavity::makeCavity()
 {
@@ -83,7 +83,7 @@ void TsLessCavity::makeCavity(int maxts, int lwork)
 
         // Go TsLess, Go!	
 	generate_tslesscavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
-						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
+						xe, ye, ze, rin, &averageArea, &probeRadius, &minDistance, &derOrder, work, &lwork);
 	
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
 	// coming out from generatecavity_cpp_

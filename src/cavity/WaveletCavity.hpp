@@ -27,7 +27,18 @@ extern "C"
 }
 
 #include "Cavity.hpp"
+#include "CavityData.hpp"
 #include "CavityFactory.hpp"
+
+/*! \file WaveletCavity.hpp
+ *  \class WaveletCavity
+ *  \brief A class for wavelet cavity. 
+ *  \author Luca Frediani
+ *  \date 2011
+ *
+ *  This class is an interface to the C code wavcav for the generation
+ *  of cavities according to the wavelet algorithms
+ */
 
 class WaveletCavity : public Cavity 
 {
@@ -71,10 +82,9 @@ class WaveletCavity : public Cavity
 
 namespace
 {
-	Cavity* createWaveletCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-		    bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
+	Cavity* createWaveletCavity(const cavityData & _data)
 	{
-		return new WaveletCavity(_spheres, _probeRadius, _patchLevel, _coarsity);
+		return new WaveletCavity(_data.spheres, _data.probeRadius, _data.patchLevel, _data.coarsity);
         }
 	const std::string WAVELET("Wavelet");
 	const bool registeredWavelet = CavityFactory::TheCavityFactory().registerCavity(WAVELET, createWaveletCavity);

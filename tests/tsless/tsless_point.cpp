@@ -42,7 +42,10 @@ class TsLessCavityTest : public ::testing::Test
 			Sphere sph1(origin,  1.0);
 			spheres.push_back(sph1);
 			double area = 0.4;
-			cav = TsLessCavity(spheres, area);
+			double minDistance = 0.1;
+			double probeRadius = 0.0;
+			int derOrder = 4;
+			cav = TsLessCavity(spheres, area, probeRadius, minDistance, derOrder);
 		}
 };
 

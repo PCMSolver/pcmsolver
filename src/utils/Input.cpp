@@ -38,7 +38,7 @@ Input::Input()
 	if (type == "GePol") 
 	{ // GePol cavity branch
 		area = cavity.getDbl("Area");
-		patchLevel = 0.0;
+		patchLevel = 0;
 		coarsity = 0.0;
 	}
 	else if (type == "Wavelet") 
@@ -51,10 +51,15 @@ Input::Input()
 		throw std::runtime_error("Wavelet cavity generator is not included in this release.");
 #endif
 	}
-	else
+	else if (type == "TsLess")
 	{ // TsLess cavity branch
 #if defined (TSLESS_DEVELOPMENT)
 		// Get the necessary input parameters to be passed to the TsLessCavity CTOR.
+		area = cavity.getDbl("Area");
+		minDistance = cavity.getDbl("MinDistance");
+		derOrder = cavity.getInt("DerOrder");
+		patchLevel = 0;
+		coarsity = 0.0;
 #else
 		throw std::runtime_error("TsLess cavity generator is not included in this release.");
 #endif

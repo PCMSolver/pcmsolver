@@ -3,7 +3,6 @@
 
 #include <map>
 #include <string>
-#include <vector>
 
 #include "Config.hpp"
 
@@ -23,8 +22,7 @@
 #endif
 
 class Cavity;
-
-#include "Sphere.hpp"
+struct cavityData;
 
 /*!
  *	\file CavityFactory.hpp
@@ -43,8 +41,7 @@ class CavityFactory
 		/*!
 		 * Callback function for cavity creation.
 		 */
-		typedef Cavity * (*createCavityCallback)(const std::vector<Sphere> & _spheres, double _area, double _probeRadius, 
-							 bool _addSpheres, int _patchLevel, double _coarsity);
+		typedef Cavity * (*createCavityCallback)(const cavityData & _data);
 	private:
 		/*!
 		 * A map from the cavity type identifier (a string) to its callback function.
@@ -65,8 +62,7 @@ class CavityFactory
 		/*! 
 		 * Calls the appropriate creation function, based on the passed cavityID
 		 */
-		Cavity * createCavity(std::string cavityID, const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-				      bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5);
+		Cavity * createCavity(std::string cavityID, const cavityData & _data); 
 		/*!
 		 * Unique point of access to the unique instance of the CavityFactory
 		 */

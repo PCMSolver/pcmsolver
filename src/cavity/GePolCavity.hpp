@@ -8,6 +8,7 @@
 #include "Config.hpp"
 
 #include "Cavity.hpp"
+#include "CavityData.hpp"
 #include "CavityFactory.hpp"
 
 /*! \file GePolCavity.hpp
@@ -49,10 +50,9 @@ class GePolCavity : public Cavity
 
 namespace
 {
-	Cavity* createGePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-			bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5)
+	Cavity* createGePolCavity(const cavityData & _data)
 	{
-		return new GePolCavity(_spheres, _area, _probeRadius, _addSpheres);
+		return new GePolCavity(_data.spheres, _data.area, _data.probeRadius, _data.addSpheres);
 	}
 	const std::string GEPOL("GePol");
 	const bool registeredGePol = CavityFactory::TheCavityFactory().registerCavity(GEPOL, createGePolCavity);

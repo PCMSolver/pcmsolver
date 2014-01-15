@@ -51,6 +51,7 @@
 #include "SolverFactory.hpp"
 // Helper classes
 #include "Atom.hpp"
+#include "CavityData.hpp"
 #include "Citation.hpp"
 #include "Input.hpp"
 #include "Solvent.hpp"
@@ -415,9 +416,13 @@ void initCavity()
 	        std::vector<Sphere> spheres = Input::TheInput().getSpheres();
 	        bool addSpheres = Input::TheInput().getAddSpheres();
 	        double probeRadius = Input::TheInput().getProbeRadius();
+		double minDistance = Input::TheInput().getMinDistance();
+		int derOrder = Input::TheInput().getDerOrder();
 	        int patchLevel = Input::TheInput().getPatchLevel();
 	        double coarsity = Input::TheInput().getCoarsity();
-                                                                                                                                                                        
+             
+          	cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, addSpheres, patchLevel, coarsity);          
+                                                                                                                                                              
 	        // Get the right cavity from the Factory
 	        // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
 	        std::string modelType = Input::TheInput().getSolverType();
@@ -427,7 +432,7 @@ void initCavity()
 	        }
                 else
 	        {// This means in practice that the CavityFactory is now working only for GePol.
-	        	_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
+	        	_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
 	        }
  	        // Always save the cavity in a cavity.npz binary file
 	        _cavity->saveCavity();	

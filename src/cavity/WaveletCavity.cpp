@@ -99,7 +99,7 @@ void WaveletCavity::readCavity(const std::string & filename)
 
 	nPoints = nPatches * nNodes * nNodes;
 	
-	for (int k = 0; k < nPoints; ++k) 
+	for (size_t k = 0; k < nPoints; ++k) 
 	{
 		file >> i >> j >> k >> x >> y >> z;
 		Eigen::Vector3i index(i, j, k);
@@ -145,7 +145,7 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
 	elementArea.resize(nElements);
 
 	int j = 0;
-	for (int i1 = 0; i1 < nPatches; ++i1)
+	for (size_t i1 = 0; i1 < nPatches; ++i1)
 	{
 		for (int i2 = 0; i2 < n; ++i2)
 		{
@@ -153,7 +153,7 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
 			for (int i3=0; i3 < n; ++i3)
 			{
 				s.x = h * i3;
-				for (int k = 0; k < Q[quadLevel].nop; ++k)
+				for (size_t k = 0; k < Q[quadLevel].nop; ++k)
 				{
 					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
 					point = Chi(t,T_[i1], nLevels);
@@ -195,7 +195,7 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
 	elementArea.resize(nElements);
 
 	int j = 0;
-	for (int i1 = 0; i1 < nPatches; ++i1)
+	for (size_t i1 = 0; i1 < nPatches; ++i1)
 	{
 		for (int i2 = 0; i2 < n; ++i2)
 		{
@@ -203,7 +203,7 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
 			for (int i3=0; i3 < n; ++i3)
 			{
 				s.x = h * i3;
-				for (int k = 0; k < Q[quadLevel].nop; k++)
+				for (size_t k = 0; k < Q[quadLevel].nop; k++)
 				{
 					t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
 					point = Chi_pwl(t,T_[i1], nLevels);

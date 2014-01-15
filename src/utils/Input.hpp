@@ -42,6 +42,8 @@ class Input
 		int patchLevel;
 		double coarsity;
 		double area;
+		double minDistance;
+		int derOrder;
 		bool scaling;
 		std::string radiiSet;
 		bool addSpheres;
@@ -77,6 +79,8 @@ class Input
 		int getPatchLevel(){ return patchLevel; }
 		double getCoarsity(){ return coarsity; }
 		double getArea(){ return area; }
+		double getMinDistance(){ return minDistance; }
+		int getDerOrder(){ return derOrder; }
 		bool getScaling(){ return scaling; }
 		std::string getRadiiSet() { return radiiSet; }
 		bool getAddSpheres(){ return addSpheres; }

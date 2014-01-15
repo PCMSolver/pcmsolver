@@ -37,14 +37,31 @@ class Cavity;
  * 	It is implemented as a Singleton.
  */
 
+struct cavityData
+{
+	std::vector<Sphere> spheres;
+	double area;
+	double probeRadius;
+	double minDistance;
+	int derOrder;
+	bool addSpheres;
+	int patchLevel;
+	double coarsity;
+	cavityData(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
+		   double _minDistance = 0.1, int _derOrder = 4, bool _addSpheres = false, 
+		   int _patchLevel = 2, double _coarsity = 0.5) :
+	spheres(_spheres), area(_area), probeRadius(_probeRadius), 
+	minDistance(_minDistance), derOrder(_derOrder), addSpheres(_addSpheres), 
+	patchLevel(_patchLevel), coarsity(_coarsity) {}
+};
+
 class CavityFactory 
 {
 	public:
 		/*!
 		 * Callback function for cavity creation.
 		 */
-		typedef Cavity * (*createCavityCallback)(const std::vector<Sphere> & _spheres, double _area, double _probeRadius, 
-							 bool _addSpheres, int _patchLevel, double _coarsity);
+		typedef Cavity * (*createCavityCallback)(const cavityData & _data);
 	private:
 		/*!
 		 * A map from the cavity type identifier (a string) to its callback function.
@@ -65,8 +82,7 @@ class CavityFactory
 		/*! 
 		 * Calls the appropriate creation function, based on the passed cavityID
 		 */
-		Cavity * createCavity(std::string cavityID, const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-				      bool _addSpheres = false, int _patchLevel = 2, double _coarsity = 0.5);
+		Cavity * createCavity(std::string cavityID, const cavityData & _data); 
 		/*!
 		 * Unique point of access to the unique instance of the CavityFactory
 		 */

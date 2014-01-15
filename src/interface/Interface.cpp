@@ -407,8 +407,12 @@ void initCavity()
 	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
 	bool addSpheres = Input::TheInput().getAddSpheres();
 	double probeRadius = Input::TheInput().getProbeRadius();
+	double minDistance = Input::TheInput().getMinDistance();
+	int derOrder = Input::TheInput().getDerOrder();
 	int patchLevel = Input::TheInput().getPatchLevel();
 	double coarsity = Input::TheInput().getCoarsity();
+ 
+	cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, addSpheres, patchLevel, coarsity);
 
 	// Get the right cavity from the Factory
 	// TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
@@ -418,8 +422,8 @@ void initCavity()
 		_waveletCavity = initWaveletCavity();
 	}
         else
-	{// This means in practice that the CavityFactory is now working only for GePol.
-		_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, spheres, area, probeRadius, addSpheres, patchLevel, coarsity);
+	{// This means in practice that the CavityFactory is now working only for GePol and TsLess.
+		_cavity = CavityFactory::TheCavityFactory().createCavity(cavInput);
 	}	
 }
 

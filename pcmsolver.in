@@ -120,6 +120,8 @@ def	setup_keywords():
 	cavity.add_kw('PatchLevel', 'INT', 2)
 	cavity.add_kw('Coarsity', 'DBL', 0.5)
 	cavity.add_kw('Area','DBL', 0.3)
+	cavity.add_kw('MinDistance', 'DBL', 0.1)
+	cavity.add_kw('DerOrder', 'INT', 4)
 	cavity.add_kw('Scaling', 'BOOL', True)
 	cavity.add_kw('RadiiSet', 'STR', 'Bondi')
 	cavity.add_kw('AddSpheres', 'BOOL', True)
@@ -187,6 +189,20 @@ def verify_cavity(section):
         	if (key.get() < 0.0 or key.get() >= 1.0):
         		print "Coarsity has to be within ]0,1["
         		sys.exit(1)
+        elif (type.get() == 'TsLess'):
+		area = section.get('Area')
+		a = area.get()
+		if (a < 0.01):
+	 		print("Area value is too small")
+			print("Minimum value: 0.01")
+			sys.exit(1)
+                minDistance = section.get('MinDistance')
+		md = minDistance.get()
+		# Insert a sanity check on minimal distance!
+ 		derOrder = section.get('DerOrder')
+ 		do = derOrder.get()
+		# Insert a check on derivative order
+
 	radiiSet = section.get('RadiiSet')
 	allowed_sets = ('Bondi', 'UFF')
 	if (radiiSet.get() not in allowed_sets):

@@ -31,6 +31,7 @@ extern "C"
 
 class GreensFunction;
 
+#include "SolverData.hpp"
 #include "SolverFactory.hpp"
 #include "WEMSolver.hpp"
 
@@ -75,9 +76,9 @@ class PWLSolver : public WEMSolver
 
 namespace
 {
-	PCMSolver * createPWLSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0, int integralEquation_ = 1)
+	PCMSolver * createPWLSolver(const solverData & _data)
 	{
-		return new PWLSolver(gfInside_, gfOutside_, integralEquation_);
+		return new PWLSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
 	}
 	const std::string PWLSOLVER("Linear");
 	const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(PWLSOLVER, createPWLSolver);

@@ -55,6 +55,7 @@
 #include "Citation.hpp"
 #include "Input.hpp"
 #include "Solvent.hpp"
+#include "SolverData.hpp"
 #include "Sphere.hpp"
 #include "SurfaceFunction.hpp"
 
@@ -460,6 +461,8 @@ void initSolver()
 	std::string modelType = Input::TheInput().getSolverType();
 	double correction = Input::TheInput().getCorrection();
 	int eqType = Input::TheInput().getEquationType();
+	solverData solverInput(gfInside, gfOutside, correction, eqType);
+
 	// This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
 	// it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
 	// (...not our fault, but should remedy somehow)
@@ -481,7 +484,7 @@ void initSolver()
 	}
         else
 	{// This means that the factory is properly working only for IEFSolver and CPCMSolver
-		_solver = SolverFactory::TheSolverFactory().createSolver(modelType, gfInside, gfOutside, correction, eqType);
+		_solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
 		_solver->buildSystemMatrix(*_cavity);
 	}	
 }

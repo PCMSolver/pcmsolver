@@ -88,7 +88,7 @@ void WaveletCavity::makeCavity()
 
 void WaveletCavity::readCavity(const std::string & filename) 
 {
-	int i, j, k;
+	size_t i, j;
 	double x, y, z;
 
 	std::ifstream file;

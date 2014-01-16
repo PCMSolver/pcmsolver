@@ -6,7 +6,7 @@
 
 #include "Config.hpp"
 
-class GreensFunction;
+struct solverData;
 class PCMSolver;
 
 /*!
@@ -25,7 +25,7 @@ class SolverFactory {
 		/*!
 		 * Callback function for solver creation.
 		 */
-		typedef PCMSolver * (*createSolverCallback)(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_, int integralEquation_);
+		typedef PCMSolver * (*createSolverCallback)(const solverData & _data);
 	private:
 		/*!
 		 * A map from the solver type identifier (a string) to its callback function.
@@ -46,8 +46,7 @@ class SolverFactory {
 		/*! 
 		 * Calls the appropriate creation function, based on the passed cavityID
 		 */
-		PCMSolver * createSolver(std::string solverID, GreensFunction * gfInside_, GreensFunction * gfOutside_, 
-				         double correction_ = 0.0, int integralEquation_ = 1); // 1 stands for SecondKind
+		PCMSolver * createSolver(std::string solverID, const solverData & _data); 
 		/*!
 		 * Unique point of access to the unique instance of the SolverFactory
 		 */

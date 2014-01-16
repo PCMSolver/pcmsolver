@@ -25,6 +25,7 @@ class Cavity;
 class GreensFunction;
 
 #include "PCMSolver.hpp"
+#include "SolverData.hpp"
 #include "SolverFactory.hpp"
 
 /*! \file CPCMSolver.hpp  
@@ -64,9 +65,9 @@ class CPCMSolver : public PCMSolver
 
 namespace
 {
-	PCMSolver * createCPCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0, int integralEquation_ = 1)
+	PCMSolver * createCPCMSolver(const solverData & _data)
 	{
-		return new CPCMSolver(gfInside_, gfOutside_, correction_);
+		return new CPCMSolver(_data.gfInside, _data.gfOutside, _data.correction);
 	}
 	const std::string CPCMSOLVER("CPCM");
 	const bool registeredCPCMSolver = SolverFactory::TheSolverFactory().registerSolver(CPCMSOLVER, createCPCMSolver);

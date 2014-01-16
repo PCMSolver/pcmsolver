@@ -17,8 +17,7 @@ bool SolverFactory::unRegisterSolver(std::string solverID)
 	return callbacks.erase(solverID) == 1;
 }
 
-PCMSolver * SolverFactory::createSolver(std::string solverID, GreensFunction * gfInside_, GreensFunction * gfOutside_,
-				     double correction_, int integralEquation_) // 1 stands for SecondKind
+PCMSolver * SolverFactory::createSolver(std::string solverID, const solverData & _data)
 {
 	CallbackMap::const_iterator i = callbacks.find(solverID);
 	if (i == callbacks.end()) 
@@ -27,5 +26,5 @@ PCMSolver * SolverFactory::createSolver(std::string solverID, GreensFunction * g
                 throw std::runtime_error("The unknown solver ID " + solverID + " occurred in SolverFactory.");
 	}
 	// Invoke the creation function
-	return (i->second)(gfInside_, gfOutside_, correction_, integralEquation_);
+	return (i->second)(_data);
 }

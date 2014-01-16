@@ -10,6 +10,7 @@ class Cavity;
 class GreensFunction;
 
 #include "PCMSolver.hpp"
+#include "SolverData.hpp"
 #include "SolverFactory.hpp"
 
 /*! 
@@ -48,9 +49,9 @@ class IEFSolver : public PCMSolver
 
 namespace
 {
-	PCMSolver * createIEFSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0, int integralEquation_ = 1)
+	PCMSolver * createIEFSolver(const solverData & _data)
 	{
-		return new IEFSolver(gfInside_, gfOutside_);
+		return new IEFSolver(_data.gfInside, _data.gfOutside);
 	}
 	const std::string IEFSOLVER("IEFPCM");
 	const bool registeredIEFSolver = SolverFactory::TheSolverFactory().registerSolver(IEFSOLVER, createIEFSolver);

@@ -25,9 +25,11 @@
 #endif
 
 #include "cnpy.hpp"
+#include "MathUtils.hpp"
 
-void Cavity::saveCavity(const std::string & fname)
+inline void Cavity::saveCavity(const std::string & fname)
 {
+	/*
 	std::ofstream weights("weights.txt", std::ios_base::out);
 	// First line in the weights file is the number of elements.
 	// This is for a sanity-check on the save/load operations.
@@ -39,6 +41,7 @@ void Cavity::saveCavity(const std::string & fname)
 	centers << std::setprecision(std::numeric_limits<double>::digits10) << elementCenter << std::endl;
 	std::ofstream normals("normals.txt", std::ios_base::out);
 	normals << std::setprecision(std::numeric_limits<double>::digits10) << elementNormal << std::endl;
+	*/
 		
 	// Write everything in a single .npz binary file
 	// Write the number of elements, it will be used to check sanity of the save/load operations.
@@ -58,10 +61,9 @@ void Cavity::saveCavity(const std::string & fname)
 	cnpy::npz_save(fname, "normals", elementNormal.data(), normals_shape, 2, "a", true);
 }
 
-void Cavity::loadCavity(const std::string & fname)
+inline void Cavity::loadCavity(const std::string & fname)
 {	
-	// Load the .npz binary file and then traverse it to get the data
-	// needed to rebuild the cavity.
+	// Load the .npz binary file and then traverse it to get the data needed to rebuild the cavity.
 	cnpy::npz_t loaded_cavity = cnpy::npz_load(fname);
 	// 0. Get the number of elements
 	cnpy::NpyArray raw_ele = loaded_cavity["elements"];
@@ -77,10 +79,7 @@ void Cavity::loadCavity(const std::string & fname)
 	}
 	else
 	{
-		elementArea.resize(dim);
-		double * loaded_weights = reinterpret_cast<double*>(raw_weights.data);
-		Eigen::Map<Eigen::VectorXd> w(loaded_weights, dim, 1);
-		elementArea = w;
+		elementArea = getFromRawBuffer<double>(dim, 1, raw_weights.data);
 	}
 	
 	// 2. Get the element radius 
@@ -92,10 +91,7 @@ void Cavity::loadCavity(const std::string & fname)
 	}
 	else
 	{
-		elementRadius.resize(dim);
-		double * loaded_elRadius = reinterpret_cast<double*>(raw_elRadius.data);
-		Eigen::Map<Eigen::VectorXd> er(loaded_elRadius, dim, 1);
-		elementRadius = er;
+		elementRadius = getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
 	}
 
 	// 3. Get the centers
@@ -107,10 +103,7 @@ void Cavity::loadCavity(const std::string & fname)
 	}
 	else
 	{
-		elementCenter.resize(Eigen::NoChange, dim);
-		double * loaded_centers = reinterpret_cast<double*>(raw_centers.data);
-		Eigen::Map<Eigen::Matrix3Xd> c(loaded_centers, 3, dim);
-		elementCenter = c;
+		elementCenter = getFromRawBuffer<double>(3, dim, raw_centers.data);
 	}
 
 	// 4. Get the normal vectors	
@@ -122,9 +115,6 @@ void Cavity::loadCavity(const std::string & fname)
 	}
 	else
 	{
-		elementNormal.resize(Eigen::NoChange, dim);
-		double * loaded_normals = reinterpret_cast<double*>(raw_normals.data);
-		Eigen::Map<Eigen::Matrix3Xd> n(loaded_normals, 3, dim);
-		elementNormal = n;
+		elementNormal = getFromRawBuffer<double>(3, dim, raw_normals.data);
 	}
 }

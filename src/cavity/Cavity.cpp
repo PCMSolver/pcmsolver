@@ -29,7 +29,12 @@
 void Cavity::saveCavity(const std::string & fname)
 {
 	std::ofstream weights("weights.txt", std::ios_base::out);
+	// First line in the weights file is the number of elements.
+	// This is for a sanity-check on the save/load operations.
+	weights << std::setprecision(std::numeric_limits<double>::digits10) << nElements << std::endl;
 	weights << std::setprecision(std::numeric_limits<double>::digits10) << elementArea << std::endl;
+	std::ofstream elRadius("element_radius.txt", std::ios_base::out);
+	elRadius << std::setprecision(std::numeric_limits<double>::digits10) << elementRadius << std::endl;
 	std::ofstream centers("centers.txt", std::ios_base::out);
 	centers << std::setprecision(std::numeric_limits<double>::digits10) << elementCenter << std::endl;
 	std::ofstream normals("normals.txt", std::ios_base::out);
@@ -42,6 +47,9 @@ void Cavity::saveCavity(const std::string & fname)
 	// Write weights
 	const unsigned int weights_shape[] = {nElements};
 	cnpy::npz_save(fname, "weights", elementArea.data(), weights_shape, 1, "a", true);
+	// Write element radius
+	const unsigned int elRadius_shape[] = {nElements};
+	cnpy::npz_save(fname, "elRadius", elementRadius.data(), elRadius_shape, 1, "a", true);
 	// Write centers
 	const unsigned int centers_shape[] = {3, nElements};
 	cnpy::npz_save(fname, "centers", elementCenter.data(), centers_shape, 2, "a", true);
@@ -74,8 +82,23 @@ void Cavity::loadCavity(const std::string & fname)
 		Eigen::Map<Eigen::VectorXd> w(loaded_weights, dim, 1);
 		elementArea = w;
 	}
+	
+	// 2. Get the element radius 
+        cnpy::NpyArray raw_elRadius = loaded_cavity["elRadius"];
+	dim = raw_elRadius.shape[0];
+	if (dim != nElements)
+	{
+		throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of element radius vector!");
+	}
+	else
+	{
+		elementRadius.resize(dim);
+		double * loaded_elRadius = reinterpret_cast<double*>(raw_elRadius.data);
+		Eigen::Map<Eigen::VectorXd> er(loaded_elRadius, dim, 1);
+		elementRadius = er;
+	}
 
-	// 2. Get the centers
+	// 3. Get the centers
 	cnpy::NpyArray raw_centers = loaded_cavity["centers"];
 	dim = raw_centers.shape[1];
 	if (dim != nElements)
@@ -90,7 +113,7 @@ void Cavity::loadCavity(const std::string & fname)
 		elementCenter = c;
 	}
 
-	// 3. Get the normal vectors	
+	// 4. Get the normal vectors	
 	cnpy::NpyArray raw_normals = loaded_cavity["normals"];
 	dim = raw_normals.shape[1];
 	if (dim != nElements)

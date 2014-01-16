@@ -10,7 +10,7 @@ Release*
 Makefile
 Debug*
 .DS_Store
-build*
+*build*
 debug
 TAGS
 */TAGS
@@ -21,3 +21,8 @@ doc/Doxyfile
 doc/_doxygen
 doc/conf.py
 *.pyc
+weights.txt
+element_radius.txt
+centers.txt
+normals.txt
+cavity.npz

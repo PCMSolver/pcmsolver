@@ -91,10 +91,13 @@ class Cavity
 		 *  The cavity specification contains:
 		 *   0. the number of finite elements, nElements;
 		 *   1. the weight of the finite elements, elementArea;
-		 *   2. the centers of the finite elements, elementCenter;
-		 *   3. the normal vectors relative to the centers, elementNormal.
+		 *   2. the radius of the finite elements, elementRadius;
+		 *   3. the centers of the finite elements, elementCenter;
+		 *   4. the normal vectors relative to the centers, elementNormal.
 		 *  Each of these objects is saved in a separate .npy binary file
 		 *  and compressed into one .npz file.
+		 *  Notice that this is just the minimal set of data needed to 
+		 *  restart an energy calculation.
 		 */
 		virtual void saveCavity(const std::string & fname = "cavity.npz");
 		/*! \brief Load cavity specification from file.

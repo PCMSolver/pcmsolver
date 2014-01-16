@@ -40,7 +40,8 @@ TEST(IEFSolver, pointChargeGePol)
 	Sphere sph1(N, 2.929075493);      		
 	spheres.push_back(sph1);          		
 	double area = 0.4;                		
-	GePolCavity cavity(spheres, area);		
+	GePolCavity cavity(spheres, area);
+	cavity.saveCavity("point.npz");
 	
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative

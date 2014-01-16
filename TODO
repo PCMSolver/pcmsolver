@@ -18,8 +18,3 @@ the issue number.
    (programmers' manual only)
 7. Implementation of input management as asked by Andy
    and Daniel
-8. Output management is still an issue with an
-   unsatisfactory solution. Sending a C-style string 
-   i.e. an array of chars, to the host program might 
-   be a viable solution. Look up the c_str() function
-   of the string class in C++

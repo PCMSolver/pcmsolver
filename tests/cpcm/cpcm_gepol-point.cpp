@@ -40,7 +40,8 @@ TEST(CPCMSolver, pointChargeGePol)
 	Sphere sph1(N, 2.929075493);      		
 	spheres.push_back(sph1);          		
 	double area = 0.4;                		
-	GePolCavity cavity(spheres, area);		
+	GePolCavity cavity(spheres, area);
+	cavity.saveCavity("point.npz");
 	// The point charge is located at the origin.
 	// The potential at cavity point s_I is Q/|s_I|
 	double permittivity = 78.39;

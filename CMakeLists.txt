@@ -26,6 +26,7 @@ set(SOURCES)
 
 include(ConfigVersion)
 include(ConfigArchitecture)
+include(CheckCXX11Features)
 include(ConfigCompilerFlags)
 include(ConfigDocumentation)
 include(ConfigExternal)

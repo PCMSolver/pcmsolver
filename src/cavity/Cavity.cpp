@@ -44,20 +44,21 @@ inline void Cavity::saveCavity(const std::string & fname)
 	*/
 		
 	// Write everything in a single .npz binary file
+	unsigned int dim = static_cast<unsigned int>(nElements);
 	// Write the number of elements, it will be used to check sanity of the save/load operations.
 	const unsigned int shape[] = {1};
-	cnpy::npz_save(fname, "elements", &nElements, shape, 1, "w", false);
+	cnpy::npz_save(fname, "elements", &dim, shape, 1, "w", false);
 	// Write weights
-	const unsigned int weights_shape[] = {nElements};
+	const unsigned int weights_shape[] = {dim};
 	cnpy::npz_save(fname, "weights", elementArea.data(), weights_shape, 1, "a", true);
 	// Write element radius
-	const unsigned int elRadius_shape[] = {nElements};
+	const unsigned int elRadius_shape[] = {dim};
 	cnpy::npz_save(fname, "elRadius", elementRadius.data(), elRadius_shape, 1, "a", true);
 	// Write centers
-	const unsigned int centers_shape[] = {3, nElements};
+	const unsigned int centers_shape[] = {3, dim};
 	cnpy::npz_save(fname, "centers", elementCenter.data(), centers_shape, 2, "a", true);
 	// Write normals
-	const unsigned int normals_shape[] = {3, nElements};
+	const unsigned int normals_shape[] = {3, dim};
 	cnpy::npz_save(fname, "normals", elementNormal.data(), normals_shape, 2, "a", true);
 }
 

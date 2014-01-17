@@ -15,7 +15,7 @@ bool GreensFunctionFactory::unRegisterGreensFunction(const std::string & greenID
 	return callbacks.erase(greenID) == 1;
 }
 
-GreensFunction * GreensFunctionFactory::createGreensFunction(const std::string & greenID, int how_, double epsilon_, double kappa_) 
+GreensFunction * GreensFunctionFactory::createGreensFunction(const std::string & greenID, const greenData & _data) 
 {
 	CallbackMap::const_iterator i = callbacks.find(greenID);
 	if (i == callbacks.end()) 
@@ -24,5 +24,5 @@ GreensFunction * GreensFunctionFactory::createGreensFunction(const std::string &
                 throw std::runtime_error("The unknown Green's function ID " + greenID + " occurred in GreensFunctionFactory.");
 	}
 	// Invoke the creation function
-	return (i->second)(how_, epsilon_, kappa_);
+	return (i->second)(_data);
 }

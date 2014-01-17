@@ -21,6 +21,7 @@
 #pragma warning pop
 #endif
 
+#include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
 
@@ -61,9 +62,9 @@ class IonicLiquid : public GreensFunction
 
 namespace
 {
-	GreensFunction * createIonicLiquid(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	GreensFunction * createIonicLiquid(const greenData & _data)
 	{
-		return new IonicLiquid(how_, epsilon_, kappa_);
+		return new IonicLiquid(_data.how, _data.epsilon, _data.kappa);
 	}
 	const std::string IONICLIQUID("IonicLiquid");
 	const bool registeredIonicLiquid = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(IONICLIQUID, createIonicLiquid);

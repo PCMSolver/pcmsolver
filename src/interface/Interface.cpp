@@ -53,6 +53,7 @@
 #include "Atom.hpp"
 #include "CavityData.hpp"
 #include "Citation.hpp"
+#include "GreenData.hpp"
 #include "Input.hpp"
 #include "Solvent.hpp"
 #include "SolverData.hpp"
@@ -448,15 +449,17 @@ void initSolver()
 	double epsilon = Input::TheInput().getEpsilonInside();
 	std::string greenType = Input::TheInput().getGreenInsideType();
 	int greenDer = Input::TheInput().getDerivativeInsideType();
+	greenData inside(greenDer, epsilon);
 
-	GreensFunction * gfInside = factory.createGreensFunction(greenType, greenDer);
+	GreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
 	
 	// OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
 	epsilon = Input::TheInput().getEpsilonOutside();
 	greenType = Input::TheInput().getGreenOutsideType();
 	greenDer = Input::TheInput().getDerivativeOutsideType();
+	greenData outside(greenDer, epsilon);
 	
-	GreensFunction * gfOutside = factory.createGreensFunction(greenType, greenDer, epsilon);
+	GreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
 	// And all this to finally create the solver! 
 	std::string modelType = Input::TheInput().getSolverType();
 	double correction = Input::TheInput().getCorrection();
@@ -506,7 +509,7 @@ void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd &
 	vector<double> radiiInput = Input::TheInput().getRadii();
   
 	// Loop over the atomsInput array to get which atoms will have a user-given radius
-	for (int i = 0; i < atomsInput.size(); ++i) 
+	for (size_t i = 0; i < atomsInput.size(); ++i) 
 	{
 		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
 		// Create the Sphere

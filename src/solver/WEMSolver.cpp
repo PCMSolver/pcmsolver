@@ -87,7 +87,7 @@ void WEMSolver::uploadCavity(WaveletCavity & cavity) {
 	alloc_points(&pointList, nPatches, nLevels);
 	int kk = 0;
 	// Ask Helmut about index switch
-	for (int i = 0; i < nPatches; i++) {
+	for (size_t i = 0; i < nPatches; i++) {
 		for (int j = 0; j <= n; j++) {
 			for (int k = 0; k <= n; k++) {
 				Eigen::Vector3d p = cavity.getNodePoint(kk);

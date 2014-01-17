@@ -21,6 +21,7 @@
 #pragma warning pop
 #endif
 
+#include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
 
@@ -60,9 +61,9 @@ class UniformDielectric : public GreensFunction
 
 namespace
 {
-	GreensFunction * createUniformDielectric(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	GreensFunction * createUniformDielectric(const greenData & _data)
 	{
-		return new UniformDielectric(how_, epsilon_);
+		return new UniformDielectric(_data.how, _data.epsilon);
 	}
 	const std::string UNIFORMDIELECTRIC("UniformDielectric");
 	const bool registeredUniformDielectric = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(UNIFORMDIELECTRIC, createUniformDielectric);

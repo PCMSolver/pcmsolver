@@ -21,6 +21,7 @@
 #pragma warning pop
 #endif
 
+#include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
 
@@ -59,9 +60,9 @@ class Vacuum : public GreensFunction
 
 namespace
 {
-	GreensFunction * createVacuum(int how_, double epsilon_ = 1.0, double kappa_ = 0.0)
+	GreensFunction * createVacuum(const greenData & _data)
 	{
-		return new Vacuum(how_);
+		return new Vacuum(_data.how);
 	}
 	const std::string VACUUM("Vacuum");
 	const bool registeredVacuum = GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(VACUUM, createVacuum);

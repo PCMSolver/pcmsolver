@@ -6,6 +6,7 @@
 
 #include "Config.hpp"
 
+struct greenData;
 class GreensFunction;
 
 /*!
@@ -25,7 +26,7 @@ class GreensFunctionFactory
 		/*!
 		 * Callback function for Green's function creation.
 		 */
-		typedef GreensFunction * (*createGreensFunctionCallback)(int how_, double epsilon_, double kappa_);
+		typedef GreensFunction * (*createGreensFunctionCallback)(const greenData & _data);
 	private:
 		/*!
 		 * A map from the Green's function type identifier (a string) to its callback function.
@@ -46,7 +47,7 @@ class GreensFunctionFactory
 		/*! 
 		 * Calls the appropriate creation function, based on the passed greenID
 		 */
-		GreensFunction * createGreensFunction(const std::string & greenID, int how_, double epsilon_ = 1.0, double kappa_ = 0.0);
+		GreensFunction * createGreensFunction(const std::string & greenID, const greenData & _data);
 		/*!
 		 * Unique point of access to the unique instance of the GreensFunctionFactory
 		 */

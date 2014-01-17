@@ -73,11 +73,19 @@ SurfaceFunction & SurfaceFunction::operator-=(const SurfaceFunction & other)
 
 SurfaceFunction & SurfaceFunction::operator*=(double scaling)
 {
-//	this->name = std::to_string(scaling) + "*" + this->name; // The C++11 way
+#if defined (HAS_CXX11)
+	// The C++11 way
+	// As from the standard this would produce the same result at std::sprintf(buf, "%f", value)
+	// meaning that 2.5 will be represented as 2.500000
+	std::string tmp = std::to_string(scaling);
+	tmp.erase(tmp.find_last_not_of('0') + 1, std::string::npos);
+	this->name = tmp + "*" + this->name; 
+#else
 	std::ostringstream sstream;
 	sstream << scaling;
 	std::string scalingAsString = sstream.str();
 	this->name = scalingAsString + "*" + this->name;
+#endif
 	this->values *= scaling;
         return *this;
 }

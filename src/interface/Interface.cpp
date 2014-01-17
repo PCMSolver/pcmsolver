@@ -397,7 +397,7 @@ void setupInput() {
 	} 
 	else if (_mode == "Atoms") 
 	{
-		initSpheresAtoms(charges, centers, spheres);
+		initSpheresAtoms(centers, spheres);
 		parsedInput.setSpheres(spheres);
 	}
 }
@@ -503,7 +503,7 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
 	collect_atoms(chg, centers);
 } 
 
-void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_) 
+void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_) 
 {
 	vector<int> atomsInput = Input::TheInput().getAtoms();
 	vector<double> radiiInput = Input::TheInput().getRadii();

@@ -134,11 +134,12 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
 
 void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
-void initSpheresAtoms(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
+void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
 bool surfaceFunctionExists(const std::string & name);
 
-template<typename T> void safe_delete( T *& ptr ); 
+template<typename T> 
+void safe_delete( T *& ptr ); 
 
 #endif // INTERFACE_HPP
 

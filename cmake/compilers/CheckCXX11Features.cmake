@@ -60,9 +60,10 @@ if (NOT _HAS_CXX11_FLAG)
     check_cxx_compiler_flag("-std=c++0x" _HAS_CXX0X_FLAG)
 endif ()
 
-set(HAS_11_FLAG FALSE)
+set(HAS_CXX11_SUPPORT FALSE)
 if (_HAS_CXX11_FLAG OR _HAS_CXX0X_FLAG)
-	set(HAS_11_FLAG TRUE)
+	set(HAS_CXX11_SUPPORT TRUE)
+	add_definitions(-DHAS_CXX11)
 endif()
 
 if (_HAS_CXX11_FLAG)
@@ -73,7 +74,7 @@ endif ()
 
 function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
     if (NOT DEFINED ${RESULT_VAR})
-        set(_bindir "${CMAKE_CURRENT_BINARY_DIR}/cxx11_${FEATURE_NAME}")
+        set(_bindir "${CMAKE_CURRENT_BINARY_DIR}/check_cxx11/cxx11_${FEATURE_NAME}")
 
         set(_SRCFILE_BASE ${CMAKE_CURRENT_LIST_DIR}/CheckCXX11Features/cxx11-test-${FEATURE_NAME})
         set(_LOG_NAME "\"${FEATURE_NAME}\"")

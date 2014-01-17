@@ -8,9 +8,26 @@
 #include "Sphere.hpp"
 
 /*! @struct cavityData
- *  @brief Contains all data defined from used input in the cavity section.
+ *  @brief Contains all data defined from user input in the cavity section.
  *  @var cavityData::spheres 
  *  Contains the list of generating spheres.
+ *  @var cavityData::area
+ *  The average tesserae area. Relevant for GePolCavity.
+ *  @var cavityData::probeRadius
+ *  The radius of the spherical probe representing the solvent.
+ *  @var cavityData::minDistance
+ *  The minimal distance between two sampling 
+ *  points on different spheres. Relevant for TsLessCavity.
+ *  @var cavityData::derOrder
+ *  The maximum derivative order to be used in the definition
+ *  of the smoothing function. Relevant for TsLessCavity.
+ *  @var cavityData::addSpheres
+ *  Triggers the addition of spheres not centered on atoms.
+ *  Relevant for GePolCavity.
+ *  @var cavityData::patchLevel
+ *  Relevant for WaveletCavity.
+ *  @var cavityData::coarsity
+ *  Relevant for WaveletCavity.
  */
 
 struct cavityData

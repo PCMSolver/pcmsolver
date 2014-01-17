@@ -1,16 +1,20 @@
 #ifndef SOLVERDATA_HPP
 #define SOLVERDATA_HPP
 
-#include <vector>
-
 #include "Config.hpp"
 
 class GreensFunction;
 
 /*! @struct solverData
- *  @brief Contains all data defined from used input in the cavity section.
- *  @var solverData::spheres 
- *  Contains the list of generating spheres.
+ *  @brief Contains all data defined from user input in the solver section.
+ *  @var solverData::gfInside 
+ *  The Green's function inside the cavity.
+ *  @var solverData::gfOutside
+ *  The Green's function outside the cavity.
+ *  @var solverData::correction
+ *  The correction factor to be use in a CPCM calculation.
+ *  @var solverData::integralEquation
+ *  The type of integral equation to solve, relevant only for wavelet solvers.
  */
 
 struct solverData

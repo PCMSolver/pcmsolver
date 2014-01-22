@@ -32,8 +32,6 @@ Input::Input()
         Getkw input = Getkw(parsedInputFile, false, true);
 	const Section & cavity = input.getSect("Cavity");
 
-	cavFilename = cavity.getStr("Restart");
-
         type = cavity.getStr("Type");
 	if (type == "GePol") 
 	{ // GePol cavity branch
@@ -64,6 +62,11 @@ Input::Input()
 		throw std::runtime_error("TsLess cavity generator is not included in this release.");
 #endif
 	}
+	else if (type == "Restart")
+	{
+		cavFilename = cavity.getStr("Restart");
+	}
+
 	scaling = cavity.getBool("Scaling");
 	radiiSet = cavity.getStr("RadiiSet");
 	addSpheres = cavity.getBool("AddSpheres");
@@ -165,7 +168,7 @@ Input::Input()
 	    		throw std::runtime_error("GePol cavity can be used only with traditional solvers.");
 		}
 	}
-	else 
+	else if ( type == "Wavelet" ) // Hoping that the user knows what's going on if he asks for a restart... 
 	{
 		if (solverType == "IEFPCM" || solverType == "CPCM") // User asked for wavelet cavity with traditional solvers
 		{

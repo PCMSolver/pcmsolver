@@ -1,6 +1,7 @@
 set(cavity_SOURCES
     Cavity.cpp 
     GePolCavity.cpp 
+    RestartCavity.cpp
     TsLessCavity.cpp
     WaveletCavity.cpp
     CavityFactory.cpp
@@ -26,6 +27,7 @@ set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
  
 install(FILES Cavity.hpp DESTINATION include)
 install(FILES GePolCavity.hpp DESTINATION include)
+install(FILES RestartCavity.hpp DESTINATION include)
 install(FILES TsLessCavity.hpp DESTINATION include)
 install(FILES WaveletCavity.hpp DESTINATION include)
 install(FILES CavityFactory.hpp DESTINATION include)

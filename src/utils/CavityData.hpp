@@ -1,6 +1,7 @@
 #ifndef CAVITYDATA_HPP
 #define CAVITYDATA_HPP
 
+#include <string>
 #include <vector>
 
 #include "Config.hpp"
@@ -28,6 +29,9 @@
  *  Relevant for WaveletCavity.
  *  @var cavityData::coarsity
  *  Relevant for WaveletCavity.
+ *  @var cavityData::filename
+ *  Name of the file containing the cavity
+ *  specification for a restart.
  */
 
 struct cavityData
@@ -40,12 +44,13 @@ struct cavityData
 	bool addSpheres;
 	int patchLevel;
 	double coarsity;
+	std::string filename;
 	cavityData(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
 		   double _minDistance = 0.1, int _derOrder = 4, bool _addSpheres = false, 
-		   int _patchLevel = 2, double _coarsity = 0.5) :
+		   int _patchLevel = 2, double _coarsity = 0.5, const std::string & _fname = " ") :
 	spheres(_spheres), area(_area), probeRadius(_probeRadius), 
 	minDistance(_minDistance), derOrder(_derOrder), addSpheres(_addSpheres), 
-	patchLevel(_patchLevel), coarsity(_coarsity) {}
+	patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname) {}
 };
 
 #endif // CAVITYDATA_HPP

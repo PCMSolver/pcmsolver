@@ -37,6 +37,7 @@
 //    1. Cavities
 #include "Cavity.hpp"
 #include "GePolCavity.hpp"
+#include "RestartCavity.hpp"
 #include "WaveletCavity.hpp"
 //    2. Green's functions
 #include "GreensFunction.hpp"
@@ -101,7 +102,7 @@ extern "C" void hello_pcm(int * a, double * b)
 extern "C" void set_up_pcm() 
 {
 	setupInput();
-    initCavity();
+    	initCavity();
 	initSolver();
 }
 
@@ -415,40 +416,32 @@ void setupInput() {
 void initCavity()
 {
 	// Get the input data for generating the cavity
+	std::string cavityType = Input::TheInput().getCavityType();                                                                                            	
+ 	double area = Input::TheInput().getArea();
+	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
+	bool addSpheres = Input::TheInput().getAddSpheres();
+	double probeRadius = Input::TheInput().getProbeRadius();
+	double minDistance = Input::TheInput().getMinDistance();
+	int derOrder = Input::TheInput().getDerOrder();
+	int patchLevel = Input::TheInput().getPatchLevel();
+	double coarsity = Input::TheInput().getCoarsity();
 	std::string restart = Input::TheInput().getCavityFilename();
-
-	if ( not restart.empty() )
-	{
-		_cavity->loadCavity(restart);
+        
+        cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, addSpheres, patchLevel, coarsity, restart);          
+                                                                                                                                                      
+	// Get the right cavity from the Factory
+	// TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
+	std::string modelType = Input::TheInput().getSolverType();
+        if (modelType == "Wavelet" || modelType == "Linear") 
+	{// Both PWC and PWL require a WaveletCavity
+		_waveletCavity = initWaveletCavity();
 	}
-	else
-	{
-		std::string cavityType = Input::TheInput().getCavityType();                                                                                            	
- 	        double area = Input::TheInput().getArea();
-	        std::vector<Sphere> spheres = Input::TheInput().getSpheres();
-	        bool addSpheres = Input::TheInput().getAddSpheres();
-	        double probeRadius = Input::TheInput().getProbeRadius();
-		double minDistance = Input::TheInput().getMinDistance();
-		int derOrder = Input::TheInput().getDerOrder();
-	        int patchLevel = Input::TheInput().getPatchLevel();
-	        double coarsity = Input::TheInput().getCoarsity();
-             
-          	cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, addSpheres, patchLevel, coarsity);          
-                                                                                                                                                              
-	        // Get the right cavity from the Factory
-	        // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
-	        std::string modelType = Input::TheInput().getSolverType();
-                if (modelType == "Wavelet" || modelType == "Linear") 
-	        {// Both PWC and PWL require a WaveletCavity
-	        	_waveletCavity = initWaveletCavity();
-	        }
-                else
-	        {// This means in practice that the CavityFactory is now working only for GePol.
-	        	_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
-	        }
- 	        // Always save the cavity in a cavity.npz binary file
-	        _cavity->saveCavity();	
+        else
+	{// This means in practice that the CavityFactory is now working only for GePol.
+		_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
 	}
+ 	// Always save the cavity in a cavity.npz binary file
+	_cavity->saveCavity();	
 }
 
 void initSolver()
@@ -499,7 +492,7 @@ void initSolver()
 	{// This means that the factory is properly working only for IEFSolver and CPCMSolver
 		_solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
 		_solver->buildSystemMatrix(*_cavity);
-	}	
+	}
 }
 
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_) 

@@ -121,10 +121,10 @@ Input::Input()
 		derivativeOutsideType = mapStringToIntDerType.find(_outside.getStr("Der"))->second;
 		epsilonOutside = _outside.getDbl("Eps");
 		// This will be needed for the metal sphere
-		epsilonReal = medium.getDbl("EpsRe");
-		epsilonImaginary = medium.getDbl("EpsImg");
-		spherePosition = medium.getDblVec("SpherePosition");
-		sphereRadius = medium.getDbl("SphereRadius");
+		epsilonReal = _outside.getDbl("EpsRe");
+		epsilonImaginary = _outside.getDbl("EpsImg");
+		spherePosition = _outside.getDblVec("SpherePosition");
+		sphereRadius = _outside.getDbl("SphereRadius");
 	} 
 	else // This part must be reviewed!! Some data members are not initialized... 
 	{       // Just initialize the solvent object in this class

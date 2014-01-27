@@ -21,7 +21,10 @@ C
      & xsphcor_,ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_,
      & rin_, avgarea_, rsolv_, work2, lwork2)
 
-#include <pcm_implicit.h>
+      use, intrinsic :: iso_c_binding
+
+      implicit none
+
 #include <pcm_maxorb.h>
 #include <pcm_maxaqn.h>
 #include <pcm_priunit.h>
@@ -34,13 +37,15 @@ C
 #include <pcm_symmet.h>
 #include <pcm_pgroup.h>
 
-      dimension work2(*)
-      double precision xtscor_(*), ytscor_(*), ztscor_(*)
-      double precision xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
-      double precision ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
-      double precision avgarea_, rsolv_
-      integer nts_, nesfp_
-      logical pedra_file_exists
+      real(c_double)  :: work2(*)
+      real(c_double)  :: xtscor_(*), ytscor_(*), ztscor_(*)
+      real(c_double)  :: xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
+      real(c_double)  :: ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
+      real(c_double)  :: avgarea_, rsolv_
+      integer(c_int)  :: nts_, nesfp_
+      logical(c_bool) :: pedra_file_exists
+
+      integer(c_int)  :: lwork2, i, nsym 
 
       LVPRI = 121201
       inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
@@ -63,6 +68,7 @@ C
       AREATS=avgArea_
       ICESPH=1
       IPRPCM=3
+!      GROUP = 'C2V'
       GROUP = 'C1'
       RSOLV = rsolv_
       RET = 100.0D0

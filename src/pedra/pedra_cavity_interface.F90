@@ -56,9 +56,10 @@
       iprpcm = 3
       group = 'C1'
       rsolv = rsolv_
-!      ret = 100.0D0
-! ret is the minimum radius of added spheres     
-      ret = 0.2 
+      omega = 40.0d+00
+      fro = 0.7d+00
+! ret is the minimum radius of added spheres
+      ret = 0.3779452249130124d0 ! This is 0.2 ang in Bohr 
       nesfp = nesfp_
       do i = 1, nesfp
          xe(i) = xe_(i)
@@ -94,9 +95,5 @@
       enddo
 
       close(lvpri)
-
-     ! call makecav_(xtscor,ytscor,ztscor,ar,xsphcor,                    &    
-     !     ysphcor, zsphcor, rsph, nts, nesfp, xe, ye, ze, rin, avgArea, &
-     !     rsolv, work, lwork)
 
       end subroutine generatecavity_cpp

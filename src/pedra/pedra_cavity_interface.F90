@@ -56,7 +56,9 @@
       iprpcm = 3
       group = 'C1'
       rsolv = rsolv_
-      ret = 100.0D0
+!      ret = 100.0D0
+! ret is the minimum radius of added spheres     
+      ret = 0.2 
       nesfp = nesfp_
       do i = 1, nesfp
          xe(i) = xe_(i)

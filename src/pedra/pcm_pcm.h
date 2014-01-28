@@ -1,3 +1,4 @@
+! RET: minimum radius of added spheres
       DOUBLE PRECISION ALPHA, AREATS, AS, CCX, CCY, CCZ, DERCEN,   &
       DERRAD, DR, EPS, EPSINF, FN, FE, FO, FRO, OMEGA, RET,        &
       RIN, RSOLV, QSN, QSE, QSENEQ, QLOC, PCMEN, PCMEE, PCMNE,     &

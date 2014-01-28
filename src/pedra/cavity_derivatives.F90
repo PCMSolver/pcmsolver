@@ -165,7 +165,6 @@
         600 END DO
     500 END DO
 
-    RETURN
     END SUBROUTINE CAVDER_
 !***********************************************************************
 !/* Deck Dcdr */
@@ -223,7 +222,6 @@
     DC = - ( COORDJ(JJ) - COORDK(JJ) ) / D
 
     200 CONTINUE
-    RETURN
     END SUBROUTINE DRCNRD_
 !/* Deck Dcdc */
     SUBROUTINE DRCNCN_(JJ,NSI,ICOORD,NSJ,DC,NEWSPH)
@@ -287,7 +285,6 @@
     END IF
 
     200 CONTINUE
-    RETURN
     END SUBROUTINE DRCNCN_
 !/* Deck Drdr */
     SUBROUTINE DRRDRD_(NSI,NSJ,DR1,NEWSPH)
@@ -348,7 +345,6 @@
         DR1 = ( RE(ABS(NSK)) * RJ ) / ( D*RI)
     END IF
     200 CONTINUE
-    RETURN
     END SUBROUTINE DRRDRD_
 !/* Deck Drdc */
     SUBROUTINE DRRDCN_(NSI,ICOORD,NSJ,DR1,NEWSPH)
@@ -413,5 +409,4 @@
     DR1 = DIFF * FAC / ( 2.0D+00 * D**3 * RI )
 
     200 CONTINUE
-    RETURN
     END SUBROUTINE DRRDCN_

@@ -1,13 +1,13 @@
 set(pedra_SOURCES 
-  pcm_utils.F
-  pcm_print.F
+  pcm_utils.F90
+  pcm_print.F90
   pcm_inertia.F90
-  cavity_derivatives.F
-  pedra_cavity.F
-  pedra_cavity_interface.F
-  makecav.F
-  pcm_dblas1.F
-  pcm_dlapack.F
+  cavity_derivatives.F90
+  pedra_cavity.F90
+  pedra_cavity_interface.F90
+  pcm_dblas.F90
+  pcm_dlapack.F90
+  makecav.F90
   )
 
 if(ENABLE_TESTS)

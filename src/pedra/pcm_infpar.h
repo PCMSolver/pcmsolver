@@ -10,15 +10,15 @@
 #define my_MPI_INTEGER MPI_INTEGER4
 #endif
 
-C File: infpar.h for Dalton; special information for parallel calculations
-C
-C     Parameters NPARI must be updated after changes (for parallelization)
-C
-C     NOTE: Integers  (IPRPAR,...,MASTER,...,MYTID)
-C           Logicals  (TIMING,SLAVE)
-C           Character (NODNAM,MYNAME) should NOT be sent to slaves
-C     THUS: NPARI is length from NODTOT,...,PARIO
-C
+! File: infpar.h for Dalton; special information for parallel calculations
+!
+!     Parameters NPARI must be updated after changes (for parallelization)
+!
+!     NOTE: Integers  (IPRPAR,...,MASTER,...,MYTID)
+!           Logicals  (TIMING,SLAVE)
+!           Character (NODNAM,MYNAME) should NOT be sent to slaves
+!     THUS: NPARI is length from NODTOT,...,PARIO
+!
       INTEGER MAXNOD, MAXCL2
       PARAMETER (MAXNOD = 200, MAXCL2 = 10000)
       PARAMETER (NPARI = (MAXNOD + 1) + 6)
@@ -26,10 +26,10 @@ C
       INTEGER NODTOT, NODEID(0:MAXNOD), NFMAT, MTOTTK
       LOGICAL PARHER, PARIO, DEBUG,     TIMING, SLAVE
       CHARACTER*20   NODNAM(0:MAXNOD), MYNAME
-      COMMON /PCM_INFPAR/                                              
-     &     IPRPAR, NTASK, NCODE, NDEGDI, MASTER, MYNUM, MYTID,       
-     &     NODTOT, NODEID, NFMAT, MTOTTK, PARHER, DEBUG, PARIO,      
-     &     TIMING, SLAVE , NODNAM, MYNAME
+      COMMON /PCM_INFPAR/                                           &   
+          IPRPAR, NTASK, NCODE, NDEGDI, MASTER, MYNUM, MYTID,       &
+          NODTOT, NODEID, NFMAT, MTOTTK, PARHER, DEBUG, PARIO,      &
+          TIMING, SLAVE , NODNAM, MYNAME
 
 #if defined (VAR_INT64)
 !     integer array ISTAT contains MPI_SOURCE information.
@@ -39,4 +39,4 @@ C
       INTEGER*4 ISTAT
 #endif
 
-C -- end of infpar.h --
+! -- end of infpar.h --

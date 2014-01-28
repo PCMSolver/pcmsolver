@@ -1,7 +1,6 @@
-C     FILE: priunit.h
+!     FILE: priunit.h
       CHARACTER*80 SEPARATOR
-      PARAMETER (SEPARATOR = '----------------------------------------'
-     &                     //'----------------------------------------')
+      PARAMETER (SEPARATOR = '----------------------------------------'  &
+                           //'----------------------------------------')
       INTEGER LVPRI
-      COMMON /PCM_PRIUNIT/
-     &        LVPRI
+      COMMON /PCM_PRIUNIT/ LVPRI

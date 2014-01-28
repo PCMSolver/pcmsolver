@@ -47,7 +47,7 @@ class Input
 		int derOrder;
 		bool scaling;
 		std::string radiiSet;
-		bool addSpheres;
+		double minimalRadius;
 		std::string mode;
 		std::vector<int> atoms;
 		std::vector<double> radii;
@@ -85,7 +85,7 @@ class Input
 		int getDerOrder(){ return derOrder; }
 		bool getScaling(){ return scaling; }
 		std::string getRadiiSet() { return radiiSet; }
-		bool getAddSpheres(){ return addSpheres; }
+		double getMinimalRadius(){ return minimalRadius; }
 		std::string getMode(){ return mode; }
 		std::vector<int> getAtoms(){ return atoms; }
 		std::vector<double> getRadii(){ return radii; }

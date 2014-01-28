@@ -53,6 +53,11 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 	double *work    = new double[lwork];
 
 	int nts;
+
+        // If there's an overflow in the number of spheres PEDRA will die.
+        // The maximum number of spheres in PEDRA is set to 200 (primitive+additional)
+        // so the integer here declared is just to have enough space C++ side to pass everything back.
+	int maxAddedSpheres = 200;
 	
 	// Allocate vectors of size equal to nSpheres + maxAddedSpheres where maxAddedSpheres is the 
 	// maximum number of spheres we allow the algorithm to add to our original set.
@@ -82,7 +87,7 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 
 	double *rin = sphereRadius_.data();
 
-    // Go PEDRA, Go!	
+        // Go PEDRA, Go!	
 	generatecavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
 	
@@ -187,16 +192,9 @@ std::ostream & GePolCavity::printCavity(std::ostream & os)
 	*/
         os << "Cavity type: GePol" << std::endl;
 	os << "Average area = " << averageArea << " AU^2" << std::endl;
-	if (addSpheres)
-	{
-		os << "Addition of extra spheres enabled" << std::endl;
-		os << "Probe radius = " << probeRadius << std::endl;
-		os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
-	}
-	else
-	{
-		os << "Number of spheres = " << nSpheres << std::endl;
-	}
+	os << "Addition of extra spheres enabled" << std::endl;
+	os << "Probe radius = " << probeRadius << std::endl;
+	os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
         os << "Number of finite elements = " << nElements;
         /*for(int i = 0; i < nElements; i++) 
 	{
@@ -208,11 +206,4 @@ std::ostream & GePolCavity::printCavity(std::ostream & os)
 		os << elementArea(i) << " ";
         }*/
 	return os;
-}
-
-void GePolCavity::setProbeRadius(double rsolv) 
-{
-	probeRadius = rsolv;
-	addSpheres = true;
-	maxAddedSpheres = 100;
 }

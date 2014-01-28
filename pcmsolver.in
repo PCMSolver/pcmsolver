@@ -89,7 +89,7 @@ def	setup_keywords():
 	cavity.add_kw('DerOrder', 'INT', 4)
 	cavity.add_kw('Scaling', 'BOOL', True)
 	cavity.add_kw('RadiiSet', 'STR', 'Bondi')
-	cavity.add_kw('AddSpheres', 'BOOL', True)
+	cavity.add_kw('MinRadius', 'DOUBLE', 100.0)
         cavity.add_kw('Mode','STR','Explicit')
         cavity.add_kw('Atoms','INT_ARRAY')
         cavity.add_kw('Radii','DBL_ARRAY')
@@ -145,6 +145,12 @@ def verify_cavity(section):
         		print "Area value is too small"
         		print "Minimum value: 0.01"
         		sys.exit(1)
+		minRadius = section.get('MinRadius')
+		mr = minRadius.get()
+		if ( mr < 0.2 ):
+ 			print("Minimal radius for added spheres too small!")
+			print("Minimum value: 0.2")
+			sys.exit(1)
         elif (type.get() == 'Wavelet'):
         	key = section.get('PatchLevel')
         	if (key.get() < 1):

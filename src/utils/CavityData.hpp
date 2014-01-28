@@ -22,7 +22,7 @@
  *  @var cavityData::derOrder
  *  The maximum derivative order to be used in the definition
  *  of the smoothing function. Relevant for TsLessCavity.
- *  @var cavityData::addSpheres
+ *  @var cavityData::minimalRadius
  *  Triggers the addition of spheres not centered on atoms.
  *  Relevant for GePolCavity.
  *  @var cavityData::patchLevel
@@ -41,15 +41,15 @@ struct cavityData
 	double probeRadius;
 	double minDistance;
 	int derOrder;
-	bool addSpheres;
+	double minimalRadius;
 	int patchLevel;
 	double coarsity;
 	std::string filename;
 	cavityData(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-		   double _minDistance = 0.1, int _derOrder = 4, bool _addSpheres = false, 
+		   double _minDistance = 0.1, int _derOrder = 4, double _minRadius = 100.0, 
 		   int _patchLevel = 2, double _coarsity = 0.5, const std::string & _fname = " ") :
 	spheres(_spheres), area(_area), probeRadius(_probeRadius), 
-	minDistance(_minDistance), derOrder(_derOrder), addSpheres(_addSpheres), 
+	minDistance(_minDistance), derOrder(_derOrder), minimalRadius(_minRadius), 
 	patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname) {}
 };
 

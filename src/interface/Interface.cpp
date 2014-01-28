@@ -419,7 +419,7 @@ void initCavity()
 	std::string cavityType = Input::TheInput().getCavityType();                                                                                            	
  	double area = Input::TheInput().getArea();
 	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
-	bool addSpheres = Input::TheInput().getAddSpheres();
+	double minRadius = Input::TheInput().getMinimalRadius();
 	double probeRadius = Input::TheInput().getProbeRadius();
 	double minDistance = Input::TheInput().getMinDistance();
 	int derOrder = Input::TheInput().getDerOrder();
@@ -427,7 +427,7 @@ void initCavity()
 	double coarsity = Input::TheInput().getCoarsity();
 	std::string restart = Input::TheInput().getCavityFilename();
         
-        cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, addSpheres, patchLevel, coarsity, restart);          
+        cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, minRadius, patchLevel, coarsity, restart);          
                                                                                                                                                       
 	// Get the right cavity from the Factory
 	// TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)

@@ -69,7 +69,7 @@ Input::Input()
 
 	scaling = cavity.getBool("Scaling");
 	radiiSet = cavity.getStr("RadiiSet");
-	addSpheres = cavity.getBool("AddSpheres");
+	minimalRadius = cavity.getDbl("MinRadius");
 	mode = cavity.getStr("Mode");
 	if (mode == "Explicit") 
 	{

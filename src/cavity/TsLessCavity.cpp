@@ -52,6 +52,7 @@ void TsLessCavity::makeCavity(int maxts, int lwork)
 	double *work    = new double[lwork];
 	
 	int nts;
+	int maxAddedSpheres = 200;
 	
 	// Allocate vectors of size equal to nSpheres + maxAddedSpheres where maxAddedSpheres is the 
 	// maximum number of spheres we allow the algorithm to add to our original set.
@@ -187,16 +188,9 @@ std::ostream & TsLessCavity::printCavity(std::ostream & os)
 	*/
         os << "Cavity type: GePol" << std::endl;
 	os << "Average area = " << averageArea << " AU^2" << std::endl;
-	if (addSpheres)
-	{
-		os << "Addition of extra spheres enabled" << std::endl;
-		os << "Probe radius = " << probeRadius << std::endl;
-		os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
-	}
-	else
-	{
-		os << "Number of spheres = " << nSpheres << std::endl;
-	}
+	os << "Addition of extra spheres enabled" << std::endl;
+	os << "Probe radius = " << probeRadius << std::endl;
+	os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
         os << "Number of finite elements = " << nElements;
         /*for(int i = 0; i < nElements; i++) 
 	{
@@ -208,11 +202,4 @@ std::ostream & TsLessCavity::printCavity(std::ostream & os)
 		os << elementArea(i) << " ";
         }*/
 	return os;
-}
-
-void TsLessCavity::setProbeRadius(double rsolv) 
-{
-	probeRadius = rsolv;
-	addSpheres = true;
-	maxAddedSpheres = 100;
 }

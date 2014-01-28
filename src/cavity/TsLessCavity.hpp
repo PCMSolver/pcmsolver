@@ -23,17 +23,15 @@ class TsLessCavity : public Cavity
 	public:
 		TsLessCavity(){}
                 TsLessCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
-			     double _minDistance = 0.1, int _derOrder = 4, bool _addSpheres = false) :  
+			     double _minDistance = 0.1, int _derOrder = 4, double _minRadius = 100.0) :  
                     Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), minDistance(_minDistance), 
-		    derOrder(_derOrder), addSpheres(_addSpheres), maxAddedSpheres(100) 
+		    derOrder(_derOrder), minimalRadius(_minRadius)
                        {
                     	   makeCavity(10000, 10000000);
                        }
                 virtual ~TsLessCavity() {}
                 void makeCavity(int maxts, int lwork);
                 void makeCavity();
-                double getProbeRadius() { return probeRadius; }
-                void setProbeRadius( double probeRadius );
                 friend std::ostream & operator<<(std::ostream & os, TsLessCavity & cavity)
 		{
 			return cavity.printCavity(os);
@@ -43,8 +41,7 @@ class TsLessCavity : public Cavity
                 double probeRadius;
 		double minDistance;
 		int derOrder;
-                bool addSpheres;
-                int maxAddedSpheres;
+		double minimalRadius;
                 int addedSpheres;
                 virtual std::ostream & printCavity(std::ostream & os);  
 };
@@ -53,7 +50,7 @@ namespace
 {
 	Cavity* createTsLessCavity(const cavityData & _data)
 	{
-		return new TsLessCavity(_data.spheres, _data.area, _data.probeRadius, _data.minDistance, _data.derOrder, _data.addSpheres);
+		return new TsLessCavity(_data.spheres, _data.area, _data.probeRadius, _data.minDistance, _data.derOrder, _data.minimalRadius);
 	}
 	const std::string TSLESS("TsLess");
 	const bool registeredTsLess = CavityFactory::TheCavityFactory().registerCavity(TSLESS, createTsLessCavity);

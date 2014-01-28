@@ -25,16 +25,14 @@ class GePolCavity : public Cavity
 {
 	public:
 		GePolCavity(){}
-                GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, bool _addSpheres = false) :  
-                    Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), addSpheres(_addSpheres), maxAddedSpheres(100) 
+                GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, double _minRadius = 100.0) :  
+                    Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), minimalRadius(_minRadius) 
                        {
                     	   makeCavity(10000, 10000000);
                        }
                 virtual ~GePolCavity(){}
                 void makeCavity(int maxts, int lwork);
                 void makeCavity();
-                double getProbeRadius() { return probeRadius; }
-                void setProbeRadius( double probeRadius );
                 friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity)
 		{
 			return cavity.printCavity(os);
@@ -42,8 +40,7 @@ class GePolCavity : public Cavity
 	private:
                 double averageArea;  
                 double probeRadius;
-                bool addSpheres;
-                int maxAddedSpheres;
+		double minimalRadius;
                 int addedSpheres;
                 virtual std::ostream & printCavity(std::ostream & os);  
 };
@@ -52,7 +49,7 @@ namespace
 {
 	Cavity* createGePolCavity(const cavityData & _data)
 	{
-		return new GePolCavity(_data.spheres, _data.area, _data.probeRadius, _data.addSpheres);
+		return new GePolCavity(_data.spheres, _data.area, _data.probeRadius, _data.minimalRadius);
 	}
 	const std::string GEPOL("GePol");
 	const bool registeredGePol = CavityFactory::TheCavityFactory().registerCavity(GEPOL, createGePolCavity);

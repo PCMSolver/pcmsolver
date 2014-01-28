@@ -113,3 +113,26 @@
     //T16,'Need      :',I10,' + uncalculated amount', &
     /T16,'Available :',I10)
     END SUBROUTINE ERRWRK_
+
+    subroutine get_point_group(int_pgroup, char_pgroup)
+        
+        integer          :: int_pgroup
+        character(len=3) :: char_pgroup
+ 
+        if (int_group == 0) then
+                char_pgroup = 'C1'
+        else if (int_group == 1) then
+                char_pgroup = 'Cs'
+        else if (int_group == 2) then
+                char_pgroup = 'Ci'
+        else if (int_group == 3) then
+                char_pgroup = 'C2'
+        else if (int_group == 4) then
+                char_pgroup = 'D2'
+        else if (int_group == 5) then
+                char_pgroup = 'C2v'
+        else
+                char_pgroup = 'D2h'
+        end if
+
+    end subroutine get_point_group

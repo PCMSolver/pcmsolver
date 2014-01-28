@@ -27,7 +27,7 @@
 
 extern "C" void generatecavity_cpp(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
 			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
-			     double *avgArea, double *rsolv, double* work, int* lwork);
+			     double *avgArea, double *rsolv, double * ret, int * pgroup, double* work, int* lwork);
 
 void GePolCavity::makeCavity()
 {
@@ -52,7 +52,7 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 	double *rsph    = new double[maxts];
 	double *work    = new double[lwork];
 
-	int nts;
+	int nts = 0;
 
         // If there's an overflow in the number of spheres PEDRA will die.
         // The maximum number of spheres in PEDRA is set to 200 (primitive+additional)
@@ -87,9 +87,11 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 
 	double *rin = sphereRadius_.data();
 
+	int pointGroup = 0;
+
         // Go PEDRA, Go!	
 	generatecavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
-						xe, ye, ze, rin, &averageArea, &probeRadius, work, &lwork);
+						xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius, &pointGroup, work, &lwork);
 	
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
 	// coming out from generatecavity_cpp_

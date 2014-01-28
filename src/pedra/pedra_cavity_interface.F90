@@ -6,7 +6,8 @@
 !
       subroutine generatecavity_cpp(xtscor_, ytscor_, ztscor_, ar_, xsphcor_,     &
           ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_, rin_, avgArea_, &
-          rsolv_, work_, lwork_) bind(c, name='generatecavity_cpp')
+          rsolv_, ret_, pgroup_, work_, lwork_)                                   & 
+          bind(c, name='generatecavity_cpp')
 
       use, intrinsic :: iso_c_binding    
 
@@ -24,14 +25,16 @@
 #include <pcm_symmet.h>
 #include <pcm_pgroup.h>
 
-      real(c_double)  :: xtscor_(*), ytscor_(*), ztscor_(*)
-      real(c_double)  :: xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
-      real(c_double)  :: ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
-      real(c_double)  :: avgArea_, rsolv_, work_(*)
-      integer(c_int)  :: nts_, nesfp_, lwork_
-      logical(c_bool) :: pedra_file_exists
+      real(c_double)    :: xtscor_(*), ytscor_(*), ztscor_(*)
+      real(c_double)    :: xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
+      real(c_double)    :: ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
+      real(c_double)    :: avgArea_, rsolv_, ret_, work_(*)
+      integer(c_int)    :: nts_, nesfp_, lwork_
+      logical(c_bool)   :: pedra_file_exists
+      integer(c_int)    :: pgroup_
 
       integer(c_int)  :: i, nsym
+      character(len=3) :: pgroup
       
       lvpri = 121201
       inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
@@ -54,12 +57,14 @@
       areats = avgArea_
       icesph = 1
       iprpcm = 3
-      group = 'C1'
+      call get_point_group(pgroup_, pgroup)
+      write(lvpri, *) " Point group is ", pgroup
+      group = pgroup 
       rsolv = rsolv_
       omega = 40.0d+00
       fro = 0.7d+00
 ! ret is the minimum radius of added spheres
-      ret = 0.3779452249130124d0 ! This is 0.2 ang in Bohr 
+      ret = ret_ !0.3779452249130124d0 ! This is 0.2 ang in Bohr 
       nesfp = nesfp_
       do i = 1, nesfp
          xe(i) = xe_(i)

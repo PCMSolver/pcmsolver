@@ -5,6 +5,8 @@ set(utils_SOURCES
 	Sphere.cpp	
     	SurfaceFunction.cpp
 	cnpy.cpp
+	pointgrp.cpp
+	symop.cpp
 )
 
 if(ENABLE_TESTS)
@@ -32,4 +34,5 @@ install(FILES CavityData.hpp DESTINATION include)
 install(FILES GreenData.hpp DESTINATION include)
 install(FILES SolverData.hpp DESTINATION include)
 install(FILES cnpy.hpp DESTINATION include)
+install(FILES pointgrp.hpp DESTINATION include)
 install(FILES MathUtils.hpp DESTINATION include)

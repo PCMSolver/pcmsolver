@@ -65,12 +65,6 @@
 #include "Sphere.hpp"
 #include "SurfaceFunction.hpp"
 
-#if defined (HAS_CXX11)
-using std::shared_ptr;
-#else
-using boost::shared_ptr;
-#endif
-
 typedef std::map<std::string, shared_ptr<SurfaceFunction> > SurfaceFunctionMap;
 typedef std::pair<std::string, shared_ptr<SurfaceFunction> > SurfaceFunctionPair;
 

@@ -11,6 +11,7 @@
     public ddot
     public dnorm2
     public idamax
+    public vector_product
 
     contains
 
@@ -66,7 +67,7 @@
     real(8), intent(inout) :: dy(n)
     integer,    intent(in) :: incx, incy
 
-    integer :: i, ix, iy, m, mp1
+    integer :: i, ix, iy
     real(8), parameter :: zero = 0.0d0
 
     if (n <= 0)       return
@@ -390,8 +391,6 @@
         IF (INCX == 1) GOTO 20
         IF (INCX > 1) GOTO 60
     END IF
-    5 CONTINUE
-
 !        CODE FOR UNEQUAL OR NONPOSITIVE INCREMENTS.
 
     IX = 1
@@ -437,5 +436,17 @@
     70 END DO
     RETURN
     END SUBROUTINE DCOPY
+
+    SUBROUTINE vector_product(P1,P2,P3,DNORM3)
+! Calculates vector product and norm of resulting vector
+
+    real(8) :: p1(3), p2(3), p3(3), dnorm3
+
+    p3(1) = p1(2)*p2(3) - p1(3)*p2(2)
+    p3(2) = p1(3)*p2(1) - p1(1)*p2(3)
+    p3(3) = p1(1)*p2(2) - p1(2)*p2(1)
+    dnorm3 = sqrt(p3(1)*p3(1) + p3(2)*p3(2) + p3(3)*p3(3))
+    
+    END SUBROUTINE vector_product
 
     end module pedra_dblas

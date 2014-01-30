@@ -10,7 +10,8 @@
           bind(c, name='generatecavity_cpp')
 
       use, intrinsic :: iso_c_binding    
-      use pedra_utils, only : get_point_group
+      use pedra_utils,  only: get_point_group
+      use pedra_cavity, only: polyhedra_driver
 
       implicit none
 
@@ -85,7 +86,7 @@
       pt(6) =  1
       pt(7) =  1
       
-      call pedra_m_(work_, lwork_)
+      call polyhedra_driver(work_, lwork_)
 
       nts_ = nts
       do i = 1, nts

@@ -1,21 +1,38 @@
-
+!
 !  -- dalton/sirius/sircav.F --
 !     (Luca Frediani)
+! Extracted from DALTON
+! RDR 300114 Wrap up in a F90 module. 
+!
+    module pedra_cavity
 
-!/* Deck pedram */
-    SUBROUTINE PEDRA_M_(WORK,LWORK)
+    implicit none
+
+    public polyhedra_driver
+
+    private
+
+    contains
+
+    subroutine polyhedra_driver(work,lwork)
 
     use pedra_utils, only : errwrk
 
-#include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
 #include <pcm_infpri.h>
 
-    LOGICAL :: SOME
-    DIMENSION WORK(*)
+    real(8) :: work(*)
+    integer :: lwork
+
+    logical :: some
+    integer :: numts, numsph, natm, numver
+    integer :: loadfm, lintsf, lvert, lcentr
+    integer :: lnewsp, licav1, licav2, lx, ly, lz
+    integer :: ljtr, lcv, lnperm, last
+    character(len=8) :: memory_used_format = '(A, I10)'
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 
@@ -45,28 +62,25 @@
     LCV    = LJTR   + NUMTS*3
     LNPERM = LCV    + NUMVER*3
     LAST   = LNPERM + NUMSPH*8
-    IF (LAST > LWORK) CALL ERRWRK('PEDRA_M_',LAST,LWORK, lvpri)
+    IF (LAST > LWORK) CALL ERRWRK('polyhedra_driver',LAST,LWORK, lvpri)
     LWRK   = LWORK - LAST + 1
-    IF(SOME) WRITE(LVPRI,910) LAST
+    IF(SOME) then 
+            wRITE(LVPRI, memory_used_format) ' MEMORY USED TO GENERATE CAVITY =', LAST
+    end if
 
-    CALL PEDRA_(WORK(LINTSP),WORK(LVERT),WORK(LCENTR),WORK(LNEWSP), &
+    CALL polyhedra(WORK(LINTSP),WORK(LVERT),WORK(LCENTR),WORK(LNEWSP), &
     WORK(LICAV1),WORK(LICAV2),WORK(LX),WORK(LY),WORK(LZ), &
     WORK(LJTR),WORK(LCV),NUMTS,NUMSPH,NUMVER,NATM,SOME, &
     WORK(LAST),LWRK,WORK(LNPERM))
 
-! m      CALL QEXIT('PEDRA_')
-    RETURN
+    end subroutine polyhedra_driver
 
-    910 FORMAT(/' MEMORY USED TO GENERATE CAVITY =',I10/)
-    END SUBROUTINE PEDRA_M_
-!/* Deck pedra*/
-    SUBROUTINE PEDRA_(INTSPH,VERT,CENTR,NEWSPH,ICAV1,ICAV2, XVAL,YVAL, &
+    subroutine polyhedra(INTSPH,VERT,CENTR,NEWSPH,ICAV1,ICAV2, XVAL,YVAL, &
     ZVAL,JTR,CV,NUMTS,NUMSPH,NUMVER,NATM,SOME,WORK,LWORK,NPERM)
 
     use pedra_dblas, only: dzero
     use pedra_print, only: output
 
-#include <pcm_implicit.h>
 #include <pcm_maxorb.h>
 #include <pcm_maxaqn.h>
 #include <pcm_priunit.h>
@@ -290,7 +304,7 @@
 
 ! f      WRITE(LVPRI,*)'MAXREP', MAXREP
 
-    CALL SPHPER_(NESF,NESFP,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
+    CALL SPHPER(NESF,NESFP,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
 
 ! f Determination of eigenvalues and eigenvectors of the inertia tensor
 
@@ -309,7 +323,7 @@
     ENDIF
 
     IF (KATOM > 1) THEN
-        CALL PCMTNS_(ROTCAV,WORK(LGEOM),WORK(LMASS),KATOM)
+        CALL PCMTNS(ROTCAV,WORK(LGEOM),WORK(LMASS),KATOM)
     END IF
 
 !    Division of the surface into tesserae
@@ -341,7 +355,7 @@
     !            IPFlag = 1
     !            TsAre = -1.0D-03*IPolyg
     ! f         ENDIF
-        CALL POLYGEN_(IPFLAG,AREATS,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF, &
+        CALL POLYGEN(IPFLAG,AREATS,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF, &
         CV,JTR,NPerm,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
         IF(IPRCAV >= 10) WRITE(LVPRI,*)'AFTER POLYGEN_. ITSEFF=',ITSEFF
         DO 310 ITS = 1, ITSEFF
@@ -385,7 +399,7 @@
                     WRITE(LVPRI,9110) IVER, (PTS(JCOR,IVER),JCOR=1,3)
                 END DO
             END IF
-            CALL TESSERA_(NSFE,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
+            CALL TESSERA(NSFE,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
             IF(IPRCAV >= 10) THEN
                 WRITE(LVPRI,*) 'AFTER TESSERA_ ROUTINE'
                 WRITE(LVPRI,1245) NV
@@ -462,7 +476,7 @@
 
 ! f Replication of geometrical parameters according to simmetry
 
-    CALL REPCAV_(VERT,CENTR,NPERM,NUMTS,NUMSPH)
+    CALL REPCAV(VERT,CENTR,NPERM,NUMTS,NUMSPH)
 
 ! Prepare data for geomview
 
@@ -485,7 +499,7 @@
         KLAST = KIDX + NTS
         IF (KLAST < LWORK) THEN
             CALL DZERO(WORK,KLAST)
-            call ORDPCM_(lvpri,nts,xtscor,ytscor,ztscor,as,work(kord), &
+            call ORDPCM(lvpri,nts,xtscor,ytscor,ztscor,as,work(kord), &
             work(kidx),work(klast),lwork)
         ELSE
             WRITE(LVPRI,*) &
@@ -509,7 +523,7 @@
     1247 FORMAT('CENTER: ',3F15.11)
     1248 FORMAT('BOH???: ',3F15.11)
     1249 FORMAT('AREA=',F10.8,'ISPHE=',I4,'NVERT=',I3)
-    CALL PLOTCAV_(VERT,NUMTS)
+    CALL PLOTCAV(VERT,NUMTS)
 
 !***********************************************************
 !     Calcola il volume della cavita' con la formula (t. di Gauss):
@@ -575,7 +589,7 @@
             ENDIF
             IF(NATSPH == 0) then
                 DO ICOORD = 1, 3
-                    CALL CAVDER_(NSFE,NSFER,ICOORD,INTSPH,NEWSPH)
+                    CALL CAVDER(NSFE,NSFER,ICOORD,INTSPH,NEWSPH)
                 ENDDO
             ENDIF
         ENDDO
@@ -589,7 +603,7 @@
 
 !     Call the routine which checks if the cavity is single or divided.
 
-    CALL CAVSPL_(ICAV1,ICAV2,NCAV1,NCAV2,NPCMN,SOME)
+    CALL CAVSPL(ICAV1,ICAV2,NCAV1,NCAV2,NPCMN,SOME)
 
 !     The dispersion calculation is allowed only in the case of
 !     single cavity.
@@ -619,11 +633,10 @@
     //' TESSERA_  SPHERE   AREA   X Y Z TESSERA CENTER  ', &
     'X Y Z NORMAL VECTOR')
     9090 FORMAT(2I4,7F12.7)
-    END SUBROUTINE PEDRA_
-!/* Deck SphPer */
-    SUBROUTINE SPHPER_(NESF,NESF0,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
+    end subroutine polyhedra
+    
+    SUBROUTINE SPHPER(NESF,NESF0,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
 
-#include <pcm_implicit.h>
 #include <pcm_maxorb.h>
 #include <pcm_maxaqn.h>
 #include <pcm_mxcent.h>
@@ -746,12 +759,11 @@
     1000 format(8I3)
     2000 format (I4,4F18.8)
     RETURN
-    END SUBROUTINE SPHPER_
-!/* Deck Polygen */
-    SUBROUTINE POLYGEN_(IPFLAG,TSARE,ITSNUM,XEN,YEN,ZEN,REN, &
+    END SUBROUTINE SPHPER
+    
+    SUBROUTINE POLYGEN(IPFLAG,TSARE,ITSNUM,XEN,YEN,ZEN,REN, &
     ITSEFF,CV,JTR,NPERM,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
 
-#include <pcm_implicit.h>
     integer :: ITRVO(60,3),ITREO(60,3),IEDO(90,2)
     integer :: oldtr(100,100),ednew(90,100),trnew(60,100,100)
 #include <pcm_priunit.h>
@@ -987,7 +999,7 @@
 ! f Replication generate the right irreducible part of the cavity
 !   for the selected group
 
-    CALL PREREP_(NV,NT,ITSEFF,CV,JTR,NUMVER,NUMTS)
+    CALL PREREP(NV,NT,ITSEFF,CV,JTR,NUMVER,NUMTS)
     DO i=1,nv
         V1(1) = 0.0D0
         V1(2) = 0.0D0
@@ -1071,11 +1083,10 @@
     1100 FORMAT(/' ** WARNING ** A VERY EXPENSIVE TESSELATION ', &
     'HAS BEEN CHOSEN', &
     /' IT WILL PROBABLY PRODUCE A HUGE AMOUNT OF TESSERA_E')
-    END SUBROUTINE POLYGEN_
-!/* Deck Repcav */
-    SUBROUTINE REPCAV_(VERT,CENTR,NPERM,NUMTS,NUMSPH)
+    END SUBROUTINE POLYGEN
+    
+    SUBROUTINE REPCAV(VERT,CENTR,NPERM,NUMTS,NUMSPH)
 
-#include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
@@ -1160,15 +1171,13 @@
 !      enddo
 ! f
     RETURN
-    END SUBROUTINE REPCAV_
+    END SUBROUTINE REPCAV
 
-!/* Deck tessera */
-    SUBROUTINE TESSERA_(NS,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
+    SUBROUTINE TESSERA(NS,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
 
     use pedra_utils, only: around
     use pedra_print, only: output
 
-#include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
@@ -1390,7 +1399,7 @@
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                 END IF
-                CALL INTER_(P1,P2,P3,P4,NSFE1,INTCAS)
+                CALL INTER(P1,P2,P3,P4,NSFE1,INTCAS)
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1050)
                     WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
@@ -1448,7 +1457,7 @@
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                 END IF
-                CALL INTER_(P1,P2,P3,P4,NSFE1,INTCAS)
+                CALL INTER(P1,P2,P3,P4,NSFE1,INTCAS)
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1050)
                     WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
@@ -1496,7 +1505,7 @@
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                 END IF
-                CALL INTER_(P1,P2,P3,P4,NSFE1,INTCAS)
+                CALL INTER(P1,P2,P3,P4,NSFE1,INTCAS)
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1050)
                     WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
@@ -1547,7 +1556,7 @@
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                 END IF
-                CALL INTER_(P1,P2,P3,P4,NSFE1,INTCAS)
+                CALL INTER(P1,P2,P3,P4,NSFE1,INTCAS)
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1050)
                     WRITE(LVPRI,1045) 1,(P1(I),I=1,3)
@@ -1674,7 +1683,7 @@
 
 ! Finally we calculate area and center of the tessera!
 
-    CALL GAUBON_(NV,NS,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
+    CALL GAUBON(NV,NS,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
     RETURN
     1000 FORMAT('NS=',I4,' NV=',I4,' NUMTS=', I4)
     1005 FORMAT('CHECKING INTER_SECTIONS WITH SPHERE N.',I4)
@@ -1689,11 +1698,10 @@
     1045 FORMAT('P',I1,' X = ',F12.9,' Y = ',F12.9,' Z = ',F12.9)
     1050 FORMAT('AFTER INTER_')
     1055 FORMAT('DIST CHECK EDGE N.',I2,' DIFFERENCE:',F12.10)
-    END SUBROUTINE TESSERA_
-!/* Deck inter */
-    SUBROUTINE INTER_(P1,P2,P3,P4,NS,I)
+    END SUBROUTINE TESSERA
+    
+    SUBROUTINE INTER(P1,P2,P3,P4,NS,I)
 
-#include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_mxcent.h>
 #include <pcm_pcmdef.h>
@@ -1824,11 +1832,12 @@
     1010 FORMAT('P',I1,' X = ',F12.9,' Y = ',F12.9,' Z = ',F12.9)
     1015 FORMAT('SPHERE',' X = ',F12.9,' Y = ',F12.9,' Z = ',F12.9, &
     ' R = ',F12.9)
-    END SUBROUTINE INTER_
-!/* Deck gaubon */
-    SUBROUTINE GAUBON_(NV,NS,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
+    END SUBROUTINE INTER
+    
+    SUBROUTINE GAUBON(NV,NS,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
 
-#include <pcm_implicit.h>
+    use pedra_dblas, only: vector_product
+
     PARAMETER (D0 = 0.0D0, DP5 = 0.5D0, D1 = 1.0D0)
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
@@ -1977,11 +1986,11 @@
             P2(JJ) = PTS(JJ,N0) - CCC(JJ,N0)
         ENDDO
     
-        CALL VECP_(P1,P2,P3,DNORM3)
+        CALL vector_product(P1,P2,P3,DNORM3)
         DO JJ = 1, 3
             P2(JJ) = P3(JJ)
         ENDDO
-        CALL VECP_(P1,P2,P3,DNORM3)
+        CALL vector_product(P1,P2,P3,DNORM3)
         DO JJ = 1, 3
             U1(JJ) = P3(JJ)/DNORM3
         ENDDO
@@ -1992,11 +2001,11 @@
             P2(JJ) = PTS(JJ,N2) - CCC(JJ,N1)
         ENDDO
     
-        CALL VECP_(P1,P2,P3,DNORM3)
+        CALL vector_product(P1,P2,P3,DNORM3)
         DO JJ = 1, 3
             P2(JJ) = P3(JJ)
         ENDDO
-        CALL VECP_(P1,P2,P3,DNORM3)
+        CALL vector_product(P1,P2,P3,DNORM3)
         DO JJ = 1, 3
             U2(JJ) = P3(JJ)/DNORM3
         ENDDO
@@ -2044,26 +2053,10 @@
         ' IS IGNORED',F16.10)
     END IF
     RETURN
-    END SUBROUTINE GAUBON_
-!/* Deck vecp */
-    SUBROUTINE VECP_(P1,P2,P3,DNORM3)
+    END SUBROUTINE GAUBON
+    
+    SUBROUTINE CAVSPL(ICAV1,ICAV2,NCAV1,NCAV2,NATM,SOME)
 
-#include <pcm_implicit.h>
-
-    DIMENSION P1(3),P2(3),P3(3)
-
-!     Esegue il prodotto vettoriale P3 = P1 x P2
-
-    P3(1) = P1(2)*P2(3) - P1(3)*P2(2)
-    P3(2) = P1(3)*P2(1) - P1(1)*P2(3)
-    P3(3) = P1(1)*P2(2) - P1(2)*P2(1)
-    DNORM3 = SQRT(P3(1)*P3(1) + P3(2)*P3(2) + P3(3)*P3(3))
-    RETURN
-    END SUBROUTINE VECP_
-!/* Deck cavspl */
-    SUBROUTINE CAVSPL_(ICAV1,ICAV2,NCAV1,NCAV2,NATM,SOME)
-
-#include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_mxcent.h>
 #include <pcm_pcmdef.h>
@@ -2141,11 +2134,10 @@
     10X,'OF',I3,3X,'E',I3,3X,'SPHERE(S),  RESPECTIVELY')
     400 FORMAT(/10X,'THE FIRST CAVITY IS FORMED BY SPHERE(S) :'/)
     500 FORMAT(/10X,'THE SECOND CAVITY IS FORMED BY SPHERE(S) :'/)
-    END SUBROUTINE CAVSPL_
-!/* Deck plotcav */
-    SUBROUTINE PLOTCAV_(Vert,NUMTS)
+    END SUBROUTINE CAVSPL
+    
+    SUBROUTINE PLOTCAV(Vert,NUMTS)
 
-#include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
@@ -2211,10 +2203,9 @@
     2001 FORMAT('  ',3f16.9,4f5.2,' # Tess. ',i4)
     3000 FORMAT('  ',14i10)
     RETURN
-    END SUBROUTINE PLOTCAV_
-!/* Deck Colour */
-    SUBROUTINE COLOUR_(N,C1,C2,C3)
-#include <pcm_implicit.h>
+    END SUBROUTINE PLOTCAV
+    
+    SUBROUTINE COLOUR(N,C1,C2,C3)
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
@@ -2259,11 +2250,11 @@
     ELSE
         COL = 'Fuchsia'
     ENDIF
-    CALL COLTSS_(Col,C1,C2,C3)
+    CALL COLTSS(Col,C1,C2,C3)
     RETURN
-    END SUBROUTINE COLOUR_
-!/* ComdDeck ColTss */
-    SUBROUTINE COLTSS_(COLOUR_,C1,C2,C3)
+    END SUBROUTINE COLOUR
+    
+    SUBROUTINE COLTSS(COLOUR_,C1,C2,C3)
     Implicit Real*8(A-H,O-Z)
 
 !     Assigne tesserae colours for GeomView:
@@ -2323,10 +2314,9 @@
         STOP
     ENDIF
     RETURN
-    END SUBROUTINE COLTSS_
-!/*DECK PREREP_*/
-    SUBROUTINE PREREP_(NV,NT,ITS,CV,JTR,NVERT,NUMTS)
-#include <pcm_implicit.h>
+    END SUBROUTINE COLTSS
+    
+    SUBROUTINE PREREP(NV,NT,ITS,CV,JTR,NVERT,NUMTS)
 #include <pcm_priunit.h>
 #include <pcm_maxaqn.h>
 #include <pcm_maxorb.h>
@@ -2406,13 +2396,12 @@
         ENDDO
     ENDDO
     RETURN
-    END SUBROUTINE PREREP_
-!  /* Deck pcmtns */
-    SUBROUTINE PCMTNS_(VMAT,GEOM,AMASS,KATOM)
+    END SUBROUTINE PREREP
+    
+    SUBROUTINE PCMTNS(VMAT,GEOM,AMASS,KATOM)
 
     use pedra_utils, only: wlkdin                
 
-#include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_mxcent.h>
 #include <pcm_maxaqn.h>
@@ -2525,248 +2514,9 @@
         STOP
     ENDIF
     RETURN
-    END SUBROUTINE PCMTNS_
-! fC/* Deck ANLINT */
-! f      SUBROUTINE ANLINT(H0,K0,A0,B0,P0,Q0,O0,RP,RQ,L,NEXIT)
-! fC
-! fC     Luca Frediani February 2 2002. This is a replacemement for the old
-! fC     inter subroutine with an analytic algorithm instead of the old
-! fC     numeric algorithm. It is necessary in order to get a good
-! fC     symmetric cavity.
-! fC
-! fC
-! f#include <pcm_implicit.h>
-! f#include <pcm_priunit.h>
-! fC
-! f      DOUBLE PRECISION MAT(3,3),W(3),V(3)
-! f      DOUBLE PRECISION H(3), A(3), B(3), P(3), Q(3)
-! f      DOUBLE PRECISION H0(3),A0(3),B0(3),P0(3),Q0(3),O0(3)
-! f      LOGICAL INT1, INT2, RIGHT
-! fC
-! fC A: First point on the initial arc
-! fC B: Second point on the initial arc
-! fC P: Center of the sphere where the arc is located (radii = RP)
-! fC Q: Center of the intersecting sphere (radii = RQ)
-! fC O: Center of the arc
-! fC W: Scratch vector
-! fC
-! fC
-! fClf We copy the original values to the working variables
-! fC   and we translate them at the same time
-! fC
-! f      DO I =1,3
-! f         A(I) = A0(I) - O0(I)
-! f         B(I) = B0(I) - O0(I)
-! f         P(I) = P0(I) - O0(I)
-! f         Q(I) = Q0(I) - O0(I)
-! f      ENDDO
-! fC
-! fC Determination of the normal vector to the arc
-! fC
-! f      W(1) = A(2) * B(3) - A(3) * B(2)
-! f      W(2) = A(3) * B(1) - A(1) * B(3)
-! f      W(3) = A(1) * B(2) - A(2) * B(1)
-! f      write(lvpri,*) 'normal vector', (w(i),i=1,3)
-! f      WM2  = W(1) ** 2 + W(2) ** 2 + W(3) ** 2
-! f      WM   = DSQRT ( WM2 )
-! f      WMXY = DSQRT ( W(1) ** 2 + W(2) ** 2 )
-! fC
-! fC Magnitudes and square magnitudes
-! fC
-! f      PM2 = P(1) ** 2 + P(2) ** 2 + P(3) ** 2
-! f      QM2 = Q(1) ** 2 + Q(2) ** 2 + Q(3) ** 2
-! f      AM2 = A(1) ** 2 + A(2) ** 2 + A(3) ** 2
-! f      BM2 = B(1) ** 2 + B(2) ** 2 + B(3) ** 2
-! f      PM  = DSQRT ( PM2 )
-! f      QM  = DSQRT ( QM2 )
-! f      AM  = DSQRT ( AM2 )
-! f      BM  = DSQRT ( BM2 )
-! fC      write(lvpri,*) 'moduli'
-! fC      write(lvpri,*) pm2,qm2,am2,bm2
-! fC      write(lvpri,*) pm,qm,am,bm
-! fC
-! fClf determination of sines and cosines of the euler angles
-! fC
-! f      IF(WMXY.GT.1.0D-12) THEN
-! f         write(lvpri,*) 'wmxy grande'
-! f         COSA = W(1) / DSQRT( W(1) ** 2 + W(2) ** 2 )
-! f         SINA = W(2) / DSQRT( W(1) ** 2 + W(2) ** 2 )
-! f         COSB = W(3) / WM
-! f         SINB = DSQRT( 1 - COSB ** 2 )
-! f      ELSEIF(WM.GT.1.0D-8) THEN
-! f         write(lvpri,*) 'wm grande'
-! f         COSA = 1.0D0
-! f         SINA = 0.0D0
-! f         COSB = W(3)/DABS(W(3))
-! f         SINB = 0.0D0
-! f      ELSE
-! f         CALL QUIT('ANLINT: NORMAL VECTOR TOO SMALL')
-! f      ENDIF
-! fC
-! f      V(1) = COSB * COSA * W(1) + COSB * SINA * W(2) - SINB * W(3)
-! f      V(2) =      - SINA * W(1) +        COSA * W(2)
-! f      V(3) = SINB * COSA * W(1) + SINB * SINA * W(2) + COSB * W(3)
-! f      IF(DABS(V(1)).GT.1.0D-8.OR.DABS(V(2)).GT.1.0D-8)
-! f     $     CALL QUIT('ANLINT: ROTATION ERROR 1')
-! f      IF(V(3).LE.0.0D0) THEN
-! f         WRITE(LVPRI,*) 'ROT ERR 2', (V(I),I=1,3)
-! f         CALL QUIT('ANLINT: ROTATION ERROR 2')
-! f      ENDIF
-! fC
-! f      W(1) = COSB * COSA * A(1) + COSB * SINA * A(2) - SINB * A(3)
-! f      W(2) =      - SINA * A(1) +        COSA * A(2)
-! f      W(3) = SINB * COSA * A(1) + SINB * SINA * A(2) + COSB * A(3)
-! f      COSG = W(1) / AM
-! f      SING = W(2) / AM
-! f      IF(DABS(W(3)).GT.1.0D-8) CALL QUIT('ANLINT: ROTATION ERROR 3')
-! f      write(lvpri,*) 'DOPO a e b rot',(w(i),i=1,3)
-! f      write(lvpri,*) 'rp e rq', rp,rq
-! f      write(lvpri,*) 'sin e cos'
-! f      write(lvpri,*) sina,sinb,sing
-! f      write(lvpri,*) cosa,cosb,cosg
-! fC
-! fClf rotation matrix
-! fC
-! f      MAT(1,1) =   COSG * COSB * COSA - SING * SINA
-! f      MAT(1,2) =   COSG * COSB * SINA + SING * COSA
-! f      MAT(1,3) = - COSG * SINB
-! f      MAT(2,1) = - SING * COSB * COSA - COSG * SINA
-! f      MAT(2,2) = - SING * COSB * SINA + COSG * COSA
-! f      MAT(2,3) =   SING * SINB
-! f      MAT(3,1) =   SINB * COSA
-! f      MAT(3,2) =   SINB * SINA
-! f      MAT(3,3) =   COSB
-! f      write(lvpri,*)'mat'
-! f      do i=1,3
-! f         write(lvpri,*) (mat(I,J),J=1,3)
-! f      enddo
-! fC
-! fClf rotation of vectors and intersection calculations
-! fC
-! f      write(lvpri,*)'AAAAAA',AM2
-! f      CALL TRIROT(MAT,A)
-! f      write(lvpri,*)'BBBBBB',BM2
-! f      CALL TRIROT(MAT,B)
-! f      write(lvpri,*)'PPPPPP',PM2
-! f      CALL TRIROT(MAT,P)
-! f      write(lvpri,*)'QQQQQQ',QM2
-! f      CALL TRIROT(MAT,Q)
-! f      R1R1 = RP**2 - PM2
-! f      R1 = DSQRT(R1R1)
-! f      COST = (RP**2 - RQ**2 + QM2 - PM2)/2.0D0
-! f      IF(Q(1)**2 + Q(2)**2.LT.1.0D-20) THEN
-! f         CALL QUIT('NO HOPE!')
-! f      END IF
-! f      IF(DABS(Q(1)) .GE. DABS(Q(2))) THEN
-! f         CALL SECGRA_(COST,R1,Q(1),Q(2),X1,Y1,X2,Y2,NSOL)
-! f      ELSE
-! f         CALL SECGRA_(COST,R1,Q(2),Q(1),Y1,X1,Y2,X2,NSOL)
-! f      END IF
-! f      WRITE(LVPRI,*) 'SOL1',X1,Y1,X1**2+Y1**2
-! f      WRITE(LVPRI,*) 'SOL2',X2,Y2,X2**2+Y2**2
-! f      IF(NSOL.EQ.-1) THEN
-! f         CALL QUIT('ANLINT: SECGRA_ EXITED ABNORMALLY')
-! f      ELSE IF (NSOL.EQ.0) THEN
-! f         WRITE(LVPRI,*)
-! f     $        'NO INTER_SECTION BETWEEN THIS EDGE AND THIS SPHERE'
-! fC
-! fC     PUT SOME CODE HERE!!!
-! fC
-! f         RETURN
-! f      ELSE IF (NSOL.EQ.1) THEN
-! f         WRITE(LVPRI,*) 'THE TWO SPHERES ARE (ALMOST) TANGENT'
-! fC
-! fC     PUT SOME CODE HERE!!!
-! fC
-! f      ELSE IF (NSOL.EQ.2)
-! f         NCASE = 0
-! f         THRESH = 1.0D-12
-! f         DA1 = DSQRT((X1 - A(1))**2 + (Y1-A(2))**2)
-! f         DB1 = DSQRT((X1 - B(1))**2 + (Y1-B(2))**2)
-! f         DA2 = DSQRT((X2 - A(1))**2 + (Y2-A(2))**2)
-! f         DB2 = DSQRT((X2 - B(1))**2 + (Y2-B(2))**2)
-! fC
-! fC Check some inconsistencies
-! fC
-! f         IF ((DA1.LT.THRESH.AND.DB1.LT.THRESH).OR.
-! f     $       (DA2.LT.THRESH.AND.DB2.LT.THRESH) THEN
-! f            CALL QUIT('DISTANCE INCONSISTENCY IN ANLINT')
-! f         ENDIF
-! f         INT1 = (X1 .LT. A(1)) .AND. (X1 .GT. B(1)).AND.
-! f     $          (Y1 .GT. A(2)) .AND. (Y1 .LT. B(2))
-! f         INT2 = (X2 .LT. A(1)) .AND. (X2 .GT. B(1)).AND.
-! f     $          (Y2 .GT. A(2)) .AND. (Y2 .LT. B(2))
-! f         IF(DB1.LT.THRESH) THEN
-! f            NCASE = NCASE + 3
-! f         ELSE IF(DA1.LT.THRESH) THEN
-! f            NCASE = NCASE + 2
-! f         ELSE IF(.NOT.INT1)
-! f            NCASE = NCASE + 1
-! f         END IF
-! f         IF(DB2.LT.THRESH) THEN
-! f            NCASE = NCASE + 12
-! f         ELSE IF(DA2.LT.THRESH) THEN
-! f            NCASE = NCASE + 8
-! f         ELSE IF(.NOT.INT2)
-! f            NCASE = NCASE + 4
-! f         END IF
-! f         WRITE(LVPRI,*) 'NCASE =' NCASE
-! f         GO TO (100,101,102,103,104,105,106,107,108,109,
-! f     $          110,111,112,113,114,115), NCASE
-! f 100
-! f      RIGHT = INT1.XOR.INT2
-! f      IF(RIGHT) THEN
-! f         H(3) = 0.0D0
-! f         IF(INT1) THEN
-! f            H(1) = X1
-! f            H(2) = Y1
-! f         ELSE
-! f            H(1) = X2
-! f            H(2) = Y2
-! f         ENDIF
-! f      ELSE
-! f         CALL QUIT('ANLINT: INTER_SECTION ERROR 2')
-! f      ENDIF
-! fC
-! fC     transpose matrix elements
-! fC
-! f      MAT(2,1) =   COSG * COSB * SINA + SING * COSA
-! f      MAT(3,1) = - COSG * SINB
-! f      MAT(1,2) = - SING * COSB * COSA - COSG * SINA
-! f      MAT(3,2) =   SING * SINB
-! f      MAT(1,3) =   SINB * COSA
-! f      MAT(2,3) =   SINB * SINA
-! f      write(lvpri,*)'matinv'
-! f      do i=1,3
-! f         write(lvpri,*) (mat(I,J),J=1,3)
-! f      enddo
-! f      CALL TRIROT(MAT,H)
-! f      DO I = 1,3
-! f         H0(I) = H(I) + O0(I)
-! f      ENDDO
-! f      RETURN
-! f      END
-! fC
-! fC
-! fC/* Deck TRIROT*/
-! f      SUBROUTINE TRIROT(M,V)
-! f#include <pcm_implicit.h>
-! f#include <pcm_priunit.h>
-! f      DOUBLE PRECISION M(3,*),V(*),W(3)
-! f      write(lvpri,*) 'PRIMA', (V(I),I=1,3)
-! f      DO I = 1,3
-! f         W(I) = M(I,1) * V(1) + M(I,2) * V(2) + M(I,3) * V(3)
-! f      ENDDO
-! f      DO I = 1,3
-! f         V(I) = W(I)
-! f      ENDDO
-! f      write(lvpri,*) 'DOPO', (V(I),I=1,3)
-! f      RETURN
-! f      END
-
-!/* Deck UPDCAV_*/
-    SUBROUTINE UPDCAV_(COORD)
-#include <pcm_implicit.h>
+    END SUBROUTINE PCMTNS
+    
+    SUBROUTINE UPDCAV(COORD)
 #include <pcm_mxcent.h>
 #include <pcm_maxaqn.h>
 #include <pcm_maxorb.h>
@@ -2795,11 +2545,10 @@
         END DO
     END IF
     RETURN
-    END SUBROUTINE UPDCAV_
-!/* Deck ordpcm*/
-    SUBROUTINE ORDPCM_(lvpri,nts,xtscor,ytscor,ztscor,as,privec, &
+    END SUBROUTINE UPDCAV
+    
+    SUBROUTINE ORDPCM(lvpri,nts,xtscor,ytscor,ztscor,as,privec, &
     idxpri,work,lwork)
-#include <pcm_implicit.h>
     DIMENSION PRIVEC(4,*), XTSCOR(*), YTSCOR(*), ZTSCOR(*), &
     WORK(*), AS(*)
     DIMENSION IDXPRI(*)
@@ -2846,11 +2595,9 @@
     RETURN
     1240 format(i3,4f15.9)
     1250 format(4f15.9)
-    END SUBROUTINE ORDPCM_
+    END SUBROUTINE ORDPCM
 
-!/* Deck chktss*/
-    LOGICAL FUNCTION CHKTSS_(X1,Y1,Z1,A1,X2,Y2,Z2,A2)
-#include <pcm_implicit.h>
+    LOGICAL FUNCTION CHKTSS(X1,Y1,Z1,A1,X2,Y2,Z2,A2)
     IF(DABS(X1) < DABS(X2)) THEN
         CHKTSS_ = .TRUE.
         RETURN
@@ -2876,11 +2623,9 @@
         CHKTSS_ = .FALSE.
         RETURN
     ENDIF
-    END FUNCTION CHKTSS_
+    END FUNCTION CHKTSS
           
-!/* Deck SECGRA_*/
-    SUBROUTINE SECGRA_(COST,RP,Q1,Q2,X1,Y1,X2,Y2,NSOL)
-#include <pcm_implicit.h>
+    SUBROUTINE SECGRA(COST,RP,Q1,Q2,X1,Y1,X2,Y2,NSOL)
     PARAMETER (D0 =0.0D0)
     THRESH = 1.0D-20
     A = Q1 ** 2 + Q2 ** 2
@@ -2911,25 +2656,25 @@
     END IF
     NSOL = - 1
     RETURN
-    END SUBROUTINE SECGRA_
+    END SUBROUTINE SECGRA
 
-!/* Deck TYPLAB_*/
-
-    FUNCTION TYPLAB_(I)
-    CHARACTER(16) :: TYPLAB_            
+    FUNCTION TYPLAB(I)
+    CHARACTER(16) :: TYPLAB            
     INTEGER :: I
     IF(I == 4) THEN
-        TYPLAB_='ALL EDGE IS FREE'
+        TYPLAB='ALL EDGE IS FREE'
     ELSE IF(I == 1) THEN
-        TYPLAB_='2ND VERT COVERED'
+        TYPLAB='2ND VERT COVERED'
     ELSE IF(I == 2) THEN
-        TYPLAB_='1ST VERT COVERED'
+        TYPLAB='1ST VERT COVERED'
     ELSE IF(I == 3) THEN
-        TYPLAB_='EDGE  CUT  TWICE'
+        TYPLAB='EDGE  CUT  TWICE'
     ELSE IF(I == 0) THEN
-        TYPLAB_='ALL EDGE COVERED'
+        TYPLAB='ALL EDGE COVERED'
     ELSE
-        TYPLAB_='UNDEFINED CASE!!'
+        TYPLAB='UNDEFINED CASE!!'
     END IF
     RETURN
-    END FUNCTION TYPLAB_ 
+    END FUNCTION TYPLAB 
+
+    end module pedra_cavity

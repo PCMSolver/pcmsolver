@@ -26,3 +26,4 @@ element_radius.txt
 centers.txt
 normals.txt
 cavity.npz
+*.mod

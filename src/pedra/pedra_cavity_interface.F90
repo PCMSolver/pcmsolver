@@ -10,6 +10,7 @@
           bind(c, name='generatecavity_cpp')
 
       use, intrinsic :: iso_c_binding    
+      use pedra_utils, only : get_point_group
 
       implicit none
 
@@ -52,12 +53,11 @@
           form = 'formatted',          &
           access = 'sequential')
       rewind(lvpri)
-      maxrep = 0
-      nsym = 1
       areats = avgArea_
       icesph = 1
       iprpcm = 3
-      call get_point_group(pgroup_, pgroup)
+      call get_point_group(pgroup_, pgroup, maxrep)
+      nsym = maxrep + 1
       write(lvpri, *) " Point group is ", pgroup
       group = pgroup 
       rsolv = rsolv_

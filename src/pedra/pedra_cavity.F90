@@ -5,6 +5,8 @@
 !/* Deck pedram */
     SUBROUTINE PEDRA_M_(WORK,LWORK)
 
+    use pedra_utils, only : errwrk
+
 #include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_iratdef.h>
@@ -43,7 +45,7 @@
     LCV    = LJTR   + NUMTS*3
     LNPERM = LCV    + NUMVER*3
     LAST   = LNPERM + NUMSPH*8
-    IF (LAST > LWORK) CALL ERRWRK_('PEDRA_M_',LAST,LWORK)
+    IF (LAST > LWORK) CALL ERRWRK('PEDRA_M_',LAST,LWORK, lvpri)
     LWRK   = LWORK - LAST + 1
     IF(SOME) WRITE(LVPRI,910) LAST
 
@@ -60,6 +62,9 @@
 !/* Deck pedra*/
     SUBROUTINE PEDRA_(INTSPH,VERT,CENTR,NEWSPH,ICAV1,ICAV2, XVAL,YVAL, &
     ZVAL,JTR,CV,NUMTS,NUMSPH,NUMVER,NATM,SOME,WORK,LWORK,NPERM)
+
+    use pedra_utils, only: dzero
+    use pedra_print, only: output
 
 #include <pcm_implicit.h>
 #include <pcm_maxorb.h>
@@ -149,8 +154,8 @@
         write (lvpri,*) xe(i), ye(i), ze(i), re(i)
     ENDDO
 
-    CALL DZERO_(VERT,NUMTS*10*3)
-    CALL DZERO_(CENTR,NUMTS*10*3)
+    CALL DZERO(VERT,NUMTS*10*3)
+    CALL DZERO(CENTR,NUMTS*10*3)
 
 !                   creation of new spheres
 
@@ -356,7 +361,7 @@
             IF(IPRCAV >= 10) THEN
                 WRITE(LVPRI,1244) N1,N2,N3
                 WRITE(LVPRI,*) 'VERTICES'' COORDINATES'
-                CALL OUTPUT_(PTS,1,3,1,3,3,3,1,LVPRI)
+                CALL OUTPUT(PTS,1,3,1,3,3,3,1,LVPRI)
             END IF
             DO JJ = 1, 3
                 PP(JJ) = D0
@@ -385,7 +390,7 @@
                 WRITE(LVPRI,*) 'AFTER TESSERA_ ROUTINE'
                 WRITE(LVPRI,1245) NV
                 WRITE(LVPRI,*) 'VERTICES'' COORDINATES'
-                CALL OUTPUT_(PTS,1,3,1,NV,3,NV,1,LVPRI)
+                CALL OUTPUT(PTS,1,3,1,NV,3,NV,1,LVPRI)
             END IF
             IF(AREA == D0) THEN
                 WRITE(LVPRI,*) 'ZERO AREA IN TESSERA_', NN + 1
@@ -479,7 +484,7 @@
         KIDX  = KORD + 4 * NTS
         KLAST = KIDX + NTS
         IF (KLAST < LWORK) THEN
-            CALL DZERO_(WORK,KLAST)
+            CALL DZERO(WORK,KLAST)
             call ORDPCM_(lvpri,nts,xtscor,ytscor,ztscor,as,work(kord), &
             work(kidx),work(klast),lwork)
         ELSE
@@ -528,7 +533,7 @@
 !     Stampa la geometria della cavita'
 !***********************************************************
     STOT=D0
-    CALL DZERO_(SSFE,NESF)
+    CALL DZERO(SSFE,NESF)
     DO I=1,NTS
         K=ISPHE(I)
         SSFE(K)=SSFE(K)+AS(I)
@@ -554,8 +559,8 @@
             STOP
         END IF
     
-        CALL DZERO_(DERCEN,MXSP*MXCENT*3*3)
-        CALL DZERO_(DERRAD,MXSP*MXCENT*3)
+        CALL DZERO(DERCEN,MXSP*MXCENT*3*3)
+        CALL DZERO(DERRAD,MXSP*MXCENT*3)
         DO NSFE = 1,NUCDEP
             NATSPH=0
             NSFER=NSFE
@@ -1156,8 +1161,12 @@
 ! f
     RETURN
     END SUBROUTINE REPCAV_
+
 !/* Deck tessera */
     SUBROUTINE TESSERA_(NS,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
+
+    use pedra_utils, only: around
+    use pedra_print, only: output
 
 #include <pcm_implicit.h>
 #include <pcm_priunit.h>
@@ -1190,12 +1199,12 @@
         CCC(3,J) = ZE(NS)
     ENDDO
     IF(IPRCAV >= 10) THEN
-        CALL AROUND_('INPUT DATA IN TESSERA_')
+        CALL AROUND('INPUT DATA IN TESSERA_', lvpri)
         WRITE(LVPRI,1000) NS,NV,NUMTS
         WRITE(LVPRI,*) '=======PTS======='
-        CALL OUTPUT_(PTS,1,3,1,3,3,3,1,LVPRI)
+        CALL OUTPUT(PTS,1,3,1,3,3,3,1,LVPRI)
         WRITE(LVPRI,*) '=======CCC======='
-        CALL OUTPUT_(CCC,1,3,1,3,3,3,1,LVPRI)
+        CALL OUTPUT(CCC,1,3,1,3,3,3,1,LVPRI)
     END IF
 
 !     INTSPH viene riferito alla tessera -numts-, e in seguito riceve il
@@ -1224,12 +1233,12 @@
             ENDDO
         ENDDO
         IF(IPRCAV >= 10) THEN
-            CALL AROUND_('ACTUAL TESSERA_ STATUS')
+            CALL AROUND('ACTUAL TESSERA_ STATUS', lvpri)
             WRITE(LVPRI,1000) NS,NV,NUMTS
             WRITE(LVPRI,*) '=======PSCR======='
-            CALL OUTPUT_(PSCR,1,3,1,NV,3,NV,1,LVPRI)
+            CALL OUTPUT(PSCR,1,3,1,NV,3,NV,1,LVPRI)
             WRITE(LVPRI,*) '=======CCCP======='
-            CALL OUTPUT_(CCCP,1,3,1,NV,3,NV,1,LVPRI)
+            CALL OUTPUT(CCCP,1,3,1,NV,3,NV,1,LVPRI)
         END IF
                  
     
@@ -1572,12 +1581,12 @@
         300 END DO
         NV = N - 1
         IF(IPRCAV >= 10) THEN
-            CALL AROUND_('AFTER INTER_SECTION TESSERA_ STATUS')
+            CALL AROUND('AFTER INTER_SECTION TESSERA_ STATUS', lvpri)
             WRITE(LVPRI,1000) NS,NV,NUMTS
             WRITE(LVPRI,*) '=======PTS======='
-            CALL OUTPUT_(PTS,1,3,1,NV,3,NV,1,LVPRI)
+            CALL OUTPUT(PTS,1,3,1,NV,3,NV,1,LVPRI)
             WRITE(LVPRI,*) '=======CCC======='
-            CALL OUTPUT_(CCC,1,3,1,NV,3,NV,1,LVPRI)
+            CALL OUTPUT(CCC,1,3,1,NV,3,NV,1,LVPRI)
             DO IDX=1,NV
                 IDX2=IDX+1
                 IF (IDX2 > NV) IDX2=1
@@ -1598,12 +1607,12 @@
         END IF
     150 END DO
     IF(IPRCAV >= 10) THEN
-        CALL AROUND_('FINAL TESSERA_ STATUS')
+        CALL AROUND('FINAL TESSERA_ STATUS', lvpri)
         WRITE(LVPRI,1000) NS,NV,NUMTS
         WRITE(LVPRI,*) '=======PSCR======='
-        CALL OUTPUT_(PSCR,1,3,1,NV,3,NV,1,LVPRI)
+        CALL OUTPUT(PSCR,1,3,1,NV,3,NV,1,LVPRI)
         WRITE(LVPRI,*) '=======CCCP======='
-        CALL OUTPUT_(CCCP,1,3,1,NV,3,NV,1,LVPRI)
+        CALL OUTPUT(CCCP,1,3,1,NV,3,NV,1,LVPRI)
     END IF
 
 !     Se la tessera non e' stata scartata, a questo punto ne troviamo
@@ -1868,9 +1877,9 @@
             Z2 = PTS(3,1) - CCC(3,N)
         END IF
         DNORM1 = X1*X1 + Y1*Y1 + Z1*Z1
-        DNORM2__ = X2*X2 + Y2*Y2 + Z2*Z2
+        DNORM2_ = X2*X2 + Y2*Y2 + Z2*Z2
         SCAL = X1*X2 + Y1*Y2 + Z1*Z2
-        COSPHIN = SCAL / (SQRT(DNORM1*DNORM2__))
+        COSPHIN = SCAL / (SQRT(DNORM1*DNORM2_))
         IF(COSPHIN > 1.0D+00) COSPHIN = 1.0D+00
         PHIN(N) = ACOS(COSPHIN)
         SUMPHI = SUMPHI + PHIN(N)
@@ -1885,8 +1894,8 @@
         X2 = PTS(1,N) - XE(NS)
         Y2 = PTS(2,N) - YE(NS)
         Z2 = PTS(3,N) - ZE(NS)
-        DNORM2__ = SQRT(X2*X2 + Y2*Y2 + Z2*Z2)
-        COSTN = (X1*X2+Y1*Y2+Z1*Z2)/(DNORM1*DNORM2__)
+        DNORM2_ = SQRT(X2*X2 + Y2*Y2 + Z2*Z2)
+        COSTN = (X1*X2+Y1*Y2+Z1*Z2)/(DNORM1*DNORM2_)
         SUM1 = SUM1 + PHIN(N) * COSTN
     100 END DO
 
@@ -2400,6 +2409,9 @@
     END SUBROUTINE PREREP_
 !  /* Deck pcmtns */
     SUBROUTINE PCMTNS_(VMAT,GEOM,AMASS,KATOM)
+
+    use pedra_utils, only: wlkdin                
+
 #include <pcm_implicit.h>
 #include <pcm_priunit.h>
 #include <pcm_mxcent.h>
@@ -2456,7 +2468,7 @@
     ANGMOM(1) = 1.0D0
     ANGMOM(2) = 1.0D0
     ANGMOM(3) = 1.0D0
-    CALL PCM_WLKDIN(GEOM,AMASS,NESFP,ANGMOM,TINERT,OMEGAD,EIGVAL, &
+    CALL WLKDIN(GEOM,AMASS,NESFP,ANGMOM,TINERT,OMEGAD,EIGVAL, &
     EIGVEC,.TRUE.,PLANAR,LINEAR)
 ! f      WRITE(LVPRI,*) 'INERTIA TENSOR EIGENVECTORS AND EIGENVALUES'
     DO I = 1, 3

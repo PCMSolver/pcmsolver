@@ -7,6 +7,10 @@ set(utils_SOURCES
 	cnpy.cpp
 	pointgrp.cpp
 	symop.cpp
+	chartab.cpp
+	irrep.cpp
+	maketab.cpp
+	rep.cpp
 )
 
 if(ENABLE_TESTS)

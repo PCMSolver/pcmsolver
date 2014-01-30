@@ -1,7 +1,6 @@
 set(pedra_SOURCES 
-  pcm_utils.F90
-  pcm_print.F90
-  pcm_inertia.F90
+  pedra_utils.F90
+  pedra_print.F90
   cavity_derivatives.F90
   pedra_cavity.F90
   pedra_cavity_interface.F90

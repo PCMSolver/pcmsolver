@@ -63,7 +63,7 @@
     SUBROUTINE PEDRA_(INTSPH,VERT,CENTR,NEWSPH,ICAV1,ICAV2, XVAL,YVAL, &
     ZVAL,JTR,CV,NUMTS,NUMSPH,NUMVER,NATM,SOME,WORK,LWORK,NPERM)
 
-    use pedra_utils, only: dzero
+    use pedra_dblas, only: dzero
     use pedra_print, only: output
 
 #include <pcm_implicit.h>

@@ -4,8 +4,8 @@ set(pedra_SOURCES
   cavity_derivatives.F90
   pedra_cavity.F90
   pedra_cavity_interface.F90
-  pcm_dblas.F90
-  pcm_dlapack.F90
+  pedra_dblas.F90
+  pedra_dlapack.F90
   makecav.F90
   )
 

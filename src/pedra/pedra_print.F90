@@ -4,6 +4,8 @@
 
     public output
 
+    private
+
     contains
 
 !...   Dalton, Release 2.0, pdpack/printpkg.F

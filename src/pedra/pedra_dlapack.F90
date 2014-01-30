@@ -27,7 +27,16 @@
 !      Int. J. Mod. Phys. C 19 (2008) 523-548
 !      arXiv.org: physics/0610206
 
+    module pedra_dlapack
 
+    implicit none
+
+    public dsyevv3 ! Diagonalize using the analytical method
+    public dsyevh3 ! Diagonalize using an hybrid analytical/numerical method 
+
+    private
+
+    contains
 ! ----------------------------------------------------------------------------
     SUBROUTINE DSYEVV3(A, Q, W)
 ! ----------------------------------------------------------------------------
@@ -65,9 +74,6 @@
     DOUBLE PRECISION :: NORM, N1, N2, N1TMP, N2TMP
     DOUBLE PRECISION :: THRESH, ERROR, WMAX, F, T
     INTEGER ::          I, J
-
-!     .. External Functions ..
-    EXTERNAL         DSYEVC3
 
 !     Calculate eigenvalues
     CALL DSYEVC3(A, W)
@@ -271,9 +277,6 @@
     DOUBLE PRECISION :: T, U
     INTEGER ::          J
 
-!     .. External Functions ..
-    EXTERNAL         DSYEVC3, DSYEVQ3
-
 !     Calculate eigenvalues
     CALL DSYEVC3(A, W)
 
@@ -398,6 +401,120 @@
 ! End of subroutine DSYEVC3
 
 ! ----------------------------------------------------------------------------
+    SUBROUTINE DSYEVQ3(A, Q, W)
+! ----------------------------------------------------------------------------
+! Calculates the eigenvalues and normalized eigenvectors of a symmetric 3x3
+! matrix A using the QL algorithm with implicit shifts, preceded by a
+! Householder reduction to real tridiagonal form.
+! The function accesses only the diagonal and upper triangular parts of
+! A. The access is read-only.
+! ----------------------------------------------------------------------------
+! Parameters:
+!   A: The symmetric input matrix
+!   Q: Storage buffer for eigenvectors
+!   W: Storage buffer for eigenvalues
+! ----------------------------------------------------------------------------
+! Dependencies:
+!   DSYTRD3()
+! ----------------------------------------------------------------------------
+!     .. Arguments ..
+    DOUBLE PRECISION :: A(3,3)
+    DOUBLE PRECISION :: Q(3,3)
+    DOUBLE PRECISION :: W(3)
+
+!     .. Parameters ..
+    INTEGER ::          N
+    PARAMETER        ( N = 3 )
+
+!     .. Local Variables ..
+    DOUBLE PRECISION :: E(3)
+    DOUBLE PRECISION :: G, R, P, F, B, S, C, T
+    INTEGER ::          NITER
+    INTEGER ::          L, M, I, J, K
+
+!     Transform A to real tridiagonal form by the Householder method
+    CALL DSYTRD3(A, Q, W, E)
+
+!     Calculate eigensystem of the remaining real symmetric tridiagonal
+!     matrix with the QL method
+
+!     Loop over all off-diagonal elements
+    DO 10 L = 1, N-1
+        NITER = 0
+
+    !       Iteration loop
+        DO 11 I = 1, 50
+        !         Check for convergence and exit iteration loop if off-diagonal
+        !         element E(L) is zero
+            DO 20 M = L, N-1
+                G = ABS(W(M)) + ABS(W(M+1))
+                IF (ABS(E(M)) + G == G) THEN
+                    GO TO 30
+                END IF
+            20 END DO
+            30 IF (M == L) THEN
+                GO TO 10
+            END IF
+
+            NITER = NITER + 1
+            IF (NITER >= 30) THEN
+                PRINT *, 'DSYEVQ3: No convergence.'
+                RETURN
+            END IF
+
+        !         Calculate G = D(M) - K
+            G = (W(L+1) - W(L)) / (2.0D0 * E(L))
+            R = SQRT(1.0D0 + G**2)
+            IF (G >= 0.0D0) THEN
+                G = W(M) - W(L) + E(L)/(G + R)
+            ELSE
+                G = W(M) - W(L) + E(L)/(G - R)
+            END IF
+
+            S = 1.0D0
+            C = 1.0D0
+            P = 0.0D0
+            DO 40 J = M - 1, L, -1
+                F = S * E(J)
+                B = C * E(J)
+                IF (ABS(F) > ABS(G)) THEN
+                    C      = G / F
+                    R      = SQRT(1.0D0 + C**2)
+                    E(J+1) = F * R
+                    S      = 1.0D0 / R
+                    C      = C * S
+                ELSE
+                    S      = F / G
+                    R      = SQRT(1.0D0 + S**2)
+                    E(J+1) = G * R
+                    C      = 1.0D0 / R
+                    S      = S * C
+                END IF
+
+                G      = W(J+1) - P
+                R      = (W(J) - G) * S + 2.0D0 * C * B
+                P      = S * R
+                W(J+1) = G + P
+                G      = C * R - B
+
+            !           Form eigenvectors
+            !           --- This loop can be omitted if only the eigenvalues are desired ---
+                DO 50 K = 1, N
+                    T         = Q(K, J+1)
+                    Q(K, J+1) = S * Q(K, J) + C * T
+                    Q(K, J)   = C * Q(K, J) - S * T
+                50 END DO
+            40 END DO
+            W(L) = W(L) - P
+            E(L) = G
+            E(M) = 0.0D0
+        11 END DO
+    10 END DO
+      
+    END SUBROUTINE
+! End of subroutine DSYEVQ3
+
+! ----------------------------------------------------------------------------
     SUBROUTINE DSYTRD3(A, Q, D, E)
 ! ----------------------------------------------------------------------------
 ! Reduces a symmetric 3x3 matrix to real tridiagonal form by applying
@@ -486,119 +603,4 @@
     END SUBROUTINE
 ! End of subroutine DSYTRD3
 
-! ----------------------------------------------------------------------------
-    SUBROUTINE DSYEVQ3(A, Q, W)
-! ----------------------------------------------------------------------------
-! Calculates the eigenvalues and normalized eigenvectors of a symmetric 3x3
-! matrix A using the QL algorithm with implicit shifts, preceded by a
-! Householder reduction to real tridiagonal form.
-! The function accesses only the diagonal and upper triangular parts of
-! A. The access is read-only.
-! ----------------------------------------------------------------------------
-! Parameters:
-!   A: The symmetric input matrix
-!   Q: Storage buffer for eigenvectors
-!   W: Storage buffer for eigenvalues
-! ----------------------------------------------------------------------------
-! Dependencies:
-!   DSYTRD3()
-! ----------------------------------------------------------------------------
-!     .. Arguments ..
-    DOUBLE PRECISION :: A(3,3)
-    DOUBLE PRECISION :: Q(3,3)
-    DOUBLE PRECISION :: W(3)
-
-!     .. Parameters ..
-    INTEGER ::          N
-    PARAMETER        ( N = 3 )
-
-!     .. Local Variables ..
-    DOUBLE PRECISION :: E(3)
-    DOUBLE PRECISION :: G, R, P, F, B, S, C, T
-    INTEGER ::          NITER
-    INTEGER ::          L, M, I, J, K
-
-!     .. External Functions ..
-    EXTERNAL         DSYTRD3
-          
-!     Transform A to real tridiagonal form by the Householder method
-    CALL DSYTRD3(A, Q, W, E)
-
-!     Calculate eigensystem of the remaining real symmetric tridiagonal
-!     matrix with the QL method
-
-!     Loop over all off-diagonal elements
-    DO 10 L = 1, N-1
-        NITER = 0
-
-    !       Iteration loop
-        DO 11 I = 1, 50
-        !         Check for convergence and exit iteration loop if off-diagonal
-        !         element E(L) is zero
-            DO 20 M = L, N-1
-                G = ABS(W(M)) + ABS(W(M+1))
-                IF (ABS(E(M)) + G == G) THEN
-                    GO TO 30
-                END IF
-            20 END DO
-            30 IF (M == L) THEN
-                GO TO 10
-            END IF
-
-            NITER = NITER + 1
-            IF (NITER >= 30) THEN
-                PRINT *, 'DSYEVQ3: No convergence.'
-                RETURN
-            END IF
-
-        !         Calculate G = D(M) - K
-            G = (W(L+1) - W(L)) / (2.0D0 * E(L))
-            R = SQRT(1.0D0 + G**2)
-            IF (G >= 0.0D0) THEN
-                G = W(M) - W(L) + E(L)/(G + R)
-            ELSE
-                G = W(M) - W(L) + E(L)/(G - R)
-            END IF
-
-            S = 1.0D0
-            C = 1.0D0
-            P = 0.0D0
-            DO 40 J = M - 1, L, -1
-                F = S * E(J)
-                B = C * E(J)
-                IF (ABS(F) > ABS(G)) THEN
-                    C      = G / F
-                    R      = SQRT(1.0D0 + C**2)
-                    E(J+1) = F * R
-                    S      = 1.0D0 / R
-                    C      = C * S
-                ELSE
-                    S      = F / G
-                    R      = SQRT(1.0D0 + S**2)
-                    E(J+1) = G * R
-                    C      = 1.0D0 / R
-                    S      = S * C
-                END IF
-
-                G      = W(J+1) - P
-                R      = (W(J) - G) * S + 2.0D0 * C * B
-                P      = S * R
-                W(J+1) = G + P
-                G      = C * R - B
-
-            !           Form eigenvectors
-            !           --- This loop can be omitted if only the eigenvalues are desired ---
-                DO 50 K = 1, N
-                    T         = Q(K, J+1)
-                    Q(K, J+1) = S * Q(K, J) + C * T
-                    Q(K, J)   = C * Q(K, J) - S * T
-                50 END DO
-            40 END DO
-            W(L) = W(L) - P
-            E(L) = G
-            E(M) = 0.0D0
-        11 END DO
-    10 END DO
-      
-    END SUBROUTINE
-! End of subroutine DSYEVQ3
+    end module pedra_dlapack

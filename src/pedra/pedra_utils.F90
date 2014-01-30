@@ -2,12 +2,12 @@
 
     implicit none        
 
-    public dzero
     public around
-    public dnorm2
     public errwrk
     public get_point_group
     public wlkdin
+
+    private
 
     contains
 
@@ -48,62 +48,6 @@
     write (print_unit,'()')
 
     end subroutine around
-
-    function dnorm2(n, dx, incx)
-
-!     Forms the two-norm of a vector.
-! 19-Sep-1988 -- hjaaj -- based on DNRM2_ from LINPACK
-!     This version does not use extended precision for intermediates
-!     as the LINPACK version does.C 1) DNORM2_ (emulate ESSL DNORM2: do not use \
-! xtended precision for intermediates)
-
-!     Equivalent to DNORM2_ in IBM's ESSL library.
-
-!     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.
-!     DNRM2_: JACK DONGARRA, LINPACK, 3/11/78.
-
-    real(8)             :: dnorm2
-    integer, intent(in) :: n
-    real(8), intent(in) :: dx(n)
-    integer, intent(in) :: incx
-    real(8), parameter  :: zero = 0.0d0 
-
-    real(8) :: dtemp
-    integer :: m, mp1, i, ix
-
-    if (n <= 0) then
-        dnorm2 = zero
-        return
-    end if
-    
-    dtemp  = zero
-    if (incx == 1) then
-            m = mod(n, 5)
-            if (m == 0) then
-                    mp1 = m + 1
-                    do i = mp1, n, 5
-                        dtemp = dtemp + dx(i)*dx(i) + dx(i + 1)*dx(i + 1) + &
-                        dx(i + 2)*dx(i + 2) + dx(i + 3)*dx(i + 3) + dx(i + 4)*dx(i + 4)
-                    end do
-            else
-                    do i = 1, m
-                        dtemp = dtemp + dx(i)*dx(i)
-                    end do
-            end if
-    else
-            ix = 1
-            if (incx < 0) then
-                    ix = (-n + 1)*incx + 1
-            end if
-            do i = 1, n
-                dtemp = dtemp + dx(ix)*dx(ix)
-                ix = ix + incx
-            end do
-    end if
-
-    dnorm2 = sqrt(dtemp)
-
-    end function dnorm2
 
     subroutine errwrk(string, lneed, lavail, print_unit)
 
@@ -180,7 +124,9 @@
    ! subroutine. Replace with a custom function specialized
    ! for 3x3 matrices (thus avoiding having to link BLAS/LAPACK)
    !
-    
+   
+    use pedra_dlapack, only: dsyevh3
+
     implicit none
     real(8), dimension(n,3), intent(in) :: cor
     real(8), dimension(n), intent(in) :: tmass

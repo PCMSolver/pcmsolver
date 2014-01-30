@@ -1,5 +1,12 @@
-!/* Deck Deriva */
-    SUBROUTINE CAVDER_(NSJ,NSJR,ICOORD,INTSPH,NEWSPH)
+    module pedra_cavity_derivatives
+
+    public cavder
+    
+    private
+    
+    contains
+    
+    SUBROUTINE CAVDER(NSJ,NSJR,ICOORD,INTSPH,NEWSPH)
 
 #include <pcm_implicit.h>
 #include <pcm_mxcent.h>
@@ -88,10 +95,10 @@
             
                 NS1 = CASCA(1)
                 NS2 = CASCA(2)
-                CALL DRRDCN_(NS2,ICOORD,NS1,DR1,NEWSPH)
-                CALL DRCNCN_(1,NS2,ICOORD,NS1,DX,NEWSPH)
-                CALL DRCNCN_(2,NS2,ICOORD,NS1,DY,NEWSPH)
-                CALL DRCNCN_(3,NS2,ICOORD,NS1,DZ,NEWSPH)
+                CALL DRRDCN(NS2,ICOORD,NS1,DR1,NEWSPH)
+                CALL DRCNCN(1,NS2,ICOORD,NS1,DX,NEWSPH)
+                CALL DRCNCN(2,NS2,ICOORD,NS1,DY,NEWSPH)
+                CALL DRCNCN(3,NS2,ICOORD,NS1,DZ,NEWSPH)
                 DO 800 I = 3, ICONT
                     DDR = D0
                     DDX = D0
@@ -103,49 +110,49 @@
                 !     Derivata del raggio dell'elemento I di CASCA rispetto
                 !     alla coord. ICOORD dell'elemento 1 di CASCA
                 
-                    CALL DRRDRD_(NS2,NS1,DER,NEWSPH)
+                    CALL DRRDRD(NS2,NS1,DER,NEWSPH)
                     DDR = DER * DR1
-                    CALL DRRDCN_(NS2,1,NS1,DER,NEWSPH)
+                    CALL DRRDCN(NS2,1,NS1,DER,NEWSPH)
                     DDR = DDR + DER * DX
-                    CALL DRRDCN_(NS2,2,NS1,DER,NEWSPH)
+                    CALL DRRDCN(NS2,2,NS1,DER,NEWSPH)
                     DDR = DDR + DER * DY
-                    CALL DRRDCN_(NS2,3,NS1,DER,NEWSPH)
+                    CALL DRRDCN(NS2,3,NS1,DER,NEWSPH)
                     DDR = DDR + DER * DZ
                 
                 !     Derivata della coord. X dell'elemento I di CASCA rispetto
                 !     alla coord. ICOORD dell'elemento 1 di CASCA
                 
-                    CALL DRCNRD_(1,NS2,NS1,DER,NEWSPH)
+                    CALL DRCNRD(1,NS2,NS1,DER,NEWSPH)
                     DDX = DER * DR1
-                    CALL DRCNCN_(1,NS2,1,NS1,DER,NEWSPH)
+                    CALL DRCNCN(1,NS2,1,NS1,DER,NEWSPH)
                     DDX = DDX + DER * DX
-                    CALL DRCNCN_(1,NS2,2,NS1,DER,NEWSPH)
+                    CALL DRCNCN(1,NS2,2,NS1,DER,NEWSPH)
                     DDX = DDX + DER * DY
-                    CALL DRCNCN_(1,NS2,3,NS1,DER,NEWSPH)
+                    CALL DRCNCN(1,NS2,3,NS1,DER,NEWSPH)
                     DDX = DDX + DER * DZ
                 
                 !     Derivata della coord. Y dell'elemento I di CASCA rispetto
                 !     alla coord. ICOORD dell'elemento 1 di CASCA
                 
-                    CALL DRCNRD_(2,NS2,NS1,DER,NEWSPH)
+                    CALL DRCNRD(2,NS2,NS1,DER,NEWSPH)
                     DDY = DER * DR1
-                    CALL DRCNCN_(2,NS2,1,NS1,DER,NEWSPH)
+                    CALL DRCNCN(2,NS2,1,NS1,DER,NEWSPH)
                     DDY = DDY + DER * DX
-                    CALL DRCNCN_(2,NS2,2,NS1,DER,NEWSPH)
+                    CALL DRCNCN(2,NS2,2,NS1,DER,NEWSPH)
                     DDY = DDY + DER * DY
-                    CALL DRCNCN_(2,NS2,3,NS1,DER,NEWSPH)
+                    CALL DRCNCN(2,NS2,3,NS1,DER,NEWSPH)
                     DDY = DDY + DER * DZ
                 
                 !     Derivata della coord. Z dell'elemento I di CASCA rispetto
                 !     alla coord. ICOORD dell'elemento 1 di CASCA
                 
-                    CALL DRCNRD_(3,NS2,NS1,DER,NEWSPH)
+                    CALL DRCNRD(3,NS2,NS1,DER,NEWSPH)
                     DDZ = DER * DR1
-                    CALL DRCNCN_(3,NS2,1,NS1,DER,NEWSPH)
+                    CALL DRCNCN(3,NS2,1,NS1,DER,NEWSPH)
                     DDZ = DDZ + DER * DX
-                    CALL DRCNCN_(3,NS2,2,NS1,DER,NEWSPH)
+                    CALL DRCNCN(3,NS2,2,NS1,DER,NEWSPH)
                     DDZ = DDZ + DER * DY
-                    CALL DRCNCN_(3,NS2,3,NS1,DER,NEWSPH)
+                    CALL DRCNCN(3,NS2,3,NS1,DER,NEWSPH)
                     DDZ = DDZ + DER * DZ
                 
                     DR1 = DDR
@@ -165,10 +172,10 @@
         600 END DO
     500 END DO
 
-    END SUBROUTINE CAVDER_
+    END SUBROUTINE CAVDER
 !***********************************************************************
-!/* Deck Dcdr */
-    SUBROUTINE DRCNRD_(JJ,NSI,NSJ,DC,NEWSPH)
+    
+    SUBROUTINE DRCNRD(JJ,NSI,NSJ,DC,NEWSPH)
 
 #include <pcm_implicit.h>
 #include <pcm_mxcent.h>
@@ -222,9 +229,9 @@
     DC = - ( COORDJ(JJ) - COORDK(JJ) ) / D
 
     200 CONTINUE
-    END SUBROUTINE DRCNRD_
-!/* Deck Dcdc */
-    SUBROUTINE DRCNCN_(JJ,NSI,ICOORD,NSJ,DC,NEWSPH)
+    END SUBROUTINE DRCNRD
+    
+    SUBROUTINE DRCNCN(JJ,NSI,ICOORD,NSJ,DC,NEWSPH)
 
 #include <pcm_implicit.h>
 #include <pcm_mxcent.h>
@@ -285,9 +292,9 @@
     END IF
 
     200 CONTINUE
-    END SUBROUTINE DRCNCN_
-!/* Deck Drdr */
-    SUBROUTINE DRRDRD_(NSI,NSJ,DR1,NEWSPH)
+    END SUBROUTINE DRCNCN
+    
+    SUBROUTINE DRRDRD(NSI,NSJ,DR1,NEWSPH)
 
 #include <pcm_implicit.h>
 #include <pcm_mxcent.h>
@@ -345,9 +352,9 @@
         DR1 = ( RE(ABS(NSK)) * RJ ) / ( D*RI)
     END IF
     200 CONTINUE
-    END SUBROUTINE DRRDRD_
-!/* Deck Drdc */
-    SUBROUTINE DRRDCN_(NSI,ICOORD,NSJ,DR1,NEWSPH)
+    END SUBROUTINE DRRDRD
+    
+    SUBROUTINE DRRDCN(NSI,ICOORD,NSJ,DR1,NEWSPH)
 
 #include <pcm_implicit.h>
 #include <pcm_mxcent.h>
@@ -409,4 +416,6 @@
     DR1 = DIFF * FAC / ( 2.0D+00 * D**3 * RI )
 
     200 CONTINUE
-    END SUBROUTINE DRRDCN_
+    END SUBROUTINE DRRDCN
+
+    end module pedra_cavity_derivatives

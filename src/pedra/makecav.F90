@@ -22,6 +22,7 @@
     rin_, avgarea_, rsolv_, work2, lwork2)
 
     use, intrinsic :: iso_c_binding
+    use pedra_cavity, only: polyhedra_driver
 
     implicit none
 
@@ -92,7 +93,7 @@
     PT(6) =  1
     PT(7) =  1
           
-    CALL PEDRA_M_(WORK2, LWORK2)
+    CALL polyhedra_driver(WORK2, LWORK2)
 
     nts_=nts
     do i=1,NTS

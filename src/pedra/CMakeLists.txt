@@ -1,7 +1,8 @@
 set(pedra_SOURCES 
   pedra_utils.F90
+  pedra_ibtfun.F90
   pedra_print.F90
-  cavity_derivatives.F90
+  pedra_cavity_derivatives.F90
   pedra_cavity.F90
   pedra_cavity_interface.F90
   pedra_dblas.F90

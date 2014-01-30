@@ -18,21 +18,28 @@
 
     use pedra_utils, only : errwrk
 
+#include <pcm_maxorb.h>
+#include <pcm_maxaqn.h>
 #include <pcm_priunit.h>
 #include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
 #include <pcm_infpri.h>
+#include <pcm_symmet.h>
 
     real(8) :: work(*)
     integer :: lwork
 
     logical :: some
     integer :: numts, numsph, natm, numver
-    integer :: loadfm, lintsf, lvert, lcentr
+    integer :: loadfm, lintsp, lvert, lcentr, lwrk
     integer :: lnewsp, licav1, licav2, lx, ly, lz
     integer :: ljtr, lcv, lnperm, last
     character(len=8) :: memory_used_format = '(A, I10)'
+    integer, allocatable :: intsph(:, :), newsph(:, :)
+    integer, allocatable :: icav1(:), icav2(:)
+    integer, allocatable :: jtr(:, :), nperm(:, :)
+
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 
@@ -68,10 +75,17 @@
             wRITE(LVPRI, memory_used_format) ' MEMORY USED TO GENERATE CAVITY =', LAST
     end if
 
-    CALL polyhedra(WORK(LINTSP),WORK(LVERT),WORK(LCENTR),WORK(LNEWSP), &
-    WORK(LICAV1),WORK(LICAV2),WORK(LX),WORK(LY),WORK(LZ), &
-    WORK(LJTR),WORK(LCV),NUMTS,NUMSPH,NUMVER,NATM,SOME, &
-    WORK(LAST),LWRK,WORK(LNPERM))
+    allocate(intsph(numts, 10))
+    allocate(newsph(numsph, 2))
+    allocate(icav1(natm))
+    allocate(icav2(natm))
+    allocate(jtr(numts, 3))
+    allocate(nperm(numsph, maxrep))
+
+    call polyhedra(intsph, WORK(LVERT), WORK(LCENTR), newsph, &
+    icav1, icav2, WORK(LX), WORK(LY), WORK(LZ), &
+    jtr, WORK(LCV), NUMTS, NUMSPH, NUMVER, NATM, SOME, &
+    WORK(LAST), LWRK, nperm)
 
     end subroutine polyhedra_driver
 
@@ -80,6 +94,7 @@
 
     use pedra_dblas, only: dzero
     use pedra_print, only: output
+    use pedra_cavity_derivatives, only: cavder
 
 #include <pcm_maxorb.h>
 #include <pcm_maxaqn.h>
@@ -90,26 +105,40 @@
 #include <pcm_infpri.h>
 #include <pcm_symmet.h>
 
-    LOGICAL :: SOME
+    logical :: some
 
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 #include <pcm_nuclei.h>
 #include <pcm_pcmnuclei.h>
 
-    DIMENSION INTSPH(NUMTS,10),VERT(NUMTS,10,3),CENTR(NUMTS,10,3), &
-    NEWSPH(NUMSPH,2),ICAV1(NATM),ICAV2(NATM), &
-    XVAL(NUMTS),YVAL(NUMTS),ZVAL(NUMTS)
-    DIMENSION PP(3),PP1(3),PTS(3,10),CCC(3,10),ROTCAV(3,3)
-    DIMENSION WORK(LWORK)
-    DIMENSION JTR(NUMTS,*),CV(NUMVER,*)
-    DIMENSION NPERM(NUMSPH,*)
+    integer :: numts, natm, numsph, numver, lwork
+    integer :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
+    real(8) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, *)
+    real(8) :: xval(numts), yval(numts), zval(numts)
+    real(8) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
+    real(8) :: work(lwork)
+    integer :: jtr(numts, 3), nperm(numsph, *) 
 
-    Save D0,First
-    DATA D0,FIRST/0.0D0,0.0174533D0/
-    DATA ROTCAV/1.0D0, 0.0D0, 0.0D0, &
-    0.0D0, 1.0D0, 0.0D0, &
-    0.0D0, 0.0D0, 1.0D0/
+    real(8), parameter :: d0 = 0.0d0
+    real(8), parameter :: first = 0.0174533d0
+    real(8) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
+    real(8) :: reg, reg2, regd2, ren, rend2, reo, reo2
+    real(8) :: rep, rep2, repd2, rgn, rij, rij2, rik, rik2
+    real(8) :: rjd, rjk, rjk2, rtdd, rtdd2, senom, sp 
+    real(8) :: test, test1, test2, test3, test7, test8
+    real(8) :: xen, xi, xj, xn, yen, yi, yj, yn, zen, zi, zj, zn
+    integer :: i, icoord, idisp, ii, ipflag, iprcav, iptype
+    integer :: its, itseff, itsnum, itypc, iv, iver, j, jj, jcor
+    integer :: k, katom, kg, idisrep, kidx, klast, kord
+    integer :: kp, lend, lgeom, lmass, lwrk, n, n1, n2, n3
+    integer :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
+    integer :: nsfe, nsfer, nv
+    integer, allocatable :: idxpri(:)
+    
+    real(8), dimension(3, 3) ::  rotcav = reshape([1.0d0, 0.0d0, 0.0d0,  &
+                                                   0.0d0, 1.0d0, 0.0d0,  &
+                                                   0.0d0, 0.0d0, 1.0d0], [3, 3])
           
 
 !     Se stiamo costruendo una nuova cavita' per il calcolo del
@@ -156,7 +185,7 @@
 !         write(lvpri,1111) xe(i), ye(i), ze(i), re(i)
 !      enddo
 
-!  PEDRA_ prevede che i dati geometrici siano espressi in ANGSTROM :
+!  PEDRA prevede che i dati geometrici siano espressi in ANGSTROM :
 !  vengono trasformati, e solo alla fine i risultati tornano in bohr.
 
     90 CONTINUE
@@ -411,7 +440,7 @@
                 GOTO 310
             END IF
             IF (NN >= MXTS) THEN
-                WRITE(LVPRI,*) 'TOO MANY TESSERA_E IN PEDRA_'
+                WRITE(LVPRI,*) 'TOO MANY TESSERA_E IN PEDRA'
                 WRITE(LVPRI,*) 'NN=',NN,'  MXTS=',MXTS
                 STOP
             END IF
@@ -497,13 +526,13 @@
         KORD  = 1
         KIDX  = KORD + 4 * NTS
         KLAST = KIDX + NTS
+        allocate(idxpri(nts))
         IF (KLAST < LWORK) THEN
             CALL DZERO(WORK,KLAST)
-            call ORDPCM(lvpri,nts,xtscor,ytscor,ztscor,as,work(kord), &
-            work(kidx),work(klast),lwork)
+            call ORDPCM(lvpri,nts,xtscor,ytscor,ztscor,as,work(kord),idxpri,work(klast),lwork)
         ELSE
             WRITE(LVPRI,*) &
-            'WARNING: NOT ENOUGH MEM IN PEDRA_ TO PRINT THE CAVITY'
+            'WARNING: NOT ENOUGH MEM IN PEDRA TO PRINT THE CAVITY'
         END IF
     END IF
     1234 format(2i4,3f12.6)
@@ -603,7 +632,7 @@
 
 !     Call the routine which checks if the cavity is single or divided.
 
-    CALL CAVSPL(ICAV1,ICAV2,NCAV1,NCAV2,NPCMN,SOME)
+    call cavspl(icav1,icav2,ncav1,ncav2,npcmn,some)
 
 !     The dispersion calculation is allowed only in the case of
 !     single cavity.
@@ -613,7 +642,6 @@
     IDISREP = 0
     IRETCAV = 0
     IF (IDISP == 2) IDISP = 1
-    RETURN
 
     9000 FORMAT(10X,'-- CENTER OF CHARGE --'/ &
     ' X =',F8.4,' AU  Y =',F8.4,' AU  Z =',F8.4,' AU')
@@ -633,9 +661,12 @@
     //' TESSERA_  SPHERE   AREA   X Y Z TESSERA CENTER  ', &
     'X Y Z NORMAL VECTOR')
     9090 FORMAT(2I4,7F12.7)
+
     end subroutine polyhedra
     
-    SUBROUTINE SPHPER(NESF,NESF0,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
+    subroutine sphper(nesf,nesf0,numsph,nperm,newsph,xe,ye,ze,re)
+  
+    use pedra_ibtfun
 
 #include <pcm_maxorb.h>
 #include <pcm_maxaqn.h>
@@ -644,11 +675,13 @@
 #include <pcm_symmet.h>
 
 ! f#include <pcm_trans.h>
+    
+    integer :: nesf, nesf0, numsph
+    real(8) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
+    integer :: nperm(numsph,*), newsph(numsph,2)
 
-    DIMENSION XE(*),YE(*),ZE(*),RE(*),V1(3),V2(3)
-    DIMENSION NPERM(NUMSPH,*),NEWSPH(NUMSPH,2)
-
-#include <pcm_ibtfun.h>
+    real(8) :: diff1, r1
+    integer :: i, j, k, l, n1, n2, nesf1
 
 !  crea la tabella di permutazione delle sfere
 !  e completa per simmetria le sfere aggiunte
@@ -672,11 +705,11 @@
                 ENDDO
             ! f
             !            DIFF1=
-            !     &        DSQRT((XE(K)-V2(1))**2+(YE(K)-V2(2))**2+(ZE(K)-V2(3))**2)
-            !            DIFF2=DABS(R1-RE(K))
+            !     &        SQRT((XE(K)-V2(1))**2+(YE(K)-V2(2))**2+(ZE(K)-V2(3))**2)
+            !            DIFF2=ABS(R1-RE(K))
             !            IF ((DIFF1.LT.1.0d-3).AND.(DIFF2.LT.1.0d-3)) THEN
             ! f
-                DIFF1 = DSQRT((XE(K)-V2(1))**2 + (YE(K)-V2(2))**2 + &
+                DIFF1 = SQRT((XE(K)-V2(1))**2 + (YE(K)-V2(2))**2 + &
                 (ZE(K)-V2(3))**2 + (RE(K)-R1)**2)
                 IF ((DIFF1 < 1.0d-3)) THEN
                     NPERM(I,J+1)=K
@@ -727,7 +760,7 @@
                 DO L=1,3
                     V2(L)=PT(IBTAND(ISYMAX(L,1),J))*V1(L)
                 ENDDO
-                DIFF1 = DSQRT((XE(K)-V2(1))**2 + (YE(K)-V2(2))**2 + &
+                DIFF1 = SQRT((XE(K)-V2(1))**2 + (YE(K)-V2(2))**2 + &
                 (ZE(K)-V2(3))**2 + (RE(K)-R1)**2)
                 IF ((DIFF1 < 1.0d-3)) THEN
                     NPERM(I,J+1)=K
@@ -756,19 +789,15 @@
         ENDDO
         30 CONTINUE
     ENDDO
-    1000 format(8I3)
-    2000 format (I4,4F18.8)
-    RETURN
+    
     END SUBROUTINE SPHPER
     
-    SUBROUTINE POLYGEN(IPFLAG,TSARE,ITSNUM,XEN,YEN,ZEN,REN, &
-    ITSEFF,CV,JTR,NPERM,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
+    SUBROUTINE POLYGEN(IPFLAG,TSARE,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF,CV,JTR,NPERM,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
 
-    integer :: ITRVO(60,3),ITREO(60,3),IEDO(90,2)
-    integer :: oldtr(100,100),ednew(90,100),trnew(60,100,100)
+    use pedra_ibtfun
+
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
-#include <pcm_pi.h>
 #include <pcm_mxcent.h>
 #include <pcm_maxaqn.h>
 #include <pcm_maxorb.h>
@@ -777,16 +806,28 @@
 ! Polygen: a program to generate spherical polyhedra with triangular
 ! faces. An equilater division algorithm is used.
 
-    DIMENSION NPERM(NUMSPH,*),CV(NUMVER,*),JTR(NUMTS,*)
-    DIMENSION V1(3),V2(3),V3(3),ROTCAV(3,3)
-    DATA ITRVO /180*0/
-    DATA ITREO /180*0/
-    DATA IEDO  /180*0/
-    DATA D0/0.0d0/,D1/1.0d0/
+    integer :: ipflag, itsnum, itseff, nsfe, numts, numsph, numver
+    integer :: nperm(numsph, *), jtr(numts, *)
+    real(8) :: cv(numver, *)
+    real(8) :: tsare, xen, yen, zen, ren
+    
+    real(8) :: v1(3), v2(3), v3(3), rotcav(3, 3)
+    integer :: itrvo(60,3) = 0
+    integer :: itreo(60,3) = 0 
+    integer :: iedo(90,2)  = 0
+    integer :: oldtr(100,100), ednew(90,100), trnew(60,100,100)
+
+    real(8), parameter :: d0 = 0.0d0
+    real(8), parameter :: d1 = 1.0d0
+    real(8), parameter :: pi = acos(-1.0d0)
+    real(8) :: alpha, beta, cos1, cos2, costheta, dl, dm, dn, dnf, dnorm
+    real(8) :: sintheta, theta
+    integer :: i, ii, isymop, j, jj, jsymop, k, l, m, n, ne0, nf
+    integer :: noppt, nt, nt0, ntpt, ntra, nv, nvpt
+
 
 !  Se la sfera non deve essere tassellata ritorna a pedra con 0 tessere
 
-#include <pcm_ibtfun.h>
 ! f      IF (NPerm(NSFE,1).EQ.0.or.nsfe.ne.2) THEN
     IF (NPerm(NSFE,1) == 0) THEN
         ITsEff=0
@@ -846,7 +887,7 @@
 !  determination of NF
 
           
-    NF = INT(DSQRT(D1 * ITSNUM / ( D1 * NT0  * 8 )) + 0.5d0)
+    NF = INT(SQRT(D1 * ITSNUM / ( D1 * NT0  * 8 )) + 0.5d0)
     IF (NF <= 1) NF=2
     IF (NF <= 2) WRITE(LVPRI,1000)
     IF (NF >= 8) WRITE(LVPRI,1100)
@@ -914,13 +955,13 @@
             DM = DFLOAT(NF - L + 1)
             DL = DFLOAT(L - 1 - N)
             DN = DFLOAT(N)
-        !            CV(NVPT,1) = DSQRT(DM/DNF)
-        !            CV(NVPT,2) = DSQRT(DL/DNF)
-        !            CV(NVPT,3) = DSQRT(DN/DNF)
+        !            CV(NVPT,1) = SQRT(DM/DNF)
+        !            CV(NVPT,2) = SQRT(DL/DNF)
+        !            CV(NVPT,3) = SQRT(DN/DNF)
             CV(NVPT,1) = DM
             CV(NVPT,2) = DL
             CV(NVPT,3) = DN
-            DNORM = DSQRT(CV(NVPT,1)**2 + CV(NVPT,2)**2 + CV(NVPT,3)**2)
+            DNORM = SQRT(CV(NVPT,1)**2 + CV(NVPT,2)**2 + CV(NVPT,3)**2)
             CV(NVPT,1) = CV(NVPT,1) / DNORM
             CV(NVPT,2) = CV(NVPT,2) / DNORM
             CV(NVPT,3) = CV(NVPT,3) / DNORM
@@ -1077,20 +1118,21 @@
     ! f         WRITE(LVPRI,'(3F10.4)')  (CV(i,II),II=1,3)
     ENDDO
 
-    RETURN
     1000 FORMAT(/' ** WARNING ** A VERY POOR TESSELATION HAS BEEN CHOSEN', &
     /' IT IS VALUABLE ALMOST ONLY FOR TESTING')
     1100 FORMAT(/' ** WARNING ** A VERY EXPENSIVE TESSELATION ', &
     'HAS BEEN CHOSEN', &
     /' IT WILL PROBABLY PRODUCE A HUGE AMOUNT OF TESSERA_E')
+
     END SUBROUTINE POLYGEN
     
     SUBROUTINE REPCAV(VERT,CENTR,NPERM,NUMTS,NUMSPH)
 
+    use pedra_ibtfun
+
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
-
 #include <pcm_maxaqn.h>
 #include <pcm_maxorb.h>
 #include <pcm_pcm.h>
@@ -1100,12 +1142,13 @@
 ! f#include <pcm_trans.h>
 
 !  reproduce the irreducibile part of the cavity
+    
+    integer :: numts, numsph
+    real(8) :: vert(numts,10,3), centr(numts,10,3)
+    integer :: nperm(numsph,*)
 
-    DIMENSION VERT(NUMTS,10,3),CENTR(NUMTS,10,3)
-    DIMENSION NPERM(NUMSPH,*)
-    DATA D0/0.0D0/
-
-#include <pcm_ibtfun.h>
+    real(8), parameter :: d0 = 0.0d0
+    integer :: i, ii, ii2, isymop, k, l
 
 !  replication of the cavity
 
@@ -1170,7 +1213,7 @@
 !         enddo
 !      enddo
 ! f
-    RETURN
+    
     END SUBROUTINE REPCAV
 
     SUBROUTINE TESSERA(NS,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
@@ -1183,13 +1226,22 @@
 #include <pcm_mxcent.h>
 #include <pcm_infpri.h>
 
-    DIMENSION PTS(3,10),CCC(3,10),PP(3),PP1(3),INTSPH(NUMTS,10)
-    DIMENSION P1(3),P2(3),P3(3),P4(3),P4BIS(3),POINT(3),P5(3),P6(3), &
-    PSCR(3,10),CCCP(3,10),POINTL(3,10), &
-    IND(10),LTYP(10),INTSCR(10),NTRHSO(10)
-    LOGICAL :: LAN
-    DIMENSION DISTCK(10,10)
-    CHARACTER(16) :: TYPLAB_
+    integer :: ns, nv, numts
+    real(8) :: area
+    real(8) :: pts(3,10), ccc(3,10), pp(3), pp1(3)
+    integer :: intsph(numts,10)
+    real(8) :: p1(3),p2(3),p3(3),p4(3),p4bis(3),point(3),p5(3),p6(3)
+    real(8) :: pscr(3,10),cccp(3,10),pointl(3,10), distck(10,10)
+    integer :: ind(10),ltyp(10),intscr(10),ntrhso(10)
+    logical :: lan
+    character(16) :: typlab_
+    
+    real(8) :: dcheck, de2, delr, delr2, diffdr, dist, dist1, dist2
+    real(8) :: dnorm, rc, rc2, tol
+    real(8) :: x1, x2, y1, y2, z1, z2
+    integer :: i, j, ic, icop, icut, idx, idx2, ii, intcas, iprcav
+    integer :: iv1, iv2, ivnew, ivold, jj, k, l, n, nsfe1, nvleft, nvnegl
+
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 
@@ -1334,7 +1386,7 @@
             END IF
             160 CONTINUE
             IF(IPRCAV >= 10) THEN
-                WRITE(LVPRI,1025) L,TYPLAB_(LTYP(L))
+                WRITE(LVPRI,1025) L,TYPLAB(LTYP(L))
             END IF
         ENDDO
     
@@ -1364,7 +1416,7 @@
             IV2 = L+1
             IF(L == NV) IV2 = 1
             IF (IPRCAV >= 10) THEN
-                WRITE(LVPRI,1030) L,TYPLAB_(LTYP(L)),LTYP(L)
+                WRITE(LVPRI,1030) L,TYPLAB(LTYP(L)),LTYP(L)
                 WRITE(LVPRI,1035) IV1,IV2
             ENDIF
         !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1407,9 +1459,9 @@
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                 END IF
-                DIST1 = DSQRT((P4(1)-P1(1))**2 + (P4(2)-P1(2))**2 + &
+                DIST1 = SQRT((P4(1)-P1(1))**2 + (P4(2)-P1(2))**2 + &
                 (P4(3)-P1(3))**2)
-                DIST2 = DSQRT((P4(1)-P2(1))**2 + (P4(2)-P2(2))**2 + &
+                DIST2 = SQRT((P4(1)-P2(1))**2 + (P4(2)-P2(2))**2 + &
                 (P4(3)-P2(3))**2)
             !     Aggiorna i vertici della tessera e il centro dell'arco
                 DO JJ = 1,3
@@ -1564,9 +1616,9 @@
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
                 END IF
-                DIST1 = DSQRT((P4(1)-P1(1))**2 + (P4(2)-P1(2))**2 + &
+                DIST1 = SQRT((P4(1)-P1(1))**2 + (P4(2)-P1(2))**2 + &
                 (P4(3)-P1(3))**2)
-                DIST2 = DSQRT((P4(1)-P2(1))**2 + (P4(2)-P2(2))**2 + &
+                DIST2 = SQRT((P4(1)-P2(1))**2 + (P4(2)-P2(2))**2 + &
                 (P4(3)-P2(3))**2)
             !     Aggiorna il vertice e il centro dell'arco
                 DO JJ = 1,3
@@ -1641,7 +1693,7 @@
         X2 = PTS(1,II)
         Y2 = PTS(2,II)
         Z2 = PTS(3,II)
-        DIST = DSQRT((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)
+        DIST = SQRT((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)
         IF (DIST < 1.0D-6) THEN
             NTRHSO(I) = 1
             NVNEGL = NVNEGL + 1
@@ -1698,6 +1750,7 @@
     1045 FORMAT('P',I1,' X = ',F12.9,' Y = ',F12.9,' Z = ',F12.9)
     1050 FORMAT('AFTER INTER_')
     1055 FORMAT('DIST CHECK EDGE N.',I2,' DIFFERENCE:',F12.10)
+
     END SUBROUTINE TESSERA
     
     SUBROUTINE INTER(P1,P2,P3,P4,NS,I)
@@ -1707,12 +1760,17 @@
 #include <pcm_pcmdef.h>
 #include <pcm_infpri.h>
 
-    DIMENSION P1(3),P2(3),P3(3),P4(3)
-    LOGICAL :: LALOW,LBLOW
+    real(8) :: p1(3), p2(3), p3(3), p4(3)
+    integer :: ns, i
+    logical :: lalow,lblow
+
+    real(8) :: alphat, delta, diff, diff2, diff2a, diff2b
+    real(8) :: diffa, diffb, dnorm, p1p3, p2p3, r, r2, tol
+    integer :: j, jj, m
+    integer :: iprcav = 0
 
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
-    IPRCAV = 0
 
 !     Trova il punto P4, sull`arco P1-P2 sotteso dal centro P3, che
 !     si trova sulla superficie della sfera NS
@@ -1735,9 +1793,9 @@
     LALOW=.FALSE.
     LBLOW=.FALSE.
     DIFF2A= (P1(1)-XE(NS))**2 + (P1(2)-YE(NS))**2 + (P1(3)-ZE(NS))**2
-    DIFFA = DABS(DSQRT(DIFF2A) - RE(NS))
+    DIFFA = ABS(SQRT(DIFF2A) - RE(NS))
     DIFF2B= (P2(1)-XE(NS))**2 + (P2(2)-YE(NS))**2 + (P2(3)-ZE(NS))**2
-    DIFFB = DABS(DSQRT(DIFF2B) - RE(NS))
+    DIFFB = ABS(SQRT(DIFF2B) - RE(NS))
     LALOW=(DIFFA.LT.TOL)
     LBLOW=(DIFFB.LT.TOL)
     IF(LALOW .AND. .NOT. LBLOW) THEN
@@ -1832,22 +1890,33 @@
     1010 FORMAT('P',I1,' X = ',F12.9,' Y = ',F12.9,' Z = ',F12.9)
     1015 FORMAT('SPHERE',' X = ',F12.9,' Y = ',F12.9,' Z = ',F12.9, &
     ' R = ',F12.9)
+
     END SUBROUTINE INTER
     
     SUBROUTINE GAUBON(NV,NS,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
 
     use pedra_dblas, only: vector_product
 
-    PARAMETER (D0 = 0.0D0, DP5 = 0.5D0, D1 = 1.0D0)
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
-#include <pcm_pi.h>
 #include <pcm_infpri.h>
 
-    DIMENSION PTS(3,10),CCC(3,10),PP(3),PP1(3),INTSPH(NUMTS,10), &
-    NTRHSO(10),BETA(10)
-    DIMENSION P1(3),P2(3),P3(3),U1(3),U2(3),PHIN(10),WEIGHT(0:10)
+    integer :: nv, ns, numts
+    real(8) :: area
+    real(8) :: pts(3, 10), ccc(3, 10), pp(3), pp1(3), beta(10)
+    integer :: intsph(numts, 10), ntrhso(10)
+    real(8) :: p1(3),p2(3),p3(3),u1(3),u2(3),phin(10),weight(0:10)
+    
+    real(8), parameter :: d0 = 0.0d0
+    real(8), parameter :: dp5 = 0.5d0
+    real(8), parameter :: d1 = 1.0d0
+    real(8), parameter :: pi = acos(-1.0d0)
+
+    real(8) :: cosphin, costn, sum1, sum2, sumphi, dnorm1, dnorm2, tpi
+    real(8) :: scal, dnorm, dnorm3
+    real(8) :: x1, x2, y1, y2, z1, z2
+    integer :: i, jj, n, n0, n1, n2, nsfe1
 
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
@@ -1886,9 +1955,9 @@
             Z2 = PTS(3,1) - CCC(3,N)
         END IF
         DNORM1 = X1*X1 + Y1*Y1 + Z1*Z1
-        DNORM2_ = X2*X2 + Y2*Y2 + Z2*Z2
+        DNORM2 = X2*X2 + Y2*Y2 + Z2*Z2
         SCAL = X1*X2 + Y1*Y2 + Z1*Z2
-        COSPHIN = SCAL / (SQRT(DNORM1*DNORM2_))
+        COSPHIN = SCAL / (SQRT(DNORM1*DNORM2))
         IF(COSPHIN > 1.0D+00) COSPHIN = 1.0D+00
         PHIN(N) = ACOS(COSPHIN)
         SUMPHI = SUMPHI + PHIN(N)
@@ -1903,8 +1972,8 @@
         X2 = PTS(1,N) - XE(NS)
         Y2 = PTS(2,N) - YE(NS)
         Z2 = PTS(3,N) - ZE(NS)
-        DNORM2_ = SQRT(X2*X2 + Y2*Y2 + Z2*Z2)
-        COSTN = (X1*X2+Y1*Y2+Z1*Z2)/(DNORM1*DNORM2_)
+        DNORM2 = SQRT(X2*X2 + Y2*Y2 + Z2*Z2)
+        COSTN = (X1*X2+Y1*Y2+Z1*Z2)/(DNORM1*DNORM2)
         SUM1 = SUM1 + PHIN(N) * COSTN
     100 END DO
 
@@ -2052,7 +2121,7 @@
         1000 FORMAT(/,'WARNING: THE AEREA OF ONE TESSERA_ ON SPHERE ',I3, &
         ' IS IGNORED',F16.10)
     END IF
-    RETURN
+    
     END SUBROUTINE GAUBON
     
     SUBROUTINE CAVSPL(ICAV1,ICAV2,NCAV1,NCAV2,NATM,SOME)
@@ -2062,9 +2131,12 @@
 #include <pcm_pcmdef.h>
 #include <pcm_infpri.h>
 
-    LOGICAL :: SOME
+    integer :: icav1(mxcent), icav2(mxcent)
+    integer :: ncav1, ncav2, natm
+    logical :: some
 
-    DIMENSION ICAV1(MXCENT),ICAV2(MXCENT)
+    integer :: i, n1, n2, nn, icen, n
+    real(8) :: r, rr, sum, x, y, z, xx, yy, zz
 
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
@@ -2134,6 +2206,7 @@
     10X,'OF',I3,3X,'E',I3,3X,'SPHERE(S),  RESPECTIVELY')
     400 FORMAT(/10X,'THE FIRST CAVITY IS FORMED BY SPHERE(S) :'/)
     500 FORMAT(/10X,'THE SECOND CAVITY IS FORMED BY SPHERE(S) :'/)
+
     END SUBROUTINE CAVSPL
     
     SUBROUTINE PLOTCAV(Vert,NUMTS)
@@ -2145,8 +2218,15 @@
 #include <pcm_infpri.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
-    DIMENSION VERT(NUMTS,10,*),IVTS(MXTS,10)
+
+    integer :: numts
+    real(8) :: VERT(NUMTS,10,*)
+    integer :: IVTS(MXTS,10)
     logical :: cavity_file_exists
+
+    real(8) :: c1, c2, c3
+    integer :: n, numv, i, j, k, last, lucav, index
+    integer :: jcord
 
 !     Prepare the input file for GeomView (coloured polyhedra)
 
@@ -2175,13 +2255,12 @@
     WRITE(LUCAV,1000)NUMV, NTs, NumV
     K = 0
     LAST = 0
-    100 CONTINUE
     DO 2010 I = 1, NTs
         N=ISphe(I)
         IF(N /= Last) WRITE(LUCAV,1500)N
         Last = N
         IF(Index == 1) THEN
-            Call COLOUR_(N,C1,C2,C3)
+            Call COLOUR(N,C1,C2,C3)
         ELSE
             C1=1.0D0
             C2=1.0D0
@@ -2202,7 +2281,7 @@
     1500 FORMAT('# Sphere number ',i4)
     2001 FORMAT('  ',3f16.9,4f5.2,' # Tess. ',i4)
     3000 FORMAT('  ',14i10)
-    RETURN
+    
     END SUBROUTINE PLOTCAV
     
     SUBROUTINE COLOUR(N,C1,C2,C3)
@@ -2214,8 +2293,14 @@
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 #include <pcm_codata.h>
+    
+    integer :: n
+    real(8) :: c1, c2, c3
+
     Character(20) :: Col
     Data Col /'                    '/
+    real(8) :: delta, diff, ddiff
+    integer :: num, i
 
 !     Assign tesserae colours for GeomView:
 !     Carbon: green, nitrogen: blue, oxygen: red, hydrogen: light blue,
@@ -2224,7 +2309,7 @@
     Delta=1.d-03
     IF(N > NESFP)THEN
         Col = 'Gray'
-        Call COLTSS_(Col,C1,C2,C3)
+        Call COLTSS(Col,C1,C2,C3)
         Return
     END IF
     NUM = 0
@@ -2251,15 +2336,15 @@
         COL = 'Fuchsia'
     ENDIF
     CALL COLTSS(Col,C1,C2,C3)
-    RETURN
-    END SUBROUTINE COLOUR
     
-    SUBROUTINE COLTSS(COLOUR_,C1,C2,C3)
-    Implicit Real*8(A-H,O-Z)
+    end subroutine colour
+    
+    subroutine coltss(colour_,c1,c2,c3)
 
 !     Assigne tesserae colours for GeomView:
 
-    Character(20) :: COLOUR_
+    character(20) :: COLOUR_
+    real(8) :: c1, c2, c3
 
     IF(COLOUR_ == 'White') THEN
         C1 = 1.0
@@ -2313,19 +2398,26 @@
         WRITE(*,*) '8'
         STOP
     ENDIF
-    RETURN
-    END SUBROUTINE COLTSS
     
-    SUBROUTINE PREREP(NV,NT,ITS,CV,JTR,NVERT,NUMTS)
+    end subroutine coltss
+    
+    subroutine prerep(nv,nt,its,cv,jtr,nvert,numts)
+
+    use pedra_ibtfun
+
 #include <pcm_priunit.h>
 #include <pcm_maxaqn.h>
 #include <pcm_maxorb.h>
 #include <pcm_mxcent.h>
 #include <pcm_symmet.h>
 #include <pcm_pgroup.h>
-    LOGICAL LSYMOP(0:7)
-    DIMENSION JTR(NUMTS,*),CV(NVERT,*)
-#include <pcm_ibtfun.h>
+
+    integer :: nv, nt, its, nvert, numts
+    integer :: jtr(numts, *)
+    real(8) :: cv(nvert, *)
+    logical :: lsymop(0:7)
+
+    integer :: i, j, isymop, ii, jj, k
 
 !      SYMOP(0) = ' E '
 !      SYMOP(1) = 'Oyz'
@@ -2395,12 +2487,13 @@
         ! f            WRITE(LVPRI,*) I,JTR(I,J),(CV(JTR(I,J),K),K=1,3)
         ENDDO
     ENDDO
-    RETURN
-    END SUBROUTINE PREREP
     
-    SUBROUTINE PCMTNS(VMAT,GEOM,AMASS,KATOM)
+    end subroutine prerep
+    
+    subroutine pcmtns(vmat, geom, amass, katom)
 
     use pedra_utils, only: wlkdin                
+    use pedra_ibtfun
 
 #include <pcm_priunit.h>
 #include <pcm_mxcent.h>
@@ -2414,13 +2507,22 @@
 #include <pcm_symmet.h>
 #include <pcm_nuclei.h>
 #include <pcm_orgcom.h>
-    DIMENSION EIGVAL(3),EIGVEC(3,3),GEOM(KATOM,*),AMASS(*),TINERT(3,3)
-    DIMENSION ANGMOM(3),OMEGAD(3),EIGINV(3,3),VMAT(3,3),SCAL(3)
-    DIMENSION IAX(6),NORDER_(3)
-    LOGICAL :: PLANAR, LINEAR
-    DATA IAX/1,2,3,3,2,1/
-#include <pcm_ibtfun.h>
-    JATOM = 1
+
+    integer :: katom
+    real(8) :: vmat(3, 3), geom(katom, *), amass(*)
+
+    real(8) :: eigval(3), eigvec(3, 3), tinert(3, 3)
+    real(8) :: angmom(3), omegad(3), eiginv(3, 3), scal(3)
+    integer :: iax(6), norder(3)
+    logical :: planar, linear
+    integer :: jatom, i, j, k, jax, nmax
+    integer :: nopax, nshift
+
+    real(8) :: dij
+    
+    iax = (/1,2,3,3,2,1/)
+
+    jatom = 1
 
 ! As correctly pointed out by Kenneth, we want two molecules
 ! like HCCD and HCCH to have the same cavity so NUMIS is always 1
@@ -2447,76 +2549,78 @@
 !         WRITE(LVPRI,*) 'ATOM ',I,' COORD ',(GEOM(I,J),J=1,3),AMASS(I)
 !      ENDDO
 ! f
-    DO I = 1, NESFP
-        AMASS(I) = RIN(I)
-        GEOM(I,1)  = XE(I)
-        GEOM(I,2)  = YE(I)
-        GEOM(I,3)  = ZE(I)
-    ENDDO
+    do i = 1, nesfp
+        amass(i) = rin(i)
+        geom(i,1)  = xe(i)
+        geom(i,2)  = ye(i)
+        geom(i,3)  = ze(i)
+    enddo
 
-    ANGMOM(1) = 1.0D0
-    ANGMOM(2) = 1.0D0
-    ANGMOM(3) = 1.0D0
-    CALL WLKDIN(GEOM,AMASS,NESFP,ANGMOM,TINERT,OMEGAD,EIGVAL, &
-    EIGVEC,.TRUE.,PLANAR,LINEAR)
+    angmom(1) = 1.0d0
+    angmom(2) = 1.0d0
+    angmom(3) = 1.0d0
+    call wlkdin(geom,amass,nesfp,angmom,tinert,omegad,eigval,eigvec,.true.,planar,linear)
 ! f      WRITE(LVPRI,*) 'INERTIA TENSOR EIGENVECTORS AND EIGENVALUES'
-    DO I = 1, 3
-        DO J = 1, 3
-            EIGINV(I,J) = EIGVEC(J,I)
-        ENDDO
+    do i = 1, 3
+        do j = 1, 3
+            eiginv(i,j) = eigvec(j,i)
+        enddo
     ! f         WRITE(LVPRI,*) (EIGINV(I,J),J=1,3), EIGVAL(I), OMEGA(I), QUAD
-    ENDDO
+    enddo
 !      do i=1,3
 !         write(lvpri,*) 'tinert',(tinert(i,j),j=1,3)
 !      enddo
-    DO I = 1,3
-        DO J= 1,3
-            VMAT(J,I) = 0.0D0
-        ENDDO
-    ENDDO
-    NOPAX = NROTS + NREFL
-    NORDER_(1) = 1
-    NORDER_(2) = 2
-    NORDER_(3) = 3
-    IF (NOPAX >= 3) THEN
-        DO I = 1,3
+    do i = 1,3
+        do j= 1,3
+            vmat(j,i) = 0.0d0
+        enddo
+    enddo
+    nopax = nrots + nrefl
+    norder(1) = 1
+    norder(2) = 2
+    norder(3) = 3
+    if (nopax >= 3) then
+        do i = 1,3
         !            write(lvpri,*) 'iax',i,isop(i),iax(isop(i))
-            DO J = 1,3
-                DIJ = 0.0D0
-                IF (I == J) DIJ = 1.0D0
-                VMAT(J,IAX(ISOP(I))) = DIJ
-            ENDDO
-        ENDDO
-    ELSEIF (NOPAX >= 1) THEN
-        JAX = IAX(ISOP(1))
-        SCAL(1) = DABS(EIGINV(1,JAX))
-        SCAL(2) = DABS(EIGINV(2,JAX))
-        SCAL(3) = DABS(EIGINV(3,JAX))
-        NMAX = 1
-        DO J = 2,3
-            IF (SCAL(J) > SCAL(NMAX)) NMAX = J
-        ENDDO
-        NSHIFT = MOD(NMAX-1,3)
-        DO I = 0,2
-            K = MOD(I + NSHIFT,3) + 1
-            DO J =1,3
-                VMAT(I+1,J) = EIGINV(K,J)
-            ENDDO
-        ENDDO
-    ELSEIF (NOPAX == 0) THEN
-        DO I = 1,3
-            DO J = 1,3
-                VMAT(I,J) = EIGINV(I,J)
-            ENDDO
-        ENDDO
-    ELSE
-        WRITE(*,*) '9'
-        STOP
-    ENDIF
-    RETURN
-    END SUBROUTINE PCMTNS
+            do j = 1,3
+                dij = 0.0d0
+                if (i == j) dij = 1.0d0
+                vmat(j,iax(isop(i))) = dij
+            enddo
+        enddo
+    elseif (nopax >= 1) then
+        jax = iax(isop(1))
+        scal(1) = abs(eiginv(1,jax))
+        scal(2) = abs(eiginv(2,jax))
+        scal(3) = abs(eiginv(3,jax))
+        nmax = 1
+        do j = 2,3
+            if (scal(j) > scal(nmax)) nmax = j
+        enddo
+        nshift = mod(nmax-1,3)
+        do i = 0,2
+            k = mod(i + nshift,3) + 1
+            do j =1,3
+                vmat(i+1,j) = eiginv(k,j)
+            enddo
+        enddo
+    elseif (nopax == 0) then
+        do i = 1,3
+            do j = 1,3
+                vmat(i,j) = eiginv(i,j)
+            enddo
+        enddo
+    else
+        write(*,*) '9'
+        stop
+    endif
+
+    end subroutine pcmtns
     
-    SUBROUTINE UPDCAV(COORD)
+    subroutine updcav(coord)
+
+    use pedra_ibtfun
+
 #include <pcm_mxcent.h>
 #include <pcm_maxaqn.h>
 #include <pcm_maxorb.h>
@@ -2526,155 +2630,163 @@
 #include <pcm_nuclei.h>
 #include <pcm_pcmnuclei.h>
 #include <pcm_symmet.h>
-    DIMENSION COORD(3,*)
-#include <pcm_ibtfun.h>
-    IF (ICESPH == 0 .OR. ICESPH == 2) THEN
-        JATOM = 0
-        DO I = 1, NUCIND
-            MULCNT = ISTBNU(I)
-            DO ISYM = 0, MAXREP
-                IF(IBTAND(ISYM,MULCNT) == 0) THEN
-                    JATOM = JATOM + 1
-                    DO JCORD = 1,3
-                        PCMCORD(JCORD,JATOM) = &
-                        PT(IBTAND(ISYMAX(JCORD,1),ISYM)) &
-                        *COORD(JCORD,I)
-                    END DO
-                END IF
-            END DO
-        END DO
-    END IF
-    RETURN
-    END SUBROUTINE UPDCAV
+
+    real(8) :: coord(3, *)
+
+    integer :: jatom, i, isym, jcord, mulcnt
+
+    if (icesph == 0 .or. icesph == 2) then
+        jatom = 0
+        do i = 1, nucind
+            mulcnt = istbnu(i)
+            do isym = 0, maxrep
+                if(ibtand(isym,mulcnt) == 0) then
+                    jatom = jatom + 1
+                    do jcord = 1,3
+                        pcmcord(jcord,jatom) = pt(ibtand(isymax(jcord,1),isym))*coord(jcord,i)
+                    end do
+                end if
+            end do
+        end do
+    end if
+
+    end subroutine updcav
     
-    SUBROUTINE ORDPCM(lvpri,nts,xtscor,ytscor,ztscor,as,privec, &
-    idxpri,work,lwork)
-    DIMENSION PRIVEC(4,*), XTSCOR(*), YTSCOR(*), ZTSCOR(*), &
-    WORK(*), AS(*)
-    DIMENSION IDXPRI(*)
-    LOGICAL :: CHKTSS_, LCHK, LSWTCH
-    LSWTCH = .FALSE.
-    DO I = 1,NTS
-        PRIVEC(1,I) = XTSCOR(I)
-        PRIVEC(2,I) = YTSCOR(I)
-        PRIVEC(3,I) = ZTSCOR(I)
-        PRIVEC(4,I) = AS(I)
-        IDXPRI(I) = I
-    ENDDO
-    222 CONTINUE
-    DO I = 1,NTS - 1
-        II = I + 1
-        LCHK = CHKTSS_(PRIVEC(1,I),PRIVEC(2,I),PRIVEC(3,I),PRIVEC(4,I), &
-        PRIVEC(1,II),PRIVEC(2,II),PRIVEC(3,II),PRIVEC(4,II))
-        LSWTCH = LSWTCH .OR. LCHK
-        IF (LCHK) THEN
-            XBAK         = PRIVEC(1,I)
-            YBAK         = PRIVEC(2,I)
-            ZBAK         = PRIVEC(3,I)
-            ABAK         = PRIVEC(4,I)
-            IBAK         = IDXPRI(I)
-            PRIVEC(1,I)  = PRIVEC(1,II)
-            PRIVEC(2,I)  = PRIVEC(2,II)
-            PRIVEC(3,I)  = PRIVEC(3,II)
-            PRIVEC(4,I)  = PRIVEC(4,II)
-            IDXPRI(I)    = IDXPRI(II)
-            PRIVEC(1,II) = XBAK
-            PRIVEC(2,II) = YBAK
-            PRIVEC(3,II) = ZBAK
-            PRIVEC(4,II) = ABAK
-            IDXPRI(II)   = IBAK
-        END IF
-    ENDDO
-    IF(LSWTCH) THEN
-        LSWTCH = .FALSE.
-        GOTO 222
-    ENDIF
-    DO I = 1, NTS
-        WRITE(LVPRI,1250) (dabs(PRIVEC(J,I)),J=1,4)
-    ENDDO
-    RETURN
-    1240 format(i3,4f15.9)
-    1250 format(4f15.9)
-    END SUBROUTINE ORDPCM
+    subroutine ordpcm(lvpri, nts, xtscor, ytscor, ztscor, as, privec, idxpri, work, lwork)
 
-    LOGICAL FUNCTION CHKTSS(X1,Y1,Z1,A1,X2,Y2,Z2,A2)
-    IF(DABS(X1) < DABS(X2)) THEN
-        CHKTSS_ = .TRUE.
-        RETURN
-    ELSE IF(DABS(X1) > DABS(X2)) THEN
-        CHKTSS_ = .FALSE.
-        RETURN
-    ELSE IF(DABS(Y1) < DABS(Y2)) THEN
-        CHKTSS_ = .TRUE.
-        RETURN
-    ELSE IF(DABS(Y1) > DABS(Y2)) THEN
-        CHKTSS_ = .FALSE.
-        RETURN
-    ELSE IF(DABS(Z1) < DABS(Z2)) THEN
-        CHKTSS_ = .TRUE.
-        RETURN
-    ELSE IF(DABS(Z1) > DABS(Z2)) THEN
-        CHKTSS_ = .FALSE.
-        RETURN
-    ELSE IF(DABS(A1) < DABS(A2)) THEN
-        CHKTSS_ = .TRUE.
-        RETURN
-    ELSE
-        CHKTSS_ = .FALSE.
-        RETURN
-    ENDIF
-    END FUNCTION CHKTSS
+    integer :: lvpri, lwork, nts
+    real(8) :: work(*)
+    real(8) :: privec(4, nts), xtscor(nts), ytscor(nts), ztscor(nts), as(nts)
+    integer :: idxpri(nts)
+    
+    logical :: lchk, lswtch
+    real(8) :: xbak, ybak, zbak, abak
+    integer :: ibak, i, j, ii
+
+    lswtch = .false.
+    
+    do i = 1, nts
+        privec(1,i) = xtscor(i)
+        privec(2,i) = ytscor(i)
+        privec(3,i) = ztscor(i)
+        privec(4,i) = as(i)
+        idxpri(i) = i
+    enddo
+
+    if(lswtch) then
+        lswtch = .false.
+        do i = 1, nts - 1                                                     
+            ii = i + 1
+            lchk = chktss(privec(1,i),privec(2,i),privec(3,i),privec(4,i),privec(1,ii),privec(2,ii),privec(3,ii),privec(4,ii))
+            lswtch = (lswtch .or. lchk)
+            if (lchk) then
+                xbak         = privec(1,i)
+                ybak         = privec(2,i)
+                zbak         = privec(3,i)
+                abak         = privec(4,i)
+                ibak         = idxpri(i)
+                privec(1,i)  = privec(1,ii)
+                privec(2,i)  = privec(2,ii)
+                privec(3,i)  = privec(3,ii)
+                privec(4,i)  = privec(4,ii)
+                idxpri(i)    = idxpri(ii)
+                privec(1,ii) = xbak
+                privec(2,ii) = ybak
+                privec(3,ii) = zbak
+                privec(4,ii) = abak
+                idxpri(ii)   = ibak
+            end if
+        enddo
+    endif
+    
+    do i = 1, nts
+        write(lvpri, '(4f15.9)') (abs(privec(j,i)),j=1,4)
+    enddo
+
+    end subroutine ordpcm
+
+    logical function chktss(x1,y1,z1,a1,x2,y2,z2,a2)
+
+    real(8) :: x1, y1, z1, a1, x2, y2, z2, a2
+
+    if(abs(x1) < abs(x2)) then
+        chktss = .true.
+    else if(abs(x1) > abs(x2)) then
+        chktss = .false.
+    else if(abs(y1) < abs(y2)) then
+        chktss = .true.
+    else if(abs(y1) > abs(y2)) then
+        chktss = .false.
+    else if(abs(z1) < abs(z2)) then
+        chktss = .true.
+    else if(abs(z1) > abs(z2)) then
+        chktss = .false.
+    else if(abs(a1) < abs(a2)) then
+        chktss = .true.
+    else
+        chktss = .false.
+    endif
+
+    end function chktss
           
-    SUBROUTINE SECGRA(COST,RP,Q1,Q2,X1,Y1,X2,Y2,NSOL)
-    PARAMETER (D0 =0.0D0)
-    THRESH = 1.0D-20
-    A = Q1 ** 2 + Q2 ** 2
-    B = - 2.0D0 * COST * Q2
-    C = COST ** 2 - RP ** 2 * Q1 ** 2
-    DELTA = B ** 2 - 4.0D0 * A * C
-    IF(DELTA > THRESH) THEN
-        NSOL = 2
-        Y1 = (- B + DSQRT(DELTA)) / (2.0D0 * A)
-        Y2 = (- B - DSQRT(DELTA)) / (2.0D0 * A)
-        X1 = (COST - Q2 * Y1) / Q1
-        X2 = (COST - Q2 * Y2) / Q1
-        RETURN
-    ELSE IF(DELTA < -THRESH) THEN
-        NSOL = 0
-        X1 = D0
-        X2 = D0
-        Y1 = D0
-        Y2 = D0
-        RETURN
-    ELSE
-        NSOL = 1
-        Y1 = - B / (2.0D0 * A)
-        Y2 = Y1
-        X1 = (COST - Q2 * Y1) / Q1
-        X2 = X1
-        RETURN
-    END IF
-    NSOL = - 1
-    RETURN
-    END SUBROUTINE SECGRA
+    subroutine secgra(cost,rp,q1,q2,x1,y1,x2,y2,nsol)
 
-    FUNCTION TYPLAB(I)
-    CHARACTER(16) :: TYPLAB            
-    INTEGER :: I
-    IF(I == 4) THEN
-        TYPLAB='ALL EDGE IS FREE'
-    ELSE IF(I == 1) THEN
-        TYPLAB='2ND VERT COVERED'
-    ELSE IF(I == 2) THEN
-        TYPLAB='1ST VERT COVERED'
-    ELSE IF(I == 3) THEN
-        TYPLAB='EDGE  CUT  TWICE'
-    ELSE IF(I == 0) THEN
-        TYPLAB='ALL EDGE COVERED'
-    ELSE
-        TYPLAB='UNDEFINED CASE!!'
-    END IF
-    RETURN
-    END FUNCTION TYPLAB 
+    real(8) :: cost, rp, q1, q2, x1, y1, x2, y2
+    integer :: nsol
+
+    real(8), parameter :: d0 = 0.0d0
+    real(8) :: thresh, a, b, c, delta
+
+
+    thresh = 1.0d-20
+    a = q1 ** 2 + q2 ** 2
+    b = - 2.0d0 * cost * q2
+    c = cost ** 2 - rp ** 2 * q1 ** 2
+    delta = b ** 2 - 4.0d0 * a * c
+    
+    if(delta > thresh) then
+        nsol = 2
+        y1 = (- b + sqrt(delta)) / (2.0d0 * a)
+        y2 = (- b - sqrt(delta)) / (2.0d0 * a)
+        x1 = (cost - q2 * y1) / q1
+        x2 = (cost - q2 * y2) / q1
+    else if(delta < -thresh) then
+        nsol = 0
+        x1 = d0
+        x2 = d0
+        y1 = d0
+        y2 = d0
+    else
+        nsol = 1
+        y1 = - b / (2.0d0 * a)
+        y2 = y1
+        x1 = (cost - q2 * y1) / q1
+        x2 = x1
+    end if
+   
+    nsol = - 1
+    
+    end subroutine secgra
+
+    function typlab(i)
+    
+    character(16)       :: typlab            
+    integer, intent(in) :: i
+    
+    if(i == 4) then
+        typlab='ALL EDGE IS FREE'
+    else if(i == 1) then
+        typlab='2ND VERT COVERED'
+    else if(i == 2) then
+        typlab='1ST VERT COVERED'
+    else if(i == 3) then
+        typlab='EDGE  CUT  TWICE'
+    else if(i == 0) then
+        typlab='ALL EDGE COVERED'
+    else
+        typlab='UNDEFINED CASE!!'
+    end if
+    
+    end function typlab 
 
     end module pedra_cavity

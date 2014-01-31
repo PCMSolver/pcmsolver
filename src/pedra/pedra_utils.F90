@@ -83,8 +83,8 @@
 
     select case (int_pgroup)
             case(7)
-                    char_pgroup = 'D2h'
-                    nsymop      = 3 
+                   char_pgroup = 'D2h'
+                   nsymop      = 3 
             case(6)
                    char_pgroup = 'C2v'
                    nsymop      = 2 

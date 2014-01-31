@@ -89,7 +89,8 @@
     allocate(icav1(natm))
     allocate(icav2(natm))
     allocate(jtr(numts, 3))
-    allocate(nperm(numsph, maxrep))
+    ! 8 is the number of operations in D2h, the largest group we can treat
+    allocate(nperm(numsph, 8)) 
     allocate(vert(numts, 10, 3))
     allocate(centr(numts, 10, 3))
     allocate(xval(numts))

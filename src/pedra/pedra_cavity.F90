@@ -100,7 +100,6 @@
 #include <pcm_maxaqn.h>
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
-#include <pcm_codata.h>
 #include <pcm_mxcent.h>
 #include <pcm_infpri.h>
 #include <pcm_symmet.h>
@@ -2292,7 +2291,6 @@
 #include <pcm_pcmnuclei.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
-#include <pcm_codata.h>
     
     integer :: n
     real(8) :: c1, c2, c3

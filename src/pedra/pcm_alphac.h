@@ -1,6 +1,0 @@
-!
-!     Fine structure constant
-!
-      PARAMETER (CCM = 299792458.0D0)
-      PARAMETER (CVEL = CCM*XTANGM10*EMASS/(HBAR))
-      PARAMETER (ALPHAC = 1.0D0/CVEL, ALPHA2 = ALPHAC*ALPHAC)

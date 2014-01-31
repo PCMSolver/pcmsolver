@@ -12,6 +12,9 @@
 
     private
 
+    ! Some print levels
+    integer :: iprsol = 0
+
     contains
 
     subroutine polyhedra_driver(work,lwork)
@@ -24,7 +27,6 @@
 #include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
-#include <pcm_infpri.h>
 #include <pcm_symmet.h>
 
     real(8) :: work(*)
@@ -101,7 +103,6 @@
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
-#include <pcm_infpri.h>
 #include <pcm_symmet.h>
 
     logical :: some
@@ -622,6 +623,7 @@
             ENDIF
         ENDDO
     END IF
+
     IF(IPRSOL > 5) THEN
         WRITE(LVPRI,9070)
         WRITE(LVPRI,9090) (I,ISPHE(I),AS(I),XTSCOR(I),YTSCOR(I), &
@@ -1223,7 +1225,6 @@
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
-#include <pcm_infpri.h>
 
     integer :: ns, nv, numts
     real(8) :: area
@@ -1757,7 +1758,6 @@
 #include <pcm_priunit.h>
 #include <pcm_mxcent.h>
 #include <pcm_pcmdef.h>
-#include <pcm_infpri.h>
 
     real(8) :: p1(3), p2(3), p3(3), p4(3)
     integer :: ns, i
@@ -1899,7 +1899,6 @@
 #include <pcm_priunit.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
-#include <pcm_infpri.h>
 
     integer :: nv, ns, numts
     real(8) :: area
@@ -2128,7 +2127,6 @@
 #include <pcm_priunit.h>
 #include <pcm_mxcent.h>
 #include <pcm_pcmdef.h>
-#include <pcm_infpri.h>
 
     integer :: icav1(mxcent), icav2(mxcent)
     integer :: ncav1, ncav2, natm
@@ -2214,7 +2212,6 @@
 #include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
-#include <pcm_infpri.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 
@@ -2498,7 +2495,6 @@
 #include <pcm_maxaqn.h>
 #include <pcm_maxorb.h>
 #include <pcm_iratdef.h>
-#include <pcm_infpri.h>
 #include <pcm_pcmdef.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
@@ -2617,6 +2613,11 @@
     
     subroutine updcav(coord)
 
+    ! This subroutine is used to update the cavity in a gradient calculation.
+    ! It is called in abacus/abaopt.F
+    ! It might be useless within the module as the host program always
+    ! calls some other higher-level function to perform the update...
+
     use pedra_ibtfun
 
 #include <pcm_mxcent.h>
@@ -2727,45 +2728,6 @@
 
     end function chktss
           
-    subroutine secgra(cost,rp,q1,q2,x1,y1,x2,y2,nsol)
-
-    real(8) :: cost, rp, q1, q2, x1, y1, x2, y2
-    integer :: nsol
-
-    real(8), parameter :: d0 = 0.0d0
-    real(8) :: thresh, a, b, c, delta
-
-
-    thresh = 1.0d-20
-    a = q1 ** 2 + q2 ** 2
-    b = - 2.0d0 * cost * q2
-    c = cost ** 2 - rp ** 2 * q1 ** 2
-    delta = b ** 2 - 4.0d0 * a * c
-    
-    if(delta > thresh) then
-        nsol = 2
-        y1 = (- b + sqrt(delta)) / (2.0d0 * a)
-        y2 = (- b - sqrt(delta)) / (2.0d0 * a)
-        x1 = (cost - q2 * y1) / q1
-        x2 = (cost - q2 * y2) / q1
-    else if(delta < -thresh) then
-        nsol = 0
-        x1 = d0
-        x2 = d0
-        y1 = d0
-        y2 = d0
-    else
-        nsol = 1
-        y1 = - b / (2.0d0 * a)
-        y2 = y1
-        x1 = (cost - q2 * y1) / q1
-        x2 = x1
-    end if
-   
-    nsol = - 1
-    
-    end subroutine secgra
-
     function typlab(i)
     
     character(16)       :: typlab            

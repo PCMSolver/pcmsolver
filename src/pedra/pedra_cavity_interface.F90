@@ -21,7 +21,6 @@
 #include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
-#include <pcm_infpri.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
 #include <pcm_symmet.h>

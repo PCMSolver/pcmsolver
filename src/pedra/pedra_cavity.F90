@@ -24,7 +24,6 @@
 #include <pcm_maxorb.h>
 #include <pcm_maxaqn.h>
 #include <pcm_priunit.h>
-#include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
 #include <pcm_symmet.h>
@@ -38,9 +37,13 @@
     integer :: lnewsp, licav1, licav2, lx, ly, lz
     integer :: ljtr, lcv, lnperm, last
     character(len=8) :: memory_used_format = '(A, I10)'
+    
     integer, allocatable :: intsph(:, :), newsph(:, :)
     integer, allocatable :: icav1(:), icav2(:)
     integer, allocatable :: jtr(:, :), nperm(:, :)
+    real(8), allocatable :: vert(:, :, :), centr(:, :, :)
+    real(8), allocatable :: xval(:), yval(:), zval(:)
+    real(8), allocatable :: cv(:, :)
 
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
@@ -57,20 +60,21 @@
     NATM   = MXCENT
     NUMVER = MXVER
 
-    LOADFM = 1
-    LINTSP = LOADFM + 1
-    LVERT  = LINTSP + (NUMTS*10 + 1)/IRAT
-    LCENTR = LVERT  + NUMTS*10*3
-    LNEWSP = LCENTR + NUMTS*10*3
-    LICAV1 = LNEWSP + (NUMSPH*2 + 1)/IRAT
-    LICAV2 = LICAV1 + MXCENT
-    LX     = LICAV2 + MXCENT
-    LY     = LX     + NUMTS
-    LZ     = LY     + NUMTS
-    LJTR   = LZ     + NUMTS
-    LCV    = LJTR   + NUMTS*3
-    LNPERM = LCV    + NUMVER*3
-    LAST   = LNPERM + NUMSPH*8
+!   LOADFM = 1
+!   LINTSP = LOADFM + 1
+!   LVERT  = LINTSP + (NUMTS*10 + 1)/IRAT
+!   LCENTR = LVERT  + NUMTS*10*3
+!   LNEWSP = LCENTR + NUMTS*10*3
+!   LICAV1 = LNEWSP + (NUMSPH*2 + 1)/IRAT
+!   LICAV2 = LICAV1 + MXCENT
+!   LX     = LICAV2 + MXCENT
+!   LY     = LX     + NUMTS
+!   LZ     = LY     + NUMTS
+!   LJTR   = LZ     + NUMTS
+!   LCV    = LJTR   + NUMTS*3
+!   LNPERM = LCV    + NUMVER*3
+!   LAST   = LNPERM + NUMSPH*8
+    last = 1
     IF (LAST > LWORK) CALL ERRWRK('polyhedra_driver',LAST,LWORK, lvpri)
     LWRK   = LWORK - LAST + 1
     IF(SOME) then 
@@ -83,11 +87,17 @@
     allocate(icav2(natm))
     allocate(jtr(numts, 3))
     allocate(nperm(numsph, maxrep))
+    allocate(vert(numts, 10, 3))
+    allocate(centr(numts, 10, 3))
+    allocate(xval(numts))
+    allocate(yval(numts))
+    allocate(zval(numts))
+    allocate(cv(numver, 3))
 
-    call polyhedra(intsph, WORK(LVERT), WORK(LCENTR), newsph, &
-    icav1, icav2, WORK(LX), WORK(LY), WORK(LZ), &
-    jtr, WORK(LCV), NUMTS, NUMSPH, NUMVER, NATM, SOME, &
-    WORK(LAST), LWRK, nperm)
+    call polyhedra(intsph, vert, centr, newsph, &
+    icav1, icav2, xval, yval, zval, &
+    jtr, cv, numts, numsph, numver, natm, some, &
+    work(last), lwrk, nperm)
 
     end subroutine polyhedra_driver
 
@@ -114,7 +124,7 @@
 
     integer :: numts, natm, numsph, numver, lwork
     integer :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
-    real(8) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, *)
+    real(8) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, 3)
     real(8) :: xval(numts), yval(numts), zval(numts)
     real(8) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
     real(8) :: work(lwork)
@@ -2209,7 +2219,6 @@
     SUBROUTINE PLOTCAV(Vert,NUMTS)
 
 #include <pcm_priunit.h>
-#include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
 #include <pcm_pcm.h>
@@ -2494,7 +2503,6 @@
 #include <pcm_mxcent.h>
 #include <pcm_maxaqn.h>
 #include <pcm_maxorb.h>
-#include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>

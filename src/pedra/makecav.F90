@@ -29,7 +29,6 @@
 #include <pcm_maxorb.h>
 #include <pcm_maxaqn.h>
 #include <pcm_priunit.h>
-#include <pcm_iratdef.h>
 #include <pcm_pcmdef.h>
 #include <pcm_mxcent.h>
 #include <pcm_pcm.h>

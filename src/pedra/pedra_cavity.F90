@@ -21,7 +21,6 @@
 
     use pedra_utils, only : errwrk
 
-#include "pcm_maxorb.h"
 #include "pcm_maxaqn.h"
 #include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
@@ -108,7 +107,6 @@
     use pedra_print, only: output
     use pedra_cavity_derivatives, only: cavder
 
-#include "pcm_maxorb.h"
 #include "pcm_maxaqn.h"
 #include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
@@ -677,7 +675,6 @@
   
     use pedra_ibtfun
 
-#include "pcm_maxorb.h"
 #include "pcm_maxaqn.h"
 #include "pcm_mxcent.h"
 #include "pcm_priunit.h"
@@ -807,7 +804,6 @@
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"
-#include "pcm_maxorb.h"
 #include "pcm_symmet.h"
 
 ! Polygen: a program to generate spherical polyhedra with triangular
@@ -1141,7 +1137,6 @@
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"
-#include "pcm_maxorb.h"
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"
 #include "pcm_nuclei.h"
@@ -2407,7 +2402,6 @@
 
 #include "pcm_priunit.h"
 #include "pcm_maxaqn.h"
-#include "pcm_maxorb.h"
 #include "pcm_mxcent.h"
 #include "pcm_symmet.h"
 #include "pcm_pgroup.h"
@@ -2500,7 +2494,6 @@
 #include "pcm_priunit.h"
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"
-#include "pcm_maxorb.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"
@@ -2628,7 +2621,6 @@
 
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"
-#include "pcm_maxorb.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"

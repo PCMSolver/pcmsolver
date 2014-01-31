@@ -2483,7 +2483,6 @@
     subroutine pcmtns(vmat, geom, amass, katom)
 
     use pedra_utils, only: wlkdin                
-    use pedra_ibtfun
 
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"

@@ -81,7 +81,7 @@
       pt(4) = -1
       pt(5) =  1
       pt(6) =  1
-      pt(7) =  1
+      pt(7) = -1
       
       call polyhedra_driver(lvpri, work_, lwork_)
 

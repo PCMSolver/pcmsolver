@@ -124,10 +124,10 @@
    ! subroutine. Replace with a custom function specialized
    ! for 3x3 matrices (thus avoiding having to link BLAS/LAPACK)
    !
-   
-    use pedra_dlapack, only: dsyevh3
+  
+    use pedra_dblas, only: ddot
+    use pedra_dlapack, only: dsyevj3
 
-    implicit none
     real(8), dimension(n,3), intent(in) :: cor
     real(8), dimension(n), intent(in) :: tmass
     integer, intent(in) :: n
@@ -140,17 +140,27 @@
     integer :: i, j, k, info
     real(8) :: eigval(3), eigvec(3,3), ieigval(3), work(15), tinver(3,3), eigvalinv(3,3), temp(3,3)
     real(8), parameter :: tstlin = 1.0d-10
-    real(8) :: average
+    real(8) :: average, r2
     
     tinert = 0.0d0 
+    eigvec = 0.0d0
+    eigval = 0.0d0
+    eigvalinv = 0.0d0
+    tinver = 0.0d0
+    temp = 0.0d0
+    r2 = 0.0d0
     do i = 1, n
+       r2 = tmass(i)* ddot(3, cor(i, 1), n, cor(i, 1), n)
        do j = 1,3
+          tinert(j, j) = tinert(j, j) + r2
           do k = 1,3
              tinert(j,k) = tinert(j,k)+ tmass(i)*cor(i,j)*cor(i,k)
           enddo
        enddo
     enddo
+
     ! Symmetrize the inertia tensor
+    average = 0.0d0
     do i = 1, 3                                            
        do j = 1, 3
            average = 0.5d0 * (tinert(i, j) + tinert(j, i))
@@ -158,12 +168,13 @@
            tinert(j, i) = average
        enddo
     enddo
+
     temp = tinert
     
     ! Now diagonalize it, we want back both the eigenvalues and eigenvectors
-    !   call DGEEV('V','N',3,TEMP,3,EIGVAL,IEIGVAL,EIGVEC,3,1,1,WORK,15,INFO)
-    call dsyevh3(temp, eigvec, eigval)
-    
+    !call DGEEV('V','N',3,TEMP,3,EIGVAL,IEIGVAL,EIGVEC,3,1,1,WORK,15,INFO)
+    call dsyevj3(temp, eigvec, eigval)
+   
     if ( abs(eigval(3)-eigval(2)-eigval(1)) .lt. tstlin) then
        planar = .true.
     else

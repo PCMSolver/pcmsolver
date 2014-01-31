@@ -42,12 +42,12 @@ class GePolCavityH3Test : public ::testing::Test
 			Eigen::Vector3d H3( 0.000000, 0.000000,  2.666667);
 			std::vector<Sphere> spheres;
 			double radiusH = (1.20 * 1.20) / convertBohrToAngstrom;
-			Sphere sph2(H1, radiusH);
-			Sphere sph3(H2, radiusH);
-			Sphere sph4(H3, radiusH);
+			Sphere sph1(H1, radiusH);
+			Sphere sph2(H2, radiusH);
+			Sphere sph3(H3, radiusH);
+			spheres.push_back(sph1);
 			spheres.push_back(sph2);
 			spheres.push_back(sph3);
-			spheres.push_back(sph4);
 			double area = 0.2 / convertBohr2ToAngstrom2;
 			double probeRadius = 1.385 / convertBohrToAngstrom;
 			double minRadius = 0.2 / convertBohrToAngstrom;

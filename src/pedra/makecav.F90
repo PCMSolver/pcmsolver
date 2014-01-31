@@ -27,7 +27,6 @@
     implicit none
 
 #include "pcm_maxaqn.h"
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
@@ -44,6 +43,7 @@
     logical(c_bool) :: pedra_file_exists
 
     integer(c_int)  :: lwork2, i, nsym
+    integer :: lvpri
 
     LVPRI = 121201
     inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
@@ -90,7 +90,7 @@
     PT(6) =  1
     PT(7) =  1
           
-    CALL polyhedra_driver(WORK2, LWORK2)
+    CALL polyhedra_driver(lvpri, WORK2, LWORK2)
 
     nts_=nts
     do i=1,NTS

@@ -14,21 +14,23 @@
 
     ! Some print levels
     integer :: iprsol = 0
+    ! The global print unit
+    integer :: lvpri
 
     contains
 
-    subroutine polyhedra_driver(work,lwork)
+    subroutine polyhedra_driver(global_print_unit, work, lwork)
 
     use pedra_utils, only : errwrk
 
 #include "pcm_maxaqn.h"
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_symmet.h"
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"
 
+    integer :: global_print_unit
     real(8) :: work(*)
     integer :: lwork
 
@@ -50,6 +52,8 @@
 !     ----- set memory pointers for polyhedra setup -----
 
     SOME = IPRPCM.NE.-5
+!     ----- set lvpri
+    lvpri = global_print_unit
 
 !     maximum number of tessalations is not known, take worst case
 !     maximum number of spheres is not known, take worst case
@@ -108,7 +112,6 @@
     use pedra_cavity_derivatives, only: cavder
 
 #include "pcm_maxaqn.h"
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_symmet.h"
@@ -677,7 +680,6 @@
 
 #include "pcm_maxaqn.h"
 #include "pcm_mxcent.h"
-#include "pcm_priunit.h"
 #include "pcm_symmet.h"
 
     integer :: nesf, nesf0, numsph
@@ -800,7 +802,6 @@
 
     use pedra_ibtfun
 
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"
@@ -1133,7 +1134,6 @@
 
     use pedra_ibtfun
 
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"
@@ -1222,7 +1222,6 @@
     use pedra_utils, only: around
     use pedra_print, only: output
 
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
@@ -1755,7 +1754,6 @@
     
     SUBROUTINE INTER(P1,P2,P3,P4,NS,I)
 
-#include "pcm_priunit.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
@@ -1896,7 +1894,6 @@
 
     use pedra_dblas, only: vector_product
 
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
@@ -2124,7 +2121,6 @@
     
     SUBROUTINE CAVSPL(ICAV1,ICAV2,NCAV1,NCAV2,NATM,SOME)
 
-#include "pcm_priunit.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
@@ -2208,7 +2204,6 @@
     
     SUBROUTINE PLOTCAV(Vert,NUMTS)
 
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
@@ -2281,7 +2276,6 @@
     
     SUBROUTINE COLOUR(N,C1,C2,C3)
 
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_nuclei.h"
@@ -2400,7 +2394,6 @@
 
     use pedra_ibtfun
 
-#include "pcm_priunit.h"
 #include "pcm_maxaqn.h"
 #include "pcm_mxcent.h"
 #include "pcm_symmet.h"
@@ -2491,7 +2484,6 @@
     use pedra_utils, only: wlkdin                
     use pedra_ibtfun
 
-#include "pcm_priunit.h"
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"
 #include "pcm_pcmdef.h"

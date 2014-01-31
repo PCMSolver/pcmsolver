@@ -16,7 +16,6 @@
       implicit none
 
 #include "pcm_maxaqn.h"
-#include "pcm_priunit.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
@@ -32,7 +31,8 @@
       logical(c_bool)   :: pedra_file_exists
       integer(c_int)    :: pgroup_
 
-      integer(c_int)  :: i, nsym
+      integer(c_int)   :: i, nsym
+      integer          :: lvpri
       character(len=3) :: pgroup
       
       lvpri = 121201
@@ -83,7 +83,7 @@
       pt(6) =  1
       pt(7) =  1
       
-      call polyhedra_driver(work_, lwork_)
+      call polyhedra_driver(lvpri, work_, lwork_)
 
       nts_ = nts
       do i = 1, nts

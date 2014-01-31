@@ -15,15 +15,14 @@
 
       implicit none
 
-#include <pcm_maxorb.h>
-#include <pcm_maxaqn.h>
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
-#include <pcm_symmet.h>
-#include <pcm_pgroup.h>
+#include "pcm_maxaqn.h"
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
+#include "pcm_symmet.h"
+#include "pcm_pgroup.h"
 
       real(c_double)    :: xtscor_(*), ytscor_(*), ztscor_(*)
       real(c_double)    :: xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)

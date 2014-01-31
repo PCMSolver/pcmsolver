@@ -21,12 +21,14 @@
 
     use pedra_utils, only : errwrk
 
-#include <pcm_maxorb.h>
-#include <pcm_maxaqn.h>
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
-#include <pcm_symmet.h>
+#include "pcm_maxorb.h"
+#include "pcm_maxaqn.h"
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_symmet.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     real(8) :: work(*)
     integer :: lwork
@@ -45,8 +47,6 @@
     real(8), allocatable :: xval(:), yval(:), zval(:)
     real(8), allocatable :: cv(:, :)
 
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
 
 !     ----- set memory pointers for polyhedra setup -----
 
@@ -108,25 +108,23 @@
     use pedra_print, only: output
     use pedra_cavity_derivatives, only: cavder
 
-#include <pcm_maxorb.h>
-#include <pcm_maxaqn.h>
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
-#include <pcm_symmet.h>
-
-    logical :: some
-
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
-#include <pcm_nuclei.h>
-#include <pcm_pcmnuclei.h>
+#include "pcm_maxorb.h"
+#include "pcm_maxaqn.h"
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_symmet.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
+#include "pcm_nuclei.h"
+#include "pcm_pcmnuclei.h"
 
     integer :: numts, natm, numsph, numver, lwork
     integer :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
     real(8) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, 3)
     real(8) :: xval(numts), yval(numts), zval(numts)
     real(8) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
+    logical :: some
     real(8) :: work(lwork)
     integer :: jtr(numts, 3), nperm(numsph, *) 
 
@@ -679,14 +677,12 @@
   
     use pedra_ibtfun
 
-#include <pcm_maxorb.h>
-#include <pcm_maxaqn.h>
-#include <pcm_mxcent.h>
-#include <pcm_priunit.h>
-#include <pcm_symmet.h>
+#include "pcm_maxorb.h"
+#include "pcm_maxaqn.h"
+#include "pcm_mxcent.h"
+#include "pcm_priunit.h"
+#include "pcm_symmet.h"
 
-! f#include <pcm_trans.h>
-    
     integer :: nesf, nesf0, numsph
     real(8) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
     integer :: nperm(numsph,*), newsph(numsph,2)
@@ -807,12 +803,12 @@
 
     use pedra_ibtfun
 
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
-#include <pcm_maxaqn.h>
-#include <pcm_maxorb.h>
-#include <pcm_symmet.h>
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_maxaqn.h"
+#include "pcm_maxorb.h"
+#include "pcm_symmet.h"
 
 ! Polygen: a program to generate spherical polyhedra with triangular
 ! faces. An equilater division algorithm is used.
@@ -1141,16 +1137,15 @@
 
     use pedra_ibtfun
 
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
-#include <pcm_maxaqn.h>
-#include <pcm_maxorb.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
-#include <pcm_nuclei.h>
-#include <pcm_symmet.h>
-! f#include <pcm_trans.h>
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_maxaqn.h"
+#include "pcm_maxorb.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
+#include "pcm_nuclei.h"
+#include "pcm_symmet.h"
 
 !  reproduce the irreducibile part of the cavity
     
@@ -1232,9 +1227,11 @@
     use pedra_utils, only: around
     use pedra_print, only: output
 
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     integer :: ns, nv, numts
     real(8) :: area
@@ -1252,8 +1249,6 @@
     integer :: i, j, ic, icop, icut, idx, idx2, ii, intcas, iprcav
     integer :: iv1, iv2, ivnew, ivold, jj, k, l, n, nsfe1, nvleft, nvnegl
 
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
 
 !     Coord. del centro che sottende l`arco tra i vertici
 !     n e n+1 (per i primi tre vertici e' sicuramente il centro della
@@ -1765,21 +1760,21 @@
     
     SUBROUTINE INTER(P1,P2,P3,P4,NS,I)
 
-#include <pcm_priunit.h>
-#include <pcm_mxcent.h>
-#include <pcm_pcmdef.h>
+#include "pcm_priunit.h"
+#include "pcm_mxcent.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     real(8) :: p1(3), p2(3), p3(3), p4(3)
     integer :: ns, i
-    logical :: lalow,lblow
+    logical :: lalow, lblow
 
     real(8) :: alphat, delta, diff, diff2, diff2a, diff2b
     real(8) :: diffa, diffb, dnorm, p1p3, p2p3, r, r2, tol
     integer :: j, jj, m
     integer :: iprcav = 0
 
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
 
 !     Trova il punto P4, sull`arco P1-P2 sotteso dal centro P3, che
 !     si trova sulla superficie della sfera NS
@@ -1906,9 +1901,11 @@
 
     use pedra_dblas, only: vector_product
 
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     integer :: nv, ns, numts
     real(8) :: area
@@ -1926,8 +1923,6 @@
     real(8) :: x1, x2, y1, y2, z1, z2
     integer :: i, jj, n, n0, n1, n2, nsfe1
 
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
 
 !     Sfrutta il teorema di Gauss-Bonnet per calcolare l'area
 !     della tessera con vertici PTS(3,NV). Consideriamo sempre
@@ -2134,9 +2129,11 @@
     
     SUBROUTINE CAVSPL(ICAV1,ICAV2,NCAV1,NCAV2,NATM,SOME)
 
-#include <pcm_priunit.h>
-#include <pcm_mxcent.h>
-#include <pcm_pcmdef.h>
+#include "pcm_priunit.h"
+#include "pcm_mxcent.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     integer :: icav1(mxcent), icav2(mxcent)
     integer :: ncav1, ncav2, natm
@@ -2145,8 +2142,6 @@
     integer :: i, n1, n2, nn, icen, n
     real(8) :: r, rr, sum, x, y, z, xx, yy, zz
 
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
 
 !  QUESTA ROUTINE CONTROLLA SE IL SOLUTO E' CONTENUTO IN UNA
 !  UNICA CAVITA' O IN CAVITA' DISTINTE: IN TAL CASO I NUMERI
@@ -2218,11 +2213,11 @@
     
     SUBROUTINE PLOTCAV(Vert,NUMTS)
 
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     integer :: numts
     real(8) :: VERT(NUMTS,10,*)
@@ -2290,13 +2285,14 @@
     END SUBROUTINE PLOTCAV
     
     SUBROUTINE COLOUR(N,C1,C2,C3)
-#include <pcm_priunit.h>
-#include <pcm_pcmdef.h>
-#include <pcm_mxcent.h>
-#include <pcm_nuclei.h>
-#include <pcm_pcmnuclei.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
+
+#include "pcm_priunit.h"
+#include "pcm_pcmdef.h"
+#include "pcm_mxcent.h"
+#include "pcm_nuclei.h"
+#include "pcm_pcmnuclei.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
     
     integer :: n
     real(8) :: c1, c2, c3
@@ -2409,12 +2405,12 @@
 
     use pedra_ibtfun
 
-#include <pcm_priunit.h>
-#include <pcm_maxaqn.h>
-#include <pcm_maxorb.h>
-#include <pcm_mxcent.h>
-#include <pcm_symmet.h>
-#include <pcm_pgroup.h>
+#include "pcm_priunit.h"
+#include "pcm_maxaqn.h"
+#include "pcm_maxorb.h"
+#include "pcm_mxcent.h"
+#include "pcm_symmet.h"
+#include "pcm_pgroup.h"
 
     integer :: nv, nt, its, nvert, numts
     integer :: jtr(numts, *)
@@ -2423,6 +2419,7 @@
 
     integer :: i, j, isymop, ii, jj, k
 
+! Symmetry operations in for the Abelian groups
 !      SYMOP(0) = ' E '
 !      SYMOP(1) = 'Oyz'
 !      SYMOP(2) = 'Oxz'
@@ -2431,6 +2428,7 @@
 !      SYMOP(5) = 'C2y'
 !      SYMOP(6) = 'C2x'
 !      SYMOP(7) = ' i '
+
     DO I = 0, 7
         LSYMOP(I) = .FALSE.
     END DO
@@ -2499,16 +2497,16 @@
     use pedra_utils, only: wlkdin                
     use pedra_ibtfun
 
-#include <pcm_priunit.h>
-#include <pcm_mxcent.h>
-#include <pcm_maxaqn.h>
-#include <pcm_maxorb.h>
-#include <pcm_pcmdef.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
-#include <pcm_symmet.h>
-#include <pcm_nuclei.h>
-#include <pcm_orgcom.h>
+#include "pcm_priunit.h"
+#include "pcm_mxcent.h"
+#include "pcm_maxaqn.h"
+#include "pcm_maxorb.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
+#include "pcm_symmet.h"
+#include "pcm_nuclei.h"
+#include "pcm_orgcom.h"
 
     integer :: katom
     real(8) :: vmat(3, 3), geom(katom, *), amass(*)
@@ -2628,15 +2626,15 @@
 
     use pedra_ibtfun
 
-#include <pcm_mxcent.h>
-#include <pcm_maxaqn.h>
-#include <pcm_maxorb.h>
-#include <pcm_pcmdef.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
-#include <pcm_nuclei.h>
-#include <pcm_pcmnuclei.h>
-#include <pcm_symmet.h>
+#include "pcm_mxcent.h"
+#include "pcm_maxaqn.h"
+#include "pcm_maxorb.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
+#include "pcm_nuclei.h"
+#include "pcm_pcmnuclei.h"
+#include "pcm_symmet.h"
 
     real(8) :: coord(3, *)
 

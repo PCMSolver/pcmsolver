@@ -23,10 +23,12 @@
 
 class GePolCavity : public Cavity 
 {
+	private:
+		enum pGroup { C1, Cs, C2, Ci, C2v, C2h, D2, D2h };
 	public:
 		GePolCavity(){}
-                GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, double _minRadius = 100.0) :  
-                    Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), minimalRadius(_minRadius) 
+                GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, double _minRadius = 100.0, int _pGroup = C1) :  
+                    Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), minimalRadius(_minRadius), pointGroup(_pGroup) 
                        {
                     	   makeCavity(10000, 10000000);
                        }
@@ -41,8 +43,9 @@ class GePolCavity : public Cavity
                 double averageArea;  
                 double probeRadius;
 		double minimalRadius;
+		int pointGroup;
                 int addedSpheres;
-                virtual std::ostream & printCavity(std::ostream & os);  
+                virtual std::ostream & printCavity(std::ostream & os);
 };
 
 namespace

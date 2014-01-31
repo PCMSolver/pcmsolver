@@ -51,7 +51,8 @@ class GePolCavityH3Test : public ::testing::Test
 			double area = 0.2 / convertBohr2ToAngstrom2;
 			double probeRadius = 1.385 / convertBohrToAngstrom;
 			double minRadius = 0.2 / convertBohrToAngstrom;
-			cavity = GePolCavity(spheres, area, probeRadius, minRadius);
+			int pGroup = 6; // C2v
+			cavity = GePolCavity(spheres, area, probeRadius, minRadius, pGroup);
 			cavity.saveCavity("h3+.npz");
 		}
 };

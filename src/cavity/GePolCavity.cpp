@@ -87,8 +87,6 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 
 	double *rin = sphereRadius_.data();
 
-	int pointGroup = 0;
-
         // Go PEDRA, Go!	
 	generatecavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius, &pointGroup, work, &lwork);

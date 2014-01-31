@@ -10,11 +10,11 @@
     
     subroutine cavder(nsj, nsjr, icoord, intsph, newsph)
 
-#include <pcm_mxcent.h>
-#include <pcm_nuclei.h>
-#include <pcm_pcmdef.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
+#include "pcm_mxcent.h"
+#include "pcm_nuclei.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
     
     integer :: nsj, nsjr, icoord
     integer :: intsph(mxts, 10), newsph(mxsp, 2)
@@ -180,16 +180,15 @@
         600 END DO
     500 END DO
 
-    END SUBROUTINE CAVDER
-!***********************************************************************
+    end subroutine cavder
     
-    SUBROUTINE DRCNRD(JJ,NSI,NSJ,DC,NEWSPH)
+    subroutine drcnrd(jj,nsi,nsj,dc,newsph)
 
-#include <pcm_mxcent.h>
-#include <pcm_nuclei.h>
-#include <pcm_pcmdef.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
+#include "pcm_mxcent.h"
+#include "pcm_nuclei.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     integer :: jj, nsi, nsj
     real(8) :: coordj(3), coordk(3)
@@ -241,15 +240,15 @@
     DC = - ( COORDJ(JJ) - COORDK(JJ) ) / D
 
     200 CONTINUE
-    END SUBROUTINE DRCNRD
+    end subroutine drcnrd
     
-    SUBROUTINE DRCNCN(JJ,NSI,ICOORD,NSJ,DC,NEWSPH)
+    subroutine drcncn(jj,nsi,icoord,nsj,dc,newsph)
 
-#include <pcm_mxcent.h>
-#include <pcm_nuclei.h>
-#include <pcm_pcmdef.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
+#include "pcm_mxcent.h"
+#include "pcm_nuclei.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     integer :: jj, nsi, icoord, nsj
     real(8) :: dc
@@ -309,15 +308,15 @@
     END IF
 
     200 CONTINUE
-    END SUBROUTINE DRCNCN
+    end subroutine drcncn
     
-    SUBROUTINE DRRDRD(NSI,NSJ,DR1,NEWSPH)
+    subroutine drrdrd(nsi,nsj,dr1,newsph)
 
-#include <pcm_mxcent.h>
-#include <pcm_nuclei.h>
-#include <pcm_pcmdef.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
+#include "pcm_mxcent.h"
+#include "pcm_nuclei.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     integer :: nsi, nsj, newsph(mxsp, 2)
     real(8) :: dr1
@@ -373,15 +372,15 @@
         DR1 = ( RE(ABS(NSK)) * RJ ) / ( D*RI)
     END IF
     200 CONTINUE
-    END SUBROUTINE DRRDRD
+    end subroutine drrdrd
     
     subroutine drrdcn(nsi, icoord, nsj, dr1, newsph)
 
-#include <pcm_mxcent.h>
-#include <pcm_nuclei.h>
-#include <pcm_pcmdef.h>
-#include <pcm_pcm.h>
-#include <pcm_pcmlog.h>
+#include "pcm_mxcent.h"
+#include "pcm_nuclei.h"
+#include "pcm_pcmdef.h"
+#include "pcm_pcm.h"
+#include "pcm_pcmlog.h"
 
     integer :: nsi, icoord, nsj, newsph(mxsp, 2)
     real(8) :: dr1
@@ -441,6 +440,6 @@
     DR1 = DIFF * FAC / ( 2.0D+00 * D**3 * RI )
 
     200 CONTINUE
-    END SUBROUTINE DRRDCN
+    end subroutine drrdcn
 
     end module pedra_cavity_derivatives

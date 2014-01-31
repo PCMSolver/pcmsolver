@@ -1,28 +1,36 @@
     module pedra_cavity_derivatives
 
+    implicit none
+
     public cavder
     
     private
     
     contains
     
-    SUBROUTINE CAVDER(NSJ,NSJR,ICOORD,INTSPH,NEWSPH)
+    subroutine cavder(nsj, nsjr, icoord, intsph, newsph)
 
-#include <pcm_implicit.h>
 #include <pcm_mxcent.h>
 #include <pcm_nuclei.h>
 #include <pcm_pcmdef.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
+    
+    integer :: nsj, nsjr, icoord
+    integer :: intsph(mxts, 10), newsph(mxsp, 2)
+    
+    real(8), parameter :: d0 = 0.0d0
+    integer :: alge(63), casca(10)
+    real(8) :: ddr, ddx, ddy, ddz, der, dr1, dx, dy, dz
+    real(8) :: fact
+    integer :: i, ii, index, k, livel, ll, max, icont, min 
+    integer :: ns1, ns2, nsa, nsub, number
 
-    INTEGER :: ALGE(63),CASCA(10)
-    DIMENSION INTSPH(MXTS,10), NEWSPH(MXSP,2)
-    PARAMETER (D0=0.0D0)
 
 !     Le derivate contengono termini dovuti direttamente allo
 !     spostamento del centro della sfera NSJ, e termini "mediati" dagli
 !     spostamenti del centro e dal cambiamento del raggio delle sfere
-!     "aggiunte" (create da PEDRA_, oltre a quelle originarie).
+!     "aggiunte" (create da PEDRA, oltre a quelle originarie).
 
 !     Memorizza in DERRAD(NS,NSJ,ICOORD) la derivata del raggio di
 !     NS e in DERCEN(NS,NSJ,ICOORD,3) le derivate delle
@@ -177,15 +185,19 @@
     
     SUBROUTINE DRCNRD(JJ,NSI,NSJ,DC,NEWSPH)
 
-#include <pcm_implicit.h>
 #include <pcm_mxcent.h>
 #include <pcm_nuclei.h>
 #include <pcm_pcmdef.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
-    DIMENSION COORDJ(3), COORDK(3)
-    DIMENSION INTSPH(MXTS,10), NEWSPH(MXSP,2)
-    PARAMETER (D0=0.D0)
+
+    integer :: jj, nsi, nsj
+    real(8) :: coordj(3), coordk(3)
+    integer :: intsph(mxts, 10), newsph(mxsp, 2)
+
+    real(8), parameter :: d0 = 0.0d0
+    real(8) :: dc, d, d2
+    integer :: nsk
 
 !     Trova la derivata della coordinata JJ del centro della sfera
 !     NSI rispetto al raggio dellla sfera NSJ.
@@ -233,15 +245,20 @@
     
     SUBROUTINE DRCNCN(JJ,NSI,ICOORD,NSJ,DC,NEWSPH)
 
-#include <pcm_implicit.h>
 #include <pcm_mxcent.h>
 #include <pcm_nuclei.h>
 #include <pcm_pcmdef.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
-    DIMENSION COORDJ(3), COORDK(3)
-    DIMENSION NEWSPH(MXSP,2)
-    PARAMETER (D0=0.D0)
+
+    integer :: jj, nsi, icoord, nsj
+    real(8) :: dc
+    integer :: newsph(mxsp,2)
+
+    real(8) :: coordj(3), coordk(3)
+    real(8), parameter :: d0 = 0.0d0
+    real(8) :: d, d2
+    integer :: k, nsk 
 
 !     Trova la derivata della coordinata JJ del centro della sfera
 !     NSI rispetto alla coordinata ICOORD di NSJ, che interseca NSI.
@@ -296,14 +313,18 @@
     
     SUBROUTINE DRRDRD(NSI,NSJ,DR1,NEWSPH)
 
-#include <pcm_implicit.h>
 #include <pcm_mxcent.h>
 #include <pcm_nuclei.h>
 #include <pcm_pcmdef.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
-    DIMENSION NEWSPH(MXSP,2)
-    PARAMETER (D0=0.D0)
+
+    integer :: nsi, nsj, newsph(mxsp, 2)
+    real(8) :: dr1
+    
+    real(8), parameter :: d0 = 0.0d0
+    real(8) :: d, d2, ri, rj, rk, rs
+    integer :: nsk
 
 !     Trova la derivata del raggio della sfera NSI rispetto al raggio
 !     della sfera NSJ.
@@ -354,17 +375,21 @@
     200 CONTINUE
     END SUBROUTINE DRRDRD
     
-    SUBROUTINE DRRDCN(NSI,ICOORD,NSJ,DR1,NEWSPH)
+    subroutine drrdcn(nsi, icoord, nsj, dr1, newsph)
 
-#include <pcm_implicit.h>
 #include <pcm_mxcent.h>
 #include <pcm_nuclei.h>
 #include <pcm_pcmdef.h>
 #include <pcm_pcm.h>
 #include <pcm_pcmlog.h>
-    DIMENSION NEWSPH(MXSP,2)
-    DIMENSION COORDJ(3),COORDK(3)
-    PARAMETER (D0=0.D0)
+
+    integer :: nsi, icoord, nsj, newsph(mxsp, 2)
+    real(8) :: dr1
+    
+    real(8) :: coordj(3), coordk(3)
+    real(8), parameter :: d0 = 0.0d0
+    real(8) :: a, b, d, d2, diff, fac, ri, rj, rk, rs
+    integer :: k, nsk
 
 !     Trova la derivata del raggio della sfera NSI rispetto alla
 !     coordinata ICOORD (1=X, 2=Y, 3=Z) della sfera NSJ, che interseca

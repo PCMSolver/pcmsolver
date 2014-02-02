@@ -16,6 +16,8 @@
     integer :: iprsol = 0
     ! The global print unit
     integer :: lvpri
+    ! Error code, 0 means everything went OK
+    integer :: pedra_error_code = 0
 
     contains
 
@@ -131,7 +133,7 @@
     integer :: jtr(numts, 3), nperm(numsph, *) 
 
     real(8), parameter :: d0 = 0.0d0
-    real(8), parameter :: first = 0.0174533d0
+    real(8), parameter :: first = 0.0174533d0 ! Degrees-to-Radians conversion
     real(8) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
     real(8) :: reg, reg2, regd2, ren, rend2, reo, reo2
     real(8) :: rep, rep2, repd2, rgn, rij, rij2, rik, rik2
@@ -149,13 +151,14 @@
     real(8), dimension(3, 3) ::  rotcav = reshape([1.0d0, 0.0d0, 0.0d0,  &
                                                    0.0d0, 1.0d0, 0.0d0,  &
                                                    0.0d0, 0.0d0, 1.0d0], [3, 3])
+    real(8), allocatable :: mass(:), geom(:, :)
           
 
 !     Se stiamo costruendo una nuova cavita' per il calcolo del
 !     contributo dispersivo e repulsivo:
 
-    IDISREP = 0
-    IPRCAV = 0
+    idisrep = 0
+    iprcav = 0
 
 
 ! se icesph=0
@@ -166,83 +169,64 @@
 !     legge i raggi dall'input e fa coincidere i centri con
 !     alcuni atomi definiti dall'indice ina(k) con k=1,NESFP
 !     es: xe(k)=c(1,ina(k))
+! icesph is always 1, centers and radii are passed explicitly from
+!  the module. PEDRA is completely ignorant about the existence of molecules.
+! All data is already in bohr. No unit conversions are performed by PEDRA
 
-! f      IF(ICESPH.LE.0) THEN
-! f         DO J=1,NESFP
-! f
-! fc           XE(J)=CORD(1,J)
-! fc           YE(J)=CORD(2,J)
-! fc           ZE(J)=CORD(3,J)
-! fClf            write(lvpri,*) 'icesph',icesph,nesfp
-! f            XE(J)=PCMCORD(1,J)
-! f            YE(J)=PCMCORD(2,J)
-! f            ZE(J)=PCMCORD(3,J)
-! f            INA(J)=J
-! f         ENDDO
-! fC
-! f      END IF
-! f      IF(ICESPH.EQ.2)THEN
-! f         DO J=1,NESFP
-! f           XE(J)=PCMCORD(1,INA(J))
-! f           YE(J)=PCMCORD(2,INA(J))
-! f           ZE(J)=PCMCORD(3,INA(J))
-! f         ENDDO
-! f      END IF
-! f      NESF=NESFP
-!      print * ,'at the beginning of pedra', nesf
-!      write(lvpri,*) 'at the beginning of pedra', nesf
-!      do i=1,nesf
-!         write(lvpri,1111) xe(i), ye(i), ze(i), re(i)
-!      enddo
-
-!  PEDRA prevede che i dati geometrici siano espressi in ANGSTROM :
-!  vengono trasformati, e solo alla fine i risultati tornano in bohr.
-
-    90 CONTINUE
-    DO I=1,NESFP
-        XE(I)=XE(I)
-        YE(I)=YE(I)
-        ZE(I)=ZE(I)
-        RE(I) = RIN(I) * ALPHA(I)
+    do i = 1, nesfp
+        ! The following are useless... 
+        ! Leftover from the cleanup of unit conversions
+        !xe(i) = xe(i)
+        !ye(i) = ye(i)
+        !ze(i) = ze(i)
+        !re(i) = rin(i) * alpha(i) 
+        re(i) = rin(i) ! The scaling has been done C++-side
         write (lvpri,*) xe(i), ye(i), ze(i), re(i)
-    ENDDO
+    enddo
 
-    CALL DZERO(VERT,NUMTS*10*3)
-    CALL DZERO(CENTR,NUMTS*10*3)
+    !call dzero(vert,numts*10*3)
+    !call dzero(centr,numts*10*3)
+    ! Avoid calls to dzero...
+    vert = 0.0d0
+    centr = 0.0d0
 
 !                   creation of new spheres
 
-    DO N = 1, NESF
-        NEWSPH(N,1) = 0
-        NEWSPH(N,2) = 0
-    ENDDO
+    do n = 1, nesf
+        newsph(n,1) = 0
+        newsph(n,2) = 0
+    enddo
 
-    ITYPC = 0
-    OMG=OMEGA*FIRST
-    SENOM=Sin(OMG)
-    COSOM2=(cos(OMG))**2
-    RTDD=RET+RSOLV
-    RTDD2=RTDD*RTDD
-    NET=NESF
-    NN=2
-    NE=NESF
-    NEV=NESF
+    itypc = 0
+    omg = omega * first
+    senom = sin(omg)
+    cosom2 = (cos(omg))**2
+    rtdd = ret + rsolv
+    rtdd2 = rtdd * rtdd
+    net = nesf
+    nn = 2
+    ne = nesf
+    nev = nesf
     GO TO 100
-    110 NN=NE+1
-    NE=NET
+    110 NN = NE + 1
+    NE = NET
     100 CONTINUE
 
 !     check on the number of spheres
 
-    WRITE(LVPRI,*) 'Number of extra spheres = ', NE
-    IF (NE > MXSP) THEN
-        WRITE(LVPRI,*) NE
-        WRITE(LVPRI,*) 'Too many spheres (Greater than MXSP=200).'
-        STOP
-    ENDIF
+    write(lvpri, *) 'Number of extra spheres = ', NE
+    if (ne > mxsp) then
+        write(lvpri, *) ne
+        write(lvpri, *) 'Too many spheres (Greater than MXSP=200).'
+! PEDRA should not stop the program flow as that renders catching
+! bugs rather difficult. It should rather send back error codes
+! to the parent code.
+        pedra_error_code = 1
+        stop
+    end if
 
 
-    DO 120 I=NN,NE
+    DO 120 I = NN,NE
         NES=I-1
         DO 130 J=1,NES
             RIJ2=(XE(I)-XE(J))**2+ &
@@ -360,10 +344,12 @@
         WRITE(*,*) '2'
         STOP
     ENDIF
-
-    IF (KATOM > 1) THEN
-        CALL PCMTNS(ROTCAV,WORK(LGEOM),WORK(LMASS),KATOM)
-    END IF
+    
+    allocate(mass(katom))
+    allocate(geom(katom, 3))
+    if (katom > 1) then
+        call pcmtns(rotcav, geom, mass, katom)
+    end if
 
 !    Division of the surface into tesserae
 
@@ -2203,7 +2189,7 @@
 
     END SUBROUTINE CAVSPL
     
-    SUBROUTINE PLOTCAV(Vert,NUMTS)
+    subroutine plotcav(vert, numts)
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
@@ -2211,8 +2197,8 @@
 #include "pcm_pcmlog.h"
 
     integer :: numts
-    real(8) :: VERT(NUMTS,10,*)
-    integer :: IVTS(MXTS,10)
+    real(8) :: vert(numts, 10, *)
+    integer :: ivts(mxts, 10)
     logical :: cavity_file_exists
 
     real(8) :: c1, c2, c3
@@ -2221,8 +2207,16 @@
 
 !     Prepare the input file for GeomView (coloured polyhedra)
 
-    IF (ICESPH == 0 .OR. ICESPH == 2 .OR. ICESPH == 3) INDEX = 1
-    LUCAV = 12121201
+! Decide how to color the spheres.
+! This is DALTON-related, in PCMSolver all the spheres will always be
+! gray as PEDRA is to be kept ignorant of atomic types!
+!   icesph = 1, spheres given from input (x, y, z, R)
+    if (icesph == 0 .or. icesph == 2 .or. icesph == 3) then
+            index = 1
+    end if
+    
+    lucav = 12121201
+    
     inquire(file = 'cavity.off', exist = cavity_file_exists)
     if (cavity_file_exists) then
         open(lucav, &
@@ -2238,42 +2232,43 @@
     form = 'formatted', &
     access = 'sequential')
     rewind(lucav)
-    Numv = 0
-    DO 10 I = 1, NTs
-        NUMV = NUMV + NVert(i)
-    10 END DO
-    WRITE(LUCAV,500)'COFF'
-    WRITE(LUCAV,1000)NUMV, NTs, NumV
-    K = 0
-    LAST = 0
-    DO 2010 I = 1, NTs
-        N=ISphe(I)
-        IF(N /= Last) WRITE(LUCAV,1500)N
-        Last = N
-        IF(Index == 1) THEN
-            Call COLOUR(N,C1,C2,C3)
-        ELSE
-            C1=1.0D0
-            C2=1.0D0
-            C3=1.0D0
-        END IF
-        Do 2020 j = 1, NVert(i)
-            IVTS(I,J) = K
-            K = K + 1
-            WRITE(LUCAV,2001)(VERT(I,J,JCORD),JCORD=1,3), &
-            C1,C2,C3,0.75,I
-        2020 END DO
-    2010 END DO
-    Do 20 I = 1, NTs
-        WRITE(LUCAV,3000)NVert(I),(IVTS(I,J),J=1,NVERT(I))
-    20 END DO
-    500 FORMAT(1x,a)
-    1000 FORMAT(3i10)
-    1500 FORMAT('# Sphere number ',i4)
-    2001 FORMAT('  ',3f16.9,4f5.2,' # Tess. ',i4)
-    3000 FORMAT('  ',14i10)
+
+    numv = 0
+
+    do i = 1, nts
+        numv = numv + nvert(i)
+    end do
+
+    write(lucav, '(1x, a)') 'COFF'
+    write(lucav, '(3i10)') numv, nts, numv
+    k = 0
+    last = 0
+    do i = 1, nts
+        n = isphe(i)
+        if (n /= last) then
+                write(lucav, '(a, i4)') "# Sphere number ", n
+        end if
+        last = n
+        if (index == 1) then
+            call colour(n, c1, c2, c3)
+        else
+            c1 = 1.0d0
+            c2 = 1.0d0
+            c3 = 1.0d0
+        end if
+        do j = 1, nvert(i)
+            ivts(i, j) = k
+            k = k + 1
+            write(lucav, 2001) (vert(i, j, jcord), jcord = 1, 3), c1, c2, c3, 0.75, i
+        end do
+    end do
+    do i = 1, nts
+        write(lucav, '(a, 14i10)') "  ", nvert(i), (ivts(i, j), j = 1, nvert(i))
+    end do
+
+    2001 format('  ',3f16.9,4f5.2,' # Tess. ',i4)
     
-    END SUBROUTINE PLOTCAV
+    end subroutine plotcav
     
     SUBROUTINE COLOUR(N,C1,C2,C3)
 
@@ -2494,7 +2489,7 @@
 #include "pcm_orgcom.h"
 
     integer :: katom
-    real(8) :: vmat(3, 3), geom(katom, *), amass(*)
+    real(8) :: vmat(3, 3), geom(katom, 3), amass(katom)
 
     real(8) :: eigval(3), eigvec(3, 3), tinert(3, 3)
     real(8) :: angmom(3), omegad(3), eiginv(3, 3), scal(3)

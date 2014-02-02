@@ -32,6 +32,7 @@
       integer(c_int)    :: pgroup_
 
       integer(c_int)   :: i, nsym
+      integer(c_int)   :: error_code
       integer          :: lvpri
       character(len=3) :: pgroup
       
@@ -83,7 +84,7 @@
       pt(6) =  1
       pt(7) = -1
       
-      call polyhedra_driver(lvpri, work_, lwork_)
+      call polyhedra_driver(lvpri, error_code, work_, lwork_)
 
       nts_ = nts
       do i = 1, nts
@@ -96,6 +97,8 @@
          zsphcor_(i) = ze(isphe(i))
          rsph_(i) = re(isphe(i))
       enddo
+
+      write(lvpri, *) "Error code is ", error_code
 
       close(lvpri)
 

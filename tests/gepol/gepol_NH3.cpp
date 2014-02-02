@@ -19,6 +19,7 @@
 #endif
 
 #include "GePolCavity.hpp"
+#include "PhysicalConstants.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -49,8 +50,10 @@ class GePolCavityNH3Test : public ::testing::Test
 			spheres.push_back(sph2);
 			spheres.push_back(sph3);
 			spheres.push_back(sph4);
-			double area = 0.4;
-			cavity = GePolCavity(spheres, area);
+			double area = 0.4; // Bohr^2
+			double probeRadius = 1.385 / convertBohrToAngstrom;
+			double minRadius = 0.2 / convertBohrToAngstrom;
+			cavity = GePolCavity(spheres, area, probeRadius, minRadius);
 			cavity.saveCavity("nh3.npz");
 		}
 };

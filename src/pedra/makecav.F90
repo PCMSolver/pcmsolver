@@ -43,6 +43,7 @@
     logical(c_bool) :: pedra_file_exists
 
     integer(c_int)  :: lwork2, i, nsym
+    integer(c_int)  :: error_code
     integer :: lvpri
 
     LVPRI = 121201
@@ -90,7 +91,7 @@
     PT(6) =  1
     PT(7) =  1
           
-    CALL polyhedra_driver(lvpri, WORK2, LWORK2)
+    CALL polyhedra_driver(lvpri, error_code, WORK2, LWORK2)
 
     nts_=nts
     do i=1,NTS

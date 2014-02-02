@@ -1,8 +1,10 @@
 !
 !  -- dalton/sirius/sircav.F --
 !     (Luca Frediani)
-! Extracted from DALTON
-! RDR 300114 Wrap up in a F90 module. 
+! Originally written for DALTON by Luca Frediani (ca. 2003-2004)
+! Extracted from DALTON by Krzysztof Mozgawa and Ville Weijio (ca. 2010-2012)
+! RDR 0114 Wrap up in a F90 module, with a major clean-up of all
+!          the DALTON stuff that still lingered but was unused. 
 !
     module pedra_cavity
 
@@ -16,12 +18,37 @@
     integer :: iprsol = 0
     ! The global print unit
     integer :: lvpri
-    ! Error code, 0 means everything went OK
+    ! Error code
+    !    0: everything went OK
+    !    1: exceeded maximum number of spheres
+    !       [subroutine polyhedra]
+    !    2: exceeded maximum number of tesserae
+    !       [subroutine polyhedra]
+    !    3: number of spheres bigger than number of nuclei [only for gradients]
+    !       [subroutine polyhedra]
+    !    4: cavity not consistent with symmetry
+    !       [subroutine sphper]
+    !    5: ?
+    !       [subroutine sphper]
+    !    6: itsnum > mxts ?
+    !       [subroutine polygen]
+    !    7: nts > mxts ?
+    !       [subroutine repcav]
+    !    8: too many vertices in tessera
+    !       [subroutine tessera]
+    !    9: ?
+    !       [subroutine tessera]
+    !   10: ?
+    !       [subroutine inter]
+    !   11: color string not recognized
+    !       [subroutine coltss]
+    !   12: symmetry string not recognized
+    !       [subroutine prerep]
     integer :: pedra_error_code = 0
 
     contains
 
-    subroutine polyhedra_driver(global_print_unit, work, lwork)
+    subroutine polyhedra_driver(global_print_unit, error_code, work, lwork)
 
     use pedra_utils, only : errwrk
 
@@ -33,6 +60,7 @@
 #include "pcm_pcmlog.h"
 
     integer :: global_print_unit
+    integer :: error_code
     real(8) :: work(*)
     integer :: lwork
 
@@ -104,6 +132,9 @@
     icav1, icav2, xval, yval, zval, &
     jtr, cv, numts, numsph, numver, natm, some, &
     work(last), lwrk, nperm)
+
+! Bring the error code back home
+    error_code = pedra_error_code
 
     end subroutine polyhedra_driver
 
@@ -214,10 +245,10 @@
 
 !     check on the number of spheres
 
-    write(lvpri, *) 'Number of extra spheres = ', NE
+    write(lvpri, *) 'Number of extra spheres = ', ne 
     if (ne > mxsp) then
         write(lvpri, *) ne
-        write(lvpri, *) 'Too many spheres (Greater than MXSP=200).'
+        write(lvpri, *) 'Exceeded limit on the maximum number of spheres:', mxsp
 ! PEDRA should not stop the program flow as that renders catching
 ! bugs rather difficult. It should rather send back error codes
 ! to the parent code.
@@ -330,26 +361,30 @@
     CALL SPHPER(NESF,NESFP,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
 
 ! f Determination of eigenvalues and eigenvectors of the inertia tensor
+! We have to construct the tensor of inertia and diagonalize it.
+! Our tensor of inertia uses the center of the spheres as coordinates
+! and the radii as masses.
 
-!      KATOM = NATOMS + NFLOAT
-
-!     Modification by Ville & Chris for new cavity gen
-    KATOM = NESFP
-    LGEOM = 1
-    LMASS = LGEOM + 3 * KATOM
-    LEND  = LMASS + KATOM
-    LWRK =  LWORK - LEND
-! f      write(lvpri,*) 'katom',katom,lgeom,lmass,lend
-    IF (LWRK < 0) THEN
-        WRITE(*,*) '2'
-        STOP
-    ENDIF
+    allocate(mass(nesfp))
+    allocate(geom(nesfp, 3))
     
-    allocate(mass(katom))
-    allocate(geom(katom, 3))
-    if (katom > 1) then
-        call pcmtns(rotcav, geom, mass, katom)
+    mass = 0.0d0
+    geom = 0.0d0
+    
+    do i = 1, nesfp
+        mass(i)   = rin(i)
+        geom(i,1) = xe(i)
+        geom(i,2) = ye(i)
+        geom(i,3) = ze(i)
+    enddo
+
+    if (nesfp > 1) then
+        call pcmtns(rotcav, geom, mass, nesfp)
     end if
+
+! Clean-up the rubbish
+    deallocate(mass)
+    deallocate(geom)
 
 !    Division of the surface into tesserae
 
@@ -438,6 +473,7 @@
             IF (NN >= MXTS) THEN
                 WRITE(LVPRI,*) 'TOO MANY TESSERA_E IN PEDRA'
                 WRITE(LVPRI,*) 'NN=',NN,'  MXTS=',MXTS
+                pedra_error_code = 2
                 STOP
             END IF
             NN = NN + 1
@@ -595,6 +631,7 @@
         IF(NESFP > NUCDEP) THEN
             WRITE(LVPRI,9050) NESFP,NUCDEP
             WRITE(*,*) '3'
+            pedra_error_code = 3
             STOP
         END IF
     
@@ -649,8 +686,8 @@
     '   Radius (AU)      Area (AU^2)')
     9030 FORMAT(I4,4F15.9,F15.9)
     9040 FORMAT(/' Total number of tesserae =',I8 &
-    /' Surface area =',F14.8,' (AU^2)    Cavity volume =', &
-    F14.8,' (AU^3)')
+    /' Surface area =',F20.14,' (AU^2)    Cavity volume =', &
+    F20.14,' (AU^3)')
     9050 FORMAT( ' PEDRA: CONFUSION ABOUT SPHERE COUNTS. NESFP, NATM=',2I6)
     9060 FORMAT(/' ADDITIONAL MEMORY NEEDED TO SETUP GRADIENT RUN=',I10)
     9061 FORMAT(/' ADDITIONAL MEMORY NEEDED TO SETUP IEF RUN=',I10)
@@ -715,6 +752,7 @@
         
             If (I < NESF0) THEN
                 WRITE(LVPRI,*) 'CAVITIY IS NOT CONSISTENT WITH SYMMETRY'
+                pedra_error_code = 4
                 STOP
             ELSE
                 NESF1=NESF1+1
@@ -761,6 +799,7 @@
                 ENDIF
             ENDDO
             WRITE(*,*) '4'
+            pedra_error_code = 5
             STOP
 
             20 CONTINUE
@@ -842,6 +881,7 @@
 
     IF (ITSNUM > MxTs) THEN
         WRITE(*,*) '5', ITSNUM, MxTs
+        pedra_error_code = 6
         STOP
     ENDIF
 
@@ -1146,6 +1186,7 @@
 
     IF (NTS > MXTS) THEN
         WRITE(*,*) 'Errornumber 6 - check in the code'
+        pedra_error_code = 7
         STOP
     END IF
     DO ISYMOP=1,MAXREP
@@ -1650,6 +1691,7 @@
     !     Controlla che il numero di vertici creati non sia eccessivo
         IF(NV > 10) THEN
             WRITE(LVPRI,*)'TOO MANY VERTICES IN TESSERA_: BYE BYE...'
+            pedra_error_code = 8
             STOP
         END IF
     150 END DO
@@ -1714,6 +1756,7 @@
         END DO
         IF (IVNEW /= NVLEFT) THEN
             WRITE(LVPRI,*) 'SIRCAV: BADLY MADE ALGORITHM!'
+            pedra_error_code = 9
             STOP
         ENDIF
         NV = NVLEFT
@@ -1842,6 +1885,7 @@
         M = M + 1
     ELSE
         WRITE(*,*) '7'
+        pedra_error_code = 10
         STOP
     END IF
     IF (M > 300)THEN
@@ -2381,6 +2425,7 @@
         C3 = 0.0
     ELSE
         WRITE(*,*) '8'
+        pedra_error_code = 11
         STOP
     ENDIF
     
@@ -2432,6 +2477,7 @@
         LSYMOP(2) = .TRUE.
     ELSEIF(GROUP /= 'D2h') THEN
         WRITE(*,*) 'Check symmetry group.'
+        pedra_error_code = 12
         STOP
     ENDIF
     DO ISYMOP = 1,7
@@ -2488,84 +2534,49 @@
 #include "pcm_nuclei.h"
 #include "pcm_orgcom.h"
 
-    integer :: katom
-    real(8) :: vmat(3, 3), geom(katom, 3), amass(katom)
+    integer,    intent(in) :: katom
+    real(8),    intent(in) :: geom(katom, 3), amass(katom)
+    real(8), intent(inout) :: vmat(3, 3)
 
     real(8) :: eigval(3), eigvec(3, 3), tinert(3, 3)
     real(8) :: angmom(3), omegad(3), eiginv(3, 3), scal(3)
     integer :: iax(6), norder(3)
     logical :: planar, linear
-    integer :: jatom, i, j, k, jax, nmax
+    integer :: i, j, k, jax, nmax
     integer :: nopax, nshift
 
     real(8) :: dij
     
     iax = (/1,2,3,3,2,1/)
 
-    jatom = 1
+    angmom = [1.0d0, 1.0d0, 1.0d0]
 
-! As correctly pointed out by Kenneth, we want two molecules
-! like HCCD and HCCH to have the same cavity so NUMIS is always 1
+    call wlkdin(geom, amass, nesfp, angmom, tinert, omegad, eigval, eigvec, .true., planar, linear)
 
-!      NUMIS = 1
-!      DO 100 IATOM = 1, NUCIND
-!         NATTYP = NINT(CHARGE(IATOM))
-! f         NUMIS  = ISOTOP(IATOM)
-!         DO 110 ISYMOP = 0, MAXOPR
-!            IF (IBTAND(ISYMOP,ISTBNU(IATOM)) .EQ. 0) THEN
-!               AMASS(JATOM) = DISOTP(NATTYP,NUMIS,'MASS')
-!               DO 120 ICOOR = 1, 3
-!                  GEOM(JATOM,ICOOR) = PT(IBTAND(ISYMAX(ICOOR,1),ISYMOP))
-!     &                               *CORD(ICOOR,IATOM) - CMXYZ(ICOOR)
-! 120           CONTINUE
-! f               WRITE(LVPRI,*) 'NATTYP, NUMIS,JATOM,AMASS',
-! f     $              NATTYP, NUMIS,JATOM,AMASS(JATOM)
-!               JATOM = JATOM + 1
-!            END IF
-! 110     CONTINUE
-! 100  CONTINUE
-! f
-!      DO I=1,JATOM-1
-!         WRITE(LVPRI,*) 'ATOM ',I,' COORD ',(GEOM(I,J),J=1,3),AMASS(I)
-!      ENDDO
-! f
-    do i = 1, nesfp
-        amass(i) = rin(i)
-        geom(i,1)  = xe(i)
-        geom(i,2)  = ye(i)
-        geom(i,3)  = ze(i)
-    enddo
-
-    angmom(1) = 1.0d0
-    angmom(2) = 1.0d0
-    angmom(3) = 1.0d0
-    call wlkdin(geom,amass,nesfp,angmom,tinert,omegad,eigval,eigvec,.true.,planar,linear)
-! f      WRITE(LVPRI,*) 'INERTIA TENSOR EIGENVECTORS AND EIGENVALUES'
+!    write(lvpri,*) 'inertia tensor eigenvectors and eigenvalues'
     do i = 1, 3
         do j = 1, 3
             eiginv(i,j) = eigvec(j,i)
-        enddo
-    ! f         WRITE(LVPRI,*) (EIGINV(I,J),J=1,3), EIGVAL(I), OMEGA(I), QUAD
-    enddo
-!      do i=1,3
-!         write(lvpri,*) 'tinert',(tinert(i,j),j=1,3)
-!      enddo
-    do i = 1,3
-        do j= 1,3
-            vmat(j,i) = 0.0d0
-        enddo
-    enddo
+        end do   
+!        write(lvpri,*) (eiginv(i,j),j=1,3), eigval(i), omegad(i)
+    end do
+!    do i=1,3
+!       write(lvpri,*) 'tinert',(tinert(i,j),j=1,3)
+!    enddo
+    
     nopax = nrots + nrefl
     norder(1) = 1
     norder(2) = 2
     norder(3) = 3
     if (nopax >= 3) then
         do i = 1,3
-        !            write(lvpri,*) 'iax',i,isop(i),iax(isop(i))
+!            write(lvpri,*) 'iax',i,isop(i),iax(isop(i))
             do j = 1,3
                 dij = 0.0d0
-                if (i == j) dij = 1.0d0
-                vmat(j,iax(isop(i))) = dij
+                if (i == j) then 
+                        dij = 1.0d0
+                end if
+                vmat(j, iax(isop(i))) = dij
             enddo
         enddo
     elseif (nopax >= 1) then
@@ -2591,7 +2602,7 @@
             enddo
         enddo
     else
-        write(*,*) '9'
+        pedra_error_code = 9
         stop
     endif
 

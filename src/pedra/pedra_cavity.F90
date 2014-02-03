@@ -28,7 +28,7 @@
     !       [subroutine polyhedra]
     !    4: cavity not consistent with symmetry
     !       [subroutine sphper]
-    !    5: ?
+    !    5: additional spheres not consistent with symmetry 
     !       [subroutine sphper]
     !    6: itsnum > mxts ?
     !       [subroutine polygen]
@@ -138,8 +138,8 @@
 
     end subroutine polyhedra_driver
 
-    subroutine polyhedra(INTSPH,VERT,CENTR,NEWSPH,ICAV1,ICAV2, XVAL,YVAL, &
-    ZVAL,JTR,CV,NUMTS,NUMSPH,NUMVER,NATM,SOME,WORK,LWORK,NPERM)
+    subroutine polyhedra(intsph,vert,centr,newsph,icav1,icav2,xval,yval, &
+    zval,jtr,cv,numts,numsph,numver,natm,some,work,lwork,nperm)
 
     use pedra_dblas, only: dzero
     use pedra_print, only: output
@@ -249,9 +249,6 @@
     if (ne > mxsp) then
         write(lvpri, *) ne
         write(lvpri, *) 'Exceeded limit on the maximum number of spheres:', mxsp
-! PEDRA should not stop the program flow as that renders catching
-! bugs rather difficult. It should rather send back error codes
-! to the parent code.
         pedra_error_code = 1
         stop
     end if
@@ -354,13 +351,11 @@
     IF(NET /= NE) GO TO 110
     NESF=NET
 
-!     costruzione della tabella di permutazione delle sfere
+! Build the spheres permutation table
 
-! f      WRITE(LVPRI,*)'MAXREP', MAXREP
+    call sphper(nesf,nesfp,numsph,nperm,newsph,xe,ye,ze,re)
 
-    CALL SPHPER(NESF,NESFP,NUMSPH,NPERM,NEWSPH,XE,YE,ZE,RE)
-
-! f Determination of eigenvalues and eigenvectors of the inertia tensor
+! Determination of eigenvalues and eigenvectors of the inertia tensor.
 ! We have to construct the tensor of inertia and diagonalize it.
 ! Our tensor of inertia uses the center of the spheres as coordinates
 ! and the radii as masses.
@@ -699,6 +694,8 @@
     end subroutine polyhedra
     
     subroutine sphper(nesf,nesf0,numsph,nperm,newsph,xe,ye,ze,re)
+! Create permutation table for the spheres and complete the added
+! spheres by symmetry.
   
     use pedra_ibtfun
 
@@ -708,121 +705,101 @@
 
     integer :: nesf, nesf0, numsph
     real(8) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
-    integer :: nperm(numsph,*), newsph(numsph,2)
+    integer :: nperm(numsph, 8), newsph(numsph, 2)
 
     real(8) :: diff1, r1
     integer :: i, j, k, l, n1, n2, nesf1
 
-!  crea la tabella di permutazione delle sfere
-!  e completa per simmetria le sfere aggiunte
+    nesf1 = nesf
 
-          
-    NESF1=NESF
-
-    DO I=1,NESF
-        V1(1)=XE(I)
-        V1(2)=YE(I)
-        V1(3)=ZE(I)
-        R1=RE(I)
-    
-    !  ciclo sulle operazioni di simmetria
-    
-                
-        DO J=1,MAXREP
-            DO K=1,NESF
-                DO L=1,3
-                    V2(L)=PT(IBTAND(ISYMAX(L,1),J))*V1(L)
-                ENDDO
-            ! f
-            !            DIFF1=
-            !     &        SQRT((XE(K)-V2(1))**2+(YE(K)-V2(2))**2+(ZE(K)-V2(3))**2)
-            !            DIFF2=ABS(R1-RE(K))
-            !            IF ((DIFF1.LT.1.0d-3).AND.(DIFF2.LT.1.0d-3)) THEN
-            ! f
-                DIFF1 = SQRT((XE(K)-V2(1))**2 + (YE(K)-V2(2))**2 + &
-                (ZE(K)-V2(3))**2 + (RE(K)-R1)**2)
-                IF ((DIFF1 < 1.0d-3)) THEN
-                    NPERM(I,J+1)=K
-                    GOTO 10
-                ENDIF
-            ENDDO
-        
-        !  caso in cui occorre completare la creazione di sfere aggiunte
-        !  oppure le sfere iniziali sono messe male
-        
-            If (I < NESF0) THEN
-                WRITE(LVPRI,*) 'CAVITIY IS NOT CONSISTENT WITH SYMMETRY'
+    ! Loop over spheres
+    do i = 1, nesf
+        v1(1) = xe(i)
+        v1(2) = ye(i)
+        v1(3) = ze(i)
+        r1    = re(i)
+        ! Loop over symmetry operations                
+        do j = 1, maxrep
+            ! Loop over spheres
+            do k = 1, nesf
+                do l = 1, 3
+                    v2(l) = pt(ibtand(isymax(l, 1), j)) * v1(l)
+                enddo
+                diff1 = sqrt((xe(k) - v2(1))**2 + (ye(k) - v2(2))**2 + (ze(k) - v2(3))**2 + (re(k) - r1)**2)
+                if ((diff1 < 1.0D-3)) then
+                    nperm(i, j+1) = k
+                    goto 10
+                endif
+            enddo
+            ! Check if we need to complete the creation of additional sphere
+            ! or the initial spheres are ill-defined.
+            if (i < nesf0) then
+                write(lvpri,*) 'Cavity is not consistent with symmetry'
                 pedra_error_code = 4
-                STOP
-            ELSE
-                NESF1=NESF1+1
-                NPerm(i,j+1)=NESF1
-                XE(NESF1)=v2(1)
-                YE(NESF1)=v2(2)
-                ZE(NESF1)=v2(3)
-                RE(NESF1)=r1
-                N1=NPERM(IAbs(NewSph(i,1)),j+1)
-                N2=NPERM(IAbs(NEwSph(i,2)),j+1)
-                IF (NewSph(i,1) < 0) THEN
-                    N1=-N1
-                    N2=-N2
-                ENDIF
-                NewSph(NESF1,1)=N1
-                NewSph(NESF1,2)=N2
-                WRITE(LVPRI,*) 'new!',NESF1,N1,N2
-            ENDIF
-            10 CONTINUE
-        ENDDO
-    ENDDO
+                stop
+            else
+                nesf1 = nesf1 + 1
+                nperm(i, j+1) = nesf1
+                xe(nesf1) = v2(1)
+                ye(nesf1) = v2(2)
+                ze(nesf1) = v2(3)
+                re(nesf1) = r1
+                n1 = nperm(abs(newsph(i, 1)), j+1)
+                n2 = nperm(abs(newsph(i, 2)), j+1)
+                if (newsph(i, 1) < 0) then
+                    n1 = -n1
+                    n2 = -n2
+                endif
+                newsph(nesf1, 1) = n1
+                newsph(nesf1, 2) = n2
+                write(lvpri,*) 'NEW!', nesf1, n1, n2
+            endif
+            10 continue
+        enddo
+    enddo
 
-!  eventuale completamento della tabella delle permutazioni per le
-!  nuove sfere
-
-    DO I=NESF+1,NESF1
-        V1(1)=XE(I)
-        V1(2)=YE(I)
-        V1(3)=ZE(I)
-        R1=RE(I)
-                
-    !  ciclo sulle operazioni di simmetria
-                
-        DO J=1,MAXREP
-            DO K=1,NESF1
-                DO L=1,3
-                    V2(L)=PT(IBTAND(ISYMAX(L,1),J))*V1(L)
-                ENDDO
-                DIFF1 = SQRT((XE(K)-V2(1))**2 + (YE(K)-V2(2))**2 + &
-                (ZE(K)-V2(3))**2 + (RE(K)-R1)**2)
-                IF ((DIFF1 < 1.0d-3)) THEN
-                    NPERM(I,J+1)=K
-                    GOTO 20
-                ENDIF
-            ENDDO
-            WRITE(*,*) '4'
+! If needed complete the permutation table for the new spheres
+    do i = nesf + 1, nesf1
+        v1(1) = xe(i)
+        v1(2) = ye(i)
+        v1(3) = ze(i)
+        r1    = re(i)
+        
+        ! Loop over symmetry operations
+        do j = 1, maxrep
+            do k = 1, nesf1
+                do l = 1, 3
+                    v2(l) = pt(ibtand(isymax(l, 1), j)) * v1(l)
+                enddo
+                diff1 = sqrt((xe(k) - v2(1))**2 + (ye(k) - v2(2))**2 + (ze(k) - v2(3))**2 + (re(k) - r1)**2)
+                if ((diff1 < 1.0D-3)) then
+                    nperm(i, j+1) = k
+                    goto 20
+                endif
+            enddo
+            write(lvpri, *) 'Additional spheres not consistent with symmetry'
             pedra_error_code = 5
-            STOP
-
-            20 CONTINUE
-        ENDDO
-    ENDDO
+            stop
+            20 continue
+        enddo
+    enddo
           
-    NESF=NESF1
+    nesf = nesf1
 
-!  vengono segnate le sfere da tassellare: la prima in ordine di ogni
-!  classe di sfere equivalenti per simmetria
-
-    DO I=1,NESF
-        NPERM(I,1)=1
-        DO K=1,MAXREP
-            IF (NPERM(I,K+1) < I) THEN
-                NPERM(I,1)=0
-                GOTO 30
-            ENDIF
-        ENDDO
-        30 CONTINUE
-    ENDDO
+! Now define which spheres are to be tesselated: it will be the first
+! in each class of spheres equivalent by symmetry.
+    do i = 1, nesf
+        nperm(i, 1) = 1
+        do k = 1, maxrep
+            if (nperm(i, k+1) < i) then
+                nperm(i, 1) = 0
+                goto 30
+            endif
+        enddo
+        30 continue
+    enddo
     
-    END SUBROUTINE SPHPER
+    end subroutine sphper
     
     SUBROUTINE POLYGEN(IPFLAG,TSARE,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF,CV,JTR,NPERM,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
 
@@ -834,7 +811,7 @@
 #include "pcm_symmet.h"
 
 ! Polygen: a program to generate spherical polyhedra with triangular
-! faces. An equilater division algorithm is used.
+! faces. An equilateral division algorithm is used.
 
     integer :: ipflag, itsnum, itseff, nsfe, numts, numsph, numver
     integer :: nperm(numsph, *), jtr(numts, *)

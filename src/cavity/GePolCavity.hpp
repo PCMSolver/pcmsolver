@@ -24,7 +24,7 @@
 class GePolCavity : public Cavity 
 {
 	private:
-		enum pGroup { C1, Cs, C2, Ci, C2v, C2h, D2, D2h };
+		enum pGroup { C1, Cs, C2, Ci, C2h, D2, C2v, D2h };
 	public:
 		GePolCavity(){}
                 GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, double _minRadius = 100.0, int _pGroup = C1) :  

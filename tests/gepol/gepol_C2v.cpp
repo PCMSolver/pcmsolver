@@ -32,7 +32,6 @@
 #endif
 
 // Test C2v symmetry with addition of extra spheres enabled
-/*
 class GePolCavityC2vAddTest : public ::testing::Test
 {
 	protected:
@@ -68,14 +67,14 @@ TEST_F(GePolCavityC2vAddTest, size)
 
 TEST_F(GePolCavityC2vAddTest, area)
 {
-	double area = 178.74700262277943;
+	double area = 178.74700256128352;
  	double actualArea = cavity.getElementArea().sum();
 	EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
 TEST_F(GePolCavityC2vAddTest, volume)
 {
-	double volume = 196.47360305796454;
+	double volume = 196.47360294559090;
 	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
 	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
 	double actualVolume = 0;
@@ -86,7 +85,6 @@ TEST_F(GePolCavityC2vAddTest, volume)
 	actualVolume /= 3;
 	EXPECT_NEAR(volume, actualVolume, 1.0e-10);
 }
-*/
 
 // Test C2v symmetry without addition of extra spheres enabled
 class GePolCavityC2vTest : public ::testing::Test
@@ -124,14 +122,14 @@ TEST_F(GePolCavityC2vTest, size)
 
 TEST_F(GePolCavityC2vTest, area)
 {
-	double area = 181.87043338844276;
+	double area = 181.87043332808548;
  	double actualArea = cavity.getElementArea().sum();
 	EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
 TEST_F(GePolCavityC2vTest, volume)
 {
-	double volume = 181.87043338844276;
+	double volume = 192.48281460140359;
 	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
 	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
 	double actualVolume = 0;

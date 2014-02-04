@@ -23,6 +23,7 @@
 
     use, intrinsic :: iso_c_binding
     use pedra_cavity, only: polyhedra_driver
+    use pedra_symmetry, only: point_group
 
     implicit none
 
@@ -44,6 +45,7 @@
 
     integer(c_int)  :: lwork2, i, nsym
     integer(c_int)  :: error_code
+    type(point_group) :: dummy_group
     integer :: lvpri
 
     LVPRI = 121201
@@ -91,7 +93,7 @@
     PT(6) =  1
     PT(7) =  1
           
-    CALL polyhedra_driver(lvpri, error_code, WORK2, LWORK2)
+    CALL polyhedra_driver(dummy_group, lvpri, error_code, WORK2, LWORK2)
 
     nts_=nts
     do i=1,NTS

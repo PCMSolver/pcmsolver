@@ -6,7 +6,17 @@
 ! RDR 0114 Wrap up in a F90 module, with a major clean-up of all
 !          the DALTON stuff that still lingered but was unused. 
 !
+! NOTE: the ibtfun module is gone, as we can safely use Fortran
+!       standard intrisic functions. 
+!       Mapping between intrinsics and ibtfun:
+!           ibtand(i, j) <-> iand(i, j)                
+!           ibtor(i, j)  <-> ior(i, j)
+!           ibtshl(i, j) <-> ishft(i, j)
+!           ibtshr(i, j) <-> ishft(i, -j) !WARNING!
+!           ibtxor(i, j) <-> ieor(i, j)
     module pedra_cavity
+
+    use pedra_symmetry, only: point_group        
 
     implicit none
 
@@ -14,6 +24,8 @@
 
     private
 
+    ! The point group
+    type(point_group) :: group
     ! Some print levels
     integer :: iprsol = 0
     ! The global print unit
@@ -48,28 +60,25 @@
 
     contains
 
-    subroutine polyhedra_driver(global_print_unit, error_code, work, lwork)
+    subroutine polyhedra_driver(pgroup, global_print_unit, error_code, work, lwork)
 
     use pedra_utils, only : errwrk
 
 #include "pcm_maxaqn.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
-#include "pcm_symmet.h"
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"
 
-    integer :: global_print_unit
-    integer :: error_code
-    real(8) :: work(*)
-    integer :: lwork
+    type(point_group) :: pgroup
+    integer           :: global_print_unit 
+    integer           :: error_code
+    real(8)           :: work(*)
+    integer           :: lwork
 
     logical :: some
     integer :: numts, numsph, natm, numver
-    integer :: loadfm, lintsp, lvert, lcentr, lwrk
-    integer :: lnewsp, licav1, licav2, lx, ly, lz
-    integer :: ljtr, lcv, lnperm, last
-    character(len=8) :: memory_used_format = '(A, I10)'
+    integer :: lwrk, last
     
     integer, allocatable :: intsph(:, :), newsph(:, :)
     integer, allocatable :: icav1(:), icav2(:)
@@ -78,60 +87,53 @@
     real(8), allocatable :: xval(:), yval(:), zval(:)
     real(8), allocatable :: cv(:, :)
 
-
-!     ----- set memory pointers for polyhedra setup -----
-
     SOME = IPRPCM.NE.-5
 !     ----- set lvpri
     lvpri = global_print_unit
+!     ----- set the point group
+    group = pgroup
 
 !     maximum number of tessalations is not known, take worst case
 !     maximum number of spheres is not known, take worst case
 
-    NUMTS  = MXTS
-    NUMSPH = MXSP
-    NATM   = MXCENT
-    NUMVER = MXVER
+    numts  = mxts
+    numsph = mxsp
+    natm   = mxcent
+    numver = mxver
 
-!   LOADFM = 1
-!   LINTSP = LOADFM + 1
-!   LVERT  = LINTSP + (NUMTS*10 + 1)/IRAT
-!   LCENTR = LVERT  + NUMTS*10*3
-!   LNEWSP = LCENTR + NUMTS*10*3
-!   LICAV1 = LNEWSP + (NUMSPH*2 + 1)/IRAT
-!   LICAV2 = LICAV1 + MXCENT
-!   LX     = LICAV2 + MXCENT
-!   LY     = LX     + NUMTS
-!   LZ     = LY     + NUMTS
-!   LJTR   = LZ     + NUMTS
-!   LCV    = LJTR   + NUMTS*3
-!   LNPERM = LCV    + NUMVER*3
-!   LAST   = LNPERM + NUMSPH*8
     last = 1
     IF (LAST > LWORK) CALL ERRWRK('polyhedra_driver',LAST,LWORK, lvpri)
     LWRK   = LWORK - LAST + 1
-    IF(SOME) then 
-            wRITE(LVPRI, memory_used_format) ' MEMORY USED TO GENERATE CAVITY =', LAST
-    end if
+    write(lvpri, '(a)') "Memory management through standard Fortran90 allocate/deallocate."
 
     allocate(intsph(numts, 10))
+    intsph = 0
     allocate(newsph(numsph, 2))
+    newsph = 0
     allocate(icav1(natm))
+    icav1 = 0
     allocate(icav2(natm))
+    icav2 = 0
     allocate(jtr(numts, 3))
+    jtr = 0
     ! 8 is the number of operations in D2h, the largest group we can treat
     allocate(nperm(numsph, 8)) 
+    nperm = 0
     allocate(vert(numts, 10, 3))
+    vert = 0.0d0
     allocate(centr(numts, 10, 3))
+    centr = 0.0d0
     allocate(xval(numts))
+    xval = 0.0d0
     allocate(yval(numts))
+    yval = 0.0d0
     allocate(zval(numts))
+    zval = 0.0d0
     allocate(cv(numver, 3))
+    cv = 0.0d0
 
-    call polyhedra(intsph, vert, centr, newsph, &
-    icav1, icav2, xval, yval, zval, &
-    jtr, cv, numts, numsph, numver, natm, some, &
-    work(last), lwrk, nperm)
+    call polyhedra(intsph, vert, centr, newsph, icav1, icav2, xval, yval, zval, &
+    jtr, cv, numts, numsph, numver, natm, some, work(last), lwrk, nperm)
 
 ! Bring the error code back home
     error_code = pedra_error_code
@@ -148,7 +150,6 @@
 #include "pcm_maxaqn.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
-#include "pcm_symmet.h"
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"
 #include "pcm_nuclei.h"
@@ -173,8 +174,8 @@
     real(8) :: xen, xi, xj, xn, yen, yi, yj, yn, zen, zi, zj, zn
     integer :: i, icoord, idisp, ii, ipflag, iprcav, iptype
     integer :: its, itseff, itsnum, itypc, iv, iver, j, jj, jcor
-    integer :: k, katom, kg, idisrep, kidx, klast, kord
-    integer :: kp, lend, lgeom, lmass, lwrk, n, n1, n2, n3
+    integer :: k, kg, idisrep, kidx, klast, kord
+    integer :: kp, n, n1, n2, n3
     integer :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
     integer :: nsfe, nsfer, nv
     integer, allocatable :: idxpri(:)
@@ -203,26 +204,19 @@
 ! icesph is always 1, centers and radii are passed explicitly from
 !  the module. PEDRA is completely ignorant about the existence of molecules.
 ! All data is already in bohr. No unit conversions are performed by PEDRA
-
+    
+    write(lvpri, '(a)') "Input spheres"
+    write(lvpri, '(a, i5)') "Initial number of spheres = ", nesfp
+    write(lvpri, '(a)') "Sphere                      Center  (X,Y,Z) (AU)                       Radius (AU)"
     do i = 1, nesfp
-        ! The following are useless... 
-        ! Leftover from the cleanup of unit conversions
-        !xe(i) = xe(i)
-        !ye(i) = ye(i)
-        !ze(i) = ze(i)
-        !re(i) = rin(i) * alpha(i) 
         re(i) = rin(i) ! The scaling has been done C++-side
-        write (lvpri,*) xe(i), ye(i), ze(i), re(i)
+        write(lvpri, '(i4, 4f20.14)') i, xe(i), ye(i), ze(i), re(i)
     enddo
 
-    !call dzero(vert,numts*10*3)
-    !call dzero(centr,numts*10*3)
-    ! Avoid calls to dzero...
     vert = 0.0d0
     centr = 0.0d0
 
-!                   creation of new spheres
-
+! Creation of new spheres
     do n = 1, nesf
         newsph(n,1) = 0
         newsph(n,2) = 0
@@ -352,8 +346,7 @@
     NESF=NET
 
 ! Build the spheres permutation table
-
-    call sphper(nesf,nesfp,numsph,nperm,newsph,xe,ye,ze,re)
+    call sphper(nesf, nesfp, numsph, nperm, newsph, xe, ye, ze, re)
 
 ! Determination of eigenvalues and eigenvectors of the inertia tensor.
 ! We have to construct the tensor of inertia and diagonalize it.
@@ -381,12 +374,14 @@
     deallocate(mass)
     deallocate(geom)
 
-!    Division of the surface into tesserae
+! Division of the surface into tesserae
 
-    VOL=D0
-    STOT=D0
+    ! Volume and surface
+    vol  = 0.0d0
+    stot = 0.0d0
 
-!     Controlla se ciascuna tessera e' scoperta o va tagliata
+! For every tessera, check if there's other tesserae covering it
+! or not. If yes, cut it.
 
     NN = 0
     DO 300 NSFE = 1, NESF
@@ -410,8 +405,7 @@
     !            IPFlag = 1
     !            TsAre = -1.0D-03*IPolyg
     ! f         ENDIF
-        CALL POLYGEN(IPFLAG,AREATS,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF, &
-        CV,JTR,NPerm,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
+        CALL POLYGEN(IPFLAG,AREATS,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF,CV,JTR,NPerm,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
         IF(IPRCAV >= 10) WRITE(LVPRI,*)'AFTER POLYGEN_. ITSEFF=',ITSEFF
         DO 310 ITS = 1, ITSEFF
             N1 = JTR(ITS,1)
@@ -436,18 +430,17 @@
                 PP(JJ) = D0
                 PP1(JJ) = D0
             ENDDO
-        
-        !     Per ciascuna tessera, trova la porzione scoperta e ne
-        !     calcola l'area con il teorema di Gauss-Bonnet; il punto rappresentativo
-        !     e' definito come media dei vertici della porzione scoperta di tessera
-        !     e passato in PP (mentre in PP1 ci sono le coordinate del punto sulla
-        !     normale interna).
-        !     I vertici di ciascuna tessera sono conservati in VERT(3,10,MxTs), il
-        !     numero di vertici di ciascuna tessera e' in NVERT(MxTs), e i centri
-        !     dei cerchi di ciascun lato sono in CENTR(3,10,MxTs).
-        !     In INTSPH(MxTs,10) sono registrate le sfere a cui appartengono i lati
-        !     delle tessere.
-        
+            ! For every tessera, find the free portion (not covered by any other
+            ! tesserae) and calculate its surface with the Gauss-Bonnet Theorem.
+            ! The representative point is defined as the average of vertices
+            ! belonging to the free portion of the tessera. The representative
+            ! point is stored in the pp variable, while pp1 contains the
+            ! coordinates of the point on the inward pointing normal vector.
+            ! The vertices of each tessera are stored in vert(mxts, 10, 3), the
+            ! number of vertices of each tessera is in nvert(mxts), the centers
+            ! of the circles on each edge are in centr(mxts, 10, 3). 
+            ! The spheres to which teh edges of the tesserae belong to are
+            ! stored in intsph(mxts, 10)  
             IF (IPRCAV > 15) THEN
                 write(lvpri,9100) NN + 1
                 DO IVER = 1, 3
@@ -497,17 +490,11 @@
                 WRITE(LVPRI,1249) AS(NN),ISPHE(NN),NVERT(NN)
             END IF
         310 END DO
-    ! f
         9100 format('Before Tessera n.',I4)
         9110 format('XYZ vert n.',I4,3f15.9)
-        9120 format('After Tessera n.',I4)
-        9130 format('XYZ centr n.',I4,3f15.9)
-        9140 format('XYZA',4f15.9)
-    ! f
     300 END DO
     NTS = NN
-
-!     Verifica se due tessere sono troppo vicine
+    ! Check if two tesserae are too close
     TEST = 0.02D0
     TEST2 = TEST*TEST
     DO 400 I = 1, NTS-1
@@ -525,51 +512,26 @@
             RIJ = (XI-XJ)**2 + (YI-YJ)**2 + (ZI-ZJ)**2
             IF(RIJ > TEST2) GOTO 410
             WRITE(LVPRI,9010) I,J,RIJ,TEST2
-        ! a vedere  IF(AS(I).LT.AS(J)) AS(I) = D0
-        ! a vedere  IF(AS(I).GE.AS(J)) AS(J) = D0
+        ! Check  IF(AS(I).LT.AS(J)) AS(I) = D0
+        ! Check  IF(AS(I).GE.AS(J)) AS(J) = D0
         410 END DO
     400 END DO
 
-! f Replication of geometrical parameters according to simmetry
-
+! Replication of geometrical parameters according to simmetry
     CALL REPCAV(VERT,CENTR,NPERM,NUMTS,NUMSPH)
 
 ! Prepare data for geomview
+    kord  = 1
+    kidx  = kord + 4 * nts
+    klast = kidx + nts
+    allocate(idxpri(nts))
+    if (klast < lwork) then
+        call dzero(work,klast)
+        call ordpcm(nts, xtscor, ytscor, ztscor, as, work(kord), idxpri)
+    else
+        write(lvpri, *) 'warning: not enough mem in pedra to print the cavity'
+    end if
 
-! f      write(lvpri,*) 'vertici delle tessere'
-!      do i=1,nts
-!         do j=1,nvert(i)
-!            write(lvpri,1241) i,j,(vert(i,j,k),k=1,3)
-!         enddo
-!      enddo
-!      write(lvpri,*) 'centers of tesserae'
-!      do i=1,nts
-!         write(lvpri,1240) i, xtscor(i),ytscor(i),ztscor(i),as(i)
-!      enddo
-!      call flshfo(lvpri)
-
-! f      IF (IPRPCM .GT. 10) THEN
-    IF ( .TRUE. ) THEN
-        KORD  = 1
-        KIDX  = KORD + 4 * NTS
-        KLAST = KIDX + NTS
-        allocate(idxpri(nts))
-        IF (KLAST < LWORK) THEN
-            CALL DZERO(WORK,KLAST)
-            call ORDPCM(lvpri,nts,xtscor,ytscor,ztscor,as,work(kord),idxpri,work(klast),lwork)
-        ELSE
-            WRITE(LVPRI,*) &
-            'WARNING: NOT ENOUGH MEM IN PEDRA TO PRINT THE CAVITY'
-        END IF
-    END IF
-    1234 format(2i4,3f12.6)
-    1235 format('XTSCOR(',i4,') = ',f18.12)
-    1236 format('YTSCOR(',i4,') = ',f18.12)
-    1237 format('ZTSCOR(',i4,') = ',f18.12)
-    1238 format('AS(',i4,') = ',f18.12)
-    1239 format('ISPHE(',i4,') = ',I3)
-    1240 format(i4,4f12.6)
-    1241 format(2i4,3f15.9)
     1242 FORMAT('Now tessellating sphere n.',i4)
     1243 FORMAT('Coordinates: X=',F12.8,'  Y=',F12.8,'  Z=',F12.8, &
     '  R=',F12.8)
@@ -579,44 +541,37 @@
     1247 FORMAT('CENTER: ',3F15.11)
     1248 FORMAT('BOH???: ',3F15.11)
     1249 FORMAT('AREA=',F10.8,'ISPHE=',I4,'NVERT=',I3)
-    CALL PLOTCAV(VERT,NUMTS)
+    call plotcav(vert, numts)
 
-!***********************************************************
-!     Calcola il volume della cavita' con la formula (t. di Gauss):
-!                V=SOMMAsulleTESSERE{A r*n}/3
-!     dove r e' la distanza del punto rappresentativo dall'origine,
-!     n e' il versore normale alla tessera, A l'area della tessera,
-!     e * indica il prodotto scalare.
-!***********************************************************
-    VOL = D0
-    DO ITS = 1, NTS
-        NSFE = ISPHE(ITS)
-    !     Trova il versore normale
-        XN = (XTSCOR(ITS) - XE(NSFE)) / RE(NSFE)
-        YN = (YTSCOR(ITS) - YE(NSFE)) / RE(NSFE)
-        ZN = (ZTSCOR(ITS) - ZE(NSFE)) / RE(NSFE)
-    !     Trova il prodotto scalare
-        PROD = XTSCOR(ITS)*XN + YTSCOR(ITS)*YN + ZTSCOR(ITS)*ZN
-        VOL = VOL + AS(ITS) * PROD / 3.D0
-    ENDDO
-!***********************************************************
-!     Stampa la geometria della cavita'
-!***********************************************************
-    STOT=D0
-    CALL DZERO(SSFE,NESF)
-    DO I=1,NTS
-        K=ISPHE(I)
-        SSFE(K)=SSFE(K)+AS(I)
-    ENDDO
+! Calculate cavity volume using Gauss Theorem:
+!       V = sum_i {area(i) * center(i) * normal(i)} / 3
+! the sum runs on the tesserae.
+    do its = 1, nts
+        nsfe = isphe(its)
+        ! Find the unit normal vector
+        xn = (xtscor(its) - xe(nsfe)) / re(nsfe)
+        yn = (ytscor(its) - ye(nsfe)) / re(nsfe)
+        zn = (ztscor(its) - ze(nsfe)) / re(nsfe)
+        ! Calculate scalar product
+        prod = xtscor(its)*xn + ytscor(its)*yn + ztscor(its)*zn
+        ! And finally the volume
+        vol = vol + as(its) * prod / 3.d0
+    end do
+! Print out some cavity data
+    call dzero(ssfe, nesf)
+    do i = 1, nts
+        k = isphe(i)
+        ssfe(k) = ssfe(k) + as(i)
+    enddo
 
-    IF(SOME) THEN
-        WRITE(LVPRI,9020) NESF
-        DO 520 I=1,NESF
-            WRITE(LVPRI,9030) I,XE(I),YE(I),ZE(I),RE(I),SSFE(I)
-            STOT=STOT+SSFE(I)
-        520 END DO
-        WRITE(LVPRI,9040) NTS,STOT,VOL
-    END IF
+    if (some) then
+        write(lvpri, 9020) nesf
+        do i = 1, nesf
+            write(lvpri, 9030) i, xe(i), ye(i), ze(i), re(i), ssfe(i)
+            stot = stot + ssfe(i)
+        end do
+        write(lvpri, 9040) nts, stot, vol
+    end if
 
 !     ----- set up for possible gradient calculation -----
 !           DONE ONLY IF WE HAVE SPHERES ON ATOMS
@@ -630,8 +585,8 @@
             STOP
         END IF
     
-        CALL DZERO(DERCEN,MXSP*MXCENT*3*3)
-        CALL DZERO(DERRAD,MXSP*MXCENT*3)
+        call dzero(dercen,mxsp*mxcent*3*3)
+        call dzero(derrad,mxsp*mxcent*3)
         DO NSFE = 1,NUCDEP
             NATSPH=0
             NSFER=NSFE
@@ -661,7 +616,7 @@
 
 !     Call the routine which checks if the cavity is single or divided.
 
-    call cavspl(icav1,icav2,ncav1,ncav2,npcmn,some)
+    call cavspl(icav1, icav2, ncav1, ncav2, some)
 
 !     The dispersion calculation is allowed only in the case of
 !     single cavity.
@@ -672,8 +627,6 @@
     IRETCAV = 0
     IF (IDISP == 2) IDISP = 1
 
-    9000 FORMAT(10X,'-- CENTER OF CHARGE --'/ &
-    ' X =',F8.4,' AU  Y =',F8.4,' AU  Z =',F8.4,' AU')
     9010 FORMAT(/' WARNING: The distance between center of tessera',I4, &
     'and',I4,' is ',F8.6,', less than ',F8.6,' AU'/)
     9020 FORMAT(/' Total number of spheres =',I5/ &
@@ -684,8 +637,6 @@
     /' Surface area =',F20.14,' (AU^2)    Cavity volume =', &
     F20.14,' (AU^3)')
     9050 FORMAT( ' PEDRA: CONFUSION ABOUT SPHERE COUNTS. NESFP, NATM=',2I6)
-    9060 FORMAT(/' ADDITIONAL MEMORY NEEDED TO SETUP GRADIENT RUN=',I10)
-    9061 FORMAT(/' ADDITIONAL MEMORY NEEDED TO SETUP IEF RUN=',I10)
     9070 FORMAT(/' ***  PARTITION OF THE SURFACE  ***' &
     //' TESSERA_  SPHERE   AREA   X Y Z TESSERA CENTER  ', &
     'X Y Z NORMAL VECTOR')
@@ -693,15 +644,15 @@
 
     end subroutine polyhedra
     
-    subroutine sphper(nesf,nesf0,numsph,nperm,newsph,xe,ye,ze,re)
+    subroutine sphper(nesf, nesf0, numsph, nperm, newsph, xe, ye, ze, re)
+!                    
 ! Create permutation table for the spheres and complete the added
 ! spheres by symmetry.
+!
+    use pedra_symmetry, only: get_pt
   
-    use pedra_ibtfun
-
 #include "pcm_maxaqn.h"
 #include "pcm_mxcent.h"
-#include "pcm_symmet.h"
 
     integer :: nesf, nesf0, numsph
     real(8) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
@@ -719,11 +670,11 @@
         v1(3) = ze(i)
         r1    = re(i)
         ! Loop over symmetry operations                
-        do j = 1, maxrep
+        do j = 1, group%maxrep
             ! Loop over spheres
             do k = 1, nesf
                 do l = 1, 3
-                    v2(l) = pt(ibtand(isymax(l, 1), j)) * v1(l)
+                    v2(l) = get_pt(iand(group%isymax(l, 1), j)) * v1(l)
                 enddo
                 diff1 = sqrt((xe(k) - v2(1))**2 + (ye(k) - v2(2))**2 + (ze(k) - v2(3))**2 + (re(k) - r1)**2)
                 if ((diff1 < 1.0D-3)) then
@@ -766,10 +717,10 @@
         r1    = re(i)
         
         ! Loop over symmetry operations
-        do j = 1, maxrep
+        do j = 1, group%maxrep
             do k = 1, nesf1
                 do l = 1, 3
-                    v2(l) = pt(ibtand(isymax(l, 1), j)) * v1(l)
+                    v2(l) = get_pt(iand(group%isymax(l, 1), j)) * v1(l)
                 enddo
                 diff1 = sqrt((xe(k) - v2(1))**2 + (ye(k) - v2(2))**2 + (ze(k) - v2(3))**2 + (re(k) - r1)**2)
                 if ((diff1 < 1.0D-3)) then
@@ -790,7 +741,7 @@
 ! in each class of spheres equivalent by symmetry.
     do i = 1, nesf
         nperm(i, 1) = 1
-        do k = 1, maxrep
+        do k = 1, group%maxrep
             if (nperm(i, k+1) < i) then
                 nperm(i, 1) = 0
                 goto 30
@@ -801,17 +752,16 @@
     
     end subroutine sphper
     
-    SUBROUTINE POLYGEN(IPFLAG,TSARE,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF,CV,JTR,NPERM,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
-
-    use pedra_ibtfun
+    subroutine polygen(ipflag,tsare,itsnum,xen,yen,zen,ren,itseff,cv,jtr,nperm,nsfe,numts,numsph,numver,rotcav)
+!
+! Polygen: a program to generate spherical polyhedra with triangular faces. 
+! An equilateral division algorithm is used.
+!
+    use pedra_symmetry, only: get_pt
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_maxaqn.h"
-#include "pcm_symmet.h"
-
-! Polygen: a program to generate spherical polyhedra with triangular
-! faces. An equilateral division algorithm is used.
 
     integer :: ipflag, itsnum, itseff, nsfe, numts, numsph, numver
     integer :: nperm(numsph, *), jtr(numts, *)
@@ -1070,7 +1020,7 @@
 !        nei casi in cui l'o.l. trasforma la sfera in un altra sfera
 
     NOpPt=0
-    DO ISYMOP = 1, MAXREP
+    DO ISYMOP = 1, group%maxrep
         NTRA=NPerm(NSFE,ISYMOP + 1)
     
     !     the If statment is entered only if the sphere which is equivalent
@@ -1092,7 +1042,7 @@
             Do I=1,NV
                 II=I+NOpPt*NV
                 Do K=1,3
-                    CV(II,K) = PT(IBTAND(ISYMAX(K,1),ISYMOP)) * CV(I,K)
+                    CV(II,K) = get_pt(iand(group%isymax(K, 1), ISYMOP)) * CV(I,K)
                 ENDDO
             ENDDO
         
@@ -1132,11 +1082,14 @@
     'HAS BEEN CHOSEN', &
     /' IT WILL PROBABLY PRODUCE A HUGE AMOUNT OF TESSERA_E')
 
-    END SUBROUTINE POLYGEN
+    end subroutine polygen
     
-    SUBROUTINE REPCAV(VERT,CENTR,NPERM,NUMTS,NUMSPH)
+    subroutine repcav(vert, centr, nperm, numts, numsph)
+!                    
+! Reproduce the irreducibile part of the cavity
+!
 
-    use pedra_ibtfun
+    use pedra_symmetry, only: get_pt
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
@@ -1144,9 +1097,7 @@
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"
 #include "pcm_nuclei.h"
-#include "pcm_symmet.h"
 
-!  reproduce the irreducibile part of the cavity
     
     integer :: numts, numsph
     real(8) :: vert(numts,10,3), centr(numts,10,3)
@@ -1155,74 +1106,56 @@
     real(8), parameter :: d0 = 0.0d0
     integer :: i, ii, ii2, isymop, k, l
 
-!  replication of the cavity
+    ntsirr = nts
+    nts = nts * (group%maxrep + 1)
 
-! heckWRITE(LVPRI,*)'IN REPCAV_',NTS
-    NTSIRR = NTS
-    NTS = NTS * (MAXREP + 1)
-
-    IF (NTS > MXTS) THEN
+    if (nts > mxts) then
         WRITE(*,*) 'Errornumber 6 - check in the code'
         pedra_error_code = 7
-        STOP
-    END IF
-    DO ISYMOP=1,MAXREP
-        DO I=1,NTSIRR
-            II=I+Ntsirr*ISYMOP
-            AS(II)=AS(I)
-            NVERT(II)=NVERT(I)
-            ISPHE(II)=NPERM(ISPHE(I),ISYMOP+1)
-            DO K=1,NVERT(I)
-                DO L=1,3
-                    VERT(II,K,L)  = &
-                    PT(IBTAND(ISYMAX(L,1),ISYMOP)) * VERT(I,K,L)
-                    CENTR(II,K,L) = &
-                    PT(IBTAND(ISYMAX(L,1),ISYMOP)) * CENTR(I,K,L)
-                ENDDO
-            ENDDO
-        ENDDO
-    ENDDO
+        stop
+    end if
+    ! Loop over symmetry operations. The identity is excluded from the loop.
+    do isymop = 1, group%maxrep 
+        do i = 1, ntsirr
+            ii        = i + ntsirr * isymop
+            as(ii)    = as(i)
+            nvert(ii) = nvert(i)
+            isphe(ii) = nperm(isphe(i), isymop+1)
+            do k = 1, nvert(i)
+                do l = 1, 3
+                  vert(ii, k, l)  = get_pt(iand(group%isymax(l, 1), isymop)) * vert(i, k, l)
+                  centr(ii, k, l) = get_pt(iand(group%isymax(l, 1), isymop)) * centr(i, k, l)
+                enddo
+            enddo
+        enddo
+    enddo
 
-! f Moving the normal points in a safe location where they will not be overwritten
+! Moving the normal points in a safe location where they will not be overwritten
+    do i = 1, ntsirr
+        ii          = i + ntsirr
+        ii2         = i + (group%maxrep + 1) * ntsirr
+        xtscor(ii2) = xtscor(ii)
+        ytscor(ii2) = ytscor(ii)
+        ztscor(ii2) = ztscor(ii)
+    end do
 
-    DO I=1,NTSIRR
-        II=I+NTSIRR
-        II2=I+(MAXREP+1)*NTSIRR
-        XTSCOR(II2)=XTSCOR(II)
-        YTSCOR(II2)=YTSCOR(II)
-        ZTSCOR(II2)=ZTSCOR(II)
-    ENDDO
-
-! f      write(lvpri,*) 'see if the pt are correct',nts
-    DO ISYMOP=1,MAXREP
-        DO I=1,NTSIRR
-            II=I+NTSIRR*ISYMOP
-            XTSCOR(II)=PT(IBTAND(ISYMAX(1,1),ISYMOP)) * XTSCOR(I)
-            YTSCOR(II)=PT(IBTAND(ISYMAX(2,1),ISYMOP)) * YTSCOR(I)
-            ZTSCOR(II)=PT(IBTAND(ISYMAX(3,1),ISYMOP)) * ZTSCOR(I)
-        !            II=I+NTS*(ISYMOP+MAXREP+1)
-        !            II2=I+NTS
-        !            XTSCOR(II)=PT(IBTAND(ISYMAX(1,1),ISYMOP)) * XTSCOR(II2)
-        !            YTSCOR(II)=PT(IBTAND(ISYMAX(2,1),ISYMOP)) * YTSCOR(II2)
-        !            ZTSCOR(II)=PT(IBTAND(ISYMAX(3,1),ISYMOP)) * ZTSCOR(II2)
-        ENDDO
-    ENDDO
-! f
-!      do i=1,nts
-!         do j=1,nts
-!            distance=sqrt((xtscor(j)-xtscor(i))**2
-!     $                   +(ytscor(j)-ytscor(i))**2
-!     $                   +(ztscor(j)-ztscor(i))**2)
-!            if(i.ne.j .and. distance.lt.1.0d-8) then
-!               write(lvpri,*) 'tesserae too close:',i,j
-!            endif
-!         enddo
-!      enddo
-! f
+    do isymop = 1, group%maxrep
+        do i = 1, ntsirr
+            ii         = i + ntsirr * isymop
+            xtscor(ii) = get_pt(iand(group%isymax(1, 1), isymop)) * xtscor(i)
+            ytscor(ii) = get_pt(iand(group%isymax(2, 1), isymop)) * ytscor(i)
+            ztscor(ii) = get_pt(iand(group%isymax(3, 1), isymop)) * ztscor(i)
+        !            ii=i+nts*(isymop+group%maxrep+1)
+        !            ii2=i+nts
+        !            xtscor(ii)=get_pt(iand(group%isymax(1,1),isymop)) * xtscor(ii2)
+        !            ytscor(ii)=get_pt(iand(group%isymax(2,1),isymop)) * ytscor(ii2)
+        !            ztscor(ii)=get_pt(iand(group%isymax(3,1),isymop)) * ztscor(ii2)
+        enddo
+    enddo
     
-    END SUBROUTINE REPCAV
+    end subroutine repcav
 
-    SUBROUTINE TESSERA(NS,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
+    subroutine tessera(ns, nv, pts, ccc, pp, pp1, area, intsph, numts)
 
     use pedra_utils, only: around
     use pedra_print, only: output
@@ -1236,11 +1169,10 @@
     real(8) :: area
     real(8) :: pts(3,10), ccc(3,10), pp(3), pp1(3)
     integer :: intsph(numts,10)
-    real(8) :: p1(3),p2(3),p3(3),p4(3),p4bis(3),point(3),p5(3),p6(3)
-    real(8) :: pscr(3,10),cccp(3,10),pointl(3,10), distck(10,10)
-    integer :: ind(10),ltyp(10),intscr(10),ntrhso(10)
+    real(8) :: p1(3), p2(3), p3(3), p4(3), point(3)
+    real(8) :: pscr(3,10),cccp(3,10),pointl(3,10)
+    integer :: ind(10), ltyp(10), intscr(10), ntrhso(10)
     logical :: lan
-    character(16) :: typlab_
     
     real(8) :: dcheck, de2, delr, delr2, diffdr, dist, dist1, dist2
     real(8) :: dnorm, rc, rc2, tol
@@ -1896,9 +1828,9 @@
     1015 FORMAT('SPHERE',' X = ',F12.9,' Y = ',F12.9,' Z = ',F12.9, &
     ' R = ',F12.9)
 
-    END SUBROUTINE INTER
+    end subroutine inter
     
-    SUBROUTINE GAUBON(NV,NS,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
+    subroutine gaubon(nv, ns, pts, ccc, pp, pp1, area, intsph, numts)
 
     use pedra_dblas, only: vector_product
 
@@ -1910,7 +1842,7 @@
     integer :: nv, ns, numts
     real(8) :: area
     real(8) :: pts(3, 10), ccc(3, 10), pp(3), pp1(3), beta(10)
-    integer :: intsph(numts, 10), ntrhso(10)
+    integer :: intsph(numts, 10)
     real(8) :: p1(3),p2(3),p3(3),u1(3),u2(3),phin(10),weight(0:10)
     
     real(8), parameter :: d0 = 0.0d0
@@ -2127,7 +2059,7 @@
     
     END SUBROUTINE GAUBON
     
-    SUBROUTINE CAVSPL(ICAV1,ICAV2,NCAV1,NCAV2,NATM,SOME)
+    subroutine cavspl(icav1, icav2, ncav1, ncav2, some)
 
 #include "pcm_mxcent.h"
 #include "pcm_pcmdef.h"
@@ -2135,7 +2067,7 @@
 #include "pcm_pcmlog.h"
 
     integer :: icav1(mxcent), icav2(mxcent)
-    integer :: ncav1, ncav2, natm
+    integer :: ncav1, ncav2
     logical :: some
 
     integer :: i, n1, n2, nn, icen, n
@@ -2208,7 +2140,7 @@
     400 FORMAT(/10X,'THE FIRST CAVITY IS FORMED BY SPHERE(S) :'/)
     500 FORMAT(/10X,'THE SECOND CAVITY IS FORMED BY SPHERE(S) :'/)
 
-    END SUBROUTINE CAVSPL
+    end subroutine cavspl
     
     subroutine plotcav(vert, numts)
 
@@ -2218,7 +2150,7 @@
 #include "pcm_pcmlog.h"
 
     integer :: numts
-    real(8) :: vert(numts, 10, *)
+    real(8) :: vert(numts, 10, 3)
     integer :: ivts(mxts, 10)
     logical :: cavity_file_exists
 
@@ -2291,7 +2223,7 @@
     
     end subroutine plotcav
     
-    SUBROUTINE COLOUR(N,C1,C2,C3)
+    subroutine colour(n, c1, c2, c3)
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
@@ -2345,7 +2277,7 @@
     
     end subroutine colour
     
-    subroutine coltss(colour_,c1,c2,c3)
+    subroutine coltss(colour_, c1, c2, c3)
 
 !     Assigne tesserae colours for GeomView:
 
@@ -2408,21 +2340,19 @@
     
     end subroutine coltss
     
-    subroutine prerep(nv,nt,its,cv,jtr,nvert,numts)
-
-    use pedra_ibtfun
+    subroutine prerep(nv, nt, its, cv, jtr, nvert, numts)
+    
+    use pedra_symmetry, only: get_pt
 
 #include "pcm_maxaqn.h"
 #include "pcm_mxcent.h"
-#include "pcm_symmet.h"
-#include "pcm_pgroup.h"
 
     integer :: nv, nt, its, nvert, numts
     integer :: jtr(numts, *)
     real(8) :: cv(nvert, *)
-    logical :: lsymop(0:7)
 
-    integer :: i, j, isymop, ii, jj, k
+    integer :: i, isymop, ii, jj, k
+    logical :: lsymop(0:7)
 
 ! Symmetry operations in for the Abelian groups
 !      SYMOP(0) = ' E '
@@ -2434,67 +2364,64 @@
 !      SYMOP(6) = 'C2x'
 !      SYMOP(7) = ' i '
 
-    DO I = 0, 7
-        LSYMOP(I) = .FALSE.
-    END DO
-    LSYMOP(0) = .TRUE.
-    IF(GROUP == 'C1 ') THEN
-        LSYMOP(1) = .TRUE.
-        LSYMOP(2) = .TRUE.
-        LSYMOP(4) = .TRUE.
-    ELSEIF(GROUP == 'C2 ' .OR. GROUP == 'Ci ') THEN
-        LSYMOP(1) = .TRUE.
-        LSYMOP(2) = .TRUE.
-    ELSEIF(GROUP == 'Cs ') THEN
-        LSYMOP(2) = .TRUE.
-        LSYMOP(4) = .TRUE.
-    ELSEIF(GROUP == 'D2 ' .OR. GROUP == 'C2v') THEN
-        LSYMOP(1) = .TRUE.
-    ELSEIF(GROUP == 'C2h') THEN
-        LSYMOP(2) = .TRUE.
-    ELSEIF(GROUP /= 'D2h') THEN
-        WRITE(*,*) 'Check symmetry group.'
+    do i = 0, 7
+        lsymop(i) = .false.
+    end do
+    ! Every group has the identity
+    lsymop(0) = .true.
+    if (group%group_name == 'C1 ') then
+        ! C1 has 0 generators. All three planes of reflection for the replication.
+        lsymop(1) = .true.
+        lsymop(2) = .true.
+        lsymop(4) = .true.
+    else if (group%group_name == 'C2 ' .or. group%group_name == 'Ci ') then
+        ! C2 has 1 generator. Two planes of reflection for the replication.
+        ! Ci has 1 generator. Two planes of reflection for the replication.
+        lsymop(1) = .true.
+        lsymop(2) = .true.
+    else if (group%group_name == 'Cs ') then
+        ! C2 has 1 generator. Two planes of reflection for the replication.
+        lsymop(2) = .true.
+        lsymop(4) = .true.
+    else if (group%group_name == 'D2 ' .or. group%group_name == 'C2v') then
+        ! D2 has 2 generators. One plane of reflection for the replication.
+        ! C2v has 2 generators. One plane of reflection for the replication.
+        lsymop(1) = .true.
+    else if (group%group_name == 'C2h') then
+        ! C2h has 2 generators. One plane of reflection for the replication.
+        lsymop(2) = .true.
+    else if (group%group_name /= 'D2h') then
+        ! D2h has 3 generators. No planes of reflection for the replication.
+        ! If we get here it  means something went awry before...
+        write(lvpri, *) 'Check symmetry group.'
         pedra_error_code = 12
-        STOP
-    ENDIF
-    DO ISYMOP = 1,7
-        IF(LSYMOP(ISYMOP)) THEN
-        
-        !     riproduzione vertici
-        
-            DO I = 1,NV
-                II = I + NV
-                DO K = 1,3
-                    CV(II,K) = &
-                    PT(IBTAND(ISYMOP,2**(K-1))) * CV(I,K)
-                ENDDO
-            ENDDO
-        ! f            WRITE(LVPRI,*) 'I,II,JJ,K,JTR(II,K),JTR(I,K)'
-        
-        !     riproduzione topologia
-        
-            DO I = 1,NT
-                II = I + NT
-                JJ = NV
-                Do K = 1,3
-                    JTR(II,K) = JTR(I,K) + JJ
-                ! f                  WRITE(LVPRI,*) I,II,JJ,K,JTR(II,K),JTR(I,K)
-                ENDDO
-            ENDDO
-        
-        !  aggiornamento indici
-        
-            NT = NT * 2
-            NV = NV * 2
-            ITS = ITS * 2
-        ! f            write(lvpri,*) 'nt,nv,its',nt,nv,its
-        ENDIF
-    END DO
-    DO I = 1,ITS
-        DO J = 1,3
-        ! f            WRITE(LVPRI,*) I,JTR(I,J),(CV(JTR(I,J),K),K=1,3)
-        ENDDO
-    ENDDO
+        stop
+    end if
+    ! We DO NOT want to include the identity operator in this loop.
+    ! That would cause a cavity twice as big as the correct one to be generated!
+    do isymop = 1, 7 
+        if (lsymop(isymop)) then
+            ! Replication of vertices                
+            do i = 1, nv
+                ii = i + nv
+                do k = 1, 3 
+                    cv(ii,k) = get_pt(iand(isymop, 2**(k-1))) * cv(i, k)
+                enddo
+            enddo
+            ! Replication of topology       
+            do i = 1, nt
+                ii = i + nt
+                jj = nv
+                do k = 1, 3
+                    jtr(ii, k) = jtr(i, k) + jj
+                enddo
+            enddo
+            ! Update indices 
+            nt  = nt  * 2
+            nv  = nv  * 2
+            its = its * 2
+        endif
+    end do
     
     end subroutine prerep
     
@@ -2507,7 +2434,6 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"
-#include "pcm_symmet.h"
 #include "pcm_nuclei.h"
 #include "pcm_orgcom.h"
 
@@ -2530,34 +2456,28 @@
 
     call wlkdin(geom, amass, nesfp, angmom, tinert, omegad, eigval, eigvec, .true., planar, linear)
 
-!    write(lvpri,*) 'inertia tensor eigenvectors and eigenvalues'
     do i = 1, 3
         do j = 1, 3
             eiginv(i,j) = eigvec(j,i)
         end do   
-!        write(lvpri,*) (eiginv(i,j),j=1,3), eigval(i), omegad(i)
     end do
-!    do i=1,3
-!       write(lvpri,*) 'tinert',(tinert(i,j),j=1,3)
-!    enddo
     
-    nopax = nrots + nrefl
+    nopax = group%nr_rotations + group%nr_reflections
     norder(1) = 1
     norder(2) = 2
     norder(3) = 3
     if (nopax >= 3) then
         do i = 1,3
-!            write(lvpri,*) 'iax',i,isop(i),iax(isop(i))
             do j = 1,3
                 dij = 0.0d0
                 if (i == j) then 
                         dij = 1.0d0
                 end if
-                vmat(j, iax(isop(i))) = dij
+                vmat(j, iax(group%jsop(i))) = dij
             enddo
         enddo
     elseif (nopax >= 1) then
-        jax = iax(isop(1))
+        jax = iax(group%jsop(1))
         scal(1) = abs(eiginv(1,jax))
         scal(2) = abs(eiginv(2,jax))
         scal(3) = abs(eiginv(3,jax))
@@ -2585,49 +2505,48 @@
 
     end subroutine pcmtns
     
-    subroutine updcav(coord)
-
-    ! This subroutine is used to update the cavity in a gradient calculation.
-    ! It is called in abacus/abaopt.F
-    ! It might be useless within the module as the host program always
-    ! calls some other higher-level function to perform the update...
-
-    use pedra_ibtfun
-
-#include "pcm_mxcent.h"
-#include "pcm_maxaqn.h"
-#include "pcm_pcmdef.h"
-#include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
-#include "pcm_nuclei.h"
-#include "pcm_pcmnuclei.h"
-#include "pcm_symmet.h"
-
-    real(8) :: coord(3, *)
-
-    integer :: jatom, i, isym, jcord, mulcnt
-
-    if (icesph == 0 .or. icesph == 2) then
-        jatom = 0
-        do i = 1, nucind
-            mulcnt = istbnu(i)
-            do isym = 0, maxrep
-                if(ibtand(isym,mulcnt) == 0) then
-                    jatom = jatom + 1
-                    do jcord = 1,3
-                        pcmcord(jcord,jatom) = pt(ibtand(isymax(jcord,1),isym))*coord(jcord,i)
-                    end do
-                end if
-            end do
-        end do
-    end if
-
-    end subroutine updcav
+!    subroutine updcav(coord)
+!!                    
+!! This subroutine is used to update the cavity in a gradient calculation.
+!! It is called in abacus/abaopt.F
+!! It might be useless within the module as the host program always
+!! calls some other higher-level function to perform the update...
+!!
+!    
+!    use pedra_symmetry, only: get_pt
+!
+!#include "pcm_mxcent.h"
+!#include "pcm_maxaqn.h"
+!#include "pcm_pcmdef.h"
+!#include "pcm_pcm.h"
+!#include "pcm_pcmlog.h"
+!#include "pcm_nuclei.h"
+!#include "pcm_pcmnuclei.h"
+!
+!    real(8) :: coord(3, *)
+!
+!    integer :: jatom, i, isym, jcord, mulcnt
+!
+!    if (icesph == 0 .or. icesph == 2) then
+!        jatom = 0
+!        do i = 1, nucind
+!            mulcnt = istbnu(i)
+!            do isym = 0, group%maxrep
+!                if(iand(isym,mulcnt) == 0) then
+!                    jatom = jatom + 1
+!                    do jcord = 1,3
+!                        pcmcord(jcord,jatom) = get_pt(iand(group%isymax(jcord,1),isym))*coord(jcord,i)
+!                    end do
+!                end if
+!            end do
+!        end do
+!    end if
+!
+!    end subroutine updcav
     
-    subroutine ordpcm(lvpri, nts, xtscor, ytscor, ztscor, as, privec, idxpri, work, lwork)
+    subroutine ordpcm(nts, xtscor, ytscor, ztscor, as, privec, idxpri)
 
-    integer :: lvpri, lwork, nts
-    real(8) :: work(*)
+    integer :: nts
     real(8) :: privec(4, nts), xtscor(nts), ytscor(nts), ztscor(nts), as(nts)
     integer :: idxpri(nts)
     

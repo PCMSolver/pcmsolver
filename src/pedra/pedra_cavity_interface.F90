@@ -10,7 +10,7 @@
           bind(c, name='generatecavity_cpp')
 
       use, intrinsic :: iso_c_binding    
-      use pedra_utils,  only: get_point_group
+      use pedra_symmetry, only: point_group, get_point_group
       use pedra_cavity, only: polyhedra_driver
 
       implicit none
@@ -20,8 +20,6 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
 #include "pcm_pcmlog.h"
-#include "pcm_symmet.h"
-#include "pcm_pgroup.h"
 
       real(c_double)    :: xtscor_(*), ytscor_(*), ztscor_(*)
       real(c_double)    :: xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
@@ -34,7 +32,7 @@
       integer(c_int)   :: i, nsym
       integer(c_int)   :: error_code
       integer          :: lvpri
-      character(len=3) :: pgroup
+      type(point_group) :: pgroup
       
       lvpri = 121201
       inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
@@ -55,10 +53,10 @@
       areats = avgArea_
       icesph = 1
       iprpcm = 3
-      call get_point_group(pgroup_, pgroup, maxrep)
-      nsym = maxrep + 1
-      write(lvpri, *) " Point group is ", pgroup
-      group = pgroup 
+      call get_point_group(pgroup, pgroup_)
+      nsym = pgroup%maxrep + 1
+      write(lvpri, *) " Point group is ", pgroup%group_name
+!     group = pgroup%group_name 
       rsolv = rsolv_
       omega = 40.0d+00
       fro = 0.7d+00
@@ -75,16 +73,16 @@
       
       nesf = nesfp
 
-      pt(0) =  1
-      pt(1) = -1
-      pt(2) = -1
-      pt(3) =  1
-      pt(4) = -1
-      pt(5) =  1
-      pt(6) =  1
-      pt(7) = -1
+!     pt(0) =  1
+!     pt(1) = -1
+!     pt(2) = -1
+!     pt(3) =  1
+!     pt(4) = -1
+!     pt(5) =  1
+!     pt(6) =  1
+!     pt(7) = -1
       
-      call polyhedra_driver(lvpri, error_code, work_, lwork_)
+      call polyhedra_driver(pgroup, lvpri, error_code, work_, lwork_)
 
       nts_ = nts
       do i = 1, nts

@@ -4,7 +4,6 @@
 
     public around
     public errwrk
-    public get_point_group
     public wlkdin
 
     private
@@ -72,47 +71,6 @@
     /T16,'Available :',I10)
 
     end subroutine errwrk
-
-    subroutine get_point_group(int_pgroup, char_pgroup, maxrep)
-
-    integer,          intent(in)  :: int_pgroup
-    character(len=3), intent(out) :: char_pgroup
-    integer,          intent(out) :: maxrep
-
-    integer :: nsymop  ! Number of generators
-
-    select case (int_pgroup)
-            case(7)
-                   char_pgroup = 'D2h'
-                   nsymop      = 3 
-            case(6)
-                   char_pgroup = 'C2v'
-                   nsymop      = 2 
-            case(5)
-                   char_pgroup = 'D2'
-                   nsymop      = 2 
-            case(4)
-                   char_pgroup = 'C2h'
-                   nsymop      = 2
-            case(3)
-                   char_pgroup = 'Ci'
-                   nsymop      = 1
-            case(2)
-                   char_pgroup = 'Ci'
-                   nsymop      = 1
-            case(1)
-                   char_pgroup = 'Cs'
-                   nsymop      = 1
-            case(0) 
-                   char_pgroup = 'C1'
-                   nsymop      = 0
-            case default
-                    write(6, *) "Can't recognize your group..."
-                    stop
-    end select
-    maxrep      = 2**nsymop - 1
-
-    end subroutine get_point_group
 
     subroutine wlkdin(cor, tmass, n, angmom, tinert, omega, cepval, cepvec, docopy, planar, linear)
    !

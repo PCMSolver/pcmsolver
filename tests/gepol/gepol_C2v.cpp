@@ -18,6 +18,8 @@
 #pragma warning pop
 #endif
 
+#include <boost/filesystem.hpp>
+
 #include "GePolCavity.hpp"
 #include "PhysicalConstants.hpp"
 
@@ -30,6 +32,8 @@
 #include "gtest/gtest.h"
 #pragma GCC diagnostic pop
 #endif
+
+namespace fs = boost::filesystem;
 
 // Test C2v symmetry with addition of extra spheres enabled
 class GePolCavityC2vAddTest : public ::testing::Test
@@ -54,7 +58,11 @@ class GePolCavityC2vAddTest : public ::testing::Test
 			double minRadius = 0.2 / convertBohrToAngstrom;
 			int pGroup = 6; // C2v
 			cavity = GePolCavity(spheres, area, probeRadius, minRadius, pGroup);
-			cavity.saveCavity("h3+.npz");
+			cavity.saveCavity("h3+_c2v.npz");
+			fs::path pedra_in(fs::current_path() / "PEDRA.OUT");
+			fs::path pedra_out = pedra_in.replace_extension(".OUT.c2v");
+			fs::path off_in(fs::current_path() / "cavity.off");
+			fs::path off_out = off_in.replace_extension(".off.c2v");
 		}
 };
 
@@ -109,7 +117,11 @@ class GePolCavityC2vTest : public ::testing::Test
 			double minRadius = 100.0 / convertBohrToAngstrom;
 			int pGroup = 6; // C2v
 			cavity = GePolCavity(spheres, area, probeRadius, minRadius, pGroup);
-			cavity.saveCavity("h3+.npz");
+			cavity.saveCavity("h3+_c2v_noadd.npz");
+			fs::path pedra_in(fs::current_path() / "PEDRA.OUT");
+			fs::path pedra_out = pedra_in.replace_extension(".OUT.c2v_noadd");
+			fs::path off_in(fs::current_path() / "cavity.off");
+			fs::path off_out = off_in.replace_extension(".off.c2v_noadd");
 		}
 };
 

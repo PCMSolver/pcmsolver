@@ -39,7 +39,7 @@ FortranCInterface_HEADER(include/FCMangle.hpp)
 
 find_package(PythonInterp REQUIRED)
 
-find_package(Boost)
+find_package(Boost 1.49.0 COMPONENTS filesystem system REQUIRED)
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 	set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
@@ -136,6 +136,8 @@ include_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 
 link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib)
 link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
+link_directories(${Boost_LIBRARY_DIRS})
+set(LIBS boost_filesystem boost_system ${LIBS})
 
 add_subdirectory(src)
 include_directories(${header_dir_list})

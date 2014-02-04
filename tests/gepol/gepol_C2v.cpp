@@ -59,10 +59,8 @@ class GePolCavityC2vAddTest : public ::testing::Test
 			int pGroup = 6; // C2v
 			cavity = GePolCavity(spheres, area, probeRadius, minRadius, pGroup);
 			cavity.saveCavity("h3+_c2v.npz");
-			fs::path pedra_in(fs::current_path() / "PEDRA.OUT");
-			fs::path pedra_out = pedra_in.replace_extension(".OUT.c2v");
-			fs::path off_in(fs::current_path() / "cavity.off");
-			fs::path off_out = off_in.replace_extension(".off.c2v");
+			fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
+			fs::rename("cavity.off", "cavity.off.c2v");
 		}
 };
 
@@ -118,10 +116,8 @@ class GePolCavityC2vTest : public ::testing::Test
 			int pGroup = 6; // C2v
 			cavity = GePolCavity(spheres, area, probeRadius, minRadius, pGroup);
 			cavity.saveCavity("h3+_c2v_noadd.npz");
-			fs::path pedra_in(fs::current_path() / "PEDRA.OUT");
-			fs::path pedra_out = pedra_in.replace_extension(".OUT.c2v_noadd");
-			fs::path off_in(fs::current_path() / "cavity.off");
-			fs::path off_out = off_in.replace_extension(".off.c2v_noadd");
+			fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v_noadd");
+			fs::rename("cavity.off", "cavity.off.c2v_noadd");
 		}
 };
 

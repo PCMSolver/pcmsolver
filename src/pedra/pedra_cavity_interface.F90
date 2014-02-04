@@ -15,11 +15,9 @@
 
       implicit none
 
-#include "pcm_maxaqn.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
       real(c_double)    :: xtscor_(*), ytscor_(*), ztscor_(*)
       real(c_double)    :: xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
@@ -61,7 +59,7 @@
       omega = 40.0d+00
       fro = 0.7d+00
 ! ret is the minimum radius of added spheres
-      ret = ret_ !0.3779452249130124d0 ! This is 0.2 ang in Bohr 
+      ret = ret_ 
       nesfp = nesfp_
       do i = 1, nesfp
          xe(i) = xe_(i)
@@ -73,15 +71,6 @@
       
       nesf = nesfp
 
-!     pt(0) =  1
-!     pt(1) = -1
-!     pt(2) = -1
-!     pt(3) =  1
-!     pt(4) = -1
-!     pt(5) =  1
-!     pt(6) =  1
-!     pt(7) = -1
-      
       call polyhedra_driver(pgroup, lvpri, error_code, work_, lwork_)
 
       nts_ = nts

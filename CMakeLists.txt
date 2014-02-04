@@ -74,6 +74,9 @@ if(ENABLE_EIGEN_MKL)
         set(EIGEN_USE_MKL_ALL ON)
 endif()
 
+set(CMAKE_Fortran_MODULE_DIRECTORY
+    ${PROJECT_BINARY_DIR}/modules
+    )
 
 set(ExternalProjectCMakeArgs
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -116,7 +119,6 @@ configure_file(
     ${PROJECT_BINARY_DIR}/include/Config.hpp
     )
 
-# ALL THIS STUFF NEEDS TO BE REVIEWED
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
 configure_file(pcmsolver.in pcmsolver)
 file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
@@ -128,19 +130,20 @@ file(COPY ${PROJECT_BINARY_DIR}/pcmsolver
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
   GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-include_directories(${EIGEN3_INCLUDE_DIR})
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${PROJECT_BINARY_DIR}/include)
-include_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
-
-link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib)
-link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
-link_directories(${Boost_LIBRARY_DIRS})
-set(LIBS boost_filesystem boost_system ${LIBS})
+include_directories(${EIGEN3_INCLUDE_DIR}
+	            ${Boost_INCLUDE_DIRS}
+		    ${PROJECT_SOURCE_DIR}
+		    ${PROJECT_BINARY_DIR}/include
+                    ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include
+                    ${CMAKE_Fortran_MODULE_DIRECTORY})
 
 add_subdirectory(src)
 include_directories(${header_dir_list})
+
+link_directories(${Boost_LIBRARY_DIRS}
+                 ${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
+	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
+set(LIBS boost_filesystem boost_system ${LIBS})
 
 add_library(pcm ${SOURCES})
 install(TARGETS pcm ARCHIVE DESTINATION lib)

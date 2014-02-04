@@ -7,7 +7,6 @@ set(pedra_SOURCES
   pedra_cavity_interface.F90
   pedra_dblas.F90
   pedra_dlapack.F90
-  makecav.F90
   )
 
 if(ENABLE_TESTS)

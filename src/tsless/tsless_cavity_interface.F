@@ -12,8 +12,7 @@
       real(c_double) :: avgArea, rsolv, dmin, work(*)
       integer(c_int) :: nts, nesfp, nord, lwork
 
-      call makecav_(xtscor,ytscor,ztscor,ar,xsphcor,
-     &     ysphcor, zsphcor, rsph, nts, nesfp, xe, ye, ze, rin, avgArea,
-     $     rsolv, work, lwork)
+      write(*, *) "generate_tsless_cavity_cpp: "
+     $ //"THIS IS NOT THE SUBROUTINE YOU WERE LOOKING FOR"
 
       end subroutine generate_tslesscavity_cpp

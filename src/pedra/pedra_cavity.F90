@@ -64,11 +64,9 @@
 
     use pedra_utils, only : errwrk
 
-#include "pcm_maxaqn.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     type(point_group) :: pgroup
     integer           :: global_print_unit 
@@ -147,13 +145,11 @@
     use pedra_print, only: output
     use pedra_cavity_derivatives, only: cavder
 
-#include "pcm_maxaqn.h"
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
-#include "pcm_nuclei.h"
-#include "pcm_pcmnuclei.h"
+! Import nucdep from pcm_nuclei.h: to set up gradient calculation...
+#include "pcm_nuclei.h" 
 
     integer :: numts, natm, numsph, numver, lwork
     integer :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
@@ -579,8 +575,8 @@
     IF(ICESPH /= 1) THEN
     
         IF(NESFP > NUCDEP) THEN
-            WRITE(LVPRI,9050) NESFP,NUCDEP
-            WRITE(*,*) '3'
+            write(lvpri, '(a)') "PEDRA: confusion about the sphere count."
+            write(lvpri, '(a, i6, a, i6)') "nesfp = ", nesfp, "natm = ", nucdep
             pedra_error_code = 3
             STOP
         END IF
@@ -636,7 +632,6 @@
     9040 FORMAT(/' Total number of tesserae =',I8 &
     /' Surface area =',F20.14,' (AU^2)    Cavity volume =', &
     F20.14,' (AU^3)')
-    9050 FORMAT( ' PEDRA: CONFUSION ABOUT SPHERE COUNTS. NESFP, NATM=',2I6)
     9070 FORMAT(/' ***  PARTITION OF THE SURFACE  ***' &
     //' TESSERA_  SPHERE   AREA   X Y Z TESSERA CENTER  ', &
     'X Y Z NORMAL VECTOR')
@@ -651,7 +646,6 @@
 !
     use pedra_symmetry, only: get_pt
   
-#include "pcm_maxaqn.h"
 #include "pcm_mxcent.h"
 
     integer :: nesf, nesf0, numsph
@@ -761,7 +755,6 @@
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
-#include "pcm_maxaqn.h"
 
     integer :: ipflag, itsnum, itseff, nsfe, numts, numsph, numver
     integer :: nperm(numsph, *), jtr(numts, *)
@@ -1093,11 +1086,7 @@
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
-#include "pcm_maxaqn.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
-#include "pcm_nuclei.h"
-
     
     integer :: numts, numsph
     real(8) :: vert(numts,10,3), centr(numts,10,3)
@@ -1163,7 +1152,6 @@
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     integer :: ns, nv, numts
     real(8) :: area
@@ -1696,7 +1684,6 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     real(8) :: p1(3), p2(3), p3(3), p4(3)
     integer :: ns, i
@@ -1837,7 +1824,6 @@
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     integer :: nv, ns, numts
     real(8) :: area
@@ -1912,29 +1898,13 @@
         SUM1 = SUM1 + PHIN(N) * COSTN
     100 END DO
 
-! WEIGHTS GENERATION FOR CENTER DEFINITION
-
-! the use of old weights is only for backward compatibility
-! the new weights give a smooth variation of the
-! tessera change during geometry optimizations especially when
-! the number of vertices of a tessera changes.
-
-! the difference in the sum has no importance since at the end
-! the point is renormalized in order to be on the sphere
-
-    IF (OLDCEN) THEN
-        DO I = 1,NV
-            WEIGHT(I) = 1.0D0
-        ENDDO
-    ELSE
-        DO I = 1, NV
-            WEIGHT(I) = PHIN(I)
-        END DO
-        WEIGHT(0) = WEIGHT(NV)
-        DO I = NV,1,-1
-            WEIGHT(I) = WEIGHT(I) + WEIGHT(I-1)
-        END DO
-    END IF
+    do i = 1, nv
+        weight(i) = phin(i)
+    end do
+    weight(0) = weight(nv)
+    do i = nv, 1, -1
+        weight(i) = weight(i) + weight(i-1)
+    end do
 
 !     Calcola la seconda sommatoria: l'angolo esterno Beta(N) e'
 !     definito usando i versori (u(N-1),u(N)) tangenti alla sfera
@@ -2064,7 +2034,6 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     integer :: icav1(mxcent), icav2(mxcent)
     integer :: ncav1, ncav2
@@ -2147,7 +2116,6 @@
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     integer :: numts
     real(8) :: vert(numts, 10, 3)
@@ -2155,7 +2123,7 @@
     logical :: cavity_file_exists
 
     real(8) :: c1, c2, c3
-    integer :: n, numv, i, j, k, last, lucav, index
+    integer :: n, numv, i, j, k, last, lucav
     integer :: jcord
 
 !     Prepare the input file for GeomView (coloured polyhedra)
@@ -2164,9 +2132,6 @@
 ! This is DALTON-related, in PCMSolver all the spheres will always be
 ! gray as PEDRA is to be kept ignorant of atomic types!
 !   icesph = 1, spheres given from input (x, y, z, R)
-    if (icesph == 0 .or. icesph == 2 .or. icesph == 3) then
-            index = 1
-    end if
     
     lucav = 12121201
     
@@ -2202,13 +2167,10 @@
                 write(lucav, '(a, i4)') "# Sphere number ", n
         end if
         last = n
-        if (index == 1) then
-            call colour(n, c1, c2, c3)
-        else
-            c1 = 1.0d0
-            c2 = 1.0d0
-            c3 = 1.0d0
-        end if
+        ! All spheres are gray
+        c1 = 1.0d0
+        c2 = 1.0d0
+        c3 = 1.0d0
         do j = 1, nvert(i)
             ivts(i, j) = k
             k = k + 1
@@ -2223,128 +2185,10 @@
     
     end subroutine plotcav
     
-    subroutine colour(n, c1, c2, c3)
-
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
-#include "pcm_nuclei.h"
-#include "pcm_pcmnuclei.h"
-#include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
-    
-    integer :: n
-    real(8) :: c1, c2, c3
-
-    Character(20) :: Col
-    Data Col /'                    '/
-    real(8) :: delta, diff, ddiff
-    integer :: num, i
-
-!     Assign tesserae colours for GeomView:
-!     Carbon: green, nitrogen: blue, oxygen: red, hydrogen: light blue,
-!     others: violet, added spheres: gray.
-
-    Delta=1.d-03
-    IF(N > NESFP)THEN
-        Col = 'Gray'
-        Call COLTSS(Col,C1,C2,C3)
-        Return
-    END IF
-    NUM = 0
-    DO I = 1, NUCDEP
-        DIFF=( PCMCORD(1,I) - XE(N) )**2 &
-        +( PCMCORD(2,I) - YE(N) )**2 &
-        +( PCMCORD(3,I) - ZE(N) )**2
-        DDIFF=Sqrt(DIFF)
-        IF(DDIFF <= Delta) THEN
-            NUM=INT(PCMCHG(I))
-            GOTO 11
-        END IF
-    END DO
-    11 CONTINUE
-    IF(NUM == 6)THEN
-        COL = 'Green'
-    ELSEIF(NUM == 7)THEN
-        COL = 'Blue'
-    ELSEIF(NUM == 8)THEN
-        COL = 'Red'
-    ELSEIF(NUM == 1)THEN
-        COL = 'Light Blue'
-    ELSE
-        COL = 'Fuchsia'
-    ENDIF
-    CALL COLTSS(Col,C1,C2,C3)
-    
-    end subroutine colour
-    
-    subroutine coltss(colour_, c1, c2, c3)
-
-!     Assigne tesserae colours for GeomView:
-
-    character(20) :: COLOUR_
-    real(8) :: c1, c2, c3
-
-    IF(COLOUR_ == 'White') THEN
-        C1 = 1.0
-        C2 = 1.0
-        C3 = 1.0
-    ELSE IF(COLOUR_ == 'Gray') THEN
-        C1 = 0.66
-        C2 = 0.66
-        C3 = 0.66
-    ELSE IF(COLOUR_ == 'Blue' .OR. COLOUR_ == 'Dark Blue') THEN
-        C1 = 0.0
-        C2 = 0.0
-        C3 = 1.0
-    ELSE IF(COLOUR_ == 'Light Blue') THEN
-        C1 = 0.0
-        C2 = 1.0
-        C3 = 1.0
-    ELSE IF(COLOUR_ == 'Green') THEN
-        C1 = 0.0
-        C2 = 1.0
-        C3 = 0.0
-    ELSE IF(COLOUR_ == 'Yellow') THEN
-        C1 = 1.0
-        C2 = 1.0
-        C3 = 0.0
-    ELSE IF(COLOUR_ == 'Orange') THEN
-        C1 = 1.0
-        C2 = 0.5
-        C3 = 0.0
-    ELSE IF(COLOUR_ == 'Violet') THEN
-        C1 = 0.6
-        C2 = 0.0
-        C3 = 1.0
-    ELSE IF(COLOUR_ == 'Pink' .OR. COLOUR_ == 'Light Red') THEN
-        C1 = 1.0
-        C2 = 0.5
-        C3 = 1.0
-    ELSE IF(COLOUR_ == 'Fuchsia') THEN
-        C1 = 1.0
-        C2 = 0.0
-        C3 = 1.0
-    ELSE IF(COLOUR_ == 'Red' .OR. COLOUR_ == 'Dark Red') THEN
-        C1 = 1.0
-        C2 = 0.0
-        C3 = 0.0
-    ELSE IF(COLOUR_ == 'Black') THEN
-        C1 = 0.0
-        C2 = 0.0
-        C3 = 0.0
-    ELSE
-        WRITE(*,*) '8'
-        pedra_error_code = 11
-        STOP
-    ENDIF
-    
-    end subroutine coltss
-    
     subroutine prerep(nv, nt, its, cv, jtr, nvert, numts)
     
     use pedra_symmetry, only: get_pt
 
-#include "pcm_maxaqn.h"
 #include "pcm_mxcent.h"
 
     integer :: nv, nt, its, nvert, numts
@@ -2430,12 +2274,8 @@
     use pedra_utils, only: wlkdin                
 
 #include "pcm_mxcent.h"
-#include "pcm_maxaqn.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
-#include "pcm_nuclei.h"
-#include "pcm_orgcom.h"
 
     integer,    intent(in) :: katom
     real(8),    intent(in) :: geom(katom, 3), amass(katom)
@@ -2504,45 +2344,6 @@
     endif
 
     end subroutine pcmtns
-    
-!    subroutine updcav(coord)
-!!                    
-!! This subroutine is used to update the cavity in a gradient calculation.
-!! It is called in abacus/abaopt.F
-!! It might be useless within the module as the host program always
-!! calls some other higher-level function to perform the update...
-!!
-!    
-!    use pedra_symmetry, only: get_pt
-!
-!#include "pcm_mxcent.h"
-!#include "pcm_maxaqn.h"
-!#include "pcm_pcmdef.h"
-!#include "pcm_pcm.h"
-!#include "pcm_pcmlog.h"
-!#include "pcm_nuclei.h"
-!#include "pcm_pcmnuclei.h"
-!
-!    real(8) :: coord(3, *)
-!
-!    integer :: jatom, i, isym, jcord, mulcnt
-!
-!    if (icesph == 0 .or. icesph == 2) then
-!        jatom = 0
-!        do i = 1, nucind
-!            mulcnt = istbnu(i)
-!            do isym = 0, group%maxrep
-!                if(iand(isym,mulcnt) == 0) then
-!                    jatom = jatom + 1
-!                    do jcord = 1,3
-!                        pcmcord(jcord,jatom) = get_pt(iand(group%isymax(jcord,1),isym))*coord(jcord,i)
-!                    end do
-!                end if
-!            end do
-!        end do
-!    end if
-!
-!    end subroutine updcav
     
     subroutine ordpcm(nts, xtscor, ytscor, ztscor, as, privec, idxpri)
 

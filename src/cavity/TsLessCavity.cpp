@@ -35,7 +35,6 @@ void TsLessCavity::makeCavity()
 
 void TsLessCavity::makeCavity(int maxts, int lwork) 
 {
-       
 	// This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code PEDRA.
 	// Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow
 	// for the insertion of additional spheres as in the most general formulation of the
@@ -85,6 +84,7 @@ void TsLessCavity::makeCavity(int maxts, int lwork)
         // Go TsLess, Go!	
 	generate_tslesscavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, &minDistance, &derOrder, work, &lwork);
+        throw std::runtime_error("TsLessCavity Fortran backend not yet implemented!");
 	
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
 	// coming out from generatecavity_cpp_

@@ -14,7 +14,6 @@
 #include "pcm_nuclei.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
     
     integer :: nsj, nsjr, icoord
     integer :: intsph(mxts, 10), newsph(mxsp, 2)
@@ -188,7 +187,6 @@
 #include "pcm_nuclei.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     integer :: jj, nsi, nsj
     real(8) :: coordj(3), coordk(3)
@@ -248,7 +246,6 @@
 #include "pcm_nuclei.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     integer :: jj, nsi, icoord, nsj
     real(8) :: dc
@@ -316,7 +313,6 @@
 #include "pcm_nuclei.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     integer :: nsi, nsj, newsph(mxsp, 2)
     real(8) :: dr1
@@ -380,7 +376,6 @@
 #include "pcm_nuclei.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-#include "pcm_pcmlog.h"
 
     integer :: nsi, icoord, nsj, newsph(mxsp, 2)
     real(8) :: dr1

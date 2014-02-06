@@ -39,6 +39,7 @@ class Cavity
 	protected:
 		std::vector<Sphere> spheres;
                 int nElements;
+		int nIrrElements;
                 bool built;
 		Eigen::Matrix3Xd elementCenter;
 		Eigen::Matrix3Xd elementNormal;
@@ -78,6 +79,7 @@ class Cavity
                 Eigen::VectorXd & getElementArea() { return elementArea; }
                 double getElementArea(int i) { return elementArea(i); }
                 int size() { return nElements; }
+		int irreducible_size() { return nIrrElements; }
      	 	std::vector<Sphere> & getSpheres() { return spheres; }
 	  	int getNSpheres() { return nSpheres; }
      	 	void setNSpheres(int n) { nSpheres = n; }

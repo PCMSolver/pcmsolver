@@ -25,9 +25,12 @@
 
 #include "Sphere.hpp"
 
-extern "C" void generatecavity_cpp(double *xtscor, double *ytscor, double *ztscor, double *ar, double *xsphcor, double *ysphcor, 
-			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
-			     double *avgArea, double *rsolv, double * ret, int * pgroup, double* work, int* lwork);
+extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
+                             double * xtscor, double * ytscor, double * ztscor, double * ar, 
+			     double * xsphcor, double * ysphcor, double * zsphcor, double * rsph, 
+	                     int * nts, int * ntsirr, int * nesfp, int * addsph,
+	                     double * xe, double * ye, double * ze, double * rin, 
+			     double * avgArea, double * rsolv, double * ret, int * pgroup);
 
 void GePolCavity::build(int maxts, int maxsph, int maxvert) 
 {
@@ -37,18 +40,17 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 	// for the insertion of additional spheres as in the most general formulation of the
 	// GePol algorithm.
 
-        int lwork = 100000000;
-	double *xtscor  = new double[maxts];
-	double *ytscor  = new double[maxts];
-	double *ztscor  = new double[maxts];
-	double *ar      = new double[maxts];
-	double *xsphcor = new double[maxts];
-	double *ysphcor = new double[maxts];
-	double *zsphcor = new double[maxts];
-	double *rsph    = new double[maxts];
-	double *work    = new double[lwork];
+	double * xtscor  = new double[maxts];
+	double * ytscor  = new double[maxts];
+	double * ztscor  = new double[maxts];
+	double * ar      = new double[maxts];
+	double * xsphcor = new double[maxts];
+	double * ysphcor = new double[maxts];
+	double * zsphcor = new double[maxts];
+	double * rsph    = new double[maxts];
 
 	int nts = 0;
+        int ntsirr = 0;
 
         // If there's an overflow in the number of spheres PEDRA will die.
         // The maximum number of spheres in PEDRA is set to 200 (primitive+additional)
@@ -77,73 +79,50 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 		sphereRadius_(i) = sphereRadius(i);
 	}
 		
-	double *xe = xv.data();
-	double *ye = yv.data();
-	double *ze = zv.data();
+	double * xe = xv.data();
+	double * ye = yv.data();
+	double * ze = zv.data();
 
-	double *rin = sphereRadius_.data();
+	double * rin = sphereRadius_.data();
+
+        addedSpheres = 0;
 
         // Go PEDRA, Go!	
-	generatecavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
-						xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius, &pointGroup, work, &lwork);
+	generatecavity_cpp(&maxts, &maxsph, &maxvert,
+                           xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, 
+		           &nts, &ntsirr, &nSpheres, &addedSpheres, 
+			   xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius, &pointGroup);
 	
-	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
-	// coming out from generatecavity_cpp_
-	
-	Eigen::VectorXd rtmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd xtmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd ytmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd ztmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-
-	// The first nSpheres elements of these temporaries will still be those of the original set of spheres	
-	rtmp = sphereRadius_.head(nSpheres);
-	xtmp = xv.head(nSpheres);
-	ytmp = yv.head(nSpheres);
-	ztmp = zv.head(nSpheres);
-	// Traverse the sphereRadius vector (starting from the nSpheres index) and count the number of 
-	// additional spheres that the algorithm created (characterized by non-zero radius)
-	addedSpheres = 0;
-	for ( int i = nSpheres; i < nSpheres + maxAddedSpheres; i++ ) 
-	{
-		if ( sphereRadius_(i) != 0.0) 
-		{
-			rtmp(i) = sphereRadius_(i);
-			xtmp(i) = xv(i);
-			ytmp(i) = yv(i);
-			ztmp(i) = zv(i);
-			addedSpheres += 1;
-		}
-	}
-
 	// The "intensive" part of updating the spheres related class data members will be of course
 	// executed iff addedSpheres != 0
 	if ( addedSpheres != 0 )
 	{
-		std::cout << "The PEDRA algorithm added " << addedSpheres << " new spheres to the original list." << std::endl;
-		// First of all update the nSpheres
+		// Save the number of original spheres
+ 		int orig = nSpheres;
+		// Update the nSpheres
 		nSpheres += addedSpheres;
 		// Resize sphereRadius and sphereCenter...
 		sphereRadius.resize(nSpheres);
 		sphereCenter.resize(Eigen::NoChange, nSpheres);
-		// ...clear vector<Sphere> spheres...
-		spheres.clear();
-		// ...and update their content
+ 		// Transfer radii and centers.
+                // Eigen has no push_back function, so we need to traverse all the spheres...
+		sphereRadius = sphereRadius_.head(nSpheres);
 		for ( int i = 0; i < nSpheres; ++i )
 		{
-			sphereRadius(i) = rtmp(i);
-			for ( int j = 0; j < 3; ++j )
-			{
-				sphereCenter(0, i) = xtmp(i);
-				sphereCenter(1, i) = ytmp(i);
-				sphereCenter(2, i) = ztmp(i);
-			}
-			Eigen::Vector3d cent = sphereCenter.col(i);
-			Sphere sph(cent, sphereRadius(i));
-			spheres.push_back(sph);
+			sphereCenter(0, i) = xv(i);	
+			sphereCenter(1, i) = yv(i);	
+			sphereCenter(2, i) = zv(i);
+		}
+		// Now grow the vector<Sphere> containing the list of spheres
+		for ( int i = orig;  i < nSpheres; ++i )
+		{
+			spheres.push_back(Sphere(sphereCenter.col(i), sphereRadius(i)));
 		}
 	}
-    	
-        nElements = int(nts);                                               
+    
+        // Now take care of updating the rest of the cavity info.	
+        nElements = static_cast<int>(nts);                                               
+        nIrrElements = static_cast<int>(ntsirr);                                               
         elementCenter.resize(Eigen::NoChange, nElements);
         elementSphereCenter.resize(Eigen::NoChange, nElements);
         elementNormal.resize(Eigen::NoChange, nElements);
@@ -160,13 +139,14 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     		elementSphereCenter(2,i) = zsphcor[i];
     		elementRadius(i) = rsph[i];
         }
-    
+        // Calculate normal vectors 
         elementNormal = elementCenter - elementSphereCenter;
         for( int i = 0; i < nElements; ++i)
 	{
     		elementNormal.col(i) /= elementNormal.col(i).norm();
     	}
-    
+   
+        // Clean-up 
 	delete[] xtscor;
 	delete[] ytscor;
 	delete[] ztscor;
@@ -175,7 +155,6 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 	delete[] ysphcor;
 	delete[] zsphcor;
 	delete[] rsph;
-	delete[] work;
 	
 	built = true;
 }
@@ -188,10 +167,17 @@ std::ostream & GePolCavity::printCavity(std::ostream & os)
 	*/
         os << "Cavity type: GePol" << std::endl;
 	os << "Average area = " << averageArea << " AU^2" << std::endl;
-	os << "Addition of extra spheres enabled" << std::endl;
 	os << "Probe radius = " << probeRadius << std::endl;
+        if ( addedSpheres != 0 )
+	{
+		os << "Addition of extra spheres enabled" << std::endl;
+ 	}
 	os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
-        os << "Number of finite elements = " << nElements;
+        os << "Number of finite elements = " << nElements << std::endl;
+	if (pointGroup != 0)
+	{
+		os << "Number of irreducible finite elements = " << nIrrElements;
+	}
         /*for(int i = 0; i < nElements; i++) 
 	{
 		os << std::endl;

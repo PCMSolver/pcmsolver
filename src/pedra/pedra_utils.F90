@@ -3,7 +3,6 @@
     implicit none        
 
     public around
-    public errwrk
     public wlkdin
 
     private
@@ -15,7 +14,7 @@
 !...................................................................
 ! Last revision 5-May-1984 by Hans Jorgen Aa. Jensen
 !
-!   Subroutine DZERO_ sets a real array of length *LENGTH*
+!   Subroutine DZERO sets a real array of length *LENGTH*
 !   to zero.
 !...................................................................
     integer, intent(in)    :: length
@@ -47,30 +46,6 @@
     write (print_unit,'()')
 
     end subroutine around
-
-    subroutine errwrk(string, lneed, lavail, print_unit)
-
-! Version 6-Mar-1985 by hjaaj
-
-    character(len=*), intent(in) :: string
-    integer,          intent(in) :: lneed
-    integer,          intent(in) :: lavail
-    integer,          intent(in) :: print_unit
-    
-    if (lneed >= 0) then
-        write(print_unit, 1010) string, lneed, lavail
-    else
-        write(print_unit, 1020) string, -lneed, lavail
-    end if
-    stop
-
-    1010 FORMAT(/'  FATAL ERROR, insufficient core for ',A, &
-    /T16,'( Need:',I10,', available:',I10,' )')
-    1020 FORMAT(/'  FATAL ERROR, insufficient core for ',A, &
-    //T16,'Need      :',I10,' + uncalculated amount', &
-    /T16,'Available :',I10)
-
-    end subroutine errwrk
 
     subroutine wlkdin(cor, tmass, n, angmom, tinert, omega, cepval, cepvec, docopy, planar, linear)
    !
@@ -136,7 +111,6 @@
     temp = tinert
     
     ! Now diagonalize it, we want back both the eigenvalues and eigenvectors
-    !call DGEEV('V','N',3,TEMP,3,EIGVAL,IEIGVAL,EIGVEC,3,1,1,WORK,15,INFO)
     call dsyevj3(temp, eigvec, eigval)
     ! Order by decreasing eigenvalue
     call order(eigvec, eigval, 3, 3)

@@ -4,10 +4,11 @@
 !      
 !     RDR, 280114. Put things in makecav.F inside here directly.
 !
-      subroutine generatecavity_cpp(xtscor_, ytscor_, ztscor_, ar_, xsphcor_,     &
-          ysphcor_, zsphcor_, rsph_, nts_, nesfp_, xe_, ye_, ze_, rin_, avgArea_, &
-          rsolv_, ret_, pgroup_, work_, lwork_)                                   & 
-          bind(c, name='generatecavity_cpp')
+      subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
+          xtscor_, ytscor_, ztscor_, ar_,                              &
+          xsphcor_, ysphcor_, zsphcor_, rsph_,                         &
+          nts_, ntsirr_, nesfp_, addsph_,                              &
+          xe_, ye_, ze_, rin_, avgArea_, rsolv_, ret_, pgroup_) bind(c, name='generatecavity_cpp')
 
       use, intrinsic :: iso_c_binding    
       use pedra_symmetry, only: get_point_group, point_group
@@ -19,19 +20,20 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
 
-      real(c_double)    :: xtscor_(*), ytscor_(*), ztscor_(*)
-      real(c_double)    :: xsphcor_(*), ysphcor_(*), zsphcor_(*), rsph_(*)
-      real(c_double)    :: ar_(*), xe_(*), ye_(*), ze_(*), rin_(*)
-      real(c_double)    :: avgArea_, rsolv_, ret_, work_(*)
-      integer(c_int)    :: nts_, nesfp_, lwork_
-      logical(c_bool)   :: pedra_file_exists
-      integer(c_int)    :: pgroup_
+      integer(c_int)  :: maxts_, maxsph_, maxvert_
+      real(c_double)  :: xtscor_(maxts_), ytscor_(maxts_), ztscor_(maxts_)
+      real(c_double)  :: xsphcor_(maxts_), ysphcor_(maxts_), zsphcor_(maxts_), rsph_(maxts_)
+      real(c_double)  :: ar_(maxts_), xe_(maxts_), ye_(maxts_), ze_(maxts_), rin_(maxts_)
+      real(c_double)  :: avgArea_, rsolv_, ret_
+      integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
+      logical(c_bool) :: pedra_file_exists
+      integer(c_int)  :: pgroup_
 
       integer(c_int)   :: i
       integer(c_int)   :: error_code
       integer          :: lvpri
       type(point_group) :: pgroup
-      
+     
       lvpri = 121201
       inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
       if (pedra_file_exists) then
@@ -58,6 +60,8 @@
       fro = 0.7d+00
 ! ret is the minimum radius of added spheres
       ret = ret_ 
+! nesfp is the number of initial spheres.
+! nesf is the total number of spheres: initial + added
       nesfp = nesfp_
       do i = 1, nesfp
          xe(i) = xe_(i)
@@ -69,9 +73,14 @@
       
       nesf = nesfp
 
-      call polyhedra_driver(pgroup, lvpri, error_code, work_, lwork_)
+      call polyhedra_driver(pgroup, lvpri, error_code)
 
+! Common block dark magic, it will disappear one day...
       nts_ = nts
+      ntsirr_ = ntsirr
+! Pass the number of added spheres back, to update the GePolCavity
+! object in the right way.
+      addsph_ = nesf - nesfp
       do i = 1, nts
          xtscor_(i) = xtscor(i)
          ytscor_(i) = ytscor(i)

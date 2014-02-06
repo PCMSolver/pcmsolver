@@ -60,9 +60,7 @@
 
     contains
 
-    subroutine polyhedra_driver(pgroup, global_print_unit, error_code, work, lwork)
-
-    use pedra_utils, only : errwrk
+    subroutine polyhedra_driver(pgroup, global_print_unit, error_code)
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
@@ -71,12 +69,9 @@
     type(point_group) :: pgroup
     integer           :: global_print_unit 
     integer           :: error_code
-    real(8)           :: work(*)
-    integer           :: lwork
 
     logical :: some
     integer :: numts, numsph, natm, numver
-    integer :: lwrk, last
     
     integer, allocatable :: intsph(:, :), newsph(:, :)
     integer, allocatable :: icav1(:), icav2(:)
@@ -99,9 +94,6 @@
     natm   = mxcent
     numver = mxver
 
-    last = 1
-    IF (LAST > LWORK) CALL ERRWRK('polyhedra_driver',LAST,LWORK, lvpri)
-    LWRK   = LWORK - LAST + 1
     write(lvpri, '(a)') "Memory management through standard Fortran90 allocate/deallocate."
 
     allocate(intsph(numts, 10))
@@ -131,7 +123,7 @@
     cv = 0.0d0
 
     call polyhedra(intsph, vert, centr, newsph, icav1, icav2, xval, yval, zval, &
-    jtr, cv, numts, numsph, numver, natm, some, work(last), lwrk, nperm)
+    jtr, cv, numts, numsph, numver, natm, some, nperm)
 
 ! Bring the error code back home
     error_code = pedra_error_code
@@ -139,7 +131,7 @@
     end subroutine polyhedra_driver
 
     subroutine polyhedra(intsph,vert,centr,newsph,icav1,icav2,xval,yval, &
-    zval,jtr,cv,numts,numsph,numver,natm,some,work,lwork,nperm)
+    zval,jtr,cv,numts,numsph,numver,natm,some,nperm)
 
     use pedra_dblas, only: dzero
     use pedra_print, only: output
@@ -151,13 +143,12 @@
 ! Import nucdep from pcm_nuclei.h: to set up gradient calculation...
 #include "pcm_nuclei.h" 
 
-    integer :: numts, natm, numsph, numver, lwork
+    integer :: numts, natm, numsph, numver
     integer :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
     real(8) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, 3)
     real(8) :: xval(numts), yval(numts), zval(numts)
     real(8) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
     logical :: some
-    real(8) :: work(lwork)
     integer :: jtr(numts, 3), nperm(numsph, *) 
 
     real(8), parameter :: d0 = 0.0d0
@@ -170,12 +161,10 @@
     real(8) :: xen, xi, xj, xn, yen, yi, yj, yn, zen, zi, zj, zn
     integer :: i, icoord, idisp, ii, ipflag, iprcav, iptype
     integer :: its, itseff, itsnum, itypc, iv, iver, j, jj, jcor
-    integer :: k, kg, idisrep, kidx, klast, kord
+    integer :: k, kg, idisrep
     integer :: kp, n, n1, n2, n3
     integer :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
     integer :: nsfe, nsfer, nv
-    integer, allocatable :: idxpri(:)
-    
     real(8), dimension(3, 3) ::  rotcav = reshape([1.0d0, 0.0d0, 0.0d0,  &
                                                    0.0d0, 1.0d0, 0.0d0,  &
                                                    0.0d0, 0.0d0, 1.0d0], [3, 3])
@@ -517,16 +506,7 @@
     CALL REPCAV(VERT,CENTR,NPERM,NUMTS,NUMSPH)
 
 ! Prepare data for geomview
-    kord  = 1
-    kidx  = kord + 4 * nts
-    klast = kidx + nts
-    allocate(idxpri(nts))
-    if (klast < lwork) then
-        call dzero(work,klast)
-        call ordpcm(nts, xtscor, ytscor, ztscor, as, work(kord), idxpri)
-    else
-        write(lvpri, *) 'warning: not enough mem in pedra to print the cavity'
-    end if
+    call ordpcm(nts, xtscor, ytscor, ztscor, as)
 
     1242 FORMAT('Now tessellating sphere n.',i4)
     1243 FORMAT('Coordinates: X=',F12.8,'  Y=',F12.8,'  Z=',F12.8, &
@@ -566,7 +546,10 @@
             write(lvpri, 9030) i, xe(i), ye(i), ze(i), re(i), ssfe(i)
             stot = stot + ssfe(i)
         end do
-        write(lvpri, 9040) nts, stot, vol
+        write(lvpri, '(/a, i8)') " Total number of tesserae = ", nts
+        write(lvpri, '(a, i8)') " Number of irreducible tesserae = ", ntsirr
+        write(lvpri, '(a, f20.14, a)') " Cavity surface = ", stot, " AU^2"
+        write(lvpri, '(a, f20.14, a/)') " Cavity volume  = ", vol, " AU^3"
     end if
 
 !     ----- set up for possible gradient calculation -----
@@ -629,9 +612,6 @@
     ' Sphere             Center  (X,Y,Z) (AU)            ', &
     '   Radius (AU)      Area (AU^2)')
     9030 FORMAT(I4,4F15.9,F15.9)
-    9040 FORMAT(/' Total number of tesserae =',I8 &
-    /' Surface area =',F20.14,' (AU^2)    Cavity volume =', &
-    F20.14,' (AU^3)')
     9070 FORMAT(/' ***  PARTITION OF THE SURFACE  ***' &
     //' TESSERA_  SPHERE   AREA   X Y Z TESSERA CENTER  ', &
     'X Y Z NORMAL VECTOR')
@@ -840,8 +820,14 @@
           
     NF = INT(SQRT(D1 * ITSNUM / ( D1 * NT0  * 8 )) + 0.5d0)
     IF (NF <= 1) NF=2
-    IF (NF <= 2) WRITE(LVPRI,1000)
-    IF (NF >= 8) WRITE(LVPRI,1100)
+    IF (NF <= 2) then
+            write(lvpri, '(a/)') "** WARNING  ** A very poor tesselation has " &
+            //"been chosen. It is valuable almost only for testing."
+    end if 
+    IF (NF >= 8) then 
+        write(lvpri, '(a)') "** WARNING ** A very fine tesselation has been " &
+        //"chosen, it will probably produce a HUGE amount of tesserae."
+    end if
     DNF = DFLOAT(NF)
 ! eck WRITE(LVPRI,*) 'dopo polydata',NT0,NE0,NV,NF
 
@@ -1066,12 +1052,6 @@
     ! f         WRITE(LVPRI,*)'CV',I
     ! f         WRITE(LVPRI,'(3F10.4)')  (CV(i,II),II=1,3)
     ENDDO
-
-    1000 FORMAT(/' ** WARNING ** A VERY POOR TESSELATION HAS BEEN CHOSEN', &
-    /' IT IS VALUABLE ALMOST ONLY FOR TESTING')
-    1100 FORMAT(/' ** WARNING ** A VERY EXPENSIVE TESSELATION ', &
-    'HAS BEEN CHOSEN', &
-    /' IT WILL PROBABLY PRODUCE A HUGE AMOUNT OF TESSERA_E')
 
     end subroutine polygen
     
@@ -2351,19 +2331,26 @@
 
     end subroutine pcmtns
     
-    subroutine ordpcm(nts, xtscor, ytscor, ztscor, as, privec, idxpri)
-
-    integer :: nts
-    real(8) :: privec(4, nts), xtscor(nts), ytscor(nts), ztscor(nts), as(nts)
-    integer :: idxpri(nts)
+    subroutine ordpcm(nts, xtscor, ytscor, ztscor, as)
+!                    
+! Performs some kind of check on tesserae
+!
+    integer, intent(in) :: nts
+    real(8), intent(in) :: xtscor(nts), ytscor(nts), ztscor(nts), as(nts)
     
     logical :: lchk, lswtch
     real(8) :: xbak, ybak, zbak, abak
     integer :: ibak, i, j, ii
+    ! Some scratch space
+    real(8) :: privec(4, nts) ! Tesserae centers and area
+    integer :: idxpri(nts)    ! Index of tessera i at i-th position
 
     lswtch = .false.
-    
+    privec = 0.0d0
+    idxpri = 0
+
     do i = 1, nts
+        ! Transfer coordinates, areas and index to scratch space.
         privec(1,i) = xtscor(i)
         privec(2,i) = ytscor(i)
         privec(3,i) = ztscor(i)
@@ -2397,13 +2384,18 @@
         enddo
     endif
     
+    write(lvpri, '(a)') "Tess. #      x (AU)              y (AU)             "& 
+    //" z (AU)             a (AU^2)" 
+    write(lvpri, '(a)') "--------------------------------------------------"  &
+    //"----------------------------------" 
     do i = 1, nts
-        write(lvpri, '(4f15.9)') (abs(privec(j,i)),j=1,4)
+        ! This writes centers and areas of tesserae to lvpri (PEDRA.OUT)
+        write(lvpri, '(i4, 4f20.14)') i, (privec(j,i), j=1, 4)
     enddo
 
     end subroutine ordpcm
 
-    logical function chktss(x1,y1,z1,a1,x2,y2,z2,a2)
+    logical function chktss(x1, y1, z1, a1, x2, y2, z2, a2)
 
     real(8) :: x1, y1, z1, a1, x2, y2, z2, a2
 
@@ -2427,9 +2419,8 @@
 
     end function chktss
           
-    function typlab(i)
+    character(16) function typlab(i)
     
-    character(16)       :: typlab            
     integer, intent(in) :: i
     
     if(i == 4) then

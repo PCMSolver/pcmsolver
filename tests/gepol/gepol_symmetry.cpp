@@ -62,6 +62,13 @@ TEST_F(GePolCavityC1Test, size)
 	EXPECT_EQ(size, actualSize);
 }
 
+TEST_F(GePolCavityC1Test, irreducible_size)
+{
+	int size = 32;
+	int actualSize = cavity.irreducible_size();
+	EXPECT_EQ(size, actualSize);
+}
+
 TEST_F(GePolCavityC1Test, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
@@ -109,6 +116,13 @@ TEST_F(GePolCavityCsTest, size)
 {
 	int size = 32;
 	int actualSize = cavity.size();
+	EXPECT_EQ(size, actualSize);
+}
+
+TEST_F(GePolCavityCsTest, irreducible_size)
+{
+	int size = 16;
+	int actualSize = cavity.irreducible_size();
 	EXPECT_EQ(size, actualSize);
 }
 
@@ -162,6 +176,13 @@ TEST_F(GePolCavityC2Test, size)
 	EXPECT_EQ(size, actualSize);
 }
 
+TEST_F(GePolCavityC2Test, irreducible_size)
+{
+	int size = 16;
+	int actualSize = cavity.irreducible_size();
+	EXPECT_EQ(size, actualSize);
+}
+
 TEST_F(GePolCavityC2Test, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
@@ -209,6 +230,13 @@ TEST_F(GePolCavityCiTest, size)
 {
 	int size = 32;
 	int actualSize = cavity.size();
+	EXPECT_EQ(size, actualSize);
+}
+
+TEST_F(GePolCavityCiTest, irreducible_size)
+{
+	int size = 16;
+	int actualSize = cavity.irreducible_size();
 	EXPECT_EQ(size, actualSize);
 }
 
@@ -262,6 +290,13 @@ TEST_F(GePolCavityC2hTest, size)
 	EXPECT_EQ(size, actualSize);
 }
 
+TEST_F(GePolCavityC2hTest, irreducible_size)
+{
+	int size = 8;
+	int actualSize = cavity.irreducible_size();
+	EXPECT_EQ(size, actualSize);
+}
+
 TEST_F(GePolCavityC2hTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
@@ -309,6 +344,13 @@ TEST_F(GePolCavityD2Test, size)
 {
 	int size = 32;
 	int actualSize = cavity.size();
+	EXPECT_EQ(size, actualSize);
+}
+
+TEST_F(GePolCavityD2Test, irreducible_size)
+{
+	int size = 8;
+	int actualSize = cavity.irreducible_size();
 	EXPECT_EQ(size, actualSize);
 }
 
@@ -362,6 +404,13 @@ TEST_F(GePolCavityC2vTest, size)
 	EXPECT_EQ(size, actualSize);
 }
 
+TEST_F(GePolCavityC2vTest, irreducible_size)
+{
+	int size = 8;
+	int actualSize = cavity.irreducible_size();
+	EXPECT_EQ(size, actualSize);
+}
+
 TEST_F(GePolCavityC2vTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
@@ -409,6 +458,13 @@ TEST_F(GePolCavityD2hTest, size)
 {
 	int size = 32;
 	int actualSize = cavity.size();
+	EXPECT_EQ(size, actualSize);
+}
+
+TEST_F(GePolCavityD2hTest, irreducible_size)
+{
+	int size = 4;
+	int actualSize = cavity.irreducible_size();
 	EXPECT_EQ(size, actualSize);
 }
 

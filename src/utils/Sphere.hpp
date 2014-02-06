@@ -32,7 +32,7 @@ class Sphere
 {
   	public:
 		Sphere() {}
-		Sphere(Eigen::Vector3d & _center, double _radius, const std::string & _colour = "Violet" )
+		Sphere(const Eigen::Vector3d & _center, double _radius, const std::string & _colour = "Violet" )
 			: sphereCenter(_center), sphereRadius(_radius), sphereColour(_colour) {}
 		~Sphere() {}
                 double getSphereRadius() const { return sphereRadius; }

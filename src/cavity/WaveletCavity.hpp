@@ -51,7 +51,6 @@ class WaveletCavity : public Cavity
             		makeCavity();
                        }
                 virtual ~WaveletCavity(){};
-                void makeCavity();
                 void readCavity(const std::string & filename);
                 void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
                 unsigned int getNPatches() { return nPatches; }
@@ -77,7 +76,8 @@ class WaveletCavity : public Cavity
                 unsigned int nPoints;
                 bool uploadedDyadic;
                 void writeInput(std::string &fileName);
-                virtual std::ostream & printCavity(std::ostream & os);  
+                virtual std::ostream & printCavity(std::ostream & os);
+		virtual void makeCavity();
 };
 
 namespace

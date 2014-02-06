@@ -29,12 +29,7 @@ extern "C" void generatecavity_cpp(double *xtscor, double *ytscor, double *ztsco
 			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
 			     double *avgArea, double *rsolv, double * ret, int * pgroup, double* work, int* lwork);
 
-void GePolCavity::makeCavity()
-{
-	makeCavity(10000, 10000000);
-}
-
-void GePolCavity::makeCavity(int maxts, int lwork) 
+void GePolCavity::build(int maxts, int maxsph, int maxvert) 
 {
        
 	// This is a wrapper for the generatecavity_cpp function defined in the Fortran code PEDRA.
@@ -42,6 +37,7 @@ void GePolCavity::makeCavity(int maxts, int lwork)
 	// for the insertion of additional spheres as in the most general formulation of the
 	// GePol algorithm.
 
+        int lwork = 100000000;
 	double *xtscor  = new double[maxts];
 	double *ytscor  = new double[maxts];
 	double *ztscor  = new double[maxts];

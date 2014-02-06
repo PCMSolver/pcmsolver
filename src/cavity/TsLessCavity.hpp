@@ -27,11 +27,9 @@ class TsLessCavity : public Cavity
                     Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), minDistance(_minDistance), 
 		    derOrder(_derOrder), minimalRadius(_minRadius)
                        {
-                    	   makeCavity(10000, 10000000);
+                    	   build(10000, 200, 25000);
                        }
                 virtual ~TsLessCavity() {}
-                void makeCavity(int maxts, int lwork);
-                void makeCavity();
                 friend std::ostream & operator<<(std::ostream & os, TsLessCavity & cavity)
 		{
 			return cavity.printCavity(os);
@@ -44,6 +42,11 @@ class TsLessCavity : public Cavity
 		double minimalRadius;
                 int addedSpheres;
                 virtual std::ostream & printCavity(std::ostream & os);  
+                virtual void makeCavity()
+		{
+		        build(10000, 200, 25000);
+		}
+                void build(int maxts, int maxsp, int maxvert);
 };
 
 namespace

@@ -988,10 +988,8 @@
     NV=NVPT-1
     NT=NTPT-1
 
-! f Replication generate the right irreducible part of the cavity
-!   for the selected group
-
-    CALL PREREP(NV,NT,ITSEFF,CV,JTR,NUMVER,NUMTS)
+! Replication generate the right irreducible part of the cavity for the selected group
+    call prerep(nv, nt, itseff, cv, jtr, numver, numts)
     DO i=1,nv
         V1(1) = 0.0D0
         V1(2) = 0.0D0
@@ -1089,8 +1087,8 @@
 #include "pcm_pcm.h"
     
     integer :: numts, numsph
-    real(8) :: vert(numts,10,3), centr(numts,10,3)
-    integer :: nperm(numsph,*)
+    real(8) :: vert(numts, 10, 3), centr(numts, 10, 3)
+    integer :: nperm(numsph, *)
 
     real(8), parameter :: d0 = 0.0d0
     integer :: i, ii, ii2, isymop, k, l
@@ -2186,7 +2184,15 @@
     end subroutine plotcav
     
     subroutine prerep(nv, nt, its, cv, jtr, nvert, numts)
-    
+!                    
+! This subroutine identifies the symmetry elements needed for the replication of
+! the cavity. The algorithm always starts from the D2h tesselation of a single
+! sphere, i.e. it tesselated one eighth of the sphere.
+! We then need additional symmetry operators to generate the right unique for
+! symmetry portion of the surface, unless the group is D2h.
+! That is what happens in the big if-else if statement below, where we construct
+! the lsymop(0:7) array.
+!
     use pedra_symmetry, only: get_pt
 
 #include "pcm_mxcent.h"

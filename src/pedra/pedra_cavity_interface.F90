@@ -10,7 +10,7 @@
           bind(c, name='generatecavity_cpp')
 
       use, intrinsic :: iso_c_binding    
-      use pedra_symmetry, only: point_group, get_point_group
+      use pedra_symmetry, only: get_point_group, point_group
       use pedra_cavity, only: polyhedra_driver
 
       implicit none
@@ -27,7 +27,7 @@
       logical(c_bool)   :: pedra_file_exists
       integer(c_int)    :: pgroup_
 
-      integer(c_int)   :: i, nsym
+      integer(c_int)   :: i
       integer(c_int)   :: error_code
       integer          :: lvpri
       type(point_group) :: pgroup
@@ -52,9 +52,7 @@
       icesph = 1
       iprpcm = 3
       call get_point_group(pgroup, pgroup_)
-      nsym = pgroup%maxrep + 1
       write(lvpri, *) " Point group is ", pgroup%group_name
-!     group = pgroup%group_name 
       rsolv = rsolv_
       omega = 40.0d+00
       fro = 0.7d+00

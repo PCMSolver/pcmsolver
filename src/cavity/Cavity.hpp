@@ -49,6 +49,9 @@ class Cavity
 	        Eigen::Matrix3Xd sphereCenter;
 	        Eigen::VectorXd sphereRadius;
 	private:
+		/*! \brief Creates the cavity and discretizes its surface. 
+		 */
+                virtual void makeCavity() = 0; 
                 virtual std::ostream & printCavity(std::ostream & os) = 0;  
 	public:
 		//! Default constructor
@@ -68,24 +71,21 @@ class Cavity
 				}
 			}
                 virtual ~Cavity() {}
-		/*! \brief Creates the cavity and discretizes its surface. 
-		 */
-                virtual void makeCavity() = 0;                                         
-                virtual Eigen::Matrix3Xd & getElementCenter() { return elementCenter; }
-                virtual Eigen::Vector3d getElementCenter(int i) { return elementCenter.col(i); }
-                virtual Eigen::Matrix3Xd & getElementNormal() { return elementNormal; }
-                virtual Eigen::Vector3d getElementNormal(int i) { return elementNormal.col(i); }
-                virtual Eigen::VectorXd & getElementArea() { return elementArea; }
-                virtual double getElementArea(int i) { return elementArea(i); }
-                virtual int size() { return nElements; }
-     	 	virtual std::vector<Sphere> & getSpheres() { return spheres; }
-	  	virtual int getNSpheres() { return nSpheres; }
-     	 	virtual void setNSpheres(int n) { nSpheres = n; }
-                virtual Eigen::VectorXd & getSphereRadius() { return sphereRadius; }                
-                virtual Eigen::Matrix3Xd & getSphereCenter() { return sphereCenter; }
-                virtual Eigen::VectorXd & getElementRadius() { return elementRadius; }
-     	        virtual double getElementRadius(int i) { return elementRadius(i); }
-     	        virtual Eigen::Matrix3Xd & getElementSphereCenter() { return elementSphereCenter; }
+                Eigen::Matrix3Xd & getElementCenter() { return elementCenter; }
+                Eigen::Vector3d getElementCenter(int i) { return elementCenter.col(i); }
+                Eigen::Matrix3Xd & getElementNormal() { return elementNormal; }
+                Eigen::Vector3d getElementNormal(int i) { return elementNormal.col(i); }
+                Eigen::VectorXd & getElementArea() { return elementArea; }
+                double getElementArea(int i) { return elementArea(i); }
+                int size() { return nElements; }
+     	 	std::vector<Sphere> & getSpheres() { return spheres; }
+	  	int getNSpheres() { return nSpheres; }
+     	 	void setNSpheres(int n) { nSpheres = n; }
+                Eigen::VectorXd & getSphereRadius() { return sphereRadius; }                
+                Eigen::Matrix3Xd & getSphereCenter() { return sphereCenter; }
+                Eigen::VectorXd & getElementRadius() { return elementRadius; }
+     	        double getElementRadius(int i) { return elementRadius(i); }
+     	        Eigen::Matrix3Xd & getElementSphereCenter() { return elementSphereCenter; }
 		/*! \brief Save cavity specification to file.
 		 *
 		 *  The cavity specification contains:

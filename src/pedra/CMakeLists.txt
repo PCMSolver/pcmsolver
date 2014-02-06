@@ -1,12 +1,12 @@
 set(pedra_SOURCES 
+  pedra_cavity_interface.F90
+  pedra_cavity.F90
+  pedra_cavity_derivatives.F90
+  pedra_dblas.F90
+  pedra_dlapack.F90
   pedra_utils.F90
   pedra_symmetry.F90
   pedra_print.F90
-  pedra_cavity_derivatives.F90
-  pedra_cavity.F90
-  pedra_cavity_interface.F90
-  pedra_dblas.F90
-  pedra_dlapack.F90
   )
 
 if(ENABLE_TESTS)

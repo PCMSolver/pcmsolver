@@ -30,11 +30,9 @@ class GePolCavity : public Cavity
                 GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, double _minRadius = 100.0, int _pGroup = C1) :  
                     Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), minimalRadius(_minRadius), pointGroup(_pGroup) 
                        {
-                    	   makeCavity(10000, 10000000);
+                    	   build(10000, 200, 25000);
                        }
                 virtual ~GePolCavity(){}
-                void makeCavity(int maxts, int lwork);
-                void makeCavity();
                 friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity)
 		{
 			return cavity.printCavity(os);
@@ -46,6 +44,16 @@ class GePolCavity : public Cavity
 		int pointGroup;
                 int addedSpheres;
                 virtual std::ostream & printCavity(std::ostream & os);
+                virtual void makeCavity()
+		{
+		        build(10000, 200, 25000);
+		}
+	        /*! \brief Driver for PEDRA Fortran module. 
+		 *  \param[in] maxts maximum number of tesserae
+		 *  \param[in] maxsp maximum number of spheres (original + added)
+		 *  \param[in] maxvert maximum number of vertices
+		 */
+                void build(int maxts, int maxsp, int maxvert);
 };
 
 namespace

@@ -28,18 +28,14 @@ extern "C" void generate_tslesscavity_cpp(double *xtscor, double *ytscor, double
 			     double *zsphcor, double *rsph, int *nts, int *nesfp, double *xe, double *ye, double *ze, double *rin, 
 			     double *avgArea, double *rsolv, double * dmin, int * nord, double* work, int* lwork);
 
-void TsLessCavity::makeCavity()
-{
-	makeCavity(10000, 10000000);
-}
-
-void TsLessCavity::makeCavity(int maxts, int lwork) 
+void TsLessCavity::build(int maxts, int maxsph, int maxvert) 
 {
 	// This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code PEDRA.
 	// Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow
 	// for the insertion of additional spheres as in the most general formulation of the
 	// GePol algorithm.
 
+	int lwork = 1000000;
 	double *xtscor  = new double[maxts];
 	double *ytscor  = new double[maxts];
 	double *ztscor  = new double[maxts];

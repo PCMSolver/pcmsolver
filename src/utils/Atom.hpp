@@ -39,7 +39,7 @@ class Atom
 	public:
 		Atom(){}
                 Atom(const std::string & _element, const std::string & _symbol, double _charge,                              
-                      double _radius, Eigen::Vector3d & _coord, double _scaling = 1.0, const std::string & _colour = "Violet")
+                      double _radius, const Eigen::Vector3d & _coord, double _scaling = 1.0, const std::string & _colour = "Violet")
 			: atomElement(_element), atomSymbol(_symbol), atomCharge(_charge), atomRadius(_radius),
 			atomCoord(_coord), atomRadiusScaling(_scaling), atomColour(_colour) {}
                 Atom(const std::string & _element, const std::string & _symbol, double _charge, double _radius)

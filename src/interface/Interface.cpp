@@ -509,11 +509,8 @@ void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere
 	for (size_t i = 0; i < atomsInput.size(); ++i) 
 	{
 		int index = atomsInput[i] - 1; // -1 to go from human readable to machine readable
-		// Create the Sphere
-		Eigen::Vector3d center = sphereCenter_.col(index);
-		Sphere sph(center, radiiInput[i]);
 		// Put the new Sphere in place of the implicit-generated one
-		spheres_[index] = sph;
+		spheres_[index] = Sphere(sphereCenter_.col(index), radiiInput[i]);
 	}
 }
 
@@ -540,9 +537,7 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3X
 		{
 			radius *= radiiSet[index].getAtomRadiusScaling();
                 }
-		Eigen::Vector3d center = sphereCenter_.col(i);
-		Sphere sph(center, radius);
-		spheres_.push_back(sph);
+		spheres_.push_back(Sphere(sphereCenter_.col(i), radius));
 	}
 }
 

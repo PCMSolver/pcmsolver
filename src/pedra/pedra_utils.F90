@@ -94,9 +94,9 @@
           do k = 1, 3 ! Loop on coordinates
              ! Build off-diagonal elements
              tinert(j, k) = tinert(j, k) - tmass(i)*cor(i,j)*cor(i,k)
-          enddo
-       enddo
-    enddo
+          end do
+       end do
+    end do
 
     ! Symmetrize the inertia tensor
     average = 0.0d0
@@ -105,8 +105,8 @@
            average = 0.5d0 * (tinert(i, j) + tinert(j, i))
            tinert(i, j) = average
            tinert(j, i) = average
-       enddo
-    enddo
+       end do
+    end do
 
     temp = tinert
     
@@ -142,7 +142,7 @@
     if (docopy) then
        cepval = eigval
        cepvec = eigvec 
-    endif
+    end if
     
     end subroutine wlkdin
 
@@ -173,15 +173,15 @@
         if (eval(j) .lt. emin) then
           emin = eval(j)
           imin = j
-        endif
+        end if
       end do
       if (imin.ne.i) then
         eval(imin)=eval(i)
         eval(i)=emin
         if (nevec .gt. 0) then
           call dswap(nevec,evec(beg),1,evec((imin-1)*nevec+1),1)
-        endif
-      endif
+        end if
+      end if
       beg = beg + nevec
     end do
 

@@ -69,7 +69,7 @@
          ze(i) = ze_(i)
          rin(i) = rin_(i)
          alpha(i) = 1.0d0
-      enddo
+      end do
       
       nesf = nesfp
 
@@ -80,6 +80,7 @@
       ntsirr_ = ntsirr
 ! Pass the number of added spheres back, to update the GePolCavity
 ! object in the right way.
+! nesf: total number of spheres; nesfp: number of original spheres
       addsph_ = nesf - nesfp
       do i = 1, nts
          xtscor_(i) = xtscor(i)
@@ -90,7 +91,7 @@
          ysphcor_(i) = ye(isphe(i))
          zsphcor_(i) = ze(isphe(i))
          rsph_(i) = re(isphe(i))
-      enddo
+      end do
 
       write(lvpri, *) "Error code is ", error_code
 

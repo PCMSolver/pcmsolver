@@ -123,10 +123,10 @@
         IF (ABS(A(2, 2)) > T) THEN
             T = ABS(A(2, 2))
             F = -A(1, 2) / A(2, 2)
-        END IF
+        end if
         IF (ABS(A(2, 3)) > T) THEN
             F = -A(1, 3) / A(2, 3)
-        END IF
+        end if
         NORM    = 1.0D0 / SQRT(1.0D0 + F**2)
         Q(1, 1) = NORM
         Q(2, 1) = F * NORM
@@ -136,8 +136,8 @@
         NORM = SQRT(1.0D0 / NORM)
         DO 20, J = 1, 3
             Q(J, 1) = Q(J, 1) * NORM
-        20 END DO
-    END IF
+        20 end do
+    end if
      
 !     Prepare calculation of second eigenvector
     T = W(1) - W(2)
@@ -171,10 +171,10 @@
             IF (ABS(A(2, 2)) > T) THEN
                 T = ABS(A(2, 2))
                 F = -A(1, 2) / A(2, 2)
-            END IF
+            end if
             IF (ABS(A(2, 3)) > T) THEN
                 F = -A(1, 3) / A(2, 3)
-            END IF
+            end if
             NORM    = 1.0D0 / SQRT(1.0D0 + F**2)
             Q(1, 2) = NORM
             Q(2, 2) = F * NORM
@@ -183,8 +183,8 @@
             NORM = SQRT(1.0D0 / NORM)
             DO 40, J = 1, 3
                 Q(J, 2) = Q(J, 2) * NORM
-            40 END DO
-        END IF
+            40 end do
+        end if
     ELSE
     !       For degenerate eigenvalue, calculate second eigenvector according to
     !         v[1] = v[0] x (A - lambda[1]).e[i]
@@ -208,11 +208,11 @@
                     NORM = SQRT(1.0D0 / NORM)
                     DO 55 J = 1, 3
                         Q(J, 2) = Q(J, 2) * NORM
-                    55 END DO
-                    GO TO 60
-                END IF
-            END IF
-        50 END DO
+                    55 end do
+                    go to 60
+                end if
+            end if
+        50 end do
            
     !       This means that any vector orthogonal to v[0] is an EV.
         60 IF (I == 4) THEN
@@ -223,11 +223,11 @@
                     Q(J, 2)              = Q(1 + MOD(J,3), 1) * NORM
                     Q(1 + MOD(J,3), 2)   = -Q(J, 1) * NORM
                     Q(1 + MOD(J+1,3), 2) = 0.0D0
-                    GO TO 80
-                END IF
-            70 END DO
-        END IF
-    END IF
+                    go to 80
+                end if
+            70 end do
+        end if
+    end if
 
 !     Calculate third eigenvector according to
 !       v[2] = v[0] x v[1]
@@ -315,8 +315,8 @@
         NORM = SQRT(1.0D0 / NORM)
         DO 20, J = 1, 3
             Q(J, 1) = Q(J, 1) * NORM
-        20 END DO
-    END IF
+        20 end do
+    end if
      
 !     Calculate second eigenvector by the formula
 !       v[1] = (A - lambda[1]).e1 x (A - lambda[1]).e2
@@ -331,8 +331,8 @@
         NORM = SQRT(1.0D0 / NORM)
         DO 40, J = 1, 3
             Q(J, 2) = Q(J, 2) * NORM
-        40 END DO
-    END IF
+        40 end do
+    end if
 
 !     Calculate third eigenvector according to
 !       v[2] = v[0] x v[1]
@@ -406,13 +406,13 @@
    50   CONTINUE
         IF (SO .EQ. 0.0D0) THEN
           RETURN
-        END IF
+        end if
 
         IF (I .LT. 4) THEN
           THRESH = 0.2D0 * SO / N**2
         ELSE
           THRESH = 0.0D0
-        END IF
+        end if
 
 !       Do sweep
         DO 60 X = 1, N
@@ -432,8 +432,8 @@
                   T = -1.0D0 / (SQRT(1.0D0 + THETA**2) - THETA)
                 ELSE
                   T = 1.0D0 / (SQRT(1.0D0 + THETA**2) + THETA)
-                END IF
-              END IF
+                end if
+              end if
 
               C = 1.0D0 / SQRT( 1.0D0 + T**2 )
               S = T * C
@@ -466,7 +466,7 @@
                 Q(R, X) = C * T - S * Q(R, Y)
                 Q(R, Y) = S * T + C * Q(R, Y)
   100         CONTINUE
-            END IF
+            end if
    61     CONTINUE
    60   CONTINUE
    40 CONTINUE
@@ -583,18 +583,18 @@
             DO 20 M = L, N-1
                 G = ABS(W(M)) + ABS(W(M+1))
                 IF (ABS(E(M)) + G == G) THEN
-                    GO TO 30
-                END IF
-            20 END DO
+                    go to 30
+                end if
+            20 end do
             30 IF (M == L) THEN
-                GO TO 10
-            END IF
+                go to 10
+            end if
 
             NITER = NITER + 1
             IF (NITER >= 30) THEN
                 PRINT *, 'DSYEVQ3: No convergence.'
                 RETURN
-            END IF
+            end if
 
         !         Calculate G = D(M) - K
             G = (W(L+1) - W(L)) / (2.0D0 * E(L))
@@ -603,7 +603,7 @@
                 G = W(M) - W(L) + E(L)/(G + R)
             ELSE
                 G = W(M) - W(L) + E(L)/(G - R)
-            END IF
+            end if
 
             S = 1.0D0
             C = 1.0D0
@@ -623,7 +623,7 @@
                     E(J+1) = G * R
                     C      = 1.0D0 / R
                     S      = S * C
-                END IF
+                end if
 
                 G      = W(J+1) - P
                 R      = (W(J) - G) * S + 2.0D0 * C * B
@@ -637,13 +637,13 @@
                     T         = Q(K, J+1)
                     Q(K, J+1) = S * Q(K, J) + C * T
                     Q(K, J)   = C * Q(K, J) - S * T
-                50 END DO
-            40 END DO
+                50 end do
+            40 end do
             W(L) = W(L) - P
             E(L) = G
             E(M) = 0.0D0
-        11 END DO
-    10 END DO
+        11 end do
+    10 end do
       
     END SUBROUTINE
 ! End of subroutine DSYEVQ3
@@ -682,8 +682,8 @@
         DO 11, J = 1, I-1
             Q(I, J) = 0.0D0
             Q(J, I) = 0.0D0
-        11 END DO
-    10 END DO
+        11 end do
+    10 end do
 
 !     Bring first row and column to the desired form
     H = A(1,2)**2 + A(1,3)**2
@@ -691,7 +691,7 @@
         G = -SQRT(H)
     ELSE
         G = SQRT(H)
-    END IF
+    end if
     E(1)  = G
     F     = G * A(1,2)
     U(2)  = A(1,2) - G
@@ -705,12 +705,12 @@
             F    = A(2,I)*U(2) + A(I,3)*U(3)
             P(I) = OMEGA * F
             K    = K + U(I) * F
-        20 END DO
+        20 end do
         K = 0.5D0 * K * OMEGA**2
 
         DO 30 I = 2, N
             P(I) = P(I) - K * U(I)
-        30 END DO
+        30 end do
 
         D(1) = A(1,1)
         D(2) = A(2,2) - 2.0D0 * P(2) * U(2)
@@ -722,17 +722,17 @@
             F = OMEGA * U(J)
             DO 41 I = 2, N
                 Q(I,J) = Q(I,J) - F * U(I)
-            41 END DO
-        40 END DO
+            41 end do
+        40 end do
                     
     !       Calculated updated A(2, 3) and store it in E(2)
         E(2) = A(2, 3) - P(2) * U(3) - U(2) * P(3)
     ELSE
         DO 50 I = 1, N
             D(I) = A(I, I)
-        50 END DO
+        50 end do
         E(2) = A(2, 3)
-    END IF
+    end if
           
     END SUBROUTINE
 ! End of subroutine DSYTRD3

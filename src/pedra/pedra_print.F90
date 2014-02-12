@@ -67,18 +67,18 @@
     real(8) :: amax, thrpri
     integer :: i, j, k, mctl, last
 
-    IF (ROWHI < ROWLOW) GO TO 3
-    IF (COLHI < COLLOW) GO TO 3
+    IF (ROWHI < ROWLOW) go to 3
+    IF (COLHI < COLLOW) go to 3
 
     AMAX = ZERO
     DO 10 J = COLLOW,COLHI
         DO 10 I = ROWLOW,ROWHI
             AMAX = MAX( AMAX, ABS(AMATRX(I,J)) )
-    10 END DO
+    10 end do
     IF (AMAX == ZERO) THEN
         WRITE (LVPRI,'(/T6,A)') 'Zero matrix.'
-        GO TO 3
-    END IF
+        go to 3
+    end if
     IF (FFMIN <= AMAX .AND. AMAX < FFMAX) THEN
     !        use F output format
         PFMT = '(A1,I7,2X,8F14.8)'
@@ -87,32 +87,32 @@
     !        use 1PD output format
         PFMT = '(A1,I7,2X,1P,8D14.6)'
         thrpri = 1.0D-8*AMAX
-    END IF
+    end if
 
     IF (NCTL < 0) THEN
         KCOL = KCOLN
     ELSE
         KCOL = KCOLP
-    END IF
+    end if
     MCTL = ABS(NCTL)
     IF ((MCTL <= 3) .AND. (MCTL > 0)) THEN
         CTL = ASA(MCTL)
     ELSE
         CTL = BLANK
-    END IF
+    end if
 
     LAST = MIN(COLHI,COLLOW+KCOL-1)
     DO 2 BEGIN = COLLOW,COLHI,KCOL
         WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
         DO 1 K = ROWLOW,ROWHI
             DO 4 I = BEGIN,LAST
-                IF (abs(AMATRX(K,I)) > thrpri) GO TO 5
-            4 END DO
-        GO TO 1
+                IF (abs(AMATRX(K,I)) > thrpri) go to 5
+            4 end do
+        go to 1
         5 WRITE (LVPRI,PFMT) CTL,K,(AMATRX(K,I), I = BEGIN,LAST)
-        1 END DO
+        1 end do
     LAST = MIN(LAST+KCOL,COLHI)
-    2 END DO
+    2 end do
     3 RETURN
     1000 FORMAT (/10X,8(4X,A6,I4))
 ! 2000 FORMAT (A1,'Row',I4,2X,1P,8D14.6)

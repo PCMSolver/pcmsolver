@@ -111,7 +111,7 @@
     DDOT = ZERO
     DTEMP = ZERO
     IF(N <= 0)RETURN
-    IF(INCX == 1 .AND. INCY == 1)GO TO 20
+    IF(INCX == 1 .AND. INCY == 1)go to 20
 
 !        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
 !          NOT EQUAL TO 1
@@ -124,7 +124,7 @@
         DTEMP = DTEMP + DX(IX)*DY(IY)
         IX = IX + INCX
         IY = IY + INCY
-    10 END DO
+    10 end do
     DDOT = DTEMP
     RETURN
 
@@ -134,16 +134,16 @@
 !        CLEAN-UP LOOP
 
     20 M = MOD(N,5)
-    IF( M == 0 ) GO TO 40
+    IF( M == 0 ) go to 40
     DO 30 I = 1,M
         DTEMP = DTEMP + DX(I)*DY(I)
-    30 END DO
-    IF( N < 5 ) GO TO 60
+    30 end do
+    IF( N < 5 ) go to 60
     40 MP1 = M + 1
     DO 50 I = MP1,N,5
         DTEMP = DTEMP + DX(I)*DY(I) + DX(I + 1)*DY(I + 1) + &
         DX(I + 2)*DY(I + 2) + DX(I + 3)*DY(I + 3) + DX(I + 4)*DY(I + 4)
-    50 END DO
+    50 end do
     60 DDOT = DTEMP
 
     END FUNCTION DDOT
@@ -240,7 +240,7 @@
     integer :: i, ix, m, mp1
 
     IF(N <= 0)RETURN
-    IF(INCX == 1)GO TO 20
+    IF(INCX == 1)go to 20
 
 !        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS
 !          NOT EQUAL TO 1
@@ -250,7 +250,7 @@
     DO 10 I = 1,N
         DX(IX) = DA*DX(IX)
         IX = IX + INCX
-    10 END DO
+    10 end do
     RETURN
 
 !        CODE FOR BOTH INCREMENTS EQUAL TO 1
@@ -260,10 +260,10 @@
 
     20 CONTINUE
     M = MOD(N,4)
-    IF( M == 0 ) GO TO 40
+    IF( M == 0 ) go to 40
     DO 30 I = 1,M
         DX(I) = DA*DX(I)
-    30 END DO
+    30 end do
     IF( N < 4 ) RETURN
     40 CONTINUE
     MP1 = M + 1
@@ -272,7 +272,7 @@
         DX(I + 1) = DA*DX(I + 1)
         DX(I + 2) = DA*DX(I + 2)
         DX(I + 3) = DA*DX(I + 3)
-    50 END DO
+    50 end do
     RETURN
     END SUBROUTINE DSCAL
 
@@ -288,7 +288,7 @@
     INTEGER :: I,IX,IY,M,MP1
 
     IF(N <= 0)RETURN
-    IF(INCX == 1 .AND. INCY == 1)GO TO 20
+    IF(INCX == 1 .AND. INCY == 1)go to 20
 
 !       CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS NOT EQUAL
 !         TO 1
@@ -303,7 +303,7 @@
         DY(IY) = DTEMP
         IX = IX + INCX
         IY = IY + INCY
-    10 END DO
+    10 end do
     RETURN
 
 !       CODE FOR BOTH INCREMENTS EQUAL TO 1
@@ -312,12 +312,12 @@
 !       CLEAN-UP LOOP
 
     20 M = MOD(N,3)
-    IF( M == 0 ) GO TO 40
+    IF( M == 0 ) go to 40
     DO 30 I = 1,M
         DTEMP = DX(I)
         DX(I) = DY(I)
         DY(I) = DTEMP
-    30 END DO
+    30 end do
     IF( N < 3 ) RETURN
     40 MP1 = M + 1
     DO 50 I = MP1,N,3
@@ -330,7 +330,7 @@
         DTEMP = DX(I + 2)
         DX(I + 2) = DY(I + 2)
         DY(I + 2) = DTEMP
-    50 END DO
+    50 end do
     RETURN
     END SUBROUTINE 
 
@@ -348,7 +348,7 @@
     IF( N < 1 ) RETURN
     IDAMAX = 1
     IF(N == 1)RETURN
-    IF(INCX == 1)GO TO 20
+    IF(INCX == 1)go to 20
 
 !        CODE FOR INCREMENT NOT EQUAL TO 1
 
@@ -356,21 +356,21 @@
     DMAX = DABS(DX(1))
     IX = IX + INCX
     DO 10 I = 2,N
-        IF(DABS(DX(IX)) <= DMAX) GO TO 5
+        IF(DABS(DX(IX)) <= DMAX) go to 5
         IDAMAX = I
         DMAX = DABS(DX(IX))
         5 IX = IX + INCX
-    10 END DO
+    10 end do
     RETURN
 
 !        CODE FOR INCREMENT EQUAL TO 1
 
     20 DMAX = DABS(DX(1))
     DO 30 I = 2,N
-        IF(DABS(DX(I)) <= DMAX) GO TO 30
+        IF(DABS(DX(I)) <= DMAX) go to 30
         IDAMAX = I
         DMAX = DABS(DX(I))
-    30 END DO
+    30 end do
     RETURN
     END FUNCTION IDAMAX
 
@@ -388,9 +388,9 @@
 
     IF(N <= 0)RETURN
     IF (INCX == INCY) THEN
-        IF (INCX == 1) GOTO 20
-        IF (INCX > 1) GOTO 60
-    END IF
+        IF (INCX == 1) go to 20
+        IF (INCX > 1) go to 60
+    end if
 !        CODE FOR UNEQUAL OR NONPOSITIVE INCREMENTS.
 
     IX = 1
@@ -401,7 +401,7 @@
         DY(IY) = DX(IX)
         IX = IX + INCX
         IY = IY + INCY
-    10 END DO
+    10 end do
     RETURN
 
 !        CODE FOR BOTH INCREMENTS EQUAL TO 1
@@ -410,10 +410,10 @@
 !        CLEAN-UP LOOP SO REMAINING VECTOR LENGTH IS A MULTIPLE OF 7.
 
     20 M = MOD(N,7)
-    IF( M == 0 ) GO TO 40
+    IF( M == 0 ) go to 40
     DO 30 I = 1,M
         DY(I) = DX(I)
-    30 END DO
+    30 end do
     IF( N < 7 ) RETURN
     40 MP1 = M + 1
     DO 50 I = MP1,N,7
@@ -424,7 +424,7 @@
         DY(I + 4) = DX(I + 4)
         DY(I + 5) = DX(I + 5)
         DY(I + 6) = DX(I + 6)
-    50 END DO
+    50 end do
     RETURN
 
 !        CODE FOR EQUAL, POSITIVE, NONUNIT INCREMENTS.
@@ -433,7 +433,7 @@
     NS=N*INCX
     DO 70 I=1,NS,INCX
         DY(I) = DX(I)
-    70 END DO
+    70 end do
     RETURN
     END SUBROUTINE DCOPY
 

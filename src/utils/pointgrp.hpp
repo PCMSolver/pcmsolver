@@ -188,7 +188,7 @@ class SymmetryOperation {
     void transpose();
 
     /// print the matrix
-    void print(FILE *out);
+    void print(FILE *out = stdout);
 };
 
 // //////////////////////////////////////////////////////////////////
@@ -369,7 +369,7 @@ class IrreducibleRepresentation {
     /** This prints the irrep to the given file, or stdout if none is
      given.  The second argument is an optional string of spaces to offset
      by. */
-     void print(FILE *out) const;
+     void print(FILE *out = stdout) const;
 };
 
 // ///////////////////////////////////////////////////////////
@@ -464,7 +464,7 @@ class CharacterTable {
     unsigned char bits();
 
     /// This prints the irrep to the given file, or stdout if none is given.
-     void print(FILE *out) const;
+     void print(FILE *out = stdout) const;
 };
 
 // ///////////////////////////////////////////////////////////
@@ -563,7 +563,7 @@ class PointGroup {
     static const char* bits_to_basic_name(unsigned char bits);
     static bool full_name_to_bits(const std::string& pg, unsigned char& bits);
 
-    void print(FILE *out) const;
+    void print(FILE *out = stdout) const;
 };
 
 #endif

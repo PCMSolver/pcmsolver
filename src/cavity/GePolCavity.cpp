@@ -23,6 +23,8 @@
 #pragma warning pop
 #endif
 
+#include <boost/lexical_cast.hpp>
+
 #include "Sphere.hpp"
 
 extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
@@ -139,6 +141,37 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     		elementSphereCenter(2,i) = zsphcor[i];
     		elementRadius(i) = rsph[i];
         }
+	// Check that no points are overlapping exactly
+	// Do not perform float comparisons column by column. 
+	// Instead form differences between columns and evaluate if they differ
+	// from zero by more than a fixed threshold.
+        // The indices of the equal elements are gathered in a std::pair and saved into a std::vector
+	double threshold = 1.0e-12;
+	std::vector< std::pair<int, int> > equal_elements;
+        for( int i = 0; i < nElements; ++i )
+	{
+		for ( int j = i + 1; j < nElements; ++j)
+		{
+			Eigen::Vector3d difference = elementCenter.col(i) - elementCenter.col(j);
+			if ( difference.isZero(threshold) )	
+			{
+				equal_elements.push_back(std::make_pair(i, j));
+			}
+		}
+	}
+	if ( equal_elements.size() != 0 )
+	{
+		// Not sure that printing the list of pairs is actually of any help...
+		std::string list_of_pairs;
+		for ( size_t i = 0; i < equal_elements.size(); ++i)
+		{
+			list_of_pairs += "(" + boost::lexical_cast<std::string>(equal_elements[i].first) 
+				     + ", " + boost::lexical_cast<std::string>(equal_elements[i].second) + ")\n";
+		}
+		// Prepare the error message:
+		std::string message = boost::lexical_cast<std::string>(equal_elements.size()) + " cavity finite element centers overlap exactly!\n" + list_of_pairs; 
+		throw std::runtime_error(message);
+	}
         // Calculate normal vectors 
         elementNormal = elementCenter - elementSphereCenter;
         for( int i = 0; i < nElements; ++i)

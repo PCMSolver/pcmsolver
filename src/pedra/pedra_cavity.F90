@@ -1,4 +1,3 @@
-!
 !  -- dalton/sirius/sircav.F --
 !     (Luca Frediani)
 ! Originally written for DALTON by Luca Frediani (ca. 2003-2004)
@@ -27,7 +26,7 @@
     ! The point group
     type(point_group) :: group
     ! Some print levels
-    integer :: iprsol = 0
+    integer :: iprsol
     ! The global print unit
     integer :: lvpri
     ! Error code
@@ -52,11 +51,9 @@
     !       [subroutine tessera]
     !   10: ?
     !       [subroutine inter]
-    !   11: color string not recognized
-    !       [subroutine coltss]
-    !   12: symmetry string not recognized
+    !   11: symmetry string not recognized
     !       [subroutine prerep]
-    integer :: pedra_error_code = 0
+    integer :: pedra_error_code
 
     contains
 
@@ -75,12 +72,14 @@
     
     integer, allocatable :: intsph(:, :), newsph(:, :)
     integer, allocatable :: icav1(:), icav2(:)
-    integer, allocatable :: jtr(:, :), nperm(:, :)
+    integer, allocatable :: jtr(:, :)
     real(8), allocatable :: vert(:, :, :), centr(:, :, :)
     real(8), allocatable :: xval(:), yval(:), zval(:)
     real(8), allocatable :: cv(:, :)
 
     SOME = IPRPCM.NE.-5
+!     ----- set the print level
+    iprsol = 0
 !     ----- set lvpri
     lvpri = global_print_unit
 !     ----- set the point group
@@ -106,9 +105,6 @@
     icav2 = 0
     allocate(jtr(numts, 3))
     jtr = 0
-    ! 8 is the number of operations in D2h, the largest group we can treat
-    allocate(nperm(numsph, 8)) 
-    nperm = 0
     allocate(vert(numts, 10, 3))
     vert = 0.0d0
     allocate(centr(numts, 10, 3))
@@ -123,7 +119,7 @@
     cv = 0.0d0
 
     call polyhedra(intsph, vert, centr, newsph, icav1, icav2, xval, yval, zval, &
-    jtr, cv, numts, numsph, numver, natm, some, nperm)
+    jtr, cv, numts, numsph, numver, natm, some)
 
 ! Bring the error code back home
     error_code = pedra_error_code
@@ -131,7 +127,12 @@
     end subroutine polyhedra_driver
 
     subroutine polyhedra(intsph,vert,centr,newsph,icav1,icav2,xval,yval, &
-    zval,jtr,cv,numts,numsph,numver,natm,some,nperm)
+    zval,jtr,cv,numts,numsph,numver,natm,some)
+!
+! We list variables of interest, that might be declared inside a common block.
+! nesf: total number of spheres
+! nesfp: number of original spheres
+!
 
     use pedra_dblas, only: dzero
     use pedra_print, only: output
@@ -149,10 +150,9 @@
     real(8) :: xval(numts), yval(numts), zval(numts)
     real(8) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
     logical :: some
-    integer :: jtr(numts, 3), nperm(numsph, *) 
+    integer :: jtr(numts, 3)
 
     real(8), parameter :: d0 = 0.0d0
-    real(8), parameter :: first = 0.0174533d0 ! Degrees-to-Radians conversion
     real(8) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
     real(8) :: reg, reg2, regd2, ren, rend2, reo, reo2
     real(8) :: rep, rep2, repd2, rgn, rij, rij2, rik, rik2
@@ -165,10 +165,9 @@
     integer :: kp, n, n1, n2, n3
     integer :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
     integer :: nsfe, nsfer, nv
-    real(8), dimension(3, 3) ::  rotcav = reshape([1.0d0, 0.0d0, 0.0d0,  &
-                                                   0.0d0, 1.0d0, 0.0d0,  &
-                                                   0.0d0, 0.0d0, 1.0d0], [3, 3])
+    real(8) :: rotcav(3, 3)
     real(8), allocatable :: mass(:), geom(:, :)
+    integer, allocatable :: permutation_table(:, :)
           
 
 !     Se stiamo costruendo una nuova cavita' per il calcolo del
@@ -176,6 +175,9 @@
 
     idisrep = 0
     iprcav = 0
+    rotcav = reshape([1.0d0, 0.0d0, 0.0d0,  &
+                      0.0d0, 1.0d0, 0.0d0,  &
+                      0.0d0, 0.0d0, 1.0d0], [3, 3])
 
 
 ! se icesph=0
@@ -196,19 +198,17 @@
     do i = 1, nesfp
         re(i) = rin(i) ! The scaling has been done C++-side
         write(lvpri, '(i4, 4f20.14)') i, xe(i), ye(i), ze(i), re(i)
-    enddo
-
-    vert = 0.0d0
-    centr = 0.0d0
+    end do
 
 ! Creation of new spheres
     do n = 1, nesf
         newsph(n,1) = 0
         newsph(n,2) = 0
-    enddo
+    end do
 
     itypc = 0
-    omg = omega * first
+    ! Degrees-to-Radians conversion: pi/180
+    omg = omega * (acos(-1.0d0) / 180.0d0)
     senom = sin(omg)
     cosom2 = (cos(omg))**2
     rtdd = ret + rsolv
@@ -217,7 +217,7 @@
     nn = 2
     ne = nesf
     nev = nesf
-    GO TO 100
+    go to 100
     110 NN = NE + 1
     NE = NET
     100 CONTINUE
@@ -232,106 +232,107 @@
         stop
     end if
 
-
-    DO 120 I = NN,NE
-        NES=I-1
-        DO 130 J=1,NES
-            RIJ2=(XE(I)-XE(J))**2+ &
-            (YE(I)-YE(J))**2+ &
-            (ZE(I)-ZE(J))**2
-            RIJ=SQRT(RIJ2)
-            RJD=RE(J)+RSOLV
-            TEST1=RE(I)+RJD+RSOLV
-            IF(RIJ >= TEST1) GO TO 130
-            REG=DMAX1(RE(I),RE(J))
-            REP=DMIN1(RE(I),RE(J))
-            REG2=REG*REG
-            REP2=REP*REP
-            TEST2=REP*SENOM+sqrt(REG2-REP2*COSOM2)
-            IF(RIJ <= TEST2) GO TO 130
-            REGD2=(REG+RSOLV)*(REG+RSOLV)
-            TEST3=(REGD2+REG2-RTDD2)/REG
-            IF(RIJ >= TEST3) GO TO 130
-            DO 140 K=1,NEV
-                IF(K == J .OR. K == I) GO TO 140
-                RJK2=(XE(J)-XE(K))**2+ &
-                (YE(J)-YE(K))**2+ &
-                (ZE(J)-ZE(K))**2
-                IF(RJK2 >= RIJ2) GO TO 140
-                RIK2=(XE(I)-XE(K))**2+ &
-                (YE(I)-YE(K))**2+ &
-                (ZE(I)-ZE(K))**2
-                IF(RIK2 >= RIJ2) GO TO 140
-                RJK=sqrt(RJK2)
-                RIK=sqrt(RIK2)
-                SP=(RIJ+RJK+RIK)/2.0D0
-                HH=4*(SP*(SP-RIJ)*(SP-RIK)*(SP-RJK))/RIJ2
-                REO=RE(K)*FRO
-                IF(K >= NE)REO=0.0002D0
-                REO2=REO*REO
-                IF(HH < REO2) GO TO 130
-            140 END DO
-            REPD2=(REP+RSOLV)**2
-            TEST8=SQRT(REPD2-RTDD2)+sqrt(REGD2-RTDD2)
-            IF(RIJ <= TEST8)GO TO 150
-            REND2=REGD2+REG2-(REG/RIJ)*(REGD2+RIJ2-REPD2)
-            IF(REND2 <= RTDD2) GO TO 130
-            REN=sqrt(REND2)-RSOLV
-            FC=REG/(RIJ-REG)
-            TEST7=REG-RE(I)
-            KG=I
-            KP=J
-            IF(TEST7 <= 0.000000001D0) GO TO 160
-            KG=J
-            KP=I
-            160 FC1=FC+1.0
-            XEN=(XE(KG)+FC*XE(KP))/FC1
-            YEN=(YE(KG)+FC*YE(KP))/FC1
-            ZEN=(ZE(KG)+FC*ZE(KP))/FC1
-            ITYPC = 1
-            GO TO 170
-            150 R2GN=RIJ-REP+REG
-            RGN=R2GN/2.0D0
-            FC=R2GN/(RIJ+REP-REG)
-            FC1=FC+1.0D0
-            TEST7=REG-RE(I)
-            KG=I
-            KP=J
-            IF(TEST7 <= 0.000000001D0) GO TO 180
-            KG=J
-            KP=I
-            180 XEN=(XE(KG)+FC*XE(KP))/FC1
-            YEN=(YE(KG)+FC*YE(KP))/FC1
-            ZEN=(ZE(KG)+FC*ZE(KP))/FC1
-            REN=sqrt(REGD2+RGN*(RGN-(REGD2+RIJ2-REPD2)/RIJ))-RSOLV
-            170 NET=NET+1
-            XE(NET)=XEN
-            YE(NET)=YEN
-            ZE(NET)=ZEN
-            RE(NET)=REN
+! Addition of spheres happens in the following
+! Criteria for addition of spheres are listed and explained in:
+! Paper 1:
+! J. L. Pascual-Ahuir, E. Silla, J. Tomasi, R. Bonaccorsi, J. Comput. Chem. 8, 778 (1987)
+! Paper 2:
+! J. L. Pascual-Ahuir, E. Silla, J. Comput. Chem. 11, 1047 (1990)
+    do 120 i = nn, ne
+        nes = i - 1
+        do 130 j=1,nes
+            rij2 = (xe(i) - xe(j))**2 + (ye(i) - ye(j))**2 + (ze(i) - ze(j))**2
+            rij = sqrt(rij2)
+            rjd = re(j) + rsolv
+            test1 = re(i) + rjd + rsolv
+            if (rij >= test1) cycle
+            reg = max(re(i), re(j))
+            rep = min(re(i), re(j))
+            reg2 = reg * reg
+            rep2 = rep * rep
+            test2 = rep * senom + sqrt(reg2 - rep2 * cosom2)
+            if (rij <= test2) cycle
+            regd2 = (reg + rsolv) * (reg + rsolv)
+            test3 = (regd2 + reg2 - rtdd2) / reg
+            if (rij >= test3) cycle
+            do k = 1, nev
+                if (k == j .or. k == i) cycle 
+                rjk2 = (xe(j) - xe(k))**2 + (ye(j) - ye(k))**2 + (ze(j) - ze(k))**2
+                if (rjk2 >= rij2) cycle
+                rik2 = (xe(i) - xe(k))**2 + (ye(i) - ye(k))**2 + (ze(i) - ze(k))**2
+                if (rik2 >= rij2) cycle
+                rjk = sqrt(rjk2)
+                rik = sqrt(rik2)
+                sp = (rij + rjk + rik) / 2.0d0
+                hh = 4 * (sp * (sp - rij) * (sp - rik) * (sp - rjk)) / rij2
+                reo = re(k) * fro
+                if (k >= ne) reo = 0.0002d0
+                reo2 = reo * reo
+                if (hh < reo2) go to 130
+            end do
+            repd2 = (rep + rsolv)**2
+            test8 = sqrt(repd2 - rtdd2) + sqrt(regd2 - rtdd2)
+            if (rij <= test8) go to 150
+            rend2 = regd2 + reg2 - (reg / rij) * (regd2 + rij2 - repd2)
+            if (rend2 <= rtdd2) go to 130
+            ren = sqrt(rend2) - rsolv
+            fc = reg / (rij - reg)
+            test7 = reg - re(i)
+            kg = i
+            kp = j
+            if (test7 <= 1.0d-09) go to 160
+            kg = j
+            kp = i
+            160 fc1 = fc + 1.0
+            xen = (xe(kg) + fc * xe(kp)) / fc1
+            yen = (ye(kg) + fc * ye(kp)) / fc1
+            zen = (ze(kg) + fc * ze(kp)) / fc1
+            itypc = 1
+            go to 170
+            150 r2gn = rij - rep + reg
+            rgn = r2gn / 2.0d0
+            fc = r2gn / (rij + rep - reg)
+            fc1 = fc + 1.0d0
+            test7 = reg - re(i)
+            kg = i
+            kp = j
+            if (test7 <= 1.0d-09) go to 180
+            kg = j
+            kp = i
+            180 xen = (xe(kg) + fc * xe(kp)) / fc1
+            yen = (ye(kg) + fc * ye(kp)) / fc1
+            zen = (ze(kg) + fc * ze(kp)) / fc1
+            ren = sqrt(regd2 + rgn * (rgn - (regd2 + rij2 - repd2) / rij)) - rsolv
+            170 net = net + 1
+            xe(net) = xen
+            ye(net) = yen
+            ze(net) = zen
+            re(net) = ren
         
-        !     Nella matrice NEWSPH(NESF,2) sono memorizzati i numeri delle
-        !     sfere "generatrici" della nuova sfera NET: se la nuova sfera e'
-        !     del tipo A o B entrambi i numeri sono positivi, se e' di tipo
-        !     C il numero della sfera "principale" e' negativo
-        !     (per la definizione del tipo si veda JCC 11, 1047 (1990))
+            ! The matrix newsph(nesf, 2) stores the numbers of spheres
+            ! "generating" the new sphere with index net: if the new sphere is
+            ! of type A or B both numbers are positive. If the new sphere is of
+            ! type C the number of the "principal" sphere is negative.
+            ! Definition of the new sphere types are given in Paper 2.
+            if(itypc == 0) then
+                newsph(net, 1) = kg
+                newsph(net, 2) = kp
+            elseif (itypc == 1) then
+                newsph(net, 1) = - kg
+                newsph(net, 2) = kp
+            end if
         
-            IF(ITYPC == 0) THEN
-                NEWSPH(NET,1) = KG
-                NEWSPH(NET,2) = KP
-            ELSEIF(ITYPC == 1) THEN
-                NEWSPH(NET,1) = - KG
-                NEWSPH(NET,2) = KP
-            ENDIF
-        
-        130 END DO
-        NEV=NET
-    120 END DO
-    IF(NET /= NE) GO TO 110
-    NESF=NET
+        130 end do
+        nev = net
+    120 end do
+    if (net /= ne) go to 110
+    nesf = net
 
 ! Build the spheres permutation table
-    call sphper(nesf, nesfp, numsph, nperm, newsph, xe, ye, ze, re)
+! Allocate the space for the permutation table and clean it up    
+    allocate(permutation_table(nesf, (group%maxrep+1)))
+    permutation_table = 0
+    call sphper(nesf, nesfp, numsph, permutation_table, newsph, xe, ye, ze, re)
 
 ! Determination of eigenvalues and eigenvectors of the inertia tensor.
 ! We have to construct the tensor of inertia and diagonalize it.
@@ -349,39 +350,40 @@
         geom(i,1) = xe(i)
         geom(i,2) = ye(i)
         geom(i,3) = ze(i)
-    enddo
+    end do
 
     if (nesfp > 1) then
         call pcmtns(rotcav, geom, mass, nesfp)
     end if
 
-! Clean-up the rubbish
-    deallocate(mass)
-    deallocate(geom)
-
 ! Division of the surface into tesserae
-
-    ! Volume and surface
-    vol  = 0.0d0
-    stot = 0.0d0
-
 ! For every tessera, check if there's other tesserae covering it
 ! or not. If yes, cut it.
-
     NN = 0
-    DO 300 NSFE = 1, NESF
-        XEN = XE(NSFE)
-        YEN = YE(NSFE)
-        ZEN = ZE(NSFE)
-        REN = RE(NSFE)
-        IF(IPRCAV >= 10) THEN
-            WRITE(LVPRI,1242) NSFE
-            WRITE(LVPRI,1243) XEN,YEN,ZEN,REN
-        END IF
-    !     Default options (same as traditional GEPOL)
-        IPtype = 2
-        IPFlag = 0
-        ITSNUM = 60
+    do nsfe = 1, nesf
+        ! First of all check if the sphere is Unique For Symmetry (UFS) 
+        ! and hence needs to be tesselated.
+        ! If the sphere is not UFS, then go to the next sphere.
+        if (permutation_table(nsfe, 1) == 0) then
+                write(lvpri, '(a, i4, a)') "Sphere ", nsfe, " is not Unique-For-Symmetry: skipping tesselation."
+!                write(lvpri, '(a, i4, a, i2)') "permutation_table(", nsfe, ", 1) = ", permutation_table(nsfe, 1)
+                cycle
+        end if
+        
+        ! Transfer center and radius to temporaries
+        xen = xe(nsfe)
+        yen = ye(nsfe)
+        zen = ze(nsfe)
+        ren = re(nsfe)
+        if(iprcav >= 10) then
+            write(lvpri, '(a, i4)') "Now tesselating sphere no. ", nsfe
+            write(lvpri, '(a, f12.8, a, f12.8, a, f12.8, a, f12.8)') "Coordinates: X = ", xen, &
+                            " Y = ", yen, " Z = ",  zen, " R = ", ren
+        end if
+        ! Default options (same as traditional GEPOL)
+        iptype = 2
+        ipflag = 0
+        itsnum = 60
     ! f Which type of tessellation?
     !         IF(IPOLYG.GT.0) THEN
     !            IPFlag = 0
@@ -389,32 +391,36 @@
     !         ELSEIF(IPolyg.lt.0) THEN
     !            IPFlag = 1
     !            TsAre = -1.0D-03*IPolyg
-    ! f         ENDIF
-        CALL POLYGEN(IPFLAG,AREATS,ITSNUM,XEN,YEN,ZEN,REN,ITSEFF,CV,JTR,NPerm,NSFE,NUMTS,NUMSPH,NUMVER,ROTCAV)
-        IF(IPRCAV >= 10) WRITE(LVPRI,*)'AFTER POLYGEN_. ITSEFF=',ITSEFF
-        DO 310 ITS = 1, ITSEFF
-            N1 = JTR(ITS,1)
-            N2 = JTR(ITS,2)
-            N3 = JTR(ITS,3)
-            PTS(1,1)=CV(N1,1)
-            PTS(2,1)=CV(N1,2)
-            PTS(3,1)=CV(N1,3)
-            PTS(1,2)=CV(N2,1)
-            PTS(2,2)=CV(N2,2)
-            PTS(3,2)=CV(N2,3)
-            PTS(1,3)=CV(N3,1)
-            PTS(2,3)=CV(N3,2)
-            PTS(3,3)=CV(N3,3)
-            NV=3
-            IF(IPRCAV >= 10) THEN
-                WRITE(LVPRI,1244) N1,N2,N3
-                WRITE(LVPRI,*) 'VERTICES'' COORDINATES'
-                CALL OUTPUT(PTS,1,3,1,3,3,3,1,LVPRI)
-            END IF
-            DO JJ = 1, 3
-                PP(JJ) = D0
-                PP1(JJ) = D0
-            ENDDO
+    ! f         end if
+        ! polygen: where the magic happens. Generate the spherical polyhedra.
+        call polygen(ipflag, areats, itsnum, xen, yen, zen, ren, itseff, cv,  &
+        jtr, permutation_table, nesf, nsfe, numts, numver, rotcav)
+        if (iprcav >= 10) then
+              write(lvpri, '(a, i8)') "After polygen, itseff=", itseff
+        end if
+        do 310 its = 1, itseff
+            n1 = jtr(its, 1)
+            n2 = jtr(its, 2)
+            n3 = jtr(its, 3)
+            pts(1, 1) = cv(n1, 1)
+            pts(2, 1) = cv(n1, 2)
+            pts(3, 1) = cv(n1, 3)
+            pts(1, 2) = cv(n2, 1)
+            pts(2, 2) = cv(n2, 2)
+            pts(3, 2) = cv(n2, 3)
+            pts(1, 3) = cv(n3, 1)
+            pts(2, 3) = cv(n3, 2)
+            pts(3, 3) = cv(n3, 3)
+            nv = 3
+            if(iprcav >= 10) then
+                write(lvpri, '(a, 3i6)') "Vertices indices: ", n1, n2, n3
+                write(lvpri, *) 'Vertices'' Coordinates'
+                call output(pts, 1, 3, 1, 3, 3, 3, 1, lvpri)
+            end if
+            do jj = 1, 3
+                pp(jj) = d0
+                pp1(jj) = d0
+            end do
             ! For every tessera, find the free portion (not covered by any other
             ! tesserae) and calculate its surface with the Gauss-Bonnet Theorem.
             ! The representative point is defined as the average of vertices
@@ -426,102 +432,93 @@
             ! of the circles on each edge are in centr(mxts, 10, 3). 
             ! The spheres to which teh edges of the tesserae belong to are
             ! stored in intsph(mxts, 10)  
-            IF (IPRCAV > 15) THEN
-                write(lvpri,9100) NN + 1
-                DO IVER = 1, 3
-                    WRITE(LVPRI,9110) IVER, (PTS(JCOR,IVER),JCOR=1,3)
-                END DO
-            END IF
-            CALL TESSERA(NSFE,NV,PTS,CCC,PP,PP1,AREA,INTSPH,NUMTS)
-            IF(IPRCAV >= 10) THEN
-                WRITE(LVPRI,*) 'AFTER TESSERA_ ROUTINE'
-                WRITE(LVPRI,1245) NV
-                WRITE(LVPRI,*) 'VERTICES'' COORDINATES'
-                CALL OUTPUT(PTS,1,3,1,NV,3,NV,1,LVPRI)
-            END IF
-            IF(AREA == D0) THEN
-                WRITE(LVPRI,*) 'ZERO AREA IN TESSERA_', NN + 1
-                GOTO 310
-            END IF
-            IF (NN >= MXTS) THEN
-                WRITE(LVPRI,*) 'TOO MANY TESSERA_E IN PEDRA'
-                WRITE(LVPRI,*) 'NN=',NN,'  MXTS=',MXTS
+            if (iprcav > 15) then
+                write(lvpri, '(a, i4)') "Before Tessera n.", nn + 1
+                do iver = 1, 3
+                    write(lvpri, '(a, i4, 3f15.9)') "XYZ vert n.", iver, (pts(jcor, iver), jcor=1, 3)
+                end do
+            end if
+            call tessera(nsfe, nv, pts, ccc, pp, pp1, area, intsph, numts)
+            if (iprcav >= 10) then
+                write(lvpri, *) 'After tessera subroutine'
+                write(lvpri, '(a, i6)') "Number of vertices: ", nv
+                write(lvpri,*) 'Vertices'' Coordinates'
+                call output(pts, 1, 3, 1, nv, 3, nv, 1, lvpri)
+            end if
+            if(area == d0) then
+                write(lvpri, '(a, i4)') "Zero area in tessera", nn + 1
+                go to 310
+            end if
+            if (nn >= mxts) then
+                write(lvpri, '(a)') 'Too many tesserae in polyhedra!'
+                write(lvpri, '(a, i4, a, i4)') "nn = ", nn, "  mxts = ", mxts
                 pedra_error_code = 2
-                STOP
-            END IF
-            NN = NN + 1
-            XTSCOR(NN) = PP(1)
-            YTSCOR(NN) = PP(2)
-            ZTSCOR(NN) = PP(3)
-            XVAL(NN) = PP1(1)
-            YVAL(NN) = PP1(2)
-            ZVAL(NN) = PP1(3)
-            AS(NN) = AREA
-            ISPHE(NN) = NSFE
-            NVERT(NN) = NV
-            DO IV = 1, NV
-                DO JJ = 1, 3
-                    VERT(NN,IV,JJ) = PTS(JJ,IV)
-                    CENTR(NN,IV,JJ) = CCC(JJ,IV)
-                ENDDO
-            ENDDO
-            DO IV = 1, NV
-                INTSPH(NN,IV) = INTSPH(NUMTS,IV)
-            ENDDO
-            IF(IPRCAV >= 10) THEN
-                WRITE(LVPRI,1246) NN
-                WRITE(LVPRI,1247) XTSCOR(NN),YTSCOR(NN),ZTSCOR(NN)
-                WRITE(LVPRI,1248) XVAL(NN),YVAL(NN),ZVAL(NN)
-                WRITE(LVPRI,1249) AS(NN),ISPHE(NN),NVERT(NN)
-            END IF
-        310 END DO
-        9100 format('Before Tessera n.',I4)
-        9110 format('XYZ vert n.',I4,3f15.9)
-    300 END DO
-    NTS = NN
+                stop
+            end if
+            nn = nn + 1
+            xtscor(nn) = pp(1)
+            ytscor(nn) = pp(2)
+            ztscor(nn) = pp(3)
+            xval(nn) = pp1(1)
+            yval(nn) = pp1(2)
+            zval(nn) = pp1(3)
+            as(nn) = area
+            isphe(nn) = nsfe
+            nvert(nn) = nv
+            do iv = 1, nv
+                do jj = 1, 3
+                    vert(nn, iv, jj) = pts(jj, iv)
+                    centr(nn, iv, jj) = ccc(jj, iv)
+                end do
+            end do
+            do iv = 1, nv
+                intsph(nn, iv) = intsph(numts, iv)
+            end do
+            if(iprcav >= 10) then
+                write(lvpri, '(a, i6)') "Adding tessera data to the list. nn = ", nn
+                write(lvpri, '(a, 3f15.11)') "Center: ", xtscor(nn), ytscor(nn), ztscor(nn)
+                write(lvpri, '(a, 3f15.11)') "Boh??? ", xval(nn), yval(nn), zval(nn)
+                write(lvpri, '(a, f10.8, a, i4, a, i3)') "Area = ", as(nn), " Isphe = ", isphe(nn), " nvert = ", nvert(nn)
+            end if
+        310 end do
+    end do
+    nts = nn
     ! Check if two tesserae are too close
-    TEST = 0.02D0
-    TEST2 = TEST*TEST
-    DO 400 I = 1, NTS-1
-        IF(AS(I) == D0) GOTO 400
-        XI = XTSCOR(I)
-        YI = YTSCOR(I)
-        ZI = ZTSCOR(I)
-        II = I + 1
-        DO 410 J = II , NTS
-            IF(ISPHE(I) == ISPHE(J)) GOTO 410
-            IF(AS(J) == D0) GOTO 410
-            XJ = XTSCOR(J)
-            YJ = YTSCOR(J)
-            ZJ = ZTSCOR(J)
-            RIJ = (XI-XJ)**2 + (YI-YJ)**2 + (ZI-ZJ)**2
-            IF(RIJ > TEST2) GOTO 410
-            WRITE(LVPRI,9010) I,J,RIJ,TEST2
-        ! Check  IF(AS(I).LT.AS(J)) AS(I) = D0
-        ! Check  IF(AS(I).GE.AS(J)) AS(J) = D0
-        410 END DO
-    400 END DO
+    test = 0.02d0
+    test2 = test * test
+    do 400 i = 1, nts-1
+        if(as(i) == d0) go to 400
+        xi = xtscor(i)
+        yi = ytscor(i)
+        zi = ztscor(i)
+        ii = i + 1
+        do 410 j = ii , nts
+            if(isphe(i) == isphe(j)) go to 410
+            if(as(j) == d0) go to 410
+            xj = xtscor(j)
+            yj = ytscor(j)
+            zj = ztscor(j)
+            rij = (xi-xj)**2 + (yi-yj)**2 + (zi-zj)**2
+            if(rij > test2) go to 410
+            write(lvpri, '(a, i4, a, i4, a, f8.6, a, f8.6, a)') " WARNING: The distance between center of tessera",  &
+                            i, "and", j, " is ", rij, ", less than ", test2, " AU"
+        ! Check  if(as(i).lt.as(j)) as(i) = d0
+        ! Check  if(as(i).ge.as(j)) as(j) = d0
+        410 end do
+    400 end do
 
 ! Replication of geometrical parameters according to simmetry
-    CALL REPCAV(VERT,CENTR,NPERM,NUMTS,NUMSPH)
+    call repcav(vert, centr, permutation_table, numts)
 
 ! Prepare data for geomview
     call ordpcm(nts, xtscor, ytscor, ztscor, as)
 
-    1242 FORMAT('Now tessellating sphere n.',i4)
-    1243 FORMAT('Coordinates: X=',F12.8,'  Y=',F12.8,'  Z=',F12.8, &
-    '  R=',F12.8)
-    1244 FORMAT('VERTICES INDICES: ',3I6)
-    1245 FORMAT('NO. OF VERTICES: ',I6)
-    1246 FORMAT('ADDING TESSERA_ DATA TO THE LIST. NN=',I6)
-    1247 FORMAT('CENTER: ',3F15.11)
-    1248 FORMAT('BOH???: ',3F15.11)
-    1249 FORMAT('AREA=',F10.8,'ISPHE=',I4,'NVERT=',I3)
     call plotcav(vert, numts)
 
 ! Calculate cavity volume using Gauss Theorem:
 !       V = sum_i {area(i) * center(i) * normal(i)} / 3
 ! the sum runs on the tesserae.
+    vol  = 0.0d0
     do its = 1, nts
         nsfe = isphe(its)
         ! Find the unit normal vector
@@ -538,12 +535,14 @@
     do i = 1, nts
         k = isphe(i)
         ssfe(k) = ssfe(k) + as(i)
-    enddo
+    end do
 
     if (some) then
-        write(lvpri, 9020) nesf
+        write(lvpri, '(a, i5)') "Total number of spheres = ", nesf
+        write(lvpri, '(a)') "Sphere             Center  (X,Y,Z) (AU)              Radius (AU)      Area (AU^2)"
+        stot = 0.0d0
         do i = 1, nesf
-            write(lvpri, 9030) i, xe(i), ye(i), ze(i), re(i), ssfe(i)
+            write(lvpri, '(i4, 4f15.9, f15.9)') i, xe(i), ye(i), ze(i), re(i), ssfe(i)
             stot = stot + ssfe(i)
         end do
         write(lvpri, '(/a, i8)') " Total number of tesserae = ", nts
@@ -555,74 +554,82 @@
 !     ----- set up for possible gradient calculation -----
 !           DONE ONLY IF WE HAVE SPHERES ON ATOMS
 
-    IF(ICESPH /= 1) THEN
+    if(icesph /= 1) then
     
-        IF(NESFP > NUCDEP) THEN
+        if(nesfp > nucdep) then
             write(lvpri, '(a)') "PEDRA: confusion about the sphere count."
             write(lvpri, '(a, i6, a, i6)') "nesfp = ", nesfp, "natm = ", nucdep
             pedra_error_code = 3
-            STOP
-        END IF
+            stop
+        end if
     
-        call dzero(dercen,mxsp*mxcent*3*3)
-        call dzero(derrad,mxsp*mxcent*3)
-        DO NSFE = 1,NUCDEP
-            NATSPH=0
-            NSFER=NSFE
-            IF(ICESPH == 2)THEN
-                NATSPH=1
-                DO JJ=1,NESFP
-                    IF(INA(JJ) == NSFE)THEN
-                        NATSPH=0
-                        NSFER=JJ
-                    ENDIF
-                ENDDO
-            ENDIF
-            IF(NATSPH == 0) then
-                DO ICOORD = 1, 3
-                    CALL CAVDER(NSFE,NSFER,ICOORD,INTSPH,NEWSPH)
-                ENDDO
-            ENDIF
-        ENDDO
-    END IF
+        call dzero(dercen, mxsp*mxcent*3*3)
+        call dzero(derrad, mxsp*mxcent*3)
+        do nsfe = 1, nucdep
+            natsph = 0
+            nsfer = nsfe
+            if (icesph == 2)then
+                natsph = 1
+                do jj = 1, nesfp
+                    if (ina(jj) == nsfe)then
+                        natsph = 0
+                        nsfer = jj
+                    end if
+                end do
+            end if
+            if(natsph == 0) THEN
+                do icoord = 1, 3
+                    call cavder(nsfe, nsfer, icoord, intsph, newsph)
+                end do
+            end if
+        end do
+    end if
 
-    IF(IPRSOL > 5) THEN
-        WRITE(LVPRI,9070)
-        WRITE(LVPRI,9090) (I,ISPHE(I),AS(I),XTSCOR(I),YTSCOR(I), &
-        ZTSCOR(I),XTSCOR(NTS+I),YTSCOR(NTS+I), &
-        ZTSCOR(NTS+I), I=1,NTS)
-    END IF
+    if (iprsol > 5) then
+        write(lvpri, '(a)') " ***  Partition of the surface  ***"
+        write(lvpri, '(a)') " Tessera  Sphere   Area   x y z tessera center  x y z normal vector"
+        write(lvpri, '(2i4, 7f12.7)') (i,isphe(i),as(i),xtscor(i),ytscor(i), &
+        ztscor(i),xtscor(nts+i),ytscor(nts+i), &
+        ztscor(nts+i), i=1,nts)
+    end if
 
-!     Call the routine which checks if the cavity is single or divided.
-
+! Check if the cavity is made up of disjoint spheres
     call cavspl(icav1, icav2, ncav1, ncav2, some)
+! The dispersion calculation is allowed only in the case of single cavity.
 
-!     The dispersion calculation is allowed only in the case of
-!     single cavity.
+    if(ncav2 /= 0) idisp=0
 
-    IF(NCAV2 /= 0) IDISP=0
+    idisrep = 0
+    iretcav = 0
+    if (idisp == 2) idisp = 1
 
-    IDISREP = 0
-    IRETCAV = 0
-    IF (IDISP == 2) IDISP = 1
-
-    9010 FORMAT(/' WARNING: The distance between center of tessera',I4, &
-    'and',I4,' is ',F8.6,', less than ',F8.6,' AU'/)
-    9020 FORMAT(/' Total number of spheres =',I5/ &
-    ' Sphere             Center  (X,Y,Z) (AU)            ', &
-    '   Radius (AU)      Area (AU^2)')
-    9030 FORMAT(I4,4F15.9,F15.9)
-    9070 FORMAT(/' ***  PARTITION OF THE SURFACE  ***' &
-    //' TESSERA_  SPHERE   AREA   X Y Z TESSERA CENTER  ', &
-    'X Y Z NORMAL VECTOR')
-    9090 FORMAT(2I4,7F12.7)
+! Time to clean up all the dinamically allocated arrays
+    deallocate(permutation_table)
+    deallocate(mass)
+    deallocate(geom)
 
     end subroutine polyhedra
     
-    subroutine sphper(nesf, nesf0, numsph, nperm, newsph, xe, ye, ze, re)
+    subroutine sphper(nesf, nesf0, numsph, permutation_table, newsph, xe, ye, ze, re)
 !                    
 ! Create permutation table for the spheres and complete the added
 ! spheres by symmetry.
+! The permutation table permutation_table has dimension numsph*8, since 8 is the number of
+! operations in D2h the biggest Abelian group.
+! It reports which sphere is transformed into which under the operation
+! considered.
+! The ordering of operations is the DALTON ordering: E, Oyz, Oxz, C2z, Oxy, C2y,
+! C2x, i
+! The first column does not report how the sphere transforms under the identity,
+! as it is trivially known. The first column does instead report if the sphere
+! is Unique-For-Symmetry or not and hence needs to be tesselated or not.
+! A class is composed by the spheres that are equivalent (i.e. overlapping
+! exactly) under a given operation of symmetry.
+! See also C. S. Pomelli, J. Tomasi and R. Cammi, J. Comput. Chem. 22, 1262 (2001)
+!       Operations  1  2  3  4  5  6  7  8
+!                  ------------------------        
+!       Spheres    
+!
 !
     use pedra_symmetry, only: get_pt
   
@@ -630,7 +637,7 @@
 
     integer :: nesf, nesf0, numsph
     real(8) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
-    integer :: nperm(numsph, 8), newsph(numsph, 2)
+    integer :: permutation_table(nesf, *), newsph(numsph, 2)
 
     real(8) :: diff1, r1
     integer :: i, j, k, l, n1, n2, nesf1
@@ -649,39 +656,39 @@
             do k = 1, nesf
                 do l = 1, 3
                     v2(l) = get_pt(iand(group%isymax(l, 1), j)) * v1(l)
-                enddo
+                end do
                 diff1 = sqrt((xe(k) - v2(1))**2 + (ye(k) - v2(2))**2 + (ze(k) - v2(3))**2 + (re(k) - r1)**2)
                 if ((diff1 < 1.0D-3)) then
-                    nperm(i, j+1) = k
-                    goto 10
-                endif
-            enddo
+                    permutation_table(i, j+1) = k
+                    go to 10
+                end if
+            end do
             ! Check if we need to complete the creation of additional sphere
             ! or the initial spheres are ill-defined.
             if (i < nesf0) then
-                write(lvpri,*) 'Cavity is not consistent with symmetry'
+                write(lvpri, '(a)') "Cavity is not consistent with symmetry"
                 pedra_error_code = 4
                 stop
             else
                 nesf1 = nesf1 + 1
-                nperm(i, j+1) = nesf1
+                permutation_table(i, j+1) = nesf1
                 xe(nesf1) = v2(1)
                 ye(nesf1) = v2(2)
                 ze(nesf1) = v2(3)
                 re(nesf1) = r1
-                n1 = nperm(abs(newsph(i, 1)), j+1)
-                n2 = nperm(abs(newsph(i, 2)), j+1)
+                n1 = permutation_table(abs(newsph(i, 1)), j+1)
+                n2 = permutation_table(abs(newsph(i, 2)), j+1)
                 if (newsph(i, 1) < 0) then
                     n1 = -n1
                     n2 = -n2
-                endif
+                end if
                 newsph(nesf1, 1) = n1
                 newsph(nesf1, 2) = n2
-                write(lvpri,*) 'NEW!', nesf1, n1, n2
-            endif
+                write(lvpri,*) "New sphere added in sphper ", nesf1, n1, n2
+            end if
             10 continue
-        enddo
-    enddo
+        end do
+    end do
 
 ! If needed complete the permutation table for the new spheres
     do i = nesf + 1, nesf1
@@ -695,56 +702,62 @@
             do k = 1, nesf1
                 do l = 1, 3
                     v2(l) = get_pt(iand(group%isymax(l, 1), j)) * v1(l)
-                enddo
+                end do
                 diff1 = sqrt((xe(k) - v2(1))**2 + (ye(k) - v2(2))**2 + (ze(k) - v2(3))**2 + (re(k) - r1)**2)
                 if ((diff1 < 1.0D-3)) then
-                    nperm(i, j+1) = k
-                    goto 20
-                endif
-            enddo
-            write(lvpri, *) 'Additional spheres not consistent with symmetry'
+                    permutation_table(i, j+1) = k
+                    go to 20
+                end if
+            end do
+            write(lvpri, '(a)') "Additional spheres not consistent with symmetry"
             pedra_error_code = 5
             stop
             20 continue
-        enddo
-    enddo
+        end do
+    end do
           
     nesf = nesf1
-
 ! Now define which spheres are to be tesselated: it will be the first
-! in each class of spheres equivalent by symmetry.
+! in each class of spheres equivalent by symmetry (first column of permutation_table array)
     do i = 1, nesf
-        nperm(i, 1) = 1
+        permutation_table(i, 1) = 1
         do k = 1, group%maxrep
-            if (nperm(i, k+1) < i) then
-                nperm(i, 1) = 0
-                goto 30
-            endif
-        enddo
-        30 continue
-    enddo
+            if (permutation_table(i, k+1) < i) then
+                permutation_table(i, 1) = 0
+                cycle
+            end if
+        end do
+    end do
     
     end subroutine sphper
     
-    subroutine polygen(ipflag,tsare,itsnum,xen,yen,zen,ren,itseff,cv,jtr,nperm,nsfe,numts,numsph,numver,rotcav)
+    subroutine polygen(ipflag, tsare, itsnum, xen, yen, zen, ren, itseff, cv,  &
+                       jtr, permutation_table, nesf, nsfe, numts, numver, rotcav)
 !
 ! Polygen: a program to generate spherical polyhedra with triangular faces. 
 ! An equilateral division algorithm is used.
+! Polygen can generate an optimal tesselation based on used input. 
+! Using the ipflag integer, the user can request:
+!    - a spherical polyhedron with an optimal number of tesserae (ipflag = 0);
+!    - a spherical polyhedron with an optimal average tesserae area (ipflag = 1)
+! The polyhedron whose vertices are to be projected on the sphere and the
+! subdivision frequency (nf) for the subsequent equilateral division procedure are
+! chosen based on ipflag.
 !
     use pedra_symmetry, only: get_pt
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 
-    integer :: ipflag, itsnum, itseff, nsfe, numts, numsph, numver
-    integer :: nperm(numsph, *), jtr(numts, *)
-    real(8) :: cv(numver, *)
+    integer :: ipflag, itsnum, itseff, nsfe, numts, numver
+    integer, intent(in) :: nesf
+    integer, intent(in) :: permutation_table(nesf, *) 
+    integer :: jtr(numts, *)
+    real(8) :: cv(numver, 3)
     real(8) :: tsare, xen, yen, zen, ren
     
     real(8) :: v1(3), v2(3), v3(3), rotcav(3, 3)
-    integer :: itrvo(60,3) = 0
-    integer :: itreo(60,3) = 0 
-    integer :: iedo(90,2)  = 0
+    integer :: itrvo(60,3), itreo(60,3), iedo(90,2) 
     integer :: oldtr(100,100), ednew(90,100), trnew(60,100,100)
 
     real(8), parameter :: d0 = 0.0d0
@@ -754,84 +767,67 @@
     real(8) :: sintheta, theta
     integer :: i, ii, isymop, j, jj, jsymop, k, l, m, n, ne0, nf
     integer :: noppt, nt, nt0, ntpt, ntra, nv, nvpt
+    
+    itrvo = 0
+    itreo = 0 
+    iedo  = 0
 
+    ipflag = 1
+    if (ipflag == 1) then
+        itsnum = int(4.0d0 * pi * ren**2 / tsare + 0.5d0 )
+    end if
 
-!  Se la sfera non deve essere tassellata ritorna a pedra con 0 tessere
-
-! f      IF (NPerm(NSFE,1).EQ.0.or.nsfe.ne.2) THEN
-    IF (NPerm(NSFE,1) == 0) THEN
-        ITsEff=0
-    ! f         print *, 'return!', ITsEff,NPerm(NSFE,1)
-        RETURN
-    ENDIF
-
-!  A seconda delle due opzioni di funzionamento (Area ottimale o
-!  numero di tessere ottimale ) vengono stabilite il tipo di poliedro
-!  e la  frequenza di divisione (NF)
-
-!  IPflag = 0 Numero di tessere: si genera il poliedro disponibile
-!           con il numero di tessere piu' prossimo a ITSNUM
-!  IPflag = 1  Area: si genera il poliedro con il numero di tessere tali
-!           da avere un area il piu' simile possibile
-
-    IPFLAG = 1
-    IF (IPflag == 1) THEN
-        ITSNUM = INT (4.0d0 * pi * REN**2 / TsAre + 0.5D0 )
-    ENDIF
-
-    IF (ITSNUM > MxTs) THEN
-        WRITE(*,*) '5', ITSNUM, MxTs
+    if (itsnum > mxts) then
+        write(lvpri, '(a, 2i6)') "Requested number of tesserae in polyhedron exceeds maximum number of tesserae: ", itsnum, mxts
         pedra_error_code = 6
-        STOP
-    ENDIF
+        stop
+    end if
 
-!  costruisce la tassellazione iniziale che dipende dal gruppo di
-!  simmetria e (per C1) dal numero di tessere richieste
+! Build the initial tesselation. This depends on the point group and (for C1) on
+! the number of tesserae requested.
     nt0 = 1
     nv = 3
     ne0 = 3
-    itrvo(1,1)=1
-    itrvo(1,2)=2
-    itrvo(1,3)=3
-    iedo(1,1)=1
-    iedo(1,2)=2
-    iedo(2,1)=2
-    iedo(2,2)=3
-    iedo(3,1)=1
-    iedo(3,2)=3
-    itreo(1,1)=1
-    itreo(1,2)=2
-    itreo(1,3)=3
+    itrvo(1, 1) = 1
+    itrvo(1, 2) = 2
+    itrvo(1, 3) = 3
+    iedo(1, 1) = 1
+    iedo(1, 2) = 2
+    iedo(2, 1) = 2
+    iedo(2, 2) = 3
+    iedo(3, 1) = 1
+    iedo(3, 2) = 3
+    itreo(1, 1) = 1
+    itreo(1, 2) = 2
+    itreo(1, 3) = 3
 
-    CV(1,1)=D1
-    CV(1,2)=D0
-    CV(1,3)=D0
+    cv(1, 1) = d1
+    cv(1, 2) = d0
+    cv(1, 3) = d0
 
-    CV(2,1)=D0
-    CV(2,2)=D1
-    CV(2,3)=D0
+    cv(2, 1) = d0
+    cv(2, 2) = d1
+    cv(2, 3) = d0
 
-    CV(3,1)=D0
-    CV(3,2)=D0
-    CV(3,3)=D1
+    cv(3, 1) = d0
+    cv(3, 2) = d0
+    cv(3, 3) = d1
 
-!  determination of NF
-
-          
-    NF = INT(SQRT(D1 * ITSNUM / ( D1 * NT0  * 8 )) + 0.5d0)
-    IF (NF <= 1) NF=2
-    IF (NF <= 2) then
+! Calculate the subdivision frequency.          
+    nf = int(sqrt(d1 * itsnum / ( d1 * nt0  * 8 )) + 0.5d0)
+    if (nf <= 1) nf = 2
+    if (nf <= 2) then
             write(lvpri, '(a/)') "** WARNING  ** A very poor tesselation has " &
             //"been chosen. It is valuable almost only for testing."
     end if 
-    IF (NF >= 8) then 
+    if (nf >= 8) then 
         write(lvpri, '(a)') "** WARNING ** A very fine tesselation has been " &
         //"chosen, it will probably produce a HUGE amount of tesserae."
     end if
-    DNF = DFLOAT(NF)
+    dnf = dble(nf)
 ! eck WRITE(LVPRI,*) 'dopo polydata',NT0,NE0,NV,NF
 
-    ITsEff=NT0*NF**2
+    itseff = nt0 * nf**2
 
 !  -nuovi vertici posti lungo i vecchi spigoli
 !  -le regole di calcolo derivano da  calcoli di algebra
@@ -844,7 +840,7 @@
         DO K = 1,3
             v1(k)=CV(IEDO(j,1),k)
             v2(k)=CV(IEDO(j,2),k)
-        ENDDO
+        end do
         costheta= &
         ( v1(1)*v2(1) + v1(2)*v2(2) + v1(3)*v2(3)) / &
         (sqrt(v1(1)**2 + v1(2)**2 + v1(3)**2) * &
@@ -852,29 +848,29 @@
         theta=acos(costheta)
         sintheta=sin(theta)
         DO l=1,NF-1
-            DL = DFLOAT(L)
+            DL = dble(L)
         ! F          m=NF-l
             cos1=cos(theta*Dl/DNF)
             cos2=cos(theta*(DNF-Dl)/DNF)
             alpha=(cos1-costheta*cos2)/sintheta**2
             beta=(cos2-costheta*cos1)/sintheta**2
             DM = 0.0D0
-            ALPHA = DFLOAT(NF-L)
-            BETA  = DFLOAT(L)
+            ALPHA = dble(NF-L)
+            BETA  = dble(L)
             DO k=1,3
                 v3(k)=alpha*v1(k)+beta*v2(k)
-            ENDDO
+            end do
             dnorm = sqrt(v3(1)**2 + v3(2)**2 + v3(3)**2)
             DO k=1,3
                 v3(k) = v3(k) /dnorm
-            ENDDO
+            end do
             DO K = 1,3
                 CV(NVPT,K)=V3(K)
-            ENDDO
+            end do
             ednew(j,l+1)=NVPT
             NVPT=NVPT+1
-        ENDDO
-    ENDDO
+        end do
+    end do
           
 
 !  -nuovi vertici non posti lungo i vecchi spigoli
@@ -887,11 +883,11 @@
     ii=1
     jj=3
     DO L =3,NF
-        DL = DFLOAT(L)
+        DL = dble(L)
         DO N=1,l-2
-            DM = DFLOAT(NF - L + 1)
-            DL = DFLOAT(L - 1 - N)
-            DN = DFLOAT(N)
+            DM = dble(NF - L + 1)
+            DL = dble(L - 1 - N)
+            DN = dble(N)
         !            CV(NVPT,1) = SQRT(DM/DNF)
         !            CV(NVPT,2) = SQRT(DL/DNF)
         !            CV(NVPT,3) = SQRT(DN/DNF)
@@ -904,9 +900,9 @@
             CV(NVPT,3) = CV(NVPT,3) / DNORM
             trnew(j,l,n+1)=NVPT
             NVPT=NVPT+1
-        ENDDO
-    ENDDO
-! f       ENDDO
+        end do
+    end do
+! f       end do
     NV=NVPT-1
 
 !  -ora per ogni triangolo originario vengono posti nella matrice oldtr
@@ -942,15 +938,15 @@
             oldtr(l,1)=ednew(ITREO(n,1),l)
             oldtr(NF+1,l)=ednew(ITREO(n,2),l)
             oldtr(l,l)=ednew(ITREO(n,3),l)
-        ENDDO
+        end do
     
     !  -3 nuovi vertici non lungo i vecchi spigoli
     
         DO l=3,NF
             DO m=2,l-1
                 oldtr(l,m)=trnew(n,l,m)
-            ENDDO
-        ENDDO
+            end do
+        end do
     
     !  -ora si creano i nuovi triangoli
     
@@ -960,102 +956,82 @@
                 JTR(NTPT,2)=oldtr(i+1,j)
                 JTR(NTPT,3)=oldtr(i+1,j+1)
                 NTPT=NTPT+1
-            ENDDO
-        ENDDO
+            end do
+        end do
         DO i=2,NF
             DO j=1,i-1
                 JTR(NTPT,1)=oldtr(i,j)
                 JTR(NTPT,2)=oldtr(i,j+1)
                 JTR(NTPT,3)=oldtr(i+1,j+1)
                 NTPT=NTPT+1
-            ENDDO
-        ENDDO
-    2310 END DO
+            end do
+        end do
+    2310 end do
     NV=NVPT-1
     NT=NTPT-1
 
-! Replication generate the right irreducible part of the cavity for the selected group
-    call prerep(nv, nt, itseff, cv, jtr, numver, numts)
-    DO i=1,nv
-        V1(1) = 0.0D0
-        V1(2) = 0.0D0
-        V1(3) = 0.0D0
-        DO J = 1,3
-            DO K = 1,3
-                V1(J) = V1(J) + ROTCAV(K,J) * CV(I,K)
-            ENDDO
-        ENDDO
-        CV(I,1) = V1(1)
-        CV(I,2) = V1(2)
-        CV(I,3) = V1(3)
-    ! f         WRITE(LVPRI,*)'CV',I
-    ! f         WRITE(LVPRI,'(3F10.4)')  (CV(i,II),II=1,3)
-    ENDDO
+! Generate the right irreducible part of the tesselation for the current sphere
+! under the selected point group.
+    call prerep(nv, nt, itseff, cv, jtr, numver, numts)   
+    do i = 1, nv
+        v1 = 0.0d0
+        do j = 1,3
+            do k = 1,3
+                v1(j) = v1(j) + rotcav(k, j) * cv(i, k)
+            end do
+        end do
+        cv(i, :) = v1
+    end do
 
+! Replication with local operators, for those cases where the local operator
+! transforms the given sphere into another sphere.
+    noppt=0
+    do isymop = 1, group%maxrep
+        ! Get the index of the transformed sphere ntra when applying the
+        ! operator with index isymop + 1 to the sphere with index nsfe
+        ntra = permutation_table(nsfe, isymop + 1)
+        ! The if statment is entered only if the sphere which is equivalent
+        ! to the one we are tesselating now under the operation isymop, is
+        ! not itself, i.e. if the symmetry operator doesn't bring the current
+        ! sphere into itself.
+        if (ntra /= nsfe) then
+            ! If the replication of this part of the cavity has already been
+            ! done we start checking a new simmetry operation
+            do jsymop = 1 , isymop-1
+                if (permutation_table(nsfe, jsymop + 1) == ntra) go to 100
+            end do
+            noppt = noppt + 1
+            ! Replication of vertices 
+            do i = 1, nv
+                ii = i + noppt * nv
+                do k = 1, 3
+                    cv(ii, k) = get_pt(iand(group%isymax(k, 1), isymop)) * cv(i,k)
+                end do
+            end do
+            ! Replication of topology 
+            do i = 1, nt
+                ii = i + noppt * nt
+                jj = noppt * nv
+                do k = 1, 3
+                    jtr(ii, k) = jtr(i, k) + jj
+                end do
+            end do
+            100 continue
+        end if
+    end do
+    ! Update indices
+    nv = nv * (noppt + 1)
+    itseff = itseff * (noppt + 1)
 
-!  replicazione con operatori locali
-!        nei casi in cui l'o.l. trasforma la sfera in un altra sfera
-
-    NOpPt=0
-    DO ISYMOP = 1, group%maxrep
-        NTRA=NPerm(NSFE,ISYMOP + 1)
-    
-    !     the If statment is entered only if the sphere which is equivalent
-    !     to the one we are tesselating now under the operation ISYMOP, is
-    !     not itself.
-    
-        IF (NTRA /= NSFE) THEN
-        
-        !     If the replication of this part of the cavity has already been
-        !     done we start checking a new simmetry operation
-        
-            DO JSYMOP = 1 , ISYMOP-1
-                IF(Nperm(NSFE, JSYMOP+1) == NTRA) Goto 100
-            ENDDO
-            NOpPt=NOpPt+1
-        
-        !     riproduzione vertici
-        
-            Do I=1,NV
-                II=I+NOpPt*NV
-                Do K=1,3
-                    CV(II,K) = get_pt(iand(group%isymax(K, 1), ISYMOP)) * CV(I,K)
-                ENDDO
-            ENDDO
-        
-        !  riproduzione topologia
-        
-            Do i=1,NT
-                ii=i+NOpPt*NT
-                jj=NOpPt*NV
-                Do k=1,3
-                    JTR(ii,k)=JTR(i,k)+jj
-                ENDDO
-            ENDDO
-            100 CONTINUE
-        ENDIF
-    ENDDO
-
-!  aggiornamento indici
-
-    NV=NV*(NOpPt+1)
-    ITsEff=ITsEff*(NOpPt+1)
-
-! scrittura della CV
-
-! heckWRITE(LVPRI,*) 'OFF'
-! heckWRITE(LVPRI,*) NV,ITsEff,NV
-    DO i=1,NV
-        CV(I,1) = CV(I,1) * REN + XEN
-        CV(I,2) = CV(I,2) * REN + YEN
-        CV(I,3) = CV(I,3) * REN + ZEN
-    ! f         WRITE(LVPRI,*)'CV',I
-    ! f         WRITE(LVPRI,'(3F10.4)')  (CV(i,II),II=1,3)
-    ENDDO
+    do i = 1, nv
+        cv(i,1) = cv(i,1) * ren + xen
+        cv(i,2) = cv(i,2) * ren + yen
+        cv(i,3) = cv(i,3) * ren + zen
+    end do
 
     end subroutine polygen
     
-    subroutine repcav(vert, centr, nperm, numts, numsph)
+    subroutine repcav(vert, centr, permutation_table, numts)
 !                    
 ! Reproduce the irreducibile part of the cavity
 !
@@ -1066,9 +1042,9 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
     
-    integer :: numts, numsph
+    integer :: numts
     real(8) :: vert(numts, 10, 3), centr(numts, 10, 3)
-    integer :: nperm(numsph, *)
+    integer :: permutation_table(nesf, *)
 
     real(8), parameter :: d0 = 0.0d0
     integer :: i, ii, ii2, isymop, k, l
@@ -1077,7 +1053,7 @@
     nts = nts * (group%maxrep + 1)
 
     if (nts > mxts) then
-        WRITE(*,*) 'Errornumber 6 - check in the code'
+        write(lvpri, '(a)') "Number of tesserae exceeds maximum." 
         pedra_error_code = 7
         stop
     end if
@@ -1087,15 +1063,15 @@
             ii        = i + ntsirr * isymop
             as(ii)    = as(i)
             nvert(ii) = nvert(i)
-            isphe(ii) = nperm(isphe(i), isymop+1)
+            isphe(ii) = permutation_table(isphe(i), isymop+1)
             do k = 1, nvert(i)
                 do l = 1, 3
                   vert(ii, k, l)  = get_pt(iand(group%isymax(l, 1), isymop)) * vert(i, k, l)
                   centr(ii, k, l) = get_pt(iand(group%isymax(l, 1), isymop)) * centr(i, k, l)
-                enddo
-            enddo
-        enddo
-    enddo
+                end do
+            end do
+        end do
+    end do
 
 ! Moving the normal points in a safe location where they will not be overwritten
     do i = 1, ntsirr
@@ -1117,8 +1093,8 @@
         !            xtscor(ii)=get_pt(iand(group%isymax(1,1),isymop)) * xtscor(ii2)
         !            ytscor(ii)=get_pt(iand(group%isymax(2,1),isymop)) * ytscor(ii2)
         !            ztscor(ii)=get_pt(iand(group%isymax(3,1),isymop)) * ztscor(ii2)
-        enddo
-    enddo
+        end do
+    end do
     
     end subroutine repcav
 
@@ -1153,38 +1129,38 @@
 !     appartiene alla sfera originaria INTSPH(numts,N)=NS)
 
 
-    IPRCAV = 0
-    LAN = .FALSE.
-    AREA = 0.0D+00
-    DO J=1, 3
-        CCC(1,J) = XE(NS)
-        CCC(2,J) = YE(NS)
-        CCC(3,J) = ZE(NS)
-    ENDDO
-    IF(IPRCAV >= 10) THEN
-        CALL AROUND('INPUT DATA IN TESSERA_', lvpri)
-        WRITE(LVPRI,1000) NS,NV,NUMTS
-        WRITE(LVPRI,*) '=======PTS======='
-        CALL OUTPUT(PTS,1,3,1,3,3,3,1,LVPRI)
-        WRITE(LVPRI,*) '=======CCC======='
-        CALL OUTPUT(CCC,1,3,1,3,3,3,1,LVPRI)
-    END IF
+    iprcav = 0
+    lan = .false.
+    area = 0.0d+00
+    do j = 1, 3
+        ccc(1, j) = xe(ns)
+        ccc(2, j) = ye(ns)
+        ccc(3, j) = ze(ns)
+    end do
+    if (iprcav >= 10) then
+        call around('Input data in tessera', LVPRI)
+        write(lvpri,1000) ns, nv, numts
+        write(lvpri, *) '=======pts======='
+        call output(pts, 1, 3, 1, 3, 3, 3, 1, lvpri)
+        write(lvpri, *) '=======ccc======='
+        call output(ccc, 1, 3, 1, 3, 3, 3, 1, lvpri)
+    end if
 
 !     INTSPH viene riferito alla tessera -numts-, e in seguito riceve il
 !     numero corretto.
 
     DO N = 1, 3
         INTSPH(NUMTS,N) = NS
-    ENDDO
+    end do
 
 !     Loop sulle altre sfere
 
     DO 150 NSFE1=1,NESF
-        IF(NSFE1 == NS) GO TO 150
+        IF(NSFE1 == NS) go to 150
         IF(IPRCAV >= 10) THEN
             WRITE(LVPRI,1005) NSFE1
             WRITE(LVPRI,1010) XE(NSFE1),YE(NSFE1),ZE(NSFE1),RE(NSFE1)
-        END IF
+        end if
     
     !     Memorizza i vertici e i centri che sottendono gli archi
     
@@ -1193,8 +1169,8 @@
             DO I = 1,3
                 PSCR(I,J) = PTS(I,J)
                 CCCP(I,J) = CCC(I,J)
-            ENDDO
-        ENDDO
+            end do
+        end do
         IF(IPRCAV >= 10) THEN
             CALL AROUND('ACTUAL TESSERA_ STATUS', lvpri)
             WRITE(LVPRI,1000) NS,NV,NUMTS
@@ -1202,14 +1178,14 @@
             CALL OUTPUT(PSCR,1,3,1,NV,3,NV,1,LVPRI)
             WRITE(LVPRI,*) '=======CCCP======='
             CALL OUTPUT(CCCP,1,3,1,NV,3,NV,1,LVPRI)
-        END IF
+        end if
                  
     
         ICOP = 0
         DO J =1, 10
             IND(J) = 0
             LTYP(J) = 0
-        ENDDO
+        end do
     
     !     Loop sui vertici della tessera considerata
     
@@ -1219,19 +1195,19 @@
             DELR=SQRT(DELR2)
             IF (IPRPCM >= 10) THEN
                 WRITE(LVPRI,1015) DELR,RE(NSFE1)
-            ENDIF
+            end if
             DIFFDR = DELR - RE(NSFE1)
             IF(DIFFDR < 0.0D0) THEN
                 IND(I) = 1
                 ICOP = ICOP+1
-            END IF
-        100 END DO
+            end if
+        100 end do
     !     Se la tessera e' completamente coperta, la trascura
         IF(ICOP == NV) THEN
             IF(IPRCAV >= 10) WRITE(LVPRI,1020) NSFE1
             RETURN
         !           ******
-        END IF
+        end if
 
     
     !     Controlla e classifica i lati della tessera: LTYP = 0 (coperto),
@@ -1281,16 +1257,16 @@
                         LTYP(L) = 3
                         DO JJ = 1, 3
                             POINTL(JJ,L) = POINT(JJ)
-                        ENDDO
-                        GO TO 160
-                    END IF
-                ENDDO
-            END IF
+                        end do
+                        go to 160
+                    end if
+                end do
+            end if
             160 CONTINUE
             IF(IPRCAV >= 10) THEN
                 WRITE(LVPRI,1025) L,TYPLAB(LTYP(L))
-            END IF
-        ENDDO
+            end if
+        end do
     
     !     Se la tessera e' spezzata in due o piu' tronconi, la trascura
     
@@ -1298,12 +1274,12 @@
         DO L = 1, NV
             IF(LTYP(L) == 1 .OR. LTYP(L) == 2) ICUT = ICUT + 1
             IF(LTYP(L) == 3) ICUT = ICUT + 2
-        ENDDO
+        end do
         ICUT = ICUT / 2
         IF(ICUT > 1) THEN
             WRITE(LVPRI,*) 'Tessera cut in pieces and removed.'
             RETURN
-        END IF
+        end if
     
     !     Creazione dei nuovi vertici e lati della tessera
     !     Loop sui lati
@@ -1313,14 +1289,14 @@
         'NOW CREATING NEW VERTICES AND EDGES IF NEED BE....'
         DO 300 L = 1, NV
         !     Se il lato L e' coperto:
-            IF(LTYP(L) == 0) GO TO 300
+            IF(LTYP(L) == 0) go to 300
             IV1 = L
             IV2 = L+1
             IF(L == NV) IV2 = 1
             IF (IPRCAV >= 10) THEN
                 WRITE(LVPRI,1030) L,TYPLAB(LTYP(L)),LTYP(L)
                 WRITE(LVPRI,1035) IV1,IV2
-            ENDIF
+            end if
         !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         !     Se il lato L e' tagliato (con il I vertice scoperto):
             IF(LTYP(L) == 1) THEN
@@ -1328,7 +1304,7 @@
                 DO JJ = 1, 3
                     PTS(JJ,N) = PSCR(JJ,IV1)
                     CCC(JJ,N) = CCCP(JJ,IV1)
-                ENDDO
+                end do
                 INTSPH(NUMTS,N) = INTSCR(IV1)
                 N = N+1
             
@@ -1344,7 +1320,7 @@
                     P2(JJ) = PSCR(JJ,IV2)
                     P3(JJ) = CCCP(JJ,IV1)
                     P4(JJ) = 0.0D0
-                ENDDO
+                end do
                 INTCAS=0
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1040) INTCAS,NSFE1
@@ -1352,7 +1328,7 @@
                     WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
-                END IF
+                end if
                 CALL INTER(P1,P2,P3,P4,NSFE1,INTCAS)
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1050)
@@ -1360,7 +1336,7 @@
                     WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
-                END IF
+                end if
                 DIST1 = SQRT((P4(1)-P1(1))**2 + (P4(2)-P1(2))**2 + &
                 (P4(3)-P1(3))**2)
                 DIST2 = SQRT((P4(1)-P2(1))**2 + (P4(2)-P2(2))**2 + &
@@ -1368,7 +1344,7 @@
             !     Aggiorna i vertici della tessera e il centro dell'arco
                 DO JJ = 1,3
                     PTS(JJ,N) = P4(JJ)
-                ENDDO
+                end do
             
             !     Il nuovo arco sara' sotteso tra questo e il prossimo punto
             !     di intersezione: il centro che lo sottende
@@ -1385,7 +1361,7 @@
                 (RE(NS)**2-RE(NSFE1)**2+DE2)/(2.0D+00*DE2)
                 INTSPH(NUMTS,N) = NSFE1
                 N = N+1
-            END IF
+            end if
         
         !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         !     Se il lato L e' tagliato (con il II vertice scoperto):
@@ -1402,7 +1378,7 @@
                     P2(JJ) = PSCR(JJ,IV2)
                     P3(JJ) = CCCP(JJ,IV1)
                     P4(JJ) = 0.0D0
-                ENDDO
+                end do
                 INTCAS=1
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1040) INTCAS,NSFE1
@@ -1410,7 +1386,7 @@
                     WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
-                END IF
+                end if
                 CALL INTER(P1,P2,P3,P4,NSFE1,INTCAS)
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1050)
@@ -1418,22 +1394,22 @@
                     WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
-                END IF
+                end if
             !     Aggiorna i vertici della tessera e il centro dell'arco
                 DO JJ = 1,3
                     PTS(JJ,N) = P4(JJ)
                     CCC(JJ,N) = CCCP(JJ,IV1)
-                ENDDO
+                end do
                 INTSPH(NUMTS,N) = INTSCR(IV1)
                 N = N+1
-            END IF
+            end if
         !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         !     Se il lato e' intersecato due volte:
             IF(LTYP(L) == 3) THEN
                 DO JJ = 1, 3
                     PTS(JJ,N) = PSCR(JJ,IV1)
                     CCC(JJ,N) = CCCP(JJ,IV1)
-                ENDDO
+                end do
                 INTSPH(NUMTS,N) = INTSCR(IV1)
                 N = N+1
             
@@ -1450,7 +1426,7 @@
                     P2(JJ) = POINTL(JJ,L)
                     P3(JJ) = CCCP(JJ,IV1)
                     P4(JJ) = 0.0D0
-                ENDDO
+                end do
                 INTCAS=0
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1040) INTCAS,NSFE1
@@ -1458,7 +1434,7 @@
                     WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
-                END IF
+                end if
                 CALL INTER(P1,P2,P3,P4,NSFE1,INTCAS)
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1050)
@@ -1466,11 +1442,11 @@
                     WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
-                END IF
+                end if
             !     Aggiorna i vertici della tessera e il centro dell'arco
                 DO JJ = 1,3
                     PTS(JJ,N) = P4(JJ)
-                ENDDO
+                end do
             
             !     Il nuovo arco sara' sotteso tra questo e il prossimo punto
             !     di intersezione: il centro che lo sottende
@@ -1501,7 +1477,7 @@
                     P2(JJ) = PSCR(JJ,IV2)
                     P3(JJ) = CCCP(JJ,IV1)
                     P4(JJ) = 0.0D0
-                ENDDO
+                end do
                 INTCAS=1
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1040) INTCAS,NSFE1
@@ -1509,7 +1485,7 @@
                     WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
-                END IF
+                end if
                 CALL INTER(P1,P2,P3,P4,NSFE1,INTCAS)
                 IF(IPRCAV >= 10) THEN
                     WRITE(LVPRI,1050)
@@ -1517,7 +1493,7 @@
                     WRITE(LVPRI,1045) 2,(P2(I),I=1,3)
                     WRITE(LVPRI,1045) 3,(P3(I),I=1,3)
                     WRITE(LVPRI,1045) 4,(P4(I),I=1,3)
-                END IF
+                end if
                 DIST1 = SQRT((P4(1)-P1(1))**2 + (P4(2)-P1(2))**2 + &
                 (P4(3)-P1(3))**2)
                 DIST2 = SQRT((P4(1)-P2(1))**2 + (P4(2)-P2(2))**2 + &
@@ -1526,10 +1502,10 @@
                 DO JJ = 1,3
                     PTS(JJ,N) = P4(JJ)
                     CCC(JJ,N) = CCCP(JJ,IV1)
-                ENDDO
+                end do
                 INTSPH(NUMTS,N) = INTSCR(IV1)
                 N = N + 1
-            END IF
+            end if
         
         !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         !     Se il lato e' scoperto:
@@ -1537,11 +1513,11 @@
                 DO JJ = 1, 3
                     PTS(JJ,N) = PSCR(JJ,IV1)
                     CCC(JJ,N) = CCCP(JJ,IV1)
-                ENDDO
+                end do
                 INTSPH(NUMTS,N) = INTSCR(IV1)
                 N = N+1
-            END IF
-        300 END DO
+            end if
+        300 end do
         NV = N - 1
         IF(IPRCAV >= 10) THEN
             CALL AROUND('AFTER INTER_SECTION TESSERA_ STATUS', lvpri)
@@ -1558,18 +1534,18 @@
                 DO IC=1,3
                     DIST1 = DIST1 + (PTS(IC,IDX ) - CCC(IC,IDX))**2
                     DIST2 = DIST2 + (PTS(IC,IDX2) - CCC(IC,IDX))**2
-                END DO
+                end do
                 DCHECK=DIST1-DIST2
                 WRITE(LVPRI,1055) IDX,DCHECK
-            END DO
-        END IF
+            end do
+        end if
     !     Controlla che il numero di vertici creati non sia eccessivo
         IF(NV > 10) THEN
             WRITE(LVPRI,*)'TOO MANY VERTICES IN TESSERA_: BYE BYE...'
             pedra_error_code = 8
             STOP
-        END IF
-    150 END DO
+        end if
+    150 end do
     IF(IPRCAV >= 10) THEN
         CALL AROUND('FINAL TESSERA_ STATUS', lvpri)
         WRITE(LVPRI,1000) NS,NV,NUMTS
@@ -1577,7 +1553,7 @@
         CALL OUTPUT(PSCR,1,3,1,NV,3,NV,1,LVPRI)
         WRITE(LVPRI,*) '=======CCCP======='
         CALL OUTPUT(CCCP,1,3,1,NV,3,NV,1,LVPRI)
-    END IF
+    end if
 
 !     Se la tessera non e' stata scartata, a questo punto ne troviamo
 !     l'area e il punto rappresentativo
@@ -1601,8 +1577,8 @@
             NTRHSO(I) = 1
             NVNEGL = NVNEGL + 1
         ! f            NTRHSO(I) = 0
-        END IF
-    ENDDO
+        end if
+    end do
     NVLEFT = NV - NVNEGL
 
 ! If we end up with a tessera with less than three long enough edges
@@ -1626,16 +1602,16 @@
                 DO K =1,3
                     CCC(K,IVNEW) = CCC(K,IVOLD)
                     PTS(K,IVNEW) = PTS(K,IVOLD)
-                ENDDO
-            END IF
-        END DO
+                end do
+            end if
+        end do
         IF (IVNEW /= NVLEFT) THEN
             WRITE(LVPRI,*) 'SIRCAV: BADLY MADE ALGORITHM!'
             pedra_error_code = 9
             STOP
-        ENDIF
+        end if
         NV = NVLEFT
-    END IF
+    end if
 
 ! Finally we calculate area and center of the tessera!
 
@@ -1689,7 +1665,7 @@
     P2P3 = SQRT((P2(1)-P3(1))**2+(P2(2)-P3(2))**2+(P2(3)-P3(3))**2)
     IF(IPRCAV >= 10) THEN
         WRITE(LVPRI,1000) P1P3-P2P3
-    END IF
+    end if
 ! f Check if one or both starting points are below the threshold
     LALOW=.FALSE.
     LBLOW=.FALSE.
@@ -1704,33 +1680,33 @@
         'INTER_: TAKEN FIRST POINT'
         DO J=1,3
             P4(J)=P1(J)
-        END DO
-        GOTO 100
-    END IF
+        end do
+        go to 100
+    end if
     IF(LBLOW .AND. .NOT. LALOW) THEN
         IF(IPRCAV >= 10) WRITE (LVPRI,*) &
         'INTER_: TAKEN SECOND POINT'
         DO J=1,3
             P4(J)=P2(J)
-        END DO
-        GOTO 100
-    END IF
+        end do
+        go to 100
+    end if
     IF(LALOW .AND. LBLOW) THEN
         IF(DIFFA <= DIFFB) THEN
             IF(IPRCAV >= 10) WRITE (LVPRI,*) &
             'INTER_: TAKEN FIRST POINT'
             DO J=1,3
                 P4(J)=P1(J)
-            END DO
+            end do
         ELSE
             IF(IPRCAV >= 10) WRITE (LVPRI,*) &
             'INTER_: TAKEN SECOND POINT'
             DO J=1,3
                 P4(J)=P2(J)
-            END DO
-        END IF
-        GOTO 100
-    END IF
+            end do
+        end if
+        go to 100
+    end if
 
 !     Start iterations
 
@@ -1741,14 +1717,14 @@
     DO JJ = 1,3
         P4(JJ)=P1(JJ)+ALPHAT*(P2(JJ)-P1(JJ))-P3(JJ)
         DNORM = DNORM + P4(JJ)**2
-    ENDDO
+    end do
     DNORM = SQRT(DNORM)
     DO JJ = 1,3
         P4(JJ)= P4(JJ)*R/DNORM + P3(JJ)
-    ENDDO
+    end do
     DIFF2=(P4(1)-XE(NS))**2 + (P4(2)-YE(NS))**2 + (P4(3)-ZE(NS))**2
     DIFF = SQRT(DIFF2) - RE(NS)
-    IF(ABS(DIFF) < TOL) GOTO 100
+    IF(ABS(DIFF) < TOL) go to 100
     IF(I == 0) THEN
         IF(DIFF > 0.0D+00) DELTA = 1.0D+00/(2.0D+00**DBLE(M+1))
         IF(DIFF < 0.0D+00) DELTA = - 1.0D+00/(2.0D+00**DBLE(M+1))
@@ -1761,7 +1737,7 @@
         WRITE(*,*) '7'
         pedra_error_code = 10
         STOP
-    END IF
+    end if
     IF (M > 300)THEN
         WRITE(LVPRI,*)'Too many iterations in INTER_! BYE BYE ...'
         WRITE(LVPRI,*)'P1',P1(1),P1(2),P1(3),DIFFA,LALOW
@@ -1771,8 +1747,8 @@
         WRITE(LVPRI,*)'SPHERE',XE(NS),YE(NS),ZE(NS),RE(NS)
         WRITE(*,*) '8'
         STOP
-    END IF
-    GO TO 10
+    end if
+    go to 10
 
 ! Final printing and return
 
@@ -1784,7 +1760,7 @@
         WRITE(LVPRI,1010) 3,P3(1),P3(2),P3(3)
         WRITE(LVPRI,1010) 4,P4(1),P4(2),P4(3)
         WRITE(LVPRI,1015) XE(NS),YE(NS),ZE(NS),RE(NS)
-    END IF
+    end if
     RETURN
 
     1000 FORMAT('INTER_, distance consistency check: ',F14.12)
@@ -1839,7 +1815,7 @@
     DO 100 N = 1, NV
         PHIN(N) = 0.0D0
     
-    !         IF (NTRHSO(N) .EQ. 1) GOTO 100
+    !         IF (NTRHSO(N) .EQ. 1) go to 100
     
         X1 = PTS(1,N) - CCC(1,N)
         Y1 = PTS(2,N) - CCC(2,N)
@@ -1852,7 +1828,7 @@
             X2 = PTS(1,1) - CCC(1,N)
             Y2 = PTS(2,1) - CCC(2,N)
             Z2 = PTS(3,1) - CCC(3,N)
-        END IF
+        end if
         DNORM1 = X1*X1 + Y1*Y1 + Z1*Z1
         DNORM2 = X2*X2 + Y2*Y2 + Z2*Z2
         SCAL = X1*X2 + Y1*Y2 + Z1*Z2
@@ -1874,7 +1850,7 @@
         DNORM2 = SQRT(X2*X2 + Y2*Y2 + Z2*Z2)
         COSTN = (X1*X2+Y1*Y2+Z1*Z2)/(DNORM1*DNORM2)
         SUM1 = SUM1 + PHIN(N) * COSTN
-    100 END DO
+    100 end do
 
     do i = 1, nv
         weight(i) = phin(i)
@@ -1900,7 +1876,7 @@
             P1(JJ) = 0.0D+00
             P2(JJ) = 0.0D+00
             P3(JJ) = 0.0D+00
-        ENDDO
+        end do
         N1 = N
     ! f
     !         IF(N.GT.1) N0 = N - 1
@@ -1917,7 +1893,7 @@
         N0 = MOD(NV+N0-1,NV)
         IF(N0 == 0) N0 = NV
     ! f         write(lvpri,*) "N0 is", N0, NTRHSO(N0)
-    ! f         IF(NTRHSO(N0).EQ.1) GOTO 220
+    ! f         IF(NTRHSO(N0).EQ.1) go to 220
         N2 = N
     ! f         NCONT = 0
     ! f 230     CONTINUE
@@ -1926,8 +1902,8 @@
     ! f         write(lvpri,*) "N2 is", N2, NTRHSO(N1)
     ! f         IF(NTRHSO(N1 + NCONT).EQ.1) THEN
     ! f            NCONT = NCONT + 1
-    ! f            GOTO 230
-    ! F         END IF
+    ! f            go to 230
+    ! F         end if
     
     !     Trova i vettori posizione rispetto ai centri corrispondenti
     !     e i versori tangenti
@@ -1936,57 +1912,57 @@
         DO JJ = 1, 3
             P1(JJ) = PTS(JJ,N1) - CCC(JJ,N0)
             P2(JJ) = PTS(JJ,N0) - CCC(JJ,N0)
-        ENDDO
+        end do
     
         CALL vector_product(P1,P2,P3,DNORM3)
         DO JJ = 1, 3
             P2(JJ) = P3(JJ)
-        ENDDO
+        end do
         CALL vector_product(P1,P2,P3,DNORM3)
         DO JJ = 1, 3
             U1(JJ) = P3(JJ)/DNORM3
-        ENDDO
+        end do
     
     !     Lato N1-N2:
         DO JJ = 1, 3
             P1(JJ) = PTS(JJ,N1) - CCC(JJ,N1)
             P2(JJ) = PTS(JJ,N2) - CCC(JJ,N1)
-        ENDDO
+        end do
     
         CALL vector_product(P1,P2,P3,DNORM3)
         DO JJ = 1, 3
             P2(JJ) = P3(JJ)
-        ENDDO
+        end do
         CALL vector_product(P1,P2,P3,DNORM3)
         DO JJ = 1, 3
             U2(JJ) = P3(JJ)/DNORM3
-        ENDDO
+        end do
     
         BETA(N) = ACOS(U1(1)*U2(1)+U1(2)*U2(2)+U1(3)*U2(3))
     ! F         SUM2 = SUM2 + (PI - BETAN)
-    200 END DO
+    200 end do
     do I=1,NV
     ! F         II = I - 1
     ! f         IF (II .EQ. 0) II = NV
     ! f         SUM2 = SUM2 - BETA(I) * (D1 - DP5 * DBLE(NTRHSO(I)+NTRHSO(II)))
     ! f     $               + PI * (D1 - DBLE(NTRHSO(I)))
         SUM2 = SUM2 - BETA(I)
-    enddo
+    end do
 !     Calcola l'area della tessera
     AREA = RE(NS)*RE(NS)*(DBLE(2-NV) * PI + SUM1 - SUM2)
 !     Trova il punto rappresentativo (come media dei vertici)
     DO JJ = 1, 3
         PP(JJ) = 0.0D+00
-    ENDDO
+    end do
     DO I = 1, NV
         PP(1) = PP(1) + (PTS(1,I)-XE(NS)) * WEIGHT(I)
         PP(2) = PP(2) + (PTS(2,I)-YE(NS)) * WEIGHT(I)
         PP(3) = PP(3) + (PTS(3,I)-ZE(NS)) * WEIGHT(I)
-    END DO
+    end do
     DNORM = 0.0D+00
     DO JJ = 1, 3
         DNORM = DNORM + PP(JJ)*PP(JJ)
-    ENDDO
+    end do
     PP(1) = XE(NS) + PP(1) * RE(NS) / SQRT(DNORM)
     PP(2) = YE(NS) + PP(2) * RE(NS) / SQRT(DNORM)
     PP(3) = ZE(NS) + PP(3) * RE(NS) / SQRT(DNORM)
@@ -2003,12 +1979,16 @@
         AREA = 0.0D+00
         1000 FORMAT(/,'WARNING: THE AEREA OF ONE TESSERA_ ON SPHERE ',I3, &
         ' IS IGNORED',F16.10)
-    END IF
+    end if
     
     END SUBROUTINE GAUBON
     
     subroutine cavspl(icav1, icav2, ncav1, ncav2, some)
-
+!
+! Check if the solute is contained into a single cavity or in
+! more disjoint cavities. If yes, the order numbers of the spheres
+! for the first and second cavity are stored into icav1 and icav2 respectively.
+!
 #include "pcm_mxcent.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
@@ -2020,16 +2000,10 @@
     integer :: i, n1, n2, nn, icen, n
     real(8) :: r, rr, sum, x, y, z, xx, yy, zz
 
-
-!  QUESTA ROUTINE CONTROLLA SE IL SOLUTO E' CONTENUTO IN UNA
-!  UNICA CAVITA' O IN CAVITA' DISTINTE: IN TAL CASO I NUMERI
-!  D'ORDINE DELLE SFERE CHE COSTITUISCONO LA PRIMA E LA SECONDA
-!  CAVITA' VENGONO MEMORIZZATI RISPETTIVAMENTE IN ICAV1 E ICAV2
-
     DO I=1,MXCENT
         ICAV1(I)=0
         ICAV2(I)=0
-    ENDDO
+    end do
     NCAV1=0
     NCAV2=0
     N1=1
@@ -2039,14 +2013,14 @@
     N1=N1+1
     50 DO I=1,MXCENT
         ICAV2(I)=0
-    ENDDO
+    end do
     N2=1
     N=ICAV1(NN)
     DO 100 ICEN=1,NESF
-        IF(ICEN == N) GO TO 100
+        IF(ICEN == N) go to 100
         DO I=1,NESF
-            IF(ICEN == ICAV1(I)) GO TO 100
-        ENDDO
+            IF(ICEN == ICAV1(I)) go to 100
+        end do
         X=XE(N)-XE(ICEN)
         XX=X*X
         Y=YE(N)-YE(ICEN)
@@ -2062,10 +2036,10 @@
         ELSE
             ICAV2(N2)=ICEN
             N2=N2+1
-        END IF
-    100 END DO
+        end if
+    100 end do
     NN=NN+1
-    IF(ICAV1(NN) /= 0) GO TO 50
+    IF(ICAV1(NN) /= 0) go to 50
     NCAV1=NN-1
     NCAV2=NESF-NCAV1
     IF(SOME) THEN
@@ -2077,8 +2051,8 @@
             WRITE(LVPRI,*) (ICAV1(I),I=1,NCAV1)
             WRITE(LVPRI,500)
             WRITE(LVPRI,*) (ICAV2(I),I=1,NCAV2)
-        END IF
-    END IF
+        end if
+    end if
     RETURN
 
     200 FORMAT(/10X,'THE SOLUTE IS ENCLOSED IN ONE CAVITY')
@@ -2090,7 +2064,11 @@
     end subroutine cavspl
     
     subroutine plotcav(vert, numts)
-
+!                    
+! Prepare the input file for GeomView
+! Contrary to the DALTON version of PEDRA we are in this context completely
+! agnostic of the atom type, so no coloring of polyhedra is possible.
+!
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
@@ -2104,13 +2082,6 @@
     integer :: n, numv, i, j, k, last, lucav
     integer :: jcord
 
-!     Prepare the input file for GeomView (coloured polyhedra)
-
-! Decide how to color the spheres.
-! This is DALTON-related, in PCMSolver all the spheres will always be
-! gray as PEDRA is to be kept ignorant of atomic types!
-!   icesph = 1, spheres given from input (x, y, z, R)
-    
     lucav = 12121201
     
     inquire(file = 'cavity.off', exist = cavity_file_exists)
@@ -2175,16 +2146,17 @@
 !
     use pedra_symmetry, only: get_pt
 
-#include "pcm_mxcent.h"
-
     integer :: nv, nt, its, nvert, numts
     integer :: jtr(numts, *)
     real(8) :: cv(nvert, *)
 
     integer :: i, isymop, ii, jj, k
     logical :: lsymop(0:7)
+    character(len=3) :: group_name
 
-! Symmetry operations in for the Abelian groups
+    group_name = group%group_name
+
+! Symmetry operations in the Abelian groups
 !      SYMOP(0) = ' E '
 !      SYMOP(1) = 'Oyz'
 !      SYMOP(2) = 'Oxz'
@@ -2199,32 +2171,32 @@
     end do
     ! Every group has the identity
     lsymop(0) = .true.
-    if (group%group_name == 'C1 ') then
-        ! C1 has 0 generators. All three planes of reflection for the replication.
+    if (group_name == 'C1 ') then
+        ! C1 has 0 generators. Three planes of reflection.
         lsymop(1) = .true.
         lsymop(2) = .true.
         lsymop(4) = .true.
-    else if (group%group_name == 'C2 ' .or. group%group_name == 'Ci ') then
-        ! C2 has 1 generator. Two planes of reflection for the replication.
-        ! Ci has 1 generator. Two planes of reflection for the replication.
-        lsymop(1) = .true.
+    else if (group_name == 'C2 ' .or. group_name == 'Ci ') then
+        ! C2 has 1 generator. Two planes among Oxy, Oxz, Oyz 
+        ! Ci has 1 generator. Two planes among Oxy, Oxz, Oyz 
         lsymop(2) = .true.
+        lsymop(4) = .true.
     else if (group%group_name == 'Cs ') then
-        ! C2 has 1 generator. Two planes of reflection for the replication.
-        lsymop(2) = .true.
-        lsymop(4) = .true.
-    else if (group%group_name == 'D2 ' .or. group%group_name == 'C2v') then
-        ! D2 has 2 generators. One plane of reflection for the replication.
-        ! C2v has 2 generators. One plane of reflection for the replication.
+        ! Cs has 1 generator. Two planes Oxz, Oyz 
         lsymop(1) = .true.
-    else if (group%group_name == 'C2h') then
-        ! C2h has 2 generators. One plane of reflection for the replication.
         lsymop(2) = .true.
-    else if (group%group_name /= 'D2h') then
+    else if (group_name == 'D2 ' .or. group_name == 'C2h') then
+        ! D2 has 2 generators. One plane among Oxy, Oyz, Oxz 
+        ! C2h has 2 generators. One plane amond Oxz, Oyz
+        lsymop(1) = .true.
+    else if (group_name == 'C2v') then
+        ! C2v has 2 generators. One plane Oxy 
+        lsymop(7) = .true.
+    else if (group_name /= 'D2h') then
         ! D2h has 3 generators. No planes of reflection for the replication.
         ! If we get here it  means something went awry before...
-        write(lvpri, *) 'Check symmetry group.'
-        pedra_error_code = 12
+        write(lvpri, '(a)') "Check symmetry group."
+        pedra_error_code = 11
         stop
     end if
     ! We DO NOT want to include the identity operator in this loop.
@@ -2235,24 +2207,24 @@
             do i = 1, nv
                 ii = i + nv
                 do k = 1, 3 
-                    cv(ii,k) = get_pt(iand(isymop, 2**(k-1))) * cv(i, k)
-                enddo
-            enddo
+                    cv(ii, k) = get_pt(iand(isymop, 2**(k-1))) * cv(i, k)
+                end do
+            end do
             ! Replication of topology       
             do i = 1, nt
                 ii = i + nt
                 jj = nv
                 do k = 1, 3
                     jtr(ii, k) = jtr(i, k) + jj
-                enddo
-            enddo
+                end do
+            end do
             ! Update indices 
             nt  = nt  * 2
             nv  = nv  * 2
             its = its * 2
-        endif
+        end if
     end do
-    
+
     end subroutine prerep
     
     subroutine pcmtns(vmat, geom, amass, katom)
@@ -2269,14 +2241,14 @@
 
     real(8) :: eigval(3), eigvec(3, 3), tinert(3, 3)
     real(8) :: angmom(3), omegad(3), eiginv(3, 3), scal(3)
-    integer :: iax(6), norder(3)
+    integer :: iax(6)
     logical :: planar, linear
     integer :: i, j, k, jax, nmax
     integer :: nopax, nshift
 
     real(8) :: dij
     
-    iax = (/1,2,3,3,2,1/)
+    iax = [1, 2, 3, 3, 2, 1]
 
     angmom = [1.0d0, 1.0d0, 1.0d0]
 
@@ -2289,19 +2261,16 @@
     end do
     
     nopax = group%nr_rotations + group%nr_reflections
-    norder(1) = 1
-    norder(2) = 2
-    norder(3) = 3
     if (nopax >= 3) then
-        do i = 1,3
-            do j = 1,3
+        do i = 1, 3
+            do j = 1, 3
                 dij = 0.0d0
                 if (i == j) then 
                         dij = 1.0d0
                 end if
                 vmat(j, iax(group%jsop(i))) = dij
-            enddo
-        enddo
+            end do
+        end do
     elseif (nopax >= 1) then
         jax = iax(group%jsop(1))
         scal(1) = abs(eiginv(1,jax))
@@ -2310,24 +2279,24 @@
         nmax = 1
         do j = 2,3
             if (scal(j) > scal(nmax)) nmax = j
-        enddo
+        end do
         nshift = mod(nmax-1,3)
         do i = 0,2
             k = mod(i + nshift,3) + 1
             do j =1,3
                 vmat(i+1,j) = eiginv(k,j)
-            enddo
-        enddo
+            end do
+        end do
     elseif (nopax == 0) then
         do i = 1,3
             do j = 1,3
                 vmat(i,j) = eiginv(i,j)
-            enddo
-        enddo
+            end do
+        end do
     else
         pedra_error_code = 9
         stop
-    endif
+    end if
 
     end subroutine pcmtns
     
@@ -2356,7 +2325,7 @@
         privec(3,i) = ztscor(i)
         privec(4,i) = as(i)
         idxpri(i) = i
-    enddo
+    end do
 
     if(lswtch) then
         lswtch = .false.
@@ -2381,8 +2350,8 @@
                 privec(4,ii) = abak
                 idxpri(ii)   = ibak
             end if
-        enddo
-    endif
+        end do
+    end if
     
     write(lvpri, '(a)') "Tess. #      x (AU)              y (AU)             "& 
     //" z (AU)             a (AU^2)" 
@@ -2391,7 +2360,7 @@
     do i = 1, nts
         ! This writes centers and areas of tesserae to lvpri (PEDRA.OUT)
         write(lvpri, '(i4, 4f20.14)') i, (privec(j,i), j=1, 4)
-    enddo
+    end do
 
     end subroutine ordpcm
 
@@ -2415,7 +2384,7 @@
         chktss = .true.
     else
         chktss = .false.
-    endif
+    end if
 
     end function chktss
           

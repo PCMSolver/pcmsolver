@@ -49,7 +49,7 @@
     DO 500 NSA = NESFP+1, NESF
         DO II = 1, 63
             ALGE(II) = 0
-        ENDDO
+        end do
     
     !     Costruiamo l'"albero genealogico" della sfera NSA
     
@@ -63,12 +63,12 @@
             IF(ALGE(II) > NESFP) THEN
                 ALGE(LIVEL+NSUB)   = ABS(NEWSPH(ALGE(II),1))
                 ALGE(LIVEL+NSUB+1) = ABS(NEWSPH(ALGE(II),2))
-            END IF
+            end if
             NSUB = NSUB + 2
-        ENDDO
+        end do
         NUMBER = NUMBER * 2
         LIVEL = LIVEL + NUMBER
-        IF(NUMBER < 32) GO TO 510
+        IF(NUMBER < 32) go to 510
     
     !     Quando un elemento di ALGE e' = NSJR, costruisce la corrispondente
     !     "cascata" di sfere aggiunte che collega NSJR a NSA
@@ -77,10 +77,10 @@
             MIN = 2**(LIVEL-1)
             MAX = (2**LIVEL) - 1
             DO 700 II = MIN, MAX
-                IF(ALGE(II) /= NSJR) GO TO 700
+                IF(ALGE(II) /= NSJR) go to 700
                 DO K = 1, 10
                     CASCA(K) = 0
-                ENDDO
+                end do
                 CASCA(1) = NSJR
                 INDEX = II
                 K = 2
@@ -89,12 +89,12 @@
                     INDEX = INT(2**(LL-2) + FACT)
                     CASCA(K) = ALGE(INDEX)
                     K = K + 1
-                ENDDO
+                end do
             !     Contiamo gli elementi diversi da 0 in CASCA
                 ICONT = 0
                 DO K = 1, 10
                     IF(CASCA(K) /= 0) ICONT = ICONT + 1
-                ENDDO
+                end do
             
             !     Costruiamo le derivate composte del raggio e delle coordinate di
             !     NSA (ultimo elemento di CASCA)
@@ -166,7 +166,7 @@
                     DX = DDX
                     DY = DDY
                     DZ = DDZ
-                800 END DO
+                800 end do
             
             !     Se NS e' una sfera aggiunta, memorizza le derivate del raggio
             !     e delle coordinate del centro:
@@ -175,9 +175,9 @@
                 DERCEN(NSA,NSJ,ICOORD,1) = DX
                 DERCEN(NSA,NSJ,ICOORD,2) = DY
                 DERCEN(NSA,NSJ,ICOORD,3) = DZ
-            700 END DO
-        600 END DO
-    500 END DO
+            700 end do
+        600 end do
+    500 end do
 
     end subroutine cavder
     
@@ -206,7 +206,7 @@
 !     e la generatrice "principale" corrisponde al label negativo
 !     (cfr. JCC 11, 1047 (1990))
 
-    IF(NEWSPH(NSI,1) < 0 .OR. NEWSPH(NSI,2) < 0) GO TO 100
+    IF(NEWSPH(NSI,1) < 0 .OR. NEWSPH(NSI,2) < 0) go to 100
     NSK = NEWSPH(NSI,1)
     IF(NSK == NSJ) NSK = NEWSPH(NSI,2)
     COORDJ(1) = XE(NSJ)
@@ -219,13 +219,13 @@
     (ZE(NSJ)-ZE(NSK))**2
     D = SQRT(D2)
     DC = - (COORDJ(JJ) - COORDK(JJ)) / (2.0D+00 * D)
-    GO TO 200
+    go to 200
 
     100 CONTINUE
     NSK = NEWSPH(NSI,1)
     IF(ABS(NSK) == NSJ) NSK = NEWSPH(NSI,2)
     DC = D0
-    IF(NSK < D0) GO TO 200
+    IF(NSK < D0) go to 200
     COORDJ(1) = XE(NSJ)
     COORDJ(2) = YE(NSJ)
     COORDJ(3) = ZE(NSJ)
@@ -266,7 +266,7 @@
 !     e la generatrice "principale" corrisponde al label negativo
 !     (cfr. JCC 11, 1047 (1990))
 
-    IF(NEWSPH(NSI,1) < 0 .OR. NEWSPH(NSI,2) < 0) GO TO 100
+    IF(NEWSPH(NSI,1) < 0 .OR. NEWSPH(NSI,2) < 0) go to 100
     K = NEWSPH(NSI,1)
     IF(K == NSJ) K = NEWSPH(NSI,2)
     COORDJ(1) = XE(NSJ)
@@ -280,7 +280,7 @@
     DC = (RE(NSJ)-RE(K)) * (COORDJ(ICOORD)-COORDK(ICOORD)) * &
     (COORDJ(JJ) - COORDK(JJ)) / (2.0D+00 * D**3)
     IF(JJ == ICOORD)DC = DC + 0.5D+00 - (RE(NSJ)-RE(K)) / (2.0D+00*D)
-    GO TO 200
+    go to 200
 
     100 CONTINUE
     NSK = NEWSPH(NSI,1)
@@ -302,7 +302,7 @@
         DC = - RE(ABS(NSK)) * (COORDK(JJ)-COORDJ(JJ)) * (COORDK(ICOORD)- &
         COORDJ(ICOORD)) / D**3
         IF(ICOORD == JJ) DC = DC + RE(ABS(NSK)) / D
-    END IF
+    end if
 
     200 CONTINUE
     end subroutine drcncn
@@ -330,7 +330,7 @@
 !     e la generatrice "principale" corrisponde al label negativo
 !     (cfr. JCC 11, 1047 (1990))
 
-    IF(NEWSPH(NSI,1) < 0 .OR. NEWSPH(NSI,2) < 0) GO TO 100
+    IF(NEWSPH(NSI,1) < 0 .OR. NEWSPH(NSI,2) < 0) go to 100
     NSK = NEWSPH(NSI,1)
     IF(NSK == NSJ) NSK = NEWSPH(NSI,2)
     RS = RSOLV
@@ -342,7 +342,7 @@
     D = SQRT(D2)
     DR1 = (-3.0D+00*RJ*RJ + RK*RK + 2.0D+00*RJ*RK &
     + 3.0D+00*D*RJ - D*RK) / (4.0D+00*D*RI)
-    GO TO 200
+    go to 200
 
     100 CONTINUE
     NSK = NEWSPH(NSI,1)
@@ -366,7 +366,7 @@
         (ZE(NSJ)-ZE(ABS(NSK)))**2
         D = SQRT(D2)
         DR1 = ( RE(ABS(NSK)) * RJ ) / ( D*RI)
-    END IF
+    end if
     200 CONTINUE
     end subroutine drrdrd
     
@@ -396,7 +396,7 @@
 !     e la generatrice "principale" corrisponde al label negativo
 !     (cfr. JCC 11, 1047 (1990))
 
-    IF(NEWSPH(NSI,1) < 0 .OR. NEWSPH(NSI,2) < 0) GO TO 100
+    IF(NEWSPH(NSI,1) < 0 .OR. NEWSPH(NSI,2) < 0) go to 100
     K = NEWSPH(NSI,1)
     IF(K == NSJ) K = NEWSPH(NSI,2)
     COORDJ(1) = XE(NSJ)
@@ -412,7 +412,7 @@
     A = ((RE(NSJ)+RS)**2 + D2 - (RE(K)+RS)**2) / D
     DR1 = (2.0D+00*A*B - 2.0D+00*B*D - A*D) * &
     (COORDJ(ICOORD)-COORDK(ICOORD)) / (4.0D+00*D2*(RE(NSI)+RS))
-    GO TO 200
+    go to 200
 
     100 CONTINUE
     NSK = NEWSPH(NSI,1)

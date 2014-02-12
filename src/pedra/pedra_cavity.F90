@@ -2172,33 +2172,39 @@
     ! Every group has the identity
     lsymop(0) = .true.
     if (group_name == 'C1 ') then
-        ! C1 has 0 generators. Three planes of reflection.
-        lsymop(1) = .true.
-        lsymop(2) = .true.
-        lsymop(4) = .true.
-    else if (group_name == 'C2 ' .or. group_name == 'Ci ') then
-        ! C2 has 1 generator. Two planes among Oxy, Oxz, Oyz 
-        ! Ci has 1 generator. Two planes among Oxy, Oxz, Oyz 
-        lsymop(2) = .true.
-        lsymop(4) = .true.
-    else if (group%group_name == 'Cs ') then
-        ! Cs has 1 generator. Two planes Oxz, Oyz 
-        lsymop(1) = .true.
-        lsymop(2) = .true.
-    else if (group_name == 'D2 ' .or. group_name == 'C2h') then
-        ! D2 has 2 generators. One plane among Oxy, Oyz, Oxz 
-        ! C2h has 2 generators. One plane amond Oxz, Oyz
-        lsymop(1) = .true.
+            ! C1 has 0 generators. Use all three planes of reflection 
+            lsymop(1) = .true.
+            lsymop(2) = .true.
+            lsymop(4) = .true.
+    else if (group_name == 'Cs ') then
+            ! Cs has 1 generator. Use Oxz plane and inversion 
+            lsymop(2) = .true.
+            lsymop(7) = .true.
+    else if (group_name == 'C2 ') then
+            ! C2 has 1 generator. Use Oxz and inversion 
+            lsymop(2) = .true.
+            lsymop(7) = .true.
+    else if (group_name == 'Ci ') then
+            ! Ci has 1 generator. Use Oxz and Oxy planes 
+            lsymop(2) = .true.
+            lsymop(4) = .true.
+    else if (group_name == 'C2h') then
+            ! C2h has 2 generators. Use Oxz plane 
+            lsymop(2) = .true.
+    else if (group_name == 'D2 ') then
+            ! D2 has 2 generators. Use Oyz plane 
+            lsymop(1) = .true.
     else if (group_name == 'C2v') then
-        ! C2v has 2 generators. One plane Oxy 
-        lsymop(7) = .true.
+            ! C2v has 2 generators. Use inversion 
+            lsymop(7) = .true.
     else if (group_name /= 'D2h') then
-        ! D2h has 3 generators. No planes of reflection for the replication.
-        ! If we get here it  means something went awry before...
-        write(lvpri, '(a)') "Check symmetry group."
-        pedra_error_code = 11
-        stop
+            ! D2h has 3 generators. No need to select other operations for the replication.
+            ! If we get here it  means something went awry before...
+            write(lvpri, '(a)') "Check symmetry group."
+            pedra_error_code = 11
+            stop
     end if
+
     ! We DO NOT want to include the identity operator in this loop.
     ! That would cause a cavity twice as big as the correct one to be generated!
     do isymop = 1, 7 

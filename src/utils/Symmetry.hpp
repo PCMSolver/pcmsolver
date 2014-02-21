@@ -58,8 +58,43 @@
 class Symmetry
 {
 	private:
+		/*!
+		 * Integer representing the group
+		 */
+		int groupInteger_;
+		/*!
+		 * The Schoenflies symbol
+		 */
+		std::string groupName_;
+		/*!
+		 * Number of generators
+		 */
+		int nrGenerators_;
+		/*!
+		 * Number of nontrivial symmetry operations
+		 * nontrivial_ops = 2**nr_generators - 1 
+		 */
+		int nontrivialOps_;
 	public:
+		Symmetry() {}
+		Symmetry(int _pGroup, const std::string & _name, int gen, int ops) : 
+			groupInteger_(_pGroup), groupName_(_name), nrGenerators_(gen), nontrivialOps_(ops) {};
+		Symmetry(const Symmetry & other) : 
+			groupInteger_(other.groupInteger_), groupName_(other.groupName_), 
+			nrGenerators_(other.nrGenerators_), nontrivialOps_(other.nontrivialOps_) {};
+		~Symmetry() {}
+		int groupInteger() const { return groupInteger_; }
+		std::string groupName() const { return groupName_; }
+		int nrGenerators() const { return nrGenerators_; }
+		int nontrivialOps() const { return nontrivialOps_; }
 		static int parity(int i);
 };
+
+/*!
+ * int-to-point_group mapping
+ */
+enum pGroup { C1, Cs, C2, Ci, C2h, D2, C2v, D2h };
+
+Symmetry buildGroup(int _pGroup);
 
 #endif // SYMMETRY_HPP

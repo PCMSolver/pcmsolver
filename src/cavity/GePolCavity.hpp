@@ -28,7 +28,7 @@ class GePolCavity : public Cavity
 	public:
 		GePolCavity(){}
                 GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, double _minRadius = 100.0, int _pGroup = C1) :  
-                    Cavity(_spheres), averageArea(_area), probeRadius(_probeRadius), minimalRadius(_minRadius), pointGroup(_pGroup) 
+                    Cavity(_spheres, _pGroup), averageArea(_area), probeRadius(_probeRadius), minimalRadius(_minRadius)
                        {
                     	   build(10000, 200, 25000);
                        }
@@ -41,7 +41,6 @@ class GePolCavity : public Cavity
                 double averageArea;  
                 double probeRadius;
 		double minimalRadius;
-		int pointGroup;
                 int addedSpheres;
                 virtual std::ostream & printCavity(std::ostream & os);
                 virtual void makeCavity()
@@ -60,7 +59,7 @@ namespace
 {
 	Cavity* createGePolCavity(const cavityData & _data)
 	{
-		return new GePolCavity(_data.spheres, _data.area, _data.probeRadius, _data.minimalRadius);
+		return new GePolCavity(_data.spheres, _data.area, _data.probeRadius, _data.minimalRadius, _data.symmetry);
 	}
 	const std::string GEPOL("GePol");
 	const bool registeredGePol = CavityFactory::TheCavityFactory().registerCavity(GEPOL, createGePolCavity);

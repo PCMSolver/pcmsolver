@@ -6,12 +6,6 @@ set(utils_SOURCES
     	SurfaceFunction.cpp
 	Symmetry.cpp
 	cnpy.cpp
-	pointgrp.cpp
-	symop.cpp
-	chartab.cpp
-	irrep.cpp
-	maketab.cpp
-	rep.cpp
 )
 
 if(ENABLE_TESTS)
@@ -40,5 +34,4 @@ install(FILES GreenData.hpp DESTINATION include)
 install(FILES SolverData.hpp DESTINATION include)
 install(FILES Symmetry.hpp DESTINATION include)
 install(FILES cnpy.hpp DESTINATION include)
-install(FILES pointgrp.hpp DESTINATION include)
 install(FILES MathUtils.hpp DESTINATION include)

@@ -26,6 +26,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "Sphere.hpp"
+#include "Symmetry.hpp"
 
 extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
                              double * xtscor, double * ytscor, double * ztscor, double * ar, 
@@ -88,12 +89,14 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 	double * rin = sphereRadius_.data();
 
         addedSpheres = 0;
+	// Integer representing the point group
+	int pg = pointGroup_.groupInteger();
 
         // Go PEDRA, Go!	
 	generatecavity_cpp(&maxts, &maxsph, &maxvert,
                            xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, 
 		           &nts, &ntsirr, &nSpheres, &addedSpheres, 
-			   xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius, &pointGroup);
+			   xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius, &pg);
 	
 	// The "intensive" part of updating the spheres related class data members will be of course
 	// executed iff addedSpheres != 0
@@ -207,7 +210,7 @@ std::ostream & GePolCavity::printCavity(std::ostream & os)
  	}
 	os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
         os << "Number of finite elements = " << nElements << std::endl;
-	if (pointGroup != 0)
+	if (pointGroup_.groupInteger() != 0)
 	{
 		os << "Number of irreducible finite elements = " << nIrrElements;
 	}

@@ -32,6 +32,8 @@
  *  @var cavityData::filename
  *  Name of the file containing the cavity
  *  specification for a restart.
+ *  @var cavityData::symmetry
+ *  Integer specifying the point group.
  */
 
 struct cavityData
@@ -45,12 +47,14 @@ struct cavityData
 	int patchLevel;
 	double coarsity;
 	std::string filename;
+	int symmetry;
 	cavityData(const std::vector<Sphere> & _spheres, double _area, double _probeRadius = 0.0, 
 		   double _minDistance = 0.1, int _derOrder = 4, double _minRadius = 100.0, 
-		   int _patchLevel = 2, double _coarsity = 0.5, const std::string & _fname = " ") :
+		   int _patchLevel = 2, double _coarsity = 0.5, const std::string & _fname = " ",
+		   int _symmetry = 0) :
 	spheres(_spheres), area(_area), probeRadius(_probeRadius), 
 	minDistance(_minDistance), derOrder(_derOrder), minimalRadius(_minRadius), 
-	patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname) {}
+	patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname), symmetry(_symmetry) {}
 };
 
 #endif // CAVITYDATA_HPP

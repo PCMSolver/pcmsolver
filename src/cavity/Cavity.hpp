@@ -22,6 +22,7 @@
 #endif
 
 #include "Sphere.hpp"
+#include "Symmetry.hpp"
 
 /*!
  *	\file Cavity.hpp
@@ -49,6 +50,7 @@ class Cavity
 	 	Eigen::VectorXd elementRadius;
 	        Eigen::Matrix3Xd sphereCenter;
 	        Eigen::VectorXd sphereRadius;
+		Symmetry pointGroup_;
 	private:
 		/*! \brief Creates the cavity and discretizes its surface. 
 		 */
@@ -71,6 +73,17 @@ class Cavity
 					sphereRadius(i) = spheres[i].getSphereRadius();
 				}
 			}
+		Cavity(const std::vector<Sphere> & _spheres, int pg) : spheres(_spheres), built(false), pointGroup_(buildGroup(pg))
+			{
+                		nSpheres = spheres.size();
+				sphereCenter.resize(Eigen::NoChange, nSpheres);
+				sphereRadius.resize(nSpheres);
+				for (int i = 0; i < nSpheres; ++i) 
+				{
+					sphereCenter.col(i) = spheres[i].getSphereCenter();
+					sphereRadius(i) = spheres[i].getSphereRadius();
+				}
+			}
                 virtual ~Cavity() {}
                 Eigen::Matrix3Xd & getElementCenter() { return elementCenter; }
                 Eigen::Vector3d getElementCenter(int i) { return elementCenter.col(i); }
@@ -80,6 +93,7 @@ class Cavity
                 double getElementArea(int i) { return elementArea(i); }
                 int size() { return nElements; }
 		int irreducible_size() { return nIrrElements; }
+		virtual Symmetry pointGroup() const { return pointGroup_; } 
      	 	std::vector<Sphere> & getSpheres() { return spheres; }
 	  	int getNSpheres() { return nSpheres; }
      	 	void setNSpheres(int n) { nSpheres = n; }

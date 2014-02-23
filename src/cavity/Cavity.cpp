@@ -63,7 +63,9 @@ inline void Cavity::saveCavity(const std::string & fname)
 }
 
 inline void Cavity::loadCavity(const std::string & fname)
-{	
+{
+	// If the cavity has been loaded from file, the point group is C1
+        pointGroup_ = buildGroup(0);
 	// Load the .npz binary file and then traverse it to get the data needed to rebuild the cavity.
 	cnpy::npz_t loaded_cavity = cnpy::npz_load(fname);
 	// 0. Get the number of elements

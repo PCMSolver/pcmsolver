@@ -76,7 +76,7 @@ Symmetry buildGroup(int _pGroup)
 	return group;
 }
 
-int Symmetry::parity(int i)
+double Symmetry::parity(int i)
 {
 	static Eigen::VectorXd parity(8);
 	parity << 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0;

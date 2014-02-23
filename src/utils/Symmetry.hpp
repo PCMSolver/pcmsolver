@@ -87,7 +87,7 @@ class Symmetry
 		std::string groupName() const { return groupName_; }
 		int nrGenerators() const { return nrGenerators_; }
 		int nontrivialOps() const { return nontrivialOps_; }
-		static int parity(int i);
+		static double parity(int i);
 };
 
 /*!

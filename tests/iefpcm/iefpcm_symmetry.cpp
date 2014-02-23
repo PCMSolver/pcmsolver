@@ -96,18 +96,49 @@ TEST(IEFSolver, pointChargeGePolCs)
 
 	double charge = 1.0;
 	int size = cavity.size();
+	int irr_size = cavity.irreducible_size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-	for (int i = 0; i < size; ++i)
+	// Calculate it only on the irreducible portion of the cavity
+	// then replicate it according to the point group
+	for (int i = 0; i < irr_size; ++i)
 	{
 		Eigen::Vector3d center = cavity.getElementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
+	int nontrivialOps = cavity.pointGroup().nontrivialOps();
+	int nr_irrep = nontrivialOps + 1;
+	for (int i = 1; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int its = 0; its < irr_size; ++its)
+		{
+			int jts = ioff + its;
+			fake_mep(jts) = fake_mep(its);
+		}
+	}
+	Eigen::VectorXd scratch = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int j = 0; j < nr_irrep; ++j) 
+		{
+			int joff = j * irr_size;
+			double uij = Symmetry::parity(i&j) / nr_irrep;
+			for (int k = 0; k < irr_size; ++k)
+			{
+				int its = ioff + k;
+				int jts = joff + k;
+				scratch(its) += uij * fake_mep(jts);
+			}
+		}
+	}
+	fake_mep = scratch;
 	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
-	double totalFakeASC = fake_asc.sum();
+	double totalFakeASC = fake_asc.sum() * nr_irrep;
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
@@ -134,18 +165,49 @@ TEST(IEFSolver, pointChargeGePolC2)
 
 	double charge = 1.0;
 	int size = cavity.size();
+	int irr_size = cavity.irreducible_size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-	for (int i = 0; i < size; ++i)
+	// Calculate it only on the irreducible portion of the cavity
+	// then replicate it according to the point group
+	for (int i = 0; i < irr_size; ++i)
 	{
 		Eigen::Vector3d center = cavity.getElementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
+	int nontrivialOps = cavity.pointGroup().nontrivialOps();
+	int nr_irrep = nontrivialOps + 1;
+	for (int i = 1; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int its = 0; its < irr_size; ++its)
+		{
+			int jts = ioff + its;
+			fake_mep(jts) = fake_mep(its);
+		}
+	}
+	Eigen::VectorXd scratch = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int j = 0; j < nr_irrep; ++j) 
+		{
+			int joff = j * irr_size;
+			double uij = Symmetry::parity(i&j) / nr_irrep;
+			for (int k = 0; k < irr_size; ++k)
+			{
+				int its = ioff + k;
+				int jts = joff + k;
+				scratch(its) += uij * fake_mep(jts);
+			}
+		}
+	}
+	fake_mep = scratch;
 	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
-	double totalFakeASC = fake_asc.sum();
+	double totalFakeASC = fake_asc.sum() * nr_irrep;
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
@@ -172,18 +234,49 @@ TEST(IEFSolver, pointChargeGePolCi)
 
 	double charge = 1.0;
 	int size = cavity.size();
+	int irr_size = cavity.irreducible_size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-	for (int i = 0; i < size; ++i)
+	// Calculate it only on the irreducible portion of the cavity
+	// then replicate it according to the point group
+	for (int i = 0; i < irr_size; ++i)
 	{
 		Eigen::Vector3d center = cavity.getElementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
+	int nontrivialOps = cavity.pointGroup().nontrivialOps();
+	int nr_irrep = nontrivialOps + 1;
+	for (int i = 1; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int its = 0; its < irr_size; ++its)
+		{
+			int jts = ioff + its;
+			fake_mep(jts) = fake_mep(its);
+		}
+	}
+	Eigen::VectorXd scratch = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int j = 0; j < nr_irrep; ++j) 
+		{
+			int joff = j * irr_size;
+			double uij = Symmetry::parity(i&j) / nr_irrep;
+			for (int k = 0; k < irr_size; ++k)
+			{
+				int its = ioff + k;
+				int jts = joff + k;
+				scratch(its) += uij * fake_mep(jts);
+			}
+		}
+	}
+	fake_mep = scratch;
 	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
-	double totalFakeASC = fake_asc.sum();
+	double totalFakeASC = fake_asc.sum() * nr_irrep;
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
@@ -210,18 +303,49 @@ TEST(IEFSolver, pointChargeGePolC2h)
 
 	double charge = 1.0;
 	int size = cavity.size();
+	int irr_size = cavity.irreducible_size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-	for (int i = 0; i < size; ++i)
+	// Calculate it only on the irreducible portion of the cavity
+	// then replicate it according to the point group
+	for (int i = 0; i < irr_size; ++i)
 	{
 		Eigen::Vector3d center = cavity.getElementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
+	int nontrivialOps = cavity.pointGroup().nontrivialOps();
+	int nr_irrep = nontrivialOps + 1;
+	for (int i = 1; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int its = 0; its < irr_size; ++its)
+		{
+			int jts = ioff + its;
+			fake_mep(jts) = fake_mep(its);
+		}
+	}
+	Eigen::VectorXd scratch = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int j = 0; j < nr_irrep; ++j) 
+		{
+			int joff = j * irr_size;
+			double uij = Symmetry::parity(i&j) / nr_irrep;
+			for (int k = 0; k < irr_size; ++k)
+			{
+				int its = ioff + k;
+				int jts = joff + k;
+				scratch(its) += uij * fake_mep(jts);
+			}
+		}
+	}
+	fake_mep = scratch;
 	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
-	double totalFakeASC = fake_asc.sum();
+	double totalFakeASC = fake_asc.sum() * nr_irrep;
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
@@ -248,18 +372,49 @@ TEST(IEFSolver, pointChargeGePolD2)
 
 	double charge = 1.0;
 	int size = cavity.size();
+	int irr_size = cavity.irreducible_size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-	for (int i = 0; i < size; ++i)
+	// Calculate it only on the irreducible portion of the cavity
+	// then replicate it according to the point group
+	for (int i = 0; i < irr_size; ++i)
 	{
 		Eigen::Vector3d center = cavity.getElementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
+	int nontrivialOps = cavity.pointGroup().nontrivialOps();
+	int nr_irrep = nontrivialOps + 1;
+	for (int i = 1; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int its = 0; its < irr_size; ++its)
+		{
+			int jts = ioff + its;
+			fake_mep(jts) = fake_mep(its);
+		}
+	}
+	Eigen::VectorXd scratch = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int j = 0; j < nr_irrep; ++j) 
+		{
+			int joff = j * irr_size;
+			double uij = Symmetry::parity(i&j) / nr_irrep;
+			for (int k = 0; k < irr_size; ++k)
+			{
+				int its = ioff + k;
+				int jts = joff + k;
+				scratch(its) += uij * fake_mep(jts);
+			}
+		}
+	}
+	fake_mep = scratch;
 	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
-	double totalFakeASC = fake_asc.sum();
+	double totalFakeASC = fake_asc.sum() * nr_irrep;
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
@@ -286,18 +441,49 @@ TEST(IEFSolver, pointChargeGePolC2v)
 
 	double charge = 1.0;
 	int size = cavity.size();
+	int irr_size = cavity.irreducible_size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-	for (int i = 0; i < size; ++i)
+	// Calculate it only on the irreducible portion of the cavity
+	// then replicate it according to the point group
+	for (int i = 0; i < irr_size; ++i)
 	{
 		Eigen::Vector3d center = cavity.getElementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
+	int nontrivialOps = cavity.pointGroup().nontrivialOps();
+	int nr_irrep = nontrivialOps + 1;
+	for (int i = 1; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int its = 0; its < irr_size; ++its)
+		{
+			int jts = ioff + its;
+			fake_mep(jts) = fake_mep(its);
+		}
+	}
+	Eigen::VectorXd scratch = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int j = 0; j < nr_irrep; ++j) 
+		{
+			int joff = j * irr_size;
+			double uij = Symmetry::parity(i&j) / nr_irrep;
+			for (int k = 0; k < irr_size; ++k)
+			{
+				int its = ioff + k;
+				int jts = joff + k;
+				scratch(its) += uij * fake_mep(jts);
+			}
+		}
+	}
+	fake_mep = scratch;
 	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
-	double totalFakeASC = fake_asc.sum();
+	double totalFakeASC = fake_asc.sum() * nr_irrep;
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
@@ -306,7 +492,7 @@ TEST(IEFSolver, pointChargeGePolD2h)
 {
 	// Set up cavity
 	Eigen::Vector3d N(0.0, 0.0, 0.0); 		
-	std::vector<Sphere> spheres;      		
+	std::vector<Sphere> spheres;
 	Sphere sph1(N, 1.0);      		
 	spheres.push_back(sph1);          		
 	double area = 0.4;
@@ -324,18 +510,49 @@ TEST(IEFSolver, pointChargeGePolD2h)
 
 	double charge = 1.0;
 	int size = cavity.size();
+	int irr_size = cavity.irreducible_size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-	for (int i = 0; i < size; ++i)
+	// Calculate it only on the irreducible portion of the cavity
+	// then replicate it according to the point group
+	for (int i = 0; i < irr_size; ++i)
 	{
 		Eigen::Vector3d center = cavity.getElementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
+	int nontrivialOps = cavity.pointGroup().nontrivialOps();
+	int nr_irrep = nontrivialOps + 1;
+	for (int i = 1; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int its = 0; its < irr_size; ++its)
+		{
+			int jts = ioff + its;
+			fake_mep(jts) = fake_mep(its);
+		}
+	}
+	Eigen::VectorXd scratch = Eigen::VectorXd::Zero(size);
+	for (int i = 0; i < nr_irrep; ++i)
+	{
+		int ioff = i * irr_size;
+		for (int j = 0; j < nr_irrep; ++j) 
+		{
+			int joff = j * irr_size;
+			double uij = Symmetry::parity(i&j) / nr_irrep;
+			for (int k = 0; k < irr_size; ++k)
+			{
+				int its = ioff + k;
+				int jts = joff + k;
+				scratch(its) += uij * fake_mep(jts);
+			}
+		}
+	}
+	fake_mep = scratch;
 	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
-	double totalFakeASC = fake_asc.sum();
+	double totalFakeASC = fake_asc.sum() * nr_irrep;
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }

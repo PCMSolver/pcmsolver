@@ -1,4 +1,5 @@
 add_subdirectory(surface_function)
+add_subdirectory(block_diagonal)
 add_subdirectory(gepol)
 add_subdirectory(iefpcm)
 add_subdirectory(cpcm)

@@ -1,11 +1,12 @@
 set(utils_SOURCES
-	Input.cpp
-	Solvent.cpp
 	Atom.cpp
+	cnpy.cpp
+	Input.cpp
+	MathUtils.cpp
+	Solvent.cpp
 	Sphere.cpp	
     	SurfaceFunction.cpp
 	Symmetry.cpp
-	cnpy.cpp
 )
 
 if(ENABLE_TESTS)
@@ -22,16 +23,16 @@ foreach(source ${utils_SOURCES})
 endforeach()
 set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
 
-install(FILES PhysicalConstants.hpp DESTINATION include)
-install(FILES Input.hpp DESTINATION include)
-install(FILES Solvent.hpp DESTINATION include)
 install(FILES Atom.hpp DESTINATION include)
+install(FILES CavityData.hpp DESTINATION include)
+install(FILES Citation.hpp DESTINATION include)
+install(FILES cnpy.hpp DESTINATION include)
+install(FILES GreenData.hpp DESTINATION include)
+install(FILES Input.hpp DESTINATION include)
+install(FILES MathUtils.hpp DESTINATION include)
+install(FILES PhysicalConstants.hpp DESTINATION include)
+install(FILES Solvent.hpp DESTINATION include)
+install(FILES SolverData.hpp DESTINATION include)
 install(FILES Sphere.hpp DESTINATION include)
 install(FILES SurfaceFunction.hpp DESTINATION include)
-install(FILES Citation.hpp DESTINATION include)
-install(FILES CavityData.hpp DESTINATION include)
-install(FILES GreenData.hpp DESTINATION include)
-install(FILES SolverData.hpp DESTINATION include)
 install(FILES Symmetry.hpp DESTINATION include)
-install(FILES cnpy.hpp DESTINATION include)
-install(FILES MathUtils.hpp DESTINATION include)

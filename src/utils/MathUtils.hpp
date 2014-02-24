@@ -1,6 +1,9 @@
 #ifndef MATHUTILS_HPP
 #define MATHUTILS_HPP
 
+#include <iosfwd>
+#include <vector>
+
 #include "Config.hpp"
 
 // Disable obnoxious warnings from Eigen headers
@@ -43,6 +46,57 @@ inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(size_t 
 	Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > mapped_data(data, _rows, _columns);
  	_outData = mapped_data;
 	return _outData;
-}
+};
+
+/*! \brief Packs a block-diagonal matrix.
+ *  
+ * 
+ *  We currently assume that all the blocks are square and have the same dimensionality.
+ *  This data type is to be used in conjuction with symmetry handling in the solver.
+ */
+
+template <typename T>
+class BlockDiagonalMatrix
+{
+	private:
+		typedef std::vector<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > blockVector;
+	private:
+		blockVector blockedMatrix_;
+		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> fullMatrix_;
+		int nrBlocks_;
+		int dimBlock_;
+		std::ostream & printObject(std::ostream & os)
+		{
+                	os << "Matrix has " << nrBlocks_ << " square blocks of dimension " << dimBlock_ << std::endl;
+                	for (int i = 0; i < nrBlocks_; ++i)
+                	{
+                		os << "Block number " << i << std::endl;
+                		os << blockedMatrix_[i] << std::endl;
+                	}
+                	return os;
+                }
+	public:
+		BlockDiagonalMatrix() {}
+		/*!
+		 *  Packs a block diagonal matrix given the full matrix.
+		 */
+		BlockDiagonalMatrix(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> & matrix, int nrBlocks, int dimBlock)
+			: fullMatrix_(matrix), nrBlocks_(nrBlocks), dimBlock_(dimBlock)
+		{	
+			// The dimension of the full matrix is (nrBlocks * dimBlock)
+			// The full matrix is assumed to be square, with square blocks on the diagonal
+			// all with the same dimension.
+			int j = 0;
+			for (int i = 0; i < nrBlocks_; ++i)
+			{
+				blockedMatrix_.push_back(fullMatrix_.block(j, j, dimBlock_, dimBlock_));
+				j += dimBlock_;
+			}
+		}
+         	friend std::ostream & operator<<(std::ostream & os, BlockDiagonalMatrix<T> & bd)
+	 	{
+			return bd.printObject(os);
+         	}
+};
 
 #endif // MATHUTILS_HPP

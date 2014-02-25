@@ -127,7 +127,7 @@ inline SurfaceFunction operator-(SurfaceFunction left, const SurfaceFunction & r
 }
 
 /*!
- * \fn inline SurfaceFunction operator-(SurfaceFunction left, const SurfaceFunction & right)
+ * \fn inline SurfaceFunction operator*(double scaling, const SurfaceFunction & right)
  * \brief Multiplication operator: uniform scaling of SurfaceFunction version
  * \param scaling the scaling factor
  * \param object the surface function to be scaled

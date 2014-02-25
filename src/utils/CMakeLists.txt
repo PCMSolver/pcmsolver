@@ -2,7 +2,6 @@ set(utils_SOURCES
 	Atom.cpp
 	cnpy.cpp
 	Input.cpp
-	MathUtils.cpp
 	Solvent.cpp
 	Sphere.cpp	
     	SurfaceFunction.cpp

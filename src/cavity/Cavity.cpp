@@ -16,15 +16,16 @@
 #pragma GCC diagnostic ignored "-Weffc++" 
 #pragma GCC diagnostic ignored "-Wextra"
 #include <Eigen/Dense>
+#include "cnpy.hpp"
 #pragma GCC diagnostic pop
 #elif (__INTEL_COMPILER)
 #pragma warning push
 #pragma warning disable "-Wall"
 #include <Eigen/Dense>
+#include "cnpy.hpp"
 #pragma warning pop
 #endif
 
-#include "cnpy.hpp"
 #include "MathUtils.hpp"
 
 inline void Cavity::saveCavity(const std::string & fname)

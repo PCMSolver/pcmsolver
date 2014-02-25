@@ -1,7 +1,9 @@
 #ifndef MATHUTILS_HPP
 #define MATHUTILS_HPP
 
-#include <iosfwd>
+#include <iostream>
+//#include <iosfwd>
+#include <stdexcept>
 #include <vector>
 
 #include "Config.hpp"
@@ -55,16 +57,17 @@ inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(size_t 
  *  This data type is to be used in conjuction with symmetry handling in the solver.
  */
 
-template <typename T>
+template <typename T, int nrBlocks_, int dimBlock_>
 class BlockDiagonalMatrix
 {
 	private:
-		typedef std::vector<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > blockVector;
+		typedef Eigen::Matrix<T, dimBlock_, dimBlock_, Eigen::ColMajor> EigenBlock;
+		typedef Eigen::Matrix<T, (nrBlocks_*dimBlock_), (nrBlocks_*dimBlock_), Eigen::ColMajor> EigenFull;
+		typedef std::vector<EigenBlock> blockVector;
 	private:
 		blockVector blockedMatrix_;
-		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> fullMatrix_;
-		int nrBlocks_;
-		int dimBlock_;
+		EigenFull fullMatrix_;
+		int fullDim_;
 		std::ostream & printObject(std::ostream & os)
 		{
                 	os << "Matrix has " << nrBlocks_ << " square blocks of dimension " << dimBlock_ << std::endl;
@@ -78,10 +81,9 @@ class BlockDiagonalMatrix
 	public:
 		BlockDiagonalMatrix() {}
 		/*!
-		 *  Packs a block diagonal matrix given the full matrix.
+		 *  Packs a square block diagonal matrix given the full matrix.
 		 */
-		BlockDiagonalMatrix(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> & matrix, int nrBlocks, int dimBlock)
-			: fullMatrix_(matrix), nrBlocks_(nrBlocks), dimBlock_(dimBlock)
+		BlockDiagonalMatrix(const EigenFull & matrix) : fullMatrix_(matrix), fullDim_(nrBlocks_*dimBlock_)
 		{	
 			// The dimension of the full matrix is (nrBlocks * dimBlock)
 			// The full matrix is assumed to be square, with square blocks on the diagonal
@@ -93,10 +95,88 @@ class BlockDiagonalMatrix
 				j += dimBlock_;
 			}
 		}
-         	friend std::ostream & operator<<(std::ostream & os, BlockDiagonalMatrix<T> & bd)
+		/// Copy constructor
+		BlockDiagonalMatrix(const BlockDiagonalMatrix & other) : blockedMatrix_(other.blockedMatrix_), fullMatrix_(other.fullMatrix_), fullDim_(other.fullDim_) {}
+		friend inline void swap(BlockDiagonalMatrix & left, BlockDiagonalMatrix & right);
+		inline void swap(BlockDiagonalMatrix & other);
+		/// Addition-assignment operator
+		BlockDiagonalMatrix & operator+=(const BlockDiagonalMatrix & other);
+		/// Subtraction-assignment operator
+		BlockDiagonalMatrix & operator-=(const BlockDiagonalMatrix & other);
+		~BlockDiagonalMatrix() {}
+         	friend std::ostream & operator<<(std::ostream & os, BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & bd)
 	 	{
 			return bd.printObject(os);
          	}
+
+		int nrBlocks() const { return nrBlocks_; }
+		int dimBlock() const { return dimBlock_; }
+		int fullDim() const { return fullDim_; }
+
+		const EigenFull & fullMatrix() const { return fullMatrix_; }
+		void fullMatrix(const EigenFull & matrix) const { matrix = fullMatrix_; }
+
+		const EigenBlock & block(int i) const { return blockedMatrix_[i]; }
+		void block(const EigenBlock & matrix, int i) const { matrix = blockedMatrix_[i]; }
+};
+
+template <typename T, int nrBlocks_, int dimBlock_>
+BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & BlockDiagonalMatrix<T, nrBlocks_, dimBlock_>::operator+=(const BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & other)
+{
+	for (int i = 0; i < nrBlocks_; ++i)
+	{
+		blockedMatrix_[i] += other.blockedMatrix_[i];
+	}
+	return *this;
+}
+
+template <typename T, int nrBlocks_, int dimBlock_>
+BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & BlockDiagonalMatrix<T, nrBlocks_, dimBlock_>::operator-=(const BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & other)
+{
+	for (int i = 0; i < nrBlocks_; ++i)
+	{
+		blockedMatrix_[i] -= other.blockedMatrix_[i];
+	}
+	return *this;
+}
+
+/*!
+ * \fn inline BlockDiagonalMatrix operator+(BlockDiagonalMatrix left, const BlockDiagonalMatrix & right)
+ * \brief Addition operator
+ * \param left the left hand side of the addition
+ * \param right the right hand side of the addition
+ */
+template <typename T, int nrBlocks_, int dimBlock_>
+inline BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> operator+(BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> left, const BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & right)
+{
+	left += right;
+	return left;
+};
+
+/*!
+ * \fn inline BlockDiagonalMatrix operator-(BlockDiagonalMatrix left, const BlockDiagonalMatrix & right)
+ * \brief Subtraction operator
+ * \param left the left hand side of the subtraction
+ * \param right the right hand side of the subtraction
+ */
+template <typename T, int nrBlocks_, int dimBlock_>
+inline BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> operator-(BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> left, const BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & right)
+{
+	left -= right;
+	return left;
+};
+
+/*!
+ * \fn inline BlockDiagonalMatrix operator*(BlockDiagonalMatrix left, const BlockDiagonalMatrix & right)
+ * \brief Multiplication operator: uniform scaling of BlockDiagonalMatrix version
+ * \param scaling the scaling factor
+ * \param object the surface function to be scaled
+ */
+template <typename T, int nrBlocks_, int dimBlock_>
+inline BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> operator*(double scaling, BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & object)
+{
+	object *= scaling;
+	return object;
 };
 
 #endif // MATHUTILS_HPP

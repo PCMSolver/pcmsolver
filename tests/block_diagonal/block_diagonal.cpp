@@ -84,9 +84,9 @@ TEST_F(BlockDiagonalMatrixTest, addition)
 	{
 		for (int j = 0; j < nPoints; ++j)
 		{
-			EXPECT_EQ(result1(i, j), tmp1(i, j));
-			EXPECT_EQ(result2(i, j), tmp2(i, j));
-			EXPECT_EQ(result3(i, j), tmp3(i, j));
+			EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
+			EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
+			EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
 		}
 	}
 }
@@ -113,34 +113,120 @@ TEST_F(BlockDiagonalMatrixTest, subtraction)
 	{
 		for (int j = 0; j < nPoints; ++j)
 		{
-			EXPECT_EQ(result1(i, j), tmp1(i, j));
-			EXPECT_EQ(result2(i, j), tmp2(i, j));
-			EXPECT_EQ(result3(i, j), tmp3(i, j));
+			EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
+			EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
+			EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
 		}
 	}
 }
-/*
-TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar)
+
+TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar1)
 {
-	BlockDiagonalMatrix scaled1 = 2.5 * func1;
-	func2 *= 0.5;
-	EXPECT_EQ("2.5*TestFunction1", scaled1.getName());
-	EXPECT_EQ("0.5*TestFunction2", func2.getName());
-	EXPECT_EQ(nPoints, scaled1.getNPoints());
-	EXPECT_EQ(nPoints, func2.getNPoints());
-	Eigen::VectorXd result1(nPoints), result2(nPoints);
-    result1 = 2.5 * values1;
-    result2 = 0.5 * values2;
+	const int nBlocks = 3;
+        const int nPoints = 15;
+	BlockDiagonalMatrix<double, nBlocks, nPoints> scaled1 = 2.5 * bd1;
+	EXPECT_EQ(fullDim, scaled1.fullDim());
+	Eigen::MatrixXd result1(nPoints, nPoints);
+	result1 = 2.5 * block1;
+	Eigen::MatrixXd result2(nPoints, nPoints);
+	result2 = 2.5 * block2;
+	Eigen::MatrixXd result3(nPoints, nPoints);
+	result3 = 2.5 * block3;
+	Eigen::MatrixXd tmp1(nPoints, nPoints);
+	tmp1 = scaled1.block(0);
+	Eigen::MatrixXd tmp2(nPoints, nPoints);
+	tmp2 = scaled1.block(1);
+	Eigen::MatrixXd tmp3(nPoints, nPoints);
+	tmp3 = scaled1.block(2);
 	for (int i = 0; i < nPoints; ++i)
 	{
-		EXPECT_EQ(result1(i), scaled1.getValue(i));
-		EXPECT_EQ(result2(i), func2.getValue(i));
+		for (int j = 0; j < nPoints; ++j)
+		{
+			EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
+			EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
+			EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+		}
 	}
 }
 
-TEST_F(BlockDiagonalMatrixTest, multiply)
+TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar2)
 {
-	double product = func1 * func2;
-	double expected_product = values1.dot(values2);
-	EXPECT_EQ(expected_product, product);
-}*/
+        int nPoints = 15;
+	bd2 *= 0.5;
+	EXPECT_EQ(fullDim, bd2.fullDim());
+	Eigen::MatrixXd result1(nPoints, nPoints);
+	result1 = 0.5 * block3;
+	Eigen::MatrixXd result2(nPoints, nPoints);
+	result2 = 0.5 * block2;
+	Eigen::MatrixXd result3(nPoints, nPoints);
+	result3 = 0.5 * block1;
+	Eigen::MatrixXd tmp1(nPoints, nPoints);
+	tmp1 = bd2.block(0);
+	Eigen::MatrixXd tmp2(nPoints, nPoints);
+	tmp2 = bd2.block(1);
+	Eigen::MatrixXd tmp3(nPoints, nPoints);
+	tmp3 = bd2.block(2);
+	for (int i = 0; i < nPoints; ++i)
+	{
+		for (int j = 0; j < nPoints; ++j)
+		{
+			EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
+			EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
+			EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+		}
+	}
+}
+
+TEST_F(BlockDiagonalMatrixTest, multiply1)
+{
+	const int nBlocks = 3;
+        const int nPoints = 15;
+	BlockDiagonalMatrix<double, nBlocks, nPoints> prod = bd1 * bd2;
+	Eigen::MatrixXd result1(nPoints, nPoints);
+	result1 = block1 * block3;
+	Eigen::MatrixXd result2(nPoints, nPoints);
+	result2 = block2 * block2;
+	Eigen::MatrixXd result3(nPoints, nPoints);
+	result3 = block3 * block1;
+	Eigen::MatrixXd tmp1(nPoints, nPoints);
+	tmp1 = prod.block(0);
+	Eigen::MatrixXd tmp2(nPoints, nPoints);
+	tmp2 = prod.block(1);
+	Eigen::MatrixXd tmp3(nPoints, nPoints);
+	tmp3 = prod.block(2);
+	for (int i = 0; i < nPoints; ++i)
+	{
+		for (int j = 0; j < nPoints; ++j)
+		{
+			EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
+			EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
+			EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+		}
+	}
+}
+
+TEST_F(BlockDiagonalMatrixTest, multiply2)
+{
+	bd1 *= bd2;
+	Eigen::MatrixXd result1(nPoints, nPoints);
+	result1 = block1 * block3;
+	Eigen::MatrixXd result2(nPoints, nPoints);
+	result2 = block2 * block2;
+	Eigen::MatrixXd result3(nPoints, nPoints);
+	result3 = block3 * block1;
+	Eigen::MatrixXd tmp1(nPoints, nPoints);
+	tmp1 = bd1.block(0);
+	Eigen::MatrixXd tmp2(nPoints, nPoints);
+	tmp2 = bd1.block(1);
+	Eigen::MatrixXd tmp3(nPoints, nPoints);
+	tmp3 = bd1.block(2);
+	for (int i = 0; i < nPoints; ++i)
+	{
+		for (int j = 0; j < nPoints; ++j)
+		{
+			EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
+			EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
+			EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+		}
+	}
+}

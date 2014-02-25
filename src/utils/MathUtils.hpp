@@ -103,6 +103,11 @@ class BlockDiagonalMatrix
 		BlockDiagonalMatrix & operator+=(const BlockDiagonalMatrix & other);
 		/// Subtraction-assignment operator
 		BlockDiagonalMatrix & operator-=(const BlockDiagonalMatrix & other);
+		/// Multiplication-assignment operator: BlockDiagonalMatrix * BlockDiagonalMatrix case
+		BlockDiagonalMatrix & operator*=(const BlockDiagonalMatrix & other);
+		/// Multiplication-assignment operator: uniform scaling case
+		BlockDiagonalMatrix & operator*=(double scaling);
+
 		~BlockDiagonalMatrix() {}
          	friend std::ostream & operator<<(std::ostream & os, BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & bd)
 	 	{
@@ -140,6 +145,26 @@ BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & BlockDiagonalMatrix<T, nrBlocks_,
 	return *this;
 }
 
+template <typename T, int nrBlocks_, int dimBlock_>
+BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & BlockDiagonalMatrix<T, nrBlocks_, dimBlock_>::operator*=(const BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & other)
+{
+	for (int i = 0; i < nrBlocks_; ++i)
+	{
+		blockedMatrix_[i] *= other.blockedMatrix_[i];
+	}
+	return *this;
+}
+
+template <typename T, int nrBlocks_, int dimBlock_>
+BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & BlockDiagonalMatrix<T, nrBlocks_, dimBlock_>::operator*=(double scaling)
+{
+	for (int i = 0; i < nrBlocks_; ++i)
+	{
+		blockedMatrix_[i] *= scaling;
+	}
+	return *this;
+}
+
 /*!
  * \fn inline BlockDiagonalMatrix operator+(BlockDiagonalMatrix left, const BlockDiagonalMatrix & right)
  * \brief Addition operator
@@ -151,7 +176,7 @@ inline BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> operator+(BlockDiagonalMatri
 {
 	left += right;
 	return left;
-};
+}
 
 /*!
  * \fn inline BlockDiagonalMatrix operator-(BlockDiagonalMatrix left, const BlockDiagonalMatrix & right)
@@ -164,19 +189,32 @@ inline BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> operator-(BlockDiagonalMatri
 {
 	left -= right;
 	return left;
-};
+}
 
 /*!
  * \fn inline BlockDiagonalMatrix operator*(BlockDiagonalMatrix left, const BlockDiagonalMatrix & right)
+ * \brief Multiplication operator: BlockDiagonalMatrix * BlockDiagonalMatrix version
+ * \param left the left hand side of the multiplication 
+ * \param right the right hand side of the multiplication
+ */
+template <typename T, int nrBlocks_, int dimBlock_>
+inline BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> operator*(BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> left, const BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & right)
+{
+	left *= right;
+	return left;
+}
+
+/*!
+ * \fn inline BlockDiagonalMatrix operator*(double scaling, const BlockDiagonalMatrix & right)
  * \brief Multiplication operator: uniform scaling of BlockDiagonalMatrix version
  * \param scaling the scaling factor
- * \param object the surface function to be scaled
+ * \param object the square block diagonal matrix to be scaled
  */
 template <typename T, int nrBlocks_, int dimBlock_>
 inline BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> operator*(double scaling, BlockDiagonalMatrix<T, nrBlocks_, dimBlock_> & object)
 {
 	object *= scaling;
 	return object;
-};
+}
 
 #endif // MATHUTILS_HPP

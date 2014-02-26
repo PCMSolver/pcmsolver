@@ -24,6 +24,7 @@
 
 #include "Cavity.hpp"
 #include "GreensFunction.hpp"
+#include "MathUtils.hpp"
 
 void CPCMSolver::buildSystemMatrix(const Cavity & cavity) 
 {
@@ -40,6 +41,7 @@ void CPCMSolver::buildSystemMatrix(const Cavity & cavity)
 
 void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
 {
+	bool symmetry = cav.pointGroup().groupInteger();
 	double epsilon = greenOutside_->getDielectricConstant();
     	int cavitySize = cav.size();
     	Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
@@ -48,25 +50,43 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
 	// This is the very core of PCMSolver
     	greenInside_->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
     	greenInside_->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
-    	
+	// Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
+	// If the group is C1 avoid symmetry blocking, we will just pack the PCMMatrix
+	// into "block diagonal" when all other manipulations are done.
+	if (symmetry)
+	{
+		symmetryBlocking(SI, cav);
+	}
+
+	Eigen::MatrixXd a = cav.getElementArea().asDiagonal();    
+	
 	double fact = (epsilon - 1.0)/(epsilon + correction_);
-    	PCMMatrix = SI;
-    	PCMMatrix = fact * PCMMatrix.inverse();
+	// Invert SI  using LU decomposition with full pivoting
+	// This is a rank-revealing LU decomposition, this allows us
+	// to test if SI is invertible before attempting to invert it.
+	Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
+	if (!(SI_LU.isInvertible()))
+		throw std::runtime_error("SI matrix is not invertible!");
+    	PCMMatrix = fact * SI_LU.inverse();
     	Eigen::MatrixXd PCMAdjoint(cavitySize, cavitySize); 
     	PCMAdjoint = PCMMatrix.adjoint().eval(); // See Eigen doc for the reason of this
     	PCMMatrix = 0.5 * (PCMMatrix + PCMAdjoint);
-	// PRINT TO FILE RELEVANT INFO ABOUT PCMMatrix
-    	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(PCMMatrix);
-    	if (solver.info() != Eigen::Success) 
-		abort();
+	// Diagonalize and print out some useful info.
+	// This should be done only when debugging...
+	/* 
     	std::ofstream matrixOut("PCM_matrix");
- 	matrixOut << "PCM matrix printout" << std::endl;
-    	matrixOut << "Number of Tesserae: " << cavitySize << std::endl;
+    	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(PCMMatrix);
+    	if (solver.info() != Eigen::Success)
+	       throw std::runtime_error("PCMMatrix diagonalization not successful");	
+    	matrixOut << "PCM matrix printout" << std::endl;
+ 	matrixOut << "Number of Tesserae: " << cavitySize << std::endl;
     	matrixOut << "Largest Eigenvalue: " << solver.eigenvalues()[cavitySize-1] << std::endl;
     	matrixOut << "Lowest Eigenvalue: " << solver.eigenvalues()[0] << std::endl;
     	matrixOut << "Average of Eigenvalues: " << (solver.eigenvalues().sum() / cavitySize)<< std::endl;
     	matrixOut << "List of Eigenvalues:\n" << solver.eigenvalues() << std::endl;
     	matrixOut.close();
+	*/
+	// Pack into a BlockDiagonalMatrix
     	builtIsotropicMatrix = true;
     	builtAnisotropicMatrix = false;
 }

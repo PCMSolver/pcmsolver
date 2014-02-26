@@ -22,7 +22,6 @@
 #pragma warning pop
 #endif
 
-#include "BlockDiagonalMatrix.hpp"
 #include "Cavity.hpp"
 #include "GreensFunction.hpp"
 #include "MathUtils.hpp"
@@ -106,7 +105,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 	// 3. Multiply T^-1 and R
     	PCMMatrix *= (2 * M_PI * aInv - DI);
 	// 4. Multiply by a
-    	PCMMatrix = PCMMatrix * a;
+    	PCMMatrix *= a;
 	// 5. Symmetrize K := (K + K+)/2
     	Eigen::MatrixXd PCMAdjoint(cavitySize, cavitySize); 
     	PCMAdjoint = PCMMatrix.adjoint().eval(); // See Eigen doc for the reason of this

@@ -86,22 +86,36 @@ class Cavity
 			}
                 virtual ~Cavity() {}
                 Eigen::Matrix3Xd & getElementCenter() { return elementCenter; }
+                const Eigen::Matrix3Xd & getElementCenter() const { return elementCenter; }
                 Eigen::Vector3d getElementCenter(int i) { return elementCenter.col(i); }
+                Eigen::Vector3d getElementCenter(int i) const { return elementCenter.col(i); }
                 Eigen::Matrix3Xd & getElementNormal() { return elementNormal; }
+                const Eigen::Matrix3Xd & getElementNormal() const { return elementNormal; }
                 Eigen::Vector3d getElementNormal(int i) { return elementNormal.col(i); }
+                Eigen::Vector3d getElementNormal(int i) const { return elementNormal.col(i); }
                 Eigen::VectorXd & getElementArea() { return elementArea; }
+                const Eigen::VectorXd & getElementArea() const { return elementArea; }
                 double getElementArea(int i) { return elementArea(i); }
+                double getElementArea(int i) const { return elementArea(i); }
                 int size() { return nElements; }
+                int size() const { return nElements; }
 		int irreducible_size() { return nIrrElements; }
+		int irreducible_size() const { return nIrrElements; }
 		virtual Symmetry pointGroup() const { return pointGroup_; } 
      	 	std::vector<Sphere> & getSpheres() { return spheres; }
+     	 	const std::vector<Sphere> & getSpheres() const { return spheres; }
 	  	int getNSpheres() { return nSpheres; }
-     	 	void setNSpheres(int n) { nSpheres = n; }
+	  	int getNSpheres() const { return nSpheres; }
                 Eigen::VectorXd & getSphereRadius() { return sphereRadius; }                
+                const Eigen::VectorXd & getSphereRadius() const { return sphereRadius; }                
                 Eigen::Matrix3Xd & getSphereCenter() { return sphereCenter; }
+                const Eigen::Matrix3Xd & getSphereCenter() const { return sphereCenter; }
                 Eigen::VectorXd & getElementRadius() { return elementRadius; }
+                const Eigen::VectorXd & getElementRadius() const { return elementRadius; }
      	        double getElementRadius(int i) { return elementRadius(i); }
+     	        double getElementRadius(int i) const { return elementRadius(i); }
      	        Eigen::Matrix3Xd & getElementSphereCenter() { return elementSphereCenter; }
+     	        const Eigen::Matrix3Xd & getElementSphereCenter() const { return elementSphereCenter; }
 		/*! \brief Save cavity specification to file.
 		 *
 		 *  The cavity specification contains:

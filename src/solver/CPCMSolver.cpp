@@ -25,9 +25,9 @@
 #include "Cavity.hpp"
 #include "GreensFunction.hpp"
 
-void CPCMSolver::buildSystemMatrix(Cavity & cavity) 
+void CPCMSolver::buildSystemMatrix(const Cavity & cavity) 
 {
-	if (greenInside->isUniform() && greenOutside->isUniform()) 
+	if (greenInside_->isUniform() && greenOutside_->isUniform()) 
 	{
 		buildIsotropicMatrix(cavity);
 	} 
@@ -38,18 +38,18 @@ void CPCMSolver::buildSystemMatrix(Cavity & cavity)
 }
 
 
-void CPCMSolver::buildIsotropicMatrix(Cavity & cav)
+void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
 {
-	double epsilon = greenOutside->getDielectricConstant();
+	double epsilon = greenOutside_->getDielectricConstant();
     	int cavitySize = cav.size();
     	Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 	Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     	
 	// This is the very core of PCMSolver
-    	greenInside->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
-    	greenInside->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
+    	greenInside_->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
+    	greenInside_->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
     	
-	double fact = (epsilon - 1.0)/(epsilon + correction);
+	double fact = (epsilon - 1.0)/(epsilon + correction_);
     	PCMMatrix = SI;
     	PCMMatrix = fact * PCMMatrix.inverse();
     	Eigen::MatrixXd PCMAdjoint(cavitySize, cavitySize); 
@@ -71,7 +71,7 @@ void CPCMSolver::buildIsotropicMatrix(Cavity & cav)
     	builtAnisotropicMatrix = false;
 }
 
-void CPCMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
+void CPCMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep) 
 {
 	if (builtIsotropicMatrix) 
 	{

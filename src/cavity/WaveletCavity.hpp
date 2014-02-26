@@ -54,10 +54,15 @@ class WaveletCavity : public Cavity
                 void readCavity(const std::string & filename);
                 void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
                 unsigned int getNPatches() { return nPatches; }
+                unsigned int getNPatches() const { return nPatches; }
                 unsigned int getNLevels() { return nLevels; }
+                unsigned int getNLevels() const { return nLevels; }
                 unsigned int getNPoints() { return nPoints; }
+                unsigned int getNPoints() const { return nPoints; }
                 Eigen::Vector3d getNodePoint(int i) { return nodePoint[i]; }
+                Eigen::Vector3d getNodePoint(int i) const { return nodePoint[i]; }
                 Eigen::Vector3i getNodeIndex(int i) { return nodeIndex[i]; }
+                Eigen::Vector3i getNodeIndex(int i) const { return nodeIndex[i]; }
                 friend std::ostream & operator<<(std::ostream & os, WaveletCavity & cavity)
 		{
 			return cavity.printCavity(os);

@@ -40,23 +40,19 @@ class CPCMSolver : public PCMSolver
 	private:
     		bool builtIsotropicMatrix;
     		bool builtAnisotropicMatrix;
-    		double correction;
+    		double correction_;
     		Eigen::MatrixXd PCMMatrix;
-//    		static const double factor = 1.0694;
-//    		static const double factor = 1.07;
-                void buildIsotropicMatrix(Cavity & cav);
+                void buildIsotropicMatrix(const Cavity & cavity);
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
 		CPCMSolver() {}
-                CPCMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, double correction_ = 0.0) 
-			: PCMSolver(gfInside_, gfOutside_), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction(correction_) {}                
-                //CPCMSolver(const Section & solver);
+                CPCMSolver(GreensFunction * gfInside, GreensFunction * gfOutside, double correction) 
+			: PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction_(correction) {}                
                 virtual ~CPCMSolver() {}
                 const Eigen::MatrixXd & getPCMMatrix() const { return PCMMatrix; }
-                virtual void buildSystemMatrix(Cavity & cavity);
-                //virtual VectorXd compCharge(const VectorXd & potential);
-                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-                void setCorrection(double correction_) { correction = correction_; }
+                virtual void buildSystemMatrix(const Cavity & cavity);
+                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep = 0);
+                void correction(double corr) { correction_ = corr; }
                 friend std::ostream & operator<<(std::ostream & os, CPCMSolver & solver)                      
 		{                                                                                         
                     return solver.printSolver(os);                                                           

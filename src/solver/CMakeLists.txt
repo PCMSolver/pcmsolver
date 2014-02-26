@@ -1,9 +1,9 @@
 set(solver_SOURCES
-	SolverFactory.cpp
+	CPCMSolver.cpp
   	IEFSolver.cpp
-	CPCMSolver.cpp 
   	PWCSolver.cpp
   	PWLSolver.cpp
+	SolverFactory.cpp
   	WEMSolver.cpp
 )
 

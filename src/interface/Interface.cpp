@@ -241,9 +241,9 @@ extern "C" void print_pcm()
 		out_stream << solvent << std::endl;
 	}
 	out_stream << ".... Inside " << std::endl;
-	out_stream << *(_solver->getGreenInside()) << std::endl;
+	out_stream << *(_solver->greenInside()) << std::endl;
 	out_stream << ".... Outside " << std::endl;
-	out_stream << *(_solver->getGreenOutside()) << std::endl;
+	out_stream << *(_solver->greenOutside()) << std::endl;
 	out_stream << std::endl;
  	// Extract C++-style string from stream	
 	std::string message = out_stream.str();

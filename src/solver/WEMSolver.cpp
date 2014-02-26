@@ -79,7 +79,7 @@ WEMSolver::~WEMSolver()
 	}
 }
 
-void WEMSolver::uploadCavity(WaveletCavity & cavity) {
+void WEMSolver::uploadCavity(const WaveletCavity & cavity) {
 	nPatches = cavity.getNPatches();
 	nLevels = cavity.getNLevels();
 	int n = (1<<nLevels);
@@ -98,8 +98,11 @@ void WEMSolver::uploadCavity(WaveletCavity & cavity) {
 	}	
 }
 
-void WEMSolver::buildSystemMatrix(Cavity & cavity) {
-    if (WaveletCavity *waveletCavity = dynamic_cast<WaveletCavity*> (&cavity)) {
+void WEMSolver::buildSystemMatrix(const Cavity & cavity) 
+{
+    // Down-cast const Cavity & to const WaveletCavity *
+    if (const WaveletCavity * waveletCavity = dynamic_cast<const WaveletCavity *>(&cavity)) 
+    {
 		this->uploadCavity(*waveletCavity);
 		this->initInterpolation();
 		this->constructWavelets();
@@ -116,7 +119,7 @@ void WEMSolver::constructSystemMatrix(){
 	}
 }
 
-void WEMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
+void WEMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep) 
 {
 	switch (integralEquation) 
 	{

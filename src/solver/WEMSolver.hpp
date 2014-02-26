@@ -55,15 +55,15 @@ class WEMSolver : public PCMSolver
                 virtual ~WEMSolver();
                 vector3 **** getT_(){return T_;}
                 int getQuadratureLevel(){return quadratureLevel_;}
-                virtual void buildSystemMatrix(Cavity & cavity);
-                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
+                virtual void buildSystemMatrix(const Cavity & cavity);
+                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep = 0);
                 friend std::ostream & operator<<(std::ostream & os, WEMSolver & solver)                      
 		{                                                                                         
                     return solver.printSolver(os);                                                           
                 }                                                                                         
 	protected:
 		virtual void constructSystemMatrix();
-                virtual void uploadCavity(WaveletCavity & cavity); // different interpolation       
+                virtual void uploadCavity(const WaveletCavity & cavity); // different interpolation       
                 virtual void constructSi() = 0;
                 virtual void constructSe() = 0;
                 virtual void solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) = 0;

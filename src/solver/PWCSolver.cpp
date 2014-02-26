@@ -144,7 +144,7 @@ void PWCSolver::constructSi()
 	switch (integralEquation) 
 	{
 		case FirstKind:
-			epsilon = greenOutside->getDielectricConstant();
+			epsilon = greenOutside_->getDielectricConstant();
 			factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
 			break;
 		case SecondKind:
@@ -156,7 +156,7 @@ void PWCSolver::constructSi()
 		default:
 			throw std::runtime_error("Unknown integral equation type.");
 	}
-	gf = greenInside;
+	gf = greenInside_;
 	apriori1_ = compression(&S_i_, waveletList, elementTree, nPatches, nLevels);
 	WEM(&S_i_, waveletList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer, factor);
 	aposteriori1_ = postproc(&S_i_, waveletList, elementTree, nPatches, nLevels);
@@ -164,7 +164,7 @@ void PWCSolver::constructSi()
 
 void PWCSolver::constructSe() 
 {
-	gf = greenOutside; // sets the global pointer to pass GF to C code
+	gf = greenOutside_; // sets the global pointer to pass GF to C code
 	apriori2_ = compression(&S_e_, waveletList, elementTree, nPatches, nLevels);
 	WEM(&S_e_, waveletList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer, -2*M_PI);
 	aposteriori2_ = postproc(&S_e_, waveletList, elementTree, nPatches, nLevels);
@@ -176,7 +176,7 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorX
 	double *u = (double*) calloc(nFunctions, sizeof(double));
     	double * pot = const_cast<double *>(potential.data());
     	double * chg = charge.data();
-	double epsilon = greenOutside->getDielectricConstant();
+	double epsilon = greenOutside_->getDielectricConstant();
 	WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, pot, quadratureLevel_);
 	int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, nPatches, nLevels);
 	tdwtKon(u, nLevels, nFunctions);

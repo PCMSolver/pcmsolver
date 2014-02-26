@@ -146,7 +146,7 @@ void PWLSolver::constructSi()
 	{
 		case FirstKind:
 		case SecondKind:
-			epsilon = greenOutside->getDielectricConstant();
+			epsilon = greenOutside_->getDielectricConstant();
 			factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
 			break;
 		case Full:
@@ -156,7 +156,7 @@ void PWLSolver::constructSi()
 			throw std::runtime_error("Unknown integral equation type.");
 		
 	}
-	gf = greenInside;
+	gf = greenInside_;
 	apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels, nNodes);
 	WEM_pwl(&S_i_, waveletList, nodeList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer, factor);
 	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
@@ -164,7 +164,7 @@ void PWLSolver::constructSi()
 
 void PWLSolver::constructSe() 
 {
-	gf = greenOutside; // sets the global pointer to pass GF to C code
+	gf = greenOutside_; // sets the global pointer to pass GF to C code
 	apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels, nNodes);
 	WEM_pwl(&S_e_, waveletList, nodeList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer, -2*M_PI);
 	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);

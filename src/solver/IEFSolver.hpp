@@ -26,21 +26,23 @@ class IEFSolver : public PCMSolver
 	private:
    	 	bool builtIsotropicMatrix;
     		bool builtAnisotropicMatrix;
-//	 	static const double factor = 1.0694;
-//    		static const double factor = 1.07;
 		Eigen::MatrixXd PCMMatrix;
-                void buildAnisotropicMatrix(Cavity & cav);
-                void buildIsotropicMatrix(Cavity & cav);
+		/*! \brief Builds PCM matrix for an anisotropic environment
+		 *  \param[in] cavity the cavity to be used. 
+		 */
+                void buildAnisotropicMatrix(const Cavity & cavity);
+		/*! \brief Builds PCM matrix for an isotropic environment
+		 *  \param[in] cavity the cavity to be used. 
+		 */
+                void buildIsotropicMatrix(const Cavity & cavity);
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
 		IEFSolver() {}
-    		IEFSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) 
-			: PCMSolver(gfInside_, gfOutside_), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
+    		IEFSolver(GreensFunction * gfInside, GreensFunction * gfOutside) 
+			: PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
                 virtual ~IEFSolver() {}
-                const Eigen::MatrixXd & getPCMMatrix() const { return PCMMatrix; }
-                virtual void buildSystemMatrix(Cavity & cavity);
-                //virtual VectorXd compCharge(const VectorXd & potential);
-                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
+                virtual void buildSystemMatrix(const Cavity & cavity);
+                virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep = 0);
                 friend std::ostream & operator<<(std::ostream & os, IEFSolver & solver)                      
 		{                                                                                         
                     return solver.printSolver(os);                                                           

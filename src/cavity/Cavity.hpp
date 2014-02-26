@@ -69,8 +69,8 @@ class Cavity
 				sphereRadius.resize(nSpheres);
 				for (int i = 0; i < nSpheres; ++i) 
 				{
-					sphereCenter.col(i) = spheres[i].getSphereCenter();
-					sphereRadius(i) = spheres[i].getSphereRadius();
+					sphereCenter.col(i) = spheres[i].sphereCenter();
+					sphereRadius(i) = spheres[i].sphereRadius();
 				}
 			}
 		Cavity(const std::vector<Sphere> & _spheres, int pg) : spheres(_spheres), built(false), pointGroup_(buildGroup(pg))
@@ -80,8 +80,8 @@ class Cavity
 				sphereRadius.resize(nSpheres);
 				for (int i = 0; i < nSpheres; ++i) 
 				{
-					sphereCenter.col(i) = spheres[i].getSphereCenter();
-					sphereRadius(i) = spheres[i].getSphereRadius();
+					sphereCenter.col(i) = spheres[i].sphereCenter();
+					sphereRadius(i) = spheres[i].sphereRadius();
 				}
 			}
                 virtual ~Cavity() {}

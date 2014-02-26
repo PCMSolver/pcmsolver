@@ -37,35 +37,36 @@
 class Atom 
 {
 	public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW // See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
 		Atom(){}
-                Atom(const std::string & _element, const std::string & _symbol, double _charge,                              
-                      double _radius, const Eigen::Vector3d & _coord, double _scaling = 1.0, const std::string & _colour = "Violet")
-			: atomElement(_element), atomSymbol(_symbol), atomCharge(_charge), atomRadius(_radius),
-			atomCoord(_coord), atomRadiusScaling(_scaling), atomColour(_colour) {}
-                Atom(const std::string & _element, const std::string & _symbol, double _charge, double _radius)
-			: atomElement(_element), atomSymbol(_symbol), atomCharge(_charge), atomRadius(_radius)
+                Atom(const std::string & element, const std::string & symbol, double charge,                              
+                      double radius, const Eigen::Vector3d & coord, double scaling = 1.0, const std::string & colour = "Violet")
+			: atomElement_(element), atomSymbol_(symbol), atomCharge_(charge), atomRadius_(radius),
+			atomCoord_(coord), atomRadiusScaling_(scaling), atomColour_(colour) {}
+                Atom(const std::string & element, const std::string & symbol, double charge, double radius)
+			: atomElement_(element), atomSymbol_(symbol), atomCharge_(charge), atomRadius_(radius)
 		{
 			Eigen::Vector3d Origin(0.0, 0.0, 0.0);
 			std::string colour = "Violet";
-  			atomCoord = Origin;
-  			atomColour = colour;
-			atomRadiusScaling = 1.0;
+  			atomCoord_ = Origin;
+  			atomColour_ = colour;
+			atomRadiusScaling_ = 1.0;
 		}
                 ~Atom(){}
-		std::string getAtomElement() { return atomElement; }
-                void setAtomElement(const std::string & _element) { atomElement = _element; }
-		std::string getAtomSymbol() { return atomSymbol; }
-                void setAtomSymbol(const std::string & _symbol) { atomSymbol = _symbol; }
-		Eigen::Vector3d & getAtomCoord() { return atomCoord; }
-                void setAtomCoord(Eigen::Vector3d & _coord){ atomCoord = _coord; }
-                double getAtomCharge() { return atomCharge; }
-                void setAtomCharge( double _charge ){ atomCharge = _charge; }
-                double getAtomRadius() { return (atomRadius / convertBohrToAngstrom); }
-                void setAtomRadius( double _radius ) { atomRadius = _radius; }
-                double getAtomRadiusScaling() { return atomRadiusScaling; }
-                void setAtomRadiusScaling(double _scaling) { atomRadiusScaling = _scaling; }
-		std::string getAtomColour() { return atomColour; }
-                void setAtomColour(const std::string & _colour){ atomColour = _colour; }
+		std::string atomElement() const { return atomElement_; }
+                void atomElement(const std::string & element) { atomElement_ = element; }
+		std::string atomSymbol() const { return atomSymbol_; }
+                void atomSymbol(const std::string & symbol) { atomSymbol_ = symbol; }
+		const Eigen::Vector3d & atomCoord() const { return atomCoord_; }
+                void atomCoord(Eigen::Vector3d & coord) { atomCoord_ = coord; }
+                double atomCharge() const { return atomCharge_; }
+                void atomCharge(double charge) { atomCharge_ = charge; }
+                double atomRadius() const { return (atomRadius_ / convertBohrToAngstrom); }
+                void atomRadius(double radius) { atomRadius_ = radius; }
+                double atomRadiusScaling() const { return atomRadiusScaling_; }
+                void atomRadiusScaling(double scaling) { atomRadiusScaling_ = scaling; }
+		std::string atomColour() const { return atomColour_; }
+                void atomColour(const std::string & colour) { atomColour_ = colour; }
                 /*! \brief Returns a reference to a vector<Atom> containing Bondi van der Waals radii.                                                                        	
 	         * 
 		 * The van der Waals radii are taken from:
@@ -87,13 +88,13 @@ class Atom
 	         */
                 static std::vector<Atom> & initUFF();
  	private:
-		std::string atomElement;
-		std::string atomSymbol;
-                double atomCharge;
-                double atomRadius;
-		Eigen::Vector3d atomCoord;
-                double atomRadiusScaling;
-		std::string atomColour;
+		std::string atomElement_;
+		std::string atomSymbol_;
+                double atomCharge_;
+                double atomRadius_;
+		Eigen::Vector3d atomCoord_;
+                double atomRadiusScaling_;
+		std::string atomColour_;
 };
 
 #endif // ATOM_HPP

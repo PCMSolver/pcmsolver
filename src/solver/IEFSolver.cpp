@@ -22,6 +22,7 @@
 #pragma warning pop
 #endif
 
+#include "BlockDiagonalMatrix.hpp"
 #include "Cavity.hpp"
 #include "GreensFunction.hpp"
 

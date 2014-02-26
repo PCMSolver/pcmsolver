@@ -532,10 +532,10 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3X
 	for (int i = 0; i < charges_.size(); ++i) 
 	{
 		int index = charges_(i) - 1;
-		double radius = radiiSet[index].getAtomRadius();
+		double radius = radiiSet[index].atomRadius();
                 if (scaling) 
 		{
-			radius *= radiiSet[index].getAtomRadiusScaling();
+			radius *= radiiSet[index].atomRadiusScaling();
                 }
 		spheres_.push_back(Sphere(sphereCenter_.col(i), radius));
 	}

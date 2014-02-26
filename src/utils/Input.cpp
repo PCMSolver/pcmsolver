@@ -131,7 +131,7 @@ Input::Input()
 		hasSolvent = true;
 		std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
 		solvent = solvents[_name];
-		probeRadius = solvent.getRadius();
+		probeRadius = solvent.probeRadius();
 		// Specification of the solvent by name means isotropic PCM
 		// We have to initialize the Green's functions data here, Solvent class
 		// is an helper class and should not be used in the core classes.
@@ -140,7 +140,7 @@ Input::Input()
 		epsilonInside = 1.0;
 	        greenOutsideType = "UniformDielectric";
 		derivativeOutsideType = mapStringToIntDerType.find("Derivative")->second;	
-		epsilonOutside = solvent.getEpsStatic();
+		epsilonOutside = solvent.epsStatic();
 	}
 	// A useful map to convert the EquationType string to an integer
 	// which will be passed to the Solver CTOR.

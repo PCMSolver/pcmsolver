@@ -17,7 +17,7 @@
 #pragma warning pop
 #endif
 
-#include "MathUtils.hpp"
+#include "BlockDiagonalMatrix.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)

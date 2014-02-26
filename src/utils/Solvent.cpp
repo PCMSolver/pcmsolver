@@ -35,9 +35,9 @@ Solvent::SolventMap & Solvent::initSolventMap()
 
 std::ostream & Solvent::printSolvent(std::ostream & os) 
 {
-	os << "Solvent name:          " << name << std::endl;
-	os << "Static  permittivity = " << epsStatic << std::endl;
-	os << "Optical permittivity = " << epsOptical << std::endl;
-	os << "Solvent radius =       " << probeRadius;
+	os << "Solvent name:          " << name_ << std::endl;
+	os << "Static  permittivity = " << epsStatic_ << std::endl;
+	os << "Optical permittivity = " << epsOptical_ << std::endl;
+	os << "Solvent radius =       " << probeRadius_;
 	return os;
 }

@@ -25,18 +25,18 @@ class Solvent
 	public:
 		/*! \brief typedef for the map between solvent name and Solvent object.
 		 */
-		typedef std::map< std::string, Solvent > SolventMap;
+		typedef std::map<std::string, Solvent> SolventMap;
 
 		Solvent(){}
-                Solvent(const std::string & _name, double _epsStatic, double _epsOptical, double _radius )
-			: name(_name), epsStatic(_epsStatic), epsOptical(_epsOptical), probeRadius(_radius) {}
+                Solvent(const std::string & name, double epsStatic, double epsOptical, double radius )
+			: name_(name), epsStatic_(epsStatic), epsOptical_(epsOptical), probeRadius_(radius) {}
                 ~Solvent(){}
 
-                std::string getName() const { return name; }
-                double getEpsStatic() const { return epsStatic; }
-                double getEpsOptical() const { return epsOptical; }
-                double getRadius() const { return (probeRadius / convertBohrToAngstrom); }
-                void setRadius(double _radius) { probeRadius = _radius; }
+                std::string name() const { return name_; }
+                double epsStatic() const { return epsStatic_; }
+                double epsOptical() const { return epsOptical_; }
+                double probeRadius() const { return (probeRadius_ / convertBohrToAngstrom); }
+                void probeRadius(double radius) { probeRadius_ = radius; }
 
 		/*! \brief Returns the map between solvent names and Solvent objects.
 		 *
@@ -49,10 +49,10 @@ class Solvent
                     return solvent.printSolvent(os);
                 }
 	private:
-		std::string name;        
-                double epsStatic;
-                double epsOptical;
-                double probeRadius;
+		std::string name_;        
+                double epsStatic_;
+                double epsOptical_;
+                double probeRadius_;
 		std::ostream & printSolvent(std::ostream & os);
 };
 

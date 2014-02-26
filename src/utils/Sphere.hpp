@@ -31,17 +31,18 @@
 class Sphere
 {
   	public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW // See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
 		Sphere() {}
-		Sphere(const Eigen::Vector3d & _center, double _radius, const std::string & _colour = "Violet" )
-			: sphereCenter(_center), sphereRadius(_radius), sphereColour(_colour) {}
+		Sphere(const Eigen::Vector3d & center, double radius, const std::string & colour = "Violet" )
+			: sphereCenter_(center), sphereRadius_(radius), sphereColour_(colour) {}
 		~Sphere() {}
-                double getSphereRadius() const { return sphereRadius; }
-                void setSphereRadius( double _radius ) { sphereRadius = _radius; }
-		Eigen::Vector3d & getSphereCenter() { return sphereCenter; }
-                double getSphereCenter(int i) const { return sphereCenter(i); }
-                void setSphereCenter( Eigen::Vector3d & _coord ){ sphereCenter = _coord; }
-		std::string & getSphereColour() { return sphereColour; }
-                void setSphereColour( std::string & _colour ){ sphereColour = _colour; }
+                double sphereRadius() const { return sphereRadius_; }
+                void sphereRadius(double radius) { sphereRadius_ = radius; }
+		const Eigen::Vector3d & sphereCenter() const { return sphereCenter_; }
+                double sphereCenter(int i) const { return sphereCenter_(i); }
+                void sphereCenter(Eigen::Vector3d & coord) { sphereCenter_ = coord; }
+		const std::string & sphereColour() const { return sphereColour_; }
+                void sphereColour(std::string & colour) { sphereColour_ = colour; }
          	friend inline void swap(Sphere & left, Sphere & right);
          	inline void swap(Sphere & other);
 	        /// Assignment operator.
@@ -51,9 +52,9 @@ class Sphere
 			return sph.printObject(os);
 		}
 	private:
-		Eigen::Vector3d sphereCenter;
-		double sphereRadius;
-		std::string sphereColour;
+		Eigen::Vector3d sphereCenter_;
+		double sphereRadius_;
+		std::string sphereColour_;
          	std::ostream & printObject(std::ostream & os); 
 };
 

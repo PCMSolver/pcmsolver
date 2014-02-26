@@ -26,8 +26,6 @@
 #pragma warning pop
 #endif
 
-#include "MathUtils.hpp"
-
 inline void Cavity::saveCavity(const std::string & fname)
 {
 	/*
@@ -83,7 +81,7 @@ inline void Cavity::loadCavity(const std::string & fname)
 	}
 	else
 	{
-		elementArea = getFromRawBuffer<double>(dim, 1, raw_weights.data);
+		elementArea = cnpy::getFromRawBuffer<double>(dim, 1, raw_weights.data);
 	}
 	
 	// 2. Get the element radius 
@@ -95,7 +93,7 @@ inline void Cavity::loadCavity(const std::string & fname)
 	}
 	else
 	{
-		elementRadius = getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
+		elementRadius = cnpy::getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
 	}
 
 	// 3. Get the centers
@@ -107,7 +105,7 @@ inline void Cavity::loadCavity(const std::string & fname)
 	}
 	else
 	{
-		elementCenter = getFromRawBuffer<double>(3, dim, raw_centers.data);
+		elementCenter = cnpy::getFromRawBuffer<double>(3, dim, raw_centers.data);
 	}
 
 	// 4. Get the normal vectors	
@@ -119,6 +117,6 @@ inline void Cavity::loadCavity(const std::string & fname)
 	}
 	else
 	{
-		elementNormal = getFromRawBuffer<double>(3, dim, raw_normals.data);
+		elementNormal = cnpy::getFromRawBuffer<double>(3, dim, raw_normals.data);
 	}
 }

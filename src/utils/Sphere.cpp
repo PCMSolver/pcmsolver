@@ -7,8 +7,8 @@
 
 std::ostream & Sphere::printObject(std::ostream & os) 
 {
-	os << "Sphere radius " << sphereRadius << std::endl;
-	os << "Sphere center\n" << sphereCenter;
+	os << "Sphere radius " << sphereRadius_ << std::endl;
+	os << "Sphere center\n" << sphereCenter_;
 
 	return os;
 }
@@ -16,17 +16,17 @@ std::ostream & Sphere::printObject(std::ostream & os)
 inline void swap(Sphere & left, Sphere & right)
 {
     using std::swap;
-    swap(left.sphereCenter, right.sphereCenter);
-    swap(left.sphereRadius, right.sphereRadius);
-    swap(left.sphereColour, right.sphereColour);
+    swap(left.sphereCenter_, right.sphereCenter_);
+    swap(left.sphereRadius_, right.sphereRadius_);
+    swap(left.sphereColour_, right.sphereColour_);
 }
 
 inline void Sphere::swap(Sphere & other)
 {
     using std::swap;
-    swap(this->sphereCenter, other.sphereCenter);
-    swap(this->sphereRadius, other.sphereRadius);
-    swap(this->sphereColour, other.sphereColour);
+    swap(this->sphereCenter_, other.sphereCenter_);
+    swap(this->sphereRadius_, other.sphereRadius_);
+    swap(this->sphereColour_, other.sphereColour_);
 }
 
 Sphere & Sphere::operator=(Sphere other)

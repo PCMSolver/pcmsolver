@@ -22,7 +22,7 @@
 #include "GePolCavity.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
-#include "IEFSolver.hpp"
+#include "CPCMSolver.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -53,7 +53,8 @@ TEST(IEFSolver, pointChargeGePolC1)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	double correction = 0.0;
+	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -65,7 +66,8 @@ TEST(IEFSolver, pointChargeGePolC1)
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	// The total ASC for a conductor is -Q
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -91,7 +93,8 @@ TEST(IEFSolver, pointChargeGePolCs)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	double correction = 0.0;
+	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -106,7 +109,8 @@ TEST(IEFSolver, pointChargeGePolCs)
 		fake_mep(i) = charge / distance; 
 	}
 	int nr_irrep = cavity.pointGroup().nrIrrep();
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	// The total ASC for a conductor is -Q
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -132,7 +136,8 @@ TEST(IEFSolver, pointChargeGePolC2)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	double correction = 0.0;
+	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -147,7 +152,8 @@ TEST(IEFSolver, pointChargeGePolC2)
 		fake_mep(i) = charge / distance; 
 	}
 	int nr_irrep = cavity.pointGroup().nrIrrep();
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	// The total ASC for a conductor is -Q
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -173,7 +179,8 @@ TEST(IEFSolver, pointChargeGePolCi)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	double correction = 0.0;
+	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -188,7 +195,8 @@ TEST(IEFSolver, pointChargeGePolCi)
 		fake_mep(i) = charge / distance; 
 	}
 	int nr_irrep = cavity.pointGroup().nrIrrep();
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	// The total ASC for a conductor is -Q
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -214,7 +222,8 @@ TEST(IEFSolver, pointChargeGePolC2h)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	double correction = 0.0;
+	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -229,7 +238,8 @@ TEST(IEFSolver, pointChargeGePolC2h)
 		fake_mep(i) = charge / distance; 
 	}
 	int nr_irrep = cavity.pointGroup().nrIrrep();
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	// The total ASC for a conductor is -Q
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -255,7 +265,8 @@ TEST(IEFSolver, pointChargeGePolD2)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	double correction = 0.0;
+	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -270,7 +281,8 @@ TEST(IEFSolver, pointChargeGePolD2)
 		fake_mep(i) = charge / distance; 
 	}
 	int nr_irrep = cavity.pointGroup().nrIrrep();
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	// The total ASC for a conductor is -Q
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -296,7 +308,8 @@ TEST(IEFSolver, pointChargeGePolC2v)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	double correction = 0.0;
+	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -311,7 +324,8 @@ TEST(IEFSolver, pointChargeGePolC2v)
 		fake_mep(i) = charge / distance; 
 	}
 	int nr_irrep = cavity.pointGroup().nrIrrep();
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	// The total ASC for a conductor is -Q
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -337,7 +351,8 @@ TEST(IEFSolver, pointChargeGePolD2h)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	double correction = 0.0;
+	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -352,7 +367,8 @@ TEST(IEFSolver, pointChargeGePolD2h)
 		fake_mep(i) = charge / distance; 
 	}
 	int nr_irrep = cavity.pointGroup().nrIrrep();
-	// The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+	// The total ASC for a conductor is -Q
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
 	solver.compCharge(fake_mep, fake_asc);
 	double totalASC = - charge * (permittivity - 1) / permittivity;

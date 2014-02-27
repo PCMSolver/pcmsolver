@@ -70,7 +70,10 @@ inline void Cavity::loadCavity(const std::string & fname)
 	// 0. Get the number of elements
 	cnpy::NpyArray raw_ele = loaded_cavity["elements"];
 	int * ne = reinterpret_cast<int*>(raw_ele.data);
-	nElements = *ne; 
+	nElements = *ne;
+        // Set the size of the irreducible portion of the cavity
+	// it will be the same as the total size, since a restarted cavity is always C1
+	nIrrElements = (nElements / pointGroup_.nrIrrep());		
 
 	// 1. Get the weights
         cnpy::NpyArray raw_weights = loaded_cavity["weights"];

@@ -47,7 +47,7 @@ TEST(CPCMSolver, pointChargeGePol)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	double correction = 0.0;
+	double correction = 0.5;
 	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
@@ -61,10 +61,10 @@ TEST(CPCMSolver, pointChargeGePol)
 		fake_mep(i) = charge / distance; 
 	}
 	// The total ASC for a conductor is -Q
-	// for CPCM it will be -Q*[(epsilon-1)/epsilon}
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon + correction]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
-	double totalASC = - charge * (permittivity - 1) / permittivity;
+	double totalASC = - charge * (permittivity - 1) / (permittivity + correction);
 	double totalFakeASC = fake_asc.sum();
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);

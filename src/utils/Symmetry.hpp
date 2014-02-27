@@ -1,6 +1,7 @@
 #ifndef SYMMETRY_HPP
 #define SYMMETRY_HPP
 
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -70,23 +71,28 @@ class Symmetry
 		 * Number of generators
 		 */
 		int nrGenerators_;
-		/*!
-		 * Number of nontrivial symmetry operations
-		 * nontrivial_ops = 2**nr_generators - 1 
-		 */
-		int nontrivialOps_;
 	public:
 		Symmetry() {}
-		Symmetry(int _pGroup, const std::string & _name, int gen, int ops) : 
-			groupInteger_(_pGroup), groupName_(_name), nrGenerators_(gen), nontrivialOps_(ops) {};
+		Symmetry(int _pGroup, const std::string & _name, int gen) : 
+			groupInteger_(_pGroup), groupName_(_name), nrGenerators_(gen) {};
 		Symmetry(const Symmetry & other) : 
 			groupInteger_(other.groupInteger_), groupName_(other.groupName_), 
-			nrGenerators_(other.nrGenerators_), nontrivialOps_(other.nontrivialOps_) {};
+			nrGenerators_(other.nrGenerators_) {};
 		~Symmetry() {}
 		int groupInteger() const { return groupInteger_; }
 		std::string groupName() const { return groupName_; }
 		int nrGenerators() const { return nrGenerators_; }
-		int nontrivialOps() const { return nontrivialOps_; }
+		/*!
+		 * Number of irreducible representations,
+		 * nrIrrep_ = 2**nrGenerators_
+		 * This is also the number of operations in the group.
+		 */
+		int nrIrrep() const { return int(std::pow(2, nrGenerators_)); }
+		/*!
+		 * Number of nontrivial symmetry operations,
+		 * nontrivialOps_ = 2**nrGenerators_ - 1 
+		 */
+		int nontrivialOps() const { return (int(std::pow(2, nrGenerators_)) - 1); }
 		static double parity(int i);
 };
 

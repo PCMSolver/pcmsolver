@@ -1,5 +1,6 @@
 #include "IEFSolver.hpp"
 
+#include <iostream>
 #include <cmath>
 #include <fstream>
 #include <stdexcept>
@@ -56,10 +57,10 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     	Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     	aInv = 2 * M_PI * a.inverse();
 
-    	PCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose().eval()));
-    	PCMMatrix = PCMMatrix.inverse();
-    	PCMMatrix *= ((aInv - DE) - SE * SI.inverse() * (aInv - DI));
-    	PCMMatrix = PCMMatrix * a;
+    	fullPCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose().eval()));
+    	fullPCMMatrix = fullPCMMatrix.inverse();
+    	fullPCMMatrix *= ((aInv - DE) - SE * SI.inverse() * (aInv - DI));
+    	fullPCMMatrix = fullPCMMatrix * a;
     	builtAnisotropicMatrix = true;
     	builtIsotropicMatrix = false;
 }
@@ -67,9 +68,13 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 {
-	bool symmetry = cav.pointGroup().groupInteger();
-	double epsilon = greenOutside_->getDielectricConstant();
+	// The total size of the cavity
         int cavitySize = cav.size();
+	// The number of irreps in the group
+	int nrBlocks = cav.pointGroup().nrIrrep();
+	// The size of the irreducible portion of the cavity
+	int dimBlock = cav.irreducible_size();
+
     	Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     	Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
@@ -77,12 +82,12 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     	greenInside_->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
     	greenInside_->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
 	// Perform symmetry blocking
-	// If the group is C1 avoid symmetry blocking, we will just pack the PCMMatrix
+	// If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
 	// into "block diagonal" when all other manipulations are done.
-	if (symmetry)
+	if (cav.pointGroup().groupInteger())
 	{
-		symmetryBlocking(DI, cav);
-		symmetryBlocking(SI, cav);
+		symmetryBlocking(DI, cavitySize, dimBlock, nrBlocks);
+		symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
 	}
 
     	Eigen::MatrixXd a = cav.getElementArea().asDiagonal();
@@ -91,32 +96,33 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 
 	// Tq = -Rv -> q = -(T^-1 * R)v = -Kv
 	// T = (2 * M_PI * fact * aInv - DI) * a * SI; R = (2 * M_PI * aInv - DI)
-	// PCMMatrix = K = T^-1 * R * a
+	// fullPCMMatrix = K = T^-1 * R * a
 	// 1. Form T
+	double epsilon = greenOutside_->getDielectricConstant();
 	double fact = (epsilon + 1.0)/(epsilon - 1.0);
-    	PCMMatrix = (2 * M_PI * fact * aInv - DI) * a * SI;
+    	fullPCMMatrix = (2 * M_PI * fact * aInv - DI) * a * SI;
 	// 2. Invert T using LU decomposition with full pivoting
 	//    This is a rank-revealing LU decomposition, this allows us
 	//    to test if T is invertible before attempting to invert it.
-	Eigen::FullPivLU<Eigen::MatrixXd> T_LU(PCMMatrix);
+	Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
 	if (!(T_LU.isInvertible()))
 		throw std::runtime_error("T matrix is not invertible!");
-    	PCMMatrix = T_LU.inverse();
+    	fullPCMMatrix = T_LU.inverse();
 	// 3. Multiply T^-1 and R
-    	PCMMatrix *= (2 * M_PI * aInv - DI);
+    	fullPCMMatrix *= (2 * M_PI * aInv - DI);
 	// 4. Multiply by a
-    	PCMMatrix *= a;
+    	fullPCMMatrix *= a;
 	// 5. Symmetrize K := (K + K+)/2
     	Eigen::MatrixXd PCMAdjoint(cavitySize, cavitySize); 
-    	PCMAdjoint = PCMMatrix.adjoint().eval(); // See Eigen doc for the reason of this
-    	PCMMatrix = 0.5 * (PCMMatrix + PCMAdjoint);
+    	PCMAdjoint = fullPCMMatrix.adjoint().eval(); // See Eigen doc for the reason of this
+    	fullPCMMatrix = 0.5 * (fullPCMMatrix + PCMAdjoint);
 	// Diagonalize and print out some useful info.
 	// This should be done only when debugging...
 	/* 
     	std::ofstream matrixOut("PCM_matrix");
-    	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(PCMMatrix);
+    	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(fullPCMMatrix);
     	if (solver.info() != Eigen::Success)
-	       throw std::runtime_error("PCMMatrix diagonalization not successful");	
+	       throw std::runtime_error("fullPCMMatrix diagonalization not successful");	
     	matrixOut << "PCM matrix printout" << std::endl;
  	matrixOut << "Number of Tesserae: " << cavitySize << std::endl;
     	matrixOut << "Largest Eigenvalue: " << solver.eigenvalues()[cavitySize-1] << std::endl;
@@ -126,6 +132,9 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     	matrixOut.close();
 	*/
 	// Pack into a BlockDiagonalMatrix
+	// For the moment just packs into a std::vector<Eigen::MatrixXd> without the syntactic
+	// sugar of the BlockDiagonalMatrix class...
+	symmetryPacking(blockPCMMatrix, fullPCMMatrix, dimBlock, nrBlocks);
 
 	builtIsotropicMatrix = true;
 	builtAnisotropicMatrix = false;
@@ -135,7 +144,7 @@ void IEFSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & 
 {
 	if (builtIsotropicMatrix or builtAnisotropicMatrix) 
 	{
-		charge = - PCMMatrix * potential; // This should look like charge = -PCMMatrix[irrep] * potential; i.e. just using the desired block
+		charge = - blockPCMMatrix[irrep] * potential; 
 	} 
 	else 
 	{

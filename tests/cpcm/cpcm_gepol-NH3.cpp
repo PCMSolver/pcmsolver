@@ -55,7 +55,7 @@ TEST(CPCMSolver, NH3GePol)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	double correction = 0.0;
+	double correction = 0.8;
 	CPCMSolver solver(gfInside, gfOutside, correction);
 	solver.buildSystemMatrix(cavity);
 
@@ -73,10 +73,10 @@ TEST(CPCMSolver, NH3GePol)
 		fake_mep(i) = Ncharge / Ndistance + Hcharge / H1distance + Hcharge / H2distance + Hcharge / H3distance; 
 	}
 	// The total ASC for a conductor is -Q
-	// for CPCM it will be -Q*[(epsilon-1)/epsilon}
+	// for CPCM it will be -Q*[(epsilon-1)/epsilon + correction]
 	Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
 	solver.compCharge(fake_mep, fake_asc);
-	double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
+	double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / (permittivity + correction);
 	double totalFakeASC = fake_asc.sum();
 	std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
 	EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);

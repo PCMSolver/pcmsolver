@@ -2,6 +2,7 @@
 #define MATHUTILS_HPP
 
 #include <cmath>
+#include <iostream>
 
 #include "Config.hpp"
 
@@ -20,16 +21,19 @@
 #pragma warning pop
 #endif
 
-#include "Cavity.hpp"
 #include "Symmetry.hpp"
 
-inline void symmetryBlocking(Eigen::MatrixXd & matrix, const Cavity & cav)
+/*! \fn inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int ntsirr, int nr_irrep)
+ *  \param[out] matrix the matrix to be block-diagonalized
+ *  \param[in]  cavitySize the size of the cavity (size of the matrix)
+ *  \param[in]  ntsirr     the size of the irreducible portion of the cavity (size of the blocks)
+ *  \param[in]  nr_irrep   the number of irreducible representations (number of blocks)
+ */
+inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int ntsirr, int nr_irrep)
 {
 	// This function implements the simmetry-blocking of the PCM
 	// matrix due to point group symmetry as reported in:
 	// L. Frediani, R. Cammi, C. S. Pomelli, J. Tomasi and K. Ruud, J. Comput.Chem. 25, 375 (2003)
-	int cavitySize = cav.size();
-	int nr_irrep = cav.pointGroup().nontrivialOps() + 1;
 	// u is the character table for the group (t in the paper)
 	Eigen::MatrixXd u = Eigen::MatrixXd::Zero(nr_irrep, nr_irrep);
 	for (int i = 0; i < nr_irrep; ++i)
@@ -48,7 +52,6 @@ inline void symmetryBlocking(Eigen::MatrixXd & matrix, const Cavity & cav)
 	//      matrix = U * matrix * Ut; U * Ut = Ut * U = id
 	// First half-transformation, i.e. first_half = matrix * Ut
 	Eigen::MatrixXd first_half = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-	int ntsirr = cav.irreducible_size();
 	for (int i = 0; i < nr_irrep; ++i)
 	{
 		int ioff = i * ntsirr;
@@ -107,6 +110,24 @@ inline void symmetryBlocking(Eigen::MatrixXd & matrix, const Cavity & cav)
 				matrix(a, b) = 0.0;	        				
 			}
 		}
+	}
+}
+
+/*! \fn inline void symmetryPacking(std::vector<Eigen::MatrixXd> & blockedMatrix, const Eigen::MatrixXd & fullMatrix, int nrBlocks, int dimBlock)
+ *  \param[out] blockedMatrix the result of packing fullMatrix
+ *  \param[in]  fullMatrix the matrix to be packed
+ *  \param[in]  dimBlock the dimension of the square blocks
+ *  \param[in]  nrBlocks the number of square blocks
+ */
+inline void symmetryPacking(std::vector<Eigen::MatrixXd> & blockedMatrix, const Eigen::MatrixXd & fullMatrix, int dimBlock, int nrBlocks)
+{
+	// This function packs the square block diagonal fullMatrix with nrBlocks of dimension dimBlock 
+	// into a std::vector<Eigen::MatrixXd> containing nrBlocks square matrices of dimenion dimBlock.
+	int j = 0;
+        for (int i = 0; i < nrBlocks; ++i)
+	{
+		blockedMatrix.push_back(fullMatrix.block(j, j, dimBlock, dimBlock));
+		j += dimBlock;
 	}
 }
 

@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -26,7 +27,8 @@ class IEFSolver : public PCMSolver
 	private:
    	 	bool builtIsotropicMatrix;
     		bool builtAnisotropicMatrix;
-		Eigen::MatrixXd PCMMatrix;
+		Eigen::MatrixXd fullPCMMatrix;
+		std::vector<Eigen::MatrixXd> blockPCMMatrix;
 		/*! \brief Builds PCM matrix for an anisotropic environment
 		 *  \param[in] cavity the cavity to be used. 
 		 */

@@ -41,7 +41,8 @@ class CPCMSolver : public PCMSolver
     		bool builtIsotropicMatrix;
     		bool builtAnisotropicMatrix;
     		double correction_;
-    		Eigen::MatrixXd PCMMatrix;
+		Eigen::MatrixXd fullPCMMatrix;
+		std::vector<Eigen::MatrixXd> blockPCMMatrix;
                 void buildIsotropicMatrix(const Cavity & cavity);
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
@@ -49,7 +50,6 @@ class CPCMSolver : public PCMSolver
                 CPCMSolver(GreensFunction * gfInside, GreensFunction * gfOutside, double correction) 
 			: PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction_(correction) {}                
                 virtual ~CPCMSolver() {}
-                const Eigen::MatrixXd & getPCMMatrix() const { return PCMMatrix; }
                 virtual void buildSystemMatrix(const Cavity & cavity);
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep = 0);
                 void correction(double corr) { correction_ = corr; }

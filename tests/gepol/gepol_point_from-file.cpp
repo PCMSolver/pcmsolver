@@ -50,7 +50,7 @@ TEST_F(GePolCavityTest, size)
 TEST_F(GePolCavityTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -58,12 +58,12 @@ TEST_F(GePolCavityTest, area)
 TEST_F(GePolCavityTest, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);

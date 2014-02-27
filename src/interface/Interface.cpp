@@ -199,15 +199,15 @@ extern "C" void get_cavity_size(int * nts)
 
 extern "C" void get_tesserae(double * centers) 
 {// Use some Eigen magic
-	for ( int i = 0; i < _cavity->getElementCenter().size(); ++i)
+	for ( int i = 0; i < _cavity->elementCenter().size(); ++i)
 	{
-		centers[i] = *(_cavity->getElementCenter().data() + i);
+		centers[i] = *(_cavity->elementCenter().data() + i);
 	}
 }
 
 extern "C" void get_tesserae_centers(int * its, double * center) 
 {
-	Eigen::Vector3d tess = _cavity->getElementCenter(*its-1);
+	Eigen::Vector3d tess = _cavity->elementCenter(*its-1);
 	center[0] = tess(0);
 	center[1] = tess(1);
 	center[2] = tess(2);

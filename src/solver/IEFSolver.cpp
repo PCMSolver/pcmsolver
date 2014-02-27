@@ -48,12 +48,12 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     	Eigen::MatrixXd DE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     	// This is the very core of PCMSolver
-    	greenInside_->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
-    	greenInside_->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
-    	greenOutside_->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SE, DE);
-    	greenOutside_->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SE, DE);
+    	greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
+    	greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
+    	greenOutside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SE, DE);
+    	greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);
     	
-	Eigen::MatrixXd a = cav.getElementArea().asDiagonal();// Eigen::MatrixXd::Zero(cavitySize, cavitySize);
+	Eigen::MatrixXd a = cav.elementArea().asDiagonal();// Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     	Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     	aInv = 2 * M_PI * a.inverse();
 
@@ -79,8 +79,8 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     	Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
 	// Compute SI and DI on the whole cavity, regardless of symmetry
-    	greenInside_->compOffDiagonal(cav.getElementCenter(), cav.getElementNormal(), SI, DI);
-    	greenInside_->compDiagonal(cav.getElementArea(), cav.getElementRadius(), SI, DI);
+    	greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
+    	greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
 	// Perform symmetry blocking
 	// If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
 	// into "block diagonal" when all other manipulations are done.
@@ -90,7 +90,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 		symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
 	}
 
-    	Eigen::MatrixXd a = cav.getElementArea().asDiagonal();
+    	Eigen::MatrixXd a = cav.elementArea().asDiagonal();
     	Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     	aInv = a.inverse();
 

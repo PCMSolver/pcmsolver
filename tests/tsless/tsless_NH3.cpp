@@ -67,19 +67,19 @@ TEST_F(TsLessCavityNH3Test, size)
 TEST_F(TsLessCavityNH3Test, area)
 {
 	double area = 147.18581691164593;
- 	double actualArea = cav.getElementArea().sum();
+ 	double actualArea = cav.elementArea().sum();
 	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
 TEST_F(TsLessCavityNH3Test, volume)
 {
 	double volume = 152.81441857040116;
-	Eigen::Matrix3Xd elementCenter = cav.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cav.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cav.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cav.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cav.size(); ++i )
 	{
-		actualVolume += cav.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cav.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_NEAR(volume, actualVolume, 1.0e-12);

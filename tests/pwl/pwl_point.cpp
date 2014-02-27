@@ -61,7 +61,7 @@ TEST(PWLSolver, pointCharge)
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
 	for (int i = 0; i < size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}

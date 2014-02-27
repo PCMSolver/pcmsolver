@@ -49,60 +49,60 @@ void TsLessCavity::build(int maxts, int maxsph, int maxvert)
 	int nts;
 	int maxAddedSpheres = 200;
 	
-	// Allocate vectors of size equal to nSpheres + maxAddedSpheres where maxAddedSpheres is the 
+	// Allocate vectors of size equal to nSpheres_ + maxAddedSpheres where maxAddedSpheres is the 
 	// maximum number of spheres we allow the algorithm to add to our original set.
 	// If this number is exceeded, then the algorithm crashes (should look into this...)
 	// After the cavity is generated we will update ALL the class data members, both related
 	// to spheres and finite elements so that the cavity is fully formed.
 	
-	Eigen::VectorXd xv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd yv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd zv = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd sphereRadius_ = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres); // Not to be confused with the data member inherited from Cavity!!!
+	Eigen::VectorXd xv = Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres);
+	Eigen::VectorXd yv = Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres);
+	Eigen::VectorXd zv = Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres);
+	Eigen::VectorXd radii_scratch = Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres); // Not to be confused with the data member inherited from Cavity!!!
 	
-	for ( int i = 0; i < nSpheres; ++i ) 
+	for ( int i = 0; i < nSpheres_; ++i ) 
 	{
 		for ( int j = 0; j < 3; ++j )
 		{
-			xv(i) = sphereCenter(0, i);
-			yv(i) = sphereCenter(1, i);
-			zv(i) = sphereCenter(2, i);
+			xv(i) = sphereCenter_(0, i);
+			yv(i) = sphereCenter_(1, i);
+			zv(i) = sphereCenter_(2, i);
 		}
-		sphereRadius_(i) = sphereRadius(i);
+		radii_scratch(i) = sphereRadius_(i);
 	}
 		
 	double *xe = xv.data();
 	double *ye = yv.data();
 	double *ze = zv.data();
 
-	double *rin = sphereRadius_.data();
+	double *rin = radii_scratch.data();
 
         // Go TsLess, Go!	
-	generate_tslesscavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres, 
+	generate_tslesscavity_cpp(xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, &nts, &nSpheres_, 
 						xe, ye, ze, rin, &averageArea, &probeRadius, &minDistance, &derOrder, work, &lwork);
         throw std::runtime_error("TsLessCavity Fortran backend not yet implemented!");
 	
 	// We now create come Eigen temporaries to be used in the post-processing of the spheres data
 	// coming out from generatecavity_cpp_
 	
-	Eigen::VectorXd rtmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd xtmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd ytmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
-	Eigen::VectorXd ztmp = Eigen::VectorXd::Zero(nSpheres + maxAddedSpheres);
+	Eigen::VectorXd rtmp = Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres);
+	Eigen::VectorXd xtmp = Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres);
+	Eigen::VectorXd ytmp = Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres);
+	Eigen::VectorXd ztmp = Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres);
 
-	// The first nSpheres elements of these temporaries will still be those of the original set of spheres	
-	rtmp = sphereRadius_.head(nSpheres);
-	xtmp = xv.head(nSpheres);
-	ytmp = yv.head(nSpheres);
-	ztmp = zv.head(nSpheres);
-	// Traverse the sphereRadius vector (starting from the nSpheres index) and count the number of 
+	// The first nSpheres_ elements of these temporaries will still be those of the original set of spheres	
+	rtmp = radii_scratch.head(nSpheres_);
+	xtmp = xv.head(nSpheres_);
+	ytmp = yv.head(nSpheres_);
+	ztmp = zv.head(nSpheres_);
+	// Traverse the sphereRadius vector (starting from the nSpheres_ index) and count the number of 
 	// additional spheres that the algorithm created (characterized by non-zero radius)
 	addedSpheres = 0;
-	for ( int i = nSpheres; i < nSpheres + maxAddedSpheres; i++ ) 
+	for ( int i = nSpheres_; i < nSpheres_ + maxAddedSpheres; i++ ) 
 	{
-		if ( sphereRadius_(i) != 0.0) 
+		if ( radii_scratch(i) != 0.0) 
 		{
-			rtmp(i) = sphereRadius_(i);
+			rtmp(i) = radii_scratch(i);
 			xtmp(i) = xv(i);
 			ytmp(i) = yv(i);
 			ztmp(i) = zv(i);
@@ -115,51 +115,51 @@ void TsLessCavity::build(int maxts, int maxsph, int maxvert)
 	if ( addedSpheres != 0 )
 	{
 		std::cout << "The PEDRA algorithm added " << addedSpheres << " new spheres to the original list." << std::endl;
-		// First of all update the nSpheres
-		nSpheres += addedSpheres;
+		// First of all update the nSpheres_
+		nSpheres_ += addedSpheres;
 		// Resize sphereRadius and sphereCenter...
-		sphereRadius.resize(nSpheres);
-		sphereCenter.resize(Eigen::NoChange, nSpheres);
+		sphereRadius_.resize(nSpheres_);
+		sphereCenter_.resize(Eigen::NoChange, nSpheres_);
 		// ...clear vector<Sphere> spheres...
-		spheres.clear();
+		spheres_.clear();
 		// ...and update their content
-		for ( int i = 0; i < nSpheres; ++i )
+		for ( int i = 0; i < nSpheres_; ++i )
 		{
-			sphereRadius(i) = rtmp(i);
+			sphereRadius_(i) = rtmp(i);
 			for ( int j = 0; j < 3; ++j )
 			{
-				sphereCenter(0, i) = xtmp(i);
-				sphereCenter(1, i) = ytmp(i);
-				sphereCenter(2, i) = ztmp(i);
+				sphereCenter_(0, i) = xtmp(i);
+				sphereCenter_(1, i) = ytmp(i);
+				sphereCenter_(2, i) = ztmp(i);
 			}
-			Eigen::Vector3d cent = sphereCenter.col(i);
-			Sphere sph(cent, sphereRadius(i));
-			spheres.push_back(sph);
+			Eigen::Vector3d cent = sphereCenter_.col(i);
+			Sphere sph(cent, sphereRadius_(i));
+			spheres_.push_back(sph);
 		}
 	}
     	
-        nElements = int(nts);                                               
-        elementCenter.resize(Eigen::NoChange, nElements);
-        elementSphereCenter.resize(Eigen::NoChange, nElements);
-        elementNormal.resize(Eigen::NoChange, nElements);
-        elementArea.resize(nElements);
-        elementRadius.resize(nElements);
-        for( int i = 0; i < nElements; ++i )
+        nElements_ = int(nts);                                               
+        elementCenter_.resize(Eigen::NoChange, nElements_);
+        elementSphereCenter_.resize(Eigen::NoChange, nElements_);
+        elementNormal_.resize(Eigen::NoChange, nElements_);
+        elementArea_.resize(nElements_);
+        elementRadius_.resize(nElements_);
+        for( int i = 0; i < nElements_; ++i )
 	{
-    		elementCenter(0,i) = xtscor[i];
-    		elementCenter(1,i) = ytscor[i];
-    		elementCenter(2,i) = ztscor[i];
-    		elementArea(i) = ar[i];
-    		elementSphereCenter(0,i) = xsphcor[i];
-    		elementSphereCenter(1,i) = ysphcor[i];
-    		elementSphereCenter(2,i) = zsphcor[i];
-    		elementRadius(i) = rsph[i];
+    		elementCenter_(0,i) = xtscor[i];
+    		elementCenter_(1,i) = ytscor[i];
+    		elementCenter_(2,i) = ztscor[i];
+    		elementArea_(i) = ar[i];
+    		elementSphereCenter_(0,i) = xsphcor[i];
+    		elementSphereCenter_(1,i) = ysphcor[i];
+    		elementSphereCenter_(2,i) = zsphcor[i];
+    		elementRadius_(i) = rsph[i];
         }
     
-        elementNormal = elementCenter - elementSphereCenter;
-        for( int i = 0; i < nElements; ++i)
+        elementNormal_ = elementCenter_ - elementSphereCenter_;
+        for( int i = 0; i < nElements_; ++i)
 	{
-    		elementNormal.col(i) /= elementNormal.col(i).norm();
+    		elementNormal_.col(i) /= elementNormal_.col(i).norm();
     	}
     
 	delete[] xtscor;
@@ -186,16 +186,16 @@ std::ostream & TsLessCavity::printCavity(std::ostream & os)
 	os << "Average area = " << averageArea << " AU^2" << std::endl;
 	os << "Addition of extra spheres enabled" << std::endl;
 	os << "Probe radius = " << probeRadius << std::endl;
-	os << "Number of spheres = " << nSpheres << " [initial = " << nSpheres - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
-        os << "Number of finite elements = " << nElements;
-        /*for(int i = 0; i < nElements; i++) 
+	os << "Number of spheres = " << nSpheres_ << " [initial = " << nSpheres_ - addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
+        os << "Number of finite elements = " << nElements_;
+        /*for(int i = 0; i < nElements_; i++) 
 	{
 		os << std::endl;
 		os << i+1 << " ";
-		os << elementCenter(0,i) << " ";
-		os << elementCenter(1,i) << " ";
-		os << elementCenter(2,i) << " ";
-		os << elementArea(i) << " ";
+		os << elementCenter_(0,i) << " ";
+		os << elementCenter_(1,i) << " ";
+		os << elementCenter_(2,i) << " ";
+		os << elementArea_(i) << " ";
         }*/
 	return os;
 }

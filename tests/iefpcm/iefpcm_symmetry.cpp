@@ -61,7 +61,7 @@ TEST(IEFSolver, pointChargeGePolC1)
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
 	for (int i = 0; i < size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
@@ -101,7 +101,7 @@ TEST(IEFSolver, pointChargeGePolCs)
 	// then replicate it according to the point group
 	for (int i = 0; i < irr_size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
@@ -142,7 +142,7 @@ TEST(IEFSolver, pointChargeGePolC2)
 	// then replicate it according to the point group
 	for (int i = 0; i < irr_size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
@@ -183,7 +183,7 @@ TEST(IEFSolver, pointChargeGePolCi)
 	// then replicate it according to the point group
 	for (int i = 0; i < irr_size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
@@ -224,7 +224,7 @@ TEST(IEFSolver, pointChargeGePolC2h)
 	// then replicate it according to the point group
 	for (int i = 0; i < irr_size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
@@ -265,7 +265,7 @@ TEST(IEFSolver, pointChargeGePolD2)
 	// then replicate it according to the point group
 	for (int i = 0; i < irr_size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
@@ -306,7 +306,7 @@ TEST(IEFSolver, pointChargeGePolC2v)
 	// then replicate it according to the point group
 	for (int i = 0; i < irr_size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}
@@ -347,7 +347,7 @@ TEST(IEFSolver, pointChargeGePolD2h)
 	// then replicate it according to the point group
 	for (int i = 0; i < irr_size; ++i)
 	{
-		Eigen::Vector3d center = cavity.getElementCenter(i);
+		Eigen::Vector3d center = cavity.elementCenter(i);
 		double distance = center.norm();
 		fake_mep(i) = charge / distance; 
 	}

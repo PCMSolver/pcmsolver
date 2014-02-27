@@ -72,7 +72,7 @@ TEST_F(GePolCavityC1Test, irreducible_size)
 TEST_F(GePolCavityC1Test, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -80,12 +80,12 @@ TEST_F(GePolCavityC1Test, area)
 TEST_F(GePolCavityC1Test, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);
@@ -129,7 +129,7 @@ TEST_F(GePolCavityCsTest, irreducible_size)
 TEST_F(GePolCavityCsTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -137,12 +137,12 @@ TEST_F(GePolCavityCsTest, area)
 TEST_F(GePolCavityCsTest, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);
@@ -186,7 +186,7 @@ TEST_F(GePolCavityC2Test, irreducible_size)
 TEST_F(GePolCavityC2Test, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -194,12 +194,12 @@ TEST_F(GePolCavityC2Test, area)
 TEST_F(GePolCavityC2Test, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);
@@ -243,7 +243,7 @@ TEST_F(GePolCavityCiTest, irreducible_size)
 TEST_F(GePolCavityCiTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -251,12 +251,12 @@ TEST_F(GePolCavityCiTest, area)
 TEST_F(GePolCavityCiTest, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);
@@ -300,7 +300,7 @@ TEST_F(GePolCavityC2hTest, irreducible_size)
 TEST_F(GePolCavityC2hTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -308,12 +308,12 @@ TEST_F(GePolCavityC2hTest, area)
 TEST_F(GePolCavityC2hTest, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);
@@ -357,7 +357,7 @@ TEST_F(GePolCavityD2Test, irreducible_size)
 TEST_F(GePolCavityD2Test, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -365,12 +365,12 @@ TEST_F(GePolCavityD2Test, area)
 TEST_F(GePolCavityD2Test, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);
@@ -414,7 +414,7 @@ TEST_F(GePolCavityC2vTest, irreducible_size)
 TEST_F(GePolCavityC2vTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -422,12 +422,12 @@ TEST_F(GePolCavityC2vTest, area)
 TEST_F(GePolCavityC2vTest, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);
@@ -471,7 +471,7 @@ TEST_F(GePolCavityD2hTest, irreducible_size)
 TEST_F(GePolCavityD2hTest, area)
 {
 	double area = 4.0 * M_PI * pow(1.0, 2);
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_DOUBLE_EQ(area, actualArea);
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
@@ -479,12 +479,12 @@ TEST_F(GePolCavityD2hTest, area)
 TEST_F(GePolCavityD2hTest, volume)
 {
 	double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_DOUBLE_EQ(volume, actualVolume);

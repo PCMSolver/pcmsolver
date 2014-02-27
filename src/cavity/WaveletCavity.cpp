@@ -49,15 +49,15 @@ void WaveletCavity::writeInput(std::string &fileName)
 	std::ofstream output;
 	output.open(fileName.c_str(), std::fstream::out);
 
-        output << nSpheres << std::endl;
+        output << nSpheres_ << std::endl;
 	output.setf(std::ios_base::showpoint);
 	output.precision(12);
-        for(int i=0; i < nSpheres; i++) 
+        for(int i=0; i < nSpheres_; i++) 
 	{
-		output << sphereCenter(0,i) << " ";
-		output << sphereCenter(1,i) << " ";
-		output << sphereCenter(2,i) << " ";
-		output << sphereRadius(i) << std::endl;
+		output << sphereCenter_(0,i) << " ";
+		output << sphereCenter_(1,i) << " ";
+		output << sphereCenter_(2,i) << " ";
+		output << sphereRadius_(i) << std::endl;
         }
         output.close();
 	uploadedDyadic = false;
@@ -70,14 +70,13 @@ extern "C"
 
 void WaveletCavity::makeCavity() 
 {
-//	int dummy = 0; 
 	int check = 0;
 	std::string infile = "cavity.inp";
 	writeInput(infile);
 #if defined (WAVELET_DEVELOPMENT)    
 	check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, infile.c_str());
 #else
-    check = 1;
+        check = 1;
 #endif
 	if (check != 0) 
 	{
@@ -138,11 +137,11 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
 	cubature *Q;
 	init_Gauss_Square(&Q, quadLevel + 1);
 
-	nElements = nPatches * n * n * Q[quadLevel].nop;
+	nElements_ = nPatches * n * n * Q[quadLevel].nop;
 
-	elementCenter.resize(Eigen::NoChange, nElements);
-	elementNormal.resize(Eigen::NoChange, nElements);
-	elementArea.resize(nElements);
+	elementCenter_.resize(Eigen::NoChange, nElements_);
+	elementNormal_.resize(Eigen::NoChange, nElements_);
+	elementArea_.resize(nElements_);
 
 	int j = 0;
 	for (size_t i1 = 0; i1 < nPatches; ++i1)
@@ -162,9 +161,9 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
 					Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
-					elementCenter.col(j) = center.transpose();
-					elementNormal.col(j) = normal.transpose();
-					elementArea(j) = area;
+					elementCenter_.col(j) = center.transpose();
+					elementNormal_.col(j) = normal.transpose();
+					elementArea_(j) = area;
 					++j;
 				}
 			}
@@ -188,11 +187,11 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
 	cubature *Q;
 	init_Gauss_Square(&Q, quadLevel + 1);
 
-	nElements = nPatches * n * n * Q[quadLevel].nop;
+	nElements_ = nPatches * n * n * Q[quadLevel].nop;
 
-	elementCenter.resize(Eigen::NoChange, nElements);
-	elementNormal.resize(Eigen::NoChange, nElements);
-	elementArea.resize(nElements);
+	elementCenter_.resize(Eigen::NoChange, nElements_);
+	elementNormal_.resize(Eigen::NoChange, nElements_);
+	elementArea_.resize(nElements_);
 
 	int j = 0;
 	for (size_t i1 = 0; i1 < nPatches; ++i1)
@@ -212,9 +211,9 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
 					Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);	 
 					normal.normalize();
 					double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi_pwl(t, T_[i1], nLevels));
-					elementCenter.col(j) = center.transpose();
-					elementNormal.col(j) = normal.transpose();
-					elementArea(j) = area;
+					elementCenter_.col(j) = center.transpose();
+					elementNormal_.col(j) = normal.transpose();
+					elementArea_(j) = area;
 					++j;
 				}
 			}
@@ -230,25 +229,25 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
 	os << "Probe Radius =  " << probeRadius << std::endl;
 	os << "Coarsity =      " << coarsity << std::endl;
 	os << "Patch Level =   " << patchLevel << std::endl;
-	os << "Number of spheres = " << nSpheres << std::endl;
-        os << "Number of finite elements = " << nElements << std::endl;
-        /*for(int i = 0; i < nElements; i++) 
+	os << "Number of spheres = " << nSpheres_ << std::endl;
+        os << "Number of finite elements = " << nElements_ << std::endl;
+        /*for(int i = 0; i < nElements_; i++) 
 	{
 		os << std::endl;
 		os << i+1 << " ";
-		os << elementCenter(0,i) << " ";
-		os << elementCenter(1,i) << " ";
-		os << elementCenter(2,i) << " ";
-		os << elementArea(i) << " ";
+		os << elementCenter_(0,i) << " ";
+		os << elementCenter_(1,i) << " ";
+		os << elementCenter_(2,i) << " ";
+		os << elementArea_(i) << " ";
         }
-    	for(int i = 0; i < nSpheres; i++) 
+    	for(int i = 0; i < nSpheres_; i++) 
 	{
 		os << endl;
 		os << i+1 << " ";
-		os << sphereCenter(0,i) << " ";
-		os << sphereCenter(1,i) << " ";
-		os << sphereCenter(2,i) << " ";
-		os << sphereRadius(i) << " ";
+		os << sphereCenter_(0,i) << " ";
+		os << sphereCenter_(1,i) << " ";
+		os << sphereCenter_(2,i) << " ";
+		os << sphereRadius_(i) << " ";
     	}*/
 /*	if (uploadedDyadic) 
 	{

@@ -34,15 +34,15 @@ class Sphere
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW // See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
 		Sphere() {}
 		Sphere(const Eigen::Vector3d & center, double radius, const std::string & colour = "Violet" )
-			: sphereCenter_(center), sphereRadius_(radius), sphereColour_(colour) {}
+			: center_(center), radius_(radius), colour_(colour) {}
 		~Sphere() {}
-                double sphereRadius() const { return sphereRadius_; }
-                void sphereRadius(double radius) { sphereRadius_ = radius; }
-		const Eigen::Vector3d & sphereCenter() const { return sphereCenter_; }
-                double sphereCenter(int i) const { return sphereCenter_(i); }
-                void sphereCenter(Eigen::Vector3d & coord) { sphereCenter_ = coord; }
-		const std::string & sphereColour() const { return sphereColour_; }
-                void sphereColour(std::string & colour) { sphereColour_ = colour; }
+                double radius() const { return radius_; }
+                void radius(double r) { radius_ = r; }
+		const Eigen::Vector3d & center() const { return center_; }
+                double center(int i) const { return center_(i); }
+                void center(Eigen::Vector3d & coord) { center_ = coord; }
+		const std::string & colour() const { return colour_; }
+                void colour(std::string & col) { colour_ = col; }
          	friend inline void swap(Sphere & left, Sphere & right);
          	inline void swap(Sphere & other);
 	        /// Assignment operator.
@@ -52,9 +52,9 @@ class Sphere
 			return sph.printObject(os);
 		}
 	private:
-		Eigen::Vector3d sphereCenter_;
-		double sphereRadius_;
-		std::string sphereColour_;
+		Eigen::Vector3d center_;
+		double radius_;
+		std::string colour_;
          	std::ostream & printObject(std::ostream & os); 
 };
 

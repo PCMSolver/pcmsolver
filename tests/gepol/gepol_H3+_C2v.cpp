@@ -81,19 +81,19 @@ TEST_F(GePolCavityC2vAddTest, irreducible_size)
 TEST_F(GePolCavityC2vAddTest, area)
 {
 	double area = 178.74700256128352;
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
 TEST_F(GePolCavityC2vAddTest, volume)
 {
 	double volume = 196.47360294559090;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_NEAR(volume, actualVolume, 1.0e-10);
@@ -145,19 +145,19 @@ TEST_F(GePolCavityC2vTest, irreducible_size)
 TEST_F(GePolCavityC2vTest, area)
 {
 	double area = 181.87043332808548;
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
 TEST_F(GePolCavityC2vTest, volume)
 {
 	double volume = 192.48281460140359;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_NEAR(volume, actualVolume, 1.0e-10);

@@ -91,19 +91,19 @@ TEST_F(GePolCavityD2hAddTest, irreducible_size)
 TEST_F(GePolCavityD2hAddTest, area)
 {
 	double area = 281.81993683500656;
- 	double actualArea = cavity.getElementArea().sum();
+ 	double actualArea = cavity.elementArea().sum();
 	EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
 TEST_F(GePolCavityD2hAddTest, volume)
 {
 	double volume = 406.54737252764619;
-	Eigen::Matrix3Xd elementCenter = cavity.getElementCenter();
-	Eigen::Matrix3Xd elementNormal = cavity.getElementNormal();
+	Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+	Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
 	double actualVolume = 0;
         for ( int i = 0; i < cavity.size(); ++i )
 	{
-		actualVolume += cavity.getElementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
+		actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
 	}
 	actualVolume /= 3;
 	EXPECT_NEAR(volume, actualVolume, 1.0e-10);

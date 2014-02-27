@@ -38,18 +38,18 @@
 class Cavity
 {
 	protected:
-		std::vector<Sphere> spheres;
-                int nElements;
-		int nIrrElements;
+		std::vector<Sphere> spheres_;
+                int nElements_;
+		int nIrrElements_;
                 bool built;
-		Eigen::Matrix3Xd elementCenter;
-		Eigen::Matrix3Xd elementNormal;
-		Eigen::VectorXd elementArea;
-          	int nSpheres;
-	 	Eigen::Matrix3Xd elementSphereCenter;
-	 	Eigen::VectorXd elementRadius;
-	        Eigen::Matrix3Xd sphereCenter;
-	        Eigen::VectorXd sphereRadius;
+		Eigen::Matrix3Xd elementCenter_;
+		Eigen::Matrix3Xd elementNormal_;
+		Eigen::VectorXd elementArea_;
+          	int nSpheres_;
+	 	Eigen::Matrix3Xd elementSphereCenter_;
+	 	Eigen::VectorXd elementRadius_;
+	        Eigen::Matrix3Xd sphereCenter_;
+	        Eigen::VectorXd sphereRadius_;
 		Symmetry pointGroup_;
 	private:
 		/*! \brief Creates the cavity and discretizes its surface. 
@@ -58,64 +58,64 @@ class Cavity
                 virtual std::ostream & printCavity(std::ostream & os) = 0;  
 	public:
 		//! Default constructor
-		Cavity() : nElements(0), built(false) {}
+		Cavity() : nElements_(0), built(false) {}
 		/*! \brief Constructor from spheres
 		 *  \param[in] _spheres an STL vector containing the spheres making up the cavity.
 		 */
-		Cavity(const std::vector<Sphere> & _spheres) : spheres(_spheres), built(false)
+		Cavity(const std::vector<Sphere> & _spheres) : spheres_(_spheres), built(false)
 			{
-                		nSpheres = spheres.size();
-				sphereCenter.resize(Eigen::NoChange, nSpheres);
-				sphereRadius.resize(nSpheres);
-				for (int i = 0; i < nSpheres; ++i) 
+                		nSpheres_ = spheres_.size();
+				sphereCenter_.resize(Eigen::NoChange, nSpheres_);
+				sphereRadius_.resize(nSpheres_);
+				for (int i = 0; i < nSpheres_; ++i) 
 				{
-					sphereCenter.col(i) = spheres[i].sphereCenter();
-					sphereRadius(i) = spheres[i].sphereRadius();
+					sphereCenter_.col(i) = spheres_[i].center();
+					sphereRadius_(i) = spheres_[i].radius();
 				}
 			}
-		Cavity(const std::vector<Sphere> & _spheres, int pg) : spheres(_spheres), built(false), pointGroup_(buildGroup(pg))
+		Cavity(const std::vector<Sphere> & _spheres, int pg) : spheres_(_spheres), built(false), pointGroup_(buildGroup(pg))
 			{
-                		nSpheres = spheres.size();
-				sphereCenter.resize(Eigen::NoChange, nSpheres);
-				sphereRadius.resize(nSpheres);
-				for (int i = 0; i < nSpheres; ++i) 
+                		nSpheres_ = spheres_.size();
+				sphereCenter_.resize(Eigen::NoChange, nSpheres_);
+				sphereRadius_.resize(nSpheres_);
+				for (int i = 0; i < nSpheres_; ++i) 
 				{
-					sphereCenter.col(i) = spheres[i].sphereCenter();
-					sphereRadius(i) = spheres[i].sphereRadius();
+					sphereCenter_.col(i) = spheres_[i].center();
+					sphereRadius_(i) = spheres_[i].radius();
 				}
 			}
                 virtual ~Cavity() {}
-                Eigen::Matrix3Xd & getElementCenter() { return elementCenter; }
-                const Eigen::Matrix3Xd & getElementCenter() const { return elementCenter; }
-                Eigen::Vector3d getElementCenter(int i) { return elementCenter.col(i); }
-                Eigen::Vector3d getElementCenter(int i) const { return elementCenter.col(i); }
-                Eigen::Matrix3Xd & getElementNormal() { return elementNormal; }
-                const Eigen::Matrix3Xd & getElementNormal() const { return elementNormal; }
-                Eigen::Vector3d getElementNormal(int i) { return elementNormal.col(i); }
-                Eigen::Vector3d getElementNormal(int i) const { return elementNormal.col(i); }
-                Eigen::VectorXd & getElementArea() { return elementArea; }
-                const Eigen::VectorXd & getElementArea() const { return elementArea; }
-                double getElementArea(int i) { return elementArea(i); }
-                double getElementArea(int i) const { return elementArea(i); }
-                int size() { return nElements; }
-                int size() const { return nElements; }
-		int irreducible_size() { return nIrrElements; }
-		int irreducible_size() const { return nIrrElements; }
+                Eigen::Matrix3Xd & elementCenter() { return elementCenter_; }
+                const Eigen::Matrix3Xd & elementCenter() const { return elementCenter_; }
+                Eigen::Vector3d elementCenter(int i) { return elementCenter_.col(i); }
+                Eigen::Vector3d elementCenter(int i) const { return elementCenter_.col(i); }
+                Eigen::Matrix3Xd & elementNormal() { return elementNormal_; }
+                const Eigen::Matrix3Xd & elementNormal() const { return elementNormal_; }
+                Eigen::Vector3d elementNormal(int i) { return elementNormal_.col(i); }
+                Eigen::Vector3d elementNormal(int i) const { return elementNormal_.col(i); }
+                Eigen::VectorXd & elementArea() { return elementArea_; }
+                const Eigen::VectorXd & elementArea() const { return elementArea_; }
+                double elementArea(int i) { return elementArea_(i); }
+                double elementArea(int i) const { return elementArea_(i); }
+                int size() { return nElements_; }
+                int size() const { return nElements_; }
+		int irreducible_size() { return nIrrElements_; }
+		int irreducible_size() const { return nIrrElements_; }
 		virtual Symmetry pointGroup() const { return pointGroup_; } 
-     	 	std::vector<Sphere> & getSpheres() { return spheres; }
-     	 	const std::vector<Sphere> & getSpheres() const { return spheres; }
-	  	int getNSpheres() { return nSpheres; }
-	  	int getNSpheres() const { return nSpheres; }
-                Eigen::VectorXd & getSphereRadius() { return sphereRadius; }                
-                const Eigen::VectorXd & getSphereRadius() const { return sphereRadius; }                
-                Eigen::Matrix3Xd & getSphereCenter() { return sphereCenter; }
-                const Eigen::Matrix3Xd & getSphereCenter() const { return sphereCenter; }
-                Eigen::VectorXd & getElementRadius() { return elementRadius; }
-                const Eigen::VectorXd & getElementRadius() const { return elementRadius; }
-     	        double getElementRadius(int i) { return elementRadius(i); }
-     	        double getElementRadius(int i) const { return elementRadius(i); }
-     	        Eigen::Matrix3Xd & getElementSphereCenter() { return elementSphereCenter; }
-     	        const Eigen::Matrix3Xd & getElementSphereCenter() const { return elementSphereCenter; }
+     	 	std::vector<Sphere> & spheres() { return spheres_; }
+     	 	const std::vector<Sphere> & spheres() const { return spheres_; }
+	  	int nSpheres() { return nSpheres_; }
+	  	int nSpheres() const { return nSpheres_; }
+                Eigen::VectorXd & sphereRadius() { return sphereRadius_; }                
+                const Eigen::VectorXd & sphereRadius() const { return sphereRadius_; }                
+                Eigen::Matrix3Xd & sphereCenter() { return sphereCenter_; }
+                const Eigen::Matrix3Xd & sphereCenter() const { return sphereCenter_; }
+                Eigen::VectorXd & elementRadius() { return elementRadius_; }
+                const Eigen::VectorXd & elementRadius() const { return elementRadius_; }
+     	        double elementRadius(int i) { return elementRadius_(i); }
+     	        double elementRadius(int i) const { return elementRadius_(i); }
+     	        Eigen::Matrix3Xd & elementSphereCenter() { return elementSphereCenter_; }
+     	        const Eigen::Matrix3Xd & elementSphereCenter() const { return elementSphereCenter_; }
 		/*! \brief Save cavity specification to file.
 		 *
 		 *  The cavity specification contains:

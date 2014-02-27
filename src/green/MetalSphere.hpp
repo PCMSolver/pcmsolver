@@ -45,7 +45,7 @@ class MetalSphere : public GreensFunction
                 virtual ~MetalSphere() {}                                              
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
-	        virtual double getDielectricConstant() const {}	
+	        virtual double dielectricConstant() const {}	
                 friend std::ostream & operator<<(std::ostream & os, MetalSphere & green)                      
 		{                                                                                         
                     return green.printGreensFunction(os);                                                           

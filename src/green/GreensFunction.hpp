@@ -52,7 +52,7 @@ class GreensFunction
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const = 0;
 		bool isUniform() const { return uniform; }
-		virtual double getDielectricConstant() const = 0;
+		virtual double dielectricConstant() const = 0;
                 friend std::ostream & operator<<(std::ostream & os, GreensFunction & green)                      
 		{                                                                                         
                     return green.printGreensFunction(os);                                                           

@@ -39,7 +39,7 @@ class Vacuum : public GreensFunction
 		virtual ~Vacuum() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
-	        virtual double getDielectricConstant() const { return 1.0; }	
+	        virtual double dielectricConstant() const { return 1.0; }	
                 friend std::ostream & operator<<(std::ostream & os, Vacuum & green)                      
 		{                                                                                         
                     return green.printGreensFunction(os);                                                           

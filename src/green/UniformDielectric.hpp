@@ -39,7 +39,7 @@ class UniformDielectric : public GreensFunction
 		virtual ~UniformDielectric() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
-	       	virtual double getDielectricConstant() const { return epsilon; }
+	       	virtual double dielectricConstant() const { return epsilon; }
                 friend std::ostream & operator<<(std::ostream & os, UniformDielectric & green)                      
 		{                                                                                         
                     return green.printGreensFunction(os);                                                           

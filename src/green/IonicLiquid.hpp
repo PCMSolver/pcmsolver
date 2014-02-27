@@ -39,7 +39,7 @@ class IonicLiquid : public GreensFunction
 		virtual ~IonicLiquid() {}
  		virtual void compDiagonal(const Eigen::VectorXd & elementArea_, const Eigen::VectorXd & elementRadius_,
                                           Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const; 
-	       	virtual double getDielectricConstant() const { return epsilon; }
+	       	virtual double dielectricConstant() const { return epsilon; }
                 friend std::ostream & operator<<(std::ostream & os, IonicLiquid & green)                      
 		{                                                                                         
                     return green.printGreensFunction(os);                                                           

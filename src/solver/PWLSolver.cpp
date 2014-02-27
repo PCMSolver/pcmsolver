@@ -146,7 +146,7 @@ void PWLSolver::constructSi()
 	{
 		case FirstKind:
 		case SecondKind:
-			epsilon = greenOutside_->getDielectricConstant();
+			epsilon = greenOutside_->dielectricConstant();
 			factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
 			break;
 		case Full:

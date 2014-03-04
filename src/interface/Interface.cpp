@@ -109,7 +109,7 @@ extern "C" void tear_down_pcm()
 	safe_delete(_solver);
 }
 
-extern "C" void compute_asc(char * potName, char * chgName) 
+extern "C" void compute_asc(char * potName, char * chgName, int * irrep) 
 {
 	std::string potFuncName(potName);
 	std::string chgFuncName(chgName);
@@ -119,24 +119,20 @@ extern "C" void compute_asc(char * potName, char * chgName)
 	// Here we check whether the function exists already or not
 	// 1. find the lower bound of the map
 	SurfaceFunctionMap::iterator iter_chg = functions.lower_bound(chgFuncName);
-
-    // 2. if iter_chg == end, or if iter_chg is not a match,
-    //    then this element was not in the map, so we need to insert it
+        // 2. if iter_chg == end, or if iter_chg is not a match,
+        //    then this element was not in the map, so we need to insert it
 	if ( iter_chg == functions.end()  ||  iter_chg->first != chgFuncName )
 	{// move iter_chg to the element preceeding the insertion point
-	    if ( iter_chg != functions.begin() )
-	        --iter_chg;
-
-	    // insert it
-		shared_ptr<SurfaceFunction> func( new SurfaceFunction(chgFuncName, _cavity->size()) );
+		if ( iter_chg != functions.begin() ) --iter_chg;
+	        // insert it
+		shared_ptr<SurfaceFunction> func( new SurfaceFunction(chgFuncName, _cavity->irreducible_size()) );
 		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(chgFuncName, func);
 		iter_chg = functions.insert(iter_chg, insertion);
-    }
+        }
 	
-	// If it already exists there's no problem, we will pass a reference to its values to
-	// _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
-	
-	_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector());
+		// If it already exists there's no problem, we will pass a reference to its values to
+		// _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+		_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector(), *irrep);
 	}
 
 extern "C" void compute_polarization_energy(double * energy)
@@ -192,14 +188,14 @@ extern "C" void dot_surface_functions(double * result, const char * potString, c
 	}
 }
 
-extern "C" void get_cavity_size(int * nts) 
+extern "C" void get_cavity_size(int * ntsirr) 
 {
-	*nts = _cavity->size();
+	*ntsirr = _cavity->irreducible_size();
 }
 
 extern "C" void get_tesserae(double * centers) 
 {// Use some Eigen magic
-	for ( int i = 0; i < _cavity->elementCenter().size(); ++i)
+	for ( int i = 0; i < (3 * _cavity->irreducible_size()); ++i)
 	{
 		centers[i] = *(_cavity->elementCenter().data() + i);
 	}
@@ -254,14 +250,9 @@ extern "C" void print_pcm()
 	host_writer(message_C, &message_length);
 }
 
-extern "C" void print_gepol_cavity()
-{
-	cout << "Cavity size" << _cavity->size() << endl;
-}
-
 extern "C" void set_surface_function(int * nts, double * values, char * name)
 {
-	int nTess = _cavity->size();
+	int nTess = _cavity->irreducible_size();
 	if ( nTess != *nts )
 		throw std::runtime_error("You are trying to allocate a SurfaceFunction bigger than the cavity!");
 
@@ -270,28 +261,25 @@ extern "C" void set_surface_function(int * nts, double * values, char * name)
 	// Here we check whether the function exists already or not
 	// 1. find the lower bound of the map
 	SurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
-
-    // 2. if iter == end, or if iter is not a match, 
-    //    then this element was not in the map, so we need to insert it
+        // 2. if iter == end, or if iter is not a match, 
+        //    then this element was not in the map, so we need to insert it
 	if ( iter == functions.end()  ||  iter->first != functionName )
 	{// move iter to the element preceeding the insertion point
-	    if ( iter != functions.begin() )
-	        --iter;
-
-	    // insert it
+		if ( iter != functions.begin() ) --iter;
+	        // insert it
 		shared_ptr<SurfaceFunction> func( new SurfaceFunction(functionName, *nts, values) );
 		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(functionName, func);
 		iter = functions.insert(iter, insertion);
-    }
-    else
-    {
-    	iter->second->setValues(values);
-    }
+    	}
+    	else
+    	{
+    		iter->second->setValues(values);
+    	}
 }
 
 extern "C" void get_surface_function(int * nts, double * values, char * name) 
 {
-    	int nTess = _cavity->size();
+    	int nTess = _cavity->irreducible_size();
 	if ( nTess != *nts ) 
 		throw std::runtime_error("You are trying to access a SurfaceFunction bigger than the cavity!");
 	
@@ -341,29 +329,26 @@ extern "C" void clear_surface_function(char* name)
 
 extern "C" void append_surface_function(char* name) 
 {
-	int nTess = _cavity->size();
+	int nTess = _cavity->irreducible_size();
 	std::string functionName(name);
 
 	// Here we check whether the function exists already or not
 	// 1. find the lower bound of the map
 	SurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
-
-    // 2. if iter == end, or if iter is not a match, 
-    //    then this element was not in the map, so we need to insert it
+    	// 2. if iter == end, or if iter is not a match, 
+    	//    then this element was not in the map, so we need to insert it
 	if ( iter == functions.end()  ||  iter->first != functionName )
 	{// move iter to the element preceeding the insertion point
-	    if ( iter != functions.begin() )
-	        --iter;
-
-	    // insert it
+		if ( iter != functions.begin() ) --iter;
+	    	// insert it
 		shared_ptr<SurfaceFunction> func( new SurfaceFunction(functionName, nTess) );
 		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(functionName, func);
 		iter = functions.insert(iter, insertion);
-    }
-    else
-    {// What happens if it is already in the map? The values need to be updated.
-     // Nothing, I assume that if one calls append_surface_function_ will then also call
-     // set_surface_function_ somewhere else, hence the update will be done there.
+    	}
+    	else
+    	{// What happens if it is already in the map? The values need to be updated.
+     	 // Nothing, I assume that if one calls append_surface_function_ will then also call
+     	 // set_surface_function_ somewhere else, hence the update will be done there.
  	} 
 }
 
@@ -373,9 +358,10 @@ extern "C" void append_surface_function(char* name)
 
 */
 
-void setupInput() {
+void setupInput() 
+{
 	/* Here we setup the input, meaning that we read the parsed file and store everything 
-	 * it contatins inside an Input object. 
+	 * it contains inside an Input object. 
 	 * This object will be unique (a Singleton) to each "run" of the module.
 	 *   *** WHAT HAPPENS IN NUMERICAL GEOMETRY OPTIMIZATIONS? ***
 	 */
@@ -420,8 +406,11 @@ void initCavity()
 	int patchLevel = Input::TheInput().getPatchLevel();
 	double coarsity = Input::TheInput().getCoarsity();
 	std::string restart = Input::TheInput().getCavityFilename();
-        
-        cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, minRadius, patchLevel, coarsity, restart);          
+       
+	int pg;
+	set_point_group(&pg);
+
+        cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, minRadius, patchLevel, coarsity, restart, pg);          
                                                                                                                                                       
 	// Get the right cavity from the Factory
 	// TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)

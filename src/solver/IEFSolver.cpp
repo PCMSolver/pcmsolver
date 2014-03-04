@@ -135,6 +135,14 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 	// For the moment just packs into a std::vector<Eigen::MatrixXd> without the syntactic
 	// sugar of the BlockDiagonalMatrix class...
 	symmetryPacking(blockPCMMatrix, fullPCMMatrix, dimBlock, nrBlocks);
+	std::ofstream matrixOut("PCM_matrix");
+	matrixOut << "fullPCMMatrix" << std::endl;
+	matrixOut << fullPCMMatrix << std::endl;
+	for (int i = 0; i < nrBlocks; ++i)
+	{
+		matrixOut << "Block number " << i << std::endl;
+		matrixOut << blockPCMMatrix[i] << std::endl;
+	}
 
 	builtIsotropicMatrix = true;
 	builtAnisotropicMatrix = false;

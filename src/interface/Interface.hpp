@@ -48,7 +48,12 @@ extern "C" void tear_down_pcm();
 
 #define compute_asc \
 	FortranCInterface_GLOBAL_(compute_asc, COMPUTE_ASC)
-extern "C" void compute_asc(char * potString, char * chgString);
+/*! \fn extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
+ *  \param[in] potString name of the potential SurfaceFunction
+ *  \param[in] chgString name of the charge SurfaceFunction
+ *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
+ */
+extern "C" void compute_asc(char * potString, char * chgString, int * irrep);
 
 #define compute_polarization_energy \
 	FortranCInterface_GLOBAL_(compute_polarization_energy, COMPUTE_POLARIZATION_ENERGY)
@@ -64,16 +69,28 @@ extern "C" void collect_atoms(double * charges, double * centers);
 
 extern "C" void host_writer(const char * message, size_t * message_length);
 
+extern "C" void set_point_group(int * pg);
+
 #define get_cavity_size \
 	FortranCInterface_GLOBAL_(get_cavity_size, GET_CAVITY_SIZE)
-extern "C" void get_cavity_size(int * nts);
+/*! \fn extern "C" void get_cavity_size(int * ntsirr)
+ *  \param ntsirr the irreducible size of the cavity
+ */
+extern "C" void get_cavity_size(int * ntsirr);
 
 #define get_tesserae \
 	FortranCInterface_GLOBAL_(get_tesserae, GET_TESSERAE)
+/*! \fn extern "C" void get_tesserae(double * centers)
+ *  \param centers the irreducible portion of the cavity
+ */
 extern "C" void get_tesserae(double * centers);
 
 #define get_tesserae_centers \
 	FortranCInterface_GLOBAL_(get_tesserae_centers, GET_TESSERAE_CENTERS)
+/*! \fn extern "C" void get_tesserae_centers(int * its, double * center)
+ *  \param[in] its the index of the tesserae
+ *  \param  center the coordinates of the its-th tessera
+ */
 extern "C" void get_tesserae_centers(int * its, double * center);
 
 #define print_citation \
@@ -83,10 +100,6 @@ extern "C" void print_citation();
 #define print_pcm \
 	FortranCInterface_GLOBAL_(print_pcm, PRINT_PCM)
 extern "C" void print_pcm();
-
-#define print_gepol_cavity \
-	FortranCInterface_GLOBAL_(print_gepol_cavity, PRINT_GEPOL_CAVITY)
-extern "C" void print_gepol_cavity();
 
 #define set_surface_function \
 	FortranCInterface_GLOBAL_(set_surface_function, SET_SURFACE_FUNCTION)

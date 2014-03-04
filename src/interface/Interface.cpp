@@ -141,7 +141,7 @@ extern "C" void compute_asc(char * potName, char * chgName)
 
 extern "C" void compute_polarization_energy(double * energy)
 {// Check if NucMEP && EleASC surface functions exist.
-	bool is_separate = (surfaceFunctionExists("NucMEP") && surfaceFunctionExists("EleASC"));
+    bool is_separate = (surfaceFunctionExists("NucMEP") && surfaceFunctionExists("EleASC"));
 
     if (is_separate) 
 	{ // Using separate potentials and charges

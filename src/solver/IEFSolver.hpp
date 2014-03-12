@@ -27,6 +27,7 @@ class IEFSolver : public PCMSolver
 	private:
    	 	bool builtIsotropicMatrix;
     		bool builtAnisotropicMatrix;
+		bool hermitivitize_;
 		Eigen::MatrixXd fullPCMMatrix;
 		std::vector<Eigen::MatrixXd> blockPCMMatrix;
 		/*! \brief Builds PCM matrix for an anisotropic environment
@@ -40,8 +41,8 @@ class IEFSolver : public PCMSolver
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
 		IEFSolver() {}
-    		IEFSolver(GreensFunction * gfInside, GreensFunction * gfOutside) 
-			: PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false), builtAnisotropicMatrix(false) {}
+    		IEFSolver(GreensFunction * gfInside, GreensFunction * gfOutside, bool symm) 
+			: PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), hermitivitize_(symm) {}
                 virtual ~IEFSolver() {}
                 virtual void buildSystemMatrix(const Cavity & cavity);
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep = 0);
@@ -55,7 +56,7 @@ namespace
 {
 	PCMSolver * createIEFSolver(const solverData & _data)
 	{
-		return new IEFSolver(_data.gfInside, _data.gfOutside);
+		return new IEFSolver(_data.gfInside, _data.gfOutside, _data.hermitivitize);
 	}
 	const std::string IEFSOLVER("IEFPCM");
 	const bool registeredIEFSolver = SolverFactory::TheSolverFactory().registerSolver(IEFSOLVER, createIEFSolver);

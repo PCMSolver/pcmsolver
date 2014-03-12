@@ -23,6 +23,27 @@
 
 #include "Symmetry.hpp"
 
+/*! \fn inline bool isZero(double value, double threshold)
+ *  \param[in] value     the value to be checked
+ *  \param[in] threshold the threshold
+ *
+ *  Returns true if value is less or equal to threshold
+ */
+inline bool isZero(double value, double threshold)
+{
+	return (std::abs(value) <= threshold);
+}
+
+/*! \fn inline bool numericalZero(double value)
+ *  \param[in] value the value to be checked
+ *
+ *  Returns true if value is less than 1.0e-14
+ */
+inline bool numericalZero(double value)
+{
+	return (isZero(value, 1.0e-14));
+}
+
 /*! \fn inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int ntsirr, int nr_irrep)
  *  \param[out] matrix the matrix to be block-diagonalized
  *  \param[in]  cavitySize the size of the cavity (size of the matrix)
@@ -105,7 +126,7 @@ inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int ntsir
 	{
 		for (int b = 0; b < cavitySize; ++b)
 		{
-			if ( std::abs(matrix(a, b)) < 1.0e-14 )
+			if (numericalZero(matrix(a, b)))
 			{
 				matrix(a, b) = 0.0;	        				
 			}
@@ -129,6 +150,21 @@ inline void symmetryPacking(std::vector<Eigen::MatrixXd> & blockedMatrix, const 
 		blockedMatrix.push_back(fullMatrix.block(j, j, dimBlock, dimBlock));
 		j += dimBlock;
 	}
+}
+
+/*! \fn inline void hermitivitize(Eigen::MatrixBase<Derived> & matrix_)
+ *  \param[out] matrix_ the matrix to be hermitivitized
+ *  \tparam     Derived the numeric type of matrix_ elements
+ *
+ *  Given matrix_ returns 0.5 * (matrix_ + matrix_^dagger)
+ */
+template <typename Derived>
+inline void hermitivitize(Eigen::MatrixBase<Derived> & matrix_)
+{
+	// We need to use adjoint().eval() to avoid aliasing issues, see:
+	// http://eigen.tuxfamily.org/dox/group__TopicAliasing.html
+	// The adjoint is evaluated explicitly into an intermediate.
+	matrix_ = 0.5 * (matrix_ + matrix_.adjoint().eval());
 }
 
 #endif // MATHUTILS_HPP

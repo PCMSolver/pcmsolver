@@ -100,6 +100,7 @@ def	setup_keywords():
 	medium.add_kw('Solvent',     'STR', 'Water')
 	medium.add_kw('SolverType',  'STR', 'IEFPCM')
 	medium.add_kw('EquationType','STR', 'SecondKind')
+	medium.add_kw('MatrixSymm', 'BOOL', True)
 	medium.add_kw('Correction', 'DBL', 0.0)
 	medium.add_kw('ProbeRadius', 'DBL', 1.0)
 	top.add_sect(medium)

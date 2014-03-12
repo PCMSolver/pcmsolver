@@ -152,6 +152,7 @@ Input::Input()
 	solverType = medium.getStr("SolverType");
 	equationType = mapStringToIntEquationType.find(medium.getStr("EquationType"))->second;
 	correction = medium.getDbl("Correction");
+	hermitivitize_ = medium.getBool("MatrixSymm");
 
 #if not defined (WAVELET_DEVELOPMENT)
 	if (solverType == "Wavelet" || solverType == "Linear")

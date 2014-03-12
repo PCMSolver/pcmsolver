@@ -40,6 +40,7 @@ class CPCMSolver : public PCMSolver
 	private:
     		bool builtIsotropicMatrix;
     		bool builtAnisotropicMatrix;
+		bool hermitivitize_;
     		double correction_;
 		Eigen::MatrixXd fullPCMMatrix;
 		std::vector<Eigen::MatrixXd> blockPCMMatrix;
@@ -47,8 +48,8 @@ class CPCMSolver : public PCMSolver
     		virtual std::ostream & printSolver(std::ostream & os);
 	public:
 		CPCMSolver() {}
-                CPCMSolver(GreensFunction * gfInside, GreensFunction * gfOutside, double correction) 
-			: PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), correction_(correction) {}                
+                CPCMSolver(GreensFunction * gfInside, GreensFunction * gfOutside, bool symm, double correction) 
+			: PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false), builtAnisotropicMatrix(false), hermitivitize_(symm), correction_(correction) {}                
                 virtual ~CPCMSolver() {}
                 virtual void buildSystemMatrix(const Cavity & cavity);
                 virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep = 0);
@@ -63,7 +64,7 @@ namespace
 {
 	PCMSolver * createCPCMSolver(const solverData & _data)
 	{
-		return new CPCMSolver(_data.gfInside, _data.gfOutside, _data.correction);
+		return new CPCMSolver(_data.gfInside, _data.gfOutside, _data.hermitivitize, _data.correction);
 	}
 	const std::string CPCMSOLVER("CPCM");
 	const bool registeredCPCMSolver = SolverFactory::TheSolverFactory().registerSolver(CPCMSOLVER, createCPCMSolver);

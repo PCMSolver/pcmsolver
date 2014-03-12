@@ -70,6 +70,7 @@ class Input
 		std::string solverType;
 		int equationType;
 		double correction;
+		bool hermitivitize_;
 		double probeRadius;
 		std::string greenInsideType;
 		std::string greenOutsideType;
@@ -109,7 +110,8 @@ class Input
 		bool fromSolvent() { return hasSolvent; }
 		std::string getSolverType(){ return solverType; }
 		int getEquationType(){ return equationType; }
-		double getCorrection(){ return correction; }
+		double getCorrection() { return correction; }
+		bool hermitivitize() { return hermitivitize_; }
 		double getProbeRadius(){ return probeRadius; }
 		std::string getGreenInsideType(){ return greenInsideType; }
 		std::string getGreenOutsideType(){ return greenOutsideType; }

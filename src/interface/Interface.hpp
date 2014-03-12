@@ -73,15 +73,16 @@ extern "C" void set_point_group(int * pg);
 
 #define get_cavity_size \
 	FortranCInterface_GLOBAL_(get_cavity_size, GET_CAVITY_SIZE)
-/*! \fn extern "C" void get_cavity_size(int * ntsirr)
+/*! \fn extern "C" void get_cavity_size(int * nts, int * ntsirr)
+ *  \param nts    the total size of the cavity
  *  \param ntsirr the irreducible size of the cavity
  */
-extern "C" void get_cavity_size(int * ntsirr);
+extern "C" void get_cavity_size(int * nts, int * ntsirr);
 
 #define get_tesserae \
 	FortranCInterface_GLOBAL_(get_tesserae, GET_TESSERAE)
 /*! \fn extern "C" void get_tesserae(double * centers)
- *  \param centers the irreducible portion of the cavity
+ *  \param centers the grid of points provided by discretization of the cavity
  */
 extern "C" void get_tesserae(double * centers);
 

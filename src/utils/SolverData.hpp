@@ -15,6 +15,8 @@ class GreensFunction;
  *  The correction factor to be use in a CPCM calculation.
  *  @var solverData::integralEquation
  *  The type of integral equation to solve, relevant only for wavelet solvers.
+ *  @var solverData::hermitivitize
+ *  Triggers hermitivitization of the PCM matrix obtained by collocation.
  */
 
 struct solverData
@@ -23,8 +25,9 @@ struct solverData
 	GreensFunction * gfOutside;
 	double correction;
 	int integralEquation;
-	solverData(GreensFunction * _gfInside, GreensFunction * _gfOutside, double _correction = 0.0,  int _integralEquation = 1) :
-		gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction), integralEquation(_integralEquation) {}
+	bool hermitivitize;
+	solverData(GreensFunction * _gfInside, GreensFunction * _gfOutside, double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
+		gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction), integralEquation(_integralEquation), hermitivitize(_symm) {}
 };
 
 #endif // SOLVERDATA_HPP

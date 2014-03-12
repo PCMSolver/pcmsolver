@@ -5,10 +5,13 @@
 */
 #include "Interface.hpp"
 
+#include <algorithm>
+#include <cmath>
 #include <iostream>
+#include <functional>
 #include <map>
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 #include "Config.hpp"
@@ -60,6 +63,7 @@
 #include "Citation.hpp"
 #include "GreenData.hpp"
 #include "Input.hpp"
+#include "MathUtils.hpp"
 #include "Solvent.hpp"
 #include "SolverData.hpp"
 #include "Sphere.hpp"
@@ -125,15 +129,15 @@ extern "C" void compute_asc(char * potName, char * chgName, int * irrep)
 	{// move iter_chg to the element preceeding the insertion point
 		if ( iter_chg != functions.begin() ) --iter_chg;
 	        // insert it
-		shared_ptr<SurfaceFunction> func( new SurfaceFunction(chgFuncName, _cavity->irreducible_size()) );
+		shared_ptr<SurfaceFunction> func( new SurfaceFunction(chgFuncName, _cavity->size()) );
 		SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(chgFuncName, func);
 		iter_chg = functions.insert(iter_chg, insertion);
         }
-	
-		// If it already exists there's no problem, we will pass a reference to its values to
-		// _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
-		_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector(), *irrep);
-	}
+
+	// If it already exists there's no problem, we will pass a reference to its values to
+	// _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+	_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector(), *irrep);
+}
 
 extern "C" void compute_polarization_energy(double * energy)
 {// Check if NucMEP && EleASC surface functions exist.
@@ -188,14 +192,15 @@ extern "C" void dot_surface_functions(double * result, const char * potString, c
 	}
 }
 
-extern "C" void get_cavity_size(int * ntsirr) 
+extern "C" void get_cavity_size(int * nts, int * ntsirr) 
 {
+	*nts    = _cavity->size();
 	*ntsirr = _cavity->irreducible_size();
 }
 
 extern "C" void get_tesserae(double * centers) 
 {// Use some Eigen magic
-	for ( int i = 0; i < (3 * _cavity->irreducible_size()); ++i)
+	for ( int i = 0; i < (3 * _cavity->size()); ++i)
 	{
 		centers[i] = *(_cavity->elementCenter().data() + i);
 	}
@@ -252,12 +257,11 @@ extern "C" void print_pcm()
 
 extern "C" void set_surface_function(int * nts, double * values, char * name)
 {
-	int nTess = _cavity->irreducible_size();
+	int nTess = _cavity->size();
 	if ( nTess != *nts )
 		throw std::runtime_error("You are trying to allocate a SurfaceFunction bigger than the cavity!");
 
 	std::string functionName(name);
-
 	// Here we check whether the function exists already or not
 	// 1. find the lower bound of the map
 	SurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
@@ -279,7 +283,7 @@ extern "C" void set_surface_function(int * nts, double * values, char * name)
 
 extern "C" void get_surface_function(int * nts, double * values, char * name) 
 {
-    	int nTess = _cavity->irreducible_size();
+    	int nTess = _cavity->size();
 	if ( nTess != *nts ) 
 		throw std::runtime_error("You are trying to access a SurfaceFunction bigger than the cavity!");
 	
@@ -329,7 +333,7 @@ extern "C" void clear_surface_function(char* name)
 
 extern "C" void append_surface_function(char* name) 
 {
-	int nTess = _cavity->irreducible_size();
+	int nTess = _cavity->size();
 	std::string functionName(name);
 
 	// Here we check whether the function exists already or not
@@ -450,7 +454,8 @@ void initSolver()
 	std::string modelType = Input::TheInput().getSolverType();
 	double correction = Input::TheInput().getCorrection();
 	int eqType = Input::TheInput().getEquationType();
-	solverData solverInput(gfInside, gfOutside, correction, eqType);
+	bool symm = Input::TheInput().hermitivitize();
+	solverData solverInput(gfInside, gfOutside, correction, eqType, symm);
 
 	// This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
 	// it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
@@ -558,7 +563,8 @@ bool surfaceFunctionExists(const std::string & name_)
 	return iter != functions.end();
 }
 
-template<typename T> void safe_delete( T *& ptr ) 
+template <typename T> 
+void safe_delete(T *& ptr) 
 {
 	delete ptr;
     	ptr = NULL;

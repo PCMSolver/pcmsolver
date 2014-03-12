@@ -71,9 +71,11 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
 	if (!(SI_LU.isInvertible()))
 		throw std::runtime_error("SI matrix is not invertible!");
     	fullPCMMatrix = fact * SI_LU.inverse();
-    	Eigen::MatrixXd PCMAdjoint(cavitySize, cavitySize); 
-    	PCMAdjoint = fullPCMMatrix.adjoint().eval(); // See Eigen doc for the reason of this
-    	fullPCMMatrix = 0.5 * (fullPCMMatrix + PCMAdjoint);
+	// 5. Symmetrize K := (K + K+)/2
+	if (hermitivitize_)
+	{
+		hermitivitize(fullPCMMatrix);
+    	}
 	// Diagonalize and print out some useful info.
 	// This should be done only when debugging...
 	/* 
@@ -103,6 +105,7 @@ void CPCMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd &
 	if (builtIsotropicMatrix) 
 	{
 		charge = - blockPCMMatrix[irrep] * potential;
+//		charge = - fullPCMMatrix * potential;
 	} 
 	else 
 	{
@@ -112,7 +115,15 @@ void CPCMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd &
     
 std::ostream & CPCMSolver::printSolver(std::ostream & os) 
 {
-	os << "Solver Type: C-PCM";
+	os << "Solver Type: C-PCM" << std::endl;
+	if (hermitivitize_)
+	{
+		os << "PCM matrix hermitivitized";
+	}
+	else
+	{
+		os << "PCM matrix NOT hermitivitized (matches old DALTON)";
+	}
 	return os;
 }
 

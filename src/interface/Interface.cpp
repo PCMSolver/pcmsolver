@@ -35,6 +35,8 @@
 #include <Eigen/Dense>
 #pragma warning pop
 #endif
+// Include Boost headers here
+#include <boost/format.hpp>
 
 // Core classes
 //    1. Cavities
@@ -137,6 +139,8 @@ extern "C" void compute_asc(char * potName, char * chgName, int * irrep)
 	// If it already exists there's no problem, we will pass a reference to its values to
 	// _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
 	_solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector(), *irrep);
+	// Renormalization of charges: divide by the number of symmetry operations in the group
+	(*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep()); 
 }
 
 extern "C" void compute_polarization_energy(double * energy)
@@ -144,28 +148,37 @@ extern "C" void compute_polarization_energy(double * energy)
     bool is_separate = (surfaceFunctionExists("NucMEP") && surfaceFunctionExists("EleASC"));
 
     if (is_separate) 
-	{ // Using separate potentials and charges
-		SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucMEP");
-		SurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucASC");
-		SurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("EleMEP");
-		SurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleASC");
+    { // Using separate potentials and charges
+	    SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucMEP");
+	    SurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucASC");
+	    SurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("EleMEP");
+	    SurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleASC");
+	    
+	    double UNN = (*iter_nuc_pot->second) *  (*iter_nuc_chg->second);
+	    double UEN = (*iter_ele_pot->second) *  (*iter_nuc_chg->second);
+	    double UNE = (*iter_nuc_pot->second) *  (*iter_ele_chg->second);
+	    double UEE = (*iter_ele_pot->second) *  (*iter_ele_chg->second);
+	   
+	    std::ostringstream out_stream;
+	    out_stream << "Polarization energy components" << std::endl;
+	    out_stream << "  U_ee = " << boost::format("%20.14f") % UEE;
+	    out_stream << ", U_en = " << boost::format("%20.14f") % UEN;
+	    out_stream << ", U_ne = " << boost::format("%20.14f") % UNE;
+	    out_stream << ", U_nn = " << boost::format("%20.14f\n") % UNN;
+	    const char * message_C = out_stream.str().c_str();
+	    size_t message_length = strlen(message_C);
+            host_writer(message_C, &message_length);
+	    // Clean-up the stream
+	    out_stream.str(std::string());
 
-		double UNN = (*iter_nuc_pot->second) *  (*iter_nuc_chg->second);
-		double UEN = (*iter_ele_pot->second) *  (*iter_nuc_chg->second);
-		double UNE = (*iter_nuc_pot->second) *  (*iter_ele_chg->second);
-		double UEE = (*iter_ele_pot->second) *  (*iter_ele_chg->second);
-	
-		//printf("Polarization energy components:\n");
-		//printf("U_ee = %.10E, U_en = %.10E, U_ne = %.10E, U_nn = %.10E \n", UEE, UEN, UNE, UNN);
-
-		*energy = 0.5 * ( UNN + UEN + UNE + UEE );
+	    *energy = 0.5 * ( UNN + UEN + UNE + UEE );
     } 
-	else 
-	{
-		SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotMEP");
-		SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotASC");
-	
-		*energy = (*iter_pot->second) * (*iter_chg->second) * 0.5;
+    else 
+    {
+	    SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotMEP");
+	    SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotASC");
+
+	    *energy = (*iter_pot->second) * (*iter_chg->second) * 0.5;
     }
 }
 
@@ -226,7 +239,6 @@ extern "C" void print_pcm()
 	// I don't think this will work with wavelets as of now (8/7/13)
 	// we should work towards this though: "Program to an interface, not an implementation."
 	// Initialize a stream
-	//
 	std::ostringstream out_stream;
 	out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
 	out_stream << "========== Cavity " << std::endl;
@@ -246,13 +258,13 @@ extern "C" void print_pcm()
 	out_stream << ".... Outside " << std::endl;
 	out_stream << *(_solver->greenOutside()) << std::endl;
 	out_stream << std::endl;
- 	// Extract C++-style string from stream	
-	std::string message = out_stream.str();
 	// Extract C-style string from C++-style string and get its length
-	const char * message_C = message.c_str();
+	const char * message_C = out_stream.str().c_str();
 	size_t message_length = strlen(message_C);
 	// Call the host_writer
 	host_writer(message_C, &message_length);
+	// Clean-up the stream
+	out_stream.str(std::string());
 }
 
 extern "C" void set_surface_function(int * nts, double * values, char * name)
@@ -304,7 +316,7 @@ extern "C" void add_surface_function(char * result, double * coeff, char * part)
 	std::string resultName(result);
 	std::string partName(part);
 
-	append_surface_function_(result);
+	append_surface_function(result);
 	
 	SurfaceFunctionMap::const_iterator iter_part = functions.find(partName);
 	SurfaceFunctionMap::const_iterator iter_result = functions.find(resultName);
@@ -354,6 +366,16 @@ extern "C" void append_surface_function(char* name)
      	 // Nothing, I assume that if one calls append_surface_function_ will then also call
      	 // set_surface_function_ somewhere else, hence the update will be done there.
  	} 
+}
+
+extern "C" void scale_surface_function(char * func, double * coeff) 
+{
+	std::string resultName(func);
+
+	SurfaceFunctionMap::const_iterator iter_func = functions.find(func);
+
+	// Using iterators and operator overloading: so neat!
+	(*iter_func->second) *= (*coeff);
 }
 
 /*

@@ -126,6 +126,14 @@ extern "C" void clear_surface_function(char * name);
 	FortranCInterface_GLOBAL_(append_surface_function, APPEND_SURFACE_FUNCTION)
 extern "C" void append_surface_function(char * name);
 
+/*! \fn extern "C" void scale_surface_function(char * func, double * coeff)
+ *  \param[in] func  the name of the SurfaceFunction to be scaled
+ *  \param[in] coeff the scaling coefficient
+ */
+#define scale_surface_function \
+	FortranCInterface_GLOBAL_(scale_surface_function, SCALE_SURFACE_FUNCTION)
+extern "C" void scale_surface_function(char * func, double * coeff);
+
 /*
 
 	Functions not visible to host program	

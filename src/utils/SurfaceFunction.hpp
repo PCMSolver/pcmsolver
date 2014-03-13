@@ -76,6 +76,8 @@ class SurfaceFunction
          SurfaceFunction & operator-=(const SurfaceFunction & other);
          /// Multiplication-assignment operator. Defined only for the uniform scaling case.
          SurfaceFunction & operator*=(double scaling);
+         /// Division-assignment operator. Defined only for the uniform scaling case.
+         SurfaceFunction & operator/=(double scaling);
                                                                                                                          
          std::string & getName(){ return name; }
          int getNPoints(){ return nPoints; }

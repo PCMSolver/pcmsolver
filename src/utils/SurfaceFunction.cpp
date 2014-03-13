@@ -80,6 +80,15 @@ SurfaceFunction & SurfaceFunction::operator*=(double scaling)
         return *this;
 }
 
+SurfaceFunction & SurfaceFunction::operator/=(double scaling)
+{
+	if (scaling == 0.0)
+		throw std::runtime_error("You are dividing by zero!");
+	this->name = boost::lexical_cast<std::string>(scaling) + "/" + this->name;
+	this->values /= scaling;
+        return *this;
+}
+
 void SurfaceFunction::setValues(double * values_) 
 {
 	if (!allocated)
@@ -90,7 +99,7 @@ void SurfaceFunction::setValues(double * values_)
 	for (int i = 0; i < nPoints; ++i) 
 	{
 		values(i) = values_[i];
-		}
+	}
 }
 
 void SurfaceFunction::getValues(double * values_) 

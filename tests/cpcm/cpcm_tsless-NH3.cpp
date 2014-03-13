@@ -37,8 +37,8 @@ TEST(CPCMSolver, NH3TsLess)
 	// Set up cavity
 	Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
 	Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
-    Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
-    Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
+        Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
+        Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
 	std::vector<Sphere> spheres;
 	Sphere sph1(N,  2.929075493);
 	Sphere sph2(H1, 2.267671349);
@@ -54,8 +54,9 @@ TEST(CPCMSolver, NH3TsLess)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	bool symm = true;
 	double correction = 0.0;
-	CPCMSolver solver(gfInside, gfOutside, correction);
+	CPCMSolver solver(gfInside, gfOutside, symm, correction);
 	solver.buildSystemMatrix(cavity);
 
 	double Ncharge = 7.0;

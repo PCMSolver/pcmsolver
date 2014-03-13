@@ -53,7 +53,8 @@ TEST(IEFSolver, pointChargeGePolC1)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	bool symm = true;
+	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -91,7 +92,8 @@ TEST(IEFSolver, pointChargeGePolCs)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	bool symm = true;
+	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -132,7 +134,8 @@ TEST(IEFSolver, pointChargeGePolC2)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	bool symm = true;
+	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -173,7 +176,8 @@ TEST(IEFSolver, pointChargeGePolCi)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	bool symm = true;
+	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -214,7 +218,8 @@ TEST(IEFSolver, pointChargeGePolC2h)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	bool symm = true;
+	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -255,7 +260,8 @@ TEST(IEFSolver, pointChargeGePolD2)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	bool symm = true;
+	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -296,7 +302,8 @@ TEST(IEFSolver, pointChargeGePolC2v)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	bool symm = true;
+	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;
@@ -337,7 +344,8 @@ TEST(IEFSolver, pointChargeGePolD2h)
 	double permittivity = 78.39;
 	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
 	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
-	IEFSolver solver(gfInside, gfOutside);
+	bool symm = true;
+	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
 
 	double charge = 1.0;

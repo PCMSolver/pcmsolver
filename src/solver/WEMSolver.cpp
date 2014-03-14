@@ -4,6 +4,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include "Config.hpp"
@@ -22,7 +23,6 @@
 #include <Eigen/Dense>
 #pragma warning pop
 #endif
-//#include "Getkw.h"
 
 extern "C"
 {
@@ -63,23 +63,20 @@ void WEMSolver::initWEMMembers()
 	nQuadPoints = 0;
 }
 
-/*
-WEMSolver::WEMSolver(const Section & solver) : PCMSolver(solver) {
-	initWEMMembers();
-}*/
-
 WEMSolver::~WEMSolver()
 {
-	if(nodeList != NULL)    free(nodeList);
-	if(elementList != NULL) free_patchlist(&elementList,nFunctions);
-	if(pointList != NULL)   free_points(&pointList, nPatches, nLevels);
-	if(systemMatricesInitialized_){
+	if (nodeList != NULL)    free(nodeList);
+	if (elementList != NULL) free_patchlist(&elementList,nFunctions);
+	if (pointList != NULL)   free_points(&pointList, nPatches, nLevels);
+	if (systemMatricesInitialized_)
+	{
 		free_sparse2(&S_i_);
 		if(integralEquation == Full) free_sparse2(&S_e_);
 	}
 }
 
-void WEMSolver::uploadCavity(const WaveletCavity & cavity) {
+void WEMSolver::uploadCavity(const WaveletCavity & cavity) 
+{
 	nPatches = cavity.getNPatches();
 	nLevels = cavity.getNLevels();
 	int n = (1<<nLevels);
@@ -87,9 +84,12 @@ void WEMSolver::uploadCavity(const WaveletCavity & cavity) {
 	alloc_points(&pointList, nPatches, nLevels);
 	int kk = 0;
 	// Ask Helmut about index switch
-	for (size_t i = 0; i < nPatches; i++) {
-		for (int j = 0; j <= n; j++) {
-			for (int k = 0; k <= n; k++) {
+	for (size_t i = 0; i < nPatches; ++i) 
+	{
+		for (int j = 0; j <= n; ++j) 
+		{
+			for (int k = 0; k <= n; ++k) 
+			{
 				Eigen::Vector3d p = cavity.getNodePoint(kk);
 				pointList[i][k][j] = vector3_make(p(0), p(1), p(2));
 				kk++;
@@ -100,21 +100,29 @@ void WEMSolver::uploadCavity(const WaveletCavity & cavity) {
 
 void WEMSolver::buildSystemMatrix(const Cavity & cavity) 
 {
-    // Down-cast const Cavity & to const WaveletCavity *
-    if (const WaveletCavity * waveletCavity = dynamic_cast<const WaveletCavity *>(&cavity)) 
-    {
-		this->uploadCavity(*waveletCavity);
-		this->initInterpolation();
-		this->constructWavelets();
-		this->constructSystemMatrix();
-	} else {
-		throw std::runtime_error("Wavelet type cavity needed for wavelet solver.");
+	// Down-cast const Cavity & to const WaveletCavity &
+	// This is messy. The wavelet classes are not really Object-Oriented...
+	// In principle, I should be able to use Cavity directly, without
+	// traversing the inheritance hierarchy!
+	try
+	{
+		const WaveletCavity & waveletCavity = dynamic_cast<const WaveletCavity&>(cavity);
+		uploadCavity(waveletCavity);
+		initInterpolation();
+		constructWavelets();
+		constructSystemMatrix();
+	}
+	catch (const std::bad_cast & e)
+	{
+	    	throw std::runtime_error(e.what() + std::string(" Wavelet type cavity needed for wavelet solver."));
 	}
 }
 
-void WEMSolver::constructSystemMatrix(){
+void WEMSolver::constructSystemMatrix()
+{
 	constructSi();
-	if(integralEquation == Full) {
+	if(integralEquation == Full) 
+	{
 		constructSe();
 	}
 }

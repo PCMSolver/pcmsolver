@@ -5,7 +5,6 @@
   Interface functions prototypes.
 
 */
-#include <vector>
 
 #include "Config.hpp"
 #include "FCMangle.hpp"
@@ -26,7 +25,6 @@
 #endif
 
 #include "Sphere.hpp"
-#include "WaveletCavity.hpp"
 
 /*
 
@@ -140,28 +138,86 @@ extern "C" void scale_surface_function(char * func, double * coeff);
 
  */
 
+/*! \fn void setupInput()
+ *
+ *  Sets up Input object
+ */
 void setupInput();
 
+/*! \fn void initCavity()
+ *  
+ *  Creates Cavity object
+ */
 void initCavity(); 
 
+/*! \fn void initSolver()
+ *
+ *  Creates PCMSolver object
+ */
 void initSolver();
 
-WaveletCavity * initWaveletCavity();
+/*! \fn void initWaveletCavity()
+ * 
+ *  Initializes the _waveletCavity global object
+ */
+void initWaveletCavity();
 
-void init_pwcsolver_();
-
-void init_pwlsolver_();
-
+/*! \fn void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
+ *  \param[in] charges_      contains charges of atomic centers
+ *  \param[in] sphereCenter_ contains coordinates of atomic centers
+ *
+ *  Initializes list of atoms and atoms positions
+ */
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
 
+/*! \fn void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_)
+ *  \param[in] charges_      contains charges of atomic centers
+ *  \param[in] sphereCenter_ contains coordinates of atomic centers
+ *  \param[in] spheres_      contains list of spheres
+ *
+ *  Generates the list of spheres needed to build the cavity from list of atoms and atoms centers
+ *  Uses one of the predefined sets of radii
+ */
 void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
+/*! \fn void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_)
+ *  \param[in] sphereCenter_ contains coordinates of atomic centers
+ *  \param[in] spheres_      contains list of spheres
+ *
+ *  Generates the list of spheres needed to build the cavity from list of atoms centers
+ *  Substitures radii on specified atoms with custom values from input
+ */
 void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
+/*! \fn bool surfaceFunctionExists(const std::string & name)
+ *  \param[in] name name of the SurfaceFunction
+ *
+ *  Checks if SurfaceFunction exists
+ */
 bool surfaceFunctionExists(const std::string & name);
 
+/*! \fn template<typename T> void safe_delete( T *& ptr );
+ *  \param[in] ptr the pointer to be deleted
+ *  \tparam    T   the type of the pointed-to object
+ *
+ *  Implements safe deletion of pointers
+ */
 template<typename T> 
 void safe_delete( T *& ptr ); 
+
+/*! \fn inline void printer(const std::string & message)
+ *  \param[in] message the message to be printed
+ *
+ *  Flushes message to host program printing unit
+ */
+inline void printer(const std::string & message);
+
+/*! \fn inline void printer(const std::ostringstream & stream)
+ *  \param[in] stream the message to be printed
+ *
+ *  Flushes stream to host program printing unit
+ */
+inline void printer(std::ostringstream & stream);
 
 #endif // INTERFACE_HPP
 

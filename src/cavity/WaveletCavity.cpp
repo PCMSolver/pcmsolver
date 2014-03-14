@@ -21,12 +21,11 @@
 #include <Eigen/Dense>
 #pragma warning pop
 #endif
-//#include "Getkw.h"
 
 extern "C"
 {
-	//#include "WEM.h"
-	//#include "read_points.h"
+//#include "WEM.h"
+//#include "read_points.h"
 #include "vector2.h"
 #include "vector3.h"
 #include "interpolate.h"
@@ -142,6 +141,8 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
 	elementCenter_.resize(Eigen::NoChange, nElements_);
 	elementNormal_.resize(Eigen::NoChange, nElements_);
 	elementArea_.resize(nElements_);
+	// The following is to guarantee that writing cavity to .npz file works
+	elementRadius_.setZero(nElements_);
 
 	int j = 0;
 	for (size_t i1 = 0; i1 < nPatches; ++i1)
@@ -230,7 +231,7 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
 	os << "Coarsity =      " << coarsity << std::endl;
 	os << "Patch Level =   " << patchLevel << std::endl;
 	os << "Number of spheres = " << nSpheres_ << std::endl;
-        os << "Number of finite elements = " << nElements_ << std::endl;
+        os << "Number of finite elements = " << nElements_;
         /*for(int i = 0; i < nElements_; i++) 
 	{
 		os << std::endl;

@@ -18,26 +18,27 @@
 inline std::string citation_message()
 {
     std::ostringstream rest;
-    std::string version(TOSTRING(PROJECT_VERSION));                                                                        
-    rest << " * PCMSolver, an API for the Polarizable Continuum Model electrostatic problem. Version " << version << "\n";
-    rest << "   Main authors: R. Di Remigio, L. Frediani, K. Mozgawa\n";
-    rest << "    With contributions from:\n";
-    rest << "     R. Bast            (CMake framework)\n";                           
-    rest << "     U. Ekstroem        (automatic differentiation library)\n";
+    std::string version(TOSTRING(PROJECT_VERSION));
+    rest << "\n" << std::endl;
+    rest << " * PCMSolver, an API for the Polarizable Continuum Model electrostatic problem. Version " << version << std::endl;
+    rest << "   Main authors: R. Di Remigio, L. Frediani, K. Mozgawa" << std::endl;
+    rest << "    With contributions from:" << std::endl;
+    rest << "     R. Bast            (CMake framework)" << std::endl;                           
+    rest << "     U. Ekstroem        (automatic differentiation library)" << std::endl;
 #if defined (WAVELET_DEVELOPMENT)
-    rest << "     H. Harbrecht       (wavelet cavity and solvers libraries)\n";
+    rest << "     H. Harbrecht       (wavelet cavity and solvers libraries)" << std::endl;
 #endif
-    rest << "     J. Juselius        (input parsing library and CMake framework)\n";
+    rest << "     J. Juselius        (input parsing library and CMake framework)" << std::endl;
 #if defined (TSLESS_DEVELOPMENT)
-    rest << "     C. S. Pomelli      (TsLess cavity library)\n";
+    rest << "     C. S. Pomelli      (TsLess cavity library)" << std::endl;
 #endif
 #if defined (WAVELET_DEVELOPMENT)
-    rest << "     M. Randrianarivony (wavelet cavity library)\n";
-    rest << "     V. Weijo           (wavelet libraries and cavity visualization scripts)\n";
+    rest << "     M. Randrianarivony (wavelet cavity library)" << std::endl;
+    rest << "     V. Weijo           (wavelet libraries and cavity visualization scripts)" << std::endl;
 #endif 
-    rest << "   Theory: - J. Tomasi, B. Mennucci and R. Cammi:\n";
-    rest << "            \"Quantum Mechanical Continuum Solvation Models\", Chem. Rev., 105 (2005) 2999\n";
-    rest << "   PCMSolver is distributed under the terms of the GNU Lesser General Public License.\n";
+    rest << "   Theory: - J. Tomasi, B. Mennucci and R. Cammi:" << std::endl;
+    rest << "            \"Quantum Mechanical Continuum Solvation Models\", Chem. Rev., 105 (2005) 2999" << std::endl;
+    rest << "   PCMSolver is distributed under the terms of the GNU Lesser General Public License." << std::endl;
     return rest.str();
 }
 #endif // CITATION_HPP

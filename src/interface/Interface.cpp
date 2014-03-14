@@ -165,11 +165,7 @@ extern "C" void compute_polarization_energy(double * energy)
 	    out_stream << ", U_en = " << boost::format("%20.14f") % UEN;
 	    out_stream << ", U_ne = " << boost::format("%20.14f") % UNE;
 	    out_stream << ", U_nn = " << boost::format("%20.14f\n") % UNN;
-	    const char * message_C = out_stream.str().c_str();
-	    size_t message_length = strlen(message_C);
-            host_writer(message_C, &message_length);
-	    // Clean-up the stream
-	    out_stream.str(std::string());
+	    printer(out_stream);
 
 	    *energy = 0.5 * ( UNN + UEN + UNE + UEE );
     } 
@@ -178,7 +174,7 @@ extern "C" void compute_polarization_energy(double * energy)
 	    SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotMEP");
 	    SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotASC");
 
-	    *energy = (*iter_pot->second) * (*iter_chg->second) * 0.5;
+	    *energy = 0.5 * (*iter_pot->second) * (*iter_chg->second);
     }
 }
 
@@ -229,9 +225,7 @@ extern "C" void get_tesserae_centers(int * its, double * center)
 
 extern "C" void print_citation()
 {
-    const char * citation = citation_message().c_str();
-    size_t citation_length = strlen(citation);
-    host_writer(citation, &citation_length);
+	printer(citation_message());
 }
 
 extern "C" void print_pcm()
@@ -240,6 +234,7 @@ extern "C" void print_pcm()
 	// we should work towards this though: "Program to an interface, not an implementation."
 	// Initialize a stream
 	std::ostringstream out_stream;
+	out_stream << "\n" << std::endl;
 	out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
 	out_stream << "========== Cavity " << std::endl;
 	out_stream << *_cavity << std::endl;
@@ -257,14 +252,7 @@ extern "C" void print_pcm()
 	out_stream << *(_solver->greenInside()) << std::endl;
 	out_stream << ".... Outside " << std::endl;
 	out_stream << *(_solver->greenOutside()) << std::endl;
-	out_stream << std::endl;
-	// Extract C-style string from C++-style string and get its length
-	const char * message_C = out_stream.str().c_str();
-	size_t message_length = strlen(message_C);
-	// Call the host_writer
-	host_writer(message_C, &message_length);
-	// Clean-up the stream
-	out_stream.str(std::string());
+	printer(out_stream);
 }
 
 extern "C" void set_surface_function(int * nts, double * values, char * name)
@@ -443,14 +431,14 @@ void initCavity()
 	std::string modelType = Input::TheInput().getSolverType();
         if (modelType == "Wavelet" || modelType == "Linear") 
 	{// Both PWC and PWL require a WaveletCavity
-		_waveletCavity = initWaveletCavity();
+		initWaveletCavity();
 	}
         else
 	{// This means in practice that the CavityFactory is now working only for GePol.
 		_cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
 	}
  	// Always save the cavity in a cavity.npz binary file
-	_cavity->saveCavity();	
+	//_cavity->saveCavity();	
 }
 
 void initSolver()
@@ -503,6 +491,10 @@ void initSolver()
 		_solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
 		_solver->buildSystemMatrix(*_cavity);
 	}
+ 	// Always save the cavity in a cavity.npz binary file
+	// Cavity should be saved to file in initCavity(), due to the dependencies of
+	// the WaveletCavity on the wavelet solvers it has to be done here...
+	_cavity->saveCavity();	
 }
 
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_) 
@@ -557,7 +549,7 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3X
 	}
 }
 
-WaveletCavity * initWaveletCavity()
+void initWaveletCavity()
 {
 	int patchLevel = Input::TheInput().getPatchLevel();
 	std::vector<Sphere> spheres = Input::TheInput().getSpheres();
@@ -566,16 +558,13 @@ WaveletCavity * initWaveletCavity()
 
 	// Just throw at this point if the user asked for a cavity for a single sphere...
 	// the wavelet code will die without any further notice anyway
-
 	if (spheres.size() == 1)
 	{
 		throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
 	}
-	 
-	WaveletCavity * cav = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
-	cav->readCavity("molec_dyadic.dat");
 	
-	return cav;
+	_waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
+	_waveletCavity->readCavity("molec_dyadic.dat");
 }
 
 bool surfaceFunctionExists(const std::string & name_) 
@@ -590,4 +579,24 @@ void safe_delete(T *& ptr)
 {
 	delete ptr;
     	ptr = NULL;
+}
+
+inline void printer(const std::string & message)
+{
+	// Extract C-style string from C++-style string and get its length
+	const char * message_C = message.c_str();
+	size_t message_length = strlen(message_C);
+	// Call the host_writer
+	host_writer(message_C, &message_length);
+}
+
+inline void printer(std::ostringstream & stream)
+{
+	// Extract C++-style string from stream
+	std::string message = stream.str();
+	// Extract C-style string from C++-style string and get its length
+	const char * message_C = message.c_str();
+	size_t message_length = strlen(message_C);
+	// Call the host_writer
+	host_writer(message_C, &message_length);
 }

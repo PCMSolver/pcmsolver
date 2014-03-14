@@ -2,6 +2,7 @@ Units = Angstrom
 Medium {
 		SolverType = Wavelet
                 EquationType = FirstKind
+		ProbeRadius = 1.385
 		Green<inside> {Type=Vacuum}
 		Green<outside> {
 				Type = UniformDielectric
@@ -13,7 +14,6 @@ Medium {
 Cavity {
 		Type = Wavelet
 		PatchLevel = 1
-		ProbeRadius = 1.385
 		Coarsity = 0.3
 		Spheres = [ 0.00,   0.00,  0.00,  1.80,
 			    0.00,  -0.96,  0.00,  1.44,

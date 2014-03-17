@@ -2,7 +2,7 @@ if (NOT DEFINED DEFAULT_Fortran_FLAGS_SET OR RESET_FLAGS)
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) # this is gfortran
     set(CMAKE_Fortran_FLAGS         "-DVAR_GFORTRAN -DGFORTRAN=445 -fPIC -fautomatic")
-    set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -fbacktrace -Wall")
+    set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -fbacktrace -Wall -fcheck=bounds")
     set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -funroll-all-loops -ftree-vectorize")
     if(ENABLE_64BIT_INTEGERS)
         set(CMAKE_Fortran_FLAGS

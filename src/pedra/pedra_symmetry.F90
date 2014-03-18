@@ -280,7 +280,7 @@
     integer, parameter   :: jpar(0:7) = [1, -1, -1, 1, -1, 1, 1, -1]
     integer              :: i, j, k, l, i0, i1, i2, ind, ipos
     integer              :: nrots, nrefl, ninvc, igroup, print_unit
-    integer, allocatable :: ixval(:, :)
+    integer              :: char_tab(0:7, 0:7)
     logical              :: lsymop(0:7)
     integer              :: jsop(0:7), ipar(0:7)
     character(3)         :: group, rep(0:7)                   
@@ -293,42 +293,39 @@
 !
 ! Builds point group given the generators
 !   
+    print_unit = 121201
     isymax = 0
     igen = 0
     maxrep = 2**nr_gen - 1
 ! igen contains the bitmap for the generators                   
     igen = [gen1, gen2, gen3]
 ! Build isymax(:, 1)
-! The j index is related to the order in which the generators are
-! specificed in the input. In DALTON (subroutine SYMINP) this goes
-! through the KASYM(3, 2) matrix...
-    j = 0
-    do i = 1, nr_gen
-        j = igen(i)
-        isymax(j, 1) = isymax(j, 1) + 2**(i-1)
-    end do
-!   do i = 1, nr_gen                                            
-!     if (igen(i) == 4) then                                    
-!       j = 3                                                   
-!     else                                                      
-!       j = igen(i)                                             
-!     end if                                                    
-!     isymax(j, 1) = isymax(j, 1) + 2**(i-1)                    
-!   end do                                                      
+!  determine to which irrep the translations belong to                                     
+! x translations
+! (igen(1) OR C2x) AND (igen(1) OR C2y) AND (igen(1) OR C2z)
+    isymax(1, 1) = iand(iand(ior(igen(1), 6), ior(igen(1), 5)), ior(igen(1), 3))
+! y translations
+! (igen(2) OR C2x) AND (igen(2) OR C2y) AND (igen(2) OR C2z)
+    isymax(2, 1) = iand(iand(ior(igen(2), 6), ior(igen(2), 5)), ior(igen(2), 3))
+! z translations
+! (igen(3) OR C2x) AND (igen(3) OR C2y) AND (igen(3) OR C2z)
+    isymax(3, 1) = iand(iand(ior(igen(3), 6), ior(igen(3), 5)), ior(igen(3), 3))
+
 ! Build isymax(:, 2)
-! R_x = (y XOR z) and cyclic permutations 
+!  determine to which irrep the rotations belong to        
+!  R_x = (y XOR z) and cyclic permutations 
     isymax(1, 2) = ieor(isymax(2, 1), isymax(3, 1))
     isymax(2, 2) = ieor(isymax(3, 1), isymax(1, 1))
     isymax(3, 2) = ieor(isymax(1, 1), isymax(2, 1))
 
     do i = 1, nr_gen
-      print *, "igen(",i,")=",igen(i)
+      write(print_unit, *) "igen(",i,")=",igen(i)
     end do      
     do i = 1, 3 
-      print *, "isymax(",i,",1)=", isymax(i, 1)
+      write(print_unit, *) "isymax(",i,",1)=", isymax(i, 1)
     end do      
     do i = 1, 3
-      print *, "isymax(",i,",2)=", isymax(i, 2)
+      write(print_unit, *) "isymax(",i,",2)=", isymax(i, 2)
     end do
 ! Build the character table
     lsymop = .false.
@@ -378,18 +375,18 @@
 ! tsaue - Here I have devised a highly empirical formula, but it works !!!
     igroup = min(7, nint((4 * nrots + 8 * ninvc + 6 * nrefl) / 3.0))
     group  = groups(igroup)
-    allocate(ixval(0:maxrep,0:maxrep))
-    ixval = 0
+    char_tab = 0
 ! Now generate the character table
     do i = 0, maxrep
-      ixval(0, i) = 1
+      ! The character of the identity is always +1 
+      char_tab(0, i) = 1
       do j = 1, nr_gen
-        ixval(igen(j), i) = nint(get_pt(iand(ishft(i,-(j-1)), 1)))
+        char_tab(igen(j), i) = nint(get_pt(iand(ishft(i,-(j-1)), 1)))
         do k = 1, (j-1)
           ind = ieor(igen(j), igen(k))
-          ixval(ind, i) = ixval(igen(j), i) * ixval(igen(k), i)
+          char_tab(ind, i) = char_tab(igen(j), i) * char_tab(igen(k), i)
           do l = 1, (k-1)
-            ixval(ieor(ind, igen(l)), i) = ixval(ind, i) * ixval(igen(l), i)
+            char_tab(ieor(ind, igen(l)), i) = char_tab(ind, i) * char_tab(igen(l), i)
           end do
         end do
       end do
@@ -400,14 +397,14 @@
       ipos = 2
 ! 1. Rotational symmetry
       if (nrots == 3) then
-        ind = (1 - ixval(jsop(1), i)) + (1 - ixval(jsop(2), i))/2
+        ind = (1 - char_tab(jsop(1), i)) + (1 - char_tab(jsop(2), i))/2
         if (ind /= 0) then
           rep(i)(1:1) = 'B'
           rep(i)(2:2) = char(ichar('0') + ind)
           ipos = 3
         end if
       else if (nrots == 1) then
-        if (ixval(jsop(1), i) == -1) then
+        if (char_tab(jsop(1), i) == -1) then
           rep(i)(1:1) = 'B'
         end if
         if (nrefl == 2) then
@@ -416,7 +413,7 @@
           else
             ind = 3
           end if
-          if (ixval(jsop(ind), i) == 1) then
+          if (char_tab(jsop(ind), i) == 1) then
             rep(i)(2:2) = '1'
           else
             rep(i)(2:2) = '2'
@@ -424,16 +421,16 @@
         end if
       else if (nrefl == 1) then
 ! 2. Mirror symmetry
-          if (ixval(jsop(1), i) == 1) then
+          if (char_tab(jsop(1), i) == 1) then
             rep(i)(2:2) = ''''
-          else if (ixval(jsop(1), i) == -1) then
+          else if (char_tab(jsop(1), i) == -1) then
             rep(i)(2:2) = '"'
           end if
       end if
 ! 3. Inversion symmetry
       if (ninvc == 1) then
         ind = nrots + 1
-        if (ixval(jsop(ind), i) == 1) then
+        if (char_tab(jsop(ind), i) == 1) then
           rep(i)(ipos:ipos) = 'g'
         else
           rep(i)(ipos:ipos) = 'u'
@@ -441,7 +438,6 @@
       end if
     end do  
 ! Output
-    print_unit = 121201
 ! 1. Group name and generators      
     write(print_unit, '(a, a3)') 'Point group: ', group
     if (nr_gen > 0) then
@@ -468,7 +464,7 @@
      write(print_unit,'(8x, a1, 8(1x, a3, 1x))') '|', (symop(jsop(j)), j = 0, maxrep)
      write(print_unit,'(3x, a6, 8a5)') '-----+', ('-----', i = 0, maxrep)
      do i = 0, maxrep
-       write(print_unit,'(4x, a3, 1x, a1, 8(1x, i3, 1x))') rep(i), '|', (ixval(jsop(j), i), j=0, maxrep)
+       write(print_unit,'(4x, a3, 1x, a1, 8(1x, i3, 1x))') rep(i), '|', (char_tab(jsop(j), i), j=0, maxrep)
      end do
 ! 4. Direct product table
       write(print_unit,'(/3x, a/)') '* Direct product table'
@@ -478,7 +474,6 @@
         write(print_unit,'(3x, 1x, a3, 1x, a1, 8(1x, a3, 1x))') rep(i), '|', (rep(ieor(i, j)), j = 0, maxrep)
       end do
     end if
-    deallocate(ixval)
 
     end subroutine build_point_group
 

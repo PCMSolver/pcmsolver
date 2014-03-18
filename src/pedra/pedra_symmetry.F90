@@ -1,6 +1,6 @@
     module pedra_symmetry
 ! NOTE: the ibtfun module is gone, as we can safely use Fortran
-!       standard intrisic functions. 
+!       standard intrinsic functions. 
 !       Mapping between intrinsics and ibtfun:
 !           ibtand(i, j) <-> iand(i, j)             
 !           ibtor(i, j)  <-> ior(i, j)
@@ -265,6 +265,11 @@
     end subroutine init_D2h
 
     subroutine build_point_group(nr_gen, gen1, gen2, gen3)
+!
+! Builds point group given the generators
+! Originally written by Trond Saue for DALTON/DIRAC
+! Copied and adapted by Roberto Di Remigio                   
+!   
 
     integer, intent(in)  :: nr_gen                   
     integer, intent(in)  :: gen1, gen2, gen3
@@ -274,25 +279,24 @@
     integer              :: igen(3)
 ! Integer representation of the rotations bitmaps                   
     integer, parameter   :: irots(3) = [3, 5, 6]
+    integer, parameter   :: rots(3) = [6, 5, 3]
 ! Integer representation of the reflections bitmaps                   
     integer, parameter   :: irefl(3) = [4, 2, 1] 
 ! Parity of the symmetry operations bitmaps                   
     integer, parameter   :: jpar(0:7) = [1, -1, -1, 1, -1, 1, 1, -1]
-    integer              :: i, j, k, l, i0, i1, i2, ind, ipos
+    integer              :: i, j, k, l, i0, i1, i2, ind, ipos, bitmap
     integer              :: nrots, nrefl, ninvc, igroup, print_unit
     integer              :: char_tab(0:7, 0:7)
     logical              :: lsymop(0:7)
     integer              :: jsop(0:7), ipar(0:7)
-    character(3)         :: group, rep(0:7)                   
+    character(3)         :: group, rep(0:7)
     character(3), parameter :: groups(0:7) = ['C1 ', 'C2 ', 'Cs ', &
                                               'Ci ', 'D2 ', 'C2v', &
                                               'C2h', 'D2h']
     character(3), parameter :: symop(0:7) = [' E ', 'Oyz', 'Oxz', &
                                              'C2z', 'Oxy', 'C2y', &
                                              'C2x', ' i ']
-!
-! Builds point group given the generators
-!   
+
     print_unit = 121201
     isymax = 0
     igen = 0
@@ -301,15 +305,20 @@
     igen = [gen1, gen2, gen3]
 ! Build isymax(:, 1)
 !  determine to which irrep the translations belong to                                     
-! x translations
-! (igen(1) OR C2x) AND (igen(1) OR C2y) AND (igen(1) OR C2z)
-    isymax(1, 1) = iand(iand(ior(igen(1), 6), ior(igen(1), 5)), ior(igen(1), 3))
-! y translations
-! (igen(2) OR C2x) AND (igen(2) OR C2y) AND (igen(2) OR C2z)
-    isymax(2, 1) = iand(iand(ior(igen(2), 6), ior(igen(2), 5)), ior(igen(2), 3))
-! z translations
-! (igen(3) OR C2x) AND (igen(3) OR C2y) AND (igen(3) OR C2z)
-    isymax(3, 1) = iand(iand(ior(igen(3), 6), ior(igen(3), 5)), ior(igen(3), 3))
+! Loop over Cartesian axes
+    do i = 1, 3 
+      bitmap = 0
+! Loop over generators      
+      do j = 1, nr_gen
+! Apply generators on Cartesian axes rots(i) and check the character
+        if (nint(get_pt(ior(igen(j), rots(i)))) == -1) then
+! Set the bitmap                
+          bitmap = ibset(bitmap, j)
+        end if
+      end do
+! Right-shift the bitmap and assign to isymax      
+      isymax(i, 1) = ishft(bitmap, -1)
+    end do
 
 ! Build isymax(:, 2)
 !  determine to which irrep the rotations belong to        
@@ -318,15 +327,6 @@
     isymax(2, 2) = ieor(isymax(3, 1), isymax(1, 1))
     isymax(3, 2) = ieor(isymax(1, 1), isymax(2, 1))
 
-    do i = 1, nr_gen
-      write(print_unit, *) "igen(",i,")=",igen(i)
-    end do      
-    do i = 1, 3 
-      write(print_unit, *) "isymax(",i,",1)=", isymax(i, 1)
-    end do      
-    do i = 1, 3
-      write(print_unit, *) "isymax(",i,",2)=", isymax(i, 2)
-    end do
 ! Build the character table
     lsymop = .false.
 ! Activate all symmetry operations of the group
@@ -460,12 +460,12 @@
                   (symop(ieor(jsop(i), jsop(j))), j = 0, maxrep)
       end do
 ! 3. Character table
-     write(print_unit,'(/3x, a/)') '* Character table'
-     write(print_unit,'(8x, a1, 8(1x, a3, 1x))') '|', (symop(jsop(j)), j = 0, maxrep)
-     write(print_unit,'(3x, a6, 8a5)') '-----+', ('-----', i = 0, maxrep)
-     do i = 0, maxrep
-       write(print_unit,'(4x, a3, 1x, a1, 8(1x, i3, 1x))') rep(i), '|', (char_tab(jsop(j), i), j=0, maxrep)
-     end do
+      write(print_unit,'(/3x, a/)') '* Character table'
+      write(print_unit,'(8x, a1, 8(1x, a3, 1x))') '|', (symop(jsop(j)), j = 0, maxrep)
+      write(print_unit,'(3x, a6, 8a5)') '-----+', ('-----', i = 0, maxrep)
+      do i = 0, maxrep
+        write(print_unit,'(4x, a3, 1x, a1, 8(1x, i3, 1x))') rep(i), '|', (char_tab(jsop(j), i), j=0, maxrep)
+      end do
 ! 4. Direct product table
       write(print_unit,'(/3x, a/)') '* Direct product table'
       write(print_unit,'(8x, a1, 8(1x, a3, 1x))') '|', (rep(i), i = 0, maxrep)

@@ -17,10 +17,11 @@
 #pragma warning pop
 #endif
 
-#include "GePolCavity.hpp"
-#include "Vacuum.hpp"
-#include "UniformDielectric.hpp"
 #include "CPCMSolver.hpp"
+#include "GePolCavity.hpp"
+#include "UniformDielectric.hpp"
+#include "Vacuum.hpp"
+#include "Symmetry.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -40,7 +41,11 @@ TEST(CPCMSolver, pointChargeGePol)
 	Sphere sph1(N, 2.929075493);      		
 	spheres.push_back(sph1);          		
 	double area = 0.4;                		
-	GePolCavity cavity(spheres, area);
+	double probeRadius = 0.0;
+	double minRadius = 100.0;
+	// C1 
+	Symmetry group = buildGroup(0, 0, 0, 0);
+	GePolCavity cavity = GePolCavity(spheres, area, probeRadius, minRadius, group);
 	cavity.saveCavity("point.npz");
 	// The point charge is located at the origin.
 	// The potential at cavity point s_I is Q/|s_I|

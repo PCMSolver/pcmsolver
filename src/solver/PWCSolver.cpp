@@ -181,7 +181,7 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorX
 	int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, nPatches, nLevels);
 	tdwtKon(u, nLevels, nFunctions);
 	dwtKon(u, nLevels, nFunctions);
-	for (int i = 0; i < nFunctions; ++i) 
+	for (size_t i = 0; i < nFunctions; ++i) 
 	{
 		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
 	}

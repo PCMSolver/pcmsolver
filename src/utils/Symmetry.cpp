@@ -41,38 +41,14 @@
  *
  */
 
-Symmetry buildGroup(int _pGroup)
+Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3)
 {
 	Symmetry group;
-	switch (_pGroup)
-	{
-		case C1:
-			group = Symmetry(C1, "C1", 0);
-			break;
-		case Cs:
-			group = Symmetry(Cs, "Cs", 1);
-			break;
-		case C2:
-			group = Symmetry(C2, "C2", 1);
-			break;
-		case Ci:
-			group = Symmetry(Ci, "Ci", 1);
-			break;
-		case C2h:
-			group = Symmetry(C2h, "C2h", 2);
-			break;
-		case D2:
-			group = Symmetry(D2, "D2", 2);
-			break;
-		case C2v:
-			group = Symmetry(C2v, "C2v", 2);
-			break;
-		case D2h:
-			group = Symmetry(D2h, "D2h", 3);
-			break;
-		default:
-			throw std::runtime_error("Point group not recognized.");
-	}
+	int gen[3];
+	gen[0] = _gen1;
+	gen[1] = _gen2;
+	gen[2] = _gen3;
+	group = Symmetry(_nr_gen, gen);
 	return group;
 }
 

@@ -8,7 +8,9 @@
           xtscor_, ytscor_, ztscor_, ar_,                              &
           xsphcor_, ysphcor_, zsphcor_, rsph_,                         &
           nts_, ntsirr_, nesfp_, addsph_,                              &
-          xe_, ye_, ze_, rin_, avgArea_, rsolv_, ret_, pgroup_) bind(c, name='generatecavity_cpp')
+          xe_, ye_, ze_, rin_, avgArea_, rsolv_, ret_,                 &
+          nr_gen_, gen1_, gen2_, gen3_)                                &
+          bind(c, name='generatecavity_cpp')
 
       use, intrinsic :: iso_c_binding    
       use pedra_symmetry, only: get_point_group, point_group
@@ -27,7 +29,7 @@
       real(c_double)  :: avgArea_, rsolv_, ret_
       integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
       logical(c_bool) :: pedra_file_exists
-      integer(c_int)  :: pgroup_
+      integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_ 
 
       integer(c_int)   :: i
       integer(c_int)   :: error_code
@@ -53,9 +55,9 @@
       areats = avgArea_
       icesph = 1
       iprpcm = 3
-      call get_point_group(pgroup, pgroup_)
-      write(lvpri, *) " Point group is ", pgroup%group_name
+      call get_point_group(lvpri, pgroup, nr_gen_, gen1_, gen2_, gen3_)
       rsolv = rsolv_
+! These parameters are fixed see one of the original GePol papers      
       omega = 40.0d+00
       fro = 0.7d+00
 ! ret is the minimum radius of added spheres

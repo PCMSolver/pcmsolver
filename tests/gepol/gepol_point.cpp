@@ -19,6 +19,7 @@
 #endif
 
 #include "GePolCavity.hpp"
+#include "Symmetry.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -41,7 +42,9 @@ class GePolCavityTest : public ::testing::Test
 			Sphere sph1(origin,  1.0);
 			spheres.push_back(sph1);
 			double area = 0.4;
-			cavity = GePolCavity(spheres, area);
+			// C1
+			Symmetry pGroup = buildGroup(0, 0, 0, 0);
+			cavity = GePolCavity(spheres, area, 0.0, 100.0, pGroup);
 			cavity.saveCavity("point.npz");
 		}
 };

@@ -33,7 +33,8 @@ extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
 			     double * xsphcor, double * ysphcor, double * zsphcor, double * rsph, 
 	                     int * nts, int * ntsirr, int * nesfp, int * addsph,
 	                     double * xe, double * ye, double * ze, double * rin, 
-			     double * avgArea, double * rsolv, double * ret, int * pgroup);
+			     double * avgArea, double * rsolv, double * ret, 
+                             int * nr_gen, int * gen1, int * gen2, int * gen3);
 
 void GePolCavity::build(int maxts, int maxsph, int maxvert) 
 {
@@ -89,14 +90,18 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 	double * rin = radii_scratch.data();
 
         addedSpheres = 0;
-	// Integer representing the point group
-	int pg = pointGroup_.groupInteger();
+	// Number of generators and generators of the point group
+        int nr_gen = pointGroup_.nrGenerators();
+        int gen1 = pointGroup_.generators(0);
+        int gen2 = pointGroup_.generators(1);
+        int gen3 = pointGroup_.generators(2);
 
         // Go PEDRA, Go!	
 	generatecavity_cpp(&maxts, &maxsph, &maxvert,
                            xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph, 
 		           &nts, &ntsirr, &nSpheres_, &addedSpheres, 
-			   xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius, &pg);
+			   xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius, 
+                           &nr_gen, &gen1, &gen2, &gen3);
 	
 	// The "intensive" part of updating the spheres related class data members will be of course
 	// executed iff addedSpheres != 0

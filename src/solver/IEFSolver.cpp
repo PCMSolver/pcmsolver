@@ -61,7 +61,7 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 	// Perform symmetry blocking
 	// If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
 	// into "block diagonal" when all other manipulations are done.
-	if (cav.pointGroup().groupInteger())
+	if (cav.pointGroup().nrGenerators() != 0)
 	{
 		symmetryBlocking(DI, cavitySize, dimBlock, nrBlocks);
 		symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
@@ -125,7 +125,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 	// Perform symmetry blocking
 	// If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
 	// into "block diagonal" when all other manipulations are done.
-	if (cav.pointGroup().groupInteger())
+	if (cav.pointGroup().nrGenerators() != 0)
 	{
 		symmetryBlocking(DI, cavitySize, dimBlock, nrBlocks);
 		symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);

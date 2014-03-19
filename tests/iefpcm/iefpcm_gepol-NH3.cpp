@@ -21,6 +21,7 @@
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
+#include "Symmetry.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -49,7 +50,11 @@ TEST(IEFSolver, NH3GePol)
 	spheres.push_back(sph3);
 	spheres.push_back(sph4);
 	double area = 0.4;
-	GePolCavity cavity(spheres, area);
+	double probeRadius = 0.0;
+	double minRadius = 100.0;
+	// C1 
+	Symmetry group = buildGroup(0, 0, 0, 0);
+	GePolCavity cavity = GePolCavity(spheres, area, probeRadius, minRadius, group);
 	cavity.saveCavity("nh3.npz");
 	
 	double permittivity = 78.39;

@@ -20,6 +20,7 @@
 
 #include "GePolCavity.hpp"
 #include "PhysicalConstants.hpp"
+#include "Symmetry.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -51,7 +52,9 @@ class GePolCavityH3Test : public ::testing::Test
 			double area = 0.2 / convertBohr2ToAngstrom2;
 			double probeRadius = 1.385 / convertBohrToAngstrom;
 			double minRadius = 0.2 / convertBohrToAngstrom;
-			cavity = GePolCavity(spheres, area, probeRadius, minRadius);
+			// C1
+			Symmetry pGroup = buildGroup(0, 0, 0, 0);
+			cavity = GePolCavity(spheres, area, probeRadius, minRadius, pGroup);
 			cavity.saveCavity("h3+.npz");
 		}
 };

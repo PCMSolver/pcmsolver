@@ -57,7 +57,7 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
 	// Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
 	// If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
 	// into "block diagonal" when all other manipulations are done.
-	if (cav.pointGroup().groupInteger())
+	if (cav.pointGroup().nrGenerators() != 0)
 	{
 		symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
 	}

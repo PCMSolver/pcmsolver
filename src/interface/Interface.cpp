@@ -70,6 +70,7 @@
 #include "SolverData.hpp"
 #include "Sphere.hpp"
 #include "SurfaceFunction.hpp"
+#include "Symmetry.hpp"
 
 typedef std::map<std::string, shared_ptr<SurfaceFunction> > SurfaceFunctionMap;
 typedef std::pair<std::string, shared_ptr<SurfaceFunction> > SurfaceFunctionPair;
@@ -421,10 +422,12 @@ void initCavity()
 	double coarsity = Input::TheInput().getCoarsity();
 	std::string restart = Input::TheInput().getCavityFilename();
        
-	int pg;
-	set_point_group(&pg);
+	int nr_gen;
+	int gen1, gen2, gen3;
+	set_point_group(&nr_gen, &gen1, &gen2, &gen3);
+	Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3); 
 
-        cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, minRadius, patchLevel, coarsity, restart, pg);          
+        cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, minRadius, patchLevel, coarsity, restart, pg);
                                                                                                                                                       
 	// Get the right cavity from the Factory
 	// TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)

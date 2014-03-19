@@ -67,7 +67,7 @@ extern "C" void collect_atoms(double * charges, double * centers);
 
 extern "C" void host_writer(const char * message, size_t * message_length);
 
-extern "C" void set_point_group(int * pg);
+extern "C" void set_point_group(int * nr_generators, int * gen1, int * gen2, int * gen3);
 
 #define get_cavity_size \
 	FortranCInterface_GLOBAL_(get_cavity_size, GET_CAVITY_SIZE)

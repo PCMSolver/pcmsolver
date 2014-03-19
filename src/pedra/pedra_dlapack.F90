@@ -34,6 +34,7 @@
     public dsyevv3 ! Diagonalize using the analytical method
     public dsyevh3 ! Diagonalize using an hybrid analytical/numerical method 
     public dsyevj3 ! Diagonalize using the Jacobi method
+    public order   ! Sort eigenvalues and eigenvectors in decreasing order
 
     private
 
@@ -373,7 +374,7 @@
       DOUBLE PRECISION THRESH
       INTEGER          I, X, Y, R
 
-!     Initialize Q to the identitity matrix
+!     Initialize Q to the identity matrix
 !     --- This loop can be omitted if only the eigenvalues are desired ---
       DO 10 X = 1, N
         Q(X,X) = 1.0D0
@@ -470,7 +471,7 @@
    61     CONTINUE
    60   CONTINUE
    40 CONTINUE
-
+      
       PRINT *, "DSYEVJ3: No convergence."
             
       END SUBROUTINE
@@ -736,5 +737,46 @@
           
     END SUBROUTINE
 ! End of subroutine DSYTRD3
+
+    subroutine order(evec, eval, n, nevec)
+!
+! Purpose: order the N values in EVAL and their associated vectors
+!          in EVEC so EVAL(i+1) .ge. EVAL(i)
+!
+! Revisions:
+!   29-Jul-1992 hjaaj (only dswap if nevec .gt. 0)
+!    2-Nov-1984 hjaaj (new parameter NEVEC, EVEC(1:NEVEC,1:N))
+!   27-Oct-1984 hjaaj (reduced number of swaps)
+!
+    use pedra_dblas, only: dswap
+
+    integer,    intent(in) :: n
+    real(8), intent(inout) :: evec(*), eval(*)
+
+    integer :: beg, imin, nevec, i, j
+    real(8) :: emin
+   
+    if (n.le.1) return
+    beg = 1
+    do i=1,n-1
+      emin = eval(i)
+      imin = i
+      do j=i+1,n
+        if (eval(j) .lt. emin) then
+          emin = eval(j)
+          imin = j
+        end if
+      end do
+      if (imin.ne.i) then
+        eval(imin)=eval(i)
+        eval(i)=emin
+        if (nevec .gt. 0) then
+          call dswap(nevec,evec(beg),1,evec((imin-1)*nevec+1),1)
+        end if
+      end if
+      beg = beg + nevec
+    end do
+
+    end subroutine order
 
     end module pedra_dlapack

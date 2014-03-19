@@ -9,27 +9,6 @@
 
     contains
 
-    subroutine dzero(dx, length)
-
-!...................................................................
-! Last revision 5-May-1984 by Hans Jorgen Aa. Jensen
-!
-!   Subroutine DZERO sets a real array of length *LENGTH*
-!   to zero.
-!...................................................................
-    integer, intent(in)    :: length
-    real(8), intent(inout) :: dx(length)
-
-    integer :: i
-
-    if (length <= 0) return
-
-    do i = 1, length
-        dx(i) = 0.0d0
-    end do
-
-    end subroutine dzero
-
     subroutine around(head, print_unit)
 
     character(len=*), intent(in) :: head
@@ -58,8 +37,7 @@
    ! for 3x3 matrices (thus avoiding having to link BLAS/LAPACK)
    !
   
-    use pedra_dblas, only: ddot
-    use pedra_dlapack, only: dsyevj3
+    use pedra_dlapack, only: dsyevj3, order
 
     integer,    intent(in) :: n
     real(8),    intent(in) :: cor(n, 3)
@@ -87,7 +65,7 @@
     ! T_ij = sum_l m_l((x_l)_k(x_l)_k delta_ij - (x_l)_i(x_l)_j)
     do i = 1, n ! Loop on centers
        ! Calculate diagonal elements
-       r2 = tmass(i) * ddot(3, cor(i, 1), n, cor(i, 1), n)
+       r2 = tmass(i) * dot_product(cor(i, :), cor(i, :)) 
        do j = 1, 3 ! Loop on coordinates
           ! Build diagonal elements
           tinert(j, j) = tinert(j, j) + r2
@@ -109,10 +87,9 @@
     end do
 
     temp = tinert
-    
     ! Now diagonalize it, we want back both the eigenvalues and eigenvectors
     call dsyevj3(temp, eigvec, eigval)
-    ! Order by decreasing eigenvalue
+    ! Eigenvalues and eigenvectors are sorted in decreasing order
     call order(eigvec, eigval, 3, 3)
    
     if ( abs(eigval(3)-eigval(2)-eigval(1)) .lt. tstlin) then
@@ -145,46 +122,5 @@
     end if
     
     end subroutine wlkdin
-
-    subroutine order(evec, eval, n, nevec)
-!
-! Purpose: order the N values in EVAL and their associated vectors
-!          in EVEC so EVAL(i+1) .ge. EVAL(i)
-!
-! Revisions:
-!   29-Jul-1992 hjaaj (only dswap if nevec .gt. 0)
-!    2-Nov-1984 hjaaj (new parameter NEVEC, EVEC(1:NEVEC,1:N))
-!   27-Oct-1984 hjaaj (reduced number of swaps)
-!
-    use pedra_dblas, only: dswap
-
-    integer,    intent(in) :: n
-    real(8), intent(inout) :: evec(n), eval(n)
-
-    integer :: beg, imin, nevec, i, j
-    real(8) :: emin
-    
-    if (n.le.1) return
-    beg = 1
-    do i=1,n-1
-      emin = eval(i)
-      imin = i
-      do j=i+1,n
-        if (eval(j) .lt. emin) then
-          emin = eval(j)
-          imin = j
-        end if
-      end do
-      if (imin.ne.i) then
-        eval(imin)=eval(i)
-        eval(i)=emin
-        if (nevec .gt. 0) then
-          call dswap(nevec,evec(beg),1,evec((imin-1)*nevec+1),1)
-        end if
-      end if
-      beg = beg + nevec
-    end do
-
-    end subroutine order
 
     end module pedra_utils

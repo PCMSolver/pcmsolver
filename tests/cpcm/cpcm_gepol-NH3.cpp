@@ -17,10 +17,11 @@
 #pragma warning pop
 #endif
 
-#include "GePolCavity.hpp"
-#include "Vacuum.hpp"
-#include "UniformDielectric.hpp"
 #include "CPCMSolver.hpp"
+#include "GePolCavity.hpp"
+#include "Symmetry.hpp"
+#include "UniformDielectric.hpp"
+#include "Vacuum.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -49,7 +50,11 @@ TEST(CPCMSolver, NH3GePol)
 	spheres.push_back(sph3);
 	spheres.push_back(sph4);
 	double area = 0.4;
-	GePolCavity cavity(spheres, area);
+	double probeRadius = 0.0;
+	double minRadius = 100.0;
+	// C1 
+	Symmetry group = buildGroup(0, 0, 0, 0);
+	GePolCavity cavity = GePolCavity(spheres, area, probeRadius, minRadius, group);
 	cavity.saveCavity("nh3.npz");
 	
 	double permittivity = 78.39;

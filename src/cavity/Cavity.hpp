@@ -73,7 +73,7 @@ class Cavity
 					sphereRadius_(i) = spheres_[i].radius();
 				}
 			}
-		Cavity(const std::vector<Sphere> & _spheres, int pg) : spheres_(_spheres), built(false), pointGroup_(buildGroup(pg))
+		Cavity(const std::vector<Sphere> & _spheres, const Symmetry & pg) : spheres_(_spheres), built(false), pointGroup_(pg)
 			{
                 		nSpheres_ = spheres_.size();
 				sphereCenter_.resize(Eigen::NoChange, nSpheres_);

@@ -21,6 +21,7 @@
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
+#include "Symmetry.hpp"
 
 // Disable obnoxious warnings from Google Test headers
 #if defined (__GNUC__)
@@ -39,8 +40,12 @@ TEST(IEFSolver, pointChargeGePol)
 	std::vector<Sphere> spheres;      		
 	Sphere sph1(N, 2.929075493);      		
 	spheres.push_back(sph1);          		
-	double area = 0.4;                		
-	GePolCavity cavity(spheres, area);
+	double area = 0.4;
+	double probeRadius = 0.0;
+	double minRadius = 100.0;
+	// C1 
+	Symmetry group = buildGroup(0, 0, 0, 0);
+	GePolCavity cavity = GePolCavity(spheres, area, probeRadius, minRadius, group);
 	cavity.saveCavity("point.npz");
 	
 	double permittivity = 78.39;

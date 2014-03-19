@@ -27,33 +27,8 @@
  *  \brief Contains very basic info about symmetry (only Abelian groups)
  *  \author Roberto Di Remigio
  *  \date 2014
- *  
- *   The PCM part needs to know very little about point group symmetry:
- *   1. we need to pass the correct string with the group name to PEDRA;       
- *   2. PEDRA will construct the cavity using the symmetric generator;         
- *   3. Once we have the correct cavity we build the whole PCM matrix;         
- *   4. Last step is to block diagonalize the PCM matrix.                      
- *      The transformation is built using the concept of parity of bitstrings: 
- *       Eigen::MatrixXd U(maxrep, maxrep);                                    
- *       for ( int i = 0; i < maxrep; ++i)                                     
- *       {                                                                     
- *       		for ( int j = 0; j < maxrep; ++j)                     
- *       		{                                                     
- *       			U(i, j) = parity(i & j);                      
- *       		}                                                     
- *       }                                                                     
- *       maxrep is the number of nontrivial symmetry operations,               
- *       i.e. nr_operations - 1 (the identity - E - is the trivial             
- *       operation in every group)                                             
- *       The parity vector is defined as:                                      
- *       Eigen::VectorXd parity(8) << 1.0, -1.0, -1.0, 1.0,                    
- *                                   -1.0,  1.0, 1.0, -1.0;                    
- *                                                                             
- *   The conclusion is, instead of adapting  PSI4 and mpqc way of handling     
- *   symmetry, let us just use what we know, i.e. the DALTON (and DIRAC)       
- *   way of handling symmetry.                                                 
- *   Lots of the infrastructure will not be needed as we don't actually        
- *   need to build character tables and matrix representations.                
+ *
+ *  Just a wrapper around a vector containing the generators of the group
  */
 
 class Symmetry
@@ -71,17 +46,33 @@ class Symmetry
 		 * Number of generators
 		 */
 		int nrGenerators_;
+		/*!
+		 * Generators
+		 */
+		int generators_[3];
 	public:
 		Symmetry() {}
-		Symmetry(int _pGroup, const std::string & _name, int gen) : 
-			groupInteger_(_pGroup), groupName_(_name), nrGenerators_(gen) {};
+		Symmetry(int nr_gen, int gen[3]) : 
+			groupInteger_(0), groupName_(""), nrGenerators_(nr_gen) 
+			{
+				std::copy(gen, gen + nrGenerators_, generators_);
+			};
+		Symmetry(int pGroup, const std::string & name, int nr_gen, int gen[3]) : 
+			groupInteger_(pGroup), groupName_(name), nrGenerators_(nr_gen)
+			{
+				std::copy(gen, gen + nrGenerators_, generators_);
+			};
 		Symmetry(const Symmetry & other) : 
 			groupInteger_(other.groupInteger_), groupName_(other.groupName_), 
-			nrGenerators_(other.nrGenerators_) {};
+			nrGenerators_(other.nrGenerators_)
+			{
+				std::copy(other.generators_, other.generators_ + nrGenerators_, generators_);
+			};
 		~Symmetry() {}
 		int groupInteger() const { return groupInteger_; }
 		std::string groupName() const { return groupName_; }
 		int nrGenerators() const { return nrGenerators_; }
+		int generators(int i) const { return generators_[i]; }
 		/*!
 		 * Number of irreducible representations,
 		 * nrIrrep_ = 2**nrGenerators_
@@ -99,8 +90,8 @@ class Symmetry
 /*!
  * int-to-point_group mapping
  */
-enum pGroup { C1, Cs, C2, Ci, C2h, D2, C2v, D2h };
+enum pGroup { C1, C2, Cs, Ci, D2, C2v, C2h, D2h };
 
-Symmetry buildGroup(int _pGroup);
+Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3);
 
 #endif // SYMMETRY_HPP

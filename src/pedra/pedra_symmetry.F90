@@ -25,20 +25,11 @@
 !   5  101   C2y     1.0
 !   6  110   C2x     1.0
 !   7  111    i     -1.0
-! B. Indexing of irreps for the Abelian groups
-! C1:  A  <-> 0
-! Cs:  A' <-> 0; A'' <-> 1
-! C2:  A  <-> 0; B   <-> 1
-! Ci:  Ag <-> 0; Au  <-> 1
-! C2h: Ag <-> 0; Au  <-> 1; Bu  <-> 2; Bg  <-> 3
-! D2:  A  <-> 0; B3  <-> 1; B2  <-> 2; B1  <-> 3
-! C2v: A1 <-> 0; B1  <-> 1; B2  <-> 2; A2  <-> 3
-! D2h: Ag <-> 0; B3u <-> 1; B2u <-> 2; B1g <-> 3; B1u <-> 4; B2g <-> 5; B3g <-> 6; Au <-> 7
-! C. Indexing of isymax matrix
+! B. Indexing of isymax matrix
 !  The isymax array contains the irrep to which the linear functions
 !  (first column) and the rotations (second column) belong. The indexing
 !  is given above.
-! D. Indexing of the jsop array
+! C. Indexing of the jsop array
 !  The jsop array contains the position at which the operation
 !  i (index given in point A) appears
 !       
@@ -114,132 +105,8 @@
 
     global_print_unit = print_unit
     pgroup = build_point_group(nr_gen, gen1, gen2, gen3)
-!   ! Cs
-!   call build_point_group(1, 1, 0, 0)
-!   ! C2
-!   call build_point_group(1, 3, 0, 0)
-!   ! Ci
-!   call build_point_group(1, 7, 0, 0)
-!   ! C2h
-!   call build_point_group(2, 4, 7, 0)
-!   ! D2
-!   call build_point_group(2, 3, 6, 0)
-!   ! C2v
-!   call build_point_group(2, 1, 2, 0)
-!   ! D2h
-!   call build_point_group(3, 4, 2, 1)
    
     end subroutine get_point_group
-
-
-! Fields: group name, group integer, number of generators,
-!         number of nontrivial operations, isymax, jsop,
-!         number of rotations, number of reflections,
-!         number of inversions.
-    
-    subroutine init_C1(group)
-
-    type(point_group), intent(inout) :: group
-    
-    integer :: isymax(3, 2), jsop(0:7)
-    
-    isymax = reshape([0, 0, 0, 0, 0, 0], [3, 2])
-    jsop   = [0, 0, 0, 0, 0, 0, 0, 0]
-    
-    group = point_group("C1 ", 0, 0, 0, isymax, jsop, 0, 0, 0)
-    
-    end subroutine init_C1
-    
-    subroutine init_Cs(group)
-
-    type(point_group), intent(inout) :: group
-
-    integer :: isymax(3, 2), jsop(0:7)
-
-    isymax = reshape([0, 0, 1, 1, 1, 0], [3, 2])
-    jsop   = [0, 4, 0, 0, 0, 0, 0, 0]
-
-    group = point_group("Cs ", 1, 1, 1, isymax, jsop, 0, 1, 0)
-     
-    end subroutine init_Cs
-    
-    subroutine init_C2(group)
-
-    type(point_group), intent(inout) :: group
-
-    integer :: isymax(3, 2), jsop(0:7)
-
-    isymax = reshape([1, 1, 0, 1, 1, 0], [3, 2])
-    jsop   = [0, 3, 0, 0, 0, 0, 0, 0]
-
-    group = point_group("C2 ", 2, 1, 1, isymax, jsop, 1, 0, 0)
-     
-    end subroutine init_C2
-    
-    subroutine init_Ci(group)
-
-    type(point_group), intent(inout) :: group
-
-    integer :: isymax(3, 2), jsop(0:7)
-    
-    isymax = reshape([1, 1, 1, 0, 0, 0], [3, 2])
-    jsop   = [0, 7, 0, 0, 0, 0, 0, 0]
-
-    group = point_group("Ci ", 3, 1, 1, isymax, jsop, 0, 0, 1)
-     
-    end subroutine init_Ci
-    
-    subroutine init_C2h(group)
-
-    type(point_group), intent(inout) :: group
-    
-    integer :: isymax(3, 2), jsop(0:7)
-
-    isymax = reshape([2, 2, 1, 3, 3, 0], [3, 2])
-    jsop   = [0, 3, 7, 4, 0, 0, 0, 0]
-
-    group = point_group("C2h", 4, 2, 3, isymax, jsop, 1, 1, 1)
-     
-    end subroutine init_C2h
-    
-    subroutine init_D2(group)
-
-    type(point_group), intent(inout) :: group
-    
-    integer :: isymax(3, 2), jsop(0:7)
-
-    isymax = reshape([1, 2, 3, 1, 2, 3], [3, 2])
-    jsop   = [0, 3, 5, 6, 0, 0, 0, 0]
-
-    group = point_group("D2 ", 5, 2, 3, isymax, jsop, 3, 0, 0)
-     
-    end subroutine init_D2
-    
-    subroutine init_C2v(group)
-
-    type(point_group), intent(inout) :: group
-    
-    integer :: isymax(3, 2), jsop(0:7)
-
-    isymax = reshape([1, 2, 0, 2, 1, 3], [3, 2])
-    jsop   = [0, 3, 2, 1, 0, 0, 0, 0]
-
-    group = point_group("C2v", 6, 2, 3, isymax, jsop, 1, 2, 0)
-     
-    end subroutine init_C2v
-    
-    subroutine init_D2h(group)
-
-    type(point_group), intent(inout) :: group
-    
-    integer :: isymax(3, 2), jsop(0:7)
-
-    isymax = reshape([1, 2, 4, 6, 5, 3], [3, 2])
-    jsop   = [0, 3, 5, 6, 7, 4, 2, 1]
-
-    group = point_group("D2h", 6, 3, 7, isymax, jsop, 3, 3, 1)
-     
-    end subroutine init_D2h
 
     type(point_group) function build_point_group(nr_gen, gen1, gen2, gen3)
 !
@@ -262,7 +129,7 @@
 ! Parity of the symmetry operations bitmaps                   
     integer, parameter   :: jpar(0:7) = [1, -1, -1, 1, -1, 1, 1, -1]
     integer              :: i, j, k, l, i0, i1, i2, ind, ipos, bitmap
-    integer              :: nrots, nrefl, ninvc, igroup, print_unit
+    integer              :: nrots, nrefl, ninvc, igroup
     integer              :: char_tab(0:7, 0:7)
     logical              :: lsymop(0:7)
     integer              :: jsop(0:7), ipar(0:7)

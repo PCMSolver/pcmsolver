@@ -1,10 +1,6 @@
 #ifndef SYMMETRY_HPP
 #define SYMMETRY_HPP
 
-#include <cmath>
-#include <string>
-#include <vector>
-
 #include "Config.hpp"
 
 // Disable obnoxious warnings from Eigen headers
@@ -35,14 +31,6 @@ class Symmetry
 {
 	private:
 		/*!
-		 * Integer representing the group
-		 */
-		int groupInteger_;
-		/*!
-		 * The Schoenflies symbol
-		 */
-		std::string groupName_;
-		/*!
 		 * Number of generators
 		 */
 		int nrGenerators_;
@@ -50,47 +38,30 @@ class Symmetry
 		 * Generators
 		 */
 		int generators_[3];
+		/*!
+		 * Number of irreps
+		 */
+		int nrIrrep_;
 	public:
 		Symmetry() {}
-		Symmetry(int nr_gen, int gen[3]) : 
-			groupInteger_(0), groupName_(""), nrGenerators_(nr_gen) 
+		Symmetry(int nr_gen, int gen[3]) : nrGenerators_(nr_gen) 
 			{
+				// Transfer the passed generators array into generators_
 				std::copy(gen, gen + nrGenerators_, generators_);
-			};
-		Symmetry(int pGroup, const std::string & name, int nr_gen, int gen[3]) : 
-			groupInteger_(pGroup), groupName_(name), nrGenerators_(nr_gen)
-			{
-				std::copy(gen, gen + nrGenerators_, generators_);
-			};
+				// We can now initialize the number of irreps
+				nrIrrep_ = int(std::pow(2, nrGenerators_));
+			}
 		Symmetry(const Symmetry & other) : 
-			groupInteger_(other.groupInteger_), groupName_(other.groupName_), 
-			nrGenerators_(other.nrGenerators_)
+			nrGenerators_(other.nrGenerators_), nrIrrep_(other.nrIrrep_)
 			{
 				std::copy(other.generators_, other.generators_ + nrGenerators_, generators_);
-			};
+			}
 		~Symmetry() {}
-		int groupInteger() const { return groupInteger_; }
-		std::string groupName() const { return groupName_; }
 		int nrGenerators() const { return nrGenerators_; }
 		int generators(int i) const { return generators_[i]; }
-		/*!
-		 * Number of irreducible representations,
-		 * nrIrrep_ = 2**nrGenerators_
-		 * This is also the number of operations in the group.
-		 */
-		int nrIrrep() const { return int(std::pow(2, nrGenerators_)); }
-		/*!
-		 * Number of nontrivial symmetry operations,
-		 * nontrivialOps_ = 2**nrGenerators_ - 1 
-		 */
-		int nontrivialOps() const { return (int(std::pow(2, nrGenerators_)) - 1); }
+		int nrIrrep() const { return nrIrrep_; }
 		static double parity(int i);
 };
-
-/*!
- * int-to-point_group mapping
- */
-enum pGroup { C1, C2, Cs, Ci, D2, C2v, C2h, D2h };
 
 Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3);
 

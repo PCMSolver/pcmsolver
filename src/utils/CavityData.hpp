@@ -34,7 +34,7 @@
  *  Name of the file containing the cavity
  *  specification for a restart.
  *  @var cavityData::symmetry
- *  Integer specifying the point group.
+ *  Symmetry object with the relevant information on point group 
  */
 
 struct cavityData

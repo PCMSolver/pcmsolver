@@ -11,8 +11,8 @@ option(DISABLE_EIGEN_OWN "Do not use Eigen3 headers shipped with the module"    
 option(ENABLE_EIGEN_MKL  "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
 
 set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 1)
-set(PROJECT_VERSION_PATCH 5)
+set(PROJECT_VERSION_MINOR 2)
+set(PROJECT_VERSION_PATCH 0)
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}

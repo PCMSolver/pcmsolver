@@ -6,6 +6,8 @@
 
 */
 
+#include <vector>
+
 #include "Config.hpp"
 #include "FCMangle.hpp"
 

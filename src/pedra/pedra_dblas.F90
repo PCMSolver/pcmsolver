@@ -387,7 +387,7 @@
        END DO
     END IF
     RETURN
-    END
+    END subroutine
 
     SUBROUTINE DCOPY(N,DX,INCX,DY,INCY)
 
@@ -452,16 +452,18 @@
     RETURN
     END SUBROUTINE DCOPY
 
-    SUBROUTINE vector_product(P1,P2,P3,DNORM3)
+    subroutine vector_product(p1, p2, p3, dnorm3)
+!            
 ! Calculates vector product and norm of resulting vector
-
-    real(8) :: p1(3), p2(3), p3(3), dnorm3
+!
+    real(8), intent(in)  :: p1(3), p2(3) 
+    real(8), intent(out) :: p3(3), dnorm3
 
     p3(1) = p1(2)*p2(3) - p1(3)*p2(2)
     p3(2) = p1(3)*p2(1) - p1(1)*p2(3)
     p3(3) = p1(1)*p2(2) - p1(2)*p2(1)
     dnorm3 = sqrt(p3(1)*p3(1) + p3(2)*p3(2) + p3(3)*p3(3))
     
-    END SUBROUTINE vector_product
+    end subroutine vector_product
 
     end module pedra_dblas

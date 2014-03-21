@@ -18,36 +18,22 @@
 
 #include "Config.hpp"
 
-// Disable obnoxious warnings from Eigen headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include <Eigen/Dense>
-#pragma GCC diagnostic pop
-#elif (__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#include <Eigen/Dense>
-#pragma warning pop
-#endif
+#include "EigenPimpl.hpp"
 
-namespace cnpy 
+namespace cnpy
 {
-    struct NpyArray 
-    {
+    struct NpyArray {
         char* data;
         std::vector<unsigned int> shape;
         unsigned int word_size;
         bool fortran_order;
-        void destruct() {delete[] data;}
+        void destruct() {
+            delete[] data;
+        }
     };
-    
-    struct npz_t : public std::map<std::string, NpyArray>
-    {
-        void destruct()
-        {
+
+    struct npz_t : public std::map<std::string, NpyArray> {
+        void destruct() {
             npz_t::iterator it = this->begin();
             for(; it != this->end(); ++it) (*it).second.destruct();
         }
@@ -55,44 +41,50 @@ namespace cnpy
 
     char BigEndianTest();
     char map_type(const std::type_info& t);
-    template<typename T> std::vector<char> create_npy_header(const T* data, const unsigned int* shape, const unsigned int ndims, bool fortran_order = false);
-    template <typename T> inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(size_t _rows, size_t _columns, void * _inData);
-    void parse_npy_header(FILE* fp,unsigned int& word_size, unsigned int*& shape, unsigned int& ndims, bool& fortran_order);
-    void parse_zip_footer(FILE* fp, unsigned short& nrecs, unsigned int& global_header_size, unsigned int& global_header_offset);
+    template<typename T> std::vector<char> create_npy_header(const T* data,
+            const unsigned int* shape, const unsigned int ndims, bool fortran_order = false);
+    template <typename T> inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>
+    getFromRawBuffer(size_t _rows, size_t _columns, void * _inData);
+    void parse_npy_header(FILE* fp,unsigned int& word_size, unsigned int*& shape,
+                          unsigned int& ndims, bool& fortran_order);
+    void parse_zip_footer(FILE* fp, unsigned short& nrecs,
+                          unsigned int& global_header_size, unsigned int& global_header_offset);
     npz_t npz_load(std::string fname);
     NpyArray npz_load(std::string fname, std::string varname);
     NpyArray npy_load(std::string fname);
 
-    template<typename T> std::vector<char>& operator+=(std::vector<char>& lhs, const T rhs) 
+    template<typename T> std::vector<char>& operator+=(std::vector<char>& lhs,
+            const T rhs)
     {
         //write in little endian
-        for(size_t byte = 0; byte < sizeof(T); byte++) 
-	{
-            char val = *((char*)&rhs+byte); 
+        for(size_t byte = 0; byte < sizeof(T); byte++) {
+            char val = *((char*)&rhs+byte);
             lhs.push_back(val);
         }
         return lhs;
     }
 
-    template<> std::vector<char>& operator+=(std::vector<char>& lhs, const std::string rhs); 
-    template<> std::vector<char>& operator+=(std::vector<char>& lhs, const char* rhs); 
+    template<> std::vector<char>& operator+=(std::vector<char>& lhs,
+            const std::string rhs);
+    template<> std::vector<char>& operator+=(std::vector<char>& lhs, const char* rhs);
 
 
-    template<typename T> std::string tostring(T i, int pad = 0, char padval = ' ') 
+    template<typename T> std::string tostring(T i, int pad = 0, char padval = ' ')
     {
         std::stringstream s;
         s << i;
         return s.str();
     }
 
-    template<typename T> void npy_save(std::string fname, const T* data, const unsigned int* shape, const unsigned int ndims, std::string mode = "w", bool fortran_order = false) 
+    template<typename T> void npy_save(std::string fname, const T* data,
+                                       const unsigned int* shape, const unsigned int ndims, std::string mode = "w",
+                                       bool fortran_order = false)
     {
         FILE* fp = NULL;
 
         if (mode == "a") fp = fopen(fname.c_str(), "r+b");
 
-        if (fp) 
-	{
+        if (fp) {
             //file exists. we need to append to it. read the header, modify the array size
             unsigned int word_size, tmp_dims;
             unsigned int * tmp_shape = 0;
@@ -100,22 +92,21 @@ namespace cnpy
             parse_npy_header(fp,word_size,tmp_shape,tmp_dims,fortran_order);
             assert(!fortran_order);
 
-            if (word_size != sizeof(T)) 
-	    {
-                std::cout << "libnpy error: " << fname << " has word size " << word_size << " but npy_save appending data sized " << sizeof(T) << "\n";
+            if (word_size != sizeof(T)) {
+                std::cout << "libnpy error: " << fname << " has word size " << word_size <<
+                          " but npy_save appending data sized " << sizeof(T) << "\n";
                 assert( word_size == sizeof(T) );
             }
-            if (tmp_dims != ndims) 
-	    {
-                std::cout << "libnpy error: npy_save attempting to append misdimensioned data to " << fname << "\n";
+            if (tmp_dims != ndims) {
+                std::cout << "libnpy error: npy_save attempting to append misdimensioned data to " <<
+                          fname << "\n";
                 assert(tmp_dims == ndims);
             }
 
-            for (int i = 1; i < ndims; i++) 
-	    {
-                if (shape[i] != tmp_shape[i]) 
-		{
-                    std::cout <<"libnpy error: npy_save attempting to append misshaped data to " << fname << "\n";
+            for (int i = 1; i < ndims; i++) {
+                if (shape[i] != tmp_shape[i]) {
+                    std::cout <<"libnpy error: npy_save attempting to append misshaped data to " << fname
+                              << "\n";
                     assert(shape[i] == tmp_shape[i]);
                 }
             }
@@ -127,9 +118,7 @@ namespace cnpy
             fseek(fp, 0, SEEK_END);
 
             delete[] tmp_shape;
-        }
-        else 
-	{
+        } else {
             fp = fopen(fname.c_str(), "wb");
             std::vector<char> header = create_npy_header(data, shape, ndims, fortran_order);
             fwrite(&header[0], sizeof(char), header.size(), fp);
@@ -142,7 +131,9 @@ namespace cnpy
         fclose(fp);
     }
 
-    template<typename T> void npz_save(std::string zipname, std::string fname, const T* data, const unsigned int* shape, const unsigned int ndims, std::string mode = "w", bool fortran_order = false)
+    template<typename T> void npz_save(std::string zipname, std::string fname,
+                                       const T* data, const unsigned int* shape, const unsigned int ndims,
+                                       std::string mode = "w", bool fortran_order = false)
     {
         //first, append a .npy to the fname
         fname += ".npy";
@@ -155,25 +146,21 @@ namespace cnpy
 
         if(mode == "a") fp = fopen(zipname.c_str(), "r+b");
 
-        if (fp) 
-	{
+        if (fp) {
             //zip file exists. we need to add a new npy file to it.
             //first read the footer. this gives us the offset and size of the global header
-            //then read and store the global header. 
+            //then read and store the global header.
             //below, we will write the the new data at the start of the global header then append the global header and footer below it
             unsigned int global_header_size;
             parse_zip_footer(fp, nrecs, global_header_size, global_header_offset);
             fseek(fp, global_header_offset, SEEK_SET);
             global_header.resize(global_header_size);
             size_t res = fread(&global_header[0], sizeof(char), global_header_size, fp);
-            if (res != global_header_size) 
-	    {
+            if (res != global_header_size) {
                 throw std::runtime_error("npz_save: header read error while adding to existing zip");
             }
             fseek(fp, global_header_offset, SEEK_SET);
-        }
-        else 
-	{
+        } else {
             fp = fopen(zipname.c_str(), "wb");
         }
 
@@ -207,12 +194,14 @@ namespace cnpy
         global_header += "PK"; //first part of sig
         global_header += (unsigned short) 0x0201; //second part of sig
         global_header += (unsigned short) 20; //version made by
-        global_header.insert(global_header.end(), local_header.begin()+4, local_header.begin()+30);
+        global_header.insert(global_header.end(), local_header.begin()+4,
+                             local_header.begin()+30);
         global_header += (unsigned short) 0; //file comment length
         global_header += (unsigned short) 0; //disk number where file starts
         global_header += (unsigned short) 0; //internal file attributes
         global_header += (unsigned int) 0; //external file attributes
-        global_header += (unsigned int) global_header_offset; //relative offset of local file header, since it begins where the global header used to begin
+        global_header += (unsigned int)
+                         global_header_offset; //relative offset of local file header, since it begins where the global header used to begin
         global_header += fname;
 
         //build footer
@@ -224,10 +213,11 @@ namespace cnpy
         footer += (unsigned short) (nrecs+1); //number of records on this disk
         footer += (unsigned short) (nrecs+1); //total number of records
         footer += (unsigned int) global_header.size(); //nbytes of global headers
-        footer += (unsigned int) (global_header_offset + nbytes + local_header.size()); //offset of start of global headers, since global header now starts after newly written array
+        footer += (unsigned int) (global_header_offset + nbytes +
+                                  local_header.size()); //offset of start of global headers, since global header now starts after newly written array
         footer += (unsigned short) 0; //zip file comment length
 
-        //write everything      
+        //write everything
         fwrite(&local_header[0], sizeof(char), local_header.size(), fp);
         fwrite(&npy_header[0], sizeof(char), npy_header.size(), fp);
         fwrite(data, sizeof(T), nels, fp);
@@ -236,25 +226,22 @@ namespace cnpy
         fclose(fp);
     }
 
-    template<typename T> std::vector<char> create_npy_header(const T* data, const unsigned int* shape, const unsigned int ndims, bool fortran_order) 
-    {  
+    template<typename T> std::vector<char> create_npy_header(const T* data,
+            const unsigned int* shape, const unsigned int ndims, bool fortran_order)
+    {
 
         std::vector<char> dict;
         dict += "{'descr': '";
         dict += BigEndianTest();
         dict += map_type(typeid(T));
         dict += tostring(sizeof(T));
-	if (fortran_order)
-	{
-        	dict += "', 'fortran_order': True, 'shape': (";
-	}
-	else
-	{
-        	dict += "', 'fortran_order': False, 'shape': (";
-	}
+        if (fortran_order) {
+            dict += "', 'fortran_order': True, 'shape': (";
+        } else {
+            dict += "', 'fortran_order': False, 'shape': (";
+        }
         dict += tostring(shape[0]);
-        for(size_t i = 1; i < ndims; ++i) 
-	{
+        for(size_t i = 1; i < ndims; ++i) {
             dict += ", ";
             dict += tostring(shape[i]);
         }
@@ -275,7 +262,7 @@ namespace cnpy
 
         return header;
     }
-    
+
     /*! \brief Returns an Eigen matrix of type T, with dimensions _rows*_columns.
      *  \param _rows the number of rows.
      *  \param _columns the number of columns.
@@ -286,14 +273,16 @@ namespace cnpy
      *  as in Fortran.
      */
     template <typename T>
-    inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(size_t _rows, size_t _columns, void * _inData)
+    inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(
+        size_t _rows, size_t _columns, void * _inData)
     {
-    	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> _outData;
-    	_outData.resize(_rows, _columns);
-    	T * data = reinterpret_cast<T*>(_inData);
-    	Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > mapped_data(data, _rows, _columns);
-     	_outData = mapped_data;
-    	return _outData;
+        Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> _outData;
+        _outData.resize(_rows, _columns);
+        T * data = reinterpret_cast<T*>(_inData);
+        Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > mapped_data(data,
+                _rows, _columns);
+        _outData = mapped_data;
+        return _outData;
     }
 } // closes namespace
 

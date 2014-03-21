@@ -9,20 +9,7 @@
 
 #include "Config.hpp"
 
-// Disable obnoxious warnings from Eigen headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include <Eigen/Dense>
-#pragma GCC diagnostic pop
-#elif (__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#include <Eigen/Dense>
-#pragma warning pop
-#endif
+#include "EigenPimpl.hpp"
 
 extern "C"
 {
@@ -53,96 +40,89 @@ extern "C"
 
 void WEMSolver::initWEMMembers()
 {
-	pointList = NULL;
-	nodeList = NULL;
-	elementList = NULL;
-	T_ = NULL;
-	systemMatricesInitialized_ = false;
-	threshold = 1e-10;
-	quadratureLevel_ = 1;
-	nQuadPoints = 0;
+    pointList = NULL;
+    nodeList = NULL;
+    elementList = NULL;
+    T_ = NULL;
+    systemMatricesInitialized_ = false;
+    threshold = 1e-10;
+    quadratureLevel_ = 1;
+    nQuadPoints = 0;
 }
 
 WEMSolver::~WEMSolver()
 {
-	if (nodeList != NULL)    free(nodeList);
-	if (elementList != NULL) free_patchlist(&elementList,nFunctions);
-	if (pointList != NULL)   free_points(&pointList, nPatches, nLevels);
-	if (systemMatricesInitialized_)
-	{
-		free_sparse2(&S_i_);
-		if(integralEquation == Full) free_sparse2(&S_e_);
-	}
+    if (nodeList != NULL)    free(nodeList);
+    if (elementList != NULL) free_patchlist(&elementList,nFunctions);
+    if (pointList != NULL)   free_points(&pointList, nPatches, nLevels);
+    if (systemMatricesInitialized_) {
+        free_sparse2(&S_i_);
+        if(integralEquation == Full) free_sparse2(&S_e_);
+    }
 }
 
-void WEMSolver::uploadCavity(const WaveletCavity & cavity) 
+void WEMSolver::uploadCavity(const WaveletCavity & cavity)
 {
-	nPatches = cavity.getNPatches();
-	nLevels = cavity.getNLevels();
-	int n = (1<<nLevels);
-	nFunctions = nPatches * n * n;
-	alloc_points(&pointList, nPatches, nLevels);
-	int kk = 0;
-	// Ask Helmut about index switch
-	for (size_t i = 0; i < nPatches; ++i) 
-	{
-		for (int j = 0; j <= n; ++j) 
-		{
-			for (int k = 0; k <= n; ++k) 
-			{
-				Eigen::Vector3d p = cavity.getNodePoint(kk);
-				pointList[i][k][j] = vector3_make(p(0), p(1), p(2));
-				kk++;
-			}
-		}
-	}	
+    nPatches = cavity.getNPatches();
+    nLevels = cavity.getNLevels();
+    int n = (1<<nLevels);
+    nFunctions = nPatches * n * n;
+    alloc_points(&pointList, nPatches, nLevels);
+    int kk = 0;
+    // Ask Helmut about index switch
+    for (size_t i = 0; i < nPatches; ++i) {
+        for (int j = 0; j <= n; ++j) {
+            for (int k = 0; k <= n; ++k) {
+                Eigen::Vector3d p = cavity.getNodePoint(kk);
+                pointList[i][k][j] = vector3_make(p(0), p(1), p(2));
+                kk++;
+            }
+        }
+    }
 }
 
-void WEMSolver::buildSystemMatrix(const Cavity & cavity) 
+void WEMSolver::buildSystemMatrix(const Cavity & cavity)
 {
-	// Down-cast const Cavity & to const WaveletCavity &
-	// This is messy. The wavelet classes are not really Object-Oriented...
-	// In principle, I should be able to use Cavity directly, without
-	// traversing the inheritance hierarchy!
-	try
-	{
-		const WaveletCavity & waveletCavity = dynamic_cast<const WaveletCavity&>(cavity);
-		uploadCavity(waveletCavity);
-		initInterpolation();
-		constructWavelets();
-		constructSystemMatrix();
-	}
-	catch (const std::bad_cast & e)
-	{
-	    	throw std::runtime_error(e.what() + std::string(" Wavelet type cavity needed for wavelet solver."));
-	}
+    // Down-cast const Cavity & to const WaveletCavity &
+    // This is messy. The wavelet classes are not really Object-Oriented...
+    // In principle, I should be able to use Cavity directly, without
+    // traversing the inheritance hierarchy!
+    try {
+        const WaveletCavity & waveletCavity = dynamic_cast<const WaveletCavity&>(cavity);
+        uploadCavity(waveletCavity);
+        initInterpolation();
+        constructWavelets();
+        constructSystemMatrix();
+    } catch (const std::bad_cast & e) {
+        throw std::runtime_error(e.what() +
+                                 std::string(" Wavelet type cavity needed for wavelet solver."));
+    }
 }
 
 void WEMSolver::constructSystemMatrix()
 {
-	constructSi();
-	if(integralEquation == Full) 
-	{
-		constructSe();
-	}
+    constructSi();
+    if(integralEquation == Full) {
+        constructSe();
+    }
 }
 
-void WEMSolver::compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge, int irrep) 
+void WEMSolver::compCharge(const Eigen::VectorXd & potential,
+                           Eigen::VectorXd & charge, int irrep)
 {
-	switch (integralEquation) 
-	{
-		case FirstKind:
-			solveFirstKind(potential, charge);
-			break;
-		case SecondKind:
-			solveSecondKind(potential, charge);
-			break;
-		case Full:
-			solveFull(potential, charge);
-			break;
-		default:
-			throw std::runtime_error("Invalid case");
-	}
-	charge *= -1.0;
-	//	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
+    switch (integralEquation) {
+    case FirstKind:
+        solveFirstKind(potential, charge);
+        break;
+    case SecondKind:
+        solveSecondKind(potential, charge);
+        break;
+    case Full:
+        solveFull(potential, charge);
+        break;
+    default:
+        throw std::runtime_error("Invalid case");
+    }
+    charge *= -1.0;
+    //	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
 }

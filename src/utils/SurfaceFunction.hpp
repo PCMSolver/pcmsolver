@@ -6,102 +6,87 @@
 
 #include "Config.hpp"
 
-// Disable obnoxious warnings from Eigen headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include <Eigen/Dense>
-#pragma GCC diagnostic pop
-#elif (__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#include <Eigen/Dense>
-#pragma warning pop
-#endif
+#include "EigenPimpl.hpp"
 
 /*!
  * \file SurfaceFunction.hpp
  * \class SurfaceFunction
  * \brief A basic surface function class
  * \author Luca Frediani, Roberto Di Remigio
- * \date 2012, 2013 
+ * \date 2012, 2013
  *
  * This class is basically a wrapper around vectors containing electrostatic potentials
  * and apparent charges. Use judiciously, i.e. DO NOT use it directly in the core
  * classes (cavities, solvers) to avoid high coupling.
- */ 
+ */
 
 
 class SurfaceFunction
 {
- public:
-         SurfaceFunction() : name(""), nPoints(0), allocated(false) {}
-         SurfaceFunction(const std::string & name_) : name(name_), nPoints(0), allocated(false) {}
-         SurfaceFunction(const std::string & name_, int nPoints_) : name(name_), nPoints(nPoints_) 
-	 {
-			values = Eigen::VectorXd::Zero(nPoints);
-			allocated = true;
-	 } 							       
-         SurfaceFunction(const std::string & name_, int nPoints_, double * values_) : name(name_), nPoints(nPoints_)            	
-	 {
-			values = Eigen::VectorXd::Zero(nPoints);
-	 		allocated = true;
-	 		for (int i = 0; i < nPoints; ++i)
-	 		{
-	 			values(i) = values_[i];
-	 		}
-	 }
-         ~SurfaceFunction()                                                                                                     
-         {
-             allocated = false;
-         }
-                                                                                                                         
-         /// Copy constructor
-         SurfaceFunction(const SurfaceFunction & other) : name(other.name), nPoints(other.nPoints), values(other.values)
-         {
-             allocated = true;
-         }
-                                                                                                                                 
-         friend inline void swap(SurfaceFunction & left, SurfaceFunction & right);
-         inline void swap(SurfaceFunction & other);
-         /// Assignment operator.
-         SurfaceFunction & operator=(SurfaceFunction other);
-         /// Multiplication operator: product of two SurfaceFunctions version (scalar product of the values vectors).
-         double operator*(const SurfaceFunction & other);
-         /// Addition-assignment operator.
-         SurfaceFunction & operator+=(const SurfaceFunction & other);
-         /// Subtraction-assignment operator.
-         SurfaceFunction & operator-=(const SurfaceFunction & other);
-         /// Multiplication-assignment operator. Defined only for the uniform scaling case.
-         SurfaceFunction & operator*=(double scaling);
-         /// Division-assignment operator. Defined only for the uniform scaling case.
-         SurfaceFunction & operator/=(double scaling);
-                                                                                                                         
-         std::string & getName(){ return name; }
-         int getNPoints(){ return nPoints; }
-         void setValue(int index_, double value_) { values(index_) = value_; }
-         double getValue(int index_) {return values(index_);}
-         Eigen::VectorXd & getVector(){ return values; }
-         void allocate(int nPoints_){ values.resize(nPoints_); }
-         bool isAllocated() { return allocated; }
-         void clear();
-                                                                                                                         
-         void setValues(double * values_);
-         void getValues(double * values_);
-                                                                                                                         
-         friend std::ostream & operator<<(std::ostream & os, SurfaceFunction & sf)
-	 {
-		return sf.printObject(os);
-	 }
+public:
+    SurfaceFunction() : name(""), nPoints(0), allocated(false) {}
+    SurfaceFunction(const std::string & name_) : name(name_), nPoints(0),
+        allocated(false) {}
+    SurfaceFunction(const std::string & name_, int nPoints_) : name(name_),
+        nPoints(nPoints_) {
+        values = Eigen::VectorXd::Zero(nPoints);
+        allocated = true;
+    }
+    SurfaceFunction(const std::string & name_, int nPoints_,
+                    double * values_) : name(name_), nPoints(nPoints_) {
+        values = Eigen::VectorXd::Zero(nPoints);
+        allocated = true;
+        for (int i = 0; i < nPoints; ++i) {
+            values(i) = values_[i];
+        }
+    }
+    ~SurfaceFunction() {
+        allocated = false;
+    }
 
- private:
-         std::ostream & printObject(std::ostream & os); 
-         std::string name;
-         int nPoints;
-         Eigen::VectorXd values;
-         bool allocated;
+    /// Copy constructor
+    SurfaceFunction(const SurfaceFunction & other) : name(other.name),
+        nPoints(other.nPoints), values(other.values) {
+        allocated = true;
+    }
+
+    friend inline void swap(SurfaceFunction & left, SurfaceFunction & right);
+    inline void swap(SurfaceFunction & other);
+    /// Assignment operator.
+    SurfaceFunction & operator=(SurfaceFunction other);
+    /// Multiplication operator: product of two SurfaceFunctions version (scalar product of the values vectors).
+    double operator*(const SurfaceFunction & other);
+    /// Addition-assignment operator.
+    SurfaceFunction & operator+=(const SurfaceFunction & other);
+    /// Subtraction-assignment operator.
+    SurfaceFunction & operator-=(const SurfaceFunction & other);
+    /// Multiplication-assignment operator. Defined only for the uniform scaling case.
+    SurfaceFunction & operator*=(double scaling);
+    /// Division-assignment operator. Defined only for the uniform scaling case.
+    SurfaceFunction & operator/=(double scaling);
+
+    std::string & getName() { return name; }
+    int getNPoints() { return nPoints; }
+    void setValue(int index_, double value_) { values(index_) = value_; }
+    double getValue(int index_) { return values(index_); }
+    Eigen::VectorXd & getVector() { return values; }
+    void allocate(int nPoints_) { values.resize(nPoints_); }
+    bool isAllocated() { return allocated; }
+    void clear();
+
+    void setValues(double * values_);
+    void getValues(double * values_);
+
+    friend std::ostream & operator<<(std::ostream & os, SurfaceFunction & sf) {
+        return sf.printObject(os);
+    }
+
+private:
+    std::ostream & printObject(std::ostream & os);
+    std::string name;
+    int nPoints;
+    Eigen::VectorXd values;
+    bool allocated;
 };
 
 /*!
@@ -112,8 +97,8 @@ class SurfaceFunction
  */
 inline SurfaceFunction operator+(SurfaceFunction left, const SurfaceFunction & right)
 {
-	left += right;
-	return left;
+    left += right;
+    return left;
 }
 
 /*!
@@ -124,8 +109,8 @@ inline SurfaceFunction operator+(SurfaceFunction left, const SurfaceFunction & r
  */
 inline SurfaceFunction operator-(SurfaceFunction left, const SurfaceFunction & right)
 {
-	left -= right;
-	return left;
+    left -= right;
+    return left;
 }
 
 /*!
@@ -136,8 +121,8 @@ inline SurfaceFunction operator-(SurfaceFunction left, const SurfaceFunction & r
  */
 inline SurfaceFunction operator*(double scaling, SurfaceFunction & object)
 {
-	object *= scaling;
-	return object;
+    object *= scaling;
+    return object;
 }
 
 #endif // SURFACEFUNCTION_HPP

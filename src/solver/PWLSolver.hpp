@@ -6,20 +6,7 @@
 
 #include "Config.hpp"
 
-// Disable obnoxious warnings from Eigen headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include <Eigen/Dense>
-#pragma GCC diagnostic pop
-#elif (__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#include <Eigen/Dense>
-#pragma warning pop
-#endif
+#include "EigenPimpl.hpp"
 
 extern "C"
 {
@@ -42,46 +29,48 @@ class GreensFunction;
  *  \date 2012
  */
 
-class PWLSolver : public WEMSolver 
+class PWLSolver : public WEMSolver
 {
-	private:
-		virtual void initPointers();
-    		virtual std::ostream & printSolver(std::ostream & os);
-	public:
-                PWLSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_) : WEMSolver(gfInside_, gfOutside_, FirstKind)
-		{
-	                initPointers();
-		}
-                PWLSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_, int integralEquation_) : WEMSolver(gfInside_, gfOutside_, integralEquation_)
-		{
-	                initPointers();
-		}
-		//PWLSolver(Section solver);
-                virtual ~PWLSolver();
-                friend std::ostream & operator<<(std::ostream & os, PWLSolver & solver)                      
-		{                                                                                         
-                    return solver.printSolver(os);                                                           
-                }                                                                                         
- 	private:
-		virtual void initInterpolation();
-                virtual void constructWavelets();                                            
-                virtual void constructSi();
-                virtual void constructSe();
-                virtual void solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-                virtual void solveSecondKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-                virtual void solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-                element_pwl *elementTree; //*E_; Hierarchical element list
-                wavelet_pwl *waveletList; //*W_; List of wavelets
+private:
+    virtual void initPointers();
+    virtual std::ostream & printSolver(std::ostream & os);
+public:
+    PWLSolver(GreensFunction * gfInside_,
+              GreensFunction * gfOutside_) : WEMSolver(gfInside_, gfOutside_, FirstKind) {
+        initPointers();
+    }
+    PWLSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_,
+              int integralEquation_) : WEMSolver(gfInside_, gfOutside_, integralEquation_) {
+        initPointers();
+    }
+    //PWLSolver(Section solver);
+    virtual ~PWLSolver();
+    friend std::ostream & operator<<(std::ostream & os, PWLSolver & solver) {
+        return solver.printSolver(os);
+    }
+private:
+    virtual void initInterpolation();
+    virtual void constructWavelets();
+    virtual void constructSi();
+    virtual void constructSe();
+    virtual void solveFirstKind(const Eigen::VectorXd & potential,
+                                Eigen::VectorXd & charge);
+    virtual void solveSecondKind(const Eigen::VectorXd & potential,
+                                 Eigen::VectorXd & charge);
+    virtual void solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
+    element_pwl *elementTree; //*E_; Hierarchical element list
+    wavelet_pwl *waveletList; //*W_; List of wavelets
 };
 
 namespace
 {
-	PCMSolver * createPWLSolver(const solverData & _data)
-	{
-		return new PWLSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
-	}
-	const std::string PWLSOLVER("Linear");
-	const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(PWLSOLVER, createPWLSolver);
+    PCMSolver * createPWLSolver(const solverData & _data)
+    {
+        return new PWLSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
+    }
+    const std::string PWLSOLVER("Linear");
+    const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(
+                                         PWLSOLVER, createPWLSolver);
 }
 
 #endif // PWLSOLVER_HPP

@@ -3,11 +3,12 @@
 
 #include "Config.hpp"
 
+
 class GreensFunction;
 
 /*! @struct solverData
  *  @brief Contains all data defined from user input in the solver section.
- *  @var solverData::gfInside 
+ *  @var solverData::gfInside
  *  The Green's function inside the cavity.
  *  @var solverData::gfOutside
  *  The Green's function outside the cavity.
@@ -19,15 +20,16 @@ class GreensFunction;
  *  Triggers hermitivitization of the PCM matrix obtained by collocation.
  */
 
-struct solverData
-{
-	GreensFunction * gfInside;
-	GreensFunction * gfOutside;
-	double correction;
-	int integralEquation;
-	bool hermitivitize;
-	solverData(GreensFunction * _gfInside, GreensFunction * _gfOutside, double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
-		gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction), integralEquation(_integralEquation), hermitivitize(_symm) {}
+struct solverData {
+    GreensFunction * gfInside;
+    GreensFunction * gfOutside;
+    double correction;
+    int integralEquation;
+    bool hermitivitize;
+    solverData(GreensFunction * _gfInside, GreensFunction * _gfOutside,
+               double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
+        gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction),
+        integralEquation(_integralEquation), hermitivitize(_symm) {}
 };
 
 #endif // SOLVERDATA_HPP

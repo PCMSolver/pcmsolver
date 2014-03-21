@@ -5,20 +5,7 @@
 
 #include "Config.hpp"
 
-// Disable obnoxious warnings from Eigen headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include <Eigen/Dense>
-#pragma GCC diagnostic pop
-#elif (__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#include <Eigen/Dense>
-#pragma warning pop
-#endif
+#include "EigenPimpl.hpp"
 
 #include <boost/lexical_cast.hpp>
 
@@ -26,7 +13,8 @@ inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
     using std::swap;
     swap(left.name, right.name);
-    swap(left.nPoints, right.nPoints); // This is maybe redundant as nPoints must be the same...
+    swap(left.nPoints,
+         right.nPoints); // This is maybe redundant as nPoints must be the same...
     swap(left.values, right.values);
 }
 
@@ -50,78 +38,76 @@ SurfaceFunction & SurfaceFunction::operator=(SurfaceFunction other)
 
 double SurfaceFunction::operator*(const SurfaceFunction & other)
 {
-	if (this->nPoints != other.nPoints)
-		throw std::runtime_error("Incoherent dimensions of left and right operands!");
-	return this->values.dot(other.values);
+    if (this->nPoints != other.nPoints)
+        throw std::runtime_error("Incoherent dimensions of left and right operands!");
+    return this->values.dot(other.values);
 }
 
 SurfaceFunction & SurfaceFunction::operator+=(const SurfaceFunction & other)
 {
-	if (this->nPoints != other.nPoints)
-		throw std::runtime_error("Incoherent dimensions of left and right operands!");
-	this->name += "+" + other.name;
-	this->values = this->values + other.values;
-    	return *this;
+    if (this->nPoints != other.nPoints)
+        throw std::runtime_error("Incoherent dimensions of left and right operands!");
+    this->name += "+" + other.name;
+    this->values = this->values + other.values;
+    return *this;
 }
 
 SurfaceFunction & SurfaceFunction::operator-=(const SurfaceFunction & other)
 {
-	if (this->nPoints != other.nPoints)
-		throw std::runtime_error("Incoherent dimensions of left and right operands!");
-	this->name += "-" + other.name;
-	this->values = this->values - other.values;
-    	return *this;
+    if (this->nPoints != other.nPoints)
+        throw std::runtime_error("Incoherent dimensions of left and right operands!");
+    this->name += "-" + other.name;
+    this->values = this->values - other.values;
+    return *this;
 }
 
 SurfaceFunction & SurfaceFunction::operator*=(double scaling)
 {
-	this->name = boost::lexical_cast<std::string>(scaling) + "*" + this->name;
-	this->values *= scaling;
-        return *this;
+    this->name = boost::lexical_cast<std::string>(scaling) + "*" + this->name;
+    this->values *= scaling;
+    return *this;
 }
 
 SurfaceFunction & SurfaceFunction::operator/=(double scaling)
 {
-	if (scaling == 0.0)
-		throw std::runtime_error("You are dividing by zero!");
-	this->name = boost::lexical_cast<std::string>(scaling) + "/" + this->name;
-	this->values /= scaling;
-        return *this;
+    if (scaling == 0.0)
+        throw std::runtime_error("You are dividing by zero!");
+    this->name = boost::lexical_cast<std::string>(scaling) + "/" + this->name;
+    this->values /= scaling;
+    return *this;
 }
 
-void SurfaceFunction::setValues(double * values_) 
+void SurfaceFunction::setValues(double * values_)
 {
-	if (!allocated)
-		throw std::runtime_error("Surface function not allocated!");
-	// Zero out any previous value
-	values.setZero();
+    if (!allocated)
+        throw std::runtime_error("Surface function not allocated!");
+    // Zero out any previous value
+    values.setZero();
 
-	for (int i = 0; i < nPoints; ++i) 
-	{
-		values(i) = values_[i];
-	}
+    for (int i = 0; i < nPoints; ++i) {
+        values(i) = values_[i];
+    }
 }
 
-void SurfaceFunction::getValues(double * values_) 
+void SurfaceFunction::getValues(double * values_)
 {
-	for (int i = 0; i < nPoints; ++i) 
-	{
-		values_[i] = values(i);
-	}
+    for (int i = 0; i < nPoints; ++i) {
+        values_[i] = values(i);
+    }
 }
 
-void SurfaceFunction::clear() 
+void SurfaceFunction::clear()
 {
-	values.setZero();
+    values.setZero();
 }
 
-std::ostream & SurfaceFunction::printObject(std::ostream & os) 
+std::ostream & SurfaceFunction::printObject(std::ostream & os)
 {
-	os << "Surface Function " << name << std::endl;
-	if (!allocated) 
-		throw std::runtime_error("Surface function not allocated!");
-	
-	os << values.transpose();
-	
-	return os;
+    os << "Surface Function " << name << std::endl;
+    if (!allocated)
+        throw std::runtime_error("Surface function not allocated!");
+
+    os << values.transpose();
+
+    return os;
 }

@@ -6,20 +6,7 @@
 
 #include "Config.hpp"
 
-// Disable obnoxious warnings from Getkw headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include "Getkw.h"
-#pragma GCC diagnostic pop
-#elif (__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#include "Getkw.h"
-#pragma warning pop
-#endif
+#include "GetkwPimpl.hpp"
 
 #include "Solvent.hpp"
 #include "Sphere.hpp"
@@ -30,10 +17,10 @@
  *  \author Roberto Di Remigio
  *  \date 2013
  *
- *  Implemented as a Singleton: only one instance of it is needed and therefore admitted.    
+ *  Implemented as a Singleton: only one instance of it is needed and therefore admitted.
  *  Constructors (default, non-default and copy), destructor and assignment operator are
  *  made private. We use the lazy initialization idiom to initialize the unique Input
- *  object. 
+ *  object.
  *  An Input object is to be used as the unique point of access to user-provided input:
  *   input ---> parsed input (Python script) ---> Input object (contains all the input data)
  *  Definition of input parameters is to be done in the Python script and in this class.
@@ -44,89 +31,88 @@
  *  should be carefully considered.
  */
 
-class Input 
+class Input
 {
-	private:
-		Input();
-		Input(const Input &other);
-		Input& operator=(const Input &other);
-        	~Input(){}
-		std::string cavFilename;
-		std::string type;
-		int patchLevel;
-		double coarsity;
-		double area;
-		double minDistance;
-		int derOrder;
-		bool scaling;
-		std::string radiiSet;
-		double minimalRadius;
-		std::string mode;
-		std::vector<int> atoms;
-		std::vector<double> radii;
-		std::vector<Sphere> spheres;
-		Solvent solvent;
-		bool hasSolvent;
-		std::string solverType;
-		int equationType;
-		double correction;
-		bool hermitivitize_;
-		double probeRadius;
-		std::string greenInsideType;
-		std::string greenOutsideType;
-		int derivativeInsideType;
-		int derivativeOutsideType;
-		double epsilonInside;
-		double epsilonOutside;
-		double epsilonReal;
-		double epsilonImaginary;
-		std::vector<double> spherePosition;
-		double sphereRadius;
-	public:
-		static Input& TheInput() 
-		{
-			static Input obj;
-			return obj;
-		}
-		// Accessor methods
-		// Cavity section input
-		std::string getCavityFilename(){ return cavFilename; }
-		std::string getCavityType(){ return type; }
-		int getPatchLevel(){ return patchLevel; }
-		double getCoarsity(){ return coarsity; }
-		double getArea(){ return area; }
-		double getMinDistance(){ return minDistance; }
-		int getDerOrder(){ return derOrder; }
-		bool getScaling(){ return scaling; }
-		std::string getRadiiSet() { return radiiSet; }
-		double getMinimalRadius(){ return minimalRadius; }
-		std::string getMode(){ return mode; }
-		std::vector<int> getAtoms(){ return atoms; }
-		std::vector<double> getRadii(){ return radii; }
-		std::vector<Sphere> getSpheres(){ return spheres; }
-		void setSpheres(const std::vector<Sphere> & _spheres){ spheres = _spheres; }
-		// Medium section input
-		Solvent getSolvent(){ return solvent; }
-		bool fromSolvent() { return hasSolvent; }
-		std::string getSolverType(){ return solverType; }
-		int getEquationType(){ return equationType; }
-		double getCorrection() { return correction; }
-		bool hermitivitize() { return hermitivitize_; }
-		double getProbeRadius(){ return probeRadius; }
-		std::string getGreenInsideType(){ return greenInsideType; }
-		std::string getGreenOutsideType(){ return greenOutsideType; }
-		int getDerivativeInsideType(){ return derivativeInsideType; }
-		int getDerivativeOutsideType(){ return derivativeOutsideType; }
-		double getEpsilonInside(){ return epsilonInside; } 
-		double getEpsilonOutside(){ return epsilonOutside; }
-		double getEpsilonReal(){ return epsilonReal; }
-		double getEpsilonImaginary(){ return epsilonImaginary; }
-		std::vector<double> getSpherePosition(){ return spherePosition; }
-		double getSphereRadius(){ return sphereRadius; }
-		/// Operators
-		/// operator<<
-                friend std::ostream & operator<<(std::ostream &os, const Input &input);
-                /// @}
+private:
+    Input();
+    Input(const Input &other);
+    Input& operator=(const Input &other);
+    ~Input() {}
+    std::string cavFilename;
+    std::string type;
+    int patchLevel;
+    double coarsity;
+    double area;
+    double minDistance;
+    int derOrder;
+    bool scaling;
+    std::string radiiSet;
+    double minimalRadius;
+    std::string mode;
+    std::vector<int> atoms;
+    std::vector<double> radii;
+    std::vector<Sphere> spheres;
+    Solvent solvent;
+    bool hasSolvent;
+    std::string solverType;
+    int equationType;
+    double correction;
+    bool hermitivitize_;
+    double probeRadius;
+    std::string greenInsideType;
+    std::string greenOutsideType;
+    int derivativeInsideType;
+    int derivativeOutsideType;
+    double epsilonInside;
+    double epsilonOutside;
+    double epsilonReal;
+    double epsilonImaginary;
+    std::vector<double> spherePosition;
+    double sphereRadius;
+public:
+    static Input& TheInput() {
+        static Input obj;
+        return obj;
+    }
+    // Accessor methods
+    // Cavity section input
+    std::string getCavityFilename() { return cavFilename; }
+    std::string getCavityType() { return type; }
+    int getPatchLevel() { return patchLevel; }
+    double getCoarsity() { return coarsity; }
+    double getArea() { return area; }
+    double getMinDistance() { return minDistance; }
+    int getDerOrder() { return derOrder; }
+    bool getScaling() { return scaling; }
+    std::string getRadiiSet() { return radiiSet; }
+    double getMinimalRadius() { return minimalRadius; }
+    std::string getMode() { return mode; }
+    std::vector<int> getAtoms() { return atoms; }
+    std::vector<double> getRadii() { return radii; }
+    std::vector<Sphere> getSpheres() { return spheres; }
+    void setSpheres(const std::vector<Sphere> & _spheres) { spheres = _spheres; }
+    // Medium section input
+    Solvent getSolvent() { return solvent; }
+    bool fromSolvent() { return hasSolvent; }
+    std::string getSolverType() { return solverType; }
+    int getEquationType() { return equationType; }
+    double getCorrection() { return correction; }
+    bool hermitivitize() { return hermitivitize_; }
+    double getProbeRadius() { return probeRadius; }
+    std::string getGreenInsideType() { return greenInsideType; }
+    std::string getGreenOutsideType() { return greenOutsideType; }
+    int getDerivativeInsideType() { return derivativeInsideType; }
+    int getDerivativeOutsideType() { return derivativeOutsideType; }
+    double getEpsilonInside() { return epsilonInside; }
+    double getEpsilonOutside() { return epsilonOutside; }
+    double getEpsilonReal() { return epsilonReal; }
+    double getEpsilonImaginary() { return epsilonImaginary; }
+    std::vector<double> getSpherePosition() { return spherePosition; }
+    double getSphereRadius() { return sphereRadius; }
+    /// Operators
+    /// operator<<
+    friend std::ostream & operator<<(std::ostream &os, const Input &input);
+    /// @}
 };
 
 #endif // INPUT_HPP

@@ -6,29 +6,19 @@
 
 */
 
+#include <vector>
+
 #include "Config.hpp"
+
 #include "FCMangle.hpp"
 
-// Disable obnoxious warnings from Eigen headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include <Eigen/Dense>
-#pragma GCC diagnostic pop
-#elif (__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#include <Eigen/Dense>
-#pragma warning pop
-#endif
+#include "EigenPimpl.hpp"
 
 #include "Sphere.hpp"
 
 /*
 
-	Functions visible to host program 
+	Functions visible to host program
 
 */
 
@@ -59,7 +49,8 @@ extern "C" void compute_polarization_energy(double * energy);
 
 #define dot_surface_functions \
 	FortranCInterface_GLOBAL_(dot_surface_functions, DOT_SURFACE_FUNCTIONS)
-extern "C" void dot_surface_functions(double * result, const char * potString, const char * chgString);
+extern "C" void dot_surface_functions(double * result, const char * potString,
+                                      const char * chgString);
 
 extern "C" void collect_nctot(int * nuclei);
 
@@ -67,7 +58,8 @@ extern "C" void collect_atoms(double * charges, double * centers);
 
 extern "C" void host_writer(const char * message, size_t * message_length);
 
-extern "C" void set_point_group(int * nr_generators, int * gen1, int * gen2, int * gen3);
+extern "C" void set_point_group(int * nr_generators, int * gen1, int * gen2,
+                                int * gen3);
 
 #define get_cavity_size \
 	FortranCInterface_GLOBAL_(get_cavity_size, GET_CAVITY_SIZE)
@@ -134,7 +126,7 @@ extern "C" void scale_surface_function(char * func, double * coeff);
 
 /*
 
-	Functions not visible to host program	
+	Functions not visible to host program
 
  */
 
@@ -145,10 +137,10 @@ extern "C" void scale_surface_function(char * func, double * coeff);
 void setupInput();
 
 /*! \fn void initCavity()
- *  
+ *
  *  Creates Cavity object
  */
-void initCavity(); 
+void initCavity();
 
 /*! \fn void initSolver()
  *
@@ -157,7 +149,7 @@ void initCavity();
 void initSolver();
 
 /*! \fn void initWaveletCavity()
- * 
+ *
  *  Initializes the _waveletCavity global object
  */
 void initWaveletCavity();
@@ -178,7 +170,8 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
  *  Generates the list of spheres needed to build the cavity from list of atoms and atoms centers
  *  Uses one of the predefined sets of radii
  */
-void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
+void initSpheresImplicit(const Eigen::VectorXd & charges_,
+                         const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
 
 /*! \fn void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_)
  *  \param[in] sphereCenter_ contains coordinates of atomic centers
@@ -187,7 +180,8 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3X
  *  Generates the list of spheres needed to build the cavity from list of atoms centers
  *  Substitures radii on specified atoms with custom values from input
  */
-void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_);
+void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
+                      std::vector<Sphere> & spheres_);
 
 /*! \fn bool surfaceFunctionExists(const std::string & name)
  *  \param[in] name name of the SurfaceFunction
@@ -202,8 +196,8 @@ bool surfaceFunctionExists(const std::string & name);
  *
  *  Implements safe deletion of pointers
  */
-template<typename T> 
-void safe_delete( T *& ptr ); 
+template<typename T>
+void safe_delete( T *& ptr );
 
 /*! \fn inline void printer(const std::string & message)
  *  \param[in] message the message to be printed

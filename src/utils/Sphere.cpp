@@ -5,12 +5,13 @@
 
 #include "Config.hpp"
 
-std::ostream & Sphere::printObject(std::ostream & os) 
-{
-	os << "Sphere radius " << radius_ << std::endl;
-	os << "Sphere center\n" << center_;
 
-	return os;
+std::ostream & Sphere::printObject(std::ostream & os)
+{
+    os << "Sphere radius " << radius_ << std::endl;
+    os << "Sphere center\n" << center_;
+
+    return os;
 }
 
 inline void swap(Sphere & left, Sphere & right)

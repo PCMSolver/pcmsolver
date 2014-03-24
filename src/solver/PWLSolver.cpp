@@ -8,21 +8,7 @@
 
 #include "Config.hpp"
 
-// Disable obnoxious warnings from Eigen headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include <Eigen/Dense>
-#pragma GCC diagnostic pop
-#elif (__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#include <Eigen/Dense>
-#pragma warning pop
-#endif
-//#include "Getkw.h"
+#include "EigenPimpl.hpp"
 
 extern "C"
 {
@@ -57,60 +43,60 @@ extern "C"
 static GreensFunction * gf;
 
 static double SLInt(vector3 x, vector3 y)
-{  
-	return(1.0l/sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z)));
+{
+    return(1.0l/sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z)));
 }
 
 
 static double SLExt(vector3 x, vector3 y)
 {
-	double r = sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z));
-	return 1.0l/(r*78.39l);
+    double r = sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z));
+    return 1.0l/(r*78.39l);
 }
 
 
 static double DLUni(vector3 x, vector3 y, vector3 n_y)
-{  
-	vector3	c;
-	double r;
-	Eigen::Vector3d grad, dir;
-	c.x = x.x-y.x;
-	c.y = x.y-y.y;
-	c.z = x.z-y.z;
-	r = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
-	grad(0) = c.x/(r*r*r);
-	grad(1) = c.y/(r*r*r);
-	grad(2) = c.z/(r*r*r);
-	dir << n_y.x, n_y.y, n_y.z;
-	return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
+{
+    vector3	c;
+    double r;
+    Eigen::Vector3d grad, dir;
+    c.x = x.x-y.x;
+    c.y = x.y-y.y;
+    c.z = x.z-y.z;
+    r = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
+    grad(0) = c.x/(r*r*r);
+    grad(1) = c.y/(r*r*r);
+    grad(2) = c.z/(r*r*r);
+    dir << n_y.x, n_y.y, n_y.z;
+    return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
 }
 
-static double SingleLayer (vector3 x, vector3 y) 
+static double SingleLayer (vector3 x, vector3 y)
 {
-	Eigen::Vector3d vx(x.x, x.y, x.z);
-	Eigen::Vector3d vy(y.x, y.y, y.z);
-	Eigen::Vector3d foo = Eigen::Vector3d::Zero();
-	double value = gf->evaluate(foo, vx, foo, vy)(0);
-	return value;
+    Eigen::Vector3d vx(x.x, x.y, x.z);
+    Eigen::Vector3d vy(y.x, y.y, y.z);
+    Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+    double value = gf->evaluate(foo, vx, foo, vy)(0);
+    return value;
 }
 
-static double DoubleLayer (vector3 x, vector3 y, vector3 n_y) 
+static double DoubleLayer (vector3 x, vector3 y, vector3 n_y)
 {
-	Eigen::Vector3d vx(x.x, x.y, x.z);
-	Eigen::Vector3d vy(y.x, y.y, y.z);
-	Eigen::Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-	Eigen::Vector3d foo = Eigen::Vector3d::Zero();
-	double value = gf->evaluate(foo, vx, vn_y, vy)(1);
-	return value;
+    Eigen::Vector3d vx(x.x, x.y, x.z);
+    Eigen::Vector3d vy(y.x, y.y, y.z);
+    Eigen::Vector3d vn_y(n_y.x, n_y.y, n_y.z);
+    Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+    double value = gf->evaluate(foo, vx, vn_y, vy)(1);
+    return value;
 }
 
 void PWLSolver::initPointers()
 {
-	elementTree = NULL;
-	waveletList = NULL;
+    elementTree = NULL;
+    waveletList = NULL;
 }
 
-/*PWLSolver::PWLSolver(Section solver) : WEMSolver(solver) 
+/*PWLSolver::PWLSolver(Section solver) : WEMSolver(solver)
   {
 	initPointers();
 	setSolverType("Linear");
@@ -118,131 +104,139 @@ void PWLSolver::initPointers()
 
 PWLSolver::~PWLSolver()
 {
-	if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches, nLevels);
-	if(waveletList != NULL) free_waveletlist_pwl(&waveletList, nNodes);
-	if(T_ != NULL)          free_interpolate_pwl(&T_,nPatches,nLevels);
+    if(elementTree != NULL) free_elementlist_pwl(&elementTree, nPatches, nLevels);
+    if(waveletList != NULL) free_waveletlist_pwl(&waveletList, nNodes);
+    if(T_ != NULL)          free_interpolate_pwl(&T_,nPatches,nLevels);
 }
 
-void PWLSolver::initInterpolation() 
+void PWLSolver::initInterpolation()
 {
-	init_interpolate_pwl(&T_, pointList, nPatches, nLevels);
-	nNodes = gennet_pwl(&nodeList, &elementList, pointList, nPatches, nLevels);
+    init_interpolate_pwl(&T_, pointList, nPatches, nLevels);
+    nNodes = gennet_pwl(&nodeList, &elementList, pointList, nPatches, nLevels);
 }
 
 void PWLSolver::constructWavelets()
 {
-	generate_elementlist_pwl(&elementTree, nodeList, elementList, nPatches, nLevels);
-	generate_waveletlist_pwl(&waveletList, elementTree, nPatches, nLevels, nNodes);
-	set_quadrature_level_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
-	simplify_waveletlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
-	complete_elementlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
-}	
-
-void PWLSolver::constructSi() 
-{
-	double factor = 0;
-	double epsilon = 0;
-	switch (integralEquation) 
-	{
-		case FirstKind:
-		case SecondKind:
-			epsilon = greenOutside_->dielectricConstant();
-			factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
-			break;
-		case Full:
-			factor = 2 * M_PI;
-			break;
-		default:
-			throw std::runtime_error("Unknown integral equation type.");
-		
-	}
-	gf = greenInside_;
-	apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels, nNodes);
-	WEM_pwl(&S_i_, waveletList, nodeList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer, factor);
-	aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
+    generate_elementlist_pwl(&elementTree, nodeList, elementList, nPatches, nLevels);
+    generate_waveletlist_pwl(&waveletList, elementTree, nPatches, nLevels, nNodes);
+    set_quadrature_level_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
+    simplify_waveletlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
+    complete_elementlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
 }
 
-void PWLSolver::constructSe() 
+void PWLSolver::constructSi()
 {
-	gf = greenOutside_; // sets the global pointer to pass GF to C code
-	apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels, nNodes);
-	WEM_pwl(&S_e_, waveletList, nodeList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer, -2*M_PI);
-	aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
+    double factor = 0;
+    double epsilon = 0;
+    switch (integralEquation) {
+    case FirstKind:
+    case SecondKind:
+        epsilon = greenOutside_->dielectricConstant();
+        factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
+        break;
+    case Full:
+        factor = 2 * M_PI;
+        break;
+    default:
+        throw std::runtime_error("Unknown integral equation type.");
+
+    }
+    gf = greenInside_;
+    apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels,
+                                nNodes);
+    WEM_pwl(&S_i_, waveletList, nodeList, elementTree, T_, nPatches, nLevels,
+            SingleLayer, DoubleLayer, factor);
+    aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
 }
 
-void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
+void PWLSolver::constructSe()
 {
-	sparse G;
-	double * rhs = 0;
-	double * u = (double*) calloc(nNodes, sizeof(double));
-	double * v = (double*) calloc(nNodes, sizeof(double));
-	//next line is just a quick fix but i do not like it...
-    	Eigen::VectorXd pot = potential;
-	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, nNodes, pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
-	int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList, elementList, nPatches, nLevels); // v = A^{-1} * rhs
-	init_sparse(&G, nNodes, nNodes, 10);
-	single_scale_gram_pwl(&G, elementList, nPatches, nLevels);
-	tdwtLin(v, elementList, nLevels, nPatches, nNodes);
-	for (size_t i = 0; i < nNodes; i++) 
-	{
-		for (size_t j = 0; j < G.row_number[i]; j++) 
-		{
-			u[i] += G.value[i][j] * v[G.index[i][j]];
-		}
-	}
-	dwtLin(u, elementList, nLevels, nPatches, nNodes);
-	for (size_t i = 0; i < nNodes; i++) 
-	{
-		rhs[i] += 4 * M_PI * u[i] / (epsilon - 1); // assembling RHS equation (2.7) Computing, 2009, 86, 1-22
-	}
-	memset(u, 0, nNodes * sizeof(double));
-	iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList, nPatches, nLevels);
-	tdwtLin(u, elementList, nLevels, nPatches, nNodes);
-	charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
-	energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
-	free(rhs);
-	free(u);
-	free(v);
-	free_sparse(&G);
+    gf = greenOutside_; // sets the global pointer to pass GF to C code
+    apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels,
+                                nNodes);
+    WEM_pwl(&S_e_, waveletList, nodeList, elementTree, T_, nPatches, nLevels,
+            SingleLayer, DoubleLayer, -2*M_PI);
+    aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
 }
 
-void PWLSolver::solveSecondKind(const Eigen::VectorXd & potential, Eigen::VectorXd & charge) 
+void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential,
+                               Eigen::VectorXd & charge)
 {
-	throw std::runtime_error("Second Kind (electric field) not yet implemented.");
+    sparse G;
+    double * rhs = 0;
+    double * u = (double*) calloc(nNodes, sizeof(double));
+    double * v = (double*) calloc(nNodes, sizeof(double));
+    //next line is just a quick fix but i do not like it...
+    Eigen::VectorXd pot = potential;
+    WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, nNodes,
+                 pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
+    int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList, elementList,
+                               nPatches, nLevels); // v = A^{-1} * rhs
+    init_sparse(&G, nNodes, nNodes, 10);
+    single_scale_gram_pwl(&G, elementList, nPatches, nLevels);
+    tdwtLin(v, elementList, nLevels, nPatches, nNodes);
+    for (size_t i = 0; i < nNodes; i++) {
+        for (size_t j = 0; j < G.row_number[i]; j++) {
+            u[i] += G.value[i][j] * v[G.index[i][j]];
+        }
+    }
+    dwtLin(u, elementList, nLevels, nPatches, nNodes);
+    for (size_t i = 0; i < nNodes; i++) {
+        rhs[i] += 4 * M_PI * u[i] / (epsilon -
+                                     1); // assembling RHS equation (2.7) Computing, 2009, 86, 1-22
+    }
+    memset(u, 0, nNodes * sizeof(double));
+    iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList, nPatches,
+                       nLevels);
+    tdwtLin(u, elementList, nLevels, nPatches, nNodes);
+    charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
+    energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
+    free(rhs);
+    free(u);
+    free(v);
+    free_sparse(&G);
 }
 
-void PWLSolver::solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & charge)
+void PWLSolver::solveSecondKind(const Eigen::VectorXd & potential,
+                                Eigen::VectorXd & charge)
 {
-	double * rhs = 0;
-	double * u = (double*) calloc(nNodes, sizeof(double));
-	double * v = (double*) calloc(nNodes, sizeof(double));
-	//next line is just a quick fix but i do not like it...
-        Eigen::VectorXd pot = potential;
-	WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, nNodes, pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
-	int iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList, nPatches, nLevels);  /* u = V_i^(-1)*N_f */
-	memset(rhs, 0, nNodes * sizeof(double));
-	for (size_t i = 0; i < nNodes; i++) 
-	{      /* rhs = V_e*u */
-		for (size_t j = 0; j < S_e_.row_number[i]; j++) 
-		{
-			rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
-		}
-	}
-	iters = WEMPGMRES3_pwl(&S_i_, &S_e_, rhs, v, threshold, waveletList, elementList, nPatches, nLevels); // v = A^{-1} * rhs
-	for (size_t i = 0; i < nNodes; i++) 
-	{
-		u[i] -= 4 * M_PI * v[i];      /* u = u - 4*pi*v */
-	}
-	tdwtLin(u, elementList, nLevels, nPatches, nNodes);
-	charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
-	energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
-	free(rhs);
-	free(u);
-	free(v);
+    throw std::runtime_error("Second Kind (electric field) not yet implemented.");
 }
 
-std::ostream & PWLSolver::printSolver(std::ostream & os) 
+void PWLSolver::solveFull(const Eigen::VectorXd & potential,
+                          Eigen::VectorXd & charge)
 {
-	os << "Solver Type: Wavelet, piecewise linear functions";
-	return os;
+    double * rhs = 0;
+    double * u = (double*) calloc(nNodes, sizeof(double));
+    double * v = (double*) calloc(nNodes, sizeof(double));
+    //next line is just a quick fix but i do not like it...
+    Eigen::VectorXd pot = potential;
+    WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, nNodes,
+                 pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
+    int iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList, nPatches,
+                           nLevels);  /* u = V_i^(-1)*N_f */
+    memset(rhs, 0, nNodes * sizeof(double));
+    for (size_t i = 0; i < nNodes; i++) {
+        /* rhs = V_e*u */
+        for (size_t j = 0; j < S_e_.row_number[i]; j++) {
+            rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
+        }
+    }
+    iters = WEMPGMRES3_pwl(&S_i_, &S_e_, rhs, v, threshold, waveletList, elementList,
+                           nPatches, nLevels); // v = A^{-1} * rhs
+    for (size_t i = 0; i < nNodes; i++) {
+        u[i] -= 4 * M_PI * v[i];      /* u = u - 4*pi*v */
+    }
+    tdwtLin(u, elementList, nLevels, nPatches, nNodes);
+    charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
+    energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
+    free(rhs);
+    free(u);
+    free(v);
+}
+
+std::ostream & PWLSolver::printSolver(std::ostream & os)
+{
+    os << "Solver Type: Wavelet, piecewise linear functions";
+    return os;
 }

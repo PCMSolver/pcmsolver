@@ -11,7 +11,7 @@
  *  \date 2013
  */
 
-double bohrToAngstrom(int year)
+inline double bohrToAngstrom(int year)
 {
     double bohrToAngstrom_;
     switch(year) {
@@ -50,27 +50,27 @@ double bohrToAngstrom(int year)
     return bohrToAngstrom_;
 }
 
-double angstromToBohr(int year)
+inline double angstromToBohr(int year)
 {
     return (1.0 / bohrToAngstrom(year));
 }
 
-double bohr2ToAngstrom2(int year)
+inline double bohr2ToAngstrom2(int year)
 {
     return std::pow(bohrToAngstrom(year), 2);
 }
 
-double angstrom2ToBohr2(int year)
+inline double angstrom2ToBohr2(int year)
 {
     return (1.0 / bohr2ToAngstrom2(year));
 }
 
-double bohr3ToAngstrom3(int year)
+inline double bohr3ToAngstrom3(int year)
 {
     return std::pow(bohrToAngstrom(year), 3);
 }
 
-double angstrom3ToBohr3(int year)
+inline double angstrom3ToBohr3(int year)
 {
     return (1.0 / bohr3ToAngstrom3(year));
 }

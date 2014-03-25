@@ -190,9 +190,9 @@ std::ostream & GePolCavity::printCavity(std::ostream & os)
     }
     os << "Number of spheres = " << nSpheres_ << " [initial = " << nSpheres_ -
        addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
-    os << "Number of finite elements = " << nElements_ << std::endl;
+    os << "Number of finite elements = " << nElements_;
     if (pointGroup_.nrGenerators() != 0) {
-        os << "Number of irreducible finite elements = " << nIrrElements_;
+        os << "\nNumber of irreducible finite elements = " << nIrrElements_;
     }
     /*
     for(int i = 0; i < nElements_; i++)

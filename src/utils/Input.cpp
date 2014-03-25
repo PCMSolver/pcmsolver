@@ -19,7 +19,7 @@ Input::Input()
     // Create a Getkw object from input file.
     Getkw input = Getkw(parsedInputFile, false, true);
 
-    CODATAyear_ = input.getSect("toplevel").getInt("CODATA");
+    CODATAyear_ = input.getInt("CODATA");
 
     const Section & cavity = input.getSect("Cavity");
 

@@ -229,6 +229,7 @@ extern "C" void print_pcm()
     std::ostringstream out_stream;
     out_stream << "\n" << std::endl;
     out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
+    out_stream << "Using CODATA " << Input::TheInput().CODATAyear() << " set of constants." << std::endl;
     out_stream << "========== Cavity " << std::endl;
     out_stream << *_cavity << std::endl;
     out_stream << "========== Solver " << std::endl;

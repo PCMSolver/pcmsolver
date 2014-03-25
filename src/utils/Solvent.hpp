@@ -7,9 +7,6 @@
 
 #include "Config.hpp"
 
-
-#include "PhysicalConstants.hpp"
-
 /*! \file Solvent.hpp
  *  \class Solvent
  *  \brief Class describing a solvent.
@@ -38,7 +35,8 @@ public:
     std::string name() const { return name_; }
     double epsStatic() const { return epsStatic_; }
     double epsOptical() const { return epsOptical_; }
-    double probeRadius() const { return (probeRadius_ / convertBohrToAngstrom); }
+    // The built-in probe radii are in Angstrom
+    double probeRadius() const { return probeRadius_; }
     void probeRadius(double radius) { probeRadius_ = radius; }
 
     /*! \brief Returns the map between solvent names and Solvent objects.

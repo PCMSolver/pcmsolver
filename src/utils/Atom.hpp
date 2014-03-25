@@ -8,8 +8,6 @@
 
 #include "EigenPimpl.hpp"
 
-#include "PhysicalConstants.hpp"
-
 /*! \file Atom.hpp
  *  \class Atom
  *  \brief Class describing an atom.
@@ -51,7 +49,8 @@ public:
     void atomCoord(Eigen::Vector3d & coord) { atomCoord_ = coord; }
     double atomCharge() const { return atomCharge_; }
     void atomCharge(double charge) { atomCharge_ = charge; }
-    double atomRadius() const { return (atomRadius_ / convertBohrToAngstrom); }
+    // The built-in atomic radii are in Angstrom
+    double atomRadius() const { return atomRadius_; }
     void atomRadius(double radius) { atomRadius_ = radius; }
     double atomRadiusScaling() const { return atomRadiusScaling_; }
     void atomRadiusScaling(double scaling) { atomRadiusScaling_ = scaling; }

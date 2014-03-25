@@ -38,6 +38,7 @@ private:
     Input(const Input &other);
     Input& operator=(const Input &other);
     ~Input() {}
+    int CODATAyear_;
     std::string cavFilename;
     std::string type;
     int patchLevel;
@@ -75,6 +76,7 @@ public:
         return obj;
     }
     // Accessor methods
+    int CODATAyear() { return CODATAyear_; } 
     // Cavity section input
     std::string getCavityFilename() { return cavFilename; }
     std::string getCavityType() { return type; }

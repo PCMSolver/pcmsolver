@@ -78,6 +78,7 @@ def	setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
 	top.add_kw('Units',     'STR', 'AU')
+        top.add_kw('CODATA', 'INT', 2010)
 
 	cavity=getkw.Section('Cavity', callback=verify_cavity)
 	cavity.add_kw('Restart', 'STR', '')

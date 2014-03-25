@@ -55,6 +55,7 @@
 #include "GreenData.hpp"
 #include "Input.hpp"
 #include "MathUtils.hpp"
+#include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "SolverData.hpp"
 #include "Sphere.hpp"
@@ -511,6 +512,7 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
 {
     bool scaling = Input::TheInput().getScaling();
     std::string set = Input::TheInput().getRadiiSet();
+    double factor = angstromToBohr(Input::TheInput().CODATAyear());
 
     std::vector<Atom> radiiSet;
     if ( set == "UFF" ) {
@@ -521,7 +523,7 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
 
     for (int i = 0; i < charges_.size(); ++i) {
         int index = charges_(i) - 1;
-        double radius = radiiSet[index].atomRadius();
+        double radius = radiiSet[index].atomRadius() * factor;
         if (scaling) {
             radius *= radiiSet[index].atomRadiusScaling();
         }

@@ -9,6 +9,7 @@
 #include "EigenPimpl.hpp"
 #include "GetkwPimpl.hpp"
 
+#include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
@@ -17,6 +18,9 @@ Input::Input()
     const char * parsedInputFile = "@pcmsolver.inp";
     // Create a Getkw object from input file.
     Getkw input = Getkw(parsedInputFile, false, true);
+
+    CODATAyear_ = input.getSect("toplevel").getInt("CODATA");
+
     const Section & cavity = input.getSect("Cavity");
 
     type = cavity.getStr("Type");
@@ -110,7 +114,7 @@ Input::Input()
         hasSolvent = true;
         std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
         solvent = solvents[_name];
-        probeRadius = solvent.probeRadius();
+        probeRadius = solvent.probeRadius() * angstromToBohr(CODATAyear_);
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class
         // is an helper class and should not be used in the core classes.

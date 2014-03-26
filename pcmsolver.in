@@ -94,7 +94,7 @@ def	setup_keywords():
         cavity.add_kw('Mode','STR','Explicit')
         cavity.add_kw('Atoms','INT_ARRAY')
         cavity.add_kw('Radii','DBL_ARRAY')
-	cavity.add_kw('Spheres','DBL_ARRAY', [0.0, 0.0, 0.0, 0.0], callback=verify_spheres)
+	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
 	top.add_sect(cavity)
         
 	medium=getkw.Section('Medium', callback=verify_medium)

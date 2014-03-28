@@ -1,20 +1,21 @@
 #ifndef INTERPOLATION_HPP
 #define INTERPOLATION_HPP
-/**
+
+#include <iostream>
+#include <cmath>
+
+#include "Vector3.hpp"
+#include "Vector2.hpp"
+
+/*!
  * @file Interpolation.hpp
  *
  * @brief class for calculating the surface interpolation
  */
-#include "Vector3.hpp"
-#include "Vector2.hpp"
-#include <stdlib.h>
-#ifdef DEBUG2
-#include <cstdio>
-#endif
+
 class Interpolation
 {
-public:
-
+private:
     Vector3 ****pSurfaceInterpolation; ///< surface interpolation polinomials
 
     unsigned int grade;                ///< the grade aka number of neighbours that constitute one polinomial
@@ -23,7 +24,8 @@ public:
 
     double h;                          ///< 1/step_size on reference domain
 
-    Interpolation() { grade = 0; noHlpElements = 0; h = 0;};
+public:
+    Interpolation() : grade(0), noHlpElements(0), h(0) {}
 
     /**
      * @brief computes the coefficients of the interpolation polynomial
@@ -61,5 +63,6 @@ public:
      */
     ~Interpolation();
 };
-#endif
+
+#endif // INTERPOLATION_HPP
 

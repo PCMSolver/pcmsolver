@@ -1,9 +1,13 @@
+#include "Interpolation.hpp"
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+
 #include "Vector3.hpp"
 #include "Vector2.hpp"
-#include <stdlib.h>
-#ifdef DEBUG2
-#include <cstdio>
-#endif
+
+using namespace std;
 
 Interpolation::Interpolation(Vector3*** U, int gradeIn, const int type,
                              unsigned int noHlpElementsIn, unsigned int noPatchIn)
@@ -65,7 +69,6 @@ Interpolation::Interpolation(Vector3*** U, int gradeIn, const int type,
             }
         }
     }
-#ifdef DEBUG
     FILE * debugFile = fopen("debug.out", "a");
     fprintf(debugFile, ">>> INTERPOLATION_POLINOMIALS\n");
     fprintf(debugFile, "%d %lf\n", grade, h);
@@ -86,8 +89,6 @@ Interpolation::Interpolation(Vector3*** U, int gradeIn, const int type,
     }
     fprintf(debugFile, "<<< INTERPOLATION_POLINOMIALS\n");
     fclose(debugFile);
-#endif
-    return;
 }
 
 // calculate the value in one point
@@ -136,9 +137,7 @@ Vector3 Interpolation::n_Chi(Vector2 a, int patch)
 {
     unsigned int x, y;
     double s,p;
-#ifdef DEBUG
     printf("%lf %lf ", a.x, a.y);
-#endif
 
     Vector3 c(0.0,0.0,0.0), dc_dx(0.0,0.0,0.0), dc_dy(0.0,0.0,0.0), res(0.0,0.0,0.0);
 
@@ -218,9 +217,7 @@ Vector3 Interpolation::n_Chi(Vector2 a, int patch)
     c.y = (dc_dy.z*dc_dx.x - dc_dy.x*dc_dx.z);
     c.z = (dc_dy.x*dc_dx.y - dc_dy.y*dc_dx.x);
 
-#ifdef DEBUG
     printf("%lf %lf %lf\n", c.x, c.y, c.z);
-#endif
     return c;
 }
 

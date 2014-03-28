@@ -2,6 +2,7 @@ set(utils_SOURCES
 	Atom.cpp
 	cnpy.cpp
 	Input.cpp
+	Interpolation.cpp
 	Solvent.cpp
 	Sphere.cpp	
     	SurfaceFunction.cpp
@@ -32,6 +33,7 @@ install(FILES EigenPimpl.hpp DESTINATION include)
 install(FILES GetkwPimpl.hpp DESTINATION include)
 install(FILES GreenData.hpp DESTINATION include)
 install(FILES Input.hpp DESTINATION include)
+install(FILES Interpolation.hpp DESTINATION include)
 install(FILES MathUtils.hpp DESTINATION include)
 install(FILES PhysicalConstants.hpp DESTINATION include)
 install(FILES Solvent.hpp DESTINATION include)
@@ -40,3 +42,5 @@ install(FILES Sphere.hpp DESTINATION include)
 install(FILES SurfaceFunction.hpp DESTINATION include)
 install(FILES Symmetry.hpp DESTINATION include)
 install(FILES TaylorPimpl.hpp DESTINATION include)
+install(FILES Vector2.hpp DESTINATION include)
+install(FILES Vector3.hpp DESTINATION include)

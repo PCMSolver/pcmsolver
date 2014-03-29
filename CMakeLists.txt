@@ -10,10 +10,6 @@ option(ENABLE_TESTS      "Enable compilation of unit tests"                     
 option(DISABLE_EIGEN_OWN "Do not use Eigen3 headers shipped with the module"         OFF)
 option(ENABLE_EIGEN_MKL  "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
 
-set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 2)
-set(PROJECT_VERSION_PATCH 0)
-
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_SOURCE_DIR}/cmake
@@ -86,6 +82,8 @@ set(ExternalProjectCMakeArgs
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 	-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DPARENT_BINARY_DIR=${PROJECT_BINARY_DIR}
+	-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}
+	-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}
    )
 
 add_external(libgetkw)
@@ -143,7 +141,7 @@ include_directories(${header_dir_list})
 link_directories(${Boost_LIBRARY_DIRS}
                  ${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
-set(LIBS boost_filesystem boost_system ${LIBS})
+set(LIBS ${Boost_LIBRARIES} ${LIBS})
 
 add_library(pcm ${SOURCES})
 install(TARGETS pcm ARCHIVE DESTINATION lib)

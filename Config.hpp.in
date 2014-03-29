@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef CONFIG_HPP
+#define CONFIG_HPP
 
 #define PROJECT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 #define PROJECT_VERSION_MINOR @PROJECT_VERSION_MINOR@
@@ -30,15 +30,10 @@
 
 #if defined (HAS_CXX11)
 #include <memory>
-#else
-#include <boost/shared_ptr.hpp>
-#endif
-
-#if defined (HAS_CXX11)
 using std::shared_ptr;
 #else
+#include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 #endif
 
-
-#endif
+#endif // CONFIG_HPP

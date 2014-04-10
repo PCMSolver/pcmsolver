@@ -15,9 +15,9 @@ extern "C"
 }
 
 class Cavity;
-class GreensFunction;
 class WaveletCavity;
 
+#include "IGreensFunction.hpp"
 #include "PCMSolver.hpp"
 
 /*! \file WEMSolver.hpp
@@ -35,7 +35,7 @@ private:
         return os;
     }
 public:
-    WEMSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_,
+    WEMSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_,
               int integralEquation_ = SecondKind )
         : PCMSolver(gfInside_, gfOutside_), integralEquation(integralEquation_) {
         initWEMMembers();

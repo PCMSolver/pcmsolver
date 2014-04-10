@@ -1,14 +1,17 @@
-set(cavity_SOURCES
-    Cavity.cpp 
-    GePolCavity.cpp 
-    RestartCavity.cpp
-    TsLessCavity.cpp
-    WaveletCavity.cpp
-    CavityFactory.cpp
-)
+set(headers_list "")
+# Get headers with .hpp extension
+get_hpp_headers(headers_list)
+# If you want to remove some headers specify them explictly here
+list(REMOVE_ITEM headers_list "")
+
+set(sources_list "")
+# Get sources with .cpp extension
+get_cpp_sources(sources_list)
+# If you want to remove some sources specify them explictly here
+list(REMOVE_ITEM sources_list "")
 
 if(ENABLE_TESTS)
-	add_library(cavity ${cavity_SOURCES})
+	add_library(cavity ${sources_list})
     if(DEVELOPMENT_CODE)
  	    add_dependencies(cavity pedra tsless wavcav)
     else()
@@ -19,15 +22,11 @@ endif()
 
 # Export the sources up to src directory level
 set(local_sources "")
-foreach(source ${cavity_SOURCES})
+foreach(source ${sources_list})
 	get_filename_component(sourcepath ${source} ABSOLUTE)
-  	set(local_sources ${sourcepath} ${local_sources})
+	list(APPEND local_sources ${sourcepath})
 endforeach()
 set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
- 
-install(FILES Cavity.hpp DESTINATION include)
-install(FILES GePolCavity.hpp DESTINATION include)
-install(FILES RestartCavity.hpp DESTINATION include)
-install(FILES TsLessCavity.hpp DESTINATION include)
-install(FILES WaveletCavity.hpp DESTINATION include)
-install(FILES CavityFactory.hpp DESTINATION include)
+
+# Sets install directory for all the headers in the list
+install_list_FILES("${headers_list}" include)

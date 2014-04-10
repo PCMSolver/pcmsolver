@@ -10,8 +10,8 @@
 #include "EigenPimpl.hpp"
 
 class Cavity;
-class GreensFunction;
 
+#include "IGreensFunction.hpp"
 #include "PCMSolver.hpp"
 #include "SolverData.hpp"
 #include "SolverFactory.hpp"
@@ -36,7 +36,7 @@ private:
     virtual std::ostream & printSolver(std::ostream & os);
 public:
     CPCMSolver() {}
-    CPCMSolver(GreensFunction * gfInside, GreensFunction * gfOutside, bool symm,
+    CPCMSolver(IGreensFunction * gfInside, IGreensFunction * gfOutside, bool symm,
                double correction)
         : PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false),
           builtAnisotropicMatrix(false), hermitivitize_(symm), correction_(correction) {}

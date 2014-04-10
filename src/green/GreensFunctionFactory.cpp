@@ -5,7 +5,6 @@
 
 #include "Config.hpp"
 
-
 bool GreensFunctionFactory::registerGreensFunction(const std::string & greenID,
         createGreensFunctionCallback createFunction)
 {
@@ -17,7 +16,7 @@ bool GreensFunctionFactory::unRegisterGreensFunction(const std::string & greenID
     return callbacks.erase(greenID) == 1;
 }
 
-GreensFunction * GreensFunctionFactory::createGreensFunction(
+IGreensFunction * GreensFunctionFactory::createGreensFunction(
     const std::string & greenID, const greenData & _data)
 {
     CallbackMap::const_iterator i = callbacks.find(greenID);

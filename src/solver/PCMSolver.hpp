@@ -8,7 +8,7 @@
 
 class Cavity;
 
-#include "GreensFunction.hpp"
+#include "IGreensFunction.hpp"
 
 /*!
  * \file PCMSolver.hpp
@@ -21,14 +21,14 @@ class Cavity;
 class PCMSolver
 {
 protected:
-    GreensFunction * greenInside_;
-    GreensFunction * greenOutside_;
+    IGreensFunction * greenInside_;
+    IGreensFunction * greenOutside_;
     bool allocated;
     virtual std::ostream & printSolver(std::ostream & os) = 0;
 public:
     PCMSolver() {}
-    PCMSolver(GreensFunction * gfInside,
-              GreensFunction * gfOutside) : greenInside_(gfInside), greenOutside_(gfOutside),
+    PCMSolver(IGreensFunction * gfInside,
+              IGreensFunction * gfOutside) : greenInside_(gfInside), greenOutside_(gfOutside),
         allocated(true) {}
     virtual ~PCMSolver() {
         if (allocated) {
@@ -37,10 +37,10 @@ public:
         }
     }
 
-    GreensFunction * greenInside() const {
+    IGreensFunction * greenInside() const {
         return greenInside_;
     }
-    GreensFunction * greenOutside() const {
+    IGreensFunction * greenOutside() const {
         return greenOutside_;
     }
 

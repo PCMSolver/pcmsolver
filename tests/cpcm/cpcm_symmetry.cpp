@@ -6,6 +6,7 @@
 #include <boost/filesystem.hpp>
 
 #include "CPCMSolver.hpp"
+#include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
 #include "Symmetry.hpp"
 #include "UniformDielectric.hpp"
@@ -39,8 +40,8 @@ TEST(IEFSolver, pointChargeGePolC1)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.c1");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -81,8 +82,8 @@ TEST(IEFSolver, pointChargeGePolCs)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.cs");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -126,8 +127,8 @@ TEST(IEFSolver, pointChargeGePolC2)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.c2");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -171,8 +172,8 @@ TEST(IEFSolver, pointChargeGePolCi)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.ci");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -216,8 +217,8 @@ TEST(IEFSolver, pointChargeGePolC2h)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -261,8 +262,8 @@ TEST(IEFSolver, pointChargeGePolD2)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.d2");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -306,8 +307,8 @@ TEST(IEFSolver, pointChargeGePolC2v)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -351,8 +352,8 @@ TEST(IEFSolver, pointChargeGePolD2h)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);

@@ -1,11 +1,18 @@
-add_subdirectory(surface_function)
+# Math utilities and helper classes
 add_subdirectory(block_diagonal)
+add_subdirectory(surface_function)
+# Cavity generators
 add_subdirectory(gepol)
-add_subdirectory(iefpcm)
-add_subdirectory(cpcm)
 if(DEVELOPMENT_CODE)
 	add_subdirectory(tsless)
 	add_subdirectory(wavelet_cavity)
+endif()
+# Green's functions
+add_subdirectory(green)
+# Solvers
+add_subdirectory(cpcm)
+add_subdirectory(iefpcm)
+if(DEVELOPMENT_CODE)
 	add_subdirectory(pwc)
 	add_subdirectory(pwl)
 endif()

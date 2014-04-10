@@ -5,6 +5,7 @@
 #include "EigenPimpl.hpp"
 
 #include "CPCMSolver.hpp"
+#include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
 #include "Symmetry.hpp"
 #include "UniformDielectric.hpp"
@@ -45,8 +46,8 @@ TEST(CPCMSolver, NH3GePol)
 	cavity.saveCavity("nh3.npz");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.8;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);

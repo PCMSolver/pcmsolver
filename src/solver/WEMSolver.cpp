@@ -35,7 +35,7 @@ extern "C"
 }
 
 #include "Cavity.hpp"
-#include "GreensFunction.hpp"
+#include "IGreensFunction.hpp"
 #include "WaveletCavity.hpp"
 
 void WEMSolver::initWEMMembers()

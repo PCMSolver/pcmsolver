@@ -12,7 +12,7 @@
 #include "EigenPimpl.hpp"
 
 #include "Cavity.hpp"
-#include "GreensFunction.hpp"
+#include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
 void IEFSolver::buildSystemMatrix(const Cavity & cavity)
@@ -39,10 +39,11 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd DE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // This is the very core of PCMSolver
-    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
+    throw std::runtime_error("Calculation of anisotropic matrix elements not yet implemented.");
+/*  greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
     greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
     greenOutside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SE, DE);
-    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);
+    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);*/
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.
@@ -102,8 +103,8 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
-    greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
+    greenInside_->operator()(SI, cav.elementCenter(), cav.elementNormal(), cav.elementArea());
+    greenInside_->operator()(DI, cav.elementCenter(), cav.elementNormal(), cav.elementArea(), cav.elementRadius());
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.

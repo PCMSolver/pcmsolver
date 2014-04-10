@@ -9,7 +9,7 @@
 #include "EigenPimpl.hpp"
 
 struct greenData;
-class GreensFunction;
+class IGreensFunction;
 
 /*!
  *	\file GreensFunctionFactory.hpp
@@ -28,7 +28,7 @@ public:
     /*!
      * Callback function for Green's function creation.
      */
-    typedef GreensFunction * (*createGreensFunctionCallback)(const greenData & _data);
+    typedef IGreensFunction * (*createGreensFunctionCallback)(const greenData & _data);
 private:
     /*!
      * A map from the Green's function type identifier (a string) to its callback function.
@@ -50,8 +50,8 @@ public:
     /*!
      * Calls the appropriate creation function, based on the passed greenID
      */
-    GreensFunction * createGreensFunction(const std::string & greenID,
-                                          const greenData & _data);
+    IGreensFunction * createGreensFunction(const std::string & greenID,
+                                           const greenData & _data);
     /*!
      * Unique point of access to the unique instance of the GreensFunctionFactory
      */

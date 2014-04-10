@@ -18,3 +18,11 @@ the issue number.
    (programmers' manual only)
 7. Implementation of input management as asked by Andy
    and Daniel
+
+10 April 2014
+-------------
+1. We now use CMake's GLOB function to define which C/C++
+   sources and headers are to be compiled/included.
+   That's not advised as addition of new header files/source files
+   will NOT trigger a new build. I don't know how severe/annoying
+   this will be...

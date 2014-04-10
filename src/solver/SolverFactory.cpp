@@ -6,7 +6,7 @@
 #include "Config.hpp"
 
 
-class GreensFunction;
+class IGreensFunction;
 
 bool SolverFactory::registerSolver(std::string solverID,
                                    createSolverCallback createFunction)

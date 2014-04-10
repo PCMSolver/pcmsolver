@@ -2,63 +2,77 @@
 #define UNIFORMDIELECTRIC_HPP
 
 #include <iosfwd>
-#include <string>
-
-#include "Config.hpp"
 
 #include "EigenPimpl.hpp"
 
+#include "DerivativeTypes.hpp"
+#include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
+#include "IGreensFunction.hpp"
 
 /*! \file UniformDielectric.hpp
- *  \class UniformDielectric
- *  \brief Green's functions for uniform dielectric.
- *  \author Luca Frediani, Roberto Di Remigio
- *  \date 2013
+ *  \class UniformDielectric<T>
+ *  \brief Green's function for uniform dielectric.
+ *  \author Luca Frediani and Roberto Di Remigio
+ *  \date 2012-2014
+ *  \tparam T evaluation strategy for the function and its derivatives
  */
 
-class UniformDielectric : public GreensFunction
+template <typename T>
+class UniformDielectric : public GreensFunction<T>
 {
 public:
-    UniformDielectric(int how_, double epsilon_) : GreensFunction(how_, true),
-        epsilon(epsilon_) {}
+    explicit UniformDielectric(double eps) : GreensFunction<T>(), epsilon_(eps) {}
     virtual ~UniformDielectric() {}
-    virtual void compDiagonal(const Eigen::VectorXd & elementArea_,
-                              const Eigen::VectorXd & elementRadius_,
-                              Eigen::MatrixXd & S_, Eigen::MatrixXd & D_) const;
-    virtual double dielectricConstant() const {
-        return epsilon;
-    }
-    friend std::ostream & operator<<(std::ostream & os, UniformDielectric & green) {
-        return green.printGreensFunction(os);
+    virtual double derivative(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
+    virtual void dielectricConstant(double eps) { epsilon_ = eps; }
+    virtual double dielectricConstant() const { return epsilon_; }
+    virtual double compDiagonalElementS(double area) const ;
+    virtual double compDiagonalElementD(double area, double radius) const;
+    /*!
+     *  Get the S and D matrices
+     */
+    virtual void operator()(Eigen::MatrixXd & S, Eigen::MatrixXd & D,
+                            const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
+                            const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const;
+    /*!
+     *  Get the S matrix
+     */
+    virtual void operator()(Eigen::MatrixXd & S,
+                            const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
+                            const Eigen::VectorXd & areas) const;
+    /*!
+     *  Get the D matrix
+     */
+    virtual void operator()(Eigen::MatrixXd & D,
+                            const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
+                            const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const;
+
+    friend std::ostream & operator<<(std::ostream & os, UniformDielectric & gf) {
+        return gf.printObject(os);
     }
 private:
-    double epsilon;
-    virtual Eigen::Array4d numericalDirectional(Eigen::Vector3d & sourceNormal_,
-            Eigen::Vector3d & source_,
-            Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
-    virtual Eigen::Array4d analyticDirectional(Eigen::Vector3d & sourceNormal_,
-            Eigen::Vector3d & source_,
-            Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
-    virtual Eigen::Array4d automaticDirectional(Eigen::Vector3d & sourceNormal_,
-            Eigen::Vector3d & source_,
-            Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
-    virtual Eigen::Array4d automaticGradient(Eigen::Vector3d & sourceNormal_,
-            Eigen::Vector3d & source_,
-            Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
-    virtual Eigen::Array4d automaticHessian(Eigen::Vector3d & sourceNormal_,
-                                            Eigen::Vector3d & source_,
-                                            Eigen::Vector3d & probeNormal_, Eigen::Vector3d & probe_) const;
-    virtual std::ostream & printGreensFunction(std::ostream & os);
+    virtual T evaluate(T * source, T * probe) const;
+    virtual std::ostream & printObject(std::ostream & os);
+    double epsilon_;
 };
 
 namespace
 {
-    GreensFunction * createUniformDielectric(const greenData & _data)
+    struct buildUniformDielectric {
+        template <typename DerivativeType>
+        IGreensFunction * operator()(const greenData & _data) {
+            return new UniformDielectric<DerivativeType>(_data.epsilon);
+        }
+    };
+
+    IGreensFunction * createUniformDielectric(const greenData & _data)
     {
-        return new UniformDielectric(_data.how, _data.epsilon);
+        buildUniformDielectric build;
+        return for_id<derivative_types>(build, _data, _data.how);
     }
     const std::string UNIFORMDIELECTRIC("UniformDielectric");
     const bool registeredUniformDielectric =

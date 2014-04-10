@@ -35,6 +35,7 @@
 #include "WaveletCavity.hpp"
 //    2. Green's functions
 #include "GreensFunction.hpp"
+#include "IGreensFunction.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
 //    3. Solvers
@@ -82,6 +83,7 @@ SurfaceFunctionMap functions;
 	Functions visible to host program
 
 */
+
 
 extern "C" void hello_pcm(int * a, double * b)
 {
@@ -439,7 +441,7 @@ void initSolver()
     int greenDer = Input::TheInput().getDerivativeInsideType();
     greenData inside(greenDer, epsilon);
 
-    GreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
+    IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
 
     // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
     epsilon = Input::TheInput().getEpsilonOutside();
@@ -447,7 +449,7 @@ void initSolver()
     greenDer = Input::TheInput().getDerivativeOutsideType();
     greenData outside(greenDer, epsilon);
 
-    GreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
+    IGreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
     // And all this to finally create the solver!
     std::string modelType = Input::TheInput().getSolverType();
     double correction = Input::TheInput().getCorrection();

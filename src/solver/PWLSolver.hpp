@@ -16,8 +16,7 @@ extern "C"
 #include "basis_pwl.h"
 }
 
-class GreensFunction;
-
+#include "IGreensFunction.hpp"
 #include "SolverData.hpp"
 #include "SolverFactory.hpp"
 #include "WEMSolver.hpp"
@@ -35,11 +34,11 @@ private:
     virtual void initPointers();
     virtual std::ostream & printSolver(std::ostream & os);
 public:
-    PWLSolver(GreensFunction * gfInside_,
-              GreensFunction * gfOutside_) : WEMSolver(gfInside_, gfOutside_, FirstKind) {
+    PWLSolver(IGreensFunction * gfInside_,
+              IGreensFunction * gfOutside_) : WEMSolver(gfInside_, gfOutside_, FirstKind) {
         initPointers();
     }
-    PWLSolver(GreensFunction * gfInside_, GreensFunction * gfOutside_,
+    PWLSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_,
               int integralEquation_) : WEMSolver(gfInside_, gfOutside_, integralEquation_) {
         initPointers();
     }

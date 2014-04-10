@@ -5,6 +5,7 @@
 
 #include "EigenPimpl.hpp"
 
+#include "DerivativeTypes.hpp"
 #include "PWCSolver.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
@@ -25,8 +26,8 @@ TEST(PWCSolver, NH3)
 	// Set up cavity
 	Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
 	Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
-    Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
-    Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
+        Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
+        Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
 	std::vector<Sphere> spheres;
 	Sphere sph1(N,  2.929075493);
 	Sphere sph2(H1, 2.267671349);
@@ -42,14 +43,14 @@ TEST(PWCSolver, NH3)
 	WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
 	cavity.readCavity("molec_dyadic.dat");
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	int firstKind = 0;
 	PWCSolver solver(gfInside, gfOutside, firstKind);
 	solver.buildSystemMatrix(cavity);
 	cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), false);
 	
-    double Ncharge = 7.0;
+        double Ncharge = 7.0;
 	double Hcharge = 1.0;
 	int size = cavity.size();
 	Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);

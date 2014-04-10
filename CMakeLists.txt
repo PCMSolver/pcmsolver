@@ -52,20 +52,20 @@ endif()
 if("${EIGEN3_ROOT}" STREQUAL "")
 	if(DISABLE_EIGEN_OWN)
 		find_package(Eigen3 3.0.0)
-	        message("Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
+	        message(STATUS "Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
 	else()
 		set(EIGEN3_ROOT ${PROJECT_SOURCE_DIR}/external/eigen3)
 		set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include/eigen3)
 		install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/eigen3 DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
-		message("Eigen 3.2.0 is located here: " ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include/eigen3)
+		message(STATUS "Eigen 3.2.0 is located here: " ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include/eigen3)
 	endif()
 else()
 	find_package(Eigen3 3.0.0)
-        message("Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
+        message(STATUS "Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
 endif()
 
 if(ENABLE_EIGEN_MKL)
-	message("-- ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3.\n Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
+	message(STATUS "ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3.\n Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
         include(ConfigMath)
         set(EIGEN_USE_MKL_ALL ON)
 endif()
@@ -125,6 +125,12 @@ file(COPY ${PROJECT_BINARY_DIR}/pcmsolver
   GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
+  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+configure_file(${PROJECT_SOURCE_DIR}/tools/touch_cmakelists.in touch_cmakelists)
+file(COPY ${PROJECT_BINARY_DIR}/touch_cmakelists 
+  DESTINATION ${PROJECT_BINARY_DIR}/bin
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
   GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 

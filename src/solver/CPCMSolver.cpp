@@ -10,7 +10,7 @@
 #include "EigenPimpl.hpp"
 
 #include "Cavity.hpp"
-#include "GreensFunction.hpp"
+#include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
 void CPCMSolver::buildSystemMatrix(const Cavity & cavity)
@@ -35,9 +35,8 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
-    // This is the very core of PCMSolver
-    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
-    greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
+    // Compute SI on the whole cavity, regardless of symmetry
+    greenInside_->operator()(SI, cav.elementCenter(), cav.elementNormal(), cav.elementArea());
     // Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.

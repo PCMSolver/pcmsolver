@@ -4,7 +4,7 @@
 #include "Config.hpp"
 
 
-class GreensFunction;
+class IGreensFunction;
 
 /*! @struct solverData
  *  @brief Contains all data defined from user input in the solver section.
@@ -21,12 +21,12 @@ class GreensFunction;
  */
 
 struct solverData {
-    GreensFunction * gfInside;
-    GreensFunction * gfOutside;
+    IGreensFunction * gfInside;
+    IGreensFunction * gfOutside;
     double correction;
     int integralEquation;
     bool hermitivitize;
-    solverData(GreensFunction * _gfInside, GreensFunction * _gfOutside,
+    solverData(IGreensFunction * _gfInside, IGreensFunction * _gfOutside,
                double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
         gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction),
         integralEquation(_integralEquation), hermitivitize(_symm) {}

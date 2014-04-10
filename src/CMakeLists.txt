@@ -1,18 +1,13 @@
-file(GLOB_RECURSE _listh *.h)
-set(header_dir_list "")
-foreach(file_path ${_listh})
-	get_filename_component(dir_path ${file_path} PATH)
-	set(header_dir_list ${header_dir_list} ${dir_path})
-endforeach()
-
-file(GLOB_RECURSE _listhpp *.hpp)
-foreach(file_path ${_listhpp})
-	get_filename_component(dir_path ${file_path} PATH)
-	set(header_dir_list ${header_dir_list} ${dir_path})
-endforeach()
-list(REMOVE_DUPLICATES header_dir_list)
-set(header_dir_list ${header_dir_list} PARENT_SCOPE)
-
+set(header_dir_list 
+	${CMAKE_CURRENT_SOURCE_DIR}/cavity 
+	${CMAKE_CURRENT_SOURCE_DIR}/green
+	${CMAKE_CURRENT_SOURCE_DIR}/interface
+	${CMAKE_CURRENT_SOURCE_DIR}/pwl
+	${CMAKE_CURRENT_SOURCE_DIR}/solver
+	${CMAKE_CURRENT_SOURCE_DIR}/utils
+	${CMAKE_CURRENT_SOURCE_DIR}/wavcav
+	${CMAKE_CURRENT_SOURCE_DIR}/wem
+   )
 include_directories(${header_dir_list})
 
 add_subdirectory(cavity)
@@ -28,5 +23,8 @@ if(DEVELOPMENT_CODE)
 	add_subdirectory(tsless)
 	add_subdirectory(wavcav)
 endif()
+
+# We need to export header_dir_list one level up
+set(header_dir_list ${header_dir_list} PARENT_SCOPE)
 
 set(SOURCES ${SOURCES} PARENT_SCOPE)

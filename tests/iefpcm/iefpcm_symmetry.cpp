@@ -6,6 +6,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
@@ -40,8 +41,8 @@ TEST(IEFSolver, pointChargeGePolC1)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.c1");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
@@ -80,8 +81,8 @@ TEST(IEFSolver, pointChargeGePolCs)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.cs");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
@@ -123,8 +124,8 @@ TEST(IEFSolver, pointChargeGePolC2)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.c2");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
@@ -166,8 +167,8 @@ TEST(IEFSolver, pointChargeGePolCi)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.ci");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
@@ -209,8 +210,8 @@ TEST(IEFSolver, pointChargeGePolC2h)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
@@ -252,8 +253,8 @@ TEST(IEFSolver, pointChargeGePolD2)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.d2");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
@@ -295,8 +296,8 @@ TEST(IEFSolver, pointChargeGePolC2v)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);
@@ -338,8 +339,8 @@ TEST(IEFSolver, pointChargeGePolD2h)
 	fs::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
 	
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	IEFSolver solver(gfInside, gfOutside, symm);
 	solver.buildSystemMatrix(cavity);

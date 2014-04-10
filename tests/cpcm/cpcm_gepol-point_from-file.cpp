@@ -4,6 +4,7 @@
 
 #include "EigenPimpl.hpp"
 
+#include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
@@ -27,8 +28,8 @@ TEST(CPCMSolver, pointChargeGePol)
 	// The point charge is located at the origin.
 	// The potential at cavity point s_I is Q/|s_I|
 	double permittivity = 78.39;
-	Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-	UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+	Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+	UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 	bool symm = true;
 	double correction = 0.0;
 	CPCMSolver solver(gfInside, gfOutside, symm, correction);

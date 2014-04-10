@@ -5,6 +5,7 @@
 
 #include "EigenPimpl.hpp"
 
+#include "DerivativeTypes.hpp"
 #include "PWCSolver.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
@@ -45,8 +46,8 @@ class WaveletCavityNH3Test : public ::testing::Test
 			cavity = WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
 			cavity.readCavity("molec_dyadic.dat");
 			double permittivity = 78.39;
-			Vacuum * gfInside = new Vacuum(2); // Automatic directional derivative
-			UniformDielectric * gfOutside = new UniformDielectric(2, permittivity);
+			Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(); 
+			UniformDielectric<AD_directional> * gfOutside = new UniformDielectric<AD_directional>(permittivity);
 			int firstKind = 0;
 			PWCSolver solver(gfInside, gfOutside, firstKind);
 			solver.buildSystemMatrix(cavity);

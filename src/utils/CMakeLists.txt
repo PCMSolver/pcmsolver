@@ -1,42 +1,28 @@
-set(utils_SOURCES
-	Atom.cpp
-	cnpy.cpp
-	Input.cpp
-	Solvent.cpp
-	Sphere.cpp	
-    	SurfaceFunction.cpp
-	Symmetry.cpp
-)
+set(headers_list "")
+# Get headers with .hpp extension
+get_hpp_headers(headers_list)
+# If you want to remove some headers specify them explictly here
+list(REMOVE_ITEM headers_list "")
+
+set(sources_list "")
+# Get sources with .cpp extension
+get_cpp_sources(sources_list)
+# If you want to remove some sources specify them explictly here
+list(REMOVE_ITEM sources_list "")
 
 if(ENABLE_TESTS)
-	add_library(utils ${utils_SOURCES})
+	add_library(utils ${sources_list})
 	add_dependencies(utils libgetkw)
 	install(TARGETS utils ARCHIVE DESTINATION lib)
 endif()
 
 # Export the sources up to src directory level
 set(local_sources "")
-foreach(source ${utils_SOURCES})
+foreach(source ${sources_list})
 	get_filename_component(sourcepath ${source} ABSOLUTE)
-  	set(local_sources ${sourcepath} ${local_sources})
+	list(APPEND local_sources ${sourcepath})
 endforeach()
 set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
 
-install(FILES Atom.hpp DESTINATION include)
-install(FILES BlockDiagonalMatrix.hpp DESTINATION include)
-install(FILES CavityData.hpp DESTINATION include)
-install(FILES Citation.hpp DESTINATION include)
-install(FILES cnpy.hpp DESTINATION include)
-install(FILES cnpyPimpl.hpp DESTINATION include)
-install(FILES EigenPimpl.hpp DESTINATION include)
-install(FILES GetkwPimpl.hpp DESTINATION include)
-install(FILES GreenData.hpp DESTINATION include)
-install(FILES Input.hpp DESTINATION include)
-install(FILES MathUtils.hpp DESTINATION include)
-install(FILES PhysicalConstants.hpp DESTINATION include)
-install(FILES Solvent.hpp DESTINATION include)
-install(FILES SolverData.hpp DESTINATION include)
-install(FILES Sphere.hpp DESTINATION include)
-install(FILES SurfaceFunction.hpp DESTINATION include)
-install(FILES Symmetry.hpp DESTINATION include)
-install(FILES TaylorPimpl.hpp DESTINATION include)
+# Sets install directory for all the headers in the list
+install_list_FILES("${headers_list}" include)

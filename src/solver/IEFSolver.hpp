@@ -9,8 +9,8 @@
 
 
 class Cavity;
-class GreensFunction;
 
+#include "IGreensFunction.hpp"
 #include "PCMSolver.hpp"
 #include "SolverData.hpp"
 #include "SolverFactory.hpp"
@@ -42,7 +42,7 @@ private:
     virtual std::ostream & printSolver(std::ostream & os);
 public:
     IEFSolver() {}
-    IEFSolver(GreensFunction * gfInside, GreensFunction * gfOutside, bool symm)
+    IEFSolver(IGreensFunction * gfInside, IGreensFunction * gfOutside, bool symm)
         : PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false),
           builtAnisotropicMatrix(false), hermitivitize_(symm) {}
     virtual ~IEFSolver() {}

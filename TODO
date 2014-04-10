@@ -24,5 +24,6 @@ the issue number.
 1. We now use CMake's GLOB function to define which C/C++
    sources and headers are to be compiled/included.
    That's not advised as addition of new header files/source files
-   will NOT trigger a new build. I don't know how severe/annoying
-   this will be...
+   will NOT trigger a new build. 
+   I added a Python script to automatize touching of all CMakeLists.txt
+   when a new file is added somewhere. Might need some polishing...

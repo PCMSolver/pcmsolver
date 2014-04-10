@@ -1,3 +1,6 @@
+# List here all directories that contain *.h or *.hpp
+# header files. This is needed in order to set the list
+# of directories where CMake will go look for headers
 set(header_dir_list 
 	${CMAKE_CURRENT_SOURCE_DIR}/cavity 
 	${CMAKE_CURRENT_SOURCE_DIR}/green

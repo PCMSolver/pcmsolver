@@ -121,7 +121,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     // T = (2 * M_PI * fact * aInv - DI) * a * SI; R = (2 * M_PI * aInv - DI)
     // fullPCMMatrix = K = T^-1 * R * a
     // 1. Form T
-    double epsilon = greenOutside_->dielectricConstant();
+    double epsilon = greenOutside_->epsilon();
     double fact = (epsilon + 1.0)/(epsilon - 1.0);
     fullPCMMatrix = (2 * M_PI * fact * aInv - DI) * a * SI;
     // 2. Invert T using LU decomposition with full pivoting

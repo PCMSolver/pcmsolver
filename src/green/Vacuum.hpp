@@ -2,6 +2,7 @@
 #define VACUUM_HPP
 
 #include <iosfwd>
+#include <string>
 
 #include "EigenPimpl.hpp"
 
@@ -25,12 +26,12 @@ class Vacuum : public GreensFunction<T>
 {
 public:
     Vacuum() : GreensFunction<T>(), epsilon_(1.0) {}
-    virtual ~Vacuum() {};
+    virtual ~Vacuum() {}
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
     virtual double compDiagonalElementS(double area) const ;
     virtual double compDiagonalElementD(double area, double radius) const;
-    virtual double dielectricConstant() const { return 1.0; }
+    virtual double epsilon() const { return 1.0; }
     /*!
      *  Get the S and D matrices
      */

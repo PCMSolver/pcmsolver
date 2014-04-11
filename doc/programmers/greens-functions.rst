@@ -5,6 +5,13 @@ We will here describe the inheritance hierarchy for generating Green's functions
 The runtime creation of Green's functions objects relies on the Factory Method pattern [Gamma1994]_, [Alexandrescu2001]_, 
 implemented through the GreensFunctionFactory class.
 
+IGreensFunction
+---------------
+.. doxygenclass:: IGreensFunction 
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*
+
 GreensFunction
 --------------
 .. doxygenclass:: GreensFunction 
@@ -40,9 +47,30 @@ MetalSphere
    :members:
    :sections: public*, protected*, private*
 
+PlanarInterface
+---------------
+.. doxygenclass:: PlanarInterface
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*
+
+QuasiHarmonicInterface
+----------------------
+.. doxygenclass:: QuasiHarmonicInterface
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*
+
 GreensFunctionFactory
 ---------------------
 .. doxygenclass:: GreensFunctionFactory 
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*
+
+ForIdGreen
+----------
+.. doxygenclass:: ForIdGreen 
    :project: PCMSolver
    :members:
    :sections: public*, protected*, private*

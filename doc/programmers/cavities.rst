@@ -20,6 +20,22 @@ GePolCavity
    :members:
    :sections: public*, protected*, private*
 
+TsLessCavity
+------------
+
+.. doxygenclass:: TsLessCavity 
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*
+
+RestartCavity
+-------------
+
+.. doxygenclass:: RestartCavity 
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*
+
 WaveletCavity
 -------------
 

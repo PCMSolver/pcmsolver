@@ -1,6 +1,13 @@
 Helper Classes
 ==============
 
+Citation
+--------
+.. doxygenfile:: Citation
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*
+
 Input
 -----
 .. doxygenclass:: Input
@@ -32,6 +39,13 @@ Solvent
 SurfaceFunction
 ---------------
 .. doxygenclass:: SurfaceFunction 
+   :project: PCMSolver
+   :members:
+   :sections: public*, protected*, private*
+
+Symmetry
+--------
+.. doxygenclass:: Symmetry
    :project: PCMSolver
    :members:
    :sections: public*, protected*, private*

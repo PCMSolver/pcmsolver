@@ -20,6 +20,7 @@ class GreensFunction: public IGreensFunction
 {
 public:
     GreensFunction() : IGreensFunction(true), delta_(1.0e-4) {}
+    GreensFunction(bool uniform) : IGreensFunction(uniform), delta_(1.0e-4) {}
     virtual ~GreensFunction() {}
     virtual double function(const Eigen::Vector3d & p1, const Eigen::Vector3d &p2) const;
     virtual double derivative(const Eigen::Vector3d & direction,
@@ -38,7 +39,7 @@ public:
                                const Eigen::Vector3d & p2) const;
     virtual void delta(double value);
     virtual double delta() { return delta_; }
-    virtual double dielectricConstant() const = 0;
+    virtual double epsilon() const = 0;
     virtual double compDiagonalElementS(double area) const = 0;
     virtual double compDiagonalElementD(double area, double radius) const = 0;
     /*!

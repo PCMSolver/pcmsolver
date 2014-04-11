@@ -1,7 +1,10 @@
-#ifndef UNIFORMDIELECTRIC_HPP
-#define UNIFORMDIELECTRIC_HPP
+#ifndef PLANARINTERFACE_HPP
+#define PLANARINTERFACE_HPP
 
 #include <iosfwd>
+#include <string>
+
+#include "Config.hpp"
 
 #include "EigenPimpl.hpp"
 
@@ -12,26 +15,30 @@
 #include "GreensFunctionFactory.hpp"
 #include "IGreensFunction.hpp"
 
-/*! \file UniformDielectric.hpp
- *  \class UniformDielectric<T>
- *  \brief Green's function for uniform dielectric.
- *  \author Luca Frediani and Roberto Di Remigio
- *  \date 2012-2014
+/*! \file PlanarInterface.hpp
+ *  \class PlanarInterface<T>
+ *  \brief Green's functions for a planar interface 
+ *  \author Luca Frediani, Roberto Di Remigio
+ *  \date 2013-2014
  *  \tparam T evaluation strategy for the function and its derivatives
+ *  
+ *  Reference:
+ *  http://dx.doi.org/10.1063/1.1643727 
  */
 
 template <typename T>
-class UniformDielectric : public GreensFunction<T>
+class PlanarInterface : public GreensFunction<T>
 {
 public:
-    explicit UniformDielectric(double eps) : GreensFunction<T>(), epsilon_(eps) {}
-    virtual ~UniformDielectric() {}
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW // See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
+    PlanarInterface(double eps1, double eps2, const Eigen::Vector3d & pos, double width)
+        : GreensFunction<T>(false), eps1_(eps1), eps2_(eps2), pos_(pos), width_(width), computed_(false) {}
+    virtual ~PlanarInterface() {}
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
-    virtual void epsilon(double eps) { epsilon_ = eps; }
-    virtual double epsilon() const { return epsilon_; }
     virtual double compDiagonalElementS(double area) const ;
     virtual double compDiagonalElementD(double area, double radius) const;
+    virtual double epsilon() const { return eps1_; } // This is just to get it to compile...
     /*!
      *  Get the S and D matrices
      */
@@ -51,33 +58,40 @@ public:
                             const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
                             const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const;
 
-    friend std::ostream & operator<<(std::ostream & os, UniformDielectric & gf) {
+    friend std::ostream & operator<<(std::ostream & os, PlanarInterface & gf) {
         return gf.printObject(os);
     }
 private:
     virtual T evaluate(T * source, T * probe) const;
+    double eps1_;
+    double eps2_;
+    Eigen::Vector3d pos_;
+    double width_;
+    bool computed_;
     virtual std::ostream & printObject(std::ostream & os);
-    double epsilon_;
 };
 
 namespace
 {
-    struct buildUniformDielectric {
+    struct buildPlanarInterface {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new UniformDielectric<DerivativeType>(_data.epsilon);
+	    // We pass some bogus arguments...
+	    Eigen::Vector3d orig;
+	    orig << 0.0, 0.0, 0.0;
+            return new PlanarInterface<DerivativeType>(_data.epsilon, 0.0, orig, 0.0);
         }
     };
 
-    IGreensFunction * createUniformDielectric(const greenData & _data)
+    IGreensFunction * createPlanarInterface(const greenData & _data)
     {
-        buildUniformDielectric build;
+        buildPlanarInterface build;
         return for_id<derivative_types>(build, _data, _data.how);
     }
-    const std::string UNIFORMDIELECTRIC("UniformDielectric");
-    const bool registeredUniformDielectric =
+    const std::string PLANARINTERFACE("PlanarInterface");
+    const bool registeredPlanarInterface =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            UNIFORMDIELECTRIC, createUniformDielectric);
+            PLANARINTERFACE, createPlanarInterface);
 }
 
-#endif // UNIFORMDIELECTRIC_HPP
+#endif // PLANARINTERFACE_HPP

@@ -1,8 +1,10 @@
-#ifndef FORID_HPP
-#define FORID_HPP
+#ifndef FORIDGREEN_HPP
+#define FORIDGREEN_HPP
 
 #include <stdexcept>
 #include <string>
+
+#include "Config.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/mpl/begin_end.hpp>
@@ -32,19 +34,25 @@
  *  Once the template parameter has been resolved, a functor is
  *  applied. The return value of the functor is the Green's function
  *  we want to create with the template parameter resolved.
+ *
+ *  MPL metafunctions used:
+ *  . boost::mpl::distance (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/distance.html); 
+ *  . boost::mpl::begin (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/begin.html);
+ *  . boost::mpl::end (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/end.html);
+ *  . boost::mpl::find (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/find.html);
+ *  . boost::mpl::deref (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/deref.html);
+ *  . boost::mpl::next (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/next.html);
+ *
  */
 
 namespace mpl = boost::mpl;
 
-/*
-using boost::mpl::distance;
-using boost::mpl::begin;
-using boost::mpl::end;
-using boost::mpl::find;
-using boost::mpl::deref;
-using boost::mpl::next;
-*/
 
+/*! \struct pos
+ *  \brief Returns a zero-based index of a type within a type sequence
+ *  \tparam S type sequence
+ *  \tparam T the type whose index will be returned
+ */
 template <typename S, typename T>
 struct pos : mpl::distance<
         typename mpl::begin<S>::type,
@@ -52,12 +60,25 @@ struct pos : mpl::distance<
         >::type { };
 
 // Primary template
+/*! \struct for_id_impl_1
+ *  \tparam S type sequence
+ *  \tparam B type of the first element in S
+ *  \tparam E type of the last element in S
+ */
 template <
 typename S,
          typename B = typename mpl::begin<S>::type,
          typename E = typename mpl::end<S>::type
          >
 struct for_id_impl_1 {
+    /*! \fn template <typename T> static IGreensFunction * execute(T & f, const greenData & _data, int id)
+     *  \brief Iterates over a type sequence either until the position of the actual type matches the
+     *         desired id of until the end of the sequence is reached.
+     *  \param     f the creational functor to be applied
+     *  \param _data the data needed to create the correct Green's function
+     *  \param    id the type of derivative
+     *  \tparam    T the type of the Green's function
+     */
     template <typename T>
     static IGreensFunction * execute(T & f, const greenData & _data, int id) {
         if (pos<S, typename mpl::deref<B>::type>::value == id) {
@@ -91,4 +112,4 @@ IGreensFunction * for_id(T & f, const greenData & _data, int id)
     return (for_id_impl_1<S>::execute(f, _data, id));
 }
 
-#endif // FORID_HPP
+#endif // FORIDGREEN_HPP

@@ -129,7 +129,7 @@ void PWCSolver::constructSi()
     double epsilon = 0;
     switch (integralEquation) {
     case FirstKind:
-        epsilon = greenOutside_->dielectricConstant();
+        epsilon = greenOutside_->epsilon();
         factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
         break;
     case SecondKind:
@@ -164,7 +164,7 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double *u = (double*) calloc(nFunctions, sizeof(double));
     double * pot = const_cast<double *>(potential.data());
     double * chg = charge.data();
-    double epsilon = greenOutside_->dielectricConstant();
+    double epsilon = greenOutside_->epsilon();
     WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, pot,
              quadratureLevel_);
     int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, nPatches, nLevels);

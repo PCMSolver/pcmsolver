@@ -44,7 +44,7 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
         symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
     }
 
-    double epsilon = greenOutside_->dielectricConstant();
+    double epsilon = greenOutside_->epsilon();
     double fact = (epsilon - 1.0)/(epsilon + correction_);
     // Invert SI  using LU decomposition with full pivoting
     // This is a rank-revealing LU decomposition, this allows us

@@ -1,6 +1,9 @@
 #include "UniformDielectric.hpp"
 
 #include <cmath>
+#include <ostream>
+
+#include "Config.hpp"
 
 #include "EigenPimpl.hpp"
 #include "TaylorPimpl.hpp"
@@ -114,7 +117,7 @@ template <typename T>
 std::ostream & UniformDielectric<T>::printObject(std::ostream & os)
 {
     os << "Uniform Dielectric" << std::endl;
-    os << "Delta = " << this->delta_ << std::endl;
+    os << "Delta   = " << this->delta_ << std::endl;
     os << "Uniform = " << this->uniform_ << std::endl;
     os << "epsilon = " << epsilon_;
     return os;

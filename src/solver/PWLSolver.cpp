@@ -131,7 +131,7 @@ void PWLSolver::constructSi()
     switch (integralEquation) {
     case FirstKind:
     case SecondKind:
-        epsilon = greenOutside_->dielectricConstant();
+        epsilon = greenOutside_->epsilon();
         factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
         break;
     case Full:

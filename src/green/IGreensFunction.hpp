@@ -34,7 +34,7 @@ public:
                                 const Eigen::Vector3d & p2) const = 0;
     virtual void gradientProbe(Eigen::Vector3d & gradient, const Eigen::Vector3d & p1,
                                const Eigen::Vector3d & p2) const = 0;
-    virtual double dielectricConstant() const = 0;
+    virtual double epsilon() const = 0;
     virtual double compDiagonalElementS(double area) const = 0;
     virtual double compDiagonalElementD(double area, double radius) const = 0;
     bool isUniform() const { return uniform_; }

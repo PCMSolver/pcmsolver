@@ -2,6 +2,9 @@
 #define UNIFORMDIELECTRIC_HPP
 
 #include <iosfwd>
+#include <string>
+
+#include "Config.hpp"
 
 #include "EigenPimpl.hpp"
 

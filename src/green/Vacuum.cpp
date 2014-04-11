@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "Config.hpp"
+
 #include "EigenPimpl.hpp"
 #include "TaylorPimpl.hpp"
 

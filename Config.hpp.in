@@ -28,12 +28,4 @@
 @DEFINE_FC_FUNC@
 @DEFINE_FC_FUNC_@
 
-#if defined (HAS_CXX11)
-#include <memory>
-using std::shared_ptr;
-#else
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
-#endif
-
 #endif // CONFIG_HPP

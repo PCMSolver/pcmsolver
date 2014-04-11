@@ -5,10 +5,8 @@
 */
 #include "Interface.hpp"
 
-#include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <functional>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -17,30 +15,21 @@
 
 #include "Config.hpp"
 
-
-#if defined (HAS_CXX11)
-#include <memory>
-#else
-#include <boost/shared_ptr.hpp>
-#endif
 #include "EigenPimpl.hpp"
+
 // Include Boost headers here
 #include <boost/format.hpp>
+#include <boost/shared_ptr.hpp>
 
 // Core classes
+// In the spirit of the Liskov Substitution Principle 
+// we shall only need include the Abstract Base Class headers
 //    1. Cavities
 #include "Cavity.hpp"
-#include "GePolCavity.hpp"
-#include "RestartCavity.hpp"
 #include "WaveletCavity.hpp"
 //    2. Green's functions
-#include "GreensFunction.hpp"
 #include "IGreensFunction.hpp"
-#include "Vacuum.hpp"
-#include "UniformDielectric.hpp"
 //    3. Solvers
-#include "IEFSolver.hpp"
-#include "CPCMSolver.hpp"
 #include "PCMSolver.hpp"
 #include "PWCSolver.hpp"
 #include "PWLSolver.hpp"
@@ -55,7 +44,6 @@
 #include "Citation.hpp"
 #include "GreenData.hpp"
 #include "Input.hpp"
-#include "MathUtils.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "SolverData.hpp"
@@ -63,8 +51,9 @@
 #include "SurfaceFunction.hpp"
 #include "Symmetry.hpp"
 
-typedef std::map<std::string, shared_ptr<SurfaceFunction> > SurfaceFunctionMap;
-typedef std::pair<std::string, shared_ptr<SurfaceFunction> > SurfaceFunctionPair;
+typedef boost::shared_ptr<SurfaceFunction> SharedSurfaceFunction;
+typedef std::map<std::string, SharedSurfaceFunction > SharedSurfaceFunctionMap;
+typedef std::pair<std::string, SharedSurfaceFunction > SharedSurfaceFunctionPair;
 
 // We need globals as they must be accessible across all the functions defined in this interface...
 // The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
@@ -76,7 +65,7 @@ PWCSolver * _PWCSolver = NULL;
 PWLSolver * _PWLSolver = NULL;
 PCMSolver * _solver = NULL;
 
-SurfaceFunctionMap functions;
+SharedSurfaceFunctionMap functions;
 
 /*
 
@@ -115,19 +104,19 @@ extern "C" void compute_asc(char * potName, char * chgName, int * irrep)
     std::string chgFuncName(chgName);
 
     // Get the proper iterators
-    SurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
+    SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
     // Here we check whether the function exists already or not
     // 1. find the lower bound of the map
-    SurfaceFunctionMap::iterator iter_chg = functions.lower_bound(chgFuncName);
+    SharedSurfaceFunctionMap::iterator iter_chg = functions.lower_bound(chgFuncName);
     // 2. if iter_chg == end, or if iter_chg is not a match,
     //    then this element was not in the map, so we need to insert it
     if ( iter_chg == functions.end()  ||  iter_chg->first != chgFuncName ) {
         // move iter_chg to the element preceeding the insertion point
         if ( iter_chg != functions.begin() ) --iter_chg;
         // insert it
-        shared_ptr<SurfaceFunction> func( new SurfaceFunction(chgFuncName,
+	SharedSurfaceFunction func( new SurfaceFunction(chgFuncName,
                                           _cavity->size()) );
-        SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(chgFuncName, func);
+        SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(chgFuncName, func);
         iter_chg = functions.insert(iter_chg, insertion);
     }
 
@@ -147,10 +136,10 @@ extern "C" void compute_polarization_energy(double * energy)
 
     if (is_separate) {
         // Using separate potentials and charges
-        SurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucMEP");
-        SurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucASC");
-        SurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("EleMEP");
-        SurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleASC");
+        SharedSurfaceFunctionMap::const_iterator iter_nuc_pot = functions.find("NucMEP");
+        SharedSurfaceFunctionMap::const_iterator iter_nuc_chg = functions.find("NucASC");
+        SharedSurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("EleMEP");
+        SharedSurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleASC");
 
         double UNN = (*iter_nuc_pot->second) *  (*iter_nuc_chg->second);
         double UEN = (*iter_ele_pot->second) *  (*iter_nuc_chg->second);
@@ -167,8 +156,8 @@ extern "C" void compute_polarization_energy(double * energy)
 
         *energy = 0.5 * ( UNN + UEN + UNE + UEE );
     } else {
-        SurfaceFunctionMap::const_iterator iter_pot = functions.find("TotMEP");
-        SurfaceFunctionMap::const_iterator iter_chg = functions.find("TotASC");
+        SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find("TotMEP");
+        SharedSurfaceFunctionMap::const_iterator iter_chg = functions.find("TotASC");
 
         *energy = 0.5 * (*iter_pot->second) * (*iter_chg->second);
     }
@@ -182,8 +171,8 @@ extern "C" void dot_surface_functions(double * result, const char * potString,
     std::string chgFuncName(chgString);
 
 // Setup iterators
-    SurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
-    SurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
+    SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
+    SharedSurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
 
     if ( iter_pot == functions.end()  ||  iter_chg == functions.end() ) {
         throw std::runtime_error("One or both of the SurfaceFunction specified is non-existent.");
@@ -259,15 +248,15 @@ extern "C" void set_surface_function(int * nts, double * values, char * name)
     std::string functionName(name);
     // Here we check whether the function exists already or not
     // 1. find the lower bound of the map
-    SurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
+    SharedSurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
     // 2. if iter == end, or if iter is not a match,
     //    then this element was not in the map, so we need to insert it
     if ( iter == functions.end()  ||  iter->first != functionName ) {
         // move iter to the element preceeding the insertion point
         if ( iter != functions.begin() ) --iter;
         // insert it
-        shared_ptr<SurfaceFunction> func( new SurfaceFunction(functionName, *nts, values) );
-        SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(functionName, func);
+        SharedSurfaceFunction func( new SurfaceFunction(functionName, *nts, values) );
+        SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(functionName, func);
         iter = functions.insert(iter, insertion);
     } else {
         iter->second->setValues(values);
@@ -282,7 +271,7 @@ extern "C" void get_surface_function(int * nts, double * values, char * name)
 
     std::string functionName(name);
 
-    SurfaceFunctionMap::const_iterator iter = functions.find(functionName);
+    SharedSurfaceFunctionMap::const_iterator iter = functions.find(functionName);
     if ( iter == functions.end() )
         throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
 
@@ -298,8 +287,8 @@ extern "C" void add_surface_function(char * result, double * coeff, char * part)
 
     append_surface_function(result);
 
-    SurfaceFunctionMap::const_iterator iter_part = functions.find(partName);
-    SurfaceFunctionMap::const_iterator iter_result = functions.find(resultName);
+    SharedSurfaceFunctionMap::const_iterator iter_part = functions.find(partName);
+    SharedSurfaceFunctionMap::const_iterator iter_result = functions.find(resultName);
 
     // Using iterators and operator overloading: so neat!
     (*iter_result->second) += (*coeff) * (*iter_part->second);
@@ -309,7 +298,7 @@ extern "C" void print_surface_function(char * name)
 {
     std::string functionName(name);
 
-    SurfaceFunctionMap::const_iterator iter = functions.find(name);
+    SharedSurfaceFunctionMap::const_iterator iter = functions.find(name);
 
     std::cout << *(iter->second) << std::endl;
 }
@@ -318,7 +307,7 @@ extern "C" void clear_surface_function(char* name)
 {
     std::string functionName(name);
 
-    SurfaceFunctionMap::const_iterator iter = functions.find(name);
+    SharedSurfaceFunctionMap::const_iterator iter = functions.find(name);
 
     iter->second->clear();
 }
@@ -330,15 +319,15 @@ extern "C" void append_surface_function(char* name)
 
     // Here we check whether the function exists already or not
     // 1. find the lower bound of the map
-    SurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
+    SharedSurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
     // 2. if iter == end, or if iter is not a match,
     //    then this element was not in the map, so we need to insert it
     if ( iter == functions.end()  ||  iter->first != functionName ) {
         // move iter to the element preceeding the insertion point
         if ( iter != functions.begin() ) --iter;
         // insert it
-        shared_ptr<SurfaceFunction> func( new SurfaceFunction(functionName, nTess) );
-        SurfaceFunctionPair insertion = SurfaceFunctionMap::value_type(functionName, func);
+        SharedSurfaceFunction func( new SurfaceFunction(functionName, nTess) );
+        SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(functionName, func);
         iter = functions.insert(iter, insertion);
     } else {
         // What happens if it is already in the map? The values need to be updated.
@@ -351,7 +340,7 @@ extern "C" void scale_surface_function(char * func, double * coeff)
 {
     std::string resultName(func);
 
-    SurfaceFunctionMap::const_iterator iter_func = functions.find(func);
+    SharedSurfaceFunctionMap::const_iterator iter_func = functions.find(func);
 
     // Using iterators and operator overloading: so neat!
     (*iter_func->second) *= (*coeff);
@@ -553,7 +542,7 @@ void initWaveletCavity()
 
 bool surfaceFunctionExists(const std::string & name_)
 {
-    SurfaceFunctionMap::const_iterator iter = functions.find(name_);
+    SharedSurfaceFunctionMap::const_iterator iter = functions.find(name_);
 
     return iter != functions.end();
 }

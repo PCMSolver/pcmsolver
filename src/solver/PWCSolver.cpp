@@ -73,7 +73,6 @@ static double SingleLayer (vector3 x, vector3 y)
 {
     Eigen::Vector3d vx(x.x, x.y, x.z);
     Eigen::Vector3d vy(y.x, y.y, y.z);
-    Eigen::Vector3d foo = Eigen::Vector3d::Zero();
     double value = gf->function(vx, vy);
     return value;
 }
@@ -83,7 +82,6 @@ static double DoubleLayer (vector3 x, vector3 y, vector3 n_y)
     Eigen::Vector3d vx(x.x, x.y, x.z);
     Eigen::Vector3d vy(y.x, y.y, y.z);
     Eigen::Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-    Eigen::Vector3d foo = Eigen::Vector3d::Zero();
     double value = gf->derivative(vn_y, vx, vy);
     return value;
 }

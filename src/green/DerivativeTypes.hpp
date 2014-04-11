@@ -1,6 +1,8 @@
 #ifndef DERIVATIVETYPES_HPP
 #define DERIVATIVETYPES_HPP
 
+#include "Config.hpp"
+
 #include "TaylorPimpl.hpp"
 
 #include <boost/mpl/vector.hpp>

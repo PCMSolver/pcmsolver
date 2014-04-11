@@ -4,6 +4,8 @@
 #include <cmath>
 #include <stdexcept>
 
+#include "Config.hpp"
+
 #include "EigenPimpl.hpp"
 #include "TaylorPimpl.hpp"
 

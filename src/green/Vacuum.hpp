@@ -4,6 +4,8 @@
 #include <iosfwd>
 #include <string>
 
+#include "Config.hpp"
+
 #include "EigenPimpl.hpp"
 
 #include "DerivativeTypes.hpp"

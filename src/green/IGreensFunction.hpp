@@ -3,6 +3,8 @@
 
 #include <iosfwd>
 
+#include "Config.hpp"
+
 #include "EigenPimpl.hpp"
 
 /*! \file IGreensFunction.hpp

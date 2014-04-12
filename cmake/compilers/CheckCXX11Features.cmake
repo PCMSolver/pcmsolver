@@ -72,8 +72,6 @@ elseif (_HAS_CXX0X_FLAG)
     set(CXX11_COMPILER_FLAGS "-std=c++0x")
 endif ()
 
-set(feature_list "")
-
 function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
     if (NOT DEFINED ${RESULT_VAR})
         set(_bindir "${CMAKE_CURRENT_BINARY_DIR}/check_cxx11/cxx11_${FEATURE_NAME}")

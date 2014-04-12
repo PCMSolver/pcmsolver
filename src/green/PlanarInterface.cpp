@@ -21,43 +21,7 @@ double PlanarInterface<T>::derivative(const Eigen::Vector3d & direction,
 }
 
 template<typename T>
-T PlanarInterface<T>::evaluate(T * sp, T * pp) const
-{
-    throw std::runtime_error("Green's function for a planar interface has not yet been implemented!");
-}
-
-template <typename T>
-void PlanarInterface<T>::operator()(Eigen::MatrixXd & S, Eigen::MatrixXd & D,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const
-{
-    throw std::runtime_error("Green's function for a planar interface has not yet been implemented!");
-}
-
-template <typename T>
-void PlanarInterface<T>::operator()(Eigen::MatrixXd & S,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas) const
-{
-    throw std::runtime_error("Green's function for a planar interface has not yet been implemented!");
-}
-
-template <typename T>
-void PlanarInterface<T>::operator()(Eigen::MatrixXd & D,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const
-{
-    throw std::runtime_error("Green's function for a planar interface has not yet been implemented!");
-}
-
-template<typename T>
-double PlanarInterface<T>::compDiagonalElementS(double area) const
-{
-    throw std::runtime_error("Green's function for a planar interface has not yet been implemented!");
-}
-
-template<typename T>
-double PlanarInterface<T>::compDiagonalElementD(double area, double radius) const
+T PlanarInterface<T>::operator()(T * sp, T * pp) const
 {
     throw std::runtime_error("Green's function for a planar interface has not yet been implemented!");
 }

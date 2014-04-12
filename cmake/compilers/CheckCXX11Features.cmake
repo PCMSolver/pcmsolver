@@ -130,6 +130,7 @@ function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
 		# message(STATUS "Checking C++11 support for ${_LOG_NAME}: not supported")
         endif (${RESULT_VAR})
         set(${RESULT_VAR} ${${RESULT_VAR}} CACHE INTERNAL "C++11 support for ${_LOG_NAME}")
+	set(feature_list ${feature_list} CACHE INTERNAL "")
     endif (NOT DEFINED ${RESULT_VAR})
 endfunction(cxx11_check_feature)
 

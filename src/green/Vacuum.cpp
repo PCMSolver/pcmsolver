@@ -11,8 +11,6 @@
 #include "GreensFunction.hpp"
 #include "IGreensFunction.hpp"
 
-static double factor = 1.07;
-
 template<typename T>
 double Vacuum<T>::derivative(const Eigen::Vector3d & direction,
                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
@@ -22,7 +20,7 @@ double Vacuum<T>::derivative(const Eigen::Vector3d & direction,
 }
 
 template<typename T>
-T Vacuum<T>::evaluate(T * sp, T * pp) const
+T Vacuum<T>::operator()(T * sp, T * pp) const
 {
     T res;
     res = 1.0/sqrt((sp[0]-pp[0])*(sp[0]-pp[0])+
@@ -31,6 +29,7 @@ T Vacuum<T>::evaluate(T * sp, T * pp) const
     return res;
 }
 
+/*
 template <typename T>
 void Vacuum<T>::operator()(Eigen::MatrixXd & S, Eigen::MatrixXd & D,
                            const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
@@ -107,6 +106,7 @@ double Vacuum<T>::compDiagonalElementD(double area, double radius) const
 {
     return (- factor * sqrt(M_PI / area) / radius);
 }
+*/
 
 template <typename T>
 std::ostream & Vacuum<T>::printObject(std::ostream & os)

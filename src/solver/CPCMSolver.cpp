@@ -33,10 +33,21 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
     int dimBlock = cav.irreducible_size();
 
     Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // Compute SI on the whole cavity, regardless of symmetry
-    greenInside_->operator()(SI, cav.elementCenter(), cav.elementNormal(), cav.elementArea());
+    double factor = 1.07; // See discussion in the 2005 review
+    for (int i = 0; i < cavitySize; ++i) {
+        SI(i, i) = factor * std::sqrt(4 * M_PI / cav.elementArea(i));
+        Eigen::Vector3d source = cav.elementCenter().col(i);
+        for (int j = 0; j < cavitySize; ++j) {
+            Eigen::Vector3d probe = cav.elementCenter().col(j);
+            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
+            probeNormal.normalize();
+            if (i != j) {
+                SI(i, j) = greenInside_->function(source, probe);
+            }
+        }
+    }
     // Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.

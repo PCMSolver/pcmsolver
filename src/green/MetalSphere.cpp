@@ -17,7 +17,7 @@ extern "C" void gsfera_cpp(const double * epssol, const double * epsre, const do
                      const double * sphRadius, const double * ps, const double * p1, const double * p2,
                      double * greenre, double * greenim);
 
-double MetalSphere::evaluate(double * source, double * probe) const 
+double MetalSphere::operator()(double * source, double * probe) const 
 {
     // Calculation of the value of the Green's Function
     double epsre, epsim;
@@ -45,37 +45,6 @@ double MetalSphere::derivative(const Eigen::Vector3d & direction,
                                         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
         return epsSolvent_ * (this->derivativeProbe(direction, p1, p2));
-}
-
-void MetalSphere::operator()(Eigen::MatrixXd & S, Eigen::MatrixXd & D,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const
-{
-    throw std::runtime_error("Green's function for a metal sphere has not yet been implemented!");
-}
-
-void MetalSphere::operator()(Eigen::MatrixXd & S,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas) const
-{
-    throw std::runtime_error("Green's function for a metal sphere has not yet been implemented!");
-}
-
-void MetalSphere::operator()(Eigen::MatrixXd & D,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const
-{
-    throw std::runtime_error("Green's function for a metal sphere has not yet been implemented!");
-}
-
-double MetalSphere::compDiagonalElementS(double area) const
-{
-    throw std::runtime_error("Green's function for a metal sphere has not yet been implemented!");
-}
-
-double MetalSphere::compDiagonalElementD(double area, double radius) const
-{
-    throw std::runtime_error("Green's function for a metal sphere has not yet been implemented!");
 }
 
 std::ostream & MetalSphere::printObject(std::ostream & os)

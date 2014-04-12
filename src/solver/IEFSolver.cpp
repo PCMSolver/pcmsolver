@@ -103,8 +103,21 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    greenInside_->operator()(SI, cav.elementCenter(), cav.elementNormal(), cav.elementArea());
-    greenInside_->operator()(DI, cav.elementCenter(), cav.elementNormal(), cav.elementArea(), cav.elementRadius());
+    double factor = 1.07; // See discussion in the 2005 review
+    for (int i = 0; i < cavitySize; ++i) {
+        SI(i, i) = factor * std::sqrt(4 * M_PI / cav.elementArea(i));
+        DI(i, i) = -factor * std::sqrt(M_PI/ cav.elementArea(i)) * (1.0 / cav.elementRadius(i));
+        Eigen::Vector3d source = cav.elementCenter().col(i);
+        for (int j = 0; j < cavitySize; ++j) {
+            Eigen::Vector3d probe = cav.elementCenter().col(j);
+            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
+            probeNormal.normalize();
+            if (i != j) {
+                SI(i, j) = greenInside_->function(source, probe);
+                DI(i, j) = greenInside_->derivative(probeNormal, source, probe);
+            }
+        }
+    }
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.

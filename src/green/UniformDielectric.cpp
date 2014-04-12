@@ -12,8 +12,6 @@
 #include "GreensFunction.hpp"
 #include "IGreensFunction.hpp"
 
-static double factor = 1.07;
-
 template<typename T>
 double UniformDielectric<T>::derivative(const Eigen::Vector3d & direction,
                                         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
@@ -23,7 +21,7 @@ double UniformDielectric<T>::derivative(const Eigen::Vector3d & direction,
 }
 
 template<typename T>
-T UniformDielectric<T>::evaluate(T * sp, T * pp) const
+T UniformDielectric<T>::operator()(T * sp, T * pp) const
 {
     T distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
                       (sp[1] - pp[1]) * (sp[1] - pp[1]) +
@@ -31,7 +29,7 @@ T UniformDielectric<T>::evaluate(T * sp, T * pp) const
     return 1/(epsilon_ * distance);
 }
 
-
+/*
 template <typename T>
 void UniformDielectric<T>::operator()(Eigen::MatrixXd & S, Eigen::MatrixXd & D,
                                       const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
@@ -112,6 +110,7 @@ double UniformDielectric<T>::compDiagonalElementD(double area, double radius) co
     //	return s / (2 * radius);
     return - factor * sqrt(M_PI / area) / radius;
 }
+*/
 
 template <typename T>
 std::ostream & UniformDielectric<T>::printObject(std::ostream & os)

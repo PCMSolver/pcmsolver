@@ -21,43 +21,7 @@ double QuasiHarmonicInterface<T>::derivative(const Eigen::Vector3d & direction,
 }
 
 template<typename T>
-T QuasiHarmonicInterface<T>::evaluate(T * sp, T * pp) const
-{
-    throw std::runtime_error("Green's function for a quasi-harmonic interface has not yet been implemented!");
-}
-
-template <typename T>
-void QuasiHarmonicInterface<T>::operator()(Eigen::MatrixXd & S, Eigen::MatrixXd & D,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const
-{
-    throw std::runtime_error("Green's function for a quasi-harmonic interface has not yet been implemented!");
-}
-
-template <typename T>
-void QuasiHarmonicInterface<T>::operator()(Eigen::MatrixXd & S,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas) const
-{
-    throw std::runtime_error("Green's function for a quasi-harmonic interface has not yet been implemented!");
-}
-
-template <typename T>
-void QuasiHarmonicInterface<T>::operator()(Eigen::MatrixXd & D,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const
-{
-    throw std::runtime_error("Green's function for a quasi-harmonic interface has not yet been implemented!");
-}
-
-template<typename T>
-double QuasiHarmonicInterface<T>::compDiagonalElementS(double area) const
-{
-    throw std::runtime_error("Green's function for a quasi-harmonic interface has not yet been implemented!");
-}
-
-template<typename T>
-double QuasiHarmonicInterface<T>::compDiagonalElementD(double area, double radius) const
+T QuasiHarmonicInterface<T>::operator()(T * sp, T * pp) const
 {
     throw std::runtime_error("Green's function for a quasi-harmonic interface has not yet been implemented!");
 }

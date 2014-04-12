@@ -22,48 +22,12 @@ double IonicLiquid<T>::derivative(const Eigen::Vector3d & direction,
 }
 
 template<typename T>
-T IonicLiquid<T>::evaluate(T * sp, T * pp) const
+T IonicLiquid<T>::operator()(T * sp, T * pp) const
 {
     T distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
                       (sp[1] - pp[1]) * (sp[1] - pp[1]) +
                       (sp[2] - pp[2]) * (sp[2] - pp[2]));
     return (exp(-kappa_ * distance) / (epsilon_ * distance));
-}
-
-template <typename T>
-void IonicLiquid<T>::operator()(Eigen::MatrixXd & S, Eigen::MatrixXd & D,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const
-{
-    throw std::runtime_error("Green's function for an ionic liquid has not yet been implemented!");
-}
-
-template <typename T>
-void IonicLiquid<T>::operator()(Eigen::MatrixXd & S,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas) const
-{
-    throw std::runtime_error("Green's function for an ionic liquid has not yet been implemented!");
-}
-
-template <typename T>
-void IonicLiquid<T>::operator()(Eigen::MatrixXd & D,
-                                      const Eigen::MatrixXd & centers, const Eigen::MatrixXd & normals,
-                                      const Eigen::VectorXd & areas, const Eigen::VectorXd & radii) const
-{
-    throw std::runtime_error("Green's function for an ionic liquid has not yet been implemented!");
-}
-
-template<typename T>
-double IonicLiquid<T>::compDiagonalElementS(double area) const
-{
-    throw std::runtime_error("Green's function for an ionic liquid has not yet been implemented!");
-}
-
-template<typename T>
-double IonicLiquid<T>::compDiagonalElementD(double area, double radius) const
-{
-    throw std::runtime_error("Green's function for an ionic liquid has not yet been implemented!");
 }
 
 template <typename T>

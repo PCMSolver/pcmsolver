@@ -22,7 +22,7 @@ extern "C"
 #include "WEMSolver.hpp"
 
 /*! \file PWCSolver.hpp
- *  \class PWCSOlver
+ *  \class PWCSolver
  *  \brief Wavelet solver, piecewise constant.
  *  \author Luca Frediani
  *  \date 2012

@@ -20,7 +20,7 @@
  *  Implemented as a Singleton: only one instance of it is needed and therefore admitted.
  *  Constructors (default, non-default and copy), destructor and assignment operator are
  *  made private. We use the lazy initialization idiom to initialize the unique Input
- *  object.
+ *  object \cite Alexandrescu2001
  *  An Input object is to be used as the unique point of access to user-provided input:
  *   input ---> parsed input (Python script) ---> Input object (contains all the input data)
  *  Definition of input parameters is to be done in the Python script and in this class.

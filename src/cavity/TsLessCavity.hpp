@@ -17,6 +17,10 @@
  *  \brief A class for TsLess cavity.
  *  \author Roberto Di Remigio
  *  \date 2013
+ *
+ *  This class is a wrapper for the Fortran routines generating
+ *  a tessellationless grid on the cavity surface. The original
+ *  algoritm is described in \cite Pomelli2004
  */
 
 class TsLessCavity : public Cavity

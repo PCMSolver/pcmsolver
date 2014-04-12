@@ -1,8 +1,7 @@
 #ifndef BLOCKDIAGONALMATRIX_HPP
 #define BLOCKDIAGONALMATRIX_HPP
 
-#include <iostream>
-//#include <iosfwd>
+#include <iosfwd>
 #include <stdexcept>
 #include <vector>
 
@@ -11,11 +10,17 @@
 #include "EigenPimpl.hpp"
 
 /*! \file BlockDiagonaMatrix.hpp
+ *  \class BlockDiagonalMatrix
  *  \brief Packs a block-diagonal matrix.
  *  \author Roberto Di Remigio
  *  \date 2014
+ *  \tparam         T the data type
+ *  \tparam nrBlocks_ the number of square blocks in the matrix
+ *  \tparam dimBlock_ the size of the square blocks
  *
  *  We currently assume that all the blocks are square and have the same dimensionality.
+ *  There is no check on these assumptions in any of the public methods: any other
+ *  use of this class will lead to runtime errors or "slicing" of the original matrix.
  *  This data type is to be used in conjuction with symmetry handling in the solver.
  */
 
@@ -43,13 +48,13 @@ private:
 public:
     BlockDiagonalMatrix() {}
     /*!
-     *  Packs a square block diagonal matrix given the full matrix.
+     *  Packs a square block diagonal matrix given the full matrix
+     *  The dimension of the full matrix is (nrBlocks * dimBlock)
+     *  and it is assumed to be square, with square blocks on the diagonal
+     *  all with the same dimension.
      */
     BlockDiagonalMatrix(const EigenFull & matrix) : fullMatrix_(matrix),
         fullDim_(nrBlocks_*dimBlock_) {
-        // The dimension of the full matrix is (nrBlocks * dimBlock)
-        // The full matrix is assumed to be square, with square blocks on the diagonal
-        // all with the same dimension.
         int j = 0;
         for (int i = 0; i < nrBlocks_; ++i) {
             blockedMatrix_.push_back(fullMatrix_.block(j, j, dimBlock_, dimBlock_));

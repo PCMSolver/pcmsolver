@@ -98,10 +98,10 @@ extern "C" void tear_down_pcm()
     safe_delete(_solver);
 }
 
-extern "C" void compute_asc(char * potName, char * chgName, int * irrep)
+extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
 {
-    std::string potFuncName(potName);
-    std::string chgFuncName(chgName);
+    std::string potFuncName(potString);
+    std::string chgFuncName(chgString);
 
     // Get the proper iterators
     SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
@@ -299,11 +299,13 @@ extern "C" void print_surface_function(char * name)
     std::string functionName(name);
 
     SharedSurfaceFunctionMap::const_iterator iter = functions.find(name);
-
-    std::cout << *(iter->second) << std::endl;
+    std::ostringstream out_stream;
+    out_stream << "\n" << std::endl;
+    out_stream << *(iter->second) << std::endl;
+    printer(out_stream);
 }
 
-extern "C" void clear_surface_function(char* name)
+extern "C" void clear_surface_function(char * name)
 {
     std::string functionName(name);
 
@@ -312,7 +314,7 @@ extern "C" void clear_surface_function(char* name)
     iter->second->clear();
 }
 
-extern "C" void append_surface_function(char* name)
+extern "C" void append_surface_function(char * name)
 {
     int nTess = _cavity->size();
     std::string functionName(name);
@@ -331,8 +333,8 @@ extern "C" void append_surface_function(char* name)
         iter = functions.insert(iter, insertion);
     } else {
         // What happens if it is already in the map? The values need to be updated.
-        // Nothing, I assume that if one calls append_surface_function_ will then also call
-        // set_surface_function_ somewhere else, hence the update will be done there.
+        // Nothing, I assume that if one calls append_surface_function will then also call
+        // set_surface_function somewhere else, hence the update will be done there.
     }
 }
 
@@ -540,9 +542,9 @@ void initWaveletCavity()
     _waveletCavity->readCavity("molec_dyadic.dat");
 }
 
-bool surfaceFunctionExists(const std::string & name_)
+bool surfaceFunctionExists(const std::string & name)
 {
-    SharedSurfaceFunctionMap::const_iterator iter = functions.find(name_);
+    SharedSurfaceFunctionMap::const_iterator iter = functions.find(name);
 
     return iter != functions.end();
 }

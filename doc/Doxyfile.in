@@ -688,7 +688,10 @@ EXCLUDE                = "Python/pyparsing.py" \
                          "@PROJECT_SOURCE_DIR@/src/attic" \
                          "@PROJECT_SOURCE_DIR@/src/wavcav" \
                          "@PROJECT_SOURCE_DIR@/src/wem" \
-                         "@PROJECT_SOURCE_DIR@/src/pwl"
+                         "@PROJECT_SOURCE_DIR@/src/pwl" \
+                         "@PROJECT_SOURCE_DIR@/src/metal" \
+                         "@PROJECT_SOURCE_DIR@/src/pedra" \
+                         "@PROJECT_SOURCE_DIR@/src/tsless" 
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or 
 # directories that are symbolic links (a Unix file system feature) are excluded 
@@ -737,7 +740,7 @@ EXAMPLE_RECURSIVE      = NO
 # directories that contain image that are included in the documentation (see 
 # the \image command).
 
-IMAGE_PATH             = 
+IMAGE_PATH             = "@PROJECT_SOURCE_DIR@/doc/gfx" 
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should 
 # invoke to filter for each input file. Doxygen will invoke the filter program 
@@ -1707,7 +1710,7 @@ DOT_NUM_THREADS        = 0
 # the DOTFONTPATH environment variable or by setting DOT_FONTPATH to the 
 # directory containing the font.
 
-DOT_FONTNAME           = FreeSans
+DOT_FONTNAME           =
 
 # The DOT_FONTSIZE tag can be used to set the size of the font of dot graphs. 
 # The default size is 10pt.
@@ -1743,7 +1746,7 @@ GROUP_GRAPHS           = YES
 # collaboration diagrams in a style similar to the OMG's Unified Modeling 
 # Language.
 
-UML_LOOK               = NO
+UML_LOOK               = YES 
 
 # If the UML_LOOK tag is enabled, the fields and methods are shown inside 
 # the class node. If there are many fields or methods and many nodes the 

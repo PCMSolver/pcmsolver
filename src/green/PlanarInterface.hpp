@@ -30,7 +30,6 @@ template <typename T>
 class PlanarInterface : public GreensFunction<T>
 {
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW // See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
     PlanarInterface(double eps1, double eps2, const Eigen::Vector3d & pos, double width)
         : GreensFunction<T>(false), eps1_(eps1), eps2_(eps2), pos_(pos), width_(width), computed_(false) {}
     virtual ~PlanarInterface() {}
@@ -53,6 +52,7 @@ public:
     friend std::ostream & operator<<(std::ostream & os, PlanarInterface & gf) {
         return gf.printObject(os);
     }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /*! See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     /*!
      *  Evaluates the Green's function given a pair of points

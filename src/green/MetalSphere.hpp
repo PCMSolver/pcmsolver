@@ -34,7 +34,6 @@ class MetalSphere : public GreensFunction<double>
 private:
     typedef std::complex<double> dcomplex;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW // See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
     MetalSphere(double eps, double epsRe, double epsIm,
                 const Eigen::Vector3d & pos, double radius)
         : GreensFunction<double>(false), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
@@ -59,6 +58,7 @@ public:
     friend std::ostream & operator<<(std::ostream & os, MetalSphere & gf) {
         return gf.printObject(os);
     }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /*! See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     /*!
      *  Evaluates the Green's function given a pair of points

@@ -22,7 +22,6 @@
 class Atom
 {
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW // See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
     Atom() {}
     Atom(const std::string & element, const std::string & symbol, double charge,
          double radius, const Eigen::Vector3d & coord, double scaling = 1.0,
@@ -76,6 +75,7 @@ public:
            * The getAtomRadius method will perform the conversion Angstrom to AU.
            */
     static std::vector<Atom> & initUFF();
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /*! See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     std::string atomElement_;
     std::string atomSymbol_;

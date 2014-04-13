@@ -17,7 +17,7 @@ struct cavityData;
  *	\author Roberto Di Remigio
  *	\date 2013
  *
- * 	Factory method implementation shamelessly copied from "Modern C++ Design" of A. Alexandrescu.
+ * 	Factory method implementation shamelessly copied from here \cite Alexandrescu2001 
  * 	It is implemented as a Singleton.
  */
 

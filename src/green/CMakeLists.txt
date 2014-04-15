@@ -3,6 +3,13 @@ set(headers_list "")
 get_hpp_headers(headers_list)
 # If you want to remove some headers specify them explictly here
 list(REMOVE_ITEM headers_list "")
+# Sort alphabetically
+list(SORT headers_list)
+set(to_includer "${headers_list}")
+# Write headers to Includer.hpp
+file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Green's functions\n")
+list(REMOVE_ITEM to_includer "DerivativeTypes.hpp" "ForIdGreen.hpp")
+write_to_Includer("${to_includer}")
 
 set(sources_list "")
 # Get sources with .cpp extension

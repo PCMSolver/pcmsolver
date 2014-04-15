@@ -13,7 +13,7 @@
 #include "GreensFunction.hpp"
 #include "IGreensFunction.hpp"
 
-extern "C" void gsfera_cpp(const double * epssol, const double * epsre, const double * epsim,
+extern "C" void greens_function(const double * epssol, const double * epsre, const double * epsim,
                      const double * sphRadius, const double * ps, const double * p1, const double * p2,
                      double * greenre, double * greenim);
 
@@ -35,7 +35,7 @@ double MetalSphere::operator()(double * source, double * probe) const
     epsre = epsMetal_.real();
     epsim = epsMetal_.imag();
     // Call the Fortran subroutine
-    gsfera_cpp(&epsSolvent_, &epsre, &epsim, &sphRadius_, sphere, point1, point2,
+    greens_function(&epsSolvent_, &epsre, &epsim, &sphRadius_, sphere, point1, point2,
                 &greenre, &greenim);
 
     return greenre;

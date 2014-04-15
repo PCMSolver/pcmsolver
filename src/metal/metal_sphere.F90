@@ -18,7 +18,7 @@
     real(c_double), intent(in)  :: p1(*), p2(*), ps(*)
     real(c_double), intent(out) :: greenre, greenim
 ! Local variables      
-    complex(16) :: gsfera, green, eps2, ui
+    complex(16) :: green, eps2, ui
       
     ui = (0.0, 1.0)                                               
     eps2 = epsre + epsim * ui                                     
@@ -88,7 +88,7 @@
 !     gsfera = gsfera + coefl * argl * legendre_polynomial(l, m, cost)
 !   enddo 
 !lf write (6, *) "gsfera2", gsfera
-    end
+    end function gsfera
     
     real(8) function legendre_polynomial(l, m, x)
 ! Computes the associated Legendre polynomial P_l^m(x)

@@ -160,6 +160,9 @@ install(FILES
 	${PROJECT_BINARY_DIR}/include/FCMangle.hpp 
 	DESTINATION include)
 
+install(FILES 
+	${PROJECT_BINARY_DIR}/include/Includer.hpp 
+	DESTINATION include)
 
 if(ENABLE_TESTS)
 	include(TestingMacros)

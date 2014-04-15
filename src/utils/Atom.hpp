@@ -48,7 +48,8 @@ public:
     void atomCoord(Eigen::Vector3d & coord) { atomCoord_ = coord; }
     double atomCharge() const { return atomCharge_; }
     void atomCharge(double charge) { atomCharge_ = charge; }
-    // The built-in atomic radii are in Angstrom
+    /*! \brief Returns the atomic radius in Angstrom
+     */
     double atomRadius() const { return atomRadius_; }
     void atomRadius(double radius) { atomRadius_ = radius; }
     double atomRadiusScaling() const { return atomRadiusScaling_; }
@@ -57,25 +58,23 @@ public:
     void atomColour(const std::string & colour) { atomColour_ = colour; }
     /*! \brief Returns a reference to a vector<Atom> containing Bondi van der Waals radii.
      *
-    * The van der Waals radii are taken from:
-           * --- A. Bondi, J. Phys. Chem. 68, 441-451 (1964)
-           * complemented with the ones reported in:
-           * --- M. Mantina, A. C. Chamberlin, R. Valero, C. J. Cramer, D. G. Truhlar,
-           *     J. Phys. Chem. A, 113, 5806-5812 (2009)
-           * We are here using Angstrom as in the papers.
-           * The getAtomRadius method will perform the conversion Angstrom to AU.
-           */
+     * The van der Waals radii are taken from:
+     * --- A. Bondi, J. Phys. Chem. 68, 441-451 (1964)
+     * complemented with the ones reported in:
+     * --- M. Mantina, A. C. Chamberlin, R. Valero, C. J. Cramer, D. G. Truhlar,
+     *     J. Phys. Chem. A, 113, 5806-5812 (2009)
+     * We are here using Angstrom as in the papers.
+     */
     static std::vector<Atom> & initBondi();
     /*! \brief Returns a reference to a vector<Atom> containing UFF radii.
      *
-    * The UFF set of radii is taken from:
-           * --- A. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard, W. M. Skiff,
-           *     J. Am. Chem. Soc., 114, 10024-10035 (1992)
-           * We are here using Angstrom as in the paper.
-           * The getAtomRadius method will perform the conversion Angstrom to AU.
-           */
+     * The UFF set of radii is taken from:
+     * --- A. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard, W. M. Skiff,
+     *     J. Am. Chem. Soc., 114, 10024-10035 (1992)
+     * We are here using Angstrom as in the paper.
+     */
     static std::vector<Atom> & initUFF();
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /*! See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /*!< See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     std::string atomElement_;
     std::string atomSymbol_;

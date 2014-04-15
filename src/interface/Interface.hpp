@@ -79,7 +79,9 @@ extern "C" void host_writer(const char * message, size_t * message_length);
 
 /*! \fn extern "C" void set_point_group(int * nr_generators, int * gen1, int * gen2, int * gen3)
  *  \param[out] nr_generators number of generators in the molecular point group
- *  \param[out] gen1, gen2, gen3 group generators
+ *  \param[out] gen1 first group generator
+ *  \param[out] gen2 second group generator
+ *  \param[out] gen3 third group generator
  */
 extern "C" void set_point_group(int * nr_generators, int * gen1, int * gen2,
                                 int * gen3);

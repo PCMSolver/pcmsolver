@@ -58,7 +58,7 @@ public:
     friend std::ostream & operator<<(std::ostream & os, MetalSphere & gf) {
         return gf.printObject(os);
     }
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /*! See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     /*!
      *  Evaluates the Green's function given a pair of points

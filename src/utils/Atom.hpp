@@ -74,7 +74,7 @@ public:
      * We are here using Angstrom as in the paper.
      */
     static std::vector<Atom> & initUFF();
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /*!< See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     std::string atomElement_;
     std::string atomSymbol_;

@@ -37,7 +37,7 @@ public:
     friend std::ostream& operator<<(std::ostream & os, Sphere & sph) {
         return sph.printObject(os);
     }
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /*! See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     Eigen::Vector3d center_;
     double radius_;

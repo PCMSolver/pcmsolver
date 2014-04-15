@@ -21,6 +21,9 @@
 #pragma GCC diagnostic pop
 #endif
 
+/*! \class CPCMSolver
+ *  \test \b NH3GePol tests CPCMSolver using ammonia and a GePol cavity
+ */
 TEST(CPCMSolver, NH3GePol) 
 {
 	// Set up cavity

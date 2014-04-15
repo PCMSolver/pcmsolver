@@ -44,7 +44,7 @@ if(NOT DEFINED DEFUALT_CXX_FLAGS_SET OR RESET_FLAGS)
       else()
           set(CMAKE_CXX_FLAGS "-fPIC -std=gnu++98")
       endif()
-      set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -DDEBUG -Wall -Wextra -Winit-self -Woverloaded-virtual -Wuninitialized -Wmissing-declarations -Wwrite-strings -Weffc++")
+      set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -DDEBUG -Wall -Wextra -Winit-self -Woverloaded-virtual -Wuninitialized -Wmissing-declarations -Wwrite-strings -Weffc++ -Wdocumentation")
       set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wno-unused")
       if(ENABLE_CODE_COVERAGE)
           set(CMAKE_CXX_FLAGS

@@ -11,5 +11,5 @@ if(DOXYGEN_FOUND)
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         )
 else()
-	message("Doxygen missing. You won't be able to create docs.")
+	message(STATUS "Doxygen missing. You won't be able to create docs.")
 endif()

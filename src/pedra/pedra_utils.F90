@@ -16,7 +16,7 @@
 
     integer :: lhead, lng, ind, i
     
-    lhead  = lnblnk(head)
+    lhead  = len_trim(head)
     lng    = lhead + 2
     ind = max(1,(80 - lng)/2 + 1)
     write (print_unit,'(//150a)') (' ',i=1,ind), '+', ('-',i=1,lng), '+'

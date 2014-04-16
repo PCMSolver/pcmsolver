@@ -16,7 +16,7 @@
 #include "IGreensFunction.hpp"
 
 /*! \file UniformDielectric.hpp
- *  \class UniformDielectric<T>
+ *  \class UniformDielectric
  *  \brief Green's function for uniform dielectric.
  *  \author Luca Frediani and Roberto Di Remigio
  *  \date 2012-2014

@@ -9,7 +9,7 @@
 
 #include "EigenPimpl.hpp"
 
-/*! \file BlockDiagonaMatrix.hpp
+/*! \file BlockDiagonalMatrix.hpp
  *  \class BlockDiagonalMatrix
  *  \brief Packs a block-diagonal matrix.
  *  \author Roberto Di Remigio

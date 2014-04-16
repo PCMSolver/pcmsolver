@@ -16,7 +16,7 @@
 #include "IGreensFunction.hpp"
 
 /*! \file Vacuum.hpp
- *  \class Vacuum<T>
+ *  \class Vacuum
  *  \brief Green's function for vacuum.
  *  \author Luca Frediani and Roberto Di Remigio
  *  \date 2012-2014

@@ -10,7 +10,7 @@
 #include "IGreensFunction.hpp"
 
 /*! \file GreensFunction.hpp
- *  \class GreensFunction<T>
+ *  \class GreensFunction
  *  \brief Templated interface for Green's functions
  *  \author Luca Frediani and Roberto Di Remigio
  *  \date 2012-2014

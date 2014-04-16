@@ -16,7 +16,7 @@
 #include "IGreensFunction.hpp"
 
 /*! \file PlanarInterface.hpp
- *  \class PlanarInterface<T>
+ *  \class PlanarInterface
  *  \brief Green's functions for a planar interface 
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2013-2014

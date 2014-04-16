@@ -16,7 +16,7 @@
 #include "IGreensFunction.hpp"
 
 /*! \file QuasiHarmonicInterface.hpp
- *  \class QuasiHarmonicInterface<T>
+ *  \class QuasiHarmonicInterface
  *  \brief Green's functions for a quasi-harmonic interface 
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2014

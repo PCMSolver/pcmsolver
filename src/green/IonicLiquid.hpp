@@ -16,7 +16,7 @@
 #include "IGreensFunction.hpp"
 
 /*! \file IonicLiquid.hpp
- *  \class IonicLiquid<T>
+ *  \class IonicLiquid
  *  \brief Green's functions for ionic liquid, described by the linearized Poisson-Boltzmann equation.
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2013-2014

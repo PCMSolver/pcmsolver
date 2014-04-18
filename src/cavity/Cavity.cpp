@@ -14,7 +14,7 @@
 
 #include "Symmetry.hpp"
 
-inline void Cavity::saveCavity(const std::string & fname)
+void Cavity::saveCavity(const std::string & fname)
 {
     /*
     std::ofstream weights("weights.txt", std::ios_base::out);
@@ -50,7 +50,7 @@ inline void Cavity::saveCavity(const std::string & fname)
     cnpy::npz_save(fname, "normals", elementNormal_.data(), normals_shape, 2, "a", true);
 }
 
-inline void Cavity::loadCavity(const std::string & fname)
+void Cavity::loadCavity(const std::string & fname)
 {
     // If the cavity has been loaded from file, the point group is C1
     pointGroup_ = buildGroup(0, 0, 0, 0);

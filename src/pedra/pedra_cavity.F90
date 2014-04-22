@@ -2072,31 +2072,43 @@
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
-
+! Passed variables
     integer :: numts
     real(8) :: vert(numts, 10, 3)
+! Local variables    
     integer :: ivts(mxts, 10)
-    logical :: cavity_file_exists
-
+    integer :: off_unit
+    logical :: off_open, off_exist
     real(8) :: c1, c2, c3
     integer :: n, numv, i, j, k, last, lucav
     integer :: jcord
 
     lucav = 12121201
-    
-    inquire(file = 'cavity.off', exist = cavity_file_exists)
-    if (cavity_file_exists) then
-        open(lucav, &
-        file = 'cavity.off', &
-        status = 'old', &
-        form = 'formatted', &
+
+! The following INQUIRE statement returns whether the file named cavity.off is
+! connected in logical variable off_open, whether the file exists in logical
+! variable off_exist, and the unit number in integer variable off_unit
+    inquire(file = 'cavity.off', opened = off_open, & 
+            exist = off_exist, number = off_unit)
+    if (off_exist .and. off_open) then
+        open(lucav,              &
+        file = 'cavity.off',     &
+        status = 'old',          &
+        form = 'formatted',      &
         access = 'sequential')
         close(lucav, status = 'delete')
+!   else if (off_exist .and. (.not. off_open)) then
+!       open(lucav,              &
+!       file = 'cavity.off',     &
+!       status = 'unkwown',      &
+!       form = 'formatted',      &
+!       access = 'sequential')
+!       close(lucav, status = 'delete')
     end if
-    open(lucav, &
-    file = 'cavity.off', &
-    status = 'new', &
-    form = 'formatted', &
+    open(lucav,           &
+    file = 'cavity.off',  &
+    status = 'new',       &
+    form = 'formatted',   &
     access = 'sequential')
     rewind(lucav)
 
@@ -2131,6 +2143,8 @@
     end do
 
     2001 format('  ',3f16.9,4f5.2,' # Tess. ',i4)
+
+    close(lucav, status = 'keep')
     
     end subroutine plotcav
     

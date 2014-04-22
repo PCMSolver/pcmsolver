@@ -2090,22 +2090,16 @@
 ! variable off_exist, and the unit number in integer variable off_unit
     inquire(file = 'cavity.off', opened = off_open, & 
             exist = off_exist, number = off_unit)
-    if (off_exist .and. off_open) then
-        open(lucav,              &
+    if (off_exist) then
+        open(unit = lucav,       &
         file = 'cavity.off',     &
-        status = 'old',          &
+        status = 'unknown',      &
         form = 'formatted',      &
         access = 'sequential')
-        close(lucav, status = 'delete')
-!   else if (off_exist .and. (.not. off_open)) then
-!       open(lucav,              &
-!       file = 'cavity.off',     &
-!       status = 'unkwown',      &
-!       form = 'formatted',      &
-!       access = 'sequential')
-!       close(lucav, status = 'delete')
+        close(unit = lucav, status = 'delete')
     end if
-    open(lucav,           &
+
+    open(unit = lucav,    &
     file = 'cavity.off',  &
     status = 'new',       &
     form = 'formatted',   &
@@ -2144,7 +2138,7 @@
 
     2001 format('  ',3f16.9,4f5.2,' # Tess. ',i4)
 
-    close(lucav, status = 'keep')
+    close(unit = lucav, status = 'keep')
     
     end subroutine plotcav
     

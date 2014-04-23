@@ -1,25 +1,3 @@
-/* warning-disabler-start */
-
-#if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall"
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic ignored "-Wextra"
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-#pragma warning push
-#pragma warning disable "-Wall"
-#elif defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wall"
-#pragma clang diagnostic ignored "-Weffc++"
-#pragma clang diagnostic ignored "-Wextra"
-#pragma clang diagnostic ignored "-Wdocumentation"
-#pragma clang diagnostic ignored "-Wdeprecated-register"
-#pragma clang diagnostic ignored "-Wincompatible-pointer-types"
-#endif
-
-/* warning-disabler-end */
-
 /*
  * Purpose: Patch representation of molecular cavities from
  *			atomic coordinates and radii.
@@ -274,15 +252,3 @@ int lobj_thin_fizn(manif_tl, double);
 void munk_upda_vugz(int, int, int *, int, msh_corn *);
 void peql_mult_tenq(trmsrf surf, sphere S, manif_ro mshin, int max, double accuracy, manif_ro * mshout, int pat, int mx_nnd, int mx_nel, int mx_ned);
 void cetm_find_cojq_vurg(trmsrf *, trmsrf *, bd_box3D *, prat_main_blend *, int *, included_sides *, double, double, int);
-/* warning-disabler-start */
-
-#if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-#pragma GCC diagnostic pop
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-#pragma warning pop
-#elif defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-
-/* warning-disabler-end */
-

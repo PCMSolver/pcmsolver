@@ -9,7 +9,6 @@
 #pragma GCC diagnostic ignored "-Wextra"
 #elif defined(__ICC) || defined(__INTEL_COMPILER)
 #pragma warning(push, 0)
-#pragma warning disable "-Wall"
 #elif defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wall"

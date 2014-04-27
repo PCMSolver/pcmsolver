@@ -19,6 +19,7 @@ With PCMSolver we aim to:
 - \subpage Interfacing
 \page ProgrammersManual Programmers' Manual
 - \subpage CodingStandards
+- \subpage CMakeUsage
 - \subpage Cavities
 - \subpage GreensFunctions
 - \subpage Solvers

@@ -11,15 +11,7 @@
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 
-// Disable obnoxious warnings from Google Test headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include "gtest/gtest.h"
-#pragma GCC diagnostic pop
-#endif
+#include "gtestPimpl.hpp"
 
 /*! \class CPCMSolver
  *  \test \b NH3GePol tests CPCMSolver using ammonia and a GePol cavity

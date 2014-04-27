@@ -166,6 +166,10 @@ install(FILES
 	DESTINATION include)
 
 if(ENABLE_TESTS)
+        configure_file(
+            ${PROJECT_SOURCE_DIR}/src/utils/gtestPimpl.hpp.in
+            ${PROJECT_BINARY_DIR}/include/gtestPimpl.hpp
+            )
 	include(TestingMacros)
 	set(LIBS pthread z ${LIBS})
 	ExternalProject_Add(googletest

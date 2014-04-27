@@ -7,16 +7,7 @@
 
 #include "TsLessCavity.hpp"
 
-// Disable obnoxious warnings from Google Test headers
-#if defined (__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall" 
-#pragma GCC diagnostic ignored "-Weffc++" 
-#pragma GCC diagnostic ignored "-Wextra"
-#include "gtest/gtest.h"
-#pragma GCC diagnostic pop
-#endif
-
+#include "gtestPimpl.hpp"
 
 class TsLessCavityTest : public ::testing::Test
 {

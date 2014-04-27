@@ -9,6 +9,16 @@ General Object-Oriented design principles you should try to follow \cite Sutter2
         6. Depend upon abstractions. Do not depend upon concrete classes;
         7. Principle of Least Knowledge. Talk only to your immediate friends;
 
+### Code formatting
+
+We conform to the so-called Linux (aka kernel) formatting style for C/C++ code (see http://en.wikipedia.org/wiki/Indent_style#Kernel_style)
+with minimal modifications. If uncertain on your code formatting use the Artistic Style command-line utility 
+to rectify it:
+
+\code
+   astyle --style=linux --max-code-length=85 --indent-namespaces --keep-one-line-blocks filename
+\endcode
+
 ### Including header files
 
 Do not include header files unnecessarily. Even if PCMSolver is not a big project, unnecessary include directives and/or forward declarations

@@ -6,7 +6,7 @@ if(DOXYGEN_FOUND)
         ${PROJECT_BINARY_DIR}/Doxyfile
     )
     add_custom_target(
-        doxygen 
+        doc 
         COMMAND ${DOXYGEN_EXECUTABLE}
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         )

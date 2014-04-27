@@ -11,7 +11,8 @@
 class IonicLiquidTest : public ::testing::Test
 {
 public:
-    Eigen::Array4d analyticEvaluate(double eps, double k, const Eigen::Vector3d & spNormal,
+    Eigen::Array4d analyticEvaluate(double eps, double k,
+                                    const Eigen::Vector3d & spNormal,
                                     const Eigen::Vector3d & sp,
                                     const Eigen::Vector3d & ppNormal, const Eigen::Vector3d & pp) {
         Eigen::Array4d result = Eigen::Array4d::Zero();
@@ -20,21 +21,21 @@ public:
         double distance_5 = std::pow(distance, 5);
 
         // Value of the function
-    	result(0) = std::exp(- k * distance) / (eps * distance);
+        result(0) = std::exp(- k * distance) / (eps * distance);
         // Value of the directional derivative wrt probe
-    	result(1) = (sp - pp).dot(ppNormal) * (1 + k * distance ) * std::exp(
-                    - k * distance) / (eps * distance_3);
+        result(1) = (sp - pp).dot(ppNormal) * (1 + k * distance ) * std::exp(
+                        - k * distance) / (eps * distance_3);
         // Directional derivative wrt source
-    	result(2) = - (sp - pp).dot(spNormal) * (1 + k * distance ) * std::exp(
-                    - k * distance) / (eps * distance_3);
+        result(2) = - (sp - pp).dot(spNormal) * (1 + k * distance ) * std::exp(
+                        - k * distance) / (eps * distance_3);
         // Value of the Hessian
-    	result(3) = spNormal.dot(ppNormal) * (1 + k * distance) * std::exp(
-                    - k * distance) / (eps * distance_3)
-                - std::pow(k, 2) * (sp - pp).dot(spNormal) * (sp - pp).dot(
-                    ppNormal) * std::exp(- k * distance) / (eps * distance_3)
-                - 3 * (sp - pp).dot(spNormal) * (sp - pp).dot(
-                    ppNormal) * (1 + k * distance) * std::exp(- k * distance) /
-                (eps * distance_5);
+        result(3) = spNormal.dot(ppNormal) * (1 + k * distance) * std::exp(
+                        - k * distance) / (eps * distance_3)
+                    - std::pow(k, 2) * (sp - pp).dot(spNormal) * (sp - pp).dot(
+                        ppNormal) * std::exp(- k * distance) / (eps * distance_3)
+                    - 3 * (sp - pp).dot(spNormal) * (sp - pp).dot(
+                        ppNormal) * (1 + k * distance) * std::exp(- k * distance) /
+                    (eps * distance_5);
 
         return result;
     }
@@ -45,7 +46,7 @@ protected:
     Eigen::Array4d result;
     virtual void SetUp() {
         epsilon = 60.0;
-	kappa = 5.0;
+        kappa = 5.0;
         source = Eigen::Vector3d::Random();
         sourceNormal = source + Eigen::Vector3d::Random();
         sourceNormal.normalize();
@@ -58,7 +59,8 @@ protected:
 
 TEST_F(IonicLiquidTest, numerical)
 {
-    Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source, probeNormal,
+    Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source,
+                            probeNormal,
                             probe);
 
     IonicLiquid<double> gf(epsilon, kappa);
@@ -77,7 +79,8 @@ TEST_F(IonicLiquidTest, numerical)
 
 TEST_F(IonicLiquidTest, AD_directional)
 {
-    Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source, probeNormal,
+    Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source,
+                            probeNormal,
                             probe);
 
     IonicLiquid<AD_directional> gf(epsilon, kappa);
@@ -96,7 +99,8 @@ TEST_F(IonicLiquidTest, AD_directional)
 
 TEST_F(IonicLiquidTest, AD_gradient)
 {
-    Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source, probeNormal,
+    Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source,
+                            probeNormal,
                             probe);
 
     IonicLiquid<AD_gradient> gf(epsilon, kappa);
@@ -115,7 +119,8 @@ TEST_F(IonicLiquidTest, AD_gradient)
 
 TEST_F(IonicLiquidTest, AD_hessian)
 {
-    Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source, probeNormal,
+    Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source,
+                            probeNormal,
                             probe);
 
     IonicLiquid<AD_hessian> gf(epsilon, kappa);

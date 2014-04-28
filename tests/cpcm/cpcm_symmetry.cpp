@@ -16,7 +16,10 @@
 
 namespace fs = boost::filesystem;
 
-TEST(IEFSolver, pointChargeGePolC1)
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePolC1 tests CPCMSolver using a point charge with a GePol cavity in C1 symmetry
+ */
+TEST(CPCMSolver, pointChargeGePolC1)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -58,7 +61,10 @@ TEST(IEFSolver, pointChargeGePolC1)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
-TEST(IEFSolver, pointChargeGePolCs)
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePolCs tests CPCMSolver using a point charge with a GePol cavity in Cs symmetry
+ */
+TEST(CPCMSolver, pointChargeGePolCs)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -103,7 +109,10 @@ TEST(IEFSolver, pointChargeGePolCs)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
-TEST(IEFSolver, pointChargeGePolC2)
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePolC2 tests CPCMSolver using a point charge with a GePol cavity in C2 symmetry
+ */
+TEST(CPCMSolver, pointChargeGePolC2)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -148,7 +157,10 @@ TEST(IEFSolver, pointChargeGePolC2)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
-TEST(IEFSolver, pointChargeGePolCi)
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePolCi tests CPCMSolver using a point charge with a GePol cavity in Ci symmetry
+ */
+TEST(CPCMSolver, pointChargeGePolCi)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -193,7 +205,10 @@ TEST(IEFSolver, pointChargeGePolCi)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
-TEST(IEFSolver, pointChargeGePolC2h)
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePolC2h tests CPCMSolver using a point charge with a GePol cavity in C2h symmetry
+ */
+TEST(CPCMSolver, pointChargeGePolC2h)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -238,7 +253,10 @@ TEST(IEFSolver, pointChargeGePolC2h)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
-TEST(IEFSolver, pointChargeGePolD2)
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePolD2 tests CPCMSolver using a point charge with a GePol cavity in D2 symmetry
+ */
+TEST(CPCMSolver, pointChargeGePolD2)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -283,7 +301,10 @@ TEST(IEFSolver, pointChargeGePolD2)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
-TEST(IEFSolver, pointChargeGePolC2v)
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePolC2v tests CPCMSolver using a point charge with a GePol cavity in C2v symmetry
+ */
+TEST(CPCMSolver, pointChargeGePolC2v)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -328,7 +349,10 @@ TEST(IEFSolver, pointChargeGePolC2v)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
-TEST(IEFSolver, pointChargeGePolD2h)
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePolD2h tests CPCMSolver using a point charge with a GePol cavity in D2h symmetry
+ */
+TEST(CPCMSolver, pointChargeGePolD2h)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);

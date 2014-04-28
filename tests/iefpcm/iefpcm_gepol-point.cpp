@@ -13,6 +13,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePol tests IEFSolver using a point charge with a GePol cavity
+ */
 TEST(IEFSolver, pointChargeGePol)
 {
     // Set up cavity

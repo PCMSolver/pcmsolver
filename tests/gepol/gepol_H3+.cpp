@@ -37,6 +37,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityH3Test_size tests GePol cavity size for H3+ 
+ */
 TEST_F(GePolCavityH3Test, size)
 {
     int size = 312;
@@ -44,6 +47,9 @@ TEST_F(GePolCavityH3Test, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityH3Test_area tests GePol cavity surface area for H3+
+ */
 TEST_F(GePolCavityH3Test, area)
 {
     double area = 178.74700256125493;
@@ -51,6 +57,9 @@ TEST_F(GePolCavityH3Test, area)
     EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityH3Test_volume tests GePol cavity volume for H3+ 
+ */
 TEST_F(GePolCavityH3Test, volume)
 {
     double volume = 196.4736029455637;

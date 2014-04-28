@@ -12,7 +12,10 @@
 
 #include "gtestPimpl.hpp"
 
-TEST(IEFSolver, NH3GePol)
+/*! \class IEFSolver
+ *  \test \b NH3GePolRestart tests IEFSolver using ammonia with a GePol cavity read from .npz file
+ */
+TEST(IEFSolver, NH3GePolRestart)
 {
     Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
     Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);

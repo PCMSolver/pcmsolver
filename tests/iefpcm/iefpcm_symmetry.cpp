@@ -17,6 +17,9 @@
 
 namespace fs = boost::filesystem;
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolC1 tests IEFSolver using a point charge with a GePol cavity in C1 symmetry
+ */
 TEST(IEFSolver, pointChargeGePolC1)
 {
     // Set up cavity
@@ -57,6 +60,9 @@ TEST(IEFSolver, pointChargeGePolC1)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolCs tests IEFSolver using a point charge with a GePol cavity in Cs symmetry
+ */
 TEST(IEFSolver, pointChargeGePolCs)
 {
     // Set up cavity
@@ -100,6 +106,9 @@ TEST(IEFSolver, pointChargeGePolCs)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolC2 tests IEFSolver using a point charge with a GePol cavity in C2 symmetry
+ */
 TEST(IEFSolver, pointChargeGePolC2)
 {
     // Set up cavity
@@ -143,6 +152,9 @@ TEST(IEFSolver, pointChargeGePolC2)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolCi tests IEFSolver using a point charge with a GePol cavity in Ci symmetry
+ */
 TEST(IEFSolver, pointChargeGePolCi)
 {
     // Set up cavity
@@ -186,6 +198,9 @@ TEST(IEFSolver, pointChargeGePolCi)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolC2h tests IEFSolver using a point charge with a GePol cavity in C2h symmetry
+ */
 TEST(IEFSolver, pointChargeGePolC2h)
 {
     // Set up cavity
@@ -229,6 +244,9 @@ TEST(IEFSolver, pointChargeGePolC2h)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolD2 tests IEFSolver using a point charge with a GePol cavity in D2 symmetry
+ */
 TEST(IEFSolver, pointChargeGePolD2)
 {
     // Set up cavity
@@ -272,6 +290,9 @@ TEST(IEFSolver, pointChargeGePolD2)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolC2v tests IEFSolver using a point charge with a GePol cavity in C2v symmetry
+ */
 TEST(IEFSolver, pointChargeGePolC2v)
 {
     // Set up cavity
@@ -315,6 +336,9 @@ TEST(IEFSolver, pointChargeGePolC2v)
     EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
 }
 
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolD2h tests IEFSolver using a point charge with a GePol cavity in D2h symmetry
+ */
 TEST(IEFSolver, pointChargeGePolD2h)
 {
     // Set up cavity

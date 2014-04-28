@@ -48,6 +48,9 @@ protected:
     }
 };
 
+/*! \class UniformDielectric
+ *  \test \b UniformDielectricTest_numerical tests the numerical evaluation of the UniformDielectric Green's function against analytical result
+ */
 TEST_F(UniformDielectricTest, numerical)
 {
     UniformDielectric<double> gf(epsilon);
@@ -64,6 +67,10 @@ TEST_F(UniformDielectricTest, numerical)
     EXPECT_NEAR(derSource, gf_derSource, 1.0e-09);
 }
 
+/*! \class UniformDielectric
+ *  \test \b UniformDielectricTest_AD_directional tests the automatic evaluation (directional derivative only) 
+ *  of the UniformDielectric Green's function against analytical result
+ */
 TEST_F(UniformDielectricTest, AD_directional)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, sourceNormal, source, probeNormal,
@@ -83,6 +90,10 @@ TEST_F(UniformDielectricTest, AD_directional)
     EXPECT_DOUBLE_EQ(derSource, gf_derSource);
 }
 
+/*! \class UniformDielectric
+ *  \test \b UniformDielectricTest_AD_gradient tests the automatic evaluation (full gradient) 
+ *  of the UniformDielectric Green's function against analytical result
+ */
 TEST_F(UniformDielectricTest, AD_gradient)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, sourceNormal, source, probeNormal,
@@ -102,6 +113,10 @@ TEST_F(UniformDielectricTest, AD_gradient)
     EXPECT_DOUBLE_EQ(derSource, gf_derSource);
 }
 
+/*! \class UniformDielectric
+ *  \test \b UniformDielectricTest_AD_hessian tests the automatic evaluation (full hessian) 
+ *  of the UniformDielectric Green's function against analytical result
+ */
 TEST_F(UniformDielectricTest, AD_hessian)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, sourceNormal, source, probeNormal,

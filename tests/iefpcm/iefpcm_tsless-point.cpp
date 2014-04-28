@@ -12,6 +12,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class IEFSolver
+ *  \test \b pointChargeTsLess tests IEFSolver using a point charge with a TsLess cavity
+ */
 TEST(IEFSolver, pointChargeTsLess)
 {
     // Set up cavity

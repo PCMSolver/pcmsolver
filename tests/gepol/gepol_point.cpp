@@ -27,6 +27,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityTest_size tests GePol cavity size for a point charge
+ */
 TEST_F(GePolCavityTest, size)
 {
     int size = 32;
@@ -34,6 +37,9 @@ TEST_F(GePolCavityTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityTest_area tests GePol cavity surface area for a point charge
+ */
 TEST_F(GePolCavityTest, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -42,6 +48,9 @@ TEST_F(GePolCavityTest, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityTest_volume tests GePol cavity volume for a point charge
+ */
 TEST_F(GePolCavityTest, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;

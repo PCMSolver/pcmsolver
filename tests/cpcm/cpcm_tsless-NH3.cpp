@@ -12,6 +12,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class CPCMSolver
+ *  \test \b NH3TsLess tests CPCMSolver using ammonia and a TsLess cavity
+ */
 TEST(CPCMSolver, NH3TsLess)
 {
     // Set up cavity

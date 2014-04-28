@@ -57,6 +57,9 @@ protected:
     }
 };
 
+/*! \class IonicLiquid
+ *  \test \b IonicLiquidTest_numerical tests the numerical evaluation of the IonicLiquid Green's function against analytical result
+ */
 TEST_F(IonicLiquidTest, numerical)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source,
@@ -77,6 +80,10 @@ TEST_F(IonicLiquidTest, numerical)
     EXPECT_NEAR(derSource, gf_derSource, 1.0e-09);
 }
 
+/*! \class IonicLiquid
+ *  \test \b IonicLiquidTest_AD_directional tests the automatic evaluation (directional derivative only) 
+ *  of the IonicLiquid Green's function against analytical result
+ */
 TEST_F(IonicLiquidTest, AD_directional)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source,
@@ -97,6 +104,10 @@ TEST_F(IonicLiquidTest, AD_directional)
     EXPECT_DOUBLE_EQ(derSource, gf_derSource);
 }
 
+/*! \class IonicLiquid
+ *  \test \b IonicLiquidTest_AD_gradient tests the automatic evaluation (full gradient) 
+ *  of the IonicLiquid Green's function against analytical result
+ */
 TEST_F(IonicLiquidTest, AD_gradient)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source,
@@ -117,6 +128,10 @@ TEST_F(IonicLiquidTest, AD_gradient)
     EXPECT_DOUBLE_EQ(derSource, gf_derSource);
 }
 
+/*! \class IonicLiquid
+ *  \test \b IonicLiquidTest_AD_hessian tests the automatic evaluation (full hessian) 
+ *  of the IonicLiquid Green's function against analytical result
+ */
 TEST_F(IonicLiquidTest, AD_hessian)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, kappa, sourceNormal, source,

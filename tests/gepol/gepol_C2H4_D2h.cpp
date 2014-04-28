@@ -54,6 +54,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2hAddTest_size tests GePol cavity size for C2H4 in D2h symmetry with added spheres
+ */
 TEST_F(GePolCavityD2hAddTest, size)
 {
     int size = 576;
@@ -61,6 +64,9 @@ TEST_F(GePolCavityD2hAddTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2hAddTest_irreducible_size tests GePol cavity irreducible size for C2H4 in D2h symmetry with added spheres
+ */
 TEST_F(GePolCavityD2hAddTest, irreducible_size)
 {
     int size = 72;
@@ -68,6 +74,9 @@ TEST_F(GePolCavityD2hAddTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2hAddTest_area tests GePol cavity surface area for C2H4 in D2h symmetry with added spheres
+ */
 TEST_F(GePolCavityD2hAddTest, area)
 {
     double area = 281.81993683500656;
@@ -75,6 +84,9 @@ TEST_F(GePolCavityD2hAddTest, area)
     EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2hAddTest_volume tests GePol cavity volume for C2H4 in D2h symmetry with added spheres
+ */
 TEST_F(GePolCavityD2hAddTest, volume)
 {
     double volume = 406.54737252764619;

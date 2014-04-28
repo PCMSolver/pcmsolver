@@ -35,6 +35,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC1Test_size tests GePol cavity size for a point charge in C1 symmetry with added spheres
+ */
 TEST_F(GePolCavityC1Test, size)
 {
     int size = 32;
@@ -42,6 +45,9 @@ TEST_F(GePolCavityC1Test, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC1Test_irreducible_size tests GePol cavity irreducible size for a point charge in C1 symmetry with added spheres
+ */
 TEST_F(GePolCavityC1Test, irreducible_size)
 {
     int size = 32;
@@ -49,6 +55,9 @@ TEST_F(GePolCavityC1Test, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC1Test_area tests GePol cavity surface area for a point charge in C1 symmetry with added spheres
+ */
 TEST_F(GePolCavityC1Test, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -57,6 +66,9 @@ TEST_F(GePolCavityC1Test, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC1Test_volume tests GePol cavity volume for a point charge in C1 symmetry with added spheres
+ */
 TEST_F(GePolCavityC1Test, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
@@ -92,6 +104,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCsTest_size tests GePol cavity size for a point charge in Cs symmetry with added spheres
+ */
 TEST_F(GePolCavityCsTest, size)
 {
     int size = 32;
@@ -99,6 +114,9 @@ TEST_F(GePolCavityCsTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCsTest_irreducible_size tests GePol cavity irreducible size for a point charge in Cs symmetry 
+ */
 TEST_F(GePolCavityCsTest, irreducible_size)
 {
     int size = 16;
@@ -106,6 +124,9 @@ TEST_F(GePolCavityCsTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCsTest_area tests GePol cavity surface area for a point charge in Cs symmetry 
+ */
 TEST_F(GePolCavityCsTest, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -114,6 +135,9 @@ TEST_F(GePolCavityCsTest, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCsTest_volume tests GePol cavity volume for a point charge in Cs symmetry 
+ */
 TEST_F(GePolCavityCsTest, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
@@ -149,6 +173,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2Test_size tests GePol cavity size for a point charge in C2 symmetry 
+ */
 TEST_F(GePolCavityC2Test, size)
 {
     int size = 32;
@@ -156,6 +183,9 @@ TEST_F(GePolCavityC2Test, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2Test_irreducible_size tests GePol cavity irreducible size for a point charge in C2 symmetry 
+ */
 TEST_F(GePolCavityC2Test, irreducible_size)
 {
     int size = 16;
@@ -163,6 +193,9 @@ TEST_F(GePolCavityC2Test, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2Test_area tests GePol cavity surface area for a point charge in C2 symmetry 
+ */
 TEST_F(GePolCavityC2Test, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -171,6 +204,9 @@ TEST_F(GePolCavityC2Test, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2Test_volume tests GePol cavity volume for a point charge in C2 symmetry 
+ */
 TEST_F(GePolCavityC2Test, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
@@ -206,6 +242,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCiTest_size tests GePol cavity size for a point charge in Ci symmetry 
+ */
 TEST_F(GePolCavityCiTest, size)
 {
     int size = 32;
@@ -213,6 +252,9 @@ TEST_F(GePolCavityCiTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCiTest_irreducible_size tests GePol cavity irreducible size for a point charge in Ci symmetry 
+ */
 TEST_F(GePolCavityCiTest, irreducible_size)
 {
     int size = 16;
@@ -220,6 +262,9 @@ TEST_F(GePolCavityCiTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCiTest_area tests GePol cavity surface area for a point charge in Ci symmetry 
+ */
 TEST_F(GePolCavityCiTest, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -228,6 +273,9 @@ TEST_F(GePolCavityCiTest, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCiTest_volume tests GePol cavity volume for a point charge in Ci symmetry 
+ */
 TEST_F(GePolCavityCiTest, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
@@ -263,6 +311,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2hTest_size tests GePol cavity size for a point charge in C2h symmetry 
+ */
 TEST_F(GePolCavityC2hTest, size)
 {
     int size = 32;
@@ -270,6 +321,9 @@ TEST_F(GePolCavityC2hTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2hTest_irreducible_size tests GePol cavity irreducible size for a point charge in C2h symmetry 
+ */
 TEST_F(GePolCavityC2hTest, irreducible_size)
 {
     int size = 8;
@@ -277,6 +331,9 @@ TEST_F(GePolCavityC2hTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2hTest_area tests GePol cavity surface area for a point charge in C2h symmetry 
+ */
 TEST_F(GePolCavityC2hTest, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -285,6 +342,9 @@ TEST_F(GePolCavityC2hTest, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2hTest_volume tests GePol cavity volume for a point charge in C2h symmetry 
+ */
 TEST_F(GePolCavityC2hTest, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
@@ -320,6 +380,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2Test_size tests GePol cavity size for a point charge in D2 symmetry 
+ */
 TEST_F(GePolCavityD2Test, size)
 {
     int size = 32;
@@ -327,6 +390,9 @@ TEST_F(GePolCavityD2Test, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2Test_irreducible_size tests GePol cavity irreducible size for a point charge in D2 symmetry 
+ */
 TEST_F(GePolCavityD2Test, irreducible_size)
 {
     int size = 8;
@@ -334,6 +400,9 @@ TEST_F(GePolCavityD2Test, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2Test_area tests GePol cavity surface area for a point charge in D2 symmetry 
+ */
 TEST_F(GePolCavityD2Test, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -342,6 +411,9 @@ TEST_F(GePolCavityD2Test, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2Test_volume tests GePol cavity volume for a point charge in D2 symmetry 
+ */
 TEST_F(GePolCavityD2Test, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
@@ -377,6 +449,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vTest_size tests GePol cavity size for a point charge in C2v symmetry 
+ */
 TEST_F(GePolCavityC2vTest, size)
 {
     int size = 32;
@@ -384,6 +459,9 @@ TEST_F(GePolCavityC2vTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vTest_irreducible_size tests GePol cavity irreducible size for a point charge in C2v symmetry 
+ */
 TEST_F(GePolCavityC2vTest, irreducible_size)
 {
     int size = 8;
@@ -391,6 +469,9 @@ TEST_F(GePolCavityC2vTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vTest_area tests GePol cavity surface area for a point charge in C2v symmetry 
+ */
 TEST_F(GePolCavityC2vTest, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -399,6 +480,9 @@ TEST_F(GePolCavityC2vTest, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vTest_volume tests GePol cavity volume for a point charge in C2v symmetry 
+ */
 TEST_F(GePolCavityC2vTest, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
@@ -434,6 +518,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2hTest_size tests GePol cavity size for a point charge in D2h symmetry 
+ */
 TEST_F(GePolCavityD2hTest, size)
 {
     int size = 32;
@@ -441,6 +528,9 @@ TEST_F(GePolCavityD2hTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2hTest_irreducible_size tests GePol cavity irreducible size for a point charge in D2h symmetry 
+ */
 TEST_F(GePolCavityD2hTest, irreducible_size)
 {
     int size = 4;
@@ -448,6 +538,9 @@ TEST_F(GePolCavityD2hTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2hTest_area tests GePol cavity surface area for a point charge in D2h symmetry 
+ */
 TEST_F(GePolCavityD2hTest, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -456,6 +549,9 @@ TEST_F(GePolCavityD2hTest, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityD2hTest_volume tests GePol cavity volume for a point charge in D2h symmetry 
+ */
 TEST_F(GePolCavityD2hTest, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;

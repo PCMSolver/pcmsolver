@@ -46,6 +46,9 @@ protected:
     }
 };
 
+/*! \class Vacuum
+ *  \test \b VacuumTest_numerical tests the numerical evaluation of the Vacuum Green's function against analytical result
+ */
 TEST_F(VacuumTest, numerical)
 {
     Vacuum<double> gf;
@@ -62,6 +65,10 @@ TEST_F(VacuumTest, numerical)
     EXPECT_NEAR(derSource, gf_derSource, 1.0e-09);
 }
 
+/*! \class Vacuum
+ *  \test \b VacuumTest_AD_directional tests the automatic evaluation (directional derivative only) 
+ *  of the Vacuum Green's function against analytical result
+ */
 TEST_F(VacuumTest, AD_directional)
 {
     Vacuum<AD_directional> gf;
@@ -78,6 +85,10 @@ TEST_F(VacuumTest, AD_directional)
     EXPECT_DOUBLE_EQ(derSource, gf_derSource);
 }
 
+/*! \class Vacuum
+ *  \test \b VacuumTest_AD_gradient tests the automatic evaluation (full gradient) 
+ *  of the Vacuum Green's function against analytical result
+ */
 TEST_F(VacuumTest, AD_gradient)
 {
     Vacuum<AD_gradient> gf;
@@ -94,6 +105,10 @@ TEST_F(VacuumTest, AD_gradient)
     EXPECT_DOUBLE_EQ(derSource, gf_derSource);
 }
 
+/*! \class Vacuum
+ *  \test \b VacuumTest_AD_hessian tests the automatic evaluation (full hessian) 
+ *  of the Vacuum Green's function against analytical result
+ */
 TEST_F(VacuumTest, AD_hessian)
 {
     Vacuum<AD_hessian> gf;

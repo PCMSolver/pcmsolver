@@ -47,6 +47,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCsAddTest_size tests GePol cavity size for CH3+ in Cs symmetry with added spheres
+ */
 TEST_F(GePolCavityCsAddTest, size)
 {
     int size = 384;
@@ -54,6 +57,9 @@ TEST_F(GePolCavityCsAddTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCsAddTest_irreducible_size tests GePol cavity irreducible size for CH3+ in Cs symmetry with added spheres
+ */
 TEST_F(GePolCavityCsAddTest, irreducible_size)
 {
     int size = 192;
@@ -61,6 +67,9 @@ TEST_F(GePolCavityCsAddTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCsAddTest_area tests GePol cavity surface area for CH3+ in Cs symmetry with added spheres
+ */
 TEST_F(GePolCavityCsAddTest, area)
 {
     double area = 211.86178059383573;
@@ -68,6 +77,9 @@ TEST_F(GePolCavityCsAddTest, area)
     EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityCsAddTest_volume tests GePol cavity volume for CH3+ in Cs symmetry with added spheres
+ */
 TEST_F(GePolCavityCsAddTest, volume)
 {
     double volume = 278.95706420724309;

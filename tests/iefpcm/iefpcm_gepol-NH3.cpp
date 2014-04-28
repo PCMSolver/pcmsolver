@@ -13,6 +13,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class IEFSolver
+ *  \test \b NH3GePol tests IEFSolver using ammonia and a GePol cavity
+ */
 TEST(IEFSolver, NH3GePol)
 {
     // Set up cavity

@@ -13,6 +13,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class PWLSolver
+ *  \test \b pointCharge tests PWLSolver using a point charge with a wavelet cavity
+ */
 TEST(PWLSolver, pointCharge)
 {
     // Set up cavity

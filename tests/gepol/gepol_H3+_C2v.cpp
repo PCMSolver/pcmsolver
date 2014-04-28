@@ -44,6 +44,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vAddTest_size tests GePol cavity size for H3+ in C2v symmetry with added spheres
+ */
 TEST_F(GePolCavityC2vAddTest, size)
 {
     int size = 312;
@@ -51,6 +54,9 @@ TEST_F(GePolCavityC2vAddTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vAddTest_irreducible_size tests GePol cavity irreducible size for H3+ in C2v symmetry with added spheres
+ */
 TEST_F(GePolCavityC2vAddTest, irreducible_size)
 {
     int size = 78;
@@ -58,6 +64,9 @@ TEST_F(GePolCavityC2vAddTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vAddTest_area tests GePol cavity surface area for H3+ in C2v symmetry with added spheres
+ */
 TEST_F(GePolCavityC2vAddTest, area)
 {
     double area = 178.74700256128352;
@@ -65,6 +74,9 @@ TEST_F(GePolCavityC2vAddTest, area)
     EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vAddTest_volume tests GePol cavity volume for H3+ in C2v symmetry with added spheres
+ */
 TEST_F(GePolCavityC2vAddTest, volume)
 {
     double volume = 196.47360294559090;
@@ -108,6 +120,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vTest_size tests GePol cavity size for H3+ in C2v symmetry without added spheres
+ */
 TEST_F(GePolCavityC2vTest, size)
 {
     int size = 288;
@@ -115,6 +130,9 @@ TEST_F(GePolCavityC2vTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vTest_irreducible_size tests GePol cavity irreducible size for H3+ in C2v symmetry without added spheres
+ */
 TEST_F(GePolCavityC2vTest, irreducible_size)
 {
     int size = 72;
@@ -122,6 +140,9 @@ TEST_F(GePolCavityC2vTest, irreducible_size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vTest_area tests GePol cavity surface area for H3+ in C2v symmetry without added spheres
+ */
 TEST_F(GePolCavityC2vTest, area)
 {
     double area = 181.87043332808548;
@@ -129,6 +150,9 @@ TEST_F(GePolCavityC2vTest, area)
     EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityC2vTest_volume tests GePol cavity volume for H3+ in C2v symmetry without added spheres
+ */
 TEST_F(GePolCavityC2vTest, volume)
 {
     double volume = 192.48281460140359;

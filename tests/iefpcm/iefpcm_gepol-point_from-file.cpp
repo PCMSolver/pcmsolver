@@ -12,7 +12,10 @@
 
 #include "gtestPimpl.hpp"
 
-TEST(IEFSolver, pointChargeGePol)
+/*! \class IEFSolver
+ *  \test \b pointChargeGePolRestart tests IEFSolver using a point charge with a GePol cavity read from .npz file
+ */
+TEST(IEFSolver, pointChargeGePolRestart)
 {
     // Load cavity
     GePolCavity cavity;

@@ -12,6 +12,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class IEFSolver
+ *  \test \b NH3TsLess tests IEFSolver using ammonia and a TsLess cavity
+ */
 TEST(IEFSolver, NH3TsLess)
 {
     // Set up cavity

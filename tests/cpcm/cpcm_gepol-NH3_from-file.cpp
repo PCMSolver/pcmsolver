@@ -12,7 +12,10 @@
 
 #include "gtestPimpl.hpp"
 
-TEST(CPCMSolver, NH3GePol)
+/*! \class CPCMSolver
+ *  \test \b NH3GePolRestart tests CPCMSolver using ammonia with a GePol cavity read from .npz file
+ */
+TEST(CPCMSolver, NH3GePolRestart)
 {
     // Set up cavity
     Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);

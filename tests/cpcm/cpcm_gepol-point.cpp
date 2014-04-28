@@ -13,6 +13,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class CPCMSolver
+ *  \test \b pointChargeGePol tests CPCMSolver using a point charge with a GePol cavity
+ */
 TEST(CPCMSolver, pointChargeGePol)
 {
     // Set up cavity

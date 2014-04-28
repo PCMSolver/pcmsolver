@@ -38,6 +38,9 @@ protected:
     }
 };
 
+/*! \class WaveletCavity 
+ *  \test \b WaveletCavityTest_size tests Wavelet cavity size for a point charge
+ */
 TEST_F(WaveletCavityTest, size)
 {
     int size = 4864;
@@ -45,6 +48,9 @@ TEST_F(WaveletCavityTest, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class WaveletCavity 
+ *  \test \b WaveletCavityTest_area tests Wavelet cavity surface area for a point charge
+ */
 TEST_F(WaveletCavityTest, area)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
@@ -53,6 +59,9 @@ TEST_F(WaveletCavityTest, area)
 //	EXPECT_NEAR(area, actualArea, 1.0e-12);
 }
 
+/*! \class WaveletCavity 
+ *  \test \b WaveletCavityTest_volume tests Wavelet cavity volume for a point charge
+ */
 TEST_F(WaveletCavityTest, volume)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;

@@ -39,6 +39,9 @@ protected:
     }
 };
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityNH3Test_size tests GePol cavity size for ammonia 
+ */
 TEST_F(GePolCavityNH3Test, size)
 {
     int size = 544;
@@ -46,6 +49,9 @@ TEST_F(GePolCavityNH3Test, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityNH3Test_area tests GePol cavity surface area for ammonia
+ */
 TEST_F(GePolCavityNH3Test, area)
 {
     double area = 147.18581691164593;
@@ -53,6 +59,9 @@ TEST_F(GePolCavityNH3Test, area)
     EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
+/*! \class GePolCavity 
+ *  \test \b GePolCavityNH3Test_volume tests GePol cavity volume for ammonia 
+ */
 TEST_F(GePolCavityNH3Test, volume)
 {
     double volume = 152.81441857040116;

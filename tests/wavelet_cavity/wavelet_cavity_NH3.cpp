@@ -47,6 +47,9 @@ protected:
     }
 };
 
+/*! \class WaveletCavity 
+ *  \test \b WaveletCavityNH3Test_size tests Wavelet cavity size for ammonia 
+ */
 TEST_F(WaveletCavityNH3Test, size)
 {
     int size = 4288;
@@ -54,6 +57,9 @@ TEST_F(WaveletCavityNH3Test, size)
     EXPECT_EQ(size, actualSize);
 }
 
+/*! \class WaveletCavity 
+ *  \test \b WaveletCavityNH3Test_area tests Wavelet cavity surface area for ammonia
+ */
 TEST_F(WaveletCavityNH3Test, area)
 {
     double area = 146.41490284471513;
@@ -61,6 +67,9 @@ TEST_F(WaveletCavityNH3Test, area)
     EXPECT_NEAR(area, actualArea, 1.0e-10);
 }
 
+/*! \class WaveletCavity 
+ *  \test \b WaveletCavityNH3Test_volume tests Wavelet cavity volume for ammonia 
+ */
 TEST_F(WaveletCavityNH3Test, volume)
 {
     double volume = 153.3346491517182;

@@ -12,6 +12,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class CPCMSolver
+ *  \test \b pointChargeTsLess tests CPCMSolver using a point charge with a TsLess cavity
+ */
 TEST(CPCMSolver, pointChargeTsLess)
 {
     // Set up cavity

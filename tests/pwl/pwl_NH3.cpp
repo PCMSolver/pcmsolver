@@ -11,6 +11,9 @@
 
 #include "gtestPimpl.hpp"
 
+/*! \class PWLSolver
+ *  \test \b NH3 tests PWLSolver using ammonia and a wavelet cavity
+ */
 TEST(PWLSolver, NH3)
 {
     // Set up cavity

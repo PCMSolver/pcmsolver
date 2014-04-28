@@ -41,7 +41,7 @@ protected:
 };
 
 /*! \class BlockDiagonalMatrix
- *  \test \b addition tests addition of two compatible block diagonal matrices
+ *  \test \b BlockDiagonalMatrixTest_addition tests addition of two compatible block diagonal matrices
  */
 TEST_F(BlockDiagonalMatrixTest, addition)
 {
@@ -71,7 +71,7 @@ TEST_F(BlockDiagonalMatrixTest, addition)
 }
 
 /*! \class BlockDiagonalMatrix
- *  \test \b subtraction tests subtraction of two compatible block diagonal matrices
+ *  \test \b BlockDiagonalMatrixTest_subtraction tests subtraction of two compatible block diagonal matrices
  */
 TEST_F(BlockDiagonalMatrixTest, subtraction)
 {
@@ -101,7 +101,7 @@ TEST_F(BlockDiagonalMatrixTest, subtraction)
 }
 
 /*! \class BlockDiagonalMatrix
- *  \test \b multiply_by_scalar tests multiplication of a block diagonal matrix by a scalar
+ *  \test \b BlockDiagonalMatrixTest_multiply_by_scalar tests multiplication of a block diagonal matrix by a scalar
  */
 TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar1)
 {
@@ -131,7 +131,7 @@ TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar1)
 }
 
 /*! \class BlockDiagonalMatrix
- *  \test \b multiply_by_scalar2 tests multiplication of a block diagonal matrix by a scalar
+ *  \test \b BlockDiagonalMatrixTest_multiply_by_scalar2 tests multiplication of a block diagonal matrix by a scalar
  */
 TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar2)
 {
@@ -160,7 +160,7 @@ TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar2)
 }
 
 /*! \class BlockDiagonalMatrix
- *  \test \b multiply1 tests matrix multiplication of two compatible block diagonal matrices
+ *  \test \b BlockDiagonalMatrixTest_multiply1 tests matrix multiplication of two compatible block diagonal matrices
  */
 TEST_F(BlockDiagonalMatrixTest, multiply1)
 {
@@ -189,7 +189,7 @@ TEST_F(BlockDiagonalMatrixTest, multiply1)
 }
 
 /*! \class BlockDiagonalMatrix
- *  \test \b multiply2 tests matrix multiplication of two compatible block diagonal matrices
+ *  \test \b BlockDiagonalMatrixTest_multiply2 tests matrix multiplication of two compatible block diagonal matrices
  */
 TEST_F(BlockDiagonalMatrixTest, multiply2)
 {

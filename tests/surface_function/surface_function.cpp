@@ -28,6 +28,9 @@ protected:
     }
 };
 
+/*! \class SurfaceFunction
+ *  \test \b SurfaceFunctionTest_addition tests addition of two SurfaceFunction
+ */
 TEST_F(SurfaceFunctionTest, addition)
 {
     SurfaceFunction addition = func1 + func2;
@@ -40,6 +43,9 @@ TEST_F(SurfaceFunctionTest, addition)
     }
 }
 
+/*! \class SurfaceFunction
+ *  \test \b SurfaceFunctionTest_subtraction tests subtraction of two SurfaceFunction
+ */
 TEST_F(SurfaceFunctionTest, subtraction)
 {
     SurfaceFunction subtraction = func1 - func2;
@@ -52,6 +58,9 @@ TEST_F(SurfaceFunctionTest, subtraction)
     }
 }
 
+/*! \class SurfaceFunction
+ *  \test \b SurfaceFunctionTest_multiply_by_scalar tests multiplication of a SurfaceFunction by a scalar
+ */
 TEST_F(SurfaceFunctionTest, multiply_by_scalar)
 {
     SurfaceFunction scaled1 = 2.5 * func1;
@@ -69,6 +78,9 @@ TEST_F(SurfaceFunctionTest, multiply_by_scalar)
     }
 }
 
+/*! \class SurfaceFunction
+ *  \test \b SurfaceFunctionTest_multiply tests dot product of two SurfaceFunction
+ */
 TEST_F(SurfaceFunctionTest, multiply)
 {
     double product = func1 * func2;

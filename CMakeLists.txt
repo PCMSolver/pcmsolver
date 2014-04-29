@@ -1,15 +1,24 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
+#
+#  Declare project name and programming languages
+#
 project(PCMSolver)
 enable_language(CXX C Fortran)
 
-# There still is nothing going on inside the code regarding MPI, OpenMP and tests!!
+#  
+#  Options  
+#   There still is nothing going on inside the code regarding MPI and OpenMP!!
+#
 option(ENABLE_MPI        "Enable MPI parallelization"                                OFF)
 option(ENABLE_OPENMP     "Enable OpenMP parallelization"                             OFF)
 option(ENABLE_TESTS      "Enable compilation of unit tests"                          OFF)
 option(DISABLE_EIGEN_OWN "Do not use Eigen3 headers shipped with the module"         OFF)
 option(ENABLE_EIGEN_MKL  "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
 
+#
+#  CMake modules
+#
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_SOURCE_DIR}/cmake
@@ -70,6 +79,12 @@ if(ENABLE_EIGEN_MKL)
         include(ConfigMath)
         set(EIGEN_USE_MKL_ALL ON)
 endif()
+
+#
+#  Boost Numeric Quadrature stuff
+#
+set(Boost_QUADRATURE ${PROJECT_SOURCE_DIR}/external/boost)
+install(DIRECTORY ${Boost_QUADRATURE} DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 
 set(CMAKE_Fortran_MODULE_DIRECTORY
     ${PROJECT_BINARY_DIR}/modules
@@ -137,7 +152,9 @@ file(COPY ${PROJECT_BINARY_DIR}/touch_cmakelists
 
 include_directories(${EIGEN3_INCLUDE_DIR}
 	            ${Boost_INCLUDE_DIRS}
+		    ${Boost_QUADRATURE}
 		    ${PROJECT_SOURCE_DIR}
+		    ${PROJECT_SOURCE_DIR}/external
 		    ${PROJECT_BINARY_DIR}/include
                     ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include
                     ${CMAKE_Fortran_MODULE_DIRECTORY})

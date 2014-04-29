@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavityH3+
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -9,13 +14,10 @@
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
-class GePolCavityH3Test : public ::testing::Test
-{
-protected:
+struct GePolCavityH3Test {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityH3Test() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d H1( 0.735000, 0.000000, -1.333333);
         Eigen::Vector3d H2(-0.735000, 0.000000, -1.333333);
         Eigen::Vector3d H3( 0.000000, 0.000000,  2.666667);
@@ -37,30 +39,30 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityH3Test_size tests GePol cavity size for H3+ 
+/*! \class GePolCavity
+ *  \test \b GePolCavityH3Test_size tests GePol cavity size for H3+
  */
-TEST_F(GePolCavityH3Test, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityH3Test)
 {
     int size = 312;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityH3Test_area tests GePol cavity surface area for H3+
  */
-TEST_F(GePolCavityH3Test, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityH3Test)
 {
     double area = 178.74700256125493;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityH3Test_volume tests GePol cavity volume for H3+ 
+/*! \class GePolCavity
+ *  \test \b GePolCavityH3Test_volume tests GePol cavity volume for H3+
  */
-TEST_F(GePolCavityH3Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityH3Test)
 {
     double volume = 196.4736029455637;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -71,5 +73,5 @@ TEST_F(GePolCavityH3Test, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }

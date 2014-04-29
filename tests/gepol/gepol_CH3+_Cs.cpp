@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavityCsAddTest
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -11,15 +16,12 @@
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
 namespace fs = boost::filesystem;
 
-class GePolCavityCsAddTest : public ::testing::Test
-{
-protected:
+struct GePolCavityCsAddTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCsAddTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0006122714,  0.0000000000,  0.0000000000);
         Eigen::Vector3d	H1( 1.5162556382, -1.3708721537,  0.0000000000);
         Eigen::Vector3d	H2(-0.7584339548,  0.6854360769,  1.7695110698);
@@ -47,40 +49,40 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityCsAddTest_size tests GePol cavity size for CH3+ in Cs symmetry with added spheres
  */
-TEST_F(GePolCavityCsAddTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCsAddTest)
 {
     int size = 384;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityCsAddTest_irreducible_size tests GePol cavity irreducible size for CH3+ in Cs symmetry with added spheres
  */
-TEST_F(GePolCavityCsAddTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCsAddTest)
 {
     int size = 192;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityCsAddTest_area tests GePol cavity surface area for CH3+ in Cs symmetry with added spheres
  */
-TEST_F(GePolCavityCsAddTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCsAddTest)
 {
     double area = 211.86178059383573;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityCsAddTest_volume tests GePol cavity volume for CH3+ in Cs symmetry with added spheres
  */
-TEST_F(GePolCavityCsAddTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCsAddTest)
 {
     double volume = 278.95706420724309;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -91,5 +93,5 @@ TEST_F(GePolCavityCsAddTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }

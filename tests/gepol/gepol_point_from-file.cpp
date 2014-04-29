@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavityRestartTest
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -7,42 +12,38 @@
 
 #include "GePolCavity.hpp"
 
-#include "gtestPimpl.hpp"
-
-class GePolCavityRestartTest : public ::testing::Test
-{
-protected:
+struct GePolCavityRestartTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityRestartTest() { SetUp(); }
+    void SetUp() {
         cavity.loadCavity("point.npz");
     }
 };
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityRestartTest_size tests GePol cavity size for a point charge loading the cavity from a .npz file
  */
-TEST_F(GePolCavityRestartTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityRestartTest)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityRestartTest_area tests GePol cavity surface area for a point charge loading the cavity from from a .npz file
  */
-TEST_F(GePolCavityRestartTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityRestartTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityRestartTest_volume tests GePol cavity volume for a point charge loading the cavity from from a .npz file
  */
-TEST_F(GePolCavityRestartTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityRestartTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -53,6 +54,5 @@ TEST_F(GePolCavityRestartTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }

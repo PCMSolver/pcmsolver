@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavityC2vTest
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -11,16 +16,13 @@
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
 namespace fs = boost::filesystem;
 
 // Test C2v symmetry with addition of extra spheres enabled
-class GePolCavityC2vAddTest : public ::testing::Test
-{
-protected:
+struct GePolCavityC2vAddTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityC2vAddTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d H1( 0.735000, 0.000000, -1.333333);
         Eigen::Vector3d H2( 0.000000, 0.000000,  2.666667);
         Eigen::Vector3d H3(-0.735000, 0.000000, -1.333333);
@@ -44,40 +46,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityC2vAdd, GePolCavityC2vAddTest)
+
+/*! \class GePolCavity
  *  \test \b GePolCavityC2vAddTest_size tests GePol cavity size for H3+ in C2v symmetry with added spheres
  */
-TEST_F(GePolCavityC2vAddTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityC2vAddTest)
 {
     int size = 312;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC2vAddTest_irreducible_size tests GePol cavity irreducible size for H3+ in C2v symmetry with added spheres
  */
-TEST_F(GePolCavityC2vAddTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityC2vAddTest)
 {
     int size = 78;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC2vAddTest_area tests GePol cavity surface area for H3+ in C2v symmetry with added spheres
  */
-TEST_F(GePolCavityC2vAddTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityC2vAddTest)
 {
     double area = 178.74700256128352;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC2vAddTest_volume tests GePol cavity volume for H3+ in C2v symmetry with added spheres
  */
-TEST_F(GePolCavityC2vAddTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC2vAddTest)
 {
     double volume = 196.47360294559090;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -88,15 +92,16 @@ TEST_F(GePolCavityC2vAddTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
 
+BOOST_AUTO_TEST_SUITE_END()
+
 // Test C2v symmetry without addition of extra spheres enabled
-class GePolCavityC2vTest : public ::testing::Test
-{
-protected:
+struct GePolCavityC2vTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityC2vTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d H1( 0.735000, 0.000000, -1.333333);
         Eigen::Vector3d H2( 0.000000, 0.000000,  2.666667);
         Eigen::Vector3d H3(-0.735000, 0.000000, -1.333333);
@@ -120,40 +125,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityC2v, GePolCavityC2vTest)
+
+/*! \class GePolCavity
  *  \test \b GePolCavityC2vTest_size tests GePol cavity size for H3+ in C2v symmetry without added spheres
  */
-TEST_F(GePolCavityC2vTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityC2vTest)
 {
     int size = 288;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC2vTest_irreducible_size tests GePol cavity irreducible size for H3+ in C2v symmetry without added spheres
  */
-TEST_F(GePolCavityC2vTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityC2vTest)
 {
     int size = 72;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC2vTest_area tests GePol cavity surface area for H3+ in C2v symmetry without added spheres
  */
-TEST_F(GePolCavityC2vTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityC2vTest)
 {
     double area = 181.87043332808548;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC2vTest_volume tests GePol cavity volume for H3+ in C2v symmetry without added spheres
  */
-TEST_F(GePolCavityC2vTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC2vTest)
 {
     double volume = 192.48281460140359;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -164,5 +171,7 @@ TEST_F(GePolCavityC2vTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

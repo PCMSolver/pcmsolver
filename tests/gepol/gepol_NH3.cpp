@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavityNH3
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -9,13 +14,10 @@
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
-class GePolCavityNH3Test : public ::testing::Test
-{
-protected:
+struct GePolCavityNH3Test {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityNH3Test() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
         Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
         Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
@@ -39,30 +41,30 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityNH3Test_size tests GePol cavity size for ammonia 
+/*! \class GePolCavity
+ *  \test \b GePolCavityNH3Test_size tests GePol cavity size for ammonia
  */
-TEST_F(GePolCavityNH3Test, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityNH3Test)
 {
     int size = 544;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityNH3Test_area tests GePol cavity surface area for ammonia
  */
-TEST_F(GePolCavityNH3Test, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityNH3Test)
 {
     double area = 147.18581691164593;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityNH3Test_volume tests GePol cavity volume for ammonia 
+/*! \class GePolCavity
+ *  \test \b GePolCavityNH3Test_volume tests GePol cavity volume for ammonia
  */
-TEST_F(GePolCavityNH3Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityNH3Test)
 {
     double volume = 152.81441857040116;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -73,5 +75,5 @@ TEST_F(GePolCavityNH3Test, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }

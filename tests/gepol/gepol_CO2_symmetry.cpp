@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavityCO2
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -11,15 +16,12 @@
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
 namespace fs = boost::filesystem;
 
-class GePolCavityCO2C1Test : public ::testing::Test
-{
-protected:
+struct GePolCavityCO2C1Test {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCO2C1Test() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0000000000, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O1( 2.1316110791, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O2(-2.1316110791, 0.0000000000, 0.0000000000);
@@ -43,40 +45,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C1 symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C1, GePolCavityCO2C1Test)
+
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C1 symmetry
  */
-TEST_F(GePolCavityCO2C1Test, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C1Test)
 {
     int size = 448;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C1Test_irreducible_size tests GePol cavity irreducible size for CO2 in C1 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C1Test_irreducible_size tests GePol cavity irreducible size for CO2 in C1 symmetry
  */
-TEST_F(GePolCavityCO2C1Test, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C1Test)
 {
     int size = 448;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C1Test_area tests GePol cavity surface area for CO2 in C1 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C1Test_area tests GePol cavity surface area for CO2 in C1 symmetry
  */
-TEST_F(GePolCavityCO2C1Test, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C1Test)
 {
     double area = 250.68176442433020;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C1Test_volume tests GePol cavity volume for CO2 in C1 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C1Test_volume tests GePol cavity volume for CO2 in C1 symmetry
  */
-TEST_F(GePolCavityCO2C1Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C1Test)
 {
     double volume = 352.55869984340751;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -87,14 +91,15 @@ TEST_F(GePolCavityCO2C1Test, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
 
-class GePolCavityCO2CsTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityCO2CsTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCO2CsTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0000000000, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O1( 2.1316110791, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O2(-2.1316110791, 0.0000000000, 0.0000000000);
@@ -118,40 +123,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2CsTest_size tests GePol cavity size for CO2 in Cs symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2Cs, GePolCavityCO2CsTest)
+
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2CsTest_size tests GePol cavity size for CO2 in Cs symmetry
  */
-TEST_F(GePolCavityCO2CsTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2CsTest)
 {
     int size = 448;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2CsTest_irreducible_size tests GePol cavity irreducible size for CO2 in Cs symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2CsTest_irreducible_size tests GePol cavity irreducible size for CO2 in Cs symmetry
  */
-TEST_F(GePolCavityCO2CsTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2CsTest)
 {
     int size = 224;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2CsTest_area tests GePol cavity surface area for CO2 in Cs symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2CsTest_area tests GePol cavity surface area for CO2 in Cs symmetry
  */
-TEST_F(GePolCavityCO2CsTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2CsTest)
 {
     double area = 250.68176442433020;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2CsTest_volume tests GePol cavity volume for CO2 in Cs symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2CsTest_volume tests GePol cavity volume for CO2 in Cs symmetry
  */
-TEST_F(GePolCavityCO2CsTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2CsTest)
 {
     double volume = 352.55869984340751;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -162,14 +169,15 @@ TEST_F(GePolCavityCO2CsTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
 
-class GePolCavityCO2C2Test : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityCO2C2Test {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCO2C2Test() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0000000000, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O1( 2.1316110791, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O2(-2.1316110791, 0.0000000000, 0.0000000000);
@@ -193,40 +201,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2Test_size tests GePol cavity size for CO2 in C2 symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2, GePolCavityCO2C2Test)
+
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2Test_size tests GePol cavity size for CO2 in C2 symmetry
  */
-TEST_F(GePolCavityCO2C2Test, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2Test)
 {
     int size = 448;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2Test_irreducible_size tests GePol cavity irreducible size for CO2 in C2 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2Test_irreducible_size tests GePol cavity irreducible size for CO2 in C2 symmetry
  */
-TEST_F(GePolCavityCO2C2Test, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2Test)
 {
     int size = 224;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2Test_area tests GePol cavity surface area for CO2 in C2 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2Test_area tests GePol cavity surface area for CO2 in C2 symmetry
  */
-TEST_F(GePolCavityCO2C2Test, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2Test)
 {
     double area = 250.68176442433020;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2Test_volume tests GePol cavity volume for CO2 in C2 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2Test_volume tests GePol cavity volume for CO2 in C2 symmetry
  */
-TEST_F(GePolCavityCO2C2Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2Test)
 {
     double volume = 352.55869984340751;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -237,14 +247,15 @@ TEST_F(GePolCavityCO2C2Test, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
 
-class GePolCavityCO2CiTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityCO2CiTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCO2CiTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0000000000, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O1( 2.1316110791, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O2(-2.1316110791, 0.0000000000, 0.0000000000);
@@ -268,40 +279,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2CiTest_size tests GePol cavity size for CO2 in Ci symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2Ci, GePolCavityCO2CiTest)
+
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2CiTest_size tests GePol cavity size for CO2 in Ci symmetry
  */
-TEST_F(GePolCavityCO2CiTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2CiTest)
 {
     int size = 448;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2CiTest_irreducible_size tests GePol cavity irreducible size for CO2 in Ci symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2CiTest_irreducible_size tests GePol cavity irreducible size for CO2 in Ci symmetry
  */
-TEST_F(GePolCavityCO2CiTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2CiTest)
 {
     int size = 224;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2CiTest_area tests GePol cavity surface area for CO2 in Ci symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2CiTest_area tests GePol cavity surface area for CO2 in Ci symmetry
  */
-TEST_F(GePolCavityCO2CiTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2CiTest)
 {
     double area = 250.68176442433020;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2CiTest_volume tests GePol cavity volume for CO2 in Ci symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2CiTest_volume tests GePol cavity volume for CO2 in Ci symmetry
  */
-TEST_F(GePolCavityCO2CiTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2CiTest)
 {
     double volume = 352.55869984340751;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -312,14 +325,15 @@ TEST_F(GePolCavityCO2CiTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
 
-class GePolCavityCO2C2hTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityCO2C2hTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCO2C2hTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0000000000, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O1( 2.1316110791, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O2(-2.1316110791, 0.0000000000, 0.0000000000);
@@ -343,40 +357,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2hTest_size tests GePol cavity size for CO2 in C2h symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2h, GePolCavityCO2C2hTest)
+
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2hTest_size tests GePol cavity size for CO2 in C2h symmetry
  */
-TEST_F(GePolCavityCO2C2hTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2hTest)
 {
     int size = 448;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2h symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2h symmetry
  */
-TEST_F(GePolCavityCO2C2hTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2hTest)
 {
     int size = 112;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2hTest_area tests GePol cavity surface area for CO2 in C2h symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2hTest_area tests GePol cavity surface area for CO2 in C2h symmetry
  */
-TEST_F(GePolCavityCO2C2hTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2hTest)
 {
     double area = 250.68176442433020;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2hTest_volume tests GePol cavity volume for CO2 in C2h symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2hTest_volume tests GePol cavity volume for CO2 in C2h symmetry
  */
-TEST_F(GePolCavityCO2C2hTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2hTest)
 {
     double volume = 352.55869984340751;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -387,14 +403,15 @@ TEST_F(GePolCavityCO2C2hTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
 
-class GePolCavityCO2D2Test : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityCO2D2Test {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCO2D2Test() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0000000000, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O1( 2.1316110791, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O2(-2.1316110791, 0.0000000000, 0.0000000000);
@@ -418,40 +435,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2D2Test_size tests GePol cavity size for CO2 in D2 symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2D2, GePolCavityCO2D2Test)
+
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2D2Test_size tests GePol cavity size for CO2 in D2 symmetry
  */
-TEST_F(GePolCavityCO2D2Test, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2D2Test)
 {
     int size = 448;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2D2Test_irreducible_size tests GePol cavity irreducible size for CO2 in D2 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2D2Test_irreducible_size tests GePol cavity irreducible size for CO2 in D2 symmetry
  */
-TEST_F(GePolCavityCO2D2Test, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2D2Test)
 {
     int size = 112;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2D2Test_area tests GePol cavity surface area for CO2 in D2 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2D2Test_area tests GePol cavity surface area for CO2 in D2 symmetry
  */
-TEST_F(GePolCavityCO2D2Test, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2D2Test)
 {
     double area = 250.68176442433020;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2D2Test_volume tests GePol cavity volume for CO2 in D2 symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2D2Test_volume tests GePol cavity volume for CO2 in D2 symmetry
  */
-TEST_F(GePolCavityCO2D2Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2D2Test)
 {
     double volume = 352.55869984340751;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -462,14 +481,15 @@ TEST_F(GePolCavityCO2D2Test, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
 
-class GePolCavityCO2C2vTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityCO2C2vTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCO2C2vTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0000000000, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O1( 2.1316110791, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O2(-2.1316110791, 0.0000000000, 0.0000000000);
@@ -493,40 +513,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2vTest_size tests GePol cavity size for CO2 in C2v symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2v, GePolCavityCO2C2vTest)
+
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2vTest_size tests GePol cavity size for CO2 in C2v symmetry
  */
-TEST_F(GePolCavityCO2C2vTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2vTest)
 {
     int size = 448;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2vTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2v symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2vTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2v symmetry
  */
-TEST_F(GePolCavityCO2C2vTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2vTest)
 {
     int size = 112;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2vTest_area tests GePol cavity surface area for CO2 in C2v symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2vTest_area tests GePol cavity surface area for CO2 in C2v symmetry
  */
-TEST_F(GePolCavityCO2C2vTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2vTest)
 {
     double area = 250.68176442433020;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2C2vTest_volume tests GePol cavity volume for CO2 in C2v symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2C2vTest_volume tests GePol cavity volume for CO2 in C2v symmetry
  */
-TEST_F(GePolCavityCO2C2vTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2vTest)
 {
     double volume = 352.55869984340751;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -537,14 +559,15 @@ TEST_F(GePolCavityCO2C2vTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
 
-class GePolCavityCO2D2hTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityCO2D2hTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCO2D2hTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d	C1( 0.0000000000, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O1( 2.1316110791, 0.0000000000, 0.0000000000);
         Eigen::Vector3d	O2(-2.1316110791, 0.0000000000, 0.0000000000);
@@ -568,40 +591,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2D2hTest_size tests GePol cavity size for CO2 in D2h symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2D2h, GePolCavityCO2D2hTest)
+
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2D2hTest_size tests GePol cavity size for CO2 in D2h symmetry
  */
-TEST_F(GePolCavityCO2D2hTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2D2hTest)
 {
     int size = 448;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2D2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in D2h symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2D2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in D2h symmetry
  */
-TEST_F(GePolCavityCO2D2hTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2D2hTest)
 {
     int size = 56;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2D2hTest_area tests GePol cavity surface area for CO2 in D2h symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2D2hTest_area tests GePol cavity surface area for CO2 in D2h symmetry
  */
-TEST_F(GePolCavityCO2D2hTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2D2hTest)
 {
     double area = 250.68176442433020;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCO2D2hTest_volume tests GePol cavity volume for CO2 in D2h symmetry 
+/*! \struct GePolCavity
+ *  \test \b GePolCavityCO2D2hTest_volume tests GePol cavity volume for CO2 in D2h symmetry
  */
-TEST_F(GePolCavityCO2D2hTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2D2hTest)
 {
     double volume = 352.55869984340751;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -612,5 +637,7 @@ TEST_F(GePolCavityCO2D2hTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

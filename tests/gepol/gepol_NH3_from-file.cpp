@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavityNH3RestartTest
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -7,41 +12,38 @@
 
 #include "GePolCavity.hpp"
 
-#include "gtestPimpl.hpp"
-
-class GePolCavityNH3RestartTest : public ::testing::Test
-{
-protected:
+struct GePolCavityNH3RestartTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityNH3RestartTest() { SetUp(); }
+    void SetUp() {
         cavity.loadCavity("nh3.npz");
     }
 };
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityNH3RestartTest_size tests GePol cavity size for ammonia loading the cavity from a .npz file
  */
-TEST_F(GePolCavityNH3RestartTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityNH3RestartTest)
 {
     int size = 544;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityNH3RestartTest_area tests GePol cavity surface area for ammonia loading the cavity from from a .npz file
  */
-TEST_F(GePolCavityNH3RestartTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityNH3RestartTest)
 {
     double area = 147.18581691164593;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityNH3RestartTest_volume tests GePol cavity volume for ammonia loading the cavity from from a .npz file
  */
-TEST_F(GePolCavityNH3RestartTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityNH3RestartTest)
 {
     double volume = 152.81441857040116;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -52,5 +54,5 @@ TEST_F(GePolCavityNH3RestartTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }

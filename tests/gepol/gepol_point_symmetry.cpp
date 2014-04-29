@@ -18,9 +18,7 @@
 
 namespace fs = boost::filesystem;
 
-
-struct GePolCavityC1Test
-{
+struct GePolCavityC1Test {
     GePolCavity cavity;
     GePolCavityC1Test() {  SetUp(); }
     void SetUp() {
@@ -41,38 +39,37 @@ struct GePolCavityC1Test
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityC1, GePolCavityC1Test)
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC1Test_size tests GePol cavity size for a point charge in C1 symmetry with added spheres
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityC1Test)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC1Test_irreducible_size tests GePol cavity irreducible size for a point charge in C1 symmetry with added spheres
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityC1Test)
 {
     int size = 32;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC1Test_area tests GePol cavity surface area for a point charge in C1 symmetry with added spheres
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityC1Test)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityC1Test_volume tests GePol cavity volume for a point charge in C1 symmetry with added spheres
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC1Test)
@@ -86,17 +83,15 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC1Test)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }
 
-BOOST_FIXTURE_TEST_SUITE_END()
+BOOST_AUTO_TEST_SUITE_END()
 
-class GePolCavityCsTest : public ::testing::Test
-{
-protected:
+struct GePolCavityCsTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCsTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -112,41 +107,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCs, GePolCavityCsTest)
+
+/*! \class GePolCavity
  *  \test \b GePolCavityCsTest_size tests GePol cavity size for a point charge in Cs symmetry with added spheres
  */
-TEST_F(GePolCavityCsTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCsTest)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCsTest_irreducible_size tests GePol cavity irreducible size for a point charge in Cs symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityCsTest_irreducible_size tests GePol cavity irreducible size for a point charge in Cs symmetry
  */
-TEST_F(GePolCavityCsTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCsTest)
 {
     int size = 16;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCsTest_area tests GePol cavity surface area for a point charge in Cs symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityCsTest_area tests GePol cavity surface area for a point charge in Cs symmetry
  */
-TEST_F(GePolCavityCsTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCsTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCsTest_volume tests GePol cavity volume for a point charge in Cs symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityCsTest_volume tests GePol cavity volume for a point charge in Cs symmetry
  */
-TEST_F(GePolCavityCsTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCsTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -157,15 +153,15 @@ TEST_F(GePolCavityCsTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }
 
-class GePolCavityC2Test : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityC2Test {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityC2Test() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -181,41 +177,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2Test_size tests GePol cavity size for a point charge in C2 symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityC2, GePolCavityC2Test)
+
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2Test_size tests GePol cavity size for a point charge in C2 symmetry
  */
-TEST_F(GePolCavityC2Test, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityC2Test)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2Test_irreducible_size tests GePol cavity irreducible size for a point charge in C2 symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2Test_irreducible_size tests GePol cavity irreducible size for a point charge in C2 symmetry
  */
-TEST_F(GePolCavityC2Test, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityC2Test)
 {
     int size = 16;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2Test_area tests GePol cavity surface area for a point charge in C2 symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2Test_area tests GePol cavity surface area for a point charge in C2 symmetry
  */
-TEST_F(GePolCavityC2Test, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityC2Test)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2Test_volume tests GePol cavity volume for a point charge in C2 symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2Test_volume tests GePol cavity volume for a point charge in C2 symmetry
  */
-TEST_F(GePolCavityC2Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC2Test)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -226,15 +223,15 @@ TEST_F(GePolCavityC2Test, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }
 
-class GePolCavityCiTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityCiTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityCiTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -250,41 +247,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCiTest_size tests GePol cavity size for a point charge in Ci symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityCi, GePolCavityCiTest)
+
+/*! \class GePolCavity
+ *  \test \b GePolCavityCiTest_size tests GePol cavity size for a point charge in Ci symmetry
  */
-TEST_F(GePolCavityCiTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityCiTest)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCiTest_irreducible_size tests GePol cavity irreducible size for a point charge in Ci symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityCiTest_irreducible_size tests GePol cavity irreducible size for a point charge in Ci symmetry
  */
-TEST_F(GePolCavityCiTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCiTest)
 {
     int size = 16;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCiTest_area tests GePol cavity surface area for a point charge in Ci symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityCiTest_area tests GePol cavity surface area for a point charge in Ci symmetry
  */
-TEST_F(GePolCavityCiTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityCiTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityCiTest_volume tests GePol cavity volume for a point charge in Ci symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityCiTest_volume tests GePol cavity volume for a point charge in Ci symmetry
  */
-TEST_F(GePolCavityCiTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCiTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -295,15 +293,15 @@ TEST_F(GePolCavityCiTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }
 
-class GePolCavityC2hTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityC2hTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityC2hTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -319,41 +317,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2hTest_size tests GePol cavity size for a point charge in C2h symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityC2h, GePolCavityC2hTest)
+
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2hTest_size tests GePol cavity size for a point charge in C2h symmetry
  */
-TEST_F(GePolCavityC2hTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityC2hTest)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2hTest_irreducible_size tests GePol cavity irreducible size for a point charge in C2h symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2hTest_irreducible_size tests GePol cavity irreducible size for a point charge in C2h symmetry
  */
-TEST_F(GePolCavityC2hTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityC2hTest)
 {
     int size = 8;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2hTest_area tests GePol cavity surface area for a point charge in C2h symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2hTest_area tests GePol cavity surface area for a point charge in C2h symmetry
  */
-TEST_F(GePolCavityC2hTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityC2hTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2hTest_volume tests GePol cavity volume for a point charge in C2h symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2hTest_volume tests GePol cavity volume for a point charge in C2h symmetry
  */
-TEST_F(GePolCavityC2hTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC2hTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -364,15 +363,15 @@ TEST_F(GePolCavityC2hTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }
 
-class GePolCavityD2Test : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityD2Test {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityD2Test() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -388,41 +387,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityD2Test_size tests GePol cavity size for a point charge in D2 symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityD2, GePolCavityD2Test)
+
+/*! \class GePolCavity
+ *  \test \b GePolCavityD2Test_size tests GePol cavity size for a point charge in D2 symmetry
  */
-TEST_F(GePolCavityD2Test, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityD2Test)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityD2Test_irreducible_size tests GePol cavity irreducible size for a point charge in D2 symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityD2Test_irreducible_size tests GePol cavity irreducible size for a point charge in D2 symmetry
  */
-TEST_F(GePolCavityD2Test, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityD2Test)
 {
     int size = 8;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityD2Test_area tests GePol cavity surface area for a point charge in D2 symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityD2Test_area tests GePol cavity surface area for a point charge in D2 symmetry
  */
-TEST_F(GePolCavityD2Test, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityD2Test)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityD2Test_volume tests GePol cavity volume for a point charge in D2 symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityD2Test_volume tests GePol cavity volume for a point charge in D2 symmetry
  */
-TEST_F(GePolCavityD2Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityD2Test)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -433,15 +433,15 @@ TEST_F(GePolCavityD2Test, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }
 
-class GePolCavityC2vTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityC2vTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityC2vTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -457,41 +457,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2vTest_size tests GePol cavity size for a point charge in C2v symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityC2v, GePolCavityC2vTest)
+
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2vTest_size tests GePol cavity size for a point charge in C2v symmetry
  */
-TEST_F(GePolCavityC2vTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityC2vTest)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2vTest_irreducible_size tests GePol cavity irreducible size for a point charge in C2v symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2vTest_irreducible_size tests GePol cavity irreducible size for a point charge in C2v symmetry
  */
-TEST_F(GePolCavityC2vTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityC2vTest)
 {
     int size = 8;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2vTest_area tests GePol cavity surface area for a point charge in C2v symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2vTest_area tests GePol cavity surface area for a point charge in C2v symmetry
  */
-TEST_F(GePolCavityC2vTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityC2vTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityC2vTest_volume tests GePol cavity volume for a point charge in C2v symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityC2vTest_volume tests GePol cavity volume for a point charge in C2v symmetry
  */
-TEST_F(GePolCavityC2vTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC2vTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -502,15 +503,15 @@ TEST_F(GePolCavityC2vTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }
 
-class GePolCavityD2hTest : public ::testing::Test
-{
-protected:
+BOOST_AUTO_TEST_SUITE_END()
+
+struct GePolCavityD2hTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityD2hTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -526,41 +527,42 @@ protected:
     }
 };
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityD2hTest_size tests GePol cavity size for a point charge in D2h symmetry 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityD2h, GePolCavityD2hTest)
+
+/*! \class GePolCavity
+ *  \test \b GePolCavityD2hTest_size tests GePol cavity size for a point charge in D2h symmetry
  */
-TEST_F(GePolCavityD2hTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityD2hTest)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityD2hTest_irreducible_size tests GePol cavity irreducible size for a point charge in D2h symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityD2hTest_irreducible_size tests GePol cavity irreducible size for a point charge in D2h symmetry
  */
-TEST_F(GePolCavityD2hTest, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityD2hTest)
 {
     int size = 4;
     int actualSize = cavity.irreducible_size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityD2hTest_area tests GePol cavity surface area for a point charge in D2h symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityD2hTest_area tests GePol cavity surface area for a point charge in D2h symmetry
  */
-TEST_F(GePolCavityD2hTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityD2hTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
- *  \test \b GePolCavityD2hTest_volume tests GePol cavity volume for a point charge in D2h symmetry 
+/*! \class GePolCavity
+ *  \test \b GePolCavityD2hTest_volume tests GePol cavity volume for a point charge in D2h symmetry
  */
-TEST_F(GePolCavityD2hTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityD2hTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -571,6 +573,7 @@ TEST_F(GePolCavityD2hTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

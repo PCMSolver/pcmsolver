@@ -13,10 +13,9 @@
 #include "GePolCavity.hpp"
 #include "Symmetry.hpp"
 
-struct GePolCavityTest
-{
+struct GePolCavityTest {
     GePolCavity cavity;
-    GePolCavityTest() { SetUp(); } 
+    GePolCavityTest() { SetUp(); }
     void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
@@ -30,7 +29,7 @@ struct GePolCavityTest
     }
 };
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityTest_size tests GePol cavity size for a point charge
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityTest)
@@ -40,7 +39,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityTest_area tests GePol cavity surface area for a point charge
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityTest)
@@ -50,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityTest)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityTest_volume tests GePol cavity volume for a point charge
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityTest)

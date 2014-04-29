@@ -1,3 +1,9 @@
+#define BOOST_TEST_MODULE GePolCavityH3+RestartTest
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
+
 #include <vector>
 #include <cmath>
 
@@ -7,41 +13,38 @@
 
 #include "GePolCavity.hpp"
 
-#include "gtestPimpl.hpp"
-
-class GePolCavityH3RestartTest : public ::testing::Test
-{
-protected:
+struct GePolCavityH3RestartTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityH3RestartTest() { SetUp(); }
+    void SetUp() {
         cavity.loadCavity("h3+.npz");
     }
 };
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityH3RestartTest_size tests GePol cavity size for H3+ loading the cavity from a .npz file
  */
-TEST_F(GePolCavityH3RestartTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityH3RestartTest)
 {
     int size = 312;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityH3RestartTest_area tests GePol cavity surface area for H3+ loading the cavity from from a .npz file
  */
-TEST_F(GePolCavityH3RestartTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityH3RestartTest)
 {
     double area = 178.74700256125493;
     double actualArea = cavity.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \class GePolCavity 
+/*! \class GePolCavity
  *  \test \b GePolCavityH3RestartTest_volume tests GePol cavity volume for H3+ loading the cavity from from a .npz file
  */
-TEST_F(GePolCavityH3RestartTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityH3RestartTest)
 {
     double volume = 196.4736029455637;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -52,5 +55,5 @@ TEST_F(GePolCavityH3RestartTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }

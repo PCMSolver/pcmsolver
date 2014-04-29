@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavity
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -11,15 +16,14 @@
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
 namespace fs = boost::filesystem;
 
-class GePolCavityC1Test : public ::testing::Test
+
+struct GePolCavityC1Test
 {
-protected:
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityC1Test() {  SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -35,10 +39,12 @@ protected:
     }
 };
 
+BOOST_FIXTURE_TEST_SUITE(GePolCavityC1, GePolCavityC1Test)
+
 /*! \class GePolCavity 
  *  \test \b GePolCavityC1Test_size tests GePol cavity size for a point charge in C1 symmetry with added spheres
  */
-TEST_F(GePolCavityC1Test, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityC1Test)
 {
     int size = 32;
     int actualSize = cavity.size();
@@ -48,7 +54,7 @@ TEST_F(GePolCavityC1Test, size)
 /*! \class GePolCavity 
  *  \test \b GePolCavityC1Test_irreducible_size tests GePol cavity irreducible size for a point charge in C1 symmetry with added spheres
  */
-TEST_F(GePolCavityC1Test, irreducible_size)
+BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityC1Test)
 {
     int size = 32;
     int actualSize = cavity.irreducible_size();
@@ -58,7 +64,7 @@ TEST_F(GePolCavityC1Test, irreducible_size)
 /*! \class GePolCavity 
  *  \test \b GePolCavityC1Test_area tests GePol cavity surface area for a point charge in C1 symmetry with added spheres
  */
-TEST_F(GePolCavityC1Test, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityC1Test)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
@@ -69,7 +75,7 @@ TEST_F(GePolCavityC1Test, area)
 /*! \class GePolCavity 
  *  \test \b GePolCavityC1Test_volume tests GePol cavity volume for a point charge in C1 symmetry with added spheres
  */
-TEST_F(GePolCavityC1Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC1Test)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -83,6 +89,8 @@ TEST_F(GePolCavityC1Test, volume)
     EXPECT_DOUBLE_EQ(volume, actualVolume);
 //	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
 }
+
+BOOST_FIXTURE_TEST_SUITE_END()
 
 class GePolCavityCsTest : public ::testing::Test
 {

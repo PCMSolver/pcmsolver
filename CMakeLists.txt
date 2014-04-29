@@ -24,6 +24,7 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake
     ${CMAKE_SOURCE_DIR}/cmake/compilers
     ${CMAKE_SOURCE_DIR}/cmake/math
+    ${CMAKE_SOURCE_DIR}/cmake/testing
     )
 
 set(LIBS)
@@ -44,7 +45,12 @@ FortranCInterface_HEADER(include/FCMangle.hpp)
 
 find_package(PythonInterp REQUIRED)
 
-find_package(Boost 1.49.0 COMPONENTS filesystem system REQUIRED)
+set(Boost_USE_STATIC_LIBS   ON)
+if(ENABLE_TESTS)
+	find_package(Boost 1.49.0 COMPONENTS filesystem system unit_test_framework REQUIRED)
+else()
+	find_package(Boost 1.49.0 COMPONENTS filesystem system REQUIRED)
+endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 	set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
@@ -93,16 +99,17 @@ set(CMAKE_Fortran_MODULE_DIRECTORY
 set(ExternalProjectCMakeArgs
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
-        -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 	-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DPARENT_BINARY_DIR=${PROJECT_BINARY_DIR}
 	-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}
 	-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}
    )
 
 add_external(libgetkw)
+
+set(TaylorCMakeArgs "${ExternalProjectCMakeArgs}")
+list(REMOVE_ITEM TaylorCMakeArgs "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}" "-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}" "-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}")
 
 if(DEVELOPMENT_CODE)
 ExternalProject_Add(libtaylor
@@ -114,7 +121,7 @@ ExternalProject_Add(libtaylor
         STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
         TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        CMAKE_ARGS ${ExternalProjectCMakeArgs}
+        CMAKE_ARGS ${TaylorCMakeArgs}
 	)
 else()
 ExternalProject_Add(libtaylor
@@ -124,7 +131,7 @@ ExternalProject_Add(libtaylor
         STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
         TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        CMAKE_ARGS ${ExternalProjectCMakeArgs}
+        CMAKE_ARGS ${TaylorProjectCMakeArgs}
 	)
 endif()
 
@@ -165,7 +172,10 @@ include_directories(${header_dir_list})
 link_directories(${Boost_LIBRARY_DIRS}
                  ${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
-set(LIBS ${Boost_LIBRARIES} ${LIBS})
+list(APPEND
+     LIBS
+    ${Boost_FILESYSTEM_LIBRARY} 
+    ${Boost_SYSTEM_LIBRARY})
 
 add_library(pcm ${SOURCES})
 install(TARGETS pcm ARCHIVE DESTINATION lib)
@@ -183,31 +193,12 @@ install(FILES
 	DESTINATION include)
 
 if(ENABLE_TESTS)
-        configure_file(
-            ${PROJECT_SOURCE_DIR}/src/utils/gtestPimpl.hpp.in
-            ${PROJECT_BINARY_DIR}/include/gtestPimpl.hpp
-            )
+	include(ConfigFramework)
 	include(TestingMacros)
-	set(LIBS pthread z ${LIBS})
-	ExternalProject_Add(googletest
-		SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk
-	       	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
-		PREFIX ${PROJECT_SOURCE_DIR}/external
-		SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/googletest
-		BINARY_DIR ${PROJECT_BINARY_DIR}/external/googletest-build
-	        STAMP_DIR ${PROJECT_BINARY_DIR}/external/googletest-stamp
-        	TMP_DIR ${PROJECT_BINARY_DIR}/external/googletest-tmp
-	        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        	CMAKE_ARGS ${ExternalProjectCMakeArgs}
-		# Disable install step.
-	        INSTALL_COMMAND ""
-		)
 
-        ExternalProject_Get_Property(googletest SOURCE_DIR)
-	set(GTEST_INCLUDE_DIRS ${SOURCE_DIR}/include)
-        ExternalProject_Get_Property(googletest BINARY_DIR)
-	set(GTEST_LIBS_DIR ${BINARY_DIR})
-	include_directories(${GTEST_INCLUDE_DIRS})
+        set(LIBS pthread z ${LIBS})
+
+	setup_googletest()
 
         enable_testing()
 	add_subdirectory(tests) # This must come last!!

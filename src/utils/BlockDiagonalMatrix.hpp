@@ -1,8 +1,32 @@
+/* pcmsolver_copyright_start */
+/*
+ *     PCMSolver, an API for the Polarizable Continuum Model
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+ *     
+ *     This file is part of PCMSolver.
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify       
+ *     it under the terms of the GNU Lesser General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *                                                                          
+ *     PCMSolver is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Lesser General Public License for more details.
+ *                                                                          
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     For information on the complete list of contributors to the
+ *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ */
+/* pcmsolver_copyright_end */
+
 #ifndef BLOCKDIAGONALMATRIX_HPP
 #define BLOCKDIAGONALMATRIX_HPP
 
-#include <iostream>
-//#include <iosfwd>
+#include <iosfwd>
 #include <stdexcept>
 #include <vector>
 
@@ -10,12 +34,18 @@
 
 #include "EigenPimpl.hpp"
 
-/*! \file BlockDiagonaMatrix.hpp
+/*! \file BlockDiagonalMatrix.hpp
+ *  \class BlockDiagonalMatrix
  *  \brief Packs a block-diagonal matrix.
  *  \author Roberto Di Remigio
  *  \date 2014
+ *  \tparam         T the data type
+ *  \tparam nrBlocks_ the number of square blocks in the matrix
+ *  \tparam dimBlock_ the size of the square blocks
  *
  *  We currently assume that all the blocks are square and have the same dimensionality.
+ *  There is no check on these assumptions in any of the public methods: any other
+ *  use of this class will lead to runtime errors or "slicing" of the original matrix.
  *  This data type is to be used in conjuction with symmetry handling in the solver.
  */
 
@@ -43,13 +73,13 @@ private:
 public:
     BlockDiagonalMatrix() {}
     /*!
-     *  Packs a square block diagonal matrix given the full matrix.
+     *  Packs a square block diagonal matrix given the full matrix
+     *  The dimension of the full matrix is (nrBlocks * dimBlock)
+     *  and it is assumed to be square, with square blocks on the diagonal
+     *  all with the same dimension.
      */
     BlockDiagonalMatrix(const EigenFull & matrix) : fullMatrix_(matrix),
         fullDim_(nrBlocks_*dimBlock_) {
-        // The dimension of the full matrix is (nrBlocks * dimBlock)
-        // The full matrix is assumed to be square, with square blocks on the diagonal
-        // all with the same dimension.
         int j = 0;
         for (int i = 0; i < nrBlocks_; ++i) {
             blockedMatrix_.push_back(fullMatrix_.block(j, j, dimBlock_, dimBlock_));

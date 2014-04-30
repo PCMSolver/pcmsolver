@@ -1,3 +1,28 @@
+/* pcmsolver_copyright_start */
+/*
+ *     PCMSolver, an API for the Polarizable Continuum Model
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+ *     
+ *     This file is part of PCMSolver.
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify       
+ *     it under the terms of the GNU Lesser General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *                                                                          
+ *     PCMSolver is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Lesser General Public License for more details.
+ *                                                                          
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     For information on the complete list of contributors to the
+ *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ */
+/* pcmsolver_copyright_end */
+
 #include "Input.hpp"
 
 #include <map>
@@ -9,6 +34,7 @@
 #include "EigenPimpl.hpp"
 #include "GetkwPimpl.hpp"
 
+#include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
@@ -17,6 +43,9 @@ Input::Input()
     const char * parsedInputFile = "@pcmsolver.inp";
     // Create a Getkw object from input file.
     Getkw input = Getkw(parsedInputFile, false, true);
+
+    CODATAyear_ = input.getInt("CODATA");
+
     const Section & cavity = input.getSect("Cavity");
 
     type = cavity.getStr("Type");
@@ -57,7 +86,7 @@ Input::Input()
     if (mode == "Explicit") {
         std::vector<double> spheresInput = cavity.getDblVec("Spheres");
         int j = 0;
-        int upperBound = (int)spheresInput.size() / 4;
+        int upperBound = int(spheresInput.size() / 4);
         for (int i = 0; i < upperBound; ++i) {
             Eigen::Vector3d center;
             center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
@@ -110,7 +139,7 @@ Input::Input()
         hasSolvent = true;
         std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
         solvent = solvents[_name];
-        probeRadius = solvent.probeRadius();
+        probeRadius = solvent.probeRadius() * angstromToBohr(CODATAyear_);
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class
         // is an helper class and should not be used in the core classes.

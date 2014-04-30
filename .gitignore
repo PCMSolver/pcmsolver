@@ -27,3 +27,10 @@ centers.txt
 normals.txt
 cavity.npz
 *.mod
+
+# QtCreator project files
+*.config
+*.creator*
+*.files
+*.includes
+CMakeLists.txt.user

@@ -1,3 +1,28 @@
+/* pcmsolver_copyright_start */
+/*
+ *     PCMSolver, an API for the Polarizable Continuum Model
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+ *     
+ *     This file is part of PCMSolver.
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify       
+ *     it under the terms of the GNU Lesser General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *                                                                          
+ *     PCMSolver is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Lesser General Public License for more details.
+ *                                                                          
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     For information on the complete list of contributors to the
+ *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ */
+/* pcmsolver_copyright_end */
+
 #include "IEFSolver.hpp"
 
 #include <iostream>
@@ -12,7 +37,7 @@
 #include "EigenPimpl.hpp"
 
 #include "Cavity.hpp"
-#include "GreensFunction.hpp"
+#include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
 void IEFSolver::buildSystemMatrix(const Cavity & cavity)
@@ -39,10 +64,11 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd DE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // This is the very core of PCMSolver
-    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
+    throw std::runtime_error("Calculation of anisotropic matrix elements not yet implemented.");
+/*  greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
     greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
     greenOutside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SE, DE);
-    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);
+    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);*/
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.
@@ -102,8 +128,21 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
-    greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
+    double factor = 1.07; // See discussion in the 2005 review
+    for (int i = 0; i < cavitySize; ++i) {
+        SI(i, i) = factor * std::sqrt(4 * M_PI / cav.elementArea(i));
+        DI(i, i) = -factor * std::sqrt(M_PI/ cav.elementArea(i)) * (1.0 / cav.elementRadius(i));
+        Eigen::Vector3d source = cav.elementCenter().col(i);
+        for (int j = 0; j < cavitySize; ++j) {
+            Eigen::Vector3d probe = cav.elementCenter().col(j);
+            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
+            probeNormal.normalize();
+            if (i != j) {
+                SI(i, j) = greenInside_->function(source, probe);
+                DI(i, j) = greenInside_->derivative(probeNormal, source, probe);
+            }
+        }
+    }
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.
@@ -120,7 +159,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     // T = (2 * M_PI * fact * aInv - DI) * a * SI; R = (2 * M_PI * aInv - DI)
     // fullPCMMatrix = K = T^-1 * R * a
     // 1. Form T
-    double epsilon = greenOutside_->dielectricConstant();
+    double epsilon = greenOutside_->epsilon();
     double fact = (epsilon + 1.0)/(epsilon - 1.0);
     fullPCMMatrix = (2 * M_PI * fact * aInv - DI) * a * SI;
     // 2. Invert T using LU decomposition with full pivoting

@@ -92,6 +92,16 @@ group.add_argument('--show',
         action='store_true',
         default=False,
         help='show cmake command and exit [default: %(default)s]')
+group.add_argument('--boost-headers',
+        action='store',
+        default=None,
+        help='directory containing Boost headers [default: pick automatically]',
+        metavar='PATH')
+group.add_argument('--boost-libs',
+        action='store',
+        default=None,
+        help='directory containing Boost libs [default: pick automatically]',
+        metavar='PATH')
 
 group = parser.add_argument_group('Change default paths')
 group.add_argument('--prefix',
@@ -224,8 +234,8 @@ def gen_cmake_command():
 
 #    command += ' -DENABLE_MPI=%s'    % args.mpi.upper()
 #    command += ' -DENABLE_OPENMP=%s' % args.openmp.upper()
-    command += ' -DENABLE_BLAS=%s'   % args.blas.upper()
-    command += ' -DENABLE_LAPACK=%s' % args.lapack.upper()
+#    command += ' -DENABLE_BLAS=%s'   % args.blas.upper()
+#    command += ' -DENABLE_LAPACK=%s' % args.lapack.upper()
     command += ' -DENABLE_TESTS=%s'  % args.tests.upper()
     command += ' -DDISABLE_EIGEN_OWN=%s' % args.eigenown.upper()
     command += ' -DENABLE_EIGEN_MKL=%s' % args.eigenmkl.upper()
@@ -235,6 +245,12 @@ def gen_cmake_command():
 
     if args.lapack_dir:
         command += ' -DLAPACK_ROOT={0}'.format(abspath(args.lapack_dir))
+    
+    if args.boost_headers:
+        command += ' -DBOOST_INCLUDEDIR={0}'.format(abspath(args.boost_headers))
+    
+    if args.boost_libs:
+        command += ' -DBOOST_LIBRARYDIR={0}'.format(abspath(args.boost_libs))
 
     if args.check:
         command += ' -DENABLE_BOUNDS_CHECK=ON'

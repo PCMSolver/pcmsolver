@@ -1,0 +1,57 @@
+/** \page Testing Testing
+We perform unit testing of our API. The unit testing framework used is Boost Test <http://www.boost.org/doc/libs/1_55_0/libs/test/doc/html/index.html>
+The framework provides quite an extensive set of macros to test various data types, it also provides
+facilities for easily setting up test fixtures. 
+For a quick primer on how to use Boost Test <http://www.alittlemadness.com/2009/03/31/c-unit-testing-with-boosttest/>
+For a list of the available macros <http://www.boost.org/doc/libs/1_55_0/libs/test/doc/html/utf/testing-tools/reference.html>
+The basic idea of unit testing is to test each building block of the code separataly. In our case,
+the term "building block" is used to mean a class.
+
+To add new tests for your class you have to:
+	-# create a new subdirectory inside tests/ and add a line like the following
+	to the CMakeLists.txt
+	\code
+	add_subdirectory(new_subdir)
+	\endcode
+	-# create a CMakeLists.txt inside your new subdirectory. This CMakeLists.txt contains
+	a list of the libraries needed to correctly link the executable and
+	repeated calls to a macro setting up the build and link commands for the executable, 
+	one call for each new .cpp file containig tests you add:
+	\code
+	set(list_of_libraries lib1 lib2 lib3)
+	add_boosttest(new_subdir_test1 "${list_of_libraries}" "${LIBS}")
+	add_boosttest(new_subdir_test2 "${list_of_libraries}" "${LIBS}")
+	add_boosttest(new_subdir_test3"${list_of_libraries}" "${LIBS}")
+	\endcode
+	We require that each source file containing tests follows the naming convention
+	new_subdir_testname and that testname gives some clue to what is being tested.
+	If any test depends on the result of the execution of some previous test you should
+	call the add_boosttest macro in the relevant order.
+	Depending on the execution of tests in a different subdirectory is bad practice.
+	A possible workaround is to add some kind of input file and create a text fixture
+	that sets up the test environment.
+	-# create the .cpp files containing the tests. Use the following template:
+	\include snippets/test_example.cpp
+	In this example we are creating a test fixture called GePolCavityTest. The fixture will instatiate
+	a GePolCavity with fixed parameters. The result is then tested against reference values using
+	the BOOST_FIXTURE_TEST_CASE macro provided by Boost Test.
+	The first line in the .cpp file must define the BOOST_TEST_MODULE macro with a
+        unique name. It is good practice to have this name related to what the test does. Failing to define
+        this macro will result in linker errors.
+	It is **important** to add the documentation lines on top of the tests, to help other
+	developers understand which class is being tested and what parameters are being tested.
+
+### Brief primer for Boost Test
+Here is a list of the macros defined by Boost Test that are currently used in our test suite:
+	- BOOST_FIXTURE_TEST_SUITE(suite_name, fixture_name) starts the test suite suite_name that will be
+	using the fixture fixture_name. A suite groups together a number of tests;
+	- BOOST_AUTO_TEST_SUITE_END() ends a suite of tests, be it based on a fixture or not;
+	- BOOST_FIXTURE_TEST_CASE(test_name, fixture_name) starts a test test_name that will be using
+	the fixture fixture_name;
+	- BOOST_AUTO_TEST_CASE(test_name) starts a test test_name;
+	- BOOST_REQUIRE_EQUAL(expected_value, actual_value) tests that actual_value matches expected_value. This
+	will use operator==() **DO NOT** use this macro for floating-point comparisons;
+	- BOOST_REQUIRE_CLOSE(expected_value, actual_value, threshold) tests that actual_value matches expected_value
+	up to a **relative percent error** specified by threshold. See <http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm>
+	and <http://www.boost.org/doc/libs/1_55_0/libs/test/doc/html/utf/testing-tools/floating_point_comparison.html>
+*/

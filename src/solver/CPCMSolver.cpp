@@ -1,3 +1,28 @@
+/* pcmsolver_copyright_start */
+/*
+ *     PCMSolver, an API for the Polarizable Continuum Model
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+ *     
+ *     This file is part of PCMSolver.
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify       
+ *     it under the terms of the GNU Lesser General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *                                                                          
+ *     PCMSolver is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Lesser General Public License for more details.
+ *                                                                          
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     For information on the complete list of contributors to the
+ *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ */
+/* pcmsolver_copyright_end */
+
 #include "CPCMSolver.hpp"
 
 #include <fstream>
@@ -10,7 +35,7 @@
 #include "EigenPimpl.hpp"
 
 #include "Cavity.hpp"
-#include "GreensFunction.hpp"
+#include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
 void CPCMSolver::buildSystemMatrix(const Cavity & cavity)
@@ -33,11 +58,21 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
     int dimBlock = cav.irreducible_size();
 
     Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
-    // This is the very core of PCMSolver
-    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
-    greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
+    // Compute SI on the whole cavity, regardless of symmetry
+    double factor = 1.07; // See discussion in the 2005 review
+    for (int i = 0; i < cavitySize; ++i) {
+        SI(i, i) = factor * std::sqrt(4 * M_PI / cav.elementArea(i));
+        Eigen::Vector3d source = cav.elementCenter().col(i);
+        for (int j = 0; j < cavitySize; ++j) {
+            Eigen::Vector3d probe = cav.elementCenter().col(j);
+            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
+            probeNormal.normalize();
+            if (i != j) {
+                SI(i, j) = greenInside_->function(source, probe);
+            }
+        }
+    }
     // Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.
@@ -45,7 +80,7 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
         symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
     }
 
-    double epsilon = greenOutside_->dielectricConstant();
+    double epsilon = greenOutside_->epsilon();
     double fact = (epsilon - 1.0)/(epsilon + correction_);
     // Invert SI  using LU decomposition with full pivoting
     // This is a rank-revealing LU decomposition, this allows us

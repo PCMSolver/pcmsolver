@@ -1,7 +1,28 @@
-!  -- dalton/sirius/sircav.F --
-!     (Luca Frediani)
+!pcmsolver_copyright_start
+!      PCMSolver, an API for the Polarizable Continuum Model
+!      Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+!      
+!      This file is part of PCMSolver.
+!
+!      PCMSolver is free software: you can redistribute it and/or modify       
+!      it under the terms of the GNU Lesser General Public License as published by
+!      the Free Software Foundation, either version 3 of the License, or
+!      (at your option) any later version.
+!                                                                           
+!      PCMSolver is distributed in the hope that it will be useful,
+!      but WITHOUT ANY WARRANTY; without even the implied warranty of
+!      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!      GNU Lesser General Public License for more details.
+!                                                                           
+!      You should have received a copy of the GNU Lesser General Public License
+!      along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+!
+!      For information on the complete list of contributors to the
+!      PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+!pcmsolver_copyright_end
+
 ! Originally written for DALTON by Luca Frediani (ca. 2003-2004)
-! Extracted from DALTON by Krzysztof Mozgawa and Ville Weijio (ca. 2010-2012)
+! Extracted from DALTON by Krzysztof Mozgawa and Ville Weijo (ca. 2010-2012)
 ! RDR 0114 Wrap up in a F90 module, with a major clean-up of all
 !          the DALTON stuff that still lingered but was unused. 
 !
@@ -2072,31 +2093,37 @@
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
-
+! Passed variables
     integer :: numts
     real(8) :: vert(numts, 10, 3)
+! Local variables    
     integer :: ivts(mxts, 10)
-    logical :: cavity_file_exists
-
+    integer :: off_unit
+    logical :: off_open, off_exist
     real(8) :: c1, c2, c3
     integer :: n, numv, i, j, k, last, lucav
     integer :: jcord
 
     lucav = 12121201
-    
-    inquire(file = 'cavity.off', exist = cavity_file_exists)
-    if (cavity_file_exists) then
-        open(lucav, &
-        file = 'cavity.off', &
-        status = 'old', &
-        form = 'formatted', &
+
+! The following INQUIRE statement returns whether the file named cavity.off is
+! connected in logical variable off_open, whether the file exists in logical
+! variable off_exist, and the unit number in integer variable off_unit
+    inquire(file = 'cavity.off', opened = off_open, & 
+            exist = off_exist, number = off_unit)
+    if (off_exist) then
+        open(unit = lucav,       &
+        file = 'cavity.off',     &
+        status = 'unknown',      &
+        form = 'formatted',      &
         access = 'sequential')
-        close(lucav, status = 'delete')
+        close(unit = lucav, status = 'delete')
     end if
-    open(lucav, &
-    file = 'cavity.off', &
-    status = 'new', &
-    form = 'formatted', &
+
+    open(unit = lucav,    &
+    file = 'cavity.off',  &
+    status = 'new',       &
+    form = 'formatted',   &
     access = 'sequential')
     rewind(lucav)
 
@@ -2131,6 +2158,8 @@
     end do
 
     2001 format('  ',3f16.9,4f5.2,' # Tess. ',i4)
+
+    close(unit = lucav, status = 'keep')
     
     end subroutine plotcav
     

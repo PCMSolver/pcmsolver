@@ -1,30 +1,33 @@
-set(solver_SOURCES
-	CPCMSolver.cpp
-  	IEFSolver.cpp
-  	PWCSolver.cpp
-  	PWLSolver.cpp
-	SolverFactory.cpp
-  	WEMSolver.cpp
-)
+set(headers_list "")
+# Get headers with .hpp extension
+get_hpp_headers(headers_list)
+# If you want to remove some headers specify them explictly here
+list(REMOVE_ITEM headers_list "")
+# Sort alphabetically
+list(SORT headers_list)
+# Write headers to Includer.hpp
+file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Solvers\n")
+write_to_Includer("${headers_list}" "")
+
+set(sources_list "")
+# Get sources with .cpp extension
+get_cpp_sources(sources_list)
+# If you want to remove some sources specify them explictly here
+list(REMOVE_ITEM sources_list "")
 
 if(ENABLE_TESTS)
-	add_library(solver ${solver_SOURCES})
+	add_library(solver ${sources_list})
 	add_dependencies(solver cavity green wem pwl)
 	install(TARGETS solver ARCHIVE DESTINATION lib)
 endif()
 
 # Export the sources up to src directory level
 set(local_sources "")
-foreach(source ${solver_SOURCES})
+foreach(source ${sources_list})
 	get_filename_component(sourcepath ${source} ABSOLUTE)
-  	set(local_sources ${sourcepath} ${local_sources})
+	list(APPEND local_sources ${sourcepath})
 endforeach()
 set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
 
-install(FILES SolverFactory.hpp DESTINATION include)
-install(FILES IEFSolver.hpp DESTINATION include)
-install(FILES CPCMSolver.hpp DESTINATION include)
-install(FILES PCMSolver.hpp DESTINATION include)
-install(FILES PWCSolver.hpp DESTINATION include)
-install(FILES PWLSolver.hpp DESTINATION include)
-install(FILES WEMSolver.hpp DESTINATION include)
+# Sets install directory for all the headers in the list
+install_list_FILES("${headers_list}" include)

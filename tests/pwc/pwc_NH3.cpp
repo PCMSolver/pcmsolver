@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE PWCSolverNH3
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 #include <vector>
 
@@ -11,12 +16,10 @@
 #include "Vacuum.hpp"
 #include "WaveletCavity.hpp"
 
-#include "gtestPimpl.hpp"
-
 /*! \class PWCSolver
  *  \test \b NH3 tests PWCSolver using ammonia and a wavelet cavity
  */
-TEST(PWCSolver, NH3)
+BOOST_AUTO_TEST_CASE(NH3)
 {
     // Set up cavity
     Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
@@ -65,5 +68,5 @@ TEST(PWCSolver, NH3)
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-3);
 }

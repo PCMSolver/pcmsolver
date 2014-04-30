@@ -198,7 +198,7 @@ if(ENABLE_TESTS)
 
         set(LIBS pthread z ${LIBS})
 
-	setup_googletest()
+	setup_boosttest()
 
         enable_testing()
 	add_subdirectory(tests) # This must come last!!

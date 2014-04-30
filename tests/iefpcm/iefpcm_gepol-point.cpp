@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE IEFSolverpointChargeGePol
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 
 #include "Config.hpp"
@@ -11,12 +16,10 @@
 #include "IEFSolver.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
 /*! \class IEFSolver
  *  \test \b pointChargeGePol tests IEFSolver using a point charge with a GePol cavity
  */
-TEST(IEFSolver, pointChargeGePol)
+BOOST_AUTO_TEST_CASE(pointChargeGePol)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -53,5 +56,5 @@ TEST(IEFSolver, pointChargeGePol)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

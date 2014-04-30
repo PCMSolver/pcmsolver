@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE CPCMSolverpointChargeTsLess
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 
 #include "Config.hpp"
@@ -10,12 +15,10 @@
 #include "UniformDielectric.hpp"
 #include "CPCMSolver.hpp"
 
-#include "gtestPimpl.hpp"
-
 /*! \class CPCMSolver
  *  \test \b pointChargeTsLess tests CPCMSolver using a point charge with a TsLess cavity
  */
-TEST(CPCMSolver, pointChargeTsLess)
+BOOST_AUTO_TEST_CASE(pointChargeTsLess)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -49,5 +52,5 @@ TEST(CPCMSolver, pointChargeTsLess)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

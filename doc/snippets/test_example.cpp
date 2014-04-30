@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE GePolCavity
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -8,14 +13,10 @@
 #include "GePolCavity.hpp"
 #include "Symmetry.hpp"
 
-// This header MUST be included last
-#include "gtestPimpl.hpp"
-
-class GePolCavityTest : public ::testing::Test
-{
-protected:
+struct GePolCavityTest {
     GePolCavity cavity;
-    virtual void SetUp() {
+    GePolCavityTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -28,30 +29,30 @@ protected:
     }
 };
 
-/*\! \class GePol 
+/* \class GePolCavity
  *  \test \b GePolCavityTest_size tests GePol cavity size for a point charge
  */
-TEST_F(GePolCavityTest, size)
+BOOST_FIXTURE_TEST_CASE(size, GePolCavityTest)
 {
     int size = 32;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*\! \class GePol 
+/* \class GePolCavity
  *  \test \b GePolCavityTest_area tests GePol cavity surface area for a point charge
  */
-TEST_F(GePolCavityTest, area)
+BOOST_FIXTURE_TEST_CASE(area, GePolCavityTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*\! \class GePol 
+/* \class GePolCavity
  *  \test \b GePolCavityTest_volume tests GePol cavity volume for a point charge
  */
-TEST_F(GePolCavityTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, GePolCavityTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -62,5 +63,5 @@ TEST_F(GePolCavityTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }

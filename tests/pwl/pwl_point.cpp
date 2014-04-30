@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE PWLSolver
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 #include <vector>
 
@@ -11,12 +16,10 @@
 #include "Vacuum.hpp"
 #include "WaveletCavity.hpp"
 
-#include "gtestPimpl.hpp"
-
 /*! \class PWLSolver
  *  \test \b pointCharge tests PWLSolver using a point charge with a wavelet cavity
  */
-TEST(PWLSolver, pointCharge)
+BOOST_AUTO_TEST_CASE(pointCharge)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -53,5 +56,5 @@ TEST(PWLSolver, pointCharge)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC -totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-3);
 }

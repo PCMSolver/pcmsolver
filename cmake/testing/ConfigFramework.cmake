@@ -1,9 +1,8 @@
 #
 #  This macro sets up Google Test framework for unit testing
-#  Note that we do not have a similar macro for setting up Boost Test
-#  as it is not needed
 #
 macro(setup_googletest)
+	message(STATUS "Setting up Google Test Unit Testing Framework")
 	configure_file(
     	${PROJECT_SOURCE_DIR}/src/utils/gtestPimpl.hpp.in
 	${PROJECT_BINARY_DIR}/include/gtestPimpl.hpp)
@@ -29,3 +28,12 @@ macro(setup_googletest)
         set(GTEST_LIBS_DIR ${BINARY_DIR})
         include_directories(${GTEST_INCLUDE_DIRS})
 endmacro(setup_googletest)
+
+#
+#  This macro sets up Boost Test framework for unit testing
+#  We are not doing anything special, as Boost Test doesn't require
+#  anything more than including headers and linking to a library
+#
+macro(setup_boosttest)
+	message(STATUS "Setting up Boost Test Unit Testing Framework")
+endmacro(setup_boosttest)

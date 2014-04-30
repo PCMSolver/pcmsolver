@@ -1,16 +1,19 @@
+#define BOOST_TEST_MODULE GreensFunctionVacuum
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <cmath>
 #include <iostream>
+
+#include "Config.hpp"
 
 #include "EigenPimpl.hpp"
 
 #include "DerivativeTypes.hpp"
 #include "Vacuum.hpp"
 
-#include "gtestPimpl.hpp"
-
-class VacuumTest : public ::testing::Test
-{
-public:
+struct VacuumTest {
     Eigen::Array4d analyticEvaluate(const Eigen::Vector3d & spNormal,
                                     const Eigen::Vector3d & sp,
                                     const Eigen::Vector3d & ppNormal, const Eigen::Vector3d & pp) {
@@ -32,10 +35,10 @@ public:
 
         return result;
     }
-protected:
+    VacuumTest() { SetUp(); }
     Eigen::Vector3d source, probe, sourceNormal, probeNormal;
     Eigen::Array4d result;
-    virtual void SetUp() {
+    void SetUp() {
         source = Eigen::Vector3d::Random();
         sourceNormal = source + Eigen::Vector3d::Random();
         sourceNormal.normalize();
@@ -49,83 +52,82 @@ protected:
 /*! \class Vacuum
  *  \test \b VacuumTest_numerical tests the numerical evaluation of the Vacuum Green's function against analytical result
  */
-TEST_F(VacuumTest, numerical)
+BOOST_FIXTURE_TEST_CASE(numerical, VacuumTest)
 {
     Vacuum<double> gf;
     double value = result(0);
     double gf_value = gf.function(source, probe);
-    EXPECT_DOUBLE_EQ(value, gf_value);
+    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    EXPECT_NEAR(derProbe, gf_derProbe, 1.0e-09);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-06);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    EXPECT_NEAR(derSource, gf_derSource, 1.0e-09);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
 }
 
 /*! \class Vacuum
- *  \test \b VacuumTest_AD_directional tests the automatic evaluation (directional derivative only) 
+ *  \test \b VacuumTest_directional_AD tests the automatic evaluation (directional derivative only)
  *  of the Vacuum Green's function against analytical result
  */
-TEST_F(VacuumTest, AD_directional)
+BOOST_FIXTURE_TEST_CASE(directional_AD, VacuumTest)
 {
     Vacuum<AD_directional> gf;
     double value = result(0);
     double gf_value = gf.function(source, probe);
-    EXPECT_DOUBLE_EQ(value, gf_value);
+    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derProbe, gf_derProbe);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derSource, gf_derSource);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
 }
 
 /*! \class Vacuum
- *  \test \b VacuumTest_AD_gradient tests the automatic evaluation (full gradient) 
+ *  \test \b VacuumTest_gradient_AD tests the automatic evaluation (full gradient)
  *  of the Vacuum Green's function against analytical result
  */
-TEST_F(VacuumTest, AD_gradient)
+BOOST_FIXTURE_TEST_CASE(gradient_AD, VacuumTest)
 {
     Vacuum<AD_gradient> gf;
     double value = result(0);
     double gf_value = gf.function(source, probe);
-    EXPECT_DOUBLE_EQ(value, gf_value);
+    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derProbe, gf_derProbe);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derSource, gf_derSource);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
 }
 
 /*! \class Vacuum
- *  \test \b VacuumTest_AD_hessian tests the automatic evaluation (full hessian) 
+ *  \test \b VacuumTest_hessian_AD tests the automatic evaluation (full hessian)
  *  of the Vacuum Green's function against analytical result
  */
-TEST_F(VacuumTest, AD_hessian)
+BOOST_FIXTURE_TEST_CASE(hessian_AD, VacuumTest)
 {
     Vacuum<AD_hessian> gf;
     double value = result(0);
     double gf_value = gf.function(source, probe);
-    EXPECT_DOUBLE_EQ(value, gf_value);
+    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derProbe, gf_derProbe);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derSource, gf_derSource);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
 
     /*	double hessian = result(4);
     	double gf_hessian = gf.hessian(sourceNormal, source, probeNormal, probe);
-    	EXPECT_DOUBLE_EQ(hessian, gf_hessian);
-    	EXPECT_NEAR(hessian, gf_hessian, 1.0e-13);*/
+    	BOOST_REQUIRE_CLOSE(hessian, gf_hessian, 1.0e-12);*/
 }

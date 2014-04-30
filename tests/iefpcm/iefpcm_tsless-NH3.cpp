@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE IEFSolverNH3TsLess
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 
 #include "Config.hpp"
@@ -10,12 +15,10 @@
 #include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
 
-#include "gtestPimpl.hpp"
-
 /*! \class IEFSolver
  *  \test \b NH3TsLess tests IEFSolver using ammonia and a TsLess cavity
  */
-TEST(IEFSolver, NH3TsLess)
+BOOST_AUTO_TEST_CASE(NH3TsLess)
 {
     // Set up cavity
     Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
@@ -61,5 +64,5 @@ TEST(IEFSolver, NH3TsLess)
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

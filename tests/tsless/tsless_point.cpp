@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE TsLessCavity
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -7,13 +12,10 @@
 
 #include "TsLessCavity.hpp"
 
-#include "gtestPimpl.hpp"
-
-class TsLessCavityTest : public ::testing::Test
-{
-protected:
+struct TsLessCavityTest {
     TsLessCavity cav;
-    virtual void SetUp() {
+    TsLessCavityTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d origin(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(origin,  1.0);
@@ -26,22 +28,21 @@ protected:
     }
 };
 
-TEST_F(TsLessCavityTest, size)
+BOOST_FIXTURE_TEST_CASE(size, TsLessCavityTest)
 {
     int size = 32;
     int actualSize = cav.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-TEST_F(TsLessCavityTest, area)
+BOOST_FIXTURE_TEST_CASE(area, TsLessCavityTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cav.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-TEST_F(TsLessCavityTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, TsLessCavityTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cav.elementCenter();
@@ -51,6 +52,5 @@ TEST_F(TsLessCavityTest, volume)
         actualVolume += cav.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }

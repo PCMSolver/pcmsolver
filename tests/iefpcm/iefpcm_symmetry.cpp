@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE IEFSolverpointChargeGePolSymmetry
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 
 #include "Config.hpp"
@@ -13,19 +18,17 @@
 #include "IEFSolver.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
 namespace fs = boost::filesystem;
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolC1 tests IEFSolver using a point charge with a GePol cavity in C1 symmetry
  */
-TEST(IEFSolver, pointChargeGePolC1)
+BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(N, 1.0);
+    Sphere sph1(N, 2.929075493);
     spheres.push_back(sph1);
     double area = 0.4;
     double probeRadius = 0.0;
@@ -43,7 +46,7 @@ TEST(IEFSolver, pointChargeGePolC1)
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
 
-    double charge = 1.0;
+    double charge = 8.0;
     int size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
     for (int i = 0; i < size; ++i) {
@@ -57,18 +60,18 @@ TEST(IEFSolver, pointChargeGePolC1)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolCs tests IEFSolver using a point charge with a GePol cavity in Cs symmetry
  */
-TEST(IEFSolver, pointChargeGePolCs)
+BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(N, 1.0);
+    Sphere sph1(N, 2.929075493);
     spheres.push_back(sph1);
     double area = 0.4;
     double probeRadius = 0.0;
@@ -86,7 +89,7 @@ TEST(IEFSolver, pointChargeGePolCs)
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
 
-    double charge = 1.0;
+    double charge = 8.0;
     int irr_size = cavity.irreducible_size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
     // Calculate it only on the irreducible portion of the cavity
@@ -103,18 +106,18 @@ TEST(IEFSolver, pointChargeGePolCs)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolC2 tests IEFSolver using a point charge with a GePol cavity in C2 symmetry
  */
-TEST(IEFSolver, pointChargeGePolC2)
+BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(N, 1.0);
+    Sphere sph1(N, 2.929075493);
     spheres.push_back(sph1);
     double area = 0.4;
     double probeRadius = 0.0;
@@ -132,7 +135,7 @@ TEST(IEFSolver, pointChargeGePolC2)
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
 
-    double charge = 1.0;
+    double charge = 8.0;
     int irr_size = cavity.irreducible_size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
     // Calculate it only on the irreducible portion of the cavity
@@ -149,18 +152,18 @@ TEST(IEFSolver, pointChargeGePolC2)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolCi tests IEFSolver using a point charge with a GePol cavity in Ci symmetry
  */
-TEST(IEFSolver, pointChargeGePolCi)
+BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(N, 1.0);
+    Sphere sph1(N, 2.929075493);
     spheres.push_back(sph1);
     double area = 0.4;
     double probeRadius = 0.0;
@@ -178,7 +181,7 @@ TEST(IEFSolver, pointChargeGePolCi)
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
 
-    double charge = 1.0;
+    double charge = 8.0;
     int irr_size = cavity.irreducible_size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
     // Calculate it only on the irreducible portion of the cavity
@@ -195,18 +198,18 @@ TEST(IEFSolver, pointChargeGePolCi)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolC2h tests IEFSolver using a point charge with a GePol cavity in C2h symmetry
  */
-TEST(IEFSolver, pointChargeGePolC2h)
+BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(N, 1.0);
+    Sphere sph1(N, 2.929075493);
     spheres.push_back(sph1);
     double area = 0.4;
     double probeRadius = 0.0;
@@ -224,7 +227,7 @@ TEST(IEFSolver, pointChargeGePolC2h)
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
 
-    double charge = 1.0;
+    double charge = 8.0;
     int irr_size = cavity.irreducible_size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
     // Calculate it only on the irreducible portion of the cavity
@@ -241,18 +244,18 @@ TEST(IEFSolver, pointChargeGePolC2h)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolD2 tests IEFSolver using a point charge with a GePol cavity in D2 symmetry
  */
-TEST(IEFSolver, pointChargeGePolD2)
+BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(N, 1.0);
+    Sphere sph1(N, 2.929075493);
     spheres.push_back(sph1);
     double area = 0.4;
     double probeRadius = 0.0;
@@ -270,7 +273,7 @@ TEST(IEFSolver, pointChargeGePolD2)
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
 
-    double charge = 1.0;
+    double charge = 8.0;
     int irr_size = cavity.irreducible_size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
     // Calculate it only on the irreducible portion of the cavity
@@ -287,18 +290,18 @@ TEST(IEFSolver, pointChargeGePolD2)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolC2v tests IEFSolver using a point charge with a GePol cavity in C2v symmetry
  */
-TEST(IEFSolver, pointChargeGePolC2v)
+BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(N, 1.0);
+    Sphere sph1(N, 2.929075493);
     spheres.push_back(sph1);
     double area = 0.4;
     double probeRadius = 0.0;
@@ -316,7 +319,7 @@ TEST(IEFSolver, pointChargeGePolC2v)
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
 
-    double charge = 1.0;
+    double charge = 8.0;
     int irr_size = cavity.irreducible_size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
     // Calculate it only on the irreducible portion of the cavity
@@ -333,18 +336,18 @@ TEST(IEFSolver, pointChargeGePolC2v)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolD2h tests IEFSolver using a point charge with a GePol cavity in D2h symmetry
  */
-TEST(IEFSolver, pointChargeGePolD2h)
+BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(N, 1.0);
+    Sphere sph1(N, 2.929075493);
     spheres.push_back(sph1);
     double area = 0.4;
     double probeRadius = 0.0;
@@ -362,7 +365,7 @@ TEST(IEFSolver, pointChargeGePolD2h)
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
 
-    double charge = 1.0;
+    double charge = 8.0;
     int irr_size = cavity.irreducible_size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
     // Calculate it only on the irreducible portion of the cavity
@@ -379,5 +382,5 @@ TEST(IEFSolver, pointChargeGePolD2h)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

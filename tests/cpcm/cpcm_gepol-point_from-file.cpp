@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE CPCMSolverpointChargeGePolRestart
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 
 #include "Config.hpp"
@@ -10,12 +15,10 @@
 #include "UniformDielectric.hpp"
 #include "CPCMSolver.hpp"
 
-#include "gtestPimpl.hpp"
-
 /*! \class CPCMSolver
  *  \test \b pointChargeGePolRestart tests CPCMSolver using a point charge with a GePol cavity read from .npz file
  */
-TEST(CPCMSolver, pointChargeGePolRestart)
+BOOST_AUTO_TEST_CASE(pointChargeGePolRestart)
 {
     // Set up cavity
     GePolCavity cavity;
@@ -46,5 +49,5 @@ TEST(CPCMSolver, pointChargeGePolRestart)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

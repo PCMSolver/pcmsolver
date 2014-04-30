@@ -1,16 +1,19 @@
+#define BOOST_TEST_MODULE GreensFunctionUniformDielectric
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <cmath>
 #include <iostream>
+
+#include "Config.hpp"
 
 #include "EigenPimpl.hpp"
 
 #include "DerivativeTypes.hpp"
 #include "UniformDielectric.hpp"
 
-#include "gtestPimpl.hpp"
-
-class UniformDielectricTest : public ::testing::Test
-{
-public:
+struct UniformDielectricTest {
     Eigen::Array4d analyticEvaluate(double eps, const Eigen::Vector3d & spNormal,
                                     const Eigen::Vector3d & sp,
                                     const Eigen::Vector3d & ppNormal, const Eigen::Vector3d & pp) {
@@ -32,11 +35,11 @@ public:
 
         return result;
     }
-protected:
     double epsilon;
     Eigen::Vector3d source, probe, sourceNormal, probeNormal;
     Eigen::Array4d result;
-    virtual void SetUp() {
+    UniformDielectricTest() { SetUp(); }
+    void SetUp() {
         epsilon = 60.0;
         source = Eigen::Vector3d::Random();
         sourceNormal = source + Eigen::Vector3d::Random();
@@ -51,27 +54,27 @@ protected:
 /*! \class UniformDielectric
  *  \test \b UniformDielectricTest_numerical tests the numerical evaluation of the UniformDielectric Green's function against analytical result
  */
-TEST_F(UniformDielectricTest, numerical)
+BOOST_FIXTURE_TEST_CASE(numerical, UniformDielectricTest)
 {
     UniformDielectric<double> gf(epsilon);
     double value = result(0);
     double gf_value = gf.function(source, probe);
-    EXPECT_DOUBLE_EQ(value, gf_value);
+    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    EXPECT_NEAR(derProbe, gf_derProbe, 1.0e-09);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-06);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    EXPECT_NEAR(derSource, gf_derSource, 1.0e-09);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
 }
 
 /*! \class UniformDielectric
- *  \test \b UniformDielectricTest_AD_directional tests the automatic evaluation (directional derivative only) 
+ *  \test \b UniformDielectricTest_directional_AD tests the automatic evaluation (directional derivative only)
  *  of the UniformDielectric Green's function against analytical result
  */
-TEST_F(UniformDielectricTest, AD_directional)
+BOOST_FIXTURE_TEST_CASE(directional_AD, UniformDielectricTest)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, sourceNormal, source, probeNormal,
                             probe);
@@ -79,22 +82,22 @@ TEST_F(UniformDielectricTest, AD_directional)
     UniformDielectric<AD_directional> gf(epsilon);
     double value = result(0);
     double gf_value = gf.function(source, probe);
-    EXPECT_DOUBLE_EQ(value, gf_value);
+    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derProbe, gf_derProbe);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derSource, gf_derSource);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
 }
 
 /*! \class UniformDielectric
- *  \test \b UniformDielectricTest_AD_gradient tests the automatic evaluation (full gradient) 
+ *  \test \b UniformDielectricTest_gradient_AD tests the automatic evaluation (full gradient)
  *  of the UniformDielectric Green's function against analytical result
  */
-TEST_F(UniformDielectricTest, AD_gradient)
+BOOST_FIXTURE_TEST_CASE(gradient_AD, UniformDielectricTest)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, sourceNormal, source, probeNormal,
                             probe);
@@ -102,22 +105,22 @@ TEST_F(UniformDielectricTest, AD_gradient)
     UniformDielectric<AD_gradient> gf(epsilon);
     double value = result(0);
     double gf_value = gf.function(source, probe);
-    EXPECT_DOUBLE_EQ(value, gf_value);
+    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derProbe, gf_derProbe);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derSource, gf_derSource);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
 }
 
 /*! \class UniformDielectric
- *  \test \b UniformDielectricTest_AD_hessian tests the automatic evaluation (full hessian) 
+ *  \test \b UniformDielectricTest_hessian_AD tests the automatic evaluation (full hessian)
  *  of the UniformDielectric Green's function against analytical result
  */
-TEST_F(UniformDielectricTest, AD_hessian)
+BOOST_FIXTURE_TEST_CASE(hessian_AD, UniformDielectricTest)
 {
     Eigen::Array4d result = analyticEvaluate(epsilon, sourceNormal, source, probeNormal,
                             probe);
@@ -125,18 +128,17 @@ TEST_F(UniformDielectricTest, AD_hessian)
     UniformDielectric<AD_hessian> gf(epsilon);
     double value = result(0);
     double gf_value = gf.function(source, probe);
-    EXPECT_DOUBLE_EQ(value, gf_value);
+    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derProbe, gf_derProbe);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    EXPECT_DOUBLE_EQ(derSource, gf_derSource);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
 
     /*	double hessian = result(4);
     	double gf_hessian = gf.hessian(sourceNormal, source, probeNormal, probe);
-    	EXPECT_DOUBLE_EQ(hessian, gf_hessian);
-    	EXPECT_NEAR(hessian, gf_hessian, 1.0e-13);*/
+    	BOOST_REQUIRE_CLOSE(hessian, gf_hessian, 1.0e-12);*/
 }

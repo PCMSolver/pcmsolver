@@ -47,7 +47,7 @@ struct GePolCavityCO2C1Test {
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C1, GePolCavityCO2C1Test)
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C1 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C1Test)
@@ -57,7 +57,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C1Test)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C1Test_irreducible_size tests GePol cavity irreducible size for CO2 in C1 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C1Test)
@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C1Test)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C1Test_area tests GePol cavity surface area for CO2 in C1 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C1Test)
@@ -77,7 +77,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C1Test)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C1Test_volume tests GePol cavity volume for CO2 in C1 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C1Test)
@@ -125,7 +125,7 @@ struct GePolCavityCO2CsTest {
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2Cs, GePolCavityCO2CsTest)
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2CsTest_size tests GePol cavity size for CO2 in Cs symmetry
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2CsTest)
@@ -135,7 +135,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2CsTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2CsTest_irreducible_size tests GePol cavity irreducible size for CO2 in Cs symmetry
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2CsTest)
@@ -145,7 +145,7 @@ BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2CsTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2CsTest_area tests GePol cavity surface area for CO2 in Cs symmetry
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2CsTest)
@@ -155,7 +155,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2CsTest)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2CsTest_volume tests GePol cavity volume for CO2 in Cs symmetry
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2CsTest)
@@ -203,7 +203,7 @@ struct GePolCavityCO2C2Test {
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2, GePolCavityCO2C2Test)
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2Test_size tests GePol cavity size for CO2 in C2 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2Test)
@@ -213,7 +213,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2Test)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2Test_irreducible_size tests GePol cavity irreducible size for CO2 in C2 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2Test)
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2Test)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2Test_area tests GePol cavity surface area for CO2 in C2 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2Test)
@@ -233,7 +233,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2Test)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2Test_volume tests GePol cavity volume for CO2 in C2 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2Test)
@@ -281,7 +281,7 @@ struct GePolCavityCO2CiTest {
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2Ci, GePolCavityCO2CiTest)
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2CiTest_size tests GePol cavity size for CO2 in Ci symmetry
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2CiTest)
@@ -291,7 +291,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2CiTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2CiTest_irreducible_size tests GePol cavity irreducible size for CO2 in Ci symmetry
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2CiTest)
@@ -301,7 +301,7 @@ BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2CiTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2CiTest_area tests GePol cavity surface area for CO2 in Ci symmetry
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2CiTest)
@@ -311,7 +311,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2CiTest)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2CiTest_volume tests GePol cavity volume for CO2 in Ci symmetry
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2CiTest)
@@ -359,7 +359,7 @@ struct GePolCavityCO2C2hTest {
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2h, GePolCavityCO2C2hTest)
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2hTest_size tests GePol cavity size for CO2 in C2h symmetry
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2hTest)
@@ -369,7 +369,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2hTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2h symmetry
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2hTest)
@@ -379,7 +379,7 @@ BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2hTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2hTest_area tests GePol cavity surface area for CO2 in C2h symmetry
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2hTest)
@@ -389,7 +389,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2hTest)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2hTest_volume tests GePol cavity volume for CO2 in C2h symmetry
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2hTest)
@@ -437,7 +437,7 @@ struct GePolCavityCO2D2Test {
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2D2, GePolCavityCO2D2Test)
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2D2Test_size tests GePol cavity size for CO2 in D2 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2D2Test)
@@ -447,7 +447,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2D2Test)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2D2Test_irreducible_size tests GePol cavity irreducible size for CO2 in D2 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2D2Test)
@@ -457,7 +457,7 @@ BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2D2Test)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2D2Test_area tests GePol cavity surface area for CO2 in D2 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2D2Test)
@@ -467,7 +467,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2D2Test)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2D2Test_volume tests GePol cavity volume for CO2 in D2 symmetry
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2D2Test)
@@ -515,7 +515,7 @@ struct GePolCavityCO2C2vTest {
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2v, GePolCavityCO2C2vTest)
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2vTest_size tests GePol cavity size for CO2 in C2v symmetry
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2vTest)
@@ -525,7 +525,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2vTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2vTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2v symmetry
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2vTest)
@@ -535,7 +535,7 @@ BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2vTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2vTest_area tests GePol cavity surface area for CO2 in C2v symmetry
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2vTest)
@@ -545,7 +545,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2vTest)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2C2vTest_volume tests GePol cavity volume for CO2 in C2v symmetry
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2vTest)
@@ -593,7 +593,7 @@ struct GePolCavityCO2D2hTest {
 
 BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2D2h, GePolCavityCO2D2hTest)
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2D2hTest_size tests GePol cavity size for CO2 in D2h symmetry
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2D2hTest)
@@ -603,7 +603,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2D2hTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2D2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in D2h symmetry
  */
 BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2D2hTest)
@@ -613,7 +613,7 @@ BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2D2hTest)
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2D2hTest_area tests GePol cavity surface area for CO2 in D2h symmetry
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2D2hTest)
@@ -623,7 +623,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2D2hTest)
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
 
-/*! \struct GePolCavity
+/*! \class GePolCavity
  *  \test \b GePolCavityCO2D2hTest_volume tests GePol cavity volume for CO2 in D2h symmetry
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2D2hTest)

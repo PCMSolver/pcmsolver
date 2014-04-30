@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE BlockDiagonalMatrix
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 
 #include "Config.hpp"
@@ -6,21 +11,17 @@
 
 #include "BlockDiagonalMatrix.hpp"
 
-#include "gtestPimpl.hpp"
-
-class BlockDiagonalMatrixTest : public ::testing::Test
-{
-public:
+struct BlockDiagonalMatrixTest {
     int nBlocks;
     int nPoints;
     int fullDim;
     Eigen::MatrixXd block1;
     Eigen::MatrixXd block2;
     Eigen::MatrixXd block3;
-protected:
+    BlockDiagonalMatrixTest() { SetUp(); }
     BlockDiagonalMatrix<double, 3, 15> bd1;
     BlockDiagonalMatrix<double, 3, 15> bd2;
-    virtual void SetUp() {
+    void SetUp() {
         nBlocks = 3;
         nPoints = 15;
         fullDim = nBlocks * nPoints;
@@ -43,12 +44,12 @@ protected:
 /*! \class BlockDiagonalMatrix
  *  \test \b BlockDiagonalMatrixTest_addition tests addition of two compatible block diagonal matrices
  */
-TEST_F(BlockDiagonalMatrixTest, addition)
+BOOST_FIXTURE_TEST_CASE(addition, BlockDiagonalMatrixTest)
 {
     const int nBlocks = 3;
     const int nPoints = 15;
     BlockDiagonalMatrix<double, nBlocks, nPoints> addition = bd1 + bd2;
-    EXPECT_EQ(fullDim, addition.fullDim());
+    BOOST_REQUIRE_EQUAL(fullDim, addition.fullDim());
     Eigen::MatrixXd result1(nPoints, nPoints);
     result1 = block1 + block3;
     Eigen::MatrixXd result2(nPoints, nPoints);
@@ -63,9 +64,9 @@ TEST_F(BlockDiagonalMatrixTest, addition)
     tmp3 = addition.block(2);
     for (int i = 0; i < nPoints; ++i) {
         for (int j = 0; j < nPoints; ++j) {
-            EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
-            EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
-            EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+            BOOST_REQUIRE_CLOSE(result1(i, j), tmp1(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result2(i, j), tmp2(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result3(i, j), tmp3(i, j), 1.0e-12);
         }
     }
 }
@@ -73,12 +74,12 @@ TEST_F(BlockDiagonalMatrixTest, addition)
 /*! \class BlockDiagonalMatrix
  *  \test \b BlockDiagonalMatrixTest_subtraction tests subtraction of two compatible block diagonal matrices
  */
-TEST_F(BlockDiagonalMatrixTest, subtraction)
+BOOST_FIXTURE_TEST_CASE(subtraction, BlockDiagonalMatrixTest)
 {
     const int nBlocks = 3;
     const int nPoints = 15;
     BlockDiagonalMatrix<double, nBlocks, nPoints> subtraction = bd1 - bd2;
-    EXPECT_EQ(fullDim, subtraction.fullDim());
+    BOOST_REQUIRE_EQUAL(fullDim, subtraction.fullDim());
     Eigen::MatrixXd result1(nPoints, nPoints);
     result1 = block1 - block3;
     Eigen::MatrixXd result2(nPoints, nPoints);
@@ -93,22 +94,22 @@ TEST_F(BlockDiagonalMatrixTest, subtraction)
     tmp3 = subtraction.block(2);
     for (int i = 0; i < nPoints; ++i) {
         for (int j = 0; j < nPoints; ++j) {
-            EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
-            EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
-            EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+            BOOST_REQUIRE_CLOSE(result1(i, j), tmp1(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result2(i, j), tmp2(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result3(i, j), tmp3(i, j), 1.0e-12);
         }
     }
 }
 
 /*! \class BlockDiagonalMatrix
- *  \test \b BlockDiagonalMatrixTest_multiply_by_scalar tests multiplication of a block diagonal matrix by a scalar
+ *  \test \b BlockDiagonalMatrixTest_multiply_by_scalar1 tests multiplication of a block diagonal matrix by a scalar
  */
-TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar1)
+BOOST_FIXTURE_TEST_CASE(multiply_by_scalar1, BlockDiagonalMatrixTest)
 {
     const int nBlocks = 3;
     const int nPoints = 15;
     BlockDiagonalMatrix<double, nBlocks, nPoints> scaled1 = 2.5 * bd1;
-    EXPECT_EQ(fullDim, scaled1.fullDim());
+    BOOST_REQUIRE_EQUAL(fullDim, scaled1.fullDim());
     Eigen::MatrixXd result1(nPoints, nPoints);
     result1 = 2.5 * block1;
     Eigen::MatrixXd result2(nPoints, nPoints);
@@ -123,9 +124,9 @@ TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar1)
     tmp3 = scaled1.block(2);
     for (int i = 0; i < nPoints; ++i) {
         for (int j = 0; j < nPoints; ++j) {
-            EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
-            EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
-            EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+            BOOST_REQUIRE_CLOSE(result1(i, j), tmp1(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result2(i, j), tmp2(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result3(i, j), tmp3(i, j), 1.0e-12);
         }
     }
 }
@@ -133,11 +134,11 @@ TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar1)
 /*! \class BlockDiagonalMatrix
  *  \test \b BlockDiagonalMatrixTest_multiply_by_scalar2 tests multiplication of a block diagonal matrix by a scalar
  */
-TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar2)
+BOOST_FIXTURE_TEST_CASE(multiply_by_scalar2, BlockDiagonalMatrixTest)
 {
     int nPoints = 15;
     bd2 *= 0.5;
-    EXPECT_EQ(fullDim, bd2.fullDim());
+    BOOST_REQUIRE_EQUAL(fullDim, bd2.fullDim());
     Eigen::MatrixXd result1(nPoints, nPoints);
     result1 = 0.5 * block3;
     Eigen::MatrixXd result2(nPoints, nPoints);
@@ -152,9 +153,9 @@ TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar2)
     tmp3 = bd2.block(2);
     for (int i = 0; i < nPoints; ++i) {
         for (int j = 0; j < nPoints; ++j) {
-            EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
-            EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
-            EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+            BOOST_REQUIRE_CLOSE(result1(i, j), tmp1(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result2(i, j), tmp2(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result3(i, j), tmp3(i, j), 1.0e-12);
         }
     }
 }
@@ -162,7 +163,7 @@ TEST_F(BlockDiagonalMatrixTest, multiply_by_scalar2)
 /*! \class BlockDiagonalMatrix
  *  \test \b BlockDiagonalMatrixTest_multiply1 tests matrix multiplication of two compatible block diagonal matrices
  */
-TEST_F(BlockDiagonalMatrixTest, multiply1)
+BOOST_FIXTURE_TEST_CASE(multiply1, BlockDiagonalMatrixTest)
 {
     const int nBlocks = 3;
     const int nPoints = 15;
@@ -181,9 +182,9 @@ TEST_F(BlockDiagonalMatrixTest, multiply1)
     tmp3 = prod.block(2);
     for (int i = 0; i < nPoints; ++i) {
         for (int j = 0; j < nPoints; ++j) {
-            EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
-            EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
-            EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+            BOOST_REQUIRE_CLOSE(result1(i, j), tmp1(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result2(i, j), tmp2(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result3(i, j), tmp3(i, j), 1.0e-12);
         }
     }
 }
@@ -191,7 +192,7 @@ TEST_F(BlockDiagonalMatrixTest, multiply1)
 /*! \class BlockDiagonalMatrix
  *  \test \b BlockDiagonalMatrixTest_multiply2 tests matrix multiplication of two compatible block diagonal matrices
  */
-TEST_F(BlockDiagonalMatrixTest, multiply2)
+BOOST_FIXTURE_TEST_CASE(multiply2, BlockDiagonalMatrixTest)
 {
     bd1 *= bd2;
     Eigen::MatrixXd result1(nPoints, nPoints);
@@ -208,9 +209,9 @@ TEST_F(BlockDiagonalMatrixTest, multiply2)
     tmp3 = bd1.block(2);
     for (int i = 0; i < nPoints; ++i) {
         for (int j = 0; j < nPoints; ++j) {
-            EXPECT_DOUBLE_EQ(result1(i, j), tmp1(i, j));
-            EXPECT_DOUBLE_EQ(result2(i, j), tmp2(i, j));
-            EXPECT_DOUBLE_EQ(result3(i, j), tmp3(i, j));
+            BOOST_REQUIRE_CLOSE(result1(i, j), tmp1(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result2(i, j), tmp2(i, j), 1.0e-12);
+            BOOST_REQUIRE_CLOSE(result3(i, j), tmp3(i, j), 1.0e-12);
         }
     }
 }

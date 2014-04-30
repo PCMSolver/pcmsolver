@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE TsLessCavityNH3
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -7,13 +12,11 @@
 
 #include "TsLessCavity.hpp"
 
-#include "gtestPimpl.hpp"
-
-class TsLessCavityNH3Test : public ::testing::Test
-{
+struct TsLessCavityNH3Test {
 protected:
     TsLessCavity cav;
-    virtual void SetUp() {
+    TsLessCavityNH3Test() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
         Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
         Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
@@ -35,21 +38,21 @@ protected:
     }
 };
 
-TEST_F(TsLessCavityNH3Test, size)
+BOOST_FIXTURE_TEST_CASE(size, TsLessCavityNH3Test)
 {
     int size = 544;
     int actualSize = cav.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-TEST_F(TsLessCavityNH3Test, area)
+BOOST_FIXTURE_TEST_CASE(area, TsLessCavityNH3Test)
 {
     double area = 147.18581691164593;
     double actualArea = cav.elementArea().sum();
-    EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-TEST_F(TsLessCavityNH3Test, volume)
+BOOST_FIXTURE_TEST_CASE(volume, TsLessCavityNH3Test)
 {
     double volume = 152.81441857040116;
     Eigen::Matrix3Xd elementCenter = cav.elementCenter();
@@ -59,5 +62,5 @@ TEST_F(TsLessCavityNH3Test, volume)
         actualVolume += cav.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
     }
     actualVolume /= 3;
-    EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }

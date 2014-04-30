@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE CPCMSolverpointChargeGePol
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <iostream>
 
 #include "Config.hpp"
@@ -11,12 +16,10 @@
 #include "Vacuum.hpp"
 #include "Symmetry.hpp"
 
-#include "gtestPimpl.hpp"
-
 /*! \class CPCMSolver
  *  \test \b pointChargeGePol tests CPCMSolver using a point charge with a GePol cavity
  */
-TEST(CPCMSolver, pointChargeGePol)
+BOOST_AUTO_TEST_CASE(pointChargeGePol)
 {
     // Set up cavity
     Eigen::Vector3d N(0.0, 0.0, 0.0);
@@ -56,5 +59,5 @@ TEST(CPCMSolver, pointChargeGePol)
     double totalASC = - charge * (permittivity - 1) / (permittivity + correction);
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    EXPECT_NEAR(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

@@ -1,3 +1,8 @@
+#define BOOST_TEST_MODULE WaveletCavity
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <vector>
 #include <cmath>
 
@@ -11,13 +16,10 @@
 #include "UniformDielectric.hpp"
 #include "WaveletCavity.hpp"
 
-#include "gtestPimpl.hpp"
-
-class WaveletCavityTest : public ::testing::Test
-{
-protected:
+struct WaveletCavityTest {
     WaveletCavity cavity;
-    virtual void SetUp() {
+    WaveletCavityTest() { SetUp(); }
+    void SetUp() {
         Eigen::Vector3d N(0.0, 0.0, 0.0);
         std::vector<Sphere> spheres;
         Sphere sph1(N, 1.0);
@@ -38,31 +40,30 @@ protected:
     }
 };
 
-/*! \class WaveletCavity 
+/*! \class WaveletCavity
  *  \test \b WaveletCavityTest_size tests Wavelet cavity size for a point charge
  */
-TEST_F(WaveletCavityTest, size)
+BOOST_FIXTURE_TEST_CASE(size, WaveletCavityTest)
 {
     int size = 4864;
     int actualSize = cavity.size();
-    EXPECT_EQ(size, actualSize);
+    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
-/*! \class WaveletCavity 
+/*! \class WaveletCavity
  *  \test \b WaveletCavityTest_area tests Wavelet cavity surface area for a point charge
  */
-TEST_F(WaveletCavityTest, area)
+BOOST_FIXTURE_TEST_CASE(area, WaveletCavityTest)
 {
     double area = 4.0 * M_PI * pow(1.0, 2);
     double actualArea = cavity.elementArea().sum();
-    EXPECT_DOUBLE_EQ(area, actualArea);
-//	EXPECT_NEAR(area, actualArea, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-12);
 }
 
-/*! \class WaveletCavity 
+/*! \class WaveletCavity
  *  \test \b WaveletCavityTest_volume tests Wavelet cavity volume for a point charge
  */
-TEST_F(WaveletCavityTest, volume)
+BOOST_FIXTURE_TEST_CASE(volume, WaveletCavityTest)
 {
     double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
@@ -73,6 +74,5 @@ TEST_F(WaveletCavityTest, volume)
                             i));
     }
     actualVolume /= 3;
-    EXPECT_DOUBLE_EQ(volume, actualVolume);
-//	EXPECT_NEAR(volume, actualVolume, 1.0e-12);
+    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-12);
 }

@@ -17,7 +17,8 @@
 
 namespace quadrature = boost::numeric::quadrature;
 
-/*! \test \b NumericalQuadrature_x2sinx tests adaptive integration of x^2*sin(x) in [0, 5]
+/*! \class NumericalQuadrature
+ *  \test \b NumericalQuadrature_x2sinx tests adaptive integration of x^2*sin(x) in [0, 5]
  */
 BOOST_AUTO_TEST_CASE(x2sinx)
 {

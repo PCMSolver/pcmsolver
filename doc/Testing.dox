@@ -35,14 +35,23 @@ To add new tests for your class you have to:
 	In this example we are creating a test fixture called GePolCavityTest. The fixture will instatiate
 	a GePolCavity with fixed parameters. The result is then tested against reference values using
 	the BOOST_FIXTURE_TEST_CASE macro provided by Boost Test.
+	The first line in the .cpp file must define the BOOST_TEST_MODULE macro with a
+        unique name. It is good practice to have this name related to what the test does. Failing to define
+        this macro will result in linker errors.
 	It is **important** to add the documentation lines on top of the tests, to help other
 	developers understand which class is being tested and what parameters are being tested.
 
-When creating a new test, the first line in the .cpp file must define the BOOST_TEST_MODULE macro with a
-unique name. It is good practice to have this name related to what the test does. Failing to define
-this macro will result in link errors.
-The BOOST_REQUIRE_CLOSE macro is to be used for floating-point comparisons, it implements a check based on the **relative percent error**,
-see <http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm>
-and <http://www.boost.org/doc/libs/1_55_0/libs/test/doc/html/utf/testing-tools/floating_point_comparison.html>
-
+### Brief primer for Boost Test
+Here is a list of the macros defined by Boost Test that are currently used in our test suite:
+	- BOOST_FIXTURE_TEST_SUITE(suite_name, fixture_name) starts the test suite suite_name that will be
+	using the fixture fixture_name. A suite groups together a number of tests;
+	- BOOST_AUTO_TEST_SUITE_END() ends a suite of tests, be it based on a fixture or not;
+	- BOOST_FIXTURE_TEST_CASE(test_name, fixture_name) starts a test test_name that will be using
+	the fixture fixture_name;
+	- BOOST_AUTO_TEST_CASE(test_name) starts a test test_name;
+	- BOOST_REQUIRE_EQUAL(expected_value, actual_value) tests that actual_value matches expected_value. This
+	will use operator==() **DO NOT** use this macro for floating-point comparisons;
+	- BOOST_REQUIRE_CLOSE(expected_value, actual_value, threshold) tests that actual_value matches expected_value
+	up to a **relative percent error** specified by threshold. See <http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm>
+	and <http://www.boost.org/doc/libs/1_55_0/libs/test/doc/html/utf/testing-tools/floating_point_comparison.html>
 */

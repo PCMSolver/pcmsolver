@@ -32,6 +32,8 @@
 
 #include "EigenPimpl.hpp"
 
+class DiagonalIntegrator;
+
 /*! \file IGreensFunction.hpp
  *  \class IGreensFunction
  *  \brief Interface for Green's function classes
@@ -135,6 +137,9 @@ public:
      */
     virtual void gradientProbe(Eigen::Vector3d & gradient, const Eigen::Vector3d & p1,
                                const Eigen::Vector3d & p2) const = 0;
+
+    virtual double diagonalS(const DiagonalIntegrator * diag_int) const = 0;
+    virtual double diagonalD(const DiagonalIntegrator * diag_int) const = 0;
 
     virtual double epsilon() const = 0;
     bool isUniform() const { return uniform_; }

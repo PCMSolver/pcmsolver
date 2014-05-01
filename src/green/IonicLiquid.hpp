@@ -33,12 +33,13 @@
 
 #include "EigenPimpl.hpp"
 
+class DiagonalIntegrator;
+
 #include "DerivativeTypes.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
-#include "IGreensFunction.hpp"
 
 /*! \file IonicLiquid.hpp
  *  \class IonicLiquid
@@ -68,6 +69,9 @@ public:
      */
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
+
+    virtual double diagonalS(const DiagonalIntegrator * diag_int) const; 
+    virtual double diagonalD(const DiagonalIntegrator * diag_int) const;
 
     virtual double epsilon() const { return epsilon_; }
 

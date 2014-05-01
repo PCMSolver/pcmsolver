@@ -34,6 +34,7 @@
 #include "TaylorPimpl.hpp"
 
 #include "DerivativeTypes.hpp"
+#include "DiagonalIntegrator.hpp"
 #include "GreensFunction.hpp"
 #include "IGreensFunction.hpp"
 
@@ -54,6 +55,17 @@ T UniformDielectric<T>::operator()(T * sp, T * pp) const
     return 1/(epsilon_ * distance);
 }
 
+template <typename T>
+double UniformDielectric<T>::diagonalS(const DiagonalIntegrator * diag_int) const {
+        diag_int->computeS(this);
+        return 1.0;
+}
+
+template <typename T>
+double UniformDielectric<T>::diagonalD(const DiagonalIntegrator * diag_int) const {
+        diag_int->computeD(this);
+        return 1.0;
+}
 /*
 template <typename T>
 void UniformDielectric<T>::operator()(Eigen::MatrixXd & S, Eigen::MatrixXd & D,

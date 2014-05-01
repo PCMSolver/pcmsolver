@@ -34,10 +34,10 @@
 
 #include "EigenPimpl.hpp"
 
+#include "DiagonalIntegrator.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
-#include "IGreensFunction.hpp"
 
 /*! \file MetalSphere.hpp
  *  \class MetalSphere
@@ -77,6 +77,15 @@ public:
      */
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
+
+    virtual double diagonalS(const DiagonalIntegrator * diag_int) const {
+	    //diag_int->vacuum(this);
+	    return 1.0;
+    }
+    virtual double diagonalD(const DiagonalIntegrator * diag_int) const {
+	    //diag_int->vacuum(this);
+	    return 1.0;
+    }
 
     virtual double epsilon() const { return epsSolvent_; } // This is just to get it to compile...
 

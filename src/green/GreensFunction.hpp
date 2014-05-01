@@ -32,6 +32,8 @@
 
 #include "EigenPimpl.hpp"
 
+class DiagonalIntegrator;
+
 #include "IGreensFunction.hpp"
 
 /*! \file GreensFunction.hpp
@@ -138,6 +140,9 @@ public:
      */
     virtual void gradientProbe(Eigen::Vector3d & gradient, const Eigen::Vector3d & p1,
                                const Eigen::Vector3d & p2) const;
+    
+    virtual double diagonalS(const DiagonalIntegrator * diag_int) const = 0;
+    virtual double diagonalD(const DiagonalIntegrator * diag_int) const = 0;
 
     virtual void delta(double value);
     virtual double delta() { return delta_; }

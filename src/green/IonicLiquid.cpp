@@ -35,6 +35,7 @@
 #include "TaylorPimpl.hpp"
 
 #include "DerivativeTypes.hpp"
+#include "DiagonalIntegrator.hpp"
 #include "GreensFunction.hpp"
 #include "IGreensFunction.hpp"
 
@@ -53,6 +54,18 @@ T IonicLiquid<T>::operator()(T * sp, T * pp) const
                       (sp[1] - pp[1]) * (sp[1] - pp[1]) +
                       (sp[2] - pp[2]) * (sp[2] - pp[2]));
     return (exp(-kappa_ * distance) / (epsilon_ * distance));
+}
+
+template <typename T>
+double IonicLiquid<T>::diagonalS(const DiagonalIntegrator * diag_int) const {
+        diag_int->computeS(this);
+        return 1.0;
+}
+
+template <typename T>
+double IonicLiquid<T>::diagonalD(const DiagonalIntegrator * diag_int) const {
+        diag_int->computeD(this);
+        return 1.0;
 }
 
 template <typename T>

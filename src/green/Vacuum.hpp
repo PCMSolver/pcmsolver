@@ -2,19 +2,19 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
  *
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
  *
@@ -54,13 +54,13 @@ class Vacuum : public GreensFunction<T>
 public:
     Vacuum() : GreensFunction<T>(), epsilon_(1.0) {}
     virtual ~Vacuum() {}
-    /*! 
-     *  Returns value of the directional derivative of the 
+    /*!
+     *  Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  Notice that this method returns the directional derivative with respect
      *  to the probe point, thus assuming that the direction is relative to that point.
-     *  
+     *
      *  \param[in] direction the direction
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
@@ -108,7 +108,7 @@ namespace
 #elif defined(__ICC) || defined(__INTEL_COMPILER)
 #pragma warning(pop)
 #elif defined(__clang__)
-#pragma clang diagnostic pop 
+#pragma clang diagnostic pop
 #endif
     };
 

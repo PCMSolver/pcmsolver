@@ -2,19 +2,19 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
  *
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
  *
@@ -61,7 +61,7 @@
  *  we want to create with the template parameter resolved.
  *
  *  MPL metafunctions used:
- *  . boost::mpl::distance (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/distance.html); 
+ *  . boost::mpl::distance (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/distance.html);
  *  . boost::mpl::begin (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/begin.html);
  *  . boost::mpl::end (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/end.html);
  *  . boost::mpl::find (http://www.boost.org/doc/libs/1_55_0b1/libs/mpl/doc/refmanual/find.html);
@@ -146,7 +146,7 @@ struct for_id_impl_1<S, E, E> {
 #elif defined(__ICC) || defined(__INTEL_COMPILER)
 #pragma warning(pop)
 #elif defined(__clang__)
-#pragma clang diagnostic pop 
+#pragma clang diagnostic pop
 #endif
 
 // Wrapper to the primary template

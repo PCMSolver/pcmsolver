@@ -9,6 +9,7 @@
 
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegrator.hpp"
+#include "DiagonalIntegratorFactory.hpp"
 #include "IonicLiquid.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
@@ -26,35 +27,45 @@
 class NumericalIntegrator : public DiagonalIntegrator
 {
 public:
-    virtual void computeS(const Vacuum<double> * gf) const = 0;
-    virtual void computeS(const Vacuum<AD_directional> * gf) const = 0;
-    virtual void computeS(const Vacuum<AD_gradient> * gf) const = 0;
-    virtual void computeS(const Vacuum<AD_hessian> * gf) const = 0;
+    virtual double computeS(const Vacuum<double> * gf) const;
+    virtual double computeS(const Vacuum<AD_directional> * gf) const;
+    virtual double computeS(const Vacuum<AD_gradient> * gf) const;
+    virtual double computeS(const Vacuum<AD_hessian> * gf) const;
 
-    virtual void computeD(const Vacuum<double> * gf) const = 0;
-    virtual void computeD(const Vacuum<AD_directional> * gf) const = 0;
-    virtual void computeD(const Vacuum<AD_gradient> * gf) const = 0;
-    virtual void computeD(const Vacuum<AD_hessian> * gf) const = 0;
+    virtual double computeD(const Vacuum<double> * gf) const;
+    virtual double computeD(const Vacuum<AD_directional> * gf) const;
+    virtual double computeD(const Vacuum<AD_gradient> * gf) const;
+    virtual double computeD(const Vacuum<AD_hessian> * gf) const;
 
-    virtual void computeS(const UniformDielectric<double> * gf) const = 0;
-    virtual void computeS(const UniformDielectric<AD_directional> * gf) const = 0;
-    virtual void computeS(const UniformDielectric<AD_gradient> * gf) const = 0;
-    virtual void computeS(const UniformDielectric<AD_hessian> * gf) const = 0;
+    virtual double computeS(const UniformDielectric<double> * gf) const;
+    virtual double computeS(const UniformDielectric<AD_directional> * gf) const;
+    virtual double computeS(const UniformDielectric<AD_gradient> * gf) const;
+    virtual double computeS(const UniformDielectric<AD_hessian> * gf) const;
 
-    virtual void computeD(const UniformDielectric<double> * gf) const = 0;
-    virtual void computeD(const UniformDielectric<AD_directional> * gf) const = 0;
-    virtual void computeD(const UniformDielectric<AD_gradient> * gf) const = 0;
-    virtual void computeD(const UniformDielectric<AD_hessian> * gf) const = 0;
+    virtual double computeD(const UniformDielectric<double> * gf) const;
+    virtual double computeD(const UniformDielectric<AD_directional> * gf) const;
+    virtual double computeD(const UniformDielectric<AD_gradient> * gf) const;
+    virtual double computeD(const UniformDielectric<AD_hessian> * gf) const;
 
-    virtual void computeS(const IonicLiquid<double> * gf) const = 0;
-    virtual void computeS(const IonicLiquid<AD_directional> * gf) const = 0;
-    virtual void computeS(const IonicLiquid<AD_gradient> * gf) const = 0;
-    virtual void computeS(const IonicLiquid<AD_hessian> * gf) const = 0;
+    virtual double computeS(const IonicLiquid<double> * gf) const;
+    virtual double computeS(const IonicLiquid<AD_directional> * gf) const;
+    virtual double computeS(const IonicLiquid<AD_gradient> * gf) const;
+    virtual double computeS(const IonicLiquid<AD_hessian> * gf) const;
 
-    virtual void computeD(const IonicLiquid<double> * gf) const = 0;
-    virtual void computeD(const IonicLiquid<AD_directional> * gf) const = 0;
-    virtual void computeD(const IonicLiquid<AD_gradient> * gf) const = 0;
-    virtual void computeD(const IonicLiquid<AD_hessian> * gf) const = 0;
+    virtual double computeD(const IonicLiquid<double> * gf) const;
+    virtual double computeD(const IonicLiquid<AD_directional> * gf) const;
+    virtual double computeD(const IonicLiquid<AD_gradient> * gf) const;
+    virtual double computeD(const IonicLiquid<AD_hessian> * gf) const;
 };
+namespace
+{
+    DiagonalIntegrator * createNumericalIntegrator()
+    {
+        return new NumericalIntegrator();
+    }
+    const std::string NUMERICAL("NUMERICAL");
+    const bool registeredNumericalIntegrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().registerDiagonalIntegrator(
+                                         NUMERICAL, createNumericalIntegrator);
+}
 
 #endif // NUMERICALINTEGRATOR_HPP

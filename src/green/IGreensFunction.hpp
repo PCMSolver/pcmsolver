@@ -45,7 +45,7 @@ class IGreensFunction
 {
 public:
     IGreensFunction() : uniform_(false) {}
-    IGreensFunction(bool uniform) : uniform_(uniform) {}
+    IGreensFunction(bool uniform, DiagonalIntegrator * diag) : uniform_(uniform), diagonal_(diag) {}
     virtual ~IGreensFunction() {}
     /*!
      *  Returns value of the Greens's function for the pair
@@ -138,8 +138,16 @@ public:
     virtual void gradientProbe(Eigen::Vector3d & gradient, const Eigen::Vector3d & p1,
                                const Eigen::Vector3d & p2) const = 0;
 
-    virtual double diagonalS(const DiagonalIntegrator * diag_int) const = 0;
-    virtual double diagonalD(const DiagonalIntegrator * diag_int) const = 0;
+    /*!
+     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalS(int i) const = 0;
+    /*!
+     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalD(int i) const = 0;
 
     virtual double epsilon() const = 0;
     bool isUniform() const { return uniform_; }
@@ -150,6 +158,7 @@ public:
 protected:
     virtual std::ostream & printObject(std::ostream & os) = 0;
     bool uniform_;
+    DiagonalIntegrator * diagonal_;
 };
 
 #endif // IGREENSFUNCTION_HPP

@@ -53,7 +53,7 @@ template <typename T>
 class IonicLiquid : public GreensFunction<T>
 {
 public:
-    IonicLiquid(double epsilon, double kappa) : GreensFunction<T>(false),
+    IonicLiquid(double epsilon, double kappa, DiagonalIntegrator * diag) : GreensFunction<T>(false, diag),
         epsilon_(epsilon), kappa_(kappa) {}
     virtual ~IonicLiquid() {}
     /*!
@@ -70,8 +70,16 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
 
-    virtual double diagonalS(const DiagonalIntegrator * diag_int) const; 
-    virtual double diagonalD(const DiagonalIntegrator * diag_int) const;
+    /*!
+     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalS(int i) const;
+    /*!
+     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalD(int i) const;
 
     virtual double epsilon() const { return epsilon_; }
 
@@ -96,7 +104,7 @@ namespace
     struct buildIonicLiquid {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new IonicLiquid<DerivativeType>(_data.epsilon, _data.kappa);
+            return new IonicLiquid<DerivativeType>(_data.epsilon, _data.kappa, _data.integrator);
         }
     };
 

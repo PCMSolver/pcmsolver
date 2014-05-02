@@ -48,8 +48,7 @@ template <typename T>
 class GreensFunction: public IGreensFunction
 {
 public:
-    GreensFunction() : IGreensFunction(true), delta_(1.0e-4) {}
-    GreensFunction(bool uniform) : IGreensFunction(uniform), delta_(1.0e-4) {}
+    GreensFunction(bool uniform, DiagonalIntegrator * diag) : IGreensFunction(uniform, diag), delta_(1.0e-4) {}
     virtual ~GreensFunction() {}
     /*!
      *  Returns value of the Greens's function for the pair
@@ -141,8 +140,16 @@ public:
     virtual void gradientProbe(Eigen::Vector3d & gradient, const Eigen::Vector3d & p1,
                                const Eigen::Vector3d & p2) const;
     
-    virtual double diagonalS(const DiagonalIntegrator * diag_int) const = 0;
-    virtual double diagonalD(const DiagonalIntegrator * diag_int) const = 0;
+    /*!
+     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalS(int i) const = 0;
+    /*!
+     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalD(int i) const = 0;
 
     virtual void delta(double value);
     virtual double delta() { return delta_; }

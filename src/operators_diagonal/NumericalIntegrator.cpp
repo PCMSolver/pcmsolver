@@ -25,6 +25,9 @@
 
 #include "NumericalIntegrator.hpp"
 
+#include <cmath>
+#include <stdexcept>
+
 #include "Config.hpp"
 
 #include "EigenPimpl.hpp"
@@ -32,3 +35,56 @@
 #include <boost/numeric/quadrature/kronrodgauss.hpp>
 #include <boost/numeric/quadrature/error_estimator.hpp>
 
+double NumericalIntegrator::computeS(const Vacuum<double> * gf) const {
+} 
+double NumericalIntegrator::computeS(const Vacuum<AD_directional> * gf) const {
+}
+double NumericalIntegrator::computeS(const Vacuum<AD_gradient> * gf) const {
+}
+double NumericalIntegrator::computeS(const Vacuum<AD_hessian> * gf) const {
+}
+
+double NumericalIntegrator::computeD(const Vacuum<double> * gf) const {
+}
+double NumericalIntegrator::computeD(const Vacuum<AD_directional> * gf) const {
+}
+double NumericalIntegrator::computeD(const Vacuum<AD_gradient> * gf) const {
+}
+double NumericalIntegrator::computeD(const Vacuum<AD_hessian> * gf) const {
+}
+
+double NumericalIntegrator::computeS(const UniformDielectric<double> * gf) const {
+}
+double NumericalIntegrator::computeS(const UniformDielectric<AD_directional> * gf) const {
+}
+double NumericalIntegrator::computeS(const UniformDielectric<AD_gradient> * gf) const {
+}
+double NumericalIntegrator::computeS(const UniformDielectric<AD_hessian> * gf) const {
+}
+
+double NumericalIntegrator::computeD(const UniformDielectric<double> * gf) const {
+}
+double NumericalIntegrator::computeD(const UniformDielectric<AD_directional> * gf) const {
+}
+double NumericalIntegrator::computeD(const UniformDielectric<AD_gradient> * gf) const {
+}
+double NumericalIntegrator::computeD(const UniformDielectric<AD_hessian> * gf) const {
+}
+
+double NumericalIntegrator::computeS(const IonicLiquid<double> * gf) const {
+}
+double NumericalIntegrator::computeS(const IonicLiquid<AD_directional> * gf) const {
+}
+double NumericalIntegrator::computeS(const IonicLiquid<AD_gradient> * gf) const {
+}
+double NumericalIntegrator::computeS(const IonicLiquid<AD_hessian> * gf) const {
+}
+
+double NumericalIntegrator::computeD(const IonicLiquid<double> * gf) const {
+}
+double NumericalIntegrator::computeD(const IonicLiquid<AD_directional> * gf) const {
+}
+double NumericalIntegrator::computeD(const IonicLiquid<AD_gradient> * gf) const {
+}
+double NumericalIntegrator::computeD(const IonicLiquid<AD_hessian> * gf) const {
+}

@@ -25,6 +25,63 @@
 
 #include "CollocationIntegrator.hpp"
 
+#include <cmath>
+#include <stdexcept>
+
 #include "Config.hpp"
 
 #include "EigenPimpl.hpp"
+
+double CollocationIntegrator::computeS(const Vacuum<double> * gf) const {
+} 
+double CollocationIntegrator::computeS(const Vacuum<AD_directional> * gf) const {
+}
+double CollocationIntegrator::computeS(const Vacuum<AD_gradient> * gf) const {
+}
+double CollocationIntegrator::computeS(const Vacuum<AD_hessian> * gf) const {
+}
+
+double CollocationIntegrator::computeD(const Vacuum<double> * gf) const {
+}
+double CollocationIntegrator::computeD(const Vacuum<AD_directional> * gf) const {
+}
+double CollocationIntegrator::computeD(const Vacuum<AD_gradient> * gf) const {
+}
+double CollocationIntegrator::computeD(const Vacuum<AD_hessian> * gf) const {
+}
+
+double CollocationIntegrator::computeS(const UniformDielectric<double> * gf) const {
+}
+double CollocationIntegrator::computeS(const UniformDielectric<AD_directional> * gf) const {
+}
+double CollocationIntegrator::computeS(const UniformDielectric<AD_gradient> * gf) const {
+}
+double CollocationIntegrator::computeS(const UniformDielectric<AD_hessian> * gf) const {
+}
+
+double CollocationIntegrator::computeD(const UniformDielectric<double> * gf) const {
+}
+double CollocationIntegrator::computeD(const UniformDielectric<AD_directional> * gf) const {
+}
+double CollocationIntegrator::computeD(const UniformDielectric<AD_gradient> * gf) const {
+}
+double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * gf) const {
+}
+
+double CollocationIntegrator::computeS(const IonicLiquid<double> * gf) const {
+}
+double CollocationIntegrator::computeS(const IonicLiquid<AD_directional> * gf) const {
+}
+double CollocationIntegrator::computeS(const IonicLiquid<AD_gradient> * gf) const {
+}
+double CollocationIntegrator::computeS(const IonicLiquid<AD_hessian> * gf) const {
+}
+
+double CollocationIntegrator::computeD(const IonicLiquid<double> * gf) const {
+}
+double CollocationIntegrator::computeD(const IonicLiquid<AD_directional> * gf) const {
+}
+double CollocationIntegrator::computeD(const IonicLiquid<AD_gradient> * gf) const {
+}
+double CollocationIntegrator::computeD(const IonicLiquid<AD_hessian> * gf) const {
+}

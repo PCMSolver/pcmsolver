@@ -53,7 +53,7 @@ template <typename T>
 class UniformDielectric : public GreensFunction<T>
 {
 public:
-    explicit UniformDielectric(double eps) : GreensFunction<T>(), epsilon_(eps) {}
+    explicit UniformDielectric(double eps, DiagonalIntegrator * diag) : GreensFunction<T>(true, diag), epsilon_(eps) {}
     virtual ~UniformDielectric() {}
     /*!
      *  Returns value of the directional derivative of the
@@ -69,8 +69,16 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
 
-    virtual double diagonalS(const DiagonalIntegrator * diag_int) const; 
-    virtual double diagonalD(const DiagonalIntegrator * diag_int) const; 
+    /*!
+     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalS(int i) const;
+    /*!
+     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalD(int i) const;
 
     virtual void epsilon(double eps) { epsilon_ = eps; }
     virtual double epsilon() const { return epsilon_; }
@@ -95,7 +103,7 @@ namespace
     struct buildUniformDielectric {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new UniformDielectric<DerivativeType>(_data.epsilon);
+            return new UniformDielectric<DerivativeType>(_data.epsilon, _data.integrator);
         }
     };
 

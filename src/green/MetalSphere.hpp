@@ -60,8 +60,8 @@ private:
     typedef std::complex<double> dcomplex;
 public:
     MetalSphere(double eps, double epsRe, double epsIm,
-                const Eigen::Vector3d & pos, double radius)
-        : GreensFunction<double>(false), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
+                const Eigen::Vector3d & pos, double radius, DiagonalIntegrator * diag)
+        : GreensFunction<double>(false, diag), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
           sphPosition_(pos), sphRadius_(radius) {}
     virtual ~MetalSphere() {}
     /*!
@@ -78,12 +78,18 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
 
-    virtual double diagonalS(const DiagonalIntegrator * diag_int) const {
-	    //diag_int->vacuum(this);
+    /*!
+     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalS(int i) const {
 	    return 1.0;
     }
-    virtual double diagonalD(const DiagonalIntegrator * diag_int) const {
-	    //diag_int->vacuum(this);
+    /*!
+     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalD(int i) const {
 	    return 1.0;
     }
 
@@ -117,7 +123,7 @@ namespace
         // We pass some bogus arguments...
         Eigen::Vector3d orig;
         orig << 0.0, 0.0, 0.0;
-        return new MetalSphere(_data.epsilon, 0.0, 0.0, orig, 1.0);
+        return new MetalSphere(_data.epsilon, 0.0, 0.0, orig, 1.0, _data.integrator);
     }
     const std::string METALSPHERE("MetalSphere");
     const bool registeredMetalSphere =

@@ -55,8 +55,8 @@ template <typename T>
 class PlanarInterface : public GreensFunction<T>
 {
 public:
-    PlanarInterface(double eps1, double eps2, const Eigen::Vector3d & pos, double width)
-        : GreensFunction<T>(false), eps1_(eps1), eps2_(eps2), pos_(pos), width_(width),
+    PlanarInterface(double eps1, double eps2, const Eigen::Vector3d & pos, double width, DiagonalIntegrator * diag)
+        : GreensFunction<T>(false, diag), eps1_(eps1), eps2_(eps2), pos_(pos), width_(width),
           computed_(false) {}
     virtual ~PlanarInterface() {}
     /*!
@@ -73,12 +73,18 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
 
-    virtual double diagonalS(const DiagonalIntegrator * diag_int) const {
-	    //diag_int->vacuum(this);
+    /*!
+     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalS(int i) const {
 	    return 1.0;
     }
-    virtual double diagonalD(const DiagonalIntegrator * diag_int) const {
-	    //diag_int->vacuum(this);
+    /*!
+     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
+     *  \param[in] i the index of the diagonal element to be calculated
+     */
+    virtual double diagonalD(int i) const {
 	    return 1.0;
     }
 
@@ -112,7 +118,7 @@ namespace
             // We pass some bogus arguments...
             Eigen::Vector3d orig;
             orig << 0.0, 0.0, 0.0;
-            return new PlanarInterface<DerivativeType>(_data.epsilon, 0.0, orig, 0.0);
+            return new PlanarInterface<DerivativeType>(_data.epsilon, 0.0, orig, 0.0, _data.integrator);
         }
     };
 

@@ -56,14 +56,14 @@ T UniformDielectric<T>::operator()(T * sp, T * pp) const
 }
 
 template <typename T>
-double UniformDielectric<T>::diagonalS(const DiagonalIntegrator * diag_int) const {
-        diag_int->computeS(this);
+double UniformDielectric<T>::diagonalS(int i) const {
+        this->diagonal_->computeS(this);
         return 1.0;
 }
 
 template <typename T>
-double UniformDielectric<T>::diagonalD(const DiagonalIntegrator * diag_int) const {
-        diag_int->computeD(this);
+double UniformDielectric<T>::diagonalD(int i) const {
+        this->diagonal_->computeD(this);
         return 1.0;
 }
 /*

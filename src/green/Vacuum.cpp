@@ -56,14 +56,14 @@ T Vacuum<T>::operator()(T * sp, T * pp) const
 }
 
 template <typename T>
-double Vacuum<T>::diagonalS(const DiagonalIntegrator * diag_int) const {
-        diag_int->computeS(this);
+double Vacuum<T>::diagonalS(int i) const {
+        this->diagonal_->computeS(this);
         return 1.0;
 }
 
 template <typename T>
-double Vacuum<T>::diagonalD(const DiagonalIntegrator * diag_int) const {
-        diag_int->computeD(this);
+double Vacuum<T>::diagonalD(int i) const {
+        this->diagonal_->computeD(this);
         return 1.0;
 }
 

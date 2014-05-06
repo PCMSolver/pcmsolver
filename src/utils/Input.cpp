@@ -129,11 +129,13 @@ Input::Input()
         greenOutsideType = _outside.getStr("Type");
         derivativeOutsideType = mapStringToIntDerType.find(_outside.getStr("Der"))->second;
         epsilonOutside = _outside.getDbl("Eps");
-        // This will be needed for the metal sphere
-        epsilonReal = _outside.getDbl("EpsRe");
-        epsilonImaginary = _outside.getDbl("EpsImg");
-        spherePosition = _outside.getDblVec("SpherePosition");
-        sphereRadius = _outside.getDbl("SphereRadius");
+        // This will be needed for the metal sphere only
+	if (greenOutsideType == "MetalSphere") {
+	        epsilonReal = _outside.getDbl("EpsRe");
+        	epsilonImaginary = _outside.getDbl("EpsImg");
+	        spherePosition = _outside.getDblVec("SpherePosition");
+        	sphereRadius = _outside.getDbl("SphereRadius");
+	}
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent = true;

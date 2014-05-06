@@ -140,10 +140,8 @@ double UniformDielectric<T>::compDiagonalElementD(double area, double radius) co
 template <typename T>
 std::ostream & UniformDielectric<T>::printObject(std::ostream & os)
 {
-    os << "Uniform Dielectric" << std::endl;
-    os << "Delta   = " << this->delta_ << std::endl;
-    os << "Uniform = " << this->uniform_ << std::endl;
-    os << "epsilon = " << epsilon_;
+    os << "Green's function type: uniform dielectric" << std::endl;
+    os << "Permittivity = " << epsilon << std::endl;
     return os;
 }
 

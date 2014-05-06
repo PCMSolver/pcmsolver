@@ -136,10 +136,7 @@ double Vacuum<T>::compDiagonalElementD(double area, double radius) const
 template <typename T>
 std::ostream & Vacuum<T>::printObject(std::ostream & os)
 {
-    os << "Vacuum" << std::endl;
-    os << "Delta = " << this->delta_ << std::endl;
-    os << "Uniform = " << this->uniform_ << std::endl;
-    os << "epsilon = " << epsilon_;
+    os << "Green's function type: vacuum";
     return os;
 }
 

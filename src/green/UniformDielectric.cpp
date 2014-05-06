@@ -141,7 +141,7 @@ template <typename T>
 std::ostream & UniformDielectric<T>::printObject(std::ostream & os)
 {
     os << "Green's function type: uniform dielectric" << std::endl;
-    os << "Permittivity = " << epsilon << std::endl;
+    os << "Permittivity = " << epsilon_ << std::endl;
     return os;
 }
 

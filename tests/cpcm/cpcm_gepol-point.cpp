@@ -9,6 +9,7 @@
 
 #include "EigenPimpl.hpp"
 
+#include "CollocationIntegrator.hpp"
 #include "CPCMSolver.hpp"
 #include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
@@ -35,10 +36,12 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     cavity.saveCavity("point.npz");
     // The point charge is located at the origin.
     // The potential at cavity point s_I is Q/|s_I|
+    
+    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
+    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
     UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity);
+    UniformDielectric<AD_directional>(permittivity, diag);
     bool symm = true;
     double correction = 0.5;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);

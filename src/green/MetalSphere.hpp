@@ -60,6 +60,10 @@ private:
     typedef std::complex<double> dcomplex;
 public:
     MetalSphere(double eps, double epsRe, double epsIm,
+                const Eigen::Vector3d & pos, double radius)
+        : GreensFunction<double>(false), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
+          sphPosition_(pos), sphRadius_(radius) {}
+    MetalSphere(double eps, double epsRe, double epsIm,
                 const Eigen::Vector3d & pos, double radius, DiagonalIntegrator * diag)
         : GreensFunction<double>(false, diag), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
           sphPosition_(pos), sphRadius_(radius) {}
@@ -80,16 +84,17 @@ public:
 
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalS(int i) const {
+    virtual double diagonalS(double area) const {
 	    return 1.0;
     }
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
+     *  \param[in] radius radius of the sphere the tessera belongs to
      */
-    virtual double diagonalD(int i) const {
+    virtual double diagonalD(double area, double radius) const {
 	    return 1.0;
     }
 

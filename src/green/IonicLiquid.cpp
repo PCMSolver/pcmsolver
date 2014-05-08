@@ -57,14 +57,14 @@ T IonicLiquid<T>::operator()(T * sp, T * pp) const
 }
 
 template <typename T>
-double IonicLiquid<T>::diagonalS(int i) const {
-        this->diagonal_->computeS(this);
+double IonicLiquid<T>::diagonalS(double area) const {
+        this->diagonal_->computeS(this, area);
         return 1.0;
 }
 
 template <typename T>
-double IonicLiquid<T>::diagonalD(int i) const {
-        this->diagonal_->computeD(this);
+double IonicLiquid<T>::diagonalD(double area, double radius) const {
+        this->diagonal_->computeD(this, area, radius);
         return 1.0;
 }
 

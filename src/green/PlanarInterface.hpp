@@ -55,6 +55,9 @@ template <typename T>
 class PlanarInterface : public GreensFunction<T>
 {
 public:
+    PlanarInterface(double eps1, double eps2, const Eigen::Vector3d & pos, double width)
+        : GreensFunction<T>(false), eps1_(eps1), eps2_(eps2), pos_(pos), width_(width),
+          computed_(false) {}
     PlanarInterface(double eps1, double eps2, const Eigen::Vector3d & pos, double width, DiagonalIntegrator * diag)
         : GreensFunction<T>(false, diag), eps1_(eps1), eps2_(eps2), pos_(pos), width_(width),
           computed_(false) {}
@@ -75,16 +78,17 @@ public:
 
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalS(int i) const {
+    virtual double diagonalS(double area) const {
 	    return 1.0;
     }
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
+     *  \param[in] radius radius of the sphere the tessera belongs to
      */
-    virtual double diagonalD(int i) const {
+    virtual double diagonalD(double area, double radius) const {
 	    return 1.0;
     }
 

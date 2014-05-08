@@ -8,6 +8,7 @@
 
 #include "Config.hpp"
 
+#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "PWLSolver.hpp"
 #include "UniformDielectric.hpp"
@@ -38,6 +39,8 @@ BOOST_AUTO_TEST_CASE(NH3)
     double coarsity = 0.5;
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
     cavity.readCavity("molec_dyadic.dat");
+
+    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
     UniformDielectric<AD_directional> * gfOutside = new

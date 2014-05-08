@@ -53,6 +53,7 @@ template <typename T>
 class Vacuum : public GreensFunction<T>
 {
 public:
+    Vacuum() : GreensFunction<T>(true), epsilon_(1.0) {}
     Vacuum(DiagonalIntegrator * diag) : GreensFunction<T>(true, diag), epsilon_(1.0) {}
     virtual ~Vacuum() {}
     /*!
@@ -71,14 +72,15 @@ public:
     
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera
      */
-    virtual double diagonalS(int i) const;
+    virtual double diagonalS(double area) const;
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera
+     *  \param[in] radius radius of the sphere the tessera belongs to
      */
-    virtual double diagonalD(int i) const;
+    virtual double diagonalD(double area, double radius) const;
 
     virtual double epsilon() const { return 1.0; }
 

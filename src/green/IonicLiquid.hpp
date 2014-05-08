@@ -53,6 +53,8 @@ template <typename T>
 class IonicLiquid : public GreensFunction<T>
 {
 public:
+    IonicLiquid(double epsilon, double kappa) : GreensFunction<T>(false),
+        epsilon_(epsilon), kappa_(kappa) {}
     IonicLiquid(double epsilon, double kappa, DiagonalIntegrator * diag) : GreensFunction<T>(false, diag),
         epsilon_(epsilon), kappa_(kappa) {}
     virtual ~IonicLiquid() {}
@@ -72,14 +74,15 @@ public:
 
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalS(int i) const;
+    virtual double diagonalS(double area) const;
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
+     *  \param[in] radius radius of the sphere the tessera belongs to
      */
-    virtual double diagonalD(int i) const;
+    virtual double diagonalD(double area, double radius) const;
 
     virtual double epsilon() const { return epsilon_; }
 

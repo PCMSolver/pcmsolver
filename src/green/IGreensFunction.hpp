@@ -45,6 +45,7 @@ class IGreensFunction
 {
 public:
     IGreensFunction() : uniform_(false) {}
+    IGreensFunction(bool uniform) : uniform_(uniform), diagonal_(NULL) {}
     IGreensFunction(bool uniform, DiagonalIntegrator * diag) : uniform_(uniform), diagonal_(diag) {}
     virtual ~IGreensFunction() {}
     /*!
@@ -140,14 +141,14 @@ public:
 
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalS(int i) const = 0;
+    virtual double diagonalS(double area) const = 0;
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalD(int i) const = 0;
+    virtual double diagonalD(double area, double radius) const = 0;
 
     virtual double epsilon() const = 0;
     bool isUniform() const { return uniform_; }

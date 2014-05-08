@@ -56,15 +56,13 @@ T Vacuum<T>::operator()(T * sp, T * pp) const
 }
 
 template <typename T>
-double Vacuum<T>::diagonalS(int i) const {
-        this->diagonal_->computeS(this);
-        return 1.0;
+double Vacuum<T>::diagonalS(double area) const {
+        return this->diagonal_->computeS(this, area);
 }
 
 template <typename T>
-double Vacuum<T>::diagonalD(int i) const {
-        this->diagonal_->computeD(this);
-        return 1.0;
+double Vacuum<T>::diagonalD(double area, double radius) const {
+        return this->diagonal_->computeD(this, area, radius);
 }
 
 /*

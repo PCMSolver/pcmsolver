@@ -60,9 +60,8 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // Compute SI on the whole cavity, regardless of symmetry
-    double factor = 1.07; // See discussion in the 2005 review
     for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = factor * std::sqrt(4 * M_PI / cav.elementArea(i));
+        SI(i, i) = greenInside_->diagonalS(cav.elementArea(i));
         Eigen::Vector3d source = cav.elementCenter().col(i);
         for (int j = 0; j < cavitySize; ++j) {
             Eigen::Vector3d probe = cav.elementCenter().col(j);

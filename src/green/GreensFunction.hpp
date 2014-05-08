@@ -48,6 +48,7 @@ template <typename T>
 class GreensFunction: public IGreensFunction
 {
 public:
+    GreensFunction(bool uniform) : IGreensFunction(uniform), delta_(1.0e-4) {}
     GreensFunction(bool uniform, DiagonalIntegrator * diag) : IGreensFunction(uniform, diag), delta_(1.0e-4) {}
     virtual ~GreensFunction() {}
     /*!
@@ -142,14 +143,14 @@ public:
     
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalS(int i) const = 0;
+    virtual double diagonalS(double area) const = 0;
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] i the index of the diagonal element to be calculated
+     *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalD(int i) const = 0;
+    virtual double diagonalD(double area, double radius) const = 0;
 
     virtual void delta(double value);
     virtual double delta() { return delta_; }

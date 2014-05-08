@@ -9,6 +9,7 @@
 
 #include "EigenPimpl.hpp"
 
+#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
 #include "Vacuum.hpp"
@@ -43,10 +44,11 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     GePolCavity cavity = GePolCavity(spheres, area, probeRadius, minRadius, group);
     cavity.saveCavity("nh3.npz");
 
+    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
+    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
     UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity);
+    UniformDielectric<AD_directional>(permittivity, diag);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);

@@ -23,20 +23,33 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef DERIVATIVETYPES_HPP
-#define DERIVATIVETYPES_HPP
+#include "DiagonalIntegratorFactory.hpp"
+
+#include <stdexcept>
+#include <string>
 
 #include "Config.hpp"
 
-#include "TaylorPimpl.hpp"
+bool DiagonalIntegratorFactory::registerDiagonalIntegrator(const std::string & integratorID,
+        createDiagonalIntegratorCallback createFunction)
+{
+    return callbacks.insert(CallbackMap::value_type(integratorID, createFunction)).second;
+}
 
-#include <boost/mpl/vector.hpp>
+bool DiagonalIntegratorFactory::unRegisterDiagonalIntegrator(const std::string & integratorID)
+{
+    return callbacks.erase(integratorID) == 1;
+}
 
-typedef taylor<double, 1, 1> AD_directional;
-typedef taylor<double, 3, 1> AD_gradient;
-typedef taylor<double, 3, 2> AD_hessian;
-
-typedef boost::mpl::vector<double, AD_directional, AD_gradient, AD_hessian>
-derivative_types;
-
-#endif // DERIVATIVETYPES_HPP
+DiagonalIntegrator * DiagonalIntegratorFactory::createDiagonalIntegrator(
+    const std::string & integratorID)
+{
+    CallbackMap::const_iterator i = callbacks.find(integratorID);
+    if (i == callbacks.end()) {
+        // The integratorID was not found
+        throw std::runtime_error("The unknown Green's function ID " + integratorID +
+                                 " occurred in DiagonalIntegratorFactory.");
+    }
+    // Invoke the creation function
+    return (i->second)();
+}

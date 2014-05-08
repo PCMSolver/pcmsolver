@@ -5,6 +5,7 @@ set(header_dir_list
 	${CMAKE_CURRENT_SOURCE_DIR}/cavity 
 	${CMAKE_CURRENT_SOURCE_DIR}/green
 	${CMAKE_CURRENT_SOURCE_DIR}/interface
+	${CMAKE_CURRENT_SOURCE_DIR}/operators_diagonal
 	${CMAKE_CURRENT_SOURCE_DIR}/pwl
 	${CMAKE_CURRENT_SOURCE_DIR}/solver
 	${CMAKE_CURRENT_SOURCE_DIR}/utils
@@ -20,6 +21,7 @@ add_subdirectory(cavity)
 add_subdirectory(green)
 add_subdirectory(interface)
 add_subdirectory(metal)
+add_subdirectory(operators_diagonal)
 add_subdirectory(pedra)
 add_subdirectory(pwl)
 add_subdirectory(solver)

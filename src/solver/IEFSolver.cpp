@@ -128,10 +128,9 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    double factor = 1.07; // See discussion in the 2005 review
     for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = factor * std::sqrt(4 * M_PI / cav.elementArea(i));
-        DI(i, i) = -factor * std::sqrt(M_PI/ cav.elementArea(i)) * (1.0 / cav.elementRadius(i));
+        SI(i, i) = greenInside_->diagonalS(cav.elementArea(i));
+        DI(i, i) = greenInside_->diagonalD(cav.elementArea(i), cav.elementRadius(i));
         Eigen::Vector3d source = cav.elementCenter().col(i);
         for (int j = 0; j < cavitySize; ++j) {
             Eigen::Vector3d probe = cav.elementCenter().col(j);

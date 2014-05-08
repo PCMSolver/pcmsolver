@@ -10,6 +10,7 @@
 
 #include "EigenPimpl.hpp"
 
+#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "PWCSolver.hpp"
 #include "Vacuum.hpp"
@@ -38,10 +39,12 @@ struct WaveletCavityNH3Test {
         double coarsity = 0.5;
         cavity = WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
         cavity.readCavity("molec_dyadic.dat");
+
+	CollocationIntegrator * diag = new CollocationIntegrator();
         double permittivity = 78.39;
-        Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
+        Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
         UniformDielectric<AD_directional> * gfOutside = new
-        UniformDielectric<AD_directional>(permittivity);
+        UniformDielectric<AD_directional>(permittivity, diag);
         int firstKind = 0;
         PWCSolver solver(gfInside, gfOutside, firstKind);
         solver.buildSystemMatrix(cavity);

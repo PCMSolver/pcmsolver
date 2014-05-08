@@ -10,6 +10,7 @@
 
 #include "EigenPimpl.hpp"
 
+#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "PWLSolver.hpp"
 #include "UniformDielectric.hpp"
@@ -33,10 +34,11 @@ BOOST_AUTO_TEST_CASE(pointCharge)
     cavity.readCavity("molec_dyadic.dat");
     // The point charge is located at the origin.
     // The potential at cavity point s_I is Q/|s_I|
+    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
+    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
     UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity);
+    UniformDielectric<AD_directional>(permittivity, diag);
     int firstKind = 0;
     PWLSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);

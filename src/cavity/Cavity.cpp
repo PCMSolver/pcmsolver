@@ -33,10 +33,10 @@
 
 #include "Config.hpp"
 
-
 #include "EigenPimpl.hpp"
 #include "cnpyPimpl.hpp"
 
+#include "Sphere.hpp"
 #include "Symmetry.hpp"
 
 void Cavity::saveCavity(const std::string & fname)
@@ -63,6 +63,10 @@ void Cavity::saveCavity(const std::string & fname)
     // Write weights
     const unsigned int weights_shape[] = {dim};
     cnpy::npz_save(fname, "weights", elementArea_.data(), weights_shape, 1, "a", true);
+    // Write element sphere center
+    const unsigned int elSphCenter_shape[] = {3, dim};
+    cnpy::npz_save(fname, "elSphCenter", elementSphereCenter_.data(), elSphCenter_shape, 2, "a",
+                   true);
     // Write element radius
     const unsigned int elRadius_shape[] = {dim};
     cnpy::npz_save(fname, "elRadius", elementRadius_.data(), elRadius_shape, 1, "a",
@@ -73,6 +77,10 @@ void Cavity::saveCavity(const std::string & fname)
     // Write normals
     const unsigned int normals_shape[] = {3, dim};
     cnpy::npz_save(fname, "normals", elementNormal_.data(), normals_shape, 2, "a", true);
+    // Write vertices TODO!!!!
+    const unsigned int vertices_shape[] = {dim, 10, 3};
+    // Write arcs     TODO!!!!
+    const unsigned int arcs_shape[] = {dim, 10, 3};
 }
 
 void Cavity::loadCavity(const std::string & fname)
@@ -97,8 +105,17 @@ void Cavity::loadCavity(const std::string & fname)
     } else {
         elementArea_ = cnpy::getFromRawBuffer<double>(dim, 1, raw_weights.data);
     }
+    
+    // 2. Get the element sphere center
+    cnpy::NpyArray raw_elSphCenter = loaded_cavity["elSphCenter"];
+    dim = raw_elSphCenter.shape[1];
+    if (dim != nElements_) {
+        throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of element sphere radius matrix!");
+    } else {
+        elementSphereCenter_ = cnpy::getFromRawBuffer<double>(3, dim, raw_elSphCenter.data);
+    }
 
-    // 2. Get the element radius
+    // 3. Get the element radius
     cnpy::NpyArray raw_elRadius = loaded_cavity["elRadius"];
     dim = raw_elRadius.shape[0];
     if (dim != nElements_) {
@@ -107,7 +124,7 @@ void Cavity::loadCavity(const std::string & fname)
         elementRadius_ = cnpy::getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
     }
 
-    // 3. Get the centers
+    // 4. Get the centers
     cnpy::NpyArray raw_centers = loaded_cavity["centers"];
     dim = raw_centers.shape[1];
     if (dim != nElements_) {
@@ -116,12 +133,31 @@ void Cavity::loadCavity(const std::string & fname)
         elementCenter_ = cnpy::getFromRawBuffer<double>(3, dim, raw_centers.data);
     }
 
-    // 4. Get the normal vectors
+    // 5. Get the normal vectors
     cnpy::NpyArray raw_normals = loaded_cavity["normals"];
     dim = raw_normals.shape[1];
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of normals matrix!");
     } else {
         elementNormal_ = cnpy::getFromRawBuffer<double>(3, dim, raw_normals.data);
+    }
+
+    // Reconstruct the elements_ vector
+    for (int i = 0; i < nElements_; ++i) {
+	    bool irr = false;
+	    // PEDRA puts the irreducible tesserae first
+	    if (i < nIrrElements_) irr = true;
+	    Sphere sph(elementSphereCenter_.col(i), elementRadius_(i));
+	    int nv = 3; // BOGUS!!!
+	    Eigen::Matrix3Xd vertices, arcs;
+	    vertices.resize(Eigen::NoChange, nv); // BOGUS!!!
+	    arcs.resize(Eigen::NoChange, nv); // BOGUS!!
+	    // Populate vertices and arcs
+	    elements_.push_back(Element(nv, 
+				        elementArea_(i),
+					elementCenter_.col(i),
+					elementNormal_.col(i),
+					irr, sph,
+					vertices, arcs));
     }
 }

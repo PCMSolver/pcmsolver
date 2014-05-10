@@ -37,6 +37,7 @@
 #include "EigenPimpl.hpp"
 
 #include "Cavity.hpp"
+#include "Element.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
@@ -129,8 +130,8 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 
     // Compute SI and DI on the whole cavity, regardless of symmetry
     for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = greenInside_->diagonalS(cav.elementArea(i));
-        DI(i, i) = greenInside_->diagonalD(cav.elementArea(i), cav.elementRadius(i));
+        SI(i, i) = greenInside_->diagonalS(cav.elements(i));
+        DI(i, i) = greenInside_->diagonalD(cav.elements(i));
         Eigen::Vector3d source = cav.elementCenter().col(i);
         for (int j = 0; j < cavitySize; ++j) {
             Eigen::Vector3d probe = cav.elementCenter().col(j);

@@ -32,56 +32,58 @@
 
 #include "EigenPimpl.hpp"
 
-double PurisimaIntegrator::computeS(const Vacuum<double> * gf, double area) const {
+#include "Element.hpp"
+
+double PurisimaIntegrator::computeS(const Vacuum<double> * gf, const Element & e) const {
 } 
-double PurisimaIntegrator::computeS(const Vacuum<AD_directional> * gf, double area) const {
+double PurisimaIntegrator::computeS(const Vacuum<AD_directional> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeS(const Vacuum<AD_gradient> * gf, double area) const {
+double PurisimaIntegrator::computeS(const Vacuum<AD_gradient> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeS(const Vacuum<AD_hessian> * gf, double area) const {
-}
-
-double PurisimaIntegrator::computeD(const Vacuum<double> * gf, double area, double radius) const {
-}
-double PurisimaIntegrator::computeD(const Vacuum<AD_directional> * gf, double area, double radius) const {
-}
-double PurisimaIntegrator::computeD(const Vacuum<AD_gradient> * gf, double area, double radius) const {
-}
-double PurisimaIntegrator::computeD(const Vacuum<AD_hessian> * gf, double area, double radius) const {
+double PurisimaIntegrator::computeS(const Vacuum<AD_hessian> * gf, const Element & e) const {
 }
 
-double PurisimaIntegrator::computeS(const UniformDielectric<double> * gf, double area) const {
+double PurisimaIntegrator::computeD(const Vacuum<double> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeS(const UniformDielectric<AD_directional> * gf, double area) const {
+double PurisimaIntegrator::computeD(const Vacuum<AD_directional> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeS(const UniformDielectric<AD_gradient> * gf, double area) const {
+double PurisimaIntegrator::computeD(const Vacuum<AD_gradient> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeS(const UniformDielectric<AD_hessian> * gf, double area) const {
-}
-
-double PurisimaIntegrator::computeD(const UniformDielectric<double> * gf, double area, double radius) const {
-}
-double PurisimaIntegrator::computeD(const UniformDielectric<AD_directional> * gf, double area, double radius) const {
-}
-double PurisimaIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, double area, double radius) const {
-}
-double PurisimaIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, double area, double radius) const {
+double PurisimaIntegrator::computeD(const Vacuum<AD_hessian> * gf, const Element & e) const {
 }
 
-double PurisimaIntegrator::computeS(const IonicLiquid<double> * gf, double area) const {
+double PurisimaIntegrator::computeS(const UniformDielectric<double> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeS(const IonicLiquid<AD_directional> * gf, double area) const {
+double PurisimaIntegrator::computeS(const UniformDielectric<AD_directional> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeS(const IonicLiquid<AD_gradient> * gf, double area) const {
+double PurisimaIntegrator::computeS(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeS(const IonicLiquid<AD_hessian> * gf, double area) const {
+double PurisimaIntegrator::computeS(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
 }
 
-double PurisimaIntegrator::computeD(const IonicLiquid<double> * gf, double area, double radius) const {
+double PurisimaIntegrator::computeD(const UniformDielectric<double> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeD(const IonicLiquid<AD_directional> * gf, double area, double radius) const {
+double PurisimaIntegrator::computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeD(const IonicLiquid<AD_gradient> * gf, double area, double radius) const {
+double PurisimaIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
 }
-double PurisimaIntegrator::computeD(const IonicLiquid<AD_hessian> * gf, double area, double radius) const {
+double PurisimaIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
+}
+
+double PurisimaIntegrator::computeS(const IonicLiquid<double> * gf, const Element & e) const {
+}
+double PurisimaIntegrator::computeS(const IonicLiquid<AD_directional> * gf, const Element & e) const {
+}
+double PurisimaIntegrator::computeS(const IonicLiquid<AD_gradient> * gf, const Element & e) const {
+}
+double PurisimaIntegrator::computeS(const IonicLiquid<AD_hessian> * gf, const Element & e) const {
+}
+
+double PurisimaIntegrator::computeD(const IonicLiquid<double> * gf, const Element & e) const {
+}
+double PurisimaIntegrator::computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const {
+}
+double PurisimaIntegrator::computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const {
+}
+double PurisimaIntegrator::computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const {
 }

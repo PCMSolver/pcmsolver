@@ -249,7 +249,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     // Fill elements_ vector
     for (int i = 0; i < nElements_; ++i) {
 	    int i_off = i + 1;
-	    bool irr;
+	    bool irr = false;
 	    // PEDRA puts the irreducible tesserae first
 	    if (i < nIrrElements_) irr = true;
 	    Sphere sph(elementSphereCenter_.col(i), elementRadius_(i));

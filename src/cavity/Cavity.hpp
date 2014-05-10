@@ -142,6 +142,8 @@ public:
     Eigen::Matrix3Xd & elementSphereCenter() { return elementSphereCenter_; }
     const Eigen::Matrix3Xd & elementSphereCenter() const { return elementSphereCenter_; }
     bool isBuilt() { return built; }
+    const std::vector<Element> & elements() const { return elements_; }
+    const Element & elements(int i) const { return elements_[i]; }
     /*! \brief Save cavity specification to file.
      *
      *  The cavity specification contains:

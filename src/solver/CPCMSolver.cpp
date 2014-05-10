@@ -35,6 +35,7 @@
 #include "EigenPimpl.hpp"
 
 #include "Cavity.hpp"
+#include "Element.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
@@ -61,7 +62,7 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
 
     // Compute SI on the whole cavity, regardless of symmetry
     for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = greenInside_->diagonalS(cav.elementArea(i));
+        SI(i, i) = greenInside_->diagonalS(cav.elements(i));
         Eigen::Vector3d source = cav.elementCenter().col(i);
         for (int j = 0; j < cavitySize; ++j) {
             Eigen::Vector3d probe = cav.elementCenter().col(j);

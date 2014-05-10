@@ -33,6 +33,8 @@
 
 #include "EigenPimpl.hpp"
 
+class Element;
+
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegrator.hpp"
 #include "ForIdGreen.hpp"
@@ -76,19 +78,10 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
 
-    /*!
-     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
-     */
-    virtual double diagonalS(double area) const {
+    virtual double diagonalS(const Element & e) const {
 	    return 1.0;
     }
-    /*!
-     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
-     *  \param[in] radius radius of the sphere the tessera belongs to
-     */
-    virtual double diagonalD(double area, double radius) const {
+    virtual double diagonalD(const Element & e) const {
 	    return 1.0;
     }
 

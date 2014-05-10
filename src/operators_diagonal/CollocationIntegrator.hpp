@@ -7,6 +7,8 @@
 
 #include "EigenPimpl.hpp"
 
+class Element;
+
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegrator.hpp"
 #include "DiagonalIntegratorFactory.hpp"
@@ -36,36 +38,37 @@ public:
     CollocationIntegrator() : factor_(1.07) {}
     virtual ~CollocationIntegrator() {}
 
-    virtual double computeS(const Vacuum<double> * gf, double area) const;
-    virtual double computeS(const Vacuum<AD_directional> * gf, double area) const;
-    virtual double computeS(const Vacuum<AD_gradient> * gf, double area) const;
-    virtual double computeS(const Vacuum<AD_hessian> * gf, double area) const;
+    virtual double computeS(const Vacuum<double> * gf, const Element & e) const;
+    virtual double computeS(const Vacuum<AD_directional> * gf, const Element & e) const;
+    virtual double computeS(const Vacuum<AD_gradient> * gf, const Element & e) const;
+    virtual double computeS(const Vacuum<AD_hessian> * gf, const Element & e) const;
 
-    virtual double computeD(const Vacuum<double> * gf, double area, double radius) const;
-    virtual double computeD(const Vacuum<AD_directional> * gf, double area, double radius) const;
-    virtual double computeD(const Vacuum<AD_gradient> * gf, double area, double radius) const;
-    virtual double computeD(const Vacuum<AD_hessian> * gf, double area, double radius) const;
+    virtual double computeD(const Vacuum<double> * gf, const Element & e) const;
+    virtual double computeD(const Vacuum<AD_directional> * gf, const Element & e) const;
+    virtual double computeD(const Vacuum<AD_gradient> * gf, const Element & e) const;
+    virtual double computeD(const Vacuum<AD_hessian> * gf, const Element & e) const;
 
-    virtual double computeS(const UniformDielectric<double> * gf, double area) const;
-    virtual double computeS(const UniformDielectric<AD_directional> * gf, double area) const;
-    virtual double computeS(const UniformDielectric<AD_gradient> * gf, double area) const;
-    virtual double computeS(const UniformDielectric<AD_hessian> * gf, double area) const;
+    virtual double computeS(const UniformDielectric<double> * gf, const Element & e) const;
+    virtual double computeS(const UniformDielectric<AD_directional> * gf, const Element & e) const;
+    virtual double computeS(const UniformDielectric<AD_gradient> * gf, const Element & e) const;
+    virtual double computeS(const UniformDielectric<AD_hessian> * gf, const Element & e) const;
 
-    virtual double computeD(const UniformDielectric<double> * gf, double area, double radius) const;
-    virtual double computeD(const UniformDielectric<AD_directional> * gf, double area, double radius) const;
-    virtual double computeD(const UniformDielectric<AD_gradient> * gf, double area, double radius) const;
-    virtual double computeD(const UniformDielectric<AD_hessian> * gf, double area, double radius) const;
+    virtual double computeD(const UniformDielectric<double> * gf, const Element & e) const;
+    virtual double computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const;
+    virtual double computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const;
+    virtual double computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const;
 
-    virtual double computeS(const IonicLiquid<double> * gf, double area) const;
-    virtual double computeS(const IonicLiquid<AD_directional> * gf, double area) const;
-    virtual double computeS(const IonicLiquid<AD_gradient> * gf, double area) const;
-    virtual double computeS(const IonicLiquid<AD_hessian> * gf, double area) const;
+    virtual double computeS(const IonicLiquid<double> * gf, const Element & e) const;
+    virtual double computeS(const IonicLiquid<AD_directional> * gf, const Element & e) const;
+    virtual double computeS(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
+    virtual double computeS(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
 
-    virtual double computeD(const IonicLiquid<double> * gf, double area, double radius) const;
-    virtual double computeD(const IonicLiquid<AD_directional> * gf, double area, double radius) const;
-    virtual double computeD(const IonicLiquid<AD_gradient> * gf, double area, double radius) const;
-    virtual double computeD(const IonicLiquid<AD_hessian> * gf, double area, double radius) const;
+    virtual double computeD(const IonicLiquid<double> * gf, const Element & e) const;
+    virtual double computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const;
+    virtual double computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
+    virtual double computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
 private:
+    /// Scaling factor for the collocation formulas
     double factor_;
 };
 

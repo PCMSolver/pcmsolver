@@ -35,56 +35,58 @@
 #include <boost/numeric/quadrature/kronrodgauss.hpp>
 #include <boost/numeric/quadrature/error_estimator.hpp>
 
-double NumericalIntegrator::computeS(const Vacuum<double> * gf, double area) const {
+#include "Element.hpp"
+
+double NumericalIntegrator::computeS(const Vacuum<double> * gf, const Element & e) const {
 } 
-double NumericalIntegrator::computeS(const Vacuum<AD_directional> * gf, double area) const {
+double NumericalIntegrator::computeS(const Vacuum<AD_directional> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeS(const Vacuum<AD_gradient> * gf, double area) const {
+double NumericalIntegrator::computeS(const Vacuum<AD_gradient> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeS(const Vacuum<AD_hessian> * gf, double area) const {
-}
-
-double NumericalIntegrator::computeD(const Vacuum<double> * gf, double area, double radius) const {
-}
-double NumericalIntegrator::computeD(const Vacuum<AD_directional> * gf, double area, double radius) const {
-}
-double NumericalIntegrator::computeD(const Vacuum<AD_gradient> * gf, double area, double radius) const {
-}
-double NumericalIntegrator::computeD(const Vacuum<AD_hessian> * gf, double area, double radius) const {
+double NumericalIntegrator::computeS(const Vacuum<AD_hessian> * gf, const Element & e) const {
 }
 
-double NumericalIntegrator::computeS(const UniformDielectric<double> * gf, double area) const {
+double NumericalIntegrator::computeD(const Vacuum<double> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeS(const UniformDielectric<AD_directional> * gf, double area) const {
+double NumericalIntegrator::computeD(const Vacuum<AD_directional> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeS(const UniformDielectric<AD_gradient> * gf, double area) const {
+double NumericalIntegrator::computeD(const Vacuum<AD_gradient> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeS(const UniformDielectric<AD_hessian> * gf, double area) const {
-}
-
-double NumericalIntegrator::computeD(const UniformDielectric<double> * gf, double area, double radius) const {
-}
-double NumericalIntegrator::computeD(const UniformDielectric<AD_directional> * gf, double area, double radius) const {
-}
-double NumericalIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, double area, double radius) const {
-}
-double NumericalIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, double area, double radius) const {
+double NumericalIntegrator::computeD(const Vacuum<AD_hessian> * gf, const Element & e) const {
 }
 
-double NumericalIntegrator::computeS(const IonicLiquid<double> * gf, double area) const {
+double NumericalIntegrator::computeS(const UniformDielectric<double> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeS(const IonicLiquid<AD_directional> * gf, double area) const {
+double NumericalIntegrator::computeS(const UniformDielectric<AD_directional> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeS(const IonicLiquid<AD_gradient> * gf, double area) const {
+double NumericalIntegrator::computeS(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeS(const IonicLiquid<AD_hessian> * gf, double area) const {
+double NumericalIntegrator::computeS(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
 }
 
-double NumericalIntegrator::computeD(const IonicLiquid<double> * gf, double area, double radius) const {
+double NumericalIntegrator::computeD(const UniformDielectric<double> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeD(const IonicLiquid<AD_directional> * gf, double area, double radius) const {
+double NumericalIntegrator::computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeD(const IonicLiquid<AD_gradient> * gf, double area, double radius) const {
+double NumericalIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
 }
-double NumericalIntegrator::computeD(const IonicLiquid<AD_hessian> * gf, double area, double radius) const {
+double NumericalIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
+}
+
+double NumericalIntegrator::computeS(const IonicLiquid<double> * gf, const Element & e) const {
+}
+double NumericalIntegrator::computeS(const IonicLiquid<AD_directional> * gf, const Element & e) const {
+}
+double NumericalIntegrator::computeS(const IonicLiquid<AD_gradient> * gf, const Element & e) const {
+}
+double NumericalIntegrator::computeS(const IonicLiquid<AD_hessian> * gf, const Element & e) const {
+}
+
+double NumericalIntegrator::computeD(const IonicLiquid<double> * gf, const Element & e) const {
+}
+double NumericalIntegrator::computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const {
+}
+double NumericalIntegrator::computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const {
+}
+double NumericalIntegrator::computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const {
 }

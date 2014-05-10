@@ -33,6 +33,7 @@
 #include "EigenPimpl.hpp"
 
 class DiagonalIntegrator;
+class Element;
 
 #include "IGreensFunction.hpp"
 
@@ -143,14 +144,14 @@ public:
     
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalS(double area) const = 0;
+    virtual double diagonalS(const Element & e) const = 0;
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalD(double area, double radius) const = 0;
+    virtual double diagonalD(const Element & e) const = 0;
 
     virtual void delta(double value);
     virtual double delta() { return delta_; }

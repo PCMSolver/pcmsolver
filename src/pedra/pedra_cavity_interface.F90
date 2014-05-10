@@ -32,7 +32,8 @@
           xsphcor_, ysphcor_, zsphcor_, rsph_,                         &
           nts_, ntsirr_, nesfp_, addsph_,                              &
           xe_, ye_, ze_, rin_, avgArea_, rsolv_, ret_,                 &
-          nr_gen_, gen1_, gen2_, gen3_)                                &
+          nr_gen_, gen1_, gen2_, gen3_,                                &
+          nvert_, vert_, centr_)                                       &
           bind(c, name='generatecavity_cpp')
 
       use, intrinsic :: iso_c_binding    
@@ -53,10 +54,13 @@
       integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
       logical(c_bool) :: pedra_file_exists
       integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_ 
+      integer(c_int)  :: nvert_(maxts_)
+      real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)
 
-      integer(c_int)   :: i
+      integer(c_int)   :: i, j, k, offset
       integer(c_int)   :: error_code
       integer          :: lvpri
+      real(c_double), allocatable :: vert(:, :, :), centr(:, :, :)
       type(point_group) :: pgroup
      
       lvpri = 121201
@@ -95,10 +99,17 @@
          rin(i) = rin_(i)
          alpha(i) = 1.0d0
       end do
+     
+! Allocate space for the arrays containing the vertices and the centers
+! of the tesserae arcs
+      allocate(vert(mxts, 10, 3))
+      vert = 0.0d0
+      allocate(centr(mxts, 10, 3))
+      centr = 0.0d0
       
       nesf = nesfp
-
-      call polyhedra_driver(pgroup, lvpri, error_code)
+      
+      call polyhedra_driver(pgroup, vert, centr, lvpri, error_code)
 
 ! Common block dark magic, it will disappear one day...
       nts_ = nts
@@ -116,7 +127,20 @@
          ysphcor_(i) = ye(isphe(i))
          zsphcor_(i) = ze(isphe(i))
          rsph_(i) = re(isphe(i))
+         nvert_(i) = nvert(i)
+! Fill the vert_ and centr_ arrays
+         do j = 1, nvert(i)
+            do k = 1, 3
+                offset = i + j * nts + k * nts * nvert(i)
+                vert_(offset) = vert(i, j, k)
+                centr_(offset) = centr(i, j, k)
+            end do
+         end do
       end do
+
+! Clean-up
+      deallocate(vert)
+      deallocate(centr)
 
       write(lvpri, *) "Error code is ", error_code
 

@@ -78,7 +78,7 @@
 
     contains
 
-    subroutine polyhedra_driver(pgroup, global_print_unit, error_code)
+    subroutine polyhedra_driver(pgroup, vert, centr, global_print_unit, error_code)
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
@@ -87,6 +87,7 @@
     type(point_group) :: pgroup
     integer           :: global_print_unit 
     integer           :: error_code
+    real(8)           :: vert(mxts, 10, 3), centr(mxts, 10, 3)
 
     logical :: some
     integer :: numts, numsph, natm, numver
@@ -94,7 +95,6 @@
     integer, allocatable :: intsph(:, :), newsph(:, :)
     integer, allocatable :: icav1(:), icav2(:)
     integer, allocatable :: jtr(:, :)
-    real(8), allocatable :: vert(:, :, :), centr(:, :, :)
     real(8), allocatable :: xval(:), yval(:), zval(:)
     real(8), allocatable :: cv(:, :)
 
@@ -126,10 +126,6 @@
     icav2 = 0
     allocate(jtr(numts, 3))
     jtr = 0
-    allocate(vert(numts, 10, 3))
-    vert = 0.0d0
-    allocate(centr(numts, 10, 3))
-    centr = 0.0d0
     allocate(xval(numts))
     xval = 0.0d0
     allocate(yval(numts))

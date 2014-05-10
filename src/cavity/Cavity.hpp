@@ -33,6 +33,7 @@
 
 #include "EigenPimpl.hpp"
 
+#include "Element.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 
@@ -50,18 +51,33 @@
 class Cavity
 {
 protected:
+    /// List of spheres
     std::vector<Sphere> spheres_;
+    /// Number of finite elements generated
     int nElements_;
+    /// Number of irreducible finite elements
     int nIrrElements_;
+    /// Whether the cavity has been built
     bool built;
+    /// Coordinates of elements centers
     Eigen::Matrix3Xd elementCenter_;
+    /// Outward-pointing normal vectors to the elements centers
     Eigen::Matrix3Xd elementNormal_;
+    /// Elements areas
     Eigen::VectorXd elementArea_;
+    /// Number of spheres
     int nSpheres_;
+    /// Centers of the sphere the elements belong to
     Eigen::Matrix3Xd elementSphereCenter_;
+    /// Radii of the sphere the elements belong to
     Eigen::VectorXd elementRadius_;
+    /// Spheres centers
     Eigen::Matrix3Xd sphereCenter_;
+    /// Spheres radii
     Eigen::VectorXd sphereRadius_;
+    /// List of finite elements
+    std::vector<Element> elements_;
+    /// Molecular point group
     Symmetry pointGroup_;
 private:
     /*! \brief Creates the cavity and discretizes its surface.

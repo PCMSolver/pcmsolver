@@ -164,4 +164,34 @@ inline void hermitivitize(Eigen::MatrixBase<Derived> & matrix_)
     matrix_ = 0.5 * (matrix_ + matrix_.adjoint().eval());
 }
 
+/*! \fn inline void eulerRotation(Eigen::Matrix3d & R_, const Eigen::Vector3d & eulerAngles_)
+ *  \param[out] R_ the rotation matrix
+ *  \param[in]  eulerAngles_ the Euler angles, in degrees, describing the rotation
+ *
+ *  Build rotation matrix between two reference frames given the Euler angles.
+ *  We assume the convention \f$ R = Z_3 X_2 Z_1 \f$ for the ordering of the extrinsic 
+ *  elemental rotations (see http://en.wikipedia.org/wiki/Euler_angles)
+ *  The Euler angles are given in the order \f$ \phi, \theta, \psi \f$. 
+ *  If we write \f$ c_i, s_i \,\, i = 1, 3 \f$ for their cosines and sines the rotation
+ *  matrix will be:
+ *  \f[
+ *  	R = \begin{pmatrix}
+ *  	      c_1c_3 - s_1c_2s_3 & -s_1c_3 - c_1c_2s_3 &  s_2s_3 \\
+ *  	      c_1s_3 + s_1c_2c_3 & -s_1s_3 + c_1c_2c_3 & -s_2c_3 \\
+ *  	      s_1s_2             & c_1s_2              &  c_2
+ *  	    \end{pmatrix}
+ *  \f]
+ *  Eigen's geometry module is used to calculate the rotation matrix
+ */
+inline void eulerRotation(Eigen::Matrix3d & R_, const Eigen::Vector3d & eulerAngles_)
+{
+	double to_radians = M_PI / 180.0;
+	double phi   = eulerAngles_(0) * to_radians;
+	double theta = eulerAngles_(1) * to_radians;
+	double psi   = eulerAngles_(2) * to_radians;
+	R_ = Eigen::AngleAxisd(psi, Eigen::Vector3d::UnitZ())
+          * Eigen::AngleAxisd(theta, Eigen::Vector3d::UnitX())
+          * Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitZ());
+}
+
 #endif // MATHUTILS_HPP

@@ -118,10 +118,13 @@ namespace
     // inherits from a GreensFunction<double>
     IGreensFunction * createMetalSphere(const greenData & _data)
     {
-        // We pass some bogus arguments...
-        Eigen::Vector3d orig;
-        orig << 0.0, 0.0, 0.0;
-        return new MetalSphere(_data.epsilon, 0.0, 0.0, orig, 1.0, _data.integrator);
+	// The NP center is in a std::vector<double> but we need an Eigen::Vector3d
+	// We are currently assuming that there is only one spherical metal NP
+	Eigen::Vector3d center = Eigen::Vector3d::Zero();
+	for (int i = 0; i < 3; ++i) {
+		center(i) = _data.NPspheres[i];
+	}
+        return new MetalSphere(_data.epsilon, _data.epsilonReal, _data.epsilonImaginary, center, _data.NPradii, _data.integrator);
     }
     const std::string METALSPHERE("MetalSphere");
     const bool registeredMetalSphere =

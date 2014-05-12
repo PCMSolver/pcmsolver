@@ -189,9 +189,9 @@ inline void eulerRotation(Eigen::Matrix3d & R_, const Eigen::Vector3d & eulerAng
 	double phi   = eulerAngles_(0) * to_radians;
 	double theta = eulerAngles_(1) * to_radians;
 	double psi   = eulerAngles_(2) * to_radians;
-	R_ = Eigen::AngleAxisd(psi, Eigen::Vector3d::UnitZ())
-          * Eigen::AngleAxisd(theta, Eigen::Vector3d::UnitX())
-          * Eigen::AngleAxisd(phi, Eigen::Vector3d::UnitZ());
+	R_ = Eigen::AngleAxis<double>(psi,   Eigen::Vector3d::UnitZ())
+           * Eigen::AngleAxis<double>(theta, Eigen::Vector3d::UnitX())
+           * Eigen::AngleAxis<double>(phi,   Eigen::Vector3d::UnitZ());
 }
 
 #endif // MATHUTILS_HPP

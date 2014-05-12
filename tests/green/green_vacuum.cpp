@@ -10,31 +10,11 @@
 
 #include "EigenPimpl.hpp"
 
+#include "AnalyticEvaluate.hpp"
 #include "DerivativeTypes.hpp"
 #include "Vacuum.hpp"
 
 struct VacuumTest {
-    Eigen::Array4d analyticEvaluate(const Eigen::Vector3d & spNormal,
-                                    const Eigen::Vector3d & sp,
-                                    const Eigen::Vector3d & ppNormal, const Eigen::Vector3d & pp) {
-        Eigen::Array4d result = Eigen::Array4d::Zero();
-        double distance = (sp - pp).norm();
-        double distance_3 = std::pow(distance, 3);
-        double distance_5 = std::pow(distance, 5);
-
-        // Value of the function
-        result(0) = 1.0 / distance;
-        // Value of the directional derivative wrt probe
-        result(1) = (sp - pp).dot(ppNormal) / distance_3 ;
-        // Directional derivative wrt source
-        result(2) = - (sp - pp).dot(spNormal) / distance_3;
-        // Value of the Hessian
-        result(3) = spNormal.dot(ppNormal) / distance_3 - 3 * ((
-                        sp - pp).dot(spNormal))*((sp - pp).dot(
-                                    ppNormal)) / distance_5;
-
-        return result;
-    }
     VacuumTest() { SetUp(); }
     Eigen::Vector3d source, probe, sourceNormal, probeNormal;
     Eigen::Array4d result;
@@ -45,7 +25,7 @@ struct VacuumTest {
         probe = Eigen::Vector3d::Random();
         probeNormal = probe + Eigen::Vector3d::Random();
         probeNormal.normalize();
-        result = analyticEvaluate(sourceNormal, source, probeNormal, probe);
+        result = analyticVacuum(sourceNormal, source, probeNormal, probe);
     }
 };
 

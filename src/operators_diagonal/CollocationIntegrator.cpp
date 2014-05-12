@@ -119,19 +119,53 @@ double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * gf,
 }
 
 double CollocationIntegrator::computeS(const IonicLiquid<double> * gf, const Element & e) const {
+	return 0.0;
 }
 double CollocationIntegrator::computeS(const IonicLiquid<AD_directional> * gf, const Element & e) const {
+	return 0.0;
 }
 double CollocationIntegrator::computeS(const IonicLiquid<AD_gradient> * gf, const Element & e) const {
+	return 0.0;
 }
 double CollocationIntegrator::computeS(const IonicLiquid<AD_hessian> * gf, const Element & e) const {
+	return 0.0;
 }
 
 double CollocationIntegrator::computeD(const IonicLiquid<double> * gf, const Element & e) const {
+	return 0.0;
 }
 double CollocationIntegrator::computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const {
+	return 0.0;
 }
 double CollocationIntegrator::computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const {
+	return 0.0;
 }
 double CollocationIntegrator::computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const {
+	return 0.0;
+}
+
+double CollocationIntegrator::computeS(const AnisotropicLiquid<double> * gf, const Element & e) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeS(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeS(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeS(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const {
+	return 0.0;
+}
+
+double CollocationIntegrator::computeD(const AnisotropicLiquid<double> * gf, const Element & e) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const {
+	return 0.0;
 }

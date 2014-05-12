@@ -25,6 +25,7 @@
 
 #include "AnisotropicLiquid.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <ostream>
 #include <stdexcept>
@@ -53,6 +54,8 @@ void AnisotropicLiquid<T>::build() {
 	Eigen::Vector3d scratch; 
 	scratch << (1.0/epsilonLab_(0)), (1.0/epsilonLab_(1)), (1.0/epsilonLab_(2));
 	epsilonInv_ = R_ * scratch.asDiagonal() * R_.transpose();
+	// 4. As a final step, calculate the determinant
+	detEps_ = epsilonLab_(0) * epsilonLab_(1) * epsilonLab_(2);
 }
 
 template<typename T>
@@ -60,34 +63,41 @@ double AnisotropicLiquid<T>::derivative(const Eigen::Vector3d & direction,
                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     // NORMALIZATION TEMPORARILY REMOVED /direction.norm();
-    return 0.0; //epsilon_ * (this->derivativeProbe(direction, p1, p2));
+    return this->derivativeProbe(direction, p1, p2);
 }
 
 template<typename T>
 T AnisotropicLiquid<T>::operator()(T * sp, T * pp) const
 {
-    T distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
-                      (sp[1] - pp[1]) * (sp[1] - pp[1]) +
-                      (sp[2] - pp[2]) * (sp[2] - pp[2]));
-    return 0.0;//(exp(-kappa_ * distance) / (epsilon_ * distance));
+    // The distance has to be calculated using epsilonInv_ as metric:
+    T scratch = 0.0;
+    for (int i = 0; i < 3; ++i) {
+	    for (int j = 0; j < 3; ++j) {
+		   scratch += (sp[i] - pp[i]) * epsilonInv_(i, j) * (sp[j] - pp[j]);
+	    }
+    }
+    T distance = sqrt(scratch);
+                 
+    return (1.0/(sqrt(detEps_) * distance));
 }
 
 template <typename T>
 double AnisotropicLiquid<T>::diagonalS(const Element & e) const {
-        return 0.0; //this->diagonal_->computeS(this, e);
+        return this->diagonal_->computeS(this, e);
 }
 
 template <typename T>
 double AnisotropicLiquid<T>::diagonalD(const Element & e) const {
-        return 0.0; //this->diagonal_->computeD(this, e);
+        return this->diagonal_->computeD(this, e);
 }
 
 template <typename T>
 std::ostream & AnisotropicLiquid<T>::printObject(std::ostream & os)
 {
     os << "Green's function type: anisotropic liquid" << std::endl;
-    os << "Permittivity tensor diagonal (lab frame) = " << epsilon_.transpose() << std::endl;
-    os << "Euler angles (molecule-to-lab frame)     = " << eulerAngles_.transpose();
+    os << "Permittivity tensor diagonal (lab frame)   = " << epsilonLab_.transpose() << std::endl;
+    os << "Permittivity tensor (molecule-fixed frame) =\n" << epsilon_ << std::endl;
+    os << "Euler angles (molecule-to-lab frame)       = " << eulerAngles_.transpose();
     return os;
 }
 

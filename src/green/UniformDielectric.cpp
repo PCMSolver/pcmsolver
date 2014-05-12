@@ -42,9 +42,8 @@
 template<typename T>
 double UniformDielectric<T>::derivative(const Eigen::Vector3d & direction,
                                         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
-{
-    return epsilon_ * (this->derivativeProbe(direction, p1,
-                       p2));  // NORMALIZTION TEMPORARY REMOVED /direction.norm();
+{ // NORMALIZTION TEMPORARY REMOVED /direction.norm();
+    return (this->derivativeProbe(direction, p1, p2)); 
 }
 
 template<typename T>
@@ -53,7 +52,7 @@ T UniformDielectric<T>::operator()(T * sp, T * pp) const
     T distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
                       (sp[1] - pp[1]) * (sp[1] - pp[1]) +
                       (sp[2] - pp[2]) * (sp[2] - pp[2]));
-    return 1/(epsilon_ * distance);
+    return (1.0/(epsilon_ * distance));
 }
 
 template <typename T>

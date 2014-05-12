@@ -114,10 +114,12 @@ private:
     Eigen::Vector3d eulerAngles_;
     /// Permittivity tensor in molecule-fixed frame
     Eigen::Matrix3d epsilon_;
-    /// Inverser of the permittivity tensor in molecule-fixed frame
+    /// Inverse of the permittivity tensor in molecule-fixed frame
     Eigen::Matrix3d epsilonInv_;
     /// molecule-fixed to lab-fixed frames rotation matrix
     Eigen::Matrix3d R_;
+    /// Determinant of the permittivity tensor
+    double detEps_;
     virtual std::ostream & printObject(std::ostream & os);
 };
 

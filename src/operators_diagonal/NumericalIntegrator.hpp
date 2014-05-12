@@ -12,6 +12,7 @@ class Element;
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegrator.hpp"
 #include "DiagonalIntegratorFactory.hpp"
+#include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
@@ -58,6 +59,16 @@ public:
     virtual double computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const;
     virtual double computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
     virtual double computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
+    
+    virtual double computeS(const AnisotropicLiquid<double> * gf, const Element & e) const;
+    virtual double computeS(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
+    virtual double computeS(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
+    virtual double computeS(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
+
+    virtual double computeD(const AnisotropicLiquid<double> * gf, const Element & e) const;
+    virtual double computeD(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
+    virtual double computeD(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
+    virtual double computeD(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
 };
 namespace
 {

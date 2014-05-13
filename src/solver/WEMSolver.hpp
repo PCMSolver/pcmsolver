@@ -33,32 +33,31 @@
 
 #include "EigenPimpl.hpp"
 
-extern "C"
-{
-#include "vector3.h"
-#include "sparse2.h"
-}
+#include "SparseMatrix.hpp"
+#include "GenericAnsatzFunction.hpp"
 
+class Vector2;
+class Vector3;
 class Cavity;
 class WaveletCavity;
 
 #include "IGreensFunction.hpp"
+#include "SolverData.hpp"
+#include "SolverFactory.hpp"
 #include "PCMSolver.hpp"
 
 /*! \file WEMSolver.hpp
  *  \class WEMSolver
  *  \brief WEMSolver
- *  \author Luca Frediani
- *  \date 2011
+ *  \author Luca Frediani and Monica Bugeanu
+ *  \date 2014
  */
 
 class WEMSolver : public PCMSolver
 {
 private:
     void initWEMMembers();
-    virtual std::ostream & printSolver(std::ostream & os) {
-        return os;
-    }
+    virtual std::ostream & printSolver(std::ostream & os);
 public:
     WEMSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_,
               int integralEquation_ = SecondKind )
@@ -80,36 +79,50 @@ public:
         return solver.printSolver(os);
     }
 protected:
-    virtual void constructSystemMatrix();
-    virtual void uploadCavity(const WaveletCavity &
+    void constructSystemMatrix();
+    void uploadCavity(const WaveletCavity &
                               cavity); // different interpolation
-    virtual void constructSi() = 0;
-    virtual void constructSe() = 0;
+    virtual void constructSi();
+    virtual void constructSe();
     virtual void solveFirstKind(const Eigen::VectorXd & potential,
-                                Eigen::VectorXd & charge) = 0;
+                                Eigen::VectorXd & charge);
     virtual void solveSecondKind(const Eigen::VectorXd & potential,
-                                 Eigen::VectorXd & charge) = 0;
+                                 Eigen::VectorXd & charge);
     virtual void solveFull(const Eigen::VectorXd & potential,
-                           Eigen::VectorXd & charge) = 0;
-    virtual void constructWavelets() = 0;
-    virtual void initInterpolation() = 0;
+                           Eigen::VectorXd & charge);
+    virtual void constructWavelets();
+    virtual void initInterpolation();
+
     double threshold;
-    unsigned int quadratureLevel_;
-    sparse2 S_i_, S_e_; // System matrices
+    SparseMatrix S_i_, S_e_; // System matrices
     bool systemMatricesInitialized_;
-    vector3 *** pointList; // the old U
-    vector3 *nodeList; //*P_; --     // Point list
-    unsigned int **elementList; //**F_;     // Element list
-    vector3 ****T_; // interpolation polynomial coefficients
-    unsigned int nNodes; //np_; --    // Number of knot points or something
-    unsigned int nFunctions; //nf_; --    // Number of ansatz functions
-    unsigned int nPatches; // p_; --    // Number of points
-    unsigned int nLevels; //M_; --    // Patch level (2**M * 2**M elements per patch)
-    int nQuadPoints; // nPoints_;    // Number of quadrature points
+
+//    unsigned int quadratureLevel_;
+//    Vector3 *** pointList; // the old U
+//    Vector3 *nodeList; //*P_; --     // Point list
+//    unsigned int **elementList; //**F_;     // Element list
+//    unsigned int nNodes; //np_; --    // Number of knot points or something
+//    unsigned int nFunctions; //nf_; --    // Number of ansatz functions
+//    unsigned int nPatches; // p_; --    // Number of points
+//    unsigned int nLevels; //M_; --    // Patch level (2**M * 2**M elements per patch)
+//    int nQuadPoints; // nPoints_;    // Number of quadrature points
+    
     double apriori1_, aposteriori1_;    // System matrix sparsities
     double apriori2_, aposteriori2_;    // System matrix sparsities
     int integralEquation;
+
     enum EquationType {FirstKind, SecondKind, Full};
 };
+
+namespace
+{
+    PCMSolver * createWEMSolver(const solverData & _data)
+    {
+        return new WEMSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
+    }
+    const std::string WEMSOLVER("Wavelet");
+    const bool registeredWEMSolver = SolverFactory::TheSolverFactory().registerSolver(
+        WEMSOLVER,createWEMSolver);
+}
 
 #endif // WEMSOLVER_HPP

@@ -57,33 +57,60 @@ extern "C"
 #include "cubature.h"
 #include "gauss_square.h"
 #include "constants.h"
+#include "energy.h"
 }
 
 #include "Cavity.hpp"
 #include "IGreensFunction.hpp"
 #include "WaveletCavity.hpp"
 
+static GreensFunction *gf;
+
+static double SingleLayer (Vector3 x, Vector3 y)
+{
+    Eigen::Vector3d vx(x.x, x.y, x.z);
+    Eigen::Vector3d vy(y.x, y.y, y.z);
+    Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+    double value = gf->evaluate(foo, vx, foo, vy)(0);
+    return value;
+}
+
+static double DoubleLayer (Vector3 x, Vector3 y, Vector3 n_y)
+{
+    Eigen::Vector3d vx(x.x, x.y, x.z);
+    Eigen::Vector3d vy(y.x, y.y, y.z);
+    Eigen::Vector3d vn_y(n_y.x, n_y.y, n_y.z);
+    Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+    double value = gf->evaluate(foo, vx, vn_y, vy)(1);
+    return value;
+}
+
 void WEMSolver::initWEMMembers()
 {
-    pointList = NULL;
-    nodeList = NULL;
-    elementList = NULL;
-    T_ = NULL;
+//    pointList = NULL;
+//    nodeList = NULL;
+//    elementList = NULL;
+//    T_ = NULL;
     systemMatricesInitialized_ = false;
     threshold = 1e-10;
-    quadratureLevel_ = 1;
-    nQuadPoints = 0;
+    //af.quadratureLevel_ = 1; // set in constructor of AnsatzFunction
+    af.nQuadPoints = 0; //??? what is this for?
+    af.elementTree = NULL;
+    af.waveletList = NULL;
 }
 
 WEMSolver::~WEMSolver()
 {
-    if (nodeList != NULL)    free(nodeList);
-    if (elementList != NULL) free_patchlist(&elementList,nFunctions);
-    if (pointList != NULL)   free_points(&pointList, nPatches, nLevels);
-    if (systemMatricesInitialized_) {
-        free_sparse2(&S_i_);
-        if(integralEquation == Full) free_sparse2(&S_e_);
-    }
+    //if (nodeList != NULL)    free(nodeList);
+    //if (elementList != NULL) free_patchlist(&elementList,nFunctions);
+    //if (pointList != NULL)   free_points(&pointList, nPatches, nLevels);
+    //if (systemMatricesInitialized_) {
+    //    free_sparse2(&S_i_);
+    //    if(integralEquation == Full) free_sparse2(&S_e_);
+    //}
+    //if(elementTree != NULL) free_elementlist(&elementTree, nPatches,nLevels);
+    //if(waveletList != NULL) free_waveletlist(&waveletList, nPatches,nLevels);
+    //if(T_ != NULL)          free_interpolate(&T_,nPatches,nLevels);
 }
 
 void WEMSolver::uploadCavity(const WaveletCavity & cavity)
@@ -94,7 +121,7 @@ void WEMSolver::uploadCavity(const WaveletCavity & cavity)
     nFunctions = nPatches * n * n;
     alloc_points(&pointList, nPatches, nLevels);
     int kk = 0;
-    // Ask Helmut about index switch
+    // Ask Helmut about index switch - changed for "faster access"
     for (size_t i = 0; i < nPatches; ++i) {
         for (int j = 0; j <= n; ++j) {
             for (int k = 0; k <= n; ++k) {
@@ -124,12 +151,55 @@ void WEMSolver::buildSystemMatrix(const Cavity & cavity)
     }
 }
 
+void WEMSolver::initInterpolation(){
+    af.interCoeff = new Interpolation(pointList, af.interpolationGrade, af.interpolationType, af.nLevels, af.nPatches);
+    nNodes = af.genNet(pointList);
+}
+
+void WEMSolver::constructWavelets(){
+    //af.generateElementList(); // already done in genNet
+    af.generateWaveletList();
+    af.setQuadratureLevel();
+    af.simplifyWaveletList();
+    af.completeElementList();
+}
+
 void WEMSolver::constructSystemMatrix()
 {
     constructSi();
     if(integralEquation == Full) {
         constructSe();
     }
+}
+
+void WEMSolver::constructSi(){
+    double factor = 0.0;
+    double epsilon = 0;
+    switch (integralEquation) {
+        case FirstKind:
+            epsilon = greenOutside_->dielectricConstant();
+            factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
+            break;
+        case SecondKind:
+            throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
+            break;
+        case Full:
+            factor = 2 * M_PI;
+            break;
+        default:
+            throw std::runtime_error("Unknown integral equation type.");
+    }
+    gf = greenInside_;
+    apriori1_ = af.compression(&S_i_);
+    WEM(&af, &S_i_, SingleLayer, DoubleLayer, factor);
+    aposteriori1_ = af.postproc(&S_i_);
+}
+
+void WEMSolver::constructSe(){
+    gf = greenOutside_; // sets the global pointer to pass GF to C code
+    apriori2_ = af.compression(&S_e_);
+    WEM(&af, &S_e_, SingleLayer, DoubleLayer, -2*M_PI);
+    aposteriori2_ = af.postproc(&S_e_);
 }
 
 void WEMSolver::compCharge(const Eigen::VectorXd & potential,
@@ -150,4 +220,68 @@ void WEMSolver::compCharge(const Eigen::VectorXd & potential,
     }
     charge *= -1.0;
     //	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
+}
+
+void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
+                               Eigen::VectorXd & charge)
+{
+    double *rhs;
+    double *u = (double*) calloc(af.nFunctions, sizeof(double));
+    double * pot = const_cast<double *>(potential.data());
+    double * chg = charge.data();
+    double epsilon = greenOutside_->dielectricConstant();
+    WEMRHS2M(&rhs, &af, pot);
+    int iter = WEMPGMRES2(&S_i_, rhs, u, af.threshold, &af);
+    af.tdwtKon(u);
+    af.dwtKon(u);
+    for (size_t i = 0; i < af.nFunctions; ++i) {
+        rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
+    }
+    memset(u, 0, af.nFunctions * sizeof(double));
+    iter = WEMPCG(&S_i_, rhs, u, threshold, &af);
+    af.tdwtKon(u);
+    energy_ext(u, pot, elementList, T_, nPatches, nLevels);
+    charge_ext(u, chg, elementList, T_, nPatches, nLevels);
+    free(rhs);
+    free(u);
+}
+
+void WEMSolver::solveSecondKind(const Eigen::VectorXd & potential,
+                                Eigen::VectorXd & charge)
+{
+    throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
+}
+
+void WEMSolver::solveFull(const Eigen::VectorXd & potential,
+                          Eigen::VectorXd & charge)
+{
+    double *rhs;
+    double *u = (double*) calloc(af.nFunctions, sizeof(double));
+    double *v = (double*) calloc(af.nFunctions, sizeof(double));
+    //next line is just a quick fix to avoid problems with const but i do not like it...
+    double * pot = const_cast<double *>(potential.data());
+    WEMRHS2(&rhs, &af);
+    int iters = WEMPCG(&S_i_, rhs, u, threshold, &af);
+    memset(rhs, 0, af.nFunctions*sizeof(double));
+    for(unsigned int i = 0; i < af.nFunctions; i++) {
+        for(unsigned int j = 0; j < S_e_.row_number[i]; j++) {
+            rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
+        }
+    }
+    iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, &af);
+    for(unsigned int i = 0; i < af.nFunctions; i++) {
+        u[i] -= 4*M_PI*v[i];
+    }
+    af.tdwtKon(u);
+    energy_ext(u, pot, elementList, T_, nPatches, nLevels);
+    charge_ext(u, charge.data(), elementList, T_, nPatches, nLevels);
+    free(rhs);
+    free(u);
+    free(v);
+}
+
+std::ostream & PWCSolver::printSolver(std::ostream & os)
+{
+    os << "Solver Type: Wavelet, piecewise constant functions";
+    return os;
 }

@@ -86,15 +86,4 @@ private:
     wavelet *waveletList; //*W_; List of wavelets
 };
 
-namespace
-{
-    PCMSolver * createPWCSolver(const solverData & _data)
-    {
-        return new PWCSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
-    }
-    const std::string PWCSOLVER("Wavelet");
-    const bool registeredPWCSolver = SolverFactory::TheSolverFactory().registerSolver(
-                                         PWCSOLVER, createPWCSolver);
-}
-
 #endif // PWCSOLVER_HPP

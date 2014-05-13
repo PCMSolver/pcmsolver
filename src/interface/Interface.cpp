@@ -451,13 +451,13 @@ void initSolver()
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
     // (...not our fault, but should remedy somehow)
-    if (modelType == "Wavelet") {
-        _PWCSolver = new PWCSolver(gfInside, gfOutside);
-        _PWCSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_(),
-                                     false); // WTF is happening here???
+    if ((modelType == "Wavelet")||(modelType == "Linear")) {
+        _WEMSolver = new WEMSolver(gfInside, gfOutside, modelType);
+        _WEMSolver->buildSystemMatrix(*_waveletCavity);
+        _waveletCavity->uploadPoints(_WEMSolver->getQuadratureLevel(), _WEMSolver->getT_(),
+                                     false); // WTF is happening here??? yes... why???
         _cavity = _waveletCavity;
-        _solver = _PWCSolver;
+        _solver = _WEMSolver;
     } else if (modelType == "Linear") {
         _PWLSolver = new PWLSolver(gfInside, gfOutside);
         _PWLSolver->buildSystemMatrix(*_waveletCavity);

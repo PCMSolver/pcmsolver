@@ -34,26 +34,11 @@
 
 #include "EigenPimpl.hpp"
 
-extern "C"
-{
-//#include "WEM.h"
-//#include "read_points.h"
-#include "vector2.h"
-#include "vector3.h"
-#include "interpolate.h"
-#include "interpolate_pwl.h"
-//#include "topology.h"
-//#include "kern.h"
-//#include "compression.h"
-//#include "postproc.h"
-//#include "WEMRHS.h"
-//#include "WEMPCG.h"
-//#include "WEMPGMRES.h"
-//#include "dwt.h"
-#include "cubature.h"
-#include "gauss_square.h"
-//#include "constants.h"
-}
+#include "Vector2.hpp"
+#include "Vector3.hpp"
+#include "Interpolation.hpp"
+#include "Cubature.hpp"
+#include "GaussSquare.hpp"
 
 void WaveletCavity::writeInput(std::string &fileName)
 {
@@ -120,74 +105,18 @@ void WaveletCavity::readCavity(const std::string & filename)
     uploadedDyadic = true;
 }
 
-void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_, bool isPWL)
-{
-    if(isPWL) {
-        uploadPointsPWL(quadLevel, T_);
-    } else {
-        uploadPointsPWC(quadLevel, T_);
-    }
-}
-
-void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
+void WaveletCavity::uploadPoints(int quadLevel, Interpolation *interp)
 {
     if (not uploadedDyadic) {
         throw std::runtime_error("Dyadic file must be uploaded first.");
     }
-    vector2 s, t;
-    vector3 point;
-    vector3 norm;
+    Vector2 s, t;
+    Vector3 point;
+    Vector3 norm;
     int n = 1 << nLevels;
     double h = 1.0 / n;
-    cubature *Q;
-    init_Gauss_Square(&Q, quadLevel + 1);
-
-    nElements_ = nPatches * n * n * Q[quadLevel].nop;
-
-    elementCenter_.resize(Eigen::NoChange, nElements_);
-    elementNormal_.resize(Eigen::NoChange, nElements_);
-    elementArea_.resize(nElements_);
-    // The following is to guarantee that writing cavity to .npz file works
-    elementRadius_.setZero(nElements_);
-
-    int j = 0;
-    for (size_t i1 = 0; i1 < nPatches; ++i1) {
-        for (int i2 = 0; i2 < n; ++i2) {
-            s.y = h * i2;
-            for (int i3=0; i3 < n; ++i3) {
-                s.x = h * i3;
-                for (size_t k = 0; k < Q[quadLevel].nop; ++k) {
-                    t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
-                    point = Chi(t,T_[i1], nLevels);
-                    norm = n_Chi(t,T_[i1], nLevels);
-                    Eigen::Vector3d center(point.x, point.y, point.z);
-                    Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);
-                    normal.normalize();
-                    double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
-                    elementCenter_.col(j) = center.transpose();
-                    elementNormal_.col(j) = normal.transpose();
-                    elementArea_(j) = area;
-                    ++j;
-                }
-            }
-        }
-    }
-    free_Gauss_Square(&Q,quadLevel+1);
-    built = true;
-}
-
-void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
-{
-    if (not uploadedDyadic) {
-        throw std::runtime_error("Dyadic file must be uploaded first.");
-    }
-    vector2 s, t;
-    vector3 point;
-    vector3 norm;
-    int n = 1 << nLevels;
-    double h = 1.0 / n;
-    cubature *Q;
-    init_Gauss_Square(&Q, quadLevel + 1);
+    Cubature *Q;
+    initGaussSquare(&Q, quadLevel + 1);
 
     nElements_ = nPatches * n * n * Q[quadLevel].nop;
 
@@ -202,14 +131,13 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
             for (int i3=0; i3 < n; ++i3) {
                 s.x = h * i3;
                 for (size_t k = 0; k < Q[quadLevel].nop; k++) {
-                    t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
-                    point = Chi_pwl(t,T_[i1], nLevels);
-                    norm = n_Chi_pwl(t,T_[i1], nLevels);
+                    t = vector2Add(s,vector2SMul(h,Q[quadLevel].xi[k]));
+                    point = interp->Chi(t,i1);
+                    norm = interp->n_Chi(t,i1);
                     Eigen::Vector3d center(point.x, point.y, point.z);
                     Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);
                     normal.normalize();
-                    double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi_pwl(t, T_[i1],
-                                  nLevels));
+                    double area = h * h * Q[quadLevel].w[k] * vector3Norm(norm);
                     elementCenter_.col(j) = center.transpose();
                     elementNormal_.col(j) = normal.transpose();
                     elementArea_(j) = area;
@@ -218,7 +146,7 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
             }
         }
     }
-    free_Gauss_Square(&Q,quadLevel+1);
+    freeGaussSquare(&Q,quadLevel+1);
     built = true;
 }
 

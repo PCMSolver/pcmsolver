@@ -33,6 +33,7 @@
 
 #include "GetkwPimpl.hpp"
 
+#include "InputManager.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
@@ -58,88 +59,144 @@
 
 class Input
 {
-private:
-    Input();
+private: 
+    Input() {}
+    Input(const char * pythonParsed);
+    Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
     Input(const Input &other);
     Input& operator=(const Input &other);
     ~Input() {}
+
+    /*! Read Python-parsed input (API-side syntactic input parsing) into Input object
+     */
+    void reader(const char * pythonParsed);
+    /*! Read host data structures (host-side syntactic input parsing) into Input object
+     */
+    void reader(const cavityInput & cav, const solverInput & solv, const greenInput & green);
+    /*! Perform semantic input parsing aka sanity check
+     */
+    void semanticParser();
+
+    /// Year of the CODATA set to be used
     int CODATAyear_;
-    std::string cavFilename;
-    std::string type;
-    int patchLevel;
-    double coarsity;
-    double area;
-    double minDistance;
-    int derOrder;
-    bool scaling;
-    std::string radiiSet;
-    double minimalRadius;
-    std::string mode;
-    std::vector<int> atoms;
-    std::vector<double> radii;
-    std::vector<Sphere> spheres;
-    Solvent solvent;
-    bool hasSolvent;
-    std::string solverType;
-    int equationType;
-    double correction;
+    /// Filename for the .npz cavity restart file
+    std::string cavFilename_;
+    /// The type of cavity
+    std::string type_;
+    /// Wavelet cavity patch level
+    int patchLevel_;
+    /// Wavelet cavity coarsity
+    double coarsity_;
+    /// GePol and TsLess cavities average element area
+    double area_;
+    /// TsLess cavity minimal distance between sampling points
+    double minDistance_;
+    /// TsLess cavity maximum derivative order of switch function
+    int derOrder_;
+    /// Whether the radii should be scaled by 1.2
+    bool scaling_;
+    /// The set of radii to be used
+    std::string radiiSet_;
+    /// Minimal radius of an added sphere
+    double minimalRadius_;
+    /// How the API should get the coordinates of the sphere centers
+    std::string mode_;
+    /// List of selected atoms with custom radii
+    std::vector<int> atoms_;
+    /// List of radii attached to the selected atoms
+    std::vector<double> radii_;
+    /// List of spheres for fully custom cavity generation
+    std::vector<Sphere> spheres_;
+    /// The solvent for a vacuum/uniform dielectric run
+    Solvent solvent_;
+    /// Whether the medium was initialized from a solvent object
+    bool hasSolvent_;
+    /// The solver type 
+    std::string solverType_;
+    /// The integral equation type (wavelet solvers)
+    int equationType_;
+    /// Correction factor (C-PCM)
+    double correction_;
+    /// Whether the PCM matrix should be hermitivitized (collocation solvers)
     bool hermitivitize_;
-    double probeRadius;
-    std::string greenInsideType;
-    std::string greenOutsideType;
-    int derivativeInsideType;
-    int derivativeOutsideType;
-    double epsilonInside;
-    double epsilonOutside;
-    double epsilonReal;
-    double epsilonImaginary;
-    std::vector<double> spherePosition;
-    double sphereRadius;
+    /// Solvent probe radius
+    double probeRadius_;
+    /// The Green's function type inside the cavity
+    std::string greenInsideType_;
+    /// The Green's function type outside the cavity
+    std::string greenOutsideType_;
+    /// How to calculate Green's function derivatives inside the cavity
+    int derivativeInsideType_;
+    /// How to calculate Green's function derivatives outside the cavity
+    int derivativeOutsideType_;
+    /// Permittivity inside the cavity
+    double epsilonInside_;
+    /// Permittivity outside the cavity
+    double epsilonOutside_;
+    /// Real part of the metal NP permittivity
+    double epsilonReal_;
+    /// Imaginary part of the metal NP permittivity
+    double epsilonImaginary_;
+    /// Center of the spherical metal NP
+    std::vector<double> spherePosition_;
+    /// Radisu of the spherical metal NP
+    double sphereRadius_;
+    /// Who performed the syntactic input parsing
+    std::string providedBy_;
 public:
-    static Input& TheInput() {
-        static Input obj;
+    static Input& TheInput(const cavityInput & cav, const solverInput & solv, const greenInput & green) {
+        static Input obj = Input(cav, solv, green);
         return obj;
+    }
+    static Input& TheInput(const char * pythonParsed = "@pcmsolver.inp") {
+        static Input obj = Input(pythonParsed);
+	return obj;
     }
     // Accessor methods
     int CODATAyear() { return CODATAyear_; } 
     // Cavity section input
-    std::string getCavityFilename() { return cavFilename; }
-    std::string getCavityType() { return type; }
-    int getPatchLevel() { return patchLevel; }
-    double getCoarsity() { return coarsity; }
-    double getArea() { return area; }
-    double getMinDistance() { return minDistance; }
-    int getDerOrder() { return derOrder; }
-    bool getScaling() { return scaling; }
-    std::string getRadiiSet() { return radiiSet; }
-    double getMinimalRadius() { return minimalRadius; }
-    std::string getMode() { return mode; }
-    std::vector<int> getAtoms() { return atoms; }
-    std::vector<double> getRadii() { return radii; }
-    std::vector<Sphere> getSpheres() { return spheres; }
-    void setSpheres(const std::vector<Sphere> & _spheres) { spheres = _spheres; }
+    std::string cavityFilename() { return cavFilename_; }
+    std::string cavityType() { return type_; }
+    int patchLevel() { return patchLevel_; }
+    double coarsity() { return coarsity_; }
+    double area() { return area_; }
+    double minDistance() { return minDistance_; }
+    int derOrder() { return derOrder_; }
+    bool scaling() { return scaling_; }
+    std::string radiiSet() { return radiiSet_; }
+    double minimalRadius() { return minimalRadius_; }
+    std::string mode() { return mode_; }
+    std::vector<int> atoms() { return atoms_; }
+    std::vector<double> radii() { return radii_; }
+    std::vector<Sphere> spheres() { return spheres_; }
+    void spheres(const std::vector<Sphere> & sph) { spheres_ = sph; }
     // Medium section input
-    Solvent getSolvent() { return solvent; }
-    bool fromSolvent() { return hasSolvent; }
-    std::string getSolverType() { return solverType; }
-    int getEquationType() { return equationType; }
-    double getCorrection() { return correction; }
+    Solvent solvent() { return solvent_; }
+    bool fromSolvent() { return hasSolvent_; }
+    std::string solverType() { return solverType_; }
+    int equationType() { return equationType_; }
+    double correction() { return correction_; }
     bool hermitivitize() { return hermitivitize_; }
-    double getProbeRadius() { return probeRadius; }
-    std::string getGreenInsideType() { return greenInsideType; }
-    std::string getGreenOutsideType() { return greenOutsideType; }
-    int getDerivativeInsideType() { return derivativeInsideType; }
-    int getDerivativeOutsideType() { return derivativeOutsideType; }
-    double getEpsilonInside() { return epsilonInside; }
-    double getEpsilonOutside() { return epsilonOutside; }
-    double getEpsilonReal() { return epsilonReal; }
-    double getEpsilonImaginary() { return epsilonImaginary; }
-    std::vector<double> getSpherePosition() { return spherePosition; }
-    double getSphereRadius() { return sphereRadius; }
+    double probeRadius() { return probeRadius_; }
+    std::string greenInsideType() { return greenInsideType_; }
+    std::string greenOutsideType() { return greenOutsideType_; }
+    int derivativeInsideType() { return derivativeInsideType_; }
+    int derivativeOutsideType() { return derivativeOutsideType_; }
+    double epsilonInside() { return epsilonInside_; }
+    double epsilonOutside() { return epsilonOutside_; }
+    double epsilonReal() { return epsilonReal_; }
+    double epsilonImaginary() { return epsilonImaginary_; }
+    std::vector<double> spherePosition() { return spherePosition_; }
+    double sphereRadius() { return sphereRadius_; }
+    std::string providedBy() { return providedBy_; }
     /// Operators
     /// operator<<
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
     /// @}
 };
+
+int derivativeTraits(const std::string & name);
+
+int integralEquation(const std::string & name);
 
 #endif // INPUT_HPP

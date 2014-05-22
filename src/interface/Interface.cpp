@@ -66,6 +66,7 @@ PWLSolver * _PWLSolver = NULL;
 PCMSolver * _solver = NULL;
 
 SharedSurfaceFunctionMap functions;
+Input * parsedInput = NULL;
 
 /*
 
@@ -76,14 +77,20 @@ SharedSurfaceFunctionMap functions;
 
 extern "C" void hello_pcm(int * a, double * b)
 {
-    std::cout << "Hello, PCM!" << std::endl;
-    std::cout << "The integer is: " << *a << std::endl;
-    std::cout << "The double is: " << *b << std::endl;
+    std::ostringstream out_stream;
+    out_stream << "Hello, PCM!" << std::endl;
+    out_stream << "The integer is: " << *a << std::endl;
+    out_stream << "The double is: " << *b << std::endl;
+    printer(out_stream);
 }
 
-extern "C" void set_up_pcm()
+extern "C" void set_up_pcm(int * host_provides_input)
 {
-    setupInput();
+    bool from_host = false;
+    if (*host_provides_input != 0) {
+	    from_host = true;
+    }
+    setupInput(from_host);
     initCavity();
     initSolver();
 }
@@ -220,16 +227,17 @@ extern "C" void print_pcm()
     std::ostringstream out_stream;
     out_stream << "\n" << std::endl;
     out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
-    out_stream << "Using CODATA " << Input::TheInput().CODATAyear() << " set of constants." << std::endl;
+    out_stream << "Using CODATA " << parsedInput->CODATAyear() << " set of constants." << std::endl;
+    out_stream << "Input parsing done " << parsedInput->providedBy() << std::endl;
     out_stream << "========== Cavity " << std::endl;
     out_stream << *_cavity << std::endl;
     out_stream << "========== Solver " << std::endl;
     out_stream << *_solver << std::endl;
     out_stream << "============ Medium " << std::endl;
-    bool fromSolvent = Input::TheInput().fromSolvent();
+    bool fromSolvent = parsedInput->fromSolvent();
     if (fromSolvent) {
         out_stream << "Medium initialized from solvent built-in data." << std::endl;
-        Solvent solvent = Input::TheInput().getSolvent();
+        Solvent solvent = parsedInput->solvent();
         out_stream << solvent << std::endl;
     }
     out_stream << ".... Inside " << std::endl;
@@ -354,17 +362,28 @@ extern "C" void scale_surface_function(char * func, double * coeff)
 
 */
 
-void setupInput()
+void setupInput(bool from_host)
 {
     /* Here we setup the input, meaning that we read the parsed file and store everything
      * it contains inside an Input object.
      * This object will be unique (a Singleton) to each "run" of the module.
      *   *** WHAT HAPPENS IN NUMERICAL GEOMETRY OPTIMIZATIONS? ***
      */
-    Input& parsedInput = Input::TheInput();
+    if (from_host) { // Set up input from host data structures
+	    cavityInput cav;
+	    solverInput solv;
+	    greenInput green;
+	    host_input(&cav, &solv, &green);
+	    std::cout << cav << std::endl;
+	    std::cout << solv << std::endl;
+	    std::cout << green << std::endl;
+    	    parsedInput = &Input::TheInput(cav, solv, green);
+    } else {
+	    parsedInput = &Input::TheInput("@pcmsolver.inp");
+    }
     // The only thing we can't create immediately is the vector of spheres
     // from which the cavity is to be built.
-    std::string _mode = parsedInput.getMode();
+    std::string _mode = parsedInput->mode();
     // Get the total number of nuclei and the geometry anyway
     Eigen::VectorXd charges;
     Eigen::Matrix3Xd centers;
@@ -379,26 +398,26 @@ void setupInput()
     initSpheresImplicit(charges, centers, spheres);
 
     if (_mode == "Implicit") {
-        parsedInput.setSpheres(spheres);
+        parsedInput->spheres(spheres);
     } else if (_mode == "Atoms") {
         initSpheresAtoms(centers, spheres);
-        parsedInput.setSpheres(spheres);
+        parsedInput->spheres(spheres);
     }
 }
 
 void initCavity()
 {
     // Get the input data for generating the cavity
-    std::string cavityType = Input::TheInput().getCavityType();
-    double area = Input::TheInput().getArea();
-    std::vector<Sphere> spheres = Input::TheInput().getSpheres();
-    double minRadius = Input::TheInput().getMinimalRadius();
-    double probeRadius = Input::TheInput().getProbeRadius();
-    double minDistance = Input::TheInput().getMinDistance();
-    int derOrder = Input::TheInput().getDerOrder();
-    int patchLevel = Input::TheInput().getPatchLevel();
-    double coarsity = Input::TheInput().getCoarsity();
-    std::string restart = Input::TheInput().getCavityFilename();
+    std::string cavityType = parsedInput->cavityType();
+    double area = parsedInput->area();
+    std::vector<Sphere> spheres = parsedInput->spheres();
+    double minRadius = parsedInput->minimalRadius();
+    double probeRadius = parsedInput->probeRadius();
+    double minDistance = parsedInput->minDistance();
+    int derOrder = parsedInput->derOrder();
+    int patchLevel = parsedInput->patchLevel();
+    double coarsity = parsedInput->coarsity();
+    std::string restart = parsedInput->cavityFilename();
 
     int nr_gen;
     int gen1, gen2, gen3;
@@ -410,7 +429,7 @@ void initCavity()
 
     // Get the right cavity from the Factory
     // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
-    std::string modelType = Input::TheInput().getSolverType();
+    std::string modelType = parsedInput->solverType();
     if (modelType == "Wavelet" || modelType == "Linear") {
         // Both PWC and PWL require a WaveletCavity
         initWaveletCavity();
@@ -427,25 +446,25 @@ void initSolver()
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
-    double epsilon = Input::TheInput().getEpsilonInside();
-    std::string greenType = Input::TheInput().getGreenInsideType();
-    int greenDer = Input::TheInput().getDerivativeInsideType();
+    double epsilon = parsedInput->epsilonInside();
+    std::string greenType = parsedInput->greenInsideType();
+    int greenDer = parsedInput->derivativeInsideType();
     greenData inside(greenDer, epsilon);
 
     IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
 
     // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
-    epsilon = Input::TheInput().getEpsilonOutside();
-    greenType = Input::TheInput().getGreenOutsideType();
-    greenDer = Input::TheInput().getDerivativeOutsideType();
+    epsilon = parsedInput->epsilonOutside();
+    greenType = parsedInput->greenOutsideType();
+    greenDer = parsedInput->derivativeOutsideType();
     greenData outside(greenDer, epsilon);
 
     IGreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
     // And all this to finally create the solver!
-    std::string modelType = Input::TheInput().getSolverType();
-    double correction = Input::TheInput().getCorrection();
-    int eqType = Input::TheInput().getEquationType();
-    bool symm = Input::TheInput().hermitivitize();
+    std::string modelType = parsedInput->solverType();
+    double correction = parsedInput->correction();
+    int eqType = parsedInput->equationType();
+    bool symm = parsedInput->hermitivitize();
     solverData solverInput(gfInside, gfOutside, correction, eqType, symm);
 
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
@@ -490,8 +509,8 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
 void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
                       std::vector<Sphere> & spheres_)
 {
-    vector<int> atomsInput = Input::TheInput().getAtoms();
-    vector<double> radiiInput = Input::TheInput().getRadii();
+    vector<int> atomsInput = parsedInput->atoms();
+    vector<double> radiiInput = parsedInput->radii();
 
     // Loop over the atomsInput array to get which atoms will have a user-given radius
     for (size_t i = 0; i < atomsInput.size(); ++i) {
@@ -504,9 +523,9 @@ void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
 void initSpheresImplicit(const Eigen::VectorXd & charges_,
                          const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_)
 {
-    bool scaling = Input::TheInput().getScaling();
-    std::string set = Input::TheInput().getRadiiSet();
-    double factor = angstromToBohr(Input::TheInput().CODATAyear());
+    bool scaling = parsedInput->scaling();
+    std::string set = parsedInput->radiiSet();
+    double factor = angstromToBohr(parsedInput->CODATAyear());
 
     std::vector<Atom> radiiSet;
     if ( set == "UFF" ) {
@@ -527,10 +546,10 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
 
 void initWaveletCavity()
 {
-    int patchLevel = Input::TheInput().getPatchLevel();
-    std::vector<Sphere> spheres = Input::TheInput().getSpheres();
-    double coarsity = Input::TheInput().getCoarsity();
-    double probeRadius = Input::TheInput().getProbeRadius();
+    int patchLevel = parsedInput->patchLevel();
+    std::vector<Sphere> spheres = parsedInput->spheres();
+    double coarsity = parsedInput->coarsity();
+    double probeRadius = parsedInput->probeRadius();
 
     // Just throw at this point if the user asked for a cavity for a single sphere...
     // the wavelet code will die without any further notice anyway

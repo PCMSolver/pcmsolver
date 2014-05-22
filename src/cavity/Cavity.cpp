@@ -33,7 +33,6 @@
 
 #include "Config.hpp"
 
-
 #include "EigenPimpl.hpp"
 #include "cnpyPimpl.hpp"
 

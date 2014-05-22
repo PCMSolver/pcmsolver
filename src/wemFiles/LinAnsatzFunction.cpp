@@ -149,7 +149,27 @@ LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   dp = 2.25;
 	td = 4;
 
-  gRHS=2;
+  quadratureLevel_=2;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+}
+
+LinAnsatzFunction :: LinAnsatzFunction(){
+	nLevels = 0;
+	nFunctions = 0;
+	nPatches = 0;
+  /// @todo check that the grade in the Interpolation is correct
+  // now using grade = 4!!! (coefficient is the log2 (grade)
+	interCoeff  = NULL;
+	noPhi = 4;
+
+  totalSizeElementList = 0;
+
+  B = NULL;
+
+  dp = 2.25;
+	td = 4;
+
+  quadratureLevel_=2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 

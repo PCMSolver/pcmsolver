@@ -34,7 +34,7 @@ public:
   unsigned int nPatches;              ///< number of patches
 
   unsigned int noPhi;                ///< number of basis functions per element
-  unsigned int gRHS;                 ///< the degree for the RHS quadrature
+  unsigned int quadratureLevel_;     ///< the degree for the RHS quadrature
   unsigned int td;                   ///< tilde_d parameter - the dual order parameter
   double dp;                         ///< d' parameter from paper, dp in (d, tilde_d+r) for postproc, or in (d, tilde_d+2*q) for compression
 

@@ -7,6 +7,27 @@
 #include <cstdio>
 #include "string.h"
 // NOTE the parameters must be initialized in the same order as declared in the header, otherwise a warning appears
+ConAnsatzFunction :: ConAnsatzFunction(){
+  nLevels = 0;
+  nFunctions = 0;
+  nPatches = 0;
+
+  totalSizeElementList = 0;
+  // TODO here i am still using grade = 2
+  interCoeff  = NULL;
+  minLevel = 1;
+  noPhi = 1;
+
+  B = NULL;
+  B2 = NULL;
+
+  td = 3;
+  dp = 1.25;
+
+  quadratureLevel_ = 1;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+}
+
 ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, Vector3*** pPointsIn){
   nLevels = _m;
   nFunctions = _nf;
@@ -24,9 +45,8 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   td = 3;
   dp = 1.25;
 
-  gRHS = 1;
+  quadratureLevel_ = 1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
-}
 
 void ConAnsatzFunction::setQuadratureLevel() {
   unsigned int  i, j, k, l;             // run index for wavelet/element list

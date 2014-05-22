@@ -17,7 +17,7 @@ void WEMRHS1(double **rhs, GenericAnsatzFunction *af){
   Vector3 n_t;
   double w;
 
-  initGaussSquare(&Q,af->gRHS+1);
+  initGaussSquare(&Q,af->quadratureLevel_+1);
   y = (double**)malloc(af->totalSizeElementList*sizeof(double*)+af->noPhi*af->totalSizeElementList*sizeof(double));
   for(unsigned int i = 0; i < af->totalSizeElementList;++i) y[i] = (double*)(y+af->totalSizeElementList)+i*af->noPhi;
   c = (double*)malloc(af->noPhi*sizeof(double));
@@ -26,12 +26,12 @@ void WEMRHS1(double **rhs, GenericAnsatzFunction *af){
   // 1. Quadrature on fine level
   for(unsigned int i = af->noPatch*(n*n-1)/3; i <af->totalSizeElementList; ++i){
     memset(c,0,sizeof(double)*af->noPhi);
-    for(unsigned int k = 0; k < Q[af->gRHS].noP; ++k){
-      t.x = h*(af->elementTree.element[i].index_s+Q[af->gRHS].xi[k].x);
-      t.y = h*(af->elementTree.element[i].index_t+Q[af->gRHS].xi[k].y);
+    for(unsigned int k = 0; k < Q[af->quadratureLevel_].noP; ++k){
+      t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
+      t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
       n_t = af->interCoeff->n_Chi(t, af->elementTree.element[i].patch);
-      w = Q[af->gRHS].weight[k]*vector3Dot(df(af->interCoeff->Chi(t,af->elementTree.element[i].patch)),n_t);
-      af->calculateCRHS(c,w,Q[af->gRHS].xi[k]);
+      w = Q[af->quadratureLevel_].weight[k]*vector3Dot(df(af->interCoeff->Chi(t,af->elementTree.element[i].patch)),n_t);
+      af->calculateCRHS(c,w,Q[af->quadratureLevel_].xi[k]);
     }
     for(unsigned int j = 0; j < af->noPhi; ++j){
       y[i][j] = h*c[j];
@@ -52,7 +52,7 @@ void WEMRHS1(double **rhs, GenericAnsatzFunction *af){
     }
     (*rhs)[i] = w;
   }
-  freeGaussSquare(&Q, af->gRHS+1);
+  freeGaussSquare(&Q, af->quadratureLevel_+1);
   free(y);
   free(c);
   return;
@@ -67,7 +67,7 @@ void WEMRHS2(double **rhs, GenericAnsatzFunction *af){
   Vector2 t;
   double w;
 
-  initGaussSquare(&Q,af->gRHS+1);
+  initGaussSquare(&Q,af->quadratureLevel_+1);
   y = (double**)malloc(af->totalSizeElementList*sizeof(double*)+af->noPhi*af->totalSizeElementList*sizeof(double));
   for(unsigned int i = 0; i < af->totalSizeElementList;++i) y[i] = (double*)(y+af->totalSizeElementList)+i*af->noPhi;
   c = (double*)malloc(af->noPhi*sizeof(double));
@@ -76,11 +76,11 @@ void WEMRHS2(double **rhs, GenericAnsatzFunction *af){
   // 1. Quadrature on fine level
   for(unsigned int i = af->noPatch*(n*n-1)/3; i <af->totalSizeElementList; ++i){
     memset(c,0,sizeof(double)*af->noPhi);
-    for(unsigned int k = 0; k < Q[af->gRHS].noP; ++k){
-      t.x = h*(af->elementTree.element[i].index_s+Q[af->gRHS].xi[k].x);
-      t.y = h*(af->elementTree.element[i].index_t+Q[af->gRHS].xi[k].y);
-      w = Q[af->gRHS].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
-      af->calculateCRHS(c,w,Q[af->gRHS].xi[k]);
+    for(unsigned int k = 0; k < Q[af->quadratureLevel_].noP; ++k){
+      t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
+      t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
+      w = Q[af->quadratureLevel_].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
+      af->calculateCRHS(c,w,Q[af->quadratureLevel_].xi[k]);
     }
     for(unsigned int j = 0; j < af->noPhi; ++j){
       y[i][j] = h*c[j];
@@ -101,7 +101,7 @@ void WEMRHS2(double **rhs, GenericAnsatzFunction *af){
     }
     (*rhs)[i] = w;
   }
-  freeGaussSquare(&Q, af->gRHS+1);
+  freeGaussSquare(&Q, af->quadratureLevel_+1);
   free(y);
   free(c);
   return;

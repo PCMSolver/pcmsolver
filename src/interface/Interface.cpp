@@ -454,17 +454,9 @@ void initSolver()
     if ((modelType == "Wavelet")||(modelType == "Linear")) {
         _WEMSolver = new WEMSolver(gfInside, gfOutside, modelType);
         _WEMSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_WEMSolver->getQuadratureLevel(), _WEMSolver->getT_(),
-                                     false); // WTF is happening here??? yes... why???
+        _waveletCavity->uploadPoints(_WEMSolver->getQuadratureLevel(), _WEMSolver->getT_()); // WTF is happening here??? yes... why???
         _cavity = _waveletCavity;
         _solver = _WEMSolver;
-    } else if (modelType == "Linear") {
-        _PWLSolver = new PWLSolver(gfInside, gfOutside);
-        _PWLSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_(),
-                                     true); // WTF is happening here???
-        _cavity = _waveletCavity;
-        _solver = _PWLSolver;
     } else {
         // This means that the factory is properly working only for IEFSolver and CPCMSolver
         _solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);

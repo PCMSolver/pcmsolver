@@ -34,3 +34,4 @@ cavity.npz
 *.files
 *.includes
 CMakeLists.txt.user
+/.project

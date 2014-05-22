@@ -16,6 +16,7 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
   BoundingBoxSquare *B2;
   
   /// constructor of the class ConAnsatzFunction
+  ConAnsatzFunction();
   ConAnsatzFunction(unsigned int p, unsigned int m, unsigned int nf, Vector3*** pPointsIn);
 
   void quadratureGrade(signed int *g1, signed int*g2, int level1, int level2, double dist, double alpha);

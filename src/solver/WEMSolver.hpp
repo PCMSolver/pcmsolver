@@ -60,8 +60,13 @@ private:
     virtual std::ostream & printSolver(std::ostream & os);
 public:
     WEMSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_,
-              int integralEquation_ = SecondKind )
+              int integralEquation_ = SecondKind ,std::string modelType)
         : PCMSolver(gfInside_, gfOutside_), integralEquation(integralEquation_) {
+        if(modelType =="Linear"){
+          af = new LinAnsatzFunction();
+        else if(modelType == "Wavelet"){
+          af = new ConAnsatzFunction();
+        }
         initWEMMembers();
     }
 //                WEMSolver(const Section & solver);
@@ -96,6 +101,7 @@ protected:
     double threshold;
     SparseMatrix S_i_, S_e_; // System matrices
     bool systemMatricesInitialized_;
+    GenericAnsatzFunction *af;
 
 //    unsigned int quadratureLevel_;
 //    Vector3 *** pointList; // the old U

@@ -123,8 +123,8 @@ double NumericalIntegrator::computeS(const Vacuum<double> * gf, const Element & 
 		// on \phi (azimuthal integration, 64-points rule) and \theta (polar integration, 16-points rule)
 		double pha = phinumb[i];
 		double phb = phinumb[i+1];
-		double aph = (pha - phb) / 2.0;
-		double bph = (pha + phb) / 2.0;
+		double aph = (phb - pha) / 2.0;
+		double bph = (phb + pha) / 2.0;
 		double tha = theta[numb[i]];
 		double thb = theta[numb[i+1]];
 		double thmax = 0.0;
@@ -173,7 +173,8 @@ double NumericalIntegrator::computeS(const Vacuum<double> * gf, const Element & 
 				        			  + normal(2) * (cos_th - 1.0);
 				        		double rth = std::sqrt(2 * (1.0 - cos_th));
 				        		double rtheps = gf->function(point, Eigen::Vector3d::Zero()); // Evaluate Green's function at Gaussian points
-				        		S16 += (sph.radius() / (4 * M_PI * rtheps)) * sin_th * ath * gauss16Weight(l);
+							S16 += (sph.radius() / (4 * M_PI * rtheps)) * sin_th * ath * gauss16Weight(l);
+							//S16 += (sph.radius() / (4 * M_PI)) * sin_th * ath * gauss16Weight(l);
 				        	}
 				        }
 				        S64 += S16 * aph * gauss64Weight(j);

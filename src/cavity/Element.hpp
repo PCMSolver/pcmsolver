@@ -59,6 +59,11 @@ public:
     Sphere sphere() const { return sphere_; }
     Eigen::Matrix3Xd vertices() const { return vertices_; }
     Eigen::Matrix3Xd arcs() const { return arcs_; }
+    /*! \brief Calculate tangent and bitangent vector for the representative point
+     *  \param[out] t_ tangent vector
+     *  \param[out] b_ bitangent vector
+     */	
+    void tangent_and_bitangent(Eigen::Vector3d & t_, Eigen::Vector3d & b_) const;
 
     friend std::ostream & operator<<(std::ostream & os, Element & element) {
         return element.printElement(os);

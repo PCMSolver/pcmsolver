@@ -165,10 +165,10 @@ inline void hermitivitize(Eigen::MatrixBase<Derived> & matrix_)
 }
 
 /*! \fn inline void eulerRotation(Eigen::Matrix3d & R_, const Eigen::Vector3d & eulerAngles_)
+ *  \brief Build rotation matrix between two reference frames given the Euler angles.
  *  \param[out] R_ the rotation matrix
  *  \param[in]  eulerAngles_ the Euler angles, in degrees, describing the rotation
  *
- *  Build rotation matrix between two reference frames given the Euler angles.
  *  We assume the convention \f$ R = Z_3 X_2 Z_1 \f$ for the ordering of the extrinsic 
  *  elemental rotations (see http://en.wikipedia.org/wiki/Euler_angles)
  *  The Euler angles are given in the order \f$ \phi, \theta, \psi \f$. 
@@ -193,6 +193,7 @@ inline void eulerRotation(Eigen::Matrix3d & R_, const Eigen::Vector3d & eulerAng
            * Eigen::AngleAxis<double>(theta, Eigen::Vector3d::UnitX())
            * Eigen::AngleAxis<double>(phi,   Eigen::Vector3d::UnitZ());
 }
+
 
 /*! Abscissae for 16-point Gaussian quadrature rule */
 inline double gauss16Abscissa(int i)

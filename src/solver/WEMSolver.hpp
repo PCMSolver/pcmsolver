@@ -60,7 +60,7 @@ private:
     virtual std::ostream & printSolver(std::ostream & os);
 public:
     WEMSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_,
-              int integralEquation_ = SecondKind ,std::string modelType)
+              std::string modelType, int integralEquation_ = SecondKind )
         : PCMSolver(gfInside_, gfOutside_), integralEquation(integralEquation_) {
         if(modelType =="Linear"){
           af = new LinAnsatzFunction();
@@ -71,8 +71,8 @@ public:
     }
 //                WEMSolver(const Section & solver);
     virtual ~WEMSolver();
-    vector3 **** getT_() {
-        return T_;
+     Interpolation* getT_() {
+        return af->interCoeff;
     }
     int getQuadratureLevel() {
         return quadratureLevel_;

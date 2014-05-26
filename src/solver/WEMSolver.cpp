@@ -94,7 +94,7 @@ void WEMSolver::initWEMMembers()
     systemMatricesInitialized_ = false;
     threshold = 1e-10;
     //af->quadratureLevel_ = 1; // set in constructor of AnsatzFunction
-    af->nQuadPoints = 0; //??? what is this for?
+    //af->nQuadPoints = 0; //??? what is this for?
     af->elementTree = NULL;
     af->waveletList = NULL;
 }
@@ -232,7 +232,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double * pot = const_cast<double *>(potential.data());
     double * chg = charge.data();
     double epsilon = greenOutside_->dielectricConstant();
-    WEMRHS2M(&rhs, &af, pot);
+    WEMRHS2M(&rhs, pot, &af);
     int iter = WEMPGMRES2(&S_i_, rhs, u, af->threshold, &af);
     af->tdwtKon(u);
     af->dwtKon(u);
@@ -262,7 +262,7 @@ void WEMSolver::solveFull(const Eigen::VectorXd & potential,
     double *v = (double*) calloc(af->nFunctions, sizeof(double));
     //next line is just a quick fix to avoid problems with const but i do not like it...
     double * pot = const_cast<double *>(potential.data());
-    WEMRHS2(&rhs, &af);
+    WEMRHS2M(&rhs,pot, &af);
     int iters = WEMPCG(&S_i_, rhs, u, threshold, &af);
     memset(rhs, 0, af->nFunctions*sizeof(double));
     for(unsigned int i = 0; i < af->nFunctions; i++) {

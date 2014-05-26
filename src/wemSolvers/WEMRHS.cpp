@@ -27,8 +27,8 @@ void WEMRHS1(double **rhs, GenericAnsatzFunction *af){
   for(unsigned int i = af->noPatch*(n*n-1)/3; i <af->totalSizeElementList; ++i){
     memset(c,0,sizeof(double)*af->noPhi);
     for(unsigned int k = 0; k < Q[af->quadratureLevel_].noP; ++k){
-      t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
-      t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
+      t.y = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
+      t.x = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
       n_t = af->interCoeff->n_Chi(t, af->elementTree.element[i].patch);
       w = Q[af->quadratureLevel_].weight[k]*vector3Dot(df(af->interCoeff->Chi(t,af->elementTree.element[i].patch)),n_t);
       af->calculateCRHS(c,w,Q[af->quadratureLevel_].xi[k]);
@@ -77,8 +77,8 @@ void WEMRHS2(double **rhs, GenericAnsatzFunction *af){
   for(unsigned int i = af->noPatch*(n*n-1)/3; i <af->totalSizeElementList; ++i){
     memset(c,0,sizeof(double)*af->noPhi);
     for(unsigned int k = 0; k < Q[af->quadratureLevel_].noP; ++k){
-      t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
-      t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
+      t.y = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
+      t.x = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
       w = Q[af->quadratureLevel_].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
       af->calculateCRHS(c,w,Q[af->quadratureLevel_].xi[k]);
     }
@@ -127,8 +127,8 @@ void WEMRHS2M(double **rhs, double *potential, GenericAnsatzFunction *af){
   for(unsigned int i = af->noPatch*(n*n-1)/3; i <af->totalSizeElementList; ++i){
     memset(c,0,sizeof(double)*af->noPhi);
     for(unsigned int k = 0; k < Q[af->quadratureLevel_].noP; ++k){
-      t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
-      t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
+      t.y = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
+      t.x = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
       //w = Q[af->quadratureLevel_].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
       index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
       w = Q[af->quadratureLevel_].weight[k]*potential[index*Q[af->quadratureLevel].noP+k];

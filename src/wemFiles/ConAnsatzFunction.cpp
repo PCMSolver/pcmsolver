@@ -716,8 +716,8 @@ void ConAnsatzFunction::integrateNoProblem(double *c, unsigned int i1, unsigned 
     pRandWerte[g1].noP = Q1->noP;
     hs = 1./(1<<elementTree.element[i1].level);
     for(i = 0; i < Q1->noP; ++i){
-      xi.x = hs*(elementTree.element[i1].index_s+Q1->xi[i].x);
-      xi.y = hs*(elementTree.element[i1].index_t+Q1->xi[i].y);
+      xi.y = hs*(elementTree.element[i1].index_s+Q1->xi[i].x);
+      xi.x = hs*(elementTree.element[i1].index_t+Q1->xi[i].y);
 
       pRandWerte[g1].Chi[i] = interCoeff->Chi(xi, elementTree.element[i1].patch);
       //printf("intkon1 RW %d %lf %lf %lf %lf %lf %d %d %lf %lf %lf\n",i,hs, xi.x, xi.y, Q1->xi[i].x, Q1->xi[i].y, elementTree.element[i1].index_s, elementTree.element[i1].index_t, pRandWerte[g1].Chi[i].x, pRandWerte[g1].Chi[i].y,pRandWerte[g1].Chi[i].z); 
@@ -729,8 +729,8 @@ void ConAnsatzFunction::integrateNoProblem(double *c, unsigned int i1, unsigned 
   // quadrature
   c[0] = c[1] = c[2] = 0;
   for (i = 0; i < Q2->noP; ++i) {
-    eta.x = ht*(elementTree.element[i2].index_s + Q2->xi[i].x);
-    eta.y = ht*(elementTree.element[i2].index_t + Q2->xi[i].y);
+    eta.y = ht*(elementTree.element[i2].index_s + Q2->xi[i].x);
+    eta.x = ht*(elementTree.element[i2].index_t + Q2->xi[i].y);
     y = interCoeff->Chi(eta,elementTree.element[i2].patch);
     n_y = interCoeff->n_Chi(eta,elementTree.element[i2].patch);
     for (j = 0; j < pRandWerte[g1].noP; ++j) {
@@ -773,10 +773,10 @@ void ConAnsatzFunction::integratePatch(double *c, unsigned int i1, Cubature * Q,
       //printf("INT PP0: %lf %lf %lf %lf %lf\n", eta.x, eta.y, xi.x, xi.y, h);
       //printf("INT PP1: %lf %lf %lf %lf\n", t1, t2, t3, t4);
       
-      a.x = s.x + t1;
-      a.y = s.y + t2;
-      b.x = s.x + t3;
-      b.y = s.y + t4;
+      a.y = s.x + t1;
+      a.x = s.y + t2;
+      b.y = s.x + t3;
+      b.x = s.y + t4;
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       //printf("INT PP2: %d %lf %lf %lf %lf %lf %d %d\n", i1, a.x, a.y, x.x, x.y, x.z, nLevels, 1<<(nLevels-1));
       y = interCoeff->Chi(b, elementTree.element[i1].patch);
@@ -786,8 +786,8 @@ void ConAnsatzFunction::integratePatch(double *c, unsigned int i1, Cubature * Q,
           + DoubleLayer(y, x, interCoeff->n_Chi(a, elementTree.element[i1].patch));
       //printf("INT PPLAST1: %d %lf %lf\n", i1, d1, d2);
 
-      a.y = s.y + t4;
-      b.y = s.y + t2;
+      a.x = s.y + t4;
+      b.x = s.y + t2;
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       //printf("INT PP4: %d %lf %lf %lf %lf %lf\n", i1, a.x, a.y, x.x, x.y, x.z);
       y = interCoeff->Chi(b, elementTree.element[i1].patch);
@@ -797,10 +797,10 @@ void ConAnsatzFunction::integratePatch(double *c, unsigned int i1, Cubature * Q,
           + DoubleLayer(y, x, interCoeff->n_Chi(a, elementTree.element[i1].patch));
       //printf("INT PPLAST2: %d %lf %lf\n", i1, d1, d2);
 
-      a.x = s.x + t2;
-      a.y = s.y + t1;
-      b.x = s.x + t4;
-      b.y = s.y + t3;
+      a.y = s.x + t2;
+      a.x = s.y + t1;
+      b.y = s.x + t4;
+      b.x = s.y + t3;
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       //printf("INT PP6: %d %lf %lf %lf %lf %lf\n", i1, a.x, a.y, x.x, x.y, x.z);
       y = interCoeff->Chi(b, elementTree.element[i1].patch);
@@ -810,8 +810,8 @@ void ConAnsatzFunction::integratePatch(double *c, unsigned int i1, Cubature * Q,
           + DoubleLayer(y, x, interCoeff->n_Chi(a, elementTree.element[i1].patch));
       //printf("INT PPLAST3: %d %lf %lf\n", i1, d1, d2);
 
-      a.y = s.y + t3;
-      b.y = s.y + t1;
+      a.x = s.y + t3;
+      b.x = s.y + t1;
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       //printf("INT PP8: %d %lf %lf %lf %lf %lf\n", i1, a.x, a.y, x.x, x.y, x.z);
       y = interCoeff->Chi(b, elementTree.element[i1].patch);
@@ -841,8 +841,8 @@ void ConAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
   double h = 1. / (1 << elementTree.element[i1].level);
 
   c[0] = c[1] = c[2] = 0;
-  s = Vector2(h*elementTree.element[i1].index_s, h*elementTree.element[i1].index_t);
-  t = Vector2(h*elementTree.element[i2].index_s, h*elementTree.element[i2].index_t);
+  s = Vector2(h*elementTree.element[i1].index_t, h*elementTree.element[i1].index_s);
+  t = Vector2(h*elementTree.element[i2].index_t, h*elementTree.element[i2].index_s);
 
   for (i = 0; i < Q->noP; ++i) {
     xi = Q->xi[i];
@@ -855,48 +855,48 @@ void ConAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
       t3 = xi.x * (1 - eta.x);
       t4 = (1 - xi.x) * (1 - eta.x);
 
-      a = kappa(s, tau(t1, eta.x, ind_s), h);
-      b = kappa(t, tau(t2, eta.y, ind_t), h);
+      a = kappa(s, tau(eta.x, t1, ind_s), h);
+      b = kappa(t, tau(eta.y, t2, ind_t), h);
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       y = interCoeff->Chi(b, elementTree.element[i2].patch);
       d11 = SingleLayer(x, y);
       d21 = DoubleLayer(x, y, interCoeff->n_Chi(b, elementTree.element[i2].patch));
       d31 = DoubleLayer(y, x, interCoeff->n_Chi(a, elementTree.element[i1].patch));
 
-      a = kappa(s, tau(1 - t1, eta.x, ind_s), h);
-      b = kappa(t, tau(1 - t2, eta.y, ind_t), h);
+      a = kappa(s, tau( eta.x, 1-t1, ind_s), h);
+      b = kappa(t, tau( eta.y, 1-t2, ind_t), h);
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       y = interCoeff->Chi(b, elementTree.element[i2].patch);
       d11 += SingleLayer(x, y);
       d21 += DoubleLayer(x, y, interCoeff->n_Chi(b, elementTree.element[i2].patch));
       d31 += DoubleLayer(y, x, interCoeff->n_Chi(a, elementTree.element[i1].patch));
 
-      a = kappa(s, tau(t3, xi.y, ind_s), h);
-      b = kappa(t, tau(t4, eta.y, ind_t), h);
+      a = kappa(s, tau(xi.y,  t3, ind_s), h);
+      b = kappa(t, tau(eta.y, t4, ind_t), h);
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       y = interCoeff->Chi(b, elementTree.element[i2].patch);
       d12 = SingleLayer(x, y);
       d22 = DoubleLayer(x, y, interCoeff->n_Chi(b, elementTree.element[i2].patch));
       d32 = DoubleLayer(y, x, interCoeff->n_Chi(a, elementTree.element[i1].patch));
 
-      a = kappa(s, tau(1 - t3, xi.y, ind_s), h);
-      b = kappa(t, tau(1 - t4, eta.y, ind_t), h);
+      a = kappa(s, tau( xi.y, 1-t3, ind_s), h);
+      b = kappa(t, tau(eta.y, 1-t4, ind_t), h);
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       y = interCoeff->Chi(b, elementTree.element[i2].patch);
       d12 += SingleLayer(x, y);
       d22 += DoubleLayer(x, y, interCoeff->n_Chi(b, elementTree.element[i2].patch));
       d32 += DoubleLayer(y, x, interCoeff->n_Chi(a, elementTree.element[i1].patch));
 
-      a = kappa(s, tau(t4, eta.y, ind_s), h);
-      b = kappa(t, tau(t3, xi.y, ind_t), h);
+      a = kappa(s, tau(eta.y, t4, ind_s), h);
+      b = kappa(t, tau(xi.y, t3, ind_t), h);
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       y = interCoeff->Chi(b, elementTree.element[i2].patch);
       d12 += SingleLayer(x, y);
       d22 += DoubleLayer(x, y, interCoeff->n_Chi(b, elementTree.element[i2].patch));
       d32 += DoubleLayer(y, x, interCoeff->n_Chi(a, elementTree.element[i1].patch));
 
-      a = kappa(s, tau(1 - t4, eta.y, ind_s), h);
-      b = kappa(t, tau(1 - t3, xi.y, ind_t), h);
+      a = kappa(s, tau(eta.y, 1 - t4, ind_s), h);
+      b = kappa(t, tau( xi.y, 1 - t3, ind_t), h);
       x = interCoeff->Chi(a, elementTree.element[i1].patch);
       y = interCoeff->Chi(b, elementTree.element[i2].patch);
       d12 += SingleLayer(x, y);
@@ -926,34 +926,34 @@ void ConAnsatzFunction::integratePoint(double *c, unsigned int i1, unsigned int 
   double h = 1. / (1 << elementTree.element[i1].level);
 
   c[0] = c[1] = c[2] = 0;
-  s = Vector2(h*elementTree.element[i1].index_s, h*elementTree.element[i1].index_t);
-  t = Vector2(h*elementTree.element[i2].index_s, h*elementTree.element[i2].index_t);
+  s = Vector2(h*elementTree.element[i1].index_t, h*elementTree.element[i1].index_s);
+  t = Vector2(h*elementTree.element[i2].index_t, h*elementTree.element[i2].index_s);
 
   for (i = 0; i < Q->noP; ++i) {
     xi = Q->xi[i];
     w = pow(xi.x, 3) * Q->weight[i];
     xi.y *= xi.x;
 
-    a = kappa(s, tau(xi.x, xi.y, ind_s), h);
+    a = kappa(s, tau(xi.y, xi.x, ind_s), h);
     x1 = interCoeff->Chi(a, elementTree.element[i1].patch);
     n_x1 = interCoeff->n_Chi(a, elementTree.element[i1].patch);
 
-    a = kappa(s, tau(xi.y, xi.x, ind_s), h);
+    a = kappa(s, tau(xi.x, xi.y, ind_s), h);
     x2 = interCoeff->Chi(a, elementTree.element[i1].patch);
     n_x2 = interCoeff->n_Chi(a, elementTree.element[i1].patch);
 
-    a = kappa(t, tau(xi.x, xi.y, ind_t), h);
+    a = kappa(t, tau(xi.y, xi.x, ind_t), h);
     y1 = interCoeff->Chi(a, elementTree.element[i2].patch);
     n_y1 = interCoeff->n_Chi(a, elementTree.element[i2].patch);
 
-    a = kappa(t, tau(xi.y, xi.x, ind_t), h);
+    a = kappa(t, tau(xi.x, xi.y, ind_t), h);
     y2 = interCoeff->Chi(a, elementTree.element[i2].patch);
     n_y2 = interCoeff->n_Chi(a, elementTree.element[i2].patch);
 
     for (j = 0; j < Q->noP; ++j) {
       eta = vector2SMul(xi.x, Q->xi[j]);
 
-      a = kappa(t, tau(eta.x, eta.y, ind_t), h);
+      a = kappa(t, tau(eta.y, eta.c, ind_t), h);
       z = interCoeff->Chi(a, elementTree.element[i2].patch);
       n_z = interCoeff->n_Chi(a, elementTree.element[i2].patch);
 
@@ -961,7 +961,7 @@ void ConAnsatzFunction::integratePoint(double *c, unsigned int i1, unsigned int 
       d2 = DoubleLayer(x1, z, n_z) + DoubleLayer(x2, z, n_z);
       d3 = DoubleLayer(z, x1, n_x1) + DoubleLayer(z, x2, n_x2);
 
-      a = kappa(s, tau(eta.x, eta.y, ind_s), h);
+      a = kappa(s, tau(eta.y, eta.x, ind_s), h);
       z = interCoeff->Chi(a, elementTree.element[i1].patch);
       n_z = interCoeff->n_Chi(a, elementTree.element[i1].patch);
 

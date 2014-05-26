@@ -771,14 +771,6 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
     fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", nodeList[i].x,
         nodeList[i].y, nodeList[i].z);
   }
-  /*
-  for (i = 0 ; i < nFunctions-1 ; ++i){
-    auxPoint = interCoeff->Chi(Vector2(0.5*(Ef[i].index_s+Ef[i+1].index_s), 0.5*(Ef[i].index_t+Ef[i+1].index_t)), Ef[i].patch);
-    fprintf( f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
-  }
-  auxPoint = interCoeff->Chi(Vector2(0.5*(Ef[nFunctions-1].index_s+Ef[0].index_s), 0.5*(Ef[nFunctions-1].index_t+Ef[0].index_t)), Ef[i].patch);
-  fprintf( f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
-  */
   fprintf(f, "\n");
 
   // print element list
@@ -854,14 +846,10 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
       (nodeList[Ef[index+element].vertex[i]]).x,
       (nodeList[Ef[index+element].vertex[i]]).y,
       (nodeList[Ef[index+element].vertex[i]]).z);
-  //auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s, h*Ef[element].index_t), Ef[element].patch); 
-  //fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
 
-  //printf("%f %f %f %f %f %f\n", h*Ef[element].index_s, h*Ef[element].index_s+h*0.5, h*Ef[element].index_s+h, h*Ef[element].index_t, h*Ef[element].index_t+0.5*h, h*Ef[element].index_t+h);
-  //printf("%f %f %f %f %f %f\n", h*Ef[0].index_s, h*Ef[0].index_s+h*0.5, h*Ef[0].index_s+h, h*Ef[0].index_t, h*Ef[0].index_t+0.5*h, h*Ef[0].index_t+h);
   auxPoint = interCoeff->Chi(
-      Vector2(h * Ef[index+element].index_s + 0.5 * h,
-          h * Ef[index+element].index_t), Ef[index+element].patch);
+      Vector2(h * Ef[index+element].index_t + 0.5 * h,
+          h * Ef[index+element].index_s), Ef[index+element].patch);
   fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y,
       auxPoint.z);
 
@@ -870,24 +858,22 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
       (nodeList[Ef[index+element].vertex[i]]).x,
       (nodeList[Ef[index+element].vertex[i]]).y,
       (nodeList[Ef[index+element].vertex[i]]).z);
-  //auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s+h, h*Ef[element].index_t), Ef[element].patch); 
-  //fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
 
   auxPoint = interCoeff->Chi(
-      Vector2(h * Ef[index+element].index_s,
-          h * Ef[index+element].index_t + 0.5 * h), Ef[index+element].patch);
+      Vector2(h * Ef[index+element].index_t,
+          h * Ef[index+element].index_s + 0.5 * h), Ef[index+element].patch);
   fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y,
       auxPoint.z);
 
   auxPoint = interCoeff->Chi(
-      Vector2(h * Ef[index+element].index_s + 0.5 * h,
-          h * Ef[index+element].index_t + 0.5 * h), Ef[index+element].patch);
+      Vector2(h * Ef[index+element].index_t + 0.5 * h,
+          h * Ef[index+element].index_s + 0.5 * h), Ef[index+element].patch);
   fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y,
       auxPoint.z);
 
   auxPoint = interCoeff->Chi(
-      Vector2(h * Ef[index+element].index_s + h,
-          h * Ef[index+element].index_t + 0.5 * h), Ef[index+element].patch);
+      Vector2(h * Ef[index+element].index_t + h,
+          h * Ef[index+element].index_s + 0.5 * h), Ef[index+element].patch);
   fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y,
       auxPoint.z);
   i = 3;
@@ -895,12 +881,10 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
       (nodeList[Ef[index+element].vertex[i]]).x,
       (nodeList[Ef[index+element].vertex[i]]).y,
       (nodeList[Ef[index+element].vertex[i]]).z);
-  //auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s, h*Ef[element].index_t+h), Ef[element].patch); 
-  //fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
 
   auxPoint = interCoeff->Chi(
-      Vector2(h * Ef[element].index_s + 0.5 * h,
-          h * Ef[element].index_t + h), Ef[index+element].patch);
+      Vector2(h * Ef[element].index_t + 0.5 * h,
+          h * Ef[element].index_s + h), Ef[index+element].patch);
   fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y,
       auxPoint.z);
 
@@ -909,8 +893,6 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
       (nodeList[Ef[index+element].vertex[i]]).x,
       (nodeList[Ef[index+element].vertex[i]]).y,
       (nodeList[Ef[index+element].vertex[i]]).z);
-  //auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s+h, h*Ef[element].index_t+h), Ef[element].patch); 
-  //fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
   fprintf(f, "\n");
 
   // print element list                             

@@ -42,7 +42,7 @@
  */
 struct cavityInput 
 {
-	char cavity_type[7];
+	char cavity_type[8];
 	int patch_level;
 	double coarsity;
 	double area;
@@ -52,15 +52,15 @@ struct cavityInput
 	char radii_set[8];
 	char restart_name[20];
     friend std::ostream & operator<<(std::ostream & os, cavityInput & o) {
-        os << "cavity type " << o.cavity_type << std::endl;
+        os << "cavity type " << std::string(o.cavity_type) << std::endl;
 	os << "patch level " << o.patch_level << std::endl;
 	os << "coarsity " << o.coarsity << std::endl;
 	os << "area " << o.area << std::endl;
 	os << "min distance " << o.min_distance << std::endl;
 	os << "der order " << o.der_order << std::endl;
 	os << "scaling " << o.scaling << std::endl;
-	os << "radii set " << o.radii_set << std::endl;
-	os << "restart name " << o.restart_name;
+	os << "radii set " << std::string(o.radii_set) << std::endl;
+	os << "restart name " << std::string(o.restart_name);
         return os;
     }
 };
@@ -75,8 +75,8 @@ struct solverInput
 	char solver_type[7];
 	char solvent[16];
     friend std::ostream & operator<<(std::ostream & os, solverInput & o) {
-        os << "solver type " << o.solver_type << std::endl;
-	os << "solvent " << o.solvent;
+        os << "solver type " << std::string(o.solver_type) << std::endl;
+	os << "solvent " << std::string(o.solvent);
         return os;
     }
 };

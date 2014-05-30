@@ -369,18 +369,20 @@ void setupInput(bool from_host)
      * This object will be unique (a Singleton) to each "run" of the module.
      *   *** WHAT HAPPENS IN NUMERICAL GEOMETRY OPTIMIZATIONS? ***
      */
-    if (from_host) { // Set up input from host data structures
+   // if (from_host) { // Set up input from host data structures
 	    cavityInput cav;
 	    solverInput solv;
 	    greenInput green;
 	    host_input(&cav, &solv, &green);
-	    std::cout << cav << std::endl;
-	    std::cout << solv << std::endl;
-	    std::cout << green << std::endl;
-    	    parsedInput = &Input::TheInput(cav, solv, green);
-    } else {
+	    std::ostringstream out_stream;
+	    out_stream << cav << std::endl;
+	    out_stream << solv << std::endl;
+	    out_stream << green << std::endl;
+	    printer(out_stream);
+    	//    parsedInput = &Input::TheInput(cav, solv, green);
+   // } else {
 	    parsedInput = &Input::TheInput("@pcmsolver.inp");
-    }
+    //}
     // The only thing we can't create immediately is the vector of spheres
     // from which the cavity is to be built.
     std::string _mode = parsedInput->mode();

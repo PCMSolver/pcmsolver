@@ -380,21 +380,23 @@ void setupInput(bool from_host)
 	    host_input(&cav, &solv, &green);
 	    // Put string passed with the alternative method in the input structures
 	    if (!input_strings.empty()) {
+	    	for (size_t i = 0; i < input_strings.size(); ++i) {
+		    // Trim strings aka remove blanks
+		    boost::algorithm::trim(input_strings[i]);
+	    	}
 	    	strcpy(cav.cavity_type, input_strings[0].c_str());
 	        strcpy(cav.radii_set, input_strings[1].c_str());
 	    	strcpy(cav.restart_name, input_strings[2].c_str());
 	    	strcpy(solv.solver_type, input_strings[3].c_str());
 	    	strcpy(solv.solvent, input_strings[4].c_str());
+	    	strcpy(solv.equation_type, input_strings[5].c_str());
+	    	strcpy(green.inside_type, input_strings[6].c_str());
+	    	strcpy(green.outside_type, input_strings[7].c_str());
 	    }
 	    std::ostringstream out_stream;
 	    out_stream << cav << std::endl;
 	    out_stream << solv << std::endl;
 	    out_stream << green << std::endl;
-	    for (size_t i = 0; i < input_strings.size(); ++i) {
-		    // Trim strings aka remove blanks
-		    boost::algorithm::trim(input_strings[i]);
-	    }
-	    
 	    printer(out_stream);
     	//    parsedInput = &Input::TheInput(cav, solv, green);
    // } else {

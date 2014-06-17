@@ -43,6 +43,7 @@
 #include "EigenPimpl.hpp"
 
 // Include Boost headers here
+#include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -67,6 +68,7 @@ PCMSolver * _solver = NULL;
 
 SharedSurfaceFunctionMap functions;
 Input * parsedInput = NULL;
+std::vector<std::string> input_strings; // Used only by Fortran hosts
 
 /*
 
@@ -356,6 +358,13 @@ extern "C" void scale_surface_function(char * func, double * coeff)
     (*iter_func->second) *= (*coeff);
 }
 
+extern "C" void push_input_string(char * s)
+{
+	std::string str(s);
+	// Save the string inside a std::vector<std::string>
+	input_strings.push_back(str);
+}
+
 /*
 
 	Functions not visible to host program
@@ -364,20 +373,28 @@ extern "C" void scale_surface_function(char * func, double * coeff)
 
 void setupInput(bool from_host)
 {
-    /* Here we setup the input, meaning that we read the parsed file and store everything
-     * it contains inside an Input object.
-     * This object will be unique (a Singleton) to each "run" of the module.
-     *   *** WHAT HAPPENS IN NUMERICAL GEOMETRY OPTIMIZATIONS? ***
-     */
    // if (from_host) { // Set up input from host data structures
 	    cavityInput cav;
 	    solverInput solv;
 	    greenInput green;
 	    host_input(&cav, &solv, &green);
+	    // Put string passed with the alternative method in the input structures
+	    if (!input_strings.empty()) {
+	    	strcpy(cav.cavity_type, input_strings[0].c_str());
+	        strcpy(cav.radii_set, input_strings[1].c_str());
+	    	strcpy(cav.restart_name, input_strings[2].c_str());
+	    	strcpy(solv.solver_type, input_strings[3].c_str());
+	    	strcpy(solv.solvent, input_strings[4].c_str());
+	    }
 	    std::ostringstream out_stream;
 	    out_stream << cav << std::endl;
 	    out_stream << solv << std::endl;
 	    out_stream << green << std::endl;
+	    for (size_t i = 0; i < input_strings.size(); ++i) {
+		    // Trim strings aka remove blanks
+		    boost::algorithm::trim(input_strings[i]);
+	    }
+	    
 	    printer(out_stream);
     	//    parsedInput = &Input::TheInput(cav, solv, green);
    // } else {

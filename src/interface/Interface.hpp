@@ -123,6 +123,18 @@ extern "C" void set_point_group(int * nr_generators, int * gen1, int * gen2,
  */
 extern "C" void host_input(cavityInput * cav, solverInput * solv, greenInput * green);
 
+#define push_input_string \
+	FortranCInterface_GLOBAL_(push_input_string, PUSH_INPUT_STRING)
+/*! \fn extern "C" void push_input_string(char * s)
+ *  \brief pushes a string input parameter to the API
+ *  \param[in] s the string to be passed
+ *
+ *  The string is saved inside a std::vector<std::string>
+ *  This function is to be used in conjunction with input management done
+ *  host-side.
+ */
+extern "C" void push_input_string(char * s);
+
 #define get_cavity_size \
 	FortranCInterface_GLOBAL_(get_cavity_size, GET_CAVITY_SIZE)
 /*! \fn extern "C" void get_cavity_size(int * nts, int * ntsirr)

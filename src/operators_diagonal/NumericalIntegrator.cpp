@@ -95,10 +95,10 @@ double NumericalIntegrator::computeS(const Vacuum<double> * gf, const Element & 
        
 	// Populate numb and phinumb arrays
 	phi[0] = 0.0;
-	numb[0] = 1; numb[1] = 2;
+	numb[0] = 0; numb[1] = 1;
 	phinumb[0] = phi[0]; phinumb[1] = phi[1];
 	for (int i = 2; i < nVertices; ++i) { // This loop is 2-based
-		for (int j = 1; j < (i - 1); ++j) { // This loop is 1-based 
+		for (int j = 1; j < (i-1); ++j) { // This loop is 1-based 
 			if (phi[i] < phinumb[j]) {
 				for (int k = 0; k < (i - j); ++k) {
 					numb[i - k + 1] = numb[i - k];
@@ -108,9 +108,9 @@ double NumericalIntegrator::computeS(const Vacuum<double> * gf, const Element & 
 				phinumb[j] = phi[i];
 				goto jump; // Ugly, to be refactored!!!
 			}
-			numb[i] = i;
-			phinumb[i] = phi[i];
 		}
+		numb[i] = i;
+		phinumb[i] = phi[i];
 		jump:
 		std::cout << "In definition of angles: jumped" << std::endl;
 	}
@@ -407,6 +407,7 @@ double NumericalIntegrator::computeD(const IonicLiquid<AD_hessian> * gf, const E
 
 double NumericalIntegrator::computeS(const AnisotropicLiquid<double> * gf, const Element & e) const {
 	double Sii = 0.0, S64 = 0.0;
+	double S64_test = 0.0;
 	// Extract relevant data from Element
 	int nVertices = e.nVertices();
 	double area = e.area();
@@ -431,27 +432,27 @@ double NumericalIntegrator::computeS(const AnisotropicLiquid<double> * gf, const
         // Calculate the azimuthal and polar angles for the tessera vertices:
 	// we use the normal, tangent and bitangent as a local reference frame
 	for (int i = 0; i < nVertices; ++i) {
-		Eigen::Vector3d vertex_normal = (vertices.col(i) - sph.center()) / sph.radius();
+		Eigen::Vector3d vertex_normal = vertices.col(i) - sph.center();
 		// The cosine of the polar angle is given as the dot product of the normal at the vertex and the
 		// normal at the tessera center: R\cos\theta
-		double cos_theta = vertex_normal.dot(normal);
+		double cos_theta = vertex_normal.dot(normal) / sph.radius();
 		if (cos_theta >=  1.0) cos_theta = 1.0;
 		if (cos_theta <= -1.0) cos_theta = -1.0;
 		theta[i] = std::acos(cos_theta);
 		// The cosine of the azimuthal angle is given as the dot product of the normal at the vertex and the
 		// tangent at the tessera center divided by the sine of the polar angle: R\sin\theta\cos\phi
-		double cos_phi = vertex_normal.dot(tangent) / std::sin(theta[i]);
+		double cos_phi = vertex_normal.dot(tangent) / (sph.radius() * std::sin(theta[i]));
 		if (cos_phi >=  1.0) cos_phi = 1.0;
 		if (cos_phi <= -1.0) cos_phi = -1.0;
 		phi[i] = std::acos(cos_phi);
 		// The sine of the azimuthal angle is given as the dot product of the normal at the vertex and the
 		// bitangent at the tessera center divided by the sine of the polar angle: R\sin\theta\sin\phi
-		double sin_phi = vertex_normal.dot(bitangent) / std::sin(theta[i]);
+		double sin_phi = vertex_normal.dot(bitangent) / (sph.radius() * std::sin(theta[i]));
 		if (sin_phi <= 0.0) phi[i] = 2 * M_PI - phi[i];
-		if (i != 0) {
-			phi[i] -= phi[0];
-			if (phi[i] < 0.0) phi[i] += 2 * M_PI;
-		}
+	}
+	for (int i = 1; i < nVertices; ++i) {
+		phi[i] = phi[i] - phi[0];
+		if (phi[i] < 0.0) phi[i] = 2 * M_PI + phi[i];
 	}
 	// Rewrite tangent as linear combination of original tangent and bitangent
 	// then recalculate bitangent so that it's orthogonal to the tangent
@@ -460,34 +461,34 @@ double NumericalIntegrator::computeS(const AnisotropicLiquid<double> * gf, const
        
 	// Populate numb and phinumb arrays
 	phi[0] = 0.0;
-	numb[0] = 1; numb[1] = 2;
+	numb[0] = 0; numb[1] = 1;
 	phinumb[0] = phi[0]; phinumb[1] = phi[1];
 	for (int i = 2; i < nVertices; ++i) { // This loop is 2-based
-		for (int j = 1; j < (i - 1); ++j) { // This loop is 1-based 
+		for (int j = 1; j < i; ++j) { // This loop is 1-based 
 			if (phi[i] < phinumb[j]) {
 				for (int k = 0; k < (i - j); ++k) {
-					numb[i - k + 1] = numb[i - k];
-					phinumb[i - k + 1] = phinumb[i - k];
+					numb[i - k] = numb[i - k -1];
+					phinumb[i - k] = phinumb[i - k -1];
 				}
 				numb[j] = i;
 				phinumb[j] = phi[i];
 				goto jump; // Ugly, to be refactored!!!
 			}
-			numb[i] = i;
-			phinumb[i] = phi[i];
 		}
+		numb[i] = i;
+		phinumb[i] = phi[i];
 		jump:
 		std::cout << "In definition of angles: jumped" << std::endl;
 	}
 	numb[nVertices] = numb[0];
 	phinumb[nVertices] = 2 * M_PI;
-
+	
 	// Actual integration occurs here
 	for (int i = 0; i < nVertices; ++i) { // Loop on edges
 		double pha = phinumb[i];
 		double phb = phinumb[i+1];
-		double aph = (pha - phb) / 2.0;
-		double bph = (pha + phb) / 2.0;
+		double aph = (phb - pha) / 2.0;
+		double bph = (phb + pha) / 2.0;
 		double tha = theta[numb[i]];
 		double thb = theta[numb[i+1]];
 		double thmax = 0.0;
@@ -518,6 +519,7 @@ double NumericalIntegrator::computeS(const AnisotropicLiquid<double> * gf, const
 				double ath = thmax / 2.0;
 
 				double S16 = 0.0;
+				double S16_test = 0.0;
 				if (!(thmax < 1.0e-08)) {
 					for (int l = 0; l < 8; ++l) { // Loop on Gaussian points (16-points rule)                                                         		
 				        	for (int m = 0; m <= 1; ++m) {
@@ -536,16 +538,21 @@ double NumericalIntegrator::computeS(const AnisotropicLiquid<double> * gf, const
 				        			  + normal(2) * (cos_th - 1.0);
 				        		double rth = std::sqrt(2 * (1.0 - cos_th));
 				        		double rtheps = gf->function(point, Eigen::Vector3d::Zero()); // Evaluate Green's function at Gaussian points
-				        		S16 += (sph.radius() / (4 * M_PI * rtheps)) * sin_th * ath * gauss16Weight(l);
+				        		S16 += (sph.radius() / rtheps) * sin_th * ath * gauss16Weight(l);
+							S16_test += sph.radius()*sin_th*ath*gauss16Weight(l);
 				        	}
 				        }
 				        S64 += S16 * aph * gauss64Weight(j);
+					S64_test += S16_test * aph * gauss64Weight(j);
 				}
 			}
 		}
 	}
 
-	Sii = S64 * area;
+	Sii = S64;
+        std::cout << "e.area() = " << area << std::endl;
+	std::cout << "S64_test = " << S64_test << std::endl;
+	std::cout << "diff = " << area-S64_test << std::endl;
 
         return Sii;
 }

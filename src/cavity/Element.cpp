@@ -25,81 +25,47 @@
 
 #include "Element.hpp"
 
-#include <iomanip>
-#include <iostream>
-#include <fstream>
-#include <limits>
+#include <cmath>
 #include <stdexcept>
 
 #include "Config.hpp"
 
 #include "EigenPimpl.hpp"
 
+#include <boost/math/special_functions/sign.hpp>
+
 #include "Sphere.hpp"
 
-/*! We start from the parametric representation of the sphere:
- * \f[
- * \begin{aligned}
- * (x - x_0) &= R\sin\theta\cos\phi = \sqrt{R^2 - u^2}\cos\phi \\
- * (y - y_0) &= R\sin\theta\sin\phi = \sqrt{R^2 - u^2}\sin\phi \\
- * (z - z_0) &= R\cos\theta         = u
- * \end{aligned}
- * \f]
- * \f$\phi\f$ is called azimuth or azimuthal angle, while \f$\theta\f$ is the polar angle
- * (physicists' convention)
- *
- * Their inverse:
- * \f[
- * \begin{aligned}
- * R      &= \sqrt{(x-x_0)^2 + (y-y_0)^2 + (z-z_0)^2} \\
- * \phi   &= \arctan{\frac{(y-y_0)}{(x-x_0)}}         \\
- * \theta &= \arccos{\frac{(z-z_0)}{R}}
- * \end{aligned}
- * \f]
- * Given the parametric description above, the following vectors
- * span the tangent space to the sphere (might be that they are undefined
- * in some points...)
- * \f[
- * v_\phi = \begin{pmatrix}
- *        \partial_\theta x \\
- *        \partial_\theta y \\
- *        \partial_\theta z
- *       \end{pmatrix}
- *       = \begin{pmatrix}
- *         -\sqrt{R^2-u^2}\sin\phi \\
- *          \sqrt{R^2-u^2}\cos\phi \\
- *          0
- *       \end{pmatrix}
- * \quad\quad
- * v_u = \begin{pmatrix}
- *        \partial_u x \\
- *        \partial_u y \\
- *        \partial_u z 
- *       \end{pmatrix}
- *     = \begin{pmatrix}
- *         -\frac{u}{\sqrt{R^2-u^2}}\cos\phi \\
- *         -\frac{u}{\sqrt{R^2-u^2}}\sin\phi \\
- *          1
- *       \end{pmatrix}
- *  \f]
- *
- * The tangent and bitangent are then:
- * \f[
- * \begin{alignat}{2}
- * t = -\frac{v_\phi}{|v_\phi|}, \quad&\quad
- * b = -\frac{v_u}{|v_u|}
- * \end{alignat}
- * \f]
- * the minus sign is required to preserve consistency with GAMESS subroutines
- */
 void Element::tangent_and_bitangent(Eigen::Vector3d & t_, Eigen::Vector3d & b_) const
 {
-	double polar_angle = std::acos((center_(2) - sphere_.center(2)) / sphere_.radius()); // \theta
-	double azimuth = std::atan((center_(1) - sphere_.center(1)) / (center_(0) - sphere_.center(0))); // \phi
-	double Rcos = sphere_.radius() * std::cos(polar_angle); // R\cos\theta
-	double Rsin = std::sqrt(std::pow(sphere_.radius(), 2) - std::pow(Rcos, 2)); // R\sin\theta
-	t_ << Rsin*std::sin(azimuth), -Rsin*std::cos(azimuth), 0.0;
-	t_.normalize();
-	b_ << (Rcos/Rsin)*std::cos(azimuth), (Rcos/Rsin)*std::sin(azimuth), -1.0;
-	b_.normalize();
+        double rmin = 0.99;
+        if (std::fabs(normal_(0)) <= rmin) {
+        	rmin = std::fabs(normal_(0));
+        	t_(0) = 0.0;
+        	t_(1) = - normal_(2) / std::sqrt(1.0 - std::pow(normal_(0), 2));
+        	t_(2) = normal_(1) / std::sqrt(1.0 - std::pow(normal_(0), 2));
+        }
+        if (std::fabs(normal_(1)) <= rmin) {
+        	rmin = std::fabs(normal_(1));
+        	t_(0) = normal_(2) / std::sqrt(1.0 - std::pow(normal_(1), 2));
+        	t_(1) = 0.0;
+        	t_(2) = -normal_(0) / std::sqrt(1.0 - std::pow(normal_(1), 2));
+        }
+        if (std::fabs(normal_(2)) <= rmin) {
+        	rmin = std::fabs(normal_(2));
+        	t_(0) = normal_(1) / std::sqrt(1.0 - std::pow(normal_(2), 2));
+        	t_(1) = -normal_(0) / std::sqrt(1.0 - std::pow(normal_(2), 2));
+        	t_(2) =0.0; 
+        }
+        b_ = normal_.cross(t_);
+	// Check that the calculated Frenet-Serret frame is left-handed (levogiro)
+	// by checking that the determinant of the matrix whose columns are the normal,
+	// tangent and bitangent vectors has determinant 1 (the system is orthonormal!)
+	Eigen::Matrix3d M;
+        M.col(0) = normal_;
+	M.col(1) = t_;
+	M.col(2) = b_;
+	if (boost::math::sign(M.determinant()) != 1) {
+		throw std::runtime_error("Frenet-Serret local frame is not left-handed!");
+	}
 }

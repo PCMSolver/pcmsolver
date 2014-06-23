@@ -11,34 +11,83 @@
 
 #include "EigenPimpl.hpp"
 
-#include <boost/numeric/quadrature/kronrodgauss.hpp>
-#include <boost/numeric/quadrature/error_estimator.hpp>
-#include <boost/lambda/lambda.hpp>
+#include <boost/bind.hpp>
+#include <boost/bind/placeholders.hpp>
+#include <boost/function.hpp>
 
-namespace quadrature = boost::numeric::quadrature;
+#include "GePolCavity.hpp"
+#include "MathUtils.hpp"
+#include "PhysicalConstants.hpp"
+#include "Sphere.hpp"
+#include "Symmetry.hpp"
+
+typedef boost::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> integrand;
 
 /*! \class NumericalQuadrature
- *  \test \b NumericalQuadrature_x2sinx tests adaptive integration of x^2*sin(x) in [0, 5]
+ *  \test \b NumericalQuadrature_sphere tests numerical quadrature function on a sphere of radius 1.0
  */
-BOOST_AUTO_TEST_CASE(x2sinx)
+BOOST_AUTO_TEST_CASE(sphere)
 {
-    // Define a functor to be passed to the integrator
     struct f {
-        double operator()(double x) const { return (std::pow(x, 2) * std::sin(x)); }
+	double operator()(const Eigen::Vector3d & s, const Eigen::Vector3d & p) { return 1.0; }
     };
-    double upper = 5.0;
-    double lower = 0.0;
-    double expected_result = -2.0 + 10.0 * std::sin(upper) - 23.0 * std::cos(upper);
-    double actual_result;
 
-    // declare the kernel
-    quadrature::kronrod_gauss<15> integrator;
+    Eigen::Vector3d origin(0.0, 0.0, 0.0);
+    std::vector<Sphere> spheres;
+    Sphere sph1(origin,  1.0);
+    spheres.push_back(sph1);
+    double area = 10.0;
+    // C1
+    Symmetry pGroup = buildGroup(0, 0, 0, 0);
+    GePolCavity cavity(spheres, area, 0.0, 100.0, pGroup);
+    Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
+    
+    integrand F = f();
+    
+    for (int i = 0; i < cavity.size(); ++i) {
+	results(i) = integrator(F, cavity.elements(i));
+    }
 
-    // integrate x^2*sin(x) on [0,5]
-    integrator(f(), lower, upper, actual_result);
+    for (int i = 0; i < cavity.size(); ++i) {
+    	BOOST_REQUIRE_CLOSE(results(i), cavity.elementArea(i), 1.0e-12);
+    }
+}
 
-    // display the result
-    BOOST_TEST_MESSAGE("Integral(x^2*sin(x)) on [0, 5] is " << std::setprecision(
-                           std::numeric_limits<long double>::digits10) << actual_result);
-    BOOST_REQUIRE_CLOSE(expected_result, actual_result, 1.0e-12);
+/*! \class NumericalQuadrature
+ *  \test \b NumericalQuadrature_molecule tests numerical quadrature function on H3+ cavity
+ */
+BOOST_AUTO_TEST_CASE(molecule)
+{
+    struct f {
+	double operator()(const Eigen::Vector3d & s, const Eigen::Vector3d & p) { return 1.0; }
+    };
+
+    Eigen::Vector3d H1( 0.735000, 0.000000, -1.333333);
+    Eigen::Vector3d H2(-0.735000, 0.000000, -1.333333);
+    Eigen::Vector3d H3( 0.000000, 0.000000,  2.666667);
+    std::vector<Sphere> spheres;
+    double radiusH = (1.20 * 1.20) / convertBohrToAngstrom;
+    Sphere sph2(H1, radiusH);
+    Sphere sph3(H2, radiusH);
+    Sphere sph4(H3, radiusH);
+    spheres.push_back(sph2);
+    spheres.push_back(sph3);
+    spheres.push_back(sph4);
+    double area = 0.2 / convertBohr2ToAngstrom2;
+    double probeRadius = 1.385 / convertBohrToAngstrom;
+    double minRadius = 0.2 / convertBohrToAngstrom;
+    // C1
+    Symmetry pGroup = buildGroup(0, 0, 0, 0);
+    GePolCavity cavity(spheres, area, probeRadius, minRadius, pGroup);
+    Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
+    
+    integrand F = f();
+    
+    for (int i = 0; i < cavity.size(); ++i) {
+	results(i) = integrator(F, cavity.elements(i));
+    }
+
+    for (int i = 0; i < cavity.size(); ++i) {
+    	BOOST_REQUIRE_CLOSE(results(i), cavity.elementArea(i), 1.0e-12);
+    }
 }

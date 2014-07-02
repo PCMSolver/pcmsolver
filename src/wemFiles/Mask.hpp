@@ -12,6 +12,7 @@
 class LinAnsatzFunction;
 class ConAnsatzFunction;
 
+#include "SparseMatrix.hpp"
 unsigned int     minLevel;
 
 // constant - defines the mask T on level m
@@ -27,8 +28,5 @@ void mask_T22(SparseMatrix *T, unsigned int m, unsigned int M);
 void mask_T24(SparseMatrix *T, unsigned int m, unsigned int M);
 
 // choose the correct mask according to level
-template <> void dwtMask(SparseMatrix *T, SparseMatrix *L, unsigned int m, unsigned int M, LinAnsatzFunction *linAF);
-
-// choose the correct mask according to level
-template <> void dwtMask(SparseMatrix *T, SparseMatrix *L, unsigned int m, unsigned int M, ConAnsatzFunction *conAF);
+template <class D> void dwtMask(SparseMatrix *T, SparseMatrix *L, unsigned int m, unsigned int M, D *aF);
 

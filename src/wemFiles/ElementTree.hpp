@@ -1,7 +1,8 @@
 #ifndef _ELEMENT_TREE_HPP
 #define _ELEMENT_TREE_HPP
 
-class Vector3;
+//class Vector3;
+#include "Vector3.hpp"
 
 typedef struct {
   double **value;              ///< the value of the integral

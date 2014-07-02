@@ -10,6 +10,8 @@ set(header_dir_list
 	${CMAKE_CURRENT_SOURCE_DIR}/utils
 	${CMAKE_CURRENT_SOURCE_DIR}/wavcav
 	${CMAKE_CURRENT_SOURCE_DIR}/wem
+  ${CMAKE_CURRENT_SOURCE_DIR}/wemSolvers
+  ${CMAKE_CURRENT_SOURCE_DIR}/wemFiles
    )
 include_directories(${header_dir_list})
 
@@ -26,6 +28,7 @@ add_subdirectory(solver)
 add_subdirectory(utils)
 add_subdirectory(wem)
 add_subdirectory(wemFiles)
+add_subdirectory(wemSolvers)
 if(DEVELOPMENT_CODE)
 	add_subdirectory(tsless)
 	add_subdirectory(wavcav)

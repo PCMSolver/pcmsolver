@@ -47,6 +47,7 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
 
   quadratureLevel_ = 1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+}
 
 void ConAnsatzFunction::setQuadratureLevel() {
   unsigned int  i, j, k, l;             // run index for wavelet/element list
@@ -953,7 +954,7 @@ void ConAnsatzFunction::integratePoint(double *c, unsigned int i1, unsigned int 
     for (j = 0; j < Q->noP; ++j) {
       eta = vector2SMul(xi.x, Q->xi[j]);
 
-      a = kappa(t, tau(eta.y, eta.c, ind_t), h);
+      a = kappa(t, tau(eta.y, eta.x, ind_t), h);
       z = interCoeff->Chi(a, elementTree.element[i2].patch);
       n_z = interCoeff->n_Chi(a, elementTree.element[i2].patch);
 

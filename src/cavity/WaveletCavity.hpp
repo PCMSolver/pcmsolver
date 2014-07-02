@@ -35,8 +35,10 @@
 
 extern "C"
 {
-#include "vector3.h"
+//#include "vector3.h"
 }
+
+#include "Vector3.hpp"
 
 #include "Cavity.hpp"
 #include "CavityData.hpp"

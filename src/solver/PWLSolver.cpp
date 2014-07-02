@@ -37,6 +37,7 @@
 
 extern "C"
 {
+/*
 #include "vector3.h"
 #include "sparse.h"
 #include "sparse2.h"
@@ -59,6 +60,7 @@ extern "C"
 #include "constants.h"
 #include "precond_pwl.h"
 #include "energy_pwl.h"
+*/
 }
 
 #include "Cavity.hpp"

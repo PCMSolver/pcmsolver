@@ -9,7 +9,7 @@ set(header_dir_list
 	${CMAKE_CURRENT_SOURCE_DIR}/solver
 	${CMAKE_CURRENT_SOURCE_DIR}/utils
 	${CMAKE_CURRENT_SOURCE_DIR}/wavcav
-	${CMAKE_CURRENT_SOURCE_DIR}/wem
+  #	${CMAKE_CURRENT_SOURCE_DIR}/wem
   ${CMAKE_CURRENT_SOURCE_DIR}/wemSolvers
   ${CMAKE_CURRENT_SOURCE_DIR}/wemFiles
    )
@@ -26,7 +26,7 @@ add_subdirectory(pedra)
 add_subdirectory(pwl)
 add_subdirectory(solver)
 add_subdirectory(utils)
-add_subdirectory(wem)
+#add_subdirectory(wem)
 add_subdirectory(wemFiles)
 add_subdirectory(wemSolvers)
 if(DEVELOPMENT_CODE)

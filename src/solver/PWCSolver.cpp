@@ -37,6 +37,7 @@
 
 extern "C"
 {
+/*
 #include "vector3.h"
 #include "sparse2.h"
 #include "intvector.h"
@@ -57,6 +58,7 @@ extern "C"
 #include "gauss_square.h"
 #include "constants.h"
 #include "energy.h"
+*/
 }
 
 #include "Cavity.hpp"

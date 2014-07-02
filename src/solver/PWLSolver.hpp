@@ -35,10 +35,10 @@
 
 extern "C"
 {
-#include "vector3.h"
-#include "sparse2.h"
-#include "intvector_pwl.h"
-#include "basis_pwl.h"
+//#include "vector3.h"
+//#include "sparse2.h"
+//#include "intvector_pwl.h"
+//#include "basis_pwl.h"
 }
 
 #include "IGreensFunction.hpp"

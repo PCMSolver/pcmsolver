@@ -23,3 +23,11 @@ macro(add_boosttest test_name my_libraries external_libraries)
                          )
     add_test(NAME ${the_name} COMMAND ${the_name}.x)
 endmacro()
+
+# This macro is used to copy a file containing reference values into the directory
+# where the unit tests will be executed
+macro(add_reference reference_file where)
+	FILE(COPY ${reference_file} DESTINATION ${where}
+             FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ
+             WORLD_READ)
+endmacro()

@@ -27,6 +27,7 @@
 #define ELEMENT_HPP
 
 #include <ostream>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -59,12 +60,18 @@ public:
     Sphere sphere() const { return sphere_; }
     Eigen::Matrix3Xd vertices() const { return vertices_; }
     Eigen::Matrix3Xd arcs() const { return arcs_; }
-    /*! \brief Calculate tangent and bitangent vector for the representative point
-     *  \param[out] t_ tangent vector
-     *  \param[out] b_ bitangent vector
+    /*! \brief Calculate arrays of polar and azimuthal angles for element vertices 
+     *  \param[in] t_ tangent vector
+     *  \param[in] b_ bitangent vector
+     *  \param[out] theta   polar angles of vertices 
+     *  \param[out] phi     azimuthal angles of vertices
+     *  \param[out] phinumb contains azimuth for vertices of subtriangles
+     *  \param[out] numb    contains index of polar angle for vertices of subtriangles
      */	
-    void tangent_and_bitangent(Eigen::Vector3d & t_, Eigen::Vector3d & b_) const;
-
+    void spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
+		           std::vector<double> & theta, std::vector<double> & phi,
+			   std::vector<double> & phinumb, std::vector<int> & numb) const;
+    
     friend std::ostream & operator<<(std::ostream & os, Element & element) {
         return element.printElement(os);
     }
@@ -93,5 +100,14 @@ private:
 	    return os;
     }
 };
+
+/*! \brief Calculate tangent and bitangent vector for the representative point
+ *  \param[in]  n_ normal vector
+ *  \param[out] t_ tangent vector
+ *  \param[out] b_ bitangent vector
+ */	
+void tangent_and_bitangent(const Eigen::Vector3d & n_, 
+		           Eigen::Vector3d & t_, Eigen::Vector3d & b_);
+
 
 #endif // ELEMENT_HPP

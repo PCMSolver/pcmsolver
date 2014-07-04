@@ -2470,8 +2470,6 @@
     real(8) :: epsxx, epsxy, epsxz, epsyy, epsyz, epszz
     real(8) :: epsm1xx, epsm1xy, epsm1xz, epsm1yy, epsm1yz, epsm1zz
     ! Parameters
-    real(8), parameter :: zero = 0.0d0
-    real(8), parameter :: two  = 2.0d0
     real(8), parameter :: pi   = acos(-1.0d0)
     real(8), parameter :: tpi  = 2.0d0 * pi
     real(8), parameter :: fpi  = 4.0d0 * pi
@@ -2486,54 +2484,97 @@
     real(8) :: thmax, vecx, vecy, vecz, vx, vy, vz
     real(8) :: xcc, xx, xy, xz, ycc, yx, yy, yz, zcc, zx, zy, zz
     real(8) :: sse, dde, ssep, ddep, ssepp, ddepp, deteps
-    real(8) :: rth_test, test_S, test_Sp, test_Spp ! Same nomenclature
+    real(8) :: rth_test, test_D, test_Dp, test_Dpp ! Same nomenclature
+    real(8) :: test_A, test_Ap, test_App ! Same nomenclature
     real(8) :: accum, azimuth
+    real(8) :: vvx, vvy, vvz
     integer :: i, j, k, l, m, li, nedge, nph, nphsgn, nth, nthsgn, nv
+    real(8), allocatable :: s(:), d(:), my_d(:)
     
     ! 16-points Gaussian rule: abscissas 
-    xgp16pts = [9.894009350d-01, 9.445750231d-01, &
-                8.656312024d-01, 7.554044084d-01, &
-                6.178762444d-01, 4.580167777d-01, &
-                2.816035508d-01, 9.501250984d-02]
+    xgp16pts = [0.9894009349916499325961542d0, & 
+                0.9445750230732325760779884d0, &
+                0.8656312023878317438804679d0, &
+                0.7554044083550030338951012d0, &
+                0.6178762444026437484466718d0, &
+                0.4580167776572273863424194d0, &
+                0.2816035507792589132304605d0, &
+                0.0950125098376374401853193d0]
     ! 16-points Gaussian rule: weights
-    wgp16pts = [2.715245941d-02, 6.225352394d-02, &
-                9.515851168d-02, 1.246289713d-01, &
-                1.495959888d-01, 1.691565194d-01, &
-                1.826034150d-01, 1.894506105d-01]
+    wgp16pts = [0.0271524594117540948517806d0, & 
+                0.0622535239386478928628438d0, & 
+                0.0951585116824927848099251d0, &
+                0.1246289712555338720524763d0, & 
+                0.1495959888165767320815017d0, &
+                0.1691565193950025381893121d0, &
+                0.1826034150449235888667637d0, & 
+                0.1894506104550684962853967d0]
     ! 64-points Gaussian rule: abscissas
-    xgp64pts = [9.993050417d-01, 9.963401168d-01, &  
-                9.910133715d-01, 9.833362539d-01, &
-                9.733268278d-01, 9.610087996d-01, &
-                9.464113748d-01, 9.295691721d-01, &
-                9.105221371d-01, 8.893154460d-01, &
-                8.659993982d-01, 8.406292963d-01, & 
-                8.132653151d-01, 7.839723589d-01, & 
-                7.528199073d-01, 7.198818502d-01, & 
-                6.852363131d-01, 6.489654713d-01, &
-                6.111553552d-01, 5.718956462d-01, &
-                5.312794640d-01, 4.894031457d-01, &
-                4.463660173d-01, 4.022701580d-01, &
-                3.572201583d-01, 3.113228720d-01, &
-                2.646871622d-01, 2.174236437d-01, &
-                1.696444204d-01, 1.214628193d-01, &
-                7.299312179d-02, 2.435029266d-02]
+    xgp64pts = [0.9993050417357721394569056d0, &
+                0.9963401167719552793469245d0, &
+                0.9910133714767443207393824d0, & 
+                0.9833362538846259569312993d0, & 
+                0.9733268277899109637418535d0, &
+                0.9610087996520537189186141d0, &
+                0.9464113748584028160624815d0, &
+                0.9295691721319395758214902d0, &
+                0.9105221370785028057563807d0, &
+                0.8893154459951141058534040d0, &
+                0.8659993981540928197607834d0, &
+                0.8406292962525803627516915d0, &
+                0.8132653151227975597419233d0, &
+                0.7839723589433414076102205d0, &
+                0.7528199072605318966118638d0, &
+                0.7198818501716108268489402d0, &
+                0.6852363130542332425635584d0, &
+                0.6489654712546573398577612d0, &
+                0.6111553551723932502488530d0, &
+                0.5718956462026340342838781d0, &
+                0.5312794640198945456580139d0, &
+                0.4894031457070529574785263d0, &
+                0.4463660172534640879849477d0, &
+                0.4022701579639916036957668d0, &
+                0.3572201583376681159504426d0, &
+                0.3113228719902109561575127d0, &
+                0.2646871622087674163739642d0, &
+                0.2174236437400070841496487d0, &
+                0.1696444204239928180373136d0, &
+                0.1214628192961205544703765d0, &
+                0.0729931217877990394495429d0, &
+                0.0243502926634244325089558d0]
     ! 64-points Gaussian rule: weights
-    wgp64pts = [1.783280722d-03, 4.147033261d-03, &
-                6.504457969d-03, 8.846759826d-03, &
-                1.116813946d-02, 1.346304790d-02, &
-                1.572603048d-02, 1.795171578d-02, &
-                2.013482315d-02, 2.227017381d-02, &
-                2.435270257d-02, 2.637746972d-02, &
-                2.833967261d-02, 3.023465707d-02, &
-                3.205792835d-02, 3.380516184d-02, &
-                3.547221326d-02, 3.705512854d-02, &
-                3.855015318d-02, 3.995374113d-02, &
-                4.126256324d-02, 4.247351512d-02, &
-                4.358372453d-02, 4.459055816d-02, &
-                4.549162793d-02, 4.628479658d-02, &
-                4.696818282d-02, 4.754016571d-02, &
-                4.799938860d-02, 4.834476223d-02, &
-                4.857546744d-02, 4.869095701d-02]
+    wgp64pts = [0.0017832807216964329472961d0, & 
+                0.0041470332605624676352875d0, &
+                0.0065044579689783628561174d0, &
+                0.0088467598263639477230309d0, &
+                0.0111681394601311288185905d0, &
+                0.0134630478967186425980608d0, &
+                0.0157260304760247193219660d0, &
+                0.0179517157756973430850453d0, &
+                0.0201348231535302093723403d0, &
+                0.0222701738083832541592983d0, &
+                0.0243527025687108733381776d0, &
+                0.0263774697150546586716918d0, &
+                0.0283396726142594832275113d0, &
+                0.0302346570724024788679741d0, &
+                0.0320579283548515535854675d0, &
+                0.0338051618371416093915655d0, &
+                0.0354722132568823838106931d0, &
+                0.0370551285402400460404151d0, &
+                0.0385501531786156291289625d0, &
+                0.0399537411327203413866569d0, &
+                0.0412625632426235286101563d0, &
+                0.0424735151236535890073398d0, &
+                0.0435837245293234533768279d0, &
+                0.0445905581637565630601347d0, &
+                0.0454916279274181444797710d0, &
+                0.0462847965813144172959532d0, &
+                0.0469681828162100173253263d0, &
+                0.0475401657148303086622822d0, &
+                0.0479993885964583077281262d0, &
+                0.0483447622348029571697695d0, &
+                0.0485754674415034269347991d0, &
+                0.0486909570091397203833654d0]
     
     accum = 0.0d0
     write(lvpri, *) "BOBERTO, entering DIAGAN"
@@ -2557,8 +2598,8 @@
     rot(3,2)=csphi*snthe
     rot(3,3)=csthe
 
-    ! Cube root of the determinant
     deteps = eps1 * eps2 * eps3
+    ! Cube root of the determinant
     epsm=(eps1*eps2*eps3)**(1.0d+00/3.0d+00)
     ! Build permittivity tensor in molecule-fixed frame
     epsxx=(eps1*rot(1,1)*rot(1,1)+eps2*rot(2,1)*rot(2,1)+eps3*rot(3,1)*rot(3,1))
@@ -2574,15 +2615,21 @@
     epsm1yy=(eps1**(-1)*rot(1,2)*rot(1,2)+eps2**(-1)*rot(2,2)*rot(2,2)+eps3**(-1)*rot(3,2)*rot(3,2))
     epsm1yz=(eps1**(-1)*rot(1,2)*rot(1,3)+eps2**(-1)*rot(2,2)*rot(2,3)+eps3**(-1)*rot(3,2)*rot(3,3))
     epsm1zz=(eps1**(-1)*rot(1,3)*rot(1,3)+eps2**(-1)*rot(2,3)*rot(2,3)+eps3**(-1)*rot(3,3)*rot(3,3))
+    
     eps=epsm
 
-    sse=zero
-    dde=zero
-    test_S = 0.0d0
+    sse = 0.0d0
+    dde = 0.0d0
+    test_D = 0.0d0
+    test_A = 0.0d0
+    allocate(s(nts))
+    s = 0.0d0
+    allocate(d(nts))
+    d = 0.0d0
+    allocate(my_d(nts))
+    my_d = 0.0d0
 
     do i = 1, nts
-    write(lvpri, *), "                                              Tessera n. ", i
-    write(lvpri, *), "center ", xtscor(i), ytscor(i), ztscor(i)
     li=isphe(i)
     nv=30*(i-1)
 !
@@ -2590,14 +2637,12 @@
 !
         ssep=0.0d+00
         ddep=0.0d+00
-        test_Sp = 0.0d0
+        test_Dp = 0.0d0
+        test_Ap = 0.0d0
 
         xz=(xtscor(i)-xe(li))/re(li)
         yz=(ytscor(i)-ye(li))/re(li)
         zz=(ztscor(i)-ze(li))/re(li)
-        azimuth = atan((ytscor(i) - ye(li))/(xtscor(i)-xe(li)))
-        write(lvpri, *), "azimuth = ", azimuth 
-        write(lvpri, *), "cos_azi = ", cos(azimuth)," sin_azi = ", sin(azimuth)
         rmin=0.99d+00
         if (abs(xz).le.rmin) then
           rmin=abs(xz)
@@ -2620,10 +2665,6 @@
         yy=zz*xx-zx*xz
         zy=xz*yx-xx*yz
 
-        write(lvpri, *), "n = ", xz, yz, zz
-        write(lvpri, *), "t = ", xx, yx, zx
-        write(lvpri, *), "b = ", xy, yy, zy
-
         ! Clean-up heap-crap        
         theta = 0.0d0
         phi   = 0.0d0
@@ -2635,37 +2676,22 @@
           vecy=vert(i,k,2)-ye(li)
           vecz=vert(i,k,3)-ze(li)
           dc=(vecx*xz+vecy*yz+vecz*zz)/re(li)
-          write(lvpri,*), "cos_theta = ", dc
           if(dc.ge.1.0d+00)dc=1.0d+00
-          write(lvpri,*), "cos_theta = ", dc
           if(dc.le.-1.0d+00)dc=-1.0d+00
-          write(lvpri,*), "cos_theta = ", dc
           theta(k)=acos(dc)
           dcs=(vecx*xx+vecy*yx+vecz*zx)/(re(li)*sin(theta(k)))
-          write(lvpri,*), "cos_phi = ", dcs
           if(dcs.ge.1.0d+00)dcs=1.0d+00
-          write(lvpri,*), "cos_phi = ", dcs
           if(dcs.le.-1.0d+00)dcs=-1.0d+00
-          write(lvpri,*), "cos_phi = ", dcs
           phi(k)=acos(dcs)
-        write(lvpri,*), "phi(",k,")= ", phi(k)
           snphi=(vecx*xy+vecy*yy+vecz*zy)/(re(li)*sin(theta(k)))
-          write(lvpri,*), "sin_phi = ", snphi
           if (snphi.le.0.0d+00) phi(k)=tpi-phi(k)
-        write(lvpri,*), "phi(",k,")= ", phi(k)
         enddo
        
         do k=2,nvert(i)
           phi(k)=phi(k)-phi(1)
           if (phi(k).lt.0.0d+00) phi(k)=tpi+phi(k)
         enddo
-        do k=1,nvert(i)
-        write(lvpri,*), "theta(",k,")= ", theta(k)
-        enddo
-        do k=1,nvert(i)
-        write(lvpri,*), "phi(",k,")= ", phi(k)
-        enddo
-
+        
         xx=xx*cos(phi(1))+xy*sin(phi(1))
         yx=yx*cos(phi(1))+yy*sin(phi(1))
         zx=zx*cos(phi(1))+zy*sin(phi(1))
@@ -2679,12 +2705,9 @@
         phinumb(1)=phi(1)
         phinumb(2)=phi(2)
         do 210 k=3,nvert(i)
-         write(lvpri, *), "i = ", k
           do l=2,k-1
-         write(lvpri, *), "j = ", l 
             if (phi(k).lt.phinumb(l)) then
               do m=1,k-l
-         write(lvpri, *), "k = ", m 
                 numb(k-m+1)=numb(k-m)
                 phinumb(k-m+1)=phinumb(k-m)
               enddo
@@ -2696,17 +2719,9 @@
           numb(k)=k
           phinumb(k)=phi(k)
   210   continue
-        write(lvpri, *), "in definition of angles jumped"
         numb(nvert(i)+1)=numb(1)
         phinumb(nvert(i)+1)=tpi
         
-        do k = 1, nvert(i) + 1
-               write(lvpri, *) "numb(",k,") = ", numb(k)
-        enddo
-        do k = 1, nvert(i) +1 
-               write(lvpri, *) "phinumb(",k,") = ", phinumb(k)
-        enddo
-
 !
 ! -- LOOP ON GAUSS POINTS
 !
@@ -2738,17 +2753,19 @@
            bb=-zcc*rcc
            cc=rcc**2-(xcc*cosph+ycc*sinph)**2
            ds=bb**2-aa*cc
-           if(ds.lt.zero)ds=zero
+           if(ds.lt.0.0d0)ds=0.0d0
            cs=(-bb+sqrt(ds))/aa
            if(cs.gt.1.0d+00)cs=1.0d+00
            if(cs.lt.-1.0d+00)cs=1.0d+00
            thmax=acos(cs)
           end if
            if(thmax.lt.1.0d-08) go to 33
-           ath=thmax/two
+           ath=thmax/2.0d0
+          ! write(lvpri,*), "thetaMax = ",thmax,", thetaA = ", ath
            ssepp=0.0d+00
            ddepp=0.0d+00
-           test_Spp = 0.0d0
+           test_Dpp=0.0d0
+           test_App=0.0d0
            
            do nth=1,ng16pts ! Inner 16-points rule
            do nthsgn=0,1
@@ -2762,41 +2779,59 @@
             rtheps=sqrt(epsm1xx*vx*vx+2*epsm1xy*vx*vy+2*epsm1xz*vx*vz &
                                      +  epsm1yy*vy*vy+2*epsm1yz*vy*vz &
                                                      +  epsm1zz*vz*vz)
-            ssepp=ssepp+(re(li)/(fpi*rtheps))*sinth*ath*wgp16pts(nth)
-            ddepp=ddepp-(rth**2/(2*fpi*rtheps**3))*sinth*ath*wgp16pts(nth)
+            ssepp=ssepp+(re(li)**2/(rtheps))*sinth*ath*wgp16pts(nth)
+            ddepp=ddepp-(rth**2/(2*rtheps**3))*sinth*ath*wgp16pts(nth)
+            vvx=epsm1xx*vx+epsm1xy*vy+epsm1xz*vz
+            vvy=epsm1xy*vx+epsm1yy*vy+epsm1yz*vz
+            vvz=epsm1xz*vx+epsm1yz*vy+epsm1zz*vz
+            vvx=vvx*xz
+            vvy=vvy*yz
+            vvz=vvz*zz
+            test_Dpp=test_Dpp+re(li)**2 *((vvx+vvy+vvz)/(rtheps**3))*sinth*ath*wgp16pts(nth)
+            test_App = test_App+re(li)**2 * sinth * ath * wgp16pts(nth)
             
-            rth_test = sqrt(vx*vx + vy*vy + vz*vz)
-            test_Spp = test_Spp + (re(li))*sinth*ath*wgp16pts(nth) 
            enddo ! Close loop on nthsgn (n-theta-sign)
            enddo ! Close loop on nth (n-theta)
            ssep=ssep+ssepp*aph*wgp64pts(nph)
            ddep=ddep+ddepp*aph*wgp64pts(nph)
+           test_Dp=test_Dp+test_Dpp*aph*wgp64pts(nph)
+           test_Ap=test_Ap+test_App*aph*wgp64pts(nph)
            
-           test_Sp = test_Sp + test_Spp*aph*wgp64pts(nph)
   33       continue
           enddo ! Close loop on nphsgn (n-phi-sign)
           enddo ! Close loop on nph (n-phi)
         enddo ! Close loop on nedge
-        sse=ssep*as(i)
-        dde=ddep*as(i)
+        sse=ssep!*as(i)
+        dde=ddep!*as(i)
+        test_D = test_Dp
+        test_A=test_Ap
 
-        test_S = test_Sp * as(i)
         ! Divide by determinant
-        sse = sse / deteps
-        dde = dde / deteps
-      !write(lvpri, *), "in diagan: SSE_{",i,", ",i,"} = ", sse
-      !write(lvpri, *), "in diagan: DDE_{",i,", ",i,"} = ", dde
-      write(lvpri, *), "in diagan: area = ", as(i)
-      !write(lvpri, *), "in diagan: test_S{",i,", ",i,"} = ", test_S
-      write(lvpri, *), "in diagan: S64_test = ", test_Sp
-      write(lvpri, *), "diff = ", as(i) - test_Sp
-      accum = accum + test_Sp 
+        sse = sse / sqrt(deteps)
+        dde = dde / sqrt(deteps)
+        s(i) = sse
+        d(i) = dde
+        test_D = test_D/sqrt(deteps)
+        my_d(i) = test_D
+        accum = accum + test_A
+      if ((test_A-as(i) > 1.0d-12)) then
+      write(lvpri, *), "Tessera n. ", i
+!      write(lvpri, *), "test_A = ", test_A
+      write(lvpri, *), "diff = ", test_A - as(i)
+      end if
       end do
 
-      write(lvpri, *), "BOBERTO, re = ", re(1)
-      write(lvpri, *), "BOBERTO, accum = ", accum
-      write(lvpri, *), "BOBERTO, 4 * pi * r   = ", 4*acos(-1.0d0)*re(1) ! Valid for a single sphere
-
+    ! do i = 1, nts
+    ! write(lvpri, *), "in diagan: S_{",i,", ",i,"} = ", s(i)
+    ! end do
+    ! write(lvpri,*), " "
+    ! do i = 1, nts
+    ! write(lvpri, *), "in diagan: D_{",i,", ",i,"} = ", d(i)
+    ! end do
+    ! write(lvpri,*), " "
+    ! do i = 1, nts
+    ! write(lvpri, *), "in diagan: myD_{",i,", ",i,"} = ", my_d(i)
+    ! end do
       end subroutine diagan
 
     end module pedra_cavity

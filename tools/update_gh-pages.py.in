@@ -1,0 +1,48 @@
+#!@PYTHON_EXECUTABLE@
+# -*- python -*-
+# -*- coding: utf-8 -*-
+# vim:filetype=python:
+# Update contents of @CMAKE_SOURCE_DIR@/doc/html subdirectory
+# and push to github repository. Sync both the master and gh-pages branches.
+# (c) Roberto Di Remigio  <roberto.d.remigio@uit.no>
+# licensed under the GNU Lesser General Public License
+
+import os
+import distutils.core
+import shutil
+import subprocess
+import time
+
+source = '@CMAKE_SOURCE_DIR@'
+build  = '@CMAKE_BINARY_DIR@'
+
+now = time.strftime('%c')
+commit_message = now+' : update Doxygen generated html files.'
+FNULL = open(os.devnull, 'w')
+
+def git_command(*args):
+    return subprocess.check_call(['git'] + list(args), stdout=FNULL, stderr=subprocess.STDOUT, shell=False)
+
+# Go to @CMAKE_SOURCE_DIR@/doc/html
+os.chdir(source+'/doc/html')
+
+# Copy files from @CMAKE_BINARY_DIR@/doc/html to @CMAKE_SOURCE_DIR@/doc/html
+distutils.dir_util.copy_tree(build+'/doc/html', source+'/doc/html')
+
+# Assume we are on master branch 
+# !WARNING! If we are not on master when executing this we will have an error!
+git_command('commit', '-am', commit_message)
+git_command('push', 'origin', 'master')
+
+# Now switch to gh-pages, merge and push
+git_command('checkout', 'gh-pages')
+git_command('merge', 'master')
+git_command('push', 'origin', 'gh-pages')
+
+# Switch back to master
+git_command('checkout', 'master')
+
+# Go back to @CMAKE_BINARY_DIR@/doc/html
+os.chdir(build+'/doc/html')
+
+# vim:et:ts=4:sw=4

@@ -18,6 +18,7 @@ With PCMSolver we aim to:
 - \subpage InputDescription
 - \subpage Interfacing
 \page ProgrammersManual Programmers' Manual
+- \subpage GeneralStructure
 - \subpage CodingStandards
 - \subpage Documentation
 - \subpage CMakeUsage

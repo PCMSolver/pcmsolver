@@ -47,9 +47,9 @@ find_package(PythonInterp REQUIRED)
 
 set(Boost_USE_STATIC_LIBS   ON)
 if(ENABLE_TESTS)
-	find_package(Boost 1.49.0 COMPONENTS filesystem system unit_test_framework REQUIRED)
+	find_package(Boost 1.46.0 COMPONENTS filesystem system unit_test_framework REQUIRED)
 else()
-	find_package(Boost 1.49.0 COMPONENTS filesystem system REQUIRED)
+	find_package(Boost 1.46.0 COMPONENTS filesystem system REQUIRED)
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

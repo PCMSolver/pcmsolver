@@ -1,0 +1,19 @@
+/** \page Maintenance Maintenance 
+
+Description and how-to for maintenance operations
+
+### Updating Eigen distribution 
+
+The C++ linear algebra library Eigen comes bundled with the module. To update the distributed version one has to:
+1. download the desired version of the library to a scratch location. Eigen's website is: http://eigen.tuxfamily.org/
+2. unpack the downloaded archive;
+3. go into the newly created directory and create a build directory;
+4. go into the newly created build directory and type the following (remember to substitute @CMAKE_SOURCE_DIR@ with the actual path)
+
+\code
+   cmake .. -DCMAKE_INSTALL_PREFIX=@CMAKE_SOURCE_DIR@/external/eigen3
+\endcode
+
+Remember to commit and push your modifications.
+
+*/

@@ -1,3 +1,142 @@
 /** \page Building Building the module
 
+`PCMSolver` configuration and build process is managed through CMake.
+
+## Prerequisites and dependencies
+
+A number of prerequisites and dependencies are to be satisfied to successfully build the module.
+It will be here assumed that you want to perform a "full" build, i.e. you want to build the static libraries to be linked to your
+QM program, the unit test suite and an offline copy of this documentation.
+
+### Compilers
+ 
+ + a C++ compiler, compliant with the 1998 ISO C++ standard plus the 2003 technical corrigendum and some additional defect reports. 
+   The following compilers are known to work:
+
+   1. g++ versions from 4.4.7 to 4.8.2
+   2. icpc version 13.0.1 (compilation with later versions has not been attempted)
+   3. clang++ versions 3.2 and 3.4
+
+ + a C compiler, compliant with the ISO C99 standard. 
+   The following compilers are known to work:
+
+   1. gcc versions from 4.4.7 to 4.8.2
+   2. icc version 13.0.1 (compilation with later versions has not been attempted)
+   3. clang versions 3.2 and 3.4
+
+ + a Fortran compiler, compliant with the Fortran 2003 standard. 
+   The following compilers are known to work:
+   1. gfortran versions from 4.4.7 to 4.8.2
+   2. ifort version 13.0.1 (compilation with later versions has not been attempted) 
+
+It is entirely possible that using other compiler versions you might be able to build the module. In order to ensure
+that you have a sane build, you will have to run the unit test suite.
+
+### Libraries and toolchain programs
+
+ + CMake version 2.8 and higher;
+ + Git version 1.7.1 and higher;
+ + Subversion version 1.6 and higher; 
+ + Python 2.7.3 and higher;
+ + Boost libraries version 1.46.0 and higher;
+ + Eigen libraries version 3.0.0 and higher;
+\note Version 3.2.0 of Eigen libraries is shipped with the module and resides in the `external` subdirectory.
+Unless you want to use another version of Eigen, you should not worry about satisfying this dependency.
+ + `libzip` (unit test suite only);
+ + Pthread (unit test suite only);
+ + Doxygen version 1.7.6 and higher (documentation only)
+
+## Configuration
+
+Configuration is managed through the front-end script `setup` residing in the repository main directory.
+Issuing:
+
+	./setup [options] [build path]
+
+will create the build directory in build path and run CMake with the given options. By default, files are configured in
+the `build` directory.
+
+\warning The script, written by Radovan Bast and Jonas Juselius, is a quite general CMake bootstrap front-end.
+ some options are currently unused, here is a list: `--mpi`, `--openmp`, `--blas`, `--lapack`, `--blas-dir`,
+`--lapack-dir`, `--check`, `--coverage`, `--profiling`, `--nochecks`, `--static`, `--host`
+Specifying them does not hurt, but they won't have any effect. This might, at some point, change: either the options will be
+used or completely removed.
+
+The `-h` or `--help` option will list the available options and their effect.
+Usually the following command is sufficient to get the configuration done for a debug build, including
+compilation of the unit test suite:
+
+	./setup --debug --tests=on
+
+### Getting Boost
+
+You can get Boost libraries in two ways:
+
+ + already packaged by your Linux distribution or through MacPorts;
+ + by downloading the archive from http://www.boost.org/ and building it yourself.
+   Version 1.46.1 is available [here](http://www.boost.org/users/history/version_1_46_1.html)
+
+In case your distribution packages a version older than 1.46.0 you will anyway need to build Boost on your own.
+Full documentation on how to build Boost on Unix variants is available [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html).
+It is here assumed that the user **does not** have root access to the machine and will install the libraries to a local prefix, a subdirectory of `/home/user-name` tipically.
+Once you've downloaded and unpacked the archive, run the bootstrap script to configure:
+
+	cd path/to/boost
+	./bootstrap.sh --prefix=/home/user-name/boost
+
+Running `./bootstrap.sh --help` will list the available options for the script. To build run:
+
+	./b2 install
+
+This might take a while. After a successful build you will find the headers in `/home/user-name/boost/include` and libraries in `/home/user-name/boost/lib`
+Now, you will have Boost in a nonstandard location. Without hints CMake will not be able to find it and configuration of `PCMSolver` will fail.
+To avoid this, you will have to pass the location of the headers and libraries to the setup script, either with:
+
+	./setup --boost-headers=/home/user-name/boost/include --boost-libs=/home/user-name/boost/lib
+
+or with:
+	
+	./setup -DBOOST_INCLUDEDIR=/home/user-name/boost/include -DBOOST_LIBRARYDIR=/home/user-name/boost/lib
+
+### Advanced configuration options
+ 
+In order to use another version of the Eigen libraries you need to pass the option `--eigenown=on` so that 
+CMake will ignore the default version of Eigen shipped with the module.
+At this point, CMake will try to find the package by itself. As this might fail, it suggested to run the following
+setup command:
+
+	./setup --eigenown=on -DEIGEN3_ROOT=/path/to/eigen
+	
+As of version 3.1.0 Eigen can fall back to certain BLAS/LAPACK routines as implemented in Intel's Math Kernel Library (MKL).
+You can enable this feature passing the option `--eigenmkl=on` to the setup script. You need at least version 10.3 of Intel MKL.
+Be sure to have read [here](http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html)
+
+\warning By itself, the module **does not** need to link to any mathematical library. This option makes sense only when linking the module to a QM program
+that links to Intel MKL. **Use at your own risk!** There is no proof that enabling this option leads to significant speedups!
+
+## Build and test
+
+To compile and link, just go to the build directory and run:
+
+	make -jN
+
+where `N` is the number of cores you want to use when building.
+\note Building on more than one core can sometimes result in a "race condition" and a crash. If that happens just run `make` on a single core.
+
+If you configured with the `--tests=on` option then the unit test suite will be also built. To run the whole test suite:
+
+	make test
+
+You can also use CTest to run a specific test or a set of tests. For example:
+
+	ctest -R gepol
+
+will run all the test containing the string "gepol" in their name.
+
+If Doxygen was found, an offline copy of this documentation can be built by:
+
+	make doc
+
+and visualized by opening the `doc/html/index.html` file in your browser.
+
 */

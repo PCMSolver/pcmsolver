@@ -28,8 +28,7 @@ set(CMAKE_MODULE_PATH
     )
 
 set(LIBS)
-set(SOURCES)
-set(LIBS_TO_MERGE)
+set(libs_to_merge)
 
 include(ConfigVersion)
 include(ConfigArchitecture)
@@ -181,9 +180,6 @@ list(APPEND
     ${Boost_FILESYSTEM_LIBRARY} 
     ${Boost_SYSTEM_LIBRARY})
 
-add_library(pcm ${SOURCES})
-install(TARGETS pcm ARCHIVE DESTINATION lib)
-
 install(FILES 
 	${PROJECT_BINARY_DIR}/include/Config.hpp 
 	DESTINATION include)
@@ -212,8 +208,10 @@ endif()
 #add_executable(debug_wavcav.x ${PROJECT_SOURCE_DIR}/src/debug_wavcav.cpp)
 #target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils ${LIBS})
 
-# Merge static libs from subfolders into one static lib
+# Merge static libs from subfolders into one static lib: libpcm.a
 # This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
-merge_static_libs(blabla
-		  "${LIBS_TO_MERGE}"
+merge_static_libs(pcm
+		  "${libs_to_merge}"
 		 )
+install(TARGETS pcm ARCHIVE DESTINATION lib)
+

@@ -35,6 +35,4 @@ endif()
 # We need to export header_dir_list one level up
 set(header_dir_list ${header_dir_list} PARENT_SCOPE)
 
-set(SOURCES ${SOURCES} PARENT_SCOPE)
-
-set(LIBS_TO_MERGE ${LIBS_TO_MERGE} PARENT_SCOPE)
+set(libs_to_merge ${libs_to_merge} PARENT_SCOPE)

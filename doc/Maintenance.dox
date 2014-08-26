@@ -2,7 +2,7 @@
 
 Description and how-to for maintenance operations
 
-### Updating Eigen distribution 
+## Updating Eigen distribution 
 
 The C++ linear algebra library Eigen comes bundled with the module. To update the distributed version one has to:
 1. download the desired version of the library to a scratch location. Eigen's website is: http://eigen.tuxfamily.org/

@@ -11,7 +11,8 @@ get_c_sources(sources_list)
 list(REMOVE_ITEM sources_list "data_bnz.c" "data.c" "data_pd.c" "init_exterior.c" "main2.c" "main.c" "matlab_c.c" "modify.c" "pot.c" "sphere.c")
 
 if(ENABLE_TESTS)
-	add_library(wem ${sources_list})
+	add_library(wem STATIC ${sources_list})
+	set(LIBS_TO_MERGE wem ${LIBS_TO_MERGE} PARENT_SCOPE)
 	install(TARGETS wem ARCHIVE DESTINATION lib)
 endif()
 

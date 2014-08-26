@@ -36,3 +36,5 @@ endif()
 set(header_dir_list ${header_dir_list} PARENT_SCOPE)
 
 set(SOURCES ${SOURCES} PARENT_SCOPE)
+
+set(LIBS_TO_MERGE ${LIBS_TO_MERGE} PARENT_SCOPE)

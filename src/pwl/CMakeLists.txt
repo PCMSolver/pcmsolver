@@ -11,7 +11,8 @@ get_c_sources(sources_list)
 list(REMOVE_ITEM sources_list "main_pwl.c")
 
 if(ENABLE_TESTS)
-	add_library(pwl ${sources_list})
+	add_library(pwl STATIC ${sources_list})
+	set(LIBS_TO_MERGE pwl ${LIBS_TO_MERGE} PARENT_SCOPE)
 	install(TARGETS pwl ARCHIVE DESTINATION lib)
 endif()
 

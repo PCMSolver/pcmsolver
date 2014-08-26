@@ -11,7 +11,8 @@ get_c_sources(sources_list)
 list(REMOVE_ITEM sources_list "main.c")
 
 if(ENABLE_TESTS)
-	add_library(wavcav ${sources_list})
+	add_library(wavcav STATIC ${sources_list})
+	set(LIBS_TO_MERGE wavcav ${LIBS_TO_MERGE} PARENT_SCOPE)
 	install(TARGETS wavcav ARCHIVE DESTINATION lib)
 endif()
 

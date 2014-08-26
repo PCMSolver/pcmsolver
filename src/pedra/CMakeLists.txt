@@ -5,7 +5,8 @@ get_fortran_sources(sources_list)
 list(REMOVE_ITEM sources_list "")
 
 if(ENABLE_TESTS)
-	add_library(pedra ${sources_list})
+	add_library(pedra STATIC ${sources_list})
+	set(LIBS_TO_MERGE pedra ${LIBS_TO_MERGE} PARENT_SCOPE)
 	install(TARGETS pedra ARCHIVE DESTINATION lib)
 endif()
 

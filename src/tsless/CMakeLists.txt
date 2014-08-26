@@ -5,7 +5,8 @@ get_fortran_sources(sources_list)
 list(REMOVE_ITEM sources_list "")
 
 if(ENABLE_TESTS)
-	add_library(tsless ${sources_list})
+	add_library(tsless STATIC ${sources_list})
+	set(LIBS_TO_MERGE tsless ${LIBS_TO_MERGE} PARENT_SCOPE)
 	install(TARGETS tsless ARCHIVE DESTINATION lib)
 endif()
 

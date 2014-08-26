@@ -5,7 +5,8 @@ get_fortran_sources(sources_list)
 list(REMOVE_ITEM sources_list "")
 
 if(ENABLE_TESTS)
-	add_library(metal ${sources_list})
+	add_library(metal STATIC ${sources_list})
+	set(LIBS_TO_MERGE metal ${LIBS_TO_MERGE} PARENT_SCOPE)
 	install(TARGETS metal ARCHIVE DESTINATION lib)
 endif()
 

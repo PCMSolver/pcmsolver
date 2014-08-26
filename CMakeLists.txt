@@ -29,6 +29,7 @@ set(CMAKE_MODULE_PATH
 
 set(LIBS)
 set(SOURCES)
+set(LIBS_TO_MERGE)
 
 include(ConfigVersion)
 include(ConfigArchitecture)
@@ -42,6 +43,7 @@ include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(FortranCInterface)
 FortranCInterface_VERIFY(CXX)
 FortranCInterface_HEADER(include/FCMangle.hpp)
+include(MergeStaticLibs)
 
 find_package(PythonInterp REQUIRED)
 
@@ -141,13 +143,9 @@ configure_file(
     )
 
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
-configure_file(pcmsolver.in pcmsolver)
+configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.in pcmsolver)
 file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
   DESTINATION ${PROJECT_BINARY_DIR}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
   GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
@@ -210,5 +208,12 @@ if(ENABLE_TESTS)
 	add_subdirectory(tests) # This must come last!!
 endif()
 
+# How to add a debug executable. Shouldn't be necessary, we have unit tests...
 #add_executable(debug_wavcav.x ${PROJECT_SOURCE_DIR}/src/debug_wavcav.cpp)
 #target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils ${LIBS})
+
+# Merge static libs from subfolders into one static lib
+# This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
+merge_static_libs(blabla
+		  "${LIBS_TO_MERGE}"
+		 )

@@ -10,8 +10,7 @@ set(header_dir_list
 	${CMAKE_CURRENT_SOURCE_DIR}/solver
 	${CMAKE_CURRENT_SOURCE_DIR}/utils
 	${CMAKE_CURRENT_SOURCE_DIR}/wavcav
-	${CMAKE_CURRENT_SOURCE_DIR}/wem
-   )
+	${CMAKE_CURRENT_SOURCE_DIR}/wem)
 include_directories(${header_dir_list})
 
 # Initialize Includer.hpp header

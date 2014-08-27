@@ -120,4 +120,17 @@ CMakeLists.txt in the project tree. This is achieved by using the touch_cmakelis
 script found in build/bin (build is the name chosen for the build directory)
 If you add new files *before* configuring the project there is no need to invoke touch_cmakelists
 prior to building.
+
+### Searching for libraries
+In general, the use of the [find_package](http://www.cmake.org/cmake/help/v3.0/command/find_package.html) macro is to be preferred, 
+as it is standardized and ensured to work on any platform.
+Use of `find_package` requires that the package/library you want to use has already a module inside the CMake distribution.
+If that's not the case, you should *never* use the following construct for third-party libraries:
+	
+	target_link_libraries(myexe -lsomesystemlib)
+
+If the library does not exist, the end result is a cryptic linker error. See also [this Jussi Pakkanen's blog entry](http://voices.canonical.com/jussi.pakkanen/2013/03/26/a-list-of-common-cmake-antipatterns/)
+You will first need to find the library, using the macro [find_library](http://www.cmake.org/cmake/help/v3.0/command/find_library.html), and then use
+the `target_link_libraries` command.
+
 */

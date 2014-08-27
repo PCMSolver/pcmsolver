@@ -24,10 +24,10 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake
     ${CMAKE_SOURCE_DIR}/cmake/compilers
     ${CMAKE_SOURCE_DIR}/cmake/math
-    ${CMAKE_SOURCE_DIR}/cmake/testing
-    )
+    ${CMAKE_SOURCE_DIR}/cmake/testing)
 
 set(LIBS)
+set(header_dir_list)
 set(libs_to_merge)
 
 include(ConfigVersion)
@@ -45,6 +45,7 @@ FortranCInterface_HEADER(include/FCMangle.hpp)
 include(MergeStaticLibs)
 
 find_package(PythonInterp REQUIRED)
+find_package(ZLIB REQUIRED) 
 
 set(Boost_USE_STATIC_LIBS   ON)
 if(ENABLE_TESTS)
@@ -163,6 +164,7 @@ file(COPY ${PROJECT_BINARY_DIR}/update_gh-pages.py
 include_directories(${EIGEN3_INCLUDE_DIR}
 	            ${Boost_INCLUDE_DIRS}
 		    ${Boost_QUADRATURE}
+		    ${ZLIB_INCLUDE_DIRS}
 		    ${PROJECT_SOURCE_DIR}
 		    ${PROJECT_SOURCE_DIR}/external
 		    ${PROJECT_BINARY_DIR}/include
@@ -195,8 +197,10 @@ install(FILES
 if(ENABLE_TESTS)
 	include(ConfigFramework)
 	include(TestingMacros)
+	
+	find_package(Threads REQUIRED)
 
-        set(LIBS pthread z ${LIBS})
+	list(APPEND LIBS ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES})
 
 	setup_boosttest()
 
@@ -211,7 +215,5 @@ endif()
 # Merge static libs from subfolders into one static lib: libpcm.a
 # This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
 merge_static_libs(pcm
-		  "${libs_to_merge}"
-		 )
+		  "${libs_to_merge}")
 install(TARGETS pcm ARCHIVE DESTINATION lib)
-

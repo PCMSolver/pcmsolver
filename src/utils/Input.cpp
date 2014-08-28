@@ -32,7 +32,7 @@
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-#include "GetkwPimpl.hpp"
+#include "Getkw.h"
 
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"

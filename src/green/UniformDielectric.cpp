@@ -31,7 +31,7 @@
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-#include "TaylorPimpl.hpp"
+#include "taylor.hpp"
 
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegrator.hpp"

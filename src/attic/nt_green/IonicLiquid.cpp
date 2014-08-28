@@ -7,7 +7,7 @@
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-#include "TaylorPimpl.hpp"
+#include "taylor.hpp"
 
 void IonicLiquid::compDiagonal(const Eigen::VectorXd & elementArea_,
                                const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_,

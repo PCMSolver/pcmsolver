@@ -28,7 +28,7 @@
 
 #include "Config.hpp"
 
-#include "TaylorPimpl.hpp"
+#include "taylor.hpp"
 
 #include <boost/mpl/vector.hpp>
 

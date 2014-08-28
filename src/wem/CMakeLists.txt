@@ -10,6 +10,8 @@ get_c_sources(sources_list)
 # If you want to remove some sources specify them explictly here
 list(REMOVE_ITEM sources_list "data_bnz.c" "data.c" "data_pd.c" "init_exterior.c" "main2.c" "main.c" "matlab_c.c" "modify.c" "pot.c" "sphere.c")
 
+# Override global compiler flags to avoid choking stdout with warnings
+set_wem_compiler_flags()
 # Build static library
 add_library(wem STATIC ${sources_list})
 set(libs_to_merge wem ${libs_to_merge} PARENT_SCOPE)

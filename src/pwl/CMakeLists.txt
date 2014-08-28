@@ -10,6 +10,8 @@ get_c_sources(sources_list)
 # If you want to remove some sources specify them explictly here
 list(REMOVE_ITEM sources_list "main_pwl.c")
 
+# Override global compiler flags to avoid choking stdout with warnings
+set_pwl_compiler_flags()
 # Build static library
 add_library(pwl STATIC ${sources_list})
 set(libs_to_merge pwl ${libs_to_merge} PARENT_SCOPE)

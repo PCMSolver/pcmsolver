@@ -1,55 +1,65 @@
 /** \page CMakeUsage CMake Usage
 
+A brief guide to our CMake infrastructure.
+
 ### Adding new source subdirectories and/or files
 
 Compilation of source files is taken care of semi-automatically by our CMake infrastructure.
 Developers do not need to worry about listing header and/or source files to be built in any
-CMakeLists.txt\n
+`CMakeLists.txt`.\n
 This said, a couple of gotchas have to be stressed. As already pointed out the CMake infrastructure
 is only semi-automatic and cannot cope correctly with addition of new subdirectories under the main
-source directory src/ or addition of new header and/or source files in an existing subdirectory.
+source directory `src/` or addition of new header and/or source files in an existing subdirectory.
 
 #### New subdirectory
 First of all, you will have to let CMake know that a new source-containing subdirectory
 has been added to the source tree. Due to the hierarchical approach CMake is based upon
-you will need to modify the CMakeLists.txt in the src directory and create a new one in
+you will need to modify the `CMakeLists.txt` in the `src` directory and create a new one in
 your new subdirectory.
 For the first step:
-	1. if your new subdirectory contains header files, add a line like the following
-	to the CMakeLists.txt file contained in the src directory:
-	\code
-	    ${CMAKE_CURRENT_SOURCE_DIR}/subdir_name
-	\endcode
-	to the command setting the list of directories containing headers.
-	This sets up the list of directories where CMake will look for headers with definitions
-	of classes and functions. If your directory contains Fortran code you can skip this step;
-	2. add a line like the following to the CMakeLists.txt file contained in the src directory:
-	\code
-	    add_subdirectory(subdir_name)
-	\endcode
-	This will tell CMake to go look inside subdir_name for a CMakeLists.txt containing
-	more sets of instructions.
-	It is preferable to add these new lines in **alphabetic order**
+1. if your new subdirectory contains header files, add a line like the following
+   to the `CMakeLists.txt` file contained in the `src` directory:
 
-Inside your new subdirectory you will need to add a CMakeLists.txt file containing
+	${CMAKE_CURRENT_SOURCE_DIR}/subdir_name
+
+   to the command setting the list of directories containing headers.
+   This sets up the list of directories where CMake will look for headers with definitions
+   of classes and functions. If your directory contains Fortran code you can skip this step;
+
+2. add a line like the following to the `CMakeLists.txt` file contained in the `src` directory:
+
+	add_subdirectory(subdir_name)
+
+   This will tell CMake to go look inside `subdir_name` for a `CMakeLists.txt` containing
+   more sets of instructions.
+   It is preferable to add these new lines in **alphabetic order**
+
+Inside your new subdirectory you will need to add a `CMakeLists.txt` file containing
 the set of instructions to build your cutting edge code. This is the second step. 
 There are a number of macros defined to help you write a fairly compact set of
 instructions for CMake. Each source subdirectory is the lowest possible in the CMake
 hierarchy and it contains set of instructions for:
-	-# exporting a list of header files (.h or .hpp) to the upper level in the
-	hierarchy, possibly excluding some of them
-	-# define which headers are to be included in the Interface.hpp file via 
-	the automatically generated Includer.hpp file
-	-# exporting a list of source files (.c, .cpp, .F, .f, .F90, .f90) to the upper 
-	level in the hierarchy, possibly excluding some of them
-	-# adding a target for the creation of a static library to be used in the
-	unit tests
-	-# define install targets for the files in this subdirectory	
+-# exporting a list of header files (.h or .hpp) to the upper level in the
+   hierarchy, possibly excluding some of them
+-# define which headers are to be included in the Interface.hpp file via 
+   the automatically generated Includer.hpp file
+-# adding a target for the creation of a static library
+-# exporting the list of static libraries to be merged to obtain `libpcm.a`, 
+   the library to be linked to the QM program
+-# define install targets for the files in this subdirectory.	
+The previous approach was to export all the source files and compiling them into a unique static library.
+Moreover, if unit tests were to be executed also the single static libraries were created, thus all files were
+compiled twice.
+With the current approach, we compile the sources separataly into separate static libraries that are 
+finally merged into one single static library: `libpcm.a`.
+This library is the one the host QM program need to link.
+The final result is anyway the same but we avoid double compilation. Moreover, we can also set per-target compilation flags
+and definitions.
 
-The CMakeLists.txt will differ based on the language of your source code.
-	- for C/C++ use the following template:
-	\code{.txt}
-        set(headers_list "")
+The `CMakeLists.txt` will differ based on the language of your source code.
+- for C/C++ use the following template:
+	
+	set(headers_list "")
         # Get headers with .hpp extension
         get_hpp_headers(headers_list)
         # If you want to remove some headers specify them explictly here
@@ -67,59 +77,74 @@ The CMakeLists.txt will differ based on the language of your source code.
         get_cpp_sources(sources_list)
         # If you want to remove some sources specify them explictly here
         list(REMOVE_ITEM sources_list "")
-        
-        if(ENABLE_TESTS)
-        	add_library(green ${sources_list})
-        	add_dependencies(green metal libtaylor)
-        	install(TARGETS green ARCHIVE DESTINATION lib)
-        endif()
-        
-        # Export the sources up to src directory level
-        set(local_sources "")
-        foreach(source ${sources_list})
-        	get_filename_component(sourcepath ${source} ABSOLUTE)
-        	list(APPEND local_sources ${sourcepath})
-        endforeach()
-        set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
+
+	# Build static library
+        add_library(solver STATIC ${sources_list})
+        set(libs_to_merge solver ${libs_to_merge} PARENT_SCOPE)
+        add_dependencies(solver cavity green wem pwl)
+        install(TARGETS solver ARCHIVE DESTINATION lib)
         
         # Sets install directory for all the headers in the list
         install_list_FILES("${headers_list}" include)
-	\endcode
-	- for Fortran use the following template:
-	\code{.txt}
-        set(sources_list "")
+	
+- for Fortran use the following template:
+        
+	set(sources_list "")
         # Get sources with Fortran extension
         get_fortran_sources(sources_list)
         # If you want to remove some sources specify them explictly here
         list(REMOVE_ITEM sources_list "")
         
-        if(ENABLE_TESTS)
-        	add_library(pedra ${sources_list})
-        	install(TARGETS pedra ARCHIVE DESTINATION lib)
-        endif()
-        
-        # Export the sources up to src directory level
-        set(local_sources "")
-        foreach(source ${sources_list})
-        	get_filename_component(sourcepath ${source} ABSOLUTE)
-          	set(local_sources ${sourcepath} ${local_sources})
-        endforeach()
-        set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
-	\endcode
-		 
+	# Build static library
+        add_library(pedra STATIC ${sources_list})
+       	install(TARGETS pedra ARCHIVE DESTINATION lib)
 
 #### New source/header files
-The fairly compact structure of each CMakeLists.txt file has a drawback each developer must
+The fairly compact structure of each `CMakeLists.txt` file has a drawback each developer must
 be aware of. Basically, there is no need for explictly listing source/header files because
 internally CMake performs a globbing operation given the extensions of the files to target.
 The drawback of this strategy is that the globbing is performed only when initially configuring
 the project: adding new files does not trigger a new globbing.
-If, however, the CMakeLists.txt of the directory where the file has been added is touched,
+If, however, the `CMakeLists.txt` of the directory where the file has been added is touched,
 CMake triggers a new globbing. So the workaround to this partial drawback is to touch all
-CMakeLists.txt in the project tree. This is achieved by using the touch_cmakelists Python
+`CMakeLists.txt` in the project tree. This is achieved by using the touch_cmakelists Python
 script found in build/bin (build is the name chosen for the build directory)
 If you add new files *before* configuring the project there is no need to invoke touch_cmakelists
 prior to building.
+
+### Per-target compiler flags and definitions
+It is possible to set compiler flags and definitions on a per-target basis. This means that you can change
+compiler flags and definitions *locally* in each subdirectory of `src`. See for example the `CMakeLists.txt` in `src/wavcav`:
+
+	set(headers_list "")
+        # Get headers with .h extension
+        get_h_headers(headers_list)
+        # If you want to remove some headers specify them explictly here
+        list(REMOVE_ITEM headers_list "test.h")
+        
+        set(sources_list "")
+        # Get sources with .c extension
+        get_c_sources(sources_list)
+        # If you want to remove some sources specify them explictly here
+        list(REMOVE_ITEM sources_list "main.c")
+        
+        # Override global compiler flags to avoid choking stdout with warnings
+        set_wavcav_compiler_flags()
+        # Build static library
+        add_library(wavcav STATIC ${sources_list})
+        set(libs_to_merge wavcav ${libs_to_merge} PARENT_SCOPE)
+        install(TARGETS wavcav ARCHIVE DESTINATION lib)
+        
+        # Sets install directory for all the headers in the list
+        install_list_FILES("${headers_list}" include)
+
+Inside the `set_wavcav_compiler_flags` compiler flags are reset to the desired values. The macro affects the `CMAKE_<lang>_FLAGS_<type>` variables
+within the scope of its invocation, i.e. the `src/wavcav` directory and the targets there defined.
+The same works for compiler definitions. You will need to write a similar macro to modify the compiler flags/definitions of the target at hand.
+Remember to do the same for **all** the compilers supported!
+
+\warning Fine-tuning of compiler flags and definitions on a per-target basis is to be used only when the given target is producing warnings that
+are not under the direct control of the developers, i.e. a third-party library. **Do not abuse of it**
 
 ### Searching for libraries
 In general, the use of the [find_package](http://www.cmake.org/cmake/help/v3.0/command/find_package.html) macro is to be preferred, 

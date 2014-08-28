@@ -7,7 +7,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 #include "BlockDiagonalMatrix.hpp"
 

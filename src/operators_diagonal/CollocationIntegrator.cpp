@@ -30,7 +30,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 double CollocationIntegrator::computeS(const Vacuum<double> * gf, double area) const {
 	return (factor_ * std::sqrt(4 * M_PI / area));

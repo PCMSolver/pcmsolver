@@ -34,7 +34,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 #include "Cavity.hpp"
 #include "IGreensFunction.hpp"

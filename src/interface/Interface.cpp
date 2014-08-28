@@ -40,7 +40,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 // Include Boost headers here
 #include <boost/format.hpp>

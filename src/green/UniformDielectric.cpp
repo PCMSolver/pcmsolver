@@ -30,7 +30,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 #include "TaylorPimpl.hpp"
 
 #include "DerivativeTypes.hpp"

@@ -162,14 +162,17 @@ file(COPY ${PROJECT_BINARY_DIR}/update_gh-pages.py
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
   GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-include_directories(${EIGEN3_INCLUDE_DIR}
+# To be includes as system headers
+include_directories(SYSTEM 
+	            ${EIGEN3_INCLUDE_DIR}
 	            ${Boost_INCLUDE_DIRS}
 		    ${Boost_QUADRATURE}
 		    ${ZLIB_INCLUDE_DIRS}
-		    ${PROJECT_SOURCE_DIR}
 		    ${PROJECT_SOURCE_DIR}/external
+                    ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
+# To be included as project headers
+include_directories(${PROJECT_SOURCE_DIR}
 		    ${PROJECT_BINARY_DIR}/include
-                    ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include
                     ${CMAKE_Fortran_MODULE_DIRECTORY})
 
 add_subdirectory(src)

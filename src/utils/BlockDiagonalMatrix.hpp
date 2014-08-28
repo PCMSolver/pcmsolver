@@ -32,7 +32,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 /*! \file BlockDiagonalMatrix.hpp
  *  \class BlockDiagonalMatrix

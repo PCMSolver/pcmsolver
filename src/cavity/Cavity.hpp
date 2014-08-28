@@ -31,7 +31,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 #include "Sphere.hpp"
 #include "Symmetry.hpp"

@@ -30,7 +30,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 #include <boost/lexical_cast.hpp>
 

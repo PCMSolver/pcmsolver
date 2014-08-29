@@ -18,7 +18,7 @@
 !      along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
 !
 !      For information on the complete list of contributors to the
-!      PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+!      PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
 !pcmsolver_copyright_end
 
 ! Originally written for DALTON by Luca Frediani (ca. 2003-2004)

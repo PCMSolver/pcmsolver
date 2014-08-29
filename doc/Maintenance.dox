@@ -10,10 +10,13 @@ The C++ linear algebra library Eigen comes bundled with the module. To update th
 3. go into the newly created directory and create a build directory;
 4. go into the newly created build directory and type the following (remember to substitute @CMAKE_SOURCE_DIR@ with the actual path)
 
-\code
-   cmake .. -DCMAKE_INSTALL_PREFIX=@CMAKE_SOURCE_DIR@/external/eigen3
-\endcode
+	cmake .. -DCMAKE_INSTALL_PREFIX=@CMAKE_SOURCE_DIR@/external/eigen3
 
 Remember to commit and push your modifications.
+
+## Updating the copyright notice
+
+The script `update_copyright.py` in the directory `tools` will do the job. Just run it in the directory where the
+copyright notice needs to be updated.
 
 */

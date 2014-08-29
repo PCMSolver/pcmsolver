@@ -28,6 +28,7 @@ normals.txt
 cavity.npz
 *.mod
 html/
+compile_commands.json
 
 # QtCreator project files
 *.config

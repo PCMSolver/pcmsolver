@@ -28,7 +28,8 @@ def cloc_command(*args):
 
 for root, dirs, filenames in os.walk(cloc_lists):
     for file in filenames:
+        print('\nCounting {}'.format(file))
         file = os.path.join(root, file)
-        cloc_command('--list-file='+file)
+        cloc_command('--list-file='+file, '--csv')
 
 # vim:et:ts=4:sw=4

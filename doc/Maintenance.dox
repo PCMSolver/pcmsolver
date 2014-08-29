@@ -16,7 +16,8 @@ Remember to commit and push your modifications.
 
 ## Updating the copyright notice
 
-The script `update_copyright.py` in the directory `tools` will do the job. Just run it in the directory where the
-copyright notice needs to be updated.
+The copyright notice text is in the file `copyright_notice.txt` in the `tools` directory.
+The scritp `update_copyright.py`, which is configured by CMake from `tools/update_copyright.py.in`, will extract the
+text from the file, create the appropriate header and perform the update on the files in the subdirectory where it is invoked.
 
 */

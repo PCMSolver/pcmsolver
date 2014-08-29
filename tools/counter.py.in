@@ -16,7 +16,7 @@ import time
 
 source = '@CMAKE_SOURCE_DIR@'
 build  = '@CMAKE_BINARY_DIR@'
-cloc_lists = build+'/cloc_lists'
+cloc_lists = build+'/cloc'
 cloc_script = source+'/tools/cloc.pl'
 
 now = time.strftime('%c')
@@ -24,12 +24,39 @@ commit_message = now+' : update Doxygen generated html files.'
 FNULL = open(os.devnull, 'w')
 
 def cloc_command(*args):
-    return subprocess.check_call(['perl', cloc_script] + list(args), shell=False)
+    return subprocess.check_output(['perl', cloc_script] + list(args), shell=False)
 
-for root, dirs, filenames in os.walk(cloc_lists):
-    for file in filenames:
-        print('\nCounting {}'.format(file))
-        file = os.path.join(root, file)
-        cloc_command('--list-file='+file, '--csv')
+def extract_counts(cloc_output):
+    for line in cloc_output:
+        print(line)
+
+def count():
+    for root, dirs, filenames in os.walk(cloc_lists):
+        for f in filenames:
+            if 'list' in f:
+                lib_name = f[10:]
+                print('\nCounting {}'.format(f))
+                file = os.path.join(root, f)
+                out = cloc_command('--list-file='+file, '--csv', '--csv-delimiter=  ')
+                outfile = open(cloc_lists+'/scratch-'+lib_name, 'w')
+                outfile.write(out)
+                outfile.close()
+
+def post_process():
+    for root, dirs, filenames in os.walk(cloc_lists):
+        for f in filenames:
+            if 'scratch' in f:
+                lib_name = f[8:]
+                lines = open(cloc_lists+'/scratch-'+lib_name).readlines()
+                lines = [l.replace('Fortran 90', 'Fortran90') for l in lines]
+                lines = [l.replace('C/C++ Header', 'Header') for l in lines]
+                outfile = open(cloc_lists+'/cloc_output-'+lib_name, 'w')
+                outfile.writelines(lines[5:])
+                outfile.close()
+                os.remove(cloc_lists+'/scratch-'+lib_name)
+
+count()
+
+post_process()
 
 # vim:et:ts=4:sw=4

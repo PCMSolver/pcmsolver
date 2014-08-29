@@ -41,8 +41,6 @@ include(ConfigSafeGuards)
 include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(FortranCInterface)
-FortranCInterface_VERIFY(CXX)
-FortranCInterface_HEADER(include/FCMangle.hpp)
 include(MergeStaticLibs)
 
 find_package(PythonInterp REQUIRED)
@@ -138,6 +136,10 @@ ExternalProject_Add(libtaylor
         CMAKE_ARGS ${TaylorProjectCMakeArgs}
 	)
 endif()
+ 
+FortranCInterface_VERIFY(CXX)
+FortranCInterface_HEADER(include/FCMangle.hpp)
+init_FCMangle()
 
 configure_file(
     ${PROJECT_SOURCE_DIR}/Config.hpp.in
@@ -198,6 +200,10 @@ list(APPEND
      LIBS
     ${Boost_FILESYSTEM_LIBRARY} 
     ${Boost_SYSTEM_LIBRARY})
+
+# Insert copyright notice on automagically generated header files
+execute_process(COMMAND python ${PROJECT_BINARY_DIR}/bin/update_copyright.py
+		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/include)
 
 install(FILES 
 	${PROJECT_BINARY_DIR}/include/Config.hpp 

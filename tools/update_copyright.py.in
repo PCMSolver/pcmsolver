@@ -30,14 +30,12 @@ pcmsolver_copyright_c_start = '/\* pcmsolver_copyright_start \*/'
 pcmsolver_copyright_c_end   = '/\* pcmsolver_copyright_end \*/'
 
 def from_file(file):
-
     f = open(file, 'r')
     s = f.read()
     f.close()
     return s
 
 def to_file(s, file):
-
     f = open(file, 'w')
     f.write(s)
     f.close()

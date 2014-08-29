@@ -72,9 +72,7 @@
 
 namespace mpl = boost::mpl;
 
-
-/*! \struct pos
- *  \brief Returns a zero-based index of a type within a type sequence
+/*! \brief Returns a zero-based index of a type within a type sequence
  *  \tparam S type sequence
  *  \tparam T the type whose index will be returned
  */
@@ -85,20 +83,19 @@ struct pos : mpl::distance<
         >::type { };
 
 // Primary template
-/*! \struct for_id_impl_1
+/*! \brief Iterates over a type sequence either until the position of the actual type matches the
+ *         desired id or until the end of the sequence is reached.
  *  \tparam S type sequence
  *  \tparam B type of the first element in S
  *  \tparam E type of the last element in S
  */
 template <
-typename S,
+         typename S,
          typename B = typename mpl::begin<S>::type,
          typename E = typename mpl::end<S>::type
          >
 struct for_id_impl_1 {
     /*! \fn template <typename T> static IGreensFunction * execute(T & f, const greenData & _data, int id)
-     *  \brief Iterates over a type sequence either until the position of the actual type matches the
-     *         desired id of until the end of the sequence is reached.
      *  \param     f the creational functor to be applied
      *  \param _data the data needed to create the correct Green's function
      *  \param    id the type of derivative

@@ -9,7 +9,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 #include <boost/numeric/quadrature/kronrodgauss.hpp>
 #include <boost/numeric/quadrature/error_estimator.hpp>

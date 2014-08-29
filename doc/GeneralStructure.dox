@@ -1,0 +1,18 @@
+/** \page GeneralStructure General Structure
+
+\image html structure.png 
+
+External libraries:
+
+Third-party code snippets:
+
++ Fortran subroutines `dsyevv3`, `dsyevh3`, `dsyevj3` for the diagonalization of 3x3 Hermitian matrices.
+  These subroutines were copied verbatim from the source code provided [here](http://www.mpi-hd.mpg.de/personalhomes/globes/3x3/)
+  by Joachim Kopp and described in \cite KOPP2008 (also available at [arXiv](http://arxiv.org/abs/physics/0610206))
+  The diagonalization subroutines are made available under the terms of the GNU Lesser General Public License, v2.1
+  The LGPL v2.1 text is available [here](http://opensource.org/licenses/LGPL-2.1)
++ C++ cnpy library for saving arrays in C++ into Numpy arrays. The library is from Carl Rogers and is made available 
+  [here](https://github.com/rogersce/cnpy) under the terms of the MIT License. The version in `PCMSolver` is slightly different.
+  The MIT License text is available [here](http://opensource.org/licenses/mit-license.php) 
+
+*/

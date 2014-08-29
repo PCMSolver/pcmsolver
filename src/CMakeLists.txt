@@ -10,8 +10,7 @@ set(header_dir_list
 	${CMAKE_CURRENT_SOURCE_DIR}/solver
 	${CMAKE_CURRENT_SOURCE_DIR}/utils
 	${CMAKE_CURRENT_SOURCE_DIR}/wavcav
-	${CMAKE_CURRENT_SOURCE_DIR}/wem
-   )
+	${CMAKE_CURRENT_SOURCE_DIR}/wem)
 include_directories(${header_dir_list})
 
 # Initialize Includer.hpp header
@@ -35,4 +34,4 @@ endif()
 # We need to export header_dir_list one level up
 set(header_dir_list ${header_dir_list} PARENT_SCOPE)
 
-set(SOURCES ${SOURCES} PARENT_SCOPE)
+set(libs_to_merge ${libs_to_merge} PARENT_SCOPE)

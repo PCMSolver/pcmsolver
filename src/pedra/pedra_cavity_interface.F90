@@ -51,15 +51,16 @@
       real(c_double)  :: ar_(maxts_), xe_(maxts_), ye_(maxts_), ze_(maxts_), rin_(maxts_)
       real(c_double)  :: avgArea_, rsolv_, ret_
       integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
-      logical(c_bool) :: pedra_file_exists
       integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_ 
 
-      integer(c_int)   :: i
-      integer(c_int)   :: error_code
-      integer          :: lvpri
+      integer(c_int)    :: i                 
+      integer(c_int)    :: error_code
+      integer           :: lvpri
+      logical           :: pedra_file_exists
       type(point_group) :: pgroup
      
       lvpri = 121201
+      pedra_file_exists = .false.
       inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
       if (pedra_file_exists) then
          open(lvpri,                   & 

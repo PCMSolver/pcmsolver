@@ -7,7 +7,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 #include <boost/filesystem.hpp>
 
 #include "CPCMSolver.hpp"

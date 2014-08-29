@@ -31,8 +31,8 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
-#include "GetkwPimpl.hpp"
+#include <Eigen/Dense>
+#include "Getkw.h"
 
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"

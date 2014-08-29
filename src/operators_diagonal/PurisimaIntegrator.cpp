@@ -30,7 +30,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 double PurisimaIntegrator::computeS(const Vacuum<double> * gf, double area) const {
 } 

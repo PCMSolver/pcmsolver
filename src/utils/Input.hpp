@@ -31,7 +31,7 @@
 
 #include "Config.hpp"
 
-#include "GetkwPimpl.hpp"
+#include "Getkw.h"
 
 #include "Solvent.hpp"
 #include "Sphere.hpp"

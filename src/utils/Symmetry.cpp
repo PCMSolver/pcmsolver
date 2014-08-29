@@ -27,7 +27,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 /*
  * A. Indexing of symmetry operations and their mapping to a bitstring:

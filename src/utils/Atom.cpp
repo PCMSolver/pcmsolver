@@ -29,7 +29,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 std::vector<Atom> & Atom::initBondi()
 {

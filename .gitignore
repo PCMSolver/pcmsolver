@@ -27,6 +27,7 @@ centers.txt
 normals.txt
 cavity.npz
 *.mod
+html/
 
 # QtCreator project files
 *.config

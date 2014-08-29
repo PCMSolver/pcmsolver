@@ -28,7 +28,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 /*! \file Symmetry.hpp
  *  \class Symmetry

@@ -24,16 +24,17 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake
     ${CMAKE_SOURCE_DIR}/cmake/compilers
     ${CMAKE_SOURCE_DIR}/cmake/math
-    ${CMAKE_SOURCE_DIR}/cmake/testing
-    )
+    ${CMAKE_SOURCE_DIR}/cmake/testing)
 
 set(LIBS)
-set(SOURCES)
+set(header_dir_list)
+set(libs_to_merge)
 
 include(ConfigVersion)
 include(ConfigArchitecture)
 include(CheckCXX11Features)
 include(ConfigCompilerFlags)
+include(PerTargetCompilerFlags)
 include(ConfigDocumentation)
 include(ConfigExternal)
 include(ConfigSafeGuards)
@@ -42,14 +43,16 @@ include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(FortranCInterface)
 FortranCInterface_VERIFY(CXX)
 FortranCInterface_HEADER(include/FCMangle.hpp)
+include(MergeStaticLibs)
 
 find_package(PythonInterp REQUIRED)
+find_package(ZLIB REQUIRED) 
 
 set(Boost_USE_STATIC_LIBS   ON)
 if(ENABLE_TESTS)
-	find_package(Boost 1.49.0 COMPONENTS filesystem system unit_test_framework REQUIRED)
+	find_package(Boost 1.46.0 COMPONENTS filesystem system unit_test_framework REQUIRED)
 else()
-	find_package(Boost 1.49.0 COMPONENTS filesystem system REQUIRED)
+	find_package(Boost 1.46.0 COMPONENTS filesystem system REQUIRED)
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -110,6 +113,7 @@ add_external(libgetkw)
 
 set(TaylorCMakeArgs "${ExternalProjectCMakeArgs}")
 list(REMOVE_ITEM TaylorCMakeArgs "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}" "-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}" "-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}")
+list(APPEND TaylorCMakeArgs -Wno-dev)
 
 if(DEVELOPMENT_CODE)
 ExternalProject_Add(libtaylor
@@ -141,29 +145,35 @@ configure_file(
     )
 
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
-configure_file(pcmsolver.in pcmsolver)
+configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.in pcmsolver)
 file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
   DESTINATION ${PROJECT_BINARY_DIR}/bin
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
   GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-configure_file(${PROJECT_SOURCE_DIR}/tools/touch_cmakelists.in touch_cmakelists)
-file(COPY ${PROJECT_BINARY_DIR}/touch_cmakelists 
+configure_file(${PROJECT_SOURCE_DIR}/tools/touch_cmakelists.py.in touch_cmakelists.py)
+file(COPY ${PROJECT_BINARY_DIR}/touch_cmakelists.py 
   DESTINATION ${PROJECT_BINARY_DIR}/bin
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
   GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-include_directories(${EIGEN3_INCLUDE_DIR}
+configure_file(${PROJECT_SOURCE_DIR}/tools/update_gh-pages.py.in update_gh-pages.py)
+file(COPY ${PROJECT_BINARY_DIR}/update_gh-pages.py 
+  DESTINATION ${PROJECT_BINARY_DIR}/bin
+  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
+  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+# To be includes as system headers
+include_directories(SYSTEM 
+	            ${EIGEN3_INCLUDE_DIR}
 	            ${Boost_INCLUDE_DIRS}
 		    ${Boost_QUADRATURE}
-		    ${PROJECT_SOURCE_DIR}
+		    ${ZLIB_INCLUDE_DIRS}
 		    ${PROJECT_SOURCE_DIR}/external
+                    ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
+# To be included as project headers
+include_directories(${PROJECT_SOURCE_DIR}
 		    ${PROJECT_BINARY_DIR}/include
-                    ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include
                     ${CMAKE_Fortran_MODULE_DIRECTORY})
 
 add_subdirectory(src)
@@ -176,9 +186,6 @@ list(APPEND
      LIBS
     ${Boost_FILESYSTEM_LIBRARY} 
     ${Boost_SYSTEM_LIBRARY})
-
-add_library(pcm ${SOURCES})
-install(TARGETS pcm ARCHIVE DESTINATION lib)
 
 install(FILES 
 	${PROJECT_BINARY_DIR}/include/Config.hpp 
@@ -195,8 +202,10 @@ install(FILES
 if(ENABLE_TESTS)
 	include(ConfigFramework)
 	include(TestingMacros)
+	
+	find_package(Threads REQUIRED)
 
-        set(LIBS pthread z ${LIBS})
+	list(APPEND LIBS ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES})
 
 	setup_boosttest()
 
@@ -204,5 +213,12 @@ if(ENABLE_TESTS)
 	add_subdirectory(tests) # This must come last!!
 endif()
 
+# How to add a debug executable. Shouldn't be necessary, we have unit tests...
 #add_executable(debug_wavcav.x ${PROJECT_SOURCE_DIR}/src/debug_wavcav.cpp)
 #target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils ${LIBS})
+
+# Merge static libs from subfolders into one static lib: libpcm.a
+# This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
+merge_static_libs(pcm
+		  "${libs_to_merge}")
+install(TARGETS pcm ARCHIVE DESTINATION lib)

@@ -32,7 +32,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 #include "DiagonalIntegrator.hpp"
 #include "GreenData.hpp"

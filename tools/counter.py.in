@@ -1,0 +1,34 @@
+#!@PYTHON_EXECUTABLE@
+# -*- python -*-
+# -*- coding: utf-8 -*-
+# vim:filetype=python:
+# Execute cloc.pl Perl script and wrap results in a nicer format. 
+# cloc script by Al Danial, available at http://cloc.sourceforge.net/
+# licensed under the GNU General Public License v2
+# (c) Roberto Di Remigio  <roberto.d.remigio@uit.no>
+# licensed under the GNU Lesser General Public License
+
+import os
+import distutils.core
+import shutil
+import subprocess
+import time
+
+source = '@CMAKE_SOURCE_DIR@'
+build  = '@CMAKE_BINARY_DIR@'
+cloc_lists = build+'/cloc_lists'
+cloc_script = source+'/tools/cloc.pl'
+
+now = time.strftime('%c')
+commit_message = now+' : update Doxygen generated html files.'
+FNULL = open(os.devnull, 'w')
+
+def cloc_command(*args):
+    return subprocess.check_call(['perl', cloc_script] + list(args), shell=False)
+
+for root, dirs, filenames in os.walk(cloc_lists):
+    for file in filenames:
+        file = os.path.join(root, file)
+        cloc_command('--list-file='+file)
+
+# vim:et:ts=4:sw=4

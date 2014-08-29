@@ -10,6 +10,11 @@ get_c_sources(sources_list)
 # If you want to remove some sources specify them explictly here
 list(REMOVE_ITEM sources_list "data_bnz.c" "data.c" "data_pd.c" "init_exterior.c" "main2.c" "main.c" "matlab_c.c" "modify.c" "pot.c" "sphere.c")
 
+# Write list of files to be passed to cloc for counting lines of code.
+# Only files that are actually compiled are counted.
+set(to_count "${sources_list}" "${headers_list}")
+write_to_cloc_list("${to_count}")
+
 # Override global compiler flags to avoid choking stdout with warnings
 set_wem_compiler_flags()
 # Build static library

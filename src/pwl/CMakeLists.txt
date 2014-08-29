@@ -10,6 +10,11 @@ get_c_sources(sources_list)
 # If you want to remove some sources specify them explictly here
 list(REMOVE_ITEM sources_list "main_pwl.c")
 
+# Write list of files to be passed to cloc for counting lines of code.
+# Only files that are actually compiled are counted.
+set(to_count "${sources_list}" "${headers_list}")
+write_to_cloc_list("${to_count}")
+
 # Override global compiler flags to avoid choking stdout with warnings
 set_pwl_compiler_flags()
 # Build static library

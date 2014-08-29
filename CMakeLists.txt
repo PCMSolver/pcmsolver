@@ -113,6 +113,7 @@ add_external(libgetkw)
 
 set(TaylorCMakeArgs "${ExternalProjectCMakeArgs}")
 list(REMOVE_ITEM TaylorCMakeArgs "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}" "-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}" "-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}")
+list(APPEND TaylorCMakeArgs -Wno-dev)
 
 if(DEVELOPMENT_CODE)
 ExternalProject_Add(libtaylor

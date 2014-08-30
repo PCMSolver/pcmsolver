@@ -1,0 +1,37 @@
+#!@PYTHON_EXECUTABLE@
+# -*- python -*-
+# -*- coding: utf-8 -*-
+# vim:filetype=python:
+# Some plotting utilities 
+# (c) Roberto Di Remigio  <roberto.d.remigio@uit.no>
+# licensed under the GNU Lesser General Public License
+
+from pylab import *
+
+def my_plotter(ax, data1, data2, param_dict):
+    """
+    A helper function to make a graph
+
+    Parameters
+    ----------
+    ax : Axes
+        The axes to draw to
+
+    data1 : array
+       The x data
+
+    data2 : array
+       The y data
+
+    param_dict : dict
+       Dictionary of kwargs to pass to ax.plot
+
+    Returns
+    -------
+    out : list
+        list of artists added
+    """
+    out = ax.plot(data1, data2, **param_dict)
+    return out
+
+# vim:et:ts=4:sw=4

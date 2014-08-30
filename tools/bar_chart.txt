@@ -53,4 +53,4 @@ fig.text(0.15, 0.75, annotation,
         bbox = props, fontproperties = box_font)
 
 # Save to file
-savefig(lib_name + '.png', format = 'png', dpi = 300, bbox_inches = 'tight')
+savefig(lib_name + '.png', format = 'png', dpi = 100, bbox_inches = 'tight')

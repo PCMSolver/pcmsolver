@@ -62,13 +62,23 @@ def print_header(plot):
         print('from pylab import *', file = plot)
         print('from matplotlib.font_manager import FontProperties\n', file = plot)
 
+fortran_lines = 0
+cpp_lines     = 0
+c_lines       = 0
+blank_lines   = 0
+comment_lines = 0
+
 def print_data(data, plot):
+        global fortran_lines, cpp_lines, c_lines, blank_lines, comment_lines
         if 'Fortran' in data[1]:
             print('nr_files    = '   + data[0],        file = plot)          
             print('language    = \'' + data[1] + '\'', file = plot)
             print('nr_blanks   = '   + data[2],        file = plot)
             print('nr_comments = '   + data[3],        file = plot) 
             print('nr_code     = '   + data[4],        file = plot)
+            blank_lines   += int(data[2])
+            comment_lines += int(data[3])
+            fortran_lines += int(data[4])
         if 'C++' in data:
             print('language         = \'C++\'', file = plot)
             i = data.index('C++')
@@ -95,6 +105,12 @@ def print_data(data, plot):
             print('nr_blanks   = nr_blanks_hpp + nr_blanks_cpp',     file = plot)
             print('nr_comments = nr_comments_hpp + nr_comments_cpp', file = plot)
             print('nr_code     = nr_code_hpp + nr_code_cpp',         file = plot)
+            cpp = int(data[4]) + int(data[9])
+            cpp_lines    += cpp
+            blank = int(data[2]) + int(data[7])
+            blank_lines   += blank
+            comment = int(data[3]) + int(data[8])
+            comment_lines += comment
         if ('C' in data and not 'C++' in data):
             print('language       = \'C\'', file = plot)
             i = data.index('C')
@@ -121,11 +137,26 @@ def print_data(data, plot):
             print('nr_blanks   = nr_blanks_h + nr_blanks_c',     file = plot)
             print('nr_comments = nr_comments_h + nr_comments_c', file = plot)
             print('nr_code     = nr_code_h + nr_code_c',         file = plot)
+            c = int(data[4]) + int(data[9])
+            c_lines    += c
+            blank = int(data[2]) + int(data[7])
+            blank_lines   += blank
+            comment = int(data[3]) + int(data[8])
+            comment_lines += comment
         print('annotation  = \'Library: \' + lib_name + \'\\nLanguage: \' + language + \'\\nFiles: \' + str(nr_files)',        file = plot)
 
 def print_script(plot):
     # Read from file
     with open('@CMAKE_SOURCE_DIR@/tools/bar_chart.txt', 'r') as myfile:
+        lines = myfile.readlines()
+    script = '\n'
+    for l in lines:
+        script += l
+    print(script, file = plot)
+
+def print_total_script(plot):
+    # Read from file
+    with open('@CMAKE_SOURCE_DIR@/tools/total_bar_chart.txt', 'r') as myfile:
         lines = myfile.readlines()
     script = '\n'
     for l in lines:
@@ -151,5 +182,25 @@ for root, dirs, filenames in os.walk(cloc_lists):
             print_data(words, bar_plot)
             print_script(bar_plot)
             bar_plot.close()
+
+page = open(source + '/doc/CodeStats.dox', 'w')
+total_code_lines = fortran_lines + c_lines + cpp_lines
+print('/** \\page CodeStats Code statistics\n', file = page)
+print('Blank lines: {}, Comment lines: {}\\n'.format(blank_lines, comment_lines), file = page)
+print('C++ code lines: {}, C code lines: {}, Fortran code lines: {}'.format(cpp_lines, c_lines, fortran_lines), file = page)
+print('Total code lines: {}\n'.format(total_code_lines), file = page)
+print('\\image html total.png\n', file = page)
+print('*/', file = page)
+page.close()
+
+total_plot = open(plots + '/total.py', 'w')
+print_header(total_plot)
+print('nr_blanks       = ' + str(blank_lines),   file = total_plot)
+print('nr_comments     = ' + str(comment_lines), file = total_plot) 
+print('nr_fortran_code = ' + str(fortran_lines), file = total_plot)
+print('nr_c_code       = ' + str(c_lines),       file = total_plot)
+print('nr_cpp_code     = ' + str(cpp_lines),     file = total_plot)
+print_total_script(total_plot)
+total_plot.close()
 
 # vim:et:ts=4:sw=4

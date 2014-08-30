@@ -7,11 +7,11 @@ labels_font.set_weight('bold')
 labels_font.set_size('medium')
 
 # Set properties of bar chart
-N = 3
-data = (nr_blanks, nr_comments, nr_code)
+N = 5
+data = (nr_blanks, nr_comments, nr_cpp_code, nr_c_code, nr_fortran_code)
 ind = np.arange(N)
 width = 1.0
-my_colors = 'gcy'
+my_colors = 'mgcyb'
 
 fig, ax = plt.subplots()    
 # Remove frame and adjust x-ticks and respective labels
@@ -28,7 +28,7 @@ for label in ax.get_xticklabels() :
 # Plot the data
 rects = ax.bar(ind, data, width, color = my_colors, edgecolor = 'white', alpha = 0.5)
 ax.set_xticks(ind + 0.5)
-ax.set_xticklabels(('# Blank', '# Comment', '# Code'))
+ax.set_xticklabels(('# Blank', '# Comment', '# C++ code', '# C code', '# Fortran code'))
 
 def autolabel(rects):
     # attach some text labels on top of the bars
@@ -42,15 +42,5 @@ def autolabel(rects):
 
 autolabel(rects)
 
-# Create box with library name and language
-box_font = font.copy()
-box_font.set_size('large')
-box_font.set_weight('bold')
-props = dict(boxstyle = 'round', facecolor = 'wheat', edgecolor = 'black', alpha = 0.5, linewidth = 1.5)
-fig.text(0.15, 0.75, annotation, 
-        style = 'normal', 
-        fontsize = 12,
-        bbox = props, fontproperties = box_font)
-
 # Save to file
-savefig(lib_name + '.png', format = 'png', dpi = 100, bbox_inches = 'tight')
+savefig('total.png', format = 'png', dpi = 100, bbox_inches = 'tight')

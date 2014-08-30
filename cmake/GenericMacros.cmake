@@ -145,10 +145,4 @@ macro(configure_files)
 	execute_process(COMMAND python "${PROJECT_BINARY_DIR}/bin/update_copyright.py" 
 		        "--lang=CXX" "Includer.hpp"
                         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/include)
-  	# Configure the plot_tools utility script
-        configure_file(${PROJECT_SOURCE_DIR}/tools/plot_tools.py.in plot_tools.py)
-        file(COPY ${PROJECT_BINARY_DIR}/plot_tools.py 
-          DESTINATION ${PROJECT_BINARY_DIR}/bin
-          FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-          GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endmacro()

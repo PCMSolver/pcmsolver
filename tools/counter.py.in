@@ -19,11 +19,9 @@ source = '@CMAKE_SOURCE_DIR@'
 build  = '@CMAKE_BINARY_DIR@'
 cloc_lists = build+'/cloc'
 cloc_script = source+'/tools/cloc.pl'
-plots = source+'/doc/gfx'
+plots = source+'/doc/gfx/matplotlib'
 
 now = time.strftime('%c')
-commit_message = now + ' : update Doxygen generated html files.'
-FNULL = open(os.devnull, 'w')
 
 def cloc_command(*args):
     return subprocess.check_output(['perl', cloc_script] + list(args), shell=False)
@@ -33,7 +31,6 @@ def count():
         for f in filenames:
             if 'list' in f:
                 lib_name = f[10:]
-                print('\nCounting {}'.format(f))
                 file = os.path.join(root, f)
                 out = cloc_command('--list-file='+file, '--csv', '--csv-delimiter=  ')
                 outfile = open(cloc_lists+'/scratch-'+lib_name, 'w')
@@ -62,74 +59,78 @@ def print_header(plot):
         print('# licensed under the GNU General Public License v2', file = plot)
         print('# (c) Roberto Di Remigio  <roberto.d.remigio@uit.no>', file = plot)
         print('# licensed under the GNU Lesser General Public License\n', file = plot)
-        print('import imp', file = plot)
-        print('from pylab import *\n', file = plot)
+        print('from pylab import *', file = plot)
+        print('from matplotlib.font_manager import FontProperties\n', file = plot)
 
-def gather_data(data, plot):
+def print_data(data, plot):
         if 'Fortran' in data[1]:
-            print('nr_files    = '   + data[0],        file = bar_plot)          
-            print('language    = \'' + data[1] + '\'', file = bar_plot)
-            print('nr_blanks   = '   + data[2],        file = bar_plot)
-            print('nr_comments = '   + data[3],        file = bar_plot) 
-            print('nr_code     = '   + data[4],        file = bar_plot)
+            print('nr_files    = '   + data[0],        file = plot)          
+            print('language    = \'' + data[1] + '\'', file = plot)
+            print('nr_blanks   = '   + data[2],        file = plot)
+            print('nr_comments = '   + data[3],        file = plot) 
+            print('nr_code     = '   + data[4],        file = plot)
         if 'C++' in data:
+            print('language         = \'C++\'', file = plot)
             i = data.index('C++')
             if i != 1:
-                print('nr_files_hpp    = '   + data[0],        file = bar_plot)          
-                print('language_hpp    = \'' + data[1] + '\'', file = bar_plot)
-                print('nr_blanks_hpp   = '   + data[2],        file = bar_plot)
-                print('nr_comments_hpp = '   + data[3],        file = bar_plot) 
-                print('nr_code_hpp     = '   + data[4] + '\n', file = bar_plot)
-                print('nr_files_cpp    = '   + data[5],        file = bar_plot)           
-                print('language_cpp    = \'' + data[6] + '\'', file = bar_plot)
-                print('nr_blanks_cpp   = '   + data[7],        file = bar_plot)  
-                print('nr_comments_cpp = '   + data[8],        file = bar_plot) 
-                print('nr_code_cpp     = '   + data[9] + '\n', file = bar_plot)
+                print('nr_files_hpp    = '   + data[0],        file = plot)          
+                print('nr_blanks_hpp   = '   + data[2],        file = plot)
+                print('nr_comments_hpp = '   + data[3],        file = plot) 
+                print('nr_code_hpp     = '   + data[4] + '\n', file = plot)
+                print('nr_files_cpp    = '   + data[5],        file = plot)           
+                print('nr_blanks_cpp   = '   + data[7],        file = plot)  
+                print('nr_comments_cpp = '   + data[8],        file = plot) 
+                print('nr_code_cpp     = '   + data[9] + '\n', file = plot)
             else:
-                print('nr_files_cpp    = '   + data[0],        file = bar_plot)          
-                print('language_cpp    = \'' + data[1] + '\'', file = bar_plot)
-                print('nr_blanks_cpp   = '   + data[2],        file = bar_plot)
-                print('nr_comments_cpp = '   + data[3],        file = bar_plot) 
-                print('nr_code_cpp     = '   + data[4] + '\n', file = bar_plot)
-                print('nr_files_hpp    = '   + data[5],        file = bar_plot)           
-                print('language_hpp    = \'' + data[6] + '\'', file = bar_plot)
-                print('nr_blanks_hpp   = '   + data[7],        file = bar_plot)  
-                print('nr_comments_hpp = '   + data[8],        file = bar_plot) 
-                print('nr_code_hpp     = '   + data[9] + '\n', file = bar_plot)
+                print('nr_files_cpp    = '   + data[0],        file = plot)          
+                print('nr_blanks_cpp   = '   + data[2],        file = plot)
+                print('nr_comments_cpp = '   + data[3],        file = plot) 
+                print('nr_code_cpp     = '   + data[4] + '\n', file = plot)
+                print('nr_files_hpp    = '   + data[5],        file = plot)           
+                print('nr_blanks_hpp   = '   + data[7],        file = plot)  
+                print('nr_comments_hpp = '   + data[8],        file = plot) 
+                print('nr_code_hpp     = '   + data[9] + '\n', file = plot)
             # Sum stuff
-            print('nr_files    = nr_files_hpp + nr_files_cpp',       file = bar_plot)
-            print('nr_blanks   = nr_blanks_hpp + nr_blanks_cpp',     file = bar_plot)
-            print('nr_comments = nr_comments_hpp + nr_comments_cpp', file = bar_plot)
-            print('nr_code     = nr_code_hpp + nr_code_cpp',         file = bar_plot)
+            print('nr_files    = nr_files_hpp + nr_files_cpp',       file = plot)
+            print('nr_blanks   = nr_blanks_hpp + nr_blanks_cpp',     file = plot)
+            print('nr_comments = nr_comments_hpp + nr_comments_cpp', file = plot)
+            print('nr_code     = nr_code_hpp + nr_code_cpp',         file = plot)
         if ('C' in data and not 'C++' in data):
+            print('language       = \'C\'', file = plot)
             i = data.index('C')
             if i != 1:
-                print('nr_files_h    = '   + data[0],        file = bar_plot)          
-                print('language_h    = \'' + data[1] + '\'', file = bar_plot)
-                print('nr_blanks_h   = '   + data[2],        file = bar_plot)
-                print('nr_comments_h = '   + data[3],        file = bar_plot) 
-                print('nr_code_h     = '   + data[4] + '\n', file = bar_plot)
-                print('nr_files_c    = '   + data[5],        file = bar_plot)           
-                print('language_c    = \'' + data[6] + '\'', file = bar_plot)
-                print('nr_blanks_c   = '   + data[7],        file = bar_plot)  
-                print('nr_comments_c = '   + data[8],        file = bar_plot) 
-                print('nr_code_c     = '   + data[9] + '\n', file = bar_plot)
+                print('nr_files_h    = '   + data[0],        file = plot)          
+                print('nr_blanks_h   = '   + data[2],        file = plot)
+                print('nr_comments_h = '   + data[3],        file = plot) 
+                print('nr_code_h     = '   + data[4] + '\n', file = plot)
+                print('nr_files_c    = '   + data[5],        file = plot)           
+                print('nr_blanks_c   = '   + data[7],        file = plot)  
+                print('nr_comments_c = '   + data[8],        file = plot) 
+                print('nr_code_c     = '   + data[9] + '\n', file = plot)
             else:
-                print('nr_files_c    = '   + data[0],        file = bar_plot)          
-                print('language_c    = \'' + data[1] + '\'', file = bar_plot)
-                print('nr_blanks_c   = '   + data[2],        file = bar_plot)
-                print('nr_comments_c = '   + data[3],        file = bar_plot) 
-                print('nr_code_c     = '   + data[4] + '\n', file = bar_plot)
-                print('nr_files_h    = '   + data[5],        file = bar_plot)           
-                print('language_h    = \'' + data[6] + '\'', file = bar_plot)
-                print('nr_blanks_h   = '   + data[7],        file = bar_plot)  
-                print('nr_comments_h = '   + data[8],        file = bar_plot) 
-                print('nr_code_h     = '   + data[9] + '\n', file = bar_plot)
+                print('nr_files_c    = '   + data[0],        file = plot)          
+                print('nr_blanks_c   = '   + data[2],        file = plot)
+                print('nr_comments_c = '   + data[3],        file = plot) 
+                print('nr_code_c     = '   + data[4] + '\n', file = plot)
+                print('nr_files_h    = '   + data[5],        file = plot)           
+                print('nr_blanks_h   = '   + data[7],        file = plot)  
+                print('nr_comments_h = '   + data[8],        file = plot) 
+                print('nr_code_h     = '   + data[9] + '\n', file = plot)
             # Sum stuff
-            print('nr_files    = nr_files_h + nr_files_c',       file = bar_plot)
-            print('nr_blanks   = nr_blanks_h + nr_blanks_c',     file = bar_plot)
-            print('nr_comments = nr_comments_h + nr_comments_c', file = bar_plot)
-            print('nr_code     = nr_code_h + nr_code_c',         file = bar_plot)
+            print('nr_files    = nr_files_h + nr_files_c',       file = plot)
+            print('nr_blanks   = nr_blanks_h + nr_blanks_c',     file = plot)
+            print('nr_comments = nr_comments_h + nr_comments_c', file = plot)
+            print('nr_code     = nr_code_h + nr_code_c',         file = plot)
+        print('annotation  = \'Library: \' + lib_name + \'\\nLanguage: \' + language + \'\\nFiles: \' + str(nr_files)',        file = plot)
+
+def print_script(plot):
+    # Read from file
+    with open('@CMAKE_SOURCE_DIR@/tools/bar_chart.txt', 'r') as myfile:
+        lines = myfile.readlines()
+    script = '\n'
+    for l in lines:
+        script += l
+    print(script, file = plot)
 
 count()
 
@@ -144,13 +145,11 @@ for root, dirs, filenames in os.walk(cloc_lists):
             # Generate matplotlib scripts
             bar_plot = open(plots + '/' + lib_name + '.py', 'w')
             print_header(bar_plot)
-            load = 'mod = imp.load_source(\'plot_tools\', \'' + build + '/bin/plot_tools.py\')\n'
-            print(load, file = bar_plot)
             # Separate imported lines into lists of strings
             words = [word for line in file_lines for word in line.split()]
             print('lib_name = \'' + lib_name + '\'\n', file = bar_plot)
-            gather_data(words, bar_plot)
-
+            print_data(words, bar_plot)
+            print_script(bar_plot)
             bar_plot.close()
 
 # vim:et:ts=4:sw=4

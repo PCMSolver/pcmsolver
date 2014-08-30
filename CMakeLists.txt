@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-
 #
 #  Declare project name and programming languages
 #
 project(PCMSolver)
 enable_language(CXX C Fortran)
-
 #  
 #  Options  
 #   There still is nothing going on inside the code regarding MPI and OpenMP!!
@@ -15,7 +13,6 @@ option(ENABLE_OPENMP     "Enable OpenMP parallelization"                        
 option(ENABLE_TESTS      "Enable compilation of unit tests"                          OFF)
 option(DISABLE_EIGEN_OWN "Do not use Eigen3 headers shipped with the module"         OFF)
 option(ENABLE_EIGEN_MKL  "Enable Eigen3 automatic fallback to some of Intel MKL algorithms"                 OFF)
-
 #
 #  CMake modules
 #
@@ -40,8 +37,11 @@ include(ConfigExternal)
 include(ConfigSafeGuards)
 include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
-include(FortranCInterface)
 include(MergeStaticLibs)
+include(FortranCInterface)
+ 
+FortranCInterface_VERIFY(CXX)
+init_FCMangle()
 
 find_package(PythonInterp REQUIRED)
 find_package(ZLIB REQUIRED) 
@@ -94,23 +94,23 @@ set(Boost_QUADRATURE ${PROJECT_SOURCE_DIR}/external/boost)
 install(DIRECTORY ${Boost_QUADRATURE} DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 
 set(CMAKE_Fortran_MODULE_DIRECTORY
-    ${PROJECT_BINARY_DIR}/modules
-    )
+    ${PROJECT_BINARY_DIR}/modules)
 
 set(ExternalProjectCMakeArgs
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
-        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-	-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-	-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}
-	-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}
-   )
+   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+   -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
+   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+   -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+   -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+   -DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}
+   -DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS})
 
 add_external(libgetkw)
+set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
 
 set(TaylorCMakeArgs "${ExternalProjectCMakeArgs}")
-list(REMOVE_ITEM TaylorCMakeArgs "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}" "-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}" "-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}")
+list(REMOVE_ITEM TaylorCMakeArgs 
+     "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}" "-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}" "-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}")
 list(APPEND TaylorCMakeArgs -Wno-dev)
 
 if(DEVELOPMENT_CODE)
@@ -123,8 +123,7 @@ ExternalProject_Add(libtaylor
         STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
         TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        CMAKE_ARGS ${TaylorCMakeArgs}
-	)
+        CMAKE_ARGS ${TaylorCMakeArgs})
 else()
 ExternalProject_Add(libtaylor
 	PREFIX ${PROJECT_SOURCE_DIR}/external
@@ -133,49 +132,10 @@ ExternalProject_Add(libtaylor
         STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
         TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        CMAKE_ARGS ${TaylorProjectCMakeArgs}
-	)
+        CMAKE_ARGS ${TaylorProjectCMakeArgs})
 endif()
- 
-FortranCInterface_VERIFY(CXX)
-FortranCInterface_HEADER(include/FCMangle.hpp)
-init_FCMangle()
 
-configure_file(
-    ${PROJECT_SOURCE_DIR}/Config.hpp.in
-    ${PROJECT_BINARY_DIR}/include/Config.hpp
-    )
-
-set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
-configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.in pcmsolver)
-file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
-  DESTINATION ${PROJECT_BINARY_DIR}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-configure_file(${PROJECT_SOURCE_DIR}/tools/touch_cmakelists.py.in touch_cmakelists.py)
-file(COPY ${PROJECT_BINARY_DIR}/touch_cmakelists.py 
-  DESTINATION ${PROJECT_BINARY_DIR}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-configure_file(${PROJECT_SOURCE_DIR}/tools/update_gh-pages.py.in update_gh-pages.py)
-file(COPY ${PROJECT_BINARY_DIR}/update_gh-pages.py 
-  DESTINATION ${PROJECT_BINARY_DIR}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-configure_file(${PROJECT_SOURCE_DIR}/tools/counter.py.in counter.py)
-file(COPY ${PROJECT_BINARY_DIR}/counter.py 
-  DESTINATION ${PROJECT_BINARY_DIR}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-configure_file(${PROJECT_SOURCE_DIR}/tools/update_copyright.py.in update_copyright.py)
-file(COPY ${PROJECT_BINARY_DIR}/update_copyright.py 
-  DESTINATION ${PROJECT_BINARY_DIR}/bin
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+configure_files()
 
 # To be includes as system headers
 include_directories(SYSTEM 
@@ -196,14 +156,9 @@ include_directories(${header_dir_list})
 link_directories(${Boost_LIBRARY_DIRS}
                  ${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
-list(APPEND
-     LIBS
+list(APPEND LIBS
     ${Boost_FILESYSTEM_LIBRARY} 
     ${Boost_SYSTEM_LIBRARY})
-
-# Insert copyright notice on automagically generated header files
-execute_process(COMMAND python ${PROJECT_BINARY_DIR}/bin/update_copyright.py
-		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/include)
 
 install(FILES 
 	${PROJECT_BINARY_DIR}/include/Config.hpp 
@@ -237,6 +192,5 @@ endif()
 
 # Merge static libs from subfolders into one static lib: libpcm.a
 # This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
-merge_static_libs(pcm
-		  "${libs_to_merge}")
+merge_static_libs(pcm "${libs_to_merge}")
 install(TARGETS pcm ARCHIVE DESTINATION lib)

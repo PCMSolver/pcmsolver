@@ -11,7 +11,22 @@ With PCMSolver we aim to:
 
 2. create a playground for easily extending the implementation of the model.
 
-\authors Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa
+PCMSolver is distributed under the terms of the GNU Lesser General Public License.
+
+\authors Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa\n
+
+
+With contributions from:\n
+Radovan Bast             (CMake framework)\n
+Stefano Corni            (Metal sphere Green's function)\n
+Ulf Ekstroem             (automatic differentiation library)\n
+Helmut Harbrecht         (wavelet cavity and solvers libraries)\n
+Jonas Juselius           (input parsing library and CMake framework)\n
+Christian S. Pomelli     (TsLess cavity library)\n
+Maharavo Randrianarivony (wavelet cavity library)\n
+Ville Weijo              (wavelet libraries and cavity visualization scripts)\n
+
+\include snippets/citation.bib
 
 \page UsersManual Users' Manual
 - \subpage Building

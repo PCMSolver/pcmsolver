@@ -79,6 +79,11 @@ extern "C" void hello_pcm(int * a, double * b)
     std::cout << "Hello, PCM!" << std::endl;
     std::cout << "The integer is: " << *a << std::endl;
     std::cout << "The double is: " << *b << std::endl;
+    std::ostringstream out_stream;
+    out_stream << "Hello, PCM!" << std::endl;
+    out_stream << "The integer is: " << *a << std::endl;
+    out_stream << "The double is: " << *b << std::endl;
+    printer(out_stream);
 }
 
 extern "C" void set_up_pcm()

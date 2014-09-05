@@ -8,7 +8,7 @@ list(SORT headers_list)
 set(to_includer "${headers_list}")
 # Write headers to Includer.hpp
 file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Helper classes\n")
-list(REMOVE_ITEM to_includer "BlockDiagonalMatrix.hpp" "EigenPimpl.hpp" "GetkwPimpl.hpp" "TaylorPimpl.hpp" "cnpy.hpp" "cnpyPimpl.hpp" "MathUtils.hpp")
+list(REMOVE_ITEM to_includer "BlockDiagonalMatrix.hpp" "cnpy.hpp" "cnpyPimpl.hpp" "MathUtils.hpp")
 write_to_Includer("${to_includer}")
 
 set(sources_list "")
@@ -17,19 +17,16 @@ get_cpp_sources(sources_list)
 # If you want to remove some sources specify them explictly here
 list(REMOVE_ITEM sources_list "")
 
-if(ENABLE_TESTS)
-	add_library(utils ${sources_list})
-	add_dependencies(utils libgetkw)
-	install(TARGETS utils ARCHIVE DESTINATION lib)
-endif()
+# Write list of files to be passed to cloc for counting lines of code.
+# Only files that are actually compiled are counted.
+set(to_count "${sources_list}" "${headers_list}")
+write_to_cloc_list("${to_count}")
 
-# Export the sources up to src directory level
-set(local_sources "")
-foreach(source ${sources_list})
-	get_filename_component(sourcepath ${source} ABSOLUTE)
-	list(APPEND local_sources ${sourcepath})
-endforeach()
-set(SOURCES ${local_sources} ${SOURCES} PARENT_SCOPE)
+# Build static library
+add_library(utils STATIC ${sources_list})
+set(libs_to_merge utils ${libs_to_merge} PARENT_SCOPE)
+add_dependencies(utils libgetkw)
+install(TARGETS utils ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list
 install_list_FILES("${headers_list}" include)

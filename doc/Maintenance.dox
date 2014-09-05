@@ -1,0 +1,24 @@
+/** \page Maintenance Maintenance 
+
+Description and how-to for maintenance operations
+
+## Updating Eigen distribution 
+
+The C++ linear algebra library Eigen comes bundled with the module. To update the distributed version one has to:
+1. download the desired version of the library to a scratch location. Eigen's website is: http://eigen.tuxfamily.org/
+2. unpack the downloaded archive;
+3. go into the newly created directory and create a build directory;
+4. go into the newly created build directory and type the following (remember to substitute @CMAKE_SOURCE_DIR@ with the actual path)
+
+	cmake .. -DCMAKE_INSTALL_PREFIX=@CMAKE_SOURCE_DIR@/external/eigen3
+
+Remember to commit and push your modifications.
+
+## Updating the copyright notice
+
+The copyright notice text is in the file `copyright_notice.txt` in the `tools` directory.
+The scritp `update_copyright.py`, which is configured by CMake from `tools/update_copyright.py.in`, will extract the
+text from the file, create the appropriate header and perform the update on the files in the subdirectory where it is invoked.
+\warning The copyright notice on top of the Config.hpp.in file needs to be **manually** updated!
+
+*/

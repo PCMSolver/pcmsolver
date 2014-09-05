@@ -1,24 +1,24 @@
 !pcmsolver_copyright_start
-!      PCMSolver, an API for the Polarizable Continuum Model
-!      Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
-!      
-!      This file is part of PCMSolver.
-!
-!      PCMSolver is free software: you can redistribute it and/or modify       
-!      it under the terms of the GNU Lesser General Public License as published by
-!      the Free Software Foundation, either version 3 of the License, or
-!      (at your option) any later version.
-!                                                                           
-!      PCMSolver is distributed in the hope that it will be useful,
-!      but WITHOUT ANY WARRANTY; without even the implied warranty of
-!      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-!      GNU Lesser General Public License for more details.
-!                                                                           
-!      You should have received a copy of the GNU Lesser General Public License
-!      along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-!
-!      For information on the complete list of contributors to the
-!      PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+!       PCMSolver, an API for the Polarizable Continuum Model
+!       Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+!       
+!       This file is part of PCMSolver.
+! 
+!       PCMSolver is free software: you can redistribute it and/or modify       
+!       it under the terms of the GNU Lesser General Public License as published by
+!       the Free Software Foundation, either version 3 of the License, or
+!       (at your option) any later version.
+!                                                                            
+!       PCMSolver is distributed in the hope that it will be useful,
+!       but WITHOUT ANY WARRANTY; without even the implied warranty of
+!       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!       GNU Lesser General Public License for more details.
+!                                                                            
+!       You should have received a copy of the GNU Lesser General Public License
+!       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+! 
+!       For information on the complete list of contributors to the
+!       PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
 !pcmsolver_copyright_end
 
 !
@@ -51,15 +51,16 @@
       real(c_double)  :: ar_(maxts_), xe_(maxts_), ye_(maxts_), ze_(maxts_), rin_(maxts_)
       real(c_double)  :: avgArea_, rsolv_, ret_
       integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
-      logical(c_bool) :: pedra_file_exists
       integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_ 
 
-      integer(c_int)   :: i
-      integer(c_int)   :: error_code
-      integer          :: lvpri
+      integer(c_int)    :: i                 
+      integer(c_int)    :: error_code
+      integer           :: lvpri
+      logical           :: pedra_file_exists
       type(point_group) :: pgroup
      
       lvpri = 121201
+      pedra_file_exists = .false.
       inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
       if (pedra_file_exists) then
          open(lvpri,                   & 

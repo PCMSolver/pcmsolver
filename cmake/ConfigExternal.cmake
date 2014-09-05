@@ -33,8 +33,7 @@ macro(add_external _project)
             STAMP_DIR ${PROJECT_BINARY_DIR}/external/${_project}-stamp
             TMP_DIR ${PROJECT_BINARY_DIR}/external/${_project}-tmp
             INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-            CMAKE_ARGS ${ExternalProjectCMakeArgs}
-            )
+            CMAKE_ARGS ${ExternalProjectCMakeArgs})
         include_directories(${PROJECT_BINARY_DIR}/external/${_project}-build)
         link_directories(${PROJECT_BINARY_DIR}/external/lib)
         link_directories(${PROJECT_BINARY_DIR}/external/${_project}-build/external/lib)
@@ -47,14 +46,13 @@ macro(add_external _project)
             STAMP_DIR ${PROJECT_BINARY_DIR}/external/${_project}-stamp
             TMP_DIR ${PROJECT_BINARY_DIR}/external/${_project}-tmp
             INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-            CMAKE_ARGS ${ExternalProjectCMakeArgs}
-            )
+            CMAKE_ARGS ${ExternalProjectCMakeArgs})
         include_directories(${PROJECT_BINARY_DIR}/external/${_project}-build)
         link_directories(${PROJECT_BINARY_DIR}/external/lib)
         link_directories(${PROJECT_BINARY_DIR}/external/${_project}-build/external/lib)
     endif()
 
-  # # remove stamps for external builds so that they are rebuilt every time
+   # remove stamps for external builds so that they are rebuilt every time
    add_custom_command(
        TARGET ${_project}
        PRE_BUILD

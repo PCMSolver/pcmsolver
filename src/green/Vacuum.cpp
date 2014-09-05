@@ -4,22 +4,22 @@
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
  *     
  *     This file is part of PCMSolver.
- *
+ *     
  *     PCMSolver is free software: you can redistribute it and/or modify       
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
@@ -29,10 +29,11 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
-#include "TaylorPimpl.hpp"
+#include <Eigen/Dense>
+#include "taylor.hpp"
 
 #include "DerivativeTypes.hpp"
+#include "DiagonalIntegrator.hpp"
 #include "GreensFunction.hpp"
 #include "IGreensFunction.hpp"
 
@@ -52,6 +53,16 @@ T Vacuum<T>::operator()(T * sp, T * pp) const
                    (sp[1]-pp[1])*(sp[1]-pp[1])+
                    (sp[2]-pp[2])*(sp[2]-pp[2]));
     return res;
+}
+
+template <typename T>
+double Vacuum<T>::diagonalS(double area) const {
+        return this->diagonal_->computeS(this, area);
+}
+
+template <typename T>
+double Vacuum<T>::diagonalD(double area, double radius) const {
+        return this->diagonal_->computeD(this, area, radius);
 }
 
 /*
@@ -136,10 +147,7 @@ double Vacuum<T>::compDiagonalElementD(double area, double radius) const
 template <typename T>
 std::ostream & Vacuum<T>::printObject(std::ostream & os)
 {
-    os << "Vacuum" << std::endl;
-    os << "Delta = " << this->delta_ << std::endl;
-    os << "Uniform = " << this->uniform_ << std::endl;
-    os << "epsilon = " << epsilon_;
+    os << "Green's function type: vacuum";
     return os;
 }
 

@@ -4,22 +4,22 @@
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
  *     
  *     This file is part of PCMSolver.
- *
+ *     
  *     PCMSolver is free software: you can redistribute it and/or modify       
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
@@ -40,7 +40,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 // Include Boost headers here
 #include <boost/format.hpp>
@@ -79,6 +79,11 @@ extern "C" void hello_pcm(int * a, double * b)
     std::cout << "Hello, PCM!" << std::endl;
     std::cout << "The integer is: " << *a << std::endl;
     std::cout << "The double is: " << *b << std::endl;
+    std::ostringstream out_stream;
+    out_stream << "Hello, PCM!" << std::endl;
+    out_stream << "The integer is: " << *a << std::endl;
+    out_stream << "The double is: " << *b << std::endl;
+    printer(out_stream);
 }
 
 extern "C" void set_up_pcm()
@@ -424,13 +429,17 @@ void initCavity()
 
 void initSolver()
 {
+    // First of all create the integrator for the diagonal elements of the S and D operators
+    // in principle it could be a different integrator for the inside/outside Green's function
+    std::string integratorType("COLLOCATION");
+    DiagonalIntegrator * integrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(integratorType);
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
     double epsilon = Input::TheInput().getEpsilonInside();
     std::string greenType = Input::TheInput().getGreenInsideType();
     int greenDer = Input::TheInput().getDerivativeInsideType();
-    greenData inside(greenDer, epsilon);
+    greenData inside(greenDer, epsilon, integrator);
 
     IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
 
@@ -438,7 +447,7 @@ void initSolver()
     epsilon = Input::TheInput().getEpsilonOutside();
     greenType = Input::TheInput().getGreenOutsideType();
     greenDer = Input::TheInput().getDerivativeOutsideType();
-    greenData outside(greenDer, epsilon);
+    greenData outside(greenDer, epsilon, integrator);
 
     IGreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
     // And all this to finally create the solver!

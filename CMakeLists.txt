@@ -186,10 +186,6 @@ if(ENABLE_TESTS)
 	add_subdirectory(tests) # This must come last!!
 endif()
 
-# How to add a debug executable. Shouldn't be necessary, we have unit tests...
-#add_executable(debug_wavcav.x ${PROJECT_SOURCE_DIR}/src/debug_wavcav.cpp)
-#target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils ${LIBS})
-
 # Merge static libs from subfolders into one static lib: libpcm.a
 # This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
 merge_static_libs(pcm "${libs_to_merge}")

@@ -19,6 +19,7 @@ write_to_cloc_list("${to_count}")
 set_pwl_compiler_flags()
 # Build static library
 add_library(pwl STATIC ${sources_list})
+add_dependencies(pwl wem)
 set(libs_to_merge pwl ${libs_to_merge} PARENT_SCOPE)
 install(TARGETS pwl ARCHIVE DESTINATION lib)
 

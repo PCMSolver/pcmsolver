@@ -8,21 +8,22 @@ if(DOXYGEN_FOUND)
     # Really ugly...
     add_custom_target(
 	bar_charts
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/cavity.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/green.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/interface.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/metal.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/operators_diagonal.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/pedra.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/pwl.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/solver.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/total.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/tsless.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/utils.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/wavcav.py" 
-	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/wem.py") 
-    add_custom_target(
-        doc 
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_BINARY_DIR}/bin/counter.py"
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/cavity.py"       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/green.py"        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx 
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/interface.py"    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx 
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/metal.py"        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx 
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/bi_operators.py" WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/pedra.py"        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/pwl.py"          WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx 
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/solver.py"       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/total.py"        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/tsless.py"       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx 
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/utils.py"        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/wavcav.py"       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/doc/gfx/matplotlib/wem.py"          WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/gfx) 
+    add_custom_target(                                                                            
+        doc                                                                                       
 	COMMAND "${PYTHON_EXECUTABLE}" "${PROJECT_BINARY_DIR}/bin/counter.py"
         COMMAND ${DOXYGEN_EXECUTABLE} WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
     add_dependencies(doc bar_charts)

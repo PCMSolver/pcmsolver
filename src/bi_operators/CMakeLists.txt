@@ -7,7 +7,7 @@ list(REMOVE_ITEM headers_list "")
 list(SORT headers_list)
 set(to_includer "${headers_list}")
 # Write headers to Includer.hpp
-file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Diagonal elements of integral operators\n")
+file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Construction of boundary integral operators\n")
 list(REMOVE_ITEM to_includer "")
 write_to_Includer("${to_includer}")
 
@@ -23,10 +23,10 @@ set(to_count "${sources_list}" "${headers_list}")
 write_to_cloc_list("${to_count}")
 
 # Build static library
-add_library(operators_diagonal STATIC ${sources_list})
-set(libs_to_merge operators_diagonal ${libs_to_merge} PARENT_SCOPE)
-add_dependencies(operators_diagonal metal libtaylor)
-install(TARGETS operators_diagonal ARCHIVE DESTINATION lib)
+add_library(bi_operators STATIC ${sources_list})
+set(libs_to_merge bi_operators ${libs_to_merge} PARENT_SCOPE)
+add_dependencies(bi_operators metal libtaylor)
+install(TARGETS bi_operators ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list
 install_list_FILES("${headers_list}" include)

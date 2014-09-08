@@ -16,7 +16,7 @@ TAGS
 */TAGS
 */*/TAGS
 prof
-Config.h
+Config.hpp
 doc/Doxyfile
 doc/_doxygen
 doc/conf.py

@@ -132,7 +132,7 @@ ExternalProject_Add(libtaylor
         STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
         TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
         INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        CMAKE_ARGS ${TaylorProjectCMakeArgs})
+        CMAKE_ARGS ${TaylorCMakeArgs})
 endif()
 
 configure_files()

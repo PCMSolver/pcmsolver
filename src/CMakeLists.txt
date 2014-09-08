@@ -1,16 +1,21 @@
 # List here all directories that contain *.h or *.hpp
 # header files. This is needed in order to set the list
 # of directories where CMake will go look for headers
+set(header_dir_list_DEVELOPMENT
+	${CMAKE_CURRENT_SOURCE_DIR}/pwl
+	${CMAKE_CURRENT_SOURCE_DIR}/wavcav
+	${CMAKE_CURRENT_SOURCE_DIR}/wem)
 set(header_dir_list 
 	${CMAKE_CURRENT_SOURCE_DIR}/cavity 
 	${CMAKE_CURRENT_SOURCE_DIR}/green
 	${CMAKE_CURRENT_SOURCE_DIR}/interface
 	${CMAKE_CURRENT_SOURCE_DIR}/operators_diagonal
-	${CMAKE_CURRENT_SOURCE_DIR}/pwl
 	${CMAKE_CURRENT_SOURCE_DIR}/solver
-	${CMAKE_CURRENT_SOURCE_DIR}/utils
-	${CMAKE_CURRENT_SOURCE_DIR}/wavcav
-	${CMAKE_CURRENT_SOURCE_DIR}/wem)
+	${CMAKE_CURRENT_SOURCE_DIR}/utils)
+if(DEVELOPMENT_CODE)
+	list(APPEND header_dir_list header_dir_list_DEVELOPMENT)
+	list(SORT header_dir_list)
+endif()	
 include_directories(${header_dir_list})
 
 init_Includer()
@@ -21,13 +26,13 @@ add_subdirectory(interface)
 add_subdirectory(metal)
 add_subdirectory(operators_diagonal)
 add_subdirectory(pedra)
-add_subdirectory(pwl)
 add_subdirectory(solver)
 add_subdirectory(utils)
-add_subdirectory(wem)
 if(DEVELOPMENT_CODE)
+	add_subdirectory(pwl)
 	add_subdirectory(tsless)
 	add_subdirectory(wavcav)
+	add_subdirectory(wem)
 endif()
 
 # We need to export header_dir_list one level up

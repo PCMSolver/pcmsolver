@@ -59,10 +59,12 @@ typedef std::pair<std::string, SharedSurfaceFunction > SharedSurfaceFunctionPair
 // The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
 // then maybe manage them through "objectification" of this interface.
 Cavity        * _cavity = NULL;
+#if defined (DEVELOPMENT_CODE)
 WaveletCavity * _waveletCavity = NULL;
 
 PWCSolver * _PWCSolver = NULL;
 PWLSolver * _PWLSolver = NULL;
+#endif
 PCMSolver * _solver = NULL;
 
 SharedSurfaceFunctionMap functions;
@@ -416,6 +418,7 @@ void initCavity()
     // Get the right cavity from the Factory
     // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
     std::string modelType = Input::TheInput().getSolverType();
+#if defined (DEVELOPMENT_CODE)    
     if (modelType == "Wavelet" || modelType == "Linear") {
         // Both PWC and PWL require a WaveletCavity
         initWaveletCavity();
@@ -423,8 +426,9 @@ void initCavity()
         // This means in practice that the CavityFactory is now working only for GePol.
         _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
     }
-    // Always save the cavity in a cavity.npz binary file
-    //_cavity->saveCavity();
+#else    
+    _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
+#endif    
 }
 
 void initSolver()
@@ -460,6 +464,7 @@ void initSolver()
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
     // (...not our fault, but should remedy somehow)
+#if defined (DEVELOPMENT_CODE)    
     if (modelType == "Wavelet") {
         _PWCSolver = new PWCSolver(gfInside, gfOutside);
         _PWCSolver->buildSystemMatrix(*_waveletCavity);
@@ -479,6 +484,10 @@ void initSolver()
         _solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
         _solver->buildSystemMatrix(*_cavity);
     }
+#else
+    _solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
+    _solver->buildSystemMatrix(*_cavity);
+#endif    
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of
     // the WaveletCavity on the wavelet solvers it has to be done here...
@@ -534,6 +543,7 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
     }
 }
 
+#if defined (DEVELOPMENT_CODE)
 void initWaveletCavity()
 {
     int patchLevel = Input::TheInput().getPatchLevel();
@@ -550,6 +560,7 @@ void initWaveletCavity()
     _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
     _waveletCavity->readCavity("molec_dyadic.dat");
 }
+#endif
 
 bool surfaceFunctionExists(const std::string & name)
 {

@@ -19,6 +19,7 @@ write_to_cloc_list("${to_count}")
 set_wavcav_compiler_flags()
 # Build static library
 add_library(wavcav STATIC ${sources_list})
+add_dependencies(wavcav wem)
 set(libs_to_merge wavcav ${libs_to_merge} PARENT_SCOPE)
 install(TARGETS wavcav ARCHIVE DESTINATION lib)
 

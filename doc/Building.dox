@@ -1,6 +1,6 @@
 /** \page Building Building the module
 
-`PCMSolver` configuration and build process is managed through CMake.
+`%PCMSolver` configuration and build process is managed through CMake.
 
 ## Prerequisites and dependencies
 
@@ -57,8 +57,9 @@ will create the build directory in build path and run CMake with the given optio
 the `build` directory.
 
 \warning The script, written by Radovan Bast and Jonas Juselius, is a quite general CMake bootstrap front-end.
- some options are currently unused, here is a list: `--mpi`, `--openmp`, `--blas`, `--lapack`, `--blas-dir`,
-`--lapack-dir`, `--check`, `--coverage`, `--profiling`, `--nochecks`, `--static`, `--host`
+ some options are currently unused, here is a list: `--int64`, `--mpi`, `--sgi-mpt`, `--omp`, `--mkl`, `--blas`, `--lapack`, 
+ `--explicit-libs`, `--cray`, `--csr`, `--scalapack`, `--scalasca`, `--check`, `--coverage`, `--static`, `--host`, `--generator`,
+ `--timings`.
 Specifying them does not hurt, but they won't have any effect. This might, at some point, change: either the options will be
 used or completely removed.
 
@@ -66,7 +67,7 @@ The `-h` or `--help` option will list the available options and their effect.
 Usually the following command is sufficient to get the configuration done for a debug build, including
 compilation of the unit test suite:
 
-	./setup --debug --tests=on
+	./setup --type=debug --tests
 
 ### Getting Boost
 
@@ -89,7 +90,7 @@ Running `./bootstrap.sh --help` will list the available options for the script. 
 	./b2 install
 
 This might take a while. After a successful build you will find the headers in `/home/user-name/boost/include` and libraries in `/home/user-name/boost/lib`
-Now, you will have Boost in a nonstandard location. Without hints CMake will not be able to find it and configuration of `PCMSolver` will fail.
+Now, you will have Boost in a nonstandard location. Without hints CMake will not be able to find it and configuration of `%PCMSolver` will fail.
 To avoid this, you will have to pass the location of the headers and libraries to the setup script, either with:
 
 	./setup --boost-headers=/home/user-name/boost/include --boost-libs=/home/user-name/boost/lib
@@ -105,7 +106,7 @@ CMake will ignore the default version of Eigen shipped with the module.
 At this point, CMake will try to find the package by itself. As this might fail, it suggested to run the following
 setup command:
 
-	./setup --eigenown=on -DEIGEN3_ROOT=/path/to/eigen
+	./setup --eigenown -DEIGEN3_ROOT=/path/to/eigen
 	
 As of version 3.1.0 Eigen can fall back to certain BLAS/LAPACK routines as implemented in Intel's Math Kernel Library (MKL).
 You can enable this feature passing the option `--eigenmkl=on` to the setup script. You need at least version 10.3 of Intel MKL.
@@ -123,7 +124,7 @@ To compile and link, just go to the build directory and run:
 where `N` is the number of cores you want to use when building.
 \note Building on more than one core can sometimes result in a "race condition" and a crash. If that happens just run `make` on a single core.
 
-If you configured with the `--tests=on` option then the unit test suite will be also built. To run the whole test suite:
+If you configured with the `--tests` option then the unit test suite will be also built. To run the whole test suite:
 
 	make test
 

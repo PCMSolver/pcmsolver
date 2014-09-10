@@ -1,0 +1,18 @@
+language: cpp
+before_install:
+        - sudo apt-get update
+        - sudo apt-get upgrade
+install:
+        - sudo apt-get install  
+script:
+        - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests=on
+        - cd build
+        - make
+        - make test
+notifications:
+        recipients:
+                - roberto.d.remigio@uit.no
+                - luca.frediani@uit.no
+        email:
+                on_success: change
+                on_failure: always

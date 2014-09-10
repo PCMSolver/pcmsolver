@@ -18,15 +18,13 @@ matrix:
                           - cd build
                           - make
                           - make test
-                - after_success:
-                        - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*test_.*"
                 - script:                                                                 
                           - ./setup --cxx=clang++ --cc=clang --fc=gfortran --type=debug --tests --coverage
                           - cd build
                           - make
                           - make test
-                - after_success:
-                        - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*test_.*"
+- after_success:
+        - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*test_.*"
 notifications:
         recipients:
                 - roberto.d.remigio@uit.no

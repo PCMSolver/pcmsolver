@@ -3,9 +3,9 @@ before_install:
         - sudo apt-get update
         - sudo apt-get upgrade
 install:
-        - sudo apt-get install  
+        - sudo apt-get install gfortran-4.6 gfortran-4.6-multilib libboost-all-dev 
 script:
-        - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests=on
+        - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests
         - cd build
         - make
         - make test

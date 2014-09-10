@@ -1,10 +1,12 @@
 language: cpp
+git:
+        submodules: false
 branches:
         only:
                 - release
 before_install:
         - sudo apt-get -qq update
-        - sudo apt-get -qq upgrade
+        - sudo apt-get --yes --force-yes -qq upgrade
 install:
         - sudo apt-get -qq install gfortran-4.6 gfortran-4.6-multilib libboost-all-dev 
 script:

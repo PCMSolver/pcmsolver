@@ -7,21 +7,26 @@ branches:
 before_install:
         - sudo apt-get -qq update
         - sudo apt-get install gfortran gfortran-multilib libboost-all-dev 
+        - sudo pip install cpp-coveralls
 install: true
 before_script:
         - export FC=gfortran
 matrix:
         include:
                 - script:                                                                 
-                          - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests
+                          - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage
                           - cd build
                           - make
                           - make test
+                - after_success:
+                        - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*test_.*"
                 - script:                                                                 
-                          - ./setup --cxx=clang++ --cc=clang --fc=gfortran --type=debug --tests
+                          - ./setup --cxx=clang++ --cc=clang --fc=gfortran --type=debug --tests --coverage
                           - cd build
                           - make
                           - make test
+                - after_success:
+                        - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*test_.*"
 notifications:
         recipients:
                 - roberto.d.remigio@uit.no

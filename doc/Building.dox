@@ -1,6 +1,6 @@
 /** \page Building Building the module
 
-`PCMSolver` configuration and build process is managed through CMake.
+`%PCMSolver` configuration and build process is managed through CMake.
 
 ## Prerequisites and dependencies
 
@@ -90,7 +90,7 @@ Running `./bootstrap.sh --help` will list the available options for the script. 
 	./b2 install
 
 This might take a while. After a successful build you will find the headers in `/home/user-name/boost/include` and libraries in `/home/user-name/boost/lib`
-Now, you will have Boost in a nonstandard location. Without hints CMake will not be able to find it and configuration of `PCMSolver` will fail.
+Now, you will have Boost in a nonstandard location. Without hints CMake will not be able to find it and configuration of `%PCMSolver` will fail.
 To avoid this, you will have to pass the location of the headers and libraries to the setup script, either with:
 
 	./setup --boost-headers=/home/user-name/boost/include --boost-libs=/home/user-name/boost/lib

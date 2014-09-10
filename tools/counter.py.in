@@ -21,6 +21,9 @@ cloc_lists = build+'/cloc'
 cloc_script = source+'/tools/cloc.pl'
 plots = source+'/doc/gfx/matplotlib'
 
+if not os.path.exists(plots):
+        os.makedirs(plots)
+
 now = time.strftime('%c')
 
 def cloc_command(*args):

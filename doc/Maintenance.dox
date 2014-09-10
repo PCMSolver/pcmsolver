@@ -63,7 +63,26 @@ If compilation works and all unit tests are passing then the code is ready to be
 	git push Origin release
 
 Notice that `Origin` has been spelled with a capital `O` the reason being that the release branch gets pushed both to the private
-and the public repositories (trick explained [here](http://stackoverflow.com/questions/849308/pull-push-from-multiple-remote-locations))
+and the public repositories. 
+The trick is explained [here](http://stackoverflow.com/questions/849308/pull-push-from-multiple-remote-locations)
+in some detail. 
+In brief, you need to have a `.git/config` file that resembles the following:
 
+\code
+[remote "origin"]
+	url = git@repo.ctcc.no:pcmsolver.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[submodule "external/libgetkw"]
+	url = git://repo.ctcc.no/libgetkw.git
+[remote "GitHub"]
+	url = git@github.com:PCMSolver/pcmsolver.git
+	fetch = +refs/heads/*:refs/remotes/GitHub/*
+[remote "Origin"]
+	url = git@repo.ctcc.no:pcmsolver.git
+	url = git@github.com:PCMSolver/pcmsolver.git
+\endcode	
 
 */

@@ -7,8 +7,8 @@ branches:
 before_install:
         - sudo apt-get -qq update
 #        - sudo apt-get --yes --force-yes -qq upgrade
-install:
-        - sudo apt-get -qq install gfortran-4.6 gfortran-4.6-multilib libboost-all-dev 
+        - sudo apt-get install gfortran libboost-all-dev 
+install: true
 before_script:
         - export FC=gfortran
 script:

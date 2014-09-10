@@ -6,16 +6,22 @@ branches:
                 - release
 before_install:
         - sudo apt-get -qq update
-#        - sudo apt-get --yes --force-yes -qq upgrade
-        - sudo apt-get install gfortran libboost-all-dev 
+        - sudo apt-get install gfortran gfortran-multilib libboost-all-dev 
 install: true
 before_script:
         - export FC=gfortran
-script:
-        - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests
-        - cd build
-        - make
-        - make test
+matrix:
+        include:
+                - script:                                                                 
+                          - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests
+                          - cd build
+                          - make
+                          - make test
+                - script:                                                                 
+                          - ./setup --cxx=clang++ --cc=clang --fc=gfortran --type=debug --tests
+                          - cd build
+                          - make
+                          - make test
 notifications:
         recipients:
                 - roberto.d.remigio@uit.no

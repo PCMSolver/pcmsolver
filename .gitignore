@@ -2,7 +2,6 @@
 *#
 *.out
 output*
-external/libgetkw
 external/libtaylor/.svn
 release*
 Release*

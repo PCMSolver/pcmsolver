@@ -47,8 +47,11 @@ MACRO (CHECK_Fortran_COMPILER_FLAG _FLAG _RESULT)
    if(${ARGC} GREATER 2)
       SET(TEST_SOURCE "${ARGV2}")
    else()
-      SET(TEST_SOURCE "program test\n end program test")
+      # Don't f**k up the indentation here!!! CMake expects fixed format Fortran sources!!!
+      SET(TEST_SOURCE "       program test\n       end program test") 
    endif()
+   set(tmp ${CMAKE_REQUIRED_QUIET})
+   set(CMAKE_REQUIRED_QUIET TRUE)
    CHECK_Fortran_SOURCE_COMPILES("${TEST_SOURCE}" ${_RESULT}
      # Some compilers do not fail with a bad flag
      FAIL_REGEX "error: bad value (.*) for .* switch"       # GNU
@@ -67,6 +70,7 @@ MACRO (CHECK_Fortran_COMPILER_FLAG _FLAG _RESULT)
      FAIL_REGEX " #10159: "                                 # ICC
      FAIL_REGEX " #10353: "                                 # ICC: option '-mfma' ignored, suggest using '-march=core-avx2'
      )
+   set(CMAKE_REQUIRED_QUIET ${tmp})
    SET (CMAKE_REQUIRED_DEFINITIONS "${SAFE_CMAKE_REQUIRED_DEFINITIONS}")
 ENDMACRO (CHECK_Fortran_COMPILER_FLAG)
 

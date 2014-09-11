@@ -49,6 +49,8 @@ MACRO (CHECK_C_COMPILER_FLAG _FLAG _RESULT)
    else()
       SET(TEST_SOURCE "int main() { return 0;}")
    endif()
+   set(tmp ${CMAKE_REQUIRED_QUIET})
+   set(CMAKE_REQUIRED_QUIET TRUE)
    CHECK_C_SOURCE_COMPILES("${TEST_SOURCE}" ${_RESULT}
      # Some compilers do not fail with a bad flag
      FAIL_REGEX "error: bad value (.*) for .* switch"       # GNU
@@ -67,6 +69,7 @@ MACRO (CHECK_C_COMPILER_FLAG _FLAG _RESULT)
      FAIL_REGEX " #10159: "                                 # ICC
      FAIL_REGEX " #10353: "                                 # ICC: option '-mfma' ignored, suggest using '-march=core-avx2'
      )
+   set(CMAKE_REQUIRED_QUIET ${tmp})
    SET (CMAKE_REQUIRED_DEFINITIONS "${SAFE_CMAKE_REQUIRED_DEFINITIONS}")
 ENDMACRO (CHECK_C_COMPILER_FLAG)
 

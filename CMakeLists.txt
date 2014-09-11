@@ -10,6 +10,7 @@ enable_language(CXX C Fortran)
 #
 option(ENABLE_MPI           "Enable MPI parallelization"                                       OFF)
 option(ENABLE_OPENMP        "Enable OpenMP parallelization"                                    OFF)
+option(ENABLE_VECTORIZATION "Enable vectorization"                                             ON) # Used by Eigen
 option(ENABLE_TESTS         "Enable compilation of unit tests"                                 OFF)
 option(ENABLE_CODE_COVERAGE "Enable code coverage"                                             OFF)
 option(DISABLE_EIGEN_OWN    "Do not use Eigen3 headers shipped with the module"                OFF)

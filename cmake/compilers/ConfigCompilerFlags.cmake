@@ -1,4 +1,9 @@
 include(SaveCompilerFlags)
+include(OptimizeForArchitecture)
+if(ENABLE_VECTORIZATION)
+	message(STATUS "Vectorization enabled")
+	OptimizeForArchitecture()
+endif()	
 
 if(CMAKE_C_COMPILER_WORKS)
     include(CFlags)

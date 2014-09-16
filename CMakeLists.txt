@@ -48,11 +48,19 @@ init_FCMangle()
 find_package(PythonInterp REQUIRED)
 find_package(ZLIB REQUIRED) 
 
+# Just change the Boost version number here
+set(BOOSTVER 1.55.0)
+set(BUILD_CUSTOM_BOOST FALSE)
 set(Boost_USE_STATIC_LIBS   ON)
 if(ENABLE_TESTS)
-	find_package(Boost 1.46.0 COMPONENTS filesystem system unit_test_framework REQUIRED)
+	find_package(Boost ${BOOSTVER} COMPONENTS filesystem system unit_test_framework)
 else()
-	find_package(Boost 1.46.0 COMPONENTS filesystem system REQUIRED)
+	find_package(Boost ${BOOSTVER} COMPONENTS filesystem system)
+endif()
+if(NOT BOOST_FOUND)
+	message(STATUS "  Build custom Boost ${BOOSTVER}")
+	set(BUILD_CUSTOM_BOOST TRUE)
+	add_subdirectory(external)
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -108,6 +116,11 @@ set(ExternalProjectCMakeArgs
    -DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS})
 
 add_external(libgetkw)
+# In case we need to build Boost, let libgetkw depend on custom_boost
+# so that's the first thing it's done
+if(BUILD_CUSTOM_BOOST)
+	add_dependencies(libgetkw custom_boost)
+endif()
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
 
 set(TaylorCMakeArgs "${ExternalProjectCMakeArgs}")

@@ -1,6 +1,9 @@
 # Based on Ryan M. Richard work in PSI4
 # First of all get BOOSTVER underscore separated
 string(REGEX REPLACE "\\." "_" BOOSTVER ${BOOSTVER})
+# Transform the ;-separated list to a ,-separated list (digested by the Boost build toolchain!)
+string(REPLACE ";" "," needed_components "${needed_components}")
+
 # Unpack Boost
 add_custom_command(
     OUTPUT boost.unpacked 
@@ -14,17 +17,14 @@ add_custom_command(
 # user-config.jam file. MPI_SENT will be the command we append
 set(MPI_SENT "")
 if(ENABLE_MPI)
-	#set(BOOST_LIBS_2_MAKE "chrono,filesystem,mpi,python,serialization,system,timer,thread") # This is in PSI4 (w/o chrono and timer)
-        set(BOOST_LIBS_2_MAKE "chrono,filesystem,mpi,python,system,timer")
+	list(APPEND needed_components mpi)
         set(MPI_SENT "using mpi : ${CMAKE_CXX_COMPILER} \\;")
-else()
-	#set(BOOST_LIBS_2_MAKE "chrono,filesystem,python,serialization,system,timer,thread") # This is in PSI4 (w/o chrono and timer)
-	set(BOOST_LIBS_2_MAKE "chrono,filesystem,python,system,timer")
 endif()
 if(ENABLE_TESTS)
-	set(BOOST_LIBS_2_MAKE "${BOOST_LIBS_2_MAKE},test")
+	# Replace unit_test_framework (used by CMake's find_package) with test (understood by Boost build toolchain)
+	string(REPLACE "unit_test_framework" "test" needed_components "${needed_components}")
 endif()
-message(STATUS "  Libraries to be built: ${BOOST_LIBS_2_MAKE}")
+message(STATUS "  Libraries to be built: ${needed_components}")
 
 # To get boost to be built with our compiler of choice we need these logic
 # statements, then we write the options to user-config.jam
@@ -58,7 +58,7 @@ file(APPEND ${PROJECT_BINARY_DIR}/external/boost_${BOOSTVER}/user-config.jam "${
 add_custom_command(
     OUTPUT boost.configured
     COMMAND ./bootstrap.sh --with-toolset=${toolset}
-            --with-libraries=${BOOST_LIBS_2_MAKE}
+            --with-libraries="${needed_components}"
 	    --with-python=${PYTHON_EXECUTABLE}
 	    --prefix=${PROJECT_BINARY_DIR}/external/boost 1> boost.configured.log 2> boost.configured.err
     COMMAND touch boost.configured	    

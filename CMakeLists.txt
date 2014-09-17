@@ -51,11 +51,16 @@ find_package(ZLIB REQUIRED)
 # Just change the Boost version number here
 set(BOOSTVER 1.55.0)
 set(BUILD_CUSTOM_BOOST FALSE)
+# List all components needed (except mpi and unit_test_framework) here.
+# Components addittionally required in PSI4: python,serialization,thread (Might be useful in the future?)
+# mpi and unit_test_framework will be added afterwards, if needed.
+list(APPEND needed_components filesystem system)
 set(Boost_USE_STATIC_LIBS   ON)
 if(ENABLE_TESTS)
-	find_package(Boost ${BOOSTVER} COMPONENTS filesystem system unit_test_framework)
+	list(APPEND needed_components unit_test_framework)
+	find_package(Boost ${BOOSTVER} COMPONENTS needed_components)
 else()
-	find_package(Boost ${BOOSTVER} COMPONENTS filesystem system)
+	find_package(Boost ${BOOSTVER} COMPONENTS "${needed_components}")
 endif()
 if(NOT BOOST_FOUND)
 	message(STATUS "  Build custom Boost ${BOOSTVER}")

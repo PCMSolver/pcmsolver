@@ -77,7 +77,10 @@ if(NOT Boost_FOUND)
 	add_subdirectory(external)
 	set(Boost_FOUND TRUE)
 	set(Boost_LIBRARIES "")
+	# Read documentation in FindBoost.cmake for the difference between the singular and plural forms
+	set(Boost_INCLUDE_DIR  ${CUSTOM_BOOST_LOCATION}/include)
 	set(Boost_INCLUDE_DIRS ${CUSTOM_BOOST_LOCATION}/include) 
+	set(Boost_LIBRARY_DIR  ${CUSTOM_BOOST_LOCATION}/lib)
 	set(Boost_LIBRARY_DIRS ${CUSTOM_BOOST_LOCATION}/lib)
         # We will link statically, so just set the Boost_<C>_LIBRARY for the static library 
 	foreach(_component ${needed_components})
@@ -86,6 +89,9 @@ if(NOT Boost_FOUND)
 		set(Boost_${_COMP}_LIBRARY libboost_${_component}-${Boost_LIB_VERSION}.a)
 		list(APPEND Boost_LIBRARIES Boost_${_COMP}_LIBRARY)
 	endforeach()
+	# To avoid problems with libgetkw not recognizing Boost paths
+	#	set(ENV{BOOST_INCLUDEDIR} ${Boost_INCLUDE_DIRS})
+	#set(ENV{BOOST_LIBRARYDIR} ${Boost_LIBRARY_DIRS})
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

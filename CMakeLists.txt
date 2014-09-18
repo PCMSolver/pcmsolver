@@ -89,9 +89,9 @@ if(NOT Boost_FOUND)
 		set(Boost_${_COMP}_LIBRARY libboost_${_component}-${Boost_LIB_VERSION}.a)
 		list(APPEND Boost_LIBRARIES Boost_${_COMP}_LIBRARY)
 	endforeach()
-	# To avoid problems with libgetkw not recognizing Boost paths
-	#	set(ENV{BOOST_INCLUDEDIR} ${Boost_INCLUDE_DIRS})
-	#set(ENV{BOOST_LIBRARYDIR} ${Boost_LIBRARY_DIRS})
+	# Set environment variables to avoid problems with libgetkw not recognizing Boost paths
+	set(ENV{BOOST_INCLUDEDIR} ${Boost_INCLUDE_DIRS})
+	set(ENV{BOOST_LIBRARYDIR} ${Boost_LIBRARY_DIRS})
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

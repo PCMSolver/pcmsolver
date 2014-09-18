@@ -6,15 +6,7 @@ string(REPLACE ";" "," b2_needed_components "${needed_components}")
 
 set(BOOST_BUILD_DIR ${PROJECT_BINARY_DIR}/external/boost_${BOOSTVER})
 
-# Unpack Boost
-add_custom_command(
-    OUTPUT boost.unpacked 
-    COMMAND tar -xzf ${PROJECT_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz 
-    COMMAND touch boost.unpacked
-    DEPENDS ${PROJECT_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external
-    COMMENT "Unpacking Boost")
-
+# Prepare stuff to be written to user-config.jam and project-config.jam
 # We are going to build only what is necessary. We need to create a custom user-config.jam file
 # To get boost to compile MPI we need to append "using mpi ;" to the end of the
 # user-config.jam file. MPI_SENT will be the command we append
@@ -60,12 +52,26 @@ file(WRITE  ${BOOST_BUILD_DIR}/user-config.jam
 	    "using ${toolset}\n : \n : ${CMAKE_CXX_COMPILER} \n : <cxxflags>${cxxflags} \n : <linkflags>${linkflags} \n;") 
 file(APPEND ${BOOST_BUILD_DIR}/user-config.jam "${MPI_SENT}") 
 
+# Unpack Boost and copy boostcpp.jam
+add_custom_command(
+    OUTPUT boost.unpacked 
+    COMMAND tar -xzf ${PROJECT_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz 
+    # Copy custom boostcpp.jam (to get versioned format as I want it!)
+    COMMAND cp ${PROJECT_SOURCE_DIR}/external/boostcpp.jam ${BOOST_BUILD_DIR}
+    # Append to project-config.jam 
+    # It can't be done with file(APPEND ...) because it will be destroyed when unpacking
+    COMMAND ${CMAKE_COMMAND} -E echo "${MPI_SENT}" >> ${BOOST_BUILD_DIR}/project-config.jam
+    COMMAND touch boost.unpacked
+    DEPENDS ${PROJECT_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external
+    COMMENT "Unpacking Boost")
+
 string(TOLOWER ${CMAKE_BUILD_TYPE} type)
 # Run bootstrap.sh to configure the build. We will install in ${PROJECT_BINARY_DIR}/external/boost
 add_custom_command(
     OUTPUT boost.configured
     COMMAND ./bootstrap.sh --with-toolset=${toolset}
-            --with-libraries="${needed_components}"
+            --with-libraries="${b2_needed_components}"
 	    --with-python=${PYTHON_EXECUTABLE}
 	    --prefix=${CUSTOM_BOOST_LOCATION} 1> boost.configured.log 2> boost.configured.err
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.configured	    
@@ -73,13 +79,10 @@ add_custom_command(
     DEPENDS boost.unpacked
     COMMENT "Configuring Boost")
 
-# Append the MPI-related stuff to the project-config.jam file
-file(APPEND ${BOOST_BUILD_DIR}/project-config.jam "${MPI_SENT}") 
-
 # Build Boost
 add_custom_command(
     OUTPUT boost.built
-    COMMAND ./b2 variant=${type} link=static threading=multi 1> boost.built.log 2> boost.built.err
+    COMMAND ./b2 --layout=versioned variant=${type} link=static threading=multi 1> boost.built.log 2> boost.built.err
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.built
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.configured 
@@ -88,17 +91,20 @@ add_custom_command(
 # Install Boost
 add_custom_command(
     OUTPUT boost.installed
-    COMMAND ./b2 install
+    COMMAND ./b2 install --layout=versioned
 	    variant=${type} link=static
-	    threading=multi 1> boost.installed.log 2> boost.installed.err
+	    threading=multi 1> boost.installed.log 2> boost.installed.err	   
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.installed
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.built 
     COMMENT "Installing Boost")
 
 # Clean-up
-execute_process(COMMAND rm -rf ${BOOST_BUILD_DIR}
-    OUTPUT_FILE boost.cleanedup
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external)
+add_custom_command(
+    OUTPUT boost.cleanedup
+    COMMAND rm -rf ${BOOST_BUILD_DIR}
+    COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.cleanedup
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external
+    DEPENDS boost.installed) 
 
-add_custom_target(custom_boost DEPENDS boost.installed)
+add_custom_target(custom_boost DEPENDS boost.cleanedup)

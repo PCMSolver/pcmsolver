@@ -122,8 +122,7 @@ rule tag ( name : type ? : property-set )
         if $(layout) = versioned
         {
             result = [ common.format-name
-               # <base> <toolset> <threading> <runtime> -$(BOOST_VERSION_TAG)
-                <base> -$(BOOST_VERSION_TAG)
+                <base> <toolset> <threading> <runtime> -$(BOOST_VERSION_TAG)
                 -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
         }
@@ -137,7 +136,8 @@ rule tag ( name : type ? : property-set )
         else if $(layout) = system
         {
             result = [ common.format-name
-                <base>
+                #<base>
+                <base> -$(BOOST_VERSION_TAG)
                 -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
         }

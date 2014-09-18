@@ -82,7 +82,7 @@ add_custom_command(
 # Build Boost
 add_custom_command(
     OUTPUT boost.built
-    COMMAND ./b2 --layout=versioned variant=${type} link=static threading=multi 1> boost.built.log 2> boost.built.err
+    COMMAND ./b2 variant=${type} link=static threading=multi 1> boost.built.log 2> boost.built.err
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.built
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.configured 
@@ -91,7 +91,7 @@ add_custom_command(
 # Install Boost
 add_custom_command(
     OUTPUT boost.installed
-    COMMAND ./b2 install --layout=versioned
+    COMMAND ./b2 install
 	    variant=${type} link=static
 	    threading=multi 1> boost.installed.log 2> boost.installed.err	   
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.installed

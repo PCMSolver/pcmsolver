@@ -73,7 +73,7 @@ add_custom_command(
     COMMAND ./bootstrap.sh --with-toolset=${toolset}
             --with-libraries="${b2_needed_components}"
 	    --with-python=${PYTHON_EXECUTABLE}
-	    --prefix=${CUSTOM_BOOST_LOCATION} 1> boost.configured.log 2> boost.configured.err
+	    --prefix=${CUSTOM_BOOST_LOCATION} #1> boost.configured.log 2> boost.configured.err
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.configured	    
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.unpacked
@@ -82,7 +82,7 @@ add_custom_command(
 # Build Boost
 add_custom_command(
     OUTPUT boost.built
-    COMMAND ./b2 --layout=versioned variant=${type} link=static threading=multi 1> boost.built.log 2> boost.built.err
+    COMMAND ./b2 --layout=versioned variant=${type} link=static threading=multi #1> boost.built.log 2> boost.built.err
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.built
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.configured 
@@ -93,7 +93,7 @@ add_custom_command(
     OUTPUT boost.installed
     COMMAND ./b2 install --layout=versioned
 	    variant=${type} link=static
-	    threading=multi 1> boost.installed.log 2> boost.installed.err	   
+	    threading=multi # 1> boost.installed.log 2> boost.installed.err	   
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.installed
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.built 
@@ -105,6 +105,7 @@ add_custom_command(
     COMMAND rm -rf ${BOOST_BUILD_DIR}
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.cleanedup
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external
-    DEPENDS boost.installed) 
+    DEPENDS boost.installed
+    COMMENT "Clean-up Boost") 
 
 add_custom_target(custom_boost DEPENDS boost.cleanedup)

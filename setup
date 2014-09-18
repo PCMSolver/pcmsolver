@@ -145,6 +145,10 @@ def parse_input():
             action='store_true',
             default=False,
             help='build unit test suite [default: %(default)s]')
+    group.add_argument('--vectorization',
+            action='store_true',
+            default=False,
+            help='enable vectorization [default: %(default)s]')
     group.add_argument('-D',
             action="append",
             dest='define',
@@ -188,7 +192,7 @@ def parse_input():
             default=False,
             help='enable Eigen3 automatic fallback to Intel MKL [default: %(default)s]')
 
-    group = parser.add_argument_group('pass extra flags to the compiler')
+    group = parser.add_argument_group('Pass extra flags to the compiler')
     group.add_argument('--extra-fc-flags',
             action='store',
             default=None,
@@ -258,6 +262,7 @@ def gen_cmake_command(args):
     command += ' -DENABLE_TESTS=%s'          % translate_cmake(args.tests)
     command += ' -DDISABLE_EIGEN_OWN=%s'     % translate_cmake(args.eigenown)
     command += ' -DENABLE_EIGEN_MKL=%s'      % translate_cmake(args.eigenmkl)
+    command += ' -DENABLE_VECTORIZATION=%s'  % translate_cmake(args.vectorization)
 #   command += ' -DENABLE_STATIC_LINKING=%s' % translate_cmake(args.static)
 
     if args.blas == 'builtin':

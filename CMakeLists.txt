@@ -10,6 +10,7 @@ enable_language(CXX C Fortran)
 #
 option(ENABLE_MPI           "Enable MPI parallelization"                                       OFF)
 option(ENABLE_OPENMP        "Enable OpenMP parallelization"                                    OFF)
+option(ENABLE_VECTORIZATION "Enable vectorization"                                             OFF)
 option(ENABLE_TESTS         "Enable compilation of unit tests"                                 OFF)
 option(ENABLE_CODE_COVERAGE "Enable code coverage"                                             OFF)
 option(DISABLE_EIGEN_OWN    "Do not use Eigen3 headers shipped with the module"                OFF)
@@ -40,18 +41,43 @@ include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(MergeStaticLibs)
 include(FortranCInterface)
- 
+
 FortranCInterface_VERIFY(CXX)
 init_FCMangle()
 
 find_package(PythonInterp REQUIRED)
 find_package(ZLIB REQUIRED) 
 
-set(Boost_USE_STATIC_LIBS   ON)
+# Just change the Boost version number here
+set(BOOSTVER 1.55.0)
+set(BUILD_CUSTOM_BOOST FALSE)
+# List all components needed (except mpi and unit_test_framework) here.
+# Components additionally required in PSI4: python, serialization, thread (Might be useful in the future?)
+# mpi and unit_test_framework will be added afterwards, if needed.
+list(APPEND needed_components filesystem system)
+set(Boost_USE_STATIC_LIBS    ON)
+set(Boost_USE_MULTITHREADED  ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
 if(ENABLE_TESTS)
-	find_package(Boost 1.46.0 COMPONENTS filesystem system unit_test_framework REQUIRED)
+	list(APPEND needed_components unit_test_framework)
+	find_package(Boost ${BOOSTVER} COMPONENTS "${needed_components}")
 else()
-	find_package(Boost 1.46.0 COMPONENTS filesystem system REQUIRED)
+	find_package(Boost ${BOOSTVER} COMPONENTS "${needed_components}")
+endif()
+if(NOT Boost_FOUND)
+	message(STATUS "  Build custom Boost ${BOOSTVER}")
+	set(BUILD_CUSTOM_BOOST TRUE)
+	set(CUSTOM_BOOST_LOCATION ${PROJECT_BINARY_DIR}/external/boost)
+	add_subdirectory(external)
+        # Set variables usually set by find_package by hand
+        set(Boost_FOUND TRUE)
+	set(Boost_INCLUDE_DIRS ${CUSTOM_BOOST_LOCATION}/include) 
+	set(Boost_LIBRARY_DIRS ${CUSTOM_BOOST_LOCATION}/lib)
+        # We will link statically, so just set the Boost_<C>_LIBRARY for the static library 
+	foreach(_component ${needed_components})
+		string(TOUPPER ${_component} _COMP)
+		set(Boost_${_COMP}_LIBRARY libboost_${_component}.a)
+	endforeach()
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -107,6 +133,11 @@ set(ExternalProjectCMakeArgs
    -DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS})
 
 add_external(libgetkw)
+# In case we need to build Boost, let libgetkw depend on custom_boost
+# so that's the first thing it's done
+if(BUILD_CUSTOM_BOOST)
+	add_dependencies(libgetkw custom_boost)
+endif()
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
 
 set(TaylorCMakeArgs "${ExternalProjectCMakeArgs}")

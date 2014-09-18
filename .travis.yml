@@ -6,7 +6,7 @@ branches:
                 - release
 before_install:
         - sudo apt-get -qq update
-        - sudo apt-get install gfortran gfortran-multilib libboost-all-dev 
+        - sudo apt-get install gfortran gfortran-multilib 
         - sudo pip install cpp-coveralls
 install: true
 before_script:

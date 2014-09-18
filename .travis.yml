@@ -24,7 +24,7 @@ matrix:
                           - make
                           - make test
 after_success:
-        - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*test_.*"
+        - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*tests*" -E ".*tools.*"
 notifications:
         recipients:
                 - roberto.d.remigio@uit.no

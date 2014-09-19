@@ -48,6 +48,15 @@ init_FCMangle()
 find_package(PythonInterp REQUIRED)
 find_package(ZLIB REQUIRED) 
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
+	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT} CACHE INTERNAL "")
+else()
+	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT} CACHE INTERNAL "")
+endif()
+
 # Just change the Boost version number here
 set(BOOSTVER 1.55.0)
 set(BUILD_CUSTOM_BOOST FALSE)
@@ -68,7 +77,7 @@ if(NOT Boost_FOUND)
         # Set also variables usually set by find_package
 	message(STATUS "  Build custom Boost ${BOOSTVER}")
 	set(BUILD_CUSTOM_BOOST TRUE)
-	set(CUSTOM_BOOST_LOCATION ${PROJECT_BINARY_DIR}/external/boost)
+	set(CUSTOM_BOOST_LOCATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/boost)
 	string(REGEX REPLACE "\\." "0" Boost_VERSION ${BOOSTVER})
         math(EXPR Boost_MAJOR_VERSION "${Boost_VERSION} / 100000")
         math(EXPR Boost_MINOR_VERSION "${Boost_VERSION} / 100 % 1000")
@@ -87,15 +96,13 @@ if(NOT Boost_FOUND)
 		list(APPEND Boost_LIBRARIES Boost_${_COMP}_LIBRARY)
 	endforeach()
 endif()
-
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
-	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT} CACHE INTERNAL "")
-else()
-	set(EXTERNAL_PROJECT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-	set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT} CACHE INTERNAL "")
-endif()
+#
+#  Boost Numeric Quadrature stuff
+#
+set(Boost_QUADRATURE ${PROJECT_SOURCE_DIR}/external/boost)
+install(DIRECTORY ${Boost_QUADRATURE}/numeric
+	DESTINATION ${CUSTOM_BOOST_LOCATION}/include/boost
+	USE_SOURCE_PERMISSIONS)
 
 #
 #  Eigen 3 stuff
@@ -114,19 +121,12 @@ else()
 	find_package(Eigen3 3.0.0)
         message(STATUS "Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
 endif()
-
 if(ENABLE_EIGEN_MKL)
 	message(STATUS "ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3") 
         message(STATUS "   Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
         include(ConfigMath)
         set(EIGEN_USE_MKL_ALL ON)
 endif()
-
-#
-#  Boost Numeric Quadrature stuff
-#
-set(Boost_QUADRATURE ${PROJECT_SOURCE_DIR}/external/boost)
-install(DIRECTORY ${Boost_QUADRATURE} DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 
 set(CMAKE_Fortran_MODULE_DIRECTORY
     ${PROJECT_BINARY_DIR}/modules)
@@ -199,6 +199,10 @@ link_directories(${Boost_LIBRARY_DIRS}
 list(APPEND LIBS
     ${Boost_FILESYSTEM_LIBRARY} 
     ${Boost_SYSTEM_LIBRARY})
+
+install(FILES 
+	${PROJECT_BINARY_DIR}/bin/pcmsolver 
+	DESTINATION bin)
 
 install(FILES 
 	${PROJECT_BINARY_DIR}/include/Config.hpp 

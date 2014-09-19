@@ -19,7 +19,7 @@ matrix:
                           - make
                           - make test
                 - script:                                                                 
-                          - ./setup --cxx=clang++ --cc=clang --fc=gfortran --type=debug --tests --coverage
+                          - ./setup --cxx=clang++ --cc=clang --fc=gfortran --type=debug --tests
                           - cd build
                           - make
                           - make test

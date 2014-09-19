@@ -105,7 +105,7 @@ add_custom_command(
     COMMAND rm -rf ${BOOST_BUILD_DIR}
     COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.cleanedup
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external
-    DEPENDS boost.installed
-    COMMENT "Clean-up Boost") 
+    DEPENDS boost.installed 
+    COMMENT "Clean-up Boost")
 
 add_custom_target(custom_boost DEPENDS boost.cleanedup)

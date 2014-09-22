@@ -22,7 +22,7 @@ env:
     - CI_TARGET=clang-unittest
     - CI_TARGET=coverity
 script:
-  - sh "${CI_SCRIPTS}/${CI_TARGET}.sh"
+  - bash "${CI_SCRIPTS}/${CI_TARGET}.sh"
 notifications:
   recipients:
     - roberto.d.remigio@uit.no

@@ -1,34 +1,33 @@
 language: cpp
 git:
-        submodules: false
+  submodules: false
 branches:
-        only:
-                - release
+  only:
+    - release
 before_install:
-        - sudo apt-get -qq update
-        - sudo apt-get install gfortran gfortran-multilib 
-        - sudo pip install cpp-coveralls
+    - sudo apt-get -qq update
+    - sudo apt-get install gfortran gfortran-multilib 
 install: true
-before_script:
-        - export FC=gfortran
-matrix:
-        include:
-                - script:                                                                 
-                          - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage
-                          - cd build
-                          - make
-                          - make test
-                - script:                                                                 
-                          - ./setup --cxx=clang++ --cc=clang --fc=gfortran --type=debug --tests
-                          - cd build
-                          - make
-                          - make test
-after_success:
-        - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*tests*" -E ".*tools.*"
+env:
+  global:
+    - PROJECT_ROOT="$(pwd)"
+    - CI_SCRIPTS="$PROJECT_ROOT/.ci"
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    # via the "travis encrypt" command using the project repo's public key
+    - secure: "QfS5sgnKSOG1E6G9ViEtxPRGTpMAPPJXJ/4ZUZ2hMQT7MTY4QdsH3b+FhByKy8gOCFzHl/fi5pv7EMQCA3ASju9+FAfeBXEUJzl0Uewbs16KsfMAmMOdfFb7HeCYgKwmYyPEFcwgRl2oeKngQDjBCSarb7KNDAKHz5ntHsBe+Rc="
+  matrix:
+    - CI_TARGET=gcc-unittest
+    - CI_TARGET=clang-unittest
+    - CI_TARGET=coverity
+script:
+  # This will pass the environment variables down to a bash process which runs 
+  # as $USER, while retaining the environment variables defined and belonging
+  # to secondary groups given above in usermod.
+  - sudo -E su ${USER} -c "sh -e \"${CI_SCRIPTS}/${CI_TARGET}.sh\""
 notifications:
-        recipients:
-                - roberto.d.remigio@uit.no
-                - luca.frediani@uit.no
-        email:
-                on_success: change
-                on_failure: always
+  recipients:
+    - roberto.d.remigio@uit.no
+    - luca.frediani@uit.no
+  email:
+    on_success: change
+    on_failure: always

@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=release)](https://travis-ci.org/PCMSolver/pcmsolver) 
-[![Coverage Status](https://img.shields.io/coveralls/PCMSolver/pcmsolver.svg)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
+[![Coverage Status](https://coveralls.io/repos/PCMSolver/pcmsolver/badge.png?branch=release)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
 [![Coverity Scan Build](https://scan.coverity.com/projects/3046/badge.svg)](https://scan.coverity.com/projects/3046)
 
 PCMSolver

@@ -1,9 +1,4 @@
 language: cpp
-env:
-  global:
-   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-   #   via the "travis encrypt" command using the project repo's public key
-   - secure: "E1Jc17Tev6/JHyAhyv7pyVoaMhZwoQ5w8H1RoKE2Mty1upjDzoUrUy9dCyl9zFpkaaUq7lOZ527o5DbEn5FZfh1u6hYqmlsDEvCeRFJ/KFF7E4L4Pph3w1T2+LfGkZUgAV84MIBZKY3gI1SccXrsvOCcb7w0MWhEnHw66WVQPjQ="
 git:
   submodules: false
 branches:
@@ -12,17 +7,25 @@ branches:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install gfortran gfortran-multilib 
-  - sudo pip install cpp-coveralls
 install: true
+env:
+  global:
+    - PROJECT_ROOT="$(pwd)"
+    - CI_SCRIPTS="$PROJECT_ROOT/.ci"
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "E1Jc17Tev6/JHyAhyv7pyVoaMhZwoQ5w8H1RoKE2Mty1upjDzoUrUy9dCyl9zFpkaaUq7lOZ527o5DbEn5FZfh1u6hYqmlsDEvCeRFJ/KFF7E4L4Pph3w1T2+LfGkZUgAV84MIBZKY3gI1SccXrsvOCcb7w0MWhEnHw66WVQPjQ="
+  matrix:
+    - CI_TARGET=gcc-unittest
+    - CI_TARGET=clang-unittest
+    - CI_TARGET=coverity
 before_script:
   - export FC=gfortran
-script:                                                                 
-      - python setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage
-      - cd build
-      - make
-      - make test
-after_success:
-  - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*tests*" -E ".*tools.*"
+script:
+  # This will pass the environment variables down to a bash process which runs 
+  # as $USER, while retaining the environment variables defined and belonging
+  # to secondary groups given above in usermod.
+  - sudo -E su ${USER} -c "sh -e \"${CI_SCRIPTS}/${CI_TARGET}.sh\""
 notifications:
   recipients:
     - roberto.d.remigio@uit.no
@@ -30,12 +33,3 @@ notifications:
   email:
     on_success: change
     on_failure: always
-addons:
-  coverity_scan:
-    project:
-      name: "PCMSolver/pcmsolver"
-      description: "Build submitted via Travis CI"
-    notification_email: roberto.d.remigio@uit.no
-    build_command_prepend: "python setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage; cd build"
-    build_command:   "make"
-    branch_pattern: release

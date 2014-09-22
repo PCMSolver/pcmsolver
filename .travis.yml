@@ -8,6 +8,8 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install gfortran gfortran-multilib 
 install: true
+before_script:
+  - FC=gfortran
 env:
   global:
     - PROJECT_ROOT="$(pwd)"
@@ -19,13 +21,8 @@ env:
     - CI_TARGET=gcc-unittest
     - CI_TARGET=clang-unittest
     - CI_TARGET=coverity
-before_script:
-  - export FC=gfortran
 script:
-  # This will pass the environment variables down to a bash process which runs 
-  # as $USER, while retaining the environment variables defined and belonging
-  # to secondary groups given above in usermod.
-  - sudo -E su ${USER} -c "sh -e \"${CI_SCRIPTS}/${CI_TARGET}.sh\""
+  - sh "${CI_SCRIPTS}/${CI_TARGET}.sh"
 notifications:
   recipients:
     - roberto.d.remigio@uit.no

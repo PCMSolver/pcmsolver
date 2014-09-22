@@ -11,8 +11,8 @@ before_install:
 install: true
 before_script:
   - export FC=gfortran
-  - script:                                                                 
-      - ./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage
+script:                                                                 
+      - python setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage
       - cd build
       - make
       - make test
@@ -31,6 +31,6 @@ addons:
       name: "PCMSolver/pcmsolver"
       description: "Build submitted via Travis CI"
     notification_email: roberto.d.remigio@uit.no
-    build_command_prepend: "./setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage; cd build"
+    build_command_prepend: "python setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage; cd build"
     build_command:   "make"
     branch_pattern: release

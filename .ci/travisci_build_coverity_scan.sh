@@ -12,7 +12,8 @@ echo -e "\033[33;1mNote: COVERITY_SCAN_PROJECT_NAME and COVERITY_SCAN_TOKEN are 
 
 PLATFORM=`uname`
 TOOL_ARCHIVE=/tmp/cov-analysis-${PLATFORM}.tgz
-TOOL_URL=https://scan.coverity.com/download/cxx/${PLATFORM}
+TOOL_URL=https://www.dropbox.com/s/sbq4cs1jpedxqve/cov-analysis-linux64-7.5.0.tar.gz?dl=0
+#https://scan.coverity.com/download/cxx/${PLATFORM}
 TOOL_BASE=/tmp/coverity-scan-analysis
 UPLOAD_URL="https://scan.coverity.com/builds"
 SCAN_URL="https://scan.coverity.com"
@@ -60,7 +61,6 @@ if [ ! -d $TOOL_BASE ]; then
   mkdir -p $TOOL_BASE
   pushd $TOOL_BASE
   file $TOOL_ARCHIVE
-  tar xf $TOOL_ARCHIVE
   tar xzf $TOOL_ARCHIVE
   popd
 fi

@@ -106,8 +106,8 @@ macro(configure_files)
 	configure_file(${PROJECT_SOURCE_DIR}/Config.hpp.in
                ${PROJECT_BINARY_DIR}/include/Config.hpp)
 	# Configure the input parsing script
-	configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.in pcmsolver)
-        file(COPY ${PROJECT_BINARY_DIR}/pcmsolver 
+	configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in pcmsolver.py)
+        file(COPY ${PROJECT_BINARY_DIR}/pcmsolver.py 
           DESTINATION ${PROJECT_BINARY_DIR}/bin
           FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
           GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

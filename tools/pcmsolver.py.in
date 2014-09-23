@@ -34,7 +34,7 @@ else:
 
 import getkw
 
-def parse_pcm_input():
+def main():
 	global topsect
        
         # Set up valid keywords.
@@ -44,7 +44,7 @@ def parse_pcm_input():
 
         # If no filename was provided look up for the standard name.
 	if inpfil is None:
-		inpfil = "pcmsolver.inp"
+            inpfil = "pcmsolver.inp"
 
  	# Set up a GetKw object and let it parse our input:
 	# here is where the magic happens.
@@ -57,6 +57,30 @@ def parse_pcm_input():
 	# The parsed, machine-readable file is now saved.
 	xfile='@' + inpfil
 	fd=open(xfile,'w')
+	print >> fd, inkw.top
+	fd.close()
+
+def parse_pcm_input(inpfil = None):
+	global topsect
+       
+        # Set up valid keywords.
+	valid_keywords = setup_keywords()
+
+        # If no filename was provided look up for the standard name.
+	if inpfil is None:
+            inpfil = "pcmsolver.inp"
+
+ 	# Set up a GetKw object and let it parse our input:
+	# here is where the magic happens.
+	input = getkw.GetkwParser()
+	inkw  = input.parseFile(inpfil)
+	inkw.sanitize(valid_keywords)
+	topsect = inkw.get_topsect()
+	inkw.run_callbacks(valid_keywords)
+
+	# The parsed, machine-readable file is now saved.
+	xfile = '@' + inpfil
+	fd = open(xfile, 'w')
 	print >> fd, inkw.top
 	fd.close()
 
@@ -373,6 +397,6 @@ def convert_area_scalar(keyword):
 		keyword[0] /= (CODATAdict[CODATAyear] * CODATAdict[CODATAyear]) 
 
 if __name__ == '__main__':
-	parse_pcm_input()
+	main()
 
 

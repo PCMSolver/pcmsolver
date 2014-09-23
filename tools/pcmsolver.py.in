@@ -34,7 +34,7 @@ else:
 
 import getkw
 
-def main():
+def parse_pcm_input():
 	global topsect
        
         # Set up valid keywords.
@@ -373,6 +373,6 @@ def convert_area_scalar(keyword):
 		keyword[0] /= (CODATAdict[CODATAyear] * CODATAdict[CODATAyear]) 
 
 if __name__ == '__main__':
-	main()
+	parse_pcm_input()
 
 

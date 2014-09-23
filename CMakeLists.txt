@@ -201,7 +201,7 @@ list(APPEND LIBS
     ${Boost_SYSTEM_LIBRARY})
 
 install(FILES 
-	${PROJECT_BINARY_DIR}/bin/pcmsolver 
+	${PROJECT_BINARY_DIR}/bin/pcmsolver.py 
 	DESTINATION bin)
 
 install(FILES 

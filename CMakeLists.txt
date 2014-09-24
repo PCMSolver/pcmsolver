@@ -104,7 +104,7 @@ endif()
 #
 set(Boost_QUADRATURE ${PROJECT_SOURCE_DIR}/external/boost)
 install(DIRECTORY ${Boost_QUADRATURE}/numeric
-	DESTINATION ${CUSTOM_BOOST_LOCATION}/include/boost
+	DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/boost/include/boost
 	USE_SOURCE_PERMISSIONS)
 
 #

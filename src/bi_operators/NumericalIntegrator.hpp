@@ -1,11 +1,11 @@
-#ifndef COLLOCATIONINTEGRATOR_HPP
-#define COLLOCATIONINTEGRATOR_HPP
+#ifndef NUMERICALINTEGRATOR_HPP
+#define NUMERICALINTEGRATOR_HPP
 
 #include <iosfwd>
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 class Element;
 
@@ -17,28 +17,19 @@ class Element;
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 
-/*! \file CollocationIntegrator.hpp
- *  \class CollocationIntegrator
- *  \brief Implementation of diagonal elements of S and D using approximate collocation
+/*! \file NumericalIntegrator.hpp
+ *  \class NumericalIntegrator
+ *  \brief Implementation of diagonal elements of S and D using numerical integration
  *  \author Roberto Di Remigio
  *  \date 2014
  *
- *  Calculates the diagonal elements of S as:
- *  \f[
- *  	S_{ii} = factor_ * \sqrt{\frac{4\pi}{a_i}}
- *  \f]
- *  while the diagonal elements of D are:
- *  \f[
- *  	D_{ii} = -factor_ * \sqrt{\frac{\pi}{a_i}} \frac{1}{R_I}
- *  \f]
+ *  Calculates the diagonal elements of S and D by collocation, using numerical
+ *  integration.
  */
 
-class CollocationIntegrator : public DiagonalIntegrator
+class NumericalIntegrator : public DiagonalIntegrator
 {
 public:
-    CollocationIntegrator() : factor_(1.07) {}
-    virtual ~CollocationIntegrator() {}
-
     virtual double computeS(const Vacuum<double> * gf, const Element & e) const;
     virtual double computeS(const Vacuum<AD_directional> * gf, const Element & e) const;
     virtual double computeS(const Vacuum<AD_gradient> * gf, const Element & e) const;
@@ -78,20 +69,16 @@ public:
     virtual double computeD(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
     virtual double computeD(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
     virtual double computeD(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
-private:
-    /// Scaling factor for the collocation formulas
-    double factor_;
 };
-
 namespace
 {
-    DiagonalIntegrator * createCollocationIntegrator()
+    DiagonalIntegrator * createNumericalIntegrator()
     {
-        return new CollocationIntegrator();
+        return new NumericalIntegrator();
     }
-    const std::string COLLOCATION("COLLOCATION");
-    const bool registeredCollocationIntegrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().registerDiagonalIntegrator(
-                                         COLLOCATION, createCollocationIntegrator);
+    const std::string NUMERICAL("NUMERICAL");
+    const bool registeredNumericalIntegrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().registerDiagonalIntegrator(
+                                         NUMERICAL, createNumericalIntegrator);
 }
 
-#endif // COLLOCATIONINTEGRATOR_HPP
+#endif // NUMERICALINTEGRATOR_HPP

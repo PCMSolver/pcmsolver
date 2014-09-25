@@ -1,2 +1,5 @@
 /** \page Interfacing Interfacing a QM program and PCMSolver
+    - \subpage BuildingDIRAC
+    - \subpage BuildingDalton
+    - \subpage BuildingPSI4
 */

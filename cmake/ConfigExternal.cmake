@@ -5,8 +5,7 @@ if (GIT_FOUND)
         git_update
         COMMAND ${GIT_EXECUTABLE} submodule init
         COMMAND ${GIT_EXECUTABLE} submodule update
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    )
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 else()
     if(DEVELOPMENT_CODE)
         message("-- Git not found. You need Git for the Git submodule mechanism to work.")
@@ -33,8 +32,7 @@ macro(add_external _project)
             STAMP_DIR ${PROJECT_BINARY_DIR}/external/${_project}-stamp
             TMP_DIR ${PROJECT_BINARY_DIR}/external/${_project}-tmp
             INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-            CMAKE_ARGS ${ExternalProjectCMakeArgs}
-            )
+            CMAKE_ARGS ${ExternalProjectCMakeArgs})
         include_directories(${PROJECT_BINARY_DIR}/external/${_project}-build)
         link_directories(${PROJECT_BINARY_DIR}/external/lib)
         link_directories(${PROJECT_BINARY_DIR}/external/${_project}-build/external/lib)
@@ -47,18 +45,16 @@ macro(add_external _project)
             STAMP_DIR ${PROJECT_BINARY_DIR}/external/${_project}-stamp
             TMP_DIR ${PROJECT_BINARY_DIR}/external/${_project}-tmp
             INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-            CMAKE_ARGS ${ExternalProjectCMakeArgs}
-            )
+            CMAKE_ARGS ${ExternalProjectCMakeArgs})
         include_directories(${PROJECT_BINARY_DIR}/external/${_project}-build)
         link_directories(${PROJECT_BINARY_DIR}/external/lib)
         link_directories(${PROJECT_BINARY_DIR}/external/${_project}-build/external/lib)
     endif()
 
-  # # remove stamps for external builds so that they are rebuilt every time
+   # remove stamps for external builds so that they are rebuilt every time
    add_custom_command(
        TARGET ${_project}
        PRE_BUILD
        COMMAND rm -rf ${PROJECT_BINARY_DIR}/external/${_project}-stamp
-       WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-       )
+       WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endmacro()

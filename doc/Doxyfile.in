@@ -691,8 +691,8 @@ EXCLUDE                = "Python/pyparsing.py" \
                          "@PROJECT_SOURCE_DIR@/src/wem" \
                          "@PROJECT_SOURCE_DIR@/src/pwl" \
                          "@PROJECT_SOURCE_DIR@/src/metal" \
-                         "@PROJECT_SOURCE_DIR@/src/pedra" \
-                         "@PROJECT_SOURCE_DIR@/src/tsless"
+                         "@PROJECT_SOURCE_DIR@/src/tsless" \
+			 "@PROJECT_SOURCE_DIR@/doc/gfx/matplotlib"
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or 
 # directories that are symbolic links (a Unix file system feature) are excluded 
@@ -844,7 +844,7 @@ USE_HTAGS              = NO
 # will generate a verbatim copy of the header file for each class for 
 # which an include is specified. Set to NO to disable this.
 
-VERBATIM_HEADERS       = YES
+VERBATIM_HEADERS       = NO 
 
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index
@@ -1679,7 +1679,7 @@ PERL_PATH              = /usr/bin/perl
 # this option also works with HAVE_DOT disabled, but it is recommended to 
 # install and use dot, since it yields more powerful graphs.
 
-CLASS_DIAGRAMS         = NO
+CLASS_DIAGRAMS         = YES 
 
 # You can define message sequence charts within doxygen comments using the \msc 
 # command. Doxygen will then run the mscgen tool (see 

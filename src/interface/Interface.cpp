@@ -4,22 +4,22 @@
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
  *     
  *     This file is part of PCMSolver.
- *
+ *     
  *     PCMSolver is free software: you can redistribute it and/or modify       
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
@@ -40,7 +40,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 // Include Boost headers here
 #include <boost/format.hpp>
@@ -59,10 +59,12 @@ typedef std::pair<std::string, SharedSurfaceFunction > SharedSurfaceFunctionPair
 // The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
 // then maybe manage them through "objectification" of this interface.
 Cavity        * _cavity = NULL;
+#if defined (DEVELOPMENT_CODE)
 WaveletCavity * _waveletCavity = NULL;
 
 PWCSolver * _PWCSolver = NULL;
 PWLSolver * _PWLSolver = NULL;
+#endif
 PCMSolver * _solver = NULL;
 
 SharedSurfaceFunctionMap functions;
@@ -79,6 +81,11 @@ extern "C" void hello_pcm(int * a, double * b)
     std::cout << "Hello, PCM!" << std::endl;
     std::cout << "The integer is: " << *a << std::endl;
     std::cout << "The double is: " << *b << std::endl;
+    std::ostringstream out_stream;
+    out_stream << "Hello, PCM!" << std::endl;
+    out_stream << "The integer is: " << *a << std::endl;
+    out_stream << "The double is: " << *b << std::endl;
+    printer(out_stream);
 }
 
 extern "C" void set_up_pcm()
@@ -148,10 +155,10 @@ extern "C" void compute_polarization_energy(double * energy)
 
         std::ostringstream out_stream;
         out_stream << "Polarization energy components" << std::endl;
-        out_stream << "  U_ee = " << boost::format("%20.14f") % UEE;
-        out_stream << ", U_en = " << boost::format("%20.14f") % UEN;
-        out_stream << ", U_ne = " << boost::format("%20.14f") % UNE;
-        out_stream << ", U_nn = " << boost::format("%20.14f\n") % UNN;
+        out_stream << "   U_ee = " << boost::format("%20.14f") % UEE;
+        out_stream << " , U_en = " << boost::format("%20.14f") % UEN;
+        out_stream << " , U_ne = " << boost::format("%20.14f") % UNE;
+        out_stream << " , U_nn = " << boost::format("%20.14f\n") % UNN;
         printer(out_stream);
 
         *energy = 0.5 * ( UNN + UEN + UNE + UEE );
@@ -411,6 +418,7 @@ void initCavity()
     // Get the right cavity from the Factory
     // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
     std::string modelType = Input::TheInput().getSolverType();
+#if defined (DEVELOPMENT_CODE)    
     if (modelType == "Wavelet" || modelType == "Linear") {
         // Both PWC and PWL require a WaveletCavity
         initWaveletCavity();
@@ -418,8 +426,9 @@ void initCavity()
         // This means in practice that the CavityFactory is now working only for GePol.
         _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
     }
-    // Always save the cavity in a cavity.npz binary file
-    //_cavity->saveCavity();
+#else    
+    _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
+#endif    
 }
 
 void initSolver()
@@ -455,6 +464,7 @@ void initSolver()
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
     // (...not our fault, but should remedy somehow)
+#if defined (DEVELOPMENT_CODE)    
     if (modelType == "Wavelet") {
         _PWCSolver = new PWCSolver(gfInside, gfOutside);
         _PWCSolver->buildSystemMatrix(*_waveletCavity);
@@ -474,6 +484,10 @@ void initSolver()
         _solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
         _solver->buildSystemMatrix(*_cavity);
     }
+#else
+    _solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
+    _solver->buildSystemMatrix(*_cavity);
+#endif    
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of
     // the WaveletCavity on the wavelet solvers it has to be done here...
@@ -529,6 +543,7 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
     }
 }
 
+#if defined (DEVELOPMENT_CODE)
 void initWaveletCavity()
 {
     int patchLevel = Input::TheInput().getPatchLevel();
@@ -545,6 +560,7 @@ void initWaveletCavity()
     _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
     _waveletCavity->readCavity("molec_dyadic.dat");
 }
+#endif
 
 bool surfaceFunctionExists(const std::string & name)
 {

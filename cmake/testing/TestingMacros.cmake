@@ -7,8 +7,7 @@ macro(add_googletest test_name my_libraries external_libraries)
                           ${my_libraries}
                           ${GTEST_LIBS_DIR}/libgtest.a
                           ${GTEST_LIBS_DIR}/libgtest_main.a
-                          ${external_libraries}
-                         )
+                          ${external_libraries})
     add_test(NAME ${the_name} COMMAND ${the_name}.x)
 endmacro()
 
@@ -16,11 +15,16 @@ endmacro()
 macro(add_boosttest test_name my_libraries external_libraries)
     get_filename_component(the_name ${test_name} NAME_WE)
     add_executable(${the_name}.x ${the_name}.cpp)      	
+    # Building on more than one processor can result in race conditions,
+    # since custom Boost can be built only on one processor!
+    # We thus add this dependency to not get stuck.
+    if(BUILD_CUSTOM_BOOST)
+	    add_dependencies(${the_name}.x custom_boost)
+    endif()	    
     target_link_libraries(${the_name}.x
                           ${my_libraries}
 			  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                          ${external_libraries}
-                         )
+                          ${external_libraries})
     add_test(NAME ${the_name} COMMAND ${the_name}.x)
 endmacro()
 

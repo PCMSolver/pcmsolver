@@ -1,28 +1,46 @@
 /** \mainpage notitle
 
-This is the API documentation for PCMSolver API. 
-PCMSolver is an API for solving the Polarizable Continuum Model electrostatic problem \cite Tomasi2005
+This is the documentation for the `%PCMSolver` application programming interface. 
+`%PCMSolver` is an API for solving the Polarizable Continuum Model electrostatic problem \cite Tomasi2005
 
 \image html pcmsolver-scheme.png 
 
-With PCMSolver we aim to:
+With `%PCMSolver` we aim to:
 
 1. provide a plug-and-play library for adding the PCM functionality to *any* quantum chemistry program;
 
 2. create a playground for easily extending the implementation of the model.
 
-\authors Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa
+`%PCMSolver` is distributed under the terms of the GNU Lesser General Public License.
+
+\authors Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa\n
 
 \page UsersManual Users' Manual
 - \subpage Building
 - \subpage InputDescription
 - \subpage Interfacing
+\page Publications Publications
 \page ProgrammersManual Programmers' Manual
+- \subpage GeneralStructure
 - \subpage CodingStandards
+- \subpage Documentation
 - \subpage CMakeUsage
+- \subpage Maintenance
 - \subpage Cavities
 - \subpage GreensFunctions
 - \subpage Solvers
 - \subpage HelperClasses
 - \subpage Testing
 */
+With contributions from:\n
+Radovan Bast             (CMake framework)\n
+Stefano Corni            (Metal sphere Green's function)\n
+Ulf Ekstroem             (automatic differentiation library)\n
+Helmut Harbrecht         (wavelet cavity and solvers libraries)\n
+Jonas Juselius           (input parsing library and CMake framework)\n
+Christian S. Pomelli     (TsLess cavity library)\n
+Maharavo Randrianarivony (wavelet cavity library)\n
+Ville Weijo              (wavelet libraries and cavity visualization scripts)\n
+
+\include snippets/citation.bib
+

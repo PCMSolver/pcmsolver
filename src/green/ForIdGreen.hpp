@@ -2,24 +2,24 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *
+ *     
  *     This file is part of PCMSolver.
- *
- *     PCMSolver is free software: you can redistribute it and/or modify
+ *     
+ *     PCMSolver is free software: you can redistribute it and/or modify       
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
@@ -72,9 +72,7 @@
 
 namespace mpl = boost::mpl;
 
-
-/*! \struct pos
- *  \brief Returns a zero-based index of a type within a type sequence
+/*! \brief Returns a zero-based index of a type within a type sequence
  *  \tparam S type sequence
  *  \tparam T the type whose index will be returned
  */
@@ -85,20 +83,19 @@ struct pos : mpl::distance<
         >::type { };
 
 // Primary template
-/*! \struct for_id_impl_1
+/*! \brief Iterates over a type sequence either until the position of the actual type matches the
+ *         desired id or until the end of the sequence is reached.
  *  \tparam S type sequence
  *  \tparam B type of the first element in S
  *  \tparam E type of the last element in S
  */
 template <
-typename S,
+         typename S,
          typename B = typename mpl::begin<S>::type,
          typename E = typename mpl::end<S>::type
          >
 struct for_id_impl_1 {
     /*! \fn template <typename T> static IGreensFunction * execute(T & f, const greenData & _data, int id)
-     *  \brief Iterates over a type sequence either until the position of the actual type matches the
-     *         desired id of until the end of the sequence is reached.
      *  \param     f the creational functor to be applied
      *  \param _data the data needed to create the correct Green's function
      *  \param    id the type of derivative

@@ -16,7 +16,7 @@ TAGS
 */TAGS
 */*/TAGS
 prof
-Config.h
+Config.hpp
 doc/Doxyfile
 doc/_doxygen
 doc/conf.py
@@ -27,6 +27,9 @@ centers.txt
 normals.txt
 cavity.npz
 *.mod
+html/
+compile_commands.json
+doc/gfx/matplotlib/
 
 # QtCreator project files
 *.config

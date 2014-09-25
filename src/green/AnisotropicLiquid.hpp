@@ -31,7 +31,8 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
+#include "taylor.hpp"
 
 class DiagonalIntegrator;
 

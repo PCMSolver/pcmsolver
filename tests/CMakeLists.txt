@@ -10,7 +10,7 @@ if(DEVELOPMENT_CODE)
 endif()
 # Green's functions
 add_subdirectory(green)
-add_subdirectory(operators_diagonal)
+add_subdirectory(bi_operators)
 # Solvers
 add_subdirectory(cpcm)
 add_subdirectory(iefpcm)

@@ -75,7 +75,7 @@ parser = argparse.ArgumentParser(description='Update copyright notice')
 parser.add_argument('filenames', 
                      metavar='Filenames', 
                      nargs='*',
-                     help='Filames to be updated')
+                     help='Filenames to be updated')
 parser.add_argument('--lang',
         nargs='?',
         action='store',

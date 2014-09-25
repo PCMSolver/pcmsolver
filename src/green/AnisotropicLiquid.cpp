@@ -32,8 +32,8 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
-#include "TaylorPimpl.hpp"
+#include <Eigen/Dense>
+#include "taylor.hpp"
 
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegrator.hpp"

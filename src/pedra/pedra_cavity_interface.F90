@@ -52,7 +52,6 @@
       real(c_double)  :: ar_(maxts_), xe_(maxts_), ye_(maxts_), ze_(maxts_), rin_(maxts_)
       real(c_double)  :: avgArea_, rsolv_, ret_
       integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
-      logical(c_bool) :: pedra_file_exists
       integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_ 
       integer(c_int)  :: nvert_(maxts_)
       real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)

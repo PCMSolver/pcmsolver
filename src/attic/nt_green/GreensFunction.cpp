@@ -4,7 +4,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 Eigen::Array4d GreensFunction::evaluate(Eigen::Vector3d & sourceNormal_,
                                         Eigen::Vector3d & source_, Eigen::Vector3d & probeNormal_,

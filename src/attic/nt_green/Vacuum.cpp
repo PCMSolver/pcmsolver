@@ -4,8 +4,8 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
-#include "TaylorPimpl.hpp"
+#include <Eigen/Dense>
+#include "taylor.hpp"
 
 void Vacuum::compDiagonal(const Eigen::VectorXd & elementArea_,
                           const Eigen::VectorXd & elementRadius_, Eigen::MatrixXd & S_,

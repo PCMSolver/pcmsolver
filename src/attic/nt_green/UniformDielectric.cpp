@@ -4,8 +4,8 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
-#include "TaylorPimpl.hpp"
+#include <Eigen/Dense>
+#include "taylor.hpp"
 
 void UniformDielectric::compDiagonal(const Eigen::VectorXd & elementArea_,
                                      const Eigen::VectorXd & elementRadius_,

@@ -6,11 +6,8 @@ the issue number.
 
 10 December 2013
 ----------------
-1. Document how to add unit tests (#576)
-2. Document the release process (#577)
 3. Define which part of the documentation goes into a
    release (#578)
-4. Document how to run tests (#579)
 5. Draw a better logo for the library (both programmers'
    and users' manuals)
 6. Draw a diagram explaining the structure of the library
@@ -21,11 +18,5 @@ the issue number.
 
 10 April 2014
 -------------
-1. We now use CMake's GLOB function to define which C/C++
-   sources and headers are to be compiled/included.
-   That's not advised as addition of new header files/source files
-   will NOT trigger a new build. 
-   I added a Python script to automatize touching of all CMakeLists.txt
-   when a new file is added somewhere. Might need some polishing...
 2. The metal sphere Green's function subroutines should be translated
    into C++. Of course, this should happen after proper testing...

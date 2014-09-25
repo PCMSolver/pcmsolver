@@ -11,6 +11,7 @@ import sys
 import string
 import re
 import subprocess
+import shutil
 
 sys.path.append('cmake')
 from argparse import ArgumentParser
@@ -19,182 +20,200 @@ if sys.version < '2.4':
     print('requires python version >= 2.4')
     sys.exit(1)
 
-root_directory = os.path.realpath(__file__)[:-5]
-default_path = root_directory + 'build/'
+root_directory = os.path.dirname(os.path.realpath(__file__))
+default_path = os.path.join(root_directory, 'build')
 
-# initialize parser
 
-parser = ArgumentParser(description="Setup build configurations.")
+def parse_input():
 
-# define options
+    parser = ArgumentParser(description="Setup build configurations")
 
-parser.add_argument('builddir', nargs='?',
-        action='store',
-        default=default_path,
-        help='build directory [default: %(default)s]',
-        metavar='build path')
+    parser.add_argument('builddir', nargs='?',
+            action='store',
+            default=default_path,
+            help='build directory [default: %(default)s]',
+            metavar='build path')
 
-group = parser.add_argument_group('Basic options')
-group.add_argument('--fc',
-        action='store',
-        default=None,
-        help='set the Fortran compiler [default: pick automatically or based on FC=...]',
-        metavar='STRING')
-group.add_argument('--cc',
-        action='store',
-        default=None,
-        help='set the C compiler [default: pick automatically or based on CC=...]',
-        metavar='STRING')
-group.add_argument('--cxx',
-        action='store',
-        default=None,
-        help='set the C++ compiler [default: pick automatically or based on CXX=...]',
-        metavar='STRING')
-group.add_argument('--mpi',
-        nargs='?',
-        action='store',
-        choices=('on','off'),
-        default='off',
-        const='on',
-        help='enable MPI [default: %(default)s]')
-group.add_argument('--openmp',
-        nargs='?',
-        action='store',
-        choices=('on','off'),
-        default='off',
-        const='on',
-        help='enable OpenMP [default: %(default)s]')
-group.add_argument('--blas',
-        nargs='?',
-        action='store',
-        choices=('on','off'),
-        default='on',
-        const='on',
-        help='enable BLAS [default: %(default)s]')
-group.add_argument('--lapack',
-        nargs='?',
-        action='store',
-        choices=('on','off'),
-        default='on',
-        const='on',
-        help='enable LAPACK [default: %(default)s]')
-group.add_argument('--blas-dir',
-        action='store',
-        default=None,
-        help='directory containing BLAS libraries [default: pick automatically based on BLAS_ROOT (see INSTALL)]',
-        metavar='PATH')
-group.add_argument('--lapack-dir',
-        action='store',
-        default=None,
-        help='directory containing LAPACK libraries [default: pick automatically based on LAPACK_ROOT (see INSTALL)]',
-        metavar='PATH')
-group.add_argument('--show',
-        action='store_true',
-        default=False,
-        help='show cmake command and exit [default: %(default)s]')
-group.add_argument('--boost-headers',
-        action='store',
-        default=None,
-        help='directory containing Boost headers [default: pick automatically]',
-        metavar='PATH')
-group.add_argument('--boost-libs',
-        action='store',
-        default=None,
-        help='directory containing Boost libs [default: pick automatically]',
-        metavar='PATH')
+    group = parser.add_argument_group('Basic options')
+    group.add_argument('--fc',
+            action='store',
+            default=None,
+            help='set the Fortran compiler [default: pick automatically or based on FC=...]',
+            metavar='STRING')
+    group.add_argument('--cc',
+            action='store',
+            default=None,
+            help='set the C compiler [default: pick automatically or based on CC=...]',
+            metavar='STRING')
+    group.add_argument('--cxx',
+            action='store',
+            default=None,
+            help='set the C++ compiler [default: pick automatically or based on CXX=...]',
+            metavar='STRING')
+    group.add_argument('--type',
+            nargs='?',
+            action='store',
+            choices=('release', 'debug', 'profile'),
+            default='release',
+            help='set the CMake build type [default: %(default)s]')
+    group.add_argument('--int64',
+            action='store_true',
+            default=False,
+            help='enable 64bit integers [default: %(default)s]')
+    group.add_argument('--prefix',
+            action='store',
+            default=None,
+            help='set the install path for make install [default: %(default)s]',
+            metavar='PATH')
+    group.add_argument('--show',
+            action='store_true',
+            default=False,
+            help='show cmake command and exit [default: %(default)s]')
+    group.add_argument('--cmake',
+            action='store',
+            default='cmake',
+            help='set the cmake command [default: cmake; e.g. --cmake cmake28]',
+            metavar='STRING')
 
-group = parser.add_argument_group('Change default paths')
-group.add_argument('--prefix',
-        action='store',
-        default=None,
-        help='set the install path for make install [default: %(default)s]',
-        metavar='PATH')
-group.add_argument('--cmake',
-        action='store',
-        dest='alternative_cmake',
-        default=None,
-        help='give full path to alternative cmake binary (use this if default cmake is too old)',
-        metavar='PATH')
+    group = parser.add_argument_group('Parallelization')
+    group.add_argument('--mpi',
+            action='store_true',
+            default=False,
+            help='enable MPI [default: %(default)s]')
+    group.add_argument('--sgi-mpt',
+            action='store_true',
+            default=False,
+            help='enable SGI MPT [default: %(default)s]')
+    group.add_argument('--omp',
+            action='store_true',
+            default=False,
+            help='enable OpenMP [default: %(default)s]')
 
-group = parser.add_argument_group('Advanced options')
-group.add_argument('--force',
-        action='store_true',
-        default=False,
-        help='run setup even if build directory exists [default: %(default)s]')
-group.add_argument('--debug',
-        action='store_true',
-        default=False,
-        help='build in debug mode (no optimization) [default: %(default)s]')
-group.add_argument('--release',
-        action='store_false',
-        dest='debug',
-        help='build in release mode (full optimization) [default: %(default)s]')
-group.add_argument('--tests',
-        nargs='?',
-        action='store',
-        choices=('on','off'),
-        default='off',
-        const='on',
-        help='build test suite [default: %(default)s]')
-group.add_argument('--check',
-        action='store_true',
-        default=False,
-        help='enable bounds checking [default: %(default)s]')
-group.add_argument('--coverage',
-        action='store_true',
-        default=False,
-        help='enable code coverage [default: %(default)s]')
-group.add_argument('--profiling',
-        action='store_true',
-        default=False,
-        help='enable profiling [default: %(default)s]')
-group.add_argument('--nochecks',
-        action='store_true',
-        default=False,
-        help='disable compatibility checks [default: %(default)s]')
-group.add_argument('--static',
-        action='store_true',
-        default=False,
-        help='link statically [default: %(default)s]')
-group.add_argument('-D',
-        action="append",
-        dest='define',
-        default=[],
-        help='forward directly to cmake (example: -D ENABLE_THIS=1 -D ENABLE_THAT=1); \
-                you can also forward CPP defintions all the way to the program \
-                (example: -D CPP="-DDEBUG")',
-                metavar='STRING')
-group.add_argument('--host',
-        action='store',
-        default=None,
-        help="use predefined defaults for 'host'",
-        metavar='STRING')
-group.add_argument('--eigenown',
-        nargs='?',
-        action='store',
-        choices=('on','off'),
-        default='off',
-        const='on',
-        help='Disable usage of Eigen3 headers shipped with the module  [default: %(default)s]')
-group.add_argument('--eigenmkl',
-        nargs='?',
-        action='store',
-        choices=('on','off'),
-        default='off',
-        const='on',
-        help='enable Eigen3 automatic fallback to Intel MKL [default: %(default)s]')
+    group = parser.add_argument_group('Math libraries')
+    group.add_argument('--mkl',
+            nargs='?',
+            action='store',
+            choices=('sequential', 'parallel', 'cluster'),
+            default='none',
+            help='pass -mkl=STRING flag to the compiler and linker [default: None]')
+    group.add_argument('--blas',
+            action='store',
+            default='auto',
+            help='specify BLAS library; possible choices are "auto", "builtin", "none", or full path [default: %(default)s]',
+            metavar='[{auto,builtin,none,/full/path/lib.a}]')
+    group.add_argument('--lapack',
+            action='store',
+            default='auto',
+            help='specify LAPACK library; possible choices are "auto", "builtin", "none", or full path [default: %(default)s]',
+            metavar='[{auto,builtin,none,/full/path/lib.a}]')
+    group.add_argument('--explicit-libs',
+            action='store',
+            default=None,
+            help='explicit linker specification for extra libraries; passed directly to the linker',
+            metavar='STRING')
+    group.add_argument('--cray',
+            action='store_true',
+            default=False,
+            help='use cray wrappers for BLAS/LAPACK and MPI which disables math detection and builtin math implementation [default: %(default)s]')
+    group.add_argument('--csr',
+            action='store_true',
+            default=False,
+            help='build using MKL compressed sparse row [default: %(default)s]')
+    group.add_argument('--scalapack',
+            action='store_true',
+            default=False,
+            help='build using SCALAPACK [default: %(default)s]')
+    group.add_argument('--scalasca',
+            action='store_true',
+            default=False,
+            help='build using SCALASCA profiler mode [default: %(default)s]')
 
-# process input
+    group = parser.add_argument_group('Advanced options')
+    group.add_argument('--check',
+            action='store_true',
+            default=False,
+            help='enable bounds checking [default: %(default)s]')
+    group.add_argument('--coverage',
+            action='store_true',
+            default=False,
+            help='enable code coverage [default: %(default)s]')
+    group.add_argument('--static',
+            action='store_true',
+            default=False,
+            help='link statically [default: %(default)s]')
+    group.add_argument('--tests',
+            action='store_true',
+            default=False,
+            help='build unit test suite [default: %(default)s]')
+    group.add_argument('--vectorization',
+            action='store_true',
+            default=False,
+            help='enable vectorization [default: %(default)s]')
+    group.add_argument('-D',
+            action="append",
+            dest='define',
+            default=[],
+            help='forward directly to cmake (example: -D ENABLE_THIS=1 -D ENABLE_THAT=1); \
+                    you can also forward CPP defintions all the way to the program \
+                    (example: -D CPP="-DDEBUG")',
+                    metavar='STRING')
+    group.add_argument('--host',
+            action='store',
+            default=None,
+            help="use predefined defaults for 'host'",
+            metavar='STRING')
+    group.add_argument('--generator',
+            action='store',
+            default=None,
+            help='set the cmake generator [default: %(default)s]',
+            metavar='STRING')
+    group.add_argument('--timings',
+            action='store_true',
+            default=False,
+            help='build using timings [default: %(default)s]')
 
-args = parser.parse_args()
+    group = parser.add_argument_group('External libraries')
+    group.add_argument('--boost-headers',
+            action='store',
+            default=None,
+            help='full path to directory containing Boost headers [default: pick automatically]',
+            metavar='PATH')
+    group.add_argument('--boost-libs',
+            action='store',
+            default=None,
+            help='full path to directory containing Boost libs [default: pick automatically]',
+            metavar='PATH')
+    group.add_argument('--eigenown',
+            action='store_true',
+            default=False,
+            help='Disable usage of Eigen3 headers shipped with the module  [default: %(default)s]')
+    group.add_argument('--eigenmkl',
+            action='store_true',
+            default=False,
+            help='enable Eigen3 automatic fallback to Intel MKL [default: %(default)s]')
 
-def abspath(path):
-    path = os.path.expandvars(path)
-    path = os.path.expanduser(path)
-    return os.path.abspath(path)
+    group = parser.add_argument_group('Pass extra flags to the compiler')
+    group.add_argument('--extra-fc-flags',
+            action='store',
+            default=None,
+            help='extra Fortran flags [default: %(default)s]',
+            metavar='STRING')
+    group.add_argument('--extra-cc-flags',
+            action='store',
+            default=None,
+            help='extra C flags [default: %(default)s]',
+            metavar='STRING')
+    group.add_argument('--extra-cxx-flags',
+            action='store',
+            default=None,
+            help='extra C++ flags [default: %(default)s]',
+            metavar='STRING')
 
-def check_cmake_exists():
-    p = subprocess.Popen('cmake --version',
+    return parser.parse_args()
+
+
+def check_cmake_exists(cmake_command):
+    p = subprocess.Popen('%s --version' % cmake_command,
             shell=True,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE)
@@ -208,49 +227,104 @@ def check_cmake_exists():
         print('   $ module load cmake')
         sys.exit()
 
-def gen_cmake_command():
+def translate_cmake(s):
+    if s:
+        return 'ON'
+    else:
+        return 'OFF'
+
+def gen_cmake_command(args):
     # create cmake command from flags
 
     command = ''
 
     if args.fc:
-        command += ' FC=%s' % args.fc
+        command += ' FC=%s'  % args.fc
     if args.cc:
-        command += ' CC=%s' % args.cc
+        command += ' CC=%s'  % args.cc
     if args.cxx:
         command += ' CXX=%s' % args.cxx
 
-    if args.alternative_cmake:
-        command += ' %s' % args.alternative_cmake
+    if sys.platform != "win32":
+        command += ' %s' % args.cmake
     else:
-        command += ' cmake'
+        # fix for windows
+        command = ' %s ' % args.cmake + command
 
-    # if compiler starts with 'mp' turn on mpi
-    # it is possible to call compilers with long paths
-    if args.cc and (os.path.basename(args.cc)[:2].lower() == 'mp') or \
-        args.cxx and (os.path.basename(args.cxx)[:2].lower() == 'mp') or \
-        args.fc and (os.path.basename(args.fc)[:2].lower() == 'mp'):
-            args.mpi = 'on'
+#   command += ' -DENABLE_MPI=%s'            % translate_cmake(args.mpi)
+#   command += ' -DENABLE_SGI_MPT=%s'        % translate_cmake(args.sgi_mpt)
+#   command += ' -DENABLE_OMP=%s'            % translate_cmake(args.omp)
+#   command += ' -DENABLE_64BIT_INTEGERS=%s' % translate_cmake(args.int64)
+#   command += ' -DENABLE_CSR=%s'            % translate_cmake(args.csr)
+#   command += ' -DENABLE_SCALAPACK=%s'      % translate_cmake(args.scalapack)
+#   command += ' -DENABLE_SCALASCA=%s'       % translate_cmake(args.scalasca)
+#   command += ' -DENABLE_TIMINGS=%s'        % translate_cmake(args.timings)
+    command += ' -DENABLE_TESTS=%s'          % translate_cmake(args.tests)
+    command += ' -DDISABLE_EIGEN_OWN=%s'     % translate_cmake(args.eigenown)
+    command += ' -DENABLE_EIGEN_MKL=%s'      % translate_cmake(args.eigenmkl)
+    command += ' -DENABLE_VECTORIZATION=%s'  % translate_cmake(args.vectorization)
+#   command += ' -DENABLE_STATIC_LINKING=%s' % translate_cmake(args.static)
 
-#    command += ' -DENABLE_MPI=%s'    % args.mpi.upper()
-#    command += ' -DENABLE_OPENMP=%s' % args.openmp.upper()
-#    command += ' -DENABLE_BLAS=%s'   % args.blas.upper()
-#    command += ' -DENABLE_LAPACK=%s' % args.lapack.upper()
-    command += ' -DENABLE_TESTS=%s'  % args.tests.upper()
-    command += ' -DDISABLE_EIGEN_OWN=%s' % args.eigenown.upper()
-    command += ' -DENABLE_EIGEN_MKL=%s' % args.eigenmkl.upper()
+    if args.blas == 'builtin':
+        command += ' -DENABLE_BUILTIN_BLAS=ON'
+        command += ' -DENABLE_AUTO_BLAS=OFF'
+    elif args.blas == 'auto':
+        if (args.mkl != 'none') and not args.cray:
+            command += ' -DENABLE_AUTO_BLAS=ON'
+    elif args.blas == 'none':
+        command += ' -DENABLE_AUTO_BLAS=OFF'
+    else:
+        if not os.path.isfile(args.blas):
+            print('--blas=%s does not exist' % args.blas)
+            sys.exit(1)
+        command += ' -DEXPLICIT_BLAS_LIB=%s' % args.blas
+        command += ' -DENABLE_AUTO_BLAS=OFF'
 
-    if args.blas_dir:
-        command += ' -DBLAS_ROOT={0}'.format(abspath(args.blas_dir))
+    if args.lapack == 'builtin':
+        command += ' -DENABLE_BUILTIN_LAPACK=ON'
+        command += ' -DENABLE_AUTO_LAPACK=OFF'
+    elif args.lapack == 'auto':
+        if (args.mkl != 'none') and not args.cray:
+            command += ' -DENABLE_AUTO_LAPACK=ON'
+    elif args.lapack == 'none':
+        command += ' -DENABLE_AUTO_LAPACK=OFF'
+    else:
+        if not os.path.isfile(args.lapack):
+            print('--lapack=%s does not exist' % args.lapack)
+            sys.exit(1)
+        command += ' -DEXPLICIT_LAPACK_LIB=%s' % args.lapack
+        command += ' -DENABLE_AUTO_LAPACK=OFF'
 
-    if args.lapack_dir:
-        command += ' -DLAPACK_ROOT={0}'.format(abspath(args.lapack_dir))
+    if args.cray:
+        command += ' -DENABLE_CRAY_WRAPPERS=ON'
+        command += ' -DENABLE_AUTO_BLAS=OFF'
+        command += ' -DENABLE_AUTO_LAPACK=OFF'
+
+    if args.mkl != 'none':
+        if args.mkl == None:
+            print('you have to choose between --mkl=[{sequential,parallel,cluster}]')
+            sys.exit(1)
+        command += ' -DMKL_FLAG="-mkl=%s"' % args.mkl
+        command += ' -DENABLE_AUTO_BLAS=OFF'
+        command += ' -DENABLE_AUTO_LAPACK=OFF'
+
+    if args.explicit_libs:
+        # remove leading and trailing whitespace
+        # otherwise CMake complains
+        command += ' -DEXPLICIT_LIBS="%s"' % args.explicit_libs.strip()
     
     if args.boost_headers:
-        command += ' -DBOOST_INCLUDEDIR={0}'.format(abspath(args.boost_headers))
+        command += ' -DBOOST_INCLUDEDIR={0}'.format(args.boost_headers)
     
     if args.boost_libs:
-        command += ' -DBOOST_LIBRARYDIR={0}'.format(abspath(args.boost_libs))
+        command += ' -DBOOST_LIBRARYDIR={0}'.format(args.boost_libs)
+
+    if args.extra_fc_flags:
+        command += ' -DEXTRA_Fortran_FLAGS="%s"' % args.extra_fc_flags
+    if args.extra_cc_flags:
+        command += ' -DEXTRA_C_FLAGS="%s"' % args.extra_cc_flags
+    if args.extra_cxx_flags:
+        command += ' -DEXTRA_CXX_FLAGS="%s"' % args.extra_cxx_flags
 
     if args.check:
         command += ' -DENABLE_BOUNDS_CHECK=ON'
@@ -258,26 +332,17 @@ def gen_cmake_command():
     if args.coverage:
         command += ' -DENABLE_CODE_COVERAGE=ON'
 
-    if args.profiling:
-        command += ' -DENABLE_PROFILING=ON'
-
-    if args.nochecks:
-        command += ' -DENABLE_SANITY_CHECKS=OFF'
-
-    if args.static:
-        command += ' -DENABLE_STATIC_LINKING=ON'
-
     if args.prefix:
         command += ' -DCMAKE_INSTALL_PREFIX=' + args.prefix
 
-    if args.debug:
-        command += ' -DCMAKE_BUILD_TYPE=Debug'
-    else:
-        command += ' -DCMAKE_BUILD_TYPE=Release'
+    command += ' -DCMAKE_BUILD_TYPE=%s' % args.type
 
     if args.define:
         for definition in args.define:
             command += ' -D%s' % definition
+
+    if args.generator:
+        command += ' -G "%s"' % args.generator
 
     command += ' %s' % root_directory
 
@@ -288,37 +353,26 @@ def gen_cmake_command():
 
 def print_build_help(build_path):
     print('   configure step is done')
-    print('   now you need to compile the sources')
-    print('')
-    print('   to compile with configured parameters (recommended):')
-    print('   $ cd ' + build_path)
-    print('   $ make')
-    print('')
-    print('   to modify configured parameters and then compile:')
-    print('   $ cd ' + build_path)
-    print('   $ ccmake ' + root_directory)
+    print('   now you need to compile the sources:')
+    if (build_path == default_path):
+        print('   $ cd build')
+    else:
+        print('   $ cd ' + build_path)
     print('   $ make')
 
 def save_setup_command(argv, build_path):
     file_name = os.path.join(build_path, 'setup_command')
     f = open(file_name, 'w')
-    f.write(" ".join(sys.argv[:]))
+    f.write(" ".join(argv[:])+"\n")
     f.close()
 
-def setup_build_path(build_path, only_show_command):
-    if args.show:
-        return
+def setup_build_path(build_path):
     if os.path.isdir(build_path):
-        if not only_show_command:
-            if args.force:
-                fname = os.path.join(build_path, 'CMakeCache.txt')
-                if os.path.exists(fname):
-                    os.unlink(fname)
-            else:
-                print('aborting setup - build directory %s exists already' % build_path)
-                print('you have two options: first remove it and then rerun setup')
-                print('                      or force configuration with --force')
-                sys.exit()
+        fname = os.path.join(build_path, 'CMakeCache.txt')
+        if os.path.exists(fname):
+            print('aborting setup - build directory %s which contains CMakeCache.txt exists already' % build_path)
+            print('remove the build directory and then rerun setup')
+            sys.exit(1)
     else:
         os.makedirs(build_path, 0755)
 
@@ -330,64 +384,102 @@ def run_cmake(command, build_path):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE)
     s = p.communicate()[0]
+    # print cmake output to screen
     print(s)
+    # write cmake output to file
+    f = open('setup_cmake_output', 'w')
+    f.write(s)
+    f.close()
+    # change directory and return
     os.chdir(topdir)
     return s
 
-def main():
-    check_cmake_exists()
+
+def main(argv):
+    args = parse_input()
+    check_cmake_exists(args.cmake)
     build_path = args.builddir
-    setup_build_path(build_path, args.show)
-    if not configure_host():
-        configure_default_compilers()
-    command = gen_cmake_command()
+    if not args.show:
+        setup_build_path(build_path)
+    if not configure_host(args):
+        configure_default_compilers(args)
+    command = gen_cmake_command(args)
     status = run_cmake(command, build_path)
 
-    if not 'Configuring incomplete' in status:
-        save_setup_command(sys.argv, build_path)
+    if 'Configuring incomplete' in status:
+        # configuration was not successful
+        if (build_path == default_path):
+            # remove build_path iff not set by the user
+            # otherwise removal can be dangerous
+            shutil.rmtree(default_path)
+    else:
+        # configuration was successful
+        save_setup_command(argv, build_path)
         print_build_help(build_path)
 
 # host/system specific configurations
-def configure_host():
+def configure_host(args):
     if args.host:
         host = args.host
     else:
-        u = os.uname()
+        if sys.platform != "win32":
+            u = os.uname()
+        else:
+            u = "Windows"
         host = string.join(u)
     msg = None
     # Generic systems
     if re.search('ubuntu', host, re.I):
         msg = "Configuring system: Ubuntu"
-        configure_ubuntu()
+        configure_ubuntu(args)
     if re.search('fedora', host, re.I):
         msg = "Configuring system: Fedora"
-        configure_fedora()
+        configure_fedora(args)
     if re.search('osx', host, re.I):
         msg = "Configuring system: MacOSX"
-        configure_osx()
+        configure_osx(args)
     if msg is None:
         return False
     if not args.show:
         print msg
     return True
 
-def configure_default_compilers():
+
+def configure_default_compilers(args):
+
+    if args.mpi and not args.fc and not args.cc and not args.cxx:
+        # only --mpi flag but no --fc, --cc, --cxx
+        # set --fc, --cc, --cxx to mpif90, mpicc, mpicxx
+        args.fc  = 'mpif90'
+        args.cc  = 'mpicc'
+        args.cxx = 'mpicxx'
+
+    if not args.mpi:
+        # if compiler starts with 'mp' turn on mpi
+        # it is possible to call compilers with long paths
+        if  args.cc  and os.path.basename(args.cc).lower().startswith('mp')  or \
+            args.cxx and os.path.basename(args.cxx).lower().startswith('mp') or \
+            args.fc  and os.path.basename(args.fc).lower().startswith('mp'):
+            args.mpi = 'on'
+        # if compiler starts with 'openmpi' turn on mpi
+        # it is possible to call compilers with long paths
+        if  args.cc  and os.path.basename(args.cc).lower().startswith('openmpi')  or \
+            args.cxx and os.path.basename(args.cxx).lower().startswith('openmpi') or \
+            args.fc  and os.path.basename(args.fc).lower().startswith('openmpi'):
+            args.mpi = 'on'
+
+    if not args.fc:
+        args.fc = 'gfortran'
     if not args.cc:
         args.cc = 'gcc'
     if not args.cxx:
         args.cxx = 'g++'
-    if not args.fc:
-        args.fc = 'gfortran'
-    if args.mpi == 'on':
-        args.fc = 'mpif90'
-        args.cc = 'mpicc'
-        args.cxx = 'mpicxx'
+
 
 configure_ubuntu = configure_default_compilers
 configure_fedora = configure_default_compilers
-configure_osx = configure_default_compilers
+configure_osx    = configure_default_compilers
+
 
 if __name__ == '__main__':
-    main()
-
-# vim:et:ts=4:sw=4
+    main(sys.argv)

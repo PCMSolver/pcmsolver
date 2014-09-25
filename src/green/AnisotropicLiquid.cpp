@@ -63,7 +63,8 @@ double AnisotropicLiquid<T>::derivative(const Eigen::Vector3d & direction,
                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     // NORMALIZATION TEMPORARILY REMOVED /direction.norm();
-    return this->derivativeProbe(direction, p1, p2);
+    Eigen::Vector3d scratch = epsilon_ * (this->gradientProbe(p1, p2));
+    return scratch.dot(direction);
 }
 
 template<typename T>

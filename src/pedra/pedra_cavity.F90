@@ -2781,14 +2781,15 @@
                                                      +  epsm1zz*vz*vz)
             ssepp=ssepp+(re(li)**2/(rtheps))*sinth*ath*wgp16pts(nth)
             ddepp=ddepp-(rth**2/(2*rtheps**3))*sinth*ath*wgp16pts(nth)
-            vvx=epsm1xx*vx+epsm1xy*vy+epsm1xz*vz
-            vvy=epsm1xy*vx+epsm1yy*vy+epsm1yz*vz
-            vvz=epsm1xz*vx+epsm1yz*vy+epsm1zz*vz
-            vvx=vvx*xz
-            vvy=vvy*yz
-            vvz=vvz*zz
+            !vvx=epsm1xx*vx+epsm1xy*vy+epsm1xz*vz
+            !vvy=epsm1xy*vx+epsm1yy*vy+epsm1yz*vz
+            !vvz=epsm1xz*vx+epsm1yz*vy+epsm1zz*vz
+            vvx=vx*xz
+            vvy=vy*yz
+            vvz=vz*zz
             test_Dpp=test_Dpp+re(li)**2 *((vvx+vvy+vvz)/(rtheps**3))*sinth*ath*wgp16pts(nth)
-            test_App = test_App+re(li)**2 * sinth * ath * wgp16pts(nth)
+            !test_App = test_App+re(li)**2 * sinth * ath * wgp16pts(nth)
+            test_App = test_App+re(li) * sinth * ath * wgp16pts(nth)
             
            enddo ! Close loop on nthsgn (n-theta-sign)
            enddo ! Close loop on nth (n-theta)
@@ -2817,21 +2818,22 @@
       if ((test_A-as(i) > 1.0d-12)) then
       write(lvpri, *), "Tessera n. ", i
 !      write(lvpri, *), "test_A = ", test_A
-      write(lvpri, *), "diff = ", test_A - as(i)
+      !write(lvpri, *), "diff = ", test_A - as(i)
+      write(lvpri, *), "diff = ", test_A - (as(i)/re(li))
       end if
       end do
 
-    ! do i = 1, nts
-    ! write(lvpri, *), "in diagan: S_{",i,", ",i,"} = ", s(i)
-    ! end do
-    ! write(lvpri,*), " "
-    ! do i = 1, nts
-    ! write(lvpri, *), "in diagan: D_{",i,", ",i,"} = ", d(i)
-    ! end do
-    ! write(lvpri,*), " "
-    ! do i = 1, nts
-    ! write(lvpri, *), "in diagan: myD_{",i,", ",i,"} = ", my_d(i)
-    ! end do
+     do i = 1, nts
+     write(lvpri, *), "in diagan: S_{",i,", ",i,"} = ", s(i)
+     end do
+     write(lvpri,*), " "
+     do i = 1, nts
+     write(lvpri, *), "in diagan: D_{",i,", ",i,"} = ", d(i)
+     end do
+     write(lvpri,*), " "
+     do i = 1, nts
+     write(lvpri, *), "in diagan: myD_{",i,", ",i,"} = ", my_d(i)
+     end do
       end subroutine diagan
 
     end module pedra_cavity

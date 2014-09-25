@@ -50,8 +50,8 @@ public:
     IGreensFunction(bool uniform, DiagonalIntegrator * diag) : uniform_(uniform), diagonal_(diag) {}
     virtual ~IGreensFunction() {}
     /*!
-     *  Returns value of the Greens's function for the pair
-     *  of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the 
+     *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
      *
      *  \param[in] p1 first point
      *  \param[in] p2 second point
@@ -59,11 +59,11 @@ public:
     virtual double function(const Eigen::Vector3d & p1,
                             const Eigen::Vector3d &p2) const = 0;
     /*!
-     *  Returns value of the directional derivative of the
-     *  Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the probe point, thus assuming that the direction is relative to that point.
+     *  Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
+     *  for the pair of points p1, p2:
+     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
+     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
      *
      *  \param[in] direction the direction
      *  \param[in]        p1 first point

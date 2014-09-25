@@ -66,19 +66,19 @@ double NumericalIntegrator::computeS(const Vacuum<AD_hessian> * gf, const Elemen
 }
 
 double NumericalIntegrator::computeD(const Vacuum<double> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&Vacuum<double>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&Vacuum<double>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const Vacuum<AD_directional> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&Vacuum<AD_directional>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&Vacuum<AD_directional>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const Vacuum<AD_gradient> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&Vacuum<AD_gradient>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&Vacuum<AD_gradient>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const Vacuum<AD_hessian> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&Vacuum<AD_hessian>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&Vacuum<AD_hessian>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 
@@ -100,19 +100,19 @@ double NumericalIntegrator::computeS(const UniformDielectric<AD_hessian> * gf, c
 }
 
 double NumericalIntegrator::computeD(const UniformDielectric<double> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&UniformDielectric<double>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&UniformDielectric<double>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&UniformDielectric<AD_directional>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&UniformDielectric<AD_directional>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&UniformDielectric<AD_gradient>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&UniformDielectric<AD_gradient>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&UniformDielectric<AD_hessian>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&UniformDielectric<AD_hessian>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 
@@ -134,19 +134,19 @@ double NumericalIntegrator::computeS(const IonicLiquid<AD_hessian> * gf, const E
 }
 
 double NumericalIntegrator::computeD(const IonicLiquid<double> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&IonicLiquid<double>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&IonicLiquid<double>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&IonicLiquid<AD_directional>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&IonicLiquid<AD_directional>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&IonicLiquid<AD_gradient>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&IonicLiquid<AD_gradient>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&IonicLiquid<AD_hessian>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&IonicLiquid<AD_hessian>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 
@@ -168,18 +168,18 @@ double NumericalIntegrator::computeS(const AnisotropicLiquid<AD_hessian> * gf, c
 }
 
 double NumericalIntegrator::computeD(const AnisotropicLiquid<double> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&AnisotropicLiquid<double>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&AnisotropicLiquid<double>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&AnisotropicLiquid<AD_directional>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&AnisotropicLiquid<AD_directional>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&AnisotropicLiquid<AD_gradient>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&AnisotropicLiquid<AD_gradient>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }
 double NumericalIntegrator::computeD(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const {
-	doubleLayerIntegrand F = boost::bind(&AnisotropicLiquid<AD_hessian>::derivativeProbe, *gf, _1, _2, _3); 
+	doubleLayerIntegrand F = boost::bind(&AnisotropicLiquid<AD_hessian>::derivative, *gf, _1, _2, _3); 
         return integrator<32, 16>(F, e);
 }

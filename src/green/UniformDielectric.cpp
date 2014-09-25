@@ -43,7 +43,7 @@ template<typename T>
 double UniformDielectric<T>::derivative(const Eigen::Vector3d & direction,
                                         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 { // NORMALIZTION TEMPORARY REMOVED /direction.norm();
-    return (this->derivativeProbe(direction, p1, p2)); 
+    return epsilon_ * (this->derivativeProbe(direction, p1, p2)); 
 }
 
 template<typename T>

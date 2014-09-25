@@ -58,11 +58,11 @@ public:
     Vacuum(DiagonalIntegrator * diag) : GreensFunction<T>(true, diag), epsilon_(1.0) {}
     virtual ~Vacuum() {}
     /*!
-     *  Returns value of the directional derivative of the
-     *  Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the probe point, thus assuming that the direction is relative to that point.
+     *  Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
+     *  for the pair of points p1, p2:
+     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
+     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
      *
      *  \param[in] direction the direction
      *  \param[in]        p1 first point

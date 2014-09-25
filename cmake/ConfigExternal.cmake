@@ -5,8 +5,7 @@ if (GIT_FOUND)
         git_update
         COMMAND ${GIT_EXECUTABLE} submodule init
         COMMAND ${GIT_EXECUTABLE} submodule update
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    )
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 else()
     if(DEVELOPMENT_CODE)
         message("-- Git not found. You need Git for the Git submodule mechanism to work.")
@@ -57,6 +56,5 @@ macro(add_external _project)
        TARGET ${_project}
        PRE_BUILD
        COMMAND rm -rf ${PROJECT_BINARY_DIR}/external/${_project}-stamp
-       WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-       )
+       WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endmacro()

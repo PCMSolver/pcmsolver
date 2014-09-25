@@ -1,20 +1,19 @@
 /** \mainpage notitle
 
-This is the API documentation for PCMSolver API. 
-PCMSolver is an API for solving the Polarizable Continuum Model electrostatic problem \cite Tomasi2005
+This is the documentation for the `%PCMSolver` application programming interface. 
+`%PCMSolver` is an API for solving the Polarizable Continuum Model electrostatic problem \cite Tomasi2005
 
 \image html pcmsolver-scheme.png 
 
-With PCMSolver we aim to:
+With `%PCMSolver` we aim to:
 
 1. provide a plug-and-play library for adding the PCM functionality to *any* quantum chemistry program;
 
 2. create a playground for easily extending the implementation of the model.
 
-PCMSolver is distributed under the terms of the GNU Lesser General Public License.
+`%PCMSolver` is distributed under the terms of the GNU Lesser General Public License.
 
 \authors Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa\n
-
 
 \page UsersManual Users' Manual
 - \subpage Building

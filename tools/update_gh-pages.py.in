@@ -25,8 +25,8 @@ def git_command(*args):
 
 # Check if @CMAKE_SOURCE_DIR@/doc/html exists, in case it doesn't clone it
 if (not(os.path.exists('@CMAKE_SOURCE_DIR@/doc/html'))):
-        git_command('clone', 'git@github.com:PCMSolver/pcmsolver-doc.git')
-        print('HTML github repository cloned to {}'.format(source+'doc/html'))
+        git_command('clone', 'git@github.com:PCMSolver/pcmsolver-doc.git', '@CMAKE_SOURCE_DIR@/doc/html')
+        print('HTML github repository cloned to {}'.format(source+'/doc/html'))
 # Go to @CMAKE_SOURCE_DIR@/doc/html
 os.chdir(source+'/doc/html')
 

@@ -16,7 +16,7 @@ Try to follow the guidelines in \cite Wilson2014 regarding what to document.
 ### How does this work?
 
 To have an offline version of the documentation just issue `make doc` in the build directory.
-The HTML will be stored in doc/html. Open the doc/html/index.html file with your browser to see 
+The HTML will be stored in `doc/html`. Open the `doc/html/index.html` file with your browser to see 
 and browse the documentation.
 To update the GitHub repository you will first of all need to subscribe to GitHub. You will also need 
 push access to the documentation repository. If all these conditions are satisfied, issuing 

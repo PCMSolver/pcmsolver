@@ -155,10 +155,10 @@ extern "C" void compute_polarization_energy(double * energy)
 
         std::ostringstream out_stream;
         out_stream << "Polarization energy components" << std::endl;
-        out_stream << "  U_ee = " << boost::format("%20.14f") % UEE;
-        out_stream << ", U_en = " << boost::format("%20.14f") % UEN;
-        out_stream << ", U_ne = " << boost::format("%20.14f") % UNE;
-        out_stream << ", U_nn = " << boost::format("%20.14f\n") % UNN;
+        out_stream << "   U_ee = " << boost::format("%20.14f") % UEE;
+        out_stream << " , U_en = " << boost::format("%20.14f") % UEN;
+        out_stream << " , U_ne = " << boost::format("%20.14f") % UNE;
+        out_stream << " , U_nn = " << boost::format("%20.14f\n") % UNN;
         printer(out_stream);
 
         *energy = 0.5 * ( UNN + UEN + UNE + UEE );

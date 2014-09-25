@@ -4,22 +4,22 @@
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
  *     
  *     This file is part of PCMSolver.
- *
+ *     
  *     PCMSolver is free software: you can redistribute it and/or modify       
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
@@ -34,7 +34,7 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
+#include <Eigen/Dense>
 
 #include "Cavity.hpp"
 #include "IGreensFunction.hpp"
@@ -128,10 +128,9 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    double factor = 1.07; // See discussion in the 2005 review
     for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = factor * std::sqrt(4 * M_PI / cav.elementArea(i));
-        DI(i, i) = -factor * std::sqrt(M_PI/ cav.elementArea(i)) * (1.0 / cav.elementRadius(i));
+        SI(i, i) = greenInside_->diagonalS(cav.elementArea(i));
+        DI(i, i) = greenInside_->diagonalD(cav.elementArea(i), cav.elementRadius(i));
         Eigen::Vector3d source = cav.elementCenter().col(i);
         for (int j = 0; j < cavitySize; ++j) {
             Eigen::Vector3d probe = cav.elementCenter().col(j);

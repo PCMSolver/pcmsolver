@@ -4,22 +4,22 @@
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
  *     
  *     This file is part of PCMSolver.
- *
+ *     
  *     PCMSolver is free software: you can redistribute it and/or modify       
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
@@ -31,18 +31,19 @@
 
 #include "Config.hpp"
 
-#include "EigenPimpl.hpp"
-#include "TaylorPimpl.hpp"
+#include <Eigen/Dense>
+#include "taylor.hpp"
 
 #include "DerivativeTypes.hpp"
 #include "GreensFunction.hpp"
 #include "IGreensFunction.hpp"
 
-extern "C" void greens_function(const double * epssol, const double * epsre, const double * epsim,
-                     const double * sphRadius, const double * ps, const double * p1, const double * p2,
-                     double * greenre, double * greenim);
+extern "C" void greens_function(const double * epssol, const double * epsre,
+                                const double * epsim,
+                                const double * sphRadius, const double * ps, const double * p1, const double * p2,
+                                double * greenre, double * greenim);
 
-double MetalSphere::operator()(double * source, double * probe) const 
+double MetalSphere::operator()(double * source, double * probe) const
 {
     // Calculation of the value of the Green's Function
     double epsre, epsim;
@@ -61,15 +62,15 @@ double MetalSphere::operator()(double * source, double * probe) const
     epsim = epsMetal_.imag();
     // Call the Fortran subroutine
     greens_function(&epsSolvent_, &epsre, &epsim, &sphRadius_, sphere, point1, point2,
-                &greenre, &greenim);
+                    &greenre, &greenim);
 
     return greenre;
 }
 
 double MetalSphere::derivative(const Eigen::Vector3d & direction,
-                                        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-        return epsSolvent_ * (this->derivativeProbe(direction, p1, p2));
+    return epsSolvent_ * (this->derivativeProbe(direction, p1, p2));
 }
 
 std::ostream & MetalSphere::printObject(std::ostream & os)

@@ -4,6 +4,8 @@ We will here describe the inheritance hierarchy for generating cavities, in orde
 The runtime creation of cavity objects relies on the Factory Method pattern \cite Gamma1994, \cite Alexandrescu2001, 
 implemented through the CavityFactory class.
 
+\image html cavity.png 
+
 Cavity
 
 GePolCavity

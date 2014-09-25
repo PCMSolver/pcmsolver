@@ -4,22 +4,22 @@
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
  *     
  *     This file is part of PCMSolver.
- *
+ *     
  *     PCMSolver is free software: you can redistribute it and/or modify       
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
@@ -29,6 +29,8 @@
 #include <vector>
 
 #include "Config.hpp"
+
+class DiagonalIntegrator;
 
 /*! @struct greenData
  *  @brief Contains all data defined from user input in the green section.
@@ -46,6 +48,8 @@
  *  Coordinates of the metal sphere center.
  *  @var greenData::sphereRadius
  *  Radius of the the metal sphere.
+ *  @var greenData::integrator
+ *  strategy to calculate the diagonal elements of S and D operator
  */
 
 struct greenData {
@@ -56,14 +60,15 @@ struct greenData {
     double epsilonImaginary;
     std::vector<double> spherePosition;
     double sphereRadius;
+    DiagonalIntegrator * integrator;
 
-    greenData(int _how, double _epsilon = 1.0, double _kappa = 0.0,
+    greenData(int _how, double _epsilon = 1.0, DiagonalIntegrator * _integrator = NULL, double _kappa = 0.0,
               double _epsReal = 0.0, double _epsImaginary = 0.0,
               const std::vector<double> & _sphere = std::vector<double>(),
               double _sphRadius = 0.0) :
         how(_how), epsilon(_epsilon), kappa(_kappa), epsilonReal(_epsReal),
         epsilonImaginary(_epsImaginary),
-        spherePosition(_sphere), sphereRadius(_sphRadius) {}
+        spherePosition(_sphere), sphereRadius(_sphRadius), integrator(_integrator) {}
 };
 
 #endif // GREENDATA_HPP

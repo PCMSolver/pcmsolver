@@ -64,19 +64,19 @@ void Input::reader(const char * pythonParsed)
 
     const Section & cavity = input.getSect("Cavity");
 
-    type_ = cavity.getStr("Type");
+    type_ = to_upper_copy(cavity.getStr("Type"));
     area_ = cavity.getDbl("Area");
     patchLevel_ = cavity.getInt("PatchLevel");
     coarsity_ = cavity.getDbl("Coarsity");
     minDistance_ = cavity.getDbl("MinDistance");
     derOrder_ = cavity.getInt("DerOrder");
-    cavFilename_ = cavity.getStr("Restart");
+    cavFilename_ = cavity.getStr("Restart"); // No case conversion here!
 
     scaling_ = cavity.getBool("Scaling");
-    radiiSet_ = cavity.getStr("RadiiSet");
+    radiiSet_ = to_upper_copy(cavity.getStr("RadiiSet"));
     minimalRadius_ = cavity.getDbl("MinRadius");
-    mode_ = cavity.getStr("Mode");
-    if (mode_ == "Explicit") {
+    mode_ = to_upper_copy(cavity.getStr("Mode"));
+    if (mode_ == "EXPLICIT") {
         std::vector<double> spheresInput = cavity.getDblVec("Spheres");
         int j = 0;
         int upperBound = int(spheresInput.size() / 4);
@@ -87,7 +87,7 @@ void Input::reader(const char * pythonParsed)
             spheres_.push_back(sph);
             j += 4;
         }
-    } else if (mode_ == "Atoms") {
+    } else if (mode_ == "ATOMS") {
         atoms_ = cavity.getIntVec("Atoms");
         radii_ = cavity.getDblVec("Radii");
     }
@@ -95,22 +95,22 @@ void Input::reader(const char * pythonParsed)
     // Get the contents of the Medium section
     const Section & medium = input.getSect("Medium");
     // Get the name of the solvent
-    std::string name = medium.getStr("Solvent");
-    if (name == "Explicit") {
+    std::string name = to_upper_copy(medium.getStr("Solvent"));
+    if (name == "EXPLICIT") {
         hasSolvent_ = false;
         // Get the probe radius
         probeRadius_ = medium.getDbl("ProbeRadius");
         // Get the contents of the Green<inside> section...
         const Section & inside = medium.getSect("Green<inside>");
         // ...and initialize the data members
-        greenInsideType_ = inside.getStr("Type");
-	derivativeInsideType_ = derivativeTraits(inside.getStr("Der"));
+        greenInsideType_ = to_upper_copy(inside.getStr("Type"));
+	derivativeInsideType_ = derivativeTraits(to_upper_copy(inside.getStr("Der")));
 	epsilonInside_ = inside.getDbl("Eps");
         // Get the contents of the Green<outside> section...
         const Section & outside = medium.getSect("Green<outside>");
         // ...and initialize the data members
-        greenOutsideType_ = outside.getStr("Type");
-        derivativeOutsideType_ = derivativeTraits(inside.getStr("Der"));
+        greenOutsideType_ = to_upper_copy(outside.getStr("Type"));
+        derivativeOutsideType_ = derivativeTraits(to_upper_copy(inside.getStr("Der")));
         epsilonOutside_ = outside.getDbl("Eps");
         // This will be needed for the metal sphere only
 	if (greenOutsideType_ == "MetalSphere") {
@@ -128,15 +128,15 @@ void Input::reader(const char * pythonParsed)
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class
         // is an helper class and should not be used in the core classes.
-        greenInsideType_ = "Vacuum";
-        derivativeInsideType_ = derivativeTraits("Derivative");
+        greenInsideType_ = "VACUUM";
+        derivativeInsideType_ = derivativeTraits("DERIVATIVE");
         epsilonInside_ = 1.0;
-        greenOutsideType_ = "UniformDielectric";
-        derivativeOutsideType_ = derivativeTraits("Derivative");
+        greenOutsideType_ = "UNIFORMDIELECTRIC";
+        derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
         epsilonOutside_ = solvent_.epsStatic();
     }
     
-    solverType_ = medium.getStr("SolverType");
+    solverType_ = to_upper_copy(medium.getStr("SolverType"));
     equationType_ = integralEquation(medium.getStr("EquationType"));
     correction_ = medium.getDbl("Correction");
     hermitivitize_ = medium.getBool("MatrixSymm");
@@ -149,23 +149,23 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
     CODATAyear_ = 2010;
 
     type_ = to_upper_copy(std::string(cav.cavity_type));
-    area_ = cav.area;
+    area_ = cav.area * angstrom2ToBohr2(CODATAyear_);
     patchLevel_ = cav.patch_level;
-    coarsity_ = cav.coarsity;
-    minDistance_ = cav.min_distance;
+    coarsity_ = cav.coarsity * angstromToBohr(CODATAyear_);
+    minDistance_ = cav.min_distance * angstromToBohr(CODATAyear_);
     derOrder_ = cav.der_order;
     cavFilename_ = std::string(cav.restart_name); // No case conversion here!
 
     scaling_ = cav.scaling;
     radiiSet_ = cav.radii_set;
-    minimalRadius_ = cav.min_radius;
+    minimalRadius_ = cav.min_radius * angstromToBohr(CODATAyear_);
     mode_ = std::string("IMPLICIT"); 
 
     std::string name = to_upper_copy(std::string(solv.solvent));
     if (name.empty()) {
         hasSolvent_ = false;
         // Get the probe radius
-        probeRadius_ = solv.probe_radius;
+        probeRadius_ = solv.probe_radius * angstromToBohr(CODATAyear_);
         // Get the contents of the Green<inside> section...
         // ...and initialize the data members
         greenInsideType_ = to_upper_copy(std::string(green.inside_type));
@@ -198,7 +198,7 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
     std::string inteq = to_upper_copy(std::string(solv.equation_type));
     equationType_ = integralEquation(inteq);
     correction_ = solv.correction;
-    hermitivitize_ = solv.matrix_symmetrize;
+    hermitivitize_ = true;
     
     providedBy_ = std::string("host-side");
 }

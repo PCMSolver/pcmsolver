@@ -375,7 +375,7 @@ extern "C" void push_input_string(char * s)
 
 void setupInput(bool from_host)
 {
-   // if (from_host) { // Set up input from host data structures
+    if (from_host) { // Set up input from host data structures
 	    cavityInput cav;
 	    solverInput solv;
 	    greenInput green;
@@ -395,15 +395,15 @@ void setupInput(bool from_host)
 	    	strcpy(green.inside_type, input_strings[6].c_str());
 	    	strcpy(green.outside_type, input_strings[7].c_str());
 	    }
-	    std::ostringstream out_stream;
-	    out_stream << cav << std::endl;
-	    out_stream << solv << std::endl;
-	    out_stream << green << std::endl;
-	    printer(out_stream);
-    	//    parsedInput = &Input::TheInput(cav, solv, green);
-   // } else {
+	   // std::ostringstream out_stream;
+	   // out_stream << cav << std::endl;
+	   // out_stream << solv << std::endl;
+	   // out_stream << green << std::endl;
+	   // printer(out_stream);
+    	    parsedInput = &Input::TheInput(cav, solv, green);
+    } else {
 	    parsedInput = &Input::TheInput("@pcmsolver.inp");
-    //}
+    }
     // The only thing we can't create immediately is the vector of spheres
     // from which the cavity is to be built.
     std::string _mode = parsedInput->mode();
@@ -478,7 +478,7 @@ void initSolver()
     double epsilon = parsedInput->epsilonInside();
     std::string greenType = parsedInput->greenInsideType();
     int greenDer = parsedInput->derivativeInsideType();
-    greenData inside(greenDer, epsilon);
+    greenData inside(greenDer, epsilon, integrator);
 
     IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
 

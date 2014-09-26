@@ -114,7 +114,7 @@ namespace
         buildUniformDielectric build;
         return for_id<derivative_types>(build, _data, _data.how);
     }
-    const std::string UNIFORMDIELECTRIC("UniformDielectric");
+    const std::string UNIFORMDIELECTRIC("UNIFORMDIELECTRIC");
     const bool registeredUniformDielectric =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             UNIFORMDIELECTRIC, createUniformDielectric);

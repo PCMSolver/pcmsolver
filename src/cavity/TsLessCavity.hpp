@@ -85,7 +85,7 @@ namespace
         return new TsLessCavity(_data.spheres, _data.area, _data.probeRadius,
                                 _data.minDistance, _data.derOrder, _data.minimalRadius);
     }
-    const std::string TSLESS("TsLess");
+    const std::string TSLESS("TSLESS");
     const bool registeredTsLess = CavityFactory::TheCavityFactory().registerCavity(
                                       TSLESS, createTsLessCavity);
 }

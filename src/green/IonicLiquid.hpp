@@ -116,7 +116,7 @@ namespace
         buildIonicLiquid build;
         return for_id<derivative_types>(build, _data, _data.how);
     }
-    const std::string IONICLIQUID("IonicLiquid");
+    const std::string IONICLIQUID("IONICLIQUID");
     const bool registeredIonicLiquid =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             IONICLIQUID, createIonicLiquid);

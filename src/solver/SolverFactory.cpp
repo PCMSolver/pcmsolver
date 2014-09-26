@@ -47,6 +47,10 @@ bool SolverFactory::unRegisterSolver(std::string solverID)
 PCMSolver * SolverFactory::createSolver(std::string solverID,
                                         const solverData & _data)
 {
+    if (solverID.empty()) {
+        // No solverID was specified
+        throw std::runtime_error("No solver ID given.");
+    }
     CallbackMap::const_iterator i = callbacks.find(solverID);
     if (i == callbacks.end()) {
         // The solverID was not found

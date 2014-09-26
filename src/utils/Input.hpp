@@ -73,12 +73,15 @@ private:
     /*! Read host data structures (host-side syntactic input parsing) into Input object.
      *  It provides access to a **limited** number of options only, basically the ones
      *  that can be filled into the cavityInput, solverInput and greenInput data structures. 
+     *  Lengths and areas are **expected** to be in Angstrom/Angstrom^2 and will hence be converted
+     *  to au/au^2.
      *  \note Specification of the solvent by name overrides any input given through the
      *  greenInput data structure!
      *  \warning The cavity can only be built in the "Implicit" mode, i.e. by grabbing the
-     *  coordinates for the sphere centers from the host program. The "Atoms" and "Explicit"
-     *  methods are only available using the explicit parsing by our Python script of a
-     *  separate input file.
+     *  coordinates for the sphere centers from the host program.
+     *  Atomic coordinates are **expected** to be in au!
+     *  The "Atoms" and "Explicit" methods are only available using the explicit parsing 
+     *  by our Python script of a separate input file.
      */
     void reader(const cavityInput & cav, const solverInput & solv, const greenInput & green);
     /*! Perform semantic input parsing aka sanity check

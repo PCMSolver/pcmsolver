@@ -74,7 +74,6 @@ struct solverInput {
     char solver_type[7];
     int pad1; // Without padding the two strings are lumped together...
     char solvent[16];
-    bool matrix_symmetrize;
     char equation_type[11];
     double correction;
     double probe_radius;
@@ -82,7 +81,6 @@ struct solverInput {
         os << "solver type " << std::string(o.solver_type) << std::endl;
         os << "solvent " << std::string(o.solvent) << std::endl;
 	os << "equation type " << std::string(o.equation_type) << std::endl;
-	os << "matrix_symmetrize " << o.matrix_symmetrize << std::endl;
 	os << "correction " << o.correction << std::endl;
 	os << "probe_radius " << o.probe_radius;
         return os;

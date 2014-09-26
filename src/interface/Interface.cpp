@@ -420,9 +420,9 @@ void setupInput(bool from_host)
     // Some post-processing of the list is needed in the Atoms mode.
     initSpheresImplicit(charges, centers, spheres);
 
-    if (_mode == "Implicit") {
+    if (_mode == "IMPLICIT") {
         parsedInput->spheres(spheres);
-    } else if (_mode == "Atoms") {
+    } else if (_mode == "ATOMS") {
         initSpheresAtoms(centers, spheres);
         parsedInput->spheres(spheres);
     }
@@ -454,7 +454,7 @@ void initCavity()
     // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
     std::string modelType = parsedInput->solverType();
 #if defined (DEVELOPMENT_CODE)    
-    if (modelType == "Wavelet" || modelType == "Linear") {
+    if (modelType == "WAVELET" || modelType == "LINEAR") {
         // Both PWC and PWL require a WaveletCavity
         initWaveletCavity();
     } else {
@@ -500,14 +500,14 @@ void initSolver()
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
     // (...not our fault, but should remedy somehow)
 #if defined (DEVELOPMENT_CODE)    
-    if (modelType == "Wavelet") {
+    if (modelType == "WAVELET") {
         _PWCSolver = new PWCSolver(gfInside, gfOutside);
         _PWCSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_(),
                                      false); // WTF is happening here???
         _cavity = _waveletCavity;
         _solver = _PWCSolver;
-    } else if (modelType == "Linear") {
+    } else if (modelType == "LINEAR") {
         _PWLSolver = new PWLSolver(gfInside, gfOutside);
         _PWLSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_(),

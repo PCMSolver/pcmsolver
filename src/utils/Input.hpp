@@ -70,7 +70,15 @@ private:
     /*! Read Python-parsed input (API-side syntactic input parsing) into Input object
      */
     void reader(const char * pythonParsed);
-    /*! Read host data structures (host-side syntactic input parsing) into Input object
+    /*! Read host data structures (host-side syntactic input parsing) into Input object.
+     *  It provides access to a **limited** number of options only, basically the ones
+     *  that can be filled into the cavityInput, solverInput and greenInput data structures. 
+     *  \note Specification of the solvent by name overrides any input given through the
+     *  greenInput data structure!
+     *  \warning The cavity can only be built in the "Implicit" mode, i.e. by grabbing the
+     *  coordinates for the sphere centers from the host program. The "Atoms" and "Explicit"
+     *  methods are only available using the explicit parsing by our Python script of a
+     *  separate input file.
      */
     void reader(const cavityInput & cav, const solverInput & solv, const greenInput & green);
     /*! Perform semantic input parsing aka sanity check
@@ -195,8 +203,14 @@ public:
     /// @}
 };
 
+/*!
+ * A useful map to convert the Der string to an integer which will be passed to the Green's function CTOR.
+ */
 int derivativeTraits(const std::string & name);
 
+/*!
+ * A useful map to convert the EquationType string to an integer which will be passed to the Solver CTOR.
+ */
 int integralEquation(const std::string & name);
 
 #endif // INPUT_HPP

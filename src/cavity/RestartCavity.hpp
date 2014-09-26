@@ -68,7 +68,7 @@ namespace
     {
         return new RestartCavity(_data.filename);
     }
-    const std::string RESTART("Restart");
+    const std::string RESTART("RESTART");
     const bool registeredRestart = CavityFactory::TheCavityFactory().registerCavity(
                                        RESTART, createRestartCavity);
 }

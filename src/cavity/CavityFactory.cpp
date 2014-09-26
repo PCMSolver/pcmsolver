@@ -47,6 +47,10 @@ bool CavityFactory::unRegisterCavity(std::string cavityID)
 
 Cavity * CavityFactory::createCavity(std::string cavityID, const cavityData & _data)
 {
+    if (cavityID.empty()) {
+        // No cavityID was specified
+        throw std::runtime_error("No cavity ID given.");
+    }
     CallbackMap::const_iterator i = callbacks.find(cavityID);
     if (i == callbacks.end()) {
         // The cavityID was not found

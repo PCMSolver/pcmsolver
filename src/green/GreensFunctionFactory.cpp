@@ -44,6 +44,10 @@ bool GreensFunctionFactory::unRegisterGreensFunction(const std::string & greenID
 IGreensFunction * GreensFunctionFactory::createGreensFunction(
     const std::string & greenID, const greenData & _data)
 {
+    if (greenID.empty()) {
+        // No greenID was specified
+        throw std::runtime_error("No Green's function ID given.");
+    }
     CallbackMap::const_iterator i = callbacks.find(greenID);
     if (i == callbacks.end()) {
         // The greenID was not found

@@ -83,7 +83,7 @@ namespace
         return new GePolCavity(_data.spheres, _data.area, _data.probeRadius,
                                _data.minimalRadius, _data.symmetry);
     }
-    const std::string GEPOL("GePol");
+    const std::string GEPOL("GEPOL");
     const bool registeredGePol = CavityFactory::TheCavityFactory().registerCavity(GEPOL,
                                  createGePolCavity);
 }

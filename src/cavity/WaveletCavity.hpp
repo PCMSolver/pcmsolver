@@ -104,7 +104,7 @@ namespace
         return new WaveletCavity(_data.spheres, _data.probeRadius, _data.patchLevel,
                                  _data.coarsity);
     }
-    const std::string WAVELET("Wavelet");
+    const std::string WAVELET("WAVELET");
     const bool registeredWavelet = CavityFactory::TheCavityFactory().registerCavity(
                                        WAVELET, createWaveletCavity);
 }

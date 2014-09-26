@@ -41,6 +41,8 @@
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
+using boost::algorithm::to_upper_copy;
+
 Input::Input(const char * pythonParsed)
 {
     reader(pythonParsed);
@@ -144,63 +146,36 @@ void Input::reader(const char * pythonParsed)
 
 void Input::reader(const cavityInput & cav, const solverInput & solv, const greenInput & green)
 {
-/*  
-    using boost::algorithm::trim;
-    using boost::algorithm::iequals;
+    CODATAyear_ = 2010;
 
-    CODATAyear_ = input.getInt("CODATA");
+    type_ = to_upper_copy(std::string(cav.cavity_type));
+    area_ = cav.area;
+    patchLevel_ = cav.patch_level;
+    coarsity_ = cav.coarsity;
+    minDistance_ = cav.min_distance;
+    derOrder_ = cav.der_order;
+    cavFilename_ = std::string(cav.restart_name); // No case conversion here!
 
-    type_ = cav.type;
-    area_ = cavity.getDbl("Area");
-    patchLevel_ = cavity.getInt("PatchLevel");
-    coarsity_ = cavity.getDbl("Coarsity");
-    minDistance_ = cavity.getDbl("MinDistance");
-    derOrder_ = cavity.getInt("DerOrder");
-    cavFilename_ = cavity.getStr("Restart");
+    scaling_ = cav.scaling;
+    radiiSet_ = cav.radii_set;
+    minimalRadius_ = cav.min_radius;
+    mode_ = std::string("IMPLICIT"); 
 
-    scaling_ = cavity.getBool("Scaling");
-    radiiSet_ = cavity.getStr("RadiiSet");
-    minimalRadius_ = cavity.getDbl("MinRadius");
-    mode_ = cavity.getStr("Mode");
-    if (mode_ == "Explicit") {
-        std::vector<double> spheresInput = cavity.getDblVec("Spheres");
-        int j = 0;
-        int upperBound = int(spheresInput.size() / 4);
-        for (int i = 0; i < upperBound; ++i) {
-            Eigen::Vector3d center;
-            center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
-            Sphere sph(center, spheresInput[j+3]);
-            spheres_.push_back(sph);
-            j += 4;
-        }
-    } else if (mode_ == "Atoms") {
-        atoms_ = cavity.getIntVec("Atoms");
-        radii_ = cavity.getDblVec("Radii");
-    }
-
-    // Get the name of the solvent
-    std::string name = medium.getStr("Solvent");
-    if (name == "Explicit") {
+    std::string name = to_upper_copy(std::string(solv.solvent));
+    if (name.empty()) {
         hasSolvent_ = false;
         // Get the probe radius
-        probeRadius_ = medium.getDbl("ProbeRadius");
+        probeRadius_ = solv.probe_radius;
         // Get the contents of the Green<inside> section...
         // ...and initialize the data members
-        greenInsideType_ = inside.getStr("Type");
-	derivativeInsideType_ = derivativeTraits(inside.getStr("Der"));
-	epsilonInside_ = inside.getDbl("Eps");
+        greenInsideType_ = to_upper_copy(std::string(green.inside_type));
+	derivativeInsideType_ = derivativeTraits("DERIVATIVE");
+	epsilonInside_ = 1.0;
         // Get the contents of the Green<outside> section...
         // ...and initialize the data members
-        greenOutsideType_ = outside.getStr("Type");
-        derivativeOutsideType_ = derivativeTraits(inside.getStr("Der"));
-        epsilonOutside_ = outside.getDbl("Eps");
-        // This will be needed for the metal sphere only
-	if (greenOutsideType_ == "MetalSphere") {
-	        epsilonReal_ = outside.getDbl("EpsRe");
-        	epsilonImaginary_ = outside.getDbl("EpsImg");
-	        spherePosition_ = outside.getDblVec("SpherePosition");
-        	sphereRadius_ = outside.getDbl("SphereRadius");
-	}
+        greenOutsideType_ = to_upper_copy(std::string(green.outside_type));
+        derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
+        epsilonOutside_ = green.outside_epsilon;
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -210,70 +185,58 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class
         // is an helper class and should not be used in the core classes.
-        greenInsideType_ = "Vacuum";
-        derivativeInsideType_ = derivativeTraits("Derivative");
+        greenInsideType_ = std::string("VACUUM");
+        derivativeInsideType_ = derivativeTraits("DERIVATIVE");
         epsilonInside_ = 1.0;
-        greenOutsideType_ = "UniformDielectric";
-        derivativeOutsideType_ = derivativeTraits("Derivative");
+        greenOutsideType_ = std::string("UNIFORMDIELECTRIC");
+        derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
         epsilonOutside_ = solvent_.epsStatic();
     }
     
-    solverType_ = medium.getStr("SolverType");
-    equationType_ = integralEquation(medium.getStr("EquationType"));
-    correction_ = medium.getDbl("Correction");
-    hermitivitize_ = medium.getBool("MatrixSymm");
+    
+    solverType_ = to_upper_copy(std::string(solv.solver_type));
+    std::string inteq = to_upper_copy(std::string(solv.equation_type));
+    equationType_ = integralEquation(inteq);
+    correction_ = solv.correction;
+    hermitivitize_ = solv.matrix_symmetrize;
     
     providedBy_ = std::string("host-side");
-    */
 }
 
 void Input::semanticParser()
 {
-#if not defined (WAVELET_DEVELOPMENT)
-        throw std::runtime_error("Wavelet cavity generator and solvers not included in this release.");
-#endif
-#if not defined (TSLESS_DEVELOPMENT)
-        throw std::runtime_error("TsLess cavity generator not included in this release.");
-#endif
-
-    if (type_ == "GePol" || type_ == "TsLess") {
-        if (solverType_ == "Wavelet"
-            || solverType_ ==
-            "Linear") { // User asked for GePol or TsLess cavity with wavelet solvers
+#if not defined (WAVELET_DEVELOPMENT) || not defined (TSLESS_DEVELOPMENT)
+    if (type_ == "GEPOL" || type_ == "TSLESS") {
+        if (solverType_ == "WAVELET" || solverType_ == "LINEAR") { // User asked for GePol or TsLess cavity with wavelet solvers
             throw std::runtime_error("GePol cavity can be used only with traditional solvers.");
         }
-    } else if (type_ ==
-                "Wavelet" ) { // Hoping that the user knows what's going on if he asks for a restart...
-        if (solverType_ == "IEFPCM"
-            || solverType_ == "CPCM") { // User asked for wavelet cavity with traditional solvers
+    } else if (type_ == "WAVELET" ) { // Hoping that the user knows what's going on if he asks for a restart...
+        if (solverType_ == "IEFPCM" || solverType_ == "CPCM") { // User asked for wavelet cavity with traditional solvers
             throw std::runtime_error("Wavelet cavity can be used only with wavelet solvers.");
         }
     }
+#endif
 }
 
 int derivativeTraits(const std::string & name)
 {
-    // A useful map to convert the Der string to an integer
-    // which will be passed to the Green's function CTOR.
     static std::map<std::string, int> mapStringToIntDerType;
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Numerical", 0));
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Derivative", 1));
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Gradient", 2));
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("Hessian", 3));
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("NUMERICAL", 0));
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("DERIVATIVE", 1));
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("GRADIENT", 2));
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("HESSIAN", 3));
 
     return mapStringToIntDerType.find(name)->second;
 }
 
 int integralEquation(const std::string & name)
 {
-    // A useful map to convert the EquationType string to an integer
-    // which will be passed to the Solver CTOR.
     static std::map<std::string, int> mapStringToIntEquationType;
-    mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FirstKind",
+    mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FIRSTKIND",
                                       0));
     mapStringToIntEquationType.insert(
-        std::map<std::string, int>::value_type("SecondKind", 1));
-    mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("Full", 2));
+        std::map<std::string, int>::value_type("SECONDKIND", 1));
+    mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FULL", 2));
     
     return mapStringToIntEquationType.find(name)->second;
 }

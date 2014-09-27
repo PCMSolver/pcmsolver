@@ -98,7 +98,19 @@ def parse_cmdline(valid_keywords):
 		sys.exit(0)
 	return inpfil
 
-def	setup_keywords():
+def iequal(a, b):
+    try:
+        return a.upper() == b.upper()
+    except AttributeError:
+        return a == b
+
+def convert_to_upper_case(filename):
+    inputFile = open(filename, 'r')
+    contents  = filename.read()
+    with open(filename, 'wb') as outputFile:
+        outputFile.write(content.upper())
+
+def setup_keywords():
 	top=getkw.Section('toplevel', callback=verify_top)
 	top.set_status(True)
 	top.add_kw('Units',     'STR', 'AU')
@@ -322,8 +334,6 @@ def verify_medium(section):
         if (val not in allowed_equations):  
                 print "Allowed equations are: ", allowed_equations
         	sys.exit(1)
-
-
 
 def verify_green(section):
 	required = ('Type',)

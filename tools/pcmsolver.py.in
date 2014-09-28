@@ -3,20 +3,26 @@
 # -*- coding: utf-8 -*-
 # vim:filetype=python:
 #
-# Written by Jonas Juselius <jonas.juselius@chem.uit.no> 
+# Written by Jonas Juselius <jonas.juselius@chem.uit.no>
 # University of Tromso, 2008
 #
-# Adapted to PCMSolver by Luca Frediani, 2011
+# Adapted to PCMSolver by Luca Frediani <luca.frediani@uit.no>
+# University of Tromso, 2011
+# Various modifications by Roberto Di Remigio <roberto.d.remigio@uit.no>
+# University of Pisa, 2011-2012
+# University of Tromso 2013-2014
 #
 
-#
-# Conventions
-# routine names my_perfect_routine
-# keyword names MyPerfectKeyword
-#
+"""
+Parses the PCMSolver input file and generates a machine-readable input file.
+Based on the Getkw library by J. Juselius.
+The human-readable input file is first read and converted to uppercase.
+Parsing occurs after case conversion, so that input reading is case-insensitive.
 
-ON=1
-OFF=0
+Conventions:
+routine names my_perfect_routine
+keyword names MYPERFECTKEYWORD
+"""
 
 libdir="@INST_LIBDIR@"
 isAngstrom = False
@@ -34,379 +40,390 @@ else:
 
 import getkw
 
-def main():
-	global topsect
-       
-        # Set up valid keywords.
-	valid_keywords = setup_keywords()
- 	# Get filename from command line.
-	inpfil = parse_cmdline(valid_keywords)
-
-        # If no filename was provided look up for the standard name.
-	if inpfil is None:
-            inpfil = "pcmsolver.inp"
-
- 	# Set up a GetKw object and let it parse our input:
-	# here is where the magic happens.
-	input=getkw.GetkwParser()
-	inkw=input.parseFile(inpfil)
-	inkw.sanitize(valid_keywords)
-	topsect=inkw.get_topsect()
-	inkw.run_callbacks(valid_keywords)
-
-	# The parsed, machine-readable file is now saved.
-	xfile='@' + inpfil
-	fd=open(xfile,'w')
-	print >> fd, inkw.top
-	fd.close()
-
-def parse_pcm_input(inpfil = None):
-	global topsect
-       
-        # Set up valid keywords.
-	valid_keywords = setup_keywords()
-
-        # If no filename was provided look up for the standard name.
-	if inpfil is None:
-            inpfil = "pcmsolver.inp"
-
- 	# Set up a GetKw object and let it parse our input:
-	# here is where the magic happens.
-	input = getkw.GetkwParser()
-	inkw  = input.parseFile(inpfil)
-	inkw.sanitize(valid_keywords)
-	topsect = inkw.get_topsect()
-	inkw.run_callbacks(valid_keywords)
-
-	# The parsed, machine-readable file is now saved.
-	xfile = '@' + inpfil
-	fd = open(xfile, 'w')
-	print >> fd, inkw.top
-	fd.close()
-
-def parse_cmdline(valid_keywords):
-	usage="usage: %prog inpfile"
-	cmdln=optparse.OptionParser(usage=usage)
-        (opts, args)=cmdln.parse_args()
-	
-	if (len(args) == 0):
-		inpfil=None
-	elif (len(args) == 1):
-		inpfil=args[0]
-	else:
-		cmdln.error('incorrect number of files')
-		sys.exit(0)
-	return inpfil
-
 def iequal(a, b):
+    """
+    Checks that strings a and b are equal, regardless of case.
+    """
     try:
         return a.upper() == b.upper()
     except AttributeError:
         return a == b
 
 def convert_to_upper_case(filename):
-    inputFile = open(filename, 'r')
-    contents  = filename.read()
+    """
+    Reads contents of filename and converts them to uppercase.
+    The case-converted contents are written back to filename.
+    """
+    contents = ''
+    with open(filename, 'r') as inputFile:
+        contents  = inputFile.read()
     with open(filename, 'wb') as outputFile:
-        outputFile.write(content.upper())
+        outputFile.write(contents.upper())
+
+def main():
+    global topsect
+
+    # Set up valid keywords.
+    valid_keywords = setup_keywords()
+    # Get filename from command line.
+    inpfil = parse_cmdline(valid_keywords)
+
+    # If no filename was provided look up for the standard name.
+    if inpfil is None:
+        inpfil = "pcmsolver.inp"
+
+    # Convert to uppercase
+    convert_to_upper_case(inpfil)
+
+    # Set up a GetKw object and let it parse our input:
+    # here is where the magic happens.
+    input = getkw.GetkwParser()
+    inkw  = input.parseFile(inpfil)
+    inkw.sanitize(valid_keywords)
+    topsect = inkw.get_topsect()
+    inkw.run_callbacks(valid_keywords)
+
+    # The parsed, machine-readable file is now saved.
+    xfile = '@' + inpfil
+    fd = open(xfile,'w')
+    print >> fd, inkw.top
+    fd.close()
+
+def parse_pcm_input(inpfil = None):
+    global topsect
+
+    # Set up valid keywords.
+    valid_keywords = setup_keywords()
+
+    # If no filename was provided look up for the standard name.
+    if inpfil is None:
+        inpfil = "pcmsolver.inp"
+
+    # Convert to uppercase
+    convert_to_upper_case(inpfil)
+
+    # Set up a GetKw object and let it parse our input:
+    # here is where the magic happens.
+    input = getkw.GetkwParser()
+    inkw  = input.parseFile(inpfil)
+    inkw.sanitize(valid_keywords)
+    topsect = inkw.get_topsect()
+    inkw.run_callbacks(valid_keywords)
+
+    # The parsed, machine-readable file is now saved.
+    xfile = '@' + inpfil
+    fd = open(xfile, 'w')
+    print >> fd, inkw.top
+    fd.close()
+
+def parse_cmdline(valid_keywords):
+    usage="usage: %prog inpfile"
+    cmdln=optparse.OptionParser(usage=usage)
+    (opts, args)=cmdln.parse_args()
+
+    if (len(args) == 0):
+        inpfil=None
+    elif (len(args) == 1):
+        inpfil=args[0]
+    else:
+        cmdln.error('incorrect number of files')
+        sys.exit(0)
+    return inpfil
 
 def setup_keywords():
-	top=getkw.Section('toplevel', callback=verify_top)
-	top.set_status(True)
-	top.add_kw('Units',     'STR', 'AU')
-        top.add_kw('CODATA', 'INT', 2010)
+    top=getkw.Section('toplevel', callback=verify_top)
+    top.set_status(True)
+    top.add_kw('UNITS',  'STR', 'AU')
+    top.add_kw('CODATA', 'INT', 2010)
 
-	cavity=getkw.Section('Cavity', callback=verify_cavity)
-	cavity.add_kw('Restart', 'STR', '')
-	cavity.add_kw('Type','STR')
-	cavity.add_kw('PatchLevel', 'INT', 2)
-	cavity.add_kw('Coarsity', 'DBL', 0.5)
-	cavity.add_kw('Area','DBL', 0.3)
-	cavity.add_kw('MinDistance', 'DBL', 0.1)
-	cavity.add_kw('DerOrder', 'INT', 4)
-	cavity.add_kw('Scaling', 'BOOL', True)
-	cavity.add_kw('RadiiSet', 'STR', 'Bondi')
-	cavity.add_kw('MinRadius', 'DBL', 100.0)
-        cavity.add_kw('Mode','STR','Implicit')
-        cavity.add_kw('Atoms','INT_ARRAY')
-        cavity.add_kw('Radii','DBL_ARRAY')
-	cavity.add_kw('Spheres','DBL_ARRAY', callback=verify_spheres)
-	top.add_sect(cavity)
-        
-	medium=getkw.Section('Medium', callback=verify_medium)
-	medium.add_kw('Solvent',     'STR', 'Water')
-	medium.add_kw('SolverType',  'STR', 'IEFPCM')
-	medium.add_kw('EquationType','STR', 'SecondKind')
-	medium.add_kw('MatrixSymm', 'BOOL', True)
-	medium.add_kw('Correction', 'DBL', 0.0)
-	medium.add_kw('ProbeRadius', 'DBL', 1.0)
-	top.add_sect(medium)
-	
-	green=getkw.Section('Green', callback=verify_green)
-	green.add_kw('Type',           'STR', 'Vacuum')
-	green.add_kw('Der',            'STR', 'Derivative')
-	green.add_kw('Eps',            'DBL', 1.0)
-	green.add_kw('EpsRe',          'DBL', 1.0)
-	green.add_kw('EpsImg',         'DBL', 1.0)
-	green.add_kw('SphereRadius',   'DBL', 1.0)
-	green.add_kw('SpherePosition', 'DBL_ARRAY')
-	medium.add_sect(green)
+    cavity=getkw.Section('CAVITY', callback=verify_cavity)
+    cavity.add_kw('RESTART',     'STR', '')
+    cavity.add_kw('TYPE',        'STR')
+    cavity.add_kw('PATCHLEVEL',  'INT', 2)
+    cavity.add_kw('COARSITY',    'DBL', 0.5)
+    cavity.add_kw('AREA',        'DBL', 0.3)
+    cavity.add_kw('MINDISTANCE', 'DBL', 0.1)
+    cavity.add_kw('DERORDER',    'INT', 4)
+    cavity.add_kw('SCALING',     'BOOL', True)
+    cavity.add_kw('RADIISET',    'STR', 'BONDI')
+    cavity.add_kw('MINRADIUS',   'DBL', 100.0)
+    cavity.add_kw('MODE',        'STR', 'IMPLICIT')
+    cavity.add_kw('ATOMS',       'INT_ARRAY')
+    cavity.add_kw('RADII',       'DBL_ARRAY')
+    cavity.add_kw('SPHERES',     'DBL_ARRAY', callback = verify_spheres)
+    top.add_sect(cavity)
 
-	green_part = deepcopy(green)
-	green.add_sect(green_part)
+    medium=getkw.Section('MEDIUM', callback=verify_medium)
+    medium.add_kw('SOLVENT',      'STR', 'WATER')
+    medium.add_kw('SOLVERTYPE',   'STR', 'IEFPCM')
+    medium.add_kw('EQUATIONTYPE', 'STR', 'SECONDKIND')
+    medium.add_kw('MATRIXSYMM',   'BOOL', True)
+    medium.add_kw('CORRECTION',   'DBL', 0.0)
+    medium.add_kw('PROBERADIUS',  'DBL', 1.0)
+    top.add_sect(medium)
 
-	return top
-		
+    green=getkw.Section('GREEN', callback=verify_green)
+    green.add_kw('TYPE',           'STR', 'VACUUM')
+    green.add_kw('DER',            'STR', 'DERIVATIVE')
+    green.add_kw('EPS',            'DBL', 1.0)
+    green.add_kw('EPSRE',          'DBL', 1.0)
+    green.add_kw('EPSIMG',         'DBL', 1.0)
+    green.add_kw('SPHERERADIUS',   'DBL', 1.0)
+    green.add_kw('SPHEREPOSITION', 'DBL_ARRAY')
+    medium.add_sect(green)
+
+    green_part = deepcopy(green)
+    green.add_sect(green_part)
+
+    return top
+
 def verify_top(section):
-	global isAngstrom, CODATAyear
-	allowed_units = ('AU', 'Angstrom')
-	key = section.get('Units')
-	val = key.get()
-	if (val not in allowed_units):
-	    	print("Units requested {} are not among the allowed units: {}".format(val, allowed_units))
-		sys.exit(1)
-	if (val == 'Angstrom'):
-		isAngstrom = True
-        allowed_codata = (2010, 2006, 2002, 1998)
-        CODATAyear = section.get('CODATA').get()
-	if (CODATAyear not in allowed_codata):
-		print("CODATA set requested {} is not among the allowed sets: {}".format(CODATAyear, allowed_codata))
-		sys.exit(1)
+    global isAngstrom, CODATAyear
+    allowed_units = ('AU', 'ANGSTROM')
+    key = section.get('UNITS')
+    val = key.get()
+    if (val not in allowed_units):
+        print("Units requested {} are not among the allowed units: {}".format(val, allowed_units))
+        sys.exit(1)
+    if (val == 'ANGSTROM'):
+        isAngstrom = True
+    allowed_codata = (2010, 2006, 2002, 1998)
+    CODATAyear = section.get('CODATA').get()
+    if (CODATAyear not in allowed_codata):
+        print("CODATA set requested {} is not among the allowed sets: {}".format(CODATAyear, allowed_codata))
+        sys.exit(1)
 
 def verify_cavity(section):
-	allowed = ('GePol', 'Wavelet', 'TsLess', 'Restart')
-	type = section.get('Type')                                                           
-        if (type.get() not in allowed):
-        	print("Requested {} cavity is not among the allowed types: {}".format(type, allowed))
-        	sys.exit(1)
-        
-	# Convert units if input was given in Angstrom
-        # The conversion functions check by themselves if the conversion is necessary or not!!
-	if (section['Area'].is_set()): 
-		convert_area_scalar(section['Area'])
-	if (section['MinRadius'].is_set()): 
-		convert_length_scalar(section['MinRadius'])
-	if (section['MinDistance'].is_set()): 
-		convert_length_scalar(section['MinDistance'])
-    
-	
-	if (type.get() == 'GePol'):
-        	area = section.get('Area')
-        	a = area.get()
-        	if (a < 0.01):
-        		print("Requested area value too small: {}. Minimal value is: 0.01 Bohr^2".format(a))
-        		sys.exit(1)
-		minRadius = section.get('MinRadius')
-		mr = minRadius.get()
-		if ( mr < 0.4 ):
- 			print("Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 Bohr".format(mr))
-			sys.exit(1)
-        elif (type.get() == 'Wavelet'):
-        	key = section.get('PatchLevel')
-        	if (key.get() < 1):
-        		print("Invalid patch level requested: {}. Patch level must be greater than 0".format(key.get()))
-        		sys.exit(1)
-        	key = section.get('Coarsity')
-        	if (key.get() < 0.0 or key.get() >= 1.0):
-        		print("Invalid coarsity requested: {}. Coarsity has to be within ]0, 1[".format(key.get()))
-        		sys.exit(1)
-        elif (type.get() == 'TsLess'):
-		area = section.get('Area')
-		a = area.get()
-		if (a < 0.01):
-        		print("Requested area value too small: {}. Minimal value is: 0.01 Bohr^2".format(a))
-			sys.exit(1)
-                minDistance = section.get('MinDistance')
-		md = minDistance.get()
-		# Insert a sanity check on minimal distance!
-		#if ( md < 0.4 ):
- 		#	print("Requested minimal distance between sampling points too small: {}. Minimal value is: 0.4 Bohr".format(md))
-		#	sys.exit(1)
- 		derOrder = section.get('DerOrder')
- 		do = derOrder.get()
-		# Insert a check on derivative order
-		#if ( do > 4 ):
- 		#	print("Invalid derivative order requested: {}. Derivative order has to be within [1, 5]".format(md))
-		#	sys.exit(1)
-        elif (type.get() == 'Restart'):
-		restart = section.get('Restart')
-		# Restart string is the filename, with extension, where the cavity specs were saved.
- 		# We only get the filename here, either an empty or a non-empty string, 
-        	# further management of input is then done C++-side.
-		if restart.get() == '':
-			print("You need to specify a .npz filename for a restart...")
-			sys.exit(1)
+    allowed = ('GEPOL', 'WAVELET', 'TSLESS', 'RESTART')
+    type = section.get('TYPE')
+    if (type.get() not in allowed):
+        print("Requested {} cavity is not among the allowed types: {}".format(type, allowed))
+        sys.exit(1)
 
-	radiiSet = section.get('RadiiSet')
-	allowed_sets = ('Bondi', 'UFF')
-	if (radiiSet.get() not in allowed_sets):
-	    	print("Radii set requested {} is not among the allowed sets: {}".format(radiiSet.get(), allowed_sets))
-		sys.exit(1)
-	allowed_modes = ("Explicit", "Atoms", "Implicit")
-	mode = section.get('Mode')
-	if (mode.get() not in allowed_modes):
-	    	print("Cavity creation mode requested {} is not among the allowed modes: {}".format(mode.get(), allowed_modes))
-		sys.exit(1)                         
-                                                                                      
-        atoms=section.get('Atoms')
-        at=atoms.get()
-        radii = section.get('Radii')
-	convert_length_array(radii);
-        r = radii.get()
-	
-        if (mode.get() == 'Atoms'):
-		if (len(r) != len(at) or len(at) == 0):
-	    		print("Incoherent input for Atoms keyword. Check that Atoms and Radii are consistent.")
-			sys.exit(1)
-		else:
-			for i, v in enumerate(at):
-				if (at.count(v) > 1):
-	    				print("Incoherent input for Atoms keyword. Too many spheres on the same atom(s).")
-					sys.exit(1)
+    # Convert units if input was given in Angstrom
+    # The conversion functions check by themselves if the conversion is necessary or not!!
+    if (section['AREA'].is_set()):
+        convert_area_scalar(section['AREA'])
+    if (section['MINRADIUS'].is_set()):
+        convert_length_scalar(section['MINRADIUS'])
+    if (section['MINDISTANCE'].is_set()):
+        convert_length_scalar(section['MINDISTANCE'])
+
+
+    if (type.get() == 'GEPOL'):
+        area = section.get('AREA')
+        a = area.get()
+        if (a < 0.01):
+            print("Requested area value too small: {}. Minimal value is: 0.01 Bohr^2".format(a))
+            sys.exit(1)
+        minRadius = section.get('MINRADIUS')
+        mr = minRadius.get()
+        if ( mr < 0.4 ):
+            print("Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 Bohr".format(mr))
+            sys.exit(1)
+    elif (type.get() == 'WAVELET'):
+        key = section.get('PATCHLEVEL')
+        if (key.get() < 1):
+            print("Invalid patch level requested: {}. Patch level must be greater than 0".format(key.get()))
+            sys.exit(1)
+        key = section.get('COARSITY')
+        if (key.get() < 0.0 or key.get() >= 1.0):
+            print("Invalid coarsity requested: {}. Coarsity has to be within ]0, 1[".format(key.get()))
+            sys.exit(1)
+    elif (type.get() == 'TSLESS'):
+        area = section.get('AREA')
+        a = area.get()
+        if (a < 0.01):
+            print("Requested area value too small: {}. Minimal value is: 0.01 Bohr^2".format(a))
+            sys.exit(1)
+        minDistance = section.get('MINDISTANCE')
+        md = minDistance.get()
+        # Insert a sanity check on minimal distance!
+        #if ( md < 0.4 ):
+        #       print("Requested minimal distance between sampling points too small: {}. Minimal value is: 0.4 Bohr".format(md))
+        #       sys.exit(1)
+        derOrder = section.get('DERORDER')
+        do = derOrder.get()
+        # Insert a check on derivative order
+        #if ( do > 4 ):
+        #       print("Invalid derivative order requested: {}. Derivative order has to be within [1, 5]".format(md))
+        #       sys.exit(1)
+    elif (type.get() == 'RESTART'):
+        restart = section.get('RESTART')
+        # Restart string is the filename, with extension, where the cavity specs were saved.
+        # We only get the filename here, either an empty or a non-empty string,
+        # further management of input is then done C++-side.
+        if restart.get() == '':
+            print("You need to specify a .npz filename for a restart...")
+            sys.exit(1)
+
+    radiiSet = section.get('RADIISET')
+    allowed_sets = ('BONDI', 'UFF')
+    if (radiiSet.get() not in allowed_sets):
+        print("Radii set requested {} is not among the allowed sets: {}".format(radiiSet.get(), allowed_sets))
+        sys.exit(1)
+    allowed_modes = ("EXPLICIT", "ATOMS", "IMPLICIT")
+    mode = section.get('MODE')
+    if (mode.get() not in allowed_modes):
+        print("Cavity creation mode requested {} is not among the allowed modes: {}".format(mode.get(), allowed_modes))
+        sys.exit(1)
+
+    atoms=section.get('ATOMS')
+    at=atoms.get()
+    radii = section.get('RADII')
+    convert_length_array(radii);
+    r = radii.get()
+
+    if (mode.get() == 'ATOMS'):
+        if (len(r) != len(at) or len(at) == 0):
+            print("Incoherent input for Atoms keyword. Check that Atoms and Radii are consistent.")
+            sys.exit(1)
+        else:
+            for i, v in enumerate(at):
+                if (at.count(v) > 1):
+                    print("Incoherent input for Atoms keyword. Too many spheres on the same atom(s).")
+                    sys.exit(1)
 
 def verify_medium(section):
-	allowedSolvents = {'Water':                ('Water',                'water',                'H2O'),
-			   'Methanol':             ('Methanol',             'methanol',             'CH3OH'),
-			   'Ethanol':              ('Ethanol',              'ethanol',              'CH3CH2OH'),
-			   'Chloroform':           ('Chloroform',           'chloroform',           'CHCl3'),
-			   'Methylenechloride':    ('Methylenechloride',    'methylenechloride',    'CH2Cl2'),
-			   '1,2-Dichloroethane':   ('1,2-Dichloroethane',   '1,2-dichloroethane',   'C2H4Cl2'),
-			   'Carbon Tetrachloride': ('Carbon Tetrachloride', 'carbon tetrachloride', 'CCl4'),
-			   'Benzene':              ('Benzene',              'benzene',              'C6H6'),
-			   'Toluene':              ('Toluene',              'toluene',              'C6H5CH3'),
-			   'Chlorobenzene':        ('Chlorobenzene',        'chlorobenzene',        'C6H5Cl'),
-			   'Nitromethane':         ('Nitromethane',         'nitromethane',         'CH3NO2'),
-			   'N-heptane':            ('N-heptane',            'n-heptane',            'C7H16'),
-			   'Cyclohexane':          ('Cyclohexane',          'cyclohexane',          'C6H12'),
-			   'Aniline':              ('Aniline',              'aniline',              'C6H5NH2'),
-			   'Acetone':              ('Acetone',              'acetone',              'C2H6CO'),
-			   'Tetrahydrofurane':     ('Tetrahydrofurane',     'tetrahydrofurane',     'THF'),
-			   'Dimethylsulfoxide':    ('Dimethylsulfoxide',    'dimethylsulfoxide',    'DMSO'),
-			   'Acetonitrile':         ('Acetonitrile',         'acetonitrile',         'CH3CN'),
-			   'Explicit':             ('Explicit',             'explicit')}
-	solvent = section.get('Solvent')
-	explicitSolvent = solvent.get() in allowedSolvents['Explicit']
-	if(explicitSolvent):
-		PRF = section.is_set('ProbeRadius')
-		GIF = section.is_set('Green<inside>')
-		GOF = section.is_set('Green<outside>')
-		if (not PRF):
-			print "Error: Explicit solvent chosen but ProbeRadius not specified"
-		if (not GIF):
-			print "Error: Explicit solvent chosen but Green<inside> not specified"
-		if (not GOF):
-			print "Error: Explicit solvent chosen but Green<outside> not specified"
-		if (not GIF or not GOF or not PRF):
-			sys.exit(1)
-	solventFound = False
-	for i, v in allowedSolvents.iteritems():
-		if (solvent.get() in v):
-			solventName = i
-			solventFound = True
-			break
-	if (not solventFound):
-		print "Unknown solvent"
-		print "Choose a solvent from the following list: "
-		print allowedSolvents.keys()
-		print "or specify the solvent data explicitly."
-		sys.exit(1)
+    allowedSolvents = {'Water'                : ('WATER',                'H2O'),
+                       'Methanol'             : ('METHANOL',             'CH3OH'),
+                       'Ethanol'              : ('ETHANOL',              'CH3CH2OH'),
+                       'Chloroform'           : ('CHLOROFORM',           'CHCL3'),
+                       'Methylenechloride'    : ('METHYLENECHLORIDE',    'CH2CL2'),
+                       '1,2-Dichloroethane'   : ('1,2-DICHLOROETHANE',   'C2H4CL2'),
+                       'Carbon Tetrachloride' : ('CARBON TETRACHLORIDE', 'CCL4'),
+                       'Benzene'              : ('BENZENE',              'C6H6'),
+                       'Toluene'              : ('TOLUENE',              'C6H5CH3'),
+                       'Chlorobenzene'        : ('CHLOROBENZENE',        'C6H5CL'),
+                       'Nitromethane'         : ('NITROMETHANE',         'CH3NO2'),
+                       'N-heptane'            : ('N-HEPTANE',            'C7H16'),
+                       'Cyclohexane'          : ('CYCLOHEXANE',          'C6H12'),
+                       'Aniline'              : ('ANILINE',              'C6H5NH2'),
+                       'Acetone'              : ('ACETONE',              'C2H6CO'),
+                       'Tetrahydrofurane'     : ('TETRAHYDROFURANE',     'THF'),
+                       'Dimethylsulfoxide'    : ('DIMETHYLSULFOXIDE',    'DMSO'),
+                       'Acetonitrile'         : ('ACETONITRILE',         'CH3CN'),
+                       'Explicit'             : ('EXPLICIT')}
+    solvent = section.get('SOLVENT')
+    explicitSolvent = solvent.get() in allowedSolvents['Explicit']
+    if(explicitSolvent):
+        PRF = section.is_set('PROBERADIUS')
+        GIF = section.is_set('GREEN<INSIDE>')
+        GOF = section.is_set('GREEN<OUTSIDE>')
+        if (not PRF):
+            print "Error: Explicit solvent chosen but ProbeRadius not specified"
+        if (not GIF):
+            print "Error: Explicit solvent chosen but Green<inside> not specified"
+        if (not GOF):
+            print "Error: Explicit solvent chosen but Green<outside> not specified"
+        if (not GIF or not GOF or not PRF):
+            sys.exit(1)
+    solventFound = False
+    for i, v in allowedSolvents.iteritems():
+        if (solvent.get() in v):
+            solventName = i
+            solventFound = True
+            break
+    if (not solventFound):
+        print "Unknown solvent"
+        print "Choose a solvent from the following list: "
+        print allowedSolvents.keys()
+        print "or specify the solvent data explicitly."
+        sys.exit(1)
 
-        correction = section.get('Correction')
-	if (correction.get() < 0.0):
-		print "Correction for CPCM solver must be greater than 0.0"
-		sys.exit(1)
+    correction = section.get('CORRECTION')
+    if (correction.get() < 0.0):
+        print "Correction for CPCM solver must be greater than 0.0"
+        sys.exit(1)
 
-	convert_length_scalar(section.get('ProbeRadius'))
-	radius = section.get('ProbeRadius')
-	if (radius.get() < 0.1 or radius.get() > 100):
-		print "Probe radius has to be within [0.1,100] Atomic Units"
-		sys.exit(1)
+    convert_length_scalar(section.get('PROBERADIUS'))
+    radius = section.get('PROBERADIUS')
+    if (radius.get() < 0.1 or radius.get() > 100):
+        print "Probe radius has to be within [0.1,100] Atomic Units"
+        sys.exit(1)
 
-	allowed_types = ('IEFPCM', 'CPCM', 'Wavelet', 'Linear')
-        key = section.get('SolverType')
-        val = key.get()
-        if (val not in allowed_types):  
-                print "Allowed types are: ", allowed_types
-        	sys.exit(1)
-	allowed_equations = ('FirstKind', 'SecondKind', 'Full')
-        key = section.get('EquationType')
-        val = key.get()
-        if (val not in allowed_equations):  
-                print "Allowed equations are: ", allowed_equations
-        	sys.exit(1)
+    allowed_types = ('IEFPCM', 'CPCM', 'WAVELET', 'LINEAR')
+    key = section.get('SOLVERTYPE')
+    val = key.get()
+    if (val not in allowed_types):
+        print "Allowed types are: ", allowed_types
+        sys.exit(1)
+    allowed_equations = ('FIRSTKIND', 'SECONDKIND', 'FULL')
+    key = section.get('EQUATIONTYPE')
+    val = key.get()
+    if (val not in allowed_equations):
+        print "Allowed equations are: ", allowed_equations
+        sys.exit(1)
 
 def verify_green(section):
-	required = ('Type',)
-	allowed = ('Vacuum', 'UniformDielectric', 'MetalSphere', 'GreensFunctionSum')
-	allowed_der = ('Numerical', 'Derivative', 'Gradient', 'Hessian')
+    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'METALSPHERE', 'GREENSFUNCTIONSUM')
+    allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
 
-	green1 = section.fetch_sect('Green<one>')
-	green2 = section.fetch_sect('Green<two>')
-	eps = section.get('Eps')
-	epsimg = section.get('EpsImg')
-	epsre = section.get('EpsRe')
+    green1 = section.fetch_sect('GREEN<ONE>')
+    green2 = section.fetch_sect('GREEN<TWO>')
+    eps = section.get('EPS')
+    epsimg = section.get('EPSIMG')
+    epsre = section.get('EPSRE')
 
-	convert_length_array(section.get('SpherePosition'))
-        position = section.get('SpherePosition')
-	convert_length_scalar(section.get('SphereRadius'))
-        radius = section.get('SphereRadius')
+    convert_length_array(section.get('SPHEREPOSITION'))
+    position = section.get('SPHEREPOSITION')
+    convert_length_scalar(section.get('SPHERERADIUS'))
+    radius = section.get('SPHERERADIUS')
 
-	type=section.get('Type')
-	if (type.get() not in allowed):
-		print "Allowed Green's functions are:", allowed
-		sys.exit(1)
+    type=section.get('TYPE')
+    if (type.get() not in allowed):
+        print "Allowed Green's functions are:", allowed
+        sys.exit(1)
 
-	type=section.get('Der')
-	if (type.get() not in allowed_der):
-		print "Allowed Derivatives are:", allowed
-		sys.exit(1)
+    type=section.get('DER')
+    if (type.get() not in allowed_der):
+        print "Allowed Derivatives are:", allowed
+        sys.exit(1)
 
-	if (type.get() == 'UniformDielectric'):
-		if not eps.is_set():
-			print "Eps not defined for UniformDielectric"
-			sys.exit(1)
+    if (type.get() == 'UNIFORMDIELECTRIC'):
+        if not eps.is_set():
+            print "Eps not defined for UniformDielectric"
+            sys.exit(1)
 
-	if (type.get() == 'MetalSphere'):
-		if not (eps.is_set() and epsre.is_set and epsimg.is_set()):
-			print "Eps and/or EpsImg not defined for MetalSphere"
-			sys.exit(1)
-		if not (position.is_set() and radius.is_set()):
-			print "SpherePosition and/or SphereRadius not defined for MetalSphere"
-			sys.exit(1)
-		if (len(position.get()) != 3):
-			print "SpherePosition error"
-			sys.exit(1)
-		if (radius.get()  < 0.1):
-			print "Minimum value allowed for Radius is 0.1"
-			sys.exit(1)
+    if (type.get() == 'METALSPHERE'):
+        if not (eps.is_set() and epsre.is_set and epsimg.is_set()):
+            print "Eps and/or EpsImg not defined for MetalSphere"
+            sys.exit(1)
+        if not (position.is_set() and radius.is_set()):
+            print "SpherePosition and/or SphereRadius not defined for MetalSphere"
+            sys.exit(1)
+        if (len(position.get()) != 3):
+            print "SpherePosition error"
+            sys.exit(1)
+        if (radius.get()  < 0.1):
+            print "Minimum value allowed for Radius is 0.1"
+            sys.exit(1)
 
-	if (type.get() == 'GreensFunctionSum'):
-		if not (green1.is_set() and green2.is_set()):
-			print "One or both components not defined for GreensFunctionSum"
-			sys.exit(1)
+    if (type.get() == 'GREENSFUNCTIONSUM'):
+        if not (green1.is_set() and green2.is_set()):
+            print "One or both components not defined for GreensFunctionSum"
+            sys.exit(1)
 
 def verify_spheres(keyword):
-	length=len(keyword.get())
-	if (length % 4 != 0):
-                print "Empty or incoherent Spheres list."
-		sys.exit(1)
-	convert_length_array(keyword)
+    length=len(keyword.get())
+    if (length % 4 != 0):
+        print "Empty or incoherent Spheres list."
+        sys.exit(1)
+    convert_length_array(keyword)
 
 def convert_length_array(keyword):
-	length=len(keyword.get())
-	if (isAngstrom):
-		for i in range(length):
-			keyword[i] /= CODATAdict[CODATAyear]
+    length=len(keyword.get())
+    if (isAngstrom):
+        for i in range(length):
+            keyword[i] /= CODATAdict[CODATAyear]
 
 def convert_length_scalar(keyword):
-	if (isAngstrom):
-		keyword[0] /= CODATAdict[CODATAyear]
+    if (isAngstrom):
+        keyword[0] /= CODATAdict[CODATAyear]
 
 def convert_area_scalar(keyword):
-	if (isAngstrom):
-		keyword[0] /= (CODATAdict[CODATAyear] * CODATAdict[CODATAyear]) 
+    if (isAngstrom):
+        keyword[0] /= (CODATAdict[CODATAyear] * CODATAdict[CODATAyear])
 
 if __name__ == '__main__':
-	main()
-
-
+    main()

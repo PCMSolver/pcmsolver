@@ -25,15 +25,15 @@ def git_command(*args):
 
 # Check if @CMAKE_SOURCE_DIR@/doc/html exists, in case it doesn't clone it
 if (not(os.path.exists('@CMAKE_SOURCE_DIR@/doc/html'))):
-        git_command('clone', 'git@github.com:PCMSolver/pcmsolver-doc.git', '@CMAKE_SOURCE_DIR@/doc/html')
-        print('HTML github repository cloned to {}'.format(source+'/doc/html'))
+    git_command('clone', 'git@github.com:PCMSolver/pcmsolver-doc.git', '@CMAKE_SOURCE_DIR@/doc/html')
+    print('HTML github repository cloned to {}'.format(source+'/doc/html'))
 # Go to @CMAKE_SOURCE_DIR@/doc/html
 os.chdir(source+'/doc/html')
 
 # Check that we are on the master branch, if not switch to master
 branch = subprocess.check_output(['git', 'rev-parse', '--symbolic-full-name', '--abbrev-ref', 'HEAD']).rstrip()
 if (branch != 'master'):
-        git_command('checkout', 'master')
+    git_command('checkout', 'master')
 # Copy files from @CMAKE_BINARY_DIR@/doc/html to @CMAKE_SOURCE_DIR@/doc/html
 distutils.dir_util.copy_tree(build+'/doc/html', source+'/doc/html')
 print('Updated HTML files copied to {}'.format(source+'/doc/html'))

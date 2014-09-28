@@ -101,7 +101,9 @@ void Input::reader(const char * pythonParsed)
     coarsity_ = cavity.getDbl("COARSITY");
     minDistance_ = cavity.getDbl("MINDISTANCE");
     derOrder_ = cavity.getInt("DERORDER");
-    cavFilename_ = cavity.getStr("RESTART"); 
+    if (type_ == "RESTART") {
+       cavFilename_ = cavity.getStr("NPZFILE");
+    }
 
     scaling_ = cavity.getBool("SCALING");
     radiiSet_ = to_upper_copy(cavity.getStr("RADIISET"));
@@ -185,7 +187,9 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
     coarsity_ = cav.coarsity * angstromToBohr(CODATAyear_);
     minDistance_ = cav.min_distance * angstromToBohr(CODATAyear_);
     derOrder_ = cav.der_order;
-    cavFilename_ = std::string(cav.restart_name); // No case conversion here!
+    if (type_ == "RESTART") {
+       cavFilename_ = std::string(cav.restart_name); // No case conversion here!
+    }
 
     scaling_ = cav.scaling;
     radiiSet_ = cav.radii_set;

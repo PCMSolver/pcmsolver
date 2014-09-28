@@ -25,9 +25,13 @@
 
 #include "Input.hpp"
 
+#include <iostream>
 #include <map>
 #include <vector>
 #include <stdexcept>
+#include <string>
+
+#include <Python.h>
 
 #include "Config.hpp"
 
@@ -43,16 +47,43 @@
 
 using boost::algorithm::to_upper_copy;
 
-Input::Input(const char * pythonParsed)
+Input::Input(const std::string & filename)
 {
-    reader(pythonParsed);
-    semanticParser();
+    parser(filename);
+    std::string pythonParsed = "@" + filename;
+    reader(pythonParsed.c_str());
+    semanticCheck();
 }
 
 Input::Input(const cavityInput & cav, const solverInput & solv, const greenInput & green)
 {
     reader(cav, solv, green);
-    semanticParser();
+    semanticCheck();
+}
+
+void Input::parser(const std::string & filename)
+{
+    // Initiliaze the Python interpreter
+    Py_Initialize();
+    // Import the module "pcmsolver" (from the file "pcmsolver.py")
+    PyRun_SimpleString("import sys");
+    PyRun_SimpleString("sys.path.append('@PROJECT_BINARY_DIR@/bin')");
+    PyObject * moduleName = PyString_FromString("pcmsolver");
+    PyObject * pyPCM = PyImport_Import(moduleName);
+    // Retrieve the "parse_pcm_input()" function from the module.
+    PyObject * parser = PyObject_GetAttrString(pyPCM, "parse_pcm_input");
+    // Build an argument tuple containing the string.
+    PyObject * args = Py_BuildValue("(s)", filename.c_str());
+    // Invoke the function, passing the argument tuple.
+    PyObject * result = PyObject_CallObject(parser, args);
+    // Free all temporary Python objects.
+    Py_DECREF(moduleName); 
+    Py_DECREF(pyPCM); 
+    Py_DECREF(parser);
+    Py_DECREF(args); 
+    Py_DECREF(result);
+    // Finalize the interpreter 
+    Py_Finalize();
 }
 
 void Input::reader(const char * pythonParsed)
@@ -62,22 +93,22 @@ void Input::reader(const char * pythonParsed)
 
     CODATAyear_ = input.getInt("CODATA");
 
-    const Section & cavity = input.getSect("Cavity");
+    const Section & cavity = input.getSect("CAVITY");
 
-    type_ = to_upper_copy(cavity.getStr("Type"));
-    area_ = cavity.getDbl("Area");
-    patchLevel_ = cavity.getInt("PatchLevel");
-    coarsity_ = cavity.getDbl("Coarsity");
-    minDistance_ = cavity.getDbl("MinDistance");
-    derOrder_ = cavity.getInt("DerOrder");
-    cavFilename_ = cavity.getStr("Restart"); // No case conversion here!
+    type_ = cavity.getStr("TYPE");
+    area_ = cavity.getDbl("AREA");
+    patchLevel_ = cavity.getInt("PATCHLEVEL");
+    coarsity_ = cavity.getDbl("COARSITY");
+    minDistance_ = cavity.getDbl("MINDISTANCE");
+    derOrder_ = cavity.getInt("DERORDER");
+    cavFilename_ = cavity.getStr("RESTART"); 
 
-    scaling_ = cavity.getBool("Scaling");
-    radiiSet_ = to_upper_copy(cavity.getStr("RadiiSet"));
-    minimalRadius_ = cavity.getDbl("MinRadius");
-    mode_ = to_upper_copy(cavity.getStr("Mode"));
+    scaling_ = cavity.getBool("SCALING");
+    radiiSet_ = to_upper_copy(cavity.getStr("RADIISET"));
+    minimalRadius_ = cavity.getDbl("MINRADIUS");
+    mode_ = to_upper_copy(cavity.getStr("MODE"));
     if (mode_ == "EXPLICIT") {
-        std::vector<double> spheresInput = cavity.getDblVec("Spheres");
+        std::vector<double> spheresInput = cavity.getDblVec("SPHERES");
         int j = 0;
         int upperBound = int(spheresInput.size() / 4);
         for (int i = 0; i < upperBound; ++i) {
@@ -88,36 +119,36 @@ void Input::reader(const char * pythonParsed)
             j += 4;
         }
     } else if (mode_ == "ATOMS") {
-        atoms_ = cavity.getIntVec("Atoms");
-        radii_ = cavity.getDblVec("Radii");
+        atoms_ = cavity.getIntVec("ATOMS");
+        radii_ = cavity.getDblVec("RADII");
     }
 
     // Get the contents of the Medium section
-    const Section & medium = input.getSect("Medium");
+    const Section & medium = input.getSect("MEDIUM");
     // Get the name of the solvent
-    std::string name = to_upper_copy(medium.getStr("Solvent"));
+    std::string name = medium.getStr("SOLVENT");
     if (name == "EXPLICIT") {
         hasSolvent_ = false;
         // Get the probe radius
-        probeRadius_ = medium.getDbl("ProbeRadius");
+        probeRadius_ = medium.getDbl("PROBERADIUS");
         // Get the contents of the Green<inside> section...
-        const Section & inside = medium.getSect("Green<inside>");
+        const Section & inside = medium.getSect("GREEN<INSIDE>");
         // ...and initialize the data members
-        greenInsideType_ = to_upper_copy(inside.getStr("Type"));
-	derivativeInsideType_ = derivativeTraits(to_upper_copy(inside.getStr("Der")));
-	epsilonInside_ = inside.getDbl("Eps");
+        greenInsideType_ = inside.getStr("TYPE");
+	derivativeInsideType_ = derivativeTraits(inside.getStr("DER"));
+	epsilonInside_ = inside.getDbl("EPS");
         // Get the contents of the Green<outside> section...
-        const Section & outside = medium.getSect("Green<outside>");
+        const Section & outside = medium.getSect("GREEN<OUTSIDE>");
         // ...and initialize the data members
-        greenOutsideType_ = to_upper_copy(outside.getStr("Type"));
-        derivativeOutsideType_ = derivativeTraits(to_upper_copy(inside.getStr("Der")));
-        epsilonOutside_ = outside.getDbl("Eps");
+        greenOutsideType_ = outside.getStr("TYPE");
+        derivativeOutsideType_ = derivativeTraits(inside.getStr("DER"));
+        epsilonOutside_ = outside.getDbl("EPS");
         // This will be needed for the metal sphere only
-	if (greenOutsideType_ == "MetalSphere") {
-	        epsilonReal_ = outside.getDbl("EpsRe");
-        	epsilonImaginary_ = outside.getDbl("EpsImg");
-	        spherePosition_ = outside.getDblVec("SpherePosition");
-        	sphereRadius_ = outside.getDbl("SphereRadius");
+	if (greenOutsideType_ == "METALSPHERE") {
+	        epsilonReal_ = outside.getDbl("EPSRE");
+        	epsilonImaginary_ = outside.getDbl("EPSIMG");
+	        spherePosition_ = outside.getDblVec("SPHEREPOSITION");
+        	sphereRadius_ = outside.getDbl("SPHERERADIUS");
 	}
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
@@ -136,10 +167,10 @@ void Input::reader(const char * pythonParsed)
         epsilonOutside_ = solvent_.epsStatic();
     }
     
-    solverType_ = to_upper_copy(medium.getStr("SolverType"));
-    equationType_ = integralEquation(medium.getStr("EquationType"));
-    correction_ = medium.getDbl("Correction");
-    hermitivitize_ = medium.getBool("MatrixSymm");
+    solverType_ = medium.getStr("SOLVERTYPE");
+    equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
+    correction_ = medium.getDbl("CORRECTION");
+    hermitivitize_ = medium.getBool("MATRIXSYMM");
     
     providedBy_ = std::string("API-side");
 }
@@ -203,7 +234,7 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
     providedBy_ = std::string("host-side");
 }
 
-void Input::semanticParser()
+void Input::semanticCheck()
 {
 #if not defined (WAVELET_DEVELOPMENT) || not defined (TSLESS_DEVELOPMENT)
     if (type_ == "GEPOL" || type_ == "TSLESS") {

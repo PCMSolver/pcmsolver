@@ -61,12 +61,15 @@ class Input
 {
 private: 
     Input() {}
-    Input(const char * pythonParsed);
+    Input(const std::string & filename);
     Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
     Input(const Input &other);
     Input& operator=(const Input &other);
     ~Input() {}
 
+    /*! Parse input by embedding the Python pcmsolver.py script as a module.
+     */
+    void parser(const std::string & filename);
     /*! Read Python-parsed input (API-side syntactic input parsing) into Input object
      */
     void reader(const char * pythonParsed);
@@ -86,7 +89,7 @@ private:
     void reader(const cavityInput & cav, const solverInput & solv, const greenInput & green);
     /*! Perform semantic input parsing aka sanity check
      */
-    void semanticParser();
+    void semanticCheck();
 
     /// Year of the CODATA set to be used
     int CODATAyear_;
@@ -155,13 +158,13 @@ private:
     /// Who performed the syntactic input parsing
     std::string providedBy_;
 public:
+    static Input& TheInput(const std::string & filename = "pcmsolver.inp") {
+        static Input obj = Input(filename);
+	return obj;
+    }
     static Input& TheInput(const cavityInput & cav, const solverInput & solv, const greenInput & green) {
         static Input obj = Input(cav, solv, green);
         return obj;
-    }
-    static Input& TheInput(const char * pythonParsed = "@pcmsolver.inp") {
-        static Input obj = Input(pythonParsed);
-	return obj;
     }
     // Accessor methods
     int CODATAyear() { return CODATAyear_; } 

@@ -54,11 +54,26 @@ def convert_to_upper_case(filename):
     Reads contents of filename and converts them to uppercase.
     The case-converted contents are written back to filename.
     """
-    contents = ''
+    contents = '' 
+    final    = ''
     with open(filename, 'r') as inputFile:
-        contents  = inputFile.read()
+        contents  = inputFile.readlines()
+    # In case the "restart" field is present the case conversion
+    # has to be done a bit more carefully. The filename argument to
+    # "restart" should not be touched, whereas the rest of the file
+    # has to be put in uppercase.
+    npz_file = re.compile('NPZFILE', re.IGNORECASE)
+    for line in contents:
+        if not npz_file.search(line):
+            line = line.upper() 
+        else:
+            rst_split = re.split(r"=", line)
+            rst_split = rst_split[0].upper() + ' = ' + rst_split[1]
+            line = ''.join(rst_split)
+        final += line    
+    # Write to file
     with open(filename, 'wb') as outputFile:
-        outputFile.write(contents.upper())
+        outputFile.write(final)
 
 def main():
     global topsect
@@ -138,8 +153,8 @@ def setup_keywords():
     cavity.add_kw('TYPE',        'STR')
     # Name of the file containing data for restarting a cavity
     # Valid for: Restart cavity
-    # Default: no filename
-    cavity.add_kw('RESTART',     'STR', '')
+    # Default: empty string
+    cavity.add_kw('NPZFILE',     'STR', '')
     # Patch level
     # Valid for: Wavelet cavity
     # Valid values: integer strictly greater than 0
@@ -343,11 +358,11 @@ def verify_cavity(section):
         #       print("Invalid derivative order requested: {}. Derivative order has to be within [1, 5]".format(md))
         #       sys.exit(1)
     elif (type.get() == 'RESTART'):
-        restart = section.get('RESTART')
+        npzfile = section.get('NPZFILE')
         # Restart string is the filename, with extension, where the cavity specs were saved.
         # We only get the filename here, either an empty or a non-empty string,
         # further management of input is then done C++-side.
-        if restart.get() == '':
+        if npzfile.get() == '':
             print("You need to specify a .npz filename for a restart...")
             sys.exit(1)
 

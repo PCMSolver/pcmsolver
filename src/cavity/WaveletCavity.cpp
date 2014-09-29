@@ -105,7 +105,7 @@ void WaveletCavity::readCavity(const std::string & filename)
     uploadedDyadic = true;
 }
 
-void WaveletCavity::uploadPoints(int quadLevel, Interpolation *interp)
+void WaveletCavity::uploadPoints(int quadLevel, Interpolation *interp, bool isPWL)
 {
     if (not uploadedDyadic) {
         throw std::runtime_error("Dyadic file must be uploaded first.");
@@ -118,7 +118,7 @@ void WaveletCavity::uploadPoints(int quadLevel, Interpolation *interp)
     Cubature *Q;
     initGaussSquare(&Q, quadLevel + 1);
 
-    nElements_ = nPatches * n * n * Q[quadLevel].nop;
+    nElements_ = nPatches * n * n * Q[quadLevel].noP;
 
     elementCenter_.resize(Eigen::NoChange, nElements_);
     elementNormal_.resize(Eigen::NoChange, nElements_);
@@ -130,14 +130,14 @@ void WaveletCavity::uploadPoints(int quadLevel, Interpolation *interp)
             s.y = h * i2;
             for (int i3=0; i3 < n; ++i3) {
                 s.x = h * i3;
-                for (size_t k = 0; k < Q[quadLevel].nop; k++) {
+                for (size_t k = 0; k < Q[quadLevel].noP; k++) {
                     t = vector2Add(s,vector2SMul(h,Q[quadLevel].xi[k]));
                     point = interp->Chi(t,i1);
                     norm = interp->n_Chi(t,i1);
                     Eigen::Vector3d center(point.x, point.y, point.z);
                     Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);
                     normal.normalize();
-                    double area = h * h * Q[quadLevel].w[k] * vector3Norm(norm);
+                    double area = h * h * Q[quadLevel].weight[k] * vector3Norm(norm);
                     elementCenter_.col(j) = center.transpose();
                     elementNormal_.col(j) = normal.transpose();
                     elementArea_(j) = area;

@@ -39,6 +39,7 @@ extern "C"
 }
 
 #include "Vector3.hpp"
+#include "Interpolation.hpp"
 
 #include "Cavity.hpp"
 #include "CavityData.hpp"
@@ -67,7 +68,7 @@ public:
     }
     virtual ~WaveletCavity() {};
     void readCavity(const std::string & filename);
-    void uploadPoints(int quadLevel, vector3 **** T_, bool isPWL);
+    void uploadPoints(int quadLevel, Interpolation *interp, bool isPWL);
     unsigned int getNPatches() { return nPatches; }
     unsigned int getNPatches() const { return nPatches; }
     unsigned int getNLevels() { return nLevels; }
@@ -86,8 +87,8 @@ private:
     double probeRadius;
     int patchLevel;
     double coarsity;
-    void uploadPointsPWC(int quadLevel, vector3 **** T_);
-    void uploadPointsPWL(int quadLevel, vector3 **** T_);
+    void uploadPointsPWC(int quadLevel, Interpolation *interp);
+    void uploadPointsPWL(int quadLevel, Interpolation *interp);
     std::vector<Eigen::Vector3d> nodePoint;
     std::vector<Eigen::Vector3i> nodeIndex;
     unsigned int nPatches;

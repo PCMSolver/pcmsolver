@@ -36,11 +36,38 @@
 #include <Eigen/Dense>
 
 #include "Input.hpp"
+#include "PhysicalConstants.hpp"
 
 struct InputGePolTest {
     std::string filename;
     Input parsedInput;
     InputGePolTest() { SetUp(); }
+    // List the contents of the input file here
+    int CODATAyear;
+    std::string type;
+    std::string cavFilename;
+    int patchLevel;
+    double coarsity;
+    double area;
+    double minDistance;
+    int derOrder;
+    bool scaling;
+    std::string radiiSet;
+    double minimalRadius;
+    std::string mode;
+    Solvent solvent;
+    bool hasSolvent;
+    std::string solverType;
+    int equationType;
+    double correction;
+    bool hermitivitize;
+    double probeRadius;
+    std::string greenInsideType;
+    std::string greenOutsideType;
+    int derivativeInsideType;
+    int derivativeOutsideType;
+    double epsilonInside;
+    double epsilonOutside;
     void SetUp() {
 	filename = "gepol.inp";
 	parsedInput = Input(filename);
@@ -64,11 +91,58 @@ struct InputRestartTest {
     Input parsedInput;
     InputRestartTest() { SetUp(); }
     // List the contents of the input file here
+    int CODATAyear;
+    std::string type;
     std::string cavFilename;
+    int patchLevel;
+    double coarsity;
+    double area;
+    double minDistance;
+    int derOrder;
+    bool scaling;
+    std::string radiiSet;
+    double minimalRadius;
+    std::string mode;
+    std::vector<int> atoms;
+    std::vector<double> radii;
+    std::vector<Sphere> spheres;
+    std::string solvent;
+    std::string solverType;
+    int equationType;
+    double correction;
+    bool hermitivitize;
+    double probeRadius;
+    std::string greenInsideType;
+    std::string greenOutsideType;
+    int derivativeInsideType;
+    int derivativeOutsideType;
+    double epsilonInside;
+    double epsilonOutside;
     void SetUp() {
 	filename = "restart.inp";
 	parsedInput = Input(filename);
-        std::string cavFilename = "cavity.npz";
+	CODATAyear = 2010;
+        type = "RESTART";
+        cavFilename = "cavity.npz";
+	patchLevel  = 2;
+	coarsity = 0.5;
+	area = 0.3;
+	minDistance = 0.1;
+	derOrder = 4;
+        scaling = true;
+	radiiSet = "BONDI";
+	minimalRadius = 100.0;
+	mode = "IMPLICIT";
+	solvent = "Water"; // Name in the Solvent object
+	solverType = "IEFPCM";
+	equationType = 1; 
+	correction = 0.0;
+	hermitivitize = true;
+	probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+	greenInsideType = "VACUUM";
+	greenOutsideType = "UNIFORMDIELECTRIC";
+	derivativeInsideType = 1;
+	derivativeOutsideType = 1;
     }
 };
 
@@ -79,7 +153,29 @@ BOOST_FIXTURE_TEST_SUITE(InputRestart, InputRestartTest)
  */
 BOOST_FIXTURE_TEST_CASE(embdeddedPython, InputRestartTest)
 {
-	std::cout << "Restart" << std::endl;	
+    double threshold = 1.0e-12;
+    BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
+    BOOST_REQUIRE_EQUAL(type,                  parsedInput.cavityType());
+    BOOST_REQUIRE_EQUAL(cavFilename,           parsedInput.cavityFilename());
+    BOOST_REQUIRE_EQUAL(patchLevel,            parsedInput.patchLevel());
+    BOOST_REQUIRE_CLOSE(coarsity,              parsedInput.coarsity(), threshold);
+    BOOST_REQUIRE_CLOSE(area,                  parsedInput.area(), threshold);
+    BOOST_REQUIRE_CLOSE(minDistance,           parsedInput.minDistance(), threshold);
+    BOOST_REQUIRE_EQUAL(derOrder,              parsedInput.derOrder());
+    BOOST_REQUIRE_EQUAL(scaling,               parsedInput.scaling());
+    BOOST_REQUIRE_EQUAL(radiiSet,              parsedInput.radiiSet());
+    BOOST_REQUIRE_CLOSE(minimalRadius,         parsedInput.minimalRadius(), threshold);
+    BOOST_REQUIRE_EQUAL(mode,                  parsedInput.mode());
+    BOOST_REQUIRE_EQUAL(solvent,               parsedInput.solvent().name());
+    BOOST_REQUIRE_EQUAL(solverType,            parsedInput.solverType());
+    BOOST_REQUIRE_EQUAL(equationType,          parsedInput.equationType());
+    BOOST_REQUIRE_CLOSE(correction,            parsedInput.correction(), threshold);
+    BOOST_REQUIRE_EQUAL(hermitivitize,         parsedInput.hermitivitize());
+    BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.probeRadius(), threshold);
+    BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
+    BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.derivativeInsideType());
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.derivativeOutsideType());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

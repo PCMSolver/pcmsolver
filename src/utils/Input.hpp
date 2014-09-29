@@ -80,10 +80,10 @@ private:
 
     /// Year of the CODATA set to be used
     int CODATAyear_;
-    /// Filename for the .npz cavity restart file
-    std::string cavFilename_;
     /// The type of cavity
     std::string type_;
+    /// Filename for the .npz cavity restart file
+    std::string cavFilename_;
     /// Wavelet cavity patch level
     int patchLevel_;
     /// Wavelet cavity coarsity
@@ -140,7 +140,7 @@ private:
     double epsilonImaginary_;
     /// Center of the spherical metal NP
     std::vector<double> spherePosition_;
-    /// Radisu of the spherical metal NP
+    /// Radius of the spherical metal NP
     double sphereRadius_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;

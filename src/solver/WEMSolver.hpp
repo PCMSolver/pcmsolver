@@ -35,6 +35,8 @@
 
 #include "SparseMatrix.hpp"
 #include "GenericAnsatzFunction.hpp"
+#include "LinAnsatzFunction.hpp"
+#include "ConAnsatzFunction.hpp"
 
 class Vector2;
 class Vector3;
@@ -64,6 +66,7 @@ public:
         : PCMSolver(gfInside_, gfOutside_), integralEquation(integralEquation_) {
         if(modelType =="Linear"){
           af = new LinAnsatzFunction();
+        }
         else if(modelType == "Wavelet"){
           af = new ConAnsatzFunction();
         }
@@ -75,7 +78,7 @@ public:
         return af->interCoeff;
     }
     int getQuadratureLevel() {
-        return quadratureLevel_;
+        return af->quadratureLevel_;
     }
     virtual void buildSystemMatrix(const Cavity & cavity);
     virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge,

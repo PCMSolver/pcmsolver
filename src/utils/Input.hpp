@@ -78,6 +78,8 @@ private:
      */
     void semanticCheck();
 
+    /// Units of measure
+    std::string units_;
     /// Year of the CODATA set to be used
     int CODATAyear_;
     /// The type of cavity
@@ -155,6 +157,7 @@ public:
     friend inline void swap(Input & left, Input & right);
     inline void swap(Input & other);
     // Accessor methods
+    std::string units() { return units_; }
     int CODATAyear() { return CODATAyear_; } 
     // Cavity section input
     std::string cavityFilename() { return cavFilename_; }
@@ -169,8 +172,11 @@ public:
     double minimalRadius() { return minimalRadius_; }
     std::string mode() { return mode_; }
     std::vector<int> atoms() { return atoms_; }
+    int atoms(int i) { return atoms_[i]; }
     std::vector<double> radii() { return radii_; }
+    double radii(int i) { return radii_[i]; }
     std::vector<Sphere> spheres() { return spheres_; }
+    Sphere spheres(int i) { return spheres_[i]; }
     void spheres(const std::vector<Sphere> & sph) { spheres_ = sph; }
     // Medium section input
     Solvent solvent() { return solvent_; }

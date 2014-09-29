@@ -3,6 +3,7 @@ Medium {
 		SolverType = Wavelet
                 EquationType = FirstKind
 		ProbeRadius = 1.385
+                Solvent = Explicit
 		Green<inside> {Type=Vacuum}
 		Green<outside> {
 				Type = UniformDielectric
@@ -15,6 +16,7 @@ Cavity {
 		Type = Wavelet
 		PatchLevel = 1
 		Coarsity = 0.3
+		Mode = Explicit
 		Spheres = [ 0.00,   0.00,  0.00,  1.80,
 			    0.00,  -0.96,  0.00,  1.44,
 			   -0.905,  0.32,  0.00,  1.44]

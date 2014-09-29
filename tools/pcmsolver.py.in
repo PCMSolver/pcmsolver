@@ -221,13 +221,13 @@ def setup_keywords():
 
     # Medium section
     medium = getkw.Section('MEDIUM', callback = verify_medium)
+    # Type of solver
+    # Valid values: IEFPCM, CPCM, WAVELET or LINEAR
+    medium.add_kw('SOLVERTYPE',   'STR', 'IEFPCM')
     # Solvent
     # Valid for: IEFPCM, CPCM, Wavelet and PWL solvers
     # Valid values: string
     medium.add_kw('SOLVENT',      'STR')
-    # Type of the solver
-    # Valid values: IEFPCM, CPCM, WAVELET or LINEAR
-    medium.add_kw('SOLVERTYPE',   'STR', 'IEFPCM')
     # Type of integral equation
     # Valid for: Wavelet and PWL
     # Valid values: FIRSTKIND, SECONDKIND or FULL

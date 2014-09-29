@@ -33,10 +33,26 @@
 
 /*! @struct cavityInput
  *  @brief Data structure for host-API cavity input communication.
- *  @var cavityInput::type
+ *  @var cavityInput::cavity_type
  *  Type of cavity requested.
+ *  @var cavityInput::patch_level
+ *  Wavelet cavity mesh patch level.
+ *  @var cavityInput::coarsity
+ *  Wavelet cavity mesh coarsity.
  *  @var cavityInput::area
  *  Average tesserae area.
+ *  @var min_distance
+ *  Minimal distance between sampling points.
+ *  @var der_order
+ *  Derivative order for the switching function.
+ *  @var scaling
+ *  Whether to scale or not the atomic radii.
+ *  @var radii_set
+ *  The built-in radii set to be used.
+ *  @var restart_name
+ *  Name of the .npz file for GePol cavity restart.
+ *  @var min_radius
+ *  Minimal radius for the added spheres.
  */
 struct cavityInput {
     char cavity_type[8];
@@ -67,8 +83,16 @@ struct cavityInput {
 
 /*! @struct solverInput
  *  @brief Data structure for host-API solver input communication.
- *  @var solverInput::type
+ *  @var solverInput::solver_type
  *  Type of solver requested.
+ *  @var solverInput::solvent
+ *  Name of the solvent.
+ *  @var solverInput::equation_type
+ *  Type of the integral equation to be used.
+ *  @var solverInput::correction
+ *  Correction in the CPCM apparent surface charge scaling factor.
+ *  @var solverInput::probe_radius
+ *  Radius of the spherical probe mimicking the solvent.
  */
 struct solverInput {
     char solver_type[7];
@@ -91,6 +115,8 @@ struct solverInput {
  *  @brief Data structure for host-API Green's function input communication.
  *  @var greenInput::inside_type
  *  Type of Green's function requested inside the cavity.
+ *  @var greenInput::outside_epsilon
+ *  Value of the static permittivity outside the cavity.
  *  @var greenInput::outside_type
  *  Type of Green's function requested outside the cavity.
  */

@@ -1,3 +1,229 @@
 /** \page InputDescription Input description
 
+`%PCMSolver` needs a number of input parameters at runtime. The API provides two ways of providing them:
+1. by means of an additional input file, parsed by the `pcmsolver.py` script;
+2. by means of a special section in the host program input.
+
+Method 1 is more flexible: all parameters that can be modified by the user are available.
+The host program needs only copy the additional input file to the scratch directory before execution.
+By embedding Python into our C++ code, input reading and validation are done automatically behind the curtains.
+Method 2 just gives access to the core parameters. 
+
+In this page, input style and input parameters available in Method 1 will be documented.
+
+### %Input style
+
+The input for `%PCMSolver` is parsed through the [Getkw](https://repo.ctcc.no/projects/libgetkw/wiki/Wiki) 
+library written by Jonas Juselius and is organized in **sections** and **keywords**.
+%Input reading is case-insensitive. An example input structure is shown below,
+there are also some working examples in the directory `examples`.
+A general input parameter has the following form (Keyword = [Data type]):
+
+\include example_input-all.inp
+
+Array-valued keywords will expect the array to be given in comma-separated format and enclosed 
+in square brackets. The purpose of tags is to distinguish between cases in which multiple 
+instances of the same kind of object can be managed by the program. 
+There exist only certain legal tagnames and these are determined in the C++ code. 
+Be aware that the input parsing script does not check the correctness of tags.
+
+\warning Some options might not be available or might have no effect in the released version (*vide infra*)
+
+### %Input parameters
+
+Available sections:
++ top section: sets up parameters affecting the module globally;
++ %Cavity: sets up all information needed to form the cavity and discretize its surface;
++ Medium: sets up the solver to be used and the properties of the medium, i.e. the Green's
+functions inside and outside the cavity;
++ Green, subsection of medium. Sets up the Green's function inside and outside the cavity.
+
+#### Top section keywords
+
+\keyword{Units\n, string\n, AU | Angstrom\n, global\n, AU\n}
+Units of measure used in the input file. If Angstrom is given, all relevant input parameters
+are first converted in au and subsequently parsed.
+
+\keyword{CODATA\n, integer\n, 2010 | 2006 | 2002 | 1998\n, global\n, 2010\n}
+Set of fundamental physical constants to be used in the module.
+
+#### %Cavity section keywords
+
+\keyword{Type\n, string\n, GePol | Wavelet | TsLess | Restart\n, cavity\n, none\n}
+The type of the cavity. Completely specifies type of molecular surface and its discretization.
+Only one type is allowed. Wavelet cavity only works if wavelet solver is selected in the Medium
+section. GePol and TsLess only work with IEFPCM and CPCM solvers.
+Restart cavity will read the file specified by NpzFile keyword and create a GePol cavity from
+that.
+
+\keyword{NpzFile\n, string\n, \n, Restart cavity\n, empty string\n}
+The name of the `.npz` file to be used for the GePol cavity restart.
+
+\keyword{PatchLevel\n, integer\n, \f$i > 0\f$\n, Wavelet cavity\n, 2\n}
+Defines the mesh level for a wavelet cavity. Each patch is split into \f$2^{\mathrm{PatchLevel}}\f$ elements.
+
+\keyword{Coarsity\n, double\n, \f$d \in ]0\, 1[\f$\n, Wavelet cavity\n, 0.5\n}
+Defines coarsity of wavelet cavity surface mesh.
+
+\keyword{Area\n, double\n, \f$d \geq 0.01\f$ au\f$^2\f$\n, GePol and TsLess cavities\n, 0.3 au\f$^2\f$\n}
+Average area (weight) of the surface partition for the GePol (TsLess) cavity.
+
+\keyword{MinDistance\n, double\n, \n, TsLess cavity\n, 0.1 au\n}
+Minimal distance between sampling points.
+
+\keyword{DerOrder\n, integer\n, \f$i > 2\f$\n, TsLess cavity\n, 4\n}
+Up to which order the derivatives of the switching function will be continuous.
+
+\keyword{Scaling\n, bool\n, True | False\n, all cavities except Restart\n, True\n}
+If true, the radii for the spheres will be scaled by 1.2. For finer control on the scaling factor
+for each sphere, select explicit creation mode.
+
+\keyword{RadiiSet\n, string\n, Bondi | UFF\n, all cavities except Restart\n, Bondi\n}
+Select set of atomic radii to be used. Currently Bondi-Mantina \cite Bondi1964, \cite Mantina2009 and
+UFF \cite Rappe1992 sets available.
+
+\keyword{MinRadius\n, double\n, \f$d \geq 0.4\f$ au\n, Gepol and TsLess cavities\n, 100.0 au\n}
+Minimal radius for additional spheres not centered on atoms. An arbitrary big value is equivalent
+to switching off the use of added spheres, which is the default.
+
+\keyword{Mode\n, string\n, Implicit | Atoms | Explicit\n, all cavities except Restart\n, Implicit\n}
+How to create the list of spheres for the generation of the molecular surface:
++ in Implicit mode, the atomic coordinates and charges will be obtained from the QM host program.
+Spheres will be centered on the atoms and the atomic radii, as specified in one the built-in sets, 
+will be used. Scaling by 1.2 will be applied according to the keyword Scaling;
++ in Atoms mode, the atomic coordinates and charges will be obtained from the QM host program.
+For the atoms specified by the array given in keyword Atoms, the built-in radii will be substituted 
+by the radii provided in the keyword Radii. Scaling by 1.2 will be applied according to the keyword
+Scaling;
++ in Explicit mode, both centers and radii of the spheres are to be specified in the keyword Spheres.
+The user has full control over the generation of the list of spheres. Scaling by 1.2 is **not** applied,
+regardless of the value of the Scaling keyword.
+
+\keyword{Atoms\n, array of integers\n, \n, all cavities except Restart\n, \n}
+Array of atoms whose radius has to be substituted by a custom value.
+
+\keyword{Radii\n, array of doubles\n, \n, all cavities except Restart\n, \n}
+Array of radii to substitute the built-in values.
+
+\keyword{Spheres\n, array of doubles\n, \n, all cavities except Restart\n, \n}
+Array of coordinates and centers for construction of the list of spheres in explicit mode.
+Format is \f$[\ldots, x_i, y_i, z_i, R_i, \ldots]\f$.
+
+#### Medium section keywords
+
+\keyword{Solver\n, string\n, IEFPCM | CPCM | Wavelet | Linear\n, \n, IEFPCM\n}
+Type of solver to be used. All solvers are based on the Integral Equation Formulation of
+the Polarizable Continuum Model \cite Cances1998 :
++ IEFPCM. Collocation solver for a general dielectric medium;
++ CPCM. Collocation solver for a conductor-like approximation to the dielectric medium;
++ Wavelet. Wavelet Galerkin solver for a general dielectric medium. Piecewise constant _Ansatz_;
++ Linear. Wavelet Galerkin solver for a general dielectric medium. Piecewise linear _Ansatz_.
+IEFPCM and CPCM can only be used with a GePol or TsLess cavity. Wavelet and Linear can only be
+used with a wavelet cavity.
+
+\keyword{%Solvent\n, string\n, _vide infra_\n, all solvers\n, \n}
+Specification of the dielectric medium outside the cavity. This keyword **must always** be
+given a value. Allowed values are:
++ Water               , H2O;
++ Methanol            , CH3OH;                        
++ Ethanol             , CH3CH2OH;                     
++ Chloroform          , CHCL3;                        
++ Methylenechloride   , CH2CL2;                       
++ 1,2-Dichloroethane  , C2H4CL2;                      
++ Carbon Tetrachloride, CCL4;                         
++ Benzene             , C6H6;                         
++ Toluene             , C6H5CH3;                      
++ Chlorobenzene       , C6H5CL;                       
++ Nitromethane        , CH3NO2;                       
++ N-heptane           , C7H16;                        
++ Cyclohexane         , C6H12;                        
++ Aniline             , C6H5NH2;                      
++ Acetone             , C2H6CO;                       
++ Tetrahydrofurane    , THF;                          
++ Dimethylsulfoxide   , DMSO;                         
++ Acetonitrile        , CH3CN;                        
++ Explicit. 
+
+If the solvent name given is different from Explicit any other settings in the Green's function
+section will be overridden by the built-in values for the solvent specified.
+Solvent = Explicit, triggers parsing of the Green's function sections.
+
+\keyword{EquationType\n, string\n, FirstKind | SecondKind | Full\n, Wavelet and Linear solvers\n, SecondKind\n}
+Integral equation to be used in setting up the wavelet Galerkin solvers:
++ first kind is the IEF equation for the uniform isotropic dielectric;
++ second kind is the IEF equation using the electric field as right-hand side;
++ full is the general IEF equation, valid for any dielectric covered by the integral equation formulation.
+
+\keyword{MatrixSymm\n, bool\n, True | False \n, IEFPCM solver\n, True\n}
+If True, the PCM matrix obtained by the IEFPCM collocation solver is symmetrized
+\f$
+   \mathbf{K} := \frac{\mathbf{K} + \mathbf{K}^\dagger}{2}
+\f$
+
+\keyword{Correction\n, double\n, \f$d > 0.0\f$\n, CPCM solver\n, 0.0\n}
+Correction, \f$k\f$ for the apparent surface charge scaling factor in the CPCM solver
+\f$f(\varepsilon) = \frac{\varepsilon - 1}{\varepsilon + k}\f$.
+
+\keyword{ProbeRadius\n, double\n, \f$d \in [0.1\, 100.0]\f$ au\n, all solvers\n, 1.0\n}
+Radius of the spherical probe approximating a solvent molecule. Used for generating the
+solvent-excluded surface (SES) or an approximation of it. Overridden by the built-in value
+for the chosen solvent.
+
+#### Green's function section keywords
+
+If Solvent = Explicit, **two** Green's functions sections must be specified with
+tags `inside` and `outside`, i.e. `Green<inside>` and `Green<outside>`.
+The Green's function inside will always be the vacuum, while the 
+Green's function outside might vary. Currently, only isotropic uniform dielectrics
+are implemented.
+
+\keyword{Type\n, string\n, Vacuum | UniformDielectric \n, \n, Vacuum\n}
+Which Green's function characterizes the medium.
+
+\keyword{Der\n, string\n, Numerical | Derivative | Gradient | Hessian\n, \n, Derivative\n}
+How to calculate the directional derivatives of the Green's function:
++ numerical, perform numerical differentiation **debug option**;
++ derivative, use automatic differentiation to get the directional derivative;
++ gradient, use automatic differentiation to get the full gradient **debug option**;
++ hessian, use automatic differentiation to get the full hessian **debug option**;
+
+\keyword{Eps\n, double\n, \f$d \geq 1.0\f$\n, \n, 1.0\n}
+Static dielectric permittivity for the medium.
+
+#### Available solvents
+
+The macroscopic properties for the built-in list of solvents are:
++ static permittivity, \f$\varepsilon_s\f$;
++ optical permittivity, \f$\varepsilon_\infty\f$;
++ probe radius, \f$r_\mathrm{probe}\f$ in Angstrom.
+
+List of available solvents:
++ Water, \f$\varepsilon_s = 78.39\f$, \f$\varepsilon_\infty = 1.776\f$, \f$r_\mathrm{probe} = 1.385\f$;
++ Methanol, \f$\varepsilon_s = 2.63\f$, \f$\varepsilon_\infty = 1.758\f$, \f$r_\mathrm{probe} = 1.855\f$;
++ Ethanol, \f$\varepsilon_s = 24.55\f$, \f$\varepsilon_\infty = 1.847\f$, \f$r_\mathrm{probe} = 2.18\f$;
++ Chloroform, \f$\varepsilon_s = 4.90\f$, \f$\varepsilon_\infty = 2.085\f$, \f$r_\mathrm{probe} = 2.48\f$;
++ Methylenechloride, \f$\varepsilon_s = 8.93\f$, \f$\varepsilon_\infty = 2.020\f$, \f$r_\mathrm{probe} = 2.27\f$;
++ 1,2-Dichloroethane, \f$\varepsilon_s = 10.36\f$, \f$\varepsilon_\infty = 2.085\f$, \f$r_\mathrm{probe} = 2.505\f$;
++ Carbon tetrachloride, \f$\varepsilon_s = 2.228\f$, \f$\varepsilon_\infty = 2.129\f$, \f$r_\mathrm{probe} = 2.685\f$;
++ Benzene, \f$\varepsilon_s = 2.247\f$, \f$\varepsilon_\infty = 2.244\f$, \f$r_\mathrm{probe} = 2.630\f$;          
++ Toluene, \f$\varepsilon_s = 2.379\f$, \f$\varepsilon_\infty = 2.232\f$, \f$r_\mathrm{probe} = 2.82\f$;
++ Chlorobenzene, \f$\varepsilon_s = 5.621\f$, \f$\varepsilon_\infty = 2.320\f$, \f$r_\mathrm{probe} = 2.805\f$;
++ Nitromethane, \f$\varepsilon_s = 38.20\f$, \f$\varepsilon_\infty = 1.904\f$, \f$r_\mathrm{probe} = 2.155\f$;
++ N-heptane, \f$\varepsilon_s = 1.92\f$, \f$\varepsilon_\infty = 1.918\f$, \f$r_\mathrm{probe} = 3.125\f$;
++ Cyclohexane, \f$\varepsilon_s = 2.023\f$, \f$\varepsilon_\infty = 2.028\f$, \f$r_\mathrm{probe} = 2.815\f$;
++ Aniline, \f$\varepsilon_s = 6.89\f$, \f$\varepsilon_\infty = 2.506\f$, \f$r_\mathrm{probe} = 2.80\f$;
++ Acetone, \f$\varepsilon_s = 20.7\f$, \f$\varepsilon_\infty = 1.841\f$, \f$r_\mathrm{probe} = 2.38\f$;
++ Tetrahydrofurane, \f$\varepsilon_s = 7.58\f$, \f$\varepsilon_\infty = 1.971\f$, \f$r_\mathrm{probe} = 2.9\f$;
++ Dimethylsulfoxide, \f$\varepsilon_s = 46.7\f$, \f$\varepsilon_\infty = 2.179\f$, \f$r_\mathrm{probe} = 2.455\f$;
++ Acetonitrile, \f$\varepsilon_s = 36.64\f$, \f$\varepsilon_\infty = 1.806\f$, \f$r_\mathrm{probe} = 2.155\f$
+
+### Keywords not available in the current release
+
+The code related to the following keywords is not yet part of the public release of the API.
+An input file containing them will either result in a crash or in a corrupt output:
+
++ TsLess cavity and related input parameters;
++ Wavelet cavity and related input parameters;
++ Wavelet solver and related input parameters.
+
 */

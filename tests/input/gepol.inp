@@ -6,7 +6,7 @@ Medium
 
 Cavity 
 {
-		Type = GePol
+		Type = GePol 
 		Area = 100.0
 		Spheres = [ 0.00,   0.00,  0.00,  1.80,
 			    0.00,  -0.96,  0.00,  1.44,

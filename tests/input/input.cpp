@@ -37,20 +37,49 @@
 
 #include "Input.hpp"
 
-struct InputTest {
+struct InputGePolTest {
     std::string filename;
-    Input * parsedInput;
-    InputTest() { SetUp(); }
+    Input parsedInput;
+    InputGePolTest() { SetUp(); }
     void SetUp() {
-	filename = "parsingTest.inp";
-	parsedInput = &Input::TheInput(filename);
+	filename = "gepol.inp";
+	parsedInput = Input(filename);
     }
 };
 
+BOOST_FIXTURE_TEST_SUITE(InputGePol, InputGePolTest)
+
 /*! \class Input 
- *  \test \b InputTest_embeddedPython tests input reading using Python embedding
+ *  \test \b InputGePolTest_restart tests input reading by embedding Python pcmsolver.py script
  */
-BOOST_FIXTURE_TEST_CASE(embdeddedPython, InputTest)
+BOOST_FIXTURE_TEST_CASE(embdeddedPython, InputGePolTest)
 {
-	std::cout << "BLA BLA" << std::endl;	
+	std::cout << "GePol" << std::endl;	
 }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+struct InputRestartTest {
+    std::string filename;
+    Input parsedInput;
+    InputRestartTest() { SetUp(); }
+    // List the contents of the input file here
+    std::string cavFilename;
+    void SetUp() {
+	filename = "restart.inp";
+	parsedInput = Input(filename);
+        std::string cavFilename = "cavity.npz";
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(InputRestart, InputRestartTest)
+
+/*! \class Input 
+ *  \test \b InputRestartTest_restart tests input reading by embedding Python pcmsolver.py script
+ */
+BOOST_FIXTURE_TEST_CASE(embdeddedPython, InputRestartTest)
+{
+	std::cout << "Restart" << std::endl;	
+}
+
+BOOST_AUTO_TEST_SUITE_END()

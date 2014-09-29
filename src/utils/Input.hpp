@@ -43,15 +43,9 @@
  *  \author Roberto Di Remigio
  *  \date 2013
  *
- *  Implemented as a Singleton: only one instance of it is needed and therefore admitted.
- *  Constructors (default, non-default and copy), destructor and assignment operator are
- *  made private. We use the lazy initialization idiom to initialize the unique Input
- *  object \cite Alexandrescu2001
  *  An Input object is to be used as the unique point of access to user-provided input:
  *   input ---> parsed input (Python script) ---> Input object (contains all the input data)
  *  Definition of input parameters is to be done in the Python script and in this class.
- *  At runtime a unique Input object in created, this object contains all input parameters
- *  processed as to be directly usable in the module.
  *  They must be specified as private data members with public accessor methods (get-ters).
  *  In general, no mutator methods (set-ters) should be needed, exceptions to this rule
  *  should be carefully considered.
@@ -60,13 +54,6 @@
 class Input
 {
 private: 
-    Input() {}
-    Input(const std::string & filename);
-    Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
-    Input(const Input &other);
-    Input& operator=(const Input &other);
-    ~Input() {}
-
     /*! Parse input by embedding the Python pcmsolver.py script as a module.
      */
     void parser(const std::string & filename);
@@ -158,14 +145,15 @@ private:
     /// Who performed the syntactic input parsing
     std::string providedBy_;
 public:
-    static Input& TheInput(const std::string & filename = "pcmsolver.inp") {
-        static Input obj = Input(filename);
-	return obj;
-    }
-    static Input& TheInput(const cavityInput & cav, const solverInput & solv, const greenInput & green) {
-        static Input obj = Input(cav, solv, green);
-        return obj;
-    }
+    Input() {}
+    Input(const std::string & filename);
+    Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
+    Input(const Input &other);
+    Input& operator=(Input other);
+    ~Input() {}
+
+    friend inline void swap(Input & left, Input & right);
+    inline void swap(Input & other);
     // Accessor methods
     int CODATAyear() { return CODATAyear_; } 
     // Cavity section input

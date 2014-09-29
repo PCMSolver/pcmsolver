@@ -45,6 +45,7 @@
 // Include Boost headers here
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
 // Core classes
@@ -69,7 +70,7 @@ PWLSolver * _PWLSolver = NULL;
 PCMSolver * _solver = NULL;
 
 SharedSurfaceFunctionMap functions;
-Input * parsedInput = NULL;
+boost::shared_ptr<Input> parsedInput;
 std::vector<std::string> input_strings; // Used only by Fortran hosts
 
 /*
@@ -400,9 +401,9 @@ void setupInput(bool from_host)
 	   // out_stream << solv << std::endl;
 	   // out_stream << green << std::endl;
 	   // printer(out_stream);
-    	    parsedInput = &Input::TheInput(cav, solv, green);
+    	    parsedInput = boost::make_shared<Input>(Input(cav, solv, green));
     } else {
-	    parsedInput = &Input::TheInput("@pcmsolver.inp");
+	    parsedInput = boost::make_shared<Input>(Input("pcmsolver.inp"));
     }
     // The only thing we can't create immediately is the vector of spheres
     // from which the cavity is to be built.

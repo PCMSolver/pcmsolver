@@ -195,7 +195,13 @@ TAB_SIZE               = 8
 # will result in a user-defined paragraph with heading "Side Effects:". 
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                = 
+ALIASES +=keyword{5}="__Keyword__:       \1 __Argument type__: \2 __Valid values__:  \3 __Valid for__:     \4 __Default__:       \5"
+
+ALIASES +=keyword{1}="__Keyword__:       \1" 
+ALIASES +=argtype{1}="__Argument type__: \1" 
+ALIASES +=valid{1}="__Valid values__:  \1" 
+ALIASES +=affects{1}="__Valid for__:     \1" 
+ALIASES +=default{1}="__Default__:       \1" 
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only). 
 # A mapping has the form "name=value". For example adding 
@@ -716,12 +722,13 @@ EXCLUDE_PATTERNS       = "@PROJECT_SOURCE_DIR@/src/debug*.cpp" \
 # AClass::ANamespace, ANamespace::*Test
 
 EXCLUDE_SYMBOLS        = "EIGEN_MAKE_ALIGNED_OPERATOR_NEW" \
-                         BOOST_FIXTURE_TEST_SUITE \
-                         BOOST_AUTO_TEST_SUITE_END \
-                         BOOST_AUTO_TEST_CASE \
-                         BOOST_REQUIRE_EQUAL \
-                         BOOST_REQUIRE_CLOSE \
-                         BOOST_TEST_MODULE
+                         "BOOST_FIXTURE_TEST_SUITE" \
+                         "BOOST_FIXTURE_TEST_CASE" \
+                         "BOOST_AUTO_TEST_SUITE_END" \
+                         "BOOST_AUTO_TEST_CASE" \
+                         "BOOST_REQUIRE_EQUAL" \
+                         "BOOST_REQUIRE_CLOSE" \
+                         "BOOST_TEST_MODULE"
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or 
 # directories that contain example code fragments that are included (see 

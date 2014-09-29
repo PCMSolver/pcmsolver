@@ -45,6 +45,7 @@ extern "C"
 #include "SolverData.hpp"
 #include "SolverFactory.hpp"
 #include "WEMSolver.hpp"
+#include "ElementTree.hpp"
 
 /*! \file PWCSolver.hpp
  *  \class PWCSolver
@@ -82,7 +83,7 @@ private:
     virtual void solveSecondKind(const Eigen::VectorXd & potential,
                                  Eigen::VectorXd & charge);
     virtual void solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-    element *elementTree; //*E_; Hierarchical element list
+    nt_node *elementTree; //*E_; Hierarchical element list
     wavelet *waveletList; //*W_; List of wavelets
 };
 

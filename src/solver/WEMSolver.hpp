@@ -127,7 +127,7 @@ namespace
 {
     PCMSolver * createWEMSolver(const solverData & _data)
     {
-        return new WEMSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
+        return new WEMSolver(_data.gfInside, _data.gfOutside, _data.modelType, _data.integralEquation);
     }
     const std::string WEMSOLVER("Wavelet");
     const bool registeredWEMSolver = SolverFactory::TheSolverFactory().registerSolver(

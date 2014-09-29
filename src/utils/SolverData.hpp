@@ -51,6 +51,7 @@ struct solverData {
     double correction;
     int integralEquation;
     bool hermitivitize;
+    std::string modelType;
     solverData(IGreensFunction * _gfInside, IGreensFunction * _gfOutside,
                double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
         gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction),

@@ -64,6 +64,7 @@ Input::Input(const cavityInput & cav, const solverInput & solv, const greenInput
 inline void swap(Input & left, Input & right)
 {
     using std::swap;
+    swap(left.units_,                 right.units_);
     swap(left.CODATAyear_,            right.CODATAyear_);
     swap(left.cavFilename_,           right.cavFilename_);
     swap(left.type_,                  right.type_);
@@ -102,6 +103,7 @@ inline void swap(Input & left, Input & right)
 inline void Input::swap(Input & other)
 {
     using std::swap;
+    swap(this->units_,                 other.units_);
     swap(this->CODATAyear_,            other.CODATAyear_);
     swap(this->cavFilename_,           other.cavFilename_);
     swap(this->type_,                  other.type_);
@@ -176,6 +178,7 @@ void Input::reader(const char * pythonParsed)
     // Create a Getkw object from input file.
     Getkw input = Getkw(pythonParsed, false, true);
 
+    units_      = input.getStr("UNITS");
     CODATAyear_ = input.getInt("CODATA");
 
     const Section & cavity = input.getSect("CAVITY");
@@ -228,7 +231,7 @@ void Input::reader(const char * pythonParsed)
         const Section & outside = medium.getSect("GREEN<OUTSIDE>");
         // ...and initialize the data members
         greenOutsideType_ = outside.getStr("TYPE");
-        derivativeOutsideType_ = derivativeTraits(inside.getStr("DER"));
+        derivativeOutsideType_ = derivativeTraits(outside.getStr("DER"));
         epsilonOutside_ = outside.getDbl("EPS");
         // This will be needed for the metal sphere only
 	if (greenOutsideType_ == "METALSPHERE") {

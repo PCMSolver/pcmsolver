@@ -27,7 +27,7 @@ keyword names MYPERFECTKEYWORD
 libdir="@INST_LIBDIR@"
 isAngstrom = False
 CODATAyear = 2010
-# Dictionary with the Bohr-to-Angstrom conversion factors for various CODATA sets of constants
+# Dictionary with the au-to-Angstrom conversion factors for various CODATA sets of constants
 CODATAdict = dict([(2010, 0.52917721092), (2006, 0.52917720859), (2002, 0.5291772108), (1998, 0.5291772083)])
 
 import sys, re, optparse, os, string, subprocess, tempfile
@@ -71,6 +71,11 @@ def convert_to_upper_case(filename):
             rst_split = rst_split[0].upper() + ' = ' + rst_split[1]
             line = ''.join(rst_split)
         final += line    
+    # Convert also occurences of TRUE/FALSE to True/False, 
+    # Python will otherwise interpret them as strings!
+    final = re.sub('FALSE', 'False', final)
+    final = re.sub('TRUE',  'True',  final)
+
     # Write to file
     with open(filename, 'wb') as outputFile:
         outputFile.write(final)
@@ -219,8 +224,7 @@ def setup_keywords():
     # Solvent
     # Valid for: IEFPCM, CPCM, Wavelet and PWL solvers
     # Valid values: string
-    # Default: WATER
-    medium.add_kw('SOLVENT',      'STR', 'WATER')
+    medium.add_kw('SOLVENT',      'STR')
     # Type of the solver
     # Valid values: IEFPCM, CPCM, WAVELET or LINEAR
     medium.add_kw('SOLVERTYPE',   'STR', 'IEFPCM')
@@ -292,21 +296,21 @@ def verify_top(section):
     key = section.get('UNITS')
     val = key.get()
     if (val not in allowed_units):
-        print("Units requested {} are not among the allowed units: {}".format(val, allowed_units))
+        print('Units requested {} are not among the allowed units: {}'.format(val, allowed_units))
         sys.exit(1)
     if (val == 'ANGSTROM'):
         isAngstrom = True
     allowed_codata = (2010, 2006, 2002, 1998)
     CODATAyear = section.get('CODATA').get()
     if (CODATAyear not in allowed_codata):
-        print("CODATA set requested {} is not among the allowed sets: {}".format(CODATAyear, allowed_codata))
+        print('CODATA set requested {} is not among the allowed sets: {}'.format(CODATAyear, allowed_codata))
         sys.exit(1)
 
 def verify_cavity(section):
     allowed = ('GEPOL', 'WAVELET', 'TSLESS', 'RESTART')
     type = section.get('TYPE')
     if (type.get() not in allowed):
-        print("Requested {} cavity is not among the allowed types: {}".format(type, allowed))
+        print('Requested {} cavity is not among the allowed types: {}'.format(type, allowed))
         sys.exit(1)
 
     # Convert units if input was given in Angstrom
@@ -323,33 +327,33 @@ def verify_cavity(section):
         area = section.get('AREA')
         a = area.get()
         if (a < 0.01):
-            print("Requested area value too small: {}. Minimal value is: 0.01 Bohr^2".format(a))
+            print('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a))
             sys.exit(1)
         minRadius = section.get('MINRADIUS')
         mr = minRadius.get()
         if ( mr < 0.4 ):
-            print("Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 Bohr".format(mr))
+            print('Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 au'.format(mr))
             sys.exit(1)
     elif (type.get() == 'WAVELET'):
         key = section.get('PATCHLEVEL')
         if (key.get() < 1):
-            print("Invalid patch level requested: {}. Patch level must be greater than 0".format(key.get()))
+            print('Invalid patch level requested: {}. Patch level must be greater than 0'.format(key.get()))
             sys.exit(1)
         key = section.get('COARSITY')
         if (key.get() < 0.0 or key.get() >= 1.0):
-            print("Invalid coarsity requested: {}. Coarsity has to be within ]0, 1[".format(key.get()))
+            print('Invalid coarsity requested: {}. Coarsity has to be within ]0, 1['.format(key.get()))
             sys.exit(1)
     elif (type.get() == 'TSLESS'):
         area = section.get('AREA')
         a = area.get()
         if (a < 0.01):
-            print("Requested area value too small: {}. Minimal value is: 0.01 Bohr^2".format(a))
+            print('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a))
             sys.exit(1)
         minDistance = section.get('MINDISTANCE')
         md = minDistance.get()
         # Insert a sanity check on minimal distance!
         #if ( md < 0.4 ):
-        #       print("Requested minimal distance between sampling points too small: {}. Minimal value is: 0.4 Bohr".format(md))
+        #       print("Requested minimal distance between sampling points too small: {}. Minimal value is: 0.4 au".format(md))
         #       sys.exit(1)
         derOrder = section.get('DERORDER')
         do = derOrder.get()
@@ -363,18 +367,18 @@ def verify_cavity(section):
         # We only get the filename here, either an empty or a non-empty string,
         # further management of input is then done C++-side.
         if npzfile.get() == '':
-            print("You need to specify a .npz filename for a restart...")
+            print('You need to specify a .npz filename for a restart...')
             sys.exit(1)
 
     radiiSet = section.get('RADIISET')
     allowed_sets = ('BONDI', 'UFF')
     if (radiiSet.get() not in allowed_sets):
-        print("Radii set requested {} is not among the allowed sets: {}".format(radiiSet.get(), allowed_sets))
+        print('Radii set requested {} is not among the allowed sets: {}'.format(radiiSet.get(), allowed_sets))
         sys.exit(1)
-    allowed_modes = ("EXPLICIT", "ATOMS", "IMPLICIT")
+    allowed_modes = ('EXPLICIT', 'ATOMS', 'IMPLICIT')
     mode = section.get('MODE')
     if (mode.get() not in allowed_modes):
-        print("Cavity creation mode requested {} is not among the allowed modes: {}".format(mode.get(), allowed_modes))
+        print('Cavity creation mode requested {} is not among the allowed modes: {}'.format(mode.get(), allowed_modes))
         sys.exit(1)
 
     atoms=section.get('ATOMS')
@@ -385,12 +389,12 @@ def verify_cavity(section):
 
     if (mode.get() == 'ATOMS'):
         if (len(r) != len(at) or len(at) == 0):
-            print("Incoherent input for Atoms keyword. Check that Atoms and Radii are consistent.")
+            print('Incoherent input for Atoms keyword. Check that Atoms and Radii are consistent.')
             sys.exit(1)
         else:
             for i, v in enumerate(at):
                 if (at.count(v) > 1):
-                    print("Incoherent input for Atoms keyword. Too many spheres on the same atom(s).")
+                    print('Incoherent input for Atoms keyword. Too many spheres on the same atom(s).')
                     sys.exit(1)
 
 def verify_medium(section):
@@ -415,16 +419,16 @@ def verify_medium(section):
                        'Explicit'             : ('EXPLICIT')}
     solvent = section.get('SOLVENT')
     explicitSolvent = solvent.get() in allowedSolvents['Explicit']
-    if(explicitSolvent):
+    if (explicitSolvent):
         PRF = section.is_set('PROBERADIUS')
         GIF = section.is_set('GREEN<INSIDE>')
         GOF = section.is_set('GREEN<OUTSIDE>')
         if (not PRF):
-            print "Error: Explicit solvent chosen but ProbeRadius not specified"
+            print('Error: Explicit solvent chosen but ProbeRadius not specified')
         if (not GIF):
-            print "Error: Explicit solvent chosen but Green<inside> not specified"
+            print('Error: Explicit solvent chosen but Green<inside> not specified')
         if (not GOF):
-            print "Error: Explicit solvent chosen but Green<outside> not specified"
+            print('Error: Explicit solvent chosen but Green<outside> not specified')
         if (not GIF or not GOF or not PRF):
             sys.exit(1)
     solventFound = False
@@ -434,89 +438,87 @@ def verify_medium(section):
             solventFound = True
             break
     if (not solventFound):
-        print "Unknown solvent"
-        print "Choose a solvent from the following list: "
-        print allowedSolvents.keys()
-        print "or specify the solvent data explicitly."
+        print('Unknown solvent')
+        print('Choose a solvent from the following list:\n{}\n or specify the solvent data explicitly.'.format(allowedSolvents.keys()))
         sys.exit(1)
 
     correction = section.get('CORRECTION')
     if (correction.get() < 0.0):
-        print "Correction for CPCM solver must be greater than 0.0"
+        print('Correction for CPCM solver must be greater than 0.0')
         sys.exit(1)
 
     convert_length_scalar(section.get('PROBERADIUS'))
     radius = section.get('PROBERADIUS')
     if (radius.get() < 0.1 or radius.get() > 100):
-        print "Probe radius has to be within [0.1,100] Atomic Units"
+        print('Probe radius has to be within [0.1,100] Atomic Units')
         sys.exit(1)
 
     allowed_types = ('IEFPCM', 'CPCM', 'WAVELET', 'LINEAR')
     key = section.get('SOLVERTYPE')
     val = key.get()
     if (val not in allowed_types):
-        print "Allowed types are: ", allowed_types
+        print('Allowed types are: {}'.format(allowed_types))
         sys.exit(1)
     allowed_equations = ('FIRSTKIND', 'SECONDKIND', 'FULL')
     key = section.get('EQUATIONTYPE')
     val = key.get()
     if (val not in allowed_equations):
-        print "Allowed equations are: ", allowed_equations
+        print('Allowed equations are: {}'.format(allowed_equations))
         sys.exit(1)
 
 def verify_green(section):
-    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'METALSPHERE', 'GREENSFUNCTIONSUM')
+    allowed     = ('VACUUM', 'UNIFORMDIELECTRIC', 'METALSPHERE', 'GREENSFUNCTIONSUM')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
 
     green1 = section.fetch_sect('GREEN<ONE>')
     green2 = section.fetch_sect('GREEN<TWO>')
-    eps = section.get('EPS')
+    eps    = section.get('EPS')
     epsimg = section.get('EPSIMG')
-    epsre = section.get('EPSRE')
+    epsre  = section.get('EPSRE')
 
     convert_length_array(section.get('SPHEREPOSITION'))
     position = section.get('SPHEREPOSITION')
     convert_length_scalar(section.get('SPHERERADIUS'))
     radius = section.get('SPHERERADIUS')
 
-    type=section.get('TYPE')
+    type = section.get('TYPE')
     if (type.get() not in allowed):
-        print "Allowed Green's functions are:", allowed
+        print('Allowed Green\'s functions are: {}'.format(allowed))
         sys.exit(1)
 
-    type=section.get('DER')
-    if (type.get() not in allowed_der):
-        print "Allowed Derivatives are:", allowed
+    der = section.get('DER')
+    if (der.get() not in allowed_der):
+        print('Allowed derivatives strategies are: {}'.format(allowed))
         sys.exit(1)
 
     if (type.get() == 'UNIFORMDIELECTRIC'):
         if not eps.is_set():
-            print "Eps not defined for UniformDielectric"
+            print('Eps not defined for UniformDielectric')
             sys.exit(1)
 
     if (type.get() == 'METALSPHERE'):
         if not (eps.is_set() and epsre.is_set and epsimg.is_set()):
-            print "Eps and/or EpsImg not defined for MetalSphere"
+            print('Eps and/or EpsImg not defined for MetalSphere')
             sys.exit(1)
         if not (position.is_set() and radius.is_set()):
-            print "SpherePosition and/or SphereRadius not defined for MetalSphere"
+            print('SpherePosition and/or SphereRadius not defined for MetalSphere')
             sys.exit(1)
         if (len(position.get()) != 3):
-            print "SpherePosition error"
+            print('SpherePosition error')
             sys.exit(1)
-        if (radius.get()  < 0.1):
-            print "Minimum value allowed for Radius is 0.1"
+        if (radius.get() < 0.1):
+            print('Minimum value allowed for Radius is 0.1 au')
             sys.exit(1)
 
     if (type.get() == 'GREENSFUNCTIONSUM'):
         if not (green1.is_set() and green2.is_set()):
-            print "One or both components not defined for GreensFunctionSum"
+            print('One or both components not defined for GreensFunctionSum')
             sys.exit(1)
 
 def verify_spheres(keyword):
     length=len(keyword.get())
     if (length % 4 != 0):
-        print "Empty or incoherent Spheres list."
+        print('Empty or incoherent Spheres list.')
         sys.exit(1)
     convert_length_array(keyword)
 

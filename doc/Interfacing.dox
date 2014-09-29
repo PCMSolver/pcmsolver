@@ -1,4 +1,5 @@
 /** \page Interfacing Interfacing a QM program and PCMSolver
+    - \subpage HostInput
     - \subpage BuildingDIRAC
     - \subpage BuildingDalton
     - \subpage BuildingPSI4

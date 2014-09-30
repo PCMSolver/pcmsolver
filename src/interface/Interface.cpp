@@ -31,6 +31,7 @@
 #include "Interface.hpp"
 
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -387,14 +388,14 @@ void setupInput(bool from_host)
 		    // Trim strings aka remove blanks
 		    boost::algorithm::trim(input_strings[i]);
 	    	}
-	    	strcpy(cav.cavity_type, input_strings[0].c_str());
-	        strcpy(cav.radii_set, input_strings[1].c_str());
-	    	strcpy(cav.restart_name, input_strings[2].c_str());
-	    	strcpy(solv.solver_type, input_strings[3].c_str());
-	    	strcpy(solv.solvent, input_strings[4].c_str());
-	    	strcpy(solv.equation_type, input_strings[5].c_str());
-	    	strcpy(green.inside_type, input_strings[6].c_str());
-	    	strcpy(green.outside_type, input_strings[7].c_str());
+	    	strncpy(cav.cavity_type,    input_strings[0].c_str(), input_strings[0].length());
+	        strncpy(cav.radii_set,      input_strings[1].c_str(), input_strings[1].length());
+	    	strncpy(cav.restart_name,   input_strings[2].c_str(), input_strings[2].length());
+	    	strncpy(solv.solver_type,   input_strings[3].c_str(), input_strings[3].length());
+	    	strncpy(solv.solvent,       input_strings[4].c_str(), input_strings[4].length());
+	    	strncpy(solv.equation_type, input_strings[5].c_str(), input_strings[5].length());
+	    	strncpy(green.inside_type,  input_strings[6].c_str(), input_strings[6].length());
+	    	strncpy(green.outside_type, input_strings[7].c_str(), input_strings[7].length());
 	    }
 	   // std::ostringstream out_stream;
 	   // out_stream << cav << std::endl;

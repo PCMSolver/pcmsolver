@@ -92,7 +92,7 @@ namespace
     {
         return new PWCSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
     }
-    const std::string PWCSOLVER("Wavelet");
+    const std::string PWCSOLVER("WAVELET");
     const bool registeredPWCSolver = SolverFactory::TheSolverFactory().registerSolver(
                                          PWCSOLVER, createPWCSolver);
 }

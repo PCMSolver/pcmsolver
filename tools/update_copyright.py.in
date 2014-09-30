@@ -32,8 +32,8 @@ def update_notice_fortran(file_list):
     for file in file_list:
         s = from_file(file)
         if pcmsolver_copyright_fortran_start in s:
-           s = re.sub(p, pcmsolver_copyright_fortran, s)
-           to_file(s, file)
+            s = re.sub(p, pcmsolver_copyright_fortran, s)
+            to_file(s, file)
 
 def update_notice_c(file_list):
     # c files pcmsolver copyright
@@ -41,17 +41,17 @@ def update_notice_c(file_list):
     for file in file_list:
         s = from_file(file)
         if string.replace(pcmsolver_copyright_c_start, '\\', '') in s:
-           s = re.sub(p, pcmsolver_copyright_c, s)
-           to_file(s, file)
-    
+            s = re.sub(p, pcmsolver_copyright_c, s)
+            to_file(s, file)
+
 def update_notice_h(file_list):
     # h files pcmsolver copyright
     p = re.compile('(?<=' + pcmsolver_copyright_c_start + ').*(?=' + pcmsolver_copyright_c_end + ')', re.DOTALL)
     for file in file_list:
         s = from_file(file)
         if string.replace(pcmsolver_copyright_c_start, '\\', '') in s:
-           s = re.sub(p, pcmsolver_copyright_c, s)
-           to_file(s, file)
+            s = re.sub(p, pcmsolver_copyright_c, s)
+            to_file(s, file)
 
 def update_notice_cpp(file_list):
     # cpp files pcmsolver copyright
@@ -59,21 +59,21 @@ def update_notice_cpp(file_list):
     for file in file_list:
         s = from_file(file)
         if string.replace(pcmsolver_copyright_c_start, '\\', '') in s:
-           s = re.sub(p, pcmsolver_copyright_c, s)
-           to_file(s, file)
-    
+            s = re.sub(p, pcmsolver_copyright_c, s)
+            to_file(s, file)
+
 def update_notice_hpp(file_list):
     # hpp files pcmsolver copyright
     p = re.compile('(?<=' + pcmsolver_copyright_c_start + ').*(?=' + pcmsolver_copyright_c_end + ')', re.DOTALL)
     for file in file_list:
         s = from_file(file)
         if string.replace(pcmsolver_copyright_c_start, '\\', '') in s:
-           s = re.sub(p, pcmsolver_copyright_c, s)
-           to_file(s, file)
+            s = re.sub(p, pcmsolver_copyright_c, s)
+            to_file(s, file)
 
 parser = argparse.ArgumentParser(description='Update copyright notice')
-parser.add_argument('filenames', 
-                     metavar='Filenames', 
+parser.add_argument('filenames',
+                     metavar='Filenames',
                      nargs='*',
                      help='Filames to be updated')
 parser.add_argument('--lang',
@@ -106,7 +106,7 @@ if args.filenames:
         path = os.getcwd()
         scratch.append(path + '/' + f)
     if (args.lang  == 'CXX'):
-        cpp_file_l     = scratch 
+        cpp_file_l     = scratch
     if (args.lang  == 'C'):
         c_file_l       = scratch
     if (args.lang  == 'F'):
@@ -117,19 +117,19 @@ else:
     for path, dir, files in os.walk(pwd):
         for file in files:
             if file[-4:] == '.F90':
-               fortran_file_l.append(path + '/' + file)
+                fortran_file_l.append(path + '/' + file)
             if file[-4:] == '.f90':
-               fortran_file_l.append(path + '/' + file)
+                fortran_file_l.append(path + '/' + file)
             if file[-2:] == '.F':
-               fortran_file_l.append(path + '/' + file)
+                fortran_file_l.append(path + '/' + file)
             if file[-2:] == '.c':
-               c_file_l.append(path + '/' + file)
+                c_file_l.append(path + '/' + file)
             if file[-2:] == '.h':
-               h_file_l.append(path + '/' + file)
+                h_file_l.append(path + '/' + file)
             if file[-4:] == '.cpp':
-               cpp_file_l.append(path + '/' + file)
+                cpp_file_l.append(path + '/' + file)
             if file[-4:] == '.hpp':
-               hpp_file_l.append(path + '/' + file)
+                hpp_file_l.append(path + '/' + file)
 
 # Once the lists of files are ready update the copyright notices
 if fortran_file_l:

@@ -131,7 +131,7 @@ namespace
         buildVacuum build;
         return for_id<derivative_types>(build, _data, _data.how);
     }
-    const std::string VACUUM("Vacuum");
+    const std::string VACUUM("VACUUM");
     const bool registeredVacuum =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             VACUUM, createVacuum);

@@ -130,7 +130,7 @@ namespace
         orig << 0.0, 0.0, 0.0;
         return new MetalSphere(_data.epsilon, 0.0, 0.0, orig, 1.0, _data.integrator);
     }
-    const std::string METALSPHERE("MetalSphere");
+    const std::string METALSPHERE("METALSPHERE");
     const bool registeredMetalSphere =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             METALSPHERE, createMetalSphere);

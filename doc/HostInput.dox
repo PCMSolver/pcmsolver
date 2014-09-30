@@ -1,0 +1,9 @@
+/** \page HostInput %Input to %PCMSolver from the host program
+
+cavityInput, solverInput and greenInput
+
+\include host-input_fortran-example.F90
+
+\include host-input_c-example.c
+
+*/

@@ -1,0 +1,365 @@
+/* pcmsolver_copyright_start */
+/*
+ *     PCMSolver, an API for the Polarizable Continuum Model
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+ *     
+ *     This file is part of PCMSolver.
+ *     
+ *     PCMSolver is free software: you can redistribute it and/or modify       
+ *     it under the terms of the GNU Lesser General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *     
+ *     PCMSolver is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Lesser General Public License for more details.
+ *     
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *     
+ *     For information on the complete list of contributors to the
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+ */
+/* pcmsolver_copyright_end */
+
+#include "Input.hpp"
+
+#include <iostream>
+#include <map>
+#include <vector>
+#include <stdexcept>
+#include <string>
+
+#include <Python.h>
+
+#include "Config.hpp"
+
+#include <Eigen/Dense>
+#include "Getkw.h"
+
+#include <boost/algorithm/string.hpp>
+
+#include "InputManager.hpp"
+#include "PhysicalConstants.hpp"
+#include "Solvent.hpp"
+#include "Sphere.hpp"
+
+using boost::algorithm::to_upper_copy;
+
+Input::Input(const std::string & filename)
+{
+    parser(filename);
+    std::string pythonParsed = "@" + filename;
+    reader(pythonParsed.c_str());
+    semanticCheck();
+}
+
+Input::Input(const cavityInput & cav, const solverInput & solv, const greenInput & green)
+{
+    reader(cav, solv, green);
+    semanticCheck();
+}
+
+inline void swap(Input & left, Input & right)
+{
+    using std::swap;
+    swap(left.units_,                 right.units_);
+    swap(left.CODATAyear_,            right.CODATAyear_);
+    swap(left.cavFilename_,           right.cavFilename_);
+    swap(left.type_,                  right.type_);
+    swap(left.patchLevel_,            right.patchLevel_);
+    swap(left.coarsity_,              right.coarsity_);
+    swap(left.area_,                  right.area_);
+    swap(left.minDistance_,           right.minDistance_);
+    swap(left.derOrder_,              right.derOrder_);
+    swap(left.scaling_,               right.scaling_);
+    swap(left.radiiSet_,              right.radiiSet_);
+    swap(left.minimalRadius_,         right.minimalRadius_);
+    swap(left.mode_,                  right.mode_);
+    swap(left.atoms_,                 right.atoms_);
+    swap(left.radii_,                 right.radii_);
+    swap(left.spheres_,               right.spheres_);
+    swap(left.solvent_,               right.solvent_);
+    swap(left.hasSolvent_,            right.hasSolvent_);
+    swap(left.solverType_,            right.solverType_);
+    swap(left.equationType_,          right.equationType_);
+    swap(left.correction_,            right.correction_);
+    swap(left.hermitivitize_,         right.hermitivitize_);
+    swap(left.probeRadius_,           right.probeRadius_);
+    swap(left.greenInsideType_,       right.greenInsideType_);
+    swap(left.greenOutsideType_,      right.greenOutsideType_);
+    swap(left.derivativeInsideType_,  right.derivativeInsideType_);
+    swap(left.derivativeOutsideType_, right.derivativeOutsideType_);
+    swap(left.epsilonInside_,         right.epsilonInside_);
+    swap(left.epsilonOutside_,        right.epsilonOutside_);
+    swap(left.epsilonReal_,           right.epsilonReal_);
+    swap(left.epsilonImaginary_,      right.epsilonImaginary_);
+    swap(left.spherePosition_,        right.spherePosition_);
+    swap(left.sphereRadius_,          right.sphereRadius_);
+    swap(left.providedBy_,            right.providedBy_);
+}
+
+inline void Input::swap(Input & other)
+{
+    using std::swap;
+    swap(this->units_,                 other.units_);
+    swap(this->CODATAyear_,            other.CODATAyear_);
+    swap(this->cavFilename_,           other.cavFilename_);
+    swap(this->type_,                  other.type_);
+    swap(this->patchLevel_,            other.patchLevel_);
+    swap(this->coarsity_,              other.coarsity_);
+    swap(this->area_,                  other.area_);
+    swap(this->minDistance_,           other.minDistance_);
+    swap(this->derOrder_,              other.derOrder_);
+    swap(this->scaling_,               other.scaling_);
+    swap(this->radiiSet_,              other.radiiSet_);
+    swap(this->minimalRadius_,         other.minimalRadius_);
+    swap(this->mode_,                  other.mode_);
+    swap(this->atoms_,                 other.atoms_);
+    swap(this->radii_,                 other.radii_);
+    swap(this->spheres_,               other.spheres_);
+    swap(this->solvent_,               other.solvent_);
+    swap(this->hasSolvent_,            other.hasSolvent_);
+    swap(this->solverType_,            other.solverType_);
+    swap(this->equationType_,          other.equationType_);
+    swap(this->correction_,            other.correction_);
+    swap(this->hermitivitize_,         other.hermitivitize_);
+    swap(this->probeRadius_,           other.probeRadius_);
+    swap(this->greenInsideType_,       other.greenInsideType_);
+    swap(this->greenOutsideType_,      other.greenOutsideType_);
+    swap(this->derivativeInsideType_,  other.derivativeInsideType_);
+    swap(this->derivativeOutsideType_, other.derivativeOutsideType_);
+    swap(this->epsilonInside_,         other.epsilonInside_);
+    swap(this->epsilonOutside_,        other.epsilonOutside_);
+    swap(this->epsilonReal_,           other.epsilonReal_);
+    swap(this->epsilonImaginary_,      other.epsilonImaginary_);
+    swap(this->spherePosition_,        other.spherePosition_);
+    swap(this->sphereRadius_,          other.sphereRadius_);
+    swap(this->providedBy_,            other.providedBy_);
+}
+
+Input & Input::operator=(Input other)
+{
+    if (this == &other) // Check for self-assignment
+        throw std::runtime_error("Are you trying to self-assign?");
+
+    ::swap(*this, other);
+    return *this;
+}
+
+void Input::parser(const std::string & filename)
+{
+    // Initiliaze the Python interpreter
+    Py_Initialize();
+    // Import the module "pcmsolver" (from the file "pcmsolver.py")
+    PyRun_SimpleString("import sys");
+    PyRun_SimpleString("sys.path.append('@PROJECT_BINARY_DIR@/bin')");
+    PyObject * moduleName = PyString_FromString("pcmsolver");
+    PyObject * pyPCM = PyImport_Import(moduleName);
+    // Retrieve the "parse_pcm_input()" function from the module.
+    PyObject * parser = PyObject_GetAttrString(pyPCM, "parse_pcm_input");
+    // Build an argument tuple containing the string.
+    PyObject * args = Py_BuildValue("(s)", filename.c_str());
+    // Invoke the function, passing the argument tuple.
+    PyObject * result = PyObject_CallObject(parser, args);
+    // Free all temporary Python objects.
+    Py_DECREF(moduleName); 
+    Py_DECREF(pyPCM); 
+    Py_DECREF(parser);
+    Py_DECREF(args); 
+    Py_DECREF(result);
+    // Finalize the interpreter 
+    Py_Finalize();
+}
+
+void Input::reader(const char * pythonParsed)
+{
+    // Create a Getkw object from input file.
+    Getkw input = Getkw(pythonParsed, false, true);
+
+    units_      = input.getStr("UNITS");
+    CODATAyear_ = input.getInt("CODATA");
+
+    const Section & cavity = input.getSect("CAVITY");
+
+    type_ = cavity.getStr("TYPE");
+    area_ = cavity.getDbl("AREA");
+    patchLevel_ = cavity.getInt("PATCHLEVEL");
+    coarsity_ = cavity.getDbl("COARSITY");
+    minDistance_ = cavity.getDbl("MINDISTANCE");
+    derOrder_ = cavity.getInt("DERORDER");
+    if (type_ == "RESTART") {
+       cavFilename_ = cavity.getStr("NPZFILE");
+    }
+
+    scaling_ = cavity.getBool("SCALING");
+    radiiSet_ = to_upper_copy(cavity.getStr("RADIISET"));
+    minimalRadius_ = cavity.getDbl("MINRADIUS");
+    mode_ = to_upper_copy(cavity.getStr("MODE"));
+    if (mode_ == "EXPLICIT") {
+        std::vector<double> spheresInput = cavity.getDblVec("SPHERES");
+        int j = 0;
+        int upperBound = int(spheresInput.size() / 4);
+        for (int i = 0; i < upperBound; ++i) {
+            Eigen::Vector3d center;
+            center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
+            Sphere sph(center, spheresInput[j+3]);
+            spheres_.push_back(sph);
+            j += 4;
+        }
+    } else if (mode_ == "ATOMS") {
+        atoms_ = cavity.getIntVec("ATOMS");
+        radii_ = cavity.getDblVec("RADII");
+    }
+
+    // Get the contents of the Medium section
+    const Section & medium = input.getSect("MEDIUM");
+    // Get the name of the solvent
+    std::string name = medium.getStr("SOLVENT");
+    if (name == "EXPLICIT") {
+        hasSolvent_ = false;
+        // Get the probe radius
+        probeRadius_ = medium.getDbl("PROBERADIUS");
+        // Get the contents of the Green<inside> section...
+        const Section & inside = medium.getSect("GREEN<INSIDE>");
+        // ...and initialize the data members
+        greenInsideType_ = inside.getStr("TYPE");
+	derivativeInsideType_ = derivativeTraits(inside.getStr("DER"));
+	epsilonInside_ = inside.getDbl("EPS");
+        // Get the contents of the Green<outside> section...
+        const Section & outside = medium.getSect("GREEN<OUTSIDE>");
+        // ...and initialize the data members
+        greenOutsideType_ = outside.getStr("TYPE");
+        derivativeOutsideType_ = derivativeTraits(outside.getStr("DER"));
+        epsilonOutside_ = outside.getDbl("EPS");
+        // This will be needed for the metal sphere only
+	if (greenOutsideType_ == "METALSPHERE") {
+	        epsilonReal_ = outside.getDbl("EPSRE");
+        	epsilonImaginary_ = outside.getDbl("EPSIMG");
+	        spherePosition_ = outside.getDblVec("SPHEREPOSITION");
+        	sphereRadius_ = outside.getDbl("SPHERERADIUS");
+	}
+    } else { // This part must be reviewed!! Some data members are not initialized...
+        // Just initialize the solvent object in this class
+        hasSolvent_ = true;
+        std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
+        solvent_ = solvents[name];
+        probeRadius_ = solvent_.probeRadius() * angstromToBohr(CODATAyear_);
+        // Specification of the solvent by name means isotropic PCM
+        // We have to initialize the Green's functions data here, Solvent class
+        // is an helper class and should not be used in the core classes.
+        greenInsideType_ = "VACUUM";
+        derivativeInsideType_ = derivativeTraits("DERIVATIVE");
+        epsilonInside_ = 1.0;
+        greenOutsideType_ = "UNIFORMDIELECTRIC";
+        derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
+        epsilonOutside_ = solvent_.epsStatic();
+    }
+    
+    solverType_ = medium.getStr("SOLVERTYPE");
+    equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
+    correction_ = medium.getDbl("CORRECTION");
+    hermitivitize_ = medium.getBool("MATRIXSYMM");
+    
+    providedBy_ = std::string("API-side");
+}
+
+void Input::reader(const cavityInput & cav, const solverInput & solv, const greenInput & green)
+{
+    CODATAyear_ = 2010;
+
+    type_ = to_upper_copy(std::string(cav.cavity_type));
+    area_ = cav.area * angstrom2ToBohr2(CODATAyear_);
+    patchLevel_ = cav.patch_level;
+    coarsity_ = cav.coarsity * angstromToBohr(CODATAyear_);
+    minDistance_ = cav.min_distance * angstromToBohr(CODATAyear_);
+    derOrder_ = cav.der_order;
+    if (type_ == "RESTART") {
+       cavFilename_ = std::string(cav.restart_name); // No case conversion here!
+    }
+
+    scaling_ = cav.scaling;
+    radiiSet_ = cav.radii_set;
+    minimalRadius_ = cav.min_radius * angstromToBohr(CODATAyear_);
+    mode_ = std::string("IMPLICIT"); 
+
+    std::string name = to_upper_copy(std::string(solv.solvent));
+    if (name.empty()) {
+        hasSolvent_ = false;
+        // Get the probe radius
+        probeRadius_ = solv.probe_radius * angstromToBohr(CODATAyear_);
+        // Get the contents of the Green<inside> section...
+        // ...and initialize the data members
+        greenInsideType_ = to_upper_copy(std::string(green.inside_type));
+	derivativeInsideType_ = derivativeTraits("DERIVATIVE");
+	epsilonInside_ = 1.0;
+        // Get the contents of the Green<outside> section...
+        // ...and initialize the data members
+        greenOutsideType_ = to_upper_copy(std::string(green.outside_type));
+        derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
+        epsilonOutside_ = green.outside_epsilon;
+    } else { // This part must be reviewed!! Some data members are not initialized...
+        // Just initialize the solvent object in this class
+        hasSolvent_ = true;
+        std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
+        solvent_ = solvents[name];
+        probeRadius_ = solvent_.probeRadius() * angstromToBohr(CODATAyear_);
+        // Specification of the solvent by name means isotropic PCM
+        // We have to initialize the Green's functions data here, Solvent class
+        // is an helper class and should not be used in the core classes.
+        greenInsideType_ = std::string("VACUUM");
+        derivativeInsideType_ = derivativeTraits("DERIVATIVE");
+        epsilonInside_ = 1.0;
+        greenOutsideType_ = std::string("UNIFORMDIELECTRIC");
+        derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
+        epsilonOutside_ = solvent_.epsStatic();
+    }
+    
+    
+    solverType_ = to_upper_copy(std::string(solv.solver_type));
+    std::string inteq = to_upper_copy(std::string(solv.equation_type));
+    equationType_ = integralEquation(inteq);
+    correction_ = solv.correction;
+    hermitivitize_ = true;
+    
+    providedBy_ = std::string("host-side");
+}
+
+void Input::semanticCheck()
+{
+#if not defined (WAVELET_DEVELOPMENT) || not defined (TSLESS_DEVELOPMENT)
+    if (type_ == "GEPOL" || type_ == "TSLESS") {
+        if (solverType_ == "WAVELET" || solverType_ == "LINEAR") { // User asked for GePol or TsLess cavity with wavelet solvers
+            throw std::runtime_error("GePol cavity can be used only with traditional solvers.");
+        }
+    } else if (type_ == "WAVELET" ) { // Hoping that the user knows what's going on if he asks for a restart...
+        if (solverType_ == "IEFPCM" || solverType_ == "CPCM") { // User asked for wavelet cavity with traditional solvers
+            throw std::runtime_error("Wavelet cavity can be used only with wavelet solvers.");
+        }
+    }
+#endif
+}
+
+int derivativeTraits(const std::string & name)
+{
+    static std::map<std::string, int> mapStringToIntDerType;
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("NUMERICAL", 0));
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("DERIVATIVE", 1));
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("GRADIENT", 2));
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("HESSIAN", 3));
+
+    return mapStringToIntDerType.find(name)->second;
+}
+
+int integralEquation(const std::string & name)
+{
+    static std::map<std::string, int> mapStringToIntEquationType;
+    mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FIRSTKIND",
+                                      0));
+    mapStringToIntEquationType.insert(
+        std::map<std::string, int>::value_type("SECONDKIND", 1));
+    mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FULL", 2));
+    
+    return mapStringToIntEquationType.find(name)->second;
+}

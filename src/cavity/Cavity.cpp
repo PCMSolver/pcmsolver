@@ -33,7 +33,6 @@
 
 #include "Config.hpp"
 
-
 #include <Eigen/Dense>
 #include "cnpyPimpl.hpp"
 

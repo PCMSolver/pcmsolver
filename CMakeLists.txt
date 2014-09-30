@@ -46,7 +46,8 @@ FortranCInterface_VERIFY(CXX)
 init_FCMangle()
 
 find_package(PythonInterp REQUIRED)
-find_package(ZLIB REQUIRED) 
+find_package(PythonLibs   REQUIRED)
+find_package(ZLIB         REQUIRED) 
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 	set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
@@ -184,6 +185,7 @@ configure_files()
 include_directories(SYSTEM 
 	            ${EIGEN3_INCLUDE_DIR}
 	            ${Boost_INCLUDE_DIRS}
+		    ${PYTHON_INCLUDE_DIRS}
 		    ${Boost_QUADRATURE}
 		    ${ZLIB_INCLUDE_DIRS}
 		    ${PROJECT_SOURCE_DIR}/external
@@ -197,6 +199,7 @@ add_subdirectory(src)
 include_directories(${header_dir_list})
 
 link_directories(${Boost_LIBRARY_DIRS}
+	         ${PYTHON_LIBRARIES}
                  ${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
 list(APPEND LIBS

@@ -20,6 +20,7 @@
 #include "boost/numeric/quadrature/kronrodgauss_fwd.hpp"
 #include "boost/numeric/quadrature/gauss_coefficients.hpp"
 #include "boost/numeric/quadrature/kronrod_coefficients.hpp"
+#include "boost/numeric/quadrature/quadrature_config.hpp"
 #include "boost/numeric/quadrature/quadrature_error.hpp"
 #include "boost/numeric/quadrature/quadrature_traits.hpp"
 

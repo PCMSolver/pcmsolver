@@ -94,10 +94,11 @@
     IF (COLHI < COLLOW) go to 3
 
     AMAX = ZERO
-    DO 10 J = COLLOW,COLHI
-        DO 10 I = ROWLOW,ROWHI
+    DO J = COLLOW,COLHI
+        DO I = ROWLOW,ROWHI
             AMAX = MAX( AMAX, ABS(AMATRX(I,J)) )
-    10 end do
+        end do
+    end do
     IF (AMAX == ZERO) THEN
         WRITE (LVPRI,'(/T6,A)') 'Zero matrix.'
         go to 3

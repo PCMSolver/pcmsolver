@@ -1,6 +1,6 @@
 . "$CI_SCRIPTS/common.sh"
 
-python setup --cxx=clang++ --cc=clang --fc=gfortran --type=debug --tests
+python setup --cxx=clang++ --cc=clang --fc=gfortran --type=release --tests
 cd build
 make
 make test

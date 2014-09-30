@@ -46,7 +46,7 @@
 #include "Sphere.hpp"
 
 using boost::algorithm::to_upper_copy;
-
+    
 Input::Input(const std::string & filename)
 {
     parser(filename);
@@ -60,6 +60,40 @@ Input::Input(const cavityInput & cav, const solverInput & solv, const greenInput
     reader(cav, solv, green);
     semanticCheck();
 }
+
+Input::Input(const Input &other) : units_(other.units_), 
+	                           CODATAyear_(other.CODATAyear_), 
+				   type_(other.type_),
+ 	                           cavFilename_(other.cavFilename_), 
+				   patchLevel_(other.patchLevel_), 
+				   coarsity_(other.coarsity_),
+                                   area_(other.area_), 
+				   minDistance_(other.minDistance_), 
+				   derOrder_(other.derOrder_), 
+				   scaling_(other.scaling_),
+	                           radiiSet_(other.radiiSet_), 
+				   minimalRadius_(other.minimalRadius_), 
+				   mode_(other.mode_),
+	                           atoms_(other.atoms_), 
+				   radii_(other.radii_), 
+				   spheres_(other.spheres_), 
+				   solvent_(other.solvent_),
+	                           hasSolvent_(other.hasSolvent_), 
+				   solverType_(other.solverType_), 
+				   equationType_(other.equationType_),
+	                           correction_(other.correction_), 
+				   hermitivitize_(other.hermitivitize_), 
+				   probeRadius_(other.probeRadius_),
+	                           greenInsideType_(other.greenInsideType_), 
+				   greenOutsideType_(other.greenOutsideType_),
+	                           derivativeInsideType_(other.derivativeInsideType_), 
+				   derivativeOutsideType_(other.derivativeOutsideType_),
+	                           epsilonInside_(other.epsilonInside_), 
+				   epsilonOutside_(other.epsilonOutside_),
+  	                           epsilonReal_(other.epsilonReal_), 
+				   spherePosition_(other.spherePosition_), 
+				   sphereRadius_(other.sphereRadius_),
+ 	                           providedBy_(other.providedBy_) {}
 
 inline void swap(Input & left, Input & right)
 {

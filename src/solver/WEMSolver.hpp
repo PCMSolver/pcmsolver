@@ -66,9 +66,13 @@ public:
         : PCMSolver(gfInside_, gfOutside_), integralEquation(integralEquation_) {
         if(modelType =="Linear"){
           af = new LinAnsatzFunction();
+          interpolationGrade = 2;
+          interpolationType = 1;
         }
         else if(modelType == "Wavelet"){
           af = new ConAnsatzFunction();
+          interpolationGrade = 1;
+          interpolationType = 1;
         }
         initWEMMembers();
     }
@@ -107,7 +111,7 @@ protected:
     GenericAnsatzFunction *af;
 
 //    unsigned int quadratureLevel_;
-//    Vector3 *** pointList; // the old U
+    Vector3 *** pointList; // the old U
 //    Vector3 *nodeList; //*P_; --     // Point list
 //    unsigned int **elementList; //**F_;     // Element list
 //    unsigned int nNodes; //np_; --    // Number of knot points or something

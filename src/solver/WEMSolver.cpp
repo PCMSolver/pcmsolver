@@ -24,6 +24,7 @@
 /* pcmsolver_copyright_end */
 
 #include "WEMSolver.hpp"
+#include "WEM.hpp"
 
 #include <fstream>
 #include <ostream>
@@ -38,33 +39,33 @@
 
 extern "C"
 {
-#include "vector3.h"
-#include "sparse2.h"
-#include "intvector.h"
-#include "basis.h"
-#include "WEM.h"
-#include "read_points.h"
-#include "vector2.h"
-#include "interpolate.h"
-#include "topology.h"
-#include "kern.h"
-#include "compression.h"
-#include "postproc.h"
-#include "WEMRHS.h"
-#include "WEMPCG.h"
-#include "WEMPGMRES.h"
-#include "dwt.h"
-#include "cubature.h"
-#include "gauss_square.h"
-#include "constants.h"
-#include "energy.h"
+//#include "vector3.h"
+//#include "sparse2.h"
+//#include "intvector.h"
+//#include "basis.h"
+//#include "WEM.h"
+//#include "read_points.h"
+//#include "vector2.h"
+//#include "interpolate.h"
+//#include "topology.h"
+//#include "kern.h"
+//#include "compression.h"
+//#include "postproc.h"
+//#include "WEMRHS.h"
+//#include "WEMPCG.h"
+//#include "WEMPGMRES.h"
+//#include "dwt.h"
+//#include "cubature.h"
+//#include "gauss_square.h"
+//#include "constants.h"
+//#include "energy.h"
 }
 
 #include "Cavity.hpp"
 #include "IGreensFunction.hpp"
 #include "WaveletCavity.hpp"
 
-static GreensFunction *gf;
+static IGreensFunction *gf;
 
 static double SingleLayer (Vector3 x, Vector3 y)
 {
@@ -85,9 +86,36 @@ static double DoubleLayer (Vector3 x, Vector3 y, Vector3 n_y)
     return value;
 }
 
+static double SLInt(Vector3 x, Vector3 y)
+{
+    return(1.0l/sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z)));
+}
+
+static double SLExt(Vector3 x, Vector3 y)
+{
+    double r = sqrt((x.x-y.x)*(x.x-y.x)+(x.y-y.y)*(x.y-y.y)+(x.z-y.z)*(x.z-y.z));
+    return 1.0l/(r*78.39l);
+}
+
+static double DLUni(Vector3 x, Vector3 y, Vector3 n_y)
+{
+    Vector3	c;
+    double r;
+    Eigen::Vector3d grad, dir;
+    c.x = x.x-y.x;
+    c.y = x.y-y.y;
+    c.z = x.z-y.z;
+    r = sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
+    grad(0) = c.x/(r*r*r);
+    grad(1) = c.y/(r*r*r);
+    grad(2) = c.z/(r*r*r);
+    dir << n_y.x, n_y.y, n_y.z;
+    return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
+}
+
 void WEMSolver::initWEMMembers()
 {
-//    pointList = NULL;
+    pointList = NULL;
 //    nodeList = NULL;
 //    elementList = NULL;
 //    T_ = NULL;
@@ -95,7 +123,8 @@ void WEMSolver::initWEMMembers()
     threshold = 1e-10;
     //af->quadratureLevel_ = 1; // set in constructor of AnsatzFunction
     //af->nQuadPoints = 0; //??? what is this for?
-    af->elementTree = NULL;
+    af->elementTree.element = NULL;
+    af->elementTree.nop = 0;
     af->waveletList = NULL;
 }
 
@@ -105,10 +134,10 @@ WEMSolver::~WEMSolver()
     delete(af);
     //if (nodeList != NULL)    free(nodeList);
     //if (elementList != NULL) free_patchlist(&elementList,nFunctions);
-    //if (pointList != NULL)   free_points(&pointList, nPatches, nLevels);
+    if (pointList != NULL)   free_points(&pointList, af->nPatches, af->nLevels);
     if (systemMatricesInitialized_) {
-        free_sparse2(&S_i_);
-        if(integralEquation == Full) free_sparse2(&S_e_);
+        freeSparse2(&S_i_);
+        if(integralEquation == Full) freeSparse2(&S_e_);
     }
     //if(elementTree != NULL) free_elementlist(&elementTree, nPatches,nLevels);
     //if(waveletList != NULL) free_waveletlist(&waveletList, nPatches,nLevels);
@@ -119,16 +148,16 @@ void WEMSolver::uploadCavity(const WaveletCavity & cavity)
 {
     af->nPatches = cavity.getNPatches();
     af->nLevels = cavity.getNLevels();
-    int n = (1<<nLevels);
-    af->nFunctions = nPatches * n * n;
-    alloc_points(&pointList, nPatches, nLevels);
+    int n = (1<<af->nLevels);
+    af->nFunctions = af->nPatches * n * n;
+    alloc_points(&pointList, af->nPatches, af->nLevels);
     int kk = 0;
     // index switch for "faster access"
-    for (size_t i = 0; i < nPatches; ++i) {
+    for (size_t i = 0; i < af->nPatches; ++i) {
         for (int j = 0; j <= n; ++j) {
             for (int k = 0; k <= n; ++k) {
                 Eigen::Vector3d p = cavity.getNodePoint(kk);
-                pointList[i][k][j] = vector3_make(p(0), p(1), p(2));
+                pointList[i][k][j] = Vector3(p(0), p(1), p(2));
                 kk++;
             }
         }
@@ -154,8 +183,8 @@ void WEMSolver::buildSystemMatrix(const Cavity & cavity)
 }
 
 void WEMSolver::initInterpolation(){
-    af->interCoeff = new Interpolation(pointList, af->interpolationGrade, af->interpolationType, af->nLevels, af->nPatches);
-    nNodes = af->genNet(pointList);
+    af->interCoeff = new Interpolation(pointList, interpolationGrade, interpolationType, af->nLevels, af->nPatches);
+    af->nNodes = af->genNet(pointList);
 }
 
 void WEMSolver::constructWavelets(){
@@ -163,7 +192,7 @@ void WEMSolver::constructWavelets(){
     af->generateWaveletList();
     af->setQuadratureLevel();
     af->simplifyWaveletList();
-    af->completeElementList();
+    //af->completeElementList();
 }
 
 void WEMSolver::constructSystemMatrix()
@@ -193,15 +222,15 @@ void WEMSolver::constructSi(){
     }
     gf = greenInside_;
     apriori1_ = af->compression(&S_i_);
-    WEM(&af, &S_i_, SingleLayer, DoubleLayer, factor);
-    aposteriori1_ = af->postproc(&S_i_);
+    WEM(af, &S_i_, SingleLayer, DoubleLayer, factor);
+    aposteriori1_ = af->postProc(&S_i_);
 }
 
 void WEMSolver::constructSe(){
     gf = greenOutside_; // sets the global pointer to pass GF to C code
     apriori2_ = af->compression(&S_e_);
-    WEM(&af, &S_e_, SingleLayer, DoubleLayer, -2*M_PI);
-    aposteriori2_ = af->postproc(&S_e_);
+    WEM(af, &S_e_, SingleLayer, DoubleLayer, -2*M_PI);
+    aposteriori2_ = af->postProc(&S_e_);
 }
 
 void WEMSolver::compCharge(const Eigen::VectorXd & potential,
@@ -234,16 +263,16 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double epsilon = greenOutside_->dielectricConstant();
     WEMRHS2M(&rhs, pot, &af);
     int iter = WEMPGMRES2(&S_i_, rhs, u, af->threshold, &af);
-    af->tdwtKon(u);
-    af->dwtKon(u);
+    af->tdwt(u);
+    af->dwt(u);
     for (size_t i = 0; i < af->nFunctions; ++i) {
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
     }
     memset(u, 0, af->nFunctions * sizeof(double));
     iter = WEMPCG(&S_i_, rhs, u, threshold, &af);
-    af->tdwtKon(u);
-    energy_ext(u, pot, elementList, T_, nPatches, nLevels);
-    charge_ext(u, chg, elementList, T_, nPatches, nLevels);
+    af->tdwt(u);
+    energy_ext(u, pot, af->elementTree, T_, af->nPatches, af->nLevels);
+    charge_ext(u, chg, af->elementTree, T_, af->nPatches, af->nLevels);
     free(rhs);
     free(u);
 }
@@ -274,9 +303,9 @@ void WEMSolver::solveFull(const Eigen::VectorXd & potential,
     for(unsigned int i = 0; i < af->nFunctions; i++) {
         u[i] -= 4*M_PI*v[i];
     }
-    af->tdwtKon(u);
-    energy_ext(u, pot, elementList, T_, nPatches, nLevels);
-    charge_ext(u, charge.data(), elementList, T_, nPatches, nLevels);
+    af->tdwt(u);
+    energy_ext(u, pot, af->elementTree, T_, af->nPatches, af->nLevels);
+    charge_ext(u, charge.data(), af->elementTree, T_, af->nPatches, af->nLevels);
     free(rhs);
     free(u);
     free(v);

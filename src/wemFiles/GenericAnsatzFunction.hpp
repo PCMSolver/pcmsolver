@@ -56,7 +56,8 @@ public:
   /// generate point and patch list in C Format for the single scale basis and the ElementTree
   unsigned int genNet(Vector3 ***U);
 
-  void completeElementList();
+  //virtual void completeElementList() = 0;
+  virtual void simplifyWaveletList() = 0;
   
   int print_geometry(double * rho, char* dname);
   int printElement(char *dname, int element);

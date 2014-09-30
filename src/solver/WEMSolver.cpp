@@ -27,6 +27,7 @@
 #include "WEM.hpp"
 #include "WEMPGMRES.hpp"
 #include "WEMPCG.hpp"
+#include "WEMRHS.hpp"
 #include "Energy.hpp"
 
 #include <fstream>
@@ -265,7 +266,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double * pot = const_cast<double *>(potential.data());
     double * chg = charge.data();
     double epsilon = greenOutside_->dielectricConstant();
-    WEMRHS2M(&rhs, pot, &af);
+    WEMRHS2M(&rhs, pot, af);
     int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, af);
     af->tdwt(u);
     af->dwt(u);
@@ -295,7 +296,7 @@ void WEMSolver::solveFull(const Eigen::VectorXd & potential,
     double *v = (double*) calloc(af->nFunctions, sizeof(double));
     //next line is just a quick fix to avoid problems with const but i do not like it...
     double * pot = const_cast<double *>(potential.data());
-    WEMRHS2M(&rhs,pot, &af);
+    WEMRHS2M(&rhs,pot, af);
     int iters = WEMPCG(&S_i_, rhs, u, threshold, af);
     memset(rhs, 0, af->nFunctions*sizeof(double));
     for(unsigned int i = 0; i < af->nFunctions; i++) {

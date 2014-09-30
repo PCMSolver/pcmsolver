@@ -17,6 +17,7 @@
 */
 
 #include <boost/numeric/quadrature/interval_fwd.hpp>
+#include <boost/numeric/quadrature/quadrature_traits.hpp>
 #include <boost/numeric/quadrature/detail/local_traits.hpp>
 
 namespace boost

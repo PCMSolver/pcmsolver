@@ -25,6 +25,9 @@
 
 #include "WEMSolver.hpp"
 #include "WEM.hpp"
+#include "WEMPGMRES.hpp"
+#include "WEMPCG.hpp"
+#include "Energy.hpp"
 
 #include <fstream>
 #include <ostream>
@@ -125,7 +128,8 @@ void WEMSolver::initWEMMembers()
     //af->nQuadPoints = 0; //??? what is this for?
     af->elementTree.element = NULL;
     af->elementTree.nop = 0;
-    af->waveletList = NULL;
+    af->waveletList.W = NULL;
+    af->waveletList.sizeWaveletList = 0;
 }
 
 WEMSolver::~WEMSolver()
@@ -134,7 +138,7 @@ WEMSolver::~WEMSolver()
     delete(af);
     //if (nodeList != NULL)    free(nodeList);
     //if (elementList != NULL) free_patchlist(&elementList,nFunctions);
-    if (pointList != NULL)   free_points(&pointList, af->nPatches, af->nLevels);
+    if (pointList != NULL)   freePoints(&pointList);
     if (systemMatricesInitialized_) {
         freeSparse2(&S_i_);
         if(integralEquation == Full) freeSparse2(&S_e_);
@@ -150,7 +154,7 @@ void WEMSolver::uploadCavity(const WaveletCavity & cavity)
     af->nLevels = cavity.getNLevels();
     int n = (1<<af->nLevels);
     af->nFunctions = af->nPatches * n * n;
-    alloc_points(&pointList, af->nPatches, af->nLevels);
+    allocPoints(&pointList, af->nPatches, af->nLevels);
     int kk = 0;
     // index switch for "faster access"
     for (size_t i = 0; i < af->nPatches; ++i) {
@@ -262,17 +266,17 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double * chg = charge.data();
     double epsilon = greenOutside_->dielectricConstant();
     WEMRHS2M(&rhs, pot, &af);
-    int iter = WEMPGMRES2(&S_i_, rhs, u, af->threshold, &af);
+    int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, af);
     af->tdwt(u);
     af->dwt(u);
     for (size_t i = 0; i < af->nFunctions; ++i) {
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
     }
     memset(u, 0, af->nFunctions * sizeof(double));
-    iter = WEMPCG(&S_i_, rhs, u, threshold, &af);
+    iter = WEMPCG(&S_i_, rhs, u, threshold, af);
     af->tdwt(u);
-    energy_ext(u, pot, af->elementTree, T_, af->nPatches, af->nLevels);
-    charge_ext(u, chg, af->elementTree, T_, af->nPatches, af->nLevels);
+    energy_ext(u, pot, af);
+    charge_ext(u, chg, af);
     free(rhs);
     free(u);
 }
@@ -292,27 +296,27 @@ void WEMSolver::solveFull(const Eigen::VectorXd & potential,
     //next line is just a quick fix to avoid problems with const but i do not like it...
     double * pot = const_cast<double *>(potential.data());
     WEMRHS2M(&rhs,pot, &af);
-    int iters = WEMPCG(&S_i_, rhs, u, threshold, &af);
+    int iters = WEMPCG(&S_i_, rhs, u, threshold, af);
     memset(rhs, 0, af->nFunctions*sizeof(double));
     for(unsigned int i = 0; i < af->nFunctions; i++) {
         for(unsigned int j = 0; j < S_e_.row_number[i]; j++) {
             rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
         }
     }
-    iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, &af);
+    iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, af);
     for(unsigned int i = 0; i < af->nFunctions; i++) {
         u[i] -= 4*M_PI*v[i];
     }
     af->tdwt(u);
-    energy_ext(u, pot, af->elementTree, T_, af->nPatches, af->nLevels);
-    charge_ext(u, charge.data(), af->elementTree, T_, af->nPatches, af->nLevels);
+    energy_ext(u, pot, af);
+    charge_ext(u, charge.data(), af);
     free(rhs);
     free(u);
     free(v);
 }
 
-std::ostream & PWCSolver::printSolver(std::ostream & os)
+std::ostream & WEMSolver::printSolver(std::ostream & os)
 {
-    os << "Solver Type: Wavelet, piecewise constant functions";
+    os << "Solver Type: Wavelet, piecewise constant or linear functions";
     return os;
 }

@@ -412,7 +412,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   return 0;
 }
 
-void GenericAnsatzFunction :: postProc(SparseMatrix *T){
+unsigned int GenericAnsatzFunction :: postProc(SparseMatrix *T){
   double		**c;        // cut-off parameter
   double		*D1, *D2;   // diagonal entries of the systemmatrix
   double		*v1, *v2;   // vector for new values
@@ -472,13 +472,13 @@ void GenericAnsatzFunction :: postProc(SparseMatrix *T){
     nnz += k;
   }
    
-  // free memory of function
-  printf("A-posteriori compression:        %.5f %%\n",100.0*nnz/T->n/T->n);
+  //printf("A-posteriori compression:        %.5f %%\n",100.0*nnz/T->n/T->n);
   for (unsigned int i=0; i<=nLevels; ++i) free(c[i]);
+  // free memory of function
   free(D1);
   free(D2);
   free(c);
-  return;
+  return 100*nnz/T->n/T->n;
 }
 
 void GenericAnsatzFunction :: elementElementInteraction(double *c, unsigned int ind1, unsigned int ind2, double prec, Cubature * Q, double SingleLayer(Vector3, Vector3), double DoubleLayer(Vector3, Vector3, Vector3), double Identity){

@@ -37,6 +37,7 @@
 #include "GenericAnsatzFunction.hpp"
 #include "LinAnsatzFunction.hpp"
 #include "ConAnsatzFunction.hpp"
+#include "readPoints.hpp"
 
 class Vector2;
 class Vector3;
@@ -58,6 +59,8 @@ class WaveletCavity;
 class WEMSolver : public PCMSolver
 {
 private:
+    unsigned int interpolationGrade;
+    unsigned int interpolationType;
     void initWEMMembers();
     virtual std::ostream & printSolver(std::ostream & os);
 public:

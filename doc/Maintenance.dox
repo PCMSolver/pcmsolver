@@ -2,6 +2,11 @@
 
 Description and how-to for maintenance operations
 
+## Bump version
+
+Version numbering follows the guidelines of [semantic versioning](http://semver.org/)
+To update, change the relevant field in `cmake/ConfigVersio.cmake`.
+
 ## Updating Eigen distribution 
 
 The C++ linear algebra library Eigen comes bundled with the module. To update the distributed version one has to:

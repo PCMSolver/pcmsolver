@@ -41,17 +41,17 @@
  *  Wavelet cavity mesh coarsity.
  *  @var cavityInput::area
  *  Average tesserae area.
- *  @var min_distance
+ *  @var cavityInput::min_distance
  *  Minimal distance between sampling points.
- *  @var der_order
+ *  @var cavityInput::der_order
  *  Derivative order for the switching function.
- *  @var scaling
+ *  @var cavityInput::scaling
  *  Whether to scale or not the atomic radii.
- *  @var radii_set
+ *  @var cavityInput::radii_set
  *  The built-in radii set to be used.
- *  @var restart_name
+ *  @var cavityInput::restart_name
  *  Name of the .npz file for GePol cavity restart.
- *  @var min_radius
+ *  @var cavityInput::min_radius
  *  Minimal radius for the added spheres.
  */
 struct cavityInput {

@@ -49,10 +49,73 @@
  *  They must be specified as private data members with public accessor methods (get-ters).
  *  In general, no mutator methods (set-ters) should be needed, exceptions to this rule
  *  should be carefully considered.
+ *  \warning If new data members are added, you **must** update the definition of the copy
+ *  constructor and of the two swap functions.
  */
 
 class Input
 {
+public:
+    /// Default constructor
+    Input() {}
+    /// Constructor from human-readable input file name
+    Input(const std::string & filename);
+    /// Constructor from host input structs
+    Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
+    /// Copy constructor
+    Input(const Input &other);
+    /// Assignment operator
+    Input& operator=(Input other);
+    /// Destructor
+    ~Input() {}
+
+    friend inline void swap(Input & left, Input & right);
+    inline void swap(Input & other);
+    // Accessor methods
+    std::string units() { return units_; }
+    int CODATAyear() { return CODATAyear_; } 
+    // Cavity section input
+    std::string cavityFilename() { return cavFilename_; }
+    std::string cavityType() { return type_; }
+    int patchLevel() { return patchLevel_; }
+    double coarsity() { return coarsity_; }
+    double area() { return area_; }
+    double minDistance() { return minDistance_; }
+    int derOrder() { return derOrder_; }
+    bool scaling() { return scaling_; }
+    std::string radiiSet() { return radiiSet_; }
+    double minimalRadius() { return minimalRadius_; }
+    std::string mode() { return mode_; }
+    std::vector<int> atoms() { return atoms_; }
+    int atoms(int i) { return atoms_[i]; }
+    std::vector<double> radii() { return radii_; }
+    double radii(int i) { return radii_[i]; }
+    std::vector<Sphere> spheres() { return spheres_; }
+    Sphere spheres(int i) { return spheres_[i]; }
+    void spheres(const std::vector<Sphere> & sph) { spheres_ = sph; }
+    // Medium section input
+    Solvent solvent() { return solvent_; }
+    bool fromSolvent() { return hasSolvent_; }
+    std::string solverType() { return solverType_; }
+    int equationType() { return equationType_; }
+    double correction() { return correction_; }
+    bool hermitivitize() { return hermitivitize_; }
+    double probeRadius() { return probeRadius_; }
+    std::string greenInsideType() { return greenInsideType_; }
+    std::string greenOutsideType() { return greenOutsideType_; }
+    int derivativeInsideType() { return derivativeInsideType_; }
+    int derivativeOutsideType() { return derivativeOutsideType_; }
+    double epsilonInside() { return epsilonInside_; }
+    double epsilonOutside() { return epsilonOutside_; }
+    double epsilonReal() { return epsilonReal_; }
+    double epsilonImaginary() { return epsilonImaginary_; }
+    std::vector<double> spherePosition() { return spherePosition_; }
+    double sphereRadius() { return sphereRadius_; }
+    std::string providedBy() { return providedBy_; }
+    /// Operators
+    /// operator<<
+    friend std::ostream & operator<<(std::ostream &os, const Input &input);
+    /// @}
 private: 
     /*! Parse input by embedding the Python pcmsolver.py script as a module.
      */
@@ -146,61 +209,6 @@ private:
     double sphereRadius_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
-public:
-    Input() {}
-    Input(const std::string & filename);
-    Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
-    Input(const Input &other);
-    Input& operator=(Input other);
-    ~Input() {}
-
-    friend inline void swap(Input & left, Input & right);
-    inline void swap(Input & other);
-    // Accessor methods
-    std::string units() { return units_; }
-    int CODATAyear() { return CODATAyear_; } 
-    // Cavity section input
-    std::string cavityFilename() { return cavFilename_; }
-    std::string cavityType() { return type_; }
-    int patchLevel() { return patchLevel_; }
-    double coarsity() { return coarsity_; }
-    double area() { return area_; }
-    double minDistance() { return minDistance_; }
-    int derOrder() { return derOrder_; }
-    bool scaling() { return scaling_; }
-    std::string radiiSet() { return radiiSet_; }
-    double minimalRadius() { return minimalRadius_; }
-    std::string mode() { return mode_; }
-    std::vector<int> atoms() { return atoms_; }
-    int atoms(int i) { return atoms_[i]; }
-    std::vector<double> radii() { return radii_; }
-    double radii(int i) { return radii_[i]; }
-    std::vector<Sphere> spheres() { return spheres_; }
-    Sphere spheres(int i) { return spheres_[i]; }
-    void spheres(const std::vector<Sphere> & sph) { spheres_ = sph; }
-    // Medium section input
-    Solvent solvent() { return solvent_; }
-    bool fromSolvent() { return hasSolvent_; }
-    std::string solverType() { return solverType_; }
-    int equationType() { return equationType_; }
-    double correction() { return correction_; }
-    bool hermitivitize() { return hermitivitize_; }
-    double probeRadius() { return probeRadius_; }
-    std::string greenInsideType() { return greenInsideType_; }
-    std::string greenOutsideType() { return greenOutsideType_; }
-    int derivativeInsideType() { return derivativeInsideType_; }
-    int derivativeOutsideType() { return derivativeOutsideType_; }
-    double epsilonInside() { return epsilonInside_; }
-    double epsilonOutside() { return epsilonOutside_; }
-    double epsilonReal() { return epsilonReal_; }
-    double epsilonImaginary() { return epsilonImaginary_; }
-    std::vector<double> spherePosition() { return spherePosition_; }
-    double sphereRadius() { return sphereRadius_; }
-    std::string providedBy() { return providedBy_; }
-    /// Operators
-    /// operator<<
-    friend std::ostream & operator<<(std::ostream &os, const Input &input);
-    /// @}
 };
 
 /*!

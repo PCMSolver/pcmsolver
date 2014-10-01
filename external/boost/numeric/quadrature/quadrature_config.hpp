@@ -18,9 +18,10 @@
 
 #include <boost/config.hpp>
 
-#if !defined(NDEBUG) && !defined(BOOST_QUADRATURE_NDEBUG)
+// RDR: this makes problems in release mode. Commenting 30 Sept. 2014
+//#if !defined(NDEBUG) && !defined(BOOST_QUADRATURE_NDEBUG)
 #define BOOST_QUADRATURE_DEBUG
-#endif
+//#endif
 
 #ifdef BOOST_QUADRATURE_DEBUG
 #define BOOST_QUADRATURE_INVALID( type ) \

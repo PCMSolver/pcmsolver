@@ -7,6 +7,7 @@
  * @brief points xi and weights weight of the gauss quadrature formula on
  * interval [0,1]
  */
+#include "Quadrature.hpp"
 
 void initGaussLegendre(Quadrature **Q, unsigned int g);
 void freeGaussLegendre(Quadrature **Q, unsigned int g);

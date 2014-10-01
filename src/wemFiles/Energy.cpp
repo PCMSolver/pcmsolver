@@ -6,12 +6,13 @@
 
 #include <stdio.h>
 #include "Vector2.hpp"
-#include "data.hpp"
 #include "Cubature.hpp"
 #include "GaussSquare.hpp"
 #include "GenericAnsatzFunction.hpp"
 #include "Constants.hpp"
 
+/*
+#include "molecule.h"
 double energy(double *u, GenericAnsatzFunction *af) {
 	unsigned int	n = 1 << af->nLevels;	///< n*n elements per patch
 	unsigned int	zi;                         ///< row index: zi = i1*(n*n)+i2*n+i3
@@ -29,7 +30,7 @@ double energy(double *u, GenericAnsatzFunction *af) {
 	
   // calculating the error?
 	E = zi = 0;
-	for (unsigned int i1=0; i1<af->noPatch; i1++) {
+	for (unsigned int i1=0; i1<af->nPatches; i1++) {
 		s.y = 0;
 		for (unsigned int i2=0; i2<n; i2++) {
 			s.x = 0;
@@ -38,7 +39,7 @@ double energy(double *u, GenericAnsatzFunction *af) {
 				for (unsigned int l=0; l<Q[af->quadratureLevel_].noP; l++){
 					t = vector2Add(s,vector2SMul(h,Q[af->quadratureLevel_].xi[l]));
 					U = af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l], zi);
-					E += Q[af->quadratureLevel_].weight[l]*U*f(af->interCoeff->Chi(t,i1));
+					E += Q[af->quadratureLevel_].weight[l]*U*potmol(af->interCoeff->Chi(t,i1));
 					// total charge calculated using integration of charge density
           C += Q[af->quadratureLevel_].weight[l]*U;
 				}
@@ -59,32 +60,33 @@ double energy(double *u, GenericAnsatzFunction *af) {
 	freeGaussSquare(&Q,af->quadratureLevel_+1);
 	return(E);
 }
+*/
 
 double energy_ext(double *u, double *potential, GenericAnsatzFunction *af)
 {
     unsigned int n = 1 << af->nLevels;    /* n*n Patches pro Parametergebiet             */
     unsigned int i1, i2, i3;    /* Laufindizes fuer Ansatzfunktion             */
     unsigned int zi = 0;        /* Zeilenindex hieraus: zi = i1*(n*n)+i2*n+i3  */
-    cubature *Q;                /* Kubatur-Formeln                             */
+    Cubature *Q;                /* Kubatur-Formeln                             */
     unsigned int l;             /* Laufindex fuer Quadratur                    */
-    vector2 s;                  /* Linker, unterer Eckpunkt des Patches zi     */
-    vector2 t;                  /* Auswertepunkte der Gaussquadratur           */
+    Vector2 s;                  /* Linker, unterer Eckpunkt des Patches zi     */
+    Vector2 t;                  /* Auswertepunkte der Gaussquadratur           */
     double E = 0;               /* Energie                                     */
     double h = 1. / n;          /* Schrittweite                                */
 
 /* Initialisierung */
-    init_Gauss_Square(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
+    initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
 
 /* Berechnung des Fehlers */
-    for (i1 = 0; i1 < af->noPatch; i1++) {
+    for (i1 = 0; i1 < af->nPatches; i1++) {
         s.y = 0;
         for (i2 = 0; i2 < n; i2++) {
             s.x = 0;
             for (i3 = 0; i3 < n; i3++) {        /* zeilenweise Durchnumerierung der Patches zi = (i1,i2,i3) */
-                for (l = 0; l < Q[af->quadratureLevel].noP; l++) {
-                    t = vector2_add(s, vector2_Smul(h, Q[af->quadratureLevel_].xi[l]));
-                    E += Q[af->quadratureLevel_].weight[l] * calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi)
-                      * potential[Q[af->quadratureLevel_].nop*zi+l];
+                for (l = 0; l < Q[af->quadratureLevel_].noP; l++) {
+                    t = vector2Add(s, vector2SMul(h, Q[af->quadratureLevel_].xi[l]));
+                    E += Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi)
+                      * potential[Q[af->quadratureLevel_].noP*zi+l];
                 }
                 s.x += h;
                 zi++;
@@ -105,26 +107,26 @@ double charge_ext(double *u, double *charge, GenericAnsatzFunction *af)
     unsigned int n = 1 << af->nLevels;    /* n*n Patches pro Parametergebiet             */
     unsigned int i1, i2, i3;    /* Laufindizes fuer Ansatzfunktion             */
     unsigned int zi = 0;        /* Zeilenindex hieraus: zi = i1*(n*n)+i2*n+i3  */
-    cubature *Q;                /* Kubatur-Formeln                             */
+    Cubature *Q;                /* Kubatur-Formeln                             */
     unsigned int l;             /* Laufindex fuer Quadratur                    */
-    vector2 s;                  /* Linker, unterer Eckpunkt des Patches zi     */
-    vector2 t;                  /* Auswertepunkte der Gaussquadratur           */
+    Vector2 s;                  /* Linker, unterer Eckpunkt des Patches zi     */
+    Vector2 t;                  /* Auswertepunkte der Gaussquadratur           */
     double h = 1. / n;          /* Schrittweite                                */
     double C = 0;               /* surface meassure                            */
 
 /* Initialisierung */
-    init_Gauss_Square(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
+    initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
 
 /* Berechnung des Fehlers */
-    for (i1 = 0; i1 < af->noPatch; i1++) {
+    for (i1 = 0; i1 < af->nPatches; i1++) {
         s.y = 0;
         for (i2 = 0; i2 < n; i2++) {
             s.x = 0;
             for (i3 = 0; i3 < n; i3++) {        /* zeilenweise Durchnumerierung der Patches zi = (i1,i2,i3) */
                 for (l = 0; l < Q[af->quadratureLevel_].noP; l++) {
-                    t = vector2_add(s, vector2_Smul(h, Q[a->quadratureLevel_].xi[l]));
+                    t = vector2Add(s, vector2SMul(h, Q[af->quadratureLevel_].xi[l]));
                     int index = Q[af->quadratureLevel_].noP*zi+l;
-                    charge[index] = Q[af->quadratureLevel_].weight[l] * calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi) * h;
+                    charge[index] = Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi) * h;
                     C += charge[index];
                 }
                 s.x += h;
@@ -139,4 +141,3 @@ double charge_ext(double *u, double *charge, GenericAnsatzFunction *af)
 	  freeGaussSquare(&Q,af->quadratureLevel_+1);
     return (C);
 }
-#endif

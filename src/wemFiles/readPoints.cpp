@@ -51,13 +51,13 @@ void readPoints(const char * fileName, Vector3 ****ppPointsIn, unsigned int *pno
 }
 
 void allocPoints(Vector3 ****ppPointsIn, unsigned int noPatch, unsigned int nLevels) {
-  n = 1<<(nLevels);
+    unsigned int n = 1<<(nLevels);
 		/// @note allocate memory in one chunk, seems faster most of the times
 		(*ppPointsIn) = (Vector3***) malloc( ((noPatch)*sizeof(Vector3**)) + ((noPatch)*(n+1)*sizeof(Vector3*)) + ((noPatch)*(n+1)*(n+1)*sizeof(Vector3)) );
 		
-		for(j1 = 0; j1 < noPatch; ++j1){
+		for(unsigned int j1 = 0; j1 < noPatch; ++j1){
 			(*ppPointsIn)[j1] = (Vector3 **) ((*ppPointsIn) + (noPatch)) + j1 * (n+1);
-			for(j2 = 0; j2 < n+1; ++j2){
+			for(unsigned int j2 = 0; j2 < n+1; ++j2){
 				(*ppPointsIn)[j1][j2] = (Vector3 *) ((*ppPointsIn) + (noPatch) +(noPatch)*(n+1)) + j1*(n+1)*(n+1) + j2*(n+1);
 			}
 		}

@@ -76,7 +76,7 @@ static double SingleLayer (Vector3 x, Vector3 y)
     Eigen::Vector3d vx(x.x, x.y, x.z);
     Eigen::Vector3d vy(y.x, y.y, y.z);
     Eigen::Vector3d foo = Eigen::Vector3d::Zero();
-    double value = gf->evaluate(foo, vx, foo, vy)(0);
+    double value = gf->function(vx, vy);
     return value;
 }
 
@@ -86,7 +86,7 @@ static double DoubleLayer (Vector3 x, Vector3 y, Vector3 n_y)
     Eigen::Vector3d vy(y.x, y.y, y.z);
     Eigen::Vector3d vn_y(n_y.x, n_y.y, n_y.z);
     Eigen::Vector3d foo = Eigen::Vector3d::Zero();
-    double value = gf->evaluate(foo, vx, vn_y, vy)(1);
+    double value = gf->derivative(vn_y, vx, vy);
     return value;
 }
 
@@ -213,7 +213,7 @@ void WEMSolver::constructSi(){
     double epsilon = 0;
     switch (integralEquation) {
         case FirstKind:
-            epsilon = greenOutside_->dielectricConstant();
+            epsilon = greenOutside_->epsilon();
             factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
             break;
         case SecondKind:
@@ -265,7 +265,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double *u = (double*) calloc(af->nFunctions, sizeof(double));
     double * pot = const_cast<double *>(potential.data());
     double * chg = charge.data();
-    double epsilon = greenOutside_->dielectricConstant();
+    double epsilon = greenOutside_->epsilon();
     WEMRHS2M(&rhs, pot, af);
     int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, af);
     af->tdwt(u);

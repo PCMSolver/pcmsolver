@@ -39,6 +39,7 @@
 
 #include <Eigen/Dense>
 
+#include "InputManager.hpp"
 #include "Sphere.hpp"
 
 /*
@@ -53,7 +54,10 @@ extern "C" void hello_pcm(int * a, double * b);
 
 #define set_up_pcm \
 	FortranCInterface_GLOBAL_(set_up_pcm, SET_UP_PCM)
-extern "C" void set_up_pcm();
+/*! \fn extern "C" void set_up_pcm(int * host_provides_input)
+ *  \param[in] host_provides_input whether the host does syntactic parsing for API 
+ */
+extern "C" void set_up_pcm(int * host_provides_input);
 
 #define tear_down_pcm \
 	FortranCInterface_GLOBAL_(tear_down_pcm, TEAR_DOWN_PCM)
@@ -110,6 +114,26 @@ extern "C" void host_writer(const char * message, size_t * message_length);
  */
 extern "C" void set_point_group(int * nr_generators, int * gen1, int * gen2,
                                 int * gen3);
+
+/*! \fn extern "C" void host_input(cavityInput * cav, solverInput * solv, greenInput * green)
+ *  \brief Pushes input parameters defined host-side to the API 
+ *  \param[in] cav   cavity input data
+ *  \param[in] solv  solver input data
+ *  \param[in] green Green's function input data
+ */
+extern "C" void host_input(cavityInput * cav, solverInput * solv, greenInput * green);
+
+#define push_input_string \
+	FortranCInterface_GLOBAL_(push_input_string, PUSH_INPUT_STRING)
+/*! \fn extern "C" void push_input_string(char * s)
+ *  \brief pushes a string input parameter to the API
+ *  \param[in] s the string to be passed
+ *
+ *  The string is saved inside a std::vector<std::string>
+ *  This function is to be used in conjunction with input management done
+ *  host-side.
+ */
+extern "C" void push_input_string(char * s);
 
 #define get_cavity_size \
 	FortranCInterface_GLOBAL_(get_cavity_size, GET_CAVITY_SIZE)
@@ -212,8 +236,9 @@ extern "C" void scale_surface_function(char * func, double * coeff);
 /*! \fn void setupInput()
  *
  *  Sets up Input object
+ *  \param[in] from_host whether input parameters are passed from host
  */
-void setupInput();
+void setupInput(bool from_host);
 
 /*! \fn void initCavity()
  *

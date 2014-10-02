@@ -35,17 +35,16 @@
 
 extern "C"
 {
-//#include "vector3.h"
-//#include "sparse2.h"
-//#include "intvector.h"
-//#include "basis.h"
+#include "vector3.h"
+#include "sparse2.h"
+#include "intvector.h"
+#include "basis.h"
 }
 
 #include "IGreensFunction.hpp"
 #include "SolverData.hpp"
 #include "SolverFactory.hpp"
 #include "WEMSolver.hpp"
-#include "ElementTree.hpp"
 
 /*! \file PWCSolver.hpp
  *  \class PWCSolver
@@ -83,8 +82,19 @@ private:
     virtual void solveSecondKind(const Eigen::VectorXd & potential,
                                  Eigen::VectorXd & charge);
     virtual void solveFull(const Eigen::VectorXd & potential, Eigen::VectorXd & charge);
-    nt_node *elementTree; //*E_; Hierarchical element list
+    element *elementTree; //*E_; Hierarchical element list
     wavelet *waveletList; //*W_; List of wavelets
 };
+
+namespace
+{
+    PCMSolver * createPWCSolver(const solverData & _data)
+    {
+        return new PWCSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
+    }
+    const std::string PWCSOLVER("Wavelet");
+    const bool registeredPWCSolver = SolverFactory::TheSolverFactory().registerSolver(
+                                         PWCSOLVER, createPWCSolver);
+}
 
 #endif // PWCSOLVER_HPP

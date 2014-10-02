@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(NH3)
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity);
     int firstKind = 0;
-    WEMSolver solver(gfInside, gfOutside, "linear", firstKind);
+    WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), true);
 

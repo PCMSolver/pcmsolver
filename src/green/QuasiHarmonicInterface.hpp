@@ -134,7 +134,7 @@ namespace
         buildQuasiHarmonicInterface build;
         return for_id<derivative_types>(build, _data, _data.how);
     }
-    const std::string QUASIHARMONICINTERFACE("QuasiHarmonicInterface");
+    const std::string QUASIHARMONICINTERFACE("QUASIHARMONICINTERFACE");
     const bool registeredQuasiHarmonicInterface =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             QUASIHARMONICINTERFACE, createQuasiHarmonicInterface);

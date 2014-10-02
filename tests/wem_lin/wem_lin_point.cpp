@@ -37,7 +37,7 @@
 
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
-#include "PWLSolver.hpp"
+#include "WEMSolver.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 #include "WaveletCavity.hpp"
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(pointCharge)
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity, diag);
     int firstKind = 0;
-    PWLSolver solver(gfInside, gfOutside, firstKind);
+    WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), true);
 

@@ -1,0 +1,35 @@
+Units = [String]
+CODATA = [Integer]
+Cavity {
+       Type = [String]
+       NpzFile = [String]
+       Patchlevel = [Integer]
+       Coarsity = [Double]
+       Area = [Double]
+       MinDistance = [Double]
+       DerOrder = [Integer]
+       Scaling = [Bool]
+       RadiiSet = [String]
+       MinRadius = [Double]
+       Mode = [String]
+       Atoms = [Array of Integers]
+       Radii = [Array of Doubles]
+       Spheres = [Array of Doubles]   
+}
+Medium {
+       Solvent = [String]
+       SolverType = [String]
+       EquationType = [String]
+       MatrixSymm = [Bool]
+       Correction = [Double]
+       ProbeRadius = [Double]
+       Green<GreenTag> {
+             Type = [String]
+             Der = [String]
+             Eps = [Double]
+             EpsRe = [Double]
+             EpsImg = [Double] 
+             SphereRadius = [Double]
+             SpherePosition = [Array of Doubles]
+       }
+}

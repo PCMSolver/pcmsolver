@@ -105,6 +105,9 @@ macro(configure_files)
 	# Configure the header with library-wide preprocessor definitions
 	configure_file(${PROJECT_SOURCE_DIR}/Config.hpp.in
                ${PROJECT_BINARY_DIR}/include/Config.hpp)
+       # Configure the source file for the input managing class
+       configure_file(${PROJECT_SOURCE_DIR}/src/utils/Input.cpp.in
+	       ${PROJECT_SOURCE_DIR}/src/utils/Input.cpp)
 	# Configure the input parsing script
 	configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in pcmsolver.py)
         file(COPY ${PROJECT_BINARY_DIR}/pcmsolver.py 

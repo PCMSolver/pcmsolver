@@ -17,59 +17,59 @@ toAngstrom =  0.52917721092; # CODATA 2010 recommended data
 toAtomicUnits = 1.0/toAngstrom;
 
 def main(argv):
-   """ Convert a .txt file containing an array to a .npy file.
-   Contents of the array are laid out in memory in Fortran order.
-   -l convert a length from angstrom to au
-   -a convert an area from angstrom**2 to au**2
-   -v convert a volume from angstrom**3 to au**3
-   -t transpose the array
-   -i <input_file.txt>
-   -o <output_file.npy>
-   """
-   convert_length_to_au = False
-   convert_area_to_au = False
-   convert_volume_to_au = False
-   transpose = False
+    """ Convert a .txt file containing an array to a .npy file.
+    Contents of the array are laid out in memory in Fortran order.
+    -l convert a length from angstrom to au
+    -a convert an area from angstrom**2 to au**2
+    -v convert a volume from angstrom**3 to au**3
+    -t transpose the array
+    -i <input_file.txt>
+    -o <output_file.npy>
+    """
+    convert_length_to_au = False
+    convert_area_to_au = False
+    convert_volume_to_au = False
+    transpose = False
 
-   try:
-       opts, args = getopt.getopt(argv,"hlavti:o:",["l", "a", "v", "t", "ifile=", "ofile="])
-   except getopt.GetoptError:
-      print('txt_to_npy.py -l -a -v -t -i <input_file.txt> -o <output_file.npy>')
-      sys.exit(2)
-   for opt, arg in opts:
-      if opt == '-h':
-         print('txt_to_npy.py -l -a -v -t -i <input_file.txt> -o <output_file.npy>')
-         sys.exit()
-      elif opt == '-l':
-          convert_length_to_au = True
-      elif opt == '-a':
-          convert_area_to_au = True
-      elif opt == '-v':
-          convert_volume_to_au = True
-      elif opt == '-t':
-          transpose = True
-      elif opt in ("-i", "--ifile"):
-         input_file = arg
-      elif opt in ("-o", "--ofile"):
-         output_file = arg
-   print('Input file is {}'.format(input_file))
-   print('Output file is {}'.format(output_file))
+    try:
+        opts, args = getopt.getopt(argv,"hlavti:o:",["l", "a", "v", "t", "ifile=", "ofile="])
+    except getopt.GetoptError:
+        print('txt_to_npy.py -l -a -v -t -i <input_file.txt> -o <output_file.npy>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('txt_to_npy.py -l -a -v -t -i <input_file.txt> -o <output_file.npy>')
+            sys.exit()
+        elif opt == '-l':
+            convert_length_to_au = True
+        elif opt == '-a':
+            convert_area_to_au = True
+        elif opt == '-v':
+            convert_volume_to_au = True
+        elif opt == '-t':
+            transpose = True
+        elif opt in ("-i", "--ifile"):
+            input_file = arg
+        elif opt in ("-o", "--ofile"):
+            output_file = arg
+    print('Input file is {}'.format(input_file))
+    print('Output file is {}'.format(output_file))
 
-   # Load the .txt file
-   contents = numpy.loadtxt(input_file, dtype=float, unpack=transpose)
-   if convert_length_to_au:
-       contents *= toAtomicUnits 
-   elif convert_area_to_au:
-       contents *= (toAtomicUnits * toAtomicUnits)
-   elif convert_volume_to_au:
-       contents *= (toAtomicUnits * toAtomicUnits * toAtomicUnits)
-   # Reshape to get array into Fortran order
-   numpy.reshape(contents, contents.shape, 'F')
-   
-   # Now save everything into a .npy file
-   numpy.save(output_file, contents)
+    # Load the .txt file
+    contents = numpy.loadtxt(input_file, dtype=float, unpack=transpose)
+    if convert_length_to_au:
+        contents *= toAtomicUnits
+    elif convert_area_to_au:
+        contents *= (toAtomicUnits * toAtomicUnits)
+    elif convert_volume_to_au:
+        contents *= (toAtomicUnits * toAtomicUnits * toAtomicUnits)
+    # Reshape to get array into Fortran order
+    numpy.reshape(contents, contents.shape, 'F')
+
+    # Now save everything into a .npy file
+    numpy.save(output_file, contents)
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+    main(sys.argv[1:])
 
 # vim:et:ts=4:sw=4

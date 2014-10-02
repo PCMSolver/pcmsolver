@@ -5,7 +5,7 @@ get_hpp_headers(headers_list)
 if(DEVELOPMENT_CODE)
 	list(REMOVE_ITEM headers_list "")
 else()
-	list(REMOVE_ITEM headers_list "WEMSolver.hpp" "PWCSolver.hpp" "PWLSolver.hpp")
+	list(REMOVE_ITEM headers_list "WEMSolver.hpp")
 endif()	
 # Sort alphabetically
 list(SORT headers_list)
@@ -20,7 +20,7 @@ get_cpp_sources(sources_list)
 if(DEVELOPMENT_CODE)
 	list(REMOVE_ITEM sources_list "")
 else()
-	list(REMOVE_ITEM sources_list "WEMSolver.cpp" "PWCSolver.cpp" "PWLSolver.cpp")
+	list(REMOVE_ITEM sources_list "WEMSolver.cpp")
 endif()	
 
 # Write list of files to be passed to cloc for counting lines of code.

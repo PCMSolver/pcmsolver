@@ -18,6 +18,7 @@
 
 #include <boost/numeric/quadrature/arithmetic_vector_traits.hpp>
 #include <boost/numeric/quadrature/is_arithmetic_scalar.hpp>
+#include <boost/numeric/quadrature/quadrature_config.hpp>
 
 #include <boost/array.hpp>
 #include <boost/tr1/array.hpp>

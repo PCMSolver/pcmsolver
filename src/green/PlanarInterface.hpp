@@ -131,7 +131,7 @@ namespace
         buildPlanarInterface build;
         return for_id<derivative_types>(build, _data, _data.how);
     }
-    const std::string PLANARINTERFACE("PlanarInterface");
+    const std::string PLANARINTERFACE("PLANARINTERFACE");
     const bool registeredPlanarInterface =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             PLANARINTERFACE, createPlanarInterface);

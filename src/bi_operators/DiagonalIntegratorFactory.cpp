@@ -44,10 +44,14 @@ bool DiagonalIntegratorFactory::unRegisterDiagonalIntegrator(const std::string &
 DiagonalIntegrator * DiagonalIntegratorFactory::createDiagonalIntegrator(
     const std::string & integratorID)
 {
+    if (integratorID.empty()) {
+        // No integratorID was specified
+        throw std::runtime_error("No integrator ID given.");
+    }
     CallbackMap::const_iterator i = callbacks.find(integratorID);
     if (i == callbacks.end()) {
         // The integratorID was not found
-        throw std::runtime_error("The unknown Green's function ID " + integratorID +
+        throw std::runtime_error("The unknown integrator ID " + integratorID +
                                  " occurred in DiagonalIntegratorFactory.");
     }
     // Invoke the creation function

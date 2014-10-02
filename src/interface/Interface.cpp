@@ -31,6 +31,7 @@
 #include "Interface.hpp"
 
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -43,7 +44,9 @@
 #include <Eigen/Dense>
 
 // Include Boost headers here
+#include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
 // Core classes
@@ -68,6 +71,8 @@ PWLSolver * _PWLSolver = NULL;
 PCMSolver * _solver = NULL;
 
 SharedSurfaceFunctionMap functions;
+boost::shared_ptr<Input> parsedInput;
+std::vector<std::string> input_strings; // Used only by Fortran hosts
 
 /*
 
@@ -78,9 +83,6 @@ SharedSurfaceFunctionMap functions;
 
 extern "C" void hello_pcm(int * a, double * b)
 {
-    std::cout << "Hello, PCM!" << std::endl;
-    std::cout << "The integer is: " << *a << std::endl;
-    std::cout << "The double is: " << *b << std::endl;
     std::ostringstream out_stream;
     out_stream << "Hello, PCM!" << std::endl;
     out_stream << "The integer is: " << *a << std::endl;
@@ -88,9 +90,13 @@ extern "C" void hello_pcm(int * a, double * b)
     printer(out_stream);
 }
 
-extern "C" void set_up_pcm()
+extern "C" void set_up_pcm(int * host_provides_input)
 {
-    setupInput();
+    bool from_host = false;
+    if (*host_provides_input != 0) {
+	    from_host = true;
+    }
+    setupInput(from_host);
     initCavity();
     initSolver();
 }
@@ -227,16 +233,17 @@ extern "C" void print_pcm()
     std::ostringstream out_stream;
     out_stream << "\n" << std::endl;
     out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
-    out_stream << "Using CODATA " << Input::TheInput().CODATAyear() << " set of constants." << std::endl;
+    out_stream << "Using CODATA " << parsedInput->CODATAyear() << " set of constants." << std::endl;
+    out_stream << "Input parsing done " << parsedInput->providedBy() << std::endl;
     out_stream << "========== Cavity " << std::endl;
     out_stream << *_cavity << std::endl;
     out_stream << "========== Solver " << std::endl;
     out_stream << *_solver << std::endl;
     out_stream << "============ Medium " << std::endl;
-    bool fromSolvent = Input::TheInput().fromSolvent();
+    bool fromSolvent = parsedInput->fromSolvent();
     if (fromSolvent) {
         out_stream << "Medium initialized from solvent built-in data." << std::endl;
-        Solvent solvent = Input::TheInput().getSolvent();
+        Solvent solvent = parsedInput->solvent();
         out_stream << solvent << std::endl;
     }
     out_stream << ".... Inside " << std::endl;
@@ -355,23 +362,53 @@ extern "C" void scale_surface_function(char * func, double * coeff)
     (*iter_func->second) *= (*coeff);
 }
 
+extern "C" void push_input_string(char * s)
+{
+	std::string str(s);
+	// Save the string inside a std::vector<std::string>
+	input_strings.push_back(str);
+}
+
 /*
 
 	Functions not visible to host program
 
 */
 
-void setupInput()
+void setupInput(bool from_host)
 {
-    /* Here we setup the input, meaning that we read the parsed file and store everything
-     * it contains inside an Input object.
-     * This object will be unique (a Singleton) to each "run" of the module.
-     *   *** WHAT HAPPENS IN NUMERICAL GEOMETRY OPTIMIZATIONS? ***
-     */
-    Input& parsedInput = Input::TheInput();
+    if (from_host) { // Set up input from host data structures
+	    cavityInput cav;
+	    solverInput solv;
+	    greenInput green;
+	    host_input(&cav, &solv, &green);
+	    // Put string passed with the alternative method in the input structures
+	    if (!input_strings.empty()) {
+	    	for (size_t i = 0; i < input_strings.size(); ++i) {
+		    // Trim strings aka remove blanks
+		    boost::algorithm::trim(input_strings[i]);
+	    	}
+	    	strncpy(cav.cavity_type,    input_strings[0].c_str(), input_strings[0].length());
+	        strncpy(cav.radii_set,      input_strings[1].c_str(), input_strings[1].length());
+	    	strncpy(cav.restart_name,   input_strings[2].c_str(), input_strings[2].length());
+	    	strncpy(solv.solver_type,   input_strings[3].c_str(), input_strings[3].length());
+	    	strncpy(solv.solvent,       input_strings[4].c_str(), input_strings[4].length());
+	    	strncpy(solv.equation_type, input_strings[5].c_str(), input_strings[5].length());
+	    	strncpy(green.inside_type,  input_strings[6].c_str(), input_strings[6].length());
+	    	strncpy(green.outside_type, input_strings[7].c_str(), input_strings[7].length());
+	    }
+	   // std::ostringstream out_stream;
+	   // out_stream << cav << std::endl;
+	   // out_stream << solv << std::endl;
+	   // out_stream << green << std::endl;
+	   // printer(out_stream);
+    	    parsedInput = boost::make_shared<Input>(Input(cav, solv, green));
+    } else {
+	    parsedInput = boost::make_shared<Input>(Input("pcmsolver.inp"));
+    }
     // The only thing we can't create immediately is the vector of spheres
     // from which the cavity is to be built.
-    std::string _mode = parsedInput.getMode();
+    std::string _mode = parsedInput->mode();
     // Get the total number of nuclei and the geometry anyway
     Eigen::VectorXd charges;
     Eigen::Matrix3Xd centers;
@@ -385,27 +422,27 @@ void setupInput()
     // Some post-processing of the list is needed in the Atoms mode.
     initSpheresImplicit(charges, centers, spheres);
 
-    if (_mode == "Implicit") {
-        parsedInput.setSpheres(spheres);
-    } else if (_mode == "Atoms") {
+    if (_mode == "IMPLICIT") {
+        parsedInput->spheres(spheres);
+    } else if (_mode == "ATOMS") {
         initSpheresAtoms(centers, spheres);
-        parsedInput.setSpheres(spheres);
+        parsedInput->spheres(spheres);
     }
 }
 
 void initCavity()
 {
     // Get the input data for generating the cavity
-    std::string cavityType = Input::TheInput().getCavityType();
-    double area = Input::TheInput().getArea();
-    std::vector<Sphere> spheres = Input::TheInput().getSpheres();
-    double minRadius = Input::TheInput().getMinimalRadius();
-    double probeRadius = Input::TheInput().getProbeRadius();
-    double minDistance = Input::TheInput().getMinDistance();
-    int derOrder = Input::TheInput().getDerOrder();
-    int patchLevel = Input::TheInput().getPatchLevel();
-    double coarsity = Input::TheInput().getCoarsity();
-    std::string restart = Input::TheInput().getCavityFilename();
+    std::string cavityType = parsedInput->cavityType();
+    double area = parsedInput->area();
+    std::vector<Sphere> spheres = parsedInput->spheres();
+    double minRadius = parsedInput->minimalRadius();
+    double probeRadius = parsedInput->probeRadius();
+    double minDistance = parsedInput->minDistance();
+    int derOrder = parsedInput->derOrder();
+    int patchLevel = parsedInput->patchLevel();
+    double coarsity = parsedInput->coarsity();
+    std::string restart = parsedInput->cavityFilename();
 
     int nr_gen;
     int gen1, gen2, gen3;
@@ -417,9 +454,9 @@ void initCavity()
 
     // Get the right cavity from the Factory
     // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
-    std::string modelType = Input::TheInput().getSolverType();
+    std::string modelType = parsedInput->solverType();
 #if defined (DEVELOPMENT_CODE)    
-    if (modelType == "Wavelet" || modelType == "Linear") {
+    if (modelType == "WAVELET" || modelType == "LINEAR") {
         // Both PWC and PWL require a WaveletCavity
         initWaveletCavity();
     } else {
@@ -440,39 +477,39 @@ void initSolver()
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
-    double epsilon = Input::TheInput().getEpsilonInside();
-    std::string greenType = Input::TheInput().getGreenInsideType();
-    int greenDer = Input::TheInput().getDerivativeInsideType();
+    double epsilon = parsedInput->epsilonInside();
+    std::string greenType = parsedInput->greenInsideType();
+    int greenDer = parsedInput->derivativeInsideType();
     greenData inside(greenDer, epsilon, integrator);
 
     IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
 
     // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
-    epsilon = Input::TheInput().getEpsilonOutside();
-    greenType = Input::TheInput().getGreenOutsideType();
-    greenDer = Input::TheInput().getDerivativeOutsideType();
+    epsilon = parsedInput->epsilonOutside();
+    greenType = parsedInput->greenOutsideType();
+    greenDer = parsedInput->derivativeOutsideType();
     greenData outside(greenDer, epsilon, integrator);
 
     IGreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
     // And all this to finally create the solver!
-    std::string modelType = Input::TheInput().getSolverType();
-    double correction = Input::TheInput().getCorrection();
-    int eqType = Input::TheInput().getEquationType();
-    bool symm = Input::TheInput().hermitivitize();
+    std::string modelType = parsedInput->solverType();
+    double correction = parsedInput->correction();
+    int eqType = parsedInput->equationType();
+    bool symm = parsedInput->hermitivitize();
     solverData solverInput(gfInside, gfOutside, correction, eqType, symm);
 
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
     // (...not our fault, but should remedy somehow)
 #if defined (DEVELOPMENT_CODE)    
-    if (modelType == "Wavelet") {
+    if (modelType == "WAVELET") {
         _PWCSolver = new PWCSolver(gfInside, gfOutside);
         _PWCSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_(),
                                      false); // WTF is happening here???
         _cavity = _waveletCavity;
         _solver = _PWCSolver;
-    } else if (modelType == "Linear") {
+    } else if (modelType == "LINEAR") {
         _PWLSolver = new PWLSolver(gfInside, gfOutside);
         _PWLSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_(),
@@ -508,8 +545,8 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
 void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
                       std::vector<Sphere> & spheres_)
 {
-    vector<int> atomsInput = Input::TheInput().getAtoms();
-    vector<double> radiiInput = Input::TheInput().getRadii();
+    vector<int> atomsInput = parsedInput->atoms();
+    vector<double> radiiInput = parsedInput->radii();
 
     // Loop over the atomsInput array to get which atoms will have a user-given radius
     for (size_t i = 0; i < atomsInput.size(); ++i) {
@@ -522,9 +559,9 @@ void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
 void initSpheresImplicit(const Eigen::VectorXd & charges_,
                          const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_)
 {
-    bool scaling = Input::TheInput().getScaling();
-    std::string set = Input::TheInput().getRadiiSet();
-    double factor = angstromToBohr(Input::TheInput().CODATAyear());
+    bool scaling = parsedInput->scaling();
+    std::string set = parsedInput->radiiSet();
+    double factor = angstromToBohr(parsedInput->CODATAyear());
 
     std::vector<Atom> radiiSet;
     if ( set == "UFF" ) {
@@ -546,10 +583,10 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
 #if defined (DEVELOPMENT_CODE)
 void initWaveletCavity()
 {
-    int patchLevel = Input::TheInput().getPatchLevel();
-    std::vector<Sphere> spheres = Input::TheInput().getSpheres();
-    double coarsity = Input::TheInput().getCoarsity();
-    double probeRadius = Input::TheInput().getProbeRadius();
+    int patchLevel = parsedInput->patchLevel();
+    std::vector<Sphere> spheres = parsedInput->spheres();
+    double coarsity = parsedInput->coarsity();
+    double probeRadius = parsedInput->probeRadius();
 
     // Just throw at this point if the user asked for a cavity for a single sphere...
     // the wavelet code will die without any further notice anyway

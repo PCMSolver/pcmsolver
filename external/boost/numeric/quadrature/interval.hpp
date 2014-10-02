@@ -57,7 +57,9 @@ namespace boost
           typename boost::disable_if<is_arithmetic_scalar<Image> >::type* v=0)
         {
           using namespace std;
+#ifdef BOOST_QUADRATURE_DEBUG	  
           BOOST_QUADRATURE_ASSERT(boost::size(bound)==boost::size(error));
+#endif	  
           typename boost::range_const_iterator<Image>::type
             bnd=boost::begin(bound);
           typename boost::range_const_iterator<Image>::type
@@ -280,6 +282,7 @@ namespace boost
                         )
           {
             ++m_current;
+#ifdef BOOST_QUADRATURE_DEBUG
             BOOST_QUADRATURE_ASSERT(m_selected!=boost::end(m_intervals));
             BOOST_QUADRATURE_ASSERT(m_current!=boost::end(m_intervals));
             BOOST_QUADRATURE_ASSERT(m_selected->lower_bound()==a1
@@ -287,10 +290,13 @@ namespace boost
             BOOST_QUADRATURE_ASSERT(m_selected->upper_bound()==b1
                          ||m_selected->upper_bound()==b2);
             BOOST_QUADRATURE_ASSERT(b1==a2);
+#endif	    
 
 //             if (error2<=error1)
 //             {
+#ifdef BOOST_QUADRATURE_DEBUG            
               BOOST_QUADRATURE_ASSERT(m_selected->lower_bound()==a1);
+#endif	      
               m_selected->upper_bound(b1);
               m_selected->set(area1,error1, bound);
               m_current->set_domain(a2,b2);

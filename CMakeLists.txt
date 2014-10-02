@@ -103,6 +103,9 @@ endif()
 #
 #  Boost Numeric Quadrature stuff
 #
+if(CMAKE_BUILD_TYPE STREQUAL "release")
+	add_definitions(-DBOOST_QUADRATURE_NDEBUG)
+endif()	
 set(Boost_QUADRATURE ${PROJECT_SOURCE_DIR}/external/boost)
 install(DIRECTORY ${Boost_QUADRATURE}/numeric
 	DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/boost/include/boost
@@ -158,25 +161,25 @@ list(REMOVE_ITEM TaylorCMakeArgs
 list(APPEND TaylorCMakeArgs -Wno-dev)
 
 if(DEVELOPMENT_CODE)
-ExternalProject_Add(libtaylor
-	SVN_REPOSITORY http://libtaylor.googlecode.com/svn/trunk/
-       	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
-	PREFIX ${PROJECT_SOURCE_DIR}/external
-	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
-	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
-        STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
-        TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
-        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        CMAKE_ARGS ${TaylorCMakeArgs})
+	ExternalProject_Add(libtaylor
+        	SVN_REPOSITORY http://libtaylor.googlecode.com/svn/trunk/
+               	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
+        	PREFIX ${PROJECT_SOURCE_DIR}/external
+        	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
+        	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
+                STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
+                TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
+                INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+                CMAKE_ARGS ${TaylorCMakeArgs})
 else()
-ExternalProject_Add(libtaylor
-	PREFIX ${PROJECT_SOURCE_DIR}/external
-	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
-	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
-        STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
-        TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
-        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-        CMAKE_ARGS ${TaylorCMakeArgs})
+	ExternalProject_Add(libtaylor
+        	PREFIX ${PROJECT_SOURCE_DIR}/external
+        	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
+        	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
+                STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
+                TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
+                INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+                CMAKE_ARGS ${TaylorCMakeArgs})
 endif()
 
 configure_files()

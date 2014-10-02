@@ -719,7 +719,9 @@ namespace boost
         {
           y=f(x);
           recorder(x,y);
+#ifdef BOOST_QUADRATURE_DEBUG
           BOOST_QUADRATURE_ASSERT(!detail::isnan(y));
+#endif	  
         }
 
         template <typename Integrand, typename Domain, typename Image,
@@ -732,7 +734,9 @@ namespace boost
         {
           f(x,y);
           recorder(x,y);
+#ifdef BOOST_QUADRATURE_DEBUG
           BOOST_QUADRATURE_ASSERT(!detail::isnan(y));
+#endif
         }
 
       }// namespace

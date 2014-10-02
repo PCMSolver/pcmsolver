@@ -211,8 +211,10 @@ namespace boost
         void bisect(rms_interval<19, 13, Domain, Image>& lower,
                     rms_interval<19, 13, Domain, Image>& upper)
         {
+#ifdef BOOST_QUADRATURE_DEBUG
           BOOST_QUADRATURE_ASSERT(!detail::isnan(lower.m_lower_values));
           BOOST_QUADRATURE_ASSERT(!detail::isnan(lower.m_upper_values));
+#endif	  
 
           bisect19(lower, upper);
 
@@ -251,8 +253,10 @@ namespace boost
         void bisect(rms_interval<27, 19, Domain, Image>& lower,
                     rms_interval<27, 19, Domain, Image>& upper)
         {
+#ifdef BOOST_QUADRATURE_DEBUG		
           BOOST_QUADRATURE_ASSERT(!detail::isnan(lower.m_lower_values));
           BOOST_QUADRATURE_ASSERT(!detail::isnan(lower.m_upper_values));
+#endif	  
 
           bisect19(lower, upper);
           bisect27(lower, upper);
@@ -299,8 +303,10 @@ namespace boost
         void bisect(rms_interval<41, 27, Domain, Image>& lower,
                     rms_interval<41, 27, Domain, Image>& upper)
         {
+#ifdef BOOST_QUADRATURE_DEBUG
           BOOST_QUADRATURE_ASSERT(!detail::isnan(lower.m_lower_values));
           BOOST_QUADRATURE_ASSERT(!detail::isnan(lower.m_upper_values));
+#endif	  
 
           bisect19(lower, upper);
           bisect27(lower, upper);
@@ -406,7 +412,9 @@ namespace boost
           if (interval.m_lower_status==detail::empty)
             eval(f,center,interval.m_center,recorder);
 
+#ifdef BOOST_QUADRATURE_DEBUG
           BOOST_QUADRATURE_ASSERT(!detail::isnan(interval.m_center));
+#endif	  
 
           // resg -result of the M-point rms formula
           image_type resg;

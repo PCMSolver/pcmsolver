@@ -132,6 +132,27 @@ void Curl_Phi_times_Curl_Phi(double *c, double weight, Vector2 xi, Vector2 eta,
 	return;
 }
 
+LinAnsatzFunction :: LinAnsatzFunction(){
+	nLevels = 0;
+	nFunctions = 0;
+	nPatches = 0;
+  /// @todo check that the grade in the Interpolation is correct
+  // now using grade = 4!!! (coefficient is the log2 (grade)
+	//interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
+	noPhi = 4;
+
+  totalSizeElementList = 0;
+
+  B = NULL;
+
+  dp = 2.25;
+	td = 4;
+
+  quadratureLevel_=2;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+}
+
+
 /// constructor of linear basis functions
 LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, Vector3 *** pPointsIn){
 	nLevels = _m;
@@ -143,26 +164,6 @@ LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
 	noPhi = 4;
 
   totalSizeElementList = _p*(4*(1<<2*_m)-1)/3;
-
-  B = NULL;
-
-  dp = 2.25;
-	td = 4;
-
-  quadratureLevel_=2;
-  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
-}
-
-LinAnsatzFunction :: LinAnsatzFunction(){
-	nLevels = 0;
-	nFunctions = 0;
-	nPatches = 0;
-  /// @todo check that the grade in the Interpolation is correct
-  // now using grade = 4!!! (coefficient is the log2 (grade)
-	interCoeff  = NULL;
-	noPhi = 4;
-
-  totalSizeElementList = 0;
 
   B = NULL;
 
@@ -498,8 +499,8 @@ void LinAnsatzFunction::integrateNoProblem(double *c, unsigned int i1, unsigned 
 
 	memset(c, 0, sizeC * sizeof(double));
 	for (unsigned int i = 0; i < Q2->noP; ++i) {
-    eta.y = ht * (elementTree.element[i2].index_s + Q2->xi[i].x);
-    eta.x = ht * (elementTree.element[i2].index_t + Q2->xi[i].y);
+    eta.x = ht * (elementTree.element[i2].index_s + Q2->xi[i].x);
+    eta.y = ht * (elementTree.element[i2].index_t + Q2->xi[i].y);
     y = interCoeff->Chi(eta, elementTree.element[i2].patch);
     n_y = interCoeff->n_Chi(eta, elementTree.element[i2].patch);
 
@@ -537,10 +538,10 @@ void LinAnsatzFunction::integratePatch(double *c, unsigned int i1, Cubature * Q,
 			t3 = t1 + xi.x;
 			t4 = t2 + xi.x * xi.y;
 
-			a.y = s.x + h * t1;
-			a.x = s.y + h * t2;
-			b.y = s.x + h * t3;
-			b.x = s.y + h * t4;
+			a.x = s.x + h * t1;
+			a.y = s.y + h * t2;
+			b.x = s.x + h * t3;
+			b.y = s.y + h * t4;
 			x = interCoeff->Chi(a, elementTree.element[i1].patch);
 			y = interCoeff->Chi(b, elementTree.element[i1].patch);
 			d1 = w * Q->weight[j] * SingleLayer(x, y);
@@ -551,8 +552,8 @@ void LinAnsatzFunction::integratePatch(double *c, unsigned int i1, Cubature * Q,
 			Phi_times_Phi(&c[16], d2, Vector2(t1, t2), Vector2(t3, t4));
 			Phi_times_Phi(&c[16], d3, Vector2(t3, t4), Vector2(t1, t2));
 
-			a.x = s.y + h * t4;
-			b.x = s.y + h * t2;
+			a.y = s.y + h * t4;
+			b.y = s.y + h * t2;
 			x = interCoeff->Chi(a, elementTree.element[i1].patch);
 			y = interCoeff->Chi(b, elementTree.element[i1].patch);
 			d1 = w * Q->weight[j] * SingleLayer(x, y);
@@ -563,10 +564,10 @@ void LinAnsatzFunction::integratePatch(double *c, unsigned int i1, Cubature * Q,
 			Phi_times_Phi(&c[16], d2, Vector2(t1, t4), Vector2(t3, t2));
 			Phi_times_Phi(&c[16], d3, Vector2(t3, t2), Vector2(t1, t4));
 
-			a.y = s.x + h * t2;
-			a.x = s.y + h * t1;
-			b.y = s.x + h * t4;
-			b.x = s.y + h * t3;
+			a.x = s.x + h * t2;
+			a.y = s.y + h * t1;
+			b.x = s.x + h * t4;
+			b.y = s.y + h * t3;
 			x = interCoeff->Chi(a, elementTree.element[i1].patch);
 			y = interCoeff->Chi(b, elementTree.element[i1].patch);
 			d1 = w * Q->weight[j] * SingleLayer(x, y);
@@ -577,8 +578,8 @@ void LinAnsatzFunction::integratePatch(double *c, unsigned int i1, Cubature * Q,
 			Phi_times_Phi(&c[16], d2, Vector2(t2, t1), Vector2(t4, t3));
 			Phi_times_Phi(&c[16], d3, Vector2(t4, t3), Vector2(t2, t1));
 
-			a.x = s.y + h * t3;
-			b.x = s.y + h * t1;
+			a.y = s.y + h * t3;
+			b.y = s.y + h * t1;
 			x = interCoeff->Chi(a, elementTree.element[i1].patch);
 			y = interCoeff->Chi(b, elementTree.element[i1].patch);
 			d1 = w * Q->weight[j] * SingleLayer(x, y);
@@ -638,8 +639,8 @@ void LinAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
   unsigned int sizeC=3*noPhi*noPhi;
 
 	memset(c, 0, sizeC * sizeof(double));
-  s = Vector2(h*elementTree.element[i1].index_t, h* elementTree.element[i1].index_s); 
-  t = Vector2(h*elementTree.element[i2].index_t, h* elementTree.element[i2].index_s);
+  s = Vector2(h*elementTree.element[i1].index_s, h* elementTree.element[i1].index_t); 
+  t = Vector2(h*elementTree.element[i2].index_s, h* elementTree.element[i2].index_t);
 
 	for (unsigned int i = 0; i < Q->noP; ++i) {
 		xi = Q->xi[i];
@@ -652,8 +653,8 @@ void LinAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
 			t3 = xi.x * (1 - eta.x);
 			t4 = (1 - xi.x) * (1 - eta.x);
 
-			a = tau(eta.x, t1, ind_s);
-			b = tau(eta.y, t2, ind_t);
+			a = tau(t1, eta.x, ind_s);
+			b = tau(t2, eta.y, ind_t);
 			u = kappa(s, a, h);
 			v = kappa(t, b, h);
 			x = interCoeff->Chi(u, elementTree.element[i1].patch);
@@ -667,8 +668,8 @@ void LinAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
 			Phi_times_Phi(&c[16], d2, a, b);
 			Phi_times_Phi(&c[32], d3, a, b);
 
-			a = tau(eta.x, 1-t1, ind_s);
-			b = tau(eta.y, 1-t2, ind_t);
+			a = tau(1 - t1, eta.x, ind_s);
+			b = tau(1 - t2, eta.y, ind_t);
 			u = kappa(s, a, h);
 			v = kappa(t, b, h);
 			x = interCoeff->Chi(u, elementTree.element[i1].patch);
@@ -682,8 +683,8 @@ void LinAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
 			Phi_times_Phi(&c[16], d2, a, b);
 			Phi_times_Phi(&c[32], d3, a, b);
 
-			a = tau( xi.y, t3, ind_s);
-			b = tau(eta.y, t4, ind_t);
+			a = tau(t3, xi.y, ind_s);
+			b = tau(t4, eta.y, ind_t);
 			u = kappa(s, a, h);
 			v = kappa(t, b, h);
 			x = interCoeff->Chi(u, elementTree.element[i1].patch);
@@ -697,8 +698,8 @@ void LinAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
 			Phi_times_Phi(&c[16], d2, a, b);
 			Phi_times_Phi(&c[32], d3, a, b);
 
-			a = tau(xi.y, 1 - t3, ind_s);
-			b = tau(eta.y, 1 - t4, ind_t);
+			a = tau(1 - t3, xi.y, ind_s);
+			b = tau(1 - t4, eta.y, ind_t);
 			u = kappa(s, a, h);
 			v = kappa(t, b, h);
 			x = interCoeff->Chi(u, elementTree.element[i1].patch);
@@ -712,8 +713,8 @@ void LinAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
 			Phi_times_Phi(&c[16], d2, a, b);
 			Phi_times_Phi(&c[32], d3, a, b);
 
-			a = tau(eta.y, t4, ind_s);
-			b = tau( xi.y, t3, ind_t);
+			a = tau(t4, eta.y, ind_s);
+			b = tau(t3, xi.y, ind_t);
 			u = kappa(s, a, h);
 			v = kappa(t, b, h);
 			x = interCoeff->Chi(u, elementTree.element[i1].patch);
@@ -727,8 +728,8 @@ void LinAnsatzFunction::integrateEdge(double *c, unsigned int i1, unsigned int i
 			Phi_times_Phi(&c[16], d2, a, b);
 			Phi_times_Phi(&c[32], d3, a, b);
 
-			a = tau(eta.y, 1 - t4, ind_s);
-			b = tau( xi.y, 1 - t3, ind_t);
+			a = tau(1 - t4, eta.y, ind_s);
+			b = tau(1 - t3, xi.y, ind_t);
 			u = kappa(s, a, h);
 			v = kappa(t, b, h);
 			x = interCoeff->Chi(u, elementTree.element[i1].patch);
@@ -756,17 +757,17 @@ void LinAnsatzFunction::integratePoint(double *c, unsigned int i1, unsigned int 
   unsigned int sizeC = 3*noPhi*noPhi;
 
 	memset(c, 0, sizeC * sizeof(double));
-  s = Vector2(h*elementTree.element[i1].index_t, h*elementTree.element[i1].index_s);
-  t = Vector2(h*elementTree.element[i2].index_t, h*elementTree.element[i2].index_s);
+  s = Vector2(h*elementTree.element[i1].index_s, h*elementTree.element[i1].index_t);
+  t = Vector2(h*elementTree.element[i2].index_s, h*elementTree.element[i2].index_t);
 
 	for (unsigned int i = 0; i < Q->noP; ++i) {
 		xi = Q->xi[i];
 		w = h * h * pow(xi.x, 3) * Q->weight[i];
 		xi.y *= xi.x;
-		a1 = tau(xi.y, xi.x, ind_s);
-		a2 = tau(xi.x, xi.y, ind_s);
-		b1 = tau(xi.y, xi.x, ind_t);
-		b2 = tau(xi.x, xi.y, ind_t);
+		a1 = tau(xi.x, xi.y, ind_s);
+		a2 = tau(xi.y, xi.x, ind_s);
+		b1 = tau(xi.x, xi.y, ind_t);
+		b2 = tau(xi.y, xi.x, ind_t);
 
 		u = kappa(s, a1, h);
 		x1 = interCoeff->Chi(u, elementTree.element[i1].patch);
@@ -787,7 +788,7 @@ void LinAnsatzFunction::integratePoint(double *c, unsigned int i1, unsigned int 
 		for (unsigned int j = 0; j < Q->noP; ++j) {
 			eta = vector2SMul(xi.x, Q->xi[j]);
 
-			a = tau(eta.y, eta.x, ind_t);
+			a = tau(eta.x, eta.y, ind_t);
 			u = kappa(t, a, h);
 			z = interCoeff->Chi(u, elementTree.element[i2].patch);
 			n_z = interCoeff->n_Chi(u, elementTree.element[i2].patch);
@@ -806,7 +807,7 @@ void LinAnsatzFunction::integratePoint(double *c, unsigned int i1, unsigned int 
 			Phi_times_Phi(&c[16], d2, a2, a);
 			Phi_times_Phi(&c[32], d3, a2, a);
 
-			a = tau(eta.y, eta.x, ind_s);
+			a = tau(eta.x, eta.y, ind_s);
 			u = kappa(s, a, h);
 			z = interCoeff->Chi(u, elementTree.element[i1].patch);
 			n_z = interCoeff->n_Chi(u, elementTree.element[i1].patch);

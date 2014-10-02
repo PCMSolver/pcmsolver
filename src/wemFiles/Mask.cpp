@@ -1,5 +1,5 @@
 /**
- * @file Mask.cpp
+ * @file Mask.hpp
  *
  * @brief defines the fast wavelet transform masks for constant with 3
  * vanishin moments and linear wavelets with 4 vanishing moments and
@@ -7,11 +7,11 @@
  */
 
 #include "Mask.hpp"
-//#include "LinAnsatzFunction.hpp"
-//#include "ConAnsatzFunction.hpp"
-class ConAnsatzFunction;
-class LinAnsatzFunction;
+#include "LinAnsatzFunction.hpp"
+#include "ConAnsatzFunction.hpp"
  
+unsigned int     minLevel;
+
 // constant - defines the mask T on level m
 void mask_T11(SparseMatrix * T, unsigned int m) {
   unsigned int    n = 1 << (m-1);

@@ -1,8 +1,16 @@
 if (NOT DEFINED DEFAULT_Fortran_FLAGS_SET OR RESET_FLAGS)
 
   if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) # this is gfortran
+	set(Fcheck_all "")
+	# Try to compile with -fcheck=all if failing use 
+	check_fortran_compiler_flag("-fcheck=all" has_check_all)
+	if(has_check_all)
+		set(Fcheck_all "-fcheck=all")
+	else()
+		set(Fcheck_all "-fbounds-check -fcheck-array-temporaries")
+	endif()
   	set(CMAKE_Fortran_FLAGS         "${CMAKE_Fortran_FLAGS} -DVAR_GFORTRAN -DGFORTRAN=445 -fimplicit-none -fPIC -fautomatic -std=f2003")
-  	set(CMAKE_Fortran_FLAGS_DEBUG   "${CMAKE_Fortran_FLAGS_DEBUG} -O0 -g -fbacktrace -Wall -Wextra -fcheck=all")
+	set(CMAKE_Fortran_FLAGS_DEBUG   "${CMAKE_Fortran_FLAGS_DEBUG} -O0 -g -fbacktrace -Wall -Wextra ${Fcheck_all}")
   	set(CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE} -O3 -funroll-all-loops -ftree-vectorize")
         if(ENABLE_64BIT_INTEGERS)                                                 
             set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fdefault-integer-8")

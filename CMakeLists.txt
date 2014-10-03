@@ -104,9 +104,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "release")
 	add_definitions(-DBOOST_QUADRATURE_NDEBUG)
 endif()	
 set(Boost_QUADRATURE ${PROJECT_SOURCE_DIR}/external/boost)
-install(DIRECTORY ${Boost_QUADRATURE}/numeric
-	DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/boost/include/boost
-	USE_SOURCE_PERMISSIONS)
+file(COPY ${Boost_QUADRATURE}/numeric
+     DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/boost/include/boost
+     USE_SOURCE_PERMISSIONS)
 
 #
 #  Eigen 3 stuff

@@ -1,6 +1,7 @@
 # Math utilities and helper classes
 add_subdirectory(block_diagonal)
-add_subdirectory(numerical_quadrature)
+# This test does not compile on Stallo (compiler too old?) RDR 3Oct14
+#add_subdirectory(numerical_quadrature)
 add_subdirectory(surface_function)
 add_subdirectory(input)
 # Cavity generators

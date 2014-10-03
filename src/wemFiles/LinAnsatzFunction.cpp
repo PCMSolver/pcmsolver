@@ -6,6 +6,7 @@
 #include "Vector2.hpp"
 
 #include <cstdio>
+#include <cstdlib>
 #include "string.h"
 
 // Ansatzfunktion 0
@@ -141,7 +142,6 @@ LinAnsatzFunction :: LinAnsatzFunction(){
 	//interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
 	noPhi = 4;
 
-  totalSizeElementList = 0;
 
   B = NULL;
 
@@ -163,7 +163,6 @@ LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
 	interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
 	noPhi = 4;
 
-  totalSizeElementList = _p*(4*(1<<2*_m)-1)/3;
 
   B = NULL;
 
@@ -214,7 +213,6 @@ void LinAnsatzFunction::calculateCRHS(double* c, double w, Vector2 xi){
  * elements on the value at the point i
  */
 void LinAnsatzFunction::calculateYRHS(double** y, int i){
-  unsigned int k;
   double e[4];
   double m;
     
@@ -238,10 +236,14 @@ void LinAnsatzFunction::calculateYRHS(double** y, int i){
  */
 double LinAnsatzFunction::calculateUEnergy(double *u, Vector2 xi, unsigned int zi){
   double U = 0.0;
-  const unsigned int displacement = nPatches*((1<<(2*nLevels))-1)/3;
-  U = u[elementTree.element[displacement + zi].vertex[0]] *Phi0(xi)+u[elementTree.element[displacement+zi].vertex[1]] *Phi1(xi)+u[elementTree.element[displacement+zi].vertex[2]] *Phi2(xi)+u[elementTree.element[displacement+zi].vertex[3]] *Phi3(xi);
+  et_node *pF = &elementTree.element[zi];
+  U = u[pF->vertex[0]] *Phi0(xi)
+    + u[pF->vertex[1]] *Phi1(xi)
+    + u[pF->vertex[2]] *Phi2(xi)
+    + u[pF->vertex[3]] *Phi3(xi);
   return U;
 }
+
 
 /**
  * function that creates the gramian matrix <phi_i, phi_j>
@@ -1345,7 +1347,7 @@ void LinAnsatzFunction::computeBoundingBoxes(){
 
 LinAnsatzFunction::~LinAnsatzFunction(){
   free(nodeList);
-  for(unsigned int i = 0; i < totalSizeElementList; ++i){
+  for(unsigned int i = 0; i < elementTree.totalSizeElementList; ++i){
     free(elementTree.element[i].wavelet);
   }
   free(elementTree.element);

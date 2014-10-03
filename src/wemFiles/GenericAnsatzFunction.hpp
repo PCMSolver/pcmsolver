@@ -29,7 +29,6 @@ public:
 
   unsigned int nLevels;        ///< 2^nLevels*2^nLevels elements per patch
   unsigned int nFunctions;      ///< size of F, the element list of finest level
-  unsigned int totalSizeElementList; ///< size of elementTree, the entire elementList
   unsigned int nNodes;        ///< size of P, the point list
   unsigned int nPatches;              ///< number of patches
 

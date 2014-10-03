@@ -3,7 +3,8 @@
  *
  * @brief implementation of several GMRES solvers
  */
-
+#ifndef WEMPGMRES_HPP
+#define WEMPGMRES_HPP
 class GenericAnsatzFunction;
 
 /**
@@ -48,3 +49,4 @@ unsigned int WEMPGMRES2(SparseMatrix *A, double *b, double *x, double epsi,
  */
 unsigned int WEMPGMRES3(SparseMatrix *A, SparseMatrix *B, double *rhs, double *x, double epsi, 
 	GenericAnsatzFunction *af);
+#endif

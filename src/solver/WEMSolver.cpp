@@ -269,7 +269,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     WEMRHS2M(&rhs, pot, af);
     int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, af);
     af->tdwt(u);
-    af->dwt(u);
+    //af->dwt(u);
     for (size_t i = 0; i < af->nFunctions; ++i) {
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
     }

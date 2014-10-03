@@ -18,17 +18,17 @@ void WEMRHS2M(double **rhs, double *potential, GenericAnsatzFunction *af){
   unsigned int index;
 
   initGaussSquare(&Q,af->quadratureLevel_+1);
-  y = (double**)malloc(af->totalSizeElementList*sizeof(double*)+af->noPhi*af->totalSizeElementList*sizeof(double));
-  for(unsigned int i = 0; i < af->totalSizeElementList;++i) y[i] = (double*)(y+af->totalSizeElementList)+i*af->noPhi;
+  y = (double**)malloc(af->elementTree.totalSizeElementList*sizeof(double*)+af->noPhi*af->elementTree.totalSizeElementList*sizeof(double));
+  for(unsigned int i = 0; i < af->elementTree.totalSizeElementList;++i) y[i] = (double*)(y+af->elementTree.totalSizeElementList)+i*af->noPhi;
   c = (double*)malloc(af->noPhi*sizeof(double));
   (*rhs) = (double*) malloc(af->waveletList.sizeWaveletList*sizeof(double));
 
   // 1. Quadrature on fine level
-  for(unsigned int i = af->nPatches*(n*n-1)/3; i <af->totalSizeElementList; ++i){
+  for(unsigned int i = af->nPatches*(n*n-1)/3; i <af->elementTree.totalSizeElementList; ++i){
     memset(c,0,sizeof(double)*af->noPhi);
     for(unsigned int k = 0; k < Q[af->quadratureLevel_].noP; ++k){
-      t.y = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
-      t.x = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
+      t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
+      t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);
       //w = Q[af->quadratureLevel_].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
       index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
       w = Q[af->quadratureLevel_].weight[k]*potential[index*Q[af->quadratureLevel_].noP+k];

@@ -11,7 +11,6 @@ ConAnsatzFunction :: ConAnsatzFunction(){
   nLevels = 0;
   nFunctions = 0;
   nPatches = 0;
-  totalSizeElementList = 0;
   minLevel = 1;
   noPhi = 1;
 
@@ -31,7 +30,6 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   nFunctions = _nf;
   nPatches = _p;
 
-  totalSizeElementList = _p*(4*(1<<2*_m)-1)/3;
   interCoeff  = new Interpolation(pPointsIn, 1, NEWTON, nLevels, nPatches);
   minLevel = 1;
   noPhi = 1;
@@ -983,7 +981,7 @@ void ConAnsatzFunction::integratePoint(double *c, unsigned int i1, unsigned int 
 /// destructor - releases the memory assigned to this class
 ConAnsatzFunction::~ConAnsatzFunction(){
   free(nodeList);
-  for(unsigned int i = 0; i < totalSizeElementList; ++i){
+  for(unsigned int i = 0; i < elementTree.totalSizeElementList; ++i){
     free(elementTree.element[i].wavelet);
   }
   free(elementTree.element);

@@ -84,7 +84,7 @@ template <class T> void WEM(T* af, SparseMatrix *sM, double SingleLayer(Vector3,
   fclose(debugFile);
 #endif
   // calculate system matrix linewise
-  for(unsigned int i = 0; i < af->totalSizeElementList; ++i){
+  for(unsigned int i = 0; i < af->elementTree.totalSizeElementList; ++i){
     af->resetRandwerte(g_max);
     weightIndex = (unsigned int*) realloc(weightIndex, af->elementTree.element[i].noWavelets*sizeof(unsigned int));
     ansatzWavelet = (unsigned int*) realloc(ansatzWavelet, af->elementTree.element[i].noWavelets*sizeof(unsigned int));

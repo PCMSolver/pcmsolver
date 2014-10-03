@@ -1,9 +1,6 @@
 #ifndef INTERPOLATION_HPP
 #define INTERPOLATION_HPP
 
-#include <iostream>
-#include <cmath>
-
 #include "Vector3.hpp"
 #include "Vector2.hpp"
 
@@ -21,6 +18,7 @@ private:
     unsigned int grade;                ///< the grade aka number of neighbours that constitute one polinomial
     unsigned int noPatch;              ///< number of patches
     unsigned int noHlpElements;        ///< number of refinements
+  unsigned int n;              ///< number of polinomials
 
     double h;                          ///< 1/step_size on reference domain
 
@@ -55,6 +53,25 @@ public:
      * @param[in] a the point for which the surface point needs to be computed
      * @param[in] patch the patch to which the point belongs
      */
+  Vector3 dChi_dx(Vector2 a, int patch);
+  
+  /**
+   * @brief computes the derivative of the interpolation in the 2 point vector
+   *
+   * @param[in] a the point for which the surface point needs to be computed
+   * @param[in] patch the patch to which the point belongs
+   */
+  Vector3 dChi_dy(Vector2 a, int patch);
+  
+  Vector3 d2Chi_dy2(Vector2 a, int patch);
+  Vector3 d2Chi_dx2(Vector2 a, int patch);
+  Vector3 d2Chi_dxy(Vector2 a, int patch);
+  /**
+   * @brief computes the derivative of the interpolation in the 2 point vector
+   *
+   * @param[in] a the point for which the surface point needs to be computed
+   * @param[in] patch the patch to which the point belongs
+   */
     Vector3 n_Chi(Vector2 a, int patch);
 
     /**

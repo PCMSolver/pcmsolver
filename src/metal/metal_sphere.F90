@@ -41,7 +41,7 @@
     real(c_double), intent(in)  :: p1(*), p2(*), ps(*)
     real(c_double), intent(out) :: greenre, greenim
 ! Local variables      
-    complex(16) :: green, eps2, ui
+    complex(kind=8) :: green, eps2, ui
       
     ui = (0.0, 1.0)                                               
     eps2 = epsre + epsim * ui                                     
@@ -53,16 +53,16 @@
 
     end subroutine greens_function                                
 
-    complex(16) function gsfera(eps, eps2, xs, ys, zs, rs,     &
+    complex(kind=8) function gsfera(eps, eps2, xs, ys, zs, rs,     &
                                 xi, yi, zi, xj, yj, zj)
 ! Passed variables 
     real(8), intent(in)     :: eps
-    complex(16), intent(in) :: eps2
+    complex(kind=8), intent(in) :: eps2
     real(8), intent(in)     :: xs, ys, zs, rs ! Sphere center and radius 
     real(8), intent(in)     :: xi, yi, zi     ! Source point
     real(8), intent(in)     :: xj, yj, zj     ! Probe point
 ! Local variables          
-    complex(16) :: coefl
+    complex(kind=8) :: coefl
     real(8)     :: di, dj
     real(8)     :: dim, xim, yim, zim, qim    ! Image quantities
     real(8)     :: gc, cost, aa, arg, argl, gsfera2

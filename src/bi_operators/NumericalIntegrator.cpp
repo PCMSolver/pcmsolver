@@ -32,9 +32,6 @@
 
 #include <Eigen/Dense>
 
-#include <boost/numeric/quadrature/kronrodgauss.hpp>
-#include <boost/numeric/quadrature/error_estimator.hpp>
-
 double NumericalIntegrator::computeS(const Vacuum<double> * gf, double area) const {
 	return 0.0;
 } 

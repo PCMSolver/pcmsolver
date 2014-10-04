@@ -59,7 +59,7 @@ else()
 endif()
 
 # Just change the Boost version number here
-set(BOOSTVER 1.55.0)
+set(BOOSTVER 1.54.0)
 set(BUILD_CUSTOM_BOOST FALSE)
 # List all components needed (except mpi and unit_test_framework) here.
 # Components additionally required in PSI4: python, serialization, thread (Might be useful in the future?)

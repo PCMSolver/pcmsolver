@@ -60,12 +60,7 @@ public:
         // Transfer the passed generators array into generators_
         std::copy(gen, gen + nrGenerators_, generators_);
         // We can now initialize the number of irreps
-#ifdef HAS_CXX11_SUPPORT        
-        nrIrrep_ = int(std::pow(2, nrGenerators_));
-#else
-        double base2 = 2.0;
-        nrIrrep_ = int(std::pow(base2, nrGenerators_));
-#endif
+        nrIrrep_ = int(std::pow(2.0, nrGenerators_));
     }
     Symmetry(const Symmetry & other) :
         nrGenerators_(other.nrGenerators_), nrIrrep_(other.nrIrrep_) {

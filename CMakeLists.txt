@@ -25,7 +25,6 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake/math
     ${CMAKE_SOURCE_DIR}/cmake/testing)
 
-set(LIBS)
 set(header_dir_list)
 set(libs_to_merge)
 
@@ -59,7 +58,7 @@ else()
 endif()
 
 # Just change the Boost version number here
-set(BOOSTVER 1.55.0)
+set(BOOSTVER 1.54.0)
 set(BUILD_CUSTOM_BOOST FALSE)
 # List all components needed (except mpi and unit_test_framework) here.
 # Components additionally required in PSI4: python, serialization, thread (Might be useful in the future?)
@@ -97,16 +96,6 @@ if(NOT Boost_FOUND)
 		list(APPEND Boost_LIBRARIES Boost_${_COMP}_LIBRARY)
 	endforeach()
 endif()
-#
-#  Boost Numeric Quadrature stuff
-#
-if(CMAKE_BUILD_TYPE STREQUAL "release")
-	add_definitions(-DBOOST_QUADRATURE_NDEBUG)
-endif()	
-set(Boost_QUADRATURE ${PROJECT_SOURCE_DIR}/external/boost)
-install(DIRECTORY ${Boost_QUADRATURE}/numeric
-	DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/boost/include/boost
-	USE_SOURCE_PERMISSIONS)
 
 #
 #  Eigen 3 stuff
@@ -186,7 +175,6 @@ include_directories(SYSTEM
 	            ${EIGEN3_INCLUDE_DIR}
 	            ${Boost_INCLUDE_DIRS}
 		    ${PYTHON_INCLUDE_DIRS}
-		    ${Boost_QUADRATURE}
 		    ${ZLIB_INCLUDE_DIRS}
 		    ${PROJECT_SOURCE_DIR}/external
                     ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
@@ -202,9 +190,6 @@ link_directories(${Boost_LIBRARY_DIRS}
 	         ${PYTHON_LIBRARIES}
                  ${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
-list(APPEND LIBS
-    ${Boost_FILESYSTEM_LIBRARY} 
-    ${Boost_SYSTEM_LIBRARY})
 
 install(FILES 
 	${PROJECT_BINARY_DIR}/bin/pcmsolver.py 
@@ -227,8 +212,6 @@ if(ENABLE_TESTS)
 	include(TestingMacros)
 	
 	find_package(Threads REQUIRED)
-
-	list(APPEND LIBS ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES})
 
 	setup_boosttest()
 

@@ -1,6 +1,5 @@
 # Math utilities and helper classes
 add_subdirectory(block_diagonal)
-add_subdirectory(numerical_quadrature)
 add_subdirectory(surface_function)
 add_subdirectory(input)
 # Cavity generators

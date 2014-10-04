@@ -12,9 +12,13 @@ macro(add_googletest test_name my_libraries external_libraries)
 endmacro()
 
 # This macro is used to add a unit test using Boost Unit Testing framework
-macro(add_boosttest test_name my_libraries external_libraries)
+macro(add_boosttest test_name)
     get_filename_component(the_name ${test_name} NAME_WE)
     add_executable(${the_name}.x ${the_name}.cpp)      	
+
+    set(_my_libraries "${ARGV1}")
+    set(_external_libraries "${ARGV2}")
+
     # Building on more than one processor can result in race conditions,
     # since custom Boost can be built only on one processor!
     # We thus add this dependency to not get stuck.
@@ -22,9 +26,11 @@ macro(add_boosttest test_name my_libraries external_libraries)
 	    add_dependencies(${the_name}.x custom_boost)
     endif()	    
     target_link_libraries(${the_name}.x
-                          ${my_libraries}
+                          ${_my_libraries}
 			  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                          ${external_libraries})
+                          ${_external_libraries}
+			  ${CMAKE_THREAD_LIBS_INIT}
+			  )
     add_test(NAME ${the_name} COMMAND ${the_name}.x)
 endmacro()
 

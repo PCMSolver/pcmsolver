@@ -32,7 +32,6 @@
 
 #include "Config.hpp"
 
-
 #include <Eigen/Dense>
 #include <boost/lexical_cast.hpp>
 
@@ -203,13 +202,9 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 
 std::ostream & GePolCavity::printCavity(std::ostream & os)
 {
-    /*
-      We should print the cavity.off file here, just to
-      get a prettier cavity image.
-    */
     os << "Cavity type: GePol" << std::endl;
     os << "Average area = " << averageArea << " AU^2" << std::endl;
-    os << "Probe radius = " << probeRadius << std::endl;
+    os << "Probe radius = " << probeRadius << " AU"   << std::endl;
     if (addedSpheres != 0) {
         os << "Addition of extra spheres enabled" << std::endl;
     }

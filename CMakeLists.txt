@@ -25,7 +25,6 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_SOURCE_DIR}/cmake/math
     ${CMAKE_SOURCE_DIR}/cmake/testing)
 
-set(LIBS)
 set(header_dir_list)
 set(libs_to_merge)
 
@@ -191,9 +190,6 @@ link_directories(${Boost_LIBRARY_DIRS}
 	         ${PYTHON_LIBRARIES}
                  ${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
-list(APPEND LIBS
-    ${Boost_FILESYSTEM_LIBRARY} 
-    ${Boost_SYSTEM_LIBRARY})
 
 install(FILES 
 	${PROJECT_BINARY_DIR}/bin/pcmsolver.py 
@@ -216,8 +212,6 @@ if(ENABLE_TESTS)
 	include(TestingMacros)
 	
 	find_package(Threads REQUIRED)
-
-	list(APPEND LIBS ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES})
 
 	setup_boosttest()
 

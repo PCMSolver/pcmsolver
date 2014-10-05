@@ -38,8 +38,8 @@ that you have a sane build, you will have to run the unit test suite.
  + Git version 1.7.1 and higher;
  + Subversion version 1.6 and higher; 
  + Python 2.7.3 and higher;
- + Boost libraries version 1.55.0 and higher;
-\note Version 1.55.0 of Boost libraries is shipped with the module and resides in the `external` subdirectory.
+ + Boost libraries version 1.54.0 and higher;
+\note Version 1.54.0 of Boost libraries is shipped with the module and resides in the `external` subdirectory.
 Unless you want to use another version of Boost, you should not worry about satisfying this dependency.
  + Eigen libraries version 3.0.0 and higher;
 \note Version 3.2.0 of Eigen libraries is shipped with the module and resides in the `external` subdirectory.
@@ -78,7 +78,7 @@ You can get Boost libraries in two ways:
  + already packaged by your Linux distribution or through MacPorts;
  + by downloading the archive from http://www.boost.org/ and building it yourself.
 
-In case your distribution packages a version older than 1.55.0 you might chose to either build Boost on your own or to 
+In case your distribution packages a version older than 1.54.0 you might chose to either build Boost on your own or to 
 rely on the automated build of the necessary Boost libraries when compiling the module (recommended).
 Full documentation on how to build Boost on Unix variants is available [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html).
 It is here assumed that the user **does not** have root access to the machine and will install the libraries to a local prefix, a subdirectory of `/home/user-name` tipically.

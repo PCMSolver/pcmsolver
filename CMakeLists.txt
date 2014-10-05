@@ -127,7 +127,7 @@ endif()
 set(CMAKE_Fortran_MODULE_DIRECTORY
     ${PROJECT_BINARY_DIR}/modules)
 
-set(ExternalProjectCMakeArgs
+set(GetkwCMakeArgs
    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
    -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -136,7 +136,7 @@ set(ExternalProjectCMakeArgs
    -DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}
    -DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS})
 
-add_external(libgetkw)
+add_external(libgetkw "" "${GetkwCMakeArgs}")
 # In case we need to build Boost, let libgetkw depend on custom_boost
 # so that's the first thing it's done
 if(BUILD_CUSTOM_BOOST)
@@ -144,10 +144,13 @@ if(BUILD_CUSTOM_BOOST)
 endif()
 set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
 
-set(TaylorCMakeArgs "${ExternalProjectCMakeArgs}")
-list(REMOVE_ITEM TaylorCMakeArgs 
-     "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}" "-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}" "-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}")
-list(APPEND TaylorCMakeArgs -Wno-dev)
+set(TaylorCMakeArgs 
+   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+   -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
+   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+   -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+   -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+   -Wno-dev)
 
 if(DEVELOPMENT_CODE)
 	ExternalProject_Add(libtaylor

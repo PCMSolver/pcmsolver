@@ -7,7 +7,6 @@
  * \brief  Container for Sections and Keywords
  */
 
-using namespace std;
 #include <iostream>
 
 #include "Section.h"
@@ -20,6 +19,8 @@ if (A.type() == typeid(const Keyword< T > *))
 boost::any_cast<const Keyword< T > *>(A)
 
 #define PRINT_FUNC_NAME cout << "@ Section::" << __func__ << endl;
+
+using namespace std;
 
 Section::Section(const string &_name, const string &_tag) :
 	name(_name) {

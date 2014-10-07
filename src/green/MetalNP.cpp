@@ -23,7 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#include "MetalSphere.hpp"
+#include "MetalNP.hpp"
 
 #include <cmath>
 #include <ostream>
@@ -43,7 +43,7 @@ extern "C" void greens_function(const double * epssol, const double * epsre,
                                 const double * sphRadius, const double * ps, const double * p1, const double * p2,
                                 double * greenre, double * greenim);
 
-double MetalSphere::operator()(double * source, double * probe) const
+double MetalNP::operator()(double * source, double * probe) const
 {
     // Calculation of the value of the Green's Function
     double epsre, epsim;
@@ -67,13 +67,13 @@ double MetalSphere::operator()(double * source, double * probe) const
     return greenre;
 }
 
-double MetalSphere::derivative(const Eigen::Vector3d & direction,
+double MetalNP::derivative(const Eigen::Vector3d & direction,
                                const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     return epsSolvent_ * (this->derivativeProbe(direction, p1, p2));
 }
 
-std::ostream & MetalSphere::printObject(std::ostream & os)
+std::ostream & MetalNP::printObject(std::ostream & os)
 {
     os << "Green's function type: metal sphere" << std::endl;
     os << "Permittivity (real part)      = " << epsMetal_.real() << std::endl;

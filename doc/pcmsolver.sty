@@ -1,0 +1,35 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pcmsolver}
+\RequirePackage{calc}
+\RequirePackage{array}
+
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[scaled]{beramono}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{garamondx}
+\RequirePackage[garamondx,cmbraces]{newtxmath}
+\linespread{1.05}
+\RequirePackage[english]{babel}
+\RequirePackage{verbatim}
+\RequirePackage{amstext}
+\RequirePackage{amssymb}
+\RequirePackage{bm}
+\RequirePackage{empheq}
+\RequirePackage{mathtools}
+\RequirePackage{textcomp}
+\RequirePackage{pdfcolmk}
+\RequirePackage[big]{layaureo}
+
+\newcommand*{\diff}{\mathop{}\!\mathrm{d}}
+\newcommand*{\deriv}[3][]{% 
+\frac{\diff^{#1}#2}{\diff #3^{#1}}} 
+\newcommand*{\pderiv}[3][]{% 
+	\frac{\partial^{#1}#2}% 
+{\partial #3^{#1}}}
+\newcommand*{\commutator}[3][]{\left[ #2, #3 \right]^{#1}}
+\newcommand*{\anticommutator}[2]{%
+\left[ #1, #2 \right]_{+}}
+
+\newcommand*{\diel}{\varepsilon}
+\newcommand*{\vect}[1]{\bm{#1}}
+\newcommand*{\mat}[1]{\bm{\mathcal{#1}}}

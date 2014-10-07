@@ -139,7 +139,7 @@ add_external(libgetkw "" "${GetkwCMakeArgs}")
 if(BUILD_CUSTOM_BOOST)
 	add_dependencies(libgetkw custom_boost)
 endif()
-set(INST_LIBDIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
+set(GETKW_PYTHON_DIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib/python2.7/site-packages)
 
 set(TaylorCMakeArgs 
    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}

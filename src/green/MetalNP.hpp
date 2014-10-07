@@ -23,8 +23,8 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef METALSPHERE_HPP
-#define METALSPHERE_HPP
+#ifndef METALNP_HPP
+#define METALNP_HPP
 
 #include <complex>
 #include <iosfwd>
@@ -34,13 +34,15 @@
 
 #include <Eigen/Dense>
 
+class Element;
+
 #include "DiagonalIntegrator.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
 
-/*! \file MetalSphere.hpp
- *  \class MetalSphere
+/*! \file MetalNP.hpp
+ *  \class MetalNP
  *  \brief Class to describe spherical metal nanoparticles.
  *  \author Stefano Corni, Luca Frediani, Roberto Di Remigio
  *  \date 2011, 2014
@@ -54,20 +56,20 @@
  *  http://dx.doi.org/10.1063/1.1558036
  */
 
-class MetalSphere : public GreensFunction<double>
+class MetalNP : public GreensFunction<double>
 {
 private:
     typedef std::complex<double> dcomplex;
 public:
-    MetalSphere(double eps, double epsRe, double epsIm,
+    MetalNP(double eps, double epsRe, double epsIm,
                 const Eigen::Vector3d & pos, double radius)
         : GreensFunction<double>(false), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
           sphPosition_(pos), sphRadius_(radius) {}
-    MetalSphere(double eps, double epsRe, double epsIm,
+    MetalNP(double eps, double epsRe, double epsIm,
                 const Eigen::Vector3d & pos, double radius, DiagonalIntegrator * diag)
         : GreensFunction<double>(false, diag), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
           sphPosition_(pos), sphRadius_(radius) {}
-    virtual ~MetalSphere() {}
+    virtual ~MetalNP() {}
     /*!
      *  Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
@@ -82,25 +84,16 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
 
-    /*!
-     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
-     */
-    virtual double diagonalS(double area) const {
+    virtual double diagonalS(const Element & e) const {
 	    return 1.0;
     }
-    /*!
-     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
-     *  \param[in] radius radius of the sphere the tessera belongs to
-     */
-    virtual double diagonalD(double area, double radius) const {
+    virtual double diagonalD(const Element & e) const {
 	    return 1.0;
     }
 
     virtual double epsilon() const { return epsSolvent_; } // This is just to get it to compile...
 
-    friend std::ostream & operator<<(std::ostream & os, MetalSphere & gf) {
+    friend std::ostream & operator<<(std::ostream & os, MetalNP & gf) {
         return gf.printObject(os);
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
@@ -121,18 +114,21 @@ private:
 
 namespace
 {
-    // The build functor and use of for_id are not necessary as MetalSphere
+    // The build functor and use of for_id are not necessary as MetalNP
     // inherits from a GreensFunction<double>
-    IGreensFunction * createMetalSphere(const greenData & _data)
+    IGreensFunction * createMetalNP(const greenData & _data)
     {
-        // We pass some bogus arguments...
-        Eigen::Vector3d orig;
-        orig << 0.0, 0.0, 0.0;
-        return new MetalSphere(_data.epsilon, 0.0, 0.0, orig, 1.0, _data.integrator);
+	// The NP center is in a std::vector<double> but we need an Eigen::Vector3d
+	// We are currently assuming that there is only one spherical metal NP
+	Eigen::Vector3d center = Eigen::Vector3d::Zero();
+	for (int i = 0; i < 3; ++i) {
+		center(i) = _data.NPspheres[i];
+	}
+        return new MetalNP(_data.epsilon, _data.epsilonReal, _data.epsilonImaginary, center, _data.NPradii, _data.integrator);
     }
-    const std::string METALSPHERE("METALSPHERE");
-    const bool registeredMetalSphere =
+    const std::string METALNP("MetalNP");
+    const bool registeredMetalNP =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            METALSPHERE, createMetalSphere);
+            METALNP, createMetalNP);
 }
-#endif // METALSPHERE_HPP
+#endif // METALNP_HPP

@@ -2,29 +2,29 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+ *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
  */
 /* pcmsolver_copyright_end */
 
-#ifndef VACUUM_HPP
-#define VACUUM_HPP
+#ifndef ANISOTROPICLIQUID_HPP
+#define ANISOTROPICLIQUID_HPP
 
 #include <iosfwd>
 #include <string>
@@ -32,9 +32,9 @@
 #include "Config.hpp"
 
 #include <Eigen/Dense>
+#include "taylor.hpp"
 
 class DiagonalIntegrator;
-class Element;
 
 #include "DerivativeTypes.hpp"
 #include "ForIdGreen.hpp"
@@ -42,21 +42,31 @@ class Element;
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
 
-/*! \file Vacuum.hpp
- *  \class Vacuum
- *  \brief Green's function for vacuum.
- *  \author Luca Frediani and Roberto Di Remigio
- *  \date 2012-2014
+/*! \file AnisotropicLiquid.hpp
+ *  \class AnisotropicLiquid
+ *  \brief Green's functions for anisotropic liquid, described by a tensorial permittivity
+ *  \author Roberto Di Remigio
+ *  \date 2014
  *  \tparam T evaluation strategy for the function and its derivatives
  */
 
 template <typename T>
-class Vacuum : public GreensFunction<T>
+class AnisotropicLiquid : public GreensFunction<T>
 {
 public:
-    Vacuum() : GreensFunction<T>(true), epsilon_(1.0) {}
-    Vacuum(DiagonalIntegrator * diag) : GreensFunction<T>(true, diag), epsilon_(1.0) {}
-    virtual ~Vacuum() {}
+    /*!
+     * \param[in] eigen_eps eigenvalues of the permittivity tensors
+     * \param[in] euler_ang Euler angles in degrees
+     */
+    AnisotropicLiquid(const Eigen::Vector3d & eigen_eps, const Eigen::Vector3d & euler_ang) : 
+	    GreensFunction<T>(false), epsilonLab_(eigen_eps), eulerAngles_(euler_ang) { this->build(); }
+    /*!
+     * \param[in] eigen_eps eigenvalues of the permittivity tensors
+     * \param[in] euler_ang Euler angles in degrees
+     */
+    AnisotropicLiquid(const Eigen::Vector3d & eigen_eps, const Eigen::Vector3d & euler_ang, DiagonalIntegrator * diag) : 
+	    GreensFunction<T>(false, diag), epsilonLab_(eigen_eps), eulerAngles_(euler_ang) { this->build(); }
+    virtual ~AnisotropicLiquid() {}
     /*!
      *  Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
      *  for the pair of points p1, p2:
@@ -70,7 +80,7 @@ public:
      */
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
-    
+
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *  \param[in] e i-th finite element
@@ -82,12 +92,16 @@ public:
      */
     virtual double diagonalD(const Element & e) const;
 
-    virtual double epsilon() const { return 1.0; }
+    virtual double epsilon() const { return epsilonLab_(0); }
 
-    friend std::ostream & operator<<(std::ostream & os, Vacuum & gf) {
+    friend std::ostream & operator<<(std::ostream & os, AnisotropicLiquid & gf) {
         return gf.printObject(os);
     }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
+    /*! Initializes some internals
+     */
+    void build();	    
     /*!
      *  Evaluates the Green's function given a pair of points
      *
@@ -95,46 +109,39 @@ private:
      *  \param[in]  probe the probe point
      */
     virtual T operator()(T * source, T * probe) const;
+    /// Diagonal of the permittivity tensor in the lab-fixed frame
+    Eigen::Vector3d epsilonLab_;
+    /// Euler angles (in degrees) relating molecule-fixed and lab-fixed frames
+    Eigen::Vector3d eulerAngles_;
+    /// Permittivity tensor in molecule-fixed frame
+    Eigen::Matrix3d epsilon_;
+    /// Inverse of the permittivity tensor in molecule-fixed frame
+    Eigen::Matrix3d epsilonInv_;
+    /// molecule-fixed to lab-fixed frames rotation matrix
+    Eigen::Matrix3d R_;
+    /// Determinant of the permittivity tensor
+    double detEps_;
     virtual std::ostream & printObject(std::ostream & os);
-    double epsilon_;
 };
 
 namespace
 {
-    struct buildVacuum {
-#if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-#pragma warning(push, 0)
-#elif defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#endif
-
+    struct buildAnisotropicLiquid {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new Vacuum<DerivativeType>(_data.integrator);
+            return new AnisotropicLiquid<DerivativeType>(_data.epsilonTensor, _data.eulerAngles, _data.integrator);
         }
-
-#if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-#pragma GCC diagnostic pop
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-#pragma warning(pop)
-#elif defined(__clang__)
-#pragma clang diagnostic pop
-#endif
     };
 
-    IGreensFunction * createVacuum(const greenData & _data)
+    IGreensFunction * createAnisotropicLiquid(const greenData & _data)
     {
-        buildVacuum build;
+        buildAnisotropicLiquid build;
         return for_id<derivative_types>(build, _data, _data.how);
     }
-    const std::string VACUUM("VACUUM");
-    const bool registeredVacuum =
+    const std::string ANISOTROPICLIQUID("AnisotropicLiquid");
+    const bool registeredAnisotropicLiquid =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            VACUUM, createVacuum);
+            ANISOTROPICLIQUID, createAnisotropicLiquid);
 }
 
-#endif // VACUUM_HPP
+#endif // ANISOTROPICLIQUID_HPP

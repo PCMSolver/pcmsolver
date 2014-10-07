@@ -40,13 +40,18 @@ class DiagonalIntegrator;
  *  The permittivity.
  *  @var greenData::kappa
  *  Inverse of the Debye length.
+ *  @var greenData::epsilonTensor
+ *  Diagonal values of the permittivity tensor with respect to the lab frame
+ *  @var greenData::eulertAngles
+ *  Euler angles giving the rotation of the solvent orientation with respect to the lab frame
+ *  Default is zero degrees for all three angles
  *  @var greenData::epsilonReal
  *  Real part of the permittivity of a metal sphere.
  *  @var greenData::epsilonImaginary
  *  Imaginary part of the permittivity of a metal sphere.
- *  @var greenData::spherePosition
+ *  @var greenData::NPspheres
  *  Coordinates of the metal sphere center.
- *  @var greenData::sphereRadius
+ *  @var greenData::NPradii
  *  Radius of the the metal sphere.
  *  @var greenData::integrator
  *  strategy to calculate the diagonal elements of S and D operator
@@ -56,19 +61,23 @@ struct greenData {
     int how;
     double epsilon;
     double kappa;
+    Eigen::Vector3d epsilonTensor;
+    Eigen::Vector3d eulerAngles;
     double epsilonReal;
     double epsilonImaginary;
-    std::vector<double> spherePosition;
-    double sphereRadius;
+    std::vector<double> NPspheres;
+    double NPradii;
     DiagonalIntegrator * integrator;
 
     greenData(int _how, double _epsilon = 1.0, DiagonalIntegrator * _integrator = NULL, double _kappa = 0.0,
+	      const Eigen::Vector3d & epstens = Eigen::Vector3d::Zero(), const Eigen::Vector3d & euler = Eigen::Vector3d::Zero(),
               double _epsReal = 0.0, double _epsImaginary = 0.0,
               const std::vector<double> & _sphere = std::vector<double>(),
               double _sphRadius = 0.0) :
-        how(_how), epsilon(_epsilon), kappa(_kappa), epsilonReal(_epsReal),
-        epsilonImaginary(_epsImaginary),
-        spherePosition(_sphere), sphereRadius(_sphRadius), integrator(_integrator) {}
+        how(_how), epsilon(_epsilon), kappa(_kappa), epsilonTensor(epstens), eulerAngles(euler),
+	epsilonReal(_epsReal), epsilonImaginary(_epsImaginary),
+        NPspheres(_sphere), NPradii(_sphRadius), integrator(_integrator) {}
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 };
 
 #endif // GREENDATA_HPP

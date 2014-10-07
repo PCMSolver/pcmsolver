@@ -106,9 +106,9 @@ struct InputTsLessTest {
 BOOST_FIXTURE_TEST_SUITE(InputTsLess, InputTsLessTest)
 
 /*! \class Input 
- *  \test \b InputTsLessTest_restart tests input reading by embedding Python pcmsolver.py script
+ *  \test \b InputTsLessTest_embeddedPythonTsLess tests input reading by embedding Python pcmsolver.py script
  */
-BOOST_FIXTURE_TEST_CASE(embdeddedPython, InputTsLessTest)
+BOOST_FIXTURE_TEST_CASE(embeddedPythonTsLess, InputTsLessTest)
 {
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
     BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
@@ -202,9 +202,9 @@ struct InputRestartTest {
 BOOST_FIXTURE_TEST_SUITE(InputRestart, InputRestartTest)
 
 /*! \class Input 
- *  \test \b InputRestartTest_restart tests input reading by embedding Python pcmsolver.py script
+ *  \test \b InputRestartTest_embeddedPythonRestart tests input reading by embedding Python pcmsolver.py script
  */
-BOOST_FIXTURE_TEST_CASE(embdeddedPython, InputRestartTest)
+BOOST_FIXTURE_TEST_CASE(embeddedPythonRestart, InputRestartTest)
 {
     double threshold = 1.0e-12;
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
@@ -303,9 +303,9 @@ struct InputWaveletTest {
 BOOST_FIXTURE_TEST_SUITE(InputWavelet, InputWaveletTest)
 
 /*! \class Input 
- *  \test \b InputWaveletTest_restart tests input reading by embedding Python pcmsolver.py script
+ *  \test \b InputWaveletTest_embeddedPythonWavelet tests input reading by embedding Python pcmsolver.py script
  */
-BOOST_FIXTURE_TEST_CASE(embdeddedPython, InputWaveletTest)
+BOOST_FIXTURE_TEST_CASE(embeddedPythonWavelet, InputWaveletTest)
 {
     double threshold = 1.0e-12;
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());

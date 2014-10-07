@@ -24,7 +24,7 @@ routine names my_perfect_routine
 keyword names MYPERFECTKEYWORD
 """
 
-libdir="@INST_LIBDIR@"
+libdir="@GETKW_PYTHON_DIR@"
 isAngstrom = False
 CODATAyear = 2010
 # Dictionary with the au-to-Angstrom conversion factors for various CODATA sets of constants

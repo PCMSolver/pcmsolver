@@ -3,6 +3,7 @@
 # of directories where CMake will go look for headers
 set(header_dir_list 
 	${CMAKE_CURRENT_SOURCE_DIR}/cavity 
+	${CMAKE_CURRENT_SOURCE_DIR}/dielectric_profile
 	${CMAKE_CURRENT_SOURCE_DIR}/green
 	${CMAKE_CURRENT_SOURCE_DIR}/interface
 	${CMAKE_CURRENT_SOURCE_DIR}/bi_operators # Stands for Boundary Integral operators
@@ -21,6 +22,7 @@ include_directories(${header_dir_list})
 init_Includer()
 
 add_subdirectory(cavity)
+add_subdirectory(dielectric_profile)
 add_subdirectory(green)
 add_subdirectory(interface)
 add_subdirectory(metal)

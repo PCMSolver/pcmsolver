@@ -244,8 +244,6 @@ if(ENABLE_TESTS)
 	include(ConfigFramework)
 	include(TestingMacros)
 	
-	find_package(Threads REQUIRED)
-
 	setup_boosttest()
 
         enable_testing()

@@ -7,7 +7,9 @@ macro(add_googletest test_name my_libraries external_libraries)
                           ${my_libraries}
                           ${GTEST_LIBS_DIR}/libgtest.a
                           ${GTEST_LIBS_DIR}/libgtest_main.a
-                          ${external_libraries})
+	                  ${CMAKE_THREAD_LIBS_INIT}
+                          ${external_libraries}
+			  )
     add_test(NAME ${the_name} COMMAND ${the_name}.x)
 endmacro()
 
@@ -29,7 +31,6 @@ macro(add_boosttest test_name)
                           ${_my_libraries}
 			  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                           ${_external_libraries}
-			  ${CMAKE_THREAD_LIBS_INIT}
 			  )
     add_test(NAME ${the_name} COMMAND ${the_name}.x)
 endmacro()

@@ -74,9 +74,8 @@ if (PYTHONINTERP_FOUND)
 
   # Find Pythons libs
   find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
-  #set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH_SAVE})
 endif()
-find_package(ZLIB         REQUIRED) 
+find_package(ZLIB REQUIRED) 
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 	set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
@@ -247,8 +246,6 @@ if(ENABLE_TESTS)
 	include(ConfigFramework)
 	include(TestingMacros)
 	
-	find_package(Threads REQUIRED)
-
 	setup_boosttest()
 
         enable_testing()

@@ -184,25 +184,39 @@ Input & Input::operator=(Input other)
 
 void Input::parser(const std::string & filename)
 {
+    PyObject * args = NULL; 
+    PyObject * result = NULL;
     // Initiliaze the Python interpreter
     Py_Initialize();
+    // Append location of pcmsolver.py to path
+    PyObject * sysPath = PySys_GetObject((char *)"path");
+    PyObject * path    = PyString_FromString("@PROJECT_BINARY_DIR@/bin");
+    int insertion = PyList_Insert(sysPath, 0, path);
+    if (not insertion) {
+       PyErr_Print();
+    }
     // Import the module "pcmsolver" (from the file "pcmsolver.py")
-    PyRun_SimpleString("import sys");
-    PyRun_SimpleString("sys.path.append('@PROJECT_BINARY_DIR@/bin')");
     PyObject * moduleName = PyString_FromString("pcmsolver");
     PyObject * pyPCM = PyImport_Import(moduleName);
+    if (PyErr_Occurred()) PyErr_Print();
+    Py_XDECREF(moduleName); 
     // Retrieve the "parse_pcm_input()" function from the module.
-    PyObject * parser = PyObject_GetAttrString(pyPCM, "parse_pcm_input");
-    // Build an argument tuple containing the string.
-    PyObject * args = Py_BuildValue("(s)", filename.c_str());
-    // Invoke the function, passing the argument tuple.
-    PyObject * result = PyObject_CallObject(parser, args);
+    PyObject * parser = PyObject_GetAttrString(pyPCM, (char *)"parse_pcm_input");
+    if (PyCallable_Check(parser)) {
+       // Build an argument tuple containing the string.
+       args = Py_BuildValue("(z)", filename.c_str());
+       if (PyErr_Occurred()) PyErr_Print();
+       // Invoke the function, passing the argument tuple.
+       result = PyObject_CallObject(parser, args);
+       if (PyErr_Occurred()) PyErr_Print();
+    } else {
+       PyErr_Print();
+    }
     // Free all temporary Python objects.
-    Py_DECREF(moduleName); 
-    Py_DECREF(pyPCM); 
-    Py_DECREF(parser);
-    Py_DECREF(args); 
-    Py_DECREF(result);
+    Py_XDECREF(pyPCM); 
+    Py_XDECREF(parser);
+    Py_XDECREF(args); 
+    Py_XDECREF(result);
     // Finalize the interpreter 
     Py_Finalize();
 }

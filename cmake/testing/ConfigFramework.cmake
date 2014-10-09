@@ -27,6 +27,7 @@ macro(setup_googletest)
         ExternalProject_Get_Property(googletest BINARY_DIR)
         set(GTEST_LIBS_DIR ${BINARY_DIR})
         include_directories(${GTEST_INCLUDE_DIRS})
+	find_package(Threads REQUIRED)
 endmacro(setup_googletest)
 
 #

@@ -12,8 +12,10 @@ import string
 import os
 import re
 import sys
-import argparse
 from extract_notice import extractor
+
+sys.path.append('@PROJECT_SOURCE_DIR@/tools')
+import argparse
 
 def from_file(file):
     f = open(file, 'r')

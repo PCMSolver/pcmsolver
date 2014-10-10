@@ -1,0 +1,3 @@
+[submodule "libgetkw"]
+	path = libgetkw
+	url = git://repo.ctcc.no/libgetkw.git

@@ -1,9 +1,8 @@
 *~
 *#
 *.out
+external/libtaylor
 output*
-external/libtaylor/.svn
-external/libgetkw/.gitignore
 release*
 Release*
 Makefile

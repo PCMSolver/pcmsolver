@@ -7,6 +7,7 @@ If this is the case, timestamp_path is removed.
 import os
 import sys
 import fnmatch
+import re
 import shutil
 
 timestamp_file = sys.argv[1]
@@ -31,7 +32,21 @@ for root, dirnames, filenames in os.walk(library_path):
             reset_stamp = True
             break
 
+# list all files in the stamp directory
+f = []
+for (dirpath, dirnames, filenames) in os.walk(timestamp_path):
+    f.extend(filenames)
+    break
+# exclude the *-test.cmake files from the list
+regex = fnmatch.translate('*-test.cmake')
+reobj = re.compile(regex)
+for file in f:
+    if reobj.match(file):
+        f.remove(file)
+        
 if reset_stamp:
     # sanity check
     if os.path.dirname(timestamp_file) == timestamp_path:
-        shutil.rmtree(timestamp_path)
+        # remove anything BUT the *-test.cmake files
+        for file in f:
+            os.remove(os.path.join(timestamp_path, file))

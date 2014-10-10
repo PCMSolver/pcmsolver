@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 #
 #  Declare project name and programming languages
 #
@@ -53,25 +53,21 @@ if (PYTHONINTERP_FOUND)
                          "import distutils.sysconfig, sys; sys.stdout.write(distutils.sysconfig.get_python_inc())"
                   OUTPUT_VARIABLE _PYTHON_INCLUDE_PATH
                   RESULT_VARIABLE _PYTHON_INCLUDE_RESULT)
-
   # Get Python library path from interpreter
   execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
                         "import os, sys, inspect; sys.stdout.write(os.path.split(os.path.split(inspect.getfile(inspect))[0])[0])"
                   OUTPUT_VARIABLE _PYTHON_LIB_PATH
                   RESULT_VARIABLE _PYTHON_LIB_RESULT)
-
   # Set include path, if returned by interpreter
   if ("${_PYTHON_INCLUDE_RESULT}" STREQUAL "0")
     set(PYTHON_INCLUDE_DIR ${_PYTHON_INCLUDE_PATH})
   endif()
-
   # Add a search path for Python library based on output from
   # interpreter
   set(CMAKE_LIBRARY_PATH_SAVE ${CMAKE_LIBRARY_PATH})
   if ("${_PYTHON_LIB_RESULT}" STREQUAL "0")
     set(CMAKE_LIBRARY_PATH ${_PYTHON_LIB_PATH})
   endif()
-
   # Find Pythons libs
   find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
 endif()

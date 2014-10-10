@@ -34,7 +34,7 @@ that you have a sane build, you will have to run the unit test suite.
 
 ### Libraries and toolchain programs
 
- + CMake version 2.8 and higher;
+ + CMake version 2.8.3 and higher;
  + Git version 1.7.1 and higher;
  + Subversion version 1.6 and higher; 
  + Python 2.6 and higher, both the interpreter and the development headers/libraries;

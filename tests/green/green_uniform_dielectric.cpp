@@ -68,11 +68,11 @@ BOOST_FIXTURE_TEST_CASE(numerical, UniformDielectricTest)
 
     double derProbe = result(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-06);
+    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-05);
 
     double derSource = result(2);
     double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-05);
 }
 
 /*! \class UniformDielectric

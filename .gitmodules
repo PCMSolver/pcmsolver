@@ -1,4 +1,3 @@
 [submodule "external/libgetkw"]
 	path = external/libgetkw
 	url = git://repo.ctcc.no/libgetkw.git
-	branch = pcmsolver 

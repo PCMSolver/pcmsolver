@@ -2,6 +2,7 @@
 *#
 *.out
 external/libtaylor
+external/libgetkw
 output*
 release*
 Release*

@@ -72,7 +72,6 @@ macro(add_external _project)
 
     include_directories(${PROJECT_BINARY_DIR}/external/${_project}-build)
     link_directories(${PROJECT_BINARY_DIR}/external/lib)
-    link_directories(${PROJECT_BINARY_DIR}/external/${_project}-build/external/lib)
 
     if(DEVELOPMENT_CODE)
         add_dependencies(${_project} git_update)

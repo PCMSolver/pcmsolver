@@ -40,6 +40,7 @@ include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(MergeStaticLibs)
 include(FortranCInterface)
+include(CheckPython)
 
 FortranCInterface_VERIFY(CXX)
 init_FCMangle()

@@ -44,32 +44,47 @@ include(FortranCInterface)
 FortranCInterface_VERIFY(CXX)
 init_FCMangle()
 
-find_package(PythonInterp REQUIRED)
+if("${PYTHON_INTERPRETER}" STREQUAL "")
+   find_package(PythonInterp 2.6 REQUIRED)
+else()
+   set(PYTHONINTERP_FOUND TRUE)
+   set(PYTHON_EXECUTABLE "${PYTHON_INTERPRETER}")
+   get_Python_version_string(PYTHON_VERSION_STRING)
+   message(STATUS "Found PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.6\"")
+endif()	
 # Set variables to help find Python library that is compatible with interpreter
 # Copied from https://bitbucket.org/fenics-project/dolfin
-if (PYTHONINTERP_FOUND)
-  # Get Python include path from Python interpretter
-  execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+if(PYTHONINTERP_FOUND)
+   # Get Python include path from Python interpretter
+   execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
                          "import distutils.sysconfig, sys; sys.stdout.write(distutils.sysconfig.get_python_inc())"
                   OUTPUT_VARIABLE _PYTHON_INCLUDE_PATH
                   RESULT_VARIABLE _PYTHON_INCLUDE_RESULT)
-  # Get Python library path from interpreter
-  execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+   # Get Python library path from interpreter
+   execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
                         "import os, sys, inspect; sys.stdout.write(os.path.split(os.path.split(inspect.getfile(inspect))[0])[0])"
                   OUTPUT_VARIABLE _PYTHON_LIB_PATH
                   RESULT_VARIABLE _PYTHON_LIB_RESULT)
-  # Set include path, if returned by interpreter
-  if ("${_PYTHON_INCLUDE_RESULT}" STREQUAL "0")
-    set(PYTHON_INCLUDE_DIR ${_PYTHON_INCLUDE_PATH})
-  endif()
-  # Add a search path for Python library based on output from
-  # interpreter
-  set(CMAKE_LIBRARY_PATH_SAVE ${CMAKE_LIBRARY_PATH})
-  if ("${_PYTHON_LIB_RESULT}" STREQUAL "0")
-    set(CMAKE_LIBRARY_PATH ${_PYTHON_LIB_PATH})
-  endif()
-  # Find Pythons libs
-  find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
+   # Set include path, if returned by interpreter
+   if("${_PYTHON_INCLUDE_RESULT}" STREQUAL "0")
+      set(PYTHON_INCLUDE_DIR ${_PYTHON_INCLUDE_PATH})
+   endif()
+   # Add a search path for Python library based on output from
+   # interpreter
+   set(CMAKE_LIBRARY_PATH_SAVE ${CMAKE_LIBRARY_PATH})
+   if("${_PYTHON_LIB_RESULT}" STREQUAL "0")
+      set(CMAKE_LIBRARY_PATH ${_PYTHON_LIB_PATH})
+   endif()
+   # Find Pythons libs
+   find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
+   # Check headers
+   set(CMAKE_REQUIRED_INCLUDES "${PYTHON_INCLUDE_DIRS}")
+   check_include_file(Python.h HAS_PYTHON_H)
+   check_include_file(pyconfig.h HAS_PYCONFIG_H)
+   if(NOT HAS_PYTHON_H AND NOT HAS_PYCONFIG_H)
+      message(FATAL_ERROR "No Python headers found!!")	   
+   endif()	   
+   unset(CMAKE_REQUIRED_INCLUDES)
 endif()
 find_package(ZLIB REQUIRED) 
 

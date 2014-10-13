@@ -50,8 +50,9 @@ if("${PYTHON_INTERPRETER}" STREQUAL "")
 else()
    set(PYTHONINTERP_FOUND TRUE)
    set(PYTHON_EXECUTABLE "${PYTHON_INTERPRETER}")
-   get_Python_version_string(PYTHON_VERSION_STRING)
-   message(STATUS "Found PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.6\"")
+   get_Python_version_string(pyVersion)
+   set(PYTHON_VERSION_STRING "${pyVersion}")
+   message(STATUS "Passed PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.6\"")
 endif()	
 # Set variables to help find Python library that is compatible with interpreter
 # Copied from https://bitbucket.org/fenics-project/dolfin
@@ -127,7 +128,10 @@ if(NOT Boost_FOUND)
 	add_subdirectory(external)
 	set(Boost_FOUND TRUE)
 	set(Boost_LIBRARIES "")
+	# Read documentation in FindBoost.cmake for the difference between the singular and plural forms
+	set(Boost_INCLUDE_DIR  ${CUSTOM_BOOST_LOCATION}/include)
 	set(Boost_INCLUDE_DIRS ${CUSTOM_BOOST_LOCATION}/include) 
+	set(Boost_LIBRARY_DIR  ${CUSTOM_BOOST_LOCATION}/lib)
 	set(Boost_LIBRARY_DIRS ${CUSTOM_BOOST_LOCATION}/lib)
         # We will link statically, so just set the Boost_<C>_LIBRARY for the static library 
 	foreach(_component ${needed_components})

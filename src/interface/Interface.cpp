@@ -379,8 +379,11 @@ void setupInput(bool from_host)
 {
     if (from_host) { // Set up input from host data structures
 	    cavityInput cav;
+	    cav.cleaner();
 	    solverInput solv;
+	    solv.cleaner();
 	    greenInput green;
+	    green.cleaner();
 	    host_input(&cav, &solv, &green);
 	    // Put string passed with the alternative method in the input structures
 	    if (!input_strings.empty()) {

@@ -26,6 +26,9 @@ write_to_cloc_list("${to_count}")
 add_library(utils STATIC ${sources_list})
 set(libs_to_merge utils ${libs_to_merge} PARENT_SCOPE)
 add_dependencies(utils libgetkw)
+if(BUILD_CUSTOM_BOOST)
+	add_dependencies(utils custom_boost)
+endif()
 install(TARGETS utils ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list

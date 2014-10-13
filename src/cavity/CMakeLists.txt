@@ -37,6 +37,9 @@ if(DEVELOPMENT_CODE)
 else()
         add_dependencies(cavity pedra)
 endif()
+if(BUILD_CUSTOM_BOOST)
+	add_dependencies(cavity custom_boost)
+endif()	
 install(TARGETS cavity ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list

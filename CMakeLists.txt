@@ -52,7 +52,7 @@ else()
    set(PYTHON_EXECUTABLE "${PYTHON_INTERPRETER}")
    get_Python_version_string(pyVersion)
    set(PYTHON_VERSION_STRING "${pyVersion}")
-   message(STATUS "Passed PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.6\"")
+   message(STATUS "Passed PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.6\")")
 endif()	
 # Set variables to help find Python library that is compatible with interpreter
 # Copied from https://bitbucket.org/fenics-project/dolfin

@@ -31,7 +31,7 @@ function(get_Python_version_string pyVersion)
         else()
             # sys.version was first documented for Python 1.5, so assume
             # this is older.
-            set(pyVersion "1.4")
+	    set(pyVersion "1.4")
             set(PYTHON_VERSION_MAJOR "1")
             set(PYTHON_VERSION_MAJOR "4")
             set(PYTHON_VERSION_MAJOR "0")

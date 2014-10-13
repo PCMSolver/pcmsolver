@@ -24,6 +24,9 @@ write_to_cloc_list("${to_count}")
 add_library(interface STATIC ${sources_list})
 set(libs_to_merge interface ${libs_to_merge} PARENT_SCOPE)
 add_dependencies(interface utils solver)
+if(BUILD_CUSTOM_BOOST)
+	add_dependencies(interface custom_boost)
+endif()
 install(TARGETS interface ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list

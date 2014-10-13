@@ -26,6 +26,7 @@
 #ifndef INPUTMANAGER_HPP
 #define INPUTMANAGER_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -66,6 +67,13 @@ struct cavityInput {
     int pad; // Without padding the two strings are lumped together...
     char restart_name[20];
     double min_radius;
+    /*! Cleans up the char arrays in this struct
+     */
+    void cleaner() {
+	std::fill(cavity_type, cavity_type + 8, 0);
+	std::fill(radii_set, radii_set + 8, 0);
+	std::fill(restart_name, restart_name + 20, 0);
+    }
     friend std::ostream & operator<<(std::ostream & os, cavityInput & o) {
         os << "cavity type " << std::string(o.cavity_type) << std::endl;
         os << "patch level " << o.patch_level << std::endl;
@@ -101,6 +109,13 @@ struct solverInput {
     char equation_type[11];
     double correction;
     double probe_radius;
+    /*! Cleans up the char arrays in this struct
+     */
+    void cleaner() {
+	std::fill(solver_type, solver_type + 7, 0);
+	std::fill(solvent, solvent + 16, 0);
+	std::fill(equation_type, equation_type + 11, 0);
+    }
     friend std::ostream & operator<<(std::ostream & os, solverInput & o) {
         os << "solver type " << std::string(o.solver_type) << std::endl;
         os << "solvent " << std::string(o.solvent) << std::endl;
@@ -124,6 +139,12 @@ struct greenInput {
     char inside_type[7];
     double outside_epsilon;
     char outside_type[22];
+    /*! Cleans up the char arrays in this struct
+     */
+    void cleaner() {
+	std::fill(inside_type, inside_type + 7, 0);
+	std::fill(outside_type, outside_type + 22, 0);
+    }
     friend std::ostream & operator<<(std::ostream & os, greenInput & o) {
         os << "inside type " << std::string(o.inside_type) << std::endl;
         os << "outside type " << std::string(o.outside_type) << std::endl;

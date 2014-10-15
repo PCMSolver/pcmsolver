@@ -59,42 +59,40 @@ class WaveletCavity : public Cavity
 {
 public:
     WaveletCavity() {}
-    WaveletCavity(const std::vector<Sphere> & _spheres, double _probeRadius,
-                  int _patchLevel = 2, double _coarsity = 0.5) :
-        Cavity(_spheres), probeRadius(_probeRadius), patchLevel(_patchLevel),
-        coarsity(_coarsity) {
-        uploadedDyadic = false;
+    WaveletCavity(const std::vector<Sphere> & s, double pr, int pl = 2, double c = 0.5) :
+        Cavity(s), probeRadius_(pr), patchLevel_(pl), coarsity_(c) {
+        uploadedDyadic_ = false;
         makeCavity();
     }
     virtual ~WaveletCavity() {};
     void readCavity(const std::string & filename);
-    void uploadPoints(int quadLevel, Interpolation *interp, bool isPWL);
-    unsigned int getNPatches() { return nPatches; }
-    unsigned int getNPatches() const { return nPatches; }
-    unsigned int getNLevels() { return nLevels; }
-    unsigned int getNLevels() const { return nLevels; }
-    unsigned int getNPoints() { return nPoints; }
-    unsigned int getNPoints() const { return nPoints; }
-    Eigen::Vector3d getNodePoint(int i) { return nodePoint[i]; }
-    Eigen::Vector3d getNodePoint(int i) const { return nodePoint[i]; }
-    Eigen::Vector3i getNodeIndex(int i) { return nodeIndex[i]; }
-    Eigen::Vector3i getNodeIndex(int i) const { return nodeIndex[i]; }
+    void uploadPoints(int quadLevel, Interpolation *interp);
+    unsigned int getNPatches() { return nPatches_; }
+    unsigned int getNPatches() const { return nPatches_; }
+    unsigned int getNLevels() { return nLevels_; }
+    unsigned int getNLevels() const { return nLevels_; }
+    unsigned int getNPoints() { return nPoints_; }
+    unsigned int getNPoints() const { return nPoints_; }
+    Eigen::Vector3d getNodePoint(int i) { return nodePoint_[i]; }
+    Eigen::Vector3d getNodePoint(int i) const { return nodePoint_[i]; }
+    Eigen::Vector3i getNodeIndex(int i) { return nodeIndex_[i]; }
+    Eigen::Vector3i getNodeIndex(int i) const { return nodeIndex_[i]; }
     friend std::ostream & operator<<(std::ostream & os, WaveletCavity & cavity) {
         return cavity.printCavity(os);
     }
     void compFakePotential();
 private:
-    double probeRadius;
-    int patchLevel;
-    double coarsity;
+    double probeRadius_;
+    int patchLevel_;
+    double coarsity_;
     void uploadPointsPWC(int quadLevel, Interpolation *interp);
     void uploadPointsPWL(int quadLevel, Interpolation *interp);
-    std::vector<Eigen::Vector3d> nodePoint;
-    std::vector<Eigen::Vector3i> nodeIndex;
-    unsigned int nPatches;
-    unsigned int nLevels;
-    unsigned int nPoints;
-    bool uploadedDyadic;
+    std::vector<Eigen::Vector3d> nodePoint_;
+    std::vector<Eigen::Vector3i> nodeIndex_;
+    unsigned int nPatches_;
+    unsigned int nLevels_;
+    unsigned int nPoints_;
+    bool uploadedDyadic_;
     void writeInput(std::string &fileName);
     virtual std::ostream & printCavity(std::ostream & os);
     virtual void makeCavity();

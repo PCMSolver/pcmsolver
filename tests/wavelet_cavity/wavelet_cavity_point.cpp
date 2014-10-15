@@ -64,7 +64,7 @@ struct WaveletCavityTest {
         int firstKind = 0;
         WEMSolver solver(gfInside, gfOutside, "Wavelet", firstKind);
         solver.buildSystemMatrix(cavity);
-        cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), false);
+        cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
     }
 };
 

@@ -62,6 +62,9 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
   void tdwt(double *v);
   void  dwt(double *v);
 
+  //void generateCanonicalSingleScaleBasis(Wavelet *G, unsigned int ***C, int m);
+  //void generateTopology(unsigned int  ****C);
+
   ~ConAnsatzFunction();
 };
 #endif

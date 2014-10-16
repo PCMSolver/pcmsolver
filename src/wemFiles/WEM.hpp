@@ -152,15 +152,15 @@ template <class T> void WEM(T* af, SparseMatrix *sM, double SingleLayer(Vector3,
     free(af->elementTree.element[i].interaction.value);
     free(af->elementTree.element[i].interaction.index);
 #ifdef DEBUG2
-  debugFile = fopen("debug.out","a");
-  fprintf(debugFile,">>> RANDWERTE %d\n",i);
-  for(int i1 = 0; i1< g_max; ++i1) {
-    fprintf(debugFile,"%d %d\n",i1, af->pRandWerte[i1].noP);
-      for(unsigned int i2 = 0; i2 < af->pRandWerte[i1].noP; ++i2)
-        fprintf(debugFile, "%d %d %f %f %f %f %f %f %f\n", i1, i2, af->pRandWerte[i1].Chi[i2].x, af->pRandWerte[i1].Chi[i2].y, af->pRandWerte[i1].Chi[i2].z, af->pRandWerte[i1].n_Chi[i2].x, af->pRandWerte[i1].n_Chi[i2].y, af->pRandWerte[i1].n_Chi[i2].z, af->pRandWerte[i1].det_dChi[i2]);
-  }
-  fprintf(debugFile,"<<< RANDWERTE %d\n",i);
-  fclose(debugFile);
+    debugFile = fopen("debug.out","a");
+    fprintf(debugFile,">>> RANDWERTE %d\n",i);
+    for(int i1 = 0; i1< g_max; ++i1) {
+      fprintf(debugFile,"%d %d\n",i1, af->pRandWerte[i1].noP);
+        for(unsigned int i2 = 0; i2 < af->pRandWerte[i1].noP; ++i2)
+          fprintf(debugFile, "%d %d %f %f %f %f %f %f %f\n", i1, i2, af->pRandWerte[i1].Chi[i2].x, af->pRandWerte[i1].Chi[i2].y, af->pRandWerte[i1].Chi[i2].z, af->pRandWerte[i1].n_Chi[i2].x, af->pRandWerte[i1].n_Chi[i2].y, af->pRandWerte[i1].n_Chi[i2].z, af->pRandWerte[i1].det_dChi[i2]);
+    }
+    fprintf(debugFile,"<<< RANDWERTE %d\n",i);
+    fclose(debugFile);
 #endif
   }
   // release memory

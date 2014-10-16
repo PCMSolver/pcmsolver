@@ -29,6 +29,7 @@
 #include "WEMPCG.hpp"
 #include "WEMRHS.hpp"
 #include "Energy.hpp"
+#include "Volume.hpp"
 
 #include <fstream>
 #include <ostream>
@@ -36,6 +37,7 @@
 #include <string>
 #include <typeinfo>
 #include <vector>
+#include <cstdio>
 
 #include "Config.hpp"
 
@@ -151,6 +153,7 @@ WEMSolver::~WEMSolver()
 
 void WEMSolver::uploadCavity(const WaveletCavity & cavity)
 {
+    //readPoints("../../InputFiles/benzene3.dat",&pointList,&af->nPatches, &af->nLevels);
     af->nPatches = cavity.getNPatches();
     af->nLevels = cavity.getNLevels();
     int n = (1<<af->nLevels);
@@ -190,6 +193,29 @@ void WEMSolver::buildSystemMatrix(const Cavity & cavity)
 void WEMSolver::initInterpolation(){
     af->interCoeff = new Interpolation(pointList, interpolationGrade, interpolationType, af->nLevels, af->nPatches);
     af->nNodes = af->genNet(pointList);
+    double volume = calculateVolume(af);
+    printf("Volume                     %lf\n",volume);
+  FILE* debugFile = fopen("debug.out", "a");
+  fprintf(debugFile,">>> PPOINTLIST\n");
+  for(unsigned int m = 0; m< af->nNodes; ++m) {
+    fprintf(debugFile,"%lf %lf %lf\n", af->nodeList[m].x, af->nodeList[m].y, af->nodeList[m].z);
+  }
+  fprintf(debugFile,"<<< PPOINTLIST\n");
+  fprintf(debugFile,">>> PELEMENTLIST\n");
+  for(unsigned int m = af->nPatches*((1<<af->nLevels)*(1<<af->nLevels)-1)/3; m<af->nPatches*(4*(1<<af->nLevels)*(1<<af->nLevels)-1)/3; ++m) {
+    //for(int m = 0; m<nFunctions; ++m) {
+      //fprintf(debugFile,"%d %d %d %d\n",
+        //af->pElementList[m][0], af->pElementList[m][1],
+        //af->pElementList[m][2], af->pElementList[m][3]);
+    fprintf(debugFile,"%d %d %d %d\n",
+      af->elementTree.element[m].vertex[0],
+      af->elementTree.element[m].vertex[1],
+      af->elementTree.element[m].vertex[2],
+      af->elementTree.element[m].vertex[3]);
+  }
+  fprintf(debugFile,"<<< PELEMENTLIST\n");
+  fflush(debugFile);
+  fclose(debugFile);
 }
 
 void WEMSolver::constructWavelets(){
@@ -197,7 +223,19 @@ void WEMSolver::constructWavelets(){
     af->generateWaveletList();
     af->setQuadratureLevel();
     af->simplifyWaveletList();
-    //af->completeElementList();
+    af->completeElementList();
+    et_node* pF = af->elementTree.element;
+    FILE* debugFile = fopen("debug.out", "a");
+    fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
+    for(unsigned int m = 0; m<af->nPatches*(4*(1<<af->nLevels)*(1<<af->nLevels)-1)/3; ++m) {
+      fprintf(debugFile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf\n", pF[m].patch, pF[m].level, pF[m].index_s, pF[m].index_t, pF[m].midpoint.x, pF[m].midpoint.y, pF[m].midpoint.z, pF[m].radius, af->nodeList[pF[m].vertex[0]].x, af->nodeList[pF[m].vertex[0]].y, af->nodeList[pF[m].vertex[0]].z);
+      for(unsigned int n = 0; n < pF[m].noWavelets; ++n){
+        fprintf(debugFile,"%d ", pF[m].wavelet[n]);
+      }
+      fprintf(debugFile,"\n");
+    }
+    fprintf(debugFile,"<<< HIERARCHICAL_ELEMENT_TREE\n");
+    fflush(debugFile);fclose(debugFile);
 }
 
 void WEMSolver::constructSystemMatrix()
@@ -227,8 +265,49 @@ void WEMSolver::constructSi(){
     }
     gf = greenInside_;
     apriori1_ = af->compression(&S_i_);
+    
+    FILE* debugFile = fopen("debug.out", "a");
+	  fprintf(debugFile,">>> SYSTEMMATRIX AC\n");
+    fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+    for(unsigned int i  = 0; i < S_i_.m; ++i){
+      fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+      for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+        fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+      }
+    }
+	  fprintf(debugFile,"<<< SYSTEMMATRIX AC\n");
+	  fflush(debugFile);
+	  fclose(debugFile);
+
     WEM(af, &S_i_, SingleLayer, DoubleLayer, factor);
+
+    debugFile = fopen("debug.out", "a");
+	  fprintf(debugFile,">>> SYSTEMMATRIX AW\n");
+    fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+    for(unsigned int i  = 0; i < S_i_.m; ++i){
+      fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+      for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+        fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+      }
+    }
+	  fprintf(debugFile,"<<< SYSTEMMATRIX AW\n");
+	  fflush(debugFile);
+	  fclose(debugFile);
+
     aposteriori1_ = af->postProc(&S_i_);
+    
+    debugFile = fopen("debug.out", "a");
+	  fprintf(debugFile,">>> SYSTEMMATRIX AP\n");
+    fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+    for(unsigned int i  = 0; i < S_i_.m; ++i){
+      fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+      for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+        fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+      }
+    }
+	  fprintf(debugFile,"<<< SYSTEMMATRIX AP\n");
+	  fflush(debugFile);
+	  fclose(debugFile);
 }
 
 void WEMSolver::constructSe(){
@@ -262,22 +341,26 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
                                Eigen::VectorXd & charge)
 {
     double *rhs;
-    double *u = (double*) calloc(af->nFunctions, sizeof(double));
+    double *u = (double*) calloc(af->waveletList.sizeWaveletList, sizeof(double));
     double * pot = const_cast<double *>(potential.data());
     double * chg = charge.data();
     double epsilon = greenOutside_->epsilon();
     WEMRHS2M(&rhs, pot, af);
     int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, af);
+    af->print_geometry(u,"Geometry.vtk");
     af->tdwt(u);
+    af->print_geometry(u,"Geometry0.vtk");
     af->dwt(u);
-    for (size_t i = 0; i < af->nFunctions; ++i) {
+    for (size_t i = 0; i < af->waveletList.sizeWaveletList; ++i) {
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
     }
-    memset(u, 0, af->nFunctions * sizeof(double));
+    memset(u, 0, af->waveletList.sizeWaveletList* sizeof(double));
     iter = WEMPCG(&S_i_, rhs, u, threshold, af);
     af->tdwt(u);
+    af->print_geometry(u,"Geometry1.vtk");
     energy_ext(u, pot, af);
     charge_ext(u, chg, af);
+    af->print_geometry(u,"Geometry2.vtk");
     free(rhs);
     free(u);
 }
@@ -292,20 +375,20 @@ void WEMSolver::solveFull(const Eigen::VectorXd & potential,
                           Eigen::VectorXd & charge)
 {
     double *rhs;
-    double *u = (double*) calloc(af->nFunctions, sizeof(double));
-    double *v = (double*) calloc(af->nFunctions, sizeof(double));
+    double *u = (double*) calloc(af->waveletList.sizeWaveletList, sizeof(double));
+    double *v = (double*) calloc(af->waveletList.sizeWaveletList, sizeof(double));
     //next line is just a quick fix to avoid problems with const but i do not like it...
     double * pot = const_cast<double *>(potential.data());
     WEMRHS2M(&rhs,pot, af);
     int iters = WEMPCG(&S_i_, rhs, u, threshold, af);
-    memset(rhs, 0, af->nFunctions*sizeof(double));
-    for(unsigned int i = 0; i < af->nFunctions; i++) {
+    memset(rhs, 0, af->waveletList.sizeWaveletList*sizeof(double));
+    for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; i++) {
         for(unsigned int j = 0; j < S_e_.row_number[i]; j++) {
             rhs[i] += S_e_.value1[i][j] * u[S_e_.index[i][j]];
         }
     }
     iters = WEMPGMRES3(&S_i_, &S_e_, rhs, v, threshold, af);
-    for(unsigned int i = 0; i < af->nFunctions; i++) {
+    for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; i++) {
         u[i] -= 4*M_PI*v[i];
     }
     af->tdwt(u);

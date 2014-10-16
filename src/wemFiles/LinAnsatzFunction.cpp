@@ -142,6 +142,7 @@ LinAnsatzFunction :: LinAnsatzFunction(){
 	//interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
 	noPhi = 4;
 
+  interCoeff = NULL;
 
   B = NULL;
 

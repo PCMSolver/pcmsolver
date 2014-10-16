@@ -4,12 +4,17 @@
 #include "GenericAnsatzFunction.hpp"
 
 /**
+ * @file LinAnsatzFunction.hpp
+ *
  * @brief class for a linear Ansatz functions
  * @note contains all the functions that are specific to a linear Ansatz Function
  */
 class LinAnsatzFunction: public GenericAnsatzFunction {
 public:
 
+  // characteristic variable, found only in this function
+  //BoundingBoxSquare *B2;
+  
   /// constructor of the generic class AnsatzFunction
   LinAnsatzFunction();
   LinAnsatzFunction(unsigned int p, unsigned int m, unsigned int nf, Vector3*** pPointsIn);
@@ -42,16 +47,13 @@ public:
   // construction of WaveletList
   void generateWaveletList();
 
-  void generateTopology(unsigned int  ****C);
-
-  void generateCanonicalSingleScaleBasis(Wavelet *G, unsigned int ***C, int m);
-  
   void setQuadratureLevel();
 
   void simplifyWaveletList();
 
   void computeBoundingBoxes();
   void freeBoundingBoxes();
+  
   unsigned int waveletWaveletCriterion(unsigned int ind1, unsigned int ind2, double c1, double c2);
 
   void createGram(unsigned int size, unsigned int maxRowNum);
@@ -59,6 +61,10 @@ public:
  
   void tdwt(double *v);
   void  dwt(double *v);
+
+  void generateCanonicalSingleScaleBasis(Wavelet *G, unsigned int ***C, int m);
+  void generateTopology(unsigned int  ****C);
+
   ~LinAnsatzFunction();
 };
 #endif

@@ -750,11 +750,7 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
   et_node *Ef = elementTree.element;
 
   // get length of point list P
-  for (i = 0; i < nFunctions; ++i)
-    for (j = 0; j < 4; ++j)
-      if (Ef[index+i].vertex[j] > max)
-        max = Ef[index+i].vertex[j];
-  ++max;
+  max = nNodes;
 
   // visualize the surface of the geometry in vtk format
   f = fopen(dname, "w");
@@ -771,14 +767,6 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
     fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", nodeList[i].x,
         nodeList[i].y, nodeList[i].z);
   }
-  /*
-  for (i = 0 ; i < nFunctions-1 ; ++i){
-    auxPoint = interCoeff->Chi(Vector2(0.5*(Ef[i].index_s+Ef[i+1].index_s), 0.5*(Ef[i].index_t+Ef[i+1].index_t)), Ef[i].patch);
-    fprintf( f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
-  }
-  auxPoint = interCoeff->Chi(Vector2(0.5*(Ef[nFunctions-1].index_s+Ef[0].index_s), 0.5*(Ef[nFunctions-1].index_t+Ef[0].index_t)), Ef[i].patch);
-  fprintf( f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
-  */
   fprintf(f, "\n");
 
   // print element list
@@ -797,16 +785,38 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
   fprintf(f, "POINT_DATA %d\n", max);
   fprintf(f, "SCALARS Z-value FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
-  for (i = 0; i < max; ++i)
-    fprintf(f, "%20.16f\n", nodeList[i].z);
+  if(rho != NULL){
+    for (i = 0; i < max; ++i)
+      fprintf(f, "%20.16f\n", rho[i]);
+  } else {
+    for (i = 0; i < max; ++i)
+      fprintf(f, "%20.16f\n", nodeList[i].z);
+  }
   fprintf(f, "\n");
 
   fprintf(f, "CELL_DATA %d\n", nFunctions);
-  fprintf(f, "SCALARS Cell_Density FLOAT\n");
+  fprintf(f, "SCALARS Patch FLOAT\n");
+  fprintf(f, "LOOKUP_TABLE default\n");
+  for (i = 0; i < nFunctions; ++i)
+    fprintf(f, "%d\n", Ef[index+i].patch);
+  fprintf(f, "\n");
+  
+  Vector2 xi;
+  Vector3 normal;
+  double ht = 1./(1<<Ef[index].level);
+  fprintf(f, "NORMALS Cell_Norm FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
   if (rho != NULL) {
     for (i = 0; i < nFunctions; ++i)
       fprintf(f, "%20.16f\n", rho[i]);
+  }else{
+    for(i = 0; i < nFunctions; ++i){
+      xi.x = ht*Ef[index+i].index_s;
+      xi.y = ht*Ef[index+i].index_t;
+      normal = interCoeff->n_Chi(xi,Ef[index+i].patch);
+      normal = vector3SMul(1./vector3Norm(normal),normal);
+      fprintf(f, "%20.16f %20.16f %20.16f\n",normal.x, normal.y, normal.z);
+    }
   }
 
   fclose(f);

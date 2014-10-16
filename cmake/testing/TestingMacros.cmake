@@ -7,7 +7,9 @@ macro(add_googletest test_name my_libraries external_libraries)
                           ${my_libraries}
                           ${GTEST_LIBS_DIR}/libgtest.a
                           ${GTEST_LIBS_DIR}/libgtest_main.a
-                          ${external_libraries})
+	                  ${CMAKE_THREAD_LIBS_INIT}
+                          ${external_libraries}
+			  )
     add_test(NAME ${the_name} COMMAND ${the_name}.x)
 endmacro()
 
@@ -18,6 +20,8 @@ macro(add_boosttest test_name)
 
     set(_my_libraries "${ARGV1}")
     set(_external_libraries "${ARGV2}")
+    # Find threading library aka CMAKE_THREAD_LIBS_INIT
+    find_package(Threads)
 
     # Building on more than one processor can result in race conditions,
     # since custom Boost can be built only on one processor!
@@ -28,8 +32,8 @@ macro(add_boosttest test_name)
     target_link_libraries(${the_name}.x
                           ${_my_libraries}
 			  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+	    	          ${CMAKE_THREAD_LIBS_INIT}
                           ${_external_libraries}
-			  ${CMAKE_THREAD_LIBS_INIT}
 			  )
     add_test(NAME ${the_name} COMMAND ${the_name}.x)
 endmacro()

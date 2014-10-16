@@ -379,8 +379,11 @@ void setupInput(bool from_host)
 {
     if (from_host) { // Set up input from host data structures
 	    cavityInput cav;
+	    cav.cleaner();
 	    solverInput solv;
+	    solv.cleaner();
 	    greenInput green;
+	    green.cleaner();
 	    host_input(&cav, &solv, &green);
 	    // Put string passed with the alternative method in the input structures
 	    if (!input_strings.empty()) {
@@ -505,15 +508,13 @@ void initSolver()
     if (modelType == "WAVELET") {
         _PWCSolver = new PWCSolver(gfInside, gfOutside);
         _PWCSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_(),
-                                     false); // WTF is happening here???
+        _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_());
         _cavity = _waveletCavity;
         _solver = _PWCSolver;
     } else if (modelType == "LINEAR") {
         _PWLSolver = new PWLSolver(gfInside, gfOutside);
         _PWLSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_(),
-                                     true); // WTF is happening here???
+        _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_());
         _cavity = _waveletCavity;
         _solver = _PWLSolver;
     } else {

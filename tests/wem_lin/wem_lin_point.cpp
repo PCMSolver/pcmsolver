@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(pointCharge)
     int firstKind = 0;
     WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
     solver.buildSystemMatrix(cavity);
-    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), true);
+    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
     double charge = 8.0;
     int size = cavity.size();

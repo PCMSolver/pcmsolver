@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(NH3)
     fclose(debugFile);
     WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
     solver.buildSystemMatrix(cavity);
-    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), true);
+    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;

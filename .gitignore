@@ -1,10 +1,9 @@
 *~
 *#
 *.out
-output*
-external/libgetkw
 external/libtaylor
-external/googletest
+external/libgetkw
+output*
 release*
 Release*
 Makefile

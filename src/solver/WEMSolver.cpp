@@ -31,6 +31,7 @@
 #include "Energy.hpp"
 #include "Volume.hpp"
 
+#include <iostream>
 #include <fstream>
 #include <ostream>
 #include <stdexcept>
@@ -42,30 +43,6 @@
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-
-extern "C"
-{
-//#include "vector3.h"
-//#include "sparse2.h"
-//#include "intvector.h"
-//#include "basis.h"
-//#include "WEM.h"
-//#include "read_points.h"
-//#include "vector2.h"
-//#include "interpolate.h"
-//#include "topology.h"
-//#include "kern.h"
-//#include "compression.h"
-//#include "postproc.h"
-//#include "WEMRHS.h"
-//#include "WEMPCG.h"
-//#include "WEMPGMRES.h"
-//#include "dwt.h"
-//#include "cubature.h"
-//#include "gauss_square.h"
-//#include "constants.h"
-//#include "energy.h"
-}
 
 #include "Cavity.hpp"
 #include "IGreensFunction.hpp"

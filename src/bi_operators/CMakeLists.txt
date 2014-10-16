@@ -26,6 +26,9 @@ write_to_cloc_list("${to_count}")
 add_library(bi_operators STATIC ${sources_list})
 set(libs_to_merge bi_operators ${libs_to_merge} PARENT_SCOPE)
 add_dependencies(bi_operators metal libtaylor)
+if(BUILD_CUSTOM_BOOST)
+	add_dependencies(bi_operators custom_boost)
+endif()	
 install(TARGETS bi_operators ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list

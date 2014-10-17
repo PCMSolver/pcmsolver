@@ -167,9 +167,42 @@ void PWLSolver::constructSi()
     gf = greenInside_;
     apriori1_ = compression_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels,
                                 nNodes);
+FILE* debugFile = fopen("debug.out", "a");
+fprintf(debugFile,">>> SYSTEMMATRIX AC\n");
+fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+for(unsigned int i  = 0; i < S_i_.m; ++i){
+  fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+  for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+    fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+  }
+}
+fprintf(debugFile,"<<< SYSTEMMATRIX AC\n");
+fflush(debugFile);
     WEM_pwl(&S_i_, waveletList, nodeList, elementTree, T_, nPatches, nLevels,
             SingleLayer, DoubleLayer, factor);
+debugFile = fopen("debug.out", "a");
+fprintf(debugFile,">>> SYSTEMMATRIX AW\n");
+fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+for(unsigned int i  = 0; i < S_i_.m; ++i){
+  fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+  for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+    fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+  }
+}
+fprintf(debugFile,"<<< SYSTEMMATRIX AW\n");
+fflush(debugFile);
     aposteriori1_ = postproc_pwl(&S_i_, waveletList, elementTree, nPatches, nLevels);
+debugFile = fopen("debug.out", "a");
+fprintf(debugFile,">>> SYSTEMMATRIX AP\n");
+fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+for(unsigned int i  = 0; i < S_i_.m; ++i){
+  fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+  for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+    fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+  }
+}
+fprintf(debugFile,"<<< SYSTEMMATRIX AP\n");
+fflush(debugFile);
 }
 
 void PWLSolver::constructSe()
@@ -177,9 +210,43 @@ void PWLSolver::constructSe()
     gf = greenOutside_; // sets the global pointer to pass GF to C code
     apriori2_ = compression_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels,
                                 nNodes);
+
+FILE* debugFile = fopen("debug.out", "a");
+fprintf(debugFile,">>> SYSTEMMATRIX AC\n");
+fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+for(unsigned int i  = 0; i < S_i_.m; ++i){
+  fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+  for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+    fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+  }
+}
+fprintf(debugFile,"<<< SYSTEMMATRIX AC\n");
+fflush(debugFile);
     WEM_pwl(&S_e_, waveletList, nodeList, elementTree, T_, nPatches, nLevels,
             SingleLayer, DoubleLayer, -2*M_PI);
+debugFile = fopen("debug.out", "a");
+fprintf(debugFile,">>> SYSTEMMATRIX AW\n");
+fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+for(unsigned int i  = 0; i < S_i_.m; ++i){
+  fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+  for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+    fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+  }
+}
+fprintf(debugFile,"<<< SYSTEMMATRIX AW\n");
+fflush(debugFile);
     aposteriori2_ = postproc_pwl(&S_e_, waveletList, elementTree, nPatches, nLevels);
+debugFile = fopen("debug.out", "a");
+fprintf(debugFile,">>> SYSTEMMATRIX AP\n");
+fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+for(unsigned int i  = 0; i < S_i_.m; ++i){
+  fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+  for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+    fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+  }
+}
+fprintf(debugFile,"<<< SYSTEMMATRIX AP\n");
+fflush(debugFile);
 }
 
 void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential,

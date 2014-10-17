@@ -16,7 +16,7 @@ double calculateVolume(GenericAnsatzFunction *af){
   Vector2 t; 
   initGaussSquare(&Q, af->quadratureLevel_+1);
 
-  for(unsigned int i = af->nPatches*(n*n-1)/3; i < af->nFunctions; ++i){
+  for(unsigned int i = af->nPatches*(n*n-1)/3; i < af->elementTree.totalSizeElementList; ++i){
     for(unsigned int k = 0; k < Q[af->quadratureLevel_].noP; ++k){
       t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[k].x);
       t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[k].y);

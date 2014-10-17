@@ -217,7 +217,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
       if (d1 > d2) c2[i][j] = a*d1; else c2[i][j] = a*d2;
       if (c1[i][j] < a/(1<<j)) c1[i][j] = a/(1<<j);
       if (c2[i][j] < a/(1<<i)) c2[i][j] = a/(1<<i);
-      if (c1[i][j] > c2[i][j]) c1[i][j] = c2[i][j];
+      //if (c1[i][j] > c2[i][j]) c1[i][j] = c2[i][j];
       if ((i < minLevel) || (j < minLevel)) c1[i][j] = c2[i][j];
       c1[i][j] *= maxRadius/scalingFactor;              // Gebiet relativieren
     }
@@ -437,7 +437,8 @@ unsigned int GenericAnsatzFunction :: postProc(SparseMatrix *T){
       // LinAF //c[i][j] = pow(0.5,(nLevels-0.5*(i+j))*(2*dp-op)/(2*td+op)); // false?!
       c[i][j] = pow(0.5,(2*nLevels-(i+j))*(2*dp-op)/(2*td+op));
       if (c[i][j] > pow(0.5,fabs(i-j))) c[i][j] = pow(0.5,fabs(i-j));
-      c[i][j] *= b * pow(0.5,(dp-0.5*op)*(2*nLevels-(i+j)));// added -op*nLevels
+      //c[i][j] *= b * pow(0.5,(dp-0.5*op)*(2*nLevels-(i+j)));// added -op*nLevels
+      c[i][j] *= b * pow(0.5,(dp)*(2*nLevels-(i+j)));
     }
   }
 

@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(NH3)
     spheres.push_back(sph12);
  */
     double probeRadius = 1.7;//1.385; // Probe Radius for water
-    int patchLevel = 3;
+    int patchLevel = 2;
     double coarsity = 0.5;
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
     cavity.readCavity("molec_dyadic.dat");

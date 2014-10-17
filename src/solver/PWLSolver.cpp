@@ -164,6 +164,21 @@ unsigned int	N = 1 << nLevels;	/* N*N Elemente pro Patch auf dem Level M     */
 unsigned int	ne;		/* Anzahl der Elemente                        */
 ne = nPatches*(4*N*N-1)/3;			/* Anzahl der Elemente */
 FILE* debugFile = fopen("debug.out","a");
+fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
+for(unsigned int m = 0; m<nNodes; ++m){
+        fprintf(debugFile,"%d %d %d %d\n", m, waveletList[m].level, waveletList[m].element_number, waveletList[m].son_number);
+        for(unsigned int i1 = 0; i1< waveletList[m].element_number;++i1){
+                fprintf(debugFile,"%d %lf %lf %lf %lf ", waveletList[m].element[i1], waveletList[m].weight[i1][0], waveletList[m].weight[i1][1], waveletList[m].weight[i1][2], waveletList[m].weight[i1][3]);
+        }
+        for(unsigned int i1 = 0; i1< waveletList[m].son_number;++i1){
+                fprintf(debugFile,"%d ", waveletList[m].son[i1]);
+        }
+        fprintf(debugFile,"\n");
+}
+fprintf(debugFile,"<<< WAVELET_TREE_SIMPLIFY\n");
+fflush(debugFile);
+fclose(debugFile);
+debugFile = fopen("debug.out","a");
 fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
 for(unsigned int m = 0; m<ne; ++m){
     fprintf(debugFile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf\n", elementTree[m].patch, elementTree[m].level, elementTree[m].index_s, elementTree[m].index_t, elementTree[m].midpoint.x, elementTree[m].midpoint.y, elementTree[m].midpoint.z, elementTree[m].radius, nodeList[elementTree[m].vertex[0]].x, nodeList[elementTree[m].vertex[0]].y, nodeList[elementTree[m].vertex[0]].z);

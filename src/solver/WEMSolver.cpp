@@ -202,7 +202,21 @@ void WEMSolver::constructWavelets(){
     af->simplifyWaveletList();
     af->completeElementList();
     et_node* pF = af->elementTree.element;
-    FILE* debugFile = fopen("debug.out", "a");
+	FILE* debugFile = fopen("debug.out","a");
+	fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
+	for(unsigned int m = 0; m<af->waveletList.sizeWaveletList; ++m){
+		fprintf(debugFile,"%d %d %d %d\n", m, af->waveletList.W[m].level, af->waveletList.W[m].noElements, af->waveletList.W[m].noSons);
+		for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noElements; ++i1){
+			fprintf(debugFile,"%d %lf %lf %lf %lf ", af->waveletList.W[m].element[i1], af->waveletList.W[m].weight[i1*4], af->waveletList.W[m].weight[i1*4+1], af->waveletList.W[m].weight[i1*4+2], af->waveletList.W[m].weight[i1*4+3]);
+		}
+		for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noSons; ++i1){
+			fprintf(debugFile,"%d ", af->waveletList.W[m].son[i1]);
+		}
+		fprintf(debugFile,"\n");
+	}
+	fprintf(debugFile,"<<< WAVELET_TREE_SIMPLIFY\n");
+	fclose(debugFile);
+  debugFile = fopen("debug.out", "a");
     fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
     for(unsigned int m = 0; m<af->nPatches*(4*(1<<af->nLevels)*(1<<af->nLevels)-1)/3; ++m) {
       fprintf(debugFile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf\n", pF[m].patch, pF[m].level, pF[m].index_s, pF[m].index_t, pF[m].midpoint.x, pF[m].midpoint.y, pF[m].midpoint.z, pF[m].radius, af->nodeList[pF[m].vertex[0]].x, af->nodeList[pF[m].vertex[0]].y, af->nodeList[pF[m].vertex[0]].z);

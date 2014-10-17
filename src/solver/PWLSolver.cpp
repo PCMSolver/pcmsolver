@@ -136,6 +136,21 @@ void PWLSolver::initInterpolation()
 {
     init_interpolate_pwl(&T_, pointList, nPatches, nLevels);
     nNodes = gennet_pwl(&nodeList, &elementList, pointList, nPatches, nLevels);
+FILE* debugFile = fopen("debug.out","w");
+fclose(debugFile);
+debugFile = fopen("debug.out","a");	
+fprintf(debugFile,">>> PPOINTLIST\n");
+for(unsigned int m = 0; m<nNodes; ++m){
+	fprintf(debugFile,"%lf %lf %lf\n",(nodeList)[m].x, (nodeList)[m].y, (nodeList)[m].z);
+}
+fprintf(debugFile,"<<< PPOINTLIST\n");
+fprintf(debugFile,">>> PELEMENTLIST\n");
+unsigned int nf = nPatches*(1<<nLevels)*(1<<nLevels);	        /* Anzahl der Patches */
+for(unsigned int m = 0; m<nf; ++m){
+	fprintf(debugFile,"%d %d %d %d\n",(elementList)[m][0], (elementList)[m][1], (elementList)[m][2], (elementList)[m][3]);
+}
+fprintf(debugFile,"<<< PELEMENTLIST\n");
+fclose(debugFile);
 }
 
 void PWLSolver::constructWavelets()
@@ -145,6 +160,19 @@ void PWLSolver::constructWavelets()
     set_quadrature_level_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
     simplify_waveletlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
     complete_elementlist_pwl(waveletList, elementTree, nPatches, nLevels, nNodes);
+unsigned int	N = 1 << nLevels;	/* N*N Elemente pro Patch auf dem Level M     */
+unsigned int	ne;		/* Anzahl der Elemente                        */
+ne = nPatches*(4*N*N-1)/3;			/* Anzahl der Elemente */
+FILE* debugFile = fopen("debug.out","a");
+fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
+for(unsigned int m = 0; m<ne; ++m){
+    fprintf(debugFile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf\n", elementTree[m].patch, elementTree[m].level, elementTree[m].index_s, elementTree[m].index_t, elementTree[m].midpoint.x, elementTree[m].midpoint.y, elementTree[m].midpoint.z, elementTree[m].radius, nodeList[elementTree[m].vertex[0]].x, nodeList[elementTree[m].vertex[0]].y, nodeList[elementTree[m].vertex[0]].z);
+    for(unsigned int i1 = 0; i1< elementTree[m].wavelet_number;++i1)
+        fprintf(debugFile,"%d ", elementTree[m].wavelet[i1]);
+    fprintf(debugFile,"\n");
+}
+fprintf(debugFile,"<<< HIERARCHICAL_ELEMENT_TREE\n");
+fclose(debugFile);
 }
 
 void PWLSolver::constructSi()

@@ -31,7 +31,9 @@
 #include <stdexcept>
 #include <string>
 
+#ifdef EMBEDDED_PYTHON
 #include <Python.h>
+#endif
 
 #include "Config.hpp"
 
@@ -49,9 +51,13 @@ using boost::algorithm::to_upper_copy;
     
 Input::Input(const std::string & filename)
 {
+#ifdef EMBEDDED_PYTHON
     parser(filename);
     std::string pythonParsed = "@" + filename;
     reader(pythonParsed.c_str());
+#else
+    reader(filename.c_str());
+#endif
     semanticCheck();
 }
 
@@ -184,6 +190,7 @@ Input & Input::operator=(Input other)
 
 void Input::parser(const std::string & filename)
 {
+#ifdef EMBEDDED_PYTHON
     PyObject * args = NULL; 
     PyObject * result = NULL;
     // Initiliaze the Python interpreter
@@ -219,6 +226,7 @@ void Input::parser(const std::string & filename)
     Py_XDECREF(result);
     // Finalize the interpreter 
     Py_Finalize();
+#endif
 }
 
 void Input::reader(const char * pythonParsed)

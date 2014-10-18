@@ -226,6 +226,8 @@ void Input::parser(const std::string & filename)
     Py_XDECREF(result);
     // Finalize the interpreter 
     Py_Finalize();
+#else
+    throw std::runtime_error("parser(" + filename + ") is DISABLED");
 #endif
 }
 

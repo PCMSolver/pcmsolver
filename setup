@@ -149,6 +149,10 @@ def parse_input():
             action='store_true',
             default=False,
             help='enable vectorization [default: %(default)s]')
+    group.add_argument('--embed_python',
+            action='store_true',
+            default=False,
+            help='enable Python embedding (requires Python development package) [default: %(default)s]')
     group.add_argument('-D',
             action="append",
             dest='define',
@@ -191,6 +195,10 @@ def parse_input():
             action='store_true',
             default=False,
             help='enable Eigen3 automatic fallback to Intel MKL [default: %(default)s]')
+    group.add_argument('--python',
+            action='store_true',
+            default=False,
+            help='full path to Python interpreter (development version) [default: %(default)s]')
 
     group = parser.add_argument_group('Pass extra flags to the compiler')
     group.add_argument('--extra-fc-flags',
@@ -259,10 +267,11 @@ def gen_cmake_command(args):
 #   command += ' -DENABLE_SCALAPACK=%s'      % translate_cmake(args.scalapack)
 #   command += ' -DENABLE_SCALASCA=%s'       % translate_cmake(args.scalasca)
 #   command += ' -DENABLE_TIMINGS=%s'        % translate_cmake(args.timings)
-    command += ' -DENABLE_TESTS=%s'          % translate_cmake(args.tests)
-    command += ' -DDISABLE_EIGEN_OWN=%s'     % translate_cmake(args.eigenown)
-    command += ' -DENABLE_EIGEN_MKL=%s'      % translate_cmake(args.eigenmkl)
-    command += ' -DENABLE_VECTORIZATION=%s'  % translate_cmake(args.vectorization)
+    command += ' -DENABLE_TESTS=%s'            % translate_cmake(args.tests)
+    command += ' -DDISABLE_EIGEN_OWN=%s'       % translate_cmake(args.eigenown)
+    command += ' -DENABLE_EIGEN_MKL=%s'        % translate_cmake(args.eigenmkl)
+    command += ' -DENABLE_VECTORIZATION=%s'    % translate_cmake(args.vectorization)
+    command += ' -DENABLE_PYTHON_EMBEDDING=%s' % translate_cmake(args.embed_python)
 #   command += ' -DENABLE_STATIC_LINKING=%s' % translate_cmake(args.static)
 
     if args.blas == 'builtin':
@@ -318,6 +327,9 @@ def gen_cmake_command(args):
     
     if args.boost_libs:
         command += ' -DBOOST_LIBRARYDIR={0}'.format(args.boost_libs)
+    
+    if args.python:
+        command += ' -DPYTHON_INTERPRETER={0}'.format(args.python)
 
     if args.extra_fc_flags:
         command += ' -DEXTRA_Fortran_FLAGS="%s"' % args.extra_fc_flags

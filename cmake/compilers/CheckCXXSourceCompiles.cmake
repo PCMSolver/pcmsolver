@@ -23,8 +23,9 @@
 #=============================================================================
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
-
-
+# 
+# RDR 2014 Modified so that the check happens in QUIET mode
+#
 
 macro(CHECK_CXX_SOURCE_COMPILES SOURCE VAR)
   if("${VAR}" MATCHES "^${VAR}$")

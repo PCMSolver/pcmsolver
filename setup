@@ -149,10 +149,10 @@ def parse_input():
             action='store_true',
             default=False,
             help='enable vectorization [default: %(default)s]')
-    group.add_argument('--embed_python',
+    group.add_argument('--disable_python_embedding',
             action='store_true',
             default=False,
-            help='enable Python embedding (requires Python development package) [default: %(default)s]')
+            help='disable Python embedding (requires Python development package) [default: %(default)s]')
     group.add_argument('-D',
             action="append",
             dest='define',
@@ -271,7 +271,7 @@ def gen_cmake_command(args):
     command += ' -DDISABLE_EIGEN_OWN=%s'       % translate_cmake(args.eigenown)
     command += ' -DENABLE_EIGEN_MKL=%s'        % translate_cmake(args.eigenmkl)
     command += ' -DENABLE_VECTORIZATION=%s'    % translate_cmake(args.vectorization)
-    command += ' -DENABLE_PYTHON_EMBEDDING=%s' % translate_cmake(args.embed_python)
+    command += ' -DENABLE_PYTHON_EMBEDDING=%s' % translate_cmake(not args.disable_python_embedding)
 #   command += ' -DENABLE_STATIC_LINKING=%s' % translate_cmake(args.static)
 
     if args.blas == 'builtin':

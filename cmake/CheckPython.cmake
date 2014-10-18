@@ -41,3 +41,20 @@ function(get_Python_version_string pyVersion)
     unset(_PYTHON_VERSION_RESULT)
     unset(_VERSION)
 endfunction()
+
+function(check_Python_compiles pyCompiles)
+   set(_srcfile "${PROJECT_SOURCE_DIR}/cmake/embedded_Python.cpp")
+   file(READ "${_srcfile}" source)
+
+   include(CheckCXXSourceCompiles)
+
+   set(CMAKE_REQUIRED_INCLUDES "${PYTHON_INCLUDE_DIRS}")
+   set(CMAKE_REQUIRED_LIBRARIES "${PYTHON_LIBRARIES}")
+   
+   check_cxx_source_compiles("${source}" pyCompiles)
+
+   set(pyCompiles "${pyCompiles}" PARENT_SCOPE)	
+
+   unset(CMAKE_REQUIRED_INCLUDES)
+   unset(CMAKE_REQUIRED_LIBRARIES)
+endfunction()

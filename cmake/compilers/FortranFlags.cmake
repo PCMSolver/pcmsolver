@@ -86,5 +86,4 @@ if (NOT DEFINED DEFAULT_Fortran_FLAGS_SET OR RESET_FLAGS)
   
   save_compiler_flags(Fortran)
 
-
 endif()

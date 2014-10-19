@@ -22,6 +22,8 @@
 !pcmsolver_copyright_end
 
     module pedra_cavity_derivatives
+    
+    use pedra_precision
 
     implicit none
 
@@ -38,15 +40,15 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
     
-    integer :: nsj, nsjr, icoord
-    integer :: intsph(mxts, 10), newsph(mxsp, 2)
+    integer(kind=regint_k) :: nsj, nsjr, icoord
+    integer(kind=regint_k) :: intsph(mxts, 10), newsph(mxsp, 2)
     
     real(8), parameter :: d0 = 0.0d0
-    integer :: alge(63), casca(10)
+    integer(kind=regint_k) :: alge(63), casca(10)
     real(8) :: ddr, ddx, ddy, ddz, der, dr1, dx, dy, dz
     real(8) :: fact
-    integer :: i, ii, index, k, livel, ll, max, icont, min 
-    integer :: ns1, ns2, nsa, nsub, number
+    integer(kind=regint_k) :: i, ii, index, k, livel, ll, max, icont, min 
+    integer(kind=regint_k) :: ns1, ns2, nsa, nsub, number
 
 
 !     Le derivate contengono termini dovuti direttamente allo
@@ -211,13 +213,13 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 
-    integer :: jj, nsi, nsj
+    integer(kind=regint_k) :: jj, nsi, nsj
     real(8) :: coordj(3), coordk(3)
-    integer :: intsph(mxts, 10), newsph(mxsp, 2)
+    integer(kind=regint_k) :: intsph(mxts, 10), newsph(mxsp, 2)
 
     real(8), parameter :: d0 = 0.0d0
     real(8) :: dc, d, d2
-    integer :: nsk
+    integer(kind=regint_k) :: nsk
 
 !     Trova la derivata della coordinata JJ del centro della sfera
 !     NSI rispetto al raggio dellla sfera NSJ.
@@ -270,14 +272,14 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 
-    integer :: jj, nsi, icoord, nsj
+    integer(kind=regint_k) :: jj, nsi, icoord, nsj
     real(8) :: dc
-    integer :: newsph(mxsp,2)
+    integer(kind=regint_k) :: newsph(mxsp,2)
 
     real(8) :: coordj(3), coordk(3)
     real(8), parameter :: d0 = 0.0d0
     real(8) :: d, d2
-    integer :: k, nsk 
+    integer(kind=regint_k) :: k, nsk 
 
 !     Trova la derivata della coordinata JJ del centro della sfera
 !     NSI rispetto alla coordinata ICOORD di NSJ, che interseca NSI.
@@ -337,12 +339,12 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 
-    integer :: nsi, nsj, newsph(mxsp, 2)
+    integer(kind=regint_k) :: nsi, nsj, newsph(mxsp, 2)
     real(8) :: dr1
     
     real(8), parameter :: d0 = 0.0d0
     real(8) :: d, d2, ri, rj, rk, rs
-    integer :: nsk
+    integer(kind=regint_k) :: nsk
 
 !     Trova la derivata del raggio della sfera NSI rispetto al raggio
 !     della sfera NSJ.
@@ -400,13 +402,13 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 
-    integer :: nsi, icoord, nsj, newsph(mxsp, 2)
+    integer(kind=regint_k) :: nsi, icoord, nsj, newsph(mxsp, 2)
     real(8) :: dr1
     
     real(8) :: coordj(3), coordk(3)
     real(8), parameter :: d0 = 0.0d0
     real(8) :: a, b, d, d2, diff, fac, ri, rj, rk, rs
-    integer :: k, nsk
+    integer(kind=regint_k) :: k, nsk
 
 !     Trova la derivata del raggio della sfera NSI rispetto alla
 !     coordinata ICOORD (1=X, 2=Y, 3=Z) della sfera NSJ, che interseca

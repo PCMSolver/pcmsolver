@@ -32,6 +32,7 @@
 !           ibtxor(i, j) <-> ieor(i, j)
 
     use, intrinsic :: iso_c_binding
+    use pedra_precision
 
     implicit none
 
@@ -65,39 +66,39 @@
       character(len=3) :: group_name
       ! Integer representing the group
       ! 0, 1, 2, 3, 4, 5, 6, 7
-      integer          :: group_int
+      integer(kind=regint_k)          :: group_int
       ! Number of generators
-      integer          :: nr_generators
+      integer(kind=regint_k)          :: nr_generators
       ! Number of not-trivial symmetry operations (2**nr_generators - 1)
-      integer          :: maxrep
+      integer(kind=regint_k)          :: maxrep
       ! group%isymax(i, 1): behaviour of principal axes under basic operations
       !     (x-y-z)
       ! group%isymax(i, 2): behaviour of principal rotations under basic operations
       !     (Rx-Ry-Rz)
-      integer          :: isymax(3, 2)
+      integer(kind=regint_k)          :: isymax(3, 2)
       ! Symmetry operations in the Abelian groups.
       ! Bitstring: 1 coordinate changes sign under operation;
       !            0 coordinate does not change sign.
       ! Of course, that's also the binary representation of
       ! numbers from 0 to 7!
-      integer          :: jsop(0:7)
+      integer(kind=regint_k)          :: jsop(0:7)
       ! 
-      integer          :: nr_rotations
+      integer(kind=regint_k)          :: nr_rotations
       !
-      integer          :: nr_reflections
+      integer(kind=regint_k)          :: nr_reflections
       !
-      integer          :: nr_inversion
+      integer(kind=regint_k)          :: nr_inversion
     end type point_group
 
     private
 
-    integer :: global_print_unit
+    integer(kind=regint_k) :: global_print_unit
 
     contains
     
     real(8) function get_pt(bit_rep)
 
-    integer, intent(in) :: bit_rep
+    integer(kind=regint_k), intent(in) :: bit_rep
 
     real(8) :: pt(0:7)
 
@@ -122,9 +123,9 @@
     subroutine get_point_group(print_unit, pgroup, nr_gen, gen1, gen2, gen3)
     
     type(point_group), intent(inout) :: pgroup
-    integer,           intent(in)    :: print_unit
-    integer,           intent(in)    :: nr_gen 
-    integer,           intent(in)    :: gen1, gen2, gen3
+    integer(kind=regint_k),           intent(in)    :: print_unit
+    integer(kind=regint_k),           intent(in)    :: nr_gen 
+    integer(kind=regint_k),           intent(in)    :: gen1, gen2, gen3
 
     global_print_unit = print_unit
     pgroup = build_point_group(nr_gen, gen1, gen2, gen3)
@@ -138,24 +139,24 @@
 ! Copied and adapted by Roberto Di Remigio                   
 !   
 
-    integer, intent(in)  :: nr_gen                   
-    integer, intent(in)  :: gen1, gen2, gen3
+    integer(kind=regint_k), intent(in)  :: nr_gen                   
+    integer(kind=regint_k), intent(in)  :: gen1, gen2, gen3
 ! Local variables
-    integer              :: maxrep
-    integer              :: isymax(3, 2)
-    integer              :: igen(3)
+    integer(kind=regint_k)              :: maxrep
+    integer(kind=regint_k)              :: isymax(3, 2)
+    integer(kind=regint_k)              :: igen(3)
 ! Integer representation of the rotations bitmaps                   
-    integer, parameter   :: irots(3) = [3, 5, 6]
-    integer, parameter   :: rots(3) = [6, 5, 3]
+    integer(kind=regint_k), parameter   :: irots(3) = [3, 5, 6]
+    integer(kind=regint_k), parameter   :: rots(3) = [6, 5, 3]
 ! Integer representation of the reflections bitmaps                   
-    integer, parameter   :: irefl(3) = [4, 2, 1] 
+    integer(kind=regint_k), parameter   :: irefl(3) = [4, 2, 1] 
 ! Parity of the symmetry operations bitmaps                   
-    integer, parameter   :: jpar(0:7) = [1, -1, -1, 1, -1, 1, 1, -1]
-    integer              :: i, j, k, l, i0, i1, i2, ind, ipos, bitmap
-    integer              :: nrots, nrefl, ninvc, igroup
-    integer              :: char_tab(0:7, 0:7)
+    integer(kind=regint_k), parameter   :: jpar(0:7) = [1, -1, -1, 1, -1, 1, 1, -1]
+    integer(kind=regint_k)              :: i, j, k, l, i0, i1, i2, ind, ipos, bitmap
+    integer(kind=regint_k)              :: nrots, nrefl, ninvc, igroup
+    integer(kind=regint_k)              :: char_tab(0:7, 0:7)
     logical              :: lsymop(0:7)
-    integer              :: jsop(0:7), ipar(0:7)
+    integer(kind=regint_k)              :: jsop(0:7), ipar(0:7)
     character(3)         :: group, rep(0:7)
     character(3), parameter :: groups(0:7) = ['C1 ', 'C2 ', 'Cs ', &
                                               'Ci ', 'D2 ', 'C2v', &
@@ -200,9 +201,9 @@
     jsop(0) = 0
     ipar(0) = 1
     do i = 1, maxrep
-      i0 = iand(1, i) * igen(1)
-      i1 = iand(1, ishft(i, -1)) * igen(2)
-      i2 = iand(1, ishft(i, -2)) * igen(3)
+      i0 = iand(1_regint_k, i) * igen(1)
+      i1 = iand(1_regint_k, ishft(i, -1)) * igen(2)
+      i2 = iand(1_regint_k, ishft(i, -2)) * igen(3)
       ind = ieor(ieor(i0, i1),i2)
       lsymop(ind) = .true.
       ipar(i) = jpar(ind)
@@ -247,7 +248,7 @@
       ! The character of the identity is always +1 
       char_tab(0, i) = 1
       do j = 1, nr_gen
-        char_tab(igen(j), i) = nint(get_pt(iand(ishft(i,-(j-1)), 1)))
+        char_tab(igen(j), i) = nint(get_pt(iand(ishft(i,-(j-1)), 1_regint_k)))
         do k = 1, (j-1)
           ind = ieor(igen(j), igen(k))
           char_tab(ind, i) = char_tab(igen(j), i) * char_tab(igen(k), i)
@@ -274,7 +275,7 @@
           rep(i)(1:1) = 'B'
         end if
         if (nrefl == 2) then
-          if (iand(ishft(jsop(1), -1), 1) == 1) then
+          if (iand(ishft(jsop(1), -1), 1_regint_k) == 1) then
             ind = 2
           else
             ind = 3
@@ -340,7 +341,7 @@
         write(global_print_unit,'(3x, 1x, a3, 1x, a1, 8(1x, a3, 1x))') rep(i), '|', (rep(ieor(i, j)), j = 0, maxrep)
       end do
     end if
-! Fields: group name, group integer, number of generators,
+! Fields: group name, group integer(kind=regint_k), number of generators,
 !         number of nontrivial operations, isymax, jsop,
 !         number of rotations, number of reflections,
 !         number of inversions.

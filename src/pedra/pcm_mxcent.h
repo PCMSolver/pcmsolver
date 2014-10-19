@@ -34,5 +34,5 @@
 !     have to be around 2000 - 3000!!! Remember to set MXQM3 = MXCENT in
 !     qm3.h!!!
 !
-      INTEGER MXNEW, MXCENT, MXCOOR
+      integer(kind=regint_k) MXNEW, MXCENT, MXCOOR
       PARAMETER (MXNEW =120, MXCENT = 120, MXCOOR = 3*MXCENT)

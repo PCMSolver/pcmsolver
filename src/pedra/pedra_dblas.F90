@@ -39,7 +39,7 @@
 
     contains
       
-    real(8) function dasum(n, dx, incx)
+    real(kind=dp) function dasum(n, dx, incx)
 !
 ! - Reference BLAS level1 routine (version 3.4.0) --
 ! - Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -50,13 +50,13 @@
     integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: dx(*)
+    real(kind=dp) :: dx(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    real(8) :: dtemp
+    real(kind=dp) :: dtemp
     integer(kind=regint_k) :: i, m, mp1, nincx
 !   ..
 !   .. Intrinsic Functions ..
@@ -108,11 +108,11 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    real(8), intent(in) :: da
+    real(kind=dp), intent(in) :: da
     integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: dx(*), dy(*)
+    real(kind=dp) :: dx(*), dy(*)
 !   ..
 !
 ! ====================================================================
@@ -173,7 +173,7 @@
 !   to zero.
 !...................................................................
     integer(kind=regint_k), intent(in)    :: length
-    real(8), intent(inout) :: dx(length)
+    real(kind=dp), intent(inout) :: dx(length)
 
     integer(kind=regint_k) :: i
 
@@ -185,7 +185,7 @@
 
     end subroutine dzero
 
-    real(8) function dnorm2(n, x, incx)
+    real(kind=dp) function dnorm2(n, x, incx)
 !
 ! - Reference BLAS level1 routine (version 3.4.0) --
 ! - Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -196,17 +196,17 @@
     integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: x(*)
+    real(kind=dp) :: x(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Parameters ..
-    real(8) :: one, zero
+    real(kind=dp) :: one, zero
     parameter (one=1.0d+0,zero=0.0d+0)
 !   ..
 !   .. Local Scalars ..
-    real(8) :: absxi, norm, scale, ssq
+    real(kind=dp) :: absxi, norm, scale, ssq
     integer(kind=regint_k) :: ix
 !   ..
 !   .. Intrinsic Functions ..
@@ -249,11 +249,11 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    real(8), intent(in) :: da
+    real(kind=dp), intent(in) :: da
     integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
-    real(8), intent(inout) :: dx(*)
+    real(kind=dp), intent(inout) :: dx(*)
 !   ..
 !
 ! ====================================================================
@@ -310,13 +310,13 @@
     integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
-    real(8), intent(in) :: dx(*)
+    real(kind=dp), intent(in) :: dx(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    real(8) :: dmax
+    real(kind=dp) :: dmax
     integer(kind=regint_k) :: i, ix
 !   ..
 !   .. Intrinsic Functions ..
@@ -366,13 +366,13 @@
     integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: dx(*), dy(*)
+    real(kind=dp) :: dx(*), dy(*)
 !   ..
 !
 !  ===================================================================
 !
 !   .. Local Scalars ..
-    real(8) :: dtemp
+    real(kind=dp) :: dtemp
     integer(kind=regint_k) :: i, ix, iy, m, mp1
 !   ..
 !   .. Intrinsic Functions ..
@@ -438,7 +438,7 @@
     integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: dx(*), dy(*)
+    real(kind=dp) :: dx(*), dy(*)
 !   ..
 !
 ! ====================================================================
@@ -495,8 +495,8 @@
     subroutine vector_product(p1, p2, p3, dnorm3)
 ! Calculates vector product and norm of resulting vector
 
-    real(8), intent(in)  :: p1(3), p2(3)
-    real(8), intent(out) ::p3(3), dnorm3
+    real(kind=dp), intent(in)  :: p1(3), p2(3)
+    real(kind=dp), intent(out) ::p3(3), dnorm3
 
     p3(1) = p1(2)*p2(3) - p1(3)*p2(2)
     p3(2) = p1(3)*p2(1) - p1(1)*p2(3)

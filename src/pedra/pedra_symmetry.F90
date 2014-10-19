@@ -96,11 +96,11 @@
 
     contains
     
-    real(8) function get_pt(bit_rep)
+    real(kind=dp) function get_pt(bit_rep)
 
     integer(kind=regint_k), intent(in) :: bit_rep
 
-    real(8) :: pt(0:7)
+    real(kind=dp) :: pt(0:7)
 
 !
 !   PT is the parity of a bitstring:

@@ -43,10 +43,10 @@
     integer(kind=regint_k) :: nsj, nsjr, icoord
     integer(kind=regint_k) :: intsph(mxts, 10), newsph(mxsp, 2)
     
-    real(8), parameter :: d0 = 0.0d0
+    real(kind=dp), parameter :: d0 = 0.0d0
     integer(kind=regint_k) :: alge(63), casca(10)
-    real(8) :: ddr, ddx, ddy, ddz, der, dr1, dx, dy, dz
-    real(8) :: fact
+    real(kind=dp) :: ddr, ddx, ddy, ddz, der, dr1, dx, dy, dz
+    real(kind=dp) :: fact
     integer(kind=regint_k) :: i, ii, index, k, livel, ll, max, icont, min 
     integer(kind=regint_k) :: ns1, ns2, nsa, nsub, number
 
@@ -214,11 +214,11 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k) :: jj, nsi, nsj
-    real(8) :: coordj(3), coordk(3)
+    real(kind=dp) :: coordj(3), coordk(3)
     integer(kind=regint_k) :: intsph(mxts, 10), newsph(mxsp, 2)
 
-    real(8), parameter :: d0 = 0.0d0
-    real(8) :: dc, d, d2
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp) :: dc, d, d2
     integer(kind=regint_k) :: nsk
 
 !     Trova la derivata della coordinata JJ del centro della sfera
@@ -273,12 +273,12 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k) :: jj, nsi, icoord, nsj
-    real(8) :: dc
+    real(kind=dp) :: dc
     integer(kind=regint_k) :: newsph(mxsp,2)
 
-    real(8) :: coordj(3), coordk(3)
-    real(8), parameter :: d0 = 0.0d0
-    real(8) :: d, d2
+    real(kind=dp) :: coordj(3), coordk(3)
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp) :: d, d2
     integer(kind=regint_k) :: k, nsk 
 
 !     Trova la derivata della coordinata JJ del centro della sfera
@@ -340,10 +340,10 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k) :: nsi, nsj, newsph(mxsp, 2)
-    real(8) :: dr1
+    real(kind=dp) :: dr1
     
-    real(8), parameter :: d0 = 0.0d0
-    real(8) :: d, d2, ri, rj, rk, rs
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp) :: d, d2, ri, rj, rk, rs
     integer(kind=regint_k) :: nsk
 
 !     Trova la derivata del raggio della sfera NSI rispetto al raggio
@@ -403,11 +403,11 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k) :: nsi, icoord, nsj, newsph(mxsp, 2)
-    real(8) :: dr1
+    real(kind=dp) :: dr1
     
-    real(8) :: coordj(3), coordk(3)
-    real(8), parameter :: d0 = 0.0d0
-    real(8) :: a, b, d, d2, diff, fac, ri, rj, rk, rs
+    real(kind=dp) :: coordj(3), coordk(3)
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp) :: a, b, d, d2, diff, fac, ri, rj, rk, rs
     integer(kind=regint_k) :: k, nsk
 
 !     Trova la derivata del raggio della sfera NSI rispetto alla

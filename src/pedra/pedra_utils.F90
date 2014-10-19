@@ -22,6 +22,8 @@
 !pcmsolver_copyright_end
 
     module pedra_utils
+    
+    use pedra_precision
 
     implicit none        
 
@@ -35,9 +37,9 @@
     subroutine around(head, print_unit)
 
     character(len=*), intent(in) :: head
-    integer,          intent(in) :: print_unit
+    integer(kind=regint_k),          intent(in) :: print_unit
 
-    integer :: lhead, lng, ind, i
+    integer(kind=regint_k) :: lhead, lng, ind, i
     
     lhead  = len_trim(head)
     lng    = lhead + 2
@@ -62,7 +64,7 @@
   
     use pedra_dlapack, only: dsyevj3, order
 
-    integer,    intent(in) :: n
+    integer(kind=regint_k),    intent(in) :: n
     real(8),    intent(in) :: cor(n, 3)
     real(8),    intent(in) :: tmass(n)
     real(8),    intent(in) :: angmom(3)
@@ -71,7 +73,7 @@
     logical,   intent(out) :: planar, linear
     logical,    intent(in) :: docopy
     
-    integer :: i, j, k
+    integer(kind=regint_k) :: i, j, k
     real(8) :: eigval(3), eigvec(3,3), tinver(3,3), eigvalinv(3,3), temp(3,3)
     ! Threshold to convert a numerical zero to a hard zero
     real(8), parameter :: tstlin = 1.0d-05
@@ -113,7 +115,7 @@
     ! Now diagonalize it, we want back both the eigenvalues and eigenvectors
     call dsyevj3(temp, eigvec, eigval)
     ! Eigenvalues and eigenvectors are sorted in decreasing order
-    call order(eigvec, eigval, 3, 3)
+    call order(eigvec, eigval, 3_regint_k, 3_regint_k)
    
     if ( abs(eigval(3)-eigval(2)-eigval(1)) .lt. tstlin) then
        planar = .true.

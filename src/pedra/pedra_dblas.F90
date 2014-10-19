@@ -22,6 +22,8 @@
 !pcmsolver_copyright_end
 
     module pedra_dblas
+    
+    use pedra_precision
 
     implicit none
 
@@ -45,7 +47,7 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, n
+    integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
     real(8) :: dx(*)
@@ -55,7 +57,7 @@
 !
 !   .. Local Scalars ..
     real(8) :: dtemp
-    integer :: i, m, mp1, nincx
+    integer(kind=regint_k) :: i, m, mp1, nincx
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic dabs, mod
@@ -69,7 +71,7 @@
 !
 !      clean-up loop
 !
-       m = mod(n,6)
+       m = mod(n, 6_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dtemp = dtemp + dabs(dx(i))
@@ -107,7 +109,7 @@
 !
 !   .. Scalar Arguments ..
     real(8), intent(in) :: da
-    integer, intent(in) :: incx, incy, n
+    integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
     real(8) :: dx(*), dy(*)
@@ -116,7 +118,7 @@
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    integer :: i, ix, iy, m, mp1
+    integer(kind=regint_k) :: i, ix, iy, m, mp1
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic mod
@@ -130,7 +132,7 @@
 !
 !      clean-up loop
 !
-       m = mod(n,4)
+       m = mod(n, 4_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dy(i) = dy(i) + da*dx(i)
@@ -170,10 +172,10 @@
 !   Subroutine DZERO sets a real array of length *LENGTH*
 !   to zero.
 !...................................................................
-    integer, intent(in)    :: length
+    integer(kind=regint_k), intent(in)    :: length
     real(8), intent(inout) :: dx(length)
 
-    integer :: i
+    integer(kind=regint_k) :: i
 
     if (length <= 0) return
 
@@ -191,7 +193,7 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, n
+    integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
     real(8) :: x(*)
@@ -205,7 +207,7 @@
 !   ..
 !   .. Local Scalars ..
     real(8) :: absxi, norm, scale, ssq
-    integer :: ix
+    integer(kind=regint_k) :: ix
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic abs, sqrt
@@ -248,7 +250,7 @@
 !
 !   .. Scalar Arguments ..
     real(8), intent(in) :: da
-    integer, intent(in) :: incx, n
+    integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
     real(8), intent(inout) :: dx(*)
@@ -257,7 +259,7 @@
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    integer :: i, m, mp1, nincx
+    integer(kind=regint_k) :: i, m, mp1, nincx
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic mod
@@ -270,7 +272,7 @@
 !
 !      clean-up loop
 !
-       m = mod(n,5)
+       m = mod(n, 5_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dx(i) = da*dx(i)
@@ -297,7 +299,7 @@
     
     end subroutine dscal
 
-    integer function idamax(n, dx, incx)
+    integer(kind=regint_k) function idamax(n, dx, incx)
 !
 ! - Reference BLAS level1 routine (version 3.4.0) --
 ! - Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -305,7 +307,7 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, n
+    integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
     real(8), intent(in) :: dx(*)
@@ -315,7 +317,7 @@
 !
 !   .. Local Scalars ..
     real(8) :: dmax
-    integer :: i, ix
+    integer(kind=regint_k) :: i, ix
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic dabs
@@ -361,7 +363,7 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, incy, n
+    integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
     real(8) :: dx(*), dy(*)
@@ -371,7 +373,7 @@
 !
 !   .. Local Scalars ..
     real(8) :: dtemp
-    integer :: i, ix, iy, m, mp1
+    integer(kind=regint_k) :: i, ix, iy, m, mp1
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic mod
@@ -384,7 +386,7 @@
 !
 !     clean-up loop
 !
-       m = mod(n,3)
+       m = mod(n, 3_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dtemp = dx(i)
@@ -433,7 +435,7 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, incy, n
+    integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
     real(8) :: dx(*), dy(*)
@@ -442,7 +444,7 @@
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    integer :: i, ix, iy, m, mp1
+    integer(kind=regint_k) :: i, ix, iy, m, mp1
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic mod
@@ -455,7 +457,7 @@
 !
 !      clean-up loop
 !
-       m = mod(n,7)
+       m = mod(n, 7_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dy(i) = dx(i)

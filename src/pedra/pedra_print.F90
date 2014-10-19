@@ -71,15 +71,15 @@
     integer(kind=regint_k), intent(in) :: collow, colhi
     integer(kind=regint_k), intent(in) :: rowdim, coldim
     integer(kind=regint_k), intent(in) :: nctl, lvpri
-    real(8),                intent(in) :: amatrx(rowdim, coldim)
+    real(kind=dp),                intent(in) :: amatrx(rowdim, coldim)
     integer(kind=regint_k) :: begin, kcol
     CHARACTER(1) :: ASA(3), BLANK, CTL
     CHARACTER   PFMT*20, COLUMN*8
-    real(8), parameter :: zero = 0.0d0, ffmin = 1.0d-03, ffmax = 1.0d03
+    real(kind=dp), parameter :: zero = 0.0d0, ffmin = 1.0d-03, ffmax = 1.0d03
     integer(kind=regint_k), parameter :: kcolp = 5, kcoln = 8
     DATA COLUMN/'Column  '/, BLANK/' '/, ASA/' ', '0', '-'/
 
-    real(8) :: amax, thrpri
+    real(kind=dp) :: amax, thrpri
     integer(kind=regint_k) :: i, j, k, mctl, last
 
     IF (ROWHI < ROWLOW) go to 3

@@ -776,10 +776,10 @@
     use pedra_dblas, only: dswap
 
     integer(kind=regint_k),    intent(in) :: n
-    real(8), intent(inout) :: evec(*), eval(*)
+    real(kind=dp), intent(inout) :: evec(*), eval(*)
 
     integer(kind=regint_k) :: beg, imin, nevec, i, j
-    real(8) :: emin
+    real(kind=dp) :: emin
    
     if (n.le.1) return
     beg = 1

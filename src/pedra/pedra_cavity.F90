@@ -95,9 +95,9 @@
     integer(kind=regint_k), allocatable :: intsph(:, :), newsph(:, :)
     integer(kind=regint_k), allocatable :: icav1(:), icav2(:)
     integer(kind=regint_k), allocatable :: jtr(:, :)
-    real(8), allocatable :: vert(:, :, :), centr(:, :, :)
-    real(8), allocatable :: xval(:), yval(:), zval(:)
-    real(8), allocatable :: cv(:, :)
+    real(kind=dp), allocatable :: vert(:, :, :), centr(:, :, :)
+    real(kind=dp), allocatable :: xval(:), yval(:), zval(:)
+    real(kind=dp), allocatable :: cv(:, :)
 
     SOME = IPRPCM.NE.-5
 !     ----- set the print level
@@ -168,27 +168,27 @@
 
     integer(kind=regint_k) :: numts, natm, numsph, numver
     integer(kind=regint_k) :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
-    real(8) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, 3)
-    real(8) :: xval(numts), yval(numts), zval(numts)
-    real(8) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
+    real(kind=dp) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, 3)
+    real(kind=dp) :: xval(numts), yval(numts), zval(numts)
+    real(kind=dp) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
     logical :: some
     integer(kind=regint_k) :: jtr(numts, 3)
 
-    real(8), parameter :: d0 = 0.0d0
-    real(8) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
-    real(8) :: reg, reg2, regd2, ren, rend2, reo, reo2
-    real(8) :: rep, rep2, repd2, rgn, rij, rij2, rik, rik2
-    real(8) :: rjd, rjk, rjk2, rtdd, rtdd2, senom, sp 
-    real(8) :: test, test1, test2, test3, test7, test8
-    real(8) :: xen, xi, xj, xn, yen, yi, yj, yn, zen, zi, zj, zn
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
+    real(kind=dp) :: reg, reg2, regd2, ren, rend2, reo, reo2
+    real(kind=dp) :: rep, rep2, repd2, rgn, rij, rij2, rik, rik2
+    real(kind=dp) :: rjd, rjk, rjk2, rtdd, rtdd2, senom, sp 
+    real(kind=dp) :: test, test1, test2, test3, test7, test8
+    real(kind=dp) :: xen, xi, xj, xn, yen, yi, yj, yn, zen, zi, zj, zn
     integer(kind=regint_k) :: i, icoord, idisp, ii, ipflag, iprcav, iptype
     integer(kind=regint_k) :: its, itseff, itsnum, itypc, iv, iver, j, jj, jcor
     integer(kind=regint_k) :: k, kg, idisrep
     integer(kind=regint_k) :: kp, n, n1, n2, n3
     integer(kind=regint_k) :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
     integer(kind=regint_k) :: nsfe, nsfer, nv
-    real(8) :: rotcav(3, 3)
-    real(8), allocatable :: mass(:), geom(:, :)
+    real(kind=dp) :: rotcav(3, 3)
+    real(kind=dp), allocatable :: mass(:), geom(:, :)
     integer(kind=regint_k), allocatable :: permutation_table(:, :)
           
 
@@ -658,10 +658,10 @@
 #include "pcm_mxcent.h"
 
     integer(kind=regint_k) :: nesf, nesf0, numsph
-    real(8) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
+    real(kind=dp) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
     integer(kind=regint_k) :: permutation_table(nesf, *), newsph(numsph, 2)
 
-    real(8) :: diff1, r1
+    real(kind=dp) :: diff1, r1
     integer(kind=regint_k) :: i, j, k, l, n1, n2, nesf1
 
     nesf1 = nesf
@@ -775,18 +775,18 @@
     integer(kind=regint_k), intent(in) :: nesf
     integer(kind=regint_k), intent(in) :: permutation_table(nesf, *) 
     integer(kind=regint_k) :: jtr(numts, *)
-    real(8) :: cv(numver, 3)
-    real(8) :: tsare, xen, yen, zen, ren
+    real(kind=dp) :: cv(numver, 3)
+    real(kind=dp) :: tsare, xen, yen, zen, ren
     
-    real(8) :: v1(3), v2(3), v3(3), rotcav(3, 3)
+    real(kind=dp) :: v1(3), v2(3), v3(3), rotcav(3, 3)
     integer(kind=regint_k) :: itrvo(60,3), itreo(60,3), iedo(90,2) 
     integer(kind=regint_k) :: oldtr(100,100), ednew(90,100), trnew(60,100,100)
 
-    real(8), parameter :: d0 = 0.0d0
-    real(8), parameter :: d1 = 1.0d0
-    real(8), parameter :: pi = acos(-1.0d0)
-    real(8) :: alpha, beta, cos1, cos2, costheta, dl, dm, dn, dnf, dnorm
-    real(8) :: sintheta, theta
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp), parameter :: d1 = 1.0d0
+    real(kind=dp), parameter :: pi = acos(-1.0d0)
+    real(kind=dp) :: alpha, beta, cos1, cos2, costheta, dl, dm, dn, dnf, dnorm
+    real(kind=dp) :: sintheta, theta
     integer(kind=regint_k) :: i, ii, isymop, j, jj, jsymop, k, l, m, n, ne0, nf
     integer(kind=regint_k) :: noppt, nt, nt0, ntpt, ntra, nv, nvpt
     
@@ -1065,10 +1065,10 @@
 #include "pcm_pcm.h"
     
     integer(kind=regint_k) :: numts
-    real(8) :: vert(numts, 10, 3), centr(numts, 10, 3)
+    real(kind=dp) :: vert(numts, 10, 3), centr(numts, 10, 3)
     integer(kind=regint_k) :: permutation_table(nesf, *)
 
-    real(8), parameter :: d0 = 0.0d0
+    real(kind=dp), parameter :: d0 = 0.0d0
     integer(kind=regint_k) :: i, ii, ii2, isymop, k, l
 
     ntsirr = nts
@@ -1130,17 +1130,17 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k) :: ns, nv, numts
-    real(8) :: area
-    real(8) :: pts(3,10), ccc(3,10), pp(3), pp1(3)
+    real(kind=dp) :: area
+    real(kind=dp) :: pts(3,10), ccc(3,10), pp(3), pp1(3)
     integer(kind=regint_k) :: intsph(numts,10)
-    real(8) :: p1(3), p2(3), p3(3), p4(3), point(3)
-    real(8) :: pscr(3,10),cccp(3,10),pointl(3,10)
+    real(kind=dp) :: p1(3), p2(3), p3(3), p4(3), point(3)
+    real(kind=dp) :: pscr(3,10),cccp(3,10),pointl(3,10)
     integer(kind=regint_k) :: ind(10), ltyp(10), intscr(10), ntrhso(10)
     logical :: lan
     
-    real(8) :: dcheck, de2, delr, delr2, diffdr, dist, dist1, dist2
-    real(8) :: dnorm, rc, rc2, tol
-    real(8) :: x1, x2, y1, y2, z1, z2
+    real(kind=dp) :: dcheck, de2, delr, delr2, diffdr, dist, dist1, dist2
+    real(kind=dp) :: dnorm, rc, rc2, tol
+    real(kind=dp) :: x1, x2, y1, y2, z1, z2
     integer(kind=regint_k) :: i, j, ic, icop, icut, idx, idx2, ii, intcas, iprcav
     integer(kind=regint_k) :: iv1, iv2, ivnew, ivold, jj, k, l, n, nsfe1, nvleft, nvnegl
 
@@ -1661,12 +1661,12 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 
-    real(8) :: p1(3), p2(3), p3(3), p4(3)
+    real(kind=dp) :: p1(3), p2(3), p3(3), p4(3)
     integer(kind=regint_k) :: ns, i
     logical :: lalow, lblow
 
-    real(8) :: alphat, delta, diff, diff2, diff2a, diff2b
-    real(8) :: diffa, diffb, dnorm, p1p3, p2p3, r, r2, tol
+    real(kind=dp) :: alphat, delta, diff, diff2, diff2a, diff2b
+    real(kind=dp) :: diffa, diffb, dnorm, p1p3, p2p3, r, r2, tol
     integer(kind=regint_k) :: j, jj, m
     integer(kind=regint_k) :: iprcav = 0
 
@@ -1802,19 +1802,19 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k) :: nv, ns, numts
-    real(8) :: area
-    real(8) :: pts(3, 10), ccc(3, 10), pp(3), pp1(3), beta(10)
+    real(kind=dp) :: area
+    real(kind=dp) :: pts(3, 10), ccc(3, 10), pp(3), pp1(3), beta(10)
     integer(kind=regint_k) :: intsph(numts, 10)
-    real(8) :: p1(3),p2(3),p3(3),u1(3),u2(3),phin(10),weight(0:10)
+    real(kind=dp) :: p1(3),p2(3),p3(3),u1(3),u2(3),phin(10),weight(0:10)
     
-    real(8), parameter :: d0 = 0.0d0
-    real(8), parameter :: dp5 = 0.5d0
-    real(8), parameter :: d1 = 1.0d0
-    real(8), parameter :: pi = acos(-1.0d0)
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp), parameter :: dp5 = 0.5d0
+    real(kind=dp), parameter :: d1 = 1.0d0
+    real(kind=dp), parameter :: pi = acos(-1.0d0)
 
-    real(8) :: cosphin, costn, sum1, sum2, sumphi, dnorm1, dnorm2, tpi
-    real(8) :: scal, dnorm, dnorm3
-    real(8) :: x1, x2, y1, y2, z1, z2
+    real(kind=dp) :: cosphin, costn, sum1, sum2, sumphi, dnorm1, dnorm2, tpi
+    real(kind=dp) :: scal, dnorm, dnorm3
+    real(kind=dp) :: x1, x2, y1, y2, z1, z2
     integer(kind=regint_k) :: i, jj, n, n0, n1, n2, nsfe1
 
 
@@ -2020,7 +2020,7 @@
     logical :: some
 
     integer(kind=regint_k) :: i, n1, n2, nn, icen, n
-    real(8) :: r, rr, sum, x, y, z, xx, yy, zz
+    real(kind=dp) :: r, rr, sum, x, y, z, xx, yy, zz
 
     DO I=1,MXCENT
         ICAV1(I)=0
@@ -2096,12 +2096,12 @@
 #include "pcm_pcm.h"
 ! Passed variables
     integer(kind=regint_k) :: numts
-    real(8) :: vert(numts, 10, 3)
+    real(kind=dp) :: vert(numts, 10, 3)
 ! Local variables    
     integer(kind=regint_k) :: ivts(mxts, 10)
     integer(kind=regint_k) :: off_unit
     logical :: off_open, off_exist
-    real(8) :: c1, c2, c3
+    real(kind=dp) :: c1, c2, c3
     integer(kind=regint_k) :: n, numv, i, j, k, last, lucav
     integer(kind=regint_k) :: jcord
 
@@ -2178,7 +2178,7 @@
 
     integer(kind=regint_k) :: nv, nt, its, nvert, numts
     integer(kind=regint_k) :: jtr(numts, *)
-    real(8) :: cv(nvert, *)
+    real(kind=dp) :: cv(nvert, *)
 
     integer(kind=regint_k) :: i, isymop, ii, jj, k, i_tmp
     logical :: lsymop(0:7)
@@ -2273,17 +2273,17 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k), intent(in) :: katom
-    real(8),    intent(in) :: geom(katom, 3), amass(katom)
-    real(8), intent(inout) :: vmat(3, 3)
+    real(kind=dp),    intent(in) :: geom(katom, 3), amass(katom)
+    real(kind=dp), intent(inout) :: vmat(3, 3)
 
-    real(8) :: eigval(3), eigvec(3, 3), tinert(3, 3)
-    real(8) :: angmom(3), omegad(3), eiginv(3, 3), scal(3)
+    real(kind=dp) :: eigval(3), eigvec(3, 3), tinert(3, 3)
+    real(kind=dp) :: angmom(3), omegad(3), eiginv(3, 3), scal(3)
     integer(kind=regint_k) :: iax(6)
     logical :: planar, linear
     integer(kind=regint_k) :: i, j, k, jax, nmax
     integer(kind=regint_k) :: nopax, nshift
 
-    real(8) :: dij
+    real(kind=dp) :: dij
     
     iax = [1, 2, 3, 3, 2, 1]
 
@@ -2342,13 +2342,13 @@
 ! Performs some kind of check on tesserae
 !
     integer(kind=regint_k), intent(in) :: nts
-    real(8), intent(in) :: xtscor(nts), ytscor(nts), ztscor(nts), as(nts)
+    real(kind=dp), intent(in) :: xtscor(nts), ytscor(nts), ztscor(nts), as(nts)
     
     logical :: lchk, lswtch
-    real(8) :: xbak, ybak, zbak, abak
+    real(kind=dp) :: xbak, ybak, zbak, abak
     integer(kind=regint_k) :: ibak, i, j, ii
     ! Some scratch space
-    real(8) :: privec(4, nts) ! Tesserae centers and area
+    real(kind=dp) :: privec(4, nts) ! Tesserae centers and area
     integer(kind=regint_k) :: idxpri(nts)    ! Index of tessera i at i-th position
 
     lswtch = .false.
@@ -2403,7 +2403,7 @@
 
     logical function chktss(x1, y1, z1, a1, x2, y2, z2, a2)
 
-    real(8) :: x1, y1, z1, a1, x2, y2, z2, a2
+    real(kind=dp) :: x1, y1, z1, a1, x2, y2, z2, a2
 
     if(abs(x1) < abs(x2)) then
         chktss = .true.

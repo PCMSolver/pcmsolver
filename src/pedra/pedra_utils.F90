@@ -65,19 +65,19 @@
     use pedra_dlapack, only: dsyevj3, order
 
     integer(kind=regint_k),    intent(in) :: n
-    real(8),    intent(in) :: cor(n, 3)
-    real(8),    intent(in) :: tmass(n)
-    real(8),    intent(in) :: angmom(3)
-    real(8), intent(inout) :: tinert(3, 3), cepvec(3, 3)
-    real(8),   intent(out) :: omega(3), cepval(3)
+    real(kind=dp),    intent(in) :: cor(n, 3)
+    real(kind=dp),    intent(in) :: tmass(n)
+    real(kind=dp),    intent(in) :: angmom(3)
+    real(kind=dp), intent(inout) :: tinert(3, 3), cepvec(3, 3)
+    real(kind=dp),   intent(out) :: omega(3), cepval(3)
     logical,   intent(out) :: planar, linear
     logical,    intent(in) :: docopy
     
     integer(kind=regint_k) :: i, j, k
-    real(8) :: eigval(3), eigvec(3,3), tinver(3,3), eigvalinv(3,3), temp(3,3)
+    real(kind=dp) :: eigval(3), eigvec(3,3), tinver(3,3), eigvalinv(3,3), temp(3,3)
     ! Threshold to convert a numerical zero to a hard zero
-    real(8), parameter :: tstlin = 1.0d-05
-    real(8) :: average, r2
+    real(kind=dp), parameter :: tstlin = 1.0d-05
+    real(kind=dp) :: average, r2
     
     tinert = 0.0d0 
     eigvec = 0.0d0

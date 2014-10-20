@@ -203,11 +203,11 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   for(unsigned int i = 0; elementTree.element[i].level == 0; ++i)
     if( maxRadius < elementTree.element[i].radius)
       maxRadius = elementTree.element[i].radius;
-  c1 = (double**) malloc(sizeof(double*)*(nLevels+1));
-  c2 = (double**) malloc(sizeof(double*)*(nLevels+1));
+  c1 = (double**) calloc(1,sizeof(double*)*(nLevels+1));
+  c2 = (double**) calloc(1,sizeof(double*)*(nLevels+1));
   for(unsigned int i = 0; i <= nLevels; ++i){
-    c1[i] = (double*) malloc(sizeof(double)*(i+1));
-    c2[i] = (double*) malloc(sizeof(double)*(i+1));
+    c1[i] = (double*) calloc(1,sizeof(double)*(i+1));
+    c2[i] = (double*) calloc(1,sizeof(double)*(i+1));
     for(unsigned int j = 0; j <= i; ++j){
       c1[i][j] = a*pow(2,(nLevels*(2*dp-op)-(i+j)*(dp+td))/(2*td+op));
       d1 = pow(2,(nLevels*(2*dp-op)-(i+j)*dp-i*td)/(td+op));    // alter Parameter

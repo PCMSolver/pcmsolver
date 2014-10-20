@@ -146,7 +146,7 @@ LinAnsatzFunction :: LinAnsatzFunction(){
 
   B = NULL;
 
-  dp = 2.25;
+  dp = 2.5;
 	td = 4;
 
   quadratureLevel_=2;
@@ -1265,7 +1265,7 @@ unsigned int LinAnsatzFunction::waveletWaveletCriterion(unsigned int ind1, unsig
   fclose(debugFile);
 #endif
 
-  if(ind1 < ind2) return 0;
+  //if(ind1 < ind2) return 0;
 
   // calculate distance between bounding boxes
   dx = fabs(B[ind1].mx - B[ind2].mx) - B[ind1].rx - B[ind2].rx;

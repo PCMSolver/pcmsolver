@@ -198,9 +198,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   unsigned int ind1, ind2;
   unsigned int nnz;
   unsigned int *rn;
-#if defined DEBUG || defined DEBUG2
   FILE* debugFile;
-#endif
 
   for(unsigned int i = 0; elementTree.element[i].level == 0; ++i)
     if( maxRadius < elementTree.element[i].radius)
@@ -223,7 +221,6 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
     }
   }
 
-#ifdef DEBUG
   debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> COMP CC");
   for(unsigned int i  = 0; i < nLevels+1; ++i){
@@ -235,7 +232,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   fprintf(debugFile,"\n<<< COMP CC\n");
   fflush(debugFile);
   fclose(debugFile);
-#endif
+  
   initPattern2(T,waveletList.sizeWaveletList,waveletList.sizeWaveletList,20);
 
   computeBoundingBoxes();
@@ -273,58 +270,54 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   fprintf(debugFile,">>> WAVELETWAVELETCRITERION\n"); 
   fclose(debugFile);
 #endif
+#ifdef DEBUG
+  debugFile = fopen("debug.out", "a");
+#endif
   for(unsigned int i = 0; waveletList.W[i].level < nLevels; ++i){
     m1 = waveletList.W[i].level+1;
+  // bestimme aus den Bloecken (m1-1,1:m1-1) die Bloecke (m1,1:m1)
     for(unsigned int j = 0; j < T->row_number[i]; ++j){
       ind2 = T->index[i][j];
       m2 = waveletList.W[ind2].level;
       if(m1 == m2+1){
         for(unsigned int k = 0; k < waveletList.W[i].noSons; ++k){
           ind1 = waveletList.W[i].son[k];
+          //if ((ind2 <= ind1) && (waveletWaveletCriterion(ind1,ind2,c1[m1][m2],c2[m1][m2]))){
           if(waveletWaveletCriterion(ind1, ind2, c1[m1][m2], c2[m1][m2])){ 
             setPattern(T, ind1, ind2);
 #ifdef DEBUG
-  debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"set 1 %d %d\n", ind1, ind2);
-  fclose(debugFile);
 #endif
             for(unsigned int l = 0; l < waveletList.W[ind2].noSons; ++l){
 #ifdef DEBUG
-  debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"set 2 %d %d\n",ind1, waveletList.W[ind2].son[l]);
-  fclose(debugFile);
 #endif
-              if(waveletWaveletCriterion(ind1, waveletList.W[ind2].son[l], c1[m1][m1], c2[m1][m1])) {
+              if ((waveletList.W[ind2].son[l] <= ind1) && (waveletWaveletCriterion(ind1,waveletList.W[ind2].son[l],c1[m1][m1],c2[m1][m1]))){  
+              //if(waveletWaveletCriterion(ind1, waveletList.W[ind2].son[l], c1[m1][m1], c2[m1][m1])) {
                 setPattern(T, ind1, waveletList.W[ind2].son[l]);
 #ifdef DEBUG
-  debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"set %d %d\n",ind1, waveletList.W[ind2].son[l]);
-  fclose(debugFile);
 #endif
               }
             }
           }
         }
+      // wegen halbem Diagonalblock
         for(unsigned int k = 0; k < waveletList.W[ind2].noSons;++k){
           if(waveletWaveletCriterion(waveletList.W[ind2].son[k], i, c1[m1][m2], c2[m1][m2])){
             setPattern(T, waveletList.W[ind2].son[k], i);
 #ifdef DEBUG
-  debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"set 3 %d %d\n", waveletList.W[ind2].son[k], i);
-  fclose(debugFile);
 #endif
             for(unsigned int l = 0; l < waveletList.W[i].noSons;++l){
 #ifdef DEBUG
-  debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"set 4 %d %d\n", waveletList.W[ind2].son[k], waveletList.W[i].son[l]);
-  fclose(debugFile);
 #endif
-              if (waveletWaveletCriterion(waveletList.W[ind2].son[k], waveletList.W[i].son[l], c1[m1][m1], c2[m1][m1])){
+              if ((waveletList.W[i].son[l] <= waveletList.W[ind2].son[k]) && (waveletWaveletCriterion(waveletList.W[ind2].son[k],waveletList.W[i].son[l],c1[m1][m1],c2[m1][m1]))){  
+              //if (waveletWaveletCriterion(waveletList.W[ind2].son[k], waveletList.W[i].son[l], c1[m1][m1], c2[m1][m1])){
                 setPattern(T, waveletList.W[ind2].son[k], waveletList.W[i].son[l]);
 #ifdef DEBUG
-  debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"set %d %d\n", waveletList.W[ind2].son[k], waveletList.W[i].son[l]);
-  fclose(debugFile);
 #endif
               }
             }
@@ -334,22 +327,22 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
         for(unsigned int k = 0; k < waveletList.W[i].noSons; ++k){
           ind1 = waveletList.W[i].son[k];
 #ifdef DEBUG
-  debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"set 5 %d %d\n",ind1, ind2);
-  fclose(debugFile);
 #endif
+          //if ((ind2 <= ind1) && (waveletWaveletCriterion(ind1,ind2,c1[m1][m2],c2[m1][m2]))){  
           if(waveletWaveletCriterion(ind1, ind2, c1[m1][m2], c2[m1][m2])){
             setPattern(T, ind1, ind2);
 #ifdef DEBUG
-  debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"set %d %d\n",ind1, ind2);
-  fclose(debugFile);
 #endif
           }
         }
       }
     }
   }
+#ifdef DEBUG
+  fclose(debugFile);
+#endif
 #ifdef DEBUG
   debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"<<< WAVELETWAVELETCRITERION\n"); 

@@ -179,11 +179,11 @@ FILE* debugFile;
     for (i = 0; E[i].level == 0; i++)
         if (max_radius < E[i].radius)
             max_radius = E[i].radius;
-    c1 = (double **) malloc((M + 1) * sizeof(double *));
-    c2 = (double **) malloc((M + 1) * sizeof(double *));
+    c1 = (double **) calloc(1,(M + 1) * sizeof(double *));
+    c2 = (double **) calloc(1,(M + 1) * sizeof(double *));
     for (i = 0; i <= M; i++) {
-        c1[i] = (double *) malloc((i + 1) * sizeof(double));
-        c2[i] = (double *) malloc((i + 1) * sizeof(double));
+        c1[i] = (double *) calloc(1,(i + 1) * sizeof(double));
+        c2[i] = (double *) calloc(1,(i + 1) * sizeof(double));
         for (j = 0; j <= i; j++) {
             c1[i][j] = a * pow(2, (M * (2 * dp - op) - (i + j) * (dp + td_pwl)) / (2 * td_pwl + op));
             d1 = pow(2, (M * (2 * dp - op) - (i + j) * dp - i * td_pwl) / (td_pwl + op));       /* alter Parameter */

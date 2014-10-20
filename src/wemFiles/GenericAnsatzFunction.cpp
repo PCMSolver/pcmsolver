@@ -216,13 +216,13 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
       if (c1[i][j] < a/(1<<j)) c1[i][j] = a/(1<<j);
       if (c2[i][j] < a/(1<<i)) c2[i][j] = a/(1<<i);
       //if (c1[i][j] > c2[i][j]) c1[i][j] = c2[i][j];
-      if ((i < minLevel) || (j < minLevel)) c1[i][j] = c2[i][j];
+      //if ((i < minLevel) || (j < minLevel)) c1[i][j] = c2[i][j];
       c1[i][j] *= maxRadius/scalingFactor;              // Gebiet relativieren
     }
   }
 
   debugFile = fopen("debug.out","a");
-  fprintf(debugFile,">>> COMP CC");
+  fprintf(debugFile,">>> COMP CC %lf %lf %lf\n", td, dp, op);
   for(unsigned int i  = 0; i < nLevels+1; ++i){
     for(unsigned int j = 0; j < i+1; ++j){
       fprintf(debugFile, "[%lf %lf]", c1[i][j], c2[i][j]);

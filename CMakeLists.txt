@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 #
 #  Declare project name and programming languages
 #
@@ -16,6 +16,7 @@ option(ENABLE_CODE_COVERAGE    "Enable code coverage"                           
 option(DISABLE_EIGEN_OWN       "Do not use Eigen3 headers shipped with the module"                OFF)
 option(ENABLE_EIGEN_MKL        "Enable Eigen3 automatic fallback to some of Intel MKL algorithms" OFF)
 option(ENABLE_PYTHON_EMBEDDING "Enable Python embedding"                                          ON)
+option(ENABLE_64BIT_INTEGERS   "Enable 64-bit integers"                                           OFF)
 #
 #  CMake modules
 #

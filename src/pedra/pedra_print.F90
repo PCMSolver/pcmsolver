@@ -22,6 +22,8 @@
 !pcmsolver_copyright_end
 
     module pedra_print
+    
+    use pedra_precision
 
     implicit none
 
@@ -42,53 +44,43 @@
 !.......................................................................
 ! Revised 15-Dec-1983 by Hans Jorgen Aa. Jensen.
 !         16-Jun-1986 hjaaj ( removed Hollerith )
-
 ! OUTPUT PRINTS A REAL MATRIX IN FORMATTED FORM WITH NUMBERED ROWS
 ! AND COLUMNS.  THE INPUT IS AS FOLLOWS;
-
 !        AMATRX(',').........MATRIX TO BE OUTPUT
-
 !        ROWLOW..............ROW NUMBER AT WHICH OUTPUT IS TO BEGIN
-
 !        ROWHI...............ROW NUMBER AT WHICH OUTPUT IS TO END
-
 !        COLLOW..............COLUMN NUMBER AT WHICH OUTPUT IS TO BEGIN
-
 !        COLHI...............COLUMN NUMBER AT WHICH OUTPUT IS TO END
-
 !        ROWDIM..............ROW DIMENSION OF AMATRX(',')
-
 !        COLDIM..............COLUMN DIMENSION OF AMATRX(',')
-
 !        NCTL................CARRIAGE CONTROL FLAG; 1 FOR SINGLE SPACE
 !                                                   2 FOR DOUBLE SPACE
 !                                                   3 FOR TRIPLE SPACE
 !                            hjaaj: negative for 132 col width
-
 ! THE PARAMETERS THAT FOLLOW MATRIX ARE ALL OF TYPE INTEGER*4.  THE
 ! PROGRAM IS SET UP TO HANDLE 5 COLUMNS/PAGE WITH A 1P,5D24.15 FORMAT
 ! FOR THE COLUMNS.  IF A DIFFERENT NUMBER OF COLUMNS IS REQUIRED,
 ! CHANGE FORMATS 1000 AND 2000, AND INITIALIZE KCOL WITH THE NEW NUMBER
 ! OF COLUMNS.
-
 ! AUTHOR;  NELSON H.F. BEEBE, QUANTUM THEORY PROJECT, UNIVERSITY OF
 !          FLORIDA, GAINESVILLE
 ! REVISED; FEBRUARY 26, 1971
-
 !.......................................................................
 
-    INTEGER, intent(in) :: ROWLOW,ROWHI,COLLOW,COLHI,ROWDIM,COLDIM
-    integer, intent(in) :: nctl, lvpri
-    real(8), intent(in) :: AMATRX(ROWDIM,COLDIM)
-    integer :: BEGIN,KCOL
+    integer(kind=regint_k), intent(in) :: rowlow, rowhi 
+    integer(kind=regint_k), intent(in) :: collow, colhi
+    integer(kind=regint_k), intent(in) :: rowdim, coldim
+    integer(kind=regint_k), intent(in) :: nctl, lvpri
+    real(kind=dp),                intent(in) :: amatrx(rowdim, coldim)
+    integer(kind=regint_k) :: begin, kcol
     CHARACTER(1) :: ASA(3), BLANK, CTL
     CHARACTER   PFMT*20, COLUMN*8
-    real(8), parameter :: zero = 0.0d0, ffmin = 1.0d-03, ffmax = 1.0d03
-    integer, parameter :: kcolp = 5, kcoln = 8
+    real(kind=dp), parameter :: zero = 0.0d0, ffmin = 1.0d-03, ffmax = 1.0d03
+    integer(kind=regint_k), parameter :: kcolp = 5, kcoln = 8
     DATA COLUMN/'Column  '/, BLANK/' '/, ASA/' ', '0', '-'/
 
-    real(8) :: amax, thrpri
-    integer :: i, j, k, mctl, last
+    real(kind=dp) :: amax, thrpri
+    integer(kind=regint_k) :: i, j, k, mctl, last
 
     IF (ROWHI < ROWLOW) go to 3
     IF (COLHI < COLLOW) go to 3
@@ -125,7 +117,7 @@
         CTL = BLANK
     end if
 
-    LAST = MIN(COLHI,COLLOW+KCOL-1)
+    LAST = MIN(COLHI,COLLOW+KCOL-1_regint_k)
     DO 2 BEGIN = COLLOW,COLHI,KCOL
         WRITE (LVPRI,1000) (COLUMN,I,I = BEGIN,LAST)
         DO 1 K = ROWLOW,ROWHI

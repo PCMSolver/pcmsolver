@@ -262,7 +262,7 @@ def gen_cmake_command(args):
 #   command += ' -DENABLE_MPI=%s'            % translate_cmake(args.mpi)
 #   command += ' -DENABLE_SGI_MPT=%s'        % translate_cmake(args.sgi_mpt)
 #   command += ' -DENABLE_OMP=%s'            % translate_cmake(args.omp)
-#   command += ' -DENABLE_64BIT_INTEGERS=%s' % translate_cmake(args.int64)
+    command += ' -DENABLE_64BIT_INTEGERS=%s' % translate_cmake(args.int64)
 #   command += ' -DENABLE_CSR=%s'            % translate_cmake(args.csr)
 #   command += ' -DENABLE_SCALAPACK=%s'      % translate_cmake(args.scalapack)
 #   command += ' -DENABLE_SCALASCA=%s'       % translate_cmake(args.scalasca)

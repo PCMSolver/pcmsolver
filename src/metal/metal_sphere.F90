@@ -95,16 +95,16 @@ contains
     cost = (xj - xs) * (xi - xs) + (yj - ys) * (yi - ys) + (zj - zs) * (zi - zs)
     cost = cost / (di * dj)
     aa = (rs * rs / (di * dj))**4.
-    maxl = int(800. / (abs(eps2 + eps))**0.4 * aa)
-    maxl = max(maxl, 10)
+    maxl = int(800_dp / (abs(eps2 + eps))**0.4_dp * aa, regint_k)
+    maxl = max(maxl, 10_regint_k)
     !lf write (6,*) "maxl",maxl
     arg = rs * rs / (di * dj)
     argl = rs / (di * dj)
     gsfera2 = 0.0_dp
-    m = 0
-    do l = 1, maxl
+    m = 0_regint_k
+    do l = 1_regint_k, maxl
       argl = argl * arg
-      coefl = (eps2 - eps) * float(l) / ((eps2 + eps) * float(l) + 1.0_dp)
+      coefl = (eps2 - eps) * real(l, dp) / ((eps2 + eps) * real(l, dp) + 1.0_dp)
       coefl = coefl - (eps2 - eps) / (eps2 + eps)
       gsfera = gsfera + coefl * argl * legendre_polynomial(l, m, cost)
     enddo
@@ -149,7 +149,7 @@ contains
       if (l .eq. m + 1) then
         legendre_polynomial = pmmp1
       else
-        do ll = m + 2, l
+        do ll = m + 2_regint_k, l
           pll = (x * (2.0 * ll - 1) * pmmp1 - (ll + m - 1) * pmm) / (ll - m)
           pmm = pmmp1
           pmmp1 = pll

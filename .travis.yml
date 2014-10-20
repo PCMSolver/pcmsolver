@@ -19,6 +19,7 @@ env:
     - secure: "E1Jc17Tev6/JHyAhyv7pyVoaMhZwoQ5w8H1RoKE2Mty1upjDzoUrUy9dCyl9zFpkaaUq7lOZ527o5DbEn5FZfh1u6hYqmlsDEvCeRFJ/KFF7E4L4Pph3w1T2+LfGkZUgAV84MIBZKY3gI1SccXrsvOCcb7w0MWhEnHw66WVQPjQ="
   matrix:
     - CI_TARGET=gcc-unittest
+    - CI_TARGET=gcc-unittest-i8
     - CI_TARGET=clang-unittest
     - CI_TARGET=clang-unittest-noPython
     - CI_TARGET=coverity

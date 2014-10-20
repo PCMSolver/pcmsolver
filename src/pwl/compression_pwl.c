@@ -172,6 +172,7 @@ unsigned int np;                /* Anzahl der Basisfunktionen                   
     double **c1, **c2;          /* Abschneideparameter in 1./2. Kompression      */
     double d1, d2;              /* Hilfskonstanten                               */
     unsigned int nnz;           /* nunber of nonzero elements of T               */
+FILE* debugFile;
 
 /* berechne Abschneideparameter */
     max_radius = 0;
@@ -203,6 +204,17 @@ unsigned int np;                /* Anzahl der Basisfunktionen                   
 
 /* Initialisierung: belege den Block 
    (minLevel_pwl-1:minLevel,minLevel-1:minLevel) mit 1 */
+debugFile = fopen("debug.out","a");
+fprintf(debugFile,">>> COMP CC %lf %lf %lf\n", td_pwl, dp, op);
+for(i  = 0; i < M+1; ++i){
+  for(j = 0; j < i+1; ++j){
+    fprintf(debugFile, "[%lf %lf]", c1[i][j], c2[i][j]);
+  }
+  fprintf(debugFile,"\n");
+}
+fprintf(debugFile,"\n<<< COMP CC\n");
+fflush(debugFile);
+fclose(debugFile);
     init_pattern(T, np, np, 20);
     compute_bounding_boxes(&B, W, E, np);
     for (i = 0; (i < np) && (W[i].level < minLevel_pwl); i++) {

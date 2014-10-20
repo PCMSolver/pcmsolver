@@ -31,9 +31,19 @@ if(NOT DEFINED DEFUALT_CXX_FLAGS_SET OR RESET_FLAGS)
   endif()
   
   if(CMAKE_CXX_COMPILER_ID MATCHES PGI)
-	  set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} -g")
-	  set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-	  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+      # Apparently PGI doesn't let you decide which standard to use...
+      # The main problem with PGI is compiling Eigen.
+      # Assertions have to be disabled (-DNDEBUG) and optimization level has to
+      # be low (-O1)
+      # It is impossible to compile and/or run tests otherwise!!!
+      set(CMAKE_CXX_FLAGS "-fPIC -DNDEBUG")
+      if(ENABLE_64BIT_INTEGERS)
+          set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
+      else()
+          set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+      endif()
+      set(CMAKE_CXX_FLAGS_DEBUG   "-g -O0")
+      set(CMAKE_CXX_FLAGS_RELEASE "-O1")
   endif()
   
   if(CMAKE_CXX_COMPILER_ID MATCHES XL)

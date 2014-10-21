@@ -373,7 +373,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     fflush(debugFile);
     memset(u, 0, af->waveletList.sizeWaveletList* sizeof(double));
     iter = WEMPCG(&S_i_, rhs, u, threshold, af);
-    fprintf(debugFile,">>> WEMPCG\n");
+    fprintf(debugFile,">>> WEMPCG %g\n",threshold);
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, v[i]);
     }

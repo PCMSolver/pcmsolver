@@ -348,11 +348,10 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     int iter = WEMPGMRES2(&S_i_, rhs, v, threshold, af);
     fprintf(debugFile,">>> WEMPGMRES1\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
-      fprintf(debugFile,"%d %lf\n",i, u[i]);
+      fprintf(debugFile,"%d %lf\n",i, v[i]);
     }
     fprintf(debugFile,"<<< WEMPGMRES1\n");
     fflush(debugFile);
-    fclose(debugFile);
     af->print_geometry(v,"Geometry.vtk");
     af->tdwt(v);
     af->createGram(af->waveletList.sizeWaveletList,10);
@@ -368,6 +367,13 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     }
     memset(u, 0, af->waveletList.sizeWaveletList* sizeof(double));
     iter = WEMPCG(&S_i_, rhs, u, threshold, af);
+    fprintf(debugFile,">>> WEMPCG\n");
+    for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
+      fprintf(debugFile,"%d %lf\n",i, v[i]);
+    }
+    fprintf(debugFile,"<<< WEMPCG\n");
+    fflush(debugFile);
+    fclose(debugFile);
     af->tdwt(u);
     af->print_geometry(u,"Geometry1.vtk");
     energy_ext(u, pot, af);

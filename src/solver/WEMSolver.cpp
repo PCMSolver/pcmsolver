@@ -332,6 +332,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
                                Eigen::VectorXd & charge)
 {
     double *rhs;
+    double *v = (double*) calloc(af->waveletList.sizeWaveletList, sizeof(double));
     double *u = (double*) calloc(af->waveletList.sizeWaveletList, sizeof(double));
     double * pot = const_cast<double *>(potential.data());
     double * chg = charge.data();
@@ -344,7 +345,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     }
     fprintf(debugFile,"<<< WEMRHS1\n");
     fflush(debugFile);
-    int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, af);
+    int iter = WEMPGMRES2(&S_i_, rhs, v, threshold, af);
     fprintf(debugFile,">>> WEMPGMRES1\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, u[i]);
@@ -352,8 +353,14 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     fprintf(debugFile,"<<< WEMPGMRES1\n");
     fflush(debugFile);
     fclose(debugFile);
-    af->print_geometry(u,"Geometry.vtk");
-    af->tdwt(u);
+    af->print_geometry(v,"Geometry.vtk");
+    af->tdwt(v);
+    af->createGram(af->waveletList.sizeWaveletList,10);
+    for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
+      for(unsigned int j = 0 ; j < af->G->row_number[i];++j){
+        u[i] += af->G->value[i][j] *v[af->G->index[i][j]];
+      }
+    }
     af->print_geometry(u,"Geometry0.vtk");
     af->dwt(u);
     for (size_t i = 0; i < af->waveletList.sizeWaveletList; ++i) {

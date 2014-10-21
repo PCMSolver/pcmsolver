@@ -299,6 +299,9 @@ void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double * rhs = 0;
     double * u = (double*) calloc(nNodes, sizeof(double));
     double * v = (double*) calloc(nNodes, sizeof(double));
+unsigned int	ne;		/* Anzahl der Elemente                        */
+unsigned int	N = 1 << nLevels;	/* N*N Elemente pro Patch auf dem Level M     */
+ne = nPatches*(4*N*N-1)/3;			/* Anzahl der Elemente */
     //next line is just a quick fix but i do not like it...
     Eigen::VectorXd pot = potential;
     WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, nNodes,
@@ -331,10 +334,50 @@ void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential,
         rhs[i] += 4 * M_PI * u[i] / (epsilon -
                                      1); // assembling RHS equation (2.7) Computing, 2009, 86, 1-22
     }
+    fprintf(debugFile,">>> WEMRHS2\n");
+    for(unsigned int i = 0; i < nNodes; ++i){
+      fprintf(debugFile,"%d %lf\n",i, rhs[i]);
+    }
+    fprintf(debugFile,"<<< WEMRHS2\n");
+    fflush(debugFile);
     memset(u, 0, nNodes * sizeof(double));
+debugFile = fopen("debug.out", "a");
+fprintf(debugFile,">>> SYSTEMMATRIX AW\n");
+fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+for(unsigned int i  = 0; i < S_i_.m; ++i){
+  fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+  for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+    fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+  }
+}
+fprintf(debugFile,"<<< SYSTEMMATRIX AW\n");
+fflush(debugFile);
+fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
+for(unsigned int m = 0; m<nNodes; ++m){
+        fprintf(debugFile,"%d %d %d %d\n", m, waveletList[m].level, waveletList[m].element_number, waveletList[m].son_number);
+        for(unsigned int i1 = 0; i1< waveletList[m].element_number;++i1){
+                fprintf(debugFile,"%d %lf %lf %lf %lf ", waveletList[m].element[i1], waveletList[m].weight[i1][0], waveletList[m].weight[i1][1], waveletList[m].weight[i1][2], waveletList[m].weight[i1][3]);
+        }
+        for(unsigned int i1 = 0; i1< waveletList[m].son_number;++i1){
+                fprintf(debugFile,"%d ", waveletList[m].son[i1]);
+        }
+        fprintf(debugFile,"\n");
+}
+fprintf(debugFile,"<<< WAVELET_TREE_SIMPLIFY\n");
+fflush(debugFile);
+fclose(debugFile);
+debugFile = fopen("debug.out","a");
+fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
+for(unsigned int m = 0; m<ne; ++m){
+    fprintf(debugFile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf\n", elementTree[m].patch, elementTree[m].level, elementTree[m].index_s, elementTree[m].index_t, elementTree[m].midpoint.x, elementTree[m].midpoint.y, elementTree[m].midpoint.z, elementTree[m].radius, nodeList[elementTree[m].vertex[0]].x, nodeList[elementTree[m].vertex[0]].y, nodeList[elementTree[m].vertex[0]].z);
+    for(unsigned int i1 = 0; i1< elementTree[m].wavelet_number;++i1)
+        fprintf(debugFile,"%d ", elementTree[m].wavelet[i1]);
+    fprintf(debugFile,"\n");
+}
+fprintf(debugFile,"<<< HIERARCHICAL_ELEMENT_TREE\n");
     iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList, nPatches,
                        nLevels);
-    fprintf(debugFile,">>> WEMPCG\n");
+    fprintf(debugFile,">>> WEMPCG %g\n",threshold);
     for(unsigned int i = 0; i <  nNodes; ++i){
       fprintf(debugFile,"%d %lf\n",i, u[i]);
     }

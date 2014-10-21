@@ -318,7 +318,6 @@ void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential,
     }
     fprintf(debugFile,"<<< WEMPGMRES1\n");
     fflush(debugFile);
-    fclose(debugFile);
     init_sparse(&G, nNodes, nNodes, 10);
     single_scale_gram_pwl(&G, elementList, nPatches, nLevels);
     tdwtLin(v, elementList, nLevels, nPatches, nNodes);
@@ -335,6 +334,13 @@ void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential,
     memset(u, 0, nNodes * sizeof(double));
     iters = WEMPCG_pwl(&S_i_, rhs, u, threshold, waveletList, elementList, nPatches,
                        nLevels);
+    fprintf(debugFile,">>> WEMPCG\n");
+    for(unsigned int i = 0; i <  nNodes; ++i){
+      fprintf(debugFile,"%d %lf\n",i, u[i]);
+    }
+    fprintf(debugFile,"<<< WEMPCG\n");
+    fflush(debugFile);
+    fclose(debugFile);
     tdwtLin(u, elementList, nLevels, nPatches, nNodes);
     charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
     energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);

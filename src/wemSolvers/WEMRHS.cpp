@@ -2,6 +2,7 @@
 #include "GaussSquare.hpp"
 #include "string.h"
 //#include "data.hpp" - to replace with information from GreenFunctions
+#include <cstdio>
 
 #ifdef DEBUG2
 #include <cstdio>
@@ -16,6 +17,8 @@ void WEMRHS2M(double **rhs, double *potential, GenericAnsatzFunction *af){
   Vector2 t;
   double w;
   unsigned int index;
+  FILE* debugFile = fopen("debug.out", "a");
+  fprintf(debugFile,">>> POTENTIAL %d\n", af->quadratureLevel_);
 
   initGaussSquare(&Q,af->quadratureLevel_+1);
   y = (double**)malloc(af->elementTree.totalSizeElementList*sizeof(double*)+af->noPhi*af->elementTree.totalSizeElementList*sizeof(double));
@@ -32,12 +35,15 @@ void WEMRHS2M(double **rhs, double *potential, GenericAnsatzFunction *af){
       //w = Q[af->quadratureLevel_].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
       index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
       w = Q[af->quadratureLevel_].weight[k]*potential[index*Q[af->quadratureLevel_].noP+k];
+      fprintf(debugFile,"%lf %lf\n",index*Q[af->quadratureLevel_].noP+k, potential[index*Q[af->quadratureLevel_].noP+k]);
       af->calculateCRHS(c,w,Q[af->quadratureLevel_].xi[k]);
     }
     for(unsigned int j = 0; j < af->noPhi; ++j){
       y[i][j] = h*c[j];
     }
   }
+  fprintf(debugFile,"<<< POTENTIAL\n");
+  fclose(debugFile);
   //2. calculate coarser integrals from fine level
   for(int i = af->nPatches*(n*n-1)/3-1; i >=0; --i){
     af->calculateYRHS(y,i);

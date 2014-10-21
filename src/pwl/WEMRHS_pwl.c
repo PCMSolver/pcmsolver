@@ -218,6 +218,8 @@ double *potential;
     double m;                   /* Interpolationswert im Mittelpunkt          */
     double e[4];                /* Interpolationswerte im Kantenmittelpunkt   */
     unsigned int index;
+    FILE* debugFile = fopen("debug.out", "a");
+    fprintf(debugFile,">>> POTENTIAL %d\n",g);
 
 /* Initialisierung */
     ne = p * (4 * N * N - 1) / 3;       /* Anzahl der Elemente */
@@ -243,6 +245,7 @@ double *potential;
             vector3 pos = Chi_pwl(t2, T[E[i].patch], M);
             index = (E[i].patch * N * N + E[i].index_t * N + E[i].index_s) * Q[g].nop + k;
             w = Q[g].w[k] * potential[index];
+            fprintf(debugFile,"%lf %lf\n",index, potential[index]);
             c0 += w * Phi0(Q[g].xi[k]);
             c1 += w * Phi1(Q[g].xi[k]);
             c2 += w * Phi2(Q[g].xi[k]);
@@ -253,6 +256,8 @@ double *potential;
         y[i][2] = h * c2;
         y[i][3] = h * c3;
     }
+    fprintf(debugFile,"<<< POTENTIAL\n");
+    fclose(debugFile);
 
 /* 2. berechne Integrale der groeberen Level aus denen der feineren */
     for (i = p * (N * N - 1) / 3 - 1; i >= 0; i--) {

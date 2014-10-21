@@ -337,7 +337,21 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double * chg = charge.data();
     double epsilon = greenOutside_->epsilon();
     WEMRHS2M(&rhs, pot, af);
+    FILE *debugFile = fopen("debug.out", "a");
+    fprintf(debugFile,">>> WEMRHS1\n");
+    for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
+      fprintf(debugFile,"%d %lf\n",i, rhs[i]);
+    }
+    fprintf(debugFile,"<<< WEMRHS1\n");
+    fflush(debugFile);
     int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, af);
+    fprintf(debugFile,">>> WEMPGMRES1\n");
+    for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
+      fprintf(debugFile,"%d %lf\n",i, u[i]);
+    }
+    fprintf(debugFile,"<<< WEMPGMRES1\n");
+    fflush(debugFile);
+    fclose(debugFile);
     af->print_geometry(u,"Geometry.vtk");
     af->tdwt(u);
     af->print_geometry(u,"Geometry0.vtk");

@@ -149,7 +149,8 @@ LinAnsatzFunction :: LinAnsatzFunction(){
   dp = 2.5;
 	td = 4;
 
-  quadratureLevel_=2;
+  //quadratureLevel_=2;
+  quadratureLevel_=1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 

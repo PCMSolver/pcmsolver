@@ -128,9 +128,9 @@ unsigned int WEMPGMRES1(SparseMatrix *A, double *b, double *x, double epsi, Gene
     }// end inner iteration
    
     // solving triangular linear system y = H(0:k-1,0:k-1) \ u(0:k-1) 
-    for (int i=k-1; i>=0; i--){
+    for (int i=k-1; i>=0; --i){
       t = 0;
-      for (int j=k-1; j>i; j--) t += H[i][j] * y[j];
+      for (int j=k-1; j>i; --j) t += H[i][j] * y[j];
       y[i] = (u[i] - t) / H[i][i];
     }
    
@@ -217,7 +217,7 @@ unsigned int WEMPGMRES2(SparseMatrix *A, double *b, double *x, double epsi, Gene
     u[0] = rn;
 
     // inner iteration
-    for (k=0; (k<maxiter) && (rn>epsi); k++){  
+    for (k=0; (k<maxiter) && (rn>epsi); ++k){  
       // matrix vector product v = D*(A*V(k,:))
       memset(v,0,A->n*sizeof(double));
       for (unsigned int i=0; i<A->n; ++i){

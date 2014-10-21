@@ -35,7 +35,7 @@ void WEMRHS2M(double **rhs, double *potential, GenericAnsatzFunction *af){
       //w = Q[af->quadratureLevel_].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
       index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
       w = Q[af->quadratureLevel_].weight[k]*potential[index*Q[af->quadratureLevel_].noP+k];
-      fprintf(debugFile,"%lf %lf\n",index*Q[af->quadratureLevel_].noP+k, potential[index*Q[af->quadratureLevel_].noP+k]);
+      fprintf(debugFile,"%d %lf\n",index*Q[af->quadratureLevel_].noP+k, potential[index*Q[af->quadratureLevel_].noP+k]);
       af->calculateCRHS(c,w,Q[af->quadratureLevel_].xi[k]);
     }
     for(unsigned int j = 0; j < af->noPhi; ++j){

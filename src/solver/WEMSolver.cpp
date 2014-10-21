@@ -408,7 +408,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
       fprintf(debugFile,"\n");
     }
     fprintf(debugFile,"<<< HIERARCHICAL_ELEMENT_TREE\n");
-    fflush(debugFile);fclose(debugFile);
+    fflush(debugFile);
     iter = WEMPCG(&S_i_, rhs, u, threshold, af);
     fprintf(debugFile,">>> WEMPCG %g\n",threshold);
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){

@@ -303,8 +303,22 @@ void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential,
     Eigen::VectorXd pot = potential;
     WEMRHS2M_pwl(&rhs, waveletList, elementTree, T_, nPatches, nLevels, nNodes,
                  pot.data(), quadratureLevel_); // Transforms pot data to wavelet representation
+    FILE *debugFile = fopen("debug.out", "a");
+    fprintf(debugFile,">>> WEMRHS1\n");
+    for(unsigned int i = 0; i < nNodes; ++i){
+      fprintf(debugFile,"%d %lf\n",i, rhs[i]);
+    }
+    fprintf(debugFile,"<<< WEMRHS1\n");
+    fflush(debugFile);
     int iters = WEMPGMRES2_pwl(&S_i_, rhs, v, threshold, waveletList, elementList,
                                nPatches, nLevels); // v = A^{-1} * rhs
+    fprintf(debugFile,">>> WEMPGMRES1\n");
+    for(unsigned int i = 0; i < nNodes; ++i){
+      fprintf(debugFile,"%d %lf\n",i, v[i]);
+    }
+    fprintf(debugFile,"<<< WEMPGMRES1\n");
+    fflush(debugFile);
+    fclose(debugFile);
     init_sparse(&G, nNodes, nNodes, 10);
     single_scale_gram_pwl(&G, elementList, nPatches, nLevels);
     tdwtLin(v, elementList, nLevels, nPatches, nNodes);

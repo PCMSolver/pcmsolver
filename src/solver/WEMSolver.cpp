@@ -378,7 +378,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     for(unsigned int i  = 0; i < S_i_.m; ++i){
       fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
       for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
-        fprintf(debugFile, "%d %.20lf %.20lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+        fprintf(debugFile, "%d %.12lf %.12lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
       }
     }
 	  fprintf(debugFile,"<<< SYSTEMMATRIX AW\n");
@@ -388,7 +388,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
 	  for(unsigned int m = 0; m<af->waveletList.sizeWaveletList; ++m){
 		  fprintf(debugFile,"%d %d %d %d\n", m, af->waveletList.W[m].level, af->waveletList.W[m].noElements, af->waveletList.W[m].noSons);
 		  for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noElements; ++i1){
-			  fprintf(debugFile,"%d %.20lf %.20lf %.20lf %.20lf ", af->waveletList.W[m].element[i1], af->waveletList.W[m].weight[i1*4], af->waveletList.W[m].weight[i1*4+1], af->waveletList.W[m].weight[i1*4+2], af->waveletList.W[m].weight[i1*4+3]);
+			  fprintf(debugFile,"%d %.12lf %.12lf %.12lf %.12lf ", af->waveletList.W[m].element[i1], af->waveletList.W[m].weight[i1*4], af->waveletList.W[m].weight[i1*4+1], af->waveletList.W[m].weight[i1*4+2], af->waveletList.W[m].weight[i1*4+3]);
 		  }
 		  for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noSons; ++i1){
 			  fprintf(debugFile,"%d ", af->waveletList.W[m].son[i1]);
@@ -401,7 +401,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     et_node* pF = af->elementTree.element;
     fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
     for(unsigned int m = 0; m<af->nPatches*(4*(1<<af->nLevels)*(1<<af->nLevels)-1)/3; ++m) {
-      fprintf(debugFile,"%d %d %d %d %.20lf %.20lf %.20lf %.20lf %.20lf %.20lf %.20lf\n", pF[m].patch, pF[m].level, pF[m].index_s, pF[m].index_t, pF[m].midpoint.x, pF[m].midpoint.y, pF[m].midpoint.z, pF[m].radius, af->nodeList[pF[m].vertex[0]].x, af->nodeList[pF[m].vertex[0]].y, af->nodeList[pF[m].vertex[0]].z);
+      fprintf(debugFile,"%d %d %d %d %.12lf %.12lf %.12lf %.12lf %.12lf %.12lf %.12lf\n", pF[m].patch, pF[m].level, pF[m].index_s, pF[m].index_t, pF[m].midpoint.x, pF[m].midpoint.y, pF[m].midpoint.z, pF[m].radius, af->nodeList[pF[m].vertex[0]].x, af->nodeList[pF[m].vertex[0]].y, af->nodeList[pF[m].vertex[0]].z);
       for(unsigned int n = 0; n < pF[m].noWavelets; ++n){
         fprintf(debugFile,"%d ", pF[m].wavelet[n]);
       }
@@ -412,7 +412,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     iter = WEMPCG(&S_i_, rhs, u, threshold, af);
     fprintf(debugFile,">>> WEMPCG %g\n",threshold);
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
-      fprintf(debugFile,"%d %.20lf\n",i, u[i]);
+      fprintf(debugFile,"%d %.12lf\n",i, u[i]);
     }
     fprintf(debugFile,"<<< WEMPCG\n");
     fflush(debugFile);

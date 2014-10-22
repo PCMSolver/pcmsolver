@@ -73,28 +73,22 @@ double energy_ext(double *u, double *potential, GenericAnsatzFunction *af)
     Vector2 t;                  /* Auswertepunkte der Gaussquadratur           */
     double E = 0;               /* Energie                                     */
     double h = 1. / n;          /* Schrittweite                                */
+    unsigned int index;
 
 /* Initialisierung */
     initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
 
 /* Berechnung des Fehlers */
-    for (i1 = 0; i1 < af->nPatches; i1++) {
-        s.y = 0;
-        for (i2 = 0; i2 < n; i2++) {
-            s.x = 0;
-            for (i3 = 0; i3 < n; i3++) {        /* zeilenweise Durchnumerierung der Patches zi = (i1,i2,i3) */
-                for (l = 0; l < Q[af->quadratureLevel_].noP; l++) {
-                    t = vector2Add(s, vector2SMul(h, Q[af->quadratureLevel_].xi[l]));
-                    E += Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi)
-                      * potential[Q[af->quadratureLevel_].noP*zi+l];
-                }
-                s.x += h;
-                zi++;
-            }
-            s.y += h;
+    for(unsigned int i = af->nPatches*(n*n-1)/3; i <af->elementTree.totalSizeElementList; ++i){
+      for (l = 0; l < Q[af->quadratureLevel_].noP; l++) {
+        t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[l].x);
+        t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[l].y);
+        index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
+        E += Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],index)
+          * potential[Q[af->quadratureLevel_].noP*index+l];
         }
-    }
-    E = -0.5 * h * E;           /* correct scaling */
+      }
+      E = -0.5 * h * E;           /* correct scaling */
 
 /* Datenausgabe */
 //    printf("PWC Computed energy:            %f10\n", E);
@@ -113,27 +107,20 @@ double charge_ext(double *u, double *charge, GenericAnsatzFunction *af)
     Vector2 t;                  /* Auswertepunkte der Gaussquadratur           */
     double h = 1. / n;          /* Schrittweite                                */
     double C = 0;               /* surface meassure                            */
+    unsigned int index;
 
 /* Initialisierung */
     initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
 
 /* Berechnung des Fehlers */
-    for (i1 = 0; i1 < af->nPatches; i1++) {
-        s.y = 0;
-        for (i2 = 0; i2 < n; i2++) {
-            s.x = 0;
-            for (i3 = 0; i3 < n; i3++) {        /* zeilenweise Durchnumerierung der Patches zi = (i1,i2,i3) */
-                for (l = 0; l < Q[af->quadratureLevel_].noP; l++) {
-                    t = vector2Add(s, vector2SMul(h, Q[af->quadratureLevel_].xi[l]));
-                    int index = Q[af->quadratureLevel_].noP*zi+l;
-                    charge[index] = Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi) * h;
-                    C += charge[index];
-                }
-                s.x += h;
-                zi++;
-            }
-            s.y += h;
-        }
+    for(unsigned int i = af->nPatches*(n*n-1)/3; i <af->elementTree.totalSizeElementList; ++i){
+      for (l = 0; l < Q[af->quadratureLevel_].noP; l++) {
+        t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[l].x);
+        t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[l].y);
+        index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
+        charge[index*Q[af->quadratureLevel_].noP+l] = Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],index) * h;
+        C += charge[index*Q[af->quadratureLevel_].noP+l];
+      }
     }
 
 /* Datenausgabe */

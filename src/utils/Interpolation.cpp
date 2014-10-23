@@ -69,6 +69,7 @@ Interpolation::Interpolation(Vector3*** U, int gradeIn, const int type,
             }
         }
     }
+#ifdef DEBUG
     FILE * debugFile = fopen("debug.out", "a");
     fprintf(debugFile, ">>> INTERPOLATION_POLINOMIALS\n");
     fprintf(debugFile, "%d %lf\n", grade, h);
@@ -89,6 +90,7 @@ Interpolation::Interpolation(Vector3*** U, int gradeIn, const int type,
     }
     fprintf(debugFile, "<<< INTERPOLATION_POLINOMIALS\n");
     fclose(debugFile);
+#endif
 }
 
 // calculate the value in one point

@@ -220,7 +220,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
       c1[i][j] *= maxRadius/scalingFactor;              // Gebiet relativieren
     }
   }
-
+#ifdef DEBUG
   debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> COMP CC %lf %lf %lf\n", td, dp, op);
   for(unsigned int i  = 0; i < nLevels+1; ++i){
@@ -232,7 +232,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   fprintf(debugFile,"\n<<< COMP CC\n");
   fflush(debugFile);
   fclose(debugFile);
-  
+#endif
   initPattern2(T,waveletList.sizeWaveletList,waveletList.sizeWaveletList,20);
 
   computeBoundingBoxes();

@@ -172,27 +172,29 @@ void WEMSolver::initInterpolation(){
     af->nNodes = af->genNet(pointList);
     double volume = calculateVolume(af);
     printf("Volume                     %lf\n",volume);
-  FILE* debugFile = fopen("debug.out", "a");
-  fprintf(debugFile,">>> PPOINTLIST\n");
-  for(unsigned int m = 0; m< af->nNodes; ++m) {
-    fprintf(debugFile,"%lf %lf %lf\n", af->nodeList[m].x, af->nodeList[m].y, af->nodeList[m].z);
-  }
-  fprintf(debugFile,"<<< PPOINTLIST\n");
-  fprintf(debugFile,">>> PELEMENTLIST\n");
-  for(unsigned int m = af->nPatches*((1<<af->nLevels)*(1<<af->nLevels)-1)/3; m<af->nPatches*(4*(1<<af->nLevels)*(1<<af->nLevels)-1)/3; ++m) {
-    //for(int m = 0; m<nFunctions; ++m) {
-      //fprintf(debugFile,"%d %d %d %d\n",
-        //af->pElementList[m][0], af->pElementList[m][1],
-        //af->pElementList[m][2], af->pElementList[m][3]);
-    fprintf(debugFile,"%d %d %d %d\n",
-      af->elementTree.element[m].vertex[0],
-      af->elementTree.element[m].vertex[1],
-      af->elementTree.element[m].vertex[2],
-      af->elementTree.element[m].vertex[3]);
-  }
-  fprintf(debugFile,"<<< PELEMENTLIST\n");
-  fflush(debugFile);
-  fclose(debugFile);
+#ifdef DEBUG
+    FILE* debugFile = fopen("debug.out", "a");
+    fprintf(debugFile,">>> PPOINTLIST\n");
+    for(unsigned int m = 0; m< af->nNodes; ++m) {
+      fprintf(debugFile,"%lf %lf %lf\n", af->nodeList[m].x, af->nodeList[m].y, af->nodeList[m].z);
+    }
+    fprintf(debugFile,"<<< PPOINTLIST\n");
+    fprintf(debugFile,">>> PELEMENTLIST\n");
+    for(unsigned int m = af->nPatches*((1<<af->nLevels)*(1<<af->nLevels)-1)/3; m<af->nPatches*(4*(1<<af->nLevels)*(1<<af->nLevels)-1)/3; ++m) {
+      //for(int m = 0; m<nFunctions; ++m) {
+        //fprintf(debugFile,"%d %d %d %d\n",
+          //af->pElementList[m][0], af->pElementList[m][1],
+          //af->pElementList[m][2], af->pElementList[m][3]);
+      fprintf(debugFile,"%d %d %d %d\n",
+        af->elementTree.element[m].vertex[0],
+        af->elementTree.element[m].vertex[1],
+        af->elementTree.element[m].vertex[2],
+        af->elementTree.element[m].vertex[3]);
+    }
+    fprintf(debugFile,"<<< PELEMENTLIST\n");
+    fflush(debugFile);
+    fclose(debugFile);
+#endif
 }
 
 void WEMSolver::constructWavelets(){
@@ -202,21 +204,20 @@ void WEMSolver::constructWavelets(){
     af->simplifyWaveletList();
     af->completeElementList();
     et_node* pF = af->elementTree.element;
-	FILE* debugFile = fopen("debug.out","a");
-	fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
-	for(unsigned int m = 0; m<af->waveletList.sizeWaveletList; ++m){
-		fprintf(debugFile,"%d %d %d %d\n", m, af->waveletList.W[m].level, af->waveletList.W[m].noElements, af->waveletList.W[m].noSons);
-		for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noElements; ++i1){
-			fprintf(debugFile,"%d %lf %lf %lf %lf ", af->waveletList.W[m].element[i1], af->waveletList.W[m].weight[i1*4], af->waveletList.W[m].weight[i1*4+1], af->waveletList.W[m].weight[i1*4+2], af->waveletList.W[m].weight[i1*4+3]);
-		}
-		for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noSons; ++i1){
-			fprintf(debugFile,"%d ", af->waveletList.W[m].son[i1]);
-		}
-		fprintf(debugFile,"\n");
-	}
-	fprintf(debugFile,"<<< WAVELET_TREE_SIMPLIFY\n");
-	fclose(debugFile);
-  debugFile = fopen("debug.out", "a");
+#ifdef DEBUG
+    FILE* debugFile = fopen("debug.out","a");
+    fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
+    for(unsigned int m = 0; m<af->waveletList.sizeWaveletList; ++m){
+      fprintf(debugFile,"%d %d %d %d\n", m, af->waveletList.W[m].level, af->waveletList.W[m].noElements, af->waveletList.W[m].noSons);
+      for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noElements; ++i1){
+        fprintf(debugFile,"%d %lf %lf %lf %lf ", af->waveletList.W[m].element[i1], af->waveletList.W[m].weight[i1*4], af->waveletList.W[m].weight[i1*4+1], af->waveletList.W[m].weight[i1*4+2], af->waveletList.W[m].weight[i1*4+3]);
+      }
+      for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noSons; ++i1){
+        fprintf(debugFile,"%d ", af->waveletList.W[m].son[i1]);
+      }
+      fprintf(debugFile,"\n");
+    }
+    fprintf(debugFile,"<<< WAVELET_TREE_SIMPLIFY\n");
     fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
     for(unsigned int m = 0; m<af->nPatches*(4*(1<<af->nLevels)*(1<<af->nLevels)-1)/3; ++m) {
       fprintf(debugFile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf\n", pF[m].patch, pF[m].level, pF[m].index_s, pF[m].index_t, pF[m].midpoint.x, pF[m].midpoint.y, pF[m].midpoint.z, pF[m].radius, af->nodeList[pF[m].vertex[0]].x, af->nodeList[pF[m].vertex[0]].y, af->nodeList[pF[m].vertex[0]].z);
@@ -226,7 +227,9 @@ void WEMSolver::constructWavelets(){
       fprintf(debugFile,"\n");
     }
     fprintf(debugFile,"<<< HIERARCHICAL_ELEMENT_TREE\n");
-    fflush(debugFile);fclose(debugFile);
+    fflush(debugFile);
+    fclose(debugFile);
+#endif
 }
 
 void WEMSolver::constructSystemMatrix()
@@ -256,7 +259,7 @@ void WEMSolver::constructSi(){
     }
     gf = greenInside_;
     apriori1_ = af->compression(&S_i_);
-    
+#ifdef DEBUG 
     FILE* debugFile = fopen("debug.out", "a");
 	  fprintf(debugFile,">>> SYSTEMMATRIX AC\n");
     fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
@@ -269,9 +272,9 @@ void WEMSolver::constructSi(){
 	  fprintf(debugFile,"<<< SYSTEMMATRIX AC\n");
 	  fflush(debugFile);
 	  fclose(debugFile);
-
+#endif
     WEM(af, &S_i_, SingleLayer, DoubleLayer, factor);
-
+#ifdef DEBUG
     debugFile = fopen("debug.out", "a");
 	  fprintf(debugFile,">>> SYSTEMMATRIX AW\n");
     fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
@@ -284,9 +287,9 @@ void WEMSolver::constructSi(){
 	  fprintf(debugFile,"<<< SYSTEMMATRIX AW\n");
 	  fflush(debugFile);
 	  fclose(debugFile);
-
+#endif
     aposteriori1_ = af->postProc(&S_i_);
-    
+#ifdef DEBUG
     debugFile = fopen("debug.out", "a");
 	  fprintf(debugFile,">>> SYSTEMMATRIX AP\n");
     fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
@@ -299,6 +302,7 @@ void WEMSolver::constructSi(){
 	  fprintf(debugFile,"<<< SYSTEMMATRIX AP\n");
 	  fflush(debugFile);
 	  fclose(debugFile);
+#endif
 }
 
 void WEMSolver::constructSe(){
@@ -338,6 +342,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double * chg = charge.data();
     double epsilon = greenOutside_->epsilon();
     WEMRHS2M(&rhs, pot, af);
+#ifdef DEBUG
     FILE *debugFile = fopen("debug.out", "a");
     fprintf(debugFile,">>> WEMRHS1\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
@@ -345,14 +350,16 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     }
     fprintf(debugFile,"<<< WEMRHS1\n");
     fflush(debugFile);
+#endif
     int iter = WEMPGMRES2(&S_i_, rhs, v, threshold, af);
+#ifdef DEBUG
     fprintf(debugFile,">>> WEMPGMRES1\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, v[i]);
     }
     fprintf(debugFile,"<<< WEMPGMRES1\n");
     fflush(debugFile);
-    af->print_geometry(v,"Geometry.vtk");
+#endif
     af->tdwt(v);
     af->createGram(af->waveletList.sizeWaveletList,10);
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
@@ -360,56 +367,21 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
         u[i] += af->G->value[i][j] *v[af->G->index[i][j]];
       }
     }
-    af->print_geometry(u,"Geometry0.vtk");
     af->dwt(u);
     for (size_t i = 0; i < af->waveletList.sizeWaveletList; ++i) {
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
     }
+#ifdef DEBUG
     fprintf(debugFile,">>> WEMRHS2\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, rhs[i]);
     }
     fprintf(debugFile,"<<< WEMRHS2\n");
     fflush(debugFile);
+#endif
     memset(u, 0, af->waveletList.sizeWaveletList* sizeof(double));
-    debugFile = fopen("debug.out", "a");
-	  fprintf(debugFile,">>> SYSTEMMATRIX AW\n");
-    fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
-    for(unsigned int i  = 0; i < S_i_.m; ++i){
-      fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
-      for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
-        fprintf(debugFile, "%d %.12lf %.12lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
-      }
-    }
-	  fprintf(debugFile,"<<< SYSTEMMATRIX AW\n");
-	  fflush(debugFile);
-	  debugFile = fopen("debug.out","a");
-	  fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
-	  for(unsigned int m = 0; m<af->waveletList.sizeWaveletList; ++m){
-		  fprintf(debugFile,"%d %d %d %d\n", m, af->waveletList.W[m].level, af->waveletList.W[m].noElements, af->waveletList.W[m].noSons);
-		  for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noElements; ++i1){
-			  fprintf(debugFile,"%d %.12lf %.12lf %.12lf %.12lf ", af->waveletList.W[m].element[i1], af->waveletList.W[m].weight[i1*4], af->waveletList.W[m].weight[i1*4+1], af->waveletList.W[m].weight[i1*4+2], af->waveletList.W[m].weight[i1*4+3]);
-		  }
-		  for(unsigned int i1 = 0 ; i1< af->waveletList.W[m].noSons; ++i1){
-			  fprintf(debugFile,"%d ", af->waveletList.W[m].son[i1]);
-		  }
-		  fprintf(debugFile,"\n");
-	  }
-	  fprintf(debugFile,"<<< WAVELET_TREE_SIMPLIFY\n");
-	  fclose(debugFile);
-    debugFile = fopen("debug.out", "a");
-    et_node* pF = af->elementTree.element;
-    fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
-    for(unsigned int m = 0; m<af->nPatches*(4*(1<<af->nLevels)*(1<<af->nLevels)-1)/3; ++m) {
-      fprintf(debugFile,"%d %d %d %d %.12lf %.12lf %.12lf %.12lf %.12lf %.12lf %.12lf\n", pF[m].patch, pF[m].level, pF[m].index_s, pF[m].index_t, pF[m].midpoint.x, pF[m].midpoint.y, pF[m].midpoint.z, pF[m].radius, af->nodeList[pF[m].vertex[0]].x, af->nodeList[pF[m].vertex[0]].y, af->nodeList[pF[m].vertex[0]].z);
-      for(unsigned int n = 0; n < pF[m].noWavelets; ++n){
-        fprintf(debugFile,"%d ", pF[m].wavelet[n]);
-      }
-      fprintf(debugFile,"\n");
-    }
-    fprintf(debugFile,"<<< HIERARCHICAL_ELEMENT_TREE\n");
-    fflush(debugFile);
     iter = WEMPCG(&S_i_, rhs, u, threshold, af);
+#ifdef DEBUG
     fprintf(debugFile,">>> WEMPCG %g\n",threshold);
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %.10lf\n",i, u[i]);
@@ -417,8 +389,8 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     fprintf(debugFile,"<<< WEMPCG\n");
     fflush(debugFile);
     fclose(debugFile);
+#endif
     af->tdwt(u);
-    af->print_geometry(u,"Geometry1.vtk");
     energy_ext(u, pot, af);
     charge_ext(u, chg, af);
     af->print_geometry(u,"Geometry2.vtk");

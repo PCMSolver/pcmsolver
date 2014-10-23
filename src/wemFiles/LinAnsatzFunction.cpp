@@ -238,7 +238,9 @@ void LinAnsatzFunction::calculateYRHS(double** y, int i){
  */
 double LinAnsatzFunction::calculateUEnergy(double *u, Vector2 xi, unsigned int zi){
   double U = 0.0;
-  et_node *pF = &elementTree.element[zi];
+
+  const unsigned int displacement = nPatches*((1<<(2*nLevels))-1)/3;
+  et_node *pF = &elementTree.element[displacement+zi];
   U = u[pF->vertex[0]] *Phi0(xi)
     + u[pF->vertex[1]] *Phi1(xi)
     + u[pF->vertex[2]] *Phi2(xi)

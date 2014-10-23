@@ -113,15 +113,25 @@ double charge_ext(double *u, double *charge, GenericAnsatzFunction *af)
     initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
 
 /* Berechnung des Fehlers */
-    for(unsigned int i = af->nPatches*(n*n-1)/3; i <af->elementTree.totalSizeElementList; ++i){
-      for (l = 0; l < Q[af->quadratureLevel_].noP; l++) {
-        t.x = h*(af->elementTree.element[i].index_s+Q[af->quadratureLevel_].xi[l].x);
-        t.y = h*(af->elementTree.element[i].index_t+Q[af->quadratureLevel_].xi[l].y);
-        index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
-        charge[index*Q[af->quadratureLevel_].noP+l] = Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],index) * h;
-        C += charge[index*Q[af->quadratureLevel_].noP+l];
-      }
-    }
+	zi = 0;
+	for (unsigned int i1=0; i1<af->nPatches; i1++) {
+		s.y = 0;
+		for (unsigned int i2=0; i2<n; i2++) {
+			s.x = 0;
+      // rowwise numbering of patch zi = (i1, i2, i3)
+			for (unsigned int i3=0; i3<n; i3++) {
+				for (unsigned int l=0; l<Q[af->quadratureLevel_].noP; l++){
+					t = vector2Add(s,vector2SMul(h,Q[af->quadratureLevel_].xi[l]));
+          charge[zi*Q[af->quadratureLevel_].noP+l] = Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi) * h;
+          C += charge[zi*Q[af->quadratureLevel_].noP+l];
+          printf("%d %g\n",zi*Q[af->quadratureLevel_].noP+l,charge[zi*Q[af->quadratureLevel_].noP+l]);
+				}
+				s.x += h;
+				zi++;
+			}
+			s.y += h;
+		}
+	}
 
 /* Datenausgabe */
 //    printf("PWC Computed charge:            %f10\n", C);

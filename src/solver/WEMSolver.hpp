@@ -73,7 +73,7 @@ public:
           interpolationType = 1;
         }
         else if(modelType == "Wavelet"){
-          //af = new ConAnsatzFunction();
+          af = new ConAnsatzFunction();
           interpolationGrade = 1;
           interpolationType = 1;
         }

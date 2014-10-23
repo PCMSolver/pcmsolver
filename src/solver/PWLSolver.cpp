@@ -379,13 +379,19 @@ fprintf(debugFile,"<<< HIERARCHICAL_ELEMENT_TREE\n");
                        nLevels);
     fprintf(debugFile,">>> WEMPCG %g\n",threshold);
     for(unsigned int i = 0; i <  nNodes; ++i){
-      fprintf(debugFile,"%d %.12lf\n",i, u[i]);
+      fprintf(debugFile,"%d %.10lf\n",i, u[i]);
     }
     fprintf(debugFile,"<<< WEMPCG\n");
     fflush(debugFile);
-    fclose(debugFile);
     tdwtLin(u, elementList, nLevels, nPatches, nNodes);
     charge_pwl(u, charge.data(), elementList, T_, nPatches, nLevels);
+    fprintf(debugFile,">>> CHARGE %g\n",threshold);
+    for(unsigned int i = 0; i <  ne; ++i){
+      fprintf(debugFile,"%d %.10lf\n",i, charge[i]);
+    }
+    fprintf(debugFile,"<<< CHARGE\n");
+    fflush(debugFile);
+    fclose(debugFile);
     energy_pwl(u, pot.data(), elementList, T_, nPatches, nLevels);
     free(rhs);
     free(u);

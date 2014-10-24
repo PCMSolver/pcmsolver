@@ -23,7 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE WEMSolverNH3
+#define BOOST_TEST_MODULE WEMSolverbenzene
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -41,26 +41,13 @@
 #include "WaveletCavity.hpp"
 
 /*! \class WEMSolver
- *  \test \b NH3 tests WEMSolver with linear ansatz functions using ammonia and a wavelet cavity
+ *  \test \b  benzene tests WEMSolver with linear ansatz functions using ammonia and a wavelet cavity
  */
-BOOST_AUTO_TEST_CASE(NH3)
+BOOST_AUTO_TEST_CASE(benzene)
 {
+  printf("STARTING TEST\n");
     // Set up cavity
-
-    Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
-    Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
-    Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
-    Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
-    std::vector<Sphere> spheres;
-    Sphere sph1(N,  2.929075493);
-    Sphere sph2(H1, 2.267671349);
-    Sphere sph3(H2, 2.267671349);
-    Sphere sph4(H3, 2.267671349);
-    spheres.push_back(sph1);
-    spheres.push_back(sph2);
-    spheres.push_back(sph3);
-    spheres.push_back(sph4);
-/*
+    /*
     Eigen::Vector3d C1(-0.694303272975, -0.000000000000, -1.202568545351);
     Eigen::Vector3d C2( 0.694303272975,  0.000000000000, -1.202568545351);
     Eigen::Vector3d C3( 1.388606546154,  0.000000000000,  0.000000000000);
@@ -73,7 +60,20 @@ BOOST_AUTO_TEST_CASE(NH3)
     Eigen::Vector3d H4( 1.235418032354,  0.000000000000,  2.139806800843);
     Eigen::Vector3d H5(-1.235418032354, -0.000000000000,  2.139806800843);
     Eigen::Vector3d H6(-2.470836065313, -0.000000000000,  0.000000000000);
-    
+    */
+    Eigen::Vector3d C1( 5.274,  1.999, -8.568);
+    Eigen::Vector3d C2( 6.627,  2.018, -8.209);
+    Eigen::Vector3d C3( 7.366,  0.829, -8.202);
+    Eigen::Vector3d C4( 6.752, -0.379, -8.554);
+    Eigen::Vector3d C5( 5.399, -0.398, -8.912);
+    Eigen::Vector3d C6( 4.660,  0.791, -8.919);
+    Eigen::Vector3d H1( 4.704,  2.916, -8.573);
+    Eigen::Vector3d H2( 7.101,  2.950, -7.938);
+    Eigen::Vector3d H3( 8.410,  0.844, -7.926);
+    Eigen::Vector3d H4( 7.322, -1.296, -8.548);
+    Eigen::Vector3d H5( 4.925, -1.330, -9.183);
+    Eigen::Vector3d H6( 3.616,  0.776, -9.196);
+
     std::vector<Sphere> spheres;
     Sphere sph1(C1, 3.212534412); 
     Sphere sph2(C2, 3.212534412);
@@ -101,13 +101,16 @@ BOOST_AUTO_TEST_CASE(NH3)
     spheres.push_back(sph10);
     spheres.push_back(sph11);
     spheres.push_back(sph12);
- */
+    
     double probeRadius = 1.385; // Probe Radius for water
-    int patchLevel = 4;
+    int patchLevel = 2;
     double coarsity = 0.5;
+  printf("TEST 1\n");
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
+  printf("TEST 1a\n");
     cavity.readCavity("molec_dyadic.dat");
 
+  printf("TEST 2\n");
     CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
@@ -118,27 +121,36 @@ BOOST_AUTO_TEST_CASE(NH3)
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
-    WEMSolver solver(gfInside, gfOutside, "Wavelet", firstKind);
+    WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
-    double Ncharge = 7.0;
     double Hcharge = 1.0;
+    double Ccharge = 6.0;
     int size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
     for (int i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
-        double Ndistance = (center - N).norm();
-        double H1distance = (center - H1).norm();
-        double H2distance = (center - H2).norm();
-        double H3distance = (center - H3).norm();
-        fake_mep(i) = Ncharge / Ndistance + Hcharge / H1distance + Hcharge / H2distance +
-                      Hcharge / H3distance;
+        double C1mep = Ccharge/(center - C1).norm();
+        double C2mep = Ccharge/(center - C2).norm();
+        double C3mep = Ccharge/(center - C3).norm();
+        double C4mep = Ccharge/(center - C4).norm();
+        double C5mep = Ccharge/(center - C5).norm();
+        double C6mep = Ccharge/(center - C6).norm();
+
+        double H1mep = Hcharge/(center - H1).norm();
+        double H2mep = Hcharge/(center - H2).norm();
+        double H3mep = Hcharge/(center - H3).norm();
+        double H4mep = Hcharge/(center - H4).norm();
+        double H5mep = Hcharge/(center - H5).norm();
+        double H6mep = Hcharge/(center - H6).norm();
+        fake_mep(i) = C1mep + C2mep + C3mep + C4mep + C5mep + C6mep +
+          H1mep + H2mep + H3mep + H4mep + H5mep + H6mep;
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
     solver.compCharge(fake_mep, fake_asc);
-    double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
+    double totalASC = (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-2);

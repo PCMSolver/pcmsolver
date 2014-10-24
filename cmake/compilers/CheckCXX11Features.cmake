@@ -117,7 +117,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Intel)
     execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE ICPC_VERSION)
 endif()
 
-if(ICPC_VERSION VERSION_LESS 14.0.0)
+if(CMAKE_CXX_COMPILER_ID MATCHES Intel AND ICPC_VERSION VERSION_LESS 14.0.0)
     message(STATUS "Buggy compiler support for C++11. Using older standard.")
 else()
     # Check which compiler flag is valid for the C++11 standard

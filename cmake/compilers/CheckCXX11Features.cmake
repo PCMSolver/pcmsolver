@@ -122,6 +122,7 @@ function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
 
         if (${RESULT_VAR})
 		set(feature_list ${feature_list} "${FEATURE_NAME} " PARENT_SCOPE)
+		add_definitions(-D${RESULT_VAR})
 		#    message(STATUS "Checking C++11 support for ${_LOG_NAME}: works")
         else (${RESULT_VAR})
 		# message(STATUS "Checking C++11 support for ${_LOG_NAME}: not supported")

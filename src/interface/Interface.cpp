@@ -407,7 +407,11 @@ void setupInput(bool from_host)
 	   // printer(out_stream);
     	    parsedInput = boost::make_shared<Input>(Input(cav, solv, green));
     } else {
+#ifdef EMBEDDED_PYTHON
 	    parsedInput = boost::make_shared<Input>(Input("pcmsolver.inp"));
+#else
+	    parsedInput = boost::make_shared<Input>(Input("@pcmsolver.inp"));
+#endif
     }
     // The only thing we can't create immediately is the vector of spheres
     // from which the cavity is to be built.

@@ -167,6 +167,9 @@ unsigned int m;                 /* Zahl der Level                              *
                         + u[F[zi][3]] * Phi3(Q[g].xi[l]);
                     charge[index] = h * Q[g].w[l] * U;
                     C += charge[index];
+#ifdef DEBUG
+                    printf("%d %g\n",index,charge[index]);
+#endif
                 }
                 s.x += h;
                 zi++;

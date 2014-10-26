@@ -21,7 +21,7 @@
 !      PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
 !pcmsolver_copyright_end
 
-      INTEGER NUCPRE, NUCNUM, NUCDEG, ISTBNU, NCTOT,                &
+      integer(kind=regint_k) NUCPRE, NUCNUM, NUCDEG, ISTBNU, NCTOT, &
              NUCIND, NUCDEP, NTRACO, ITRACO, NATOMS, NFLOAT,        &
              NBASIS, NLARGE, NSMALL, NPBAS,  NPLRG,  NPSML,         &
              NCHTOT, INCENT, INUNIQ, NDEGNM, ISOTOP, IZATOM,        &
@@ -43,6 +43,6 @@
       CHARACTER NAMEX*6, NAMDEP*6, NAMDPX*8, NAMN*4
       COMMON /PCM_NUCLEC/ NAMEX(MXCOOR), NAMDEP(MXCENT), NAMDPX(MXCOOR),       &
                      NAMN(MXCENT)
-      INTEGER MULBSI
+      INTEGER(kind=regint_k) MULBSI
       COMMON /PCM_MULBAS/ MULBSI(MXCENT)
 !     MULBAS has been added for multiple basis sets (WK/UniKA/31-10-2002).

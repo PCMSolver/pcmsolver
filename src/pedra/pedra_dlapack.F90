@@ -51,6 +51,8 @@
 !      arXiv.org: physics/0610206
 
     module pedra_dlapack
+    
+    use pedra_precision
 
     implicit none
 
@@ -773,11 +775,11 @@
 !
     use pedra_dblas, only: dswap
 
-    integer,    intent(in) :: n
-    real(8), intent(inout) :: evec(*), eval(*)
+    integer(kind=regint_k),    intent(in) :: n
+    real(kind=dp), intent(inout) :: evec(*), eval(*)
 
-    integer :: beg, imin, nevec, i, j
-    real(8) :: emin
+    integer(kind=regint_k) :: beg, imin, nevec, i, j
+    real(kind=dp) :: emin
    
     if (n.le.1) return
     beg = 1
@@ -794,7 +796,7 @@
         eval(imin)=eval(i)
         eval(i)=emin
         if (nevec .gt. 0) then
-          call dswap(nevec,evec(beg),1,evec((imin-1)*nevec+1),1)
+          call dswap(nevec,evec(beg),1_regint_k,evec((imin-1)*nevec+1),1_regint_k)
         end if
       end if
       beg = beg + nevec

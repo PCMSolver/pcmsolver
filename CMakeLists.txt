@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 #
 #  Declare project name and programming languages
 #
@@ -8,13 +8,15 @@ enable_language(CXX C Fortran)
 #  Options  
 #   There still is nothing going on inside the code regarding MPI and OpenMP!!
 #
-option(ENABLE_MPI           "Enable MPI parallelization"                                       OFF)
-option(ENABLE_OPENMP        "Enable OpenMP parallelization"                                    OFF)
-option(ENABLE_VECTORIZATION "Enable vectorization"                                             OFF)
-option(ENABLE_TESTS         "Enable compilation of unit tests"                                 OFF)
-option(ENABLE_CODE_COVERAGE "Enable code coverage"                                             OFF)
-option(DISABLE_EIGEN_OWN    "Do not use Eigen3 headers shipped with the module"                OFF)
-option(ENABLE_EIGEN_MKL     "Enable Eigen3 automatic fallback to some of Intel MKL algorithms" OFF)
+option(ENABLE_MPI              "Enable MPI parallelization"                                       OFF) 
+option(ENABLE_OPENMP           "Enable OpenMP parallelization"                                    OFF)
+option(ENABLE_VECTORIZATION    "Enable vectorization"                                             OFF)
+option(ENABLE_TESTS            "Enable compilation of unit tests"                                 OFF)
+option(ENABLE_CODE_COVERAGE    "Enable code coverage"                                             OFF)
+option(DISABLE_EIGEN_OWN       "Do not use Eigen3 headers shipped with the module"                OFF)
+option(ENABLE_EIGEN_MKL        "Enable Eigen3 automatic fallback to some of Intel MKL algorithms" OFF)
+option(ENABLE_PYTHON_EMBEDDING "Enable Python embedding"                                          ON)
+option(ENABLE_64BIT_INTEGERS   "Enable 64-bit integers"                                           OFF)
 #
 #  CMake modules
 #
@@ -44,52 +46,76 @@ include(CheckPython)
 
 FortranCInterface_VERIFY(CXX)
 init_FCMangle()
-
-if("${PYTHON_INTERPRETER}" STREQUAL "")
-   find_package(PythonInterp 2.6 REQUIRED)
+    
+set(EMBEDDED_PYTHON FALSE)
+# Check Python:
+if(ENABLE_PYTHON_EMBEDDING)
+   # 1. a Python interpreter of the suitable version exists
+   if("${PYTHON_INTERPRETER}" STREQUAL "")
+      find_package(PythonInterp 2.6 REQUIRED)
+   else()
+      set(PYTHONINTERP_FOUND TRUE)
+      set(PYTHON_EXECUTABLE "${PYTHON_INTERPRETER}")
+      get_Python_version_string(pyVersion)
+      set(PYTHON_VERSION_STRING "${pyVersion}")
+      message(STATUS "Passed PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.6\")")
+   endif()	
+   # 2. Python libraries and headers of the same version exist
+   # Set variables to help find Python library that is compatible with interpreter
+   # Copied from https://bitbucket.org/fenics-project/dolfin
+   if(PYTHONINTERP_FOUND)
+      # Get Python include path from Python interpretter
+      execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+                            "import distutils.sysconfig, sys; sys.stdout.write(distutils.sysconfig.get_python_inc())"
+                     OUTPUT_VARIABLE _PYTHON_INCLUDE_PATH
+                     RESULT_VARIABLE _PYTHON_INCLUDE_RESULT)
+      # Get Python library path from interpreter
+      execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
+                           "import os, sys, inspect; sys.stdout.write(os.path.split(os.path.split(inspect.getfile(inspect))[0])[0])"
+                     OUTPUT_VARIABLE _PYTHON_LIB_PATH
+                     RESULT_VARIABLE _PYTHON_LIB_RESULT)
+      # Set include path, if returned by interpreter
+      if("${_PYTHON_INCLUDE_RESULT}" STREQUAL "0")
+         set(PYTHON_INCLUDE_DIR ${_PYTHON_INCLUDE_PATH})
+      endif()
+      # Add a search path for Python library based on output from
+      # interpreter
+      set(CMAKE_LIBRARY_PATH_SAVE ${CMAKE_LIBRARY_PATH})
+      if("${_PYTHON_LIB_RESULT}" STREQUAL "0")
+         set(CMAKE_LIBRARY_PATH ${_PYTHON_LIB_PATH})
+      endif()
+      # Find Pythons libs
+      find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
+      # Check headers
+      set(CMAKE_REQUIRED_INCLUDES "${PYTHON_INCLUDE_DIRS}")
+      check_include_file(Python.h HAS_PYTHON_H)
+      check_include_file(pyconfig.h HAS_PYCONFIG_H)
+      if(NOT HAS_PYTHON_H)
+	 message(STATUS "No Python.h header found!!")	   
+      endif()	   
+      if(NOT HAS_PYCONFIG_H)
+	 message(STATUS "No pyconfig.h header found!!")	   
+      endif()	   
+      unset(CMAKE_REQUIRED_INCLUDES)
+      # 3. that we can link against those libraries
+      check_Python_compiles(pyCompiles)
+      if(NOT pyCompiles)
+	 message(STATUS "Cannot link against Python!!")
+      endif()	 
+   endif()
+   # Iff the answer is "YES" to all of the above, we set
+   # EMBEDDED_PYTHON to TRUE enabling the embedded Python code
+   if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND 
+      AND HAS_PYTHON_H AND HAS_PYCONFIG_H AND pyCompiles)
+      set(EMBEDDED_PYTHON TRUE)
+      add_definitions(-DEMBEDDED_PYTHON)
+      message(STATUS "Python embedding ENABLED")
+   else()
+      message(STATUS "Python embedding DISABLED")
+      message(STATUS "   Dependencies not satisfied")
+   endif()
 else()
-   set(PYTHONINTERP_FOUND TRUE)
-   set(PYTHON_EXECUTABLE "${PYTHON_INTERPRETER}")
-   get_Python_version_string(pyVersion)
-   set(PYTHON_VERSION_STRING "${pyVersion}")
-   message(STATUS "Passed PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.6\")")
-endif()	
-# Set variables to help find Python library that is compatible with interpreter
-# Copied from https://bitbucket.org/fenics-project/dolfin
-if(PYTHONINTERP_FOUND)
-   # Get Python include path from Python interpretter
-   execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
-                         "import distutils.sysconfig, sys; sys.stdout.write(distutils.sysconfig.get_python_inc())"
-                  OUTPUT_VARIABLE _PYTHON_INCLUDE_PATH
-                  RESULT_VARIABLE _PYTHON_INCLUDE_RESULT)
-   # Get Python library path from interpreter
-   execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c
-                        "import os, sys, inspect; sys.stdout.write(os.path.split(os.path.split(inspect.getfile(inspect))[0])[0])"
-                  OUTPUT_VARIABLE _PYTHON_LIB_PATH
-                  RESULT_VARIABLE _PYTHON_LIB_RESULT)
-   # Set include path, if returned by interpreter
-   if("${_PYTHON_INCLUDE_RESULT}" STREQUAL "0")
-      set(PYTHON_INCLUDE_DIR ${_PYTHON_INCLUDE_PATH})
-   endif()
-   # Add a search path for Python library based on output from
-   # interpreter
-   set(CMAKE_LIBRARY_PATH_SAVE ${CMAKE_LIBRARY_PATH})
-   if("${_PYTHON_LIB_RESULT}" STREQUAL "0")
-      set(CMAKE_LIBRARY_PATH ${_PYTHON_LIB_PATH})
-   endif()
-   # Find Pythons libs
-   find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
-   # Check headers
-   set(CMAKE_REQUIRED_INCLUDES "${PYTHON_INCLUDE_DIRS}")
-   check_include_file(Python.h HAS_PYTHON_H)
-   check_include_file(pyconfig.h HAS_PYCONFIG_H)
-   if(NOT HAS_PYTHON_H)
-      message(FATAL_ERROR "No Python.h header found!!")	   
-   endif()	   
-   if(NOT HAS_PYCONFIG_H)
-      message(FATAL_ERROR "No pyconfig.h header found!!")	   
-   endif()	   
-   unset(CMAKE_REQUIRED_INCLUDES)
+   message(STATUS "Python embedding DISABLED")
 endif()
 find_package(ZLIB REQUIRED) 
 

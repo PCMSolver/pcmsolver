@@ -75,7 +75,7 @@ struct InputTsLessTest {
     double epsilonInside;
     double epsilonOutside;
     void SetUp() {
-	filename = "@tsless.inp";
+	filename = "tsless.inp";
 	parsedInput = Input(filename);
 	units = "ANGSTROM";
 	CODATAyear = 2002;
@@ -106,9 +106,9 @@ struct InputTsLessTest {
 BOOST_FIXTURE_TEST_SUITE(InputTsLess, InputTsLessTest)
 
 /*! \class Input 
- *  \test \b InputTsLessTest_TsLess tests input reading on an input file parsed by pcmsolver.py
+ *  \test \b InputTsLessTest_embeddedPythonTsLess tests input reading by embedding Python pcmsolver.py script
  */
-BOOST_FIXTURE_TEST_CASE(TsLess, InputTsLessTest)
+BOOST_FIXTURE_TEST_CASE(embeddedPythonTsLess, InputTsLessTest)
 {
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
     BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
@@ -171,7 +171,7 @@ struct InputRestartTest {
     double epsilonInside;
     double epsilonOutside;
     void SetUp() {
-	filename = "@restart.inp";
+	filename = "restart.inp";
 	parsedInput = Input(filename);
 	units = "AU";
 	CODATAyear = 2010;
@@ -202,9 +202,9 @@ struct InputRestartTest {
 BOOST_FIXTURE_TEST_SUITE(InputRestart, InputRestartTest)
 
 /*! \class Input 
- *  \test \b InputRestartTest_Restart tests input reading on an input file parsed by pcmsolver.py
+ *  \test \b InputRestartTest_embeddedPythonRestart tests input reading by embedding Python pcmsolver.py script
  */
-BOOST_FIXTURE_TEST_CASE(Restart, InputRestartTest)
+BOOST_FIXTURE_TEST_CASE(embeddedPythonRestart, InputRestartTest)
 {
     double threshold = 1.0e-12;
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
@@ -269,7 +269,7 @@ struct InputWaveletTest {
     double epsilonInside;
     double epsilonOutside;
     void SetUp() {
-	filename = "@wavelet.inp";
+	filename = "wavelet.inp";
 	parsedInput = Input(filename);
 	units = "ANGSTROM";
 	CODATAyear = 1998;
@@ -303,9 +303,9 @@ struct InputWaveletTest {
 BOOST_FIXTURE_TEST_SUITE(InputWavelet, InputWaveletTest)
 
 /*! \class Input 
- *  \test \b InputWaveletTest_Wavelet tests input reading on an input file parsed by pcmsolver.py
+ *  \test \b InputWaveletTest_embeddedPythonWavelet tests input reading by embedding Python pcmsolver.py script
  */
-BOOST_FIXTURE_TEST_CASE(Wavelet, InputWaveletTest)
+BOOST_FIXTURE_TEST_CASE(embeddedPythonWavelet, InputWaveletTest)
 {
     double threshold = 1.0e-12;
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());

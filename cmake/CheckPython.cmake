@@ -41,3 +41,15 @@ function(get_Python_version_string pyVersion)
     unset(_PYTHON_VERSION_RESULT)
     unset(_VERSION)
 endfunction()
+
+function(check_Python_compiles pyCompiles)
+   set(_bindir  "${PROJECT_BINARY_DIR}/pyCompiles")	
+   set(_srcfile "${PROJECT_SOURCE_DIR}/cmake/embedded_Python.cpp")
+   
+   try_compile(pyCompiles "${_bindir}" "${_srcfile}" 
+             CMAKE_FLAGS 
+	     "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIRS}"
+             "-DLINK_LIBRARIES=${PYTHON_LIBRARIES}")
+
+   set(pyCompiles "${pyCompiles}" PARENT_SCOPE)	
+endfunction()

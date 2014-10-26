@@ -6,7 +6,7 @@ add_subdirectory(input)
 add_subdirectory(gepol)
 if(DEVELOPMENT_CODE)
 	add_subdirectory(tsless)
-	#	add_subdirectory(wavelet_cavity)
+	add_subdirectory(wavelet_cavity)
 endif()
 # Green's functions
 add_subdirectory(green)

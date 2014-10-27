@@ -75,6 +75,7 @@ BOOST_AUTO_TEST_CASE(benzene)
     Eigen::Vector3d H6( 3.616,  0.776, -9.196);
 
     std::vector<Sphere> spheres;
+    /*
     Sphere sph1(C1, 3.212534412); 
     Sphere sph2(C2, 3.212534412);
     Sphere sph3(C3, 3.212534412);
@@ -88,7 +89,21 @@ BOOST_AUTO_TEST_CASE(benzene)
     Sphere sph10(H4, 2.267671349);
     Sphere sph11(H5, 2.267671349);
     Sphere sph12(H6, 2.267671349);
+    */
+    Sphere sph1(C1, 1.53); 
+    Sphere sph2(C2, 1.53);
+    Sphere sph3(C3, 1.53);
+    Sphere sph4(C4, 1.53);
+    Sphere sph5(C5, 1.53);
+    Sphere sph6(C6, 1.53);
     
+    Sphere sph7(H1, 1.06); 
+    Sphere sph8(H2, 1.06);
+    Sphere sph9(H3, 1.06);
+    Sphere sph10(H4, 1.06);
+    Sphere sph11(H5, 1.06);
+    Sphere sph12(H6, 1.06);
+
     spheres.push_back(sph1);
     spheres.push_back(sph2);
     spheres.push_back(sph3);
@@ -103,7 +118,7 @@ BOOST_AUTO_TEST_CASE(benzene)
     spheres.push_back(sph12);
     
     double probeRadius = 1.385; // Probe Radius for water
-    int patchLevel = 2;
+    int patchLevel = 3;
     double coarsity = 0.5;
   printf("TEST 1\n");
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
@@ -150,7 +165,7 @@ BOOST_AUTO_TEST_CASE(benzene)
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
     solver.compCharge(fake_mep, fake_asc);
-    double totalASC = (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
+    double totalASC = - (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-2);

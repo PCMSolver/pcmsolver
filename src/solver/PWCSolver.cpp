@@ -22,7 +22,6 @@
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
-
 #include "PWCSolver.hpp"
 
 #include <fstream>
@@ -135,6 +134,23 @@ void PWCSolver::initInterpolation()
 {
     init_interpolate(&T_, pointList, nPatches, nLevels);
     nNodes = gennet(&nodeList, &elementList, pointList, nPatches, nLevels);
+#ifdef DEBUG
+    FILE* debugFile = fopen("debug.out","w");
+    fclose(debugFile);
+    debugFile = fopen("debug.out","a");	
+    fprintf(debugFile,">>> PPOINTLIST\n");
+    for(unsigned int m = 0; m<nNodes; ++m){
+      fprintf(debugFile,"%lf %lf %lf\n",(nodeList)[m].x, (nodeList)[m].y, (nodeList)[m].z);
+    }
+    fprintf(debugFile,"<<< PPOINTLIST\n");
+    fprintf(debugFile,">>> PELEMENTLIST\n");
+    unsigned int nf = nPatches*(1<<nLevels)*(1<<nLevels);
+    for(unsigned int m = 0; m<nf; ++m){
+      fprintf(debugFile,"%d %d %d %d\n",(elementList)[m][0], (elementList)[m][1], (elementList)[m][2], (elementList)[m][3]);
+    }
+    fprintf(debugFile,"<<< PELEMENTLIST\n");
+    fclose(debugFile);
+#endif
 }
 
 void PWCSolver::constructWavelets()
@@ -144,6 +160,34 @@ void PWCSolver::constructWavelets()
     set_quadrature_level(waveletList, elementTree, nPatches, nLevels);
     simplify_waveletlist(waveletList, elementTree, nPatches, nLevels);
     complete_elementlist(waveletList, elementTree, nPatches, nLevels);
+#ifdef DEBUG
+    unsigned int	N = 1 << nLevels;	
+    unsigned int	ne;
+    ne = nPatches*(4*N*N-1)/3;
+    FILE* debugFile = fopen("debug.out","a");
+    fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
+    for(unsigned int m = 0; m<nNodes; ++m){
+            fprintf(debugFile,"%d %d %d %d\n", m, waveletList[m].level, waveletList[m].element_number, 4);
+            for(unsigned int i1 = 0; i1< waveletList[m].element_number;++i1){
+                    fprintf(debugFile,"%d %lf ", waveletList[m].element[i1], waveletList[m].weight[i1]);
+            }
+            for(unsigned int i1 = 0; i1< 4;++i1){
+                    fprintf(debugFile,"%d ", waveletList[m].son[i1]);
+            }
+            fprintf(debugFile,"\n");
+    }
+    fprintf(debugFile,"<<< WAVELET_TREE_SIMPLIFY\n");
+    fflush(debugFile);
+    fprintf(debugFile,">>> HIERARCHICAL_ELEMENT_TREE\n");
+    for(unsigned int m = 0; m<ne; ++m){
+        fprintf(debugFile,"%d %d %d %d %lf %lf %lf %lf %lf %lf %lf\n", elementTree[m].patch, elementTree[m].level, elementTree[m].index_s, elementTree[m].index_t, elementTree[m].midpoint.x, elementTree[m].midpoint.y, elementTree[m].midpoint.z, elementTree[m].radius, nodeList[elementTree[m].vertex[0]].x, nodeList[elementTree[m].vertex[0]].y, nodeList[elementTree[m].vertex[0]].z);
+        for(unsigned int i1 = 0; i1< elementTree[m].wavelet_number;++i1)
+            fprintf(debugFile,"%d ", elementTree[m].wavelet[i1]);
+        fprintf(debugFile,"\n");
+    }
+    fprintf(debugFile,"<<< HIERARCHICAL_ELEMENT_TREE\n");
+    fclose(debugFile);
+#endif
 }
 
 void PWCSolver::constructSi()
@@ -166,9 +210,48 @@ void PWCSolver::constructSi()
     }
     gf = greenInside_;
     apriori1_ = compression(&S_i_, waveletList, elementTree, nPatches, nLevels);
+#ifdef DEBUG
+    FILE* debugFile = fopen("debug.out", "a");
+    fprintf(debugFile,">>> SYSTEMMATRIX AC\n");
+    fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+    for(unsigned int i  = 0; i < S_i_.m; ++i){
+      fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+      for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+        fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+      }
+    }
+    fprintf(debugFile,"<<< SYSTEMMATRIX AC\n");
+    fflush(debugFile);
+#endif
     WEM(&S_i_, waveletList, elementTree, T_, nPatches, nLevels, SingleLayer, DoubleLayer,
         factor);
+#ifdef DEBUG
+    fprintf(debugFile,">>> SYSTEMMATRIX AW\n");
+    fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+    for(unsigned int i  = 0; i < S_i_.m; ++i){
+      fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+      for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+        fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+      }
+    }
+    fprintf(debugFile,"<<< SYSTEMMATRIX AW\n");
+    fflush(debugFile);
+#endif
+
     aposteriori1_ = postproc(&S_i_, waveletList, elementTree, nPatches, nLevels);
+#ifdef DEBUG
+    fprintf(debugFile,">>> SYSTEMMATRIX AP\n");
+    fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
+    for(unsigned int i  = 0; i < S_i_.m; ++i){
+      fprintf(debugFile,"\n%d %d\n", S_i_.row_number[i], S_i_.max_row_number[i]);
+      for(unsigned int j = 0; j < S_i_.row_number[i]; ++j){
+        fprintf(debugFile, "%d %lf %lf\n", S_i_.index[i][j], S_i_.value1[i][j], S_i_.value2[i][j]);
+      }
+    }
+    fprintf(debugFile,"<<< SYSTEMMATRIX AP\n");
+    fflush(debugFile);
+#endif
+
 }
 
 void PWCSolver::constructSe()
@@ -190,17 +273,66 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double epsilon = greenOutside_->epsilon();
     WEMRHS2M(&rhs, waveletList, elementTree, T_, nPatches, nLevels, pot,
              quadratureLevel_);
+#ifdef DEBUG
+    FILE *debugFile = fopen("debug.out", "a");
+    fprintf(debugFile,">>> WEMRHS1\n");
+    for(unsigned int i = 0; i < nNodes; ++i){
+      fprintf(debugFile,"%d %lf\n",i, rhs[i]);
+    }
+    fprintf(debugFile,"<<< WEMRHS1\n");
+    fflush(debugFile);
+#endif
+
     int iter = WEMPGMRES2(&S_i_, rhs, u, threshold, nPatches, nLevels);
+#ifdef DEBUG
+    fprintf(debugFile,">>> WEMPGMRES1\n");
+    for(unsigned int i = 0; i < nNodes; ++i){
+      fprintf(debugFile,"%d %lf\n",i, u[i]);
+    }
+    fprintf(debugFile,"<<< WEMPGMRES1\n");
+    fflush(debugFile);
+#endif
+
     tdwtKon(u, nLevels, nFunctions);
     dwtKon(u, nLevels, nFunctions);
     for (size_t i = 0; i < nFunctions; ++i) {
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
     }
+#ifdef DEBUG
+    fprintf(debugFile,">>> WEMRHS2\n");
+    for(unsigned int i = 0; i < nNodes; ++i){
+      fprintf(debugFile,"%d %lf\n",i, rhs[i]);
+    }
+    fprintf(debugFile,"<<< WEMRHS2\n");
+    fflush(debugFile);
+#endif
+
     memset(u, 0, nFunctions * sizeof(double));
     iter = WEMPCG(&S_i_, rhs, u, threshold, nPatches, nLevels);
+#ifdef DEBUG
+    fprintf(debugFile,">>> WEMPCG %g\n",threshold);
+    for(unsigned int i = 0; i <  nNodes; ++i){
+      fprintf(debugFile,"%d %.10lf\n",i, u[i]);
+    }
+    fprintf(debugFile,"<<< WEMPCG\n");
+    fflush(debugFile);
+#endif
+
     tdwtKon(u, nLevels, nFunctions);
     energy_ext(u, pot, elementList, T_, nPatches, nLevels);
-    charge_ext(u, chg, elementList, T_, nPatches, nLevels);
+ #ifdef DEBUG
+    unsigned int	ne;		/* Anzahl der Elemente                        */
+    unsigned int	N = 1 << nLevels;	/* N*N Elemente pro Patch auf dem Level M     */
+    ne = nPatches*(4*N*N-1)/3;			/* Anzahl der Elemente */
+    fprintf(debugFile,">>> CHARGE %g\n",threshold);
+    for(unsigned int i = 0; i <  ne; ++i){
+      fprintf(debugFile,"%d %.10lf\n",i, charge[i]);
+    }
+    fprintf(debugFile,"<<< CHARGE\n");
+    fflush(debugFile);
+    fclose(debugFile);
+#endif
+   charge_ext(u, chg, elementList, T_, nPatches, nLevels);
     free(rhs);
     free(u);
 }

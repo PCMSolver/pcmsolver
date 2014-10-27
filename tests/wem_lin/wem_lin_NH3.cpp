@@ -60,48 +60,6 @@ BOOST_AUTO_TEST_CASE(NH3)
     spheres.push_back(sph2);
     spheres.push_back(sph3);
     spheres.push_back(sph4);
-/*
-    Eigen::Vector3d C1(-0.694303272975, -0.000000000000, -1.202568545351);
-    Eigen::Vector3d C2( 0.694303272975,  0.000000000000, -1.202568545351);
-    Eigen::Vector3d C3( 1.388606546154,  0.000000000000,  0.000000000000);
-    Eigen::Vector3d C4( 0.694303272975,  0.000000000000,  1.202568545351);
-    Eigen::Vector3d C5(-0.694303272975, -0.000000000000,  1.202568545351);
-    Eigen::Vector3d C6(-1.388606546154, -0.000000000000,  0.000000000000);
-    Eigen::Vector3d H1(-1.235418032354, -0.000000000000, -2.139806800843);
-    Eigen::Vector3d H2( 1.235418032354,  0.000000000000, -2.139806800843);
-    Eigen::Vector3d H3( 2.470836065313,  0.000000000000,  0.000000000000);
-    Eigen::Vector3d H4( 1.235418032354,  0.000000000000,  2.139806800843);
-    Eigen::Vector3d H5(-1.235418032354, -0.000000000000,  2.139806800843);
-    Eigen::Vector3d H6(-2.470836065313, -0.000000000000,  0.000000000000);
-    
-    std::vector<Sphere> spheres;
-    Sphere sph1(C1, 3.212534412); 
-    Sphere sph2(C2, 3.212534412);
-    Sphere sph3(C3, 3.212534412);
-    Sphere sph4(C4, 3.212534412);
-    Sphere sph5(C5, 3.212534412);
-    Sphere sph6(C6, 3.212534412);
-    
-    Sphere sph7(H1, 2.267671349); 
-    Sphere sph8(H2, 2.267671349);
-    Sphere sph9(H3, 2.267671349);
-    Sphere sph10(H4, 2.267671349);
-    Sphere sph11(H5, 2.267671349);
-    Sphere sph12(H6, 2.267671349);
-    
-    spheres.push_back(sph1);
-    spheres.push_back(sph2);
-    spheres.push_back(sph3);
-    spheres.push_back(sph4);
-    spheres.push_back(sph5);
-    spheres.push_back(sph6);
-    spheres.push_back(sph7);
-    spheres.push_back(sph8);
-    spheres.push_back(sph9);
-    spheres.push_back(sph10);
-    spheres.push_back(sph11);
-    spheres.push_back(sph12);
- */
     double probeRadius = 1.385; // Probe Radius for water
     int patchLevel = 2;
     double coarsity = 0.5;

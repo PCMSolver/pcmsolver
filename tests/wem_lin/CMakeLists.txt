@@ -3,6 +3,6 @@ set(list_of_libraries solver green bi_operators cavity wemFiles wemSolvers wavca
 list(APPEND external_libraries ${ZLIB_LIBRARIES})
 # wem_lin_point test not yet done 
 #    add_boosttest(wem_lin_point "${list_of_libraries}" "${external_libraries}")
-add_boosttest(wem_lin_NH3 "${list_of_libraries}" "${external_libraries}")
-add_boosttest(wem_con_NH3 "${list_of_libraries}" "${external_libraries}")
-add_boosttest(wem_lin_benzene "${list_of_libraries}" "${external_libraries}")
+add_boosttest(wem_lin_NH3  "${list_of_libraries}" "${external_libraries}")
+add_boosttest(wem_con_NH3  "${list_of_libraries}" "${external_libraries}")
+add_boosttest(wem_lin_C6H6 "${list_of_libraries}" "${external_libraries}")

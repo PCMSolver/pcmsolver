@@ -23,7 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE WEMSolverbenzene
+#define BOOST_TEST_MODULE WEMSolverC6H6
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -41,26 +41,11 @@
 #include "WaveletCavity.hpp"
 
 /*! \class WEMSolver
- *  \test \b  benzene tests WEMSolver with linear ansatz functions using ammonia and a wavelet cavity
+ *  \test \b  C6H6 tests WEMSolver with linear ansatz functions using ammonia and a wavelet cavity
  */
-BOOST_AUTO_TEST_CASE(benzene)
+BOOST_AUTO_TEST_CASE(C6H6)
 {
-  printf("STARTING TEST\n");
     // Set up cavity
-    /*
-    Eigen::Vector3d C1(-0.694303272975, -0.000000000000, -1.202568545351);
-    Eigen::Vector3d C2( 0.694303272975,  0.000000000000, -1.202568545351);
-    Eigen::Vector3d C3( 1.388606546154,  0.000000000000,  0.000000000000);
-    Eigen::Vector3d C4( 0.694303272975,  0.000000000000,  1.202568545351);
-    Eigen::Vector3d C5(-0.694303272975, -0.000000000000,  1.202568545351);
-    Eigen::Vector3d C6(-1.388606546154, -0.000000000000,  0.000000000000);
-    Eigen::Vector3d H1(-1.235418032354, -0.000000000000, -2.139806800843);
-    Eigen::Vector3d H2( 1.235418032354,  0.000000000000, -2.139806800843);
-    Eigen::Vector3d H3( 2.470836065313,  0.000000000000,  0.000000000000);
-    Eigen::Vector3d H4( 1.235418032354,  0.000000000000,  2.139806800843);
-    Eigen::Vector3d H5(-1.235418032354, -0.000000000000,  2.139806800843);
-    Eigen::Vector3d H6(-2.470836065313, -0.000000000000,  0.000000000000);
-    */
     Eigen::Vector3d C1( 5.274,  1.999, -8.568);
     Eigen::Vector3d C2( 6.627,  2.018, -8.209);
     Eigen::Vector3d C3( 7.366,  0.829, -8.202);
@@ -75,21 +60,6 @@ BOOST_AUTO_TEST_CASE(benzene)
     Eigen::Vector3d H6( 3.616,  0.776, -9.196);
 
     std::vector<Sphere> spheres;
-    /*
-    Sphere sph1(C1, 3.212534412); 
-    Sphere sph2(C2, 3.212534412);
-    Sphere sph3(C3, 3.212534412);
-    Sphere sph4(C4, 3.212534412);
-    Sphere sph5(C5, 3.212534412);
-    Sphere sph6(C6, 3.212534412);
-    
-    Sphere sph7(H1, 2.267671349); 
-    Sphere sph8(H2, 2.267671349);
-    Sphere sph9(H3, 2.267671349);
-    Sphere sph10(H4, 2.267671349);
-    Sphere sph11(H5, 2.267671349);
-    Sphere sph12(H6, 2.267671349);
-    */
     Sphere sph1(C1, 1.53); 
     Sphere sph2(C2, 1.53);
     Sphere sph3(C3, 1.53);
@@ -120,12 +90,9 @@ BOOST_AUTO_TEST_CASE(benzene)
     double probeRadius = 1.385; // Probe Radius for water
     int patchLevel = 3;
     double coarsity = 0.5;
-  printf("TEST 1\n");
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
-  printf("TEST 1a\n");
     cavity.readCavity("molec_dyadic.dat");
 
-  printf("TEST 2\n");
     CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();

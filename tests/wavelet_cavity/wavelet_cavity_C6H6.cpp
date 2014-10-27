@@ -60,19 +60,19 @@ struct WaveletCavityC6H6Test {
         Eigen::Vector3d H6( 3.616,  0.776, -9.196);
                                                     
         std::vector<Sphere> spheres;
-        Sphere sph1(C1, 3.212534412); 
-        Sphere sph2(C2, 3.212534412);
-        Sphere sph3(C3, 3.212534412);
-        Sphere sph4(C4, 3.212534412);
-        Sphere sph5(C5, 3.212534412);
-        Sphere sph6(C6, 3.212534412);
+        Sphere sph1(C1, 1.53);  
+        Sphere sph2(C2, 1.53);
+        Sphere sph3(C3, 1.53);
+        Sphere sph4(C4, 1.53);
+        Sphere sph5(C5, 1.53);
+        Sphere sph6(C6, 1.53);
         
-        Sphere sph7(H1, 2.267671349); 
-        Sphere sph8(H2, 2.267671349);
-        Sphere sph9(H3, 2.267671349);
-        Sphere sph10(H4, 2.267671349);
-        Sphere sph11(H5, 2.267671349);
-        Sphere sph12(H6, 2.267671349);
+        Sphere sph7(H1, 1.06); 
+        Sphere sph8(H2, 1.06);
+        Sphere sph9(H3, 1.06);
+        Sphere sph10(H4, 1.06);
+        Sphere sph11(H5, 1.06);
+        Sphere sph12(H6, 1.06);
         
         spheres.push_back(sph1);
         spheres.push_back(sph2);
@@ -110,7 +110,7 @@ struct WaveletCavityC6H6Test {
  */
 BOOST_FIXTURE_TEST_CASE(size, WaveletCavityC6H6Test)
 {
-    int size = 4288;
+    int size = 6912;
     int actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
@@ -120,7 +120,7 @@ BOOST_FIXTURE_TEST_CASE(size, WaveletCavityC6H6Test)
  */
 BOOST_FIXTURE_TEST_CASE(area, WaveletCavityC6H6Test)
 {
-    double area = 146.41490284471513;
+    double area = 95.909894964414121;
     double actualArea = cavity.elementArea().sum();
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
@@ -130,7 +130,7 @@ BOOST_FIXTURE_TEST_CASE(area, WaveletCavityC6H6Test)
  */
 BOOST_FIXTURE_TEST_CASE(volume, WaveletCavityC6H6Test)
 {
-    double volume = 153.3346491517182;
+    double volume = 69.622821450340595;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;

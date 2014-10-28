@@ -383,7 +383,11 @@ static taylor<T, Nvar, Ndeg> operator-(const taylor<T, Nvar,Ndeg>& t1,
 
 #include "taylor_math.hpp"
 
+<<<<<<< HEAD
 #ifndef NO_TAYLOR_CXXIO
+=======
+#ifdef TAYLOR_CXXIO
+>>>>>>> master
 
 #include <iostream>
 

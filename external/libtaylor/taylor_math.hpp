@@ -502,6 +502,7 @@ static taylor<T,Nvar,Ndeg> asinh(const taylor<T,Nvar,Ndeg> &t)
   return res;
 }
 
+<<<<<<< HEAD
 template<class T,int Ndeg>
 static void acos_taylor(taylor<T,1,Ndeg>& t, const T &a)
 {
@@ -526,6 +527,8 @@ static taylor<T,Nvar,Ndeg> acos(const taylor<T,Nvar,Ndeg> &t)
   return res;
 }
 
+=======
+>>>>>>> master
 
 template<class T,int Ndeg>
 static void sinc_taylor_at0(taylor<T,1,Ndeg>& t)

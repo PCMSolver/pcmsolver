@@ -5,42 +5,6 @@ using namespace std;
 #include "taylor.hpp"
 typedef double num_t;
 
-<<<<<<< HEAD
-// Some taylor coefficients around x = 2.5, calculated using
-// Maxima bfloat(taylor(...))
-const num_t exp_good[] = {1.218249396070347e1,
-			   1.218249396070347e1,
-			   6.091246980351737e0,
-			   2.030415660117246e0,
-			   5.076039150293114e-1,
-			   1.015207830058623e-1,
-			   1.692013050097705e-2};
-
-const num_t log_good[] = {9.162907318741551e-1,
-			   4.0e-1,
-			   -8.0e-2,
-			   2.133333333333333e-2,
-			   -6.4e-3,
-			   2.048e-3,
-			   -6.826666666666667e-4};
-
-const num_t atan_good[] = {1.1902899496825317,
-			    1.379310344827586e-1,
-			    -4.756242568370987e-2,
-			    1.552612516571679e-2,
-			    -4.750587107528691e-3,
-			    1.336092873197889e-3,
-			    -3.310338712605161e-4};
-
-// at 0.3
-const num_t acos_good[] = {1.266103672779499,
-			   -1.048284836721918,
-			   -1.727942038552613e-1,
-			   -2.489586819892653e-1,
-			   -1.658874436238772e-1,
-			   -1.996748716672503e-1,
-			   -1.959637313366269e-1};
-=======
 using namespace polymul;
 
 // Some taylor coefficients around x = 2.5, calculated using
@@ -69,17 +33,11 @@ const num_t atan_good[] = {1.1902899496825317,
 			   1.336092873197889e-3,
 			   -3.310338712605161e-4};
 
->>>>>>> master
 
 //exp(1/(2.5 + 3x + 7y))
 const num_t composed_good[] = { 1.49182469764127,
 				-7.160758548678098e-1, //x
 				-1.670843661358223, //y
-<<<<<<< HEAD
-				 1.031149231009646, //x^2
-				 4.812029744711682, //xy
-				 5.614034702163628}; //y^2
-=======
 				1.031149231009646, //x^2
 				4.812029744711682, //xy
 				5.614034702163628}; //y^2
@@ -98,7 +56,6 @@ void printpoly(ostream &dst, const polynomial<num,Nvar,Ndeg> &p)
     }
 }
 
->>>>>>> master
 
 #define NR_COEFF_CHECK 6
 
@@ -123,15 +80,12 @@ int taylor_check(const char *label,
   return nfail;
 }
 
-<<<<<<< HEAD
-=======
 template<class T>
 T error_measure(const T &x1, const T &x2)
 {
   return 2*fabs(x1 - x2)/(1 + 0.5*fabs(x1+x2));
 }
 
->>>>>>> master
 template<class T, int Nvar, int Ndeg>
 int taylor_compare(const taylor<T,Nvar,Ndeg>& t1,
 		   const taylor<T,Nvar,Ndeg>& t2,
@@ -188,13 +142,7 @@ taylor<T,2,N> binomial_generating_function(void)
 int main(void)
 {
   num_t x0 = 2.5;
-<<<<<<< HEAD
-  num_t x1 = 0.3;
   taylor<num_t,1,6> tin(x0,0);
-  taylor<num_t,1,6> tin1(x1,0);
-=======
-  taylor<num_t,1,6> tin(x0,0);
->>>>>>> master
   int res = 0;
 
   cout.precision(16);
@@ -203,10 +151,6 @@ int main(void)
   res += taylor_check("exp",exp(tin),exp_good,1e-15);
   res += taylor_check("log",log(tin),log_good,1e-15);
   res += taylor_check("atan",atan(tin),atan_good,1e-15);
-<<<<<<< HEAD
-  res += taylor_check("acos",acos(tin1),acos_good,1e-15);
-=======
->>>>>>> master
 
   // Test multidimensional multiply consistency
   taylor<num_t,4,5> tmul(0),tacc(1),t1,t2,t3;
@@ -304,17 +248,6 @@ int main(void)
   num_t dx = 1e-3;
   shift_sint.shift(shifted,&dx);
   res += taylor_compare(sint,shifted,1e-15);
-<<<<<<< HEAD
-
-/*
-  // sinc
-  cout << scientific;
-  cout.precision(16);
-  taylor<num_t,1,6> sincx(1e-4,0), sincout = sinc(sincx);
-  for (int i=0;i<sincout.size;i++)
-      cout << i << " " << sincout[i] << endl;
-*/
-=======
   // Tensoring.
   // Test with a normal taylor series that completely contains
   // the tensor terms. 
@@ -363,6 +296,5 @@ int main(void)
     }
 
 
->>>>>>> master
   return res;
 }

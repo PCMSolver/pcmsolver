@@ -221,29 +221,16 @@ set(TaylorCMakeArgs
    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-   -Wno-dev)
+   )
 
-if(DEVELOPMENT_CODE)
-	ExternalProject_Add(libtaylor
-        	SVN_REPOSITORY http://libtaylor.googlecode.com/svn/trunk/
-               	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
-        	PREFIX ${PROJECT_SOURCE_DIR}/external
-        	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
-        	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
-                STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
-                TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
-                INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-                CMAKE_ARGS ${TaylorCMakeArgs})
-else()
-	ExternalProject_Add(libtaylor
-        	PREFIX ${PROJECT_SOURCE_DIR}/external
-        	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
-        	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
-                STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
-                TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
-                INSTALL_DIR ${PROJECT_BINARY_DIR}/external
-                CMAKE_ARGS ${TaylorCMakeArgs})
-endif()
+ExternalProject_Add(libtaylor
+	PREFIX ${PROJECT_SOURCE_DIR}/external
+	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
+	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
+        STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
+        TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
+        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+        CMAKE_ARGS ${TaylorCMakeArgs})
 
 configure_files()
 

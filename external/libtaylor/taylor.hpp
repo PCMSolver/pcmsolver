@@ -308,7 +308,7 @@ static taylor<T, Nvar, Ndeg> operator*(const taylor<T, Nvar,Ndeg>& t1,
 				const taylor<T, Nvar,Ndeg>& t2)
 {
   taylor<T, Nvar,Ndeg> tmp;
-  taylormul(tmp,t1,t2);
+  polymul::taylormul(tmp,t1,t2);
   return tmp;
 }
 

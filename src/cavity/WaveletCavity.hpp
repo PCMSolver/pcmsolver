@@ -73,6 +73,10 @@ public:
     unsigned int getNLevels() const { return nLevels_; }
     unsigned int getNPoints() { return nPoints_; }
     unsigned int getNPoints() const { return nPoints_; }
+    void scaleNPoints(double scaleF) {
+      for(unsigned int i = 0; i < nPoints_; ++i)
+        nodePoint_[i] *=scaleF;
+    }
     Eigen::Vector3d getNodePoint(int i) { return nodePoint_[i]; }
     Eigen::Vector3d getNodePoint(int i) const { return nodePoint_[i]; }
     Eigen::Vector3i getNodeIndex(int i) { return nodeIndex_[i]; }

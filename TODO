@@ -6,15 +6,8 @@ the issue number.
 
 10 December 2013
 ----------------
-3. Define which part of the documentation goes into a
-   release (#578)
 5. Draw a better logo for the library (both programmers'
    and users' manuals)
-6. Draw a diagram explaining the structure of the library
-   and the relationships between different parts of it
-   (programmers' manual only)
-7. Implementation of input management as asked by Andy
-   and Daniel
 
 10 April 2014
 -------------

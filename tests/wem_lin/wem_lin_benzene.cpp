@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(benzene)
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
   printf("TEST 1a\n");
     cavity.readCavity("molec_dyadic.dat");
-    cavity.scaleNPoints(1./0.52917721092);
+    cavity.scaleNodePoints(0.52917721092);
 
   printf("TEST 2\n");
     CollocationIntegrator * diag = new CollocationIntegrator();

@@ -40,11 +40,14 @@
 #include "Vacuum.hpp"
 #include "WaveletCavity.hpp"
 
+#include "PhysicalConstants.hpp"
+
 /*! \class WEMSolver
  *  \test \b  C6H6 tests WEMSolver with linear ansatz functions using ammonia and a wavelet cavity
  */
 BOOST_AUTO_TEST_CASE(C6H6)
 {
+    double f = 1.2; /// constant from Tomasi Persico 1994
     // Set up cavity
     Eigen::Vector3d C1( 5.274,  1.999, -8.568);
     Eigen::Vector3d C2( 6.627,  2.018, -8.209);
@@ -60,19 +63,19 @@ BOOST_AUTO_TEST_CASE(C6H6)
     Eigen::Vector3d H6( 3.616,  0.776, -9.196);
 
     std::vector<Sphere> spheres;
-    Sphere sph1(C1, 1.53); 
-    Sphere sph2(C2, 1.53);
-    Sphere sph3(C3, 1.53);
-    Sphere sph4(C4, 1.53);
-    Sphere sph5(C5, 1.53);
-    Sphere sph6(C6, 1.53);
+    Sphere sph1(C1, 1.53*f); 
+    Sphere sph2(C2, 1.53*f);
+    Sphere sph3(C3, 1.53*f);
+    Sphere sph4(C4, 1.53*f);
+    Sphere sph5(C5, 1.53*f);
+    Sphere sph6(C6, 1.53*f);
     
-    Sphere sph7(H1, 1.06); 
-    Sphere sph8(H2, 1.06);
-    Sphere sph9(H3, 1.06);
-    Sphere sph10(H4, 1.06);
-    Sphere sph11(H5, 1.06);
-    Sphere sph12(H6, 1.06);
+    Sphere sph7(H1, 1.06*f); 
+    Sphere sph8(H2, 1.06*f);
+    Sphere sph9(H3, 1.06*f);
+    Sphere sph10(H4, 1.06*f);
+    Sphere sph11(H5, 1.06*f);
+    Sphere sph12(H6, 1.06*f);
 
     spheres.push_back(sph1);
     spheres.push_back(sph2);
@@ -87,11 +90,12 @@ BOOST_AUTO_TEST_CASE(C6H6)
     spheres.push_back(sph11);
     spheres.push_back(sph12);
     
-    double probeRadius = 1.385; // Probe Radius for water
+    double probeRadius = 1.385*f; // Probe Radius for water
     int patchLevel = 3;
     double coarsity = 0.5;
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
     cavity.readCavity("molec_dyadic.dat");
+    cavity.scaleCavity(1./convertBohrToAngstrom);
 
     CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
@@ -113,19 +117,19 @@ BOOST_AUTO_TEST_CASE(C6H6)
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
     for (int i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
-        double C1mep = Ccharge/(center - C1).norm();
-        double C2mep = Ccharge/(center - C2).norm();
-        double C3mep = Ccharge/(center - C3).norm();
-        double C4mep = Ccharge/(center - C4).norm();
-        double C5mep = Ccharge/(center - C5).norm();
-        double C6mep = Ccharge/(center - C6).norm();
+        double C1mep = Ccharge/(center - C1/convertBohrToAngstrom).norm();
+        double C2mep = Ccharge/(center - C2/convertBohrToAngstrom).norm();
+        double C3mep = Ccharge/(center - C3/convertBohrToAngstrom).norm();
+        double C4mep = Ccharge/(center - C4/convertBohrToAngstrom).norm();
+        double C5mep = Ccharge/(center - C5/convertBohrToAngstrom).norm();
+        double C6mep = Ccharge/(center - C6/convertBohrToAngstrom).norm();
 
-        double H1mep = Hcharge/(center - H1).norm();
-        double H2mep = Hcharge/(center - H2).norm();
-        double H3mep = Hcharge/(center - H3).norm();
-        double H4mep = Hcharge/(center - H4).norm();
-        double H5mep = Hcharge/(center - H5).norm();
-        double H6mep = Hcharge/(center - H6).norm();
+        double H1mep = Hcharge/(center - H1/convertBohrToAngstrom).norm();
+        double H2mep = Hcharge/(center - H2/convertBohrToAngstrom).norm();
+        double H3mep = Hcharge/(center - H3/convertBohrToAngstrom).norm();
+        double H4mep = Hcharge/(center - H4/convertBohrToAngstrom).norm();
+        double H5mep = Hcharge/(center - H5/convertBohrToAngstrom).norm();
+        double H6mep = Hcharge/(center - H6/convertBohrToAngstrom).norm();
         fake_mep(i) = C1mep + C2mep + C3mep + C4mep + C5mep + C6mep +
           H1mep + H2mep + H3mep + H4mep + H5mep + H6mep;
     }

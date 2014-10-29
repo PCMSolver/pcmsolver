@@ -66,6 +66,7 @@ public:
     }
     virtual ~WaveletCavity() {};
     void readCavity(const std::string & filename);
+    void scaleCavity(const double scalingFactor);
     void uploadPoints(int quadLevel, Interpolation *interp);
     unsigned int getNPatches() { return nPatches_; }
     unsigned int getNPatches() const { return nPatches_; }

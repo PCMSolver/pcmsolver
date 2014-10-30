@@ -249,7 +249,9 @@ void WEMSolver::constructSi(){
             factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
             break;
         case SecondKind:
-            throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
+            epsilon = greenOutside_->epsilon();
+            factor = - 2 * M_PI * (epsilon + 1) / (epsilon - 1);
+            //throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
             break;
         case Full:
             factor = 2 * M_PI;
@@ -344,11 +346,11 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     WEMRHS2M(&rhs, pot, af);
 #ifdef DEBUG
     FILE *debugFile = fopen("debug.out", "a");
-    fprintf(debugFile,">>> WEMRHS1\n");
+    fprintf(debugFile,">>> WEMRHS21\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, rhs[i]);
     }
-    fprintf(debugFile,"<<< WEMRHS1\n");
+    fprintf(debugFile,"<<< WEMRHS21\n");
     fflush(debugFile);
 #endif
     int iter = WEMPGMRES2(&S_i_, rhs, v, threshold, af);
@@ -372,11 +374,11 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
     }
 #ifdef DEBUG
-    fprintf(debugFile,">>> WEMRHS2\n");
+    fprintf(debugFile,">>> WEMRHS22\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, rhs[i]);
     }
-    fprintf(debugFile,"<<< WEMRHS2\n");
+    fprintf(debugFile,"<<< WEMRHS22\n");
     fflush(debugFile);
 #endif
     memset(u, 0, af->waveletList.sizeWaveletList* sizeof(double));
@@ -396,12 +398,45 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     af->print_geometry(u,"Geometry2.vtk");
     free(rhs);
     free(u);
+    free(v);
 }
 
 void WEMSolver::solveSecondKind(const Eigen::VectorXd & potential,
                                 Eigen::VectorXd & charge)
 {
-    throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
+    double *rhs;
+    double *v = (double*) calloc(af->waveletList.sizeWaveletList, sizeof(double));
+    double *u = (double*) calloc(af->waveletList.sizeWaveletList, sizeof(double));
+    double * pot = const_cast<double *>(potential.data());
+    double * chg = charge.data();
+    double epsilon = greenOutside_->epsilon();
+    WEMRHS2M(&rhs, pot, af);
+#ifdef DEBUG
+    FILE *debugFile = fopen("debug.out", "a");
+    fprintf(debugFile,">>> WEMRHS1\n");
+    for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
+      fprintf(debugFile,"%d %lf\n",i, rhs[i]);
+    }
+    fprintf(debugFile,"<<< WEMRHS1\n");
+    fflush(debugFile);
+#endif
+    int iter = WEMPGMRES1(&S_i_, rhs, u, threshold, af);
+#ifdef DEBUG
+    fprintf(debugFile,">>> WEMPGMRES1\n");
+    for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
+      fprintf(debugFile,"%d %lf\n",i, u[i]);
+    }
+    fprintf(debugFile,"<<< WEMPGMRES1\n");
+    fflush(debugFile);
+#endif
+    af->tdwt(u);
+    energy_ext(u, pot, af);
+    charge_ext(u, chg, af);
+    af->print_geometry(u,"Geometry2.vtk");
+    free(rhs);
+    free(u);
+
+    //throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
 }
 
 void WEMSolver::solveFull(const Eigen::VectorXd & potential,

@@ -17,6 +17,7 @@ option(DISABLE_EIGEN_OWN       "Do not use Eigen3 headers shipped with the modul
 option(ENABLE_EIGEN_MKL        "Enable Eigen3 automatic fallback to some of Intel MKL algorithms" OFF)
 option(ENABLE_PYTHON_EMBEDDING "Enable Python embedding"                                          ON)
 option(ENABLE_64BIT_INTEGERS   "Enable 64-bit integers"                                           OFF)
+option(ENABLE_CXX11_SUPPORT    "Enable C++11 compiler support"                                    ON)
 #
 #  CMake modules
 #
@@ -30,14 +31,14 @@ set(CMAKE_MODULE_PATH
 set(header_dir_list)
 set(libs_to_merge)
 
+include(ConfigSafeGuards)
 include(ConfigVersion)
 include(ConfigArchitecture)
-include(CheckCXX11Features)
+include(CheckIncludeFile)
 include(ConfigCompilerFlags)
 include(PerTargetCompilerFlags)
 include(ConfigDocumentation)
 include(ConfigExternal)
-include(ConfigSafeGuards)
 include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(MergeStaticLibs)
@@ -288,3 +289,6 @@ endif()
 # This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
 merge_static_libs(pcm "${libs_to_merge}")
 install(TARGETS pcm ARCHIVE DESTINATION lib)
+
+# Printout useful info
+include(ConfigInfo)

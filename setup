@@ -153,6 +153,10 @@ def parse_input():
             action='store_true',
             default=False,
             help='disable Python embedding (requires Python development package) [default: %(default)s]')
+    group.add_argument('--disable_cxx11',
+            action='store_true',
+            default=False,
+            help='disable C++11 support [default: %(default)s]')
     group.add_argument('-D',
             action="append",
             dest='define',
@@ -272,6 +276,7 @@ def gen_cmake_command(args):
     command += ' -DENABLE_EIGEN_MKL=%s'        % translate_cmake(args.eigenmkl)
     command += ' -DENABLE_VECTORIZATION=%s'    % translate_cmake(args.vectorization)
     command += ' -DENABLE_PYTHON_EMBEDDING=%s' % translate_cmake(not args.disable_python_embedding)
+    command += ' -DENABLE_CXX11_SUPPORT=%s'    % translate_cmake(not args.disable_cxx11)
 #   command += ' -DENABLE_STATIC_LINKING=%s' % translate_cmake(args.static)
 
     if args.blas == 'builtin':

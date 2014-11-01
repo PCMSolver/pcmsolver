@@ -76,6 +76,10 @@ if(NOT DEFINED DEFUALT_CXX_FLAGS_SET OR RESET_FLAGS)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_ARCHITECTURE_FLAGS} ${DEFINITIONS}")
      endif()	      
   endif()
+  
+  if(DEFINED EXTRA_CXX_FLAGS)
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_CXX_FLAGS}")
+  endif()
 
   save_compiler_flags(CXX)
 

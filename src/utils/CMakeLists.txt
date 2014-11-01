@@ -2,7 +2,7 @@ set(headers_list "")
 # Get headers with .hpp extension
 get_hpp_headers(headers_list)
 # If you want to remove some headers specify them explictly here
-list(REMOVE_ITEM headers_list "")
+list(REMOVE_ITEM headers_list "BlockDiagonalMatrix.hpp")
 # Sort alphabetically
 list(SORT headers_list)
 set(to_includer "${headers_list}")

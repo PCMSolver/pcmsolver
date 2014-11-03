@@ -29,6 +29,7 @@
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
 
 #include "Config.hpp"
@@ -91,53 +92,58 @@ BOOST_AUTO_TEST_CASE(C6H6)
     spheres.push_back(sph12);
     
     double probeRadius = 1.385*f; // Probe Radius for water
-    int patchLevel = 3;
-    double coarsity = 0.5;
-    WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
-    cavity.readCavity("molec_dyadic.dat");
-    cavity.scaleCavity(1./convertBohrToAngstrom);
-
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity);
-    int firstKind = 0;
-#ifdef DEBUG
-    FILE* debugFile = fopen("debug.out","w");
-    fclose(debugFile);
-#endif
-    WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
-    solver.buildSystemMatrix(cavity);
-    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
-
     double Hcharge = 1.0;
     double Ccharge = 6.0;
-    int size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double C1mep = Ccharge/(center - C1/convertBohrToAngstrom).norm();
-        double C2mep = Ccharge/(center - C2/convertBohrToAngstrom).norm();
-        double C3mep = Ccharge/(center - C3/convertBohrToAngstrom).norm();
-        double C4mep = Ccharge/(center - C4/convertBohrToAngstrom).norm();
-        double C5mep = Ccharge/(center - C5/convertBohrToAngstrom).norm();
-        double C6mep = Ccharge/(center - C6/convertBohrToAngstrom).norm();
-
-        double H1mep = Hcharge/(center - H1/convertBohrToAngstrom).norm();
-        double H2mep = Hcharge/(center - H2/convertBohrToAngstrom).norm();
-        double H3mep = Hcharge/(center - H3/convertBohrToAngstrom).norm();
-        double H4mep = Hcharge/(center - H4/convertBohrToAngstrom).norm();
-        double H5mep = Hcharge/(center - H5/convertBohrToAngstrom).norm();
-        double H6mep = Hcharge/(center - H6/convertBohrToAngstrom).norm();
-        fake_mep(i) = C1mep + C2mep + C3mep + C4mep + C5mep + C6mep +
-          H1mep + H2mep + H3mep + H4mep + H5mep + H6mep;
-    }
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
     double totalASC = - (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
-    double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-2);
+    std::cout << "totalASC = " << std::setprecision(20) << totalASC << std::endl;
+    for(int patchLevel = 2; patchLevel < 8; ++ patchLevel){
+      std::cout << "------------------------------ " << patchLevel << " ------------------------------" << std::endl;
+      //int patchLevel = 3;
+      double coarsity = 0.5;
+      WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
+      cavity.readCavity("molec_dyadic.dat");
+      cavity.scaleCavity(1./convertBohrToAngstrom);
+
+      CollocationIntegrator * diag = new CollocationIntegrator();
+      Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
+      UniformDielectric<AD_directional> * gfOutside = new
+      UniformDielectric<AD_directional>(permittivity);
+      int firstKind = 0;
+#ifdef DEBUG
+      FILE* debugFile = fopen("debug.out","w");
+      fclose(debugFile);
+#endif
+      WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
+      solver.buildSystemMatrix(cavity);
+      cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
+
+      int size = cavity.size();
+      Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+      for (int i = 0; i < size; ++i) {
+          Eigen::Vector3d center = cavity.elementCenter(i);
+          double C1mep = Ccharge/(center - C1/convertBohrToAngstrom).norm();
+          double C2mep = Ccharge/(center - C2/convertBohrToAngstrom).norm();
+          double C3mep = Ccharge/(center - C3/convertBohrToAngstrom).norm();
+          double C4mep = Ccharge/(center - C4/convertBohrToAngstrom).norm();
+          double C5mep = Ccharge/(center - C5/convertBohrToAngstrom).norm();
+          double C6mep = Ccharge/(center - C6/convertBohrToAngstrom).norm();
+
+          double H1mep = Hcharge/(center - H1/convertBohrToAngstrom).norm();
+          double H2mep = Hcharge/(center - H2/convertBohrToAngstrom).norm();
+          double H3mep = Hcharge/(center - H3/convertBohrToAngstrom).norm();
+          double H4mep = Hcharge/(center - H4/convertBohrToAngstrom).norm();
+          double H5mep = Hcharge/(center - H5/convertBohrToAngstrom).norm();
+          double H6mep = Hcharge/(center - H6/convertBohrToAngstrom).norm();
+          fake_mep(i) = C1mep + C2mep + C3mep + C4mep + C5mep + C6mep +
+            H1mep + H2mep + H3mep + H4mep + H5mep + H6mep;
+      }
+      // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+      Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+      solver.compCharge(fake_mep, fake_asc);
+      double totalFakeASC = fake_asc.sum();
+      std::cout << "totalASC - totalFakeASC = " << std::setprecision(20) << totalASC - totalFakeASC << std::endl;
+      std::cout << "totalFakeASC = "<< std::setprecision(20) << totalFakeASC << std::endl;
+      //BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-2);
+    }
 }

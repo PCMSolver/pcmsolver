@@ -67,7 +67,7 @@ EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c  \"import os; print('\\\\n'.join
                 file(RELATIVE_PATH objlistfilerpath ${objdir} ${objlistfile})
                 add_custom_command(TARGET ${outlib} POST_BUILD
                         COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/cmake/MergeStaticLibs.py
-                                ${objdir} ${CMAKE_COMMAND} ${CMAKE_AR} ${outfile} ${objlistfilerpath}
+                                ${objdir} ${CMAKE_AR} ${outfile} ${objlistfilerpath}
                        
                         #COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_AR} ru ${outfile} @${objlistfilerpath}"
                         #COMMAND ${CMAKE_AR} ru "${outfile}" `cat "${objlistfilerpath}" | tr '\\n' ' ' | sed 's/__.SYMDEF SORTED//g'`

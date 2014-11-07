@@ -3,10 +3,9 @@
 import os, sys, subprocess, re
 
 OBJDIR = sys.argv[1]
-CMAKE_COMMAND = sys.argv[2]
-CMAKE_AR = sys.argv[3]
-OUTFILE = sys.argv[4]
-OBJLISTFILERPATH = sys.argv[5]
+CMAKE_AR = sys.argv[2]
+OUTFILE = sys.argv[3]
+OBJLISTFILERPATH = sys.argv[4]
 
 os.chdir(OBJDIR)
 
@@ -17,9 +16,10 @@ for line in open(OBJLISTFILERPATH, 'r').readlines():
 
 
 files = ' '.join(files)
+
 command = CMAKE_AR + ' ru ' + OUTFILE + ' ' + files
 
-subprocess.call(CMAKE_COMMAND + ' -E echo ' + command)
-subprocess.call(command)
+print('Running: ' + command)
+subprocess.call(command, shell=True)
 
 exit(0)

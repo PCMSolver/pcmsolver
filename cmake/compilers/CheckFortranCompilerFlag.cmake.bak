@@ -1,10 +1,10 @@
-# - Check whether the CXX compiler supports a given flag.
-# CHECK_CXX_COMPILER_FLAG(<flag> <var>)
+# - Check whether the Fortran compiler supports a given flag.
+# CHECK_Fortran_COMPILER_FLAG(<flag> <var>)
 #  <flag> - the compiler flag
 #  <var>  - variable to store the result
-# This internally calls the check_cxx_source_compiles macro.  See help
-# for CheckCXXSourceCompiles for a listing of variables that can
-# modify the build.
+# This internally calls the check_fortran_source_compiles macro.
+# See help for CheckFortranSourceCompiles for a listing of variables
+# that can modify the build.
 
 #=============================================================================
 # Copyright 2006-2009 Kitware, Inc.
@@ -39,23 +39,24 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-INCLUDE(CheckCXXSourceCompiles)
+INCLUDE(CheckFortranSourceCompiles)
 
-MACRO (CHECK_CXX_COMPILER_FLAG _FLAG _RESULT)
+MACRO (CHECK_Fortran_COMPILER_FLAG _FLAG _RESULT)
    SET(SAFE_CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS}")
    SET(CMAKE_REQUIRED_DEFINITIONS "${_FLAG}")
    if(${ARGC} GREATER 2)
       SET(TEST_SOURCE "${ARGV2}")
    else()
-      SET(TEST_SOURCE "int main() { return 0;}")
+      # Don't f**k up the indentation here!!! CMake expects fixed format Fortran sources!!!
+      SET(TEST_SOURCE "       program test\n       end program test") 
    endif()
    set(tmp ${CMAKE_REQUIRED_QUIET})
    set(CMAKE_REQUIRED_QUIET TRUE)
-   CHECK_CXX_SOURCE_COMPILES("${TEST_SOURCE}" ${_RESULT}
+   CHECK_Fortran_SOURCE_COMPILES("${TEST_SOURCE}" ${_RESULT}
      # Some compilers do not fail with a bad flag
      FAIL_REGEX "error: bad value (.*) for .* switch"       # GNU
      FAIL_REGEX "argument unused during compilation"        # clang
-     FAIL_REGEX "is valid for .* but not for C\\\\+\\\\+"   # GNU
+     FAIL_REGEX "is valid for .* but not for C"             # GNU
      FAIL_REGEX "unrecognized .*option"                     # GNU
      FAIL_REGEX "ignored for target"                        # GNU
      FAIL_REGEX "ignoring unknown option"                   # MSVC
@@ -71,5 +72,5 @@ MACRO (CHECK_CXX_COMPILER_FLAG _FLAG _RESULT)
      )
    set(CMAKE_REQUIRED_QUIET ${tmp})
    SET (CMAKE_REQUIRED_DEFINITIONS "${SAFE_CMAKE_REQUIRED_DEFINITIONS}")
-ENDMACRO (CHECK_CXX_COMPILER_FLAG)
+ENDMACRO (CHECK_Fortran_COMPILER_FLAG)
 

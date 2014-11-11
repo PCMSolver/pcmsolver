@@ -23,5 +23,3 @@ print('Running: ' + CMAKE_AR + ' ru ' + OUTFILE + ' ' + ' '.join(files))
 #! every file in the list will be added to library
 for file in files:
     subprocess.call([CMAKE_AR, 'ru', OUTFILE, file])
-
-exit(0)

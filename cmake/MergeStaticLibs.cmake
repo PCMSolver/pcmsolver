@@ -51,9 +51,9 @@ function(merge_static_libs outlib )
 message(STATUS \"Extracting object files from ${lib}\")
 EXECUTE_PROCESS(COMMAND ${CMAKE_AR} -x ${lib}
                 WORKING_DIRECTORY ${objdir})
-# save the list of object files
-EXECUTE_PROCESS(COMMAND ls .
-                                OUTPUT_FILE ${objlistfile}
+# save the alphabetically sorted list of object files
+EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c  \"import os; print('\\\\n'.join(sorted(os.listdir(os.curdir), key=str.lower)))\"
+                OUTPUT_FILE ${objlistfile}
                 WORKING_DIRECTORY ${objdir})")
 #---------------------------------
                         file(MAKE_DIRECTORY ${objdir})
@@ -66,9 +66,10 @@ EXECUTE_PROCESS(COMMAND ls .
                 # relative path is needed by ar under MSYS
                 file(RELATIVE_PATH objlistfilerpath ${objdir} ${objlistfile})
                 add_custom_command(TARGET ${outlib} POST_BUILD
-                        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_AR} ru ${outfile} @${objlistfilerpath}"
-                        COMMAND ${CMAKE_AR} ru "${outfile}" `cat "${objlistfilerpath}" | tr '\\n' ' ' | sed 's/__.SYMDEF SORTED//g'`
-                        WORKING_DIRECTORY ${objdir})
+                        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/cmake/MergeStaticLibs.py
+                                ${CMAKE_AR} ${outfile} ${objlistfilerpath}                        
+                        WORKING_DIRECTORY ${objdir}
+                        )
         endforeach()
         add_custom_command(TARGET ${outlib} POST_BUILD
                         COMMAND ${CMAKE_COMMAND} -E echo "Running: ${CMAKE_RANLIB} ${outfile}"

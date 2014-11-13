@@ -37,7 +37,7 @@ that you have a sane build, you will have to run the unit test suite.
  + CMake version 2.8.3 and higher;
  + Git version 1.7.1 and higher;
  + Subversion version 1.6 and higher; 
- + Python 2.6 and higher, both the interpreter and the development headers/libraries;
+ + Python 2.4 and higher, both the interpreter and the development headers/libraries;
  + Boost libraries version 1.54.0 and higher;
 \note Version 1.54.0 of Boost libraries is shipped with the module and resides in the `external` subdirectory.
 Unless you want to use another version of Boost, you should not worry about satisfying this dependency.

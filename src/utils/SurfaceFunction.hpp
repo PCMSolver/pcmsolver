@@ -61,9 +61,8 @@ public:
 	    : name_(n), nPoints_(np) {
         values_ = Eigen::VectorXd::Zero(nPoints_);
         allocated_ = true;
-        for (int i = 0; i < nPoints_; ++i) {
-            values_(i) = v[i];
-        }
+        Eigen::Map<Eigen::VectorXd> mapped_data(v, nPoints_);
+	values_ = mapped_data;
     }
     SurfaceFunction(const std::string & n, int np, const Eigen::VectorXd & v) 
 	    : name_(n), nPoints_(np), values_(v), allocated_(true) {} 

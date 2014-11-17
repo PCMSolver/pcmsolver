@@ -135,8 +135,7 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
 
     // If it already exists there's no problem, we will pass a reference to its values to
     // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
-    _solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector(),
-                        *irrep);
+    _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
 }
@@ -290,7 +289,7 @@ extern "C" void get_surface_function(int * nts, double * values, char * name)
         throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
 
     for ( int i = 0; i < nTess; ++i ) {
-        values[i] = iter->second->getValue(i);
+        values[i] = iter->second->value(i);
     }
 }
 

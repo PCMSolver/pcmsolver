@@ -49,30 +49,32 @@
 class SurfaceFunction
 {
 public:
-    SurfaceFunction() : name(""), nPoints(0), allocated(false) {}
-    SurfaceFunction(const std::string & name_) : name(name_), nPoints(0),
-        allocated(false) {}
-    SurfaceFunction(const std::string & name_, int nPoints_) : name(name_),
-        nPoints(nPoints_) {
-        values = Eigen::VectorXd::Zero(nPoints);
-        allocated = true;
+    SurfaceFunction() : name_(""), nPoints_(0), allocated_(false) {}
+    SurfaceFunction(const std::string & n) 
+	    : name_(n), nPoints_(0), allocated_(false) {}
+    SurfaceFunction(const std::string & n, int np) 
+	    : name_(n), nPoints_(np) {
+        values_ = Eigen::VectorXd::Zero(nPoints_);
+        allocated_ = true;
     }
-    SurfaceFunction(const std::string & name_, int nPoints_,
-                    double * values_) : name(name_), nPoints(nPoints_) {
-        values = Eigen::VectorXd::Zero(nPoints);
-        allocated = true;
-        for (int i = 0; i < nPoints; ++i) {
-            values(i) = values_[i];
+    SurfaceFunction(const std::string & n, int np, double * v) 
+	    : name_(n), nPoints_(np) {
+        values_ = Eigen::VectorXd::Zero(nPoints_);
+        allocated_ = true;
+        for (int i = 0; i < nPoints_; ++i) {
+            values_(i) = v[i];
         }
     }
+    SurfaceFunction(const std::string & n, int np, const Eigen::VectorXd & v) 
+	    : name_(n), nPoints_(np), values_(v), allocated_(true) {} 
     ~SurfaceFunction() {
-        allocated = false;
+        allocated_ = false;
     }
 
     /// Copy constructor
-    SurfaceFunction(const SurfaceFunction & other) : name(other.name),
-        nPoints(other.nPoints), values(other.values) {
-        allocated = true;
+    SurfaceFunction(const SurfaceFunction & other) 
+	    : name_(other.name_), nPoints_(other.nPoints_), values_(other.values_) {
+        allocated_ = true;
     }
 
     friend inline void swap(SurfaceFunction & left, SurfaceFunction & right);
@@ -90,17 +92,17 @@ public:
     /// Division-assignment operator. Defined only for the uniform scaling case.
     SurfaceFunction & operator/=(double scaling);
 
-    std::string & getName() { return name; }
-    int getNPoints() { return nPoints; }
-    void setValue(int index_, double value_) { values(index_) = value_; }
-    double getValue(int index_) { return values(index_); }
-    Eigen::VectorXd & getVector() { return values; }
-    void allocate(int nPoints_) { values.resize(nPoints_); }
-    bool isAllocated() { return allocated; }
+    std::string & name() { return name_; }
+    int nPoints() { return nPoints_; }
+    void value(int index, double value) { values_(index) = value; }
+    double value(int index) { return values_(index); }
+    Eigen::VectorXd & vector() { return values_; }
+    void allocate(int np) { values_.resize(np); }
+    bool allocated() { return allocated_; }
     void clear();
 
-    void setValues(double * values_);
-    void getValues(double * values_);
+    void setValues(double * v);
+    void getValues(double * v);
 
     friend std::ostream & operator<<(std::ostream & os, SurfaceFunction & sf) {
         return sf.printObject(os);
@@ -108,10 +110,10 @@ public:
 
 private:
     std::ostream & printObject(std::ostream & os);
-    std::string name;
-    int nPoints;
-    Eigen::VectorXd values;
-    bool allocated;
+    std::string name_;
+    int nPoints_;
+    Eigen::VectorXd values_;
+    bool allocated_;
 };
 
 /*!

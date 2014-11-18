@@ -90,9 +90,10 @@ if(ENABLE_PYTHON_EMBEDDING)
       # Find Pythons libs
       find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
       # Check headers
+      include(CheckIncludeFiles)
       set(CMAKE_REQUIRED_INCLUDES "${PYTHON_INCLUDE_DIRS}")
-      check_include_file(Python.h HAS_PYTHON_H)
-      check_include_file(pyconfig.h HAS_PYCONFIG_H)
+      check_include_files(Python.h HAS_PYTHON_H)
+      check_include_files(pyconfig.h HAS_PYCONFIG_H)
       if(NOT HAS_PYTHON_H)
 	 message(STATUS "No Python.h header found!!")	   
       endif()	   

@@ -92,14 +92,14 @@ extern "C" void compute_polarization_energy(double * energy);
 extern "C" void save_surface_functions();
 
 #define load_surface_functions \
-	FortranCInterface_GLOBAL_(load_surface_functions, load_SURFACE_FUNCTIONS)
-/*! \fn extern "C" void load_surface_functions(const char * name)
+	FortranCInterface_GLOBAL_(load_surface_function, load_SURFACE_FUNCTION)
+/*! \fn extern "C" void load_surface_function(const char * name)
  *  \brief Loads the surface function from a .npy file
  *  \param[in] name the name of the surface function to be loaded from file
  *
  *  The name has to be consistent with that of the .npy file saved using save_surface_functions()
  */
-extern "C" void load_surface_functions(const char * name);
+extern "C" void load_surface_function(const char * name);
 
 #define dot_surface_functions \
 	FortranCInterface_GLOBAL_(dot_surface_functions, DOT_SURFACE_FUNCTIONS)

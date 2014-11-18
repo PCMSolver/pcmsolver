@@ -91,13 +91,13 @@ public:
     /// Division-assignment operator. Defined only for the uniform scaling case.
     SurfaceFunction & operator/=(double scaling);
 
-    std::string & name() { return name_; }
-    int nPoints() { return nPoints_; }
+    const std::string & name() const { return name_; }
+    int nPoints() const { return nPoints_; }
     void value(int index, double value) { values_(index) = value; }
-    double value(int index) { return values_(index); }
+    double value(int index) const { return values_(index); }
     Eigen::VectorXd & vector() { return values_; }
     void allocate(int np) { values_.resize(np); }
-    bool allocated() { return allocated_; }
+    bool allocated() const { return allocated_; }
     void clear();
 
     void setValues(double * v);

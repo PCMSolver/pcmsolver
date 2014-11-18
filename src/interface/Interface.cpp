@@ -175,6 +175,37 @@ extern "C" void compute_polarization_energy(double * energy)
     }
 }
 
+extern "C" void save_surface_functions()
+{
+    typedef SharedSurfaceFunctionMap::const_iterator surfMap_iter;
+    for ( surfMap_iter it = functions.begin(); it != functions.end(); ++it ) {
+	    std::string fname = it->second->name();
+	    unsigned int dim = static_cast<unsigned int>(it->second->nPoints());
+            const unsigned int shape[] = {dim};
+            cnpy::npy_save(fname, it->second->vector().data(), shape, 1, "w", true);
+    }
+}
+
+extern "C" void load_surface_function(const char * name)
+{
+    std::string functionName(name);
+    cnpy::NpyArray raw_surfFunc = cnpy::npy_load(functionName);
+    int dim = raw_surfFunc.shape[0];
+    if (dim != _cavity->size()) { 
+        throw std::runtime_error("Inconsistent dimension of loaded surface function!");
+    } else {
+	Eigen::VectorXd values = getFromRawBuffer<double>(dim, 1, raw_surfFunc.data); 
+        SharedSurfaceFunction func( new SurfaceFunction(functionName, dim, values) );
+	// Append to global map
+        SharedSurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
+        if ( iter == functions.end()  ||  iter->first != functionName ) {                                   
+            if ( iter != functions.begin() ) --iter;
+            SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(functionName, func);
+            iter = functions.insert(iter, insertion);
+        }
+   }
+}
+
 extern "C" void dot_surface_functions(double * result, const char * potString,
                                       const char * chgString)
 {

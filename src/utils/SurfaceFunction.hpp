@@ -91,7 +91,7 @@ public:
     /// Division-assignment operator. Defined only for the uniform scaling case.
     SurfaceFunction & operator/=(double scaling);
 
-    const std::string & name() const { return name_; }
+    std::string & name() { return name_; }
     int nPoints() const { return nPoints_; }
     void value(int index, double value) { values_(index) = value; }
     double value(int index) const { return values_(index); }

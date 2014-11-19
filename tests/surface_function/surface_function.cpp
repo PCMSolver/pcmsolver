@@ -60,7 +60,6 @@ struct SurfaceFunctionTest {
 BOOST_FIXTURE_TEST_CASE(addition, SurfaceFunctionTest)
 {
     SurfaceFunction addition = func1 + func2;
-    BOOST_REQUIRE_EQUAL("TestFunction1+TestFunction2", addition.name());
     BOOST_REQUIRE_EQUAL(nPoints, addition.nPoints());
     Eigen::VectorXd result(nPoints);
     result = values1 + values2;
@@ -75,7 +74,6 @@ BOOST_FIXTURE_TEST_CASE(addition, SurfaceFunctionTest)
 BOOST_FIXTURE_TEST_CASE(subtraction, SurfaceFunctionTest)
 {
     SurfaceFunction subtraction = func1 - func2;
-    BOOST_REQUIRE_EQUAL("TestFunction1-TestFunction2", subtraction.name());
     BOOST_REQUIRE_EQUAL(nPoints, subtraction.nPoints());
     Eigen::VectorXd result(nPoints);
     result = values1 - values2;
@@ -91,8 +89,6 @@ BOOST_FIXTURE_TEST_CASE(multiply_by_scalar, SurfaceFunctionTest)
 {
     SurfaceFunction scaled1 = 2.5 * func1;
     func2 *= 0.5;
-    BOOST_REQUIRE_EQUAL("2.5*TestFunction1", scaled1.name());
-    BOOST_REQUIRE_EQUAL("0.5*TestFunction2", func2.name());
     BOOST_REQUIRE_EQUAL(nPoints, scaled1.nPoints());
     BOOST_REQUIRE_EQUAL(nPoints, func2.nPoints());
     Eigen::VectorXd result1(nPoints), result2(nPoints);

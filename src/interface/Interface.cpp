@@ -45,6 +45,7 @@
 
 // Include Boost headers here
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
@@ -177,19 +178,34 @@ extern "C" void compute_polarization_energy(double * energy)
 
 extern "C" void save_surface_functions()
 {
-    typedef SharedSurfaceFunctionMap::const_iterator surfMap_iter;
-    for ( surfMap_iter it = functions.begin(); it != functions.end(); ++it ) {
-	    std::string fname = it->second->name();
-	    unsigned int dim = static_cast<unsigned int>(it->second->nPoints());
-            const unsigned int shape[] = {dim};
-            cnpy::npy_save(fname, it->second->vector().data(), shape, 1, "w", true);
+    printer("\nDumping surface functions to .npy files");
+    SharedSurfaceFunctionPair pair;
+    BOOST_FOREACH(pair, functions) {
+        unsigned int dim = static_cast<unsigned int>(pair.second->nPoints());
+        const unsigned int shape[] = {dim};
+        std::string fname = pair.second->name() + ".npy";
+        cnpy::npy_save(fname, pair.second->vector().data(), shape, 1, "w", true);
     }
+}
+
+extern "C" void save_surface_function(const char * name)
+{
+    typedef SharedSurfaceFunctionMap::const_iterator surfMap_iter;
+    std::string functionName(name);
+    std::string fname = functionName + ".npy";
+
+    surfMap_iter it = functions.find(functionName);
+    unsigned int dim = static_cast<unsigned int>(it->second->nPoints());
+    const unsigned int shape[] = {dim};
+    cnpy::npy_save(fname, it->second->vector().data(), shape, 1, "w", true);
 }
 
 extern "C" void load_surface_function(const char * name)
 {
     std::string functionName(name);
-    cnpy::NpyArray raw_surfFunc = cnpy::npy_load(functionName);
+    printer("\nLoading surface function " + functionName + " from .npy file");
+    std::string fname = functionName + ".npy";
+    cnpy::NpyArray raw_surfFunc = cnpy::npy_load(fname);
     int dim = raw_surfFunc.shape[0];
     if (dim != _cavity->size()) { 
         throw std::runtime_error("Inconsistent dimension of loaded surface function!");
@@ -213,18 +229,15 @@ extern "C" void dot_surface_functions(double * result, const char * potString,
     std::string potFuncName(potString);
     std::string chgFuncName(chgString);
 
-// Setup iterators
+    // Setup iterators
     SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
     SharedSurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
 
     if ( iter_pot == functions.end()  ||  iter_chg == functions.end() ) {
         throw std::runtime_error("One or both of the SurfaceFunction specified is non-existent.");
     } else {
-// Calculate the dot product
+        // Calculate the dot product
         *result = (*iter_pot->second) * (*iter_chg->second);
-        //std::cout << "Taking dot product" << std::endl;
-        //std::cout << iter_pot->second->getName() << " * " << iter_chg->second->getName() << " = ";
-        //printf("%.10E \n", *result);
     }
 }
 
@@ -319,9 +332,7 @@ extern "C" void get_surface_function(int * nts, double * values, char * name)
     if ( iter == functions.end() )
         throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
 
-    for ( int i = 0; i < nTess; ++i ) {
-        values[i] = iter->second->value(i);
-    }
+    values = iter->second->vector().data();
 }
 
 extern "C" void add_surface_function(char * result, double * coeff, char * part)

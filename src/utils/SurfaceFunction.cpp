@@ -32,8 +32,6 @@
 
 #include <Eigen/Dense>
 
-#include <boost/lexical_cast.hpp>
-
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
     using std::swap;
@@ -72,7 +70,6 @@ SurfaceFunction & SurfaceFunction::operator+=(const SurfaceFunction & other)
 {
     if (this->nPoints_ != other.nPoints_)
         throw std::runtime_error("Incoherent dimensions of left and right operands!");
-    this->name_ += "+" + other.name_;
     this->values_ = this->values_ + other.values_;
     return *this;
 }
@@ -81,14 +78,12 @@ SurfaceFunction & SurfaceFunction::operator-=(const SurfaceFunction & other)
 {
     if (this->nPoints_ != other.nPoints_)
         throw std::runtime_error("Incoherent dimensions of left and right operands!");
-    this->name_ += "-" + other.name_;
     this->values_ = this->values_ - other.values_;
     return *this;
 }
 
 SurfaceFunction & SurfaceFunction::operator*=(double scaling)
 {
-    this->name_ = boost::lexical_cast<std::string>(scaling) + "*" + this->name_;
     this->values_ *= scaling;
     return *this;
 }
@@ -97,7 +92,6 @@ SurfaceFunction & SurfaceFunction::operator/=(double scaling)
 {
     if (scaling == 0.0)
         throw std::runtime_error("You are dividing by zero!");
-    this->name_ = boost::lexical_cast<std::string>(scaling) + "/" + this->name_;
     this->values_ /= scaling;
     return *this;
 }

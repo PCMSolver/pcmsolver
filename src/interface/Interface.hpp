@@ -79,6 +79,36 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep);
  */
 extern "C" void compute_polarization_energy(double * energy);
 
+#define save_surface_functions \
+	FortranCInterface_GLOBAL_(save_surface_functions, SAVE_SURFACE_FUNCTIONS)
+/*! \fn extern "C" void save_surface_functions()
+ *  \brief Dumps the surface functions in the SharedSurfaceFunctionMap functions to a .npy file
+ *
+ *  The surface functions are saved as NumPy arrays. This function should be called **before** the
+ *  call to tear_down_pcm() so that the converged MEP and ASC are saved to file for a possible later
+ *  use. For example, they might be needed in a response calculation.
+ *  The filename is decided according to the name of the surface function.
+ */
+extern "C" void save_surface_functions();
+
+#define save_surface_function \
+	FortranCInterface_GLOBAL_(save_surface_function, SAVE_SURFACE_FUNCTION)
+/*! \fn extern "C" void save_surface_function(const char * name)
+ *  \brief Dumps the surface function to a .npy file
+ *  \param[in] name the name of the SurfaceFunction to be saved to file
+ */
+extern "C" void save_surface_function(const char * name);
+
+#define load_surface_function \
+	FortranCInterface_GLOBAL_(load_surface_function, LOAD_SURFACE_FUNCTION)
+/*! \fn extern "C" void load_surface_function(const char * name)
+ *  \brief Loads the surface function from a .npy file
+ *  \param[in] name the name of the surface function to be loaded from file
+ *
+ *  The name has to be consistent with that of the .npy file saved using save_surface_functions()
+ */
+extern "C" void load_surface_function(const char * name);
+
 #define dot_surface_functions \
 	FortranCInterface_GLOBAL_(dot_surface_functions, DOT_SURFACE_FUNCTIONS)
 /*! \fn extern "C" void dot_surface_functions(double * result, const char * potString, const char * chgString)

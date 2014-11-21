@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-# Always prefer system modules to local ones
-cmake_policy(SET CMP0017 NEW)
+# Set CMake policies here
+if(CMAKE_VERSION VERSION_GREATER 2.8.3)
+   # CMP0017 was introduced in CMake 2.8.4
+   # Always prefer system modules to local ones
+   cmake_policy(SET CMP0017 NEW)
+endif()
 #
 #  Declare project name and programming languages
 #
-project(PCMSolver)
-enable_language(CXX C Fortran)
+project(PCMSolver CXX C Fortran)
 #  
 #  Options  
 #   There still is nothing going on inside the code regarding MPI and OpenMP!!

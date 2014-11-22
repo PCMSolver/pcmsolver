@@ -153,6 +153,10 @@ def parse_input():
             action='store_true',
             default=False,
             help='disable Python embedding (requires Python development package) [default: %(default)s]')
+    group.add_argument('--disable_cxx11',
+            action='store_true',
+            default=False,
+            help='disable C++11 support [default: %(default)s]')
     group.add_argument('-D',
             action="append",
             dest='define',
@@ -247,17 +251,13 @@ def gen_cmake_command(args):
     command = ''
 
     if args.fc:
-        command += ' FC=%s'  % args.fc
+        command += ' -DCMAKE_Fortran_COMPILER=%s'  % args.fc
     if args.cc:
-        command += ' CC=%s'  % args.cc
+        command += ' -DCMAKE_C_COMPILER=%s'  % args.cc
     if args.cxx:
-        command += ' CXX=%s' % args.cxx
+        command += ' -DCMAKE_CXX_COMPILER=%s' % args.cxx
 
-    if sys.platform != "win32":
-        command += ' %s' % args.cmake
-    else:
-        # fix for windows
-        command = ' %s ' % args.cmake + command
+    command = ' %s ' % args.cmake + command
 
 #   command += ' -DENABLE_MPI=%s'            % translate_cmake(args.mpi)
 #   command += ' -DENABLE_SGI_MPT=%s'        % translate_cmake(args.sgi_mpt)
@@ -272,6 +272,7 @@ def gen_cmake_command(args):
     command += ' -DENABLE_EIGEN_MKL=%s'        % translate_cmake(args.eigenmkl)
     command += ' -DENABLE_VECTORIZATION=%s'    % translate_cmake(args.vectorization)
     command += ' -DENABLE_PYTHON_EMBEDDING=%s' % translate_cmake(not args.disable_python_embedding)
+    command += ' -DENABLE_CXX11_SUPPORT=%s'    % translate_cmake(not args.disable_cxx11)
 #   command += ' -DENABLE_STATIC_LINKING=%s' % translate_cmake(args.static)
 
     if args.blas == 'builtin':

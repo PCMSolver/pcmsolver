@@ -60,12 +60,11 @@ struct SurfaceFunctionTest {
 BOOST_FIXTURE_TEST_CASE(addition, SurfaceFunctionTest)
 {
     SurfaceFunction addition = func1 + func2;
-    BOOST_REQUIRE_EQUAL("TestFunction1+TestFunction2", addition.getName());
-    BOOST_REQUIRE_EQUAL(nPoints, addition.getNPoints());
+    BOOST_REQUIRE_EQUAL(nPoints, addition.nPoints());
     Eigen::VectorXd result(nPoints);
     result = values1 + values2;
     for (int i = 0; i < nPoints; ++i) {
-        BOOST_REQUIRE_CLOSE(result(i), addition.getValue(i), 1.0e-12);
+        BOOST_REQUIRE_CLOSE(result(i), addition.value(i), 1.0e-12);
     }
 }
 
@@ -75,12 +74,11 @@ BOOST_FIXTURE_TEST_CASE(addition, SurfaceFunctionTest)
 BOOST_FIXTURE_TEST_CASE(subtraction, SurfaceFunctionTest)
 {
     SurfaceFunction subtraction = func1 - func2;
-    BOOST_REQUIRE_EQUAL("TestFunction1-TestFunction2", subtraction.getName());
-    BOOST_REQUIRE_EQUAL(nPoints, subtraction.getNPoints());
+    BOOST_REQUIRE_EQUAL(nPoints, subtraction.nPoints());
     Eigen::VectorXd result(nPoints);
     result = values1 - values2;
     for (int i = 0; i < nPoints; ++i) {
-        BOOST_REQUIRE_CLOSE(result(i), subtraction.getValue(i), 1.0e-12);
+        BOOST_REQUIRE_CLOSE(result(i), subtraction.value(i), 1.0e-12);
     }
 }
 
@@ -91,16 +89,14 @@ BOOST_FIXTURE_TEST_CASE(multiply_by_scalar, SurfaceFunctionTest)
 {
     SurfaceFunction scaled1 = 2.5 * func1;
     func2 *= 0.5;
-    BOOST_REQUIRE_EQUAL("2.5*TestFunction1", scaled1.getName());
-    BOOST_REQUIRE_EQUAL("0.5*TestFunction2", func2.getName());
-    BOOST_REQUIRE_EQUAL(nPoints, scaled1.getNPoints());
-    BOOST_REQUIRE_EQUAL(nPoints, func2.getNPoints());
+    BOOST_REQUIRE_EQUAL(nPoints, scaled1.nPoints());
+    BOOST_REQUIRE_EQUAL(nPoints, func2.nPoints());
     Eigen::VectorXd result1(nPoints), result2(nPoints);
     result1 = 2.5 * values1;
     result2 = 0.5 * values2;
     for (int i = 0; i < nPoints; ++i) {
-        BOOST_REQUIRE_CLOSE(result1(i), scaled1.getValue(i), 1.0e-12);
-        BOOST_REQUIRE_CLOSE(result2(i), func2.getValue(i), 1.0e-12);
+        BOOST_REQUIRE_CLOSE(result1(i), scaled1.value(i), 1.0e-12);
+        BOOST_REQUIRE_CLOSE(result2(i), func2.value(i), 1.0e-12);
     }
 }
 

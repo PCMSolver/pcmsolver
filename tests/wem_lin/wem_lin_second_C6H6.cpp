@@ -29,6 +29,7 @@
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
 
 #include "Config.hpp"
@@ -91,7 +92,7 @@ BOOST_AUTO_TEST_CASE(C6H6)
     spheres.push_back(sph12);
     
     double probeRadius = 1.385*f; // Probe Radius for water
-    int patchLevel = 3;
+    int patchLevel = 5;
     double coarsity = 0.5;
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
     cavity.readCavity("molec_dyadic.dat");
@@ -167,6 +168,8 @@ BOOST_AUTO_TEST_CASE(C6H6)
 
     double totalASC = - (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
     double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
+    std::cout << "totalASC " << std::setprecision(20) << totalASC << std::endl;
+    std::cout << "totalFakeASC " << std::setprecision(20) <<  totalFakeASC << std::endl;
+    std::cout << "totalASC - totalFakeASC = " << std::setprecision(20) << totalASC - totalFakeASC << std::endl;
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-2);
 }

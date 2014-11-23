@@ -66,11 +66,26 @@ extern "C" void tear_down_pcm();
 #define compute_asc \
 	FortranCInterface_GLOBAL_(compute_asc, COMPUTE_ASC)
 /*! \fn extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
+ *  \brief Computes the ASC corresponding to the MEP and irreducible representation, using the equilibrium PCM matrix
  *  \param[in] potString name of the potential SurfaceFunction
  *  \param[in] chgString name of the charge SurfaceFunction
  *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
+ *  
+ *  The equilibrium PCM matrix is used in the computation of the ASC
  */
 extern "C" void compute_asc(char * potString, char * chgString, int * irrep);
+
+#define compute_nonequilibrium_asc \
+	FortranCInterface_GLOBAL_(compute_nonequilibrium_asc, COMPUTE_NONEQUILIBRIUM_ASC)
+/*! \fn extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
+ *  \brief Computes the ASC correspoding to the MEP and irreducible representation, using the nonequilibrium PCM matrix
+ *  \param[in] potString name of the potential SurfaceFunction
+ *  \param[in] chgString name of the charge SurfaceFunction
+ *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
+ *  
+ *  The nonequilibrium PCM matrix is used in the computation of the ASC
+ */
+extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep);
 
 #define compute_polarization_energy \
 	FortranCInterface_GLOBAL_(compute_polarization_energy, COMPUTE_POLARIZATION_ENERGY)

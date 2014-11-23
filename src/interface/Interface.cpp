@@ -141,6 +141,37 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
 }
 
+extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
+{
+    std::string potFuncName(potString);
+    std::string chgFuncName(chgString);
+
+    // Get the proper iterators
+    SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
+    // Here we check whether the function exists already or not
+    // 1. find the lower bound of the map
+    SharedSurfaceFunctionMap::iterator iter_chg = functions.lower_bound(chgFuncName);
+    // 2. if iter_chg == end, or if iter_chg is not a match,
+    //    then this element was not in the map, so we need to insert it
+    if ( iter_chg == functions.end()  ||  iter_chg->first != chgFuncName ) {
+        // move iter_chg to the element preceeding the insertion point
+        if ( iter_chg != functions.begin() ) --iter_chg;
+        // insert it
+	SharedSurfaceFunction func( new SurfaceFunction(chgFuncName,
+                                          _cavity->size()) );
+        SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(chgFuncName, func);
+        iter_chg = functions.insert(iter_chg, insertion);
+    }
+
+    // If it already exists there's no problem, we will pass a reference to its values to
+    // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // Here compCharge has to use the nonequilibrium PCM matrix!
+    // compNonequilibriumCharge()
+    _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
+    // Renormalization of charges: divide by the number of symmetry operations in the group
+    (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
+}
+
 extern "C" void compute_polarization_energy(double * energy)
 {
     // Check if NucMEP && EleASC surface functions exist.

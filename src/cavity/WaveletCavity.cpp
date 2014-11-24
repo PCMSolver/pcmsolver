@@ -119,6 +119,12 @@ void WaveletCavity::readCavity(const std::string & filename)
     uploadedDyadic_ = true;
 }
 
+void WaveletCavity::scaleCavity(const double scalingFactor)
+{
+    for (size_t k = 0; k < nPoints_; ++k) {
+        nodePoint_[k] *=scalingFactor;
+    }
+}
 void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_, bool isPWL)
 {
     if(isPWL) {

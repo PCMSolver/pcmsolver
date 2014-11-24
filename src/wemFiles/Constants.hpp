@@ -17,13 +17,13 @@ const double eps = 1e-6; ///< accuracy for point equality
 
 const double		op = -1; ///< order of the operator
 
-const double		a = 2.5; ///< compression constant,  a > 1
+const double		a = 1.25; ///< compression constant,  a > 1
 const double		b = 0.001; ///< compression constant, 0 < b < 1
 
 // quadrature
 const double		scalingFactor = 0.7071;///< size of relative outer radius
 const unsigned int minQuadratureLevel =2; ///< minimal quadrature level
-const int g_max = 10; ///< the maximum number of Cubatures calculated
+const int g_max = 15; ///< the maximum number of Cubatures calculated
 
 const double q = 1; ///<
 

@@ -395,7 +395,9 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     af->tdwt(u);
     energy_ext(u, pot, af);
     charge_ext(u, chg, af);
-    af->print_geometry(u,"Geometry2.vtk");
+    char buff[50];
+    sprintf(buff,"Geometry_%d.vtk",af->nLevels);
+    af->print_geometry(u,buff);
     free(rhs);
     free(u);
     free(v);

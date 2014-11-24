@@ -412,7 +412,7 @@ void WEMSolver::solveSecondKind(const Eigen::VectorXd & potential,
     double * pot = const_cast<double *>(potential.data());
     double * chg = charge.data();
     double epsilon = greenOutside_->epsilon();
-    WEMRHS2M(&rhs, pot, af);
+    WEMRHS2M_test(&rhs, pot, af);
 #ifdef DEBUG
     FILE *debugFile = fopen("debug.out", "a");
     fprintf(debugFile,">>> WEMRHS1\n");

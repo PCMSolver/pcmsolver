@@ -12,6 +12,7 @@
 #   Source code to try to compile.  It must define a PROGRAM entry point.
 # ``<var>``
 #   Variable to store whether the source code compiled.
+#   Will be created as an internal cache variable.
 # ``<fail-regex>``
 #   Fail if test output matches this regex.
 #
@@ -36,9 +37,8 @@
 #=============================================================================
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
-# 
-# RDR 2014 Modified so that the check happens in QUIET mode
-#
+
+
 
 macro(CHECK_Fortran_SOURCE_COMPILES SOURCE VAR)
   if(NOT DEFINED "${VAR}")

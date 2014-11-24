@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+# Always prefer system modules to local ones
+cmake_policy(SET CMP0017 NEW)
 #
 #  Declare project name and programming languages
 #
@@ -53,13 +55,13 @@ set(EMBEDDED_PYTHON FALSE)
 if(ENABLE_PYTHON_EMBEDDING)
    # 1. a Python interpreter of the suitable version exists
    if("${PYTHON_INTERPRETER}" STREQUAL "")
-      find_package(PythonInterp 2.6 REQUIRED)
+      find_package(PythonInterp 2.4 REQUIRED)
    else()
       set(PYTHONINTERP_FOUND TRUE)
       set(PYTHON_EXECUTABLE "${PYTHON_INTERPRETER}")
       get_Python_version_string(pyVersion)
       set(PYTHON_VERSION_STRING "${pyVersion}")
-      message(STATUS "Passed PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.6\")")
+      message(STATUS "Passed PythonInterp: ${PYTHON_INTERPRETER} (found suitable version \"${PYTHON_VERSION_STRING}\", minimum required is \"2.4\")")
    endif()	
    # 2. Python libraries and headers of the same version exist
    # Set variables to help find Python library that is compatible with interpreter
@@ -88,9 +90,10 @@ if(ENABLE_PYTHON_EMBEDDING)
       # Find Pythons libs
       find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
       # Check headers
+      include(CheckIncludeFiles)
       set(CMAKE_REQUIRED_INCLUDES "${PYTHON_INCLUDE_DIRS}")
-      check_include_file(Python.h HAS_PYTHON_H)
-      check_include_file(pyconfig.h HAS_PYCONFIG_H)
+      check_include_files(Python.h HAS_PYTHON_H)
+      check_include_files(pyconfig.h HAS_PYCONFIG_H)
       if(NOT HAS_PYTHON_H)
 	 message(STATUS "No Python.h header found!!")	   
       endif()	   
@@ -116,6 +119,8 @@ if(ENABLE_PYTHON_EMBEDDING)
       message(STATUS "   Dependencies not satisfied")
    endif()
 else()
+   # The Python interpreter is anyway needed to run the MergeStaticLibs.py script
+   find_package(PythonInterp 2.4 REQUIRED)
    message(STATUS "Python embedding DISABLED")
 endif()
 find_package(ZLIB REQUIRED) 

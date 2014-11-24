@@ -12,12 +12,12 @@ set(BOOST_BUILD_DIR ${PROJECT_BINARY_DIR}/external/boost_${BOOSTVER})
 # user-config.jam file. MPI_SENT will be the command we append
 set(MPI_SENT "")
 if(ENABLE_MPI)
-	list(APPEND needed_components mpi)
-        set(MPI_SENT "using mpi \n : ${CMAKE_CXX_COMPILER} \n;")
+   list(APPEND needed_components mpi)
+   set(MPI_SENT "using mpi \n : ${CMAKE_CXX_COMPILER} \n;")
 endif()
 if(ENABLE_TESTS)
-	# Replace unit_test_framework (used by CMake's find_package) with test (understood by Boost build toolchain)
-	string(REPLACE "unit_test_framework" "test" b2_needed_components "${b2_needed_components}")
+   # Replace unit_test_framework (used by CMake's find_package) with test (understood by Boost build toolchain)
+   string(REPLACE "unit_test_framework" "test" b2_needed_components "${b2_needed_components}")
 endif()
 # For a prettier printout...
 string(REPLACE ";" ", " printout "${needed_components}")
@@ -27,7 +27,7 @@ message(STATUS "  Libraries to be built: ${printout}")
 # statements, then we write the options to user-config.jam
 set(toolset   "")
 if(HAS_CXX11_SUPPORT)
-	set(cxxflags "${cxxflags} ${CXX11_COMPILER_FLAGS}") 
+   set(cxxflags "${cxxflags} ${CXX11_COMPILER_FLAGS}") 
 endif()	  
 set(linkflags "")
 if(CMAKE_CXX_COMPILER_ID MATCHES Intel)
@@ -57,9 +57,9 @@ file(APPEND ${BOOST_BUILD_DIR}/user-config.jam "${MPI_SENT}")
 # Unpack Boost and copy boostcpp.jam
 add_custom_command(
     OUTPUT boost.unpacked 
-    COMMAND tar -xzf ${PROJECT_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz 
+    COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz 
     # Copy custom boostcpp.jam (to get versioned format as I want it!)
-    COMMAND cp ${PROJECT_SOURCE_DIR}/external/boostcpp.jam ${BOOST_BUILD_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/boostcpp.jam ${BOOST_BUILD_DIR}
     # Append to project-config.jam 
     # It can't be done with file(APPEND ...) because it will be destroyed when unpacking
     COMMAND ${CMAKE_COMMAND} -E echo "${MPI_SENT}" >> ${BOOST_BUILD_DIR}/project-config.jam
@@ -76,7 +76,7 @@ add_custom_command(
             --with-libraries="${b2_needed_components}"
 	    --with-python=${PYTHON_EXECUTABLE}
 	    --prefix=${CUSTOM_BOOST_LOCATION} 1> boost.configured.log 2> boost.configured.err
-    COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.configured	    
+    COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/external/boost.configured	    
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.unpacked
     COMMENT "Configuring Boost")
@@ -85,7 +85,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT boost.built
     COMMAND ./b2 variant=${type} link=static threading=multi 1> boost.built.log 2> boost.built.err
-    COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.built
+    COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/external/boost.built
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.configured 
     COMMENT "Building Boost")
@@ -93,10 +93,8 @@ add_custom_command(
 # Install Boost
 add_custom_command(
     OUTPUT boost.installed
-    COMMAND ./b2 install
-	    variant=${type} link=static
-	    threading=multi 1> boost.installed.log 2> boost.installed.err	   
-    COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.installed
+    COMMAND ./b2 install variant=${type} link=static threading=multi 1> boost.installed.log 2> boost.installed.err	   
+    COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/external/boost.installed
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.built 
     COMMENT "Installing Boost")
@@ -104,8 +102,8 @@ add_custom_command(
 # Clean-up
 add_custom_command(
     OUTPUT boost.cleanedup
-    COMMAND rm -rf ${BOOST_BUILD_DIR}
-    COMMAND touch ${PROJECT_BINARY_DIR}/external/boost.cleanedup
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${BOOST_BUILD_DIR}
+    COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/external/boost.cleanedup
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external
     DEPENDS boost.installed 
     COMMENT "Clean-up Boost")

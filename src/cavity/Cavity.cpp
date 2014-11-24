@@ -36,6 +36,7 @@
 #include <Eigen/Dense>
 #include "cnpyPimpl.hpp"
 
+#include "MathUtils.hpp"
 #include "Symmetry.hpp"
 
 void Cavity::saveCavity(const std::string & fname)
@@ -94,7 +95,7 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of weights vector!");
     } else {
-        elementArea_ = cnpy::getFromRawBuffer<double>(dim, 1, raw_weights.data);
+        elementArea_ = getFromRawBuffer<double>(dim, 1, raw_weights.data);
     }
 
     // 2. Get the element radius
@@ -103,7 +104,7 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of element radius vector!");
     } else {
-        elementRadius_ = cnpy::getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
+        elementRadius_ = getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
     }
 
     // 3. Get the centers
@@ -112,7 +113,7 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of centers matrix!");
     } else {
-        elementCenter_ = cnpy::getFromRawBuffer<double>(3, dim, raw_centers.data);
+        elementCenter_ = getFromRawBuffer<double>(3, dim, raw_centers.data);
     }
 
     // 4. Get the normal vectors
@@ -121,6 +122,6 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of normals matrix!");
     } else {
-        elementNormal_ = cnpy::getFromRawBuffer<double>(3, dim, raw_normals.data);
+        elementNormal_ = getFromRawBuffer<double>(3, dim, raw_normals.data);
     }
 }

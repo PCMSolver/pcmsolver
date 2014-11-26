@@ -332,7 +332,9 @@ extern "C" void get_surface_function(int * nts, double * values, char * name)
     if ( iter == functions.end() )
         throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
 
-    values = iter->second->vector().data();
+    for ( int i = 0; i < nTess; ++i ) {
+        values[i] = iter->second->value(i);
+    }
 }
 
 extern "C" void add_surface_function(char * result, double * coeff, char * part)

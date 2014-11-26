@@ -13,9 +13,9 @@ const double op = -1;
 
 /* Kompression: a > 1, 0 < b < 1, d < dp < td-op */
 
-const double a = 2.5;
+const double a = 1.25;
 const double b = 0.001;
-const double dp = 2.5;
+const double dp = 1.25;
 
 
 /* Quadratur */

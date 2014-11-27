@@ -19,7 +19,7 @@ if(NOT Boost_FOUND)
    # Set also variables usually set by find_package
    message(STATUS "Boost ${BOOSTVERMIN} not found. The pre-packaged version will be built.")
    set(BUILD_CUSTOM_BOOST TRUE)
-   set(CUSTOM_BOOST_LOCATION ${PROJECT_BINARY_DIR}/boost)
+   set(CUSTOM_BOOST_LOCATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/boost)
    string(REGEX REPLACE "\\." "0" Boost_VERSION ${BOOSTVER})
    math(EXPR Boost_MAJOR_VERSION "${Boost_VERSION} / 100000")
    math(EXPR Boost_MINOR_VERSION "${Boost_VERSION} / 100 % 1000")

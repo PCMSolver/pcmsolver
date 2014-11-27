@@ -45,6 +45,7 @@
 
 // Include Boost headers here
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
@@ -135,8 +136,38 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
 
     // If it already exists there's no problem, we will pass a reference to its values to
     // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
-    _solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector(),
-                        *irrep);
+    _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
+    // Renormalization of charges: divide by the number of symmetry operations in the group
+    (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
+}
+
+extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
+{
+    std::string potFuncName(potString);
+    std::string chgFuncName(chgString);
+
+    // Get the proper iterators
+    SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
+    // Here we check whether the function exists already or not
+    // 1. find the lower bound of the map
+    SharedSurfaceFunctionMap::iterator iter_chg = functions.lower_bound(chgFuncName);
+    // 2. if iter_chg == end, or if iter_chg is not a match,
+    //    then this element was not in the map, so we need to insert it
+    if ( iter_chg == functions.end()  ||  iter_chg->first != chgFuncName ) {
+        // move iter_chg to the element preceeding the insertion point
+        if ( iter_chg != functions.begin() ) --iter_chg;
+        // insert it
+	SharedSurfaceFunction func( new SurfaceFunction(chgFuncName,
+                                          _cavity->size()) );
+        SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(chgFuncName, func);
+        iter_chg = functions.insert(iter_chg, insertion);
+    }
+
+    // If it already exists there's no problem, we will pass a reference to its values to
+    // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // Here compCharge has to use the nonequilibrium PCM matrix!
+    // compNonequilibriumCharge()
+    _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
 }
@@ -176,6 +207,52 @@ extern "C" void compute_polarization_energy(double * energy)
     }
 }
 
+extern "C" void save_surface_functions()
+{
+    printer("\nDumping surface functions to .npy files");
+    SharedSurfaceFunctionPair pair;
+    BOOST_FOREACH(pair, functions) {
+        unsigned int dim = static_cast<unsigned int>(pair.second->nPoints());
+        const unsigned int shape[] = {dim};
+        std::string fname = pair.second->name() + ".npy";
+        cnpy::npy_save(fname, pair.second->vector().data(), shape, 1, "w", true);
+    }
+}
+
+extern "C" void save_surface_function(const char * name)
+{
+    typedef SharedSurfaceFunctionMap::const_iterator surfMap_iter;
+    std::string functionName(name);
+    std::string fname = functionName + ".npy";
+
+    surfMap_iter it = functions.find(functionName);
+    unsigned int dim = static_cast<unsigned int>(it->second->nPoints());
+    const unsigned int shape[] = {dim};
+    cnpy::npy_save(fname, it->second->vector().data(), shape, 1, "w", true);
+}
+
+extern "C" void load_surface_function(const char * name)
+{
+    std::string functionName(name);
+    printer("\nLoading surface function " + functionName + " from .npy file");
+    std::string fname = functionName + ".npy";
+    cnpy::NpyArray raw_surfFunc = cnpy::npy_load(fname);
+    int dim = raw_surfFunc.shape[0];
+    if (dim != _cavity->size()) { 
+        throw std::runtime_error("Inconsistent dimension of loaded surface function!");
+    } else {
+	Eigen::VectorXd values = getFromRawBuffer<double>(dim, 1, raw_surfFunc.data); 
+        SharedSurfaceFunction func( new SurfaceFunction(functionName, dim, values) );
+	// Append to global map
+        SharedSurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
+        if ( iter == functions.end()  ||  iter->first != functionName ) {                                   
+            if ( iter != functions.begin() ) --iter;
+            SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(functionName, func);
+            iter = functions.insert(iter, insertion);
+        }
+   }
+}
+
 extern "C" void dot_surface_functions(double * result, const char * potString,
                                       const char * chgString)
 {
@@ -183,18 +260,15 @@ extern "C" void dot_surface_functions(double * result, const char * potString,
     std::string potFuncName(potString);
     std::string chgFuncName(chgString);
 
-// Setup iterators
+    // Setup iterators
     SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
     SharedSurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
 
     if ( iter_pot == functions.end()  ||  iter_chg == functions.end() ) {
         throw std::runtime_error("One or both of the SurfaceFunction specified is non-existent.");
     } else {
-// Calculate the dot product
+        // Calculate the dot product
         *result = (*iter_pot->second) * (*iter_chg->second);
-        //std::cout << "Taking dot product" << std::endl;
-        //std::cout << iter_pot->second->getName() << " * " << iter_chg->second->getName() << " = ";
-        //printf("%.10E \n", *result);
     }
 }
 
@@ -290,7 +364,7 @@ extern "C" void get_surface_function(int * nts, double * values, char * name)
         throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
 
     for ( int i = 0; i < nTess; ++i ) {
-        values[i] = iter->second->getValue(i);
+        values[i] = iter->second->value(i);
     }
 }
 

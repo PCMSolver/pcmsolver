@@ -4,3 +4,4 @@ list(APPEND external_libraries ${ZLIB_LIBRARIES})
 # The pwc_point test is not compiled as it does not work: Issue #547
 #    add_boosttest(pwc_point "${list_of_libraries}" "${external_libraries}")
 add_boosttest(pwc_NH3 "${list_of_libraries}" "${external_libraries}")
+add_boosttest(pwc_C6H6 "${list_of_libraries}" "${external_libraries}")

@@ -101,7 +101,6 @@ endif()
 include(ConfigBoost)
 link_directories(${Boost_LIBRARY_DIRS})
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-message(" : ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}")
 
 #  Eigen 3 stuff
 if("${EIGEN3_ROOT}" STREQUAL "")

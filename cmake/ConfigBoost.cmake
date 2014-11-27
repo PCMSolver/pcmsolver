@@ -1,6 +1,8 @@
 # Just change the Boost version number here
-set(BOOSTVER 1.54.0) # The version of the Boost archive we ship
-set(BOOSTVERMIN 1.54.0) # The minimum required version of Boost
+# The version of the Boost archive we ship
+set(BOOSTVER 1.54.0) 
+# The minimum required version of Boost
+set(BOOSTVERMIN 1.54.0) 
 set(BUILD_CUSTOM_BOOST FALSE)
 # List all components needed (except mpi and unit_test_framework) here.
 # Components additionally required in PSI4: python, serialization, thread (Might be useful in the future?)
@@ -25,7 +27,7 @@ if(NOT Boost_FOUND)
    math(EXPR Boost_MINOR_VERSION "${Boost_VERSION} / 100 % 1000")
    math(EXPR Boost_SUBMINOR_VERSION "${Boost_VERSION} % 100")
    set(Boost_LIB_VERSION ${Boost_MAJOR_VERSION}_${Boost_MINOR_VERSION})
-   add_subdirectory(boost)
+   add_subdirectory(external)
    set(Boost_FOUND TRUE)
    set(Boost_LIBRARIES "")
    # Read documentation in FindBoost.cmake for the difference between the singular and plural forms

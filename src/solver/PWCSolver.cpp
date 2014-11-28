@@ -337,8 +337,8 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential,
     free(u);
 }
 
-void PWCSolver::solveSecondKind(const Eigen::VectorXd & potential,
-                                Eigen::VectorXd & charge)
+void PWCSolver::solveSecondKind(const Eigen::VectorXd & /* potential */,
+                                Eigen::VectorXd & /* charge */)
 {
     throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
 }

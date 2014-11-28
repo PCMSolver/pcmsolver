@@ -133,7 +133,7 @@ void WEMSolver::constructSystemMatrix()
 }
 
 void WEMSolver::compCharge(const Eigen::VectorXd & potential,
-                           Eigen::VectorXd & charge, int irrep)
+                           Eigen::VectorXd & charge, int /* irrep */)
 {
     switch (integralEquation) {
     case FirstKind:

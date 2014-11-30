@@ -5,9 +5,9 @@ set(BOOSTVER 1.54.0)
 set(BOOSTVERMIN 1.54.0) 
 set(BUILD_CUSTOM_BOOST FALSE)
 # List all components needed (except mpi and unit_test_framework) here.
-# Components additionally required in PSI4: python, serialization, thread (Might be useful in the future?)
+# Components additionally required in PSI4: serialization, thread (Might be useful in the future?)
 # mpi and unit_test_framework will be added afterwards, if needed.
-list(APPEND needed_components filesystem system)
+list(APPEND needed_components python filesystem system)
 set(Boost_USE_STATIC_LIBS    ON)
 set(Boost_USE_MULTITHREADED  ON)
 set(Boost_USE_STATIC_RUNTIME OFF)

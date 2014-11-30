@@ -31,16 +31,16 @@
 #include <stdexcept>
 #include <string>
 
-#ifdef EMBEDDED_PYTHON
-#include <Python.h>
-#endif
-
 #include "Config.hpp"
 
 #include <Eigen/Dense>
 #include "Getkw.h"
 
 #include <boost/algorithm/string.hpp>
+#ifdef EMBEDDED_PYTHON
+#include <boost/python.hpp>
+#include <Python.h>
+#endif
 
 #include "InputManager.hpp"
 #include "PhysicalConstants.hpp"
@@ -52,6 +52,18 @@ using boost::algorithm::to_upper_copy;
 Input::Input(const std::string & filename)
 {
 #ifdef EMBEDDED_PYTHON
+    /* Initiliaze the Python interpreter
+     * Check if there's already an embedded interpreter around.
+     * This is needed in order to call Py_Finalize(), i.e. if an
+     * interpreter is already embedded we cannot finalize it as this
+     * might crash execution of the embedder library/program.
+     */
+    if (Py_IsInitialized()) {
+	hadInterpreter_ = true;
+    } else {
+	hadInterpreter_ = false;
+	Py_Initialize();
+    }
     parser(filename);
     std::string pythonParsed = "@" + filename;
     reader(pythonParsed.c_str());
@@ -99,7 +111,8 @@ Input::Input(const Input &other) : units_(other.units_),
   	                           epsilonReal_(other.epsilonReal_), 
 				   spherePosition_(other.spherePosition_), 
 				   sphereRadius_(other.sphereRadius_),
- 	                           providedBy_(other.providedBy_) {}
+ 	                           providedBy_(other.providedBy_), 
+                                   hadInterpreter_(other.hadInterpreter_) {}
 
 inline void swap(Input & left, Input & right)
 {
@@ -138,6 +151,7 @@ inline void swap(Input & left, Input & right)
     swap(left.spherePosition_,        right.spherePosition_);
     swap(left.sphereRadius_,          right.sphereRadius_);
     swap(left.providedBy_,            right.providedBy_);
+    swap(left.hadInterpreter_,        right.hadInterpreter_);
 }
 
 inline void Input::swap(Input & other)
@@ -177,6 +191,7 @@ inline void Input::swap(Input & other)
     swap(this->spherePosition_,        other.spherePosition_);
     swap(this->sphereRadius_,          other.sphereRadius_);
     swap(this->providedBy_,            other.providedBy_);
+    swap(this->hadInterpreter_,        other.hadInterpreter_);
 }
 
 Input & Input::operator=(Input other)
@@ -188,13 +203,19 @@ Input & Input::operator=(Input other)
     return *this;
 }
 
+Input::~Input() 
+{
+   // Call Py_Finalize() only if the call to Py_Initialize()
+   // was done by this object
+   if (not hadInterpreter_) {
+       Py_Finalize();
+   }
+}
+
 void Input::parser(const std::string & filename)
 {
 #ifdef EMBEDDED_PYTHON
-    PyObject * args = NULL; 
-    PyObject * result = NULL;
-    // Initiliaze the Python interpreter
-    Py_Initialize();
+    namespace py = boost::python;
     // Append location of pcmsolver.py to path
     PyObject * sysPath = PySys_GetObject((char *)"path");
     PyObject * path    = PyString_FromString("@PROJECT_BINARY_DIR@/bin");
@@ -203,29 +224,13 @@ void Input::parser(const std::string & filename)
        PyErr_Print();
     }
     // Import the module "pcmsolver" (from the file "pcmsolver.py")
-    PyObject * moduleName = PyString_FromString("pcmsolver");
-    PyObject * pyPCM = PyImport_Import(moduleName);
-    if (PyErr_Occurred()) PyErr_Print();
-    Py_XDECREF(moduleName); 
-    // Retrieve the "parse_pcm_input()" function from the module.
-    PyObject * parser = PyObject_GetAttrString(pyPCM, (char *)"parse_pcm_input");
-    if (PyCallable_Check(parser)) {
-       // Build an argument tuple containing the string.
-       args = Py_BuildValue("(z)", filename.c_str());
-       if (PyErr_Occurred()) PyErr_Print();
-       // Invoke the function, passing the argument tuple.
-       result = PyObject_CallObject(parser, args);
-       if (PyErr_Occurred()) PyErr_Print();
-    } else {
-       PyErr_Print();
-    }
+    py::object pyPCM = py::import("pcmsolver");
+    // Get the parse_pcm_input function
+    py::object pyParser = pyPCM.attr("parse_pcm_input");
+    py::object result = pyParser(filename);
     // Free all temporary Python objects.
-    Py_XDECREF(pyPCM); 
-    Py_XDECREF(parser);
-    Py_XDECREF(args); 
-    Py_XDECREF(result);
-    // Finalize the interpreter 
-    Py_Finalize();
+    Py_DECREF(sysPath);
+    Py_DECREF(path);
 #else
     throw std::runtime_error("parser(" + filename + ") is DISABLED");
 #endif

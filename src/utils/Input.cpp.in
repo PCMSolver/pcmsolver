@@ -205,11 +205,13 @@ Input & Input::operator=(Input other)
 
 Input::~Input() 
 {
+#ifdef EMBEDDED_PYTHON
    // Call Py_Finalize() only if the call to Py_Initialize()
    // was done by this object
    if (not hadInterpreter_) {
        Py_Finalize();
    }
+#endif
 }
 
 void Input::parser(const std::string & filename)

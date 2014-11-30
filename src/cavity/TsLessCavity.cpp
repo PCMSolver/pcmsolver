@@ -43,7 +43,7 @@ extern "C" void generate_tslesscavity_cpp(double *xtscor, double *ytscor,
         double *ze, double *rin,
         double *avgArea, double *rsolv, double * dmin, int * nord, double* work, int* lwork);
 
-void TsLessCavity::build(int maxts, int maxsph, int maxvert)
+void TsLessCavity::build(int maxts, int /* maxsph */, int /* maxvert */)
 {
     // This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code PEDRA.
     // Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow

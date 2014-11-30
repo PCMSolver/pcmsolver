@@ -80,17 +80,13 @@ public:
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalS(double /* area */) const {
-	    return 1.0;
-    }
+    virtual double diagonalS(double area) const;
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
      *  \param[in] area   area of the i-th tessera to be calculated
      *  \param[in] radius radius of the sphere the tessera belongs to
      */
-    virtual double diagonalD(double /* area */, double /* radius */) const {
-	    return 1.0;
-    }
+    virtual double diagonalD(double area, double radius) const;
 
     virtual double epsilon() const { return eps1_; } // This is just to get it to compile...
 

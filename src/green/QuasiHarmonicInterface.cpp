@@ -52,6 +52,16 @@ T QuasiHarmonicInterface<T>::operator()(T * /* sp */, T * /* pp */) const
 }
 
 template <typename T>
+double QuasiHarmonicInterface<T>::diagonalS(double /* area */) const {
+        return 1.0;
+}
+
+template <typename T>
+double QuasiHarmonicInterface<T>::diagonalD(double /* area */, double /* radius */) const {
+        return 1.0;
+}
+
+template <typename T>
 std::ostream & QuasiHarmonicInterface<T>::printObject(std::ostream & os)
 {
     os << "Green's function type: quasi-harmonic interface" << std::endl;

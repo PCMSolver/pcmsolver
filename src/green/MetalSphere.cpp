@@ -72,6 +72,14 @@ double MetalSphere::derivative(const Eigen::Vector3d & direction,
 {
     return epsSolvent_ * (this->derivativeProbe(direction, p1, p2));
 }
+    
+double MetalSphere::diagonalS(double /* area */) const {
+    return 1.0;
+
+}
+double MetalSphere::diagonalD(double /* area */, double /* radius */) const {
+        return 1.0;
+}
 
 std::ostream & MetalSphere::printObject(std::ostream & os)
 {

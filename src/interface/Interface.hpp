@@ -250,7 +250,7 @@ extern "C" void print_surface_function(char * name);
 
 #define clear_surface_function \
 	FortranCInterface_GLOBAL_(clear_surface_function, CLEAR_SURFACE_FUNCTION)
-/*! \fn extern "C" void clear_surface_function(const char * name)
+/*! \fn extern "C" void clear_surface_function(char * name)
  *  \brief Clears contents of SurfaceFunction
  *  \param[in] name label for the SurfaceFunction to be cleared
  */
@@ -258,7 +258,7 @@ extern "C" void clear_surface_function(char * name);
 
 #define append_surface_function \
 	FortranCInterface_GLOBAL_(append_surface_function, APPEND_SURFACE_FUNCTION)
-/*! \fn extern "C" void append_surface_function(const char * name)
+/*! \fn extern "C" void append_surface_function(char * name)
  *  \brief Appends a new SurfaceFunction to the global map 
  *  \param[in] name label for the new SurfaceFunction
  */

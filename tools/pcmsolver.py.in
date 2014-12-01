@@ -117,6 +117,10 @@ def parse_pcm_input(inputFile = None):
 
     # The parsed, machine-readable file is now saved.
     parsedFile = '@' + inputFile
+    # If parsedFile already exists, it might be a leftover.
+    # Remove it
+    if (os.path.isfile(parsedFile)):
+        os.remove(parsedFile)
     fd = open(parsedFile, 'w')
     print >> fd, inkw.top
     fd.close()

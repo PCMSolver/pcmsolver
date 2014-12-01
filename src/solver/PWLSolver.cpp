@@ -348,8 +348,8 @@ ne = nPatches*(4*N*N-1)/3;			/* Anzahl der Elemente */
     free_sparse(&G);
 }
 
-void PWLSolver::solveSecondKind(const Eigen::VectorXd & potential,
-                                Eigen::VectorXd & charge)
+void PWLSolver::solveSecondKind(const Eigen::VectorXd & /* potential */,
+                                Eigen::VectorXd & /* charge */)
 {
     throw std::runtime_error("Second Kind (electric field) not yet implemented.");
 }

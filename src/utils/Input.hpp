@@ -67,7 +67,7 @@ public:
     /// Assignment operator
     Input& operator=(Input other);
     /// Destructor
-    ~Input() {}
+    ~Input();
 
     friend inline void swap(Input & left, Input & right);
     inline void swap(Input & other);
@@ -210,6 +210,8 @@ private:
     double sphereRadius_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
+    /// Whether a Python interpreter was already embedded
+    bool hadInterpreter_;
 };
 
 /*!

@@ -134,8 +134,10 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
         iter_chg = functions.insert(iter_chg, insertion);
     }
 
-    // If it already exists there's no problem, we will pass a reference to its values to
+    // If it already exists, we will pass a reference to its values to
     // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // We clear the ASC surface function. Needed when using symmetry for response calculations
+    iter_chg->second->clear();
     _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());

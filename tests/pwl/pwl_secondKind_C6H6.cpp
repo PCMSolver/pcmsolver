@@ -23,7 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE PWLSolverC6H6
+#define BOOST_TEST_MODULE PWLSolverSecondKindC6H6
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -42,8 +42,8 @@
 
 #include "PhysicalConstants.hpp"
 
-/*! \class WEMSolver
- *  \test \b  C6H6 tests PWLSolver using ammonia and a wavelet cavity
+/*! \class PWLSolver
+ *  \test \b  C6H6 tests PWLSolver with the second kind equation using ammonia and a wavelet cavity
  */
 BOOST_AUTO_TEST_CASE(C6H6)
 {
@@ -91,20 +91,31 @@ BOOST_AUTO_TEST_CASE(C6H6)
     spheres.push_back(sph12);
     
     double probeRadius = 1.385*f; // Probe Radius for water
-    double permittivity = 78.39;
-    double Hcharge = 1.0;
-    double Ccharge = 6.0;
-    double totalASC = - (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
-    int patchLevel = 3;
+    int patchLevel = 2;
     double coarsity = 0.5;
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
     cavity.readCavity("molec_dyadic.dat");
     cavity.scaleCavity(1./convertBohrToAngstrom);
 
+    C1 /=convertBohrToAngstrom;
+    C2 /=convertBohrToAngstrom;
+    C3 /=convertBohrToAngstrom;
+    C4 /=convertBohrToAngstrom;
+    C5 /=convertBohrToAngstrom;
+    C6 /=convertBohrToAngstrom;
+
+    H1 /=convertBohrToAngstrom;
+    H2 /=convertBohrToAngstrom;
+    H3 /=convertBohrToAngstrom;
+    H4 /=convertBohrToAngstrom;
+    H5 /=convertBohrToAngstrom;
+    H6 /=convertBohrToAngstrom;
+
+    double permittivity = 78.39;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity);
-    int firstKind = 0;
+    int firstKind = 1;
 #ifdef DEBUG
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
@@ -113,29 +124,47 @@ BOOST_AUTO_TEST_CASE(C6H6)
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
+    double Hcharge = 1.0;
+    double Ccharge = 6.0;
     int size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+    Eigen::VectorXd fake_En = Eigen::VectorXd::Zero(size);
     for (int i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
-        double C1mep = Ccharge/(center - C1/convertBohrToAngstrom).norm();
-        double C2mep = Ccharge/(center - C2/convertBohrToAngstrom).norm();
-        double C3mep = Ccharge/(center - C3/convertBohrToAngstrom).norm();
-        double C4mep = Ccharge/(center - C4/convertBohrToAngstrom).norm();
-        double C5mep = Ccharge/(center - C5/convertBohrToAngstrom).norm();
-        double C6mep = Ccharge/(center - C6/convertBohrToAngstrom).norm();
+        Eigen::Vector3d normal = cavity.elementNormal(i);
 
-        double H1mep = Hcharge/(center - H1/convertBohrToAngstrom).norm();
-        double H2mep = Hcharge/(center - H2/convertBohrToAngstrom).norm();
-        double H3mep = Hcharge/(center - H3/convertBohrToAngstrom).norm();
-        double H4mep = Hcharge/(center - H4/convertBohrToAngstrom).norm();
-        double H5mep = Hcharge/(center - H5/convertBohrToAngstrom).norm();
-        double H6mep = Hcharge/(center - H6/convertBohrToAngstrom).norm();
-        fake_mep(i) = C1mep + C2mep + C3mep + C4mep + C5mep + C6mep +
-          H1mep + H2mep + H3mep + H4mep + H5mep + H6mep;
+        double dist = (center - C1).norm();
+        double C1En = -Ccharge*(center - C1).dot(normal)/(dist*dist*dist);
+        dist = (center - C2).norm();
+        double C2En = -Ccharge*(center - C2).dot(normal)/(dist*dist*dist);
+        dist = (center - C3).norm();
+        double C3En = -Ccharge*(center - C3).dot(normal)/(dist*dist*dist);
+        dist = (center - C4).norm();
+        double C4En = -Ccharge*(center - C4).dot(normal)/(dist*dist*dist);
+        dist = (center - C5).norm();
+        double C5En = -Ccharge*(center - C5).dot(normal)/(dist*dist*dist);
+        dist = (center - C6).norm();
+        double C6En = -Ccharge*(center - C6).dot(normal)/(dist*dist*dist);
+
+        dist = (center - H1).norm();
+        double H1En = -Hcharge*(center - H1).dot(normal)/(dist*dist*dist);
+        dist = (center - H2).norm();
+        double H2En = -Hcharge*(center - H2).dot(normal)/(dist*dist*dist);
+        dist = (center - H3).norm();
+        double H3En = -Hcharge*(center - H3).dot(normal)/(dist*dist*dist);
+        dist = (center - H4).norm();
+        double H4En = -Hcharge*(center - H4).dot(normal)/(dist*dist*dist);
+        dist = (center - H5).norm();
+        double H5En = -Hcharge*(center - H5).dot(normal)/(dist*dist*dist);
+        dist = (center - H6).norm();
+        double H6En = -Hcharge*(center - H6).dot(normal)/(dist*dist*dist);
+        fake_En(i) = C1En + C2En + C3En + C4En + C5En + C6En +
+          H1En + H2En + H3En + H4En + H5En + H6En;
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.compCharge(fake_En, fake_asc);
+
+    double totalASC = - (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-2);

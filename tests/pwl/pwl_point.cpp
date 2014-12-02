@@ -59,15 +59,14 @@ BOOST_AUTO_TEST_CASE(pointCharge)
     cavity.readCavity("molec_dyadic.dat");
     // The point charge is located at the origin.
     // The potential at cavity point s_I is Q/|s_I|
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity, diag);
     int firstKind = 0;
-    WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
+    PWLSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);
-    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), true);
+    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
     double charge = 8.0;
     int size = cavity.size();

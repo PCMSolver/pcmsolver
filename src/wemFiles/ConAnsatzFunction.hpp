@@ -65,6 +65,6 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
   //void generateCanonicalSingleScaleBasis(Wavelet *G, unsigned int ***C, int m);
   //void generateTopology(unsigned int  ****C);
 
-  ~ConAnsatzFunction();
+  virtual ~ConAnsatzFunction();
 };
 #endif

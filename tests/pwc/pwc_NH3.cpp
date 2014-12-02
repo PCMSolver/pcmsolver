@@ -35,9 +35,8 @@
 
 #include <Eigen/Dense>
 
-#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
-#include "WEMSolver.hpp"
+#include "PWCSolver.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 #include "WaveletCavity.hpp"
@@ -62,20 +61,19 @@ BOOST_AUTO_TEST_CASE(NH3)
     spheres.push_back(sph3);
     spheres.push_back(sph4);
     double probeRadius = 1.385; // Probe Radius for water
-    int patchLevel = 3;
+    int patchLevel = 4;
     double coarsity = 0.5;
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
     cavity.readCavity("molec_dyadic.dat");
     
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity);
     int firstKind = 0;
-    WEMSolver solver(gfInside, gfOutside, "Wavelet", firstKind);
+    PWCSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);
-    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_(), false);
+    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;
@@ -96,5 +94,5 @@ BOOST_AUTO_TEST_CASE(NH3)
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-3);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-2);
 }

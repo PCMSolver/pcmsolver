@@ -23,14 +23,10 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE PWCSolverC6H6
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
 #include <iostream>
 #include <iomanip>
-#include <vector>
+#include <fstream>
+#include <string>
 
 #include "Config.hpp"
 
@@ -41,12 +37,86 @@
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 #include "WaveletCavity.hpp"
-
 #include "PhysicalConstants.hpp"
-/*! \class PWCSolver
- *  \test \b C6H6 tests PWCSolver using benzene and a wavelet cavity
- */
-BOOST_AUTO_TEST_CASE(C6H6)
+
+void pwc_NH3(int patchLevel);
+
+void pwc_C6H6(int patchLevel);
+
+int main() {
+    for (int patchLevel = 2; patchLevel < 8; ++patchLevel) {
+	pwc_NH3(patchLevel);
+	pwc_C6H6(patchLevel);
+    }
+}
+
+void pwc_NH3(int patchLevel)
+{
+    // Set up cavity
+    Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
+    Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
+    Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
+    Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
+    std::vector<Sphere> spheres;
+    Sphere sph1(N,  2.929075493);
+    Sphere sph2(H1, 2.267671349);
+    Sphere sph3(H2, 2.267671349);
+    Sphere sph4(H3, 2.267671349);
+    spheres.push_back(sph1);
+    spheres.push_back(sph2);
+    spheres.push_back(sph3);
+    spheres.push_back(sph4);
+    
+    double probeRadius = 1.385; // Probe Radius for water
+    double coarsity = 0.5;
+    WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
+    cavity.readCavity("molec_dyadic.dat");
+
+    double permittivity = 78.39;
+    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
+    UniformDielectric<AD_directional> * gfOutside = new
+    UniformDielectric<AD_directional>(permittivity);
+    int firstKind = 0;
+#ifdef DEBUG
+    FILE* debugFile = fopen("debug.out","w");
+    fclose(debugFile);
+#endif
+    PWCSolver solver(gfInside, gfOutside, firstKind);
+    solver.buildSystemMatrix(cavity);
+    cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
+
+    double Ncharge = 7.0;
+    double Hcharge = 1.0;
+    int size = cavity.size();
+    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+    for (int i = 0; i < size; ++i) {
+        Eigen::Vector3d center = cavity.elementCenter(i);
+        double Ndistance = (center - N).norm();
+        double H1distance = (center - H1).norm();
+        double H2distance = (center - H2).norm();
+        double H3distance = (center - H3).norm();
+        fake_mep(i) = Ncharge / Ndistance + Hcharge / H1distance + Hcharge / H2distance +
+                      Hcharge / H3distance;
+    }
+    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+    solver.compCharge(fake_mep, fake_asc);
+    double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
+    double totalFakeASC = fake_asc.sum();
+
+    std::ofstream report;
+    report.open("pwc_NH3_report.out", std::ios::out | std::ios::app);
+    report << " Piecewise constant wavelet solver, NH3 molecule " << std::endl;
+    report << " patchLevel     = " << patchLevel << std::endl;
+    report << " cavity.size()  = " << size << std::endl;
+    report << "totalASC     = " << std::setprecision(20) << totalASC     << std::endl;
+    report << "totalFakeASC = " << std::setprecision(20) << totalFakeASC << std::endl;
+    report << "Delta        = " << std::setprecision(20) << totalASC - totalFakeASC << std::endl;
+    report << "------------------------------------------------------------" << std::endl;
+    report.close();
+}
+
+void pwc_C6H6(int patchLevel)
 {
     double f = 1.2; /// constant from Tomasi Persico 1994
     // Set up cavity
@@ -90,13 +160,12 @@ BOOST_AUTO_TEST_CASE(C6H6)
     spheres.push_back(sph10);
     spheres.push_back(sph11);
     spheres.push_back(sph12);
- 
+    
     double probeRadius = 1.385*f; // Probe Radius for water
     double permittivity = 78.39;
     double Hcharge = 1.0;
     double Ccharge = 6.0;
     double totalASC = - (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
-    int patchLevel = 4;
     double coarsity = 0.5;
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
     cavity.readCavity("molec_dyadic.dat");
@@ -106,10 +175,14 @@ BOOST_AUTO_TEST_CASE(C6H6)
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity);
     int firstKind = 0;
-
+#ifdef DEBUG
+    FILE* debugFile = fopen("debug.out","w");
+    fclose(debugFile);
+#endif
     PWCSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
+
     int size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
     for (int i = 0; i < size; ++i) {
@@ -134,6 +207,15 @@ BOOST_AUTO_TEST_CASE(C6H6)
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
     solver.compCharge(fake_mep, fake_asc);
     double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-2);
+    
+    std::ofstream report;
+    report.open("pwc_C6H6_report.out", std::ios::out | std::ios::app);
+    report << " Piecewise constant wavelet solver, C6H6 molecule " << std::endl;
+    report << " patchLevel     = " << patchLevel << std::endl;
+    report << " cavity.size()  = " << size << std::endl;
+    report << "totalASC     = " << std::setprecision(20) << totalASC     << std::endl;
+    report << "totalFakeASC = " << std::setprecision(20) << totalFakeASC << std::endl;
+    report << "Delta        = " << std::setprecision(20) << totalASC - totalFakeASC << std::endl;
+    report << "------------------------------------------------------------" << std::endl;
+    report.close();
 }

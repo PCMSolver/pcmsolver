@@ -65,6 +65,6 @@ public:
   void generateCanonicalSingleScaleBasis(Wavelet *G, unsigned int ***C, int m);
   void generateTopology(unsigned int  ****C);
 
-  ~LinAnsatzFunction();
+  virtual ~LinAnsatzFunction();
 };
 #endif

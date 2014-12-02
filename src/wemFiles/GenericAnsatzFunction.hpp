@@ -145,6 +145,6 @@ public:
   virtual void  dwt(double *v) = 0;
   
   int freeElementTree();
-  ~GenericAnsatzFunction(){};
+  virtual ~GenericAnsatzFunction(){};
 };
 #endif

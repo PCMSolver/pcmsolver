@@ -395,7 +395,9 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     af->tdwt(u);
     energy_ext(u, pot, af);
     charge_ext(u, chg, af);
-    af->print_geometry(u,"Geometry2.vtk");
+    char buff[50];
+    sprintf(buff,"Geometry_%d.vtk",af->nLevels);
+    af->print_geometry(u,buff);
     free(rhs);
     free(u);
     free(v);
@@ -410,7 +412,7 @@ void WEMSolver::solveSecondKind(const Eigen::VectorXd & potential,
     double * pot = const_cast<double *>(potential.data());
     double * chg = charge.data();
     double epsilon = greenOutside_->epsilon();
-    WEMRHS2M(&rhs, pot, af);
+    WEMRHS2M_test(&rhs, pot, af);
 #ifdef DEBUG
     FILE *debugFile = fopen("debug.out", "a");
     fprintf(debugFile,">>> WEMRHS1\n");

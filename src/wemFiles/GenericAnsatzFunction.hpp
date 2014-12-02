@@ -82,8 +82,8 @@ public:
    * patch, the comparison is done via indeces. In case of different patches the
    * comparison is done via differences
    *
-   * @param e1,e2 index of elements to compare
-   * @param ind1, ind2 indeces for the rotations
+   * @param e1 e2 index of elements to compare
+   * @param ind1 ind2 indeces for the rotations
    */
   unsigned int compare(unsigned int e1, unsigned int e2, unsigned int *ind1,
       unsigned int *ind2);

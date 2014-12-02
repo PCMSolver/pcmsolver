@@ -16,6 +16,5 @@ add_subdirectory(iefpcm)
 if(DEVELOPMENT_CODE)
    add_subdirectory(pwc)
    add_subdirectory(pwl)
-   add_subdirectory(wem_lin)
 endif()
 

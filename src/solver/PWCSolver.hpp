@@ -116,7 +116,7 @@ namespace
     {
         return new PWCSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
     }
-    const std::string PWCSOLVER("PWCONSTANT"); // Stands for piecewise constant functions
+    const std::string PWCSOLVER("WAVELET"); // Stands for piecewise constant functions
     const bool registeredPWCSolver = SolverFactory::TheSolverFactory().registerSolver(
         PWCSOLVER, createPWCSolver);
 }

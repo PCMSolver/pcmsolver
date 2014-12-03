@@ -116,7 +116,7 @@ namespace
     {
         return new PWLSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
     }
-    const std::string PWLSOLVER("PWLINEAR"); // Stands for piecewise linear
+    const std::string PWLSOLVER("LINEAR"); // Stands for piecewise linear
     const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(
         PWLSOLVER,createPWLSolver);
 }

@@ -586,13 +586,13 @@ void initSolver()
     // (...not our fault, but should remedy somehow)
 #if defined (DEVELOPMENT_CODE)    
     if (modelType == "WAVELET") {
-        _PWCSolver = new PWCSolver(gfInside, gfOutside);
+        _PWCSolver = new PWCSolver(gfInside, gfOutside, eqType);
         _PWCSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_());
         _cavity = _waveletCavity;
         _solver = _PWCSolver;
     } else if (modelType == "LINEAR") {
-        _PWLSolver = new PWLSolver(gfInside, gfOutside);
+        _PWLSolver = new PWLSolver(gfInside, gfOutside, eqType);
         _PWLSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_());
         _cavity = _waveletCavity;

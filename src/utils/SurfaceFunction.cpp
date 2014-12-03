@@ -59,7 +59,7 @@ SurfaceFunction & SurfaceFunction::operator=(SurfaceFunction other)
     return *this;
 }
 
-double SurfaceFunction::operator*(const SurfaceFunction & other)
+double SurfaceFunction::operator*(const SurfaceFunction & other) const
 {
     if (this->nPoints_ != other.nPoints_)
         throw std::runtime_error("Incoherent dimensions of left and right operands!");

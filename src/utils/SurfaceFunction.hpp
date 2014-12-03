@@ -81,7 +81,7 @@ public:
     /// Assignment operator.
     SurfaceFunction & operator=(SurfaceFunction other);
     /// Multiplication operator: product of two SurfaceFunctions version (scalar product of the values vectors).
-    double operator*(const SurfaceFunction & other);
+    double operator*(const SurfaceFunction & other) const;
     /// Addition-assignment operator.
     SurfaceFunction & operator+=(const SurfaceFunction & other);
     /// Subtraction-assignment operator.
@@ -96,6 +96,7 @@ public:
     void value(int index, double value) { values_(index) = value; }
     double value(int index) const { return values_(index); }
     Eigen::VectorXd & vector() { return values_; }
+    const Eigen::VectorXd & vector() const { return values_; }
     void allocate(int np) { values_.resize(np); }
     bool allocated() const { return allocated_; }
     void clear();

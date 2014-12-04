@@ -668,15 +668,27 @@ void initWaveletCavity()
     std::vector<Sphere> spheres = parsedInput->spheres();
     double coarsity = parsedInput->coarsity();
     double probeRadius = parsedInput->probeRadius();
-
+    
     // Just throw at this point if the user asked for a cavity for a single sphere...
     // the wavelet code will die without any further notice anyway
     if (spheres.size() == 1) {
         throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
     }
 
+    // --> ---> DIRTY DIRTY WORKAROUND
+    // The wavelet cavity has to be generated in Angstrom and then scaled to atomic units
+    // spheres is a local copy of the spheres list read on input. The latter is not untouched
+    double scaling = bohrToAngstrom(parsedInput->CODATAyear());
+    // Iterate by reference to scale!
+    BOOST_FOREACH(Sphere & sph, spheres) {
+	sph.scale(scaling);
+    }
+
     _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
     _waveletCavity->readCavity("molec_dyadic.dat");
+    // --> ---> DIRTY DIRTY WORKAROUND
+    // Convert back to atomic units the generated cavity    
+    _waveletCavity->scaleCavity(1.0/scaling);
 }
 #endif
 

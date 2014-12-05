@@ -41,6 +41,29 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
 
   td = 3;
   dp = 1.25;
+  a = 1.25; ///< compression constant,  a > 1
+  b = 0.001; ///< compression constant, 0 < b < 1
+
+  quadratureLevel_ = 1;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+}
+
+ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3*** pPointsIn){
+  nLevels = _m;
+  nFunctions = _nf;
+  nPatches = _p;
+
+  interCoeff  = new Interpolation(pPointsIn, 1, NEWTON, nLevels, nPatches);
+  minLevel = 1;
+  noPhi = 1;
+
+  B = NULL;
+  B2 = NULL;
+
+  td = 3;
+  dp = _dp;
+  a = _a; ///< compression constant,  a > 1
+  b = _b; ///< compression constant, 0 < b < 1
 
   quadratureLevel_ = 1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));

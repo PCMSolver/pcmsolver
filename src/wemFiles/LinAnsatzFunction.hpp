@@ -18,6 +18,7 @@ public:
   /// constructor of the generic class AnsatzFunction
   LinAnsatzFunction();
   LinAnsatzFunction(unsigned int p, unsigned int m, unsigned int nf, Vector3*** pPointsIn);
+  LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn);
 
   void quadratureGrade(signed int *g1, signed int*g2, int level1, int level2, double dist, double alpha);
 

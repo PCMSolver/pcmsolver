@@ -36,6 +36,8 @@ public:
   unsigned int quadratureLevel_;     ///< the degree for the RHS quadrature
   unsigned int td;                   ///< tilde_d parameter - the dual order parameter
   double dp;                         ///< d' parameter from paper, dp in (d, tilde_d+r) for postproc, or in (d, tilde_d+2*q) for compression
+  double		a; ///< apriori compression constant,  a > 1
+  double		b; ///< a posrteriori compression constant, 0 < b < 1
 
   Randwerte* pRandWerte;             ///< precalulated boundary values on gamma
 

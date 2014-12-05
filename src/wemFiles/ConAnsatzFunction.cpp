@@ -19,6 +19,8 @@ ConAnsatzFunction :: ConAnsatzFunction(){
 
   td = 3;
   dp = 1.25;
+  a = 1.25; ///< compression constant,  a > 1
+  b = 0.001; ///< compression constant, 0 < b < 1
 
   quadratureLevel_ = 1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));

@@ -35,9 +35,8 @@
 
 #include <Eigen/Dense>
 
-#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
-#include "WEMSolver.hpp"
+#include "PWCSolver.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
 #include "WaveletCavity.hpp"
@@ -65,13 +64,12 @@ struct WaveletCavityNH3Test {
         cavity = WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
         cavity.readCavity("molec_dyadic.dat");
 
-	CollocationIntegrator * diag = new CollocationIntegrator();
         double permittivity = 78.39;
-        Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
+        Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
         UniformDielectric<AD_directional> * gfOutside = new
-        UniformDielectric<AD_directional>(permittivity, diag);
+        UniformDielectric<AD_directional>(permittivity);
         int firstKind = 0;
-        WEMSolver solver(gfInside, gfOutside, "Wavelet", firstKind);
+        PWCSolver solver(gfInside, gfOutside, firstKind);
         solver.buildSystemMatrix(cavity);
         cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
     }

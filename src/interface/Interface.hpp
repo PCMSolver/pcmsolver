@@ -66,11 +66,26 @@ extern "C" void tear_down_pcm();
 #define compute_asc \
 	FortranCInterface_GLOBAL_(compute_asc, COMPUTE_ASC)
 /*! \fn extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
+ *  \brief Computes the ASC corresponding to the MEP and irreducible representation, using the equilibrium PCM matrix
  *  \param[in] potString name of the potential SurfaceFunction
  *  \param[in] chgString name of the charge SurfaceFunction
  *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
+ *  
+ *  The equilibrium PCM matrix is used in the computation of the ASC
  */
 extern "C" void compute_asc(char * potString, char * chgString, int * irrep);
+
+#define compute_nonequilibrium_asc \
+	FortranCInterface_GLOBAL_(compute_nonequilibrium_asc, COMPUTE_NONEQUILIBRIUM_ASC)
+/*! \fn extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
+ *  \brief Computes the ASC correspoding to the MEP and irreducible representation, using the nonequilibrium PCM matrix
+ *  \param[in] potString name of the potential SurfaceFunction
+ *  \param[in] chgString name of the charge SurfaceFunction
+ *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
+ *  
+ *  The nonequilibrium PCM matrix is used in the computation of the ASC
+ */
+extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep);
 
 #define compute_polarization_energy \
 	FortranCInterface_GLOBAL_(compute_polarization_energy, COMPUTE_POLARIZATION_ENERGY)
@@ -235,7 +250,7 @@ extern "C" void print_surface_function(char * name);
 
 #define clear_surface_function \
 	FortranCInterface_GLOBAL_(clear_surface_function, CLEAR_SURFACE_FUNCTION)
-/*! \fn extern "C" void clear_surface_function(const char * name)
+/*! \fn extern "C" void clear_surface_function(char * name)
  *  \brief Clears contents of SurfaceFunction
  *  \param[in] name label for the SurfaceFunction to be cleared
  */
@@ -243,7 +258,7 @@ extern "C" void clear_surface_function(char * name);
 
 #define append_surface_function \
 	FortranCInterface_GLOBAL_(append_surface_function, APPEND_SURFACE_FUNCTION)
-/*! \fn extern "C" void append_surface_function(const char * name)
+/*! \fn extern "C" void append_surface_function(char * name)
  *  \brief Appends a new SurfaceFunction to the global map 
  *  \param[in] name label for the new SurfaceFunction
  */

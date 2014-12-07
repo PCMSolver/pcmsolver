@@ -147,6 +147,8 @@ LinAnsatzFunction :: LinAnsatzFunction(){
   B = NULL;
 
   dp = 2.25;
+  a = 1.25; ///< compression constant,  a > 1
+  b = 0.001; ///< compression constant, 0 < b < 1
 	td = 4;
 
   //quadratureLevel_=2;
@@ -156,7 +158,7 @@ LinAnsatzFunction :: LinAnsatzFunction(){
 
 
 /// constructor of linear basis functions
-LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, Vector3 *** pPointsIn){
+LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn){
 	nLevels = _m;
 	nFunctions = _nf;
 	nPatches = _p;
@@ -168,8 +170,11 @@ LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
 
   B = NULL;
 
-  dp = 2.25;
+  dp = _dp;
   td = 4;
+  a = _a; ///< compression constant,  a > 1
+  b = _b; ///< compression constant, 0 < b < 1
+	td = 4;
 
   quadratureLevel_=2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));

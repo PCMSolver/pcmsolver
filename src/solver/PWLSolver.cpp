@@ -23,7 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#include "WEMSolver.hpp"
+#include "PWLSolver.hpp"
 #include "WEM.hpp"
 #include "WEMPGMRES.hpp"
 #include "WEMPCG.hpp"
@@ -96,7 +96,7 @@ static double DLUni(Vector3 x, Vector3 y, Vector3 n_y)
     return (c.x*n_y.x+c.y*n_y.y+c.z*n_y.z)/(r*r*r);
 }
 
-void WEMSolver::initWEMMembers()
+void PWLSolver::initWEMMembers()
 {
     pointList = NULL;
 //    nodeList = NULL;
@@ -112,10 +112,10 @@ void WEMSolver::initWEMMembers()
     af->waveletList.sizeWaveletList = 0;
 }
 
-WEMSolver::~WEMSolver()
+PWLSolver::~PWLSolver()
 {
     // TODO insert delete of af - ansatzFunction
-    delete(af);
+    delete af;
     //if (nodeList != NULL)    free(nodeList);
     //if (elementList != NULL) free_patchlist(&elementList,nFunctions);
     if (pointList != NULL)   freePoints(&pointList);
@@ -128,7 +128,7 @@ WEMSolver::~WEMSolver()
     //if(T_ != NULL)          free_interpolate(&T_,nPatches,nLevels);
 }
 
-void WEMSolver::uploadCavity(const WaveletCavity & cavity)
+void PWLSolver::uploadCavity(const WaveletCavity & cavity)
 {
     //readPoints("../../InputFiles/benzene3.dat",&pointList,&af->nPatches, &af->nLevels);
     af->nPatches = cavity.getNPatches();
@@ -149,7 +149,7 @@ void WEMSolver::uploadCavity(const WaveletCavity & cavity)
     }
 }
 
-void WEMSolver::buildSystemMatrix(const Cavity & cavity)
+void PWLSolver::buildSystemMatrix(const Cavity & cavity)
 {
     // Down-cast const Cavity & to const WaveletCavity &
     // This is messy. The wavelet classes are not really Object-Oriented...
@@ -167,7 +167,7 @@ void WEMSolver::buildSystemMatrix(const Cavity & cavity)
     }
 }
 
-void WEMSolver::initInterpolation(){
+void PWLSolver::initInterpolation(){
     af->interCoeff = new Interpolation(pointList, interpolationGrade, interpolationType, af->nLevels, af->nPatches);
     af->nNodes = af->genNet(pointList);
     double volume = calculateVolume(af);
@@ -197,7 +197,7 @@ void WEMSolver::initInterpolation(){
 #endif
 }
 
-void WEMSolver::constructWavelets(){
+void PWLSolver::constructWavelets(){
     //af->generateElementList(); // already done in genNet
     af->generateWaveletList();
     af->setQuadratureLevel();
@@ -232,7 +232,7 @@ void WEMSolver::constructWavelets(){
 #endif
 }
 
-void WEMSolver::constructSystemMatrix()
+void PWLSolver::constructSystemMatrix()
 {
     constructSi();
     if(integralEquation == Full) {
@@ -240,7 +240,7 @@ void WEMSolver::constructSystemMatrix()
     }
 }
 
-void WEMSolver::constructSi(){
+void PWLSolver::constructSi(){
     double factor = 0.0;
     double epsilon = 0;
     switch (integralEquation) {
@@ -307,15 +307,15 @@ void WEMSolver::constructSi(){
 #endif
 }
 
-void WEMSolver::constructSe(){
+void PWLSolver::constructSe(){
     gf = greenOutside_; // sets the global pointer to pass GF to C code
     apriori2_ = af->compression(&S_e_);
     WEM(af, &S_e_, SingleLayer, DoubleLayer, -2*M_PI);
     aposteriori2_ = af->postProc(&S_e_);
 }
 
-void WEMSolver::compCharge(const Eigen::VectorXd & potential,
-                           Eigen::VectorXd & charge, int irrep)
+void PWLSolver::compCharge(const Eigen::VectorXd & potential,
+                           Eigen::VectorXd & charge, int /* irrep */)
 {
     switch (integralEquation) {
     case FirstKind:
@@ -334,7 +334,7 @@ void WEMSolver::compCharge(const Eigen::VectorXd & potential,
     //	charge /= -ToAngstrom; //WARNING  WARNING  WARNING
 }
 
-void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
+void PWLSolver::solveFirstKind(const Eigen::VectorXd & potential,
                                Eigen::VectorXd & charge)
 {
     double *rhs;
@@ -403,7 +403,7 @@ void WEMSolver::solveFirstKind(const Eigen::VectorXd & potential,
     free(v);
 }
 
-void WEMSolver::solveSecondKind(const Eigen::VectorXd & potential,
+void PWLSolver::solveSecondKind(const Eigen::VectorXd & potential,
                                 Eigen::VectorXd & charge)
 {
     double *rhs;
@@ -441,7 +441,7 @@ void WEMSolver::solveSecondKind(const Eigen::VectorXd & potential,
     //throw std::runtime_error("Second Kind not yet implemented"); //careful to the double layer sign when implementing it....
 }
 
-void WEMSolver::solveFull(const Eigen::VectorXd & potential,
+void PWLSolver::solveFull(const Eigen::VectorXd & potential,
                           Eigen::VectorXd & charge)
 {
     double *rhs;
@@ -469,8 +469,8 @@ void WEMSolver::solveFull(const Eigen::VectorXd & potential,
     free(v);
 }
 
-std::ostream & WEMSolver::printSolver(std::ostream & os)
+std::ostream & PWLSolver::printSolver(std::ostream & os)
 {
-    os << "Solver Type: Wavelet, piecewise constant or linear functions";
+    os << "Solver Type: Wavelet, piecewise linear functions";
     return os;
 }

@@ -23,7 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE WEMSolverC6H6
+#define BOOST_TEST_MODULE PWLSolverSecondKindC6H6
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -34,17 +34,16 @@
 
 #include "Config.hpp"
 
-#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
-#include "WEMSolver.hpp"
+#include "PWLSolver.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 #include "WaveletCavity.hpp"
 
 #include "PhysicalConstants.hpp"
 
-/*! \class WEMSolver
- *  \test \b  C6H6 tests WEMSolver with linear ansatz functions using ammonia and a wavelet cavity
+/*! \class PWLSolver
+ *  \test \b  C6H6 tests PWLSolver with the second kind equation using ammonia and a wavelet cavity
  */
 BOOST_AUTO_TEST_CASE(C6H6)
 {
@@ -92,7 +91,7 @@ BOOST_AUTO_TEST_CASE(C6H6)
     spheres.push_back(sph12);
     
     double probeRadius = 1.385*f; // Probe Radius for water
-    int patchLevel = 5;
+    int patchLevel = 2;
     double coarsity = 0.5;
     WaveletCavity cavity(spheres, probeRadius, patchLevel, coarsity);
     cavity.readCavity("molec_dyadic.dat");
@@ -112,7 +111,6 @@ BOOST_AUTO_TEST_CASE(C6H6)
     H5 /=convertBohrToAngstrom;
     H6 /=convertBohrToAngstrom;
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
     UniformDielectric<AD_directional> * gfOutside = new
@@ -122,7 +120,7 @@ BOOST_AUTO_TEST_CASE(C6H6)
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
-    WEMSolver solver(gfInside, gfOutside, "Linear", firstKind);
+    PWLSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
@@ -168,8 +166,6 @@ BOOST_AUTO_TEST_CASE(C6H6)
 
     double totalASC = - (6 * Ccharge + 6 * Hcharge) * ( permittivity - 1) / permittivity; 
     double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC " << std::setprecision(20) << totalASC << std::endl;
-    std::cout << "totalFakeASC " << std::setprecision(20) <<  totalFakeASC << std::endl;
-    std::cout << "totalASC - totalFakeASC = " << std::setprecision(20) << totalASC - totalFakeASC << std::endl;
+    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-2);
 }

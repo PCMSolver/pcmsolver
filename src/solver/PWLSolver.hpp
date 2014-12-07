@@ -23,8 +23,8 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef WEMSOLVER_HPP
-#define WEMSOLVER_HPP
+#ifndef PWLSOLVER_HPP
+#define PWLSOLVER_HPP
 
 #include <iosfwd>
 #include <string>
@@ -36,7 +36,6 @@
 #include "SparseMatrix.hpp"
 #include "GenericAnsatzFunction.hpp"
 #include "LinAnsatzFunction.hpp"
-#include "ConAnsatzFunction.hpp"
 #include "readPoints.hpp"
 
 class Vector2;
@@ -49,14 +48,14 @@ class WaveletCavity;
 #include "SolverFactory.hpp"
 #include "PCMSolver.hpp"
 
-/*! \file WEMSolver.hpp
- *  \class WEMSolver
- *  \brief WEMSolver
+/*! \file PWLSolver.hpp
+ *  \class PWLSolver
+ *  \brief Class describing a wavelet solver with piecewise linear functions
  *  \author Luca Frediani and Monica Bugeanu
  *  \date 2014
  */
 
-class WEMSolver : public PCMSolver
+class PWLSolver : public PCMSolver
 {
 private:
     unsigned int interpolationGrade;
@@ -64,24 +63,13 @@ private:
     void initWEMMembers();
     virtual std::ostream & printSolver(std::ostream & os);
 public:
-    WEMSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_,
-              std::string modelType, int integralEquation_ = SecondKind )
-        : PCMSolver(gfInside_, gfOutside_), integralEquation(integralEquation_) {
-        if(modelType =="Linear"){
-          af = new LinAnsatzFunction();
-          interpolationGrade = 2;
-          interpolationType = 1;
-        }
-        else if(modelType == "Wavelet"){
-          af = new ConAnsatzFunction();
-          interpolationGrade = 1;
-          interpolationType = 1;
-        }
+    PWLSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, int integralEquation_ = SecondKind)
+        : PCMSolver(gfInside_, gfOutside_), interpolationGrade(2), interpolationType(1), 
+	af( new LinAnsatzFunction() ), integralEquation(integralEquation_) {
         initWEMMembers();
     }
-//                WEMSolver(const Section & solver);
-    virtual ~WEMSolver();
-     Interpolation* getT_() {
+    virtual ~PWLSolver();
+    Interpolation* getT_() {
         return af->interCoeff;
     }
     int getQuadratureLevel() {
@@ -90,7 +78,7 @@ public:
     virtual void buildSystemMatrix(const Cavity & cavity);
     virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge,
                             int irrep = 0);
-    friend std::ostream & operator<<(std::ostream & os, WEMSolver & solver) {
+    friend std::ostream & operator<<(std::ostream & os, PWLSolver & solver) {
         return solver.printSolver(os);
     }
 protected:
@@ -113,15 +101,7 @@ protected:
     bool systemMatricesInitialized_;
     GenericAnsatzFunction *af;
 
-//    unsigned int quadratureLevel_;
     Vector3 *** pointList; // the old U
-//    Vector3 *nodeList; //*P_; --     // Point list
-//    unsigned int **elementList; //**F_;     // Element list
-//    unsigned int nNodes; //np_; --    // Number of knot points or something
-//    unsigned int nFunctions; //nf_; --    // Number of ansatz functions
-//    unsigned int nPatches; // p_; --    // Number of points
-//    unsigned int nLevels; //M_; --    // Patch level (2**M * 2**M elements per patch)
-//    int nQuadPoints; // nPoints_;    // Number of quadrature points
     
     double apriori1_, aposteriori1_;    // System matrix sparsities
     double apriori2_, aposteriori2_;    // System matrix sparsities
@@ -132,13 +112,13 @@ protected:
 
 namespace
 {
-    PCMSolver * createWEMSolver(const solverData & _data)
+    PCMSolver * createPWLSolver(const solverData & _data)
     {
-        return new WEMSolver(_data.gfInside, _data.gfOutside, _data.modelType, _data.integralEquation);
+        return new PWLSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
     }
-    const std::string WEMSOLVER("Wavelet");
-    const bool registeredWEMSolver = SolverFactory::TheSolverFactory().registerSolver(
-        WEMSOLVER,createWEMSolver);
+    const std::string PWLSOLVER("LINEAR"); // Stands for piecewise linear
+    const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(
+        PWLSOLVER,createPWLSolver);
 }
 
-#endif // WEMSOLVER_HPP
+#endif // PWLSOLVER_HPP

@@ -18,6 +18,7 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
   /// constructor of the class ConAnsatzFunction
   ConAnsatzFunction();
   ConAnsatzFunction(unsigned int p, unsigned int m, unsigned int nf, Vector3*** pPointsIn);
+  ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn);
 
   void quadratureGrade(signed int *g1, signed int*g2, int level1, int level2, double dist, double alpha);
 
@@ -65,6 +66,6 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
   //void generateCanonicalSingleScaleBasis(Wavelet *G, unsigned int ***C, int m);
   //void generateTopology(unsigned int  ****C);
 
-  ~ConAnsatzFunction();
+  virtual ~ConAnsatzFunction();
 };
 #endif

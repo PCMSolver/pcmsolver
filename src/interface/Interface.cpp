@@ -134,8 +134,41 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
         iter_chg = functions.insert(iter_chg, insertion);
     }
 
+    // If it already exists, we will pass a reference to its values to
+    // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // We clear the ASC surface function. Needed when using symmetry for response calculations
+    iter_chg->second->clear();
+    _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
+    // Renormalization of charges: divide by the number of symmetry operations in the group
+    (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
+}
+
+extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
+{
+    std::string potFuncName(potString);
+    std::string chgFuncName(chgString);
+
+    // Get the proper iterators
+    SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
+    // Here we check whether the function exists already or not
+    // 1. find the lower bound of the map
+    SharedSurfaceFunctionMap::iterator iter_chg = functions.lower_bound(chgFuncName);
+    // 2. if iter_chg == end, or if iter_chg is not a match,
+    //    then this element was not in the map, so we need to insert it
+    if ( iter_chg == functions.end()  ||  iter_chg->first != chgFuncName ) {
+        // move iter_chg to the element preceeding the insertion point
+        if ( iter_chg != functions.begin() ) --iter_chg;
+        // insert it
+	SharedSurfaceFunction func( new SurfaceFunction(chgFuncName,
+                                          _cavity->size()) );
+        SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(chgFuncName, func);
+        iter_chg = functions.insert(iter_chg, insertion);
+    }
+
     // If it already exists there's no problem, we will pass a reference to its values to
     // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // Here compCharge has to use the nonequilibrium PCM matrix!
+    // compNonequilibriumCharge()
     _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
@@ -332,7 +365,9 @@ extern "C" void get_surface_function(int * nts, double * values, char * name)
     if ( iter == functions.end() )
         throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
 
-    values = iter->second->vector().data();
+    for ( int i = 0; i < nTess; ++i ) {
+        values[i] = iter->second->value(i);
+    }
 }
 
 extern "C" void add_surface_function(char * result, double * coeff, char * part)
@@ -551,13 +586,13 @@ void initSolver()
     // (...not our fault, but should remedy somehow)
 #if defined (DEVELOPMENT_CODE)    
     if (modelType == "WAVELET") {
-        _PWCSolver = new PWCSolver(gfInside, gfOutside);
+        _PWCSolver = new PWCSolver(gfInside, gfOutside, eqType);
         _PWCSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_());
         _cavity = _waveletCavity;
         _solver = _PWCSolver;
     } else if (modelType == "LINEAR") {
-        _PWLSolver = new PWLSolver(gfInside, gfOutside);
+        _PWLSolver = new PWLSolver(gfInside, gfOutside, eqType);
         _PWLSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_());
         _cavity = _waveletCavity;
@@ -633,15 +668,27 @@ void initWaveletCavity()
     std::vector<Sphere> spheres = parsedInput->spheres();
     double coarsity = parsedInput->coarsity();
     double probeRadius = parsedInput->probeRadius();
-
+    
     // Just throw at this point if the user asked for a cavity for a single sphere...
     // the wavelet code will die without any further notice anyway
     if (spheres.size() == 1) {
         throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
     }
 
+    // --> ---> DIRTY DIRTY WORKAROUND
+    // The wavelet cavity has to be generated in Angstrom and then scaled to atomic units
+    // spheres is a local copy of the spheres list read on input. The latter is not untouched
+    double scaling = bohrToAngstrom(parsedInput->CODATAyear());
+    // Iterate by reference to scale!
+    BOOST_FOREACH(Sphere & sph, spheres) {
+	sph.scale(scaling);
+    }
+
     _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
     _waveletCavity->readCavity("molec_dyadic.dat");
+    // --> ---> DIRTY DIRTY WORKAROUND
+    // Convert back to atomic units the generated cavity    
+    _waveletCavity->scaleCavity(1.0/scaling);
 }
 #endif
 

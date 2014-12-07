@@ -12,9 +12,8 @@ if(DEVELOPMENT_CODE)
         set(header_dir_list_DEVELOPMENT
             ${CMAKE_CURRENT_SOURCE_DIR}/wemSolvers
             ${CMAKE_CURRENT_SOURCE_DIR}/wemFiles      
-            #${CMAKE_CURRENT_SOURCE_DIR}/pwl
-        	${CMAKE_CURRENT_SOURCE_DIR}/wavcav
-        	${CMAKE_CURRENT_SOURCE_DIR}/wem
+       	    ${CMAKE_CURRENT_SOURCE_DIR}/wavcav
+            ${CMAKE_CURRENT_SOURCE_DIR}/wem
            )
 	list(APPEND header_dir_list "${header_dir_list_DEVELOPMENT}")
 	list(SORT header_dir_list)
@@ -32,16 +31,13 @@ add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)
 if(DEVELOPMENT_CODE)
-	# The alphabetic order rule is here violated as the
-	# wem directory contains some files also needed by
-	# wavcav and pwl...
     add_subdirectory(wemFiles)
     add_subdirectory(wemSolvers)
-	#add_subdirectory(wem)
-  #add_subdirectory(pwl)
-	add_subdirectory(tsless)
-	add_subdirectory(wavcav)
+    add_subdirectory(tsless)
+    add_subdirectory(wavcav)
 endif()
+# This directory contains source file for executables
+add_subdirectory(bin)
 
 # We need to export header_dir_list one level up
 set(header_dir_list ${header_dir_list} PARENT_SCOPE)

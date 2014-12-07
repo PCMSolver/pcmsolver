@@ -55,6 +55,10 @@ public:
     void center(Eigen::Vector3d & coord) { center_ = coord; }
     const std::string & colour() const { return colour_; }
     void colour(std::string & col) { colour_ = col; }
+    
+    /// Scale sphere to other units
+    void scale(double scaling) { center_ *= scaling; radius_ *= scaling; }
+
     friend inline void swap(Sphere & left, Sphere & right);
     inline void swap(Sphere & other);
     /// Assignment operator.

@@ -32,29 +32,29 @@
 
 #include <Eigen/Dense>
 
-double CollocationIntegrator::computeS(const Vacuum<double> * gf, double area) const {
+double CollocationIntegrator::computeS(const Vacuum<double> * /* gf */, double area) const {
 	return (factor_ * std::sqrt(4 * M_PI / area));
 } 
-double CollocationIntegrator::computeS(const Vacuum<AD_directional> * gf, double area) const {
+double CollocationIntegrator::computeS(const Vacuum<AD_directional> * /* gf */, double area) const {
 	return (factor_ * std::sqrt(4 * M_PI / area));
 }
-double CollocationIntegrator::computeS(const Vacuum<AD_gradient> * gf, double area) const {
+double CollocationIntegrator::computeS(const Vacuum<AD_gradient> * /* gf */, double area) const {
 	return (factor_ * std::sqrt(4 * M_PI / area));
 }
-double CollocationIntegrator::computeS(const Vacuum<AD_hessian> * gf, double area) const {
+double CollocationIntegrator::computeS(const Vacuum<AD_hessian> * /* gf */, double area) const {
 	return (factor_ * std::sqrt(4 * M_PI / area));
 }
 
-double CollocationIntegrator::computeD(const Vacuum<double> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const Vacuum<double> * /* gf */, double area, double radius) const {
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const Vacuum<AD_directional> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const Vacuum<AD_directional> * /* gf */, double area, double radius) const {
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const Vacuum<AD_gradient> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const Vacuum<AD_gradient> * /* gf */, double area, double radius) const {
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const Vacuum<AD_hessian> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const Vacuum<AD_hessian> * /* gf */, double area, double radius) const {
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
 
@@ -92,28 +92,28 @@ double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * gf,
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
 
-double CollocationIntegrator::computeS(const IonicLiquid<double> * gf, double area) const {
+double CollocationIntegrator::computeS(const IonicLiquid<double> * /* gf */, double /* area */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeS(const IonicLiquid<AD_directional> * gf, double area) const {
+double CollocationIntegrator::computeS(const IonicLiquid<AD_directional> * /* gf */, double /* area */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeS(const IonicLiquid<AD_gradient> * gf, double area) const {
+double CollocationIntegrator::computeS(const IonicLiquid<AD_gradient> * /* gf */, double /* area */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeS(const IonicLiquid<AD_hessian> * gf, double area) const {
+double CollocationIntegrator::computeS(const IonicLiquid<AD_hessian> * /* gf */, double /* area */) const {
 	return 0.0;
 }
 
-double CollocationIntegrator::computeD(const IonicLiquid<double> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const IonicLiquid<double> * /* gf */, double /* area */, double /* radius */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeD(const IonicLiquid<AD_directional> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const IonicLiquid<AD_directional> * /* gf */, double /* area */, double /* radius */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeD(const IonicLiquid<AD_gradient> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const IonicLiquid<AD_gradient> * /* gf */, double /* area */, double /* radius */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeD(const IonicLiquid<AD_hessian> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const IonicLiquid<AD_hessian> * /* gf */, double /* area */, double /* radius */) const {
 	return 0.0;
 }

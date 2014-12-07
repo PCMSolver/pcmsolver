@@ -147,12 +147,12 @@ LinAnsatzFunction :: LinAnsatzFunction(){
   B = NULL;
 
   dp = 2.25;
+  td = 4;
   a = 1.25; ///< compression constant,  a > 1
   b = 0.001; ///< compression constant, 0 < b < 1
-	td = 4;
 
-  //quadratureLevel_=2;
-  quadratureLevel_=1;
+  quadratureLevel_=2;
+  //quadratureLevel_=1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -174,8 +174,8 @@ LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   td = 4;
   a = _a; ///< compression constant,  a > 1
   b = _b; ///< compression constant, 0 < b < 1
-	td = 4;
 
+  //quadratureLevel_=1;
   quadratureLevel_=2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }

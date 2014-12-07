@@ -49,8 +49,6 @@
  *  They must be specified as private data members with public accessor methods (get-ters).
  *  In general, no mutator methods (set-ters) should be needed, exceptions to this rule
  *  should be carefully considered.
- *  \warning If new data members are added, you **must** update the definition of the copy
- *  constructor and of the two swap functions.
  */
 
 class Input
@@ -62,15 +60,9 @@ public:
     Input(const std::string & filename);
     /// Constructor from host input structs
     Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
-    /// Copy constructor
-    Input(const Input &other);
-    /// Assignment operator
-    Input& operator=(Input other);
     /// Destructor
     ~Input();
 
-    friend inline void swap(Input & left, Input & right);
-    inline void swap(Input & other);
     // Accessor methods
     std::string units() { return units_; }
     int CODATAyear() { return CODATAyear_; }
@@ -98,6 +90,9 @@ public:
     bool fromSolvent() { return hasSolvent_; }
     std::string solverType() { return solverType_; }
     int equationType() { return equationType_; }
+    double aPrioriA() { return aPrioriA_; }
+    double aPrioridPrime() { return aPrioridPrime_; }
+    double aPosterioriB() { return aPosterioriB_; }
     double correction() { return correction_; }
     bool hermitivitize() { return hermitivitize_; }
     double probeRadius() { return probeRadius_; }
@@ -182,6 +177,12 @@ private:
     std::string solverType_;
     /// The integral equation type (wavelet solvers)
     int equationType_;
+    /// A priori compression parameter a
+    double aPrioriA_;
+    /// A priori compression parameter d'
+    double aPrioridPrime_;
+    /// A posteriori compression parameter b
+    double aPosterioriB_;
     /// Correction factor (C-PCM)
     double correction_;
     /// Whether the PCM matrix should be hermitivitized (collocation solvers)

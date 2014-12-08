@@ -42,6 +42,7 @@
 #include <Python.h>
 #endif
 
+#include "Compression.hpp"
 #include "InputManager.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
@@ -200,9 +201,10 @@ void Input::reader(const char * pythonParsed)
     
     solverType_ = medium.getStr("SOLVERTYPE");
     equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
-    aPrioriA_ = medium.getDbl("A");
-    aPrioridPrime_ = medium.getDbl("DPRIME");
-    aPosterioriB_ = medium.getDbl("B");
+    double aPrioriA = medium.getDbl("A");
+    double aPrioridPrime = medium.getDbl("DPRIME");
+    double aPosterioriB = medium.getDbl("B");
+    compression_ = Compression(aPrioriA, aPrioridPrime, aPosterioriB);
     correction_ = medium.getDbl("CORRECTION");
     hermitivitize_ = medium.getBool("MATRIXSYMM");
     
@@ -265,13 +267,13 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
     std::string inteq = to_upper_copy(std::string(solv.equation_type));
     equationType_ = integralEquation(inteq);
     // Initialize compression parameters to safe values
-    aPrioriA_ = 1.25;
     if (solverType_ == "WAVELET") {
-	aPrioridPrime_ = 1.25;
+	/* aPrioriA = 1.25; aPrioridPrime = 1.25; aPosterioriB = 0.01; */
+	compression_ = Compression(1.25, 1.25, 0.01);
     } else if (solverType_ == "LINEAR") {
-	aPrioridPrime_ = 2.25;
+	/* aPrioriA = 1.25; aPrioridPrime = 2.25; aPosterioriB = 0.01; */
+	compression_ = Compression(1.25, 2.25, 0.01);
     }
-    aPosterioriB_ = 0.01;
     correction_ = solv.correction;
     hermitivitize_ = true;
     

@@ -578,8 +578,9 @@ void initSolver()
     std::string modelType = parsedInput->solverType();
     double correction = parsedInput->correction();
     int eqType = parsedInput->equationType();
+    Compression comp = parsedInput->compression();
     bool symm = parsedInput->hermitivitize();
-    solverData solverInput(gfInside, gfOutside, correction, eqType, symm);
+    solverData solverInput(gfInside, gfOutside, comp, correction, eqType, symm);
 
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other

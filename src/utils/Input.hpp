@@ -33,6 +33,7 @@
 
 #include "Getkw.h"
 
+#include "Compression.hpp"
 #include "InputManager.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
@@ -90,9 +91,7 @@ public:
     bool fromSolvent() { return hasSolvent_; }
     std::string solverType() { return solverType_; }
     int equationType() { return equationType_; }
-    double aPrioriA() { return aPrioriA_; }
-    double aPrioridPrime() { return aPrioridPrime_; }
-    double aPosterioriB() { return aPosterioriB_; }
+    Compression compression() { return compression_; }
     double correction() { return correction_; }
     bool hermitivitize() { return hermitivitize_; }
     double probeRadius() { return probeRadius_; }
@@ -177,12 +176,8 @@ private:
     std::string solverType_;
     /// The integral equation type (wavelet solvers)
     int equationType_;
-    /// A priori compression parameter a
-    double aPrioriA_;
-    /// A priori compression parameter d'
-    double aPrioridPrime_;
-    /// A posteriori compression parameter b
-    double aPosterioriB_;
+    /// Wavelet solvers compression parameters
+    Compression compression_;
     /// Correction factor (C-PCM)
     double correction_;
     /// Whether the PCM matrix should be hermitivitized (collocation solvers)

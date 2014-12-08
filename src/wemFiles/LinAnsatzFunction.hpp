@@ -1,6 +1,7 @@
 #ifndef LINANSATZFUNCTION_HPP
 #define LINANSATZFUNCTION_HPP
 
+#include "Compression.hpp"
 #include "GenericAnsatzFunction.hpp"
 
 /**
@@ -17,6 +18,7 @@ public:
   
   /// constructor of the generic class AnsatzFunction
   LinAnsatzFunction();
+  LinAnsatzFunction(const Compression & _comp);
   LinAnsatzFunction(unsigned int p, unsigned int m, unsigned int nf, Vector3*** pPointsIn);
   LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn);
 

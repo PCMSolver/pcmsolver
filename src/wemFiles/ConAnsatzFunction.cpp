@@ -1,4 +1,5 @@
 #include "ConAnsatzFunction.hpp"
+#include "Compression.hpp"
 #include "Transformations.hpp"
 #include "Mask.hpp"
 #include "Vector3.hpp"
@@ -21,6 +22,25 @@ ConAnsatzFunction :: ConAnsatzFunction(){
   dp = 1.25;
   a = 1.25; ///< compression constant,  a > 1
   b = 0.001; ///< compression constant, 0 < b < 1
+
+  quadratureLevel_ = 2;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+}
+
+ConAnsatzFunction :: ConAnsatzFunction(const Compression & _comp){
+  nLevels = 0;
+  nFunctions = 0;
+  nPatches = 0;
+  minLevel = 1;
+  noPhi = 1;
+
+  B = NULL;
+  B2 = NULL;
+
+  td = 3;
+  dp = _comp.aPrioridPrime;
+  a = _comp.aPrioriA; ///< compression constant,  a > 1
+  b = _comp.aPosterioriB; ///< compression constant, 0 < b < 1
 
   quadratureLevel_ = 2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));

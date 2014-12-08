@@ -1,6 +1,7 @@
 #ifndef CONANSATZFUNCTION_HPP
 #define CONANSATZFUNCTION_HPP
 
+#include "Compression.hpp"
 #include "GenericAnsatzFunction.hpp"
 
 /**
@@ -17,6 +18,7 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
   
   /// constructor of the class ConAnsatzFunction
   ConAnsatzFunction();
+  ConAnsatzFunction(const Compression & _comp);
   ConAnsatzFunction(unsigned int p, unsigned int m, unsigned int nf, Vector3*** pPointsIn);
   ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn);
 

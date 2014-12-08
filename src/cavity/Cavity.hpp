@@ -73,6 +73,8 @@ public:
     Cavity() : nElements_(0), built(false) {}
     /*! \brief Constructor from spheres
      *  \param[in] _spheres an STL vector containing the spheres making up the cavity.
+     *  
+     *  This sets the point group to C1
      */
     Cavity(const std::vector<Sphere> & _spheres) : spheres_(_spheres), built(false) {
         nSpheres_ = spheres_.size();
@@ -82,6 +84,7 @@ public:
             sphereCenter_.col(i) = spheres_[i].center();
             sphereRadius_(i) = spheres_[i].radius();
         }
+	pointGroup_ = Symmetry(); // Generate C1 cavity 
     }
     Cavity(const std::vector<Sphere> & _spheres,
            const Symmetry & pg) : spheres_(_spheres), built(false), pointGroup_(pg) {

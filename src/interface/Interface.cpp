@@ -187,10 +187,10 @@ extern "C" void compute_polarization_energy(double * energy)
         SharedSurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("EleMEP");
         SharedSurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleASC");
 
-        double UNN = (*iter_nuc_pot->second) *  (*iter_nuc_chg->second);
-        double UEN = (*iter_ele_pot->second) *  (*iter_nuc_chg->second);
-        double UNE = (*iter_nuc_pot->second) *  (*iter_ele_chg->second);
-        double UEE = (*iter_ele_pot->second) *  (*iter_ele_chg->second);
+        double UNN = (*iter_nuc_pot->second) * (*iter_nuc_chg->second);
+        double UEN = (*iter_ele_pot->second) * (*iter_nuc_chg->second);
+        double UNE = (*iter_nuc_pot->second) * (*iter_ele_chg->second);
+        double UEE = (*iter_ele_pot->second) * (*iter_ele_chg->second);
 
         std::ostringstream out_stream;
         out_stream << "Polarization energy components" << std::endl;
@@ -668,7 +668,7 @@ void initWaveletCavity()
     std::vector<Sphere> spheres = parsedInput->spheres();
     double coarsity = parsedInput->coarsity();
     double probeRadius = parsedInput->probeRadius();
-    
+
     // Just throw at this point if the user asked for a cavity for a single sphere...
     // the wavelet code will die without any further notice anyway
     if (spheres.size() == 1) {
@@ -677,12 +677,14 @@ void initWaveletCavity()
 
     // --> ---> DIRTY DIRTY WORKAROUND
     // The wavelet cavity has to be generated in Angstrom and then scaled to atomic units
-    // spheres is a local copy of the spheres list read on input. The latter is not untouched
+    // spheres is a local copy of the spheres list read on input. The latter is untouched
     double scaling = bohrToAngstrom(parsedInput->CODATAyear());
     // Iterate by reference to scale!
     BOOST_FOREACH(Sphere & sph, spheres) {
 	sph.scale(scaling);
     }
+    // Scale also probeRadius...
+    probeRadius *= scaling;
 
     _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
     _waveletCavity->readCavity("molec_dyadic.dat");

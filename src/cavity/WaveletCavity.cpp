@@ -125,6 +125,8 @@ void WaveletCavity::uploadPoints(int quadLevel, Interpolation *interp)
     initGaussSquare(&Q, quadLevel + 1);
 
     nElements_ = nPatches_ * n * n * Q[quadLevel].noP;
+    // We set nIrrElements_ to nElements_ since there is no symmetry!
+    nIrrElements_ = nElements_;
 
     elementCenter_.resize(Eigen::NoChange, nElements_);
     elementNormal_.resize(Eigen::NoChange, nElements_);

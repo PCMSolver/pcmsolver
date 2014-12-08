@@ -6,6 +6,8 @@
  *
  * @brief class for a generic ansatz functions
  */
+#include <iosfwd>
+
 #include "BoundingBox.hpp"
 #include "Constants.hpp"
 #include "Cubature.hpp"
@@ -22,6 +24,8 @@ class Vector2;
 #define LAPLACE 2
 
 class GenericAnsatzFunction {
+private: 	
+  virtual std::ostream & printAnsatzFunction(std::ostream & os) = 0;
 public:
 
   Vector3 *nodeList;               ///< points for the single scale basis
@@ -148,5 +152,8 @@ public:
   
   int freeElementTree();
   virtual ~GenericAnsatzFunction(){};
+  friend std::ostream & operator<<(std::ostream & os, GenericAnsatzFunction & af) {
+      return af.printAnsatzFunction(os);
+  }
 };
 #endif

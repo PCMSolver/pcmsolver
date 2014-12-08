@@ -11,6 +11,8 @@
  * @note contains all the functions that are specific to a linear Ansatz Function
  */
 class LinAnsatzFunction: public GenericAnsatzFunction {
+  private:
+  virtual std::ostream & printAnsatzFunction(std::ostream & os);
 public:
 
   // characteristic variable, found only in this function

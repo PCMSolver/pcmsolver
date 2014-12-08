@@ -31,7 +31,7 @@ const unsigned int 	maxiter = 100; // restart parameter
  * @param af the AnsatzFunction class for acces to wavelets, elements and
  * other constants
  */
-unsigned int WEMPGMRES1(SparseMatrix *A, double *b, double *x, double epsi, GenericAnsatzFunction *af) {
+unsigned int WEMPGMRES1(SparseMatrix *A, double *b, double *x, double epsi, GenericAnsatzFunction * /* af */) {
   unsigned int	k, l;
   double  	rn, t;
   double  	**H, **V, *D, *v, *f, *u, *c, *s, *y;
@@ -168,7 +168,7 @@ unsigned int WEMPGMRES1(SparseMatrix *A, double *b, double *x, double epsi, Gene
  * @param af the AnsatzFunction class for acces to wavelets, elements and
  * other constants
  */
-unsigned int WEMPGMRES2(SparseMatrix *A, double *b, double *x, double epsi, GenericAnsatzFunction *af){
+unsigned int WEMPGMRES2(SparseMatrix *A, double *b, double *x, double epsi, GenericAnsatzFunction * /* af */) {
   unsigned int	k, l;
   double  	rn, t;
   double  	**H, **V, *D, *v, *f, *u, *c, *s, *y;

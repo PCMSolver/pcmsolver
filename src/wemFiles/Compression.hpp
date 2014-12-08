@@ -52,6 +52,7 @@ struct Compression
 	os << "A priori compression" << std::endl;
 	os << " a  = " << o.aPrioriA << std::endl;
 	os << " d' = " << o.aPrioridPrime << std::endl;
+	os << "A posteriori compression" << std::endl;
  	os << " b  = " << o.aPosterioriB;
         return os;
     }

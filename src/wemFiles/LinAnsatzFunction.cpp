@@ -6,6 +6,7 @@
 #include "Vector3.hpp"
 #include "Vector2.hpp"
 
+#include <ostream>
 #include <cstdio>
 #include <cstdlib>
 #include "string.h"
@@ -1423,3 +1424,13 @@ LinAnsatzFunction::~LinAnsatzFunction(){
   free(G);
 }
 ///@todo implement tau, kappa, Phi times Phi, include memset
+
+std::ostream & LinAnsatzFunction::printAnsatzFunction(std::ostream & os) 
+{
+  os << "A priori compression" << std::endl;      
+  os << " a  = " << a << std::endl;
+  os << " d' = " << dp << std::endl;
+  os << "A posteriori compression" << std::endl;
+  os << " b  = " << b;
+  return os;
+}

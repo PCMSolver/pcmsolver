@@ -472,6 +472,7 @@ void PWCSolver::solveFull(const Eigen::VectorXd & potential,
 
 std::ostream & PWCSolver::printSolver(std::ostream & os)
 {
-    os << "Solver Type: Wavelet, piecewise constant functions";
+    os << "Solver Type: Wavelet, piecewise constant functions" << std::endl;
+    os << *af;
     return os;
 }

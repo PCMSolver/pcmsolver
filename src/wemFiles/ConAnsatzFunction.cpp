@@ -5,6 +5,7 @@
 #include "Vector3.hpp"
 #include "Vector2.hpp"
 
+#include <ostream>
 #include <cstdio>
 #include "string.h"
 
@@ -1070,4 +1071,14 @@ ConAnsatzFunction::~ConAnsatzFunction(){
   delete(interCoeff);
 
   free(G);
+}
+
+std::ostream & ConAnsatzFunction::printAnsatzFunction(std::ostream & os) 
+{
+  os << "A priori compression" << std::endl;      
+  os << " a  = " << a << std::endl;
+  os << " d' = " << dp << std::endl;
+  os << "A posteriori compression" << std::endl;
+  os << " b  = " << b;
+  return os;
 }

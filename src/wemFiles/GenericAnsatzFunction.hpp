@@ -6,6 +6,8 @@
  *
  * @brief class for a generic ansatz functions
  */
+#include <iosfwd>
+
 #include "BoundingBox.hpp"
 #include "Constants.hpp"
 #include "Cubature.hpp"
@@ -22,6 +24,8 @@ class Vector2;
 #define LAPLACE 2
 
 class GenericAnsatzFunction {
+private: 	
+  virtual std::ostream & printAnsatzFunction(std::ostream & os) = 0;
 public:
 
   Vector3 *nodeList;               ///< points for the single scale basis
@@ -36,6 +40,8 @@ public:
   unsigned int quadratureLevel_;     ///< the degree for the RHS quadrature
   unsigned int td;                   ///< tilde_d parameter - the dual order parameter
   double dp;                         ///< d' parameter from paper, dp in (d, tilde_d+r) for postproc, or in (d, tilde_d+2*q) for compression
+  double		a; ///< apriori compression constant,  a > 1
+  double		b; ///< a posrteriori compression constant, 0 < b < 1
 
   Randwerte* pRandWerte;             ///< precalulated boundary values on gamma
 
@@ -146,5 +152,8 @@ public:
   
   int freeElementTree();
   virtual ~GenericAnsatzFunction(){};
+  friend std::ostream & operator<<(std::ostream & os, GenericAnsatzFunction & af) {
+      return af.printAnsatzFunction(os);
+  }
 };
 #endif

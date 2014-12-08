@@ -578,21 +578,22 @@ void initSolver()
     std::string modelType = parsedInput->solverType();
     double correction = parsedInput->correction();
     int eqType = parsedInput->equationType();
+    Compression comp = parsedInput->compression();
     bool symm = parsedInput->hermitivitize();
-    solverData solverInput(gfInside, gfOutside, correction, eqType, symm);
+    solverData solverInput(gfInside, gfOutside, comp, correction, eqType, symm);
 
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
     // (...not our fault, but should remedy somehow)
 #if defined (DEVELOPMENT_CODE)    
     if (modelType == "WAVELET") {
-        _PWCSolver = new PWCSolver(gfInside, gfOutside, eqType);
+        _PWCSolver = new PWCSolver(gfInside, gfOutside, comp, eqType);
         _PWCSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_());
         _cavity = _waveletCavity;
         _solver = _PWCSolver;
     } else if (modelType == "LINEAR") {
-        _PWLSolver = new PWLSolver(gfInside, gfOutside, eqType);
+        _PWLSolver = new PWLSolver(gfInside, gfOutside, comp, eqType);
         _PWLSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_());
         _cavity = _waveletCavity;

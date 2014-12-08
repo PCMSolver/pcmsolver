@@ -42,6 +42,7 @@ class Vector2;
 class Vector3;
 class Cavity;
 class WaveletCavity;
+struct Compression;
 
 #include "IGreensFunction.hpp"
 #include "SolverData.hpp"
@@ -66,6 +67,11 @@ public:
     PWCSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, int integralEquation_ = SecondKind)
         : PCMSolver(gfInside_, gfOutside_), interpolationGrade(1), interpolationType(1), 
 	af( new ConAnsatzFunction() ), integralEquation(integralEquation_) {
+        initWEMMembers();
+    }
+    PWCSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, const Compression & _comp, int integralEquation_ = SecondKind)
+        : PCMSolver(gfInside_, gfOutside_), interpolationGrade(1), interpolationType(1), 
+	af( new ConAnsatzFunction(_comp) ), integralEquation(integralEquation_) {
         initWEMMembers();
     }
     virtual ~PWCSolver();

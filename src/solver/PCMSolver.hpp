@@ -30,7 +30,6 @@
 
 #include "Config.hpp"
 
-
 class Cavity;
 
 #include "IGreensFunction.hpp"

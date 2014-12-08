@@ -1,10 +1,12 @@
 
 #include "LinAnsatzFunction.hpp"
+#include "Compression.hpp"
 #include "Transformations.hpp"
 #include "Mask.hpp"
 #include "Vector3.hpp"
 #include "Vector2.hpp"
 
+#include <ostream>
 #include <cstdio>
 #include <cstdlib>
 #include "string.h"
@@ -147,16 +149,41 @@ LinAnsatzFunction :: LinAnsatzFunction(){
   B = NULL;
 
   dp = 2.25;
-	td = 4;
+  td = 4;
+  a = 1.25; ///< compression constant,  a > 1
+  b = 0.001; ///< compression constant, 0 < b < 1
 
-  //quadratureLevel_=2;
-  quadratureLevel_=1;
+  quadratureLevel_=2;
+  //quadratureLevel_=1;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+}
+
+LinAnsatzFunction :: LinAnsatzFunction(const Compression & _comp){
+	nLevels = 0;
+	nFunctions = 0;
+	nPatches = 0;
+  /// @todo check that the grade in the Interpolation is correct
+  // now using grade = 4!!! (coefficient is the log2 (grade)
+	//interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
+	noPhi = 4;
+
+  interCoeff = NULL;
+
+  B = NULL;
+
+  td = 4;
+  dp = _comp.aPrioridPrime;
+  a = _comp.aPrioriA; ///< compression constant,  a > 1
+  b = _comp.aPosterioriB; ///< compression constant, 0 < b < 1
+
+  quadratureLevel_=2;
+  //quadratureLevel_=1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
 
 /// constructor of linear basis functions
-LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, Vector3 *** pPointsIn){
+LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn){
 	nLevels = _m;
 	nFunctions = _nf;
 	nPatches = _p;
@@ -168,9 +195,12 @@ LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
 
   B = NULL;
 
-  dp = 2.25;
+  dp = _dp;
   td = 4;
+  a = _a; ///< compression constant,  a > 1
+  b = _b; ///< compression constant, 0 < b < 1
 
+  //quadratureLevel_=1;
   quadratureLevel_=2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
@@ -1394,3 +1424,13 @@ LinAnsatzFunction::~LinAnsatzFunction(){
   free(G);
 }
 ///@todo implement tau, kappa, Phi times Phi, include memset
+
+std::ostream & LinAnsatzFunction::printAnsatzFunction(std::ostream & os) 
+{
+  os << "A priori compression" << std::endl;      
+  os << " a  = " << a << std::endl;
+  os << " d' = " << dp << std::endl;
+  os << "A posteriori compression" << std::endl;
+  os << " b  = " << b;
+  return os;
+}

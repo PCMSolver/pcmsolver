@@ -28,6 +28,7 @@
 
 #include "Config.hpp"
 
+#include "Compression.hpp"
 
 class IGreensFunction;
 
@@ -37,6 +38,8 @@ class IGreensFunction;
  *  The Green's function inside the cavity.
  *  @var solverData::gfOutside
  *  The Green's function outside the cavity.
+ *  @var solverData::compressionParameters
+ *  A priori and a posteriori compression settings for wavelet solvers.
  *  @var solverData::correction
  *  The correction factor to be use in a CPCM calculation.
  *  @var solverData::integralEquation
@@ -48,14 +51,15 @@ class IGreensFunction;
 struct solverData {
     IGreensFunction * gfInside;
     IGreensFunction * gfOutside;
+    Compression compressionParameters;
     double correction;
     int integralEquation;
     bool hermitivitize;
     std::string modelType;
     solverData(IGreensFunction * _gfInside, IGreensFunction * _gfOutside,
-               double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
-        gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction),
-        integralEquation(_integralEquation), hermitivitize(_symm) {}
+	       Compression & _comp, double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
+        gfInside(_gfInside), gfOutside(_gfOutside), compressionParameters(_comp), correction(_correction),
+	integralEquation(_integralEquation), hermitivitize(_symm) {}
 };
 
 #endif // SOLVERDATA_HPP

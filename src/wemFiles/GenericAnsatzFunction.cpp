@@ -215,8 +215,8 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
       if (d1 > d2) c2[i][j] = a*d1; else c2[i][j] = a*d2;
       if (c1[i][j] < a/(1<<j)) c1[i][j] = a/(1<<j);
       if (c2[i][j] < a/(1<<i)) c2[i][j] = a/(1<<i);
-      //if (c1[i][j] > c2[i][j]) c1[i][j] = c2[i][j];
-      //if ((i < minLevel) || (j < minLevel)) c1[i][j] = c2[i][j];
+      if (c1[i][j] > c2[i][j]) c1[i][j] = c2[i][j];
+      if ((i < minLevel) || (j < minLevel)) c1[i][j] = c2[i][j];
       c1[i][j] *= maxRadius/scalingFactor;              // Gebiet relativieren
     }
   }
@@ -971,15 +971,15 @@ unsigned int GenericAnsatzFunction::compare(unsigned int e1, unsigned int e2,
           if( F1[3] == F2[(*ind2+1)%4]){
             *ind1 = 3;
             return 3;
-				  } else if (F1[(*ind1+1)%4] == F2[(*ind2+3)%4]) {
+          } else if (F1[(*ind1+1)%4] == F2[(*ind2+3)%4]) {
 					  // normal case
             *ind2 = (*ind2+3)%4;
-					  return(3);
-				  }
-				  else return(4);
-			  }
-		  }
-	  }
+            return(3);
+          }
+          else return(4);
+        }
+      }
+    }
     return 1;
   }else{
     //different patches, calculate difference vector
@@ -991,7 +991,7 @@ unsigned int GenericAnsatzFunction::compare(unsigned int e1, unsigned int e2,
         d.x = nodeList[F1[*ind1]].x - nodeList[F2[*ind2]].x;
         d.y = nodeList[F1[*ind1]].y - nodeList[F2[*ind2]].y;
         d.z = nodeList[F1[*ind1]].z - nodeList[F2[*ind2]].z;
-        if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-6) {
+        if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-8) {
           // found common point, search common edge
           d.x = nodeList[F1[(*ind1 + 1) % 4]].x
             - nodeList[F2[(*ind2 + 3) % 4]].x;
@@ -999,7 +999,7 @@ unsigned int GenericAnsatzFunction::compare(unsigned int e1, unsigned int e2,
             - nodeList[F2[(*ind2 + 3) % 4]].y;
           d.z = nodeList[F1[(*ind1 + 1) % 4]].z
             - nodeList[F2[(*ind2 + 3) % 4]].z;
-          if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-6) {
+          if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-8) {
             *ind2 = (*ind2 + 3) % 4;// normal case: second point at ind1+1, ind1-1
             return (3);
           } else if (*ind1 == 0) {
@@ -1009,7 +1009,7 @@ unsigned int GenericAnsatzFunction::compare(unsigned int e1, unsigned int e2,
               - nodeList[F2[(*ind2 + 1) % 4]].y; 
             d.z = nodeList[F1[3]].z
               - nodeList[F2[(*ind2 + 1) % 4]].z;
-            if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-6) {
+            if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-8) {
               *ind1 = 3;
               return (3);
             }

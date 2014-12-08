@@ -1,6 +1,7 @@
 #ifndef CONANSATZFUNCTION_HPP
 #define CONANSATZFUNCTION_HPP
 
+#include "Compression.hpp"
 #include "GenericAnsatzFunction.hpp"
 
 /**
@@ -10,6 +11,8 @@
  * @note contains all the functions that are specific to a Constant Ansatz Function
  */
 class ConAnsatzFunction : public GenericAnsatzFunction {
+  private:
+  virtual std::ostream & printAnsatzFunction(std::ostream & os);
   public:
 
   // characteristic variable, found only in this function
@@ -17,7 +20,9 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
   
   /// constructor of the class ConAnsatzFunction
   ConAnsatzFunction();
+  ConAnsatzFunction(const Compression & _comp);
   ConAnsatzFunction(unsigned int p, unsigned int m, unsigned int nf, Vector3*** pPointsIn);
+  ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn);
 
   void quadratureGrade(signed int *g1, signed int*g2, int level1, int level2, double dist, double alpha);
 

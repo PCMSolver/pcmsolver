@@ -39,9 +39,26 @@
 #include "MathUtils.hpp"
 
 Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m, 
-             const Eigen::MatrixX3d & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph)
+             const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph)
 	: nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph) 
 {
+    rotor_ = findRotorType();
+}
+
+Molecule::Molecule(int nat, const std::vector<Sphere> & sph)
+	: nAtoms_(nat), spheres_(sph) 
+{
+    // This constructor is used when initializing the Molecule in EXPLICIT mode
+    // charges are set to 1.0; masses are set based on the radii; geometry is set from the list of spheres
+    charges_ = Eigen::VectorXd::Ones(nAtoms_);
+    for (int i = 0; i < nAtoms_; ++i) {
+        masses_(i) = spheres_[i].radius();
+	geometry_.col(i) = spheres_[i].center();
+	double charge = charges_(i);
+	double mass = masses_(i);
+	// All the atoms are dummies
+	atoms_[i] = Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i));
+    }
     rotor_ = findRotorType();
 }
 
@@ -65,14 +82,14 @@ Eigen::Matrix3d Molecule::inertiaTensor(){
 
     for (int i = 0; i < nAtoms_; ++i){
         // Diagonal
-        inertia(0,0) += masses_(i) * (geometry_(i,1) * geometry_(i,1) + geometry_(i,2) * geometry_(i,2));
-        inertia(1,1) += masses_(i) * (geometry_(i,0) * geometry_(i,0) + geometry_(i,2) * geometry_(i,2));
-        inertia(2,2) += masses_(i) * (geometry_(i,0) * geometry_(i,0) + geometry_(i,1) * geometry_(i,1));
+        inertia(0,0) += masses_(i) * (geometry_(1,i) * geometry_(1,i) + geometry_(2,i) * geometry_(2,i));
+        inertia(1,1) += masses_(i) * (geometry_(0,i) * geometry_(0,i) + geometry_(2,i) * geometry_(2,i));
+        inertia(2,2) += masses_(i) * (geometry_(0,i) * geometry_(0,i) + geometry_(1,i) * geometry_(1,i));
 
         // Off-diagonal
-        inertia(0,1) -= masses_(i) * (geometry_(i,0) * geometry_(i,1));
-        inertia(0,2) -= masses_(i) * (geometry_(i,0) * geometry_(i,2));
-        inertia(1,2) -= masses_(i) * (geometry_(i,1) * geometry_(i,2));
+        inertia(0,1) -= masses_(i) * (geometry_(0,i) * geometry_(1,i));
+        inertia(0,2) -= masses_(i) * (geometry_(0,i) * geometry_(2,i));
+        inertia(1,2) -= masses_(i) * (geometry_(1,i) * geometry_(2,i));
     }
     // Now symmetrize
     hermitivitize(inertia);
@@ -134,8 +151,8 @@ rotorType Molecule::findRotorType(){
 void Molecule::translate(const Eigen::Vector3d &translationVector){
     // Translate the geometry_ matrix and update the geometric data in atoms_.
     for (int i = 0; i < nAtoms_; ++i){
-        geometry_.row(i) -= translationVector;
-	Eigen::Vector3d tmp = geometry_.row(i).transpose();
+        geometry_.col(i) -= translationVector;
+	Eigen::Vector3d tmp = geometry_.col(i);
         atoms_[i].atomCoord(tmp);
     }
 }
@@ -149,7 +166,7 @@ void Molecule::rotate(const Eigen::Matrix3d &rotationMatrix){
     // Rotate the geometry_ matrix and update the geometric data in atoms_.
     geometry_ *= rotationMatrix; // The power of Eigen: geometry_ = geometry_ * rotationMatrix;
     for (int i = 0; i < nAtoms_; ++i){
-	Eigen::Vector3d tmp = geometry_.row(i).transpose();
+	Eigen::Vector3d tmp = geometry_.col(i);
         atoms_[i].atomCoord(tmp);
     }
 }
@@ -190,7 +207,7 @@ std::ostream & operator<<(std::ostream &os, const Molecule &m){
         os << "       Center              X                  Y                   Z       " << std::endl;
         os << "    ------------   -----------------  -----------------  -----------------" << std::endl;
         for (int i = 0; i < m.nAtoms_; ++i){
-            os << std::setw(10) << m.atoms_[i].atomSymbol() << std::setw(15) <<m.geometry_.row(i).format(CleanFmt) << std::endl;
+            os << std::setw(10) << m.atoms_[i].atomSymbol() << std::setw(15) <<m.geometry_.col(i).transpose().format(CleanFmt) << std::endl;
         }
     } else {
         os << "  No atoms in this molecule!" << std::endl;

@@ -31,7 +31,7 @@ subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
     xtscor_, ytscor_, ztscor_, ar_,                              &
     xsphcor_, ysphcor_, zsphcor_, rsph_,                         &
     nts_, ntsirr_, nesfp_, addsph_,                              &
-    xe_, ye_, ze_, rin_, avgArea_, rsolv_, ret_,                 &
+    xe_, ye_, ze_, rin_, masses_, avgArea_, rsolv_, ret_,        &
     nr_gen_, gen1_, gen2_, gen3_)                                &
     bind(c, name='generatecavity_cpp')
 
@@ -50,6 +50,7 @@ subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
     real(c_double)  :: xtscor_(maxts_), ytscor_(maxts_), ztscor_(maxts_)
     real(c_double)  :: xsphcor_(maxts_), ysphcor_(maxts_), zsphcor_(maxts_), rsph_(maxts_)
     real(c_double)  :: ar_(maxts_), xe_(maxts_), ye_(maxts_), ze_(maxts_), rin_(maxts_)
+    real(c_double)  :: masses_(maxts_)
     real(c_double)  :: avgArea_, rsolv_, ret_
     integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_                        
     integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_ 
@@ -100,7 +101,7 @@ subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
     
     nesf = nesfp
     
-    call polyhedra_driver(pgroup, lvpri, error_code)
+    call polyhedra_driver(pgroup, masses_, lvpri, error_code)
     
     ! Common block dark magic, it will disappear one day...
     nts_ = nts

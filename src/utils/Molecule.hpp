@@ -81,7 +81,7 @@ public:
     Eigen::VectorXd masses() { return masses_; }
     Eigen::Matrix3Xd geometry() { return geometry_; }
     std::vector<Atom> atoms() { return atoms_; }
-    std::vector<Sphere> spheres() { return spheres_; }
+    std::vector<Sphere> spheres() const { return spheres_; }
 
     rotorType rotor();
     rotorType findRotorType();

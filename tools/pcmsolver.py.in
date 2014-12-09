@@ -260,14 +260,14 @@ def setup_keywords():
     # Valid values: double strictly less than 2.0 (piecewise constants)
     #               strictly less than 3.0 (piecewise linears)            
     # Default: 1.25 (PWC) or 2.25 (PWL)
-    # Since the default is solver-dependent it is here set to 0.0 to avoid complains
+    # Since the default is solver-dependent it is here set to 0.0 to avoid complaints
     # about nonexistent section
     medium.add_kw('DPRIME', 'DBL', 0.0)
     # A posteriori compression parameter b
     # Valid for: wavelet solvers
     # Valid values: double in ]0, 1[
-    # Default: 0.01
-    medium.add_kw('B', 'DBL', 0.01)
+    # Default: 0.001
+    medium.add_kw('B', 'DBL', 0.001)
     top.add_sect(medium)
     
     # Green's function section
@@ -490,7 +490,7 @@ def verify_medium(section):
     
     a = section.get('A')
     if (a.get() <= 1.0):
-        print('A priori compression parameter has to be strictly greater than 1.0')
+        print('A priori compression parameter a has to be strictly greater than 1.0')
         sys.exit(1)
     dprime = section.get('DPRIME')
     solver = section.get('SOLVERTYPE')

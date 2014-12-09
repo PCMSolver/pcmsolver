@@ -60,7 +60,7 @@ private:
     Eigen::VectorXd masses_;
     /// Molecular geometry, in cartesian coordinates. The dimensions are (# atoms * 3)
     /// Units are Bohr.
-    Eigen::MatrixX3d geometry_;
+    Eigen::Matrix3Xd geometry_;
     /// A container for all the atoms composing the molecule
     std::vector<Atom> atoms_;
     /// A container for the spheres composing the molecule
@@ -69,9 +69,9 @@ private:
     rotorType rotor_;
 public:
     Molecule() {}
-    /// Constructor
     Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & masses, 
-             const Eigen::MatrixX3d & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph); 
+             const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph); 
+    Molecule(int nat, const std::vector<Sphere> & sph); 
     /// Copy constructor.
     Molecule(const Molecule &other);
     ~Molecule(){}
@@ -79,7 +79,7 @@ public:
     int nAtoms() { return nAtoms_; }
     Eigen::VectorXd charges() { return charges_; }
     Eigen::VectorXd masses() { return masses_; }
-    Eigen::MatrixX3d geometry() { return geometry_; }
+    Eigen::Matrix3Xd geometry() { return geometry_; }
     std::vector<Atom> atoms() { return atoms_; }
     std::vector<Sphere> spheres() { return spheres_; }
 

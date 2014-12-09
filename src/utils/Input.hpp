@@ -34,6 +34,7 @@
 #include "Getkw.h"
 
 #include "InputManager.hpp"
+#include "Molecule.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
@@ -93,6 +94,8 @@ public:
     std::vector<Sphere> spheres() { return spheres_; }
     Sphere spheres(int i) { return spheres_[i]; }
     void spheres(const std::vector<Sphere> & sph) { spheres_ = sph; }
+    Molecule molecule() { return molecule_; }
+    void molecule(const Molecule & m) { molecule_ = m; }
     // Medium section input
     Solvent solvent() { return solvent_; }
     bool fromSolvent() { return hasSolvent_; }
@@ -174,6 +177,8 @@ private:
     std::vector<double> radii_;
     /// List of spheres for fully custom cavity generation
     std::vector<Sphere> spheres_;
+    /// Molecule or atomic aggregate
+    Molecule molecule_;
     /// The solvent for a vacuum/uniform dielectric run
     Solvent solvent_;
     /// Whether the medium was initialized from a solvent object

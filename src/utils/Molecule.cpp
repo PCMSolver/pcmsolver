@@ -38,7 +38,13 @@
 #include "Atom.hpp"
 #include "MathUtils.hpp"
 
-//    rotor_ = findRotorType();
+Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m, 
+             const Eigen::MatrixX3d & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph)
+	: nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph) 
+{
+    rotor_ = findRotorType();
+}
+
 
 Molecule::Molecule(const Molecule &other){
     *this = other;

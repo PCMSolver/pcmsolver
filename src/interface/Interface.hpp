@@ -40,6 +40,7 @@
 #include <Eigen/Dense>
 
 #include "InputManager.hpp"
+#include "Molecule.hpp"
 #include "Sphere.hpp"
 
 /*
@@ -310,6 +311,13 @@ void initWaveletCavity();
  *  Initializes list of atoms and atoms positions
  */
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
+
+/*! \fn void initMolecule(Molecule & molecule_, Eigen::Matrix3Xd & sphereCenter_)
+ *  \param[out] molecule_  a Molecule object 
+ *
+ *  Initializes Molecule object with all the information on charges, masses and positions of atomic centers
+ */
+void initMolecule(Molecule & molecule_);
 
 /*! \fn void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_)
  *  \param[in] charges_      contains charges of atomic centers

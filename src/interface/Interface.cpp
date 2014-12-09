@@ -624,6 +624,54 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
     collect_atoms(chg, centers);
 }
 
+void initMolecule(Molecule & molecule_)
+{
+    // Gather information necessary to build molecule_
+    // 1. number of atomic centers
+    int nuclei;
+    collect_nctot(&nuclei);
+    // 2. position and charges of atomic centers
+    Eigen::Matrix3Xd centers = Eigen::Matrix3Xd::Zero(Eigen::NoChange, nuclei);
+    Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
+    double * chg = charges.data();
+    double * pos = centers.data();
+    collect_atoms(chg, pos);
+    // 3. list of atoms and list of spheres
+    bool scaling = parsedInput->scaling();
+    std::string set = parsedInput->radiiSet();
+    double factor = angstromToBohr(parsedInput->CODATAyear());
+    std::vector<Atom> radiiSet, atoms;
+    if ( set == "UFF" ) {
+        radiiSet = Atom::initUFF();
+    } else {
+        radiiSet = Atom::initBondi();
+    }
+    std::vector<Sphere> spheres;
+    for (int i = 0; i < charges.size(); ++i) {
+        int index = int(charges(i)) - 1;
+	atoms.push_back(radiiSet[index]);
+        double radius = radiiSet[index].atomRadius() * factor;
+        if (scaling) {
+            radius *= radiiSet[index].atomRadiusScaling();
+        }
+        spheres.push_back(Sphere(centers.col(i), radius));
+    }
+    // 4. masses
+    Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
+    for (int i = 0; i < masses.size(); ++i) {
+	 masses(i) = atoms[i].atomMass();
+    }
+    // Based on the creation mode (Implicit or Atoms)
+    // the spheres list might need postprocessing
+    std::string _mode = parsedInput->mode();
+    if ( _mode == "ATOMS" ) {
+       initSpheresAtoms(centers, spheres);	 
+    }
+
+    // OK, now get molecule_
+    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres);
+}
+
 void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
                       std::vector<Sphere> & spheres_)
 {

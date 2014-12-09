@@ -142,14 +142,15 @@ void Input::reader(const char * pythonParsed)
     if (mode_ == "EXPLICIT") {
         std::vector<double> spheresInput = cavity.getDblVec("SPHERES");
         int j = 0;
-        int upperBound = int(spheresInput.size() / 4);
-        for (int i = 0; i < upperBound; ++i) {
+        int nAtoms = int(spheresInput.size() / 4);
+        for (int i = 0; i < nAtoms; ++i) {
             Eigen::Vector3d center;
             center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
             Sphere sph(center, spheresInput[j+3]);
             spheres_.push_back(sph);
             j += 4;
         }
+	molecule_ = Molecule(nAtoms, spheres_);
     } else if (mode_ == "ATOMS") {
         atoms_ = cavity.getIntVec("ATOMS");
         radii_ = cavity.getDblVec("RADII");

@@ -49,15 +49,15 @@ class Atom
 public:
     Atom() {}
     Atom(const std::string & element, const std::string & symbol, double charge,
-         double radius, const Eigen::Vector3d & coord, double scaling = 1.0,
+         double mass, double radius, const Eigen::Vector3d & coord, double scaling = 1.0,
          const std::string & colour = "Violet")
         : atomElement_(element), atomSymbol_(symbol), atomCharge_(charge),
-          atomRadius_(radius),
+          atomMass_(mass), atomRadius_(radius),
           atomCoord_(coord), atomRadiusScaling_(scaling), atomColour_(colour) {}
     Atom(const std::string & element, const std::string & symbol, double charge,
-         double radius)
+         double mass, double radius)
         : atomElement_(element), atomSymbol_(symbol), atomCharge_(charge),
-          atomRadius_(radius) {
+          atomMass_(mass), atomRadius_(radius) {
         Eigen::Vector3d Origin(0.0, 0.0, 0.0);
         std::string colour = "Violet";
         atomCoord_ = Origin;
@@ -73,6 +73,8 @@ public:
     void atomCoord(Eigen::Vector3d & coord) { atomCoord_ = coord; }
     double atomCharge() const { return atomCharge_; }
     void atomCharge(double charge) { atomCharge_ = charge; }
+    double atomMass() const { return atomMass_; }
+    void atomMass(double mass) { atomMass_ = mass; }
     /*! \brief Returns the atomic radius in Angstrom
      */
     double atomRadius() const { return atomRadius_; }
@@ -104,6 +106,7 @@ private:
     std::string atomElement_;
     std::string atomSymbol_;
     double atomCharge_;
+    double atomMass_;
     double atomRadius_;
     Eigen::Vector3d atomCoord_;
     double atomRadiusScaling_;

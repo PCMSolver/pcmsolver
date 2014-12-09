@@ -135,7 +135,7 @@ struct for_id_impl_1 {
 template <typename S, typename E>
 struct for_id_impl_1<S, E, E> {
     template <typename T>
-    static IGreensFunction * execute(T & f, const greenData & _data, int id) { return NULL; }
+    static IGreensFunction * execute(T & /* f */, const greenData & /* _data */, int /* id */) { return NULL; }
 };
 
 #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))

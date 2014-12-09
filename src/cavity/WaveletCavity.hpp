@@ -109,7 +109,7 @@ namespace
 {
     Cavity* createWaveletCavity(const cavityData & _data)
     {
-        return new WaveletCavity(_data.spheres, _data.probeRadius, _data.patchLevel,
+        return new WaveletCavity(_data.molecule.spheres(), _data.probeRadius, _data.patchLevel,
                                  _data.coarsity);
     }
     const std::string WAVELET("WAVELET");

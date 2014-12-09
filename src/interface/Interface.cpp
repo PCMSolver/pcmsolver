@@ -501,7 +501,7 @@ void initCavity()
     // Get the input data for generating the cavity
     std::string cavityType = parsedInput->cavityType();
     double area = parsedInput->area();
-    std::vector<Sphere> spheres = parsedInput->spheres();
+    Molecule molec = parsedInput->molecule();
     double minRadius = parsedInput->minimalRadius();
     double probeRadius = parsedInput->probeRadius();
     double minDistance = parsedInput->minDistance();
@@ -515,7 +515,7 @@ void initCavity()
     set_point_group(&nr_gen, &gen1, &gen2, &gen3);
     Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
 
-    cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, minRadius,
+    cavityData cavInput(molec, area, probeRadius, minDistance, derOrder, minRadius,
                         patchLevel, coarsity, restart, pg);
 
     // Get the right cavity from the Factory
@@ -614,7 +614,8 @@ void initMolecule(Molecule & molecule_)
     int nuclei;
     collect_nctot(&nuclei);
     // 2. position and charges of atomic centers
-    Eigen::Matrix3Xd centers = Eigen::Matrix3Xd::Zero(Eigen::NoChange, nuclei);
+    Eigen::Matrix3Xd centers; 
+    centers.resize(Eigen::NoChange, nuclei);
     Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
     double * chg = charges.data();
     double * pos = centers.data();

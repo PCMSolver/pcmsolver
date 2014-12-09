@@ -42,7 +42,7 @@ extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
                                    double * xtscor, double * ytscor, double * ztscor, double * ar,
                                    double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
                                    int * nts, int * ntsirr, int * nesfp, int * addsph,
-                                   double * xe, double * ye, double * ze, double * rin,
+                                   double * xe, double * ye, double * ze, double * rin, double * masses,
                                    double * avgArea, double * rsolv, double * ret,
                                    int * nr_gen, int * gen1, int * gen2, int * gen3);
 
@@ -97,6 +97,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     double * ze = zv.data();
 
     double * rin = radii_scratch.data();
+    double * masses = molecule_.masses().data();
 
     addedSpheres = 0;
     // Number of generators and generators of the point group
@@ -109,7 +110,8 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
                        xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph,
                        &nts, &ntsirr, &nSpheres_, &addedSpheres,
-                       xe, ye, ze, rin, &averageArea, &probeRadius, &minimalRadius,
+                       xe, ye, ze, rin, masses,
+		       &averageArea, &probeRadius, &minimalRadius,
                        &nr_gen, &gen1, &gen2, &gen3);
 
     // The "intensive" part of updating the spheres related class data members will be of course

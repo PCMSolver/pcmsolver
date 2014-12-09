@@ -93,9 +93,9 @@ public:
     double radii(int i) { return radii_[i]; }
     std::vector<Sphere> spheres() { return spheres_; }
     Sphere spheres(int i) { return spheres_[i]; }
-    void spheres(const std::vector<Sphere> & sph) { spheres_ = sph; }
     Molecule molecule() { return molecule_; }
-    void molecule(const Molecule & m) { molecule_ = m; }
+    /// This method sets the molecule and the list of spheres
+    void molecule(const Molecule & m) { molecule_ = m; spheres_ = molecule_.spheres(); }
     // Medium section input
     Solvent solvent() { return solvent_; }
     bool fromSolvent() { return hasSolvent_; }

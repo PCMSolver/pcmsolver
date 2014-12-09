@@ -489,28 +489,11 @@ void setupInput(bool from_host)
 	    parsedInput = boost::make_shared<Input>(Input("@pcmsolver.inp"));
 #endif
     }
-    // The only thing we can't create immediately is the vector of spheres
+    // The only thing we can't create immediately is the molecule
     // from which the cavity is to be built.
-    std::string _mode = parsedInput->mode();
-    // Get the total number of nuclei and the geometry anyway
-    Eigen::VectorXd charges;
-    Eigen::Matrix3Xd centers;
-    initAtoms(charges, centers);
-    std::vector<Sphere> spheres;
-
-    // We create an initial list of spheres as if we were in the Implicit mode
-    // regardless of what the user told us.
-    // If we are in the Implicit mode we just need to let the Input object know about
-    // the list of spheres.
-    // Some post-processing of the list is needed in the Atoms mode.
-    initSpheresImplicit(charges, centers, spheres);
-
-    if (_mode == "IMPLICIT") {
-        parsedInput->spheres(spheres);
-    } else if (_mode == "ATOMS") {
-        initSpheresAtoms(centers, spheres);
-        parsedInput->spheres(spheres);
-    }
+    Molecule molec;
+    initMolecule(molec);
+    parsedInput->molecule(molec);
 }
 
 void initCavity()

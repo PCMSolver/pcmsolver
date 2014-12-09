@@ -69,18 +69,9 @@ private:
     rotorType rotor_;
 public:
     Molecule() {}
-    /**
-     * Constructor that sets the charges, geometry and name to the passed values.
-     * \param chg A vector containing the atomic charges.
-     * \param geo A rectangular matrix containing the geometry.
-     */
-    Molecule(const Eigen::VectorXd & chg, const Eigen::MatrixX3d & geo); 
-    /**
-     * Constructor that sets the atoms list and name to the passed values.
-     * \param atoms A vector containing the atoms.
-     */
-    Molecule(const std::vector<Atom> & atoms)
-	    : atoms_(atoms) {}
+    /// Constructor
+    Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & masses, 
+             const Eigen::MatrixX3d & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph); 
     /// Copy constructor.
     Molecule(const Molecule &other);
     ~Molecule(){}

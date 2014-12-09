@@ -241,4 +241,3 @@ std::vector<Atom> & Atom::initUFF()
 
     return UFF;
 }
-

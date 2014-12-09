@@ -51,13 +51,15 @@ Molecule::Molecule(int nat, const std::vector<Sphere> & sph)
     // This constructor is used when initializing the Molecule in EXPLICIT mode
     // charges are set to 1.0; masses are set based on the radii; geometry is set from the list of spheres
     charges_ = Eigen::VectorXd::Ones(nAtoms_);
+    masses_.resize(nAtoms_);
+    geometry_.resize(Eigen::NoChange, nAtoms_);
     for (int i = 0; i < nAtoms_; ++i) {
         masses_(i) = spheres_[i].radius();
 	geometry_.col(i) = spheres_[i].center();
 	double charge = charges_(i);
 	double mass = masses_(i);
 	// All the atoms are dummies
-	atoms_[i] = Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i));
+	atoms_.push_back( Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i)) );
     }
     rotor_ = findRotorType();
 }

@@ -370,14 +370,13 @@
     geom = 0.0d0
     
     do i = 1, nesfp
-        mass(i)   = rin(i)
+        mass(i)   = masses(i) !rin(i)
         geom(i,1) = xe(i)
         geom(i,2) = ye(i)
         geom(i,3) = ze(i)
     end do
 
     if (nesfp > 1) then
-        !call pcmtns(rotcav, geom, masses, nesfp)
         call pcmtns(rotcav, geom, mass, nesfp)
     end if
 
@@ -2285,6 +2284,8 @@
     logical :: planar, linear
     integer(kind=regint_k) :: i, j, k, jax, nmax
     integer(kind=regint_k) :: nopax, nshift
+    real(kind=dp) :: com(3), total_mass
+    real(kind=dp) :: local_geom(katom, 3)
 
     real(kind=dp) :: dij
     
@@ -2292,7 +2293,20 @@
 
     angmom = [1.0d0, 1.0d0, 1.0d0]
 
-    call wlkdin(geom, amass, nesfp, angmom, tinert, omegad, eigval, eigvec, .true., planar, linear)
+    ! Calculate center-of-mass (com) and translate
+    total_mass = sum(amass)
+    do i = 1, 3
+      do j = 1, katom
+        com(i) = com(i) + geom(j, i) * amass(j)
+      end do
+      com(i) = com(i) / total_mass
+    end do
+    ! Translation
+    do i = 1, katom
+      local_geom(i, :) = geom(i, :) - com(:)
+    end do
+
+    call wlkdin(local_geom, amass, nesfp, angmom, tinert, omegad, eigval, eigvec, .true., planar, linear)
 
     do i = 1, 3
         do j = 1, 3

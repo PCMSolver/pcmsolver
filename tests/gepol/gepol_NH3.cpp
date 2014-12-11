@@ -36,6 +36,7 @@
 #include <Eigen/Dense>
 
 #include "GePolCavity.hpp"
+#include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 
@@ -47,6 +48,22 @@ struct GePolCavityNH3Test {
         Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
         Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
         Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
+	
+	int nAtoms = 4;
+	Eigen::MatrixXd geom(3, nAtoms);
+	geom.col(0) = N.transpose();
+	geom.col(1) = H1.transpose();
+	geom.col(2) = H2.transpose();
+	geom.col(3) = H3.transpose();
+	Eigen::Vector4d charges, masses;
+	charges << 7.0, 1.0, 1.0, 1.0;
+	masses  << 14.0030740, 1.0078250, 1.0078250, 1.0078250;
+	std::vector<Atom> atoms;
+	atoms.push_back( Atom("Nitrogen", "N", charges(0), masses(0), 2.929075493, N,  1.0) );
+	atoms.push_back( Atom("Hydrogen", "H", charges(1), masses(1), 2.267671349, H1, 1.0) );
+	atoms.push_back( Atom("Hydrogen", "H", charges(2), masses(2), 2.267671349, H2, 1.0) );
+	atoms.push_back( Atom("Hydrogen", "H", charges(3), masses(3), 2.267671349, H3, 1.0) );
+
         std::vector<Sphere> spheres;
         Sphere sph1(N,  2.929075493);
         Sphere sph2(H1, 2.267671349);
@@ -56,12 +73,14 @@ struct GePolCavityNH3Test {
         spheres.push_back(sph2);
         spheres.push_back(sph3);
         spheres.push_back(sph4);
+
+	Molecule molec(nAtoms, charges, masses, geom, atoms, spheres);
         double area = 0.4; // Bohr^2
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
         // C1
         Symmetry pGroup = buildGroup(0, 0, 0, 0);
-        cavity = GePolCavity(spheres, area, probeRadius, minRadius, pGroup);
+        cavity = GePolCavity(molec, area, probeRadius, minRadius, pGroup);
         cavity.saveCavity("nh3.npz");
     }
 };

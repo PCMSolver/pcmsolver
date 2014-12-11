@@ -38,6 +38,7 @@
 #include <boost/filesystem.hpp>
 
 #include "GePolCavity.hpp"
+#include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 

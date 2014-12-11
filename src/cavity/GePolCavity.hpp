@@ -57,6 +57,10 @@ public:
         Cavity(_molec.spheres(), _pGroup), molecule_(_molec), 
 	averageArea(_area), probeRadius(_probeRadius),
         minimalRadius(_minRadius) { build(10000, 200, 25000); }
+    GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius,
+		double _minRadius, const Symmetry & _pGroup) :
+	Cavity(_spheres, _pGroup), averageArea(_area), probeRadius(_probeRadius),
+	minimalRadius(_minRadius) { molecule_ = Molecule(_spheres.size(), _spheres); build(10000, 200, 25000); }
     virtual ~GePolCavity() {}
     friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
         return cavity.printCavity(os);

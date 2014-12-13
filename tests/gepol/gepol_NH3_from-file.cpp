@@ -50,7 +50,7 @@ struct GePolCavityNH3RestartTest {
  */
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityNH3RestartTest)
 {
-    int size = 544;
+    int size = 230;
     int actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
@@ -60,7 +60,7 @@ BOOST_FIXTURE_TEST_CASE(size, GePolCavityNH3RestartTest)
  */
 BOOST_FIXTURE_TEST_CASE(area, GePolCavityNH3RestartTest)
 {
-    double area = 147.18581691164593;
+    double area = 147.13247859942391;
     double actualArea = cavity.elementArea().sum();
     BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
 }
@@ -70,7 +70,7 @@ BOOST_FIXTURE_TEST_CASE(area, GePolCavityNH3RestartTest)
  */
 BOOST_FIXTURE_TEST_CASE(volume, GePolCavityNH3RestartTest)
 {
-    double volume = 152.81441857040116;
+    double volume = 153.12929788519045;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;

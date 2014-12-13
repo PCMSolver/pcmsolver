@@ -28,7 +28,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
-#include <vector>
 #include <cmath>
 
 #include "Config.hpp"
@@ -36,30 +35,22 @@
 #include <Eigen/Dense>
 
 #include "GePolCavity.hpp"
+#include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
+#include "TestingMolecules.hpp"
 
 struct GePolCavityH3Test {
     GePolCavity cavity;
     GePolCavityH3Test() { SetUp(); }
     void SetUp() {
-        Eigen::Vector3d H1( 0.735000, 0.000000, -1.333333);
-        Eigen::Vector3d H2(-0.735000, 0.000000, -1.333333);
-        Eigen::Vector3d H3( 0.000000, 0.000000,  2.666667);
-        std::vector<Sphere> spheres;
-        double radiusH = (1.20 * 1.20) / convertBohrToAngstrom;
-        Sphere sph2(H1, radiusH);
-        Sphere sph3(H2, radiusH);
-        Sphere sph4(H3, radiusH);
-        spheres.push_back(sph2);
-        spheres.push_back(sph3);
-        spheres.push_back(sph4);
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
+	Molecule molec = H3();
         // C1
         Symmetry pGroup = buildGroup(0, 0, 0, 0);
-        cavity = GePolCavity(spheres, area, probeRadius, minRadius, pGroup);
+        cavity = GePolCavity(molec, area, probeRadius, minRadius, pGroup);
         cavity.saveCavity("h3+.npz");
     }
 };

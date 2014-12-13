@@ -370,7 +370,7 @@
     geom = 0.0d0
     
     do i = 1, nesfp
-        mass(i)   = masses(i) !rin(i)
+        mass(i)   = masses(i)
         geom(i,1) = xe(i)
         geom(i,2) = ye(i)
         geom(i,3) = ze(i)
@@ -2275,7 +2275,8 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k), intent(in) :: katom
-    real(kind=dp),    intent(in) :: geom(katom, 3), amass(katom)
+    real(kind=dp), intent(inout) :: geom(katom, 3)
+    real(kind=dp),    intent(in) :: amass(katom)
     real(kind=dp), intent(inout) :: vmat(3, 3)
 
     real(kind=dp) :: eigval(3), eigvec(3, 3), tinert(3, 3)
@@ -2285,8 +2286,6 @@
     integer(kind=regint_k) :: i, j, k, jax, nmax
     integer(kind=regint_k) :: nopax, nshift
     real(kind=dp) :: com(3), total_mass
-    real(kind=dp) :: local_geom(katom, 3)
-
     real(kind=dp) :: dij
     
     iax = [1, 2, 3, 3, 2, 1]
@@ -2294,19 +2293,20 @@
     angmom = [1.0d0, 1.0d0, 1.0d0]
 
     ! Calculate center-of-mass (com) and translate
-    total_mass = sum(amass)
+    total_mass = sum(amass) 
     do i = 1, 3
+      com(i) = 0.0_dp
       do j = 1, katom
         com(i) = com(i) + geom(j, i) * amass(j)
       end do
       com(i) = com(i) / total_mass
     end do
-    ! Translation
+    ! Translation to COM
     do i = 1, katom
-      local_geom(i, :) = geom(i, :) - com(:)
+      geom(i, :) = geom(i, :) - com(:)
     end do
 
-    call wlkdin(local_geom, amass, nesfp, angmom, tinert, omegad, eigval, eigvec, .true., planar, linear)
+    call wlkdin(geom, amass, nesfp, angmom, tinert, omegad, eigval, eigvec, .true., planar, linear)
 
     do i = 1, 3
         do j = 1, 3

@@ -97,7 +97,10 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     double * ze = zv.data();
 
     double * rin = radii_scratch.data();
-    double * masses = molecule_.masses().data();
+    double * mass = new double[molecule_.nAtoms()]; 
+    for (int i = 0; i < molecule_.nAtoms(); ++i) {
+	    mass[i] = molecule_.masses(i);
+    }
 
     addedSpheres = 0;
     // Number of generators and generators of the point group
@@ -110,7 +113,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
                        xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph,
                        &nts, &ntsirr, &nSpheres_, &addedSpheres,
-                       xe, ye, ze, rin, masses,
+                       xe, ye, ze, rin, mass,
 		       &averageArea, &probeRadius, &minimalRadius,
                        &nr_gen, &gen1, &gen2, &gen3);
 
@@ -198,6 +201,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     delete[] ysphcor;
     delete[] zsphcor;
     delete[] rsph;
+    delete[] mass;
 
     built = true;
 }

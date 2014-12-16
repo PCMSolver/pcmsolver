@@ -24,7 +24,7 @@ ConAnsatzFunction :: ConAnsatzFunction(){
   a = 1.25; ///< compression constant,  a > 1
   b = 0.001; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 2;
+  quadratureLevel_ = 1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -43,7 +43,7 @@ ConAnsatzFunction :: ConAnsatzFunction(const Compression & _comp){
   a = _comp.aPrioriA; ///< compression constant,  a > 1
   b = _comp.aPosterioriB; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 2;
+  quadratureLevel_ = 1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -65,7 +65,7 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   a = 1.25; ///< compression constant,  a > 1
   b = 0.001; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 2;
+  quadratureLevel_ = 1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 

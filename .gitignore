@@ -36,3 +36,6 @@ doc/gfx/matplotlib/
 *.includes
 CMakeLists.txt.user
 /.project
+
+# CLion project files
+.idea/

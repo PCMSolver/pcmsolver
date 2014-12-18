@@ -9,3 +9,9 @@ target_link_libraries(profile_pwc.x solver green bi_operators cavity wemFiles we
 
 add_executable(profile_pwl.x profile_pwl.cpp)
 target_link_libraries(profile_pwl.x solver green bi_operators cavity wemFiles wemSolvers wavcav utils ${ZLIB_LIBRARY})
+
+include(TestingMacros) # imports add_reference
+
+add_executable(benzene_wavelet.x benzene_wavelet.cpp)
+target_link_libraries(benzene_wavelet.x solver green bi_operators cavity wemFiles wemSolvers wavcav utils ${ZLIB_LIBRARY})
+add_reference(${CMAKE_SOURCE_DIR}/examples/benzene2.dat ${CMAKE_CURRENT_BINARY_DIR})

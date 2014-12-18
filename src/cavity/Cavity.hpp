@@ -70,7 +70,7 @@ private:
     virtual std::ostream & printCavity(std::ostream & os) = 0;
 public:
     //! Default constructor
-    Cavity() : nElements_(0), built(false) {}
+    Cavity() : nElements_(0), built(false), nSpheres_(0) {}
     /*! \brief Constructor from spheres
      *  \param[in] _spheres an STL vector containing the spheres making up the cavity.
      *  

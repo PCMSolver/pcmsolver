@@ -33,11 +33,6 @@
 
 #include <Eigen/Dense>
 
-extern "C"
-{
-//#include "vector3.h"
-}
-
 #include "Vector3.hpp"
 #include "Interpolation.hpp"
 
@@ -60,6 +55,15 @@ class WaveletCavity : public Cavity
 {
 public:
     WaveletCavity() {}
+    /// CTOR from wavcav text file output
+    WaveletCavity(const std::string & filename) : Cavity() {
+	readCavity(filename);
+	// These values do not make "physical" sense.
+	// Reading the cavity from file doesn't provide them so...
+	probeRadius_ = 0.0;
+	coarsity_ = 0.0;
+	patchLevel_ = 0;
+    }
     WaveletCavity(const std::vector<Sphere> & s, double pr, int pl, double c) :
         Cavity(s), probeRadius_(pr), patchLevel_(pl), coarsity_(c) {
         uploadedDyadic_ = false;

@@ -178,6 +178,7 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
     os << "Quadrature level  = " << quadLevel << std::endl;
     os << "Number of potential points = " << nElements_;
     os << std::endl; 
+    /*
     os << "-------------- Potential points printout " << std::endl;
     for(int i = 0; i < nElements_; i++) {
     	os << std::endl;
@@ -185,8 +186,9 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
     	os << elementCenter_(0,i) << " ";
     	os << elementCenter_(1,i) << " ";
     	os << elementCenter_(2,i) << " ";
-    	//os << elementArea_(i) << " ";
+    	os << elementArea_(i) << " ";
     }
+    */
     /*
     for(int i = 0; i < nSpheres_; i++) {
     	os << endl;

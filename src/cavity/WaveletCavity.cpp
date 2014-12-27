@@ -81,27 +81,30 @@ void WaveletCavity::makeCavity()
 
 void WaveletCavity::readCavity(const std::string & filename)
 {
-    size_t i, j;
+    size_t i, j, k;
     double x, y, z;
 
     std::ifstream file;
-    file.open(filename.c_str());
-    file >> nLevels_ >> nPatches_;
+    file.open(filename);
+    if (file.is_open()) {
+        file >> nLevels_ >> nPatches_;           
+                                                
+        int nNodes = (1 << nLevels_) + 1;
+                                                
+        nPoints_ = nPatches_ * nNodes * nNodes;
 
-    int nNodes = (1 << nLevels_) + 1;
-
-    nPoints_ = nPatches_ * nNodes * nNodes;
-
-    for (size_t k = 0; k < nPoints_; ++k) {
-        file >> i >> j >> k >> x >> y >> z;
-        Eigen::Vector3i index(i, j, k);
-        nodeIndex_.push_back(index);
-        Eigen::Vector3d point(x, y, z);
-        nodePoint_.push_back(point);
+                                                
+        for (size_t l = 0; l < nPoints_; ++l) {
+            file >> i >> j >> k >> x >> y >> z;
+            Eigen::Vector3i index(i, j, k);
+            nodeIndex_.push_back(index);
+            Eigen::Vector3d point(x, y, z);
+            nodePoint_.push_back(point);
+        }
+                                                
+        file.close();
+        uploadedDyadic_ = true;
     }
-
-    file.close();
-    uploadedDyadic_ = true;
 }
 
 void WaveletCavity::scaleCavity(const double scalingFactor)
@@ -162,40 +165,47 @@ void WaveletCavity::uploadPoints(int quadLevel, Interpolation *interp)
 
 std::ostream & WaveletCavity::printCavity(std::ostream & os)
 {
+    // Calculation of quadrature level for printout
+    int n = 1 << nLevels_;
+    int quadLevel = int(nElements_ / (nPatches_ * n * n));
     os << "Cavity type: Wavelet" << std::endl;
     os << "Probe Radius =  " << probeRadius_ << std::endl;
     os << "Coarsity     =  " << coarsity_ << std::endl;
     os << "Patch Level  =  " << patchLevel_ << std::endl;
     os << "Number of spheres = " << nSpheres_ << std::endl;
-    os << "Number of finite elements = " << nElements_;
-    /*for(int i = 0; i < nElements_; i++)
-    {
+    os << "Number of patches = " << nPatches_ << std::endl;
+    os << "Number of levels  = " << nLevels_  << std::endl;
+    os << "Quadrature level  = " << quadLevel << std::endl;
+    os << "Number of potential points = " << nElements_;
+    os << std::endl; 
+    os << "-------------- Potential points printout " << std::endl;
+    for(int i = 0; i < nElements_; i++) {
     	os << std::endl;
-    	os << i+1 << " ";
+    	os << "Point " << i+1 << " \n";
     	os << elementCenter_(0,i) << " ";
     	os << elementCenter_(1,i) << " ";
     	os << elementCenter_(2,i) << " ";
-    	os << elementArea_(i) << " ";
-           }
-       	for(int i = 0; i < nSpheres_; i++)
-    {
+    	//os << elementArea_(i) << " ";
+    }
+    /*
+    for(int i = 0; i < nSpheres_; i++) {
     	os << endl;
     	os << i+1 << " ";
     	os << sphereCenter_(0,i) << " ";
     	os << sphereCenter_(1,i) << " ";
     	os << sphereCenter_(2,i) << " ";
     	os << sphereRadius_(i) << " ";
-       	}*/
-    /*	if (uploadedDyadic_)
-    	{
-    		os << "Printing nodes" << std::endl;
-    		for(int i = 0; i < nPoints_; i++)
-    		{
-    			os << std::endl;
-    			os << i+1 << " ";
-    			os << nodeIndex_[i].transpose() << " " << nodePoint_[i].transpose() << " ";
-    		}
-    	}*/
+    }
+    */
+    /*	
+    if (uploadedDyadic_) {
+        os << "Printing nodes" << std::endl;
+    	for(int i = 0; i < nPoints_; i++) {
+    	    os << std::endl;
+    	    os << i+1 << " ";
+    	    os << nodeIndex_[i].transpose() << " " << nodePoint_[i].transpose() << " ";
+    	}
+    }
+    */
     return os;
 }
-

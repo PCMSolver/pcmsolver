@@ -60,6 +60,14 @@ class WaveletCavity : public Cavity
 {
 public:
     WaveletCavity() {}
+    /// CTOR from wavcav text file output
+    WaveletCavity(const std::string & filename) {
+	readCavity(filename);
+	// These values do not make "physical" sense.
+	// Reading the cavity from file doesn't provide them so...
+	coarsity_ = 0.0;
+	patchLevel_ = 0;
+    }
     WaveletCavity(const std::vector<Sphere> & s, double pr, int pl, double c) :
         Cavity(s), probeRadius_(pr), patchLevel_(pl), coarsity_(c) {
         uploadedDyadic_ = false;

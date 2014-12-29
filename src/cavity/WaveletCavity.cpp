@@ -34,6 +34,8 @@
 
 #include <Eigen/Dense>
 
+#include <boost/foreach.hpp>
+
 #include "Vector2.hpp"
 #include "Vector3.hpp"
 #include "Interpolation.hpp"
@@ -106,8 +108,8 @@ void WaveletCavity::readCavity(const std::string & filename)
 
 void WaveletCavity::scaleCavity(const double scalingFactor)
 {
-    for (size_t k = 0; k < nPoints_; ++k) {
-        nodePoint_[k] *=scalingFactor;
+    BOOST_FOREACH(Eigen::Vector3d & point, nodePoint_) {
+	point *= scalingFactor;
     }
 }
 

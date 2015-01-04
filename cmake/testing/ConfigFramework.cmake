@@ -4,19 +4,19 @@
 macro(setup_googletest)
 	message(STATUS "Setting up Google Test Unit Testing Framework")
 	configure_file(
-    	${PROJECT_SOURCE_DIR}/src/utils/gtestPimpl.hpp.in
-	${PROJECT_BINARY_DIR}/include/gtestPimpl.hpp)
+    	${CMAKE_SOURCE_DIR}/src/utils/gtestPimpl.hpp.in
+	${CMAKE_BINARY_DIR}/include/gtestPimpl.hpp)
 	set(GTestCMakeArgs "${ExternalProjectCMakeArgs}")
 	list(REMOVE_ITEM GTestCMakeArgs "-DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}" "-DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}")
         ExternalProject_Add(googletest
         	SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk
-               	DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}
-        	PREFIX ${PROJECT_SOURCE_DIR}/external
-        	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/googletest
-        	BINARY_DIR ${PROJECT_BINARY_DIR}/external/googletest-build
-                STAMP_DIR ${PROJECT_BINARY_DIR}/external/googletest-stamp
-        	TMP_DIR ${PROJECT_BINARY_DIR}/external/googletest-tmp
-                INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+               	DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
+        	PREFIX ${CMAKE_SOURCE_DIR}/external
+        	SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/googletest
+        	BINARY_DIR ${CMAKE_BINARY_DIR}/external/googletest-build
+                STAMP_DIR ${CMAKE_BINARY_DIR}/external/googletest-stamp
+        	TMP_DIR ${CMAKE_BINARY_DIR}/external/googletest-tmp
+                INSTALL_DIR ${CMAKE_BINARY_DIR}/external
         	CMAKE_ARGS ${GTestCMakeArgs}
         	# Disable install step.
                 INSTALL_COMMAND ""

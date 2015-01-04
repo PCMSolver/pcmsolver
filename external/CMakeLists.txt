@@ -4,7 +4,7 @@ string(REGEX REPLACE "\\." "_" BOOSTVER ${BOOSTVER})
 # Transform the ;-separated list to a ,-separated list (digested by the Boost build toolchain!)
 string(REPLACE ";" "," b2_needed_components "${needed_components}")
 
-set(BOOST_BUILD_DIR ${PROJECT_BINARY_DIR}/external/boost_${BOOSTVER})
+set(BOOST_BUILD_DIR ${CMAKE_BINARY_DIR}/external/boost_${BOOSTVER})
 
 # Prepare stuff to be written to user-config.jam and project-config.jam
 # We are going to build only what is necessary. We need to create a custom user-config.jam file
@@ -57,26 +57,26 @@ file(APPEND ${BOOST_BUILD_DIR}/user-config.jam "${MPI_SENT}")
 # Unpack Boost and copy boostcpp.jam
 add_custom_command(
     OUTPUT boost.unpacked 
-    COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz 
+    COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz 
     # Copy custom boostcpp.jam (to get versioned format as I want it!)
-    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/boostcpp.jam ${BOOST_BUILD_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/external/boostcpp.jam ${BOOST_BUILD_DIR}
     # Append to project-config.jam 
     # It can't be done with file(APPEND ...) because it will be destroyed when unpacking
     COMMAND ${CMAKE_COMMAND} -E echo "${MPI_SENT}" >> ${BOOST_BUILD_DIR}/project-config.jam
     COMMAND touch boost.unpacked
-    DEPENDS ${PROJECT_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external
+    DEPENDS ${CMAKE_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external
     COMMENT "Unpacking Boost")
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} type)
-# Run bootstrap.sh to configure the build. We will install in ${PROJECT_BINARY_DIR}/external/boost
+# Run bootstrap.sh to configure the build. We will install in ${CMAKE_BINARY_DIR}/external/boost
 add_custom_command(
     OUTPUT boost.configured
     COMMAND ./bootstrap.sh --with-toolset=${toolset}
             --with-libraries="${b2_needed_components}"
 	    --with-python=${PYTHON_EXECUTABLE}
 	    --prefix=${CUSTOM_BOOST_LOCATION} 1> boost.configured.log 2> boost.configured.err
-    COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/external/boost.configured	    
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/external/boost.configured	    
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.unpacked
     COMMENT "Configuring Boost")
@@ -85,7 +85,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT boost.built
     COMMAND ./b2 variant=${type} link=static threading=multi 1> boost.built.log 2> boost.built.err
-    COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/external/boost.built
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/external/boost.built
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.configured 
     COMMENT "Building Boost")
@@ -94,7 +94,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT boost.installed
     COMMAND ./b2 install variant=${type} link=static threading=multi 1> boost.installed.log 2> boost.installed.err	   
-    COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/external/boost.installed
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/external/boost.installed
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}
     DEPENDS boost.built 
     COMMENT "Installing Boost")
@@ -103,8 +103,8 @@ add_custom_command(
 add_custom_command(
     OUTPUT boost.cleanedup
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${BOOST_BUILD_DIR}
-    COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_BINARY_DIR}/external/boost.cleanedup
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/external
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/external/boost.cleanedup
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external
     DEPENDS boost.installed 
     COMMENT "Clean-up Boost")
 

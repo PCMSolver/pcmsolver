@@ -7,7 +7,7 @@ set(GIT_REVISION)
 
 # if RELEASE exists then this is exported code
 # in this case set DEVELOPMENT_CODE to false
-if(EXISTS ${PROJECT_SOURCE_DIR}/RELEASE)
+if(EXISTS ${CMAKE_SOURCE_DIR}/RELEASE)
     set(DEVELOPMENT_CODE FALSE)
 else()
     set(DEVELOPMENT_CODE TRUE)

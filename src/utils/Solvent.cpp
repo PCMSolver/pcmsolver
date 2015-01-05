@@ -36,34 +36,25 @@ Solvent::SolventMap & Solvent::initSolventMap()
 {
     static SolventMap availableSolvents;
     // ------------------------------------------------------------
-    // Solvent("name", static permittivity, optical permittivit, probe radius)
-    availableSolvents["WATER"]                = Solvent("Water", 78.39, 1.776, 1.385);
-    availableSolvents["METHANOL"]             = Solvent("Methanol", 32.63, 1.758, 1.855);
-    availableSolvents["ETHANOL"]              = Solvent("Ethanol", 24.55, 1.847, 2.18);
-    availableSolvents["CHLOROFORM"]           = Solvent("Chloroform", 4.90, 2.085, 2.48);
-    availableSolvents["METHYLENECHLORIDE"]    = Solvent("Methylenechloride", 8.93, 2.020,
-            2.27);
-    availableSolvents["1,2-DICHLOROETHANE"]   = Solvent("1,2-Dichloroethane", 10.36,
-            2.085, 2.505);
-    availableSolvents["CARBON TETRACHLORIDE"] = Solvent("Carbon tetrachloride", 2.228,
-            2.129, 2.685);
-    availableSolvents["BENZENE"]              = Solvent("Benzene", 2.247, 2.244, 2.630);
-    availableSolvents["TOLUENE"]              = Solvent("Toluene", 2.379, 2.232, 2.82);
-    availableSolvents["CHLOROBENZENE"]        = Solvent("Chlorobenzene", 5.621, 2.320,
-            2.805);
-    availableSolvents["NITROMETHANE"]         = Solvent("Nitromethane", 38.20, 1.904,
-            2.155);
-    availableSolvents["N-HEPTANE"]            = Solvent("N-heptane", 1.92, 1.918, 3.125);
-    availableSolvents["CYCLOHEXANE"]          = Solvent("Cyclohexane", 2.023, 2.028,
-            2.815);
-    availableSolvents["ANILINE"]              = Solvent("Aniline", 6.89, 2.506, 2.80);
-    availableSolvents["ACETONE"]              = Solvent("Acetone", 20.7, 1.841, 2.38);
-    availableSolvents["TETRAHYDROFURANE"]     = Solvent("Tetrahydrofurane", 7.58, 1.971,
-            2.9);
-    availableSolvents["DIMETHYLSULFOXIDE"]    = Solvent("Dimethylsulfoxide", 46.7, 2.179,
-            2.455);
-    availableSolvents["ACETONITRILE"]         = Solvent("Acetonitrile", 36.64, 1.806,
-            2.155);
+    // Solvent("name", static permittivity, optical permittivity, probe radius)
+    availableSolvents["N-HEPTANE"]            = Solvent("N-heptane",            1.920, 1.918, 3.125);
+    availableSolvents["CYCLOHEXANE"]          = Solvent("Cyclohexane",          2.023, 2.028, 2.815);
+    availableSolvents["CARBON TETRACHLORIDE"] = Solvent("Carbon tetrachloride", 2.228, 2.129, 2.685);
+    availableSolvents["BENZENE"]              = Solvent("Benzene",              2.247, 2.244, 2.630);
+    availableSolvents["TOLUENE"]              = Solvent("Toluene",              2.379, 2.232, 2.820);
+    availableSolvents["CHLOROFORM"]           = Solvent("Chloroform",           4.900, 2.085, 2.480);
+    availableSolvents["CHLOROBENZENE"]        = Solvent("Chlorobenzene",        5.621, 2.320, 2.805);
+    availableSolvents["ANILINE"]              = Solvent("Aniline",              6.890, 2.506, 2.800);
+    availableSolvents["TETRAHYDROFURANE"]     = Solvent("Tetrahydrofurane",     7.580, 1.971, 2.900);
+    availableSolvents["METHYLENECHLORIDE"]    = Solvent("Methylenechloride",    8.930, 2.020, 2.270);
+    availableSolvents["1,2-DICHLOROETHANE"]   = Solvent("1,2-Dichloroethane",  10.360, 2.085, 2.505);
+    availableSolvents["ACETONE"]              = Solvent("Acetone",             20.700, 1.841, 2.380);
+    availableSolvents["ETHANOL"]              = Solvent("Ethanol",             24.550, 1.847, 2.180);
+    availableSolvents["METHANOL"]             = Solvent("Methanol",            32.630, 1.758, 1.855);
+    availableSolvents["ACETONITRILE"]         = Solvent("Acetonitrile",        36.640, 1.806, 2.155);
+    availableSolvents["NITROMETHANE"]         = Solvent("Nitromethane",        38.200, 1.904, 2.155);
+    availableSolvents["DIMETHYLSULFOXIDE"]    = Solvent("Dimethylsulfoxide",   46.700, 2.179, 2.455);
+    availableSolvents["WATER"]                = Solvent("Water",               78.390, 1.776, 1.385);
     availableSolvents["EXPLICIT"]             = Solvent("Explicit", 0.0, 0.0, 0.0);
     // ------------------------------------------------------------
     return availableSolvents;

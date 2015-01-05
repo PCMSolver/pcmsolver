@@ -37,7 +37,9 @@
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
+#include "Molecule.hpp"
 #include "Vacuum.hpp"
+#include "TestingMolecules.hpp"
 #include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
 #include "Symmetry.hpp"
@@ -52,21 +54,15 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
     Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
     Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
-    std::vector<Sphere> spheres;
-    Sphere sph1(N,  2.929075493);
-    Sphere sph2(H1, 2.267671349);
-    Sphere sph3(H2, 2.267671349);
-    Sphere sph4(H3, 2.267671349);
-    spheres.push_back(sph1);
-    spheres.push_back(sph2);
-    spheres.push_back(sph3);
-    spheres.push_back(sph4);
+    
+    Molecule molec = NH3();
+
     double area = 0.4;
     double probeRadius = 0.0;
     double minRadius = 100.0;
     // C1
     Symmetry group = buildGroup(0, 0, 0, 0);
-    GePolCavity cavity = GePolCavity(spheres, area, probeRadius, minRadius, group);
+    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, group);
     cavity.saveCavity("nh3.npz");
 
     CollocationIntegrator * diag = new CollocationIntegrator();

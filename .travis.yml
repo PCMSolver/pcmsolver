@@ -21,7 +21,6 @@ env:
     - CI_TARGET=gcc-unittest
     - CI_TARGET=gcc-unittest-i8
     - CI_TARGET=clang-unittest
-    - CI_TARGET=clang-unittest-noPython
     - CI_TARGET=coverity
 script:
   - bash "${CI_SCRIPTS}/${CI_TARGET}.sh"

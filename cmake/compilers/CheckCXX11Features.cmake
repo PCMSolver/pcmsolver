@@ -53,7 +53,7 @@ function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
     if(NOT DEFINED ${RESULT_VAR})
         set(_bindir "${CMAKE_CURRENT_BINARY_DIR}/check_cxx11/cxx11_${FEATURE_NAME}")
 
-	set(_location "${PROJECT_SOURCE_DIR}/cmake/compilers/CheckCXX11Features") 
+	set(_location "${CMAKE_SOURCE_DIR}/cmake/compilers/CheckCXX11Features") 
 	set(_SRCFILE_BASE "${_location}/cxx11-test-${FEATURE_NAME}")
         set(_LOG_NAME "\"${FEATURE_NAME}\"")
 	#message(STATUS "Checking C++11 support for ${_LOG_NAME}")

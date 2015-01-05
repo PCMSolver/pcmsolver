@@ -31,14 +31,13 @@
 
 #include "Config.hpp"
 
-
-#include "Sphere.hpp"
+#include "Molecule.hpp"
 #include "Symmetry.hpp"
 
 /*! @struct cavityData
  *  @brief Contains all data defined from user input in the cavity section.
- *  @var cavityData::spheres
- *  Contains the list of generating spheres.
+ *  @var cavityData::molecule
+ *  Molecule object with the relevant data for cavity generation.
  *  @var cavityData::area
  *  The average tesserae area. Relevant for GePolCavity.
  *  @var cavityData::probeRadius
@@ -64,7 +63,7 @@
  */
 
 struct cavityData {
-    std::vector<Sphere> spheres;
+    Molecule molecule;
     double area;
     double probeRadius;
     double minDistance;
@@ -74,11 +73,11 @@ struct cavityData {
     double coarsity;
     std::string filename;
     Symmetry symmetry;
-    cavityData(const std::vector<Sphere> & _spheres, double _area, double _probeRadius,
+    cavityData(const Molecule & _molec, double _area, double _probeRadius,
                double _minDistance, int _derOrder, double _minRadius,
                int _patchLevel, double _coarsity, const std::string & _fname,
                const Symmetry & _symmetry) :
-        spheres(_spheres), area(_area), probeRadius(_probeRadius),
+        molecule(_molec), area(_area), probeRadius(_probeRadius),
         minDistance(_minDistance), derOrder(_derOrder), minimalRadius(_minRadius),
         patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname),
         symmetry(_symmetry) {}

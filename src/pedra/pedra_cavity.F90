@@ -79,13 +79,14 @@
 
     contains
 
-    subroutine polyhedra_driver(pgroup, global_print_unit, error_code)
+    subroutine polyhedra_driver(pgroup, masses, global_print_unit, error_code)
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
 
     type(point_group) :: pgroup
+    real(kind=dp)     :: masses(mxts)
     integer(kind=regint_k)           :: global_print_unit 
     integer(kind=regint_k)           :: error_code
 
@@ -141,7 +142,7 @@
     cv = 0.0d0
 
     call polyhedra(intsph, vert, centr, newsph, icav1, icav2, xval, yval, zval, &
-    jtr, cv, numts, numsph, numver, natm, some)
+    jtr, cv, numts, numsph, numver, natm, some, masses)
 
 ! Bring the error code back home
     error_code = pedra_error_code
@@ -149,7 +150,7 @@
     end subroutine polyhedra_driver
 
     subroutine polyhedra(intsph,vert,centr,newsph,icav1,icav2,xval,yval, &
-    zval,jtr,cv,numts,numsph,numver,natm,some)
+    zval,jtr,cv,numts,numsph,numver,natm,some,masses)
 !
 ! We list variables of interest, that might be declared inside a common block.
 ! nesf: total number of spheres
@@ -168,6 +169,7 @@
 
     integer(kind=regint_k) :: numts, natm, numsph, numver
     integer(kind=regint_k) :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
+    real(kind=dp) :: masses(mxts)
     real(kind=dp) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, 3)
     real(kind=dp) :: xval(numts), yval(numts), zval(numts)
     real(kind=dp) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
@@ -368,7 +370,7 @@
     geom = 0.0d0
     
     do i = 1, nesfp
-        mass(i)   = rin(i)
+        mass(i)   = masses(i)
         geom(i,1) = xe(i)
         geom(i,2) = ye(i)
         geom(i,3) = ze(i)
@@ -2273,7 +2275,8 @@
 #include "pcm_pcm.h"
 
     integer(kind=regint_k), intent(in) :: katom
-    real(kind=dp),    intent(in) :: geom(katom, 3), amass(katom)
+    real(kind=dp), intent(inout) :: geom(katom, 3)
+    real(kind=dp),    intent(in) :: amass(katom)
     real(kind=dp), intent(inout) :: vmat(3, 3)
 
     real(kind=dp) :: eigval(3), eigvec(3, 3), tinert(3, 3)
@@ -2282,12 +2285,26 @@
     logical :: planar, linear
     integer(kind=regint_k) :: i, j, k, jax, nmax
     integer(kind=regint_k) :: nopax, nshift
-
+    real(kind=dp) :: com(3), total_mass
     real(kind=dp) :: dij
     
     iax = [1, 2, 3, 3, 2, 1]
 
     angmom = [1.0d0, 1.0d0, 1.0d0]
+
+    ! Calculate center-of-mass (com) and translate
+    total_mass = sum(amass) 
+    do i = 1, 3
+      com(i) = 0.0_dp
+      do j = 1, katom
+        com(i) = com(i) + geom(j, i) * amass(j)
+      end do
+      com(i) = com(i) / total_mass
+    end do
+    ! Translation to COM
+    do i = 1, katom
+      geom(i, :) = geom(i, :) - com(:)
+    end do
 
     call wlkdin(geom, amass, nesfp, angmom, tinert, omegad, eigval, eigvec, .true., planar, linear)
 

@@ -32,7 +32,6 @@
 
 #include "Config.hpp"
 
-
 #include "Cavity.hpp"
 #include "CavityData.hpp"
 #include "CavityFactory.hpp"
@@ -53,15 +52,21 @@ private:
     enum pGroup { C1, Cs, C2, Ci, C2h, D2, C2v, D2h };
 public:
     GePolCavity() {}
-    GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius,
+    GePolCavity(const Molecule & _molec, double _area, double _probeRadius,
                 double _minRadius, const Symmetry & _pGroup) :
-        Cavity(_spheres, _pGroup), averageArea(_area), probeRadius(_probeRadius),
+        Cavity(_molec.spheres(), _pGroup), molecule_(_molec), 
+	averageArea(_area), probeRadius(_probeRadius),
         minimalRadius(_minRadius) { build(10000, 200, 25000); }
+    GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius,
+		double _minRadius, const Symmetry & _pGroup) :
+	Cavity(_spheres, _pGroup), averageArea(_area), probeRadius(_probeRadius),
+	minimalRadius(_minRadius) { molecule_ = Molecule(_spheres.size(), _spheres); build(10000, 200, 25000); }
     virtual ~GePolCavity() {}
     friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
         return cavity.printCavity(os);
     }
 private:
+    Molecule molecule_;
     double averageArea;
     double probeRadius;
     double minimalRadius;
@@ -80,7 +85,7 @@ namespace
 {
     Cavity* createGePolCavity(const cavityData & _data)
     {
-        return new GePolCavity(_data.spheres, _data.area, _data.probeRadius,
+        return new GePolCavity(_data.molecule, _data.area, _data.probeRadius,
                                _data.minimalRadius, _data.symmetry);
     }
     const std::string GEPOL("GEPOL");

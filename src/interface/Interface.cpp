@@ -134,8 +134,10 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
         iter_chg = functions.insert(iter_chg, insertion);
     }
 
-    // If it already exists there's no problem, we will pass a reference to its values to
+    // If it already exists, we will pass a reference to its values to
     // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // We clear the ASC surface function. Needed when using symmetry for response calculations
+    iter_chg->second->clear();
     _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
@@ -481,34 +483,13 @@ void setupInput(bool from_host)
 	   // printer(out_stream);
     	    parsedInput = boost::make_shared<Input>(Input(cav, solv, green));
     } else {
-#ifdef EMBEDDED_PYTHON
-	    parsedInput = boost::make_shared<Input>(Input("pcmsolver.inp"));
-#else
 	    parsedInput = boost::make_shared<Input>(Input("@pcmsolver.inp"));
-#endif
     }
-    // The only thing we can't create immediately is the vector of spheres
+    // The only thing we can't create immediately is the molecule
     // from which the cavity is to be built.
-    std::string _mode = parsedInput->mode();
-    // Get the total number of nuclei and the geometry anyway
-    Eigen::VectorXd charges;
-    Eigen::Matrix3Xd centers;
-    initAtoms(charges, centers);
-    std::vector<Sphere> spheres;
-
-    // We create an initial list of spheres as if we were in the Implicit mode
-    // regardless of what the user told us.
-    // If we are in the Implicit mode we just need to let the Input object know about
-    // the list of spheres.
-    // Some post-processing of the list is needed in the Atoms mode.
-    initSpheresImplicit(charges, centers, spheres);
-
-    if (_mode == "IMPLICIT") {
-        parsedInput->spheres(spheres);
-    } else if (_mode == "ATOMS") {
-        initSpheresAtoms(centers, spheres);
-        parsedInput->spheres(spheres);
-    }
+    Molecule molec;
+    initMolecule(molec);
+    parsedInput->molecule(molec);
 }
 
 void initCavity()
@@ -516,7 +497,7 @@ void initCavity()
     // Get the input data for generating the cavity
     std::string cavityType = parsedInput->cavityType();
     double area = parsedInput->area();
-    std::vector<Sphere> spheres = parsedInput->spheres();
+    Molecule molec = parsedInput->molecule();
     double minRadius = parsedInput->minimalRadius();
     double probeRadius = parsedInput->probeRadius();
     double minDistance = parsedInput->minDistance();
@@ -530,7 +511,7 @@ void initCavity()
     set_point_group(&nr_gen, &gen1, &gen2, &gen3);
     Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
 
-    cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, minRadius,
+    cavityData cavInput(molec, area, probeRadius, minDistance, derOrder, minRadius,
                         patchLevel, coarsity, restart, pg);
 
     // Get the right cavity from the Factory
@@ -621,6 +602,55 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
     double * chg = charges_.data();
     double * centers = sphereCenter_.data();
     collect_atoms(chg, centers);
+}
+
+void initMolecule(Molecule & molecule_)
+{
+    // Gather information necessary to build molecule_
+    // 1. number of atomic centers
+    int nuclei;
+    collect_nctot(&nuclei);
+    // 2. position and charges of atomic centers
+    Eigen::Matrix3Xd centers; 
+    centers.resize(Eigen::NoChange, nuclei);
+    Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
+    double * chg = charges.data();
+    double * pos = centers.data();
+    collect_atoms(chg, pos);
+    // 3. list of atoms and list of spheres
+    bool scaling = parsedInput->scaling();
+    std::string set = parsedInput->radiiSet();
+    double factor = angstromToBohr(parsedInput->CODATAyear());
+    std::vector<Atom> radiiSet, atoms;
+    if ( set == "UFF" ) {
+        radiiSet = Atom::initUFF();
+    } else {
+        radiiSet = Atom::initBondi();
+    }
+    std::vector<Sphere> spheres;
+    for (int i = 0; i < charges.size(); ++i) {
+        int index = int(charges(i)) - 1;
+	atoms.push_back(radiiSet[index]);
+        double radius = radiiSet[index].atomRadius() * factor;
+        if (scaling) {
+            radius *= radiiSet[index].atomRadiusScaling();
+        }
+        spheres.push_back(Sphere(centers.col(i), radius));
+    }
+    // 4. masses
+    Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
+    for (int i = 0; i < masses.size(); ++i) {
+	 masses(i) = atoms[i].atomMass();
+    }
+    // Based on the creation mode (Implicit or Atoms)
+    // the spheres list might need postprocessing
+    std::string _mode = parsedInput->mode();
+    if ( _mode == "ATOMS" ) {
+       initSpheresAtoms(centers, spheres);	 
+    }
+
+    // OK, now get molecule_
+    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres);
 }
 
 void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,

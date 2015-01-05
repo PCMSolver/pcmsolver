@@ -37,10 +37,6 @@
 #include "Getkw.h"
 
 #include <boost/algorithm/string.hpp>
-#ifdef EMBEDDED_PYTHON
-#include <boost/python.hpp>
-#include <Python.h>
-#endif
 
 #include "InputManager.hpp"
 #include "PhysicalConstants.hpp"
@@ -51,25 +47,7 @@ using boost::algorithm::to_upper_copy;
     
 Input::Input(const std::string & filename)
 {
-#ifdef EMBEDDED_PYTHON
-    /* Initiliaze the Python interpreter
-     * Check if there's already an embedded interpreter around.
-     * This is needed in order to call Py_Finalize(), i.e. if an
-     * interpreter is already embedded we cannot finalize it as this
-     * might crash execution of the embedder library/program.
-     */
-    if (Py_IsInitialized()) {
-	hadInterpreter_ = true;
-    } else {
-	hadInterpreter_ = false;
-	Py_Initialize();
-    }
-    parser(filename);
-    std::string pythonParsed = "@" + filename;
-    reader(pythonParsed.c_str());
-#else
     reader(filename.c_str());
-#endif
     semanticCheck();
 }
 
@@ -77,165 +55,6 @@ Input::Input(const cavityInput & cav, const solverInput & solv, const greenInput
 {
     reader(cav, solv, green);
     semanticCheck();
-}
-
-Input::Input(const Input &other) : units_(other.units_), 
-	                           CODATAyear_(other.CODATAyear_), 
-				   type_(other.type_),
- 	                           cavFilename_(other.cavFilename_), 
-				   patchLevel_(other.patchLevel_), 
-				   coarsity_(other.coarsity_),
-                                   area_(other.area_), 
-				   minDistance_(other.minDistance_), 
-				   derOrder_(other.derOrder_), 
-				   scaling_(other.scaling_),
-	                           radiiSet_(other.radiiSet_), 
-				   minimalRadius_(other.minimalRadius_), 
-				   mode_(other.mode_),
-	                           atoms_(other.atoms_), 
-				   radii_(other.radii_), 
-				   spheres_(other.spheres_), 
-				   solvent_(other.solvent_),
-	                           hasSolvent_(other.hasSolvent_), 
-				   solverType_(other.solverType_), 
-				   equationType_(other.equationType_),
-	                           correction_(other.correction_), 
-				   hermitivitize_(other.hermitivitize_), 
-				   probeRadius_(other.probeRadius_),
-	                           greenInsideType_(other.greenInsideType_), 
-				   greenOutsideType_(other.greenOutsideType_),
-	                           derivativeInsideType_(other.derivativeInsideType_), 
-				   derivativeOutsideType_(other.derivativeOutsideType_),
-	                           epsilonInside_(other.epsilonInside_), 
-				   epsilonOutside_(other.epsilonOutside_),
-  	                           epsilonReal_(other.epsilonReal_), 
-				   spherePosition_(other.spherePosition_), 
-				   sphereRadius_(other.sphereRadius_),
- 	                           providedBy_(other.providedBy_), 
-                                   hadInterpreter_(other.hadInterpreter_) {}
-
-inline void swap(Input & left, Input & right)
-{
-    using std::swap;
-    swap(left.units_,                 right.units_);
-    swap(left.CODATAyear_,            right.CODATAyear_);
-    swap(left.cavFilename_,           right.cavFilename_);
-    swap(left.type_,                  right.type_);
-    swap(left.patchLevel_,            right.patchLevel_);
-    swap(left.coarsity_,              right.coarsity_);
-    swap(left.area_,                  right.area_);
-    swap(left.minDistance_,           right.minDistance_);
-    swap(left.derOrder_,              right.derOrder_);
-    swap(left.scaling_,               right.scaling_);
-    swap(left.radiiSet_,              right.radiiSet_);
-    swap(left.minimalRadius_,         right.minimalRadius_);
-    swap(left.mode_,                  right.mode_);
-    swap(left.atoms_,                 right.atoms_);
-    swap(left.radii_,                 right.radii_);
-    swap(left.spheres_,               right.spheres_);
-    swap(left.solvent_,               right.solvent_);
-    swap(left.hasSolvent_,            right.hasSolvent_);
-    swap(left.solverType_,            right.solverType_);
-    swap(left.equationType_,          right.equationType_);
-    swap(left.correction_,            right.correction_);
-    swap(left.hermitivitize_,         right.hermitivitize_);
-    swap(left.probeRadius_,           right.probeRadius_);
-    swap(left.greenInsideType_,       right.greenInsideType_);
-    swap(left.greenOutsideType_,      right.greenOutsideType_);
-    swap(left.derivativeInsideType_,  right.derivativeInsideType_);
-    swap(left.derivativeOutsideType_, right.derivativeOutsideType_);
-    swap(left.epsilonInside_,         right.epsilonInside_);
-    swap(left.epsilonOutside_,        right.epsilonOutside_);
-    swap(left.epsilonReal_,           right.epsilonReal_);
-    swap(left.epsilonImaginary_,      right.epsilonImaginary_);
-    swap(left.spherePosition_,        right.spherePosition_);
-    swap(left.sphereRadius_,          right.sphereRadius_);
-    swap(left.providedBy_,            right.providedBy_);
-    swap(left.hadInterpreter_,        right.hadInterpreter_);
-}
-
-inline void Input::swap(Input & other)
-{
-    using std::swap;
-    swap(this->units_,                 other.units_);
-    swap(this->CODATAyear_,            other.CODATAyear_);
-    swap(this->cavFilename_,           other.cavFilename_);
-    swap(this->type_,                  other.type_);
-    swap(this->patchLevel_,            other.patchLevel_);
-    swap(this->coarsity_,              other.coarsity_);
-    swap(this->area_,                  other.area_);
-    swap(this->minDistance_,           other.minDistance_);
-    swap(this->derOrder_,              other.derOrder_);
-    swap(this->scaling_,               other.scaling_);
-    swap(this->radiiSet_,              other.radiiSet_);
-    swap(this->minimalRadius_,         other.minimalRadius_);
-    swap(this->mode_,                  other.mode_);
-    swap(this->atoms_,                 other.atoms_);
-    swap(this->radii_,                 other.radii_);
-    swap(this->spheres_,               other.spheres_);
-    swap(this->solvent_,               other.solvent_);
-    swap(this->hasSolvent_,            other.hasSolvent_);
-    swap(this->solverType_,            other.solverType_);
-    swap(this->equationType_,          other.equationType_);
-    swap(this->correction_,            other.correction_);
-    swap(this->hermitivitize_,         other.hermitivitize_);
-    swap(this->probeRadius_,           other.probeRadius_);
-    swap(this->greenInsideType_,       other.greenInsideType_);
-    swap(this->greenOutsideType_,      other.greenOutsideType_);
-    swap(this->derivativeInsideType_,  other.derivativeInsideType_);
-    swap(this->derivativeOutsideType_, other.derivativeOutsideType_);
-    swap(this->epsilonInside_,         other.epsilonInside_);
-    swap(this->epsilonOutside_,        other.epsilonOutside_);
-    swap(this->epsilonReal_,           other.epsilonReal_);
-    swap(this->epsilonImaginary_,      other.epsilonImaginary_);
-    swap(this->spherePosition_,        other.spherePosition_);
-    swap(this->sphereRadius_,          other.sphereRadius_);
-    swap(this->providedBy_,            other.providedBy_);
-    swap(this->hadInterpreter_,        other.hadInterpreter_);
-}
-
-Input & Input::operator=(Input other)
-{
-    if (this == &other) // Check for self-assignment
-        throw std::runtime_error("Are you trying to self-assign?");
-
-    ::swap(*this, other);
-    return *this;
-}
-
-Input::~Input() 
-{
-#ifdef EMBEDDED_PYTHON
-   // Call Py_Finalize() only if the call to Py_Initialize()
-   // was done by this object
-   if (not hadInterpreter_) {
-       Py_Finalize();
-   }
-#endif
-}
-
-void Input::parser(const std::string & filename)
-{
-#ifdef EMBEDDED_PYTHON
-    namespace py = boost::python;
-    // Append location of pcmsolver.py to path
-    PyObject * sysPath = PySys_GetObject((char *)"path");
-    PyObject * path    = PyString_FromString("@PROJECT_BINARY_DIR@/bin");
-    int insertion = PyList_Insert(sysPath, 0, path);
-    if (not insertion) {
-       PyErr_Print();
-    }
-    // Import the module "pcmsolver" (from the file "pcmsolver.py")
-    py::object pyPCM = py::import("pcmsolver");
-    // Get the parse_pcm_input function
-    py::object pyParser = pyPCM.attr("parse_pcm_input");
-    py::object result = pyParser(filename);
-    // Free all temporary Python objects.
-    Py_DECREF(sysPath);
-    Py_DECREF(path);
-#else
-    throw std::runtime_error("parser(" + filename + ") is DISABLED");
-#endif
 }
 
 void Input::reader(const char * pythonParsed)
@@ -265,14 +84,15 @@ void Input::reader(const char * pythonParsed)
     if (mode_ == "EXPLICIT") {
         std::vector<double> spheresInput = cavity.getDblVec("SPHERES");
         int j = 0;
-        int upperBound = int(spheresInput.size() / 4);
-        for (int i = 0; i < upperBound; ++i) {
+        int nAtoms = int(spheresInput.size() / 4);
+        for (int i = 0; i < nAtoms; ++i) {
             Eigen::Vector3d center;
             center << spheresInput[j], spheresInput[j+1], spheresInput[j+2];
             Sphere sph(center, spheresInput[j+3]);
             spheres_.push_back(sph);
             j += 4;
         }
+	molecule_ = Molecule(nAtoms, spheres_);
     } else if (mode_ == "ATOMS") {
         atoms_ = cavity.getIntVec("ATOMS");
         radii_ = cavity.getDblVec("RADII");

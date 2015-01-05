@@ -6,7 +6,6 @@
 
 Method 1 is more flexible: all parameters that can be modified by the user are available.
 The host program needs only copy the additional input file to the scratch directory before execution.
-By embedding Python into our C++ code, input reading and validation are done automatically behind the curtains.
 Method 2 just gives access to the core parameters. 
 
 In this page, input style and input parameters available in Method 1 will be documented.

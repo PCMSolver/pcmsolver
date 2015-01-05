@@ -40,6 +40,7 @@
 #include <Eigen/Dense>
 
 #include "InputManager.hpp"
+#include "Molecule.hpp"
 #include "Sphere.hpp"
 
 /*
@@ -250,7 +251,7 @@ extern "C" void print_surface_function(char * name);
 
 #define clear_surface_function \
 	FortranCInterface_GLOBAL_(clear_surface_function, CLEAR_SURFACE_FUNCTION)
-/*! \fn extern "C" void clear_surface_function(const char * name)
+/*! \fn extern "C" void clear_surface_function(char * name)
  *  \brief Clears contents of SurfaceFunction
  *  \param[in] name label for the SurfaceFunction to be cleared
  */
@@ -258,7 +259,7 @@ extern "C" void clear_surface_function(char * name);
 
 #define append_surface_function \
 	FortranCInterface_GLOBAL_(append_surface_function, APPEND_SURFACE_FUNCTION)
-/*! \fn extern "C" void append_surface_function(const char * name)
+/*! \fn extern "C" void append_surface_function(char * name)
  *  \brief Appends a new SurfaceFunction to the global map 
  *  \param[in] name label for the new SurfaceFunction
  */
@@ -310,6 +311,13 @@ void initWaveletCavity();
  *  Initializes list of atoms and atoms positions
  */
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
+
+/*! \fn void initMolecule(Molecule & molecule_, Eigen::Matrix3Xd & sphereCenter_)
+ *  \param[out] molecule_  a Molecule object 
+ *
+ *  Initializes Molecule object with all the information on charges, masses and positions of atomic centers
+ */
+void initMolecule(Molecule & molecule_);
 
 /*! \fn void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_)
  *  \param[in] charges_      contains charges of atomic centers

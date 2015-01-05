@@ -34,6 +34,7 @@
 #include "Getkw.h"
 
 #include "InputManager.hpp"
+#include "Molecule.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
@@ -49,8 +50,6 @@
  *  They must be specified as private data members with public accessor methods (get-ters).
  *  In general, no mutator methods (set-ters) should be needed, exceptions to this rule
  *  should be carefully considered.
- *  \warning If new data members are added, you **must** update the definition of the copy
- *  constructor and of the two swap functions.
  */
 
 class Input
@@ -62,15 +61,7 @@ public:
     Input(const std::string & filename);
     /// Constructor from host input structs
     Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
-    /// Copy constructor
-    Input(const Input &other);
-    /// Assignment operator
-    Input& operator=(Input other);
-    /// Destructor
-    ~Input();
 
-    friend inline void swap(Input & left, Input & right);
-    inline void swap(Input & other);
     // Accessor methods
     std::string units() { return units_; }
     int CODATAyear() { return CODATAyear_; }
@@ -92,7 +83,9 @@ public:
     double radii(int i) { return radii_[i]; }
     std::vector<Sphere> spheres() { return spheres_; }
     Sphere spheres(int i) { return spheres_[i]; }
-    void spheres(const std::vector<Sphere> & sph) { spheres_ = sph; }
+    Molecule molecule() { return molecule_; }
+    /// This method sets the molecule and the list of spheres
+    void molecule(const Molecule & m) { molecule_ = m; spheres_ = molecule_.spheres(); }
     // Medium section input
     Solvent solvent() { return solvent_; }
     bool fromSolvent() { return hasSolvent_; }
@@ -117,9 +110,6 @@ public:
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
     /// @}
 private:
-    /*! Parse input by embedding the Python pcmsolver.py script as a module.
-     */
-    void parser(const std::string & filename);
     /*! Read Python-parsed input (API-side syntactic input parsing) into Input object
      */
     void reader(const char * pythonParsed);
@@ -174,6 +164,8 @@ private:
     std::vector<double> radii_;
     /// List of spheres for fully custom cavity generation
     std::vector<Sphere> spheres_;
+    /// Molecule or atomic aggregate
+    Molecule molecule_;
     /// The solvent for a vacuum/uniform dielectric run
     Solvent solvent_;
     /// Whether the medium was initialized from a solvent object
@@ -210,8 +202,6 @@ private:
     double sphereRadius_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
-    /// Whether a Python interpreter was already embedded
-    bool hadInterpreter_;
 };
 
 /*!

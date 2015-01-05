@@ -46,10 +46,9 @@ include(ConfigExternal)
 include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(MergeStaticLibs)
-include(FortranCInterface)
-
-FortranCInterface_VERIFY(CXX)
-init_FCMangle()
+# Access to the fortran_enabler macro
+include(FortranEnabler)
+fortran_enabler()
     
 # The Python interpreter is needed to run the MergeStaticLibs.py script
 # If the PYTHON_INTERPRETER variable is not empty, then the user passed a custom version

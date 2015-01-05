@@ -31,11 +31,11 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES PGI)
   set(toolset "pgi")
 else()
-	if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-		set(toolset "darwin")
-	else()
-		set(toolset "gcc")
-	endif()
+  if(CMAKE_SYSTEM_NAME MATCHES Darwin)
+     set(toolset "darwin")
+  else()
+     set(toolset "gcc")
+  endif()
 endif()
 message(STATUS "  Toolset to be used: ${toolset}")
 
@@ -50,7 +50,7 @@ add_custom_command(
     OUTPUT boost.unpacked 
     COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz 
     # Copy custom boostcpp.jam (to get versioned format as I want it!)
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boost/boostcpp.jam ${BOOST_BUILD_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/external/boostcpp.jam ${BOOST_BUILD_DIR}
     COMMAND touch boost.unpacked
     DEPENDS ${CMAKE_SOURCE_DIR}/external/boost_${BOOSTVER}.tar.gz
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external

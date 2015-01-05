@@ -65,10 +65,12 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 
     // This is the very core of PCMSolver
     throw std::runtime_error("Calculation of anisotropic matrix elements not yet implemented.");
-/*  greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
+    /*  
+    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
     greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
     greenOutside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SE, DE);
-    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);*/
+    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);
+    */
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.

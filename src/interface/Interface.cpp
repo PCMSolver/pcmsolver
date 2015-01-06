@@ -710,10 +710,10 @@ void initWaveletCavity()
     double scaling = bohrToAngstrom(parsedInput->CODATAyear());
     // Iterate by reference to scale!
     BOOST_FOREACH(Sphere & sph, spheres) {
-	sph.scale(scaling);
+    	sph.scale(scaling);
     }
-    // Scale also probeRadius...
     probeRadius *= scaling;
+    //_waveletCavity = new WaveletCavity("benzene.dat");
 
     _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
     _waveletCavity->readCavity("molec_dyadic.dat");

@@ -148,7 +148,7 @@ cnpy::NpyArray load_the_npy_file(FILE * fp)
     size_t nread = fread(arr.data, word_size, size, fp);
     if(nread != size)
         throw std::runtime_error("load_the_npy_file: failed fread");
-    delete shape;
+    delete[] shape;
     return arr;
 }
 

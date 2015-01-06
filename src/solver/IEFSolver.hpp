@@ -72,8 +72,8 @@ public:
           builtAnisotropicMatrix(false), hermitivitize_(symm) {}
     virtual ~IEFSolver() {}
     virtual void buildSystemMatrix(const Cavity & cavity);
-    virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge,
-                            int irrep = 0);
+    virtual void computeCharge(const Eigen::VectorXd &potential, Eigen::VectorXd &charge,
+            int irrep = 0);
     friend std::ostream & operator<<(std::ostream & os, IEFSolver & solver) {
         return solver.printSolver(os);
     }

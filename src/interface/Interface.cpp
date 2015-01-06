@@ -135,10 +135,10 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
     }
 
     // If it already exists, we will pass a reference to its values to
-    // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // _solver->computeCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
     // We clear the ASC surface function. Needed when using symmetry for response calculations
     iter_chg->second->clear();
-    _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
+    _solver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
 }
@@ -166,10 +166,10 @@ extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, i
     }
 
     // If it already exists there's no problem, we will pass a reference to its values to
-    // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
-    // Here compCharge has to use the nonequilibrium PCM matrix!
+    // _solver->computeCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // Here computeCharge has to use the nonequilibrium PCM matrix!
     // compNonequilibriumCharge()
-    _solver->compCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
+    _solver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
 }

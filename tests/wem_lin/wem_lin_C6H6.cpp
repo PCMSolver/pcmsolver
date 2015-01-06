@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(C6H6)
       }
       // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
       Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-      solver.compCharge(fake_mep, fake_asc);
+      solver.computeCharge(fake_mep, fake_asc);
       double totalFakeASC = fake_asc.sum();
       std::cout << "totalASC - totalFakeASC = " << std::setprecision(20) << totalASC - totalFakeASC << std::endl;
       std::cout << "totalFakeASC = "<< std::setprecision(20) << totalFakeASC << std::endl;

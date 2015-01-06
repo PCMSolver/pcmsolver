@@ -52,9 +52,9 @@ Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3)
     return Symmetry(_nr_gen, gen);
 }
 
-double Symmetry::parity(int i)
+double parity(int i)
 {
-    static Eigen::VectorXd parity(8);
+    Eigen::VectorXd parity(8);
     parity << 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0;
     return parity(i);
 }

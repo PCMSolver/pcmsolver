@@ -330,4 +330,4 @@ Molecule C6H6() {
     return Molecule(nAtoms, charges, masses, geom, atoms, spheres);
 };
 
-#endif // TESTINGMOLECULE_HPP
+#endif // TESTINGMOLECULES_HPP

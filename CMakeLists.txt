@@ -20,7 +20,6 @@ option(ENABLE_TESTS            "Enable compilation of unit tests"               
 option(ENABLE_CODE_COVERAGE    "Enable code coverage"                                             OFF)
 option(DISABLE_EIGEN_OWN       "Do not use Eigen3 headers shipped with the module"                OFF)
 option(ENABLE_EIGEN_MKL        "Enable Eigen3 automatic fallback to some of Intel MKL algorithms" OFF)
-option(ENABLE_PYTHON_EMBEDDING "Enable Python embedding"                                          ON)
 option(ENABLE_64BIT_INTEGERS   "Enable 64-bit integers"                                           OFF)
 option(ENABLE_CXX11_SUPPORT    "Enable C++11 compiler support"                                    ON)
 #
@@ -47,49 +46,27 @@ include(ConfigExternal)
 include(GenericMacros)
 include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(MergeStaticLibs)
-include(FortranCInterface)
-
-FortranCInterface_VERIFY(CXX)
-init_FCMangle()
+# Access to the fortran_enabler macro
+include(FortranEnabler)
+fortran_enabler()
     
-set(EMBEDDED_PYTHON FALSE)
-# Try to configure Python, if not possible disable Python embedding 
-if(ENABLE_PYTHON_EMBEDDING)
-   # libutil and libdl are needed in case only the static version of libpython is available
-   if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-      find_package(Util REQUIRED)
-      if(NOT LIBUTIL_FOUND)
-         message(STATUS "Python embedding DISABLED (libutil NOT FOUND)")
-      endif()	   
-   endif()
-   
-   find_package(DL REQUIRED)
-   if(NOT LIBDL_FOUND)
-      message(STATUS "Python embedding DISABLED (libdl NOT FOUND)")
-   endif()
-   include(ConfigPython)
-   # We set EMBEDDED_PYTHON to TRUE enabling the embedded Python code
-   # only if the interpreter and the headers/libraries were found
-   if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND) 
-      set(EMBEDDED_PYTHON TRUE)
-      add_definitions(-DEMBEDDED_PYTHON)
-      include_directories(SYSTEM ${PYTHON_INCLUDE_DIRS})
-      message(STATUS "Python embedding ENABLED")
-   else()
-      message(STATUS "Python embedding DISABLED")
-      message(STATUS "   Dependencies not satisfied")
-   endif()
-else(ENABLE_PYTHON_EMBEDDING)
-   # The Python interpreter is anyway needed to run the MergeStaticLibs.py script
+# The Python interpreter is needed to run the MergeStaticLibs.py script
+# If the PYTHON_INTERPRETER variable is not empty, then the user passed a custom version
+# of the interpreter to be used. If that's the case, set PYTHON_EXECUTABLE accordingly and
+# proceed with detection of Python interpreter.
+if("${PYTHON_INTERPRETER}" STREQUAL "")
    find_package(PythonInterp 2.4 REQUIRED)
-   message(STATUS "Python embedding DISABLED")
-endif(ENABLE_PYTHON_EMBEDDING)
+else()
+   set(PYTHONINTERP_FOUND TRUE)
+   set(PYTHON_EXECUTABLE "${PYTHON_INTERPRETER}")
+   find_package(PythonInterp 2.4 REQUIRED)
+endif()	
 
 find_package(ZLIB REQUIRED) 
 include_directories(SYSTEM ${ZLIB_INCLUDE_DIRS})
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-   set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
+   set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/external)
    set(EXTERNAL_PROJECT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
    set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT} CACHE INTERNAL "")
 else()
@@ -108,9 +85,9 @@ if("${EIGEN3_ROOT}" STREQUAL "")
       find_package(Eigen3 3.0.0)
       message(STATUS "Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
    else()
-      set(EIGEN3_ROOT ${PROJECT_SOURCE_DIR}/external/eigen3)
+      set(EIGEN3_ROOT ${CMAKE_SOURCE_DIR}/external/eigen3)
       set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include/eigen3)
-      install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/eigen3 DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
+      install(DIRECTORY ${CMAKE_SOURCE_DIR}/external/eigen3 DESTINATION ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
       message(STATUS "Eigen 3.2.0 is located here: " ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include/eigen3)
    endif()
 else()
@@ -127,7 +104,7 @@ if(ENABLE_EIGEN_MKL)
 endif()
 
 set(CMAKE_Fortran_MODULE_DIRECTORY
-    ${PROJECT_BINARY_DIR}/modules)
+    ${CMAKE_BINARY_DIR}/modules)
 
 set(GetkwCMakeArgs
    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -154,23 +131,23 @@ set(TaylorCMakeArgs
    )
 
 ExternalProject_Add(libtaylor
-	PREFIX ${PROJECT_SOURCE_DIR}/external
-	SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/libtaylor
-	BINARY_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-build
-        STAMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-stamp
-        TMP_DIR ${PROJECT_BINARY_DIR}/external/libtaylor-tmp
-        INSTALL_DIR ${PROJECT_BINARY_DIR}/external
+	PREFIX ${CMAKE_SOURCE_DIR}/external
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/libtaylor
+	BINARY_DIR ${CMAKE_BINARY_DIR}/external/libtaylor-build
+        STAMP_DIR ${CMAKE_BINARY_DIR}/external/libtaylor-stamp
+        TMP_DIR ${CMAKE_BINARY_DIR}/external/libtaylor-tmp
+        INSTALL_DIR ${CMAKE_BINARY_DIR}/external
         CMAKE_ARGS ${TaylorCMakeArgs})
 
 configure_files()
 
 # To be included as system headers
 include_directories(SYSTEM 
-		    ${PROJECT_SOURCE_DIR}/external
+		    ${CMAKE_SOURCE_DIR}/external
                     ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 # To be included as project headers
-include_directories(${PROJECT_SOURCE_DIR}
-		    ${PROJECT_BINARY_DIR}/include
+include_directories(${CMAKE_SOURCE_DIR}
+		    ${CMAKE_BINARY_DIR}/include
                     ${CMAKE_Fortran_MODULE_DIRECTORY})
 
 add_subdirectory(src)
@@ -180,19 +157,19 @@ link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
 
 install(FILES 
-	${PROJECT_BINARY_DIR}/bin/pcmsolver.py 
+	${CMAKE_BINARY_DIR}/bin/pcmsolver.py 
 	DESTINATION bin)
 
 install(FILES 
-	${PROJECT_BINARY_DIR}/include/Config.hpp 
+	${CMAKE_BINARY_DIR}/include/Config.hpp 
 	DESTINATION include)
 
 install(FILES 
-	${PROJECT_BINARY_DIR}/include/FCMangle.hpp 
+	${CMAKE_BINARY_DIR}/include/FCMangle.hpp 
 	DESTINATION include)
 
 install(FILES 
-	${PROJECT_BINARY_DIR}/include/Includer.hpp 
+	${CMAKE_BINARY_DIR}/include/Includer.hpp 
 	DESTINATION include)
 
 if(ENABLE_TESTS)

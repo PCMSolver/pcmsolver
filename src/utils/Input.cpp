@@ -37,10 +37,6 @@
 #include "Getkw.h"
 
 #include <boost/algorithm/string.hpp>
-#ifdef EMBEDDED_PYTHON
-#include <boost/python.hpp>
-#include <Python.h>
-#endif
 
 #include "Compression.hpp"
 #include "InputManager.hpp"
@@ -52,25 +48,7 @@ using boost::algorithm::to_upper_copy;
     
 Input::Input(const std::string & filename)
 {
-#ifdef EMBEDDED_PYTHON
-    /* Initiliaze the Python interpreter
-     * Check if there's already an embedded interpreter around.
-     * This is needed in order to call Py_Finalize(), i.e. if an
-     * interpreter is already embedded we cannot finalize it as this
-     * might crash execution of the embedder library/program.
-     */
-    if (Py_IsInitialized()) {
-	hadInterpreter_ = true;
-    } else {
-	hadInterpreter_ = false;
-	Py_Initialize();
-    }
-    parser(filename);
-    std::string pythonParsed = "@" + filename;
-    reader(pythonParsed.c_str());
-#else
     reader(filename.c_str());
-#endif
     semanticCheck();
 }
 
@@ -78,41 +56,6 @@ Input::Input(const cavityInput & cav, const solverInput & solv, const greenInput
 {
     reader(cav, solv, green);
     semanticCheck();
-}
-
-Input::~Input() 
-{
-#ifdef EMBEDDED_PYTHON
-   // Call Py_Finalize() only if the call to Py_Initialize()
-   // was done by this object
-   if (not hadInterpreter_) {
-       Py_Finalize();
-   }
-#endif
-}
-
-void Input::parser(const std::string & filename)
-{
-#ifdef EMBEDDED_PYTHON
-    namespace py = boost::python;
-    // Append location of pcmsolver.py to path
-    PyObject * sysPath = PySys_GetObject((char *)"path");
-    PyObject * path    = PyString_FromString("@PROJECT_BINARY_DIR@/bin");
-    int insertion = PyList_Insert(sysPath, 0, path);
-    if (not insertion) {
-       PyErr_Print();
-    }
-    // Import the module "pcmsolver" (from the file "pcmsolver.py")
-    py::object pyPCM = py::import("pcmsolver");
-    // Get the parse_pcm_input function
-    py::object pyParser = pyPCM.attr("parse_pcm_input");
-    py::object result = pyParser(filename);
-    // Free all temporary Python objects.
-    Py_DECREF(sysPath);
-    Py_DECREF(path);
-#else
-    throw std::runtime_error("parser(" + filename + ") is DISABLED");
-#endif
 }
 
 void Input::reader(const char * pythonParsed)

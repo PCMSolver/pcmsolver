@@ -71,7 +71,7 @@ inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int ntsir
     Eigen::MatrixXd u = Eigen::MatrixXd::Zero(nr_irrep, nr_irrep);
     for (int i = 0; i < nr_irrep; ++i) {
         for (int j = 0; j < nr_irrep; ++j) {
-            u(i, j) = Symmetry::parity(i&j);
+            u(i, j) = parity(i&j);
         }
     }
     // Naming of indices:

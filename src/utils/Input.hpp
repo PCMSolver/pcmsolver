@@ -62,8 +62,6 @@ public:
     Input(const std::string & filename);
     /// Constructor from host input structs
     Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
-    /// Destructor
-    ~Input();
 
     // Accessor methods
     std::string units() { return units_; }
@@ -114,9 +112,6 @@ public:
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
     /// @}
 private:
-    /*! Parse input by embedding the Python pcmsolver.py script as a module.
-     */
-    void parser(const std::string & filename);
     /*! Read Python-parsed input (API-side syntactic input parsing) into Input object
      */
     void reader(const char * pythonParsed);
@@ -211,8 +206,6 @@ private:
     double sphereRadius_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
-    /// Whether a Python interpreter was already embedded
-    bool hadInterpreter_;
 };
 
 /*!

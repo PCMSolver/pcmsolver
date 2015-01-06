@@ -75,9 +75,23 @@ public:
     int nrGenerators() const { return nrGenerators_; }
     int generators(int i) const { return generators_[i]; }
     int nrIrrep() const { return nrIrrep_; }
-    static double parity(int i);
 };
 
+/*! Builds Symmetry object.
+ */
 Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3);
+
+/*! Returns parity of input integer.
+ *      zyx         Parity
+ *   0  000    E      1.0
+ *   1  001   Oyz    -1.0
+ *   2  010   Oxz    -1.0
+ *   3  011   C2z     1.0
+ *   4  100   Oxy    -1.0
+ *   5  101   C2y     1.0
+ *   6  110   C2x     1.0
+ *   7  111    i     -1.0
+ */
+double parity(int i);
 
 #endif // SYMMETRY_HPP

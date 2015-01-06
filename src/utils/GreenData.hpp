@@ -62,6 +62,7 @@ struct greenData {
     double sphereRadius;
     DiagonalIntegrator * integrator;
 
+    greenData() {}
     greenData(int _how, double _epsilon = 1.0, DiagonalIntegrator * _integrator = NULL,
               double _kappa = 0.0,
               double _epsReal = 0.0, double _epsImaginary = 0.0,

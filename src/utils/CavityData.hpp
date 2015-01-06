@@ -73,6 +73,7 @@ struct cavityData {
     double coarsity;
     std::string filename;
     Symmetry symmetry;
+    cavityData() {}
     cavityData(const Molecule & _molec, double _area, double _probeRadius,
                double _minDistance, int _derOrder, double _minRadius,
                int _patchLevel, double _coarsity, const std::string & _fname,

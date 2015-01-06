@@ -33,6 +33,9 @@
 
 #include "Getkw.h"
 
+#include "CavityData.hpp"
+#include "GreenData.hpp"
+#include "SolverData.hpp"
 #include "InputManager.hpp"
 #include "Molecule.hpp"
 #include "Solvent.hpp"
@@ -105,6 +108,10 @@ public:
     std::vector<double> spherePosition() { return spherePosition_; }
     double sphereRadius() { return sphereRadius_; }
     std::string providedBy() { return providedBy_; }
+    cavityData cavData() { return cavData_; }
+    greenData insideGreenData() { return insideGreenData_; }
+    greenData outsideStaticGreenData() { return outsideStaticGreenData_; }
+    greenData outsideDynamicGreenData() { return outsideDynamicGreenData_; }
     /// Operators
     /// operator<<
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
@@ -202,6 +209,14 @@ private:
     double sphereRadius_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
+    /// Input wrapping struct for the cavity
+    cavityData cavData_;
+    /// Input wrapping struct for the Green's function inside
+    greenData insideGreenData_;
+    /// Input wrapping struct for the Green's function outside (static permittivity)
+    greenData outsideStaticGreenData_;
+    /// Input wrapping struct for the Green's function outside (dynamic permittivity)
+    greenData outsideDynamicGreenData_;
 };
 
 /*!

@@ -26,9 +26,9 @@
 #ifndef SYMMETRY_HPP
 #define SYMMETRY_HPP
 
-#include "Config.hpp"
+#include <algorithm>
 
-#include <Eigen/Dense>
+#include "Config.hpp"
 
 /*! \file Symmetry.hpp
  *  \class Symmetry

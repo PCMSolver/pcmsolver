@@ -36,6 +36,7 @@
 
 #include "Atom.hpp"
 #include "Sphere.hpp"
+#include "Symmetry.hpp"
 
 enum rotorType {rtAsymmetric, rtSymmetric, rtSpherical, rtLinear, rtAtom};
 const std::string rotorTypeList[] = {"Asymmetric", "Symmetric", "Spherical", "Linear", "Atom"};
@@ -67,11 +68,18 @@ private:
     std::vector<Sphere> spheres_;
     /// The molecular rotor type
     rotorType rotor_;
+    /// The molecular point group
+    Symmetry pointGroup_;
 public:
     Molecule() {}
     Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & masses, 
              const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph); 
+    Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & masses, 
+             const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph,
+	     int nr_gen, int gen[3]); 
     Molecule(int nat, const std::vector<Sphere> & sph); 
+    Molecule(int nat, const std::vector<Sphere> & sph,
+             int nr_gen, int gen[3]); 
     /// Copy constructor.
     Molecule(const Molecule &other);
     ~Molecule(){}

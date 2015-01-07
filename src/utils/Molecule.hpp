@@ -71,7 +71,9 @@ private:
     /// The molecular point group
     Symmetry pointGroup_;
 public:
-    /// Default constructor
+    /*! \brief Default constructor
+     *  Initialize a dummy molecule, e.g. as placeholder, see Cavity.cpp loadCavity method
+     */
     Molecule() { rotor_ = rtAsymmetric; pointGroup_ = buildGroup(0, 0, 0, 0); }
     /*! \brief Constructor from full molecular data
      *  \param[in] nat number of atoms
@@ -146,6 +148,7 @@ public:
     rotorType findRotorType();
 
     Symmetry pointGroup() const { return pointGroup_; }
+    void pointGroup(const Symmetry & pg) { pointGroup_ = pg; }
     
     Eigen::Vector3d centerOfMass();
     Eigen::Matrix3d inertiaTensor();

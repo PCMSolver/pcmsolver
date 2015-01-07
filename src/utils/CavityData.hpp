@@ -27,12 +27,10 @@
 #define CAVITYDATA_HPP
 
 #include <string>
-#include <vector>
 
 #include "Config.hpp"
 
 #include "Molecule.hpp"
-#include "Symmetry.hpp"
 
 /*! @struct cavityData
  *  @brief Contains all data defined from user input in the cavity section.
@@ -58,8 +56,6 @@
  *  @var cavityData::filename
  *  Name of the file containing the cavity
  *  specification for a restart.
- *  @var cavityData::symmetry
- *  Symmetry object with the relevant information on point group
  */
 
 struct cavityData {
@@ -72,16 +68,14 @@ struct cavityData {
     int patchLevel;
     double coarsity;
     std::string filename;
-    Symmetry symmetry;
-    cavityData() {}
+    bool empty;
+    cavityData() { empty = true; }
     cavityData(const Molecule & _molec, double _area, double _probeRadius,
                double _minDistance, int _derOrder, double _minRadius,
-               int _patchLevel, double _coarsity, const std::string & _fname,
-               const Symmetry & _symmetry) :
+               int _patchLevel, double _coarsity, const std::string & _fname) :
         molecule(_molec), area(_area), probeRadius(_probeRadius),
         minDistance(_minDistance), derOrder(_derOrder), minimalRadius(_minRadius),
-        patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname),
-        symmetry(_symmetry) {}
+        patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname) { empty = false; }
 };
 
 #endif // CAVITYDATA_HPP

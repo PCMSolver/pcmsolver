@@ -97,6 +97,7 @@ public:
     double correction() { return correction_; }
     bool hermitivitize() { return hermitivitize_; }
     double probeRadius() { return probeRadius_; }
+    std::string integratorType() { return integratorType_; }
     std::string greenInsideType() { return greenInsideType_; }
     std::string greenOutsideType() { return greenOutsideType_; }
     int derivativeInsideType() { return derivativeInsideType_; }
@@ -108,10 +109,10 @@ public:
     std::vector<double> spherePosition() { return spherePosition_; }
     double sphereRadius() { return sphereRadius_; }
     std::string providedBy() { return providedBy_; }
-    cavityData cavData() { return cavData_; }
-    greenData insideGreenData() { return insideGreenData_; }
-    greenData outsideStaticGreenData() { return outsideStaticGreenData_; }
-    greenData outsideDynamicGreenData() { return outsideDynamicGreenData_; }
+    cavityData cavityParams();
+    greenData insideGreenData();
+    greenData outsideStaticGreenData(); 
+    greenData outsideDynamicGreenData();
     /// Operators
     /// operator<<
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
@@ -187,6 +188,8 @@ private:
     bool hermitivitize_;
     /// Solvent probe radius
     double probeRadius_;
+    /// Type of integrator for the diagonal of the boundary integral operators
+    std::string integratorType_;
     /// The Green's function type inside the cavity
     std::string greenInsideType_;
     /// The Green's function type outside the cavity

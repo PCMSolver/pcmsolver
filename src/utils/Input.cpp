@@ -38,6 +38,9 @@
 
 #include <boost/algorithm/string.hpp>
 
+#include "CavityData.hpp"
+#include "GreenData.hpp"
+#include "SolverData.hpp"
 #include "InputManager.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
@@ -141,6 +144,7 @@ void Input::reader(const char * pythonParsed)
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
         epsilonOutside_ = solvent_.epsStatic();
     }
+    integratorType_ = "COLLOCATION"; // Currently hardcoded!!!
     
     solverType_ = medium.getStr("SOLVERTYPE");
     equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
@@ -200,8 +204,8 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
         epsilonOutside_ = solvent_.epsStatic();
     }
-    
-    
+    integratorType_ = "COLLOCATION"; // Currently hardcoded!!!
+
     solverType_ = to_upper_copy(std::string(solv.solver_type));
     std::string inteq = to_upper_copy(std::string(solv.equation_type));
     equationType_ = integralEquation(inteq);
@@ -224,6 +228,15 @@ void Input::semanticCheck()
         }
     }
 #endif
+}
+
+cavityData Input::cavityParams()
+{
+    if (cavData_.empty) {
+        cavData_ = cavityData(molecule_, area_, probeRadius_, minDistance_, derOrder_, minimalRadius_,
+                        patchLevel_, coarsity_, cavFilename_);
+    }
+    return cavData_;
 }
 
 int derivativeTraits(const std::string & name)

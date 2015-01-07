@@ -56,11 +56,17 @@ Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd &
     pointGroup_ = buildGroup(nr_gen, gen[0], gen[1], gen[3]);
 }
 
-Molecule::Molecule(int nat, const std::vector<Sphere> & sph)
-	: nAtoms_(nat), spheres_(sph) 
+Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m, 
+             const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph, 
+	     const Symmetry & pg)
+	: nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph), pointGroup_(pg)
 {
-    // This constructor is used when initializing the Molecule in EXPLICIT mode
-    // charges are set to 1.0; masses are set based on the radii; geometry is set from the list of spheres
+    rotor_ = findRotorType();
+}
+
+Molecule::Molecule(const std::vector<Sphere> & sph)
+	: nAtoms_(sph.size()), spheres_(sph) 
+{
     charges_ = Eigen::VectorXd::Ones(nAtoms_);
     masses_.resize(nAtoms_);
     geometry_.resize(Eigen::NoChange, nAtoms_);
@@ -69,33 +75,11 @@ Molecule::Molecule(int nat, const std::vector<Sphere> & sph)
 	geometry_.col(i) = spheres_[i].center();
 	double charge = charges_(i);
 	double mass = masses_(i);
-	// All the atoms are dummies
 	atoms_.push_back( Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i)) );
     }
     rotor_ = findRotorType();
     pointGroup_ = buildGroup(0, 0, 0, 0);
 }
-
-Molecule::Molecule(int nat, const std::vector<Sphere> & sph, int nr_gen, int gen[3])
-	: nAtoms_(nat), spheres_(sph) 
-{
-    // This constructor is used when initializing the Molecule in EXPLICIT mode
-    // charges are set to 1.0; masses are set based on the radii; geometry is set from the list of spheres
-    charges_ = Eigen::VectorXd::Ones(nAtoms_);
-    masses_.resize(nAtoms_);
-    geometry_.resize(Eigen::NoChange, nAtoms_);
-    for (int i = 0; i < nAtoms_; ++i) {
-        masses_(i) = spheres_[i].radius();
-	geometry_.col(i) = spheres_[i].center();
-	double charge = charges_(i);
-	double mass = masses_(i);
-	// All the atoms are dummies
-	atoms_.push_back( Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i)) );
-    }
-    rotor_ = findRotorType();
-    pointGroup_ = buildGroup(nr_gen, gen[0], gen[1], gen[3]);
-}
-
 
 Molecule::Molecule(const Molecule &other){
     *this = other;

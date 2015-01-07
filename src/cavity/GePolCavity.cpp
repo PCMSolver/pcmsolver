@@ -104,10 +104,10 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 
     addedSpheres = 0;
     // Number of generators and generators of the point group
-    int nr_gen = pointGroup_.nrGenerators();
-    int gen1 = pointGroup_.generators(0);
-    int gen2 = pointGroup_.generators(1);
-    int gen3 = pointGroup_.generators(2);
+    int nr_gen = molecule_.pointGroup().nrGenerators();
+    int gen1 = molecule_.pointGroup().generators(0);
+    int gen2 = molecule_.pointGroup().generators(1);
+    int gen3 = molecule_.pointGroup().generators(2);
 
     // Go PEDRA, Go!
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
@@ -217,7 +217,7 @@ std::ostream & GePolCavity::printCavity(std::ostream & os)
     os << "Number of spheres = " << nSpheres_ << " [initial = " << nSpheres_ -
        addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
     os << "Number of finite elements = " << nElements_;
-    if (pointGroup_.nrGenerators() != 0) {
+    if (molecule_.pointGroup().nrGenerators() != 0) {
         os << "\nNumber of irreducible finite elements = " << nIrrElements_;
     }
     /*

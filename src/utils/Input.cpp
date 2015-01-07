@@ -92,7 +92,7 @@ void Input::reader(const char * pythonParsed)
             spheres_.push_back(sph);
             j += 4;
         }
-	molecule_ = Molecule(nAtoms, spheres_);
+	molecule_ = Molecule(spheres_);
     } else if (mode_ == "ATOMS") {
         atoms_ = cavity.getIntVec("ATOMS");
         radii_ = cavity.getDblVec("RADII");

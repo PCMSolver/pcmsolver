@@ -494,26 +494,6 @@ void setupInput(bool from_host)
 
 void initCavity()
 {
-    // Get the input data for generating the cavity
-    std::string cavityType = parsedInput->cavityType();
-    double area = parsedInput->area();
-    Molecule molec = parsedInput->molecule();
-    double minRadius = parsedInput->minimalRadius();
-    double probeRadius = parsedInput->probeRadius();
-    double minDistance = parsedInput->minDistance();
-    int derOrder = parsedInput->derOrder();
-    int patchLevel = parsedInput->patchLevel();
-    double coarsity = parsedInput->coarsity();
-    std::string restart = parsedInput->cavityFilename();
-
-    int nr_gen;
-    int gen1, gen2, gen3;
-    set_point_group(&nr_gen, &gen1, &gen2, &gen3);
-    Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
-
-    cavityData cavInput(molec, area, probeRadius, minDistance, derOrder, minRadius,
-                        patchLevel, coarsity, restart, pg);
-
     // Get the right cavity from the Factory
     // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
     std::string modelType = parsedInput->solverType();
@@ -523,10 +503,10 @@ void initCavity()
         initWaveletCavity();
     } else {
         // This means in practice that the CavityFactory is now working only for GePol.
-        _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
+        _cavity = CavityFactory::TheCavityFactory().createCavity(parsedInput->cavityType(), parsedInput->cavityParams());
     }
 #else    
-    _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
+    _cavity = CavityFactory::TheCavityFactory().createCavity(parsedInput->cavityType(), parsedInput->cavityParams());
 #endif    
 }
 
@@ -648,9 +628,14 @@ void initMolecule(Molecule & molecule_)
     if ( _mode == "ATOMS" ) {
        initSpheresAtoms(centers, spheres);	 
     }
+    // 5. molecular point group
+    int nr_gen;
+    int gen1, gen2, gen3;
+    set_point_group(&nr_gen, &gen1, &gen2, &gen3);
+    Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
 
     // OK, now get molecule_
-    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres);
+    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres, pg);
 }
 
 void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,

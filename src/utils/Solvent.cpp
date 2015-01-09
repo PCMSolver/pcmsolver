@@ -64,7 +64,7 @@ std::ostream & Solvent::printSolvent(std::ostream & os)
 {
     os << "Solvent name:          " << name_ << std::endl;
     os << "Static  permittivity = " << epsStatic_ << std::endl;
-    os << "Optical permittivity = " << epsOptical_ << std::endl;
+    os << "Optical permittivity = " << epsDynamic_ << std::endl;
     os << "Solvent radius =       " << probeRadius_;
     return os;
 }

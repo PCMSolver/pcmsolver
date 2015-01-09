@@ -120,7 +120,8 @@ void Input::reader(const char * pythonParsed)
         // ...and initialize the data members
         greenOutsideType_ = outside.getStr("TYPE");
         derivativeOutsideType_ = derivativeTraits(outside.getStr("DER"));
-        epsilonOutside_ = outside.getDbl("EPS");
+        epsilonStaticOutside_ = outside.getDbl("EPS");
+        epsilonDynamicOutside_ = outside.getDbl("EPS");
         // This will be needed for the metal sphere only
 	if (greenOutsideType_ == "METALSPHERE") {
 	        epsilonReal_ = outside.getDbl("EPSRE");
@@ -142,7 +143,8 @@ void Input::reader(const char * pythonParsed)
         epsilonInside_ = 1.0;
         greenOutsideType_ = "UNIFORMDIELECTRIC";
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
-        epsilonOutside_ = solvent_.epsStatic();
+        epsilonStaticOutside_ = solvent_.epsStatic();
+        epsilonDynamicOutside_ = solvent_.epsDynamic();
     }
     integratorType_ = "COLLOCATION"; // Currently hardcoded!!!
     
@@ -187,7 +189,8 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
         // ...and initialize the data members
         greenOutsideType_ = to_upper_copy(std::string(green.outside_type));
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
-        epsilonOutside_ = green.outside_epsilon;
+        epsilonStaticOutside_ = green.outside_epsilon;
+        epsilonDynamicOutside_ = green.outside_epsilon;
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -202,7 +205,8 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
         epsilonInside_ = 1.0;
         greenOutsideType_ = std::string("UNIFORMDIELECTRIC");
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
-        epsilonOutside_ = solvent_.epsStatic();
+        epsilonStaticOutside_ = solvent_.epsStatic();
+        epsilonDynamicOutside_ = solvent_.epsDynamic();
     }
     integratorType_ = "COLLOCATION"; // Currently hardcoded!!!
 
@@ -237,6 +241,30 @@ cavityData Input::cavityParams()
                         patchLevel_, coarsity_, cavFilename_);
     }
     return cavData_;
+}
+
+greenData Input::insideGreenParams()
+{
+    if (insideGreenData_.empty) {
+	insideGreenData_ = greenData(derivativeInsideType_, epsilonInside_, integratorType_);
+    }
+    return insideGreenData_;
+}
+
+greenData Input::outsideStaticGreenParams()
+{
+    if (outsideStaticGreenData_.empty) {
+	outsideStaticGreenData_ = greenData(derivativeOutsideType_, epsilonStaticOutside_, integratorType_);
+    }
+    return outsideStaticGreenData_;
+}
+
+greenData Input::outsideDynamicGreenParams()
+{
+    if (outsideDynamicGreenData_.empty) {
+	outsideDynamicGreenData_ = greenData(derivativeOutsideType_, epsilonDynamicOutside_, integratorType_);
+    }
+    return outsideDynamicGreenData_;
 }
 
 int derivativeTraits(const std::string & name)

@@ -30,8 +30,6 @@
 
 #include "Config.hpp"
 
-class DiagonalIntegrator;
-
 /*! @struct greenData
  *  @brief Contains all data defined from user input in the green section.
  *  @var greenData::how

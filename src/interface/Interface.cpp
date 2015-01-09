@@ -515,20 +515,11 @@ void initSolver()
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
-    double epsilon = parsedInput->epsilonInside();
-    std::string greenType = parsedInput->greenInsideType();
-    int greenDer = parsedInput->derivativeInsideType();
-    greenData inside(greenDer, epsilon);
-
-    IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
-
+    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(), 
+		                                              parsedInput->insideGreenParams());
     // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
-    epsilon = parsedInput->epsilonOutside();
-    greenType = parsedInput->greenOutsideType();
-    greenDer = parsedInput->derivativeOutsideType();
-    greenData outside(greenDer, epsilon);
-
-    IGreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
+    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(), 
+		                                               parsedInput->outsideStaticGreenParams());
     // And all this to finally create the solver!
     std::string modelType = parsedInput->solverType();
     double correction = parsedInput->correction();
@@ -675,18 +666,16 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
 #if defined (DEVELOPMENT_CODE)
 void initWaveletCavity()
 {
-    int patchLevel = parsedInput->patchLevel();
-    std::vector<Sphere> spheres = parsedInput->spheres();
-    double coarsity = parsedInput->coarsity();
-    double probeRadius = parsedInput->probeRadius();
-
     // Just throw at this point if the user asked for a cavity for a single sphere...
     // the wavelet code will die without any further notice anyway
     if (spheres.size() == 1) {
         throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
     }
 
-    _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
+    _waveletCavity = new WaveletCavity(parsedInput->spheres(), 
+		                       parsedInput->cavityParams().probeRadius_, 
+				       parsedInput->cavityParams().patchLevel_, 
+				       parsedInput->cavityParams().coarsity_);
     _waveletCavity->readCavity("molec_dyadic.dat");
 }
 #endif

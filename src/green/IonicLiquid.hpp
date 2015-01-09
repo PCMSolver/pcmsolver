@@ -36,6 +36,7 @@
 class DiagonalIntegrator;
 
 #include "DerivativeTypes.hpp"
+#include "DiagonalIntegratorFactory.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -107,7 +108,9 @@ namespace
     struct buildIonicLiquid {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new IonicLiquid<DerivativeType>(_data.epsilon, _data.kappa, _data.integrator);
+            DiagonalIntegrator * integrator = 
+		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
+            return new IonicLiquid<DerivativeType>(_data.epsilon, _data.kappa, integrator);
         }
     };
 

@@ -36,6 +36,7 @@
 class DiagonalIntegrator;
 
 #include "DerivativeTypes.hpp"
+#include "DiagonalIntegratorFactory.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -104,7 +105,9 @@ namespace
     struct buildVacuum {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new Vacuum<DerivativeType>(_data.integrator);
+            DiagonalIntegrator * integrator = 
+		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
+            return new Vacuum<DerivativeType>(integrator);
         }
     };
 

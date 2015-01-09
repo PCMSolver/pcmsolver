@@ -55,23 +55,23 @@ class DiagonalIntegrator;
 struct greenData {
     int how;
     double epsilon;
+    std::string integratorType;
     double kappa;
     double epsilonReal;
     double epsilonImaginary;
     std::vector<double> spherePosition;
     double sphereRadius;
-    std::string integratorType;
     bool empty;
 
     greenData() { empty = true;}
-    greenData(int _how, double _epsilon = 1.0,
+    greenData(int _how, double _epsilon = 1.0, const std::string & _diag = "COLLOCATION",
               double _kappa = 0.0,
               double _epsReal = 0.0, double _epsImaginary = 0.0,
               const std::vector<double> & _sphere = std::vector<double>(),
-              double _sphRadius = 0.0, const std::string & _diag) :
-        how(_how), epsilon(_epsilon), kappa(_kappa), epsilonReal(_epsReal),
-        epsilonImaginary(_epsImaginary),
-        spherePosition(_sphere), sphereRadius(_sphRadius), integratorType(_diag) { empty = false; }
+              double _sphRadius = 0.0) :
+        how(_how), epsilon(_epsilon), integratorType(_diag), kappa(_kappa), 
+	epsilonReal(_epsReal), epsilonImaginary(_epsImaginary),
+        spherePosition(_sphere), sphereRadius(_sphRadius) { empty = false; }
 };
 
 #endif // GREENDATA_HPP

@@ -512,17 +512,13 @@ void initCavity()
 
 void initSolver()
 {
-    // First of all create the integrator for the diagonal elements of the S and D operators
-    // in principle it could be a different integrator for the inside/outside Green's function
-    std::string integratorType("COLLOCATION");
-    DiagonalIntegrator * integrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(integratorType);
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
     double epsilon = parsedInput->epsilonInside();
     std::string greenType = parsedInput->greenInsideType();
     int greenDer = parsedInput->derivativeInsideType();
-    greenData inside(greenDer, epsilon, integrator);
+    greenData inside(greenDer, epsilon);
 
     IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
 
@@ -530,7 +526,7 @@ void initSolver()
     epsilon = parsedInput->epsilonOutside();
     greenType = parsedInput->greenOutsideType();
     greenDer = parsedInput->derivativeOutsideType();
-    greenData outside(greenDer, epsilon, integrator);
+    greenData outside(greenDer, epsilon);
 
     IGreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
     // And all this to finally create the solver!

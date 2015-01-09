@@ -100,7 +100,7 @@ void pwc_NH3(int patchLevel)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
 
@@ -205,7 +205,7 @@ void pwc_C6H6(int patchLevel)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalFakeASC = fake_asc.sum();
     
     std::ofstream report;

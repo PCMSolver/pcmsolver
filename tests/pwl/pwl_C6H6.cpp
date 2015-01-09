@@ -34,6 +34,8 @@
 
 #include "Config.hpp"
 
+#include <Eigen/Dense>
+
 #include "DerivativeTypes.hpp"
 #include "PWLSolver.hpp"
 #include "UniformDielectric.hpp"
@@ -41,9 +43,8 @@
 #include "WaveletCavity.hpp"
 
 #include "PhysicalConstants.hpp"
-
-/*! \class WEMSolver
- *  \test \b  C6H6 tests PWLSolver using ammonia and a wavelet cavity
+/*! \class PWLSolver
+ *  \test \b C6H6 tests PWLSolver using ammonia and a wavelet cavity
  */
 BOOST_AUTO_TEST_CASE(C6H6)
 {
@@ -89,7 +90,7 @@ BOOST_AUTO_TEST_CASE(C6H6)
     spheres.push_back(sph10);
     spheres.push_back(sph11);
     spheres.push_back(sph12);
-    
+ 
     double probeRadius = 1.385*f; // Probe Radius for water
     double permittivity = 78.39;
     double Hcharge = 1.0;
@@ -135,7 +136,7 @@ BOOST_AUTO_TEST_CASE(C6H6)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 3e-2);

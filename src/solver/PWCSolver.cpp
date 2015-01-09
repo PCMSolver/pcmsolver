@@ -315,7 +315,7 @@ void PWCSolver::constructSe(){
     aposteriori2_ = af->postProc(&S_e_);
 }
 
-void PWCSolver::compCharge(const Eigen::VectorXd & potential,
+void PWCSolver::computeCharge(const Eigen::VectorXd & potential,
                            Eigen::VectorXd & charge, int /* irrep */)
 {
     switch (integralEquation) {

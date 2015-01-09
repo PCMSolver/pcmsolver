@@ -103,7 +103,7 @@ void pwc_C6H6()
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalFakeASC = fake_asc.sum();
 
     double energy = 0.5 * (fake_mep.dot(fake_asc));

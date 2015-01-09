@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
@@ -343,7 +343,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;

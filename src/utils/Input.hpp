@@ -35,7 +35,6 @@
 
 #include "CavityData.hpp"
 #include "GreenData.hpp"
-#include "SolverData.hpp"
 #include "InputManager.hpp"
 #include "Molecule.hpp"
 #include "Solvent.hpp"

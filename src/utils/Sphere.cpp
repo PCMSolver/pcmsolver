@@ -27,9 +27,11 @@
 
 #include <ostream>
 #include <stdexcept>
+#include <vector>
 
 #include "Config.hpp"
 
+#include <Eigen/Dense>
 
 std::ostream & Sphere::printObject(std::ostream & os)
 {

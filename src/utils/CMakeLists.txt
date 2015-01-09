@@ -8,7 +8,7 @@ list(SORT headers_list)
 set(to_includer "${headers_list}")
 # Write headers to Includer.hpp
 file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Helper classes\n")
-list(REMOVE_ITEM to_includer "BlockDiagonalMatrix.hpp" "cnpy.hpp")
+list(REMOVE_ITEM to_includer "BlockDiagonalMatrix.hpp" "cnpy.hpp" "TestingMolecules.hpp")
 write_to_Includer("${to_includer}")
 
 set(sources_list "")

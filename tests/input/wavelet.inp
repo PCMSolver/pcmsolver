@@ -16,6 +16,7 @@ MEDIUM
 	{
 		TYPE = UNIFORMDIELECTRIC
 	        EPS = 78.39
+		EPSDYN = 10.423
 		DER = GRADIENT
 	}		
 }

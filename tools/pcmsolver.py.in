@@ -281,11 +281,16 @@ def setup_keywords():
     # Default: DERIVATIVE
     # Notes: all other values for debug purposes only
     green.add_kw('DER',            'STR', 'DERIVATIVE')
-    # Dielectric permittivity
+    # Static dielectric permittivity
     # Valid for: UNIFORMDIELECTRIC
     # Valid values: positive double greater than 1.0
     # Default: 1.0
     green.add_kw('EPS',            'DBL', 1.0)
+    # Dynamic dielectric permittivity
+    # Valid for: UNIFORMDIELECTRIC
+    # Valid values: positive double greater than 1.0
+    # Default: 1.0
+    green.add_kw('EPSDYN',            'DBL', 1.0)
     # Real part of the metal's dielectric permittivity
     # Valid for: METALSPHERE
     # Valid values: positive double greater than 1.0
@@ -517,6 +522,7 @@ def verify_green(section):
     green1 = section.fetch_sect('GREEN<ONE>')
     green2 = section.fetch_sect('GREEN<TWO>')
     eps    = section.get('EPS')
+    epsdyn = section.get('EPSDYN')
     epsimg = section.get('EPSIMG')
     epsre  = section.get('EPSRE')
 
@@ -538,6 +544,9 @@ def verify_green(section):
     if (type.get() == 'UNIFORMDIELECTRIC'):
         if not eps.is_set():
             print('Eps not defined for UniformDielectric')
+            sys.exit(1)
+        if not epsdyn.is_set():
+            print('EpsDyn not defined for UniformDielectric')
             sys.exit(1)
 
     if (type.get() == 'METALSPHERE'):

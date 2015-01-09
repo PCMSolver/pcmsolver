@@ -69,11 +69,6 @@ public:
         uploadedDyadic_ = false;
         makeCavity();
     }
-    WaveletCavity(const std::vector<Sphere> & s, double pr, int pl, double c, const Symmetry & pg) :
-        Cavity(s, pg), probeRadius_(pr), patchLevel_(pl), coarsity_(c) {
-        uploadedDyadic_ = false;
-        makeCavity();
-    }
     virtual ~WaveletCavity() {};
     void readCavity(const std::string & filename);
     void scaleCavity(const double scalingFactor);

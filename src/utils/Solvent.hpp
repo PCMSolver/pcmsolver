@@ -51,15 +51,15 @@ public:
     typedef std::map<std::string, Solvent> SolventMap;
 
     Solvent() {}
-    Solvent(const std::string & name, double epsStatic, double epsOptical,
+    Solvent(const std::string & name, double epsStatic, double epsDynamic,
             double radius )
-        : name_(name), epsStatic_(epsStatic), epsOptical_(epsOptical),
+        : name_(name), epsStatic_(epsStatic), epsDynamic_(epsDynamic),
           probeRadius_(radius) {}
     ~Solvent() {}
 
     std::string name() const { return name_; }
     double epsStatic() const { return epsStatic_; }
-    double epsOptical() const { return epsOptical_; }
+    double epsDynamic() const { return epsDynamic_; }
     // The built-in probe radii are in Angstrom
     double probeRadius() const { return probeRadius_; }
     void probeRadius(double radius) { probeRadius_ = radius; }
@@ -76,7 +76,7 @@ public:
 private:
     std::string name_;
     double epsStatic_;
-    double epsOptical_;
+    double epsDynamic_;
     double probeRadius_;
     std::ostream & printSolvent(std::ostream & os);
 };

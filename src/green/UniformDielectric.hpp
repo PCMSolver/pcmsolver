@@ -36,6 +36,7 @@
 class DiagonalIntegrator;
 
 #include "DerivativeTypes.hpp"
+#include "DiagonalIntegratorFactory.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -105,7 +106,9 @@ namespace
     struct buildUniformDielectric {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new UniformDielectric<DerivativeType>(_data.epsilon, _data.integrator);
+            DiagonalIntegrator * integrator = 
+		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
+            return new UniformDielectric<DerivativeType>(_data.epsilon, integrator);
         }
     };
 

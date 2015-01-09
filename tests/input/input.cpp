@@ -267,7 +267,8 @@ struct InputWaveletTest {
     int derivativeInsideType;
     int derivativeOutsideType;
     double epsilonInside;
-    double epsilonOutside;
+    double epsilonStaticOutside;
+    double epsilonDynamicOutside;
     void SetUp() {
 	filename = "@wavelet.inp";
 	parsedInput = Input(filename);
@@ -296,7 +297,8 @@ struct InputWaveletTest {
 	derivativeInsideType = 0;
 	derivativeOutsideType = 2;
 	epsilonInside = 1.0;
-	epsilonOutside = 78.39;
+	epsilonStaticOutside = 78.39;
+	epsilonDynamicOutside = 10.423;
     }
 };
 
@@ -330,7 +332,8 @@ BOOST_FIXTURE_TEST_CASE(Wavelet, InputWaveletTest)
     BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
     BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
     BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.insideGreenParams().epsilon, threshold);
-    BOOST_REQUIRE_CLOSE(epsilonOutside,        parsedInput.outsideStaticGreenParams().epsilon, threshold);
+    BOOST_REQUIRE_CLOSE(epsilonStaticOutside,  parsedInput.outsideStaticGreenParams().epsilon, threshold);
+    BOOST_REQUIRE_CLOSE(epsilonDynamicOutside, parsedInput.outsideDynamicGreenParams().epsilon, threshold);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

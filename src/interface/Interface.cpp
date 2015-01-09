@@ -67,9 +67,13 @@ Cavity        * _cavity = NULL;
 WaveletCavity * _waveletCavity = NULL;
 
 PWCSolver * _PWCSolver = NULL;
+PWCSolver * _noneqPWCSolver = NULL;
 PWLSolver * _PWLSolver = NULL;
+PWLSolver * _noneqPWLSolver = NULL;
 #endif
 PCMSolver * _solver = NULL;
+PCMSolver * _noneqSolver = NULL;
+bool noneqExists = false;
 
 SharedSurfaceFunctionMap functions;
 boost::shared_ptr<Input> parsedInput;
@@ -80,7 +84,6 @@ std::vector<std::string> input_strings; // Used only by Fortran hosts
 	Functions visible to host program
 
 */
-
 
 extern "C" void hello_pcm(int * a, double * b)
 {
@@ -145,6 +148,11 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
 
 extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
 {
+    // Check that the nonequilibrium solver has been created
+    if (!noneqExists) {
+	initNonEqSolver();
+    }
+
     std::string potFuncName(potString);
     std::string chgFuncName(chgString);
 
@@ -166,9 +174,6 @@ extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, i
     }
 
     // If it already exists there's no problem, we will pass a reference to its values to
-    // _solver->computeCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
-    // Here computeCharge has to use the nonequilibrium PCM matrix!
-    // compNonequilibriumCharge()
     _solver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
@@ -548,6 +553,56 @@ void initSolver()
 #else
     _solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
     _solver->buildSystemMatrix(*_cavity);
+#endif    
+    // Always save the cavity in a cavity.npz binary file
+    // Cavity should be saved to file in initCavity(), due to the dependencies of
+    // the WaveletCavity on the wavelet solvers it has to be done here...
+    _cavity->saveCavity();
+}
+
+void initNonEqSolver()
+{
+    GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
+    // Get the input data for generating the inside & outside Green's functions
+    // INSIDE
+    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(), 
+		                                              parsedInput->insideGreenParams());
+    // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
+    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(), 
+		                                               parsedInput->outsideDynamicGreenParams());
+    // And all this to finally create the solver!
+    std::string modelType = parsedInput->solverType();
+    solverData solverInput(gfInside, gfOutside, 
+		           parsedInput->correction(),
+			   parsedInput->equationType(), 
+			   parsedInput->hermitivitize());
+
+    // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
+    // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
+    // (...not our fault, but should remedy somehow)
+#if defined (DEVELOPMENT_CODE)    
+    if (modelType == "WAVELET") {
+        _noneqPWCSolver = new PWCSolver(gfInside, gfOutside);
+        _noneqPWCSolver->buildSystemMatrix(*_waveletCavity);
+        _waveletCavity->uploadPoints(_noneqPWCSolver->getQuadratureLevel(), _noneqPWCSolver->getT_(),
+                                     false); // WTF is happening here???
+        _cavity = _waveletCavity;
+        _noneqSolver = _noneqPWCSolver;
+    } else if (modelType == "LINEAR") {
+        _noneqPWLSolver = new PWLSolver(gfInside, gfOutside);
+        _noneqPWLSolver->buildSystemMatrix(*_waveletCavity);
+        _waveletCavity->uploadPoints(_noneqPWLSolver->getQuadratureLevel(), _noneqPWLSolver->getT_(),
+                                     true); // WTF is happening here???
+        _cavity = _waveletCavity;
+        _noneqSolver = _noneqPWLSolver;
+    } else {
+        // This means that the factory is properly working only for IEFSolver and CPCMSolver
+        _noneqSolver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
+        _noneqSolver->buildSystemMatrix(*_cavity);
+    }
+#else
+    _noneqSolver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
+    _noneqSolver->buildSystemMatrix(*_cavity);
 #endif    
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of

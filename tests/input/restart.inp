@@ -7,5 +7,5 @@ MEDIUM
 CAVITY 
 {
 	TYPE = RESTART
-	NPZFILE     =     cavity.npz
+	NPZFILE      =      cavity.npz
 }

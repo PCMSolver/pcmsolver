@@ -476,11 +476,6 @@ void setupInput(bool from_host)
 	    	strncpy(green.inside_type,  input_strings[6].c_str(), input_strings[6].length());
 	    	strncpy(green.outside_type, input_strings[7].c_str(), input_strings[7].length());
 	    }
-	   // std::ostringstream out_stream;
-	   // out_stream << cav << std::endl;
-	   // out_stream << solv << std::endl;
-	   // out_stream << green << std::endl;
-	   // printer(out_stream);
     	    parsedInput = boost::make_shared<Input>(Input(cav, solv, green));
     } else {
 	    parsedInput = boost::make_shared<Input>(Input("@pcmsolver.inp"));
@@ -522,10 +517,10 @@ void initSolver()
 		                                               parsedInput->outsideStaticGreenParams());
     // And all this to finally create the solver!
     std::string modelType = parsedInput->solverType();
-    double correction = parsedInput->correction();
-    int eqType = parsedInput->equationType();
-    bool symm = parsedInput->hermitivitize();
-    solverData solverInput(gfInside, gfOutside, correction, eqType, symm);
+    solverData solverInput(gfInside, gfOutside, 
+		           parsedInput->correction(),
+			   parsedInput->equationType(), 
+			   parsedInput->hermitivitize());
 
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other

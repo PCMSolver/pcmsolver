@@ -27,7 +27,7 @@ macro(add_boosttest test_name)
     # since custom Boost can be built only on one processor!
     # We thus add this dependency to not get stuck.
     if(BUILD_CUSTOM_BOOST)
-	    add_dependencies(${the_name}.x custom_boost)
+       add_dependencies(${the_name}.x custom_boost)
     endif()	    
     target_link_libraries(${the_name}.x
                           ${_my_libraries}

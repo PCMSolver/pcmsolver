@@ -298,6 +298,12 @@ void initCavity();
  */
 void initSolver();
 
+/*! \fn void initNonEqSolver()
+ *
+ *  Creates PCMSolver object, nonequilibrium version
+ */
+void initNonEqSolver();
+
 /*! \fn void initWaveletCavity()
  *
  *  Initializes the _waveletCavity global object

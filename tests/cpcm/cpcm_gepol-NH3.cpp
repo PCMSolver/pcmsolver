@@ -60,9 +60,7 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     double area = 0.4;
     double probeRadius = 0.0;
     double minRadius = 100.0;
-    // C1
-    Symmetry group = buildGroup(0, 0, 0, 0);
-    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, group);
+    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
     cavity.saveCavity("nh3.npz");
 
     CollocationIntegrator * diag = new CollocationIntegrator();

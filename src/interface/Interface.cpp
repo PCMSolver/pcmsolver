@@ -476,11 +476,6 @@ void setupInput(bool from_host)
 	    	strncpy(green.inside_type,  input_strings[6].c_str(), input_strings[6].length());
 	    	strncpy(green.outside_type, input_strings[7].c_str(), input_strings[7].length());
 	    }
-	   // std::ostringstream out_stream;
-	   // out_stream << cav << std::endl;
-	   // out_stream << solv << std::endl;
-	   // out_stream << green << std::endl;
-	   // printer(out_stream);
     	    parsedInput = boost::make_shared<Input>(Input(cav, solv, green));
     } else {
 	    parsedInput = boost::make_shared<Input>(Input("@pcmsolver.inp"));
@@ -494,26 +489,6 @@ void setupInput(bool from_host)
 
 void initCavity()
 {
-    // Get the input data for generating the cavity
-    std::string cavityType = parsedInput->cavityType();
-    double area = parsedInput->area();
-    Molecule molec = parsedInput->molecule();
-    double minRadius = parsedInput->minimalRadius();
-    double probeRadius = parsedInput->probeRadius();
-    double minDistance = parsedInput->minDistance();
-    int derOrder = parsedInput->derOrder();
-    int patchLevel = parsedInput->patchLevel();
-    double coarsity = parsedInput->coarsity();
-    std::string restart = parsedInput->cavityFilename();
-
-    int nr_gen;
-    int gen1, gen2, gen3;
-    set_point_group(&nr_gen, &gen1, &gen2, &gen3);
-    Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
-
-    cavityData cavInput(molec, area, probeRadius, minDistance, derOrder, minRadius,
-                        patchLevel, coarsity, restart, pg);
-
     // Get the right cavity from the Factory
     // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
     std::string modelType = parsedInput->solverType();
@@ -523,42 +498,29 @@ void initCavity()
         initWaveletCavity();
     } else {
         // This means in practice that the CavityFactory is now working only for GePol.
-        _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
+        _cavity = CavityFactory::TheCavityFactory().createCavity(parsedInput->cavityType(), parsedInput->cavityParams());
     }
 #else    
-    _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
+    _cavity = CavityFactory::TheCavityFactory().createCavity(parsedInput->cavityType(), parsedInput->cavityParams());
 #endif    
 }
 
 void initSolver()
 {
-    // First of all create the integrator for the diagonal elements of the S and D operators
-    // in principle it could be a different integrator for the inside/outside Green's function
-    std::string integratorType("COLLOCATION");
-    DiagonalIntegrator * integrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(integratorType);
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
-    double epsilon = parsedInput->epsilonInside();
-    std::string greenType = parsedInput->greenInsideType();
-    int greenDer = parsedInput->derivativeInsideType();
-    greenData inside(greenDer, epsilon, integrator);
-
-    IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
-
+    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(), 
+		                                              parsedInput->insideGreenParams());
     // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
-    epsilon = parsedInput->epsilonOutside();
-    greenType = parsedInput->greenOutsideType();
-    greenDer = parsedInput->derivativeOutsideType();
-    greenData outside(greenDer, epsilon, integrator);
-
-    IGreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
+    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(), 
+		                                               parsedInput->outsideStaticGreenParams());
     // And all this to finally create the solver!
     std::string modelType = parsedInput->solverType();
-    double correction = parsedInput->correction();
-    int eqType = parsedInput->equationType();
-    bool symm = parsedInput->hermitivitize();
-    solverData solverInput(gfInside, gfOutside, correction, eqType, symm);
+    solverData solverInput(gfInside, gfOutside, 
+		           parsedInput->correction(),
+			   parsedInput->equationType(), 
+			   parsedInput->hermitivitize());
 
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
@@ -648,9 +610,14 @@ void initMolecule(Molecule & molecule_)
     if ( _mode == "ATOMS" ) {
        initSpheresAtoms(centers, spheres);	 
     }
+    // 5. molecular point group
+    int nr_gen;
+    int gen1, gen2, gen3;
+    set_point_group(&nr_gen, &gen1, &gen2, &gen3);
+    Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
 
     // OK, now get molecule_
-    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres);
+    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres, pg);
 }
 
 void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
@@ -694,18 +661,16 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
 #if defined (DEVELOPMENT_CODE)
 void initWaveletCavity()
 {
-    int patchLevel = parsedInput->patchLevel();
-    std::vector<Sphere> spheres = parsedInput->spheres();
-    double coarsity = parsedInput->coarsity();
-    double probeRadius = parsedInput->probeRadius();
-
     // Just throw at this point if the user asked for a cavity for a single sphere...
     // the wavelet code will die without any further notice anyway
     if (spheres.size() == 1) {
         throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
     }
 
-    _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
+    _waveletCavity = new WaveletCavity(parsedInput->spheres(), 
+		                       parsedInput->cavityParams().probeRadius_, 
+				       parsedInput->cavityParams().patchLevel_, 
+				       parsedInput->cavityParams().coarsity_);
     _waveletCavity->readCavity("molec_dyadic.dat");
 }
 #endif

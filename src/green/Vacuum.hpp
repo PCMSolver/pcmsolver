@@ -36,6 +36,7 @@
 class DiagonalIntegrator;
 
 #include "DerivativeTypes.hpp"
+#include "DiagonalIntegratorFactory.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -102,28 +103,12 @@ private:
 namespace
 {
     struct buildVacuum {
-#if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-#pragma warning(push, 0)
-#elif defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#endif
-
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new Vacuum<DerivativeType>(_data.integrator);
+            DiagonalIntegrator * integrator = 
+		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
+            return new Vacuum<DerivativeType>(integrator);
         }
-
-#if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-#pragma GCC diagnostic pop
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-#pragma warning(pop)
-#elif defined(__clang__)
-#pragma clang diagnostic pop
-#endif
     };
 
     IGreensFunction * createVacuum(const greenData & _data)

@@ -77,8 +77,8 @@ void Cavity::saveCavity(const std::string & fname)
 
 void Cavity::loadCavity(const std::string & fname)
 {
-    // If the cavity has been loaded from file, the point group is C1
-    pointGroup_ = buildGroup(0, 0, 0, 0);
+    // We initialize molecule_ to a dummy Molecule
+    molecule_ = Molecule();
     // Load the .npz binary file and then traverse it to get the data needed to rebuild the cavity.
     cnpy::npz_t loaded_cavity = cnpy::npz_load(fname);
     // 0. Get the number of elements
@@ -87,7 +87,7 @@ void Cavity::loadCavity(const std::string & fname)
     nElements_ = *ne;
     // Set the size of the irreducible portion of the cavity
     // it will be the same as the total size, since a restarted cavity is always C1
-    nIrrElements_ = (nElements_ / pointGroup_.nrIrrep());
+    nIrrElements_ = nElements_;
 
     // 1. Get the weights
     cnpy::NpyArray raw_weights = loaded_cavity["weights"];

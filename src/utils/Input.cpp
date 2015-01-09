@@ -121,7 +121,7 @@ void Input::reader(const char * pythonParsed)
         greenOutsideType_ = outside.getStr("TYPE");
         derivativeOutsideType_ = derivativeTraits(outside.getStr("DER"));
         epsilonStaticOutside_ = outside.getDbl("EPS");
-        epsilonDynamicOutside_ = outside.getDbl("EPS");
+        epsilonDynamicOutside_ = outside.getDbl("EPSDYN");
         // This will be needed for the metal sphere only
 	if (greenOutsideType_ == "METALSPHERE") {
 	        epsilonReal_ = outside.getDbl("EPSRE");

@@ -174,7 +174,7 @@ extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, i
     }
 
     // If it already exists there's no problem, we will pass a reference to its values to
-    _solver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
+    _noneqSolver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
 }
@@ -602,10 +602,7 @@ void initNonEqSolver()
     _noneqSolver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
     _noneqSolver->buildSystemMatrix(*_cavity);
 #endif    
-    // Always save the cavity in a cavity.npz binary file
-    // Cavity should be saved to file in initCavity(), due to the dependencies of
-    // the WaveletCavity on the wavelet solvers it has to be done here...
-    _cavity->saveCavity();
+    noneqExists = true;
 }
 
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)

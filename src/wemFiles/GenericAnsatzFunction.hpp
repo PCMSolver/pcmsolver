@@ -35,6 +35,7 @@ public:
   unsigned int nFunctions;      ///< size of F, the element list of finest level
   unsigned int nNodes;        ///< size of P, the point list
   unsigned int nPatches;              ///< number of patches
+  unsigned int minLevel;
 
   unsigned int noPhi;                ///< number of basis functions per element
   unsigned int quadratureLevel_;     ///< the degree for the RHS quadrature

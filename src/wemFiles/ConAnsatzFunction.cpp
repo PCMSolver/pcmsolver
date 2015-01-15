@@ -65,7 +65,7 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   a = 1.25; ///< compression constant,  a > 1
   b = 0.001; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 1;
+  quadratureLevel_ = 2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -86,7 +86,7 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   a = _a; ///< compression constant,  a > 1
   b = _b; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 1;
+  quadratureLevel_ = 2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -154,7 +154,7 @@ void ConAnsatzFunction :: generateWaveletList(){
   waveletList.W = (Wavelet*) calloc(waveletList.sizeWaveletList,sizeof(Wavelet));
   
   // loop over all levels till minimum
-  for (unsigned int m=nLevels; m>=(signed int)minLevel; --m) {
+  for (int m=nLevels; m>=(signed int)minLevel; --m) {
     // compute wavelet masks
     dwtMask(&Th,&L,m,m,this);
     n = 1 << (m-1); // p*n*n elements on level m-1
@@ -237,9 +237,12 @@ void ConAnsatzFunction :: generateWaveletList(){
   FILE* debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> WAVELET_TREE\n");
   for(unsigned int i2 = 0; i2<waveletList.sizeWaveletList; ++i2){
-    fprintf(debugFile,"%d %d %d\n", waveletList.W[i2].level, waveletList.W[i2].noElements, waveletList.W[i2].noSons);
+    fprintf(debugFile,"%d %d %d %d\n", i2, waveletList.W[i2].level, waveletList.W[i2].noElements, waveletList.W[i2].noSons);
     for(unsigned int i1 = 0 ; i1< waveletList.W[i2].noElements; i1++){
-      fprintf(debugFile,"%lf ", waveletList.W[i2].weight[i1]);
+      fprintf(debugFile,"%d %lf ", waveletList.W[i2].element[i1], waveletList.W[i2].weight[i1]);
+    }
+		for(unsigned int i1 = 0 ; i1< waveletList.W[i2].noSons; ++i1){
+			fprintf(debugFile,"%d ", waveletList.W[i2].son[i1]);
     }
     fprintf(debugFile,"\n");
   }
@@ -273,15 +276,15 @@ void ConAnsatzFunction::simplifyWaveletList(){
         if (elementTree.element[ind].level == waveletList.W[i].level) {
           // check if this is the 0. child in the father element
           ind = elementTree.element[ind].father;
-          if ((int)waveletList.W[i].element[s0] == elementTree.element[ind].son[0]) {
+          if (waveletList.W[i].element[s0] == elementTree.element[ind].son[0]) {
             // check 1st child
-            for (s1=0; (s1<noe) && (elementTree.element[ind].son[1]!=(int)waveletList.W[i].element[s1]); ++s1);
+            for (s1=0; (s1<noe) && (elementTree.element[ind].son[1]!=waveletList.W[i].element[s1]); ++s1);
             if ((s1 < noe) && (waveletList.W[i].weight[s1] == waveletList.W[i].weight[s0])) {
               // check 2nd child
-              for (s2=0; (s2<noe) && (elementTree.element[ind].son[2]!=(int)waveletList.W[i].element[s2]); ++s2);
+              for (s2=0; (s2<noe) && (elementTree.element[ind].son[2]!=waveletList.W[i].element[s2]); ++s2);
               if ((s2 < noe) && (waveletList.W[i].weight[s2] == waveletList.W[i].weight[s0])) {
                 // check 3rd child
-                for (s3=0; (s3<noe) && (elementTree.element[ind].son[3]!=(int)waveletList.W[i].element[s3]); ++s3);
+                for (s3=0; (s3<noe) && (elementTree.element[ind].son[3]!=waveletList.W[i].element[s3]); ++s3);
                 if ((s3 < noe) && (waveletList.W[i].weight[s3] == waveletList.W[i].weight[s0])) {
                   // all children have same weight, can be replaced
                   waveletList.W[i].element[s0] = ind;
@@ -344,9 +347,9 @@ void ConAnsatzFunction::simplifyWaveletList(){
   FILE* debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
   for(unsigned int m = 0; m<waveletList.sizeWaveletList; ++m){
-    fprintf(debugFile,"%d %d %d\n", waveletList.W[m].level, waveletList.W[m].noElements, waveletList.W[m].noSons);
+    fprintf(debugFile,"%d %d %d %d\n", m, waveletList.W[m].level, waveletList.W[m].noElements, waveletList.W[m].noSons);
     for(unsigned int i1 = 0 ; i1< waveletList.W[m].noElements; ++i1){
-      fprintf(debugFile,"%lf %lf ", waveletList.W[m].weight[i1], nodeList[elementTree.element[waveletList.W[m].element[i1]].vertex[0]].x);
+      fprintf(debugFile,"%d %lf ", waveletList.W[m].element[i1], waveletList.W[m].weight[i1]);
     }
     fprintf(debugFile,"\n");
   }

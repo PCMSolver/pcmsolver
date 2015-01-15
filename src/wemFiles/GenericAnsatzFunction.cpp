@@ -292,7 +292,8 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
 #ifdef DEBUG
   fprintf(debugFile,"set 2 %d %d\n",ind1, waveletList.W[ind2].son[l]);
 #endif
-              if ((waveletList.W[ind2].son[l] <= ind1) && (waveletWaveletCriterion(ind1,waveletList.W[ind2].son[l],c1[m1][m1],c2[m1][m1]))){  
+              if(waveletWaveletCriterion(ind1, waveletList.W[ind2].son[l], c1[m1][m1], c2[m1][m1])) {
+              //if ((waveletList.W[ind2].son[l] <= ind1) && (waveletWaveletCriterion(ind1,waveletList.W[ind2].son[l],c1[m1][m1],c2[m1][m1]))){  
               //if(waveletWaveletCriterion(ind1, waveletList.W[ind2].son[l], c1[m1][m1], c2[m1][m1])) {
                 setPattern(T, ind1, waveletList.W[ind2].son[l]);
 #ifdef DEBUG
@@ -313,7 +314,8 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
 #ifdef DEBUG
   fprintf(debugFile,"set 4 %d %d\n", waveletList.W[ind2].son[k], waveletList.W[i].son[l]);
 #endif
-              if ((waveletList.W[i].son[l] <= waveletList.W[ind2].son[k]) && (waveletWaveletCriterion(waveletList.W[ind2].son[k],waveletList.W[i].son[l],c1[m1][m1],c2[m1][m1]))){  
+              if (waveletWaveletCriterion(waveletList.W[ind2].son[k], waveletList.W[i].son[l], c1[m1][m1], c2[m1][m1])){
+              //if ((waveletList.W[i].son[l] <= waveletList.W[ind2].son[k]) && (waveletWaveletCriterion(waveletList.W[ind2].son[k],waveletList.W[i].son[l],c1[m1][m1],c2[m1][m1]))){  
               //if (waveletWaveletCriterion(waveletList.W[ind2].son[k], waveletList.W[i].son[l], c1[m1][m1], c2[m1][m1])){
                 setPattern(T, waveletList.W[ind2].son[k], waveletList.W[i].son[l]);
 #ifdef DEBUG
@@ -408,8 +410,6 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
 unsigned int GenericAnsatzFunction :: postProc(SparseMatrix *T){
   double		**c;        // cut-off parameter
   double		*D1, *D2;   // diagonal entries of the systemmatrix
-  double		*v1, *v2;   // vector for new values
-  unsigned int	*w;     // vector for new indeces
   unsigned int    nnz;  // number of non-zero elements of systemmatrix
   unsigned int    k;
 
@@ -428,11 +428,11 @@ unsigned int GenericAnsatzFunction :: postProc(SparseMatrix *T){
     c[i] = (double*) malloc((nLevels+1)*sizeof(double));
     for (int j=0; j<= (int)nLevels; ++j){
       // LinAF 
-      c[i][j] = pow(0.5,(nLevels-0.5*(i+j))*(2*dp-op)/(2*td+op)); // false?!
-      //c[i][j] = pow(0.5,(2*nLevels-(i+j))*(2*dp-op)/(2*td+op));
+      //c[i][j] = pow(0.5,(nLevels-0.5*(i+j))*(2*dp-op)/(2*td+op)); // false?!
+      c[i][j] = pow(0.5,(2*nLevels-(i+j))*(2*dp-op)/(2*td+op));
       if (c[i][j] > pow(0.5,fabs(i-j))) c[i][j] = pow(0.5,fabs(i-j));
-      //c[i][j] *= b * pow(0.5,(dp-0.5*op)*(2*nLevels-(i+j)));// added -op*nLevels
-      c[i][j] *= b * pow(0.5,(dp)*(2*nLevels-(i+j)));
+      c[i][j] *= b * pow(0.5,(dp-0.5*op)*(2*nLevels-(i+j)));// added -op*nLevels
+      //c[i][j] *= b * pow(0.5,(dp)*(2*nLevels-(i+j)));
     }
   }
 
@@ -441,28 +441,22 @@ unsigned int GenericAnsatzFunction :: postProc(SparseMatrix *T){
   for (unsigned int i=0; i<T->n; ++i){  
     // find relevant matrix entries
     k=0;
-    v1 = (double*) malloc(T->row_number[i]*sizeof(double));
-    v2 = (double*) malloc(T->row_number[i]*sizeof(double));
-    w = (unsigned int*) malloc((T->row_number[i]+1)*sizeof(unsigned int));
 
     for (unsigned int j=0; j<T->row_number[i]; ++j){
       if( (fabs(T->value1[i][j]) >= D1[i]*D1[T->index[i][j]]*c[waveletList.W[i].level][waveletList.W[T->index[i][j]].level]) ||
           (fabs(T->value2[i][j]) >= D2[i]*D2[T->index[i][j]]*c[waveletList.W[i].level][waveletList.W[T->index[i][j]].level]) ){
-        v1[k] = T->value1[i][j];
-        v2[k] = T->value2[i][j];
-        w[k]  = T->index[i][j];
+        T->value1[i][k] = T->value1[i][j];
+        T->value2[i][k] = T->value2[i][j];
+        T->index[i][k] = T->index[i][j];
         ++k;
       }
     }
 
     // copy new values and free memory for old ones
-    free(T->index[i]);
-    free(T->value1[i]);
-    free(T->value2[i]);
     T->max_row_number[i] = T->row_number[i] = k;
-    T->value1[i] = (double*)       realloc(v1, k   *sizeof(double));
-    T->value2[i] = (double*)       realloc(v2, k   *sizeof(double));
-    T->index[i] = (unsigned int*) realloc(w,(k+1)*sizeof(unsigned int));
+    T->value1[i] = (double*)       realloc(T->value1[i], k   *sizeof(double));
+    T->value2[i] = (double*)       realloc(T->value2[i], k   *sizeof(double));
+    T->index[i] = (unsigned int*) realloc(T->index[i],(k+1)*sizeof(unsigned int));
     T->index[i][k] = T->n;
     nnz += k;
   }
@@ -524,6 +518,7 @@ void GenericAnsatzFunction :: elementElementInteraction(double *c, unsigned int 
 
     // choose the integration routine
     //printf("%d %d %d %lf %d %d\n", CASE, g1, g2, dist, ind1, ind2);
+    memset(c, 0, sizeof(double)*sizeC);
     switch(CASE) {
       case 1:
         integrateNoProblem(c, ind1, ind2, g1, &Q[g1], &Q[g1], SingleLayer, DoubleLayer);
@@ -542,7 +537,7 @@ void GenericAnsatzFunction :: elementElementInteraction(double *c, unsigned int 
         //memset(c, 4, sizeof(double)*sizeC);
         break;
       default:
-        //memset(c,0,sizeC*sizeof(double));
+        memset(c,0,sizeC*sizeof(double));
         printf("ERROR : CASE!=1,2,3,4\n");
     }
   //printf("%lf %lf %lf\n",c[0], c[1], c[2]);
@@ -740,8 +735,8 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
   unsigned int max = 0;
   FILE *f = NULL;
   Vector3 auxPoint;
-  int n = 2<<nLevels;
-  int index = nPatches*(n*n/4-1)/3;
+  int n = 1<<nLevels;
+  int index = nPatches*(n*n-1)/3;
   et_node *Ef = elementTree.element;
 
   // get length of point list P
@@ -766,13 +761,14 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
 
   // print element list
   fprintf(f, "CELLS %d %d\n", nFunctions, 5 * nFunctions);
-  for (i = 0; i < nFunctions; ++i)
-    fprintf(f, "%d %d %d %d %d\n", 4, Ef[index+i].vertex[0], Ef[index+i].vertex[1],
-        Ef[index+i].vertex[2], Ef[index+i].vertex[3]);
+  for(i = index; i <totalSizeElementList; ++i){
+    fprintf(f, "%d %d %d %d %d\n", 4, Ef[i].vertex[0], Ef[i].vertex[1],
+        Ef[i].vertex[2], Ef[i].vertex[3]);
+  }
   fprintf(f, "\n");
 
   fprintf(f, "CELL_TYPES %d\n", nFunctions);
-  for (i = 0; i < nFunctions; ++i)
+  for(i = index; i <totalSizeElementList; ++i){
     fprintf(f, "%d\n", 9);
   fprintf(f, "\n");
 
@@ -790,25 +786,20 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
   fprintf(f, "\n");
 
   fprintf(f, "CELL_DATA %d\n", nFunctions);
-  fprintf(f, "SCALARS Patch FLOAT\n");
+  fprintf(f, "SCALARS Cell_Density FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
   for (i = 0; i < nFunctions; ++i)
-    fprintf(f, "%d\n", Ef[index+i].patch);
-  fprintf(f, "\n");
-  
+      fprintf(f, "%20.16f\n", rho[i]);
+  }
   Vector2 xi;
+  double ht = 1./n;
   Vector3 normal;
-  double ht = 1./(1<<Ef[index].level);
   fprintf(f, "NORMALS Cell_Norm FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
-  if (rho != NULL) {
-    for (i = 0; i < nFunctions; ++i)
-      fprintf(f, "%20.16f\n", rho[i]);
-  }else{
-    for(i = 0; i < nFunctions; ++i){
-      xi.x = ht*Ef[index+i].index_s;
-      xi.y = ht*Ef[index+i].index_t;
-      normal = interCoeff->n_Chi(xi,Ef[index+i].patch);
+  for(i = nPatches*(n*n-1)/3; i < totalSizeElementList; ++i){
+    xi.x = ht*(Ef[i].index_s+0.5);
+    xi.y = ht*(Ef[i].index_t+0.5);
+    normal = interCoeff->n_Chi(xi, Ef[i].patch);
       normal = vector3SMul(1./vector3Norm(normal),normal);
       fprintf(f, "%20.16f %20.16f %20.16f\n",normal.x, normal.y, normal.z);
     }
@@ -850,7 +841,7 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
   fprintf(f, "POINTS %d FLOAT\n", max);
 
   //use the fact that i know that i add only one point :)
-  double h = 1. / (1 << nLevels);
+  double h = 1./n;
   i1 = Ef[index+element].patch;
   i2 = Ef[index+element].index_t;
   i3 = Ef[index+element].index_s;
@@ -891,7 +882,7 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
       auxPoint.z);
 
   auxPoint = interCoeff->Chi(
-      Vector2(h * Ef[index+element].index_s + h,
+      Vector2(h * Ef[index+element].index_s + h ,
           h * Ef[index+element].index_t + 0.5 * h), Ef[index+element].patch);
   fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y,
       auxPoint.z);
@@ -904,8 +895,8 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
   //fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y, auxPoint.z);
 
   auxPoint = interCoeff->Chi(
-      Vector2(h * Ef[element].index_s + 0.5 * h,
-          h * Ef[element].index_t + h), Ef[index+element].patch);
+      Vector2(h * Ef[index+element].index_s +0.5* h,
+          h * Ef[index+element].index_t + h), Ef[index+element].patch);
   fprintf(f, "%20.16f\t%20.16f\t%20.16f\n", auxPoint.x, auxPoint.y,
       auxPoint.z);
 
@@ -919,13 +910,17 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
   fprintf(f, "\n");
 
   // print element list                             
-  fprintf(f, "CELLS %d %d\n", 1, 5 * 1);
-  fprintf(f, "%d %d %d %d %d\n", 4, Ef[index+element].vertex[0],
-      Ef[index+element].vertex[1], Ef[index+element].vertex[2],
-      Ef[index+element].vertex[3]);
+  fprintf(f, "CELLS %d %d\n", 4, 5 * 4);
+  fprintf(f, "4 0 1 4 3\n");
+  fprintf(f, "4 1 2 5 4\n");
+  fprintf(f, "4 3 4 7 6\n");
+  fprintf(f, "4 4 5 8 7\n");
   fprintf(f, "\n");
 
-  fprintf(f, "CELL_TYPES %d\n", 1);
+  fprintf(f, "CELL_TYPES %d\n", 4);
+  fprintf(f, "%d\n", 9);
+  fprintf(f, "%d\n", 9);
+  fprintf(f, "%d\n", 9);
   fprintf(f, "%d\n", 9);
   fprintf(f, "\n");
 
@@ -933,13 +928,31 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
   fprintf(f, "POINT_DATA %d\n", max);
   fprintf(f, "SCALARS Z-value FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
-  for (i = 0; i < 4; ++i)
-    fprintf(f, "%20.16f\n", (nodeList[Ef[index+element].vertex[i]]).z);
+  fprintf(f, "%20.16f\n",(nodeList[Ef[index+element].vertex[0]]).z );
+  auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s+0.5*h, h*Ef[element].index_t), Ef[element].patch); 
+  fprintf(f, "%20.16f\n", auxPoint.z);
+  auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s+h, h*Ef[element].index_t), Ef[element].patch); 
+  fprintf(f, "%20.16f\n",(nodeList[Ef[index+element].vertex[1]]).z );
+
+  auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s, h*Ef[element].index_t+0.5*h), Ef[element].patch); 
+  fprintf(f, "%20.16f\n", auxPoint.z);
+  auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s+0.5*h, h*Ef[element].index_t+0.5*h), Ef[element].patch); 
+  fprintf(f, "%20.16f\n", auxPoint.z);
+  auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s+h, h*Ef[element].index_t+0.5*h), Ef[element].patch); 
+  fprintf(f, "%20.16f\n", auxPoint.z);
   fprintf(f, "\n");
 
-  fprintf(f, "CELL_DATA %d\n", 1);
+  auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s, h*Ef[element].index_t+h), Ef[element].patch); 
+  fprintf(f, "%20.16f\n",(nodeList[Ef[index+element].vertex[2]]).z );
+  auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s+0.5*h, h*Ef[element].index_t+h), Ef[element].patch); 
+  fprintf(f, "%20.16f\n", auxPoint.z);
+  auxPoint = interCoeff->Chi( Vector2(h*Ef[element].index_s+h, h*Ef[element].index_t+h), Ef[element].patch); 
+  fprintf(f, "%20.16f\n",(nodeList[Ef[index+element].vertex[3]]).z );
+
+  fprintf(f, "CELL_DATA %d\n", 4);
   fprintf(f, "SCALARS Cell_Density FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
+  fprintf(f,"0\n1\n2\n3\n\n");
 
   fclose(f);
 #endif
@@ -991,7 +1004,7 @@ unsigned int GenericAnsatzFunction::compare(unsigned int e1, unsigned int e2,
         d.x = nodeList[F1[*ind1]].x - nodeList[F2[*ind2]].x;
         d.y = nodeList[F1[*ind1]].y - nodeList[F2[*ind2]].y;
         d.z = nodeList[F1[*ind1]].z - nodeList[F2[*ind2]].z;
-        if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-8) {
+        if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-6) {
           // found common point, search common edge
           d.x = nodeList[F1[(*ind1 + 1) % 4]].x
             - nodeList[F2[(*ind2 + 3) % 4]].x;
@@ -999,7 +1012,7 @@ unsigned int GenericAnsatzFunction::compare(unsigned int e1, unsigned int e2,
             - nodeList[F2[(*ind2 + 3) % 4]].y;
           d.z = nodeList[F1[(*ind1 + 1) % 4]].z
             - nodeList[F2[(*ind2 + 3) % 4]].z;
-          if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-8) {
+          if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-6) {
             *ind2 = (*ind2 + 3) % 4;// normal case: second point at ind1+1, ind1-1
             return (3);
           } else if (*ind1 == 0) {
@@ -1009,7 +1022,7 @@ unsigned int GenericAnsatzFunction::compare(unsigned int e1, unsigned int e2,
               - nodeList[F2[(*ind2 + 1) % 4]].y; 
             d.z = nodeList[F1[3]].z
               - nodeList[F2[(*ind2 + 1) % 4]].z;
-            if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-8) {
+            if (d.x * d.x + d.y * d.y + d.z * d.z < 1e-6) {
               *ind1 = 3;
               return (3);
             }

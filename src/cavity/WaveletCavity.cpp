@@ -168,8 +168,6 @@ void WaveletCavity::uploadPoints(int quadLevel, Interpolation *interp)
 std::ostream & WaveletCavity::printCavity(std::ostream & os)
 {
     // Calculation of quadrature level for printout
-    int n = 1 << nLevels_;
-    int quadLevel = int(nElements_ / (nPatches_ * n * n));
     os << "Cavity type: Wavelet" << std::endl;
     os << "Probe Radius =  " << probeRadius_ << std::endl;
     os << "Coarsity     =  " << coarsity_ << std::endl;
@@ -177,10 +175,9 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
     os << "Number of spheres = " << nSpheres_ << std::endl;
     os << "Number of patches = " << nPatches_ << std::endl;
     os << "Number of levels  = " << nLevels_  << std::endl;
-    os << "Quadrature level  = " << quadLevel << std::endl;
     os << "Number of potential points = " << nElements_;
-    os << std::endl; 
     /*
+    os << std::endl; 
     os << "-------------- Potential points printout " << std::endl;
     for(int i = 0; i < nElements_; i++) {
     	os << std::endl;

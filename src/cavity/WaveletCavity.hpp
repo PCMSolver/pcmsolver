@@ -63,6 +63,7 @@ public:
 	probeRadius_ = 0.0;
 	coarsity_ = 0.0;
 	patchLevel_ = 0;
+	nSpheres_ = 0;
     }
     WaveletCavity(const std::vector<Sphere> & s, double pr, int pl, double c) :
         Cavity(s), probeRadius_(pr), patchLevel_(pl), coarsity_(c) {

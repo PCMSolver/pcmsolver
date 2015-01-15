@@ -13,8 +13,8 @@ typedef struct {
 
 typedef struct _et_node {
   Vector3        midpoint;   ///< midpoint of circumscribed circle
-  int            father;     ///< father element
-  int            son[4];     ///< son elements
+  unsigned int   father;     ///< father element
+  unsigned int   son[4];     ///< son elements
   _et_node       *up;         ///< pointer to the upper neighbour
   _et_node       *down;       ///< pointer to the bottom neighbour
   _et_node       *left;       ///< pointer to the left neighbour

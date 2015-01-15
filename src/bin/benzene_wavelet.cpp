@@ -41,9 +41,24 @@
 
 void pwc_C6H6();
 
+void read_sphere() {
+    // Set up cavity, read it from Maharavo's file benzene2.dat
+    WaveletCavity cavity("sphere2.dat");
+    double permittivity = 78.39;
+
+    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>();
+    UniformDielectric<AD_directional> * gfOutside = new
+    UniformDielectric<AD_directional>(permittivity);
+    int firstKind = 0;
+    PWCSolver solver(gfInside, gfOutside, firstKind);
+    solver.buildSystemMatrix(cavity);
+}
+
 int main() {
+    //read_sphere();
     pwc_C6H6();
 }
+
 
 void pwc_C6H6()
 {
@@ -62,7 +77,7 @@ void pwc_C6H6()
     Eigen::Vector3d H6( 3.616,  0.776, -9.196);
     // Set up cavity, read it from Maharavo's file benzene2.dat
     WaveletCavity cavity("benzene2.dat");
-    cavity.scaleCavity(1./convertBohrToAngstrom);
+    //cavity.scaleCavity(1./convertBohrToAngstrom);
 
     double permittivity = 78.39;
     double Hcharge = 1.0;
@@ -77,6 +92,8 @@ void pwc_C6H6()
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
+    //Compression comp(1.0, 1.25, 0.01);
+    //PWCSolver solver(gfInside, gfOutside, comp, firstKind);
     PWCSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
@@ -85,19 +102,32 @@ void pwc_C6H6()
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
     for (int i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
-        double C1mep = Ccharge/(center - C1/convertBohrToAngstrom).norm();
-        double C2mep = Ccharge/(center - C2/convertBohrToAngstrom).norm();
-        double C3mep = Ccharge/(center - C3/convertBohrToAngstrom).norm();
-        double C4mep = Ccharge/(center - C4/convertBohrToAngstrom).norm();
-        double C5mep = Ccharge/(center - C5/convertBohrToAngstrom).norm();
-        double C6mep = Ccharge/(center - C6/convertBohrToAngstrom).norm();
+    //  double C1mep = Ccharge/(center - C1/convertBohrToAngstrom).norm();
+    //  double C2mep = Ccharge/(center - C2/convertBohrToAngstrom).norm();
+    //  double C3mep = Ccharge/(center - C3/convertBohrToAngstrom).norm();
+    //  double C4mep = Ccharge/(center - C4/convertBohrToAngstrom).norm();
+    //  double C5mep = Ccharge/(center - C5/convertBohrToAngstrom).norm();
+    //  double C6mep = Ccharge/(center - C6/convertBohrToAngstrom).norm();
 
-        double H1mep = Hcharge/(center - H1/convertBohrToAngstrom).norm();
-        double H2mep = Hcharge/(center - H2/convertBohrToAngstrom).norm();
-        double H3mep = Hcharge/(center - H3/convertBohrToAngstrom).norm();
-        double H4mep = Hcharge/(center - H4/convertBohrToAngstrom).norm();
-        double H5mep = Hcharge/(center - H5/convertBohrToAngstrom).norm();
-        double H6mep = Hcharge/(center - H6/convertBohrToAngstrom).norm();
+    //  double H1mep = Hcharge/(center - H1/convertBohrToAngstrom).norm();
+    //  double H2mep = Hcharge/(center - H2/convertBohrToAngstrom).norm();
+    //  double H3mep = Hcharge/(center - H3/convertBohrToAngstrom).norm();
+    //  double H4mep = Hcharge/(center - H4/convertBohrToAngstrom).norm();
+    //  double H5mep = Hcharge/(center - H5/convertBohrToAngstrom).norm();
+    //  double H6mep = Hcharge/(center - H6/convertBohrToAngstrom).norm();
+        double C1mep = Ccharge/(center - C1).norm();
+        double C2mep = Ccharge/(center - C2).norm();
+        double C3mep = Ccharge/(center - C3).norm();
+        double C4mep = Ccharge/(center - C4).norm();
+        double C5mep = Ccharge/(center - C5).norm();
+        double C6mep = Ccharge/(center - C6).norm();
+
+        double H1mep = Hcharge/(center - H1).norm();
+        double H2mep = Hcharge/(center - H2).norm();
+        double H3mep = Hcharge/(center - H3).norm();
+        double H4mep = Hcharge/(center - H4).norm();
+        double H5mep = Hcharge/(center - H5).norm();
+        double H6mep = Hcharge/(center - H6).norm();
         fake_mep(i) = C1mep + C2mep + C3mep + C4mep + C5mep + C6mep +
           H1mep + H2mep + H3mep + H4mep + H5mep + H6mep;
     }
@@ -112,6 +142,7 @@ void pwc_C6H6()
     report.open("pwc_C6H6_report.out", std::ios::out);
     report << " Piecewise constant wavelet solver, C6H6 molecule " << std::endl;
     report << cavity << std::endl;
+    report << solver << std::endl;
     report << "------------------------------------------------------------" << std::endl;
     report << "totalASC     = " << std::setprecision(20) << totalASC     << std::endl;
     report << "totalFakeASC = " << std::setprecision(20) << totalFakeASC << std::endl;

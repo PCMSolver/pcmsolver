@@ -43,7 +43,7 @@ unsigned int GenericAnsatzFunction :: genNet(Vector3 ***U) {
     pF[i].patch = i;
     pF[i].index_s = 0;
     pF[i].index_t = 0;
-    pF[i].father = -1;
+    pF[i].father = 0;
 
     pF[i].vertex[0] = 4*i;
     pF[i].vertex[1] = 4*i+1;
@@ -164,10 +164,10 @@ unsigned int GenericAnsatzFunction :: genNet(Vector3 ***U) {
   // loop unify - calculate circumscribed sphere on finest level
   i = nPatches*(n*n-1)/3;
   for (unsigned int l = 0; l < nPatches*n*n; ++l) {
-    pF[i+l].son[0] = -1;
-    pF[i+l].son[1] = -1;
-    pF[i+l].son[2] = -1;
-    pF[i+l].son[3] = -1;
+    pF[i+l].son[0] = elementTree.totalSizeElementList; 
+    pF[i+l].son[1] = elementTree.totalSizeElementList;
+    pF[i+l].son[2] = elementTree.totalSizeElementList; 
+    pF[i+l].son[3] = elementTree.totalSizeElementList; 
     unify(&d1, &r1, nodeList[pF[i+l].vertex[0]], 0, nodeList[pF[i+l].vertex[2]], 0);
     unify(&d2, &r2, nodeList[pF[i+l].vertex[1]], 0, nodeList[pF[i+l].vertex[3]], 0);
     unify(&(pF[i+l].midpoint), &(pF[i+l].radius), d1, r1, d2, r2);

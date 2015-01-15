@@ -21,10 +21,10 @@ ConAnsatzFunction :: ConAnsatzFunction(){
 
   td = 3;
   dp = 1.25;
-  a = 1.25; ///< compression constant,  a > 1
-  b = 0.001; ///< compression constant, 0 < b < 1
+  a = 1.0; ///< compression constant,  a > 1
+  b = 0.01; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 1;
+  quadratureLevel_ = 2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -43,7 +43,7 @@ ConAnsatzFunction :: ConAnsatzFunction(const Compression & _comp){
   a = _comp.aPrioriA; ///< compression constant,  a > 1
   b = _comp.aPosterioriB; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 1;
+  quadratureLevel_ = 2;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -1075,6 +1075,7 @@ ConAnsatzFunction::~ConAnsatzFunction(){
 
 std::ostream & ConAnsatzFunction::printAnsatzFunction(std::ostream & os) 
 {
+  os << "Quadrature level = " << quadratureLevel_ << std::endl;
   os << "A priori compression" << std::endl;      
   os << " a  = " << a << std::endl;
   os << " d' = " << dp << std::endl;

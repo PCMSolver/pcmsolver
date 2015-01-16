@@ -1,32 +1,33 @@
-Units = Angstrom
+UNITS = ANGSTROM
 CODATA = 1998
-Medium 
+MEDIUM 
 {
 
-	SolverType = Wavelet
-        EquationType = FirstKind
-	ProbeRadius = 1.385
-        Solvent = Explicit
-	Green<inside> 
+	SOLVERTYPE = WAVELET
+        EQUATIONTYPE = FIRSTKIND
+	PROBERADIUS = 1.385
+        SOLVENT = EXPLICIT
+	GREEN<INSIDE> 
 	{
-		Type=Vacuum
-		Der = numerical
+		TYPE=VACUUM
+		DER = NUMERICAL
 	}
-	Green<outside> 
+	GREEN<OUTSIDE> 
 	{
-		Type = UniformDielectric
-	        Eps = 78.39
-		der = gRaDiEnT
+		TYPE = UNIFORMDIELECTRIC
+	        EPS = 78.39
+		EPSDYN = 10.423
+		DER = GRADIENT
 	}		
 }
 
-Cavity 
+CAVITY 
 {
-	Type = Wavelet
-	pAtChLeVeL = 1
-	coarsity = 0.3
-	Mode = explicit
-	Spheres = [ 0.00,   0.00,  0.00,  1.80,
+	TYPE = WAVELET
+	PATCHLEVEL = 1
+	COARSITY = 0.3
+	MODE = EXPLICIT
+	SPHERES = [ 0.00,   0.00,  0.00,  1.80,
 		    0.00,  -0.96,  0.00,  1.44,
 		   -0.905,  0.32,  0.00,  1.44]
 }

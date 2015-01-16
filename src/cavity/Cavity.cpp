@@ -36,7 +36,7 @@
 #include <Eigen/Dense>
 #include "cnpyPimpl.hpp"
 
-#include "Sphere.hpp"
+#include "MathUtils.hpp"
 #include "Symmetry.hpp"
 
 void Cavity::saveCavity(const std::string & fname)
@@ -85,8 +85,8 @@ void Cavity::saveCavity(const std::string & fname)
 
 void Cavity::loadCavity(const std::string & fname)
 {
-    // If the cavity has been loaded from file, the point group is C1
-    pointGroup_ = buildGroup(0, 0, 0, 0);
+    // We initialize molecule_ to a dummy Molecule
+    molecule_ = Molecule();
     // Load the .npz binary file and then traverse it to get the data needed to rebuild the cavity.
     cnpy::npz_t loaded_cavity = cnpy::npz_load(fname);
     // 0. Get the number of elements
@@ -95,7 +95,7 @@ void Cavity::loadCavity(const std::string & fname)
     nElements_ = *ne;
     // Set the size of the irreducible portion of the cavity
     // it will be the same as the total size, since a restarted cavity is always C1
-    nIrrElements_ = (nElements_ / pointGroup_.nrIrrep());
+    nIrrElements_ = nElements_;
 
     // 1. Get the weights
     cnpy::NpyArray raw_weights = loaded_cavity["weights"];
@@ -103,7 +103,7 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of weights vector!");
     } else {
-        elementArea_ = cnpy::getFromRawBuffer<double>(dim, 1, raw_weights.data);
+        elementArea_ = getFromRawBuffer<double>(dim, 1, raw_weights.data);
     }
     
     // 2. Get the element sphere center
@@ -112,7 +112,7 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of element sphere radius matrix!");
     } else {
-        elementSphereCenter_ = cnpy::getFromRawBuffer<double>(3, dim, raw_elSphCenter.data);
+        elementSphereCenter_ = getFromRawBuffer<double>(3, dim, raw_elSphCenter.data);
     }
 
     // 3. Get the element radius
@@ -121,7 +121,7 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of element radius vector!");
     } else {
-        elementRadius_ = cnpy::getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
+        elementRadius_ = getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
     }
 
     // 4. Get the centers
@@ -130,7 +130,7 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of centers matrix!");
     } else {
-        elementCenter_ = cnpy::getFromRawBuffer<double>(3, dim, raw_centers.data);
+        elementCenter_ = getFromRawBuffer<double>(3, dim, raw_centers.data);
     }
 
     // 5. Get the normal vectors
@@ -139,7 +139,7 @@ void Cavity::loadCavity(const std::string & fname)
     if (dim != nElements_) {
         throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of normals matrix!");
     } else {
-        elementNormal_ = cnpy::getFromRawBuffer<double>(3, dim, raw_normals.data);
+        elementNormal_ = getFromRawBuffer<double>(3, dim, raw_normals.data);
     }
 
     // Reconstruct the elements_ vector

@@ -75,7 +75,7 @@ struct InputTsLessTest {
     double epsilonInside;
     double epsilonOutside;
     void SetUp() {
-	filename = "tsless.inp";
+	filename = "@tsless.inp";
 	parsedInput = Input(filename);
 	units = "ANGSTROM";
 	CODATAyear = 2002;
@@ -106,19 +106,19 @@ struct InputTsLessTest {
 BOOST_FIXTURE_TEST_SUITE(InputTsLess, InputTsLessTest)
 
 /*! \class Input 
- *  \test \b InputTsLessTest_embeddedPythonTsLess tests input reading by embedding Python pcmsolver.py script
+ *  \test \b InputTsLessTest_TsLess tests input reading on an input file parsed by pcmsolver.py
  */
-BOOST_FIXTURE_TEST_CASE(embeddedPythonTsLess, InputTsLessTest)
+BOOST_FIXTURE_TEST_CASE(TsLess, InputTsLessTest)
 {
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
     BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
     BOOST_REQUIRE_EQUAL(type,                  parsedInput.cavityType());
-    BOOST_REQUIRE_CLOSE(area,                  parsedInput.area(), 1.0e-11);
-    BOOST_REQUIRE_CLOSE(minDistance,           parsedInput.minDistance(), 1.0e-10);
-    BOOST_REQUIRE_EQUAL(derOrder,              parsedInput.derOrder());
+    BOOST_REQUIRE_CLOSE(area,                  parsedInput.cavityParams().area, 1.0e-11);
+    BOOST_REQUIRE_CLOSE(minDistance,           parsedInput.cavityParams().minDistance, 1.0e-10);
+    BOOST_REQUIRE_EQUAL(derOrder,              parsedInput.cavityParams().derOrder);
     BOOST_REQUIRE_EQUAL(scaling,               parsedInput.scaling());
     BOOST_REQUIRE_EQUAL(radiiSet,              parsedInput.radiiSet());
-    BOOST_REQUIRE_CLOSE(minimalRadius,         parsedInput.minimalRadius(), 5.0e-10);
+    BOOST_REQUIRE_CLOSE(minimalRadius,         parsedInput.cavityParams().minimalRadius, 5.0e-10);
     BOOST_REQUIRE_EQUAL(mode,                  parsedInput.mode());
     for (size_t i = 0; i < atoms.size(); ++i) {
 	    BOOST_REQUIRE_EQUAL(atoms[i],      parsedInput.atoms(i));
@@ -128,11 +128,11 @@ BOOST_FIXTURE_TEST_CASE(embeddedPythonTsLess, InputTsLessTest)
     BOOST_REQUIRE_EQUAL(solverType,            parsedInput.solverType());
     BOOST_REQUIRE_CLOSE(correction,            parsedInput.correction(), 1.0e-12);
     BOOST_REQUIRE_EQUAL(hermitivitize,         parsedInput.hermitivitize());
-    BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.probeRadius(), 1.0e-12);
+    BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-12);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.derivativeInsideType());
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.derivativeOutsideType());
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -171,7 +171,7 @@ struct InputRestartTest {
     double epsilonInside;
     double epsilonOutside;
     void SetUp() {
-	filename = "restart.inp";
+	filename = "@restart.inp";
 	parsedInput = Input(filename);
 	units = "AU";
 	CODATAyear = 2010;
@@ -202,34 +202,34 @@ struct InputRestartTest {
 BOOST_FIXTURE_TEST_SUITE(InputRestart, InputRestartTest)
 
 /*! \class Input 
- *  \test \b InputRestartTest_embeddedPythonRestart tests input reading by embedding Python pcmsolver.py script
+ *  \test \b InputRestartTest_Restart tests input reading on an input file parsed by pcmsolver.py
  */
-BOOST_FIXTURE_TEST_CASE(embeddedPythonRestart, InputRestartTest)
+BOOST_FIXTURE_TEST_CASE(Restart, InputRestartTest)
 {
     double threshold = 1.0e-12;
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
     BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
     BOOST_REQUIRE_EQUAL(type,                  parsedInput.cavityType());
-    BOOST_REQUIRE_EQUAL(cavFilename,           parsedInput.cavityFilename());
-    BOOST_REQUIRE_EQUAL(patchLevel,            parsedInput.patchLevel());
-    BOOST_REQUIRE_CLOSE(coarsity,              parsedInput.coarsity(), threshold);
-    BOOST_REQUIRE_CLOSE(area,                  parsedInput.area(), threshold);
-    BOOST_REQUIRE_CLOSE(minDistance,           parsedInput.minDistance(), threshold);
-    BOOST_REQUIRE_EQUAL(derOrder,              parsedInput.derOrder());
+    BOOST_REQUIRE_EQUAL(cavFilename,           parsedInput.cavityParams().filename);
+    BOOST_REQUIRE_EQUAL(patchLevel,            parsedInput.cavityParams().patchLevel);
+    BOOST_REQUIRE_CLOSE(coarsity,              parsedInput.cavityParams().coarsity, threshold);
+    BOOST_REQUIRE_CLOSE(area,                  parsedInput.cavityParams().area, threshold);
+    BOOST_REQUIRE_CLOSE(minDistance,           parsedInput.cavityParams().minDistance, threshold);
+    BOOST_REQUIRE_EQUAL(derOrder,              parsedInput.cavityParams().derOrder);
     BOOST_REQUIRE_EQUAL(scaling,               parsedInput.scaling());
     BOOST_REQUIRE_EQUAL(radiiSet,              parsedInput.radiiSet());
-    BOOST_REQUIRE_CLOSE(minimalRadius,         parsedInput.minimalRadius(), threshold);
+    BOOST_REQUIRE_CLOSE(minimalRadius,         parsedInput.cavityParams().minimalRadius, threshold);
     BOOST_REQUIRE_EQUAL(mode,                  parsedInput.mode());
     BOOST_REQUIRE_EQUAL(solvent,               parsedInput.solvent().name());
     BOOST_REQUIRE_EQUAL(solverType,            parsedInput.solverType());
     BOOST_REQUIRE_EQUAL(equationType,          parsedInput.equationType());
     BOOST_REQUIRE_CLOSE(correction,            parsedInput.correction(), threshold);
     BOOST_REQUIRE_EQUAL(hermitivitize,         parsedInput.hermitivitize());
-    BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.probeRadius(), threshold);
+    BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, threshold);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.derivativeInsideType());
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.derivativeOutsideType());
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -267,9 +267,10 @@ struct InputWaveletTest {
     int derivativeInsideType;
     int derivativeOutsideType;
     double epsilonInside;
-    double epsilonOutside;
+    double epsilonStaticOutside;
+    double epsilonDynamicOutside;
     void SetUp() {
-	filename = "wavelet.inp";
+	filename = "@wavelet.inp";
 	parsedInput = Input(filename);
 	units = "ANGSTROM";
 	CODATAyear = 1998;
@@ -296,23 +297,24 @@ struct InputWaveletTest {
 	derivativeInsideType = 0;
 	derivativeOutsideType = 2;
 	epsilonInside = 1.0;
-	epsilonOutside = 78.39;
+	epsilonStaticOutside = 78.39;
+	epsilonDynamicOutside = 10.423;
     }
 };
 
 BOOST_FIXTURE_TEST_SUITE(InputWavelet, InputWaveletTest)
 
 /*! \class Input 
- *  \test \b InputWaveletTest_embeddedPythonWavelet tests input reading by embedding Python pcmsolver.py script
+ *  \test \b InputWaveletTest_Wavelet tests input reading on an input file parsed by pcmsolver.py
  */
-BOOST_FIXTURE_TEST_CASE(embeddedPythonWavelet, InputWaveletTest)
+BOOST_FIXTURE_TEST_CASE(Wavelet, InputWaveletTest)
 {
     double threshold = 1.0e-12;
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
     BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
     BOOST_REQUIRE_EQUAL(type,                  parsedInput.cavityType());
-    BOOST_REQUIRE_EQUAL(patchLevel,            parsedInput.patchLevel());
-    BOOST_REQUIRE_CLOSE(coarsity,              parsedInput.coarsity(), threshold);
+    BOOST_REQUIRE_EQUAL(patchLevel,            parsedInput.cavityParams().patchLevel);
+    BOOST_REQUIRE_CLOSE(coarsity,              parsedInput.cavityParams().coarsity, threshold);
     BOOST_REQUIRE_EQUAL(scaling,               parsedInput.scaling());
     BOOST_REQUIRE_EQUAL(radiiSet,              parsedInput.radiiSet());
     BOOST_REQUIRE_EQUAL(mode,                  parsedInput.mode());
@@ -324,13 +326,14 @@ BOOST_FIXTURE_TEST_CASE(embeddedPythonWavelet, InputWaveletTest)
     }
     BOOST_REQUIRE_EQUAL(solverType,            parsedInput.solverType());
     BOOST_REQUIRE_EQUAL(equationType,          parsedInput.equationType());
-    BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.probeRadius(), 1.0e-10);
+    BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-10);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.derivativeInsideType());
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.derivativeOutsideType());
-    BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.epsilonInside(), threshold);
-    BOOST_REQUIRE_CLOSE(epsilonOutside,        parsedInput.epsilonOutside(), threshold);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.insideGreenParams().epsilon, threshold);
+    BOOST_REQUIRE_CLOSE(epsilonStaticOutside,  parsedInput.outsideStaticGreenParams().epsilon, threshold);
+    BOOST_REQUIRE_CLOSE(epsilonDynamicOutside, parsedInput.outsideDynamicGreenParams().epsilon, threshold);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

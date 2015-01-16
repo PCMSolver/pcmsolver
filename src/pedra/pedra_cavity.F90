@@ -36,6 +36,7 @@
 !           ibtxor(i, j) <-> ieor(i, j)
     module pedra_cavity
 
+    use pedra_precision
     use pedra_symmetry, only: point_group        
 
     implicit none
@@ -47,9 +48,9 @@
     ! The point group
     type(point_group) :: group
     ! Some print levels
-    integer :: iprsol
+    integer(kind=regint_k) :: iprsol
     ! The global print unit
-    integer :: lvpri
+    integer(kind=regint_k) :: lvpri
     ! Error code
     !    0: everything went OK
     !    1: exceeded maximum number of spheres
@@ -74,31 +75,32 @@
     !       [subroutine inter]
     !   11: symmetry string not recognized
     !       [subroutine prerep]
-    integer :: pedra_error_code
+    integer(kind=regint_k) :: pedra_error_code
 
     contains
 
-    subroutine polyhedra_driver(pgroup, vert, centr, global_print_unit, error_code)
+    subroutine polyhedra_driver(pgroup, vert, centr, masses, global_print_unit, error_code)
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
 
     type(point_group) :: pgroup
-    integer           :: global_print_unit 
-    integer           :: error_code
-    real(8)           :: vert(mxts, 10, 3), centr(mxts, 10, 3)
+    real(kind=dp)     :: masses(mxts)
+    integer(kind=regint_k)           :: global_print_unit 
+    integer(kind=regint_k)           :: error_code
 
     logical :: some
-    integer :: numts, numsph, natm, numver
+    integer(kind=regint_k) :: numts, numsph, natm, numver
     
-    integer, allocatable :: intsph(:, :), newsph(:, :)
-    integer, allocatable :: icav1(:), icav2(:)
-    integer, allocatable :: jtr(:, :)
-    real(8), allocatable :: xval(:), yval(:), zval(:)
-    real(8), allocatable :: cv(:, :)
+    integer(kind=regint_k), allocatable :: intsph(:, :), newsph(:, :)
+    integer(kind=regint_k), allocatable :: icav1(:), icav2(:)
+    integer(kind=regint_k), allocatable :: jtr(:, :)
+    real(kind=dp), allocatable :: vert(:, :, :), centr(:, :, :)
+    real(kind=dp), allocatable :: xval(:), yval(:), zval(:)
+    real(kind=dp), allocatable :: cv(:, :)
 
-    real(8) :: euphi, euthe, eupsi, eps1, eps2, eps3
+    real(kind=dp) :: euphi, euthe, eupsi, eps1, eps2, eps3
 
     SOME = IPRPCM.NE.-5
 !     ----- set the print level
@@ -138,7 +140,7 @@
     cv = 0.0d0
 
     call polyhedra(intsph, vert, centr, newsph, icav1, icav2, xval, yval, zval, &
-    jtr, cv, numts, numsph, numver, natm, some)
+    jtr, cv, numts, numsph, numver, natm, some, masses)
 
 !   euphi =  6.0
 !   euthe = 40.0
@@ -152,7 +154,7 @@
     eps1 = 80.0
     eps2 = 80.0
     eps3 = 80.0
-    call diagan(vert, centr, euphi, euthe, eupsi, eps1, eps2, eps3) 
+    call diagan(vert, centr, euphi, euthe, eupsi, eps1, eps2, eps3)
 
 ! Bring the error code back home
     error_code = pedra_error_code
@@ -160,7 +162,7 @@
     end subroutine polyhedra_driver
 
     subroutine polyhedra(intsph,vert,centr,newsph,icav1,icav2,xval,yval, &
-    zval,jtr,cv,numts,numsph,numver,natm,some)
+    zval,jtr,cv,numts,numsph,numver,natm,some,masses)
 !
 ! We list variables of interest, that might be declared inside a common block.
 ! nesf: total number of spheres
@@ -169,7 +171,7 @@
 
     use pedra_dblas, only: dzero
     use pedra_print, only: output
-    use pedra_cavity_derivatives, only: cavder
+!    use pedra_cavity_derivatives, only: cavder
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
@@ -177,30 +179,31 @@
 ! Import nucdep from pcm_nuclei.h: to set up gradient calculation...
 #include "pcm_nuclei.h" 
 
-    integer :: numts, natm, numsph, numver
-    integer :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
-    real(8) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, 3)
-    real(8) :: xval(numts), yval(numts), zval(numts)
-    real(8) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
+    integer(kind=regint_k) :: numts, natm, numsph, numver
+    integer(kind=regint_k) :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
+    real(kind=dp) :: masses(mxts)
+    real(kind=dp) :: vert(numts, 10, 3), centr(numts, 10, 3), cv(numver, 3)
+    real(kind=dp) :: xval(numts), yval(numts), zval(numts)
+    real(kind=dp) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
     logical :: some
-    integer :: jtr(numts, 3)
+    integer(kind=regint_k) :: jtr(numts, 3)
 
-    real(8), parameter :: d0 = 0.0d0
-    real(8) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
-    real(8) :: reg, reg2, regd2, ren, rend2, reo, reo2
-    real(8) :: rep, rep2, repd2, rgn, rij, rij2, rik, rik2
-    real(8) :: rjd, rjk, rjk2, rtdd, rtdd2, senom, sp 
-    real(8) :: test, test1, test2, test3, test7, test8
-    real(8) :: xen, xi, xj, xn, yen, yi, yj, yn, zen, zi, zj, zn
-    integer :: i, icoord, idisp, ii, ipflag, iprcav, iptype
-    integer :: its, itseff, itsnum, itypc, iv, iver, j, jj, jcor
-    integer :: k, kg, idisrep
-    integer :: kp, n, n1, n2, n3
-    integer :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
-    integer :: nsfe, nsfer, nv
-    real(8) :: rotcav(3, 3)
-    real(8), allocatable :: mass(:), geom(:, :)
-    integer, allocatable :: permutation_table(:, :)
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
+    real(kind=dp) :: reg, reg2, regd2, ren, rend2, reo, reo2
+    real(kind=dp) :: rep, rep2, repd2, rgn, rij, rij2, rik, rik2
+    real(kind=dp) :: rjd, rjk, rjk2, rtdd, rtdd2, senom, sp 
+    real(kind=dp) :: test, test1, test2, test3, test7, test8
+    real(kind=dp) :: xen, xi, xj, xn, yen, yi, yj, yn, zen, zi, zj, zn
+    integer(kind=regint_k) :: i, icoord, idisp, ii, ipflag, iprcav, iptype
+    integer(kind=regint_k) :: its, itseff, itsnum, itypc, iv, iver, j, jj, jcor
+    integer(kind=regint_k) :: k, kg, idisrep
+    integer(kind=regint_k) :: kp, n, n1, n2, n3
+    integer(kind=regint_k) :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
+    integer(kind=regint_k) :: nsfe, nsfer, nv
+    real(kind=dp) :: rotcav(3, 3)
+    real(kind=dp), allocatable :: mass(:), geom(:, :)
+    integer(kind=regint_k), allocatable :: permutation_table(:, :)
           
 
 !     Se stiamo costruendo una nuova cavita' per il calcolo del
@@ -379,7 +382,7 @@
     geom = 0.0d0
     
     do i = 1, nesfp
-        mass(i)   = rin(i)
+        mass(i)   = masses(i)
         geom(i,1) = xe(i)
         geom(i,2) = ye(i)
         geom(i,3) = ze(i)
@@ -448,7 +451,7 @@
             if(iprcav >= 10) then
                 write(lvpri, '(a, 3i6)') "Vertices indices: ", n1, n2, n3
                 write(lvpri, *) 'Vertices'' Coordinates'
-                call output(pts, 1, 3, 1, 3, 3, 3, 1, lvpri)
+                call output(pts, 1_regint_k, 3_regint_k, 1_regint_k, 3_regint_k, 3_regint_k, 3_regint_k, 1_regint_k, lvpri)
             end if
             do jj = 1, 3
                 pp(jj) = d0
@@ -476,7 +479,7 @@
                 write(lvpri, *) 'After tessera subroutine'
                 write(lvpri, '(a, i6)') "Number of vertices: ", nv
                 write(lvpri,*) 'Vertices'' Coordinates'
-                call output(pts, 1, 3, 1, nv, 3, nv, 1, lvpri)
+                call output(pts, 1_regint_k, 3_regint_k, 1_regint_k, nv, 3_regint_k, nv, 1_regint_k, lvpri)
             end if
             if(area == d0) then
                 write(lvpri, '(a, i4)') "Zero area in tessera", nn + 1
@@ -586,37 +589,37 @@
 
 !     ----- set up for possible gradient calculation -----
 !           DONE ONLY IF WE HAVE SPHERES ON ATOMS
-
-    if(icesph /= 1) then
-    
-        if(nesfp > nucdep) then
-            write(lvpri, '(a)') "PEDRA: confusion about the sphere count."
-            write(lvpri, '(a, i6, a, i6)') "nesfp = ", nesfp, "natm = ", nucdep
-            pedra_error_code = 3
-            stop
-        end if
-    
-        call dzero(dercen, mxsp*mxcent*3*3)
-        call dzero(derrad, mxsp*mxcent*3)
-        do nsfe = 1, nucdep
-            natsph = 0
-            nsfer = nsfe
-            if (icesph == 2)then
-                natsph = 1
-                do jj = 1, nesfp
-                    if (ina(jj) == nsfe)then
-                        natsph = 0
-                        nsfer = jj
-                    end if
-                end do
-            end if
-            if(natsph == 0) THEN
-                do icoord = 1, 3
-                    call cavder(nsfe, nsfer, icoord, intsph, newsph)
-                end do
-            end if
-        end do
-    end if
+! RDR 191014 Deactivate call to derivative code
+!   if(icesph /= 1) then
+!   
+!       if(nesfp > nucdep) then
+!           write(lvpri, '(a)') "PEDRA: confusion about the sphere count."
+!           write(lvpri, '(a, i6, a, i6)') "nesfp = ", nesfp, "natm = ", nucdep
+!           pedra_error_code = 3
+!           stop
+!       end if
+!   
+!       call dzero(dercen, mxsp*mxcent*3*3)
+!       call dzero(derrad, mxsp*mxcent*3)
+!       do nsfe = 1, nucdep
+!           natsph = 0
+!           nsfer = nsfe
+!           if (icesph == 2)then
+!               natsph = 1
+!               do jj = 1, nesfp
+!                   if (ina(jj) == nsfe)then
+!                       natsph = 0
+!                       nsfer = jj
+!                   end if
+!               end do
+!           end if
+!           if(natsph == 0) THEN
+!               do icoord = 1, 3
+!                   call cavder(nsfe, nsfer, icoord, intsph, newsph)
+!               end do
+!           end if
+!       end do
+!   end if
 
     if (iprsol > 5) then
         write(lvpri, '(a)') " ***  Partition of the surface  ***"
@@ -668,12 +671,12 @@
   
 #include "pcm_mxcent.h"
 
-    integer :: nesf, nesf0, numsph
-    real(8) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
-    integer :: permutation_table(nesf, *), newsph(numsph, 2)
+    integer(kind=regint_k) :: nesf, nesf0, numsph
+    real(kind=dp) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
+    integer(kind=regint_k) :: permutation_table(nesf, *), newsph(numsph, 2)
 
-    real(8) :: diff1, r1
-    integer :: i, j, k, l, n1, n2, nesf1
+    real(kind=dp) :: diff1, r1
+    integer(kind=regint_k) :: i, j, k, l, n1, n2, nesf1
 
     nesf1 = nesf
 
@@ -770,7 +773,7 @@
 ! Polygen: a program to generate spherical polyhedra with triangular faces. 
 ! An equilateral division algorithm is used.
 ! Polygen can generate an optimal tesselation based on used input. 
-! Using the ipflag integer, the user can request:
+! Using the ipflag integer(kind=regint_k), the user can request:
 !    - a spherical polyhedron with an optimal number of tesserae (ipflag = 0);
 !    - a spherical polyhedron with an optimal average tesserae area (ipflag = 1)
 ! The polyhedron whose vertices are to be projected on the sphere and the
@@ -782,24 +785,24 @@
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 
-    integer :: ipflag, itsnum, itseff, nsfe, numts, numver
-    integer, intent(in) :: nesf
-    integer, intent(in) :: permutation_table(nesf, *) 
-    integer :: jtr(numts, *)
-    real(8) :: cv(numver, 3)
-    real(8) :: tsare, xen, yen, zen, ren
+    integer(kind=regint_k) :: ipflag, itsnum, itseff, nsfe, numts, numver
+    integer(kind=regint_k), intent(in) :: nesf
+    integer(kind=regint_k), intent(in) :: permutation_table(nesf, *) 
+    integer(kind=regint_k) :: jtr(numts, *)
+    real(kind=dp) :: cv(numver, 3)
+    real(kind=dp) :: tsare, xen, yen, zen, ren
     
-    real(8) :: v1(3), v2(3), v3(3), rotcav(3, 3)
-    integer :: itrvo(60,3), itreo(60,3), iedo(90,2) 
-    integer :: oldtr(100,100), ednew(90,100), trnew(60,100,100)
+    real(kind=dp) :: v1(3), v2(3), v3(3), rotcav(3, 3)
+    integer(kind=regint_k) :: itrvo(60,3), itreo(60,3), iedo(90,2) 
+    integer(kind=regint_k) :: oldtr(100,100), ednew(90,100), trnew(60,100,100)
 
-    real(8), parameter :: d0 = 0.0d0
-    real(8), parameter :: d1 = 1.0d0
-    real(8), parameter :: pi = acos(-1.0d0)
-    real(8) :: alpha, beta, cos1, cos2, costheta, dl, dm, dn, dnf, dnorm
-    real(8) :: sintheta, theta
-    integer :: i, ii, isymop, j, jj, jsymop, k, l, m, n, ne0, nf
-    integer :: noppt, nt, nt0, ntpt, ntra, nv, nvpt
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp), parameter :: d1 = 1.0d0
+    real(kind=dp), parameter :: pi = acos(-1.0d0)
+    real(kind=dp) :: alpha, beta, cos1, cos2, costheta, dl, dm, dn, dnf, dnorm
+    real(kind=dp) :: sintheta, theta
+    integer(kind=regint_k) :: i, ii, isymop, j, jj, jsymop, k, l, m, n, ne0, nf
+    integer(kind=regint_k) :: noppt, nt, nt0, ntpt, ntra, nv, nvpt
     
     itrvo = 0
     itreo = 0 
@@ -1075,12 +1078,12 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
     
-    integer :: numts
-    real(8) :: vert(numts, 10, 3), centr(numts, 10, 3)
-    integer :: permutation_table(nesf, *)
+    integer(kind=regint_k) :: numts
+    real(kind=dp) :: vert(numts, 10, 3), centr(numts, 10, 3)
+    integer(kind=regint_k) :: permutation_table(nesf, *)
 
-    real(8), parameter :: d0 = 0.0d0
-    integer :: i, ii, ii2, isymop, k, l
+    real(kind=dp), parameter :: d0 = 0.0d0
+    integer(kind=regint_k) :: i, ii, ii2, isymop, k, l
 
     ntsirr = nts
     nts = nts * (group%maxrep + 1)
@@ -1140,20 +1143,20 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
 
-    integer :: ns, nv, numts
-    real(8) :: area
-    real(8) :: pts(3,10), ccc(3,10), pp(3), pp1(3)
-    integer :: intsph(numts,10)
-    real(8) :: p1(3), p2(3), p3(3), p4(3), point(3)
-    real(8) :: pscr(3,10),cccp(3,10),pointl(3,10)
-    integer :: ind(10), ltyp(10), intscr(10), ntrhso(10)
+    integer(kind=regint_k) :: ns, nv, numts
+    real(kind=dp) :: area
+    real(kind=dp) :: pts(3,10), ccc(3,10), pp(3), pp1(3)
+    integer(kind=regint_k) :: intsph(numts,10)
+    real(kind=dp) :: p1(3), p2(3), p3(3), p4(3), point(3)
+    real(kind=dp) :: pscr(3,10),cccp(3,10),pointl(3,10)
+    integer(kind=regint_k) :: ind(10), ltyp(10), intscr(10), ntrhso(10)
     logical :: lan
     
-    real(8) :: dcheck, de2, delr, delr2, diffdr, dist, dist1, dist2
-    real(8) :: dnorm, rc, rc2, tol
-    real(8) :: x1, x2, y1, y2, z1, z2
-    integer :: i, j, ic, icop, icut, idx, idx2, ii, intcas, iprcav
-    integer :: iv1, iv2, ivnew, ivold, jj, k, l, n, nsfe1, nvleft, nvnegl
+    real(kind=dp) :: dcheck, de2, delr, delr2, diffdr, dist, dist1, dist2
+    real(kind=dp) :: dnorm, rc, rc2, tol
+    real(kind=dp) :: x1, x2, y1, y2, z1, z2
+    integer(kind=regint_k) :: i, j, ic, icop, icut, idx, idx2, ii, intcas, iprcav
+    integer(kind=regint_k) :: iv1, iv2, ivnew, ivold, jj, k, l, n, nsfe1, nvleft, nvnegl
 
 
 !     Coord. del centro che sottende l`arco tra i vertici
@@ -1174,9 +1177,9 @@
         call around('Input data in tessera', LVPRI)
         write(lvpri,1000) ns, nv, numts
         write(lvpri, *) '=======pts======='
-        call output(pts, 1, 3, 1, 3, 3, 3, 1, lvpri)
+        call output(pts, 1_regint_k, 3_regint_k, 1_regint_k, 3_regint_k, 3_regint_k, 3_regint_k, 1_regint_k, lvpri)
         write(lvpri, *) '=======ccc======='
-        call output(ccc, 1, 3, 1, 3, 3, 3, 1, lvpri)
+        call output(ccc, 1_regint_k, 3_regint_k, 1_regint_k, 3_regint_k, 3_regint_k, 3_regint_k, 1_regint_k, lvpri)
     end if
 
 !     INTSPH viene riferito alla tessera -numts-, e in seguito riceve il
@@ -1208,9 +1211,9 @@
             CALL AROUND('ACTUAL TESSERA_ STATUS', lvpri)
             WRITE(LVPRI,1000) NS,NV,NUMTS
             WRITE(LVPRI,*) '=======PSCR======='
-            CALL OUTPUT(PSCR,1,3,1,NV,3,NV,1,LVPRI)
+            CALL OUTPUT(PSCR,1_regint_k,3_regint_k,1_regint_k,NV,3_regint_k,NV,1_regint_k,LVPRI)
             WRITE(LVPRI,*) '=======CCCP======='
-            CALL OUTPUT(CCCP,1,3,1,NV,3,NV,1,LVPRI)
+            CALL OUTPUT(CCCP,1_regint_k,3_regint_k,1_regint_k,NV,3_regint_k,NV,1_regint_k,LVPRI)
         end if
                  
     
@@ -1556,9 +1559,9 @@
             CALL AROUND('AFTER INTER_SECTION TESSERA_ STATUS', lvpri)
             WRITE(LVPRI,1000) NS,NV,NUMTS
             WRITE(LVPRI,*) '=======PTS======='
-            CALL OUTPUT(PTS,1,3,1,NV,3,NV,1,LVPRI)
+            CALL OUTPUT(PTS,1_regint_k,3_regint_k,1_regint_k,NV,3_regint_k,NV,1_regint_k,LVPRI)
             WRITE(LVPRI,*) '=======CCC======='
-            CALL OUTPUT(CCC,1,3,1,NV,3,NV,1,LVPRI)
+            CALL OUTPUT(CCC,1_regint_k,3_regint_k,1_regint_k,NV,3_regint_k,NV,1_regint_k,LVPRI)
             DO IDX=1,NV
                 IDX2=IDX+1
                 IF (IDX2 > NV) IDX2=1
@@ -1583,9 +1586,9 @@
         CALL AROUND('FINAL TESSERA_ STATUS', lvpri)
         WRITE(LVPRI,1000) NS,NV,NUMTS
         WRITE(LVPRI,*) '=======PSCR======='
-        CALL OUTPUT(PSCR,1,3,1,NV,3,NV,1,LVPRI)
+        CALL OUTPUT(PSCR,1_regint_k,3_regint_k,1_regint_k,NV,3_regint_k,NV,1_regint_k,LVPRI)
         WRITE(LVPRI,*) '=======CCCP======='
-        CALL OUTPUT(CCCP,1,3,1,NV,3,NV,1,LVPRI)
+        CALL OUTPUT(CCCP,1_regint_k,3_regint_k,1_regint_k,NV,3_regint_k,NV,1_regint_k,LVPRI)
     end if
 
 !     Se la tessera non e' stata scartata, a questo punto ne troviamo
@@ -1672,14 +1675,14 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 
-    real(8) :: p1(3), p2(3), p3(3), p4(3)
-    integer :: ns, i
+    real(kind=dp) :: p1(3), p2(3), p3(3), p4(3)
+    integer(kind=regint_k) :: ns, i
     logical :: lalow, lblow
 
-    real(8) :: alphat, delta, diff, diff2, diff2a, diff2b
-    real(8) :: diffa, diffb, dnorm, p1p3, p2p3, r, r2, tol
-    integer :: j, jj, m
-    integer :: iprcav = 0
+    real(kind=dp) :: alphat, delta, diff, diff2, diff2a, diff2b
+    real(kind=dp) :: diffa, diffb, dnorm, p1p3, p2p3, r, r2, tol
+    integer(kind=regint_k) :: j, jj, m
+    integer(kind=regint_k) :: iprcav = 0
 
 
 !     Trova il punto P4, sull`arco P1-P2 sotteso dal centro P3, che
@@ -1812,21 +1815,21 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
 
-    integer :: nv, ns, numts
-    real(8) :: area
-    real(8) :: pts(3, 10), ccc(3, 10), pp(3), pp1(3), beta(10)
-    integer :: intsph(numts, 10)
-    real(8) :: p1(3),p2(3),p3(3),u1(3),u2(3),phin(10),weight(0:10)
+    integer(kind=regint_k) :: nv, ns, numts
+    real(kind=dp) :: area
+    real(kind=dp) :: pts(3, 10), ccc(3, 10), pp(3), pp1(3), beta(10)
+    integer(kind=regint_k) :: intsph(numts, 10)
+    real(kind=dp) :: p1(3),p2(3),p3(3),u1(3),u2(3),phin(10),weight(0:10)
     
-    real(8), parameter :: d0 = 0.0d0
-    real(8), parameter :: dp5 = 0.5d0
-    real(8), parameter :: d1 = 1.0d0
-    real(8), parameter :: pi = acos(-1.0d0)
+    real(kind=dp), parameter :: d0 = 0.0d0
+    real(kind=dp), parameter :: dp5 = 0.5d0
+    real(kind=dp), parameter :: d1 = 1.0d0
+    real(kind=dp), parameter :: pi = acos(-1.0d0)
 
-    real(8) :: cosphin, costn, sum1, sum2, sumphi, dnorm1, dnorm2, tpi
-    real(8) :: scal, dnorm, dnorm3
-    real(8) :: x1, x2, y1, y2, z1, z2
-    integer :: i, jj, n, n0, n1, n2, nsfe1
+    real(kind=dp) :: cosphin, costn, sum1, sum2, sumphi, dnorm1, dnorm2, tpi
+    real(kind=dp) :: scal, dnorm, dnorm3
+    real(kind=dp) :: x1, x2, y1, y2, z1, z2
+    integer(kind=regint_k) :: i, jj, n, n0, n1, n2, nsfe1
 
 
 !     Sfrutta il teorema di Gauss-Bonnet per calcolare l'area
@@ -1923,14 +1926,14 @@
     
         N0 = N
     ! f 220     CONTINUE
-        N0 = MOD(NV+N0-1,NV)
+        N0 = MOD(NV+N0-1_regint_k,NV)
         IF(N0 == 0) N0 = NV
     ! f         write(lvpri,*) "N0 is", N0, NTRHSO(N0)
     ! f         IF(NTRHSO(N0).EQ.1) go to 220
         N2 = N
     ! f         NCONT = 0
     ! f 230     CONTINUE
-        N2 = MOD(N2+1,NV)
+        N2 = MOD(N2+1_regint_k,NV)
         IF(N2 == 0) N2 = NV
     ! f         write(lvpri,*) "N2 is", N2, NTRHSO(N1)
     ! f         IF(NTRHSO(N1 + NCONT).EQ.1) THEN
@@ -2026,12 +2029,12 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 
-    integer :: icav1(mxcent), icav2(mxcent)
-    integer :: ncav1, ncav2
+    integer(kind=regint_k) :: icav1(mxcent), icav2(mxcent)
+    integer(kind=regint_k) :: ncav1, ncav2
     logical :: some
 
-    integer :: i, n1, n2, nn, icen, n
-    real(8) :: r, rr, sum, x, y, z, xx, yy, zz
+    integer(kind=regint_k) :: i, n1, n2, nn, icen, n
+    real(kind=dp) :: r, rr, sum, x, y, z, xx, yy, zz
 
     DO I=1,MXCENT
         ICAV1(I)=0
@@ -2106,21 +2109,21 @@
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
 ! Passed variables
-    integer :: numts
-    real(8) :: vert(numts, 10, 3)
+    integer(kind=regint_k) :: numts
+    real(kind=dp) :: vert(numts, 10, 3)
 ! Local variables    
-    integer :: ivts(mxts, 10)
-    integer :: off_unit
+    integer(kind=regint_k) :: ivts(mxts, 10)
+    integer(kind=regint_k) :: off_unit
     logical :: off_open, off_exist
-    real(8) :: c1, c2, c3
-    integer :: n, numv, i, j, k, last, lucav
-    integer :: jcord
+    real(kind=dp) :: c1, c2, c3
+    integer(kind=regint_k) :: n, numv, i, j, k, last, lucav
+    integer(kind=regint_k) :: jcord
 
     lucav = 12121201
 
 ! The following INQUIRE statement returns whether the file named cavity.off is
 ! connected in logical variable off_open, whether the file exists in logical
-! variable off_exist, and the unit number in integer variable off_unit
+! variable off_exist, and the unit number in integer(kind=regint_k) variable off_unit
     inquire(file = 'cavity.off', opened = off_open, & 
             exist = off_exist, number = off_unit)
     if (off_exist) then
@@ -2187,11 +2190,11 @@
 !
     use pedra_symmetry, only: get_pt
 
-    integer :: nv, nt, its, nvert, numts
-    integer :: jtr(numts, *)
-    real(8) :: cv(nvert, *)
+    integer(kind=regint_k) :: nv, nt, its, nvert, numts
+    integer(kind=regint_k) :: jtr(numts, *)
+    real(kind=dp) :: cv(nvert, *)
 
-    integer :: i, isymop, ii, jj, k
+    integer(kind=regint_k) :: i, isymop, ii, jj, k, i_tmp
     logical :: lsymop(0:7)
     character(len=3) :: group_name
 
@@ -2254,7 +2257,8 @@
             do i = 1, nv
                 ii = i + nv
                 do k = 1, 3 
-                    cv(ii, k) = get_pt(iand(isymop, 2**(k-1))) * cv(i, k)
+                    i_tmp = 2_regint_k**(k - 1_regint_k)
+                    cv(ii, k) = get_pt(iand(isymop, i_tmp)) * cv(i, k)
                 end do
             end do
             ! Replication of topology       
@@ -2282,22 +2286,37 @@
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
 
-    integer,    intent(in) :: katom
-    real(8),    intent(in) :: geom(katom, 3), amass(katom)
-    real(8), intent(inout) :: vmat(3, 3)
+    integer(kind=regint_k), intent(in) :: katom
+    real(kind=dp), intent(inout) :: geom(katom, 3)
+    real(kind=dp),    intent(in) :: amass(katom)
+    real(kind=dp), intent(inout) :: vmat(3, 3)
 
-    real(8) :: eigval(3), eigvec(3, 3), tinert(3, 3)
-    real(8) :: angmom(3), omegad(3), eiginv(3, 3), scal(3)
-    integer :: iax(6)
+    real(kind=dp) :: eigval(3), eigvec(3, 3), tinert(3, 3)
+    real(kind=dp) :: angmom(3), omegad(3), eiginv(3, 3), scal(3)
+    integer(kind=regint_k) :: iax(6)
     logical :: planar, linear
-    integer :: i, j, k, jax, nmax
-    integer :: nopax, nshift
-
-    real(8) :: dij
+    integer(kind=regint_k) :: i, j, k, jax, nmax
+    integer(kind=regint_k) :: nopax, nshift
+    real(kind=dp) :: com(3), total_mass
+    real(kind=dp) :: dij
     
     iax = [1, 2, 3, 3, 2, 1]
 
     angmom = [1.0d0, 1.0d0, 1.0d0]
+
+    ! Calculate center-of-mass (com) and translate
+    total_mass = sum(amass) 
+    do i = 1, 3
+      com(i) = 0.0_dp
+      do j = 1, katom
+        com(i) = com(i) + geom(j, i) * amass(j)
+      end do
+      com(i) = com(i) / total_mass
+    end do
+    ! Translation to COM
+    do i = 1, katom
+      geom(i, :) = geom(i, :) - com(:)
+    end do
 
     call wlkdin(geom, amass, nesfp, angmom, tinert, omegad, eigval, eigvec, .true., planar, linear)
 
@@ -2327,9 +2346,9 @@
         do j = 2,3
             if (scal(j) > scal(nmax)) nmax = j
         end do
-        nshift = mod(nmax-1,3)
+        nshift = mod(nmax-1_regint_k,3_regint_k)
         do i = 0,2
-            k = mod(i + nshift,3) + 1
+            k = mod(i + nshift, 3_regint_k) + 1
             do j =1,3
                 vmat(i+1,j) = eiginv(k,j)
             end do
@@ -2351,15 +2370,15 @@
 !                    
 ! Performs some kind of check on tesserae
 !
-    integer, intent(in) :: nts
-    real(8), intent(in) :: xtscor(nts), ytscor(nts), ztscor(nts), as(nts)
+    integer(kind=regint_k), intent(in) :: nts
+    real(kind=dp), intent(in) :: xtscor(nts), ytscor(nts), ztscor(nts), as(nts)
     
     logical :: lchk, lswtch
-    real(8) :: xbak, ybak, zbak, abak
-    integer :: ibak, i, j, ii
+    real(kind=dp) :: xbak, ybak, zbak, abak
+    integer(kind=regint_k) :: ibak, i, j, ii
     ! Some scratch space
-    real(8) :: privec(4, nts) ! Tesserae centers and area
-    integer :: idxpri(nts)    ! Index of tessera i at i-th position
+    real(kind=dp) :: privec(4, nts) ! Tesserae centers and area
+    integer(kind=regint_k) :: idxpri(nts)    ! Index of tessera i at i-th position
 
     lswtch = .false.
     privec = 0.0d0
@@ -2413,7 +2432,7 @@
 
     logical function chktss(x1, y1, z1, a1, x2, y2, z2, a2)
 
-    real(8) :: x1, y1, z1, a1, x2, y2, z2, a2
+    real(kind=dp) :: x1, y1, z1, a1, x2, y2, z2, a2
 
     if(abs(x1) < abs(x2)) then
         chktss = .true.
@@ -2437,7 +2456,7 @@
           
     character(16) function typlab(i)
     
-    integer, intent(in) :: i
+    integer(kind=regint_k), intent(in) :: i
     
     if(i == 4) then
         typlab='ALL EDGE IS FREE'

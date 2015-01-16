@@ -27,6 +27,7 @@
 #define MATHUTILS_HPP
 
 #include <algorithm>
+#include <bitset>
 #include <cmath>
 #include <iomanip>
 #include <limits>
@@ -46,6 +47,50 @@
 #include "QuadratureRules.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
+
+/*! \fn inline int parity(std::bitset<nBits> bitrep)
+ *  \param[in] bitrep a bitset
+ *  \tparam nBits lenght of the input bitset
+ *
+ *  Calculate the parity of the bitset as defined by:
+ *     bitrep[0] XOR bitrep[1] XOR ... XOR bitrep[nBits-1]
+ */
+template <size_t nBits>
+inline int parity(std::bitset<nBits> bitrep)
+{
+    int parity = 0;
+    for (size_t i = 0; i < bitrep.size(); ++i) {
+        parity ^= bitrep[i];
+    }
+    return parity;
+}
+
+/*! \fn inline double parity(unsigned int i) 
+ *  \param[in] i an integer, usually an index for an irrep or a symmetry operation
+ *
+ * Returns parity of input integer.
+ * The parity is defined as the result of using XOR on the bitrep
+ * of the given integer. For example: 
+ *   2 -> 010 -> 0^1^0 = 1 -> -1.0
+ *   6 -> 110 -> 1^1^0 = 0 ->  1.0
+ *
+ * It can also be interpreted as the action of a given operation on the
+ * Cartesian axes:
+ *      zyx         Parity
+ *   0  000    E      1.0
+ *   1  001   Oyz    -1.0
+ *   2  010   Oxz    -1.0
+ *   3  011   C2z     1.0
+ *   4  100   Oxy    -1.0
+ *   5  101   C2y     1.0
+ *   6  110   C2x     1.0
+ *   7  111    i     -1.0
+ */
+inline double parity(unsigned int i)
+{
+    // Use a ternary if construct. If the bitset is odd return -1.0 Return +1.0 otherwise.
+    return (parity(std::bitset<3>(i)) ? -1.0 : 1.0); 
+}
 
 /*! \fn inline bool isZero(double value, double threshold)
  *  \param[in] value     the value to be checked
@@ -84,7 +129,7 @@ inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int ntsir
     Eigen::MatrixXd u = Eigen::MatrixXd::Zero(nr_irrep, nr_irrep);
     for (int i = 0; i < nr_irrep; ++i) {
         for (int j = 0; j < nr_irrep; ++j) {
-            u(i, j) = Symmetry::parity(i&j);
+            u(i, j) = parity(i&j);
         }
     }
     // Naming of indices:
@@ -175,6 +220,28 @@ inline void hermitivitize(Eigen::MatrixBase<Derived> & matrix_)
     // http://eigen.tuxfamily.org/dox/group__TopicAliasing.html
     // The adjoint is evaluated explicitly into an intermediate.
     matrix_ = 0.5 * (matrix_ + matrix_.adjoint().eval());
+}
+    
+/*! \brief Returns an Eigen matrix of type T, with dimensions _rows*_columns.
+ *  \param _rows the number of rows.
+ *  \param _columns the number of columns.
+ *  \param _inData the raw data buffer.
+ *  \tparam T the data type of the matrix to be returned.
+ *
+ *  Warning! This function assumes that the raw buffer is in column-major order
+ *  as in Fortran.
+ */
+template <typename T>
+inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(
+    size_t _rows, size_t _columns, void * _inData)
+{
+    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> _outData;
+    _outData.resize(_rows, _columns);
+    T * data = reinterpret_cast<T*>(_inData);
+    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > mapped_data(data,
+            _rows, _columns);
+    _outData = mapped_data;
+    return _outData;
 }
 
 /*! \fn inline void eulerRotation(Eigen::Matrix3d & R_, const Eigen::Vector3d & eulerAngles_)

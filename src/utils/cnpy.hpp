@@ -20,6 +20,8 @@
 
 #include <Eigen/Dense>
 
+#include "MathUtils.hpp"
+
 namespace cnpy
 {
     struct NpyArray {
@@ -43,8 +45,6 @@ namespace cnpy
     char map_type(const std::type_info& t);
     template<typename T> std::vector<char> create_npy_header(const T* data,
             const unsigned int* shape, const unsigned int ndims, bool fortran_order = false);
-    template <typename T> inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>
-    getFromRawBuffer(size_t _rows, size_t _columns, void * _inData);
     void parse_npy_header(FILE* fp,unsigned int& word_size, unsigned int*& shape,
                           unsigned int& ndims, bool& fortran_order);
     void parse_zip_footer(FILE* fp, unsigned short& nrecs,
@@ -68,8 +68,7 @@ namespace cnpy
             const std::string rhs);
     template<> std::vector<char>& operator+=(std::vector<char>& lhs, const char* rhs);
 
-
-    template<typename T> std::string tostring(T i, int pad = 0, char padval = ' ')
+    template<typename T> std::string tostring(T i, int /* pad */ = 0,  char /* padval */ = ' ')
     {
         std::stringstream s;
         s << i;
@@ -226,7 +225,7 @@ namespace cnpy
         fclose(fp);
     }
 
-    template<typename T> std::vector<char> create_npy_header(const T* data,
+    template<typename T> std::vector<char> create_npy_header(const T* /* data */,
             const unsigned int* shape, const unsigned int ndims, bool fortran_order)
     {
 
@@ -263,27 +262,6 @@ namespace cnpy
         return header;
     }
 
-    /*! \brief Returns an Eigen matrix of type T, with dimensions _rows*_columns.
-     *  \param _rows the number of rows.
-     *  \param _columns the number of columns.
-     *  \param _inData the raw data buffer.
-     *  \tparam T the data type of the matrix to be returned.
-     *
-     *  Warning! This function assumes that the raw buffer is in column-major order
-     *  as in Fortran.
-     */
-    template <typename T>
-    inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(
-        size_t _rows, size_t _columns, void * _inData)
-    {
-        Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> _outData;
-        _outData.resize(_rows, _columns);
-        T * data = reinterpret_cast<T*>(_inData);
-        Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > mapped_data(data,
-                _rows, _columns);
-        _outData = mapped_data;
-        return _outData;
-    }
 } // closes namespace
 
 #endif // LIBCNPY_H_ 

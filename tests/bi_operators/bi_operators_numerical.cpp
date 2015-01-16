@@ -46,6 +46,7 @@
 #include "NumericalIntegrator.hpp"
 #include "PhysicalConstants.hpp"
 #include "UniformDielectric.hpp"
+#include "TestingMolecules.hpp"
 #include "Vacuum.hpp"
 
 struct NumericalIntegratorTest {
@@ -72,15 +73,9 @@ struct NumericalIntegratorTest {
         probeNormal = probe + Eigen::Vector3d::Random();
         probeNormal.normalize();
         
-	Eigen::Vector3d origin(0.0, 0.0, 0.0);
-        std::vector<Sphere> spheres;
-	radius = 1.44 / convertBohrToAngstrom;
-        Sphere sph1(origin,  radius);
-        spheres.push_back(sph1);
+	Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
         double area = 10.0;
-        // C1
-        Symmetry pGroup = buildGroup(0, 0, 0, 0);
-        cavity = GePolCavity(spheres, area, 0.0, 100.0, pGroup);
+        cavity = GePolCavity(molec, area, 0.0, 100.0);
 	
 	diag = new NumericalIntegrator();
     }
@@ -106,7 +101,7 @@ BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("vacuum_S_numerical.npy");
     int dim = raw_S_ref.shape[0];
     Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim);
-    S_reference = cnpy::getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
+    S_reference = getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(S_results(i), S_reference(i), 1.0e-12);
     }
@@ -127,7 +122,7 @@ BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("vacuum_D_numerical.npy");
     dim = raw_D_ref.shape[0];
     Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim);
-    D_reference = cnpy::getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
+    D_reference = getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
     }
@@ -159,7 +154,7 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("uniformdielectric_S_numerical.npy");
     int dim = raw_S_ref.shape[0];
     Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim);
-    S_reference = cnpy::getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
+    S_reference = getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(S_results(i), S_reference(i), 1.0e-12);
     }
@@ -180,7 +175,7 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("uniformdielectric_D_numerical.npy");
     dim = raw_D_ref.shape[0];
     Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim);
-    D_reference = cnpy::getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
+    D_reference = getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
     }
@@ -212,7 +207,7 @@ BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("ionic_S_numerical.npy");
     int dim = raw_S_ref.shape[0];
     Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim);
-    S_reference = cnpy::getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
+    S_reference = getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(S_results(i), S_reference(i), 1.0e-12);
     }
@@ -233,7 +228,7 @@ BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("ionic_D_numerical.npy");
     dim = raw_D_ref.shape[0];
     Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim);
-    D_reference = cnpy::getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
+    D_reference = getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
     }
@@ -265,7 +260,7 @@ BOOST_FIXTURE_TEST_CASE(anisotropic, NumericalIntegratorTest)
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("anisotropic_S_numerical.npy");
     int dim = raw_S_ref.shape[0];
     Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim);
-    S_reference = cnpy::getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
+    S_reference = getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(S_results(i), S_reference(i), 1.0e-12);
     }
@@ -286,7 +281,7 @@ BOOST_FIXTURE_TEST_CASE(anisotropic, NumericalIntegratorTest)
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("anisotropic_D_numerical.npy");
     dim = raw_D_ref.shape[0];
     Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim);
-    D_reference = cnpy::getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
+    D_reference = getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
     }

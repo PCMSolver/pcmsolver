@@ -39,16 +39,26 @@
 #include "IGreensFunction.hpp"
 
 template<typename T>
-double PlanarInterface<T>::derivative(const Eigen::Vector3d & direction,
-                                      const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+double PlanarInterface<T>::derivative(const Eigen::Vector3d & /* direction */,
+                                      const Eigen::Vector3d & /* p1 */, const Eigen::Vector3d & /* p2 */) const
 {
     throw std::runtime_error("Green's function for a planar interface has not yet been implemented!");
 }
 
 template<typename T>
-T PlanarInterface<T>::operator()(T * sp, T * pp) const
+T PlanarInterface<T>::operator()(T * /* sp */, T * /* pp */) const
 {
     throw std::runtime_error("Green's function for a planar interface has not yet been implemented!");
+}
+
+template <typename T>
+double PlanarInterface<T>::diagonalS(double /* area */) const {
+        return 1.0;
+}
+
+template <typename T>
+double PlanarInterface<T>::diagonalD(double /* area */, double /* radius */) const {
+        return 1.0;
 }
 
 template <typename T>

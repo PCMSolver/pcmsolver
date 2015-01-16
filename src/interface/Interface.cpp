@@ -45,6 +45,7 @@
 
 // Include Boost headers here
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
@@ -66,9 +67,13 @@ Cavity        * _cavity = NULL;
 WaveletCavity * _waveletCavity = NULL;
 
 PWCSolver * _PWCSolver = NULL;
+PWCSolver * _noneqPWCSolver = NULL;
 PWLSolver * _PWLSolver = NULL;
+PWLSolver * _noneqPWLSolver = NULL;
 #endif
 PCMSolver * _solver = NULL;
+PCMSolver * _noneqSolver = NULL;
+bool noneqExists = false;
 
 SharedSurfaceFunctionMap functions;
 boost::shared_ptr<Input> parsedInput;
@@ -79,7 +84,6 @@ std::vector<std::string> input_strings; // Used only by Fortran hosts
 	Functions visible to host program
 
 */
-
 
 extern "C" void hello_pcm(int * a, double * b)
 {
@@ -133,10 +137,44 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
         iter_chg = functions.insert(iter_chg, insertion);
     }
 
+    // If it already exists, we will pass a reference to its values to
+    // _solver->computeCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
+    // We clear the ASC surface function. Needed when using symmetry for response calculations
+    iter_chg->second->clear();
+    _solver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
+    // Renormalization of charges: divide by the number of symmetry operations in the group
+    (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
+}
+
+extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
+{
+    // Check that the nonequilibrium solver has been created
+    if (!noneqExists) {
+	initNonEqSolver();
+    }
+
+    std::string potFuncName(potString);
+    std::string chgFuncName(chgString);
+
+    // Get the proper iterators
+    SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
+    // Here we check whether the function exists already or not
+    // 1. find the lower bound of the map
+    SharedSurfaceFunctionMap::iterator iter_chg = functions.lower_bound(chgFuncName);
+    // 2. if iter_chg == end, or if iter_chg is not a match,
+    //    then this element was not in the map, so we need to insert it
+    if ( iter_chg == functions.end()  ||  iter_chg->first != chgFuncName ) {
+        // move iter_chg to the element preceeding the insertion point
+        if ( iter_chg != functions.begin() ) --iter_chg;
+        // insert it
+	SharedSurfaceFunction func( new SurfaceFunction(chgFuncName,
+                                          _cavity->size()) );
+        SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(chgFuncName, func);
+        iter_chg = functions.insert(iter_chg, insertion);
+    }
+
     // If it already exists there's no problem, we will pass a reference to its values to
-    // _solver->compCharge(const Eigen::VectorXd &, Eigen::VectorXd &) so they will be automagically updated!
-    _solver->compCharge(iter_pot->second->getVector(), iter_chg->second->getVector(),
-                        *irrep);
+    _solver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
 }
@@ -176,6 +214,52 @@ extern "C" void compute_polarization_energy(double * energy)
     }
 }
 
+extern "C" void save_surface_functions()
+{
+    printer("\nDumping surface functions to .npy files");
+    SharedSurfaceFunctionPair pair;
+    BOOST_FOREACH(pair, functions) {
+        unsigned int dim = static_cast<unsigned int>(pair.second->nPoints());
+        const unsigned int shape[] = {dim};
+        std::string fname = pair.second->name() + ".npy";
+        cnpy::npy_save(fname, pair.second->vector().data(), shape, 1, "w", true);
+    }
+}
+
+extern "C" void save_surface_function(const char * name)
+{
+    typedef SharedSurfaceFunctionMap::const_iterator surfMap_iter;
+    std::string functionName(name);
+    std::string fname = functionName + ".npy";
+
+    surfMap_iter it = functions.find(functionName);
+    unsigned int dim = static_cast<unsigned int>(it->second->nPoints());
+    const unsigned int shape[] = {dim};
+    cnpy::npy_save(fname, it->second->vector().data(), shape, 1, "w", true);
+}
+
+extern "C" void load_surface_function(const char * name)
+{
+    std::string functionName(name);
+    printer("\nLoading surface function " + functionName + " from .npy file");
+    std::string fname = functionName + ".npy";
+    cnpy::NpyArray raw_surfFunc = cnpy::npy_load(fname);
+    int dim = raw_surfFunc.shape[0];
+    if (dim != _cavity->size()) { 
+        throw std::runtime_error("Inconsistent dimension of loaded surface function!");
+    } else {
+	Eigen::VectorXd values = getFromRawBuffer<double>(dim, 1, raw_surfFunc.data); 
+        SharedSurfaceFunction func( new SurfaceFunction(functionName, dim, values) );
+	// Append to global map
+        SharedSurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
+        if ( iter == functions.end()  ||  iter->first != functionName ) {                                   
+            if ( iter != functions.begin() ) --iter;
+            SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(functionName, func);
+            iter = functions.insert(iter, insertion);
+        }
+   }
+}
+
 extern "C" void dot_surface_functions(double * result, const char * potString,
                                       const char * chgString)
 {
@@ -183,18 +267,15 @@ extern "C" void dot_surface_functions(double * result, const char * potString,
     std::string potFuncName(potString);
     std::string chgFuncName(chgString);
 
-// Setup iterators
+    // Setup iterators
     SharedSurfaceFunctionMap::const_iterator iter_pot = functions.find(potFuncName);
     SharedSurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
 
     if ( iter_pot == functions.end()  ||  iter_chg == functions.end() ) {
         throw std::runtime_error("One or both of the SurfaceFunction specified is non-existent.");
     } else {
-// Calculate the dot product
+        // Calculate the dot product
         *result = (*iter_pot->second) * (*iter_chg->second);
-        //std::cout << "Taking dot product" << std::endl;
-        //std::cout << iter_pot->second->getName() << " * " << iter_chg->second->getName() << " = ";
-        //printf("%.10E \n", *result);
     }
 }
 
@@ -290,7 +371,7 @@ extern "C" void get_surface_function(int * nts, double * values, char * name)
         throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
 
     for ( int i = 0; i < nTess; ++i ) {
-        values[i] = iter->second->getValue(i);
+        values[i] = iter->second->value(i);
     }
 }
 
@@ -379,8 +460,11 @@ void setupInput(bool from_host)
 {
     if (from_host) { // Set up input from host data structures
 	    cavityInput cav;
+	    cav.cleaner();
 	    solverInput solv;
+	    solv.cleaner();
 	    greenInput green;
+	    green.cleaner();
 	    host_input(&cav, &solv, &green);
 	    // Put string passed with the alternative method in the input structures
 	    if (!input_strings.empty()) {
@@ -397,61 +481,19 @@ void setupInput(bool from_host)
 	    	strncpy(green.inside_type,  input_strings[6].c_str(), input_strings[6].length());
 	    	strncpy(green.outside_type, input_strings[7].c_str(), input_strings[7].length());
 	    }
-	   // std::ostringstream out_stream;
-	   // out_stream << cav << std::endl;
-	   // out_stream << solv << std::endl;
-	   // out_stream << green << std::endl;
-	   // printer(out_stream);
     	    parsedInput = boost::make_shared<Input>(Input(cav, solv, green));
     } else {
-	    parsedInput = boost::make_shared<Input>(Input("pcmsolver.inp"));
+	    parsedInput = boost::make_shared<Input>(Input("@pcmsolver.inp"));
     }
-    // The only thing we can't create immediately is the vector of spheres
+    // The only thing we can't create immediately is the molecule
     // from which the cavity is to be built.
-    std::string _mode = parsedInput->mode();
-    // Get the total number of nuclei and the geometry anyway
-    Eigen::VectorXd charges;
-    Eigen::Matrix3Xd centers;
-    initAtoms(charges, centers);
-    std::vector<Sphere> spheres;
-
-    // We create an initial list of spheres as if we were in the Implicit mode
-    // regardless of what the user told us.
-    // If we are in the Implicit mode we just need to let the Input object know about
-    // the list of spheres.
-    // Some post-processing of the list is needed in the Atoms mode.
-    initSpheresImplicit(charges, centers, spheres);
-
-    if (_mode == "IMPLICIT") {
-        parsedInput->spheres(spheres);
-    } else if (_mode == "ATOMS") {
-        initSpheresAtoms(centers, spheres);
-        parsedInput->spheres(spheres);
-    }
+    Molecule molec;
+    initMolecule(molec);
+    parsedInput->molecule(molec);
 }
 
 void initCavity()
 {
-    // Get the input data for generating the cavity
-    std::string cavityType = parsedInput->cavityType();
-    double area = parsedInput->area();
-    std::vector<Sphere> spheres = parsedInput->spheres();
-    double minRadius = parsedInput->minimalRadius();
-    double probeRadius = parsedInput->probeRadius();
-    double minDistance = parsedInput->minDistance();
-    int derOrder = parsedInput->derOrder();
-    int patchLevel = parsedInput->patchLevel();
-    double coarsity = parsedInput->coarsity();
-    std::string restart = parsedInput->cavityFilename();
-
-    int nr_gen;
-    int gen1, gen2, gen3;
-    set_point_group(&nr_gen, &gen1, &gen2, &gen3);
-    Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
-
-    cavityData cavInput(spheres, area, probeRadius, minDistance, derOrder, minRadius,
-                        patchLevel, coarsity, restart, pg);
-
     // Get the right cavity from the Factory
     // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
     std::string modelType = parsedInput->solverType();
@@ -461,42 +503,29 @@ void initCavity()
         initWaveletCavity();
     } else {
         // This means in practice that the CavityFactory is now working only for GePol.
-        _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
+        _cavity = CavityFactory::TheCavityFactory().createCavity(parsedInput->cavityType(), parsedInput->cavityParams());
     }
 #else    
-    _cavity = CavityFactory::TheCavityFactory().createCavity(cavityType, cavInput);
+    _cavity = CavityFactory::TheCavityFactory().createCavity(parsedInput->cavityType(), parsedInput->cavityParams());
 #endif    
 }
 
 void initSolver()
 {
-    // First of all create the integrator for the diagonal elements of the S and D operators
-    // in principle it could be a different integrator for the inside/outside Green's function
-    std::string integratorType("COLLOCATION");
-    DiagonalIntegrator * integrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(integratorType);
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
-    double epsilon = parsedInput->epsilonInside();
-    std::string greenType = parsedInput->greenInsideType();
-    int greenDer = parsedInput->derivativeInsideType();
-    greenData inside(greenDer, epsilon, integrator);
-
-    IGreensFunction * gfInside = factory.createGreensFunction(greenType, inside);
-
+    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(), 
+		                                              parsedInput->insideGreenParams());
     // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
-    epsilon = parsedInput->epsilonOutside();
-    greenType = parsedInput->greenOutsideType();
-    greenDer = parsedInput->derivativeOutsideType();
-    greenData outside(greenDer, epsilon, integrator);
-
-    IGreensFunction * gfOutside = factory.createGreensFunction(greenType, outside);
+    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(), 
+		                                               parsedInput->outsideStaticGreenParams());
     // And all this to finally create the solver!
     std::string modelType = parsedInput->solverType();
-    double correction = parsedInput->correction();
-    int eqType = parsedInput->equationType();
-    bool symm = parsedInput->hermitivitize();
-    solverData solverInput(gfInside, gfOutside, correction, eqType, symm);
+    solverData solverInput(gfInside, gfOutside, 
+		           parsedInput->correction(),
+			   parsedInput->equationType(), 
+			   parsedInput->hermitivitize());
 
     // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
     // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
@@ -531,6 +560,56 @@ void initSolver()
     _cavity->saveCavity();
 }
 
+void initNonEqSolver()
+{
+    GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
+    // Get the input data for generating the inside & outside Green's functions
+    // INSIDE
+    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(), 
+		                                              parsedInput->insideGreenParams());
+    // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
+    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(), 
+		                                               parsedInput->outsideDynamicGreenParams());
+    // And all this to finally create the solver!
+    std::string modelType = parsedInput->solverType();
+    solverData solverInput(gfInside, gfOutside, 
+		           parsedInput->correction(),
+			   parsedInput->equationType(), 
+			   parsedInput->hermitivitize());
+
+    // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
+    // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
+    // (...not our fault, but should remedy somehow)
+#if defined (DEVELOPMENT_CODE)    
+    if (modelType == "WAVELET") {
+        _noneqPWCSolver = new PWCSolver(gfInside, gfOutside);
+        _noneqPWCSolver->buildSystemMatrix(*_waveletCavity);
+        _waveletCavity->uploadPoints(_noneqPWCSolver->getQuadratureLevel(), _noneqPWCSolver->getT_(),
+                                     false); // WTF is happening here???
+        _cavity = _waveletCavity;
+        _noneqSolver = _noneqPWCSolver;
+    } else if (modelType == "LINEAR") {
+        _noneqPWLSolver = new PWLSolver(gfInside, gfOutside);
+        _noneqPWLSolver->buildSystemMatrix(*_waveletCavity);
+        _waveletCavity->uploadPoints(_noneqPWLSolver->getQuadratureLevel(), _noneqPWLSolver->getT_(),
+                                     true); // WTF is happening here???
+        _cavity = _waveletCavity;
+        _noneqSolver = _noneqPWLSolver;
+    } else {
+        // This means that the factory is properly working only for IEFSolver and CPCMSolver
+        _noneqSolver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
+        _noneqSolver->buildSystemMatrix(*_cavity);
+    }
+#else
+    _noneqSolver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
+    _noneqSolver->buildSystemMatrix(*_cavity);
+#endif    
+    // Always save the cavity in a cavity.npz binary file
+    // Cavity should be saved to file in initCavity(), due to the dependencies of
+    // the WaveletCavity on the wavelet solvers it has to be done here...
+    _cavity->saveCavity();
+}
+
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
 {
     int nuclei;
@@ -540,6 +619,60 @@ void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
     double * chg = charges_.data();
     double * centers = sphereCenter_.data();
     collect_atoms(chg, centers);
+}
+
+void initMolecule(Molecule & molecule_)
+{
+    // Gather information necessary to build molecule_
+    // 1. number of atomic centers
+    int nuclei;
+    collect_nctot(&nuclei);
+    // 2. position and charges of atomic centers
+    Eigen::Matrix3Xd centers; 
+    centers.resize(Eigen::NoChange, nuclei);
+    Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
+    double * chg = charges.data();
+    double * pos = centers.data();
+    collect_atoms(chg, pos);
+    // 3. list of atoms and list of spheres
+    bool scaling = parsedInput->scaling();
+    std::string set = parsedInput->radiiSet();
+    double factor = angstromToBohr(parsedInput->CODATAyear());
+    std::vector<Atom> radiiSet, atoms;
+    if ( set == "UFF" ) {
+        radiiSet = Atom::initUFF();
+    } else {
+        radiiSet = Atom::initBondi();
+    }
+    std::vector<Sphere> spheres;
+    for (int i = 0; i < charges.size(); ++i) {
+        int index = int(charges(i)) - 1;
+	atoms.push_back(radiiSet[index]);
+        double radius = radiiSet[index].atomRadius() * factor;
+        if (scaling) {
+            radius *= radiiSet[index].atomRadiusScaling();
+        }
+        spheres.push_back(Sphere(centers.col(i), radius));
+    }
+    // 4. masses
+    Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
+    for (int i = 0; i < masses.size(); ++i) {
+	 masses(i) = atoms[i].atomMass();
+    }
+    // Based on the creation mode (Implicit or Atoms)
+    // the spheres list might need postprocessing
+    std::string _mode = parsedInput->mode();
+    if ( _mode == "ATOMS" ) {
+       initSpheresAtoms(centers, spheres);	 
+    }
+    // 5. molecular point group
+    int nr_gen;
+    int gen1, gen2, gen3;
+    set_point_group(&nr_gen, &gen1, &gen2, &gen3);
+    Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
+
+    // OK, now get molecule_
+    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres, pg);
 }
 
 void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
@@ -583,18 +716,16 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
 #if defined (DEVELOPMENT_CODE)
 void initWaveletCavity()
 {
-    int patchLevel = parsedInput->patchLevel();
-    std::vector<Sphere> spheres = parsedInput->spheres();
-    double coarsity = parsedInput->coarsity();
-    double probeRadius = parsedInput->probeRadius();
-
     // Just throw at this point if the user asked for a cavity for a single sphere...
     // the wavelet code will die without any further notice anyway
     if (spheres.size() == 1) {
         throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
     }
 
-    _waveletCavity = new WaveletCavity(spheres, probeRadius, patchLevel, coarsity);
+    _waveletCavity = new WaveletCavity(parsedInput->spheres(), 
+		                       parsedInput->cavityParams().probeRadius_, 
+				       parsedInput->cavityParams().patchLevel_, 
+				       parsedInput->cavityParams().coarsity_);
     _waveletCavity->readCavity("molec_dyadic.dat");
 }
 #endif

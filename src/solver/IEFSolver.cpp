@@ -66,10 +66,12 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 
     // This is the very core of PCMSolver
     throw std::runtime_error("Calculation of anisotropic matrix elements not yet implemented.");
-/*  greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
+    /*  
+    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
     greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
     greenOutside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SE, DE);
-    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);*/
+    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);
+    */
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.
@@ -208,8 +210,8 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     builtAnisotropicMatrix = false;
 }
 
-void IEFSolver::compCharge(const Eigen::VectorXd & potential,
-                           Eigen::VectorXd & charge, int irrep)
+void IEFSolver::computeCharge(const Eigen::VectorXd &potential,
+        Eigen::VectorXd &charge, int irrep)
 {
     // The potential and charge vector are of dimension equal to the
     // full dimension of the cavity. We have to select just the part

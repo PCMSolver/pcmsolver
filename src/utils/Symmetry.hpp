@@ -26,9 +26,9 @@
 #ifndef SYMMETRY_HPP
 #define SYMMETRY_HPP
 
-#include "Config.hpp"
+#include <algorithm>
 
-#include <Eigen/Dense>
+#include "Config.hpp"
 
 /*! \file Symmetry.hpp
  *  \class Symmetry
@@ -70,9 +70,12 @@ public:
     int nrGenerators() const { return nrGenerators_; }
     int generators(int i) const { return generators_[i]; }
     int nrIrrep() const { return nrIrrep_; }
-    static double parity(int i);
 };
 
+/*! Builds Symmetry object.
+ * 
+ * \note C1 is built as Symmetry C1 = buildGroup(0, 0, 0, 0);
+ */
 Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3);
 
 #endif // SYMMETRY_HPP

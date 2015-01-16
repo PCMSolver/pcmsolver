@@ -34,18 +34,19 @@
 #include <Eigen/Dense>
 
 #include "Element.hpp"
+#include "Molecule.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 
 /*!
- *	\file Cavity.hpp
- *	\class Cavity
- *	\brief Abstract Base Class for cavities.
- *	\author Krzysztof Mozgawa
- *	\date 2011
- *
- * 	This class represents a cavity made of spheres, its surface being discretized in
- *      terms of finite elements.
+ * \file Cavity.hpp
+ * \class Cavity
+ * \brief Abstract Base Class for cavities.
+ * \author Krzysztof Mozgawa
+ * \date 2011
+ * 
+ * This class represents a cavity made of spheres, its surface being discretized in
+ * terms of finite elements.
  */
 
 class Cavity
@@ -53,6 +54,8 @@ class Cavity
 protected:
     /// List of spheres
     std::vector<Sphere> spheres_;
+    /// The molecule to be wrapped by the cavity
+    Molecule molecule_;
     /// Number of finite elements generated
     int nElements_;
     /// Number of irreducible finite elements
@@ -81,33 +84,30 @@ protected:
     Symmetry pointGroup_;
 private:
     /*! \brief Creates the cavity and discretizes its surface.
+     *
+     *  Has to be implemented by classes lower down in the inheritance hierarchy
      */
     virtual void makeCavity() = 0;
     virtual std::ostream & printCavity(std::ostream & os) = 0;
 public:
     //! Default constructor
     Cavity() : nElements_(0), built(false) {}
-    /*! \brief Constructor from spheres
-     *  \param[in] _spheres an STL vector containing the spheres making up the cavity.
+    /*! \brief Constructor from list of spheres 
+     *  \param[in] sph the list of spheres
+     *
+     *  Only used when we have to deal with a single sphere, i.e. in the unit tests
      */
-    Cavity(const std::vector<Sphere> & _spheres) : spheres_(_spheres), built(false) {
+    Cavity(const std::vector<Sphere> & sph) : spheres_(sph), built(false) {
+	molecule_ = Molecule(spheres_); 
         nSpheres_ = spheres_.size();
-        sphereCenter_.resize(Eigen::NoChange, nSpheres_);
-        sphereRadius_.resize(nSpheres_);
-        for (int i = 0; i < nSpheres_; ++i) {
-            sphereCenter_.col(i) = spheres_[i].center();
-            sphereRadius_(i) = spheres_[i].radius();
-        }
+	transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
     }
-    Cavity(const std::vector<Sphere> & _spheres,
-           const Symmetry & pg) : spheres_(_spheres), built(false), pointGroup_(pg) {
+    /*! \brief Constructor from Molecule
+     *  \param[in] molec the molecular aggregate
+     */
+    Cavity(const Molecule & molec) : spheres_(molec.spheres()), molecule_(molec), built(false) {
         nSpheres_ = spheres_.size();
-        sphereCenter_.resize(Eigen::NoChange, nSpheres_);
-        sphereRadius_.resize(nSpheres_);
-        for (int i = 0; i < nSpheres_; ++i) {
-            sphereCenter_.col(i) = spheres_[i].center();
-            sphereRadius_(i) = spheres_[i].radius();
-        }
+	transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
     }
     virtual ~Cavity() {}
     Eigen::Matrix3Xd & elementCenter() { return elementCenter_; }
@@ -126,7 +126,7 @@ public:
     int size() const { return nElements_; }
     int irreducible_size() { return nIrrElements_; }
     int irreducible_size() const { return nIrrElements_; }
-    virtual Symmetry pointGroup() const { return pointGroup_; }
+    Symmetry pointGroup() const { return molecule_.pointGroup(); }
     std::vector<Sphere> & spheres() { return spheres_; }
     const std::vector<Sphere> & spheres() const { return spheres_; }
     int nSpheres() { return nSpheres_; }

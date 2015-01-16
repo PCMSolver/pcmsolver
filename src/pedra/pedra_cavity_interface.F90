@@ -31,17 +31,18 @@
           xtscor_, ytscor_, ztscor_, ar_,                              &
           xsphcor_, ysphcor_, zsphcor_, rsph_,                         &
           nts_, ntsirr_, nesfp_, addsph_,                              &
-          xe_, ye_, ze_, rin_, avgArea_, rsolv_, ret_,                 &
+          xe_, ye_, ze_, rin_, masses_, avgArea_, rsolv_, ret_,        &
           nr_gen_, gen1_, gen2_, gen3_,                                &
           nvert_, vert_, centr_)                                       &
           bind(c, name='generatecavity_cpp')
 
-      use, intrinsic :: iso_c_binding    
-      use pedra_symmetry, only: get_point_group, point_group
-      use pedra_cavity, only: polyhedra_driver
-
-      implicit none
-
+    use, intrinsic :: iso_c_binding    
+    use pedra_precision
+    use pedra_symmetry, only: get_point_group, point_group
+    use pedra_cavity, only: polyhedra_driver
+    
+    implicit none
+    
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
@@ -50,20 +51,21 @@
       real(c_double)  :: xtscor_(maxts_), ytscor_(maxts_), ztscor_(maxts_)
       real(c_double)  :: xsphcor_(maxts_), ysphcor_(maxts_), zsphcor_(maxts_), rsph_(maxts_)
       real(c_double)  :: ar_(maxts_), xe_(maxts_), ye_(maxts_), ze_(maxts_), rin_(maxts_)
+      real(c_double)  :: masses_(maxts_)
       real(c_double)  :: avgArea_, rsolv_, ret_
       integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
-      integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_ 
+      integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_
       integer(c_int)  :: nvert_(maxts_)
-      real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)
+      real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)   
 
-      integer(c_int)   :: i, j, k, offset
-      integer(c_int)   :: error_code
-      integer          :: lvpri
-      logical          :: pedra_file_exists
+      integer(c_int)    :: i, j, k, offset                 
+      integer(c_int)    :: error_code
+      integer(kind=regint_k) :: lvpri
+      logical           :: pedra_file_exists
       real(c_double), allocatable :: vert(:, :, :), centr(:, :, :)
       type(point_group) :: pgroup
      
-      lvpri = 121201
+      lvpri = 121201_regint_k
       pedra_file_exists = .false.
       inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
       if (pedra_file_exists) then
@@ -100,7 +102,7 @@
          rin(i) = rin_(i)
          alpha(i) = 1.0d0
       end do
-     
+
 ! Allocate space for the arrays containing the vertices and the centers
 ! of the tesserae arcs
       allocate(vert(mxts, 10, 3))
@@ -109,8 +111,8 @@
       centr = 0.0d0
       
       nesf = nesfp
-      
-      call polyhedra_driver(pgroup, vert, centr, lvpri, error_code)
+
+      call polyhedra_driver(pgroup, vert, centr, masses_, lvpri, error_code)
 
 ! Common block dark magic, it will disappear one day...
       nts_ = nts

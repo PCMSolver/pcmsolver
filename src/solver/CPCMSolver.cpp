@@ -117,8 +117,8 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
     builtAnisotropicMatrix = false;
 }
 
-void CPCMSolver::compCharge(const Eigen::VectorXd & potential,
-                            Eigen::VectorXd & charge, int irrep)
+void CPCMSolver::computeCharge(const Eigen::VectorXd &potential,
+        Eigen::VectorXd &charge, int irrep)
 {
     // The potential and charge vector are of dimension equal to the
     // full dimension of the cavity. We have to select just the part

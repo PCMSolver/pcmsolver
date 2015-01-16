@@ -35,8 +35,10 @@
 #include "taylor.hpp"
 
 class DiagonalIntegrator;
+class Element;
 
 #include "DerivativeTypes.hpp"
+#include "DiagonalIntegratorFactory.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -129,7 +131,9 @@ namespace
     struct buildAnisotropicLiquid {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            return new AnisotropicLiquid<DerivativeType>(_data.epsilonTensor, _data.eulerAngles, _data.integrator);
+            DiagonalIntegrator * integrator = 
+		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
+            return new AnisotropicLiquid<DerivativeType>(_data.epsilonTensor, _data.eulerAngles, integrator);
         }
     };
 

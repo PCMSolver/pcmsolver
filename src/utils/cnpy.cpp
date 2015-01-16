@@ -136,7 +136,7 @@ cnpy::NpyArray load_the_npy_file(FILE * fp)
     unsigned int* shape;
     unsigned int ndims, word_size;
     bool fortran_order;
-    cnpy::parse_npy_header(fp, word_size, shape,ndims, fortran_order);
+    cnpy::parse_npy_header(fp, word_size, shape, ndims, fortran_order);
     unsigned long long size = 1; //long long so no overflow when multiplying by word_size
     for(unsigned int i = 0; i < ndims; ++i) size *= shape[i];
 
@@ -148,6 +148,7 @@ cnpy::NpyArray load_the_npy_file(FILE * fp)
     size_t nread = fread(arr.data, word_size, size, fp);
     if(nread != size)
         throw std::runtime_error("load_the_npy_file: failed fread");
+    delete[] shape;
     return arr;
 }
 

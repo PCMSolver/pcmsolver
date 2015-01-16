@@ -20,16 +20,19 @@ macro(add_boosttest test_name)
 
     set(_my_libraries "${ARGV1}")
     set(_external_libraries "${ARGV2}")
+    # Find threading library aka CMAKE_THREAD_LIBS_INIT
+    find_package(Threads)
 
     # Building on more than one processor can result in race conditions,
     # since custom Boost can be built only on one processor!
     # We thus add this dependency to not get stuck.
     if(BUILD_CUSTOM_BOOST)
-	    add_dependencies(${the_name}.x custom_boost)
+       add_dependencies(${the_name}.x custom_boost)
     endif()	    
     target_link_libraries(${the_name}.x
                           ${_my_libraries}
 			  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+	    	          ${CMAKE_THREAD_LIBS_INIT}
                           ${_external_libraries}
 			  )
     add_test(NAME ${the_name} COMMAND ${the_name}.x)

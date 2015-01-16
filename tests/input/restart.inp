@@ -1,11 +1,11 @@
-Units = AU
-Medium 
+UNITS = AU
+MEDIUM 
 {
-                Solvent = Water
+	SOLVENT = WATER
 }
 
-Cavity 
+CAVITY 
 {
-		Type = Restart
-		NpzFile = cavity.npz
+	TYPE = RESTART
+	NPZFILE         =         cavity.npz
 }

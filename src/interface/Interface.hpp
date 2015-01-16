@@ -40,6 +40,7 @@
 #include <Eigen/Dense>
 
 #include "InputManager.hpp"
+#include "Molecule.hpp"
 #include "Sphere.hpp"
 
 /*
@@ -66,11 +67,26 @@ extern "C" void tear_down_pcm();
 #define compute_asc \
 	FortranCInterface_GLOBAL_(compute_asc, COMPUTE_ASC)
 /*! \fn extern "C" void compute_asc(char * potString, char * chgString, int * irrep)
+ *  \brief Computes the ASC corresponding to the MEP and irreducible representation, using the equilibrium PCM matrix
  *  \param[in] potString name of the potential SurfaceFunction
  *  \param[in] chgString name of the charge SurfaceFunction
  *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
+ *  
+ *  The equilibrium PCM matrix is used in the computation of the ASC
  */
 extern "C" void compute_asc(char * potString, char * chgString, int * irrep);
+
+#define compute_nonequilibrium_asc \
+	FortranCInterface_GLOBAL_(compute_nonequilibrium_asc, COMPUTE_NONEQUILIBRIUM_ASC)
+/*! \fn extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
+ *  \brief Computes the ASC correspoding to the MEP and irreducible representation, using the nonequilibrium PCM matrix
+ *  \param[in] potString name of the potential SurfaceFunction
+ *  \param[in] chgString name of the charge SurfaceFunction
+ *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
+ *  
+ *  The nonequilibrium PCM matrix is used in the computation of the ASC
+ */
+extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep);
 
 #define compute_polarization_energy \
 	FortranCInterface_GLOBAL_(compute_polarization_energy, COMPUTE_POLARIZATION_ENERGY)
@@ -78,6 +94,36 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep);
  *  \param[out] energy polarization energy \f$ U_\mathrm{pol} = \frac{1}{2}\mathbf{q}\cdot\mathbf{v} \f$
  */
 extern "C" void compute_polarization_energy(double * energy);
+
+#define save_surface_functions \
+	FortranCInterface_GLOBAL_(save_surface_functions, SAVE_SURFACE_FUNCTIONS)
+/*! \fn extern "C" void save_surface_functions()
+ *  \brief Dumps the surface functions in the SharedSurfaceFunctionMap functions to a .npy file
+ *
+ *  The surface functions are saved as NumPy arrays. This function should be called **before** the
+ *  call to tear_down_pcm() so that the converged MEP and ASC are saved to file for a possible later
+ *  use. For example, they might be needed in a response calculation.
+ *  The filename is decided according to the name of the surface function.
+ */
+extern "C" void save_surface_functions();
+
+#define save_surface_function \
+	FortranCInterface_GLOBAL_(save_surface_function, SAVE_SURFACE_FUNCTION)
+/*! \fn extern "C" void save_surface_function(const char * name)
+ *  \brief Dumps the surface function to a .npy file
+ *  \param[in] name the name of the SurfaceFunction to be saved to file
+ */
+extern "C" void save_surface_function(const char * name);
+
+#define load_surface_function \
+	FortranCInterface_GLOBAL_(load_surface_function, LOAD_SURFACE_FUNCTION)
+/*! \fn extern "C" void load_surface_function(const char * name)
+ *  \brief Loads the surface function from a .npy file
+ *  \param[in] name the name of the surface function to be loaded from file
+ *
+ *  The name has to be consistent with that of the .npy file saved using save_surface_functions()
+ */
+extern "C" void load_surface_function(const char * name);
 
 #define dot_surface_functions \
 	FortranCInterface_GLOBAL_(dot_surface_functions, DOT_SURFACE_FUNCTIONS)
@@ -205,7 +251,7 @@ extern "C" void print_surface_function(char * name);
 
 #define clear_surface_function \
 	FortranCInterface_GLOBAL_(clear_surface_function, CLEAR_SURFACE_FUNCTION)
-/*! \fn extern "C" void clear_surface_function(const char * name)
+/*! \fn extern "C" void clear_surface_function(char * name)
  *  \brief Clears contents of SurfaceFunction
  *  \param[in] name label for the SurfaceFunction to be cleared
  */
@@ -213,7 +259,7 @@ extern "C" void clear_surface_function(char * name);
 
 #define append_surface_function \
 	FortranCInterface_GLOBAL_(append_surface_function, APPEND_SURFACE_FUNCTION)
-/*! \fn extern "C" void append_surface_function(const char * name)
+/*! \fn extern "C" void append_surface_function(char * name)
  *  \brief Appends a new SurfaceFunction to the global map 
  *  \param[in] name label for the new SurfaceFunction
  */
@@ -252,6 +298,12 @@ void initCavity();
  */
 void initSolver();
 
+/*! \fn void initNonEqSolver()
+ *
+ *  Creates PCMSolver object, nonequilibrium version
+ */
+void initNonEqSolver();
+
 /*! \fn void initWaveletCavity()
  *
  *  Initializes the _waveletCavity global object
@@ -265,6 +317,13 @@ void initWaveletCavity();
  *  Initializes list of atoms and atoms positions
  */
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
+
+/*! \fn void initMolecule(Molecule & molecule_, Eigen::Matrix3Xd & sphereCenter_)
+ *  \param[out] molecule_  a Molecule object 
+ *
+ *  Initializes Molecule object with all the information on charges, masses and positions of atomic centers
+ */
+void initMolecule(Molecule & molecule_);
 
 /*! \fn void initSpheresImplicit(const Eigen::VectorXd & charges_, const Eigen::Matrix3Xd & sphereCenter_, std::vector<Sphere> & spheres_)
  *  \param[in] charges_      contains charges of atomic centers

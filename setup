@@ -149,6 +149,10 @@ def parse_input():
             action='store_true',
             default=False,
             help='enable vectorization [default: %(default)s]')
+    group.add_argument('--disable_cxx11',
+            action='store_true',
+            default=False,
+            help='disable C++11 support [default: %(default)s]')
     group.add_argument('-D',
             action="append",
             dest='define',
@@ -191,6 +195,10 @@ def parse_input():
             action='store_true',
             default=False,
             help='enable Eigen3 automatic fallback to Intel MKL [default: %(default)s]')
+    group.add_argument('--python',
+            action='store_true',
+            default=False,
+            help='full path to Python interpreter (development version) [default: %(default)s]')
 
     group = parser.add_argument_group('Pass extra flags to the compiler')
     group.add_argument('--extra-fc-flags',
@@ -239,30 +247,27 @@ def gen_cmake_command(args):
     command = ''
 
     if args.fc:
-        command += ' FC=%s'  % args.fc
+        command += ' -DCMAKE_Fortran_COMPILER=%s'  % args.fc
     if args.cc:
-        command += ' CC=%s'  % args.cc
+        command += ' -DCMAKE_C_COMPILER=%s'  % args.cc
     if args.cxx:
-        command += ' CXX=%s' % args.cxx
+        command += ' -DCMAKE_CXX_COMPILER=%s' % args.cxx
 
-    if sys.platform != "win32":
-        command += ' %s' % args.cmake
-    else:
-        # fix for windows
-        command = ' %s ' % args.cmake + command
+    command = ' %s ' % args.cmake + command
 
 #   command += ' -DENABLE_MPI=%s'            % translate_cmake(args.mpi)
 #   command += ' -DENABLE_SGI_MPT=%s'        % translate_cmake(args.sgi_mpt)
 #   command += ' -DENABLE_OMP=%s'            % translate_cmake(args.omp)
-#   command += ' -DENABLE_64BIT_INTEGERS=%s' % translate_cmake(args.int64)
+    command += ' -DENABLE_64BIT_INTEGERS=%s' % translate_cmake(args.int64)
 #   command += ' -DENABLE_CSR=%s'            % translate_cmake(args.csr)
 #   command += ' -DENABLE_SCALAPACK=%s'      % translate_cmake(args.scalapack)
 #   command += ' -DENABLE_SCALASCA=%s'       % translate_cmake(args.scalasca)
 #   command += ' -DENABLE_TIMINGS=%s'        % translate_cmake(args.timings)
-    command += ' -DENABLE_TESTS=%s'          % translate_cmake(args.tests)
-    command += ' -DDISABLE_EIGEN_OWN=%s'     % translate_cmake(args.eigenown)
-    command += ' -DENABLE_EIGEN_MKL=%s'      % translate_cmake(args.eigenmkl)
-    command += ' -DENABLE_VECTORIZATION=%s'  % translate_cmake(args.vectorization)
+    command += ' -DENABLE_TESTS=%s'            % translate_cmake(args.tests)
+    command += ' -DDISABLE_EIGEN_OWN=%s'       % translate_cmake(args.eigenown)
+    command += ' -DENABLE_EIGEN_MKL=%s'        % translate_cmake(args.eigenmkl)
+    command += ' -DENABLE_VECTORIZATION=%s'    % translate_cmake(args.vectorization)
+    command += ' -DENABLE_CXX11_SUPPORT=%s'    % translate_cmake(not args.disable_cxx11)
 #   command += ' -DENABLE_STATIC_LINKING=%s' % translate_cmake(args.static)
 
     if args.blas == 'builtin':
@@ -318,6 +323,9 @@ def gen_cmake_command(args):
     
     if args.boost_libs:
         command += ' -DBOOST_LIBRARYDIR={0}'.format(args.boost_libs)
+    
+    if args.python:
+        command += ' -DPYTHON_INTERPRETER={0}'.format(args.python)
 
     if args.extra_fc_flags:
         command += ' -DEXTRA_Fortran_FLAGS="%s"' % args.extra_fc_flags

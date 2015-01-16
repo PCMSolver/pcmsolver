@@ -31,9 +31,8 @@
 
 #include "Config.hpp"
 
-
-struct solverData;
 class PCMSolver;
+struct solverData;
 
 /*!
  *	\file SolverFactory.hpp

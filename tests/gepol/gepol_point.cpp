@@ -36,20 +36,15 @@
 #include <Eigen/Dense>
 
 #include "GePolCavity.hpp"
-#include "Symmetry.hpp"
+#include "TestingMolecules.hpp"
 
 struct GePolCavityTest {
     GePolCavity cavity;
     GePolCavityTest() { SetUp(); }
     void SetUp() {
-        Eigen::Vector3d origin(0.0, 0.0, 0.0);
-        std::vector<Sphere> spheres;
-        Sphere sph1(origin,  1.0);
-        spheres.push_back(sph1);
         double area = 0.4;
-        // C1
-        Symmetry pGroup = buildGroup(0, 0, 0, 0);
-        cavity = GePolCavity(spheres, area, 0.0, 100.0, pGroup);
+	Molecule point = dummy<0>();
+        cavity = GePolCavity(point, area, 0.0, 100.0);
         cavity.saveCavity("point.npz");
     }
 };

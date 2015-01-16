@@ -48,14 +48,12 @@
 
 class GePolCavity : public Cavity
 {
-private:
-    enum pGroup { C1, Cs, C2, Ci, C2h, D2, C2v, D2h };
 public:
     GePolCavity() {}
-    GePolCavity(const std::vector<Sphere> & _spheres, double _area, double _probeRadius,
-                double _minRadius, const Symmetry & _pGroup) :
-        Cavity(_spheres, _pGroup), averageArea(_area), probeRadius(_probeRadius),
-        minimalRadius(_minRadius) { build(10000, 200, 25000); }
+    GePolCavity(const Molecule & molec, double a, double pr, double minR) :
+        Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR) { build(10000, 200, 25000); }
+    GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR) :
+	Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR) { build(10000, 200, 25000); }
     virtual ~GePolCavity() {}
     friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
         return cavity.printCavity(os);
@@ -77,10 +75,10 @@ private:
 
 namespace
 {
-    Cavity* createGePolCavity(const cavityData & _data)
+    Cavity* createGePolCavity(const cavityData & data)
     {
-        return new GePolCavity(_data.spheres, _data.area, _data.probeRadius,
-                               _data.minimalRadius, _data.symmetry);
+        return new GePolCavity(data.molecule, data.area, data.probeRadius,
+                               data.minimalRadius);
     }
     const std::string GEPOL("GEPOL");
     const bool registeredGePol = CavityFactory::TheCavityFactory().registerCavity(GEPOL,

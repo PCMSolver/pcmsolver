@@ -22,6 +22,8 @@
 !pcmsolver_copyright_end
 
     module pedra_dblas
+    
+    use pedra_precision
 
     implicit none
 
@@ -37,7 +39,7 @@
 
     contains
       
-    real(8) function dasum(n, dx, incx)
+    real(kind=dp) function dasum(n, dx, incx)
 !
 ! - Reference BLAS level1 routine (version 3.4.0) --
 ! - Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -45,17 +47,17 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, n
+    integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: dx(*)
+    real(kind=dp) :: dx(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    real(8) :: dtemp
-    integer :: i, m, mp1, nincx
+    real(kind=dp) :: dtemp
+    integer(kind=regint_k) :: i, m, mp1, nincx
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic dabs, mod
@@ -69,7 +71,7 @@
 !
 !      clean-up loop
 !
-       m = mod(n,6)
+       m = mod(n, 6_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dtemp = dtemp + dabs(dx(i))
@@ -106,17 +108,17 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    real(8), intent(in) :: da
-    integer, intent(in) :: incx, incy, n
+    real(kind=dp), intent(in) :: da
+    integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: dx(*), dy(*)
+    real(kind=dp) :: dx(*), dy(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    integer :: i, ix, iy, m, mp1
+    integer(kind=regint_k) :: i, ix, iy, m, mp1
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic mod
@@ -130,7 +132,7 @@
 !
 !      clean-up loop
 !
-       m = mod(n,4)
+       m = mod(n, 4_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dy(i) = dy(i) + da*dx(i)
@@ -170,10 +172,10 @@
 !   Subroutine DZERO sets a real array of length *LENGTH*
 !   to zero.
 !...................................................................
-    integer, intent(in)    :: length
-    real(8), intent(inout) :: dx(length)
+    integer(kind=regint_k), intent(in)    :: length
+    real(kind=dp), intent(inout) :: dx(length)
 
-    integer :: i
+    integer(kind=regint_k) :: i
 
     if (length <= 0) return
 
@@ -183,7 +185,7 @@
 
     end subroutine dzero
 
-    real(8) function dnorm2(n, x, incx)
+    real(kind=dp) function dnorm2(n, x, incx)
 !
 ! - Reference BLAS level1 routine (version 3.4.0) --
 ! - Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -191,21 +193,21 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, n
+    integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: x(*)
+    real(kind=dp) :: x(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Parameters ..
-    real(8) :: one, zero
+    real(kind=dp) :: one, zero
     parameter (one=1.0d+0,zero=0.0d+0)
 !   ..
 !   .. Local Scalars ..
-    real(8) :: absxi, norm, scale, ssq
-    integer :: ix
+    real(kind=dp) :: absxi, norm, scale, ssq
+    integer(kind=regint_k) :: ix
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic abs, sqrt
@@ -247,17 +249,17 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    real(8), intent(in) :: da
-    integer, intent(in) :: incx, n
+    real(kind=dp), intent(in) :: da
+    integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
-    real(8), intent(inout) :: dx(*)
+    real(kind=dp), intent(inout) :: dx(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    integer :: i, m, mp1, nincx
+    integer(kind=regint_k) :: i, m, mp1, nincx
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic mod
@@ -270,7 +272,7 @@
 !
 !      clean-up loop
 !
-       m = mod(n,5)
+       m = mod(n, 5_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dx(i) = da*dx(i)
@@ -297,7 +299,7 @@
     
     end subroutine dscal
 
-    integer function idamax(n, dx, incx)
+    integer(kind=regint_k) function idamax(n, dx, incx)
 !
 ! - Reference BLAS level1 routine (version 3.4.0) --
 ! - Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -305,17 +307,17 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, n
+    integer(kind=regint_k), intent(in) :: incx, n
 !   ..
 !   .. Array Arguments ..
-    real(8), intent(in) :: dx(*)
+    real(kind=dp), intent(in) :: dx(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    real(8) :: dmax
-    integer :: i, ix
+    real(kind=dp) :: dmax
+    integer(kind=regint_k) :: i, ix
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic dabs
@@ -361,17 +363,17 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, incy, n
+    integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: dx(*), dy(*)
+    real(kind=dp) :: dx(*), dy(*)
 !   ..
 !
 !  ===================================================================
 !
 !   .. Local Scalars ..
-    real(8) :: dtemp
-    integer :: i, ix, iy, m, mp1
+    real(kind=dp) :: dtemp
+    integer(kind=regint_k) :: i, ix, iy, m, mp1
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic mod
@@ -384,7 +386,7 @@
 !
 !     clean-up loop
 !
-       m = mod(n,3)
+       m = mod(n, 3_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dtemp = dx(i)
@@ -433,16 +435,16 @@
 !   November 2011
 !
 !   .. Scalar Arguments ..
-    integer, intent(in) :: incx, incy, n
+    integer(kind=regint_k), intent(in) :: incx, incy, n
 !   ..
 !   .. Array Arguments ..
-    real(8) :: dx(*), dy(*)
+    real(kind=dp) :: dx(*), dy(*)
 !   ..
 !
 ! ====================================================================
 !
 !   .. Local Scalars ..
-    integer :: i, ix, iy, m, mp1
+    integer(kind=regint_k) :: i, ix, iy, m, mp1
 !   ..
 !   .. Intrinsic Functions ..
     intrinsic mod
@@ -455,7 +457,7 @@
 !
 !      clean-up loop
 !
-       m = mod(n,7)
+       m = mod(n, 7_regint_k)
        if (m.ne.0) then
           do i = 1,m
              dy(i) = dx(i)
@@ -493,8 +495,8 @@
     subroutine vector_product(p1, p2, p3, dnorm3)
 ! Calculates vector product and norm of resulting vector
 
-    real(8), intent(in)  :: p1(3), p2(3)
-    real(8), intent(out) ::p3(3), dnorm3
+    real(kind=dp), intent(in)  :: p1(3), p2(3)
+    real(kind=dp), intent(out) ::p3(3), dnorm3
 
     p3(1) = p1(2)*p2(3) - p1(3)*p2(2)
     p3(2) = p1(3)*p2(1) - p1(1)*p2(3)

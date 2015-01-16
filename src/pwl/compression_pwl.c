@@ -172,17 +172,19 @@ unsigned int np;                /* Anzahl der Basisfunktionen                   
     double **c1, **c2;          /* Abschneideparameter in 1./2. Kompression      */
     double d1, d2;              /* Hilfskonstanten                               */
     unsigned int nnz;           /* nunber of nonzero elements of T               */
-
+#ifdef DEBUG
+    FILE* debugFile;
+#endif
 /* berechne Abschneideparameter */
     max_radius = 0;
     for (i = 0; E[i].level == 0; i++)
         if (max_radius < E[i].radius)
             max_radius = E[i].radius;
-    c1 = (double **) malloc((M + 1) * sizeof(double *));
-    c2 = (double **) malloc((M + 1) * sizeof(double *));
+    c1 = (double **) calloc(1,(M + 1) * sizeof(double *));
+    c2 = (double **) calloc(1,(M + 1) * sizeof(double *));
     for (i = 0; i <= M; i++) {
-        c1[i] = (double *) malloc((i + 1) * sizeof(double));
-        c2[i] = (double *) malloc((i + 1) * sizeof(double));
+        c1[i] = (double *) calloc(1,(i + 1) * sizeof(double));
+        c2[i] = (double *) calloc(1,(i + 1) * sizeof(double));
         for (j = 0; j <= i; j++) {
             c1[i][j] = a * pow(2, (M * (2 * dp - op) - (i + j) * (dp + td_pwl)) / (2 * td_pwl + op));
             d1 = pow(2, (M * (2 * dp - op) - (i + j) * dp - i * td_pwl) / (td_pwl + op));       /* alter Parameter */
@@ -203,6 +205,19 @@ unsigned int np;                /* Anzahl der Basisfunktionen                   
 
 /* Initialisierung: belege den Block 
    (minLevel_pwl-1:minLevel,minLevel-1:minLevel) mit 1 */
+#ifdef DEBUG
+    debugFile = fopen("debug.out","a");
+    fprintf(debugFile,">>> COMP CC %lf %lf %lf\n", td_pwl, dp, op);
+    for(i  = 0; i < M+1; ++i){
+      for(j = 0; j < i+1; ++j){
+        fprintf(debugFile, "[%lf %lf]", c1[i][j], c2[i][j]);
+      }
+      fprintf(debugFile,"\n");
+    }
+    fprintf(debugFile,"\n<<< COMP CC\n");
+    fflush(debugFile);
+    fclose(debugFile);
+#endif
     init_pattern(T, np, np, 20);
     compute_bounding_boxes(&B, W, E, np);
     for (i = 0; (i < np) && (W[i].level < minLevel_pwl); i++) {

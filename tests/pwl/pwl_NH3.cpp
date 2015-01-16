@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(NH3)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;

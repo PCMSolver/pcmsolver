@@ -70,13 +70,12 @@ void WaveletCavity::writeInput(std::string &fileName)
         output << sphereRadius_(i) << std::endl;
     }
     output.close();
-    uploadedDyadic = false;
+    uploadedDyadic_ = false;
 }
 
 extern "C"
 {
-    int waveletCavityDrv_(double probeRadius, double coarsity, int patchLevel,
-                          const char * infile);
+    int waveletCavityDrv_(double pr, double c, int pl, const char * infile);
 }
 
 void WaveletCavity::makeCavity()
@@ -85,7 +84,7 @@ void WaveletCavity::makeCavity()
     std::string infile = "cavity.inp";
     writeInput(infile);
 #if defined (WAVELET_DEVELOPMENT)
-    check = waveletCavityDrv_(probeRadius, coarsity, patchLevel, infile.c_str());
+    check = waveletCavityDrv_(probeRadius_, coarsity_, patchLevel_, infile.c_str());
 #else
     check = 1;
 #endif
@@ -102,24 +101,30 @@ void WaveletCavity::readCavity(const std::string & filename)
 
     std::ifstream file;
     file.open(filename.c_str());
-    file >> nLevels >> nPatches;
+    file >> nLevels_ >> nPatches_;
 
-    int nNodes = (1 << nLevels) + 1;
+    int nNodes = (1 << nLevels_) + 1;
 
-    nPoints = nPatches * nNodes * nNodes;
+    nPoints_ = nPatches_ * nNodes * nNodes;
 
-    for (size_t k = 0; k < nPoints; ++k) {
+    for (size_t k = 0; k < nPoints_; ++k) {
         file >> i >> j >> k >> x >> y >> z;
         Eigen::Vector3i index(i, j, k);
-        nodeIndex.push_back(index);
+        nodeIndex_.push_back(index);
         Eigen::Vector3d point(x, y, z);
-        nodePoint.push_back(point);
+        nodePoint_.push_back(point);
     }
 
     file.close();
-    uploadedDyadic = true;
+    uploadedDyadic_ = true;
 }
 
+void WaveletCavity::scaleCavity(const double scalingFactor)
+{
+    for (size_t k = 0; k < nPoints_; ++k) {
+        nodePoint_[k] *=scalingFactor;
+    }
+}
 void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_, bool isPWL)
 {
     if(isPWL) {
@@ -131,18 +136,18 @@ void WaveletCavity::uploadPoints(int quadLevel, vector3 **** T_, bool isPWL)
 
 void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
 {
-    if (not uploadedDyadic) {
+    if (not uploadedDyadic_) {
         throw std::runtime_error("Dyadic file must be uploaded first.");
     }
     vector2 s, t;
     vector3 point;
     vector3 norm;
-    int n = 1 << nLevels;
+    int n = 1 << nLevels_;
     double h = 1.0 / n;
     cubature *Q;
     init_Gauss_Square(&Q, quadLevel + 1);
 
-    nElements_ = nPatches * n * n * Q[quadLevel].nop;
+    nElements_ = nPatches_ * n * n * Q[quadLevel].nop;
 
     elementCenter_.resize(Eigen::NoChange, nElements_);
     elementNormal_.resize(Eigen::NoChange, nElements_);
@@ -151,19 +156,19 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
     elementRadius_.setZero(nElements_);
 
     int j = 0;
-    for (size_t i1 = 0; i1 < nPatches; ++i1) {
+    for (size_t i1 = 0; i1 < nPatches_; ++i1) {
         for (int i2 = 0; i2 < n; ++i2) {
             s.y = h * i2;
             for (int i3=0; i3 < n; ++i3) {
                 s.x = h * i3;
                 for (size_t k = 0; k < Q[quadLevel].nop; ++k) {
                     t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
-                    point = Chi(t,T_[i1], nLevels);
-                    norm = n_Chi(t,T_[i1], nLevels);
+                    point = Chi(t,T_[i1], nLevels_);
+                    norm = n_Chi(t,T_[i1], nLevels_);
                     Eigen::Vector3d center(point.x, point.y, point.z);
                     Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);
                     normal.normalize();
-                    double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels));
+                    double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi(t, T_[i1], nLevels_));
                     elementCenter_.col(j) = center.transpose();
                     elementNormal_.col(j) = normal.transpose();
                     elementArea_(j) = area;
@@ -178,38 +183,38 @@ void WaveletCavity::uploadPointsPWC(int quadLevel, vector3 **** T_)
 
 void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
 {
-    if (not uploadedDyadic) {
+    if (not uploadedDyadic_) {
         throw std::runtime_error("Dyadic file must be uploaded first.");
     }
     vector2 s, t;
     vector3 point;
     vector3 norm;
-    int n = 1 << nLevels;
+    int n = 1 << nLevels_;
     double h = 1.0 / n;
     cubature *Q;
     init_Gauss_Square(&Q, quadLevel + 1);
 
-    nElements_ = nPatches * n * n * Q[quadLevel].nop;
+    nElements_ = nPatches_ * n * n * Q[quadLevel].nop;
 
     elementCenter_.resize(Eigen::NoChange, nElements_);
     elementNormal_.resize(Eigen::NoChange, nElements_);
     elementArea_.resize(nElements_);
 
     int j = 0;
-    for (size_t i1 = 0; i1 < nPatches; ++i1) {
+    for (size_t i1 = 0; i1 < nPatches_; ++i1) {
         for (int i2 = 0; i2 < n; ++i2) {
             s.y = h * i2;
             for (int i3=0; i3 < n; ++i3) {
                 s.x = h * i3;
                 for (size_t k = 0; k < Q[quadLevel].nop; k++) {
                     t = vector2_add(s,vector2_Smul(h,Q[quadLevel].xi[k]));
-                    point = Chi_pwl(t,T_[i1], nLevels);
-                    norm = n_Chi_pwl(t,T_[i1], nLevels);
+                    point = Chi_pwl(t,T_[i1], nLevels_);
+                    norm = n_Chi_pwl(t,T_[i1], nLevels_);
                     Eigen::Vector3d center(point.x, point.y, point.z);
                     Eigen::Vector3d normal(norm.x,  norm.y,  norm.z);
                     normal.normalize();
                     double area = h * h * Q[quadLevel].w[k] * vector3_norm(n_Chi_pwl(t, T_[i1],
-                                  nLevels));
+                                  nLevels_));
                     elementCenter_.col(j) = center.transpose();
                     elementNormal_.col(j) = normal.transpose();
                     elementArea_(j) = area;
@@ -225,9 +230,9 @@ void WaveletCavity::uploadPointsPWL(int quadLevel, vector3 **** T_)
 std::ostream & WaveletCavity::printCavity(std::ostream & os)
 {
     os << "Cavity type: Wavelet" << std::endl;
-    os << "Probe Radius =  " << probeRadius << std::endl;
-    os << "Coarsity =      " << coarsity << std::endl;
-    os << "Patch Level =   " << patchLevel << std::endl;
+    os << "Probe Radius =  " << probeRadius_ << std::endl;
+    os << "Coarsity     =  " << coarsity_ << std::endl;
+    os << "Patch Level  =  " << patchLevel_ << std::endl;
     os << "Number of spheres = " << nSpheres_ << std::endl;
     os << "Number of finite elements = " << nElements_;
     /*for(int i = 0; i < nElements_; i++)
@@ -248,14 +253,14 @@ std::ostream & WaveletCavity::printCavity(std::ostream & os)
     	os << sphereCenter_(2,i) << " ";
     	os << sphereRadius_(i) << " ";
        	}*/
-    /*	if (uploadedDyadic)
+    /*	if (uploadedDyadic_)
     	{
     		os << "Printing nodes" << std::endl;
-    		for(int i = 0; i < nPoints; i++)
+    		for(int i = 0; i < nPoints_; i++)
     		{
     			os << std::endl;
     			os << i+1 << " ";
-    			os << nodeIndex[i].transpose() << " " << nodePoint[i].transpose() << " ";
+    			os << nodeIndex_[i].transpose() << " " << nodePoint_[i].transpose() << " ";
     		}
     	}*/
     return os;

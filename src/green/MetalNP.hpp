@@ -37,6 +37,7 @@
 class Element;
 
 #include "DiagonalIntegrator.hpp"
+#include "DiagonalIntegratorFactory.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
@@ -118,13 +119,15 @@ namespace
     // inherits from a GreensFunction<double>
     IGreensFunction * createMetalNP(const greenData & _data)
     {
+         DiagonalIntegrator * integrator = 
+		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
 	// The NP center is in a std::vector<double> but we need an Eigen::Vector3d
 	// We are currently assuming that there is only one spherical metal NP
 	Eigen::Vector3d center = Eigen::Vector3d::Zero();
 	for (int i = 0; i < 3; ++i) {
 		center(i) = _data.NPspheres[i];
 	}
-        return new MetalNP(_data.epsilon, _data.epsilonReal, _data.epsilonImaginary, center, _data.NPradii, _data.integrator);
+        return new MetalNP(_data.epsilon, _data.epsilonReal, _data.epsilonImaginary, center, _data.NPradii, integrator);
     }
     const std::string METALNP("MetalNP");
     const bool registeredMetalNP =

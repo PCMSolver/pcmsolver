@@ -220,6 +220,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
       c1[i][j] *= maxRadius/scalingFactor;              // Gebiet relativieren
     }
   }
+
 #ifdef DEBUG
   debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> COMP CC %lf %lf %lf\n", td, dp, op);
@@ -303,7 +304,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
             }
           }
         }
-      // wegen halbem Diagonalblock
+        // wegen halbem Diagonalblock
         for(unsigned int k = 0; k < waveletList.W[ind2].noSons;++k){
           if(waveletWaveletCriterion(waveletList.W[ind2].son[k], i, c1[m1][m2], c2[m1][m2])){
             setPattern(T, waveletList.W[ind2].son[k], i);
@@ -761,20 +762,28 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
 
   // print element list
   fprintf(f, "CELLS %d %d\n", nFunctions, 5 * nFunctions);
-  for(i = index; i <totalSizeElementList; ++i){
+  for(i = index; i <elementTree.totalSizeElementList; ++i){
     fprintf(f, "%d %d %d %d %d\n", 4, Ef[i].vertex[0], Ef[i].vertex[1],
         Ef[i].vertex[2], Ef[i].vertex[3]);
   }
   fprintf(f, "\n");
 
   fprintf(f, "CELL_TYPES %d\n", nFunctions);
-  for(i = index; i <totalSizeElementList; ++i){
+  for(i = index; i <elementTree.totalSizeElementList; ++i){
     fprintf(f, "%d\n", 9);
+  }
   fprintf(f, "\n");
 
   // print z-values of the geometry and solved density for visualization
   fprintf(f, "POINT_DATA %d\n", max);
   fprintf(f, "SCALARS Z-value FLOAT\n");
+  fprintf(f, "LOOKUP_TABLE default\n");
+  for (i = 0; i < max; ++i)
+    fprintf(f, "%20.16f\n", nodeList[i].z);
+  fprintf(f, "\n");
+
+  fprintf(f, "CELL_DATA %d\n", nFunctions);
+  fprintf(f, "SCALARS Cell_Density FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
   if(rho != NULL){
     for (i = 0; i < max; ++i)
@@ -783,26 +792,17 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
     for (i = 0; i < max; ++i)
       fprintf(f, "%20.16f\n", nodeList[i].z);
   }
-  fprintf(f, "\n");
-
-  fprintf(f, "CELL_DATA %d\n", nFunctions);
-  fprintf(f, "SCALARS Cell_Density FLOAT\n");
-  fprintf(f, "LOOKUP_TABLE default\n");
-  for (i = 0; i < nFunctions; ++i)
-      fprintf(f, "%20.16f\n", rho[i]);
-  }
   Vector2 xi;
   double ht = 1./n;
   Vector3 normal;
   fprintf(f, "NORMALS Cell_Norm FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
-  for(i = nPatches*(n*n-1)/3; i < totalSizeElementList; ++i){
+  for(i = nPatches*(n*n-1)/3; i < elementTree.totalSizeElementList; ++i){
     xi.x = ht*(Ef[i].index_s+0.5);
     xi.y = ht*(Ef[i].index_t+0.5);
     normal = interCoeff->n_Chi(xi, Ef[i].patch);
-      normal = vector3SMul(1./vector3Norm(normal),normal);
-      fprintf(f, "%20.16f %20.16f %20.16f\n",normal.x, normal.y, normal.z);
-    }
+    normal = vector3SMul(1./vector3Norm(normal),normal);
+    fprintf(f, "%20.16f %20.16f %20.16f\n",normal.x, normal.y, normal.z);
   }
 
   fclose(f);

@@ -1182,7 +1182,7 @@ void LinAnsatzFunction :: simplifyWaveletList() {
 				if (elementTree.element[j].level == waveletList.W[i].level) {
           // check if this is the 0. child in the father element
 					j = elementTree.element[j].father;
-					if ((int)waveletList.W[i].element[s0] == elementTree.element[j].son[0]){
+					if (waveletList.W[i].element[s0] == elementTree.element[j].son[0]){
             // check 1st child
 						for (s1=0; (s1<noe) && (elementTree.element[j].son[1]!=(int)waveletList.W[i].element[s1]); ++s1);
 						if ((s1 < noe) && (fabs(2*waveletList.W[i].weight[s0*noPhi+1]-waveletList.W[i].weight[s0*noPhi+0]-waveletList.W[i].weight[s1*noPhi+1]) < eps)){
@@ -1298,7 +1298,7 @@ unsigned int LinAnsatzFunction::waveletWaveletCriterion(unsigned int ind1, unsig
   fclose(debugFile);
 #endif
 
-  //if(ind1 < ind2) return 0;
+  if(ind1 < ind2) return 0;
 
   // calculate distance between bounding boxes
   dx = fabs(B[ind1].mx - B[ind2].mx) - B[ind1].rx - B[ind2].rx;

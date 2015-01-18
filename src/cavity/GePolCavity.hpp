@@ -32,6 +32,8 @@
 
 #include "Config.hpp"
 
+#include <boost/current_function.hpp>
+
 #include "Cavity.hpp"
 #include "CavityData.hpp"
 #include "CavityFactory.hpp"
@@ -54,16 +56,18 @@ public:
     GePolCavity(const Molecule & molec, double a, double pr, double minR) :
         Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR) 
 	{ 
-	  timerON("build");
+	  std::string checkpointName = "GePolCavity::build";
+	  timerON(checkpointName);
 	  build(10000, 200, 25000); 
-	  timerOFF("build");
+	  timerOFF(checkpointName);
 	}
     GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR) :
 	Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
 	{ 
-	  timerON("build");
+	  std::string checkpointName = "GePolCavity::build";
+	  timerON(checkpointName);
 	  build(10000, 200, 25000); 
-	  timerOFF("build");
+	  timerOFF(checkpointName);
 	}
     virtual ~GePolCavity() {}
     friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {

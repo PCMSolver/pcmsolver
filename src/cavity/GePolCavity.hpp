@@ -35,6 +35,7 @@
 #include "Cavity.hpp"
 #include "CavityData.hpp"
 #include "CavityFactory.hpp"
+#include "Timer.hpp"
 
 /*! \file GePolCavity.hpp
  *  \class GePolCavity
@@ -51,9 +52,19 @@ class GePolCavity : public Cavity
 public:
     GePolCavity() {}
     GePolCavity(const Molecule & molec, double a, double pr, double minR) :
-        Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR) { build(10000, 200, 25000); }
+        Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR) 
+	{ 
+	  timerON("build");
+	  build(10000, 200, 25000); 
+	  timerOFF("build");
+	}
     GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR) :
-	Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR) { build(10000, 200, 25000); }
+	Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
+	{ 
+	  timerON("build");
+	  build(10000, 200, 25000); 
+	  timerOFF("build");
+	}
     virtual ~GePolCavity() {}
     friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
         return cavity.printCavity(os);

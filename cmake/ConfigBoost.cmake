@@ -9,7 +9,7 @@ endif()
 # List all components needed (except mpi and unit_test_framework) here.
 # Components additionally required in PSI4: python, serialization, thread (Might be useful in the future?)
 # mpi and unit_test_framework will be added afterwards, if needed.
-list(APPEND needed_components filesystem system)
+list(APPEND needed_components chrono filesystem system timer)
 set(Boost_USE_STATIC_LIBS    ON)
 set(Boost_USE_MULTITHREADED  ON)
 set(Boost_USE_STATIC_RUNTIME OFF)

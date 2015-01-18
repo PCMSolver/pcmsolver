@@ -37,6 +37,8 @@ if(DEVELOPMENT_CODE)
 	add_subdirectory(tsless)
 	add_subdirectory(wavcav)
 endif()
+# This directory contains source file for executables
+add_subdirectory(bin)
 
 # We need to export header_dir_list one level up
 set(header_dir_list ${header_dir_list} PARENT_SCOPE)

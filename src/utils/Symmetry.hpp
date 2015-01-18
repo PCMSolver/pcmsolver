@@ -27,6 +27,7 @@
 #define SYMMETRY_HPP
 
 #include <algorithm>
+#include <cmath>
 
 #include "Config.hpp"
 

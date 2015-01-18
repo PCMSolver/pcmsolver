@@ -40,33 +40,38 @@
 typedef std::map<std::string, boost::timer::cpu_timer> timersMap;
 typedef std::pair<std::string, boost::timer::cpu_timer> timersPair;
 
+typedef std::map<std::string, boost::timer::cpu_times> timingsMap;
+typedef std::pair<std::string, boost::timer::cpu_times> timingsPair;
+
 /*! \file Timer.hpp
  *  \class Timer
  *  \brief A wrapper around Boost.Timer
  *  \author Roberto Di Remigio
  *  \date 2014
+ *
+ *  It is implemented as a Singleton. To time a code snippet:
+ *  \code{.cpp}
+ *  timerON("code-snippet");
+ *  // code-snippet
+ *  timerOFF("code-snippet");
+ *  \endcode
+ *  The timings are printed out when all the checkpoints created
+ *  by a call to timerON are closed by a call to timerOFF.
  */
 
 class Timer
 {
 private:
-    typedef std::map<std::string, boost::timer::cpu_times> timingsMap;
-    typedef std::pair<std::string, boost::timer::cpu_times> timingsPair;
-private:
+    /// Checkpoint-timer map 
     timersMap timers_;
+    /// Checkpoint-timing map
     timingsMap timings_;
 
     Timer() : timers_(), timings_() {}
     Timer(const Timer & other);
     Timer& operator=(const Timer & other);
     ~Timer() {}
-    std::ostream & printObject(std::ostream & os) const {
-        typedef timingsMap::const_iterator it_type;
-        for (it_type iter = timings_.begin(); iter != timings_.end(); ++iter) {
-            os << iter->first << " : " << boost::timer::format(iter->second);
-        }
-        return os;
-    }
+    std::ostream & printObject(std::ostream & os) const; 
 public:
     static Timer& TheTimer() {
         static Timer obj;
@@ -75,45 +80,53 @@ public:
     friend std::ostream & operator<<(std::ostream & os, const Timer & timer) {
         return timer.printObject(os);
     }
-    timersMap & timers() { return timers_; }
-    void appendTimings(const std::string & checkpoint_name,
-                       const boost::timer::cpu_times & checkpoint_times) {
-        timingsPair checkpoint = timingsMap::value_type(checkpoint_name, checkpoint_times);
-        timings_.insert(checkpoint);
+
+    /*! \brief Inserts a checkpoint-timer pair in the timers_ map
+     */
+    void insertTimer(const timersPair & checkpoint);
+    /*! \brief Erases a checkpoint-timer pair in the timers_ map
+     */
+    void eraseTimer(const std::string & checkpoint_name);
+
+    /*! \brief Inserts a checkpoint-timing pair in the timings_ map
+     */
+    void insertTiming(const std::string & checkpoint_name); 
+
+    /*! \brief Returns number of active timers
+     */
+    int activeTimers() {
+	return timers_.size();
     }
 };
 
-inline void printTimings() {
-	namespace fs = boost::filesystem;
-	fs::path file("pcmsolver.timer.dat");
-        std::ofstream timing_report;
-	if (fs::exists(file)) {
-        	timing_report.open("pcmsolver.timer.dat", std::ios::out | std::ios::app);
-	} else {
-        	timing_report.open("pcmsolver.timer.dat", std::ios::out);
-        	timing_report << "            PCMSolver API timing results            " << std::endl;
-	        timing_report << "----------------------------------------------------" << std::endl;
-	}
-        timing_report << Timer::TheTimer() << std::endl;
-        timing_report.close();
-}
-    
-inline void timerON(const std::string & checkpoint_name) {
-        boost::timer::cpu_timer checkpoint_timer;
-        timersPair checkpoint = timersMap::value_type(checkpoint_name, checkpoint_timer);
-	Timer::TheTimer().timers().insert(checkpoint);
-}
-    
-inline void timerOFF(const std::string & checkpoint_name) {
-        timersMap::iterator checkpoint_timer = Timer::TheTimer().timers().find(checkpoint_name);
-        boost::timer::cpu_times const checkpoint_times((checkpoint_timer->second).elapsed());
-	Timer::TheTimer().appendTimings(checkpoint_name, checkpoint_times);
-	// Remove checkpoint_timer from the timers_ map
-	Timer::TheTimer().timers().erase(checkpoint_name);
-	// If all timers are turned OFF write results to file
-	if (Timer::TheTimer().timers().size() == 0) {
-		printTimings();
-	}
-}
+/*! \fn void timerON(const std::string & checkpoint_name)
+ *  \param[in] checkpoint_name name of the checkpoint to be timed
+ *  \brief Starts a timer with the given name
+ *
+ *  A timer is added to the timers_ map of the Timer object.
+ */
+void timerON(const std::string & checkpoint_name);
+
+/*! \fn void timerOFF(const std::string & checkpoint_name)
+ *  \param[in] checkpoint_name name of the checkpoint to be timed
+ *  \brief Stops a timer with the given name
+ *
+ *  The timing results associated with the given timer
+ *  are added to the timings_ map of the Timer object,
+ *  the timer is then removed from the timers_ map.
+ *  If no timers are left in the timers_ map, the final results
+ *  are written to pcmsolver.timer.dat
+ */
+void timerOFF(const std::string & checkpoint_name); 
+
+/*! \fn printTimings(const std::string & fname)
+ *  \param[in] fname timers report filename
+ *  \brief Writes timing results to given filename
+ *  \warning fname is removed if already existent
+ *
+ *  This function is invoked by timerOFF when there 
+ *  are no more active timers in the timers_ map.
+ */
+void printTimings(const std::string & fname);
 
 #endif // TIMER_HPP

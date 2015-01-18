@@ -81,6 +81,8 @@
 
     subroutine polyhedra_driver(pgroup, vert, centr, masses, global_print_unit, error_code)
 
+    use pedra_diagonal
+
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
@@ -99,8 +101,6 @@
     real(kind=dp), allocatable :: vert(:, :, :), centr(:, :, :)
     real(kind=dp), allocatable :: xval(:), yval(:), zval(:)
     real(kind=dp), allocatable :: cv(:, :)
-
-    real(kind=dp) :: euphi, euthe, eupsi, eps1, eps2, eps3
 
     SOME = IPRPCM.NE.-5
 !     ----- set the print level
@@ -141,20 +141,6 @@
 
     call polyhedra(intsph, vert, centr, newsph, icav1, icav2, xval, yval, zval, &
     jtr, cv, numts, numsph, numver, natm, some, masses)
-
-!   euphi =  6.0
-!   euthe = 40.0
-!   eupsi = 15.0
-!   eps1 =  2.0
-!   eps2 = 80.0
-!   eps3 = 15.0
-    euphi =  0.0
-    euthe =  0.0
-    eupsi =  0.0
-    eps1 = 80.0
-    eps2 = 80.0
-    eps3 = 80.0
-    call diagan(vert, centr, euphi, euthe, eupsi, eps1, eps2, eps3)
 
 ! Bring the error code back home
     error_code = pedra_error_code

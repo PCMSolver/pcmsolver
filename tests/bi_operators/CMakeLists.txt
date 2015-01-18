@@ -1,6 +1,13 @@
 set(list_of_libraries green bi_operators cavity pedra utils)
 
 list(APPEND external_libraries ${ZLIB_LIBRARIES})
+add_boosttest(bi_operators_collocation "${list_of_libraries}" "${external_libraries}")
+add_reference(vacuum_S_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
+add_reference(vacuum_D_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
+add_reference(uniformdielectric_S_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
+add_reference(uniformdielectric_D_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
+
+list(APPEND external_libraries ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 add_boosttest(bi_operators_numerical "${list_of_libraries}" "${external_libraries}")
 #add_reference(vacuum_S_numerical.npy ${CMAKE_CURRENT_BINARY_DIR})
 #add_reference(vacuum_D_numerical.npy ${CMAKE_CURRENT_BINARY_DIR})
@@ -10,8 +17,3 @@ add_boosttest(bi_operators_numerical "${list_of_libraries}" "${external_librarie
 #add_reference(ionic_D_numerical.npy ${CMAKE_CURRENT_BINARY_DIR})
 #add_reference(anisotropic_S_numerical.npy ${CMAKE_CURRENT_BINARY_DIR})
 #add_reference(anisotropic_D_numerical.npy ${CMAKE_CURRENT_BINARY_DIR})
-add_boosttest(bi_operators_collocation "${list_of_libraries}" "${external_libraries}")
-add_reference(vacuum_S_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
-add_reference(vacuum_D_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
-add_reference(uniformdielectric_S_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
-add_reference(uniformdielectric_D_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})

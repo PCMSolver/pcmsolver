@@ -85,10 +85,10 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
 
-    virtual double diagonalS(const Element & e) const {
+    virtual double diagonalS(const Element & /* e */) const {
 	    return 1.0;
     }
-    virtual double diagonalD(const Element & e) const {
+    virtual double diagonalD(const Element & /* e */) const {
 	    return 1.0;
     }
 

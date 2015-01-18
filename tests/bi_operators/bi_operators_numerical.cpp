@@ -37,6 +37,8 @@
 
 #include <Eigen/Dense>
 
+#include <boost/filesystem.hpp>
+
 #include "cnpyPimpl.hpp"
 #include "DerivativeTypes.hpp"
 #include "AnisotropicLiquid.hpp"
@@ -48,6 +50,8 @@
 #include "UniformDielectric.hpp"
 #include "TestingMolecules.hpp"
 #include "Vacuum.hpp"
+
+namespace fs = boost::filesystem;
 
 struct NumericalIntegratorTest {
     double radius;
@@ -86,6 +90,7 @@ struct NumericalIntegratorTest {
  */
 BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
 {
+    fs::rename("PEDRA.OUT", "PEDRA.OUT.vacuum");
     Vacuum<AD_directional> gf(diag);
 
     BOOST_TEST_MESSAGE("Vacuum");
@@ -116,6 +121,7 @@ BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
 	D_results(i) = gf.diagonalD(cavity.elements(i)); 
     }
+    double sum_D = D_results.sum();
     // In case you need to update the reference files...
     /*
     cnpy::npy_save("vacuum_D_numerical.npy", D_results.data(), shape, 1, "w", false);
@@ -126,6 +132,8 @@ BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
     }
+    // Checks sum rule for D operator
+    BOOST_REQUIRE_CLOSE(D_sum, 2 * M_PI, 1.0e-12);
     */
     BOOST_TEST_MESSAGE("D operator diagonal by numerical quadrature");
     for (int i = 0; i < cavity.size(); ++i) {
@@ -139,6 +147,7 @@ BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
 {
+    fs::rename("PEDRA.OUT", "PEDRA.OUT.uniform");
     UniformDielectric<AD_directional> gf(eps, diag);
     
     BOOST_TEST_MESSAGE("UniformDielectric");
@@ -192,6 +201,7 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
 {
+    fs::rename("PEDRA.OUT", "PEDRA.OUT.ionic");
     IonicLiquid<AD_directional> gf(eps, kappa, diag);
 
     BOOST_TEST_MESSAGE("IonicLiquid");
@@ -245,6 +255,7 @@ BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(anisotropic, NumericalIntegratorTest)
 {
+    fs::rename("PEDRA.OUT", "PEDRA.OUT.anisotropic");
     AnisotropicLiquid<AD_directional> gf(epsilon, euler, diag);
 
     BOOST_TEST_MESSAGE("AnisotropicLiquid");

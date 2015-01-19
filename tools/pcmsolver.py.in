@@ -252,16 +252,13 @@ def setup_keywords():
     medium.add_kw('PROBERADIUS',  'DBL', 1.0)
     # A priori compression parameter a
     # Valid for: wavelet solvers
-    # Valid values: double strictly greater than 1.0
+    # Valid values: double greater than 1.0
     # Default: 1.25
     medium.add_kw('A', 'DBL', 1.25)
     # A priori compression parameter d' 
     # Valid for: wavelet solvers
-    # Valid values: double strictly less than 2.0 (piecewise constants)
-    #               strictly less than 3.0 (piecewise linears)            
+    # Valid values: double greater than 1.0
     # Default: 1.25 (PWC) or 2.25 (PWL)
-    # Since the default is solver-dependent it is here set to 0.0 to avoid complaints
-    # about nonexistent section
     medium.add_kw('DPRIME', 'DBL', 0.0)
     # A posteriori compression parameter b
     # Valid for: wavelet solvers
@@ -494,8 +491,8 @@ def verify_medium(section):
         sys.exit(1)
     
     a = section.get('A')
-    if (a.get() <= 1.0):
-        print('A priori compression parameter a has to be strictly greater than 1.0')
+    if (a.get() < 1.0):
+        print('A priori compression parameter a has to be greater than 1.0')
         sys.exit(1)
     dprime = section.get('DPRIME')
     solver = section.get('SOLVERTYPE')
@@ -504,11 +501,6 @@ def verify_medium(section):
             dprime.set(1.25)
         elif (solver.get() == 'LINEAR'):
             dprime.set(2.25)
-
-    if (dprime.get() >= 3.0 and solver.get() == 'LINEAR'):
-        print('A priori compression parameter d\' has to be strictly less than 3.0 for piecewise linears')
-    elif (dprime.get() >= 2.0 and solver.get() == 'WAVELET'):
-        print('A priori compression parameter d\' has to be strictly less than 2.0 for piecewise constants')
 
     b = section.get('B')
     if (b.get() >= 1.0 and b.get() <= 0.0):

@@ -573,9 +573,9 @@ Vector3 Interpolation::n_Chi(Vector2 a, int patch)
         dc_dx =vector3Add(dc_dx, vector3SMul(s,res)) ;
     }
 
-    c.x = (-dc_dy.y*dc_dx.z + dc_dy.z*dc_dx.y);
-    c.y = (-dc_dy.z*dc_dx.x + dc_dy.x*dc_dx.z);
-    c.z = (-dc_dy.x*dc_dx.y + dc_dy.y*dc_dx.x);
+    c.x = (dc_dy.y*dc_dx.z - dc_dy.z*dc_dx.y);
+    c.y = (dc_dy.z*dc_dx.x - dc_dy.x*dc_dx.z);
+    c.z = (dc_dy.x*dc_dx.y - dc_dy.y*dc_dx.x);
 
     return c;
 }

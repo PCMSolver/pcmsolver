@@ -24,7 +24,7 @@ ConAnsatzFunction :: ConAnsatzFunction(){
   a = 1.0; ///< compression constant,  a > 1
   b = 0.01; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 2;
+  quadratureLevel_ = 0;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -43,7 +43,7 @@ ConAnsatzFunction :: ConAnsatzFunction(const Compression & _comp){
   a = _comp.aPrioriA; ///< compression constant,  a > 1
   b = _comp.aPosterioriB; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 2;
+  quadratureLevel_ = 1;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -65,7 +65,7 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   a = 1.25; ///< compression constant,  a > 1
   b = 0.001; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 2;
+  quadratureLevel_ = 0;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -86,7 +86,7 @@ ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigne
   a = _a; ///< compression constant,  a > 1
   b = _b; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_ = 2;
+  quadratureLevel_ = 0;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
@@ -343,20 +343,6 @@ void ConAnsatzFunction::simplifyWaveletList(){
   // free memory for prototype indeces
   free(prototype);
   printf("%d prototypes\n",prototype_number);
-#ifdef DEBUG
-  FILE* debugFile = fopen("debug.out","a");
-  fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
-  for(unsigned int m = 0; m<waveletList.sizeWaveletList; ++m){
-    fprintf(debugFile,"%d %d %d %d\n", m, waveletList.W[m].level, waveletList.W[m].noElements, waveletList.W[m].noSons);
-    for(unsigned int i1 = 0 ; i1< waveletList.W[m].noElements; ++i1){
-      fprintf(debugFile,"%d %lf ", waveletList.W[m].element[i1], waveletList.W[m].weight[i1]);
-    }
-    fprintf(debugFile,"\n");
-  }
-  fprintf(debugFile,"<<< WAVELET_TREE_SIMPLIFY\n");
-  fflush(debugFile);
-  fclose(debugFile);
-#endif
 
   return;
 }

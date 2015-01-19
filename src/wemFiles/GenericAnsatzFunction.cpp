@@ -432,8 +432,8 @@ unsigned int GenericAnsatzFunction :: postProc(SparseMatrix *T){
       //c[i][j] = pow(0.5,(nLevels-0.5*(i+j))*(2*dp-op)/(2*td+op)); // false?!
       c[i][j] = pow(0.5,(2*nLevels-(i+j))*(2*dp-op)/(2*td+op));
       if (c[i][j] > pow(0.5,fabs(i-j))) c[i][j] = pow(0.5,fabs(i-j));
-      c[i][j] *= b * pow(0.5,(dp-0.5*op)*(2*nLevels-(i+j)));// added -op*nLevels
-      //c[i][j] *= b * pow(0.5,(dp)*(2*nLevels-(i+j)));
+      //c[i][j] *= b * pow(0.5,(dp-0.5*op)*(2*nLevels-(i+j)));// added -op*nLevels
+      c[i][j] *= b * pow(0.5,(dp)*(2*nLevels-(i+j)));
     }
   }
 

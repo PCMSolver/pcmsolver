@@ -52,7 +52,7 @@ double energy(double *u, GenericAnsatzFunction *af) {
 	E = -0.5*h*E;	// correct scaling
 
 	// output
-	printf("Computing the energy:            %g\n",E);
+	printf("Computing the energy:            %g\n",E*0.5291772);
 
 	for (unsigned int l=0; l<k; l++) D += alpha[l];	// total charge
 	// C = total charge * (epsilon-1)/epsilon
@@ -74,6 +74,7 @@ double energy_ext(double *u, double *potential, GenericAnsatzFunction *af)
     double E = 0;               /* Energie                                     */
     double h = 1. / n;          /* Schrittweite                                */
     unsigned int index;
+    af->quadratureLevel_ = 1;
 
 /* Initialisierung */
     initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
@@ -89,9 +90,10 @@ double energy_ext(double *u, double *potential, GenericAnsatzFunction *af)
         }
       }
       E = -0.5 * h * E;           /* correct scaling */
+      E *= 0.5291772;
 
 /* Datenausgabe */
-//    printf("PWC Computed energy:            %f10\n", E);
+    printf("PWC Computed energy:            %f10\n", E);
 	  freeGaussSquare(&Q,af->quadratureLevel_+1);
     return (E);
 }
@@ -108,6 +110,7 @@ double charge_ext(double *u, double *charge, GenericAnsatzFunction *af)
     double h = 1. / n;          /* Schrittweite                                */
     double C = 0;               /* surface meassure                            */
     unsigned int index;
+    af->quadratureLevel_ = 1;
 
 /* Initialisierung */
     initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
@@ -125,7 +128,7 @@ double charge_ext(double *u, double *charge, GenericAnsatzFunction *af)
           charge[zi*Q[af->quadratureLevel_].noP+l] = Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi) * h;
           C += charge[zi*Q[af->quadratureLevel_].noP+l];
 #ifdef DEBUG
-          printf("%d %g\n",zi*Q[af->quadratureLevel_].noP+l,charge[zi*Q[af->quadratureLevel_].noP+l]);
+          //printf("%d %g\n",zi*Q[af->quadratureLevel_].noP+l,charge[zi*Q[af->quadratureLevel_].noP+l]);
 #endif
 				}
 				s.x += h;

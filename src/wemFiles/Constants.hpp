@@ -17,7 +17,7 @@ const double		op = -1; ///< order of the operator
 
 // quadrature
 const double		scalingFactor = 0.7071;///< size of relative outer radius
-const unsigned int minQuadratureLevel =0; ///< minimal quadrature level
+const unsigned int minQuadratureLevel =2; ///< minimal quadrature level
 const int g_max = 10; ///< the maximum number of Cubatures calculated
 
 const double q = 1; ///<

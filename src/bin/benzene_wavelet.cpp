@@ -92,9 +92,9 @@ void pwc_C6H6()
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
-    //Compression comp(1.0, 1.25, 0.01);
-    //PWCSolver solver(gfInside, gfOutside, comp, firstKind);
-    PWCSolver solver(gfInside, gfOutside, firstKind);
+    Compression comp(2.5, 2.5, 0.001);
+    PWCSolver solver(gfInside, gfOutside, comp, firstKind);
+    //PWCSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
@@ -137,6 +137,7 @@ void pwc_C6H6()
     double totalFakeASC = fake_asc.sum();
 
     double energy = 0.5 * (fake_mep.dot(fake_asc));
+    energy *= 0.5291772;
     
     std::ofstream report;
     report.open("pwc_C6H6_report.out", std::ios::out);
@@ -148,6 +149,7 @@ void pwc_C6H6()
     report << "totalFakeASC = " << std::setprecision(20) << totalFakeASC << std::endl;
     report << "Delta        = " << std::setprecision(20) << totalASC - totalFakeASC << std::endl;
     report << "Energy       = " << std::setprecision(20) << energy << std::endl;
+    report << "DEnergy       = " << std::setprecision(20) << -177.756393038557-energy << std::endl;
     report << "------------------------------------------------------------" << std::endl;
     report.close();
 }

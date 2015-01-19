@@ -98,7 +98,7 @@ void WaveletCavity::readCavity(const std::string & filename)
                                                 
         for (size_t l = 0; l < nPoints_; ++l) {
             file >> i >> j >> k >> x >> y >> z;
-            Eigen::Vector3i index(i, j, k);
+            Eigen::Vector3i index(i, k, j);
             nodeIndex_.push_back(index);
             Eigen::Vector3d point(x, y, z);
             nodePoint_.push_back(point);
@@ -106,13 +106,15 @@ void WaveletCavity::readCavity(const std::string & filename)
                                                 
         file.close();
         uploadedDyadic_ = true;
+    } else {
+        throw std::runtime_error("Dyadic file not opened properly");
     }
 }
 
 void WaveletCavity::scaleCavity(const double scalingFactor)
 {
     BOOST_FOREACH(Eigen::Vector3d & point, nodePoint_) {
-	point *= scalingFactor;
+        point *= scalingFactor;
     }
 }
 

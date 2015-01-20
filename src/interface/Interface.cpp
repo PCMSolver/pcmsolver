@@ -727,12 +727,12 @@ void initWaveletCavity()
     }
     double probeRadius = parsedInput->cavityParams().probeRadius;
     probeRadius *= scaling;
-    //_waveletCavity = new WaveletCavity("benzene.dat");
+    _waveletCavity = new WaveletCavity("benzene.dat");
 
-    _waveletCavity = new WaveletCavity(spheres, probeRadius, 
+    /*_waveletCavity = new WaveletCavity(spheres, probeRadius, 
 				       parsedInput->cavityParams().patchLevel, 
 				       parsedInput->cavityParams().coarsity);
-    _waveletCavity->readCavity("molec_dyadic.dat");
+    _waveletCavity->readCavity("molec_dyadic.dat");*/
     // --> ---> DIRTY DIRTY WORKAROUND
     // Convert back to atomic units the generated cavity    
     _waveletCavity->scaleCavity(1.0/scaling);

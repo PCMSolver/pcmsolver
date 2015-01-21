@@ -1,7 +1,7 @@
 #ifndef LOGGERINTERFACE_HPP
 #define LOGGERINTERFACE_HPP
 
-#ifdef HAS_CXX11_SUPPORT
+#ifdef HAS_CXX11
 
 #include "Logger.hpp"
 
@@ -27,7 +27,7 @@ static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.executi
 #define ELOG_WARN(...)
 #endif
 
-#else // HAS_CXX11_SUPPORT
+#else // HAS_CXX11
 
 #ifdef LOGGING_LEVEL_1
 #define LOG(...)
@@ -41,6 +41,6 @@ static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.executi
 #define ELOG_WARN(...)
 #endif
 
-#endif // HAS_CXX11_SUPPORT
+#endif // HAS_CXX11
  
 #endif // LOGGERINTERFACE_HPP

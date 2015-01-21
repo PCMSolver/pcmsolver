@@ -39,7 +39,7 @@ std::vector<Atom> & Atom::initBondi()
 
 // ------------------------------------------------------------
 //             Atom("Name",    "Symbol", Charge,     Mass,   Radius, Center, Scaling)
-    Bondi[0]  = Atom("Hydrogen",     "H",   1.0,   1.0078250, 1.20, Origin, 1.2);      
+    Bondi[0]  = Atom("Hydrogen",     "H",   1.0,   1.0078250, 1.20, Origin, 1.2);
     Bondi[1]  = Atom("Helium",       "He",  2.0,   4.0026030, 1.40, Origin, 1.2);
     Bondi[2]  = Atom("Lithium",      "Li",  3.0,   7.0160050, 1.82, Origin, 1.2);
     Bondi[3]  = Atom("Beryllium",    "Be",  4.0,   9.0121830, 1.53, Origin, 1.2);
@@ -145,7 +145,7 @@ std::vector<Atom> & Atom::initUFF()
 
 // ------------------------------------------------------------
 //            Atom("Name",    "Symbol", Charge,     Mass,   Radius, Center, Scaling)
-    UFF[0]  = Atom("Hydrogen",     "H",   1.0,   1.0078250, 1.4430, Origin, 1.2);    
+    UFF[0]  = Atom("Hydrogen",     "H",   1.0,   1.0078250, 1.4430, Origin, 1.2);
     UFF[1]  = Atom("Helium",       "He",  2.0,   4.0026030, 1.8100, Origin, 1.2);
     UFF[2]  = Atom("Lithium",      "Li",  3.0,   7.0160050, 1.2255, Origin, 1.2);
     UFF[3]  = Atom("Beryllium",    "Be",  4.0,   9.0121830, 1.3725, Origin, 1.2);

@@ -62,7 +62,7 @@ typedef std::pair<std::string, boost::timer::cpu_times> timingsPair;
 class Timer
 {
 private:
-    /// Checkpoint-timer map 
+    /// Checkpoint-timer map
     timersMap timers_;
     /// Checkpoint-timing map
     timingsMap timings_;
@@ -71,7 +71,7 @@ private:
     Timer(const Timer & other);
     Timer& operator=(const Timer & other);
     ~Timer() {}
-    std::ostream & printObject(std::ostream & os) const; 
+    std::ostream & printObject(std::ostream & os) const;
 public:
     static Timer& TheTimer() {
         static Timer obj;
@@ -90,12 +90,12 @@ public:
 
     /*! \brief Inserts a checkpoint-timing pair in the timings_ map
      */
-    void insertTiming(const std::string & checkpoint_name); 
+    void insertTiming(const std::string & checkpoint_name);
 
     /*! \brief Returns number of active timers
      */
     int activeTimers() {
-	return timers_.size();
+        return timers_.size();
     }
 };
 
@@ -117,14 +117,14 @@ void timerON(const std::string & checkpoint_name);
  *  If no timers are left in the timers_ map, the final results
  *  are written to pcmsolver.timer.dat
  */
-void timerOFF(const std::string & checkpoint_name); 
+void timerOFF(const std::string & checkpoint_name);
 
 /*! \fn printTimings(const std::string & fname)
  *  \param[in] fname timers report filename
  *  \brief Writes timing results to given filename
  *  \warning fname is removed if already existent
  *
- *  This function is invoked by timerOFF when there 
+ *  This function is invoked by timerOFF when there
  *  are no more active timers in the timers_ map.
  */
 void printTimings(const std::string & fname);

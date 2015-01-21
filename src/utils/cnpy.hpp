@@ -68,7 +68,8 @@ namespace cnpy
             const std::string rhs);
     template<> std::vector<char>& operator+=(std::vector<char>& lhs, const char* rhs);
 
-    template<typename T> std::string tostring(T i, int /* pad */ = 0,  char /* padval */ = ' ')
+    template<typename T> std::string tostring(T i, int /* pad */ = 0,
+            char /* padval */ = ' ')
     {
         std::stringstream s;
         s << i;

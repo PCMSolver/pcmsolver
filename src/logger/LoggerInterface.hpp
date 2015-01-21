@@ -5,7 +5,7 @@
 
 #include "Logger.hpp"
 
-static logging::logger<logging::FileLogPolicy> loggerInstance("execution.log");
+static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.execution.log");
 
 #ifdef LOGGING_LEVEL_1
 #define LOG loggerInstance.print<logging::severityType::debug>

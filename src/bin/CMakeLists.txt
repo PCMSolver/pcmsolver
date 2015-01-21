@@ -3,5 +3,3 @@
 
 #add_executable(debug_wavcav.x debug_wavcav.cpp)
 #target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils)
-
-add_executable(logger_example.x logger_example.cpp)

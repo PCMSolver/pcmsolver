@@ -47,7 +47,7 @@ namespace logging
             header.str("");
             header.fill('0');
             header.width(7);
-            header << logLineNumber_++ << " < " <<getTime() << " - ";
+            header << logLineNumber_++ << " < " << getTime() << " - ";
 
             header.fill('0');
             header.width(7);

@@ -63,6 +63,7 @@ namespace logging
         }
         template<typename First, typename...Rest>
         void printImpl(First parm1, Rest...parm) {
+	    logStream_.precision(std::numeric_limits<double>::digits10);
             logStream_ << parm1;
             printImpl(parm...);
         }

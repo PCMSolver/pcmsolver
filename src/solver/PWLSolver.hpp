@@ -65,12 +65,12 @@ private:
     virtual std::ostream & printSolver(std::ostream & os);
 public:
     PWLSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, int integralEquation_ = SecondKind)
-        : PCMSolver(gfInside_, gfOutside_), interpolationGrade(2), interpolationType(1), 
+        : PCMSolver(gfInside_, gfOutside_), interpolationGrade(3), interpolationType(1), 
 	af( new LinAnsatzFunction() ), integralEquation(integralEquation_) {
         initWEMMembers();
     }
     PWLSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, const Compression & _comp, int integralEquation_ = SecondKind)
-        : PCMSolver(gfInside_, gfOutside_), interpolationGrade(2), interpolationType(1), 
+        : PCMSolver(gfInside_, gfOutside_), interpolationGrade(3), interpolationType(1), 
 	af( new LinAnsatzFunction(_comp) ), integralEquation(integralEquation_) {
         initWEMMembers();
     }

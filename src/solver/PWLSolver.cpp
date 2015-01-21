@@ -31,6 +31,7 @@
 #include "Energy.hpp"
 #include "Volume.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <ostream>
@@ -158,6 +159,9 @@ void PWLSolver::buildSystemMatrix(const Cavity & cavity)
     try {
         const WaveletCavity & waveletCavity = dynamic_cast<const WaveletCavity&>(cavity);
         uploadCavity(waveletCavity);
+	// IMPORTANT ! interpolationGrade has to be decided based on the number of refinements
+	// for the patch. It has to be 2 if we have nLevels_ = 2 (not enough points otherwise!)
+	interpolationGrade = std::min(waveletCavity.getNLevels(), (unsigned int)3);
         initInterpolation();
         constructWavelets();
         constructSystemMatrix();

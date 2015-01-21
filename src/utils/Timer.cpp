@@ -29,7 +29,8 @@
 
 #include <boost/foreach.hpp>
 
-std::ostream & Timer::printObject(std::ostream & os) const {
+std::ostream & Timer::printObject(std::ostream & os) const
+{
     timingsPair t_pair;
     BOOST_FOREACH(t_pair, timings_) {
         os << t_pair.first << " : " << boost::timer::format(t_pair.second);
@@ -37,15 +38,18 @@ std::ostream & Timer::printObject(std::ostream & os) const {
     return os;
 }
 
-void Timer::insertTimer(const timersPair & checkpoint) {
+void Timer::insertTimer(const timersPair & checkpoint)
+{
     timers_.insert(checkpoint);
 }
 
-void Timer::eraseTimer(const std::string & checkpoint_name) { 
-    timers_.erase(checkpoint_name); 
+void Timer::eraseTimer(const std::string & checkpoint_name)
+{
+    timers_.erase(checkpoint_name);
 }
 
-void Timer::insertTiming(const std::string & checkpoint_name) {
+void Timer::insertTiming(const std::string & checkpoint_name)
+{
     // Find timer associated with given checkpoint_name
     timersMap::iterator checkpoint_timer = timers_.find(checkpoint_name);
     // Get elapsed time, create a timingsPair and insert it into timings_ map
@@ -54,31 +58,34 @@ void Timer::insertTiming(const std::string & checkpoint_name) {
     timings_.insert(checkpoint);
 }
 
-void printTimings(const std::string & fname) {
+void printTimings(const std::string & fname)
+{
     namespace fs = boost::filesystem;
     fs::path file(fname);
     std::ofstream timing_report;
     if (fs::exists(file)) {
-	fs::remove(fname);
-    	timing_report.open(fname, std::ios::out);
-    	timing_report << "            PCMSolver API timing results            " << std::endl;
+        fs::remove(fname);
+        timing_report.open(fname, std::ios::out);
+        timing_report << "            PCMSolver API timing results            " << std::endl;
         timing_report << "----------------------------------------------------" << std::endl;
     }
     timing_report << Timer::TheTimer() << std::endl;
     timing_report.close();
 }
 
-void timerON(const std::string & checkpoint_name) {
+void timerON(const std::string & checkpoint_name)
+{
     boost::timer::cpu_timer checkpoint_timer;
     timersPair checkpoint = timersMap::value_type(checkpoint_name, checkpoint_timer);
     Timer::TheTimer().insertTimer(checkpoint);
 }
 
-void timerOFF(const std::string & checkpoint_name) {
+void timerOFF(const std::string & checkpoint_name)
+{
     Timer::TheTimer().insertTiming(checkpoint_name);
     Timer::TheTimer().eraseTimer(checkpoint_name);
     // If all timers are turned OFF write results to file
     if (Timer::TheTimer().activeTimers() == 0) {
-       printTimings("pcmsolver.timer.dat");
+        printTimings("pcmsolver.timer.dat");
     }
 }

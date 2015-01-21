@@ -50,12 +50,12 @@ inline int parity(std::bitset<nBits> bitrep)
     return parity;
 }
 
-/*! \fn inline double parity(unsigned int i) 
+/*! \fn inline double parity(unsigned int i)
  *  \param[in] i an integer, usually an index for an irrep or a symmetry operation
  *
  * Returns parity of input integer.
  * The parity is defined as the result of using XOR on the bitrep
- * of the given integer. For example: 
+ * of the given integer. For example:
  *   2 -> 010 -> 0^1^0 = 1 -> -1.0
  *   6 -> 110 -> 1^1^0 = 0 ->  1.0
  *
@@ -74,7 +74,7 @@ inline int parity(std::bitset<nBits> bitrep)
 inline double parity(unsigned int i)
 {
     // Use a ternary if construct. If the bitset is odd return -1.0 Return +1.0 otherwise.
-    return (parity(std::bitset<3>(i)) ? -1.0 : 1.0); 
+    return (parity(std::bitset<3>(i)) ? -1.0 : 1.0);
 }
 
 /*! \fn inline bool isZero(double value, double threshold)
@@ -206,7 +206,7 @@ inline void hermitivitize(Eigen::MatrixBase<Derived> & matrix_)
     // The adjoint is evaluated explicitly into an intermediate.
     matrix_ = 0.5 * (matrix_ + matrix_.adjoint().eval());
 }
-    
+
 /*! \brief Returns an Eigen matrix of type T, with dimensions _rows*_columns.
  *  \param _rows the number of rows.
  *  \param _columns the number of columns.

@@ -19,16 +19,16 @@ namespace logging
     class ILogPolicy
     {
     public:
-	/*! \brief Opens an output stream with the given name
-	 *  \param[in] name name of the stream
-	 */
+        /*! \brief Opens an output stream with the given name
+         *  \param[in] name name of the stream
+         */
         virtual void open_ostream(const std::string & name) = 0;
-	/*! \brief Closes an output stream with the given name
-	 */
+        /*! \brief Closes an output stream with the given name
+         */
         virtual void close_ostream() = 0;
-	/*! \brief Writes to stream
-	 *  \param[in] msg message to be written to stream
-	 */
+        /*! \brief Writes to stream
+         *  \param[in] msg message to be written to stream
+         */
         virtual void write(const std::string & msg) = 0;
     };
 
@@ -40,21 +40,36 @@ namespace logging
     private:
         std::unique_ptr<std::ofstream> outStream_;
     public:
-	/// Constructor
+        /// Constructor
         FileLogPolicy() : outStream_(new std::ofstream) {}
-	/// Destructor
-        virtual ~FileLogPolicy();
-	/*! \brief Opens an output stream with the given name
-	 *  \param[in] name name of the stream
-	 */
-        virtual void open_ostream(const std::string & name);
-	/*! \brief Closes an output stream with the given name
-	 */
-        virtual void close_ostream();
-	/*! \brief Writes to stream
-	 *  \param[in] msg message to be written to stream
-	 */
-        virtual void write(const std::string & msg);
+        /// Destructor
+        virtual ~FileLogPolicy() {
+            if(outStream_) {
+                close_ostream();
+            }
+        }
+        /*! \brief Opens an output stream with the given name
+         *  \param[in] name name of the stream
+         */
+        virtual void open_ostream(const std::string & name) {
+            outStream_->open(name.c_str(), std::ios_base::binary | std::ios_base::out);
+            if(!outStream_->is_open()) {
+                throw(std::runtime_error("LOGGER: Unable to open an output stream"));
+            }
+        }
+        /*! \brief Closes an output stream with the given name
+         */
+        virtual void close_ostream() {
+            if(outStream_) {
+                outStream_->close();
+            }
+        }
+        /*! \brief Writes to stream
+         *  \param[in] msg message to be written to stream
+         */
+        virtual void write(const std::string & msg) {
+            (*outStream_) << msg << std::endl;
+        }
     };
 
 } // close namespace logging

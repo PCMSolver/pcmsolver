@@ -5,11 +5,6 @@ get_hpp_headers(headers_list)
 list(REMOVE_ITEM headers_list "")
 # Sort alphabetically
 list(SORT headers_list)
-set(to_includer "${headers_list}")
-# Write headers to Includer.hpp
-file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Logger utility\n")
-list(REMOVE_ITEM to_includer "Logger.hpp" "LoggerImpl.hpp")
-write_to_Includer("${to_includer}")
 
 set(sources_list "")
 # Get sources with .cpp extension

@@ -24,7 +24,6 @@ namespace logging
 	 */
         virtual void open_ostream(const std::string & name) = 0;
 	/*! \brief Closes an output stream with the given name
-	 *  \param[in] name name of the stream
 	 */
         virtual void close_ostream() = 0;
 	/*! \brief Writes to stream
@@ -50,7 +49,6 @@ namespace logging
 	 */
         virtual void open_ostream(const std::string & name);
 	/*! \brief Closes an output stream with the given name
-	 *  \param[in] name name of the stream
 	 */
         virtual void close_ostream();
 	/*! \brief Writes to stream

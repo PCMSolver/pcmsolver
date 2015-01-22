@@ -53,6 +53,4 @@
 @DEFINE_FC_FUNC@
 @DEFINE_FC_FUNC_@
 
-#include "LoggerInterface.hpp"
-
 #endif // CONFIG_HPP

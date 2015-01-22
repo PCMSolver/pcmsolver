@@ -732,7 +732,6 @@ double GenericAnsatzFunction::distance(int e1, int e2){
 
 int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
   unsigned int i = 0;
-  unsigned int j = 0;
   unsigned int max = 0;
   FILE *f = NULL;
   Vector3 auxPoint;
@@ -810,11 +809,8 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
 }
 
 int GenericAnsatzFunction::printElement(char* dname, int element) {
-#ifdef PRINT_DEBUG
   // print out the first element!
   int i = 0;
-  int j = 0;
-  int i1, i2, i3, j1, j2, j3;
   int max = 0;
   FILE *f = NULL;
   int pointsToAdd = 1;
@@ -824,9 +820,6 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
   et_node *Ef = elementTree.element;
 
   max = (2 + pointsToAdd) * (2 + pointsToAdd);
-  double w[2 + pointsToAdd];
-  for (i = 1; i <= 2 + pointsToAdd; ++i)
-    w[i] = i / (2 + pointsToAdd);
 
   // visualize the surface of the geometry in vtk format              
   f = fopen(dname, "w");
@@ -842,9 +835,6 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
 
   //use the fact that i know that i add only one point :)
   double h = 1./n;
-  i1 = Ef[index+element].patch;
-  i2 = Ef[index+element].index_t;
-  i3 = Ef[index+element].index_s;
   i = 0;
   fprintf(f, "%20.16f\t%20.16f\t%20.16f\n",
       (nodeList[Ef[index+element].vertex[i]]).x,
@@ -955,7 +945,6 @@ int GenericAnsatzFunction::printElement(char* dname, int element) {
   fprintf(f,"0\n1\n2\n3\n\n");
 
   fclose(f);
-#endif
   return 0;
 }
 

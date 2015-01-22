@@ -313,13 +313,12 @@ void LinAnsatzFunction::freeGram(){
 /// inverse wavelet transform
 void LinAnsatzFunction :: tdwt(double *a){
   unsigned int ***C;
-  unsigned int N, n, S, arg;
+  unsigned int n, S, arg;
 
   SparseMatrix T, L;
   double *b;
 
   // loop over grid
-  N = (1<<nLevels);
   generateTopology(&C);
   //multiple(&C,&Z);
   b = (double*) malloc(waveletList.sizeWaveletList*sizeof(double));
@@ -372,13 +371,12 @@ void LinAnsatzFunction :: tdwt(double *a){
 /// wavelet transform
 void LinAnsatzFunction :: dwt(double *a){
   unsigned int ***C;
-  unsigned int N, n, S, arg;
+  unsigned int n, S, arg;
 
   SparseMatrix T, L;
   double *b;
 
   // loop over grid
-  N = (1<<nLevels);
   //multiple(&C,&Z);
   generateTopology(&C);
   b = (double*) calloc(waveletList.sizeWaveletList,sizeof(double));
@@ -1020,13 +1018,11 @@ void LinAnsatzFunction :: generateWaveletList() {
 	unsigned int n;          // n*n elements per patch on level m
 	Wavelet *w;              // wavelet under consideration
 	SparseMatrix Th, L;      // mask matrices
-	unsigned int s, t;       // indeces in mask matrices
 	unsigned int S;          // distance to next point
 	unsigned int arg;        // temporary variable
 	Wavelet *G;              // temporary wavelet list
 	double *newWeights;      // new weights to be added to w
 	unsigned int sizeNewWeights;// size of the weightsList
-	unsigned int k,l;        //  ???
 	
 	sizeNewWeights = 4;
 	newWeights = (double*) calloc(sizeNewWeights,sizeof(double));
@@ -1184,13 +1180,13 @@ void LinAnsatzFunction :: simplifyWaveletList() {
 					j = elementTree.element[j].father;
 					if (waveletList.W[i].element[s0] == elementTree.element[j].son[0]){
             // check 1st child
-						for (s1=0; (s1<noe) && (elementTree.element[j].son[1]!=(int)waveletList.W[i].element[s1]); ++s1);
+						for (s1=0; (s1<noe) && (elementTree.element[j].son[1]!=waveletList.W[i].element[s1]); ++s1);
 						if ((s1 < noe) && (fabs(2*waveletList.W[i].weight[s0*noPhi+1]-waveletList.W[i].weight[s0*noPhi+0]-waveletList.W[i].weight[s1*noPhi+1]) < eps)){
               // check 2nd child
-							for (s2=0; (s2<noe) && (elementTree.element[j].son[2] != (int)waveletList.W[i].element[s2]); ++s2);
+							for (s2=0; (s2<noe) && (elementTree.element[j].son[2] != waveletList.W[i].element[s2]); ++s2);
 							if ((s2 < noe) && (fabs(2*waveletList.W[i].weight[s1*noPhi+2]-waveletList.W[i].weight[s1*noPhi+1]-waveletList.W[i].weight[s2*noPhi+2]) < eps)){
                 // check 3rd child
-								for (s3=0; (s3<noe) && (elementTree.element[j].son[3] != (int)waveletList.W[i].element[s3]); ++s3); 
+								for (s3=0; (s3<noe) && (elementTree.element[j].son[3] != waveletList.W[i].element[s3]); ++s3); 
 								{
 									if ((s3 < noe) && (fabs(2*waveletList.W[i].weight[s2*noPhi+3]-waveletList.W[i].weight[s2*noPhi+2]-waveletList.W[i].weight[s3*noPhi+3]) < eps) \
 												 && (fabs(2*waveletList.W[i].weight[s3*noPhi+0]-waveletList.W[i].weight[s3*noPhi+3]-waveletList.W[i].weight[s0*noPhi+0]) < eps) \

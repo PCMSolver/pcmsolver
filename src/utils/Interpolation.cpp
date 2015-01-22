@@ -8,13 +8,12 @@
 #include "Interpolation.hpp"
 Interpolation::Interpolation(Vector3*** U, int gradeIn, const int type, unsigned int nLevelsIn, unsigned int noPatchIn){
   noPatch = noPatchIn;
-  nLevels = nLevelsIn;
-  n = 1<<(nLevels-gradeIn);
+  n = 1<<(nLevelsIn-gradeIn);
   grade = (1<<gradeIn);
-  coeff = (Vector3*) malloc(sizeof(Vector3)*(grade+1)*(grade+1));
+  coeff = (Vector3*) malloc(sizeof(Vector3)*(grade+1));
   if (gradeIn < 0) grade = 0;
   h = 1./grade; 
-  if (grade == 0) n = 1<<(nLevels);
+  if (grade == 0) n = 1<<(nLevelsIn);
   unsigned int i1, i2, i3, iSize, el;
   unsigned int i;
 
@@ -126,15 +125,12 @@ Vector3 Interpolation::Chi(Vector2 a, int patch){
 // calculate the x derivative in one point
 Vector3 Interpolation::dChi_dx(Vector2 a, int patch){
   unsigned int x, y;
-  double s,p;
-  Vector3 *coeff2;
 
   Vector3 c(0.0,0.0,0.0), dc_dx(0.0,0.0,0.0);
 
   x = (unsigned int)floor(a.x*n);
   y = (unsigned int)floor(a.y*n);
     
-  coeff2 = (Vector3*) malloc(sizeof(Vector3)*(grade+1));
   //if(x > 0) if((grade*x/h - a.x)*(grade*x/h - a.x) < 1e-10) --x;
   //if(y > 0) if((grade*y/h - a.y)*(grade*y/h - a.y) < 1e-10) --y;
   /** @note that here there are two possibilities to adjust the "corner"
@@ -147,37 +143,25 @@ Vector3 Interpolation::dChi_dx(Vector2 a, int patch){
   a.x = n*a.x - floor(a.x*n);
   a.y = n*a.y - floor(a.y*n);
 
-  memcpy(coeff, pSurfaceInterpolation[patch][y][x], (grade+1)*(grade+1)*sizeof(Vector3));
-  for(int i = grade; i >=0; --i){
-    for(int j = grade-1; j >= 0; --j){
-      coeff[i*(grade+1)+j] = vector3Add(coeff[i*(grade+1)+j],vector3SMul((a.x-j*h),coeff[i*(grade+1)+(j+1)]));
-    }
-  }
-
-  coeff2[grade] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+grade];
-  //dc_dx = coeff[grade*(grade+1)+grade];
-  dc_dx = coeff2[grade];
+  coeff[grade] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+grade];
+  dc_dx = coeff[grade];
 	for(int j = grade-1; j >=1; --j) {
-    coeff2[j] = vector3Add( pSurfaceInterpolation[patch][y][x][grade*(grade+1)+j],vector3SMul((a.x-j*h), coeff2[j+1]));
+    coeff[j] = vector3Add( pSurfaceInterpolation[patch][y][x][grade*(grade+1)+j],vector3SMul((a.x-j*h), coeff[j+1]));
 		dc_dx = vector3SMul(a.x-(j-1)*h, dc_dx);
-		//dc_dx = vector3Add(dc_dx, coeff[grade*(grade+1)+j]);
-		dc_dx = vector3Add(dc_dx, coeff2[j]);
+		dc_dx = vector3Add(dc_dx, coeff[j]);
 	}
 		
 	for(int i = grade-1; i >=0; --i) {
-    coeff2[grade] = pSurfaceInterpolation[patch][y][x][i*(grade+1)+grade];
-		//c = coeff[i*(grade+1)+grade];
-		c = coeff2[grade];
+    coeff[grade] = pSurfaceInterpolation[patch][y][x][i*(grade+1)+grade];
+		c = coeff[grade];
 		for(int j = grade-1; j >=1; --j) {
-      coeff2[j] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+j],vector3SMul((a.x-j*h), coeff2[j+1]));
+      coeff[j] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+j],vector3SMul((a.x-j*h), coeff[j+1]));
 			c = vector3SMul(a.x-(j-1)*h, c);
-			//c = vector3Add(c, coeff[i*(grade+1)+j]);
-			c = vector3Add(c, coeff2[j]);
+			c = vector3Add(c, coeff[j]);
 		}
 		dc_dx = vector3SMul(a.y-i*h,dc_dx);
 		dc_dx = vector3Add(dc_dx,c);
 	}
-  free(coeff2);
   dc_dx = vector3SMul(n,dc_dx);
   return dc_dx;
 }
@@ -185,9 +169,6 @@ Vector3 Interpolation::dChi_dx(Vector2 a, int patch){
 // calculate the y derivative in one point
 Vector3 Interpolation::dChi_dy(Vector2 a, int patch){
   unsigned int x, y;
-  double s,p;
-
-  Vector3 *coeff2;
 
   Vector3 c(0.0,0.0,0.0), dc_dx(0.0,0.0,0.0), dc_dy(0.0,0.0,0.0), res(0.0,0.0,0.0);
 
@@ -205,38 +186,26 @@ Vector3 Interpolation::dChi_dy(Vector2 a, int patch){
   if(y == n) --y;
   a.x = n*a.x - floor(a.x*n);
   a.y = n*a.y - floor(a.y*n);
-  memcpy(coeff, pSurfaceInterpolation[patch][y][x], (grade+1)*(grade+1)*sizeof(Vector3));
-  for(int i = grade-1; i >=0; --i){
-    for(unsigned int j = 0; j <= grade; ++j){
-      coeff[i*(grade+1)+j] = vector3Add(coeff[i*(grade+1)+j],vector3SMul((a.y-(i)*h),coeff[(i+1)*(grade+1)+j]));
-    }
-  }
 
-  coeff2 = (Vector3*) malloc(sizeof(Vector3)*(grade+1));
-  coeff2[grade] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+grade];
-  //dc_dy = coeff[grade*(grade+1)+grade];
-  dc_dy = coeff2[grade];
+  coeff[grade] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+grade];
+  dc_dy = coeff[grade];
 	for(int j = grade-1; j >=0; --j) {
-    coeff2[j] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+j]; 
+    coeff[j] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+j]; 
 		dc_dy = vector3SMul(a.x-((j)*h), dc_dy);
-		//dc_dy = vector3Add(dc_dy, coeff[grade*(grade+1)+j]);
-		dc_dy = vector3Add(dc_dy, coeff2[j]);
+		dc_dy = vector3Add(dc_dy, coeff[j]);
 	}
 		
 	for(int i = grade-1; i >=1; --i) {
-    coeff2[grade] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+grade],vector3SMul((a.y-(i)*h),coeff2[grade]));
-		//c = coeff[i*(grade+1)+grade];
-		c = coeff2[grade];
+    coeff[grade] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+grade],vector3SMul((a.y-(i)*h),coeff[grade]));
+		c = coeff[grade];
 		for(int j = grade-1; j >=0; --j) {
-      coeff2[j] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+j],vector3SMul((a.y-(i)*h),coeff2[j]));
+      coeff[j] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+j],vector3SMul((a.y-(i)*h),coeff[j]));
 			c = vector3SMul(a.x-(j)*h, c);
-			//c = vector3Add(c, coeff[i*(grade+1)+j]);
-			c = vector3Add(c, coeff2[j]);
+			c = vector3Add(c, coeff[j]);
 		}
 		dc_dy = vector3SMul(a.y-(i-1)*h,dc_dy);
 		dc_dy = vector3Add(dc_dy,c);
 	}
-  free(coeff2);
   dc_dy = vector3SMul(n,dc_dy);
   return dc_dy;
 }
@@ -262,18 +231,17 @@ Vector3 Interpolation::d2Chi_dy2(Vector2 a, int patch){
   if(y == n) --y;
   a.x = n*a.x - floor(a.x*n);
   a.y = n*a.y - floor(a.y*n);
-  memcpy(coeff, pSurfaceInterpolation[patch][y][x], (grade+1)*(grade+1)*sizeof(Vector3));
 
   for(unsigned int dy = 2; dy <= grade; dy++){
-		res = coeff[dy*(grade+1)+grade];
+		res = pSurfaceInterpolation[patch][y][x][dy*(grade+1)+grade];
 		for(int j = grade-1; j >=0; --j){
 			res = vector3SMul(a.x-j*h, res);
-			res = vector3Add(res, coeff[dy*(grade+1)+j]);
+			res = vector3Add(res, pSurfaceInterpolation[patch][y][x][dy*(grade+1)+j]);
 		}
 		s = 0;
-		for(int j = 0; j <= dy-1; ++j){
+		for(unsigned int j = 0; j <= dy-1; ++j){
 			s1 = 0;
-      for(int k = 0; k <= dy-1; ++k){
+      for(unsigned int k = 0; k <= dy-1; ++k){
         if ( k != j) {
           p = 1;
 			    for(unsigned int i = 0; i <=dy-1; ++i){
@@ -316,15 +284,15 @@ Vector3 Interpolation::d2Chi_dx2(Vector2 a, int patch){
   a.y = n*a.y - floor(a.y*n);
 
   for(unsigned int dy = 2; dy <= grade; dy++){
-		res = coeff[grade*(grade+1)+dy];
+		res = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+dy];
 		for(int j = grade-1; j >=0; --j){
 			res = vector3SMul(a.y-j*h, res);
-			res = vector3Add(res, coeff[j*(grade+1)+dy]);
+			res = vector3Add(res, pSurfaceInterpolation[patch][y][x][j*(grade+1)+dy]);
 		}
 		s = 0;
-		for(int j = 0; j <= dy-1; ++j){
+		for(unsigned int j = 0; j <= dy-1; ++j){
 			s1 = 0;
-      for(int k = 0; k <= dy-1; ++k){
+      for(unsigned int k = 0; k <= dy-1; ++k){
         if ( k != j) {
           p = 1;
 			    for(unsigned int i = 0; i <=dy-1; ++i){
@@ -364,9 +332,9 @@ Vector3 Interpolation::d2Chi_dxy(Vector2 a, int patch){
   if(y == n) --y;
   a.x = n*a.x - floor(a.x*n);
   a.y = n*a.y - floor(a.y*n);
-  memcpy(coeff, pSurfaceInterpolation[patch][y][x], (grade+1)*(grade+1)*sizeof(Vector3));
+
 	for(int dy = grade; dy >= 1; --dy){
-		res = coeff[dy*(grade+1)+1];
+		res = pSurfaceInterpolation[patch][y][x][dy*(grade+1)+1];
 		// calculate the other elements
 		for(unsigned int der = 2; der <= grade; ++der){
 			//coefficient of pSurfaceInterpolation[y][x][grade*(grade+1)+grade];
@@ -381,14 +349,14 @@ Vector3 Interpolation::d2Chi_dxy(Vector2 a, int patch){
 				}
 				s+=p;
 			}
-			res = vector3Add(res, vector3SMul(s, coeff[dy*(grade+1)+der]));
+			res = vector3Add(res, vector3SMul(s, pSurfaceInterpolation[patch][y][x][dy*(grade+1)+der]));
 		}
     s2 = 0;
     for(int i = dy-1; i >=0; --i){
       // all combinations of i elements
       p2 = 1;
-      for(unsigned int j = 0; j <=dy-1;++j){
-        if((int)j!=i){
+      for(int j = 0; j <=dy-1;++j){
+        if(j!=i){
           p2*=(a.y-j*h);
         }
       }
@@ -404,15 +372,12 @@ Vector3 Interpolation::d2Chi_dxy(Vector2 a, int patch){
 // calculate the normal in one point
 Vector3 Interpolation::n_Chi(Vector2 a, int patch){
   unsigned int x, y;
-  double s,p;
-  Vector3 *coeff2;
 
   Vector3 c(0.0,0.0,0.0), dc_dx(0.0,0.0,0.0), dc_dy(0.0,0.0,0.0), res(0.0,0.0,0.0);
 
   x = floor(a.x*n);
   y = floor(a.y*n);
     
-  coeff2 = (Vector3*) malloc(sizeof(Vector3)*(grade+1));
   //if(x > 0) if((grade*x/h - a.x)*(grade*x/h - a.x) < 1e-10) --x;
   //if(y > 0) if((grade*y/h - a.y)*(grade*y/h - a.y) < 1e-10) --y;
   /** @note that here there are two possibilities to adjust the "corner"
@@ -424,64 +389,43 @@ Vector3 Interpolation::n_Chi(Vector2 a, int patch){
   if(y == n) --y;
   a.x = n*a.x - floor(a.x*n);
   a.y = n*a.y - floor(a.y*n);
-  memcpy(coeff, pSurfaceInterpolation[patch][y][x], (grade+1)*(grade+1)*sizeof(Vector3));
-  for(int i = grade-1; i >=0; --i){
-    for(unsigned int j = 0; j <= grade; ++j){
-      coeff[i*(grade+1)+j] = vector3Add(coeff[i*(grade+1)+j],vector3SMul((a.y-(i)*h),coeff[(i+1)*(grade+1)+j]));
-    }
-  }
 
-  coeff2[grade] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+grade];
-  //dc_dy = coeff[grade*(grade+1)+grade];
-  dc_dy = coeff2[grade];
+  coeff[grade] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+grade];
+  dc_dy = coeff[grade];
 	for(int j = grade-1; j >=0; --j) {
-    coeff2[j] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+j]; 
+    coeff[j] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+j]; 
 		dc_dy = vector3SMul(a.x-((j)*h), dc_dy);
-		//dc_dy = vector3Add(dc_dy, coeff[grade*(grade+1)+j]);
-		dc_dy = vector3Add(dc_dy, coeff2[j]);
+		dc_dy = vector3Add(dc_dy, coeff[j]);
 	}
 		
 	for(int i = grade-1; i >=1; --i) {
-    coeff2[grade] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+grade],vector3SMul((a.y-(i)*h),coeff2[grade]));
-		//c = coeff[i*(grade+1)+grade];
-		c = coeff2[grade];
+    coeff[grade] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+grade],vector3SMul((a.y-(i)*h),coeff[grade]));
+		c = coeff[grade];
 		for(int j = grade-1; j >=0; --j) {
-      coeff2[j] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+j],vector3SMul((a.y-(i)*h),coeff2[j]));
+      coeff[j] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+j],vector3SMul((a.y-(i)*h),coeff[j]));
 			c = vector3SMul(a.x-(j)*h, c);
-			//c = vector3Add(c, coeff[i*(grade+1)+j]);
-			c = vector3Add(c, coeff2[j]);
+			c = vector3Add(c, coeff[j]);
 		}
 		dc_dy = vector3SMul(a.y-(i-1)*h,dc_dy);
 		dc_dy = vector3Add(dc_dy,c);
 	}
   dc_dy = vector3SMul(n,dc_dy);
 
-  memcpy(coeff, pSurfaceInterpolation[patch][y][x], (grade+1)*(grade+1)*sizeof(Vector3));
-  for(int i = grade; i >=0; --i){
-    for(int j = grade-1; j >= 0; --j){
-      coeff[i*(grade+1)+j] = vector3Add(coeff[i*(grade+1)+j],vector3SMul((a.x-(j)*h),coeff[i*(grade+1)+(j+1)]));
-    }
-  }
-
-  coeff2[grade] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+grade];
-  //dc_dx = coeff[grade*(grade+1)+grade];
-  dc_dx = coeff2[grade];
+  coeff[grade] = pSurfaceInterpolation[patch][y][x][grade*(grade+1)+grade];
+  dc_dx = coeff[grade];
 	for(int j = grade-1; j >=1; --j) {
-    coeff2[j] = vector3Add( pSurfaceInterpolation[patch][y][x][grade*(grade+1)+j],vector3SMul((a.x-(j)*h), coeff2[j+1]));
+    coeff[j] = vector3Add( pSurfaceInterpolation[patch][y][x][grade*(grade+1)+j],vector3SMul((a.x-(j)*h), coeff[j+1]));
 		dc_dx = vector3SMul(a.x-((j-1)*h), dc_dx);
-		//dc_dx = vector3Add(dc_dx, coeff[grade*(grade+1)+j]);
-		dc_dx = vector3Add(dc_dx, coeff2[j]);
+		dc_dx = vector3Add(dc_dx, coeff[j]);
 	}
 		
 	for(int i = grade-1; i >=0; --i) {
-    coeff2[grade] = pSurfaceInterpolation[patch][y][x][i*(grade+1)+grade];
-		//c = coeff[i*(grade+1)+grade];
-		c = coeff2[grade];
+    coeff[grade] = pSurfaceInterpolation[patch][y][x][i*(grade+1)+grade];
+		c = coeff[grade];
 		for(int j = grade-1; j >=1; --j) {
-      coeff2[j] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+j],vector3SMul((a.x-(j)*h), coeff2[j+1]));
+      coeff[j] = vector3Add(pSurfaceInterpolation[patch][y][x][i*(grade+1)+j],vector3SMul((a.x-(j)*h), coeff[j+1]));
 			c = vector3SMul(a.x-(j-1)*h, c);
-			//c = vector3Add(c, coeff[i*(grade+1)+j]);
-			c = vector3Add(c, coeff2[j]);
+			c = vector3Add(c, coeff[j]);
 		}
 		dc_dx = vector3SMul(a.y-(i)*h,dc_dx);
 		dc_dx = vector3Add(dc_dx,c);
@@ -494,7 +438,6 @@ Vector3 Interpolation::n_Chi(Vector2 a, int patch){
 	c.x = (dc_dy.z*dc_dx.y - dc_dy.y*dc_dx.z);
 	c.y = (dc_dy.x*dc_dx.z - dc_dy.z*dc_dx.x);
 	c.z = (dc_dy.y*dc_dx.x - dc_dy.x*dc_dx.y);
-  free(coeff2);
     
   return c;
 }

@@ -249,7 +249,6 @@ void Input::semanticCheck()
 
 cavityData Input::cavityParams()
 {
-	   std::cout << dyadicFilename_ << std::endl;
     if (cavData_.empty) {
         cavData_ = cavityData(molecule_, area_, probeRadius_, minDistance_, derOrder_, minimalRadius_,
                         patchLevel_, coarsity_, cavFilename_, dyadicFilename_);

@@ -16,3 +16,8 @@ add_executable(benzene_wavelet.x benzene_wavelet.cpp)
 target_link_libraries(benzene_wavelet.x solver green bi_operators cavity wemFiles wemSolvers wavcav utils ${ZLIB_LIBRARY})
 add_reference(${CMAKE_SOURCE_DIR}/examples/benzene2.dat ${CMAKE_CURRENT_BINARY_DIR})
 add_reference(${CMAKE_SOURCE_DIR}/examples/sphere2.dat ${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable(poly_wavelet.x poly_wavelet.cpp)
+target_link_libraries(poly_wavelet.x solver green bi_operators cavity wemFiles wemSolvers wavcav utils ${ZLIB_LIBRARY})
+add_reference(${CMAKE_SOURCE_DIR}/examples/C32H66_lev2.dat ${CMAKE_CURRENT_BINARY_DIR})
+add_reference(${CMAKE_SOURCE_DIR}/examples/C8H18_lev2.dat ${CMAKE_CURRENT_BINARY_DIR})

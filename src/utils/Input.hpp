@@ -149,6 +149,8 @@ private:
     std::string type_;
     /// Filename for the .npz cavity restart file
     std::string cavFilename_;
+    /// Filename for the wavelet cavity dyadic file
+    std::string dyadicFilename_;
     /// Wavelet cavity patch level
     int patchLevel_;
     /// Wavelet cavity coarsity

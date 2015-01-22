@@ -63,13 +63,14 @@ def convert_to_upper_case(filename):
     # "restart" should not be touched, whereas the rest of the file
     # has to be put in uppercase.
     npz_file = re.compile('NPZFILE', re.IGNORECASE)
+    dyadic_file = re.compile('DYADICFILE', re.IGNORECASE)
     for line in contents:
-        if not npz_file.search(line):
-            line = line.upper() 
-        else:
+        if (npz_file.search(line)) or (dyadic_file.search(line)):
             rst_split = re.split(r"=", line)
             rst_split = rst_split[0].upper() + ' = ' + rst_split[1]
             line = ''.join(rst_split)
+        else:
+            line = line.upper() 
         final += line    
     # Convert also occurences of TRUE/FALSE to True/False, 
     # Python will otherwise interpret them as strings!
@@ -164,6 +165,10 @@ def setup_keywords():
     # Valid for: Restart cavity
     # Default: empty string
     cavity.add_kw('NPZFILE',     'STR', '')
+    # Name of the file containing the list of points for a wavelet cavity 
+    # Valid for: Wavelet cavity
+    # Default: empty string
+    cavity.add_kw('DYADICFILE',     'STR', '')
     # Patch level
     # Valid for: Wavelet cavity
     # Valid values: integer strictly greater than 0

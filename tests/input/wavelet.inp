@@ -1,33 +1,34 @@
-UNITS = ANGSTROM
-CODATA = 1998
-MEDIUM 
+units = angstrom
+codata = 1998
+medium 
 {
 
-	SOLVERTYPE = WAVELET
-        EQUATIONTYPE = FIRSTKIND
-	PROBERADIUS = 1.385
-        SOLVENT = EXPLICIT
-	GREEN<INSIDE> 
+	solvertype = wavelet
+        equationtype = firstkind
+	proberadius = 1.385
+        solvent = explicit
+	green<inside> 
 	{
-		TYPE=VACUUM
-		DER = NUMERICAL
+		type=vacuum
+		der = numerical
 	}
-	GREEN<OUTSIDE> 
+	green<outside> 
 	{
-		TYPE = UNIFORMDIELECTRIC
-	        EPS = 78.39
-		EPSDYN = 10.423
-		DER = GRADIENT
+		type = uniformdielectric
+	        eps = 78.39
+		epsdyn = 10.423
+		der = gradient
 	}		
 }
 
-CAVITY 
+cavity 
 {
-	TYPE = WAVELET
-	PATCHLEVEL = 1
-	COARSITY = 0.3
-	MODE = EXPLICIT
-	SPHERES = [ 0.00,   0.00,  0.00,  1.80,
+	type = wavelet
+	dyadicfile = benzene2.dat
+	patchlevel = 1
+	coarsity = 0.3
+	mode = explicit
+	spheres = [ 0.00,   0.00,  0.00,  1.80,
 		    0.00,  -0.96,  0.00,  1.44,
 		   -0.905,  0.32,  0.00,  1.44]
 }

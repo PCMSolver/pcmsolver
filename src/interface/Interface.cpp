@@ -716,24 +716,26 @@ void initWaveletCavity()
     if (parsedInput->spheres().size() == 1) {
         throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
     }
-    // --> ---> DIRTY DIRTY WORKAROUND
-    std::vector<Sphere> spheres = parsedInput->spheres();
+    
     // The wavelet cavity has to be generated in Angstrom and then scaled to atomic units
-    // spheres is a local copy of the spheres list read on input. The latter is untouched
     double scaling = bohrToAngstrom(parsedInput->CODATAyear());
-    // Iterate by reference to scale!
-    BOOST_FOREACH(Sphere & sph, spheres) {
-    	sph.scale(scaling);
+    if (parsedInput->cavityParams().dyadicFile.empty()) { // No dyadic file: create cavity from spheres
+        // spheres is a local copy of the spheres list read on input. The latter is untouched
+        std::vector<Sphere> spheres = parsedInput->spheres();
+        // Iterate by reference to scale!
+        BOOST_FOREACH(Sphere & sph, spheres) {
+        	sph.scale(scaling);
+        }
+        double probeRadius = parsedInput->cavityParams().probeRadius;
+        probeRadius *= scaling;
+                                                                                              
+        _waveletCavity = new WaveletCavity(spheres, probeRadius, 
+            			       parsedInput->cavityParams().patchLevel, 
+            			       parsedInput->cavityParams().coarsity);
+        _waveletCavity->readCavity("molec_dyadic.dat");
+    } else { // Dyadic file given: create cavity from the list of points
+        _waveletCavity = new WaveletCavity(parsedInput->cavityParams().dyadicFile);
     }
-    double probeRadius = parsedInput->cavityParams().probeRadius;
-    probeRadius *= scaling;
-    _waveletCavity = new WaveletCavity("benzene.dat");
-
-    /*_waveletCavity = new WaveletCavity(spheres, probeRadius, 
-				       parsedInput->cavityParams().patchLevel, 
-				       parsedInput->cavityParams().coarsity);
-    _waveletCavity->readCavity("molec_dyadic.dat");*/
-    // --> ---> DIRTY DIRTY WORKAROUND
     // Convert back to atomic units the generated cavity    
     _waveletCavity->scaleCavity(1.0/scaling);
 }

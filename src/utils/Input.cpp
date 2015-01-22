@@ -79,6 +79,7 @@ void Input::reader(const char * pythonParsed)
     if (type_ == "RESTART") {
        cavFilename_ = cavity.getStr("NPZFILE");
     }
+    dyadicFilename_ = cavity.getStr("DYADICFILE");
 
     scaling_ = cavity.getBool("SCALING");
     radiiSet_ = to_upper_copy(cavity.getStr("RADIISET"));
@@ -248,9 +249,10 @@ void Input::semanticCheck()
 
 cavityData Input::cavityParams()
 {
+	   std::cout << dyadicFilename_ << std::endl;
     if (cavData_.empty) {
         cavData_ = cavityData(molecule_, area_, probeRadius_, minDistance_, derOrder_, minimalRadius_,
-                        patchLevel_, coarsity_, cavFilename_);
+                        patchLevel_, coarsity_, cavFilename_, dyadicFilename_);
     }
     return cavData_;
 }

@@ -56,6 +56,7 @@
  *  @var cavityData::filename
  *  Name of the file containing the cavity
  *  specification for a restart.
+ *  @var cavityData::dyadicFile
  */
 
 struct cavityData {
@@ -68,14 +69,17 @@ struct cavityData {
     int patchLevel;
     double coarsity;
     std::string filename;
+    std::string dyadicFile;
     bool empty;
     cavityData() { empty = true; }
     cavityData(const Molecule & _molec, double _area, double _probeRadius,
                double _minDistance, int _derOrder, double _minRadius,
-               int _patchLevel, double _coarsity, const std::string & _fname) :
+               int _patchLevel, double _coarsity, const std::string & _fname,
+	       const std::string & _dyad) :
         molecule(_molec), area(_area), probeRadius(_probeRadius),
         minDistance(_minDistance), derOrder(_derOrder), minimalRadius(_minRadius),
-        patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname) { empty = false; }
+        patchLevel(_patchLevel), coarsity(_coarsity), filename(_fname),
+	dyadicFile(_dyad) { empty = false; }
 };
 
 #endif // CAVITYDATA_HPP

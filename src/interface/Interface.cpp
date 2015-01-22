@@ -203,6 +203,7 @@ extern "C" void compute_polarization_energy(double * energy)
         out_stream << "  U_en = " << boost::format("%20.14f\n") % (UEN / 2.0);
         out_stream << "  U_ne = " << boost::format("%20.14f\n") % (UNE / 2.0);
         out_stream << "  U_nn = " << boost::format("%20.14f\n") % (UNN / 2.0);
+        out_stream << "  U_en - U_ne = " << boost::format("%20.14E\n") % (UEN - UNE);
         printer(out_stream);
 
         *energy = 0.5 * ( UNN + UEN + UNE + UEE );

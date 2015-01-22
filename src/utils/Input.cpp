@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -47,14 +47,15 @@
 #include "Sphere.hpp"
 
 using boost::algorithm::to_upper_copy;
-    
+
 Input::Input(const std::string & filename)
 {
     reader(filename.c_str());
     semanticCheck();
 }
 
-Input::Input(const cavityInput & cav, const solverInput & solv, const greenInput & green)
+Input::Input(const cavityInput & cav, const solverInput & solv,
+             const greenInput & green)
 {
     reader(cav, solv, green);
     semanticCheck();
@@ -77,7 +78,7 @@ void Input::reader(const char * pythonParsed)
     minDistance_ = cavity.getDbl("MINDISTANCE");
     derOrder_ = cavity.getInt("DERORDER");
     if (type_ == "RESTART") {
-       cavFilename_ = cavity.getStr("NPZFILE");
+        cavFilename_ = cavity.getStr("NPZFILE");
     }
     dyadicFilename_ = cavity.getStr("DYADICFILE");
 
@@ -96,7 +97,7 @@ void Input::reader(const char * pythonParsed)
             spheres_.push_back(sph);
             j += 4;
         }
-	molecule_ = Molecule(spheres_);
+        molecule_ = Molecule(spheres_);
     } else if (mode_ == "ATOMS") {
         atoms_ = cavity.getIntVec("ATOMS");
         radii_ = cavity.getDblVec("RADII");
@@ -114,8 +115,8 @@ void Input::reader(const char * pythonParsed)
         const Section & inside = medium.getSect("GREEN<INSIDE>");
         // ...and initialize the data members
         greenInsideType_ = inside.getStr("TYPE");
-	derivativeInsideType_ = derivativeTraits(inside.getStr("DER"));
-	epsilonInside_ = inside.getDbl("EPS");
+        derivativeInsideType_ = derivativeTraits(inside.getStr("DER"));
+        epsilonInside_ = inside.getDbl("EPS");
         // Get the contents of the Green<outside> section...
         const Section & outside = medium.getSect("GREEN<OUTSIDE>");
         // ...and initialize the data members
@@ -124,12 +125,12 @@ void Input::reader(const char * pythonParsed)
         epsilonStaticOutside_ = outside.getDbl("EPS");
         epsilonDynamicOutside_ = outside.getDbl("EPSDYN");
         // This will be needed for the metal sphere only
-	if (greenOutsideType_ == "METALSPHERE") {
-	        epsilonReal_ = outside.getDbl("EPSRE");
-        	epsilonImaginary_ = outside.getDbl("EPSIMG");
-	        spherePosition_ = outside.getDblVec("SPHEREPOSITION");
-        	sphereRadius_ = outside.getDbl("SPHERERADIUS");
-	}
+        if (greenOutsideType_ == "METALSPHERE") {
+            epsilonReal_ = outside.getDbl("EPSRE");
+            epsilonImaginary_ = outside.getDbl("EPSIMG");
+            spherePosition_ = outside.getDblVec("SPHEREPOSITION");
+            sphereRadius_ = outside.getDbl("SPHERERADIUS");
+        }
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -148,7 +149,7 @@ void Input::reader(const char * pythonParsed)
         epsilonDynamicOutside_ = solvent_.epsDynamic();
     }
     integratorType_ = "COLLOCATION"; // Currently hardcoded!!!
-    
+
     solverType_ = medium.getStr("SOLVERTYPE");
     equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
     double aPrioriA = medium.getDbl("A");
@@ -157,11 +158,12 @@ void Input::reader(const char * pythonParsed)
     compression_ = Compression(aPrioriA, aPrioridPrime, aPosterioriB);
     correction_ = medium.getDbl("CORRECTION");
     hermitivitize_ = medium.getBool("MATRIXSYMM");
-    
+
     providedBy_ = std::string("API-side");
 }
 
-void Input::reader(const cavityInput & cav, const solverInput & solv, const greenInput & green)
+void Input::reader(const cavityInput & cav, const solverInput & solv,
+                   const greenInput & green)
 {
     CODATAyear_ = 2010;
 
@@ -172,13 +174,13 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
     minDistance_ = cav.min_distance * angstromToBohr(CODATAyear_);
     derOrder_ = cav.der_order;
     if (type_ == "RESTART") {
-       cavFilename_ = std::string(cav.restart_name); // No case conversion here!
+        cavFilename_ = std::string(cav.restart_name); // No case conversion here!
     }
 
     scaling_ = cav.scaling;
     radiiSet_ = cav.radii_set;
     minimalRadius_ = cav.min_radius * angstromToBohr(CODATAyear_);
-    mode_ = std::string("IMPLICIT"); 
+    mode_ = std::string("IMPLICIT");
 
     std::string name = to_upper_copy(std::string(solv.solvent));
     if (name.empty()) {
@@ -188,8 +190,8 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
         // Get the contents of the Green<inside> section...
         // ...and initialize the data members
         greenInsideType_ = to_upper_copy(std::string(green.inside_type));
-	derivativeInsideType_ = derivativeTraits("DERIVATIVE");
-	epsilonInside_ = 1.0;
+        derivativeInsideType_ = derivativeTraits("DERIVATIVE");
+        epsilonInside_ = 1.0;
         // Get the contents of the Green<outside> section...
         // ...and initialize the data members
         greenOutsideType_ = to_upper_copy(std::string(green.outside_type));
@@ -228,7 +230,7 @@ void Input::reader(const cavityInput & cav, const solverInput & solv, const gree
     }
     correction_ = solv.correction;
     hermitivitize_ = true;
-    
+
     providedBy_ = std::string("host-side");
 }
 
@@ -236,11 +238,15 @@ void Input::semanticCheck()
 {
 #if not defined (WAVELET_DEVELOPMENT) || not defined (TSLESS_DEVELOPMENT)
     if (type_ == "GEPOL" || type_ == "TSLESS") {
-        if (solverType_ == "WAVELET" || solverType_ == "LINEAR") { // User asked for GePol or TsLess cavity with wavelet solvers
+        if (solverType_ == "WAVELET"
+            || solverType_ ==
+            "LINEAR") { // User asked for GePol or TsLess cavity with wavelet solvers
             throw std::runtime_error("GePol cavity can be used only with traditional solvers.");
         }
-    } else if (type_ == "WAVELET" ) { // Hoping that the user knows what's going on if he asks for a restart...
-        if (solverType_ == "IEFPCM" || solverType_ == "CPCM") { // User asked for wavelet cavity with traditional solvers
+    } else if (type_ ==
+               "WAVELET" ) { // Hoping that the user knows what's going on if he asks for a restart...
+        if (solverType_ == "IEFPCM"
+            || solverType_ == "CPCM") { // User asked for wavelet cavity with traditional solvers
             throw std::runtime_error("Wavelet cavity can be used only with wavelet solvers.");
         }
     }
@@ -259,7 +265,7 @@ cavityData Input::cavityParams()
 greenData Input::insideGreenParams()
 {
     if (insideGreenData_.empty) {
-	insideGreenData_ = greenData(derivativeInsideType_, epsilonInside_, integratorType_);
+        insideGreenData_ = greenData(derivativeInsideType_, epsilonInside_, integratorType_);
     }
     return insideGreenData_;
 }
@@ -267,7 +273,8 @@ greenData Input::insideGreenParams()
 greenData Input::outsideStaticGreenParams()
 {
     if (outsideStaticGreenData_.empty) {
-	outsideStaticGreenData_ = greenData(derivativeOutsideType_, epsilonStaticOutside_, integratorType_);
+        outsideStaticGreenData_ = greenData(derivativeOutsideType_, epsilonStaticOutside_,
+                                            integratorType_);
     }
     return outsideStaticGreenData_;
 }
@@ -275,7 +282,8 @@ greenData Input::outsideStaticGreenParams()
 greenData Input::outsideDynamicGreenParams()
 {
     if (outsideDynamicGreenData_.empty) {
-	outsideDynamicGreenData_ = greenData(derivativeOutsideType_, epsilonDynamicOutside_, integratorType_);
+        outsideDynamicGreenData_ = greenData(derivativeOutsideType_, epsilonDynamicOutside_,
+                                             integratorType_);
     }
     return outsideDynamicGreenData_;
 }
@@ -284,7 +292,8 @@ int derivativeTraits(const std::string & name)
 {
     static std::map<std::string, int> mapStringToIntDerType;
     mapStringToIntDerType.insert(std::map<std::string, int>::value_type("NUMERICAL", 0));
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("DERIVATIVE", 1));
+    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("DERIVATIVE",
+                                 1));
     mapStringToIntDerType.insert(std::map<std::string, int>::value_type("GRADIENT", 2));
     mapStringToIntDerType.insert(std::map<std::string, int>::value_type("HESSIAN", 3));
 
@@ -299,6 +308,6 @@ int integralEquation(const std::string & name)
     mapStringToIntEquationType.insert(
         std::map<std::string, int>::value_type("SECONDKIND", 1));
     mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FULL", 2));
-    
+
     return mapStringToIntEquationType.find(name)->second;
 }

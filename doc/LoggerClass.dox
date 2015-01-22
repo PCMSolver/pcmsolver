@@ -1,0 +1,77 @@
+/** \page LoggerClass Logger class
+
+The Logger class enables logging operations throughout the module.
+It is written based on this Dr. Dobb's article: [A Lightweight Logger for C++](http://www.drdobbs.com/cpp/a-lightweight-logger-for-c/240147505)
+and makes use of three features from the C++11 standard:
+        - std::unique_ptr, to manage unique ownership of the logger output stream;
+        - std::mutex, to guarantee thread safety of the implementation;
+        - variadic templates, to simplify usage.
+
+A fairly recent compiler, with decent support for the new standard has to be used 
+in order to have access to the logger. The code compiles anyway: simply the 
+The rationale behind this choice is that
+
+### Usage
+
+To gain access to the logger you will need to `#include` either the LoggerInterface.hpp header
+or the Config.hpp header in your header or source file.
+The latter is the preferred method, as it is always to be included in any source code file.
+
+The filename for the log is `pcmsolver.execution.log`. The logger has two logging levels and
+three types of log severity: debug, warning and error.
+The logging level can be changed by defining the `LOGGING_LEVEL_n` preprocessor variable.
+Within our project, `LOGGING_LEVEL_1` is always defined. **This might change in the future**
+
+At `LOGGING_LEVEL_1`, the logging macros available are:
+        - `LOG` for debug information. This is most likely the one you will be using most; 
+        - `LOG_WARN` for warning information;
+        - `LOG_ERR` for errors.
+
+The three macros can be called like variadic functions. Here is a small example:
+
+\code{.cpp}
+    #define LOGGING_LEVEL_1
+    #include <iostream>
+    
+    #include <Eigen/Dense>
+    
+    #include "LoggerInterface.hpp"
+    
+    int main()
+    {
+        LOG("Starting the application..");
+        for( short i = 0 ; i < 3 ; i++ ) {
+            LOG("The value of 'i' is ", i , ". " , 3 - i - 1 , " more iterations left ");
+        }
+        Eigen::Matrix3d mat = Eigen::Matrix3d::Ones();
+        LOG("Log an Eigen matrix: \n", mat);
+        LOG_WARN("Loop over");
+        LOG_ERR("All good things come to an end.. :(");
+        return 0;
+    }
+\endcode
+
+this prints out the following:
+
+    0000000 < Wed Jan 21 09:28:29 2015 - 0003258 > ~ <DEBUG> : Starting the application..
+    0000001 < Wed Jan 21 09:28:29 2015 - 0003351 > ~ <DEBUG> : The value of 'i' is 0. 2 more iterations left 
+    0000002 < Wed Jan 21 09:28:29 2015 - 0003375 > ~ <DEBUG> : The value of 'i' is 1. 1 more iterations left 
+    0000003 < Wed Jan 21 09:28:29 2015 - 0003393 > ~ <DEBUG> : The value of 'i' is 2. 0 more iterations left 
+    0000004 < Wed Jan 21 09:28:29 2015 - 0003520 > ~ <DEBUG> : Log an Eigen matrix: 
+    1 1 1
+    1 1 1
+    1 1 1
+    0000005 < Wed Jan 21 09:28:29 2015 - 0003539 > ~ <WARNING> : Loop over
+    0000006 < Wed Jan 21 09:28:29 2015 - 0003557 > ~ <ERROR> : All good things come to an end.. :(
+
+The information printed is:
+        - log line number;                  
+        - date and time;
+        - CPU time elapsed;
+        - severity level of the invocation;
+        - log message.
+
+**Any** class that overloads `operator<<` can be logged, the syntax for the invocation of the logger
+remains unchanged. This is thanks to the use of variadic templates in implementing the print function.
+
+*/

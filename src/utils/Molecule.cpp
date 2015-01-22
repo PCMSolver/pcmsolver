@@ -39,70 +39,80 @@
 #include "MathUtils.hpp"
 #include "Symmetry.hpp"
 
-Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m, 
-             const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph)
-	: nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph) 
+Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m,
+                   const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
+                   const std::vector<Sphere> & sph)
+    : nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph)
 {
     rotor_ = findRotorType();
     pointGroup_ = buildGroup(0, 0, 0, 0);
 }
 
-Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m, 
-             const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph, 
-	     int nr_gen, int gen[3])
-	: nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph) 
+Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m,
+                   const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
+                   const std::vector<Sphere> & sph,
+                   int nr_gen, int gen[3])
+    : nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph)
 {
     rotor_ = findRotorType();
     pointGroup_ = buildGroup(nr_gen, gen[0], gen[1], gen[3]);
 }
 
-Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m, 
-             const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at, const std::vector<Sphere> & sph, 
-	     const Symmetry & pg)
-	: nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph), pointGroup_(pg)
+Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m,
+                   const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
+                   const std::vector<Sphere> & sph,
+                   const Symmetry & pg)
+    : nAtoms_(nat), charges_(chg), masses_(m), geometry_(geo), atoms_(at), spheres_(sph),
+      pointGroup_(pg)
 {
     rotor_ = findRotorType();
 }
 
 Molecule::Molecule(const std::vector<Sphere> & sph)
-	: nAtoms_(sph.size()), spheres_(sph) 
+    : nAtoms_(sph.size()), spheres_(sph)
 {
     charges_ = Eigen::VectorXd::Ones(nAtoms_);
     masses_.resize(nAtoms_);
     geometry_.resize(Eigen::NoChange, nAtoms_);
     for (int i = 0; i < nAtoms_; ++i) {
         masses_(i) = spheres_[i].radius();
-	geometry_.col(i) = spheres_[i].center();
-	double charge = charges_(i);
-	double mass = masses_(i);
-	atoms_.push_back( Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i)) );
+        geometry_.col(i) = spheres_[i].center();
+        double charge = charges_(i);
+        double mass = masses_(i);
+        atoms_.push_back( Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i)) );
     }
     rotor_ = findRotorType();
     pointGroup_ = buildGroup(0, 0, 0, 0);
 }
 
-Molecule::Molecule(const Molecule &other){
+Molecule::Molecule(const Molecule &other)
+{
     *this = other;
 }
 
-Eigen::Vector3d Molecule::centerOfMass(){
+Eigen::Vector3d Molecule::centerOfMass()
+{
     Eigen::Vector3d com;
     com << 0.0, 0.0, 0.0;
-    for (int i = 0; i < nAtoms_; ++i){
+    for (int i = 0; i < nAtoms_; ++i) {
         com += masses_(i) * atoms_[i].atomCoord();
     }
     com *= 1.0/masses_.sum();
     return com;
 }
 
-Eigen::Matrix3d Molecule::inertiaTensor(){
+Eigen::Matrix3d Molecule::inertiaTensor()
+{
     Eigen::Matrix3d inertia = Eigen::Matrix3d::Zero();
 
-    for (int i = 0; i < nAtoms_; ++i){
+    for (int i = 0; i < nAtoms_; ++i) {
         // Diagonal
-        inertia(0,0) += masses_(i) * (geometry_(1,i) * geometry_(1,i) + geometry_(2,i) * geometry_(2,i));
-        inertia(1,1) += masses_(i) * (geometry_(0,i) * geometry_(0,i) + geometry_(2,i) * geometry_(2,i));
-        inertia(2,2) += masses_(i) * (geometry_(0,i) * geometry_(0,i) + geometry_(1,i) * geometry_(1,i));
+        inertia(0,0) += masses_(i) * (geometry_(1,i) * geometry_(1,i) + geometry_(2,
+                                      i) * geometry_(2,i));
+        inertia(1,1) += masses_(i) * (geometry_(0,i) * geometry_(0,i) + geometry_(2,
+                                      i) * geometry_(2,i));
+        inertia(2,2) += masses_(i) * (geometry_(0,i) * geometry_(0,i) + geometry_(1,
+                                      i) * geometry_(1,i));
 
         // Off-diagonal
         inertia(0,1) -= masses_(i) * (geometry_(0,i) * geometry_(1,i));
@@ -113,8 +123,8 @@ Eigen::Matrix3d Molecule::inertiaTensor(){
     hermitivitize(inertia);
 
     // Check elements for a numerical zero and make it a hard zero
-    for (int i = 0; i < 3; ++i){
-        for (int j = 0; j < 3; ++j){
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
             if (fabs(inertia(i,j)) < 1.0e-14) {
                 inertia(i,j) = 0.0;
             }
@@ -124,7 +134,8 @@ Eigen::Matrix3d Molecule::inertiaTensor(){
     return inertia;
 }
 
-rotorType Molecule::findRotorType(){
+rotorType Molecule::findRotorType()
+{
     rotorType type;
     if (nAtoms_ == 1) {
         type = rtAtom;
@@ -137,8 +148,8 @@ rotorType Molecule::findRotorType(){
         // Determine the degeneracy of the eigenvalues.
         int deg = 0;
         double tmp, abs, rel;
-        for (int i = 0; i < 2; ++i){
-            for (int j = i + 1; j < 3 && deg < 2; ++j){ // Check i and j != i
+        for (int i = 0; i < 2; ++i) {
+            for (int j = i + 1; j < 3 && deg < 2; ++j) { // Check i and j != i
                 abs = fabs(eigenSolver.eigenvalues()[i] - eigenSolver.eigenvalues()[j]);
                 tmp = eigenSolver.eigenvalues()[j]; // Because the eigenvalues are already in ascending order.
                 if (abs > 1.0e-14) {
@@ -166,30 +177,35 @@ rotorType Molecule::findRotorType(){
     return type;
 }
 
-void Molecule::translate(const Eigen::Vector3d &translationVector){
+void Molecule::translate(const Eigen::Vector3d &translationVector)
+{
     // Translate the geometry_ matrix and update the geometric data in atoms_.
-    for (int i = 0; i < nAtoms_; ++i){
+    for (int i = 0; i < nAtoms_; ++i) {
         geometry_.col(i) -= translationVector;
-	Eigen::Vector3d tmp = geometry_.col(i);
+        Eigen::Vector3d tmp = geometry_.col(i);
         atoms_[i].atomCoord(tmp);
     }
 }
 
-void Molecule::moveToCOM(){
+void Molecule::moveToCOM()
+{
     Eigen::Vector3d com = centerOfMass();
     this->translate(com);
 }
 
-void Molecule::rotate(const Eigen::Matrix3d &rotationMatrix){
+void Molecule::rotate(const Eigen::Matrix3d &rotationMatrix)
+{
     // Rotate the geometry_ matrix and update the geometric data in atoms_.
-    geometry_ *= rotationMatrix; // The power of Eigen: geometry_ = geometry_ * rotationMatrix;
-    for (int i = 0; i < nAtoms_; ++i){
-	Eigen::Vector3d tmp = geometry_.col(i);
+    geometry_ *=
+        rotationMatrix; // The power of Eigen: geometry_ = geometry_ * rotationMatrix;
+    for (int i = 0; i < nAtoms_; ++i) {
+        Eigen::Vector3d tmp = geometry_.col(i);
         atoms_[i].atomCoord(tmp);
     }
 }
 
-void Molecule::moveToPAF(){
+void Molecule::moveToPAF()
+{
     Eigen::Matrix3d inertia = inertiaTensor();
     // Diagonalize inertia tensor V^t * I * V
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigenSolver(inertia);
@@ -199,7 +215,8 @@ void Molecule::moveToPAF(){
     std::cout << eigenSolver.eigenvalues() << std::endl;
 }
 
-Molecule& Molecule::operator=(const Molecule& other){
+Molecule& Molecule::operator=(const Molecule& other)
+{
     // Self assignment is bad
     if (this == &other)
         return *this;
@@ -216,17 +233,22 @@ Molecule& Molecule::operator=(const Molecule& other){
     return *this;
 }
 
-std::ostream & operator<<(std::ostream &os, const Molecule &m){
+std::ostream & operator<<(std::ostream &os, const Molecule &m)
+{
     // Declare formatting of Eigen output.
     std::string sep = "                  ";
-    Eigen::IOFormat CleanFmt(Eigen::FullPrecision, Eigen::DontAlignCols, sep, "\n", "", "");
+    Eigen::IOFormat CleanFmt(Eigen::FullPrecision, Eigen::DontAlignCols, sep, "\n", "",
+                             "");
 
     os << "Rotor type: " << rotorTypeList[m.rotor_] << std::endl;
     if (m.nAtoms_ != 0) {
-        os << "       Center              X                  Y                   Z       " << std::endl;
-        os << "    ------------   -----------------  -----------------  -----------------" << std::endl;
-        for (int i = 0; i < m.nAtoms_; ++i){
-            os << std::setw(10) << m.atoms_[i].atomSymbol() << std::setw(15) <<m.geometry_.col(i).transpose().format(CleanFmt) << std::endl;
+        os << "       Center              X                  Y                   Z       " <<
+           std::endl;
+        os << "    ------------   -----------------  -----------------  -----------------" <<
+           std::endl;
+        for (int i = 0; i < m.nAtoms_; ++i) {
+            os << std::setw(10) << m.atoms_[i].atomSymbol() << std::setw(15) <<m.geometry_.col(
+                   i).transpose().format(CleanFmt) << std::endl;
         }
     } else {
         os << "  No atoms in this molecule!" << std::endl;

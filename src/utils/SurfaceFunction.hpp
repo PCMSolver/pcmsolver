@@ -50,29 +50,29 @@ class SurfaceFunction
 {
 public:
     SurfaceFunction() : name_(""), nPoints_(0), allocated_(false) {}
-    SurfaceFunction(const std::string & n) 
-	    : name_(n), nPoints_(0), allocated_(false) {}
-    SurfaceFunction(const std::string & n, int np) 
-	    : name_(n), nPoints_(np) {
+    SurfaceFunction(const std::string & n)
+        : name_(n), nPoints_(0), allocated_(false) {}
+    SurfaceFunction(const std::string & n, int np)
+        : name_(n), nPoints_(np) {
         values_ = Eigen::VectorXd::Zero(nPoints_);
         allocated_ = true;
     }
-    SurfaceFunction(const std::string & n, int np, double * v) 
-	    : name_(n), nPoints_(np) {
+    SurfaceFunction(const std::string & n, int np, double * v)
+        : name_(n), nPoints_(np) {
         values_ = Eigen::VectorXd::Zero(nPoints_);
         allocated_ = true;
         Eigen::Map<Eigen::VectorXd> mapped_data(v, nPoints_);
-	values_ = mapped_data;
+        values_ = mapped_data;
     }
-    SurfaceFunction(const std::string & n, int np, const Eigen::VectorXd & v) 
-	    : name_(n), nPoints_(np), values_(v), allocated_(true) {} 
+    SurfaceFunction(const std::string & n, int np, const Eigen::VectorXd & v)
+        : name_(n), nPoints_(np), values_(v), allocated_(true) {}
     ~SurfaceFunction() {
         allocated_ = false;
     }
 
     /// Copy constructor
-    SurfaceFunction(const SurfaceFunction & other) 
-	    : name_(other.name_), nPoints_(other.nPoints_), values_(other.values_) {
+    SurfaceFunction(const SurfaceFunction & other)
+        : name_(other.name_), nPoints_(other.nPoints_), values_(other.values_) {
         allocated_ = true;
     }
 

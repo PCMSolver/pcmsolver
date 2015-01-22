@@ -65,9 +65,9 @@ public:
     Input(const std::string & filename);
     /// Constructor from host input structs
     Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
-     
+
     /// Accessor methods
-    
+
     /// Top-level section input
     std::string units() { return units_; }
     int CODATAyear() { return CODATAyear_; }
@@ -88,7 +88,7 @@ public:
     /// This method sets the molecule and the list of spheres
     void molecule(const Molecule & m) { molecule_ = m; spheres_ = molecule_.spheres(); }
     /// @}
-   
+
     /// Medium section input
     Solvent solvent() { return solvent_; }
     bool fromSolvent() { return hasSolvent_; }
@@ -103,14 +103,14 @@ public:
     std::string greenInsideType() { return greenInsideType_; }
     std::string greenOutsideType() { return greenOutsideType_; }
     /// @}
-    
+
     /// Keeps track of who did the parsing: the API or the host program
     std::string providedBy() { return providedBy_; }
-    
+
     /// Get-ters for input wrapping structs
     cavityData cavityParams();
     greenData insideGreenParams();
-    greenData outsideStaticGreenParams(); 
+    greenData outsideStaticGreenParams();
     greenData outsideDynamicGreenParams();
     /// @}
 

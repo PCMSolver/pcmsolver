@@ -67,8 +67,8 @@ struct greenData {
               double _epsReal = 0.0, double _epsImaginary = 0.0,
               const std::vector<double> & _sphere = std::vector<double>(),
               double _sphRadius = 0.0) :
-        how(_how), epsilon(_epsilon), integratorType(_diag), kappa(_kappa), 
-	epsilonReal(_epsReal), epsilonImaginary(_epsImaginary),
+        how(_how), epsilon(_epsilon), integratorType(_diag), kappa(_kappa),
+        epsilonReal(_epsReal), epsilonImaginary(_epsImaginary),
         spherePosition(_sphere), sphereRadius(_sphRadius) { empty = false; }
 };
 

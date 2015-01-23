@@ -60,15 +60,10 @@ void Timer::insertTiming(const std::string & checkpoint_name)
 
 void printTimings(const std::string & fname)
 {
-    namespace fs = boost::filesystem;
-    fs::path file(fname);
     std::ofstream timing_report;
-    if (fs::exists(file)) {
-        fs::remove(fname);
-        timing_report.open(fname, std::ios::out);
-        timing_report << "            PCMSolver API timing results            " << std::endl;
-        timing_report << "----------------------------------------------------" << std::endl;
-    }
+    timing_report.open(fname, std::ios::out | std::ios::app);
+    timing_report << "            PCMSolver API timing results            " << std::endl;
+    timing_report << "----------------------------------------------------" << std::endl;
     timing_report << Timer::TheTimer() << std::endl;
     timing_report.close();
 }
@@ -84,8 +79,4 @@ void timerOFF(const std::string & checkpoint_name)
 {
     Timer::TheTimer().insertTiming(checkpoint_name);
     Timer::TheTimer().eraseTimer(checkpoint_name);
-    // If all timers are turned OFF write results to file
-    if (Timer::TheTimer().activeTimers() == 0) {
-        printTimings("pcmsolver.timer.dat");
-    }
 }

@@ -8,7 +8,8 @@
 namespace logging
 {
     enum printLevel {
-        coarse = 1,
+	timings,
+        coarse,
         fine,
         everything
     };

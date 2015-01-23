@@ -1,0 +1,75 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+
+s = []
+s.append(['Who compiled'       , r'@USER_NAME@'             ])
+s.append(['Host'               , r'@HOST_NAME@'             ])
+s.append(['System name'        , r'@CMAKE_SYSTEM_NAME@'     ])
+s.append(['System'             , r'@CMAKE_SYSTEM@'          ])
+s.append(['CMake version'      , r'@CMAKE_VERSION@'         ])
+s.append(['CMake generator'    , r'@CMAKE_GENERATOR@'       ])
+s.append(['Python version'     , r'@PYTHON_VERSION_STRING@' ])
+s.append(['Processor'          , r'@CMAKE_SYSTEM_PROCESSOR@'])
+s.append(['64-bit integers'    , r'@ENABLE_64BIT_INTEGERS@' ])
+s.append(['MPI'                , r'@ENABLE_MPI@'            ])
+s.append(['OpenMP'             , r'@ENABLE_OPENMP@'         ])
+s.append(['Boost version'      , r'@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@'         ])
+    
+s.append(['C++ compiler'        , r'@CMAKE_CXX_COMPILER@'  ])
+if '@CMAKE_BUILD_TYPE@' == 'debug':
+    s.append(['C++ flags', r'@CMAKE_CXX_FLAGS@ @CMAKE_CXX_FLAGS_DEBUG@'])
+elif '@CMAKE_BUILD_TYPE@' == 'release':
+    s.append(['C++ flags', r'@CMAKE_CXX_FLAGS@ @CMAKE_CXX_FLAGS_RELEASE@'])
+elif '@CMAKE_BUILD_TYPE@' == 'profile':
+    s.append(['C++ flags', r'@CMAKE_CXX_FLAGS@ @CMAKE_CXX_FLAGS_PROFILE@'])
+
+s.append(['C compiler'        , r'@CMAKE_C_COMPILER@'  ])
+if '@CMAKE_BUILD_TYPE@' == 'debug':
+    s.append(['C flags', r'@CMAKE_C_FLAGS@ @CMAKE_C_FLAGS_DEBUG@'])
+elif '@CMAKE_BUILD_TYPE@' == 'release':
+    s.append(['C flags', r'@CMAKE_C_FLAGS@ @CMAKE_C_FLAGS_RELEASE@'])
+elif '@CMAKE_BUILD_TYPE@' == 'profile':
+    s.append(['C flags', r'@CMAKE_C_FLAGS@ @CMAKE_C_FLAGS_PROFILE@'])
+
+s.append(['Fortran compiler'        , r'@CMAKE_Fortran_COMPILER@'  ])
+if '@CMAKE_BUILD_TYPE@' == 'debug':
+    s.append(['Fortran flags', r'@CMAKE_Fortran_FLAGS@ @CMAKE_Fortran_FLAGS_DEBUG@'])
+elif '@CMAKE_BUILD_TYPE@' == 'release':
+    s.append(['Fortran flags', r'@CMAKE_Fortran_FLAGS@ @CMAKE_Fortran_FLAGS_RELEASE@'])
+elif '@CMAKE_BUILD_TYPE@' == 'profile':
+    s.append(['Fortran flags', r'@CMAKE_Fortran_FLAGS@ @CMAKE_Fortran_FLAGS_PROFILE@'])
+    
+s.append(['Definitions'        , r'@_list_of_definitions@'  ])
+
+s.append(['Git branch'         , r'@GIT_BRANCH@'            ])
+s.append(['Last Git revision'  , r'@GIT_REVISION@'          ])
+s.append(['Last commit author' , r'@GIT_LAST_COMMIT_AUTHOR@'])
+s.append(['Last commit date'   , r'@GIT_LAST_COMMIT_DATE@'  ])
+
+output  = '#include <sstream>\n'
+output += '#include <string>\n\n'
+output += 'inline std::string buildInfo()\n'
+output += '{\n'
+output += '    std::ostringstream out_stream;\n'
+
+def chunkify(l, n):
+    return [l[i:i+n] for i in range(0, len(l), n)]
+
+def print_line(l, r):
+    return "    out_stream << \" %s | %s \" << std::endl;\n" % (l.ljust(24), r)
+
+for line in s:
+    chunk_l = chunkify(line[1], 50)
+    for i in range(len(chunk_l)):
+        if i == 0:
+            output += print_line(line[0], chunk_l[i])
+        else:
+            output += print_line(' ', chunk_l[i])
+output += print_line('Configuration time', '@CONFIGURATION_TIME@ UTC')
+output += '    return out_stream.str();\n'
+
+output += '}'
+
+print(output)

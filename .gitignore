@@ -28,6 +28,7 @@ cavity.npz
 html/
 compile_commands.json
 doc/gfx/matplotlib/
+BuildInfo.hpp
 
 # QtCreator project files
 *.config

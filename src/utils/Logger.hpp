@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "BuildInfo.hpp"
 #include "LoggerImpl.hpp"
 
 namespace logging
@@ -71,12 +72,17 @@ namespace logging
     public:
         /*! Constructor
         *  \param[in] name name for the log file
+	*  
+	*  The build parameters are logged first
          */
         logger(const std::string & name) : logLineNumber_(0), policy_(new logPolicy) {
             if(!policy_) {
                 throw std::runtime_error("LOGGER: Unable to create the logger instance");
             }
             policy_->open_ostream(name);
+	    // Write the logfile header
+	    policy_->write("\t\tPCMSolver execution log\n");
+	    policy_->write(buildInfo());
         }
         /// Destructor
         ~logger() {

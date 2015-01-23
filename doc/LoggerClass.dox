@@ -13,9 +13,7 @@ The rationale behind this choice is that
 
 ### Usage
 
-To gain access to the logger you will need to `#include` either the LoggerInterface.hpp header
-or the Config.hpp header in your header or source file.
-The latter is the preferred method, as it is always to be included in any source code file.
+To gain access to the logger you will need to `#include "LoggerInterface.hpp"`. 
 
 The filename for the log is `pcmsolver.execution.log`. The logger has two logging levels and
 three types of log severity: debug, warning and error.

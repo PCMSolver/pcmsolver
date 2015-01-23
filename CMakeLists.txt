@@ -28,6 +28,7 @@ option(ENABLE_CXX11_SUPPORT    "Enable C++11 compiler support"                  
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_SOURCE_DIR}/cmake
+    ${CMAKE_SOURCE_DIR}/cmake/build-info
     ${CMAKE_SOURCE_DIR}/cmake/compilers
     ${CMAKE_SOURCE_DIR}/cmake/math
     ${CMAKE_SOURCE_DIR}/cmake/testing)
@@ -189,6 +190,15 @@ endif()
 # This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
 merge_static_libs(pcm "${libs_to_merge}")
 install(TARGETS pcm ARCHIVE DESTINATION lib)
+add_dependencies(pcm generate_build_info)
 
+# configuration time in UTC
+execute_process(
+    COMMAND ${PYTHON_EXECUTABLE} -c "import datetime; print(datetime.datetime.utcnow())"
+    OUTPUT_VARIABLE CONFIGURATION_TIME
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+include(BuildInfo)
 # Printout useful info
 include(ConfigInfo)

@@ -66,11 +66,21 @@ private:
     timersMap timers_;
     /// Checkpoint-timing map
     timingsMap timings_;
+    /// File with the final report
+    std::ofstream report_;
 
-    Timer() : timers_(), timings_() {}
+    Timer() : timers_(), timings_() {
+        report_.open("pcmsolver.timer.dat", std::ios::out | std::ios::app);
+        report_ << "            PCMSolver API timing results            " << std::endl;
+        report_ << "----------------------------------------------------" << std::endl;
+    }
     Timer(const Timer & other);
     Timer& operator=(const Timer & other);
-    ~Timer() {}
+    ~Timer() {
+	printObject(report_);
+	report_ << std::endl;
+        report_.close();
+    }
     std::ostream & printObject(std::ostream & os) const;
 public:
     static Timer& TheTimer() {

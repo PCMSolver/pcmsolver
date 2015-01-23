@@ -26,15 +26,14 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include <fstream>
 #include <map>
+#include <sstream>
 #include <string>
 #include <utility>
 
 #include "Config.hpp"
 
-#include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 #include <boost/timer/timer.hpp>
 
 typedef std::map<std::string, boost::timer::cpu_timer> timersMap;
@@ -66,21 +65,13 @@ private:
     timersMap timers_;
     /// Checkpoint-timing map
     timingsMap timings_;
-    /// File with the final report
-    std::ofstream report_;
+    /// Number of active timers
+    size_t active_;
 
-    Timer() : timers_(), timings_() {
-        report_.open("pcmsolver.timer.dat", std::ios::out | std::ios::app);
-        report_ << "            PCMSolver API timing results            " << std::endl;
-        report_ << "----------------------------------------------------" << std::endl;
-    }
+    Timer() : timers_(), timings_(), active_(0) {}
     Timer(const Timer & other);
     Timer& operator=(const Timer & other);
-    ~Timer() {
-	printObject(report_);
-	report_ << std::endl;
-        report_.close();
-    }
+    ~Timer() {}
     std::ostream & printObject(std::ostream & os) const;
 public:
     static Timer& TheTimer() {
@@ -104,8 +95,20 @@ public:
 
     /*! \brief Returns number of active timers
      */
-    int activeTimers() {
-        return timers_.size();
+    int active() {
+        return active_;
+    }
+
+    /*! \brief Returns names of active timers
+     */
+    std::string checkActiveTimers() {
+	std::ostringstream tmp;
+        timersPair t_pair;                    
+        BOOST_FOREACH(t_pair, timers_) {
+	    tmp << " - " << t_pair.first << std::endl;
+        }
+	// Remove last newline
+	return tmp.str().substr(0, tmp.str().size() - 1);
     }
 };
 
@@ -124,19 +127,15 @@ void timerON(const std::string & checkpoint_name);
  *  The timing results associated with the given timer
  *  are added to the timings_ map of the Timer object,
  *  the timer is then removed from the timers_ map.
- *  If no timers are left in the timers_ map, the final results
- *  are written to pcmsolver.timer.dat
  */
 void timerOFF(const std::string & checkpoint_name);
 
-/*! \fn printTimings(const std::string & fname)
- *  \param[in] fname timers report filename
- *  \brief Writes timing results to given filename
- *  \warning fname is removed if already existent
+/*! \fn std::string printTimings()
+ *  \brief Prepares string with timing results
  *
- *  This function is invoked by timerOFF when there
- *  are no more active timers in the timers_ map.
+ *  If there still are active timers a warning is printed
+ *  to pcmsolver.execution.log
  */
-void printTimings(const std::string & fname);
+std::string printTimings();
 
 #endif // TIMER_HPP

@@ -13,14 +13,14 @@
 namespace logging
 {
     /*! \brief Returns date and time
-     */
+     */                                      
     std::string getTime() {
         std::string time_str;
         time_t raw_time;
-
+                                          
         std::time(&raw_time);
         time_str = std::ctime(&raw_time);
-
+                                          
         // Without the newline character
         return time_str;
     }
@@ -33,7 +33,7 @@ namespace logging
         std::stringstream logStream_;
         logPolicy * policy_;
         std::mutex writeMutex_;
-
+    
         /*! @name Core printing functionality
          *
          *  A variadic template is used, we specify the version

@@ -16,6 +16,7 @@ namespace logging
     class logger
     {
     private:
+	printLevel globalPrintLevel_;
         size_t logLineNumber_;
         std::stringstream logStream_;
         logPolicy * policy_;
@@ -75,7 +76,8 @@ namespace logging
 	*  
 	*  The build parameters are logged first
          */
-        logger(const std::string & name) : logLineNumber_(0), policy_(new logPolicy) {
+        logger(const std::string & name, printLevel print = coarse) 
+		: globalPrintLevel_(print), logLineNumber_(0), policy_(new logPolicy) {
             if(!policy_) {
                 throw std::runtime_error("LOGGER: Unable to create the logger instance");
             }
@@ -93,22 +95,13 @@ namespace logging
         }
 
         /// User interface for the logger class
-        template<severityType severity, typename...Args>
+        template<printLevel print, typename...Args>
         void print(Args...args) {
-            writeMutex_.lock();
-            switch(severity) {
-            case severityType::debug:
-                logStream_ << "<DEBUG> : \n";
-                break;
-            case severityType::warning:
-                logStream_ << "<WARNING> : \n";
-                break;
-            case severityType::error:
-                logStream_ << "<ERROR> : \n";
-                break;
-            };
-            printImpl(args...);
-            writeMutex_.unlock();
+	    if (globalPrintLevel_ >= print) {
+               writeMutex_.lock();   
+               printImpl(args...);
+               writeMutex_.unlock();
+	    }
         }
 
     };

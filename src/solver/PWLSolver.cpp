@@ -143,7 +143,9 @@ void PWLSolver::uploadCavity(const WaveletCavity & cavity)
         for (int j = 0; j <= n; ++j) {
             for (int k = 0; k <= n; ++k) {
                 Eigen::Vector3d p = cavity.getNodePoint(kk);
-                pointList[i][k][j] = Vector3(p(0), p(1), p(2));
+                Eigen::Vector3i idx = cavity.getNodeIndex(kk);
+                pointList[idx(0)][idx(1)][idx(2)] = Vector3(p(0), p(1), p(2));
+                //pointList[i][j][k] = Vector3(p(0), p(1), p(2));
                 kk++;
             }
         }

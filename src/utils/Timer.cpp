@@ -25,6 +25,9 @@
 
 #include "Timer.hpp"
 
+#include <sstream>
+#include <string>
+
 #include "Config.hpp"
 
 #include <boost/foreach.hpp>
@@ -41,11 +44,13 @@ std::ostream & Timer::printObject(std::ostream & os) const
 void Timer::insertTimer(const timersPair & checkpoint)
 {
     timers_.insert(checkpoint);
+    ++active_;
 }
 
 void Timer::eraseTimer(const std::string & checkpoint_name)
 {
     timers_.erase(checkpoint_name);
+    --active_;
 }
 
 void Timer::insertTiming(const std::string & checkpoint_name)
@@ -56,16 +61,6 @@ void Timer::insertTiming(const std::string & checkpoint_name)
     boost::timer::cpu_times const checkpoint_times((checkpoint_timer->second).elapsed());
     timingsPair checkpoint = timingsMap::value_type(checkpoint_name, checkpoint_times);
     timings_.insert(checkpoint);
-}
-
-void printTimings(const std::string & fname)
-{
-    std::ofstream timing_report;
-    timing_report.open(fname, std::ios::out | std::ios::app);
-    timing_report << "            PCMSolver API timing results            " << std::endl;
-    timing_report << "----------------------------------------------------" << std::endl;
-    timing_report << Timer::TheTimer() << std::endl;
-    timing_report.close();
 }
 
 void timerON(const std::string & checkpoint_name)
@@ -79,4 +74,18 @@ void timerOFF(const std::string & checkpoint_name)
 {
     Timer::TheTimer().insertTiming(checkpoint_name);
     Timer::TheTimer().eraseTimer(checkpoint_name);
+}
+
+std::string printTimings()
+{
+    std::ostringstream timing_report;
+    timing_report << "            PCMSolver API timing results            " << std::endl;
+    timing_report << "----------------------------------------------------" << std::endl;
+    if (Timer::TheTimer().active() != 0) {
+       timing_report << " These timers were not shut down:" << std::endl;
+       timing_report << Timer::TheTimer().checkActiveTimers() << std::endl;
+       timing_report << " Reported timings might be unreliable!\n" << std::endl;
+    }
+    timing_report << Timer::TheTimer() << std::endl;
+    return timing_report.str();
 }

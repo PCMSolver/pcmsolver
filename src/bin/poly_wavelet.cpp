@@ -66,8 +66,8 @@ int main(int argc, char* argv[]) {
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
-    Compression comp(2.0, 2.0, 0.001);
-    PWCSolver solver(gfInside, gfOutside, comp, firstKind);
+    Compression comp(1.0, 2.25, 0.001);
+    PWLSolver solver(gfInside, gfOutside, comp, firstKind);
     //PWCSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());

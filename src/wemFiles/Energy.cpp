@@ -74,8 +74,6 @@ double energy_ext(double *u, double *potential, GenericAnsatzFunction *af)
     double E = 0;               /* Energie                                     */
     double h = 1. / n;          /* Schrittweite                                */
     unsigned int index;
-    af->quadratureLevel_ = 1;
-
 /* Initialisierung */
     initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */
 
@@ -110,7 +108,6 @@ double charge_ext(double *u, double *charge, GenericAnsatzFunction *af)
     double h = 1. / n;          /* Schrittweite                                */
     double C = 0;               /* surface meassure                            */
     unsigned int index;
-    af->quadratureLevel_ = 1;
 
 /* Initialisierung */
     initGaussSquare(&Q, af->quadratureLevel_ + 1);       /* Kubatur-Formeln */

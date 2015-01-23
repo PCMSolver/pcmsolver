@@ -237,7 +237,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   initPattern2(T,waveletList.sizeWaveletList,waveletList.sizeWaveletList,20);
 
   computeBoundingBoxes();
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out", "a");
   fprintf(debugFile,">>> COMPRESSION BB\n"); 
   fprintf(debugFile, "%d\n", waveletList.sizeWaveletList);
@@ -252,7 +252,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
     for(unsigned int j = 0; j <=i; ++j)
       setPattern(T,i,j);
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out", "a");
   fprintf(debugFile,">>> COMPRESSION CC");  
   for(unsigned int i  = 0; i < T->m; ++i){
@@ -266,7 +266,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   fclose(debugFile);
 #endif
 
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out", "a");
   fprintf(debugFile,">>> WAVELETWAVELETCRITERION\n"); 
   fclose(debugFile);
@@ -286,18 +286,18 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
           //if ((ind2 <= ind1) && (waveletWaveletCriterion(ind1,ind2,c1[m1][m2],c2[m1][m2]))){
           if(waveletWaveletCriterion(ind1, ind2, c1[m1][m2], c2[m1][m2])){ 
             setPattern(T, ind1, ind2);
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"set 1 %d %d\n", ind1, ind2);
 #endif
             for(unsigned int l = 0; l < waveletList.W[ind2].noSons; ++l){
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"set 2 %d %d\n",ind1, waveletList.W[ind2].son[l]);
 #endif
               if(waveletWaveletCriterion(ind1, waveletList.W[ind2].son[l], c1[m1][m1], c2[m1][m1])) {
               //if ((waveletList.W[ind2].son[l] <= ind1) && (waveletWaveletCriterion(ind1,waveletList.W[ind2].son[l],c1[m1][m1],c2[m1][m1]))){  
               //if(waveletWaveletCriterion(ind1, waveletList.W[ind2].son[l], c1[m1][m1], c2[m1][m1])) {
                 setPattern(T, ind1, waveletList.W[ind2].son[l]);
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"set %d %d\n",ind1, waveletList.W[ind2].son[l]);
 #endif
               }
@@ -308,18 +308,18 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
         for(unsigned int k = 0; k < waveletList.W[ind2].noSons;++k){
           if(waveletWaveletCriterion(waveletList.W[ind2].son[k], i, c1[m1][m2], c2[m1][m2])){
             setPattern(T, waveletList.W[ind2].son[k], i);
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"set 3 %d %d\n", waveletList.W[ind2].son[k], i);
 #endif
             for(unsigned int l = 0; l < waveletList.W[i].noSons;++l){
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"set 4 %d %d\n", waveletList.W[ind2].son[k], waveletList.W[i].son[l]);
 #endif
               if (waveletWaveletCriterion(waveletList.W[ind2].son[k], waveletList.W[i].son[l], c1[m1][m1], c2[m1][m1])){
               //if ((waveletList.W[i].son[l] <= waveletList.W[ind2].son[k]) && (waveletWaveletCriterion(waveletList.W[ind2].son[k],waveletList.W[i].son[l],c1[m1][m1],c2[m1][m1]))){  
               //if (waveletWaveletCriterion(waveletList.W[ind2].son[k], waveletList.W[i].son[l], c1[m1][m1], c2[m1][m1])){
                 setPattern(T, waveletList.W[ind2].son[k], waveletList.W[i].son[l]);
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"set %d %d\n", waveletList.W[ind2].son[k], waveletList.W[i].son[l]);
 #endif
               }
@@ -329,13 +329,13 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
       } else {
         for(unsigned int k = 0; k < waveletList.W[i].noSons; ++k){
           ind1 = waveletList.W[i].son[k];
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"set 5 %d %d\n",ind1, ind2);
 #endif
           //if ((ind2 <= ind1) && (waveletWaveletCriterion(ind1,ind2,c1[m1][m2],c2[m1][m2]))){  
           if(waveletWaveletCriterion(ind1, ind2, c1[m1][m2], c2[m1][m2])){
             setPattern(T, ind1, ind2);
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"set %d %d\n",ind1, ind2);
 #endif
           }
@@ -343,10 +343,10 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
       }
     }
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   fclose(debugFile);
 #endif
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out", "a");
   fprintf(debugFile,"<<< WAVELETWAVELETCRITERION\n"); 
   fclose(debugFile);
@@ -371,7 +371,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
       T->index[T->index[i][j]][T->row_number[T->index[i][j]]++] = i;
     }
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out", "a");
   fprintf(debugFile,">>> COMPRESSION C");  
   for(unsigned int i  = 0; i < T->m; ++i){
@@ -385,7 +385,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
 #endif
   printf("A-priori compression:            %.5f %%\n",100.0*nnz/waveletList.sizeWaveletList/waveletList.sizeWaveletList);
   finishPattern2(T);
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out", "a");
   fprintf(debugFile,">>> FINISH");  
   for(unsigned int i  = 0; i < T->m; ++i){
@@ -512,6 +512,7 @@ void GenericAnsatzFunction :: elementElementInteraction(double *c, unsigned int 
     else if( ind1 == ind2 ) CASE = 2; 
     // common vertex or edge
     else CASE = compare (ind1, ind2, &s, &t);
+    //printf("%d\n",CASE);
 
     // quadrature with precision prec
     if(dist *(1<<elementTree.element[ind1].level) < 1) dist = 1./(1<<elementTree.element[ind1].level);

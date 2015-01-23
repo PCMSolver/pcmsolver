@@ -1134,15 +1134,13 @@ void LinAnsatzFunction :: generateWaveletList() {
 	fprintf(debugFile,">>> WAVELET_TREE\n");
 	for(unsigned int m = 0; m<waveletList.sizeWaveletList; ++m){
 		fprintf(debugFile,"%d %d %d %d\n", m, waveletList.W[m].level, waveletList.W[m].noElements, waveletList.W[m].noSons);
-#ifdef fsd
 		for(unsigned int i1 = 0 ; i1< waveletList.W[m].noElements; ++i1){
-			//fprintf(debugFile,"%d %lf %lf %lf %lf", waveletList.W[m].element[i1], waveletList.W[m].weight[i1*4], waveletList.W[m].weight[i1*4+1], waveletList.W[m].weight[i1*4+2], waveletList.W[m].weight[i1*4+3]);
+			fprintf(debugFile,"%d %lf %lf %lf %lf ", waveletList.W[m].element[i1], waveletList.W[m].weight[i1*4], waveletList.W[m].weight[i1*4+1], waveletList.W[m].weight[i1*4+2], waveletList.W[m].weight[i1*4+3]);
 		}
 		for(unsigned int i1 = 0 ; i1< waveletList.W[m].noSons; ++i1){
-			//fprintf(debugFile,"%d ", waveletList.W[m].son[i1]);
+			fprintf(debugFile,"%d ", waveletList.W[m].son[i1]);
 		}
 		fprintf(debugFile,"\n");
-#endif
 	}
 	fprintf(debugFile,"<<< WAVELET_TREE\n");
 	fclose(debugFile);

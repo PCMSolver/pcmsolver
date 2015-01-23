@@ -55,7 +55,7 @@ struct GePolCavityNH3Test {
         cavity = GePolCavity(molec, area, probeRadius, minRadius);
 	LOG(cavity);
         cavity.saveCavity("nh3.npz");
-	LOG(printTimings());
+	LOG_TIME;
     }
 };
 

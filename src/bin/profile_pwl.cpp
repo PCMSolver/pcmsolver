@@ -82,7 +82,8 @@ void pwl_NH3(int patchLevel)
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
-    PWLSolver solver(gfInside, gfOutside, firstKind);
+    Compression comp(2.5, 2.5, 0.001);
+    PWLSolver solver(gfInside, gfOutside, comp, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
@@ -180,7 +181,8 @@ void pwl_C6H6(int patchLevel)
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
-    PWLSolver solver(gfInside, gfOutside, firstKind);
+    Compression comp(2.5, 2.5, 0.001);
+    PWLSolver solver(gfInside, gfOutside, comp, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 

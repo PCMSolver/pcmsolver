@@ -9,25 +9,6 @@
 #include <cstdio>
 #include "string.h"
 
-ConAnsatzFunction :: ConAnsatzFunction(){
-  nLevels = 0;
-  nFunctions = 0;
-  nPatches = 0;
-  minLevel = 1;
-  noPhi = 1;
-
-  B = NULL;
-  B2 = NULL;
-
-  td = 3;
-  dp = 1.25;
-  a = 1.0; ///< compression constant,  a > 1
-  b = 0.01; ///< compression constant, 0 < b < 1
-
-  quadratureLevel_ = 0;
-  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
-}
-
 ConAnsatzFunction :: ConAnsatzFunction(const Compression & _comp){
   nLevels = 0;
   nFunctions = 0;
@@ -42,49 +23,6 @@ ConAnsatzFunction :: ConAnsatzFunction(const Compression & _comp){
   dp = _comp.aPrioridPrime;
   a = _comp.aPrioriA; ///< compression constant,  a > 1
   b = _comp.aPosterioriB; ///< compression constant, 0 < b < 1
-
-  quadratureLevel_ = 1;
-  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
-}
-
-// NOTE the parameters must be initialized in the same order as declared in the header, otherwise a warning appears
-ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, Vector3*** pPointsIn){
-  nLevels = _m;
-  nFunctions = _nf;
-  nPatches = _p;
-
-  interCoeff  = new Interpolation(pPointsIn, 1, NEWTON, nLevels, nPatches);
-  minLevel = 1;
-  noPhi = 1;
-
-  B = NULL;
-  B2 = NULL;
-
-  td = 3;
-  dp = 1.25;
-  a = 1.25; ///< compression constant,  a > 1
-  b = 0.001; ///< compression constant, 0 < b < 1
-
-  quadratureLevel_ = 0;
-  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
-}
-
-ConAnsatzFunction :: ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3*** pPointsIn){
-  nLevels = _m;
-  nFunctions = _nf;
-  nPatches = _p;
-
-  interCoeff  = new Interpolation(pPointsIn, 1, NEWTON, nLevels, nPatches);
-  minLevel = 1;
-  noPhi = 1;
-
-  B = NULL;
-  B2 = NULL;
-
-  td = 3;
-  dp = _dp;
-  a = _a; ///< compression constant,  a > 1
-  b = _b; ///< compression constant, 0 < b < 1
 
   quadratureLevel_ = 0;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));

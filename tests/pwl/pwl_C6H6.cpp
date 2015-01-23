@@ -110,7 +110,8 @@ BOOST_AUTO_TEST_CASE(C6H6)
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
-    PWLSolver solver(gfInside, gfOutside, firstKind);
+    Compression comp(2.5, 2.5, 0.001);
+    PWLSolver solver(gfInside, gfOutside, comp, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 

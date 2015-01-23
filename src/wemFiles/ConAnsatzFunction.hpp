@@ -18,11 +18,12 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
   // characteristic variable, found only in this function
   BoundingBoxSquare *B2;
   
-  /// constructor of the class ConAnsatzFunction
-  ConAnsatzFunction();
+  /*! \brief constructor of the class ConAnsatzFunction
+   *  \warning quadratureLevel_ is set to zero in the constructor.
+   *  Remember to set it to the proper value within the solver:
+   *  ceil(0.5*(td - op)) - 1
+   */
   ConAnsatzFunction(const Compression & _comp);
-  ConAnsatzFunction(unsigned int p, unsigned int m, unsigned int nf, Vector3*** pPointsIn);
-  ConAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn);
 
   void quadratureGrade(signed int *g1, signed int*g2, int level1, int level2, double dist, double alpha);
 

@@ -64,11 +64,6 @@ private:
     void initWEMMembers();
     virtual std::ostream & printSolver(std::ostream & os);
 public:
-    PWLSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, int integralEquation_ = SecondKind)
-        : PCMSolver(gfInside_, gfOutside_), interpolationGrade(3), interpolationType(1), 
-	af( new LinAnsatzFunction() ), integralEquation(integralEquation_) {
-        initWEMMembers();
-    }
     PWLSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, const Compression & _comp, int integralEquation_ = SecondKind)
         : PCMSolver(gfInside_, gfOutside_), interpolationGrade(3), interpolationType(1), 
 	af( new LinAnsatzFunction(_comp) ), integralEquation(integralEquation_) {
@@ -120,7 +115,7 @@ namespace
 {
     PCMSolver * createPWLSolver(const solverData & _data)
     {
-        return new PWLSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
+        return new PWLSolver(_data.gfInside, _data.gfOutside, _data.compressionParameters, _data.integralEquation);
     }
     const std::string PWLSOLVER("LINEAR"); // Stands for piecewise linear
     const bool registeredPWLSolver = SolverFactory::TheSolverFactory().registerSolver(

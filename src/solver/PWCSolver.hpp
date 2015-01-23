@@ -64,11 +64,6 @@ private:
     void initWEMMembers();
     virtual std::ostream & printSolver(std::ostream & os);
 public:
-    PWCSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, int integralEquation_ = SecondKind)
-        : PCMSolver(gfInside_, gfOutside_), interpolationGrade(2), interpolationType(1), 
-	af( new ConAnsatzFunction() ), integralEquation(integralEquation_) {
-        initWEMMembers();
-    }
     PWCSolver(IGreensFunction * gfInside_, IGreensFunction * gfOutside_, const Compression & _comp, int integralEquation_ = SecondKind)
         : PCMSolver(gfInside_, gfOutside_), interpolationGrade(2), interpolationType(1), 
 	af( new ConAnsatzFunction(_comp) ), integralEquation(integralEquation_) {
@@ -120,7 +115,7 @@ namespace
 {
     PCMSolver * createPWCSolver(const solverData & _data)
     {
-        return new PWCSolver(_data.gfInside, _data.gfOutside, _data.integralEquation);
+        return new PWCSolver(_data.gfInside, _data.gfOutside, _data.compressionParameters, _data.integralEquation);
     }
     const std::string PWCSOLVER("WAVELET"); // Stands for piecewise constant functions
     const bool registeredPWCSolver = SolverFactory::TheSolverFactory().registerSolver(

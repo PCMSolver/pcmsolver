@@ -583,13 +583,13 @@ void initNonEqSolver()
     // (...not our fault, but should remedy somehow)
 #if defined (DEVELOPMENT_CODE)    
     if (modelType == "WAVELET") {
-        _noneqPWCSolver = new PWCSolver(gfInside, gfOutside);
+        _noneqPWCSolver = new PWCSolver(gfInside, gfOutside, comp);
         _noneqPWCSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_noneqPWCSolver->getQuadratureLevel(), _noneqPWCSolver->getT_());
         _cavity = _waveletCavity;
         _noneqSolver = _noneqPWCSolver;
     } else if (modelType == "LINEAR") {
-        _noneqPWLSolver = new PWLSolver(gfInside, gfOutside);
+        _noneqPWLSolver = new PWLSolver(gfInside, gfOutside, comp);
         _noneqPWLSolver->buildSystemMatrix(*_waveletCavity);
         _waveletCavity->uploadPoints(_noneqPWLSolver->getQuadratureLevel(), _noneqPWLSolver->getT_());
         _cavity = _waveletCavity;

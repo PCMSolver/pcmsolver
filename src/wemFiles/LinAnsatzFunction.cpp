@@ -135,29 +135,6 @@ void Curl_Phi_times_Curl_Phi(double *c, double weight, Vector2 xi, Vector2 eta,
 	return;
 }
 
-LinAnsatzFunction :: LinAnsatzFunction(){
-	nLevels = 0;
-	nFunctions = 0;
-	nPatches = 0;
-  /// @todo check that the grade in the Interpolation is correct
-  // now using grade = 4!!! (coefficient is the log2 (grade)
-	//interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
-	noPhi = 4;
-
-  interCoeff = NULL;
-
-  B = NULL;
-
-  dp = 2.25;
-  td = 4;
-  a = 1.25; ///< compression constant,  a > 1
-  b = 0.001; ///< compression constant, 0 < b < 1
-
-  quadratureLevel_=2;
-  //quadratureLevel_=1;
-  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
-}
-
 LinAnsatzFunction :: LinAnsatzFunction(const Compression & _comp){
 	nLevels = 0;
 	nFunctions = 0;
@@ -176,32 +153,7 @@ LinAnsatzFunction :: LinAnsatzFunction(const Compression & _comp){
   a = _comp.aPrioriA; ///< compression constant,  a > 1
   b = _comp.aPosterioriB; ///< compression constant, 0 < b < 1
 
-  quadratureLevel_=2;
-  //quadratureLevel_=1;
-  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
-}
-
-
-/// constructor of linear basis functions
-LinAnsatzFunction :: LinAnsatzFunction(unsigned int _p, unsigned int _m, unsigned int _nf, double _a, double _b, double _dp, Vector3 *** pPointsIn){
-	nLevels = _m;
-	nFunctions = _nf;
-	nPatches = _p;
-  /// @todo check that the grade in the Interpolation is correct
-  // now using grade = 4!!! (coefficient is the log2 (grade)
-	interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
-	noPhi = 4;
-
-
-  B = NULL;
-
-  dp = _dp;
-  td = 4;
-  a = _a; ///< compression constant,  a > 1
-  b = _b; ///< compression constant, 0 < b < 1
-
-  //quadratureLevel_=1;
-  quadratureLevel_=2;
+  quadratureLevel_=0;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 

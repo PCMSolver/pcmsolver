@@ -105,7 +105,7 @@ void PWLSolver::initWEMMembers()
 //    T_ = NULL;
     systemMatricesInitialized_ = false;
     threshold = 1e-10;
-    //af->quadratureLevel_ = 1; // set in constructor of AnsatzFunction
+    af->quadratureLevel_ = std::ceil(0.5 * (af->td - op)) - 1; 
     //af->nQuadPoints = 0; //??? what is this for?
     af->elementTree.element = NULL;
     af->elementTree.nop = 0;

@@ -32,6 +32,7 @@
 
 #include <Eigen/Dense>
 
+#include "Compression.hpp"
 #include "DerivativeTypes.hpp"
 #include "PWCSolver.hpp"
 #include "UniformDielectric.hpp"
@@ -50,7 +51,8 @@ void read_sphere() {
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity);
     int firstKind = 0;
-    PWCSolver solver(gfInside, gfOutside, firstKind);
+    Compression comp(1.0, 1.25, 0.001);
+    PWCSolver solver(gfInside, gfOutside, comp, firstKind);
     solver.buildSystemMatrix(cavity);
 }
 
@@ -94,7 +96,6 @@ void pwc_C6H6()
 #endif
     Compression comp(2.5, 2.5, 0.001);
     PWCSolver solver(gfInside, gfOutside, comp, firstKind);
-    //PWCSolver solver(gfInside, gfOutside, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 

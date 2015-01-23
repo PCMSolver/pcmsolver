@@ -51,9 +51,6 @@ include(MergeStaticLibs)
 include(FortranEnabler)
 fortran_enabler()
 
-# Enable logging
-add_definitions(-DLOGGING_LEVEL_1)
-    
 # The Python interpreter is needed to run the MergeStaticLibs.py script
 # If the PYTHON_INTERPRETER variable is not empty, then the user passed a custom version
 # of the interpreter to be used. If that's the case, set PYTHON_EXECUTABLE accordingly and

@@ -7,39 +7,15 @@
 
 static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.execution.log");
 
-#ifdef LOGGING_LEVEL_1
-#define LOG loggerInstance.print<logging::severityType::debug>
-#define LOG_ERR loggerInstance.print<logging::severityType::error>
-#define LOG_WARN loggerInstance.print<logging::severityType::warning>
-#else
-#define LOG(...)
-#define LOG_ERR(...)
-#define LOG_WARN(...)
-#endif
-
-#ifdef LOGGING_LEVEL_2
-#define ELOG loggerInstance.print<logging::severityType::debug>
-#define ELOG_ERR loggerInstance.print<logging::severityType::error>
-#define ELOG_WARN loggerInstance.print<logging::severityType::warning>
-#else
-#define ELOG(...)
-#define ELOG_ERR(...)
-#define ELOG_WARN(...)
-#endif
+#define LOG loggerInstance.print<logging::printLevel::coarse>
+#define LOG_FINE loggerInstance.print<logging::printLevel::fine>
+#define LOG_ALL loggerInstance.print<logging::printLevel::everything>
 
 #else // HAS_CXX11
 
-#ifdef LOGGING_LEVEL_1
 #define LOG(...)
-#define LOG_ERR(...)
-#define LOG_WARN(...)
-#endif
-
-#ifdef LOGGING_LEVEL_2
-#define ELOG(...)
-#define ELOG_ERR(...)
-#define ELOG_WARN(...)
-#endif
+#define LOG_FINE(...)
+#define LOG_ALL(...)
 
 #endif // HAS_CXX11
  

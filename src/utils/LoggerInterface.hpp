@@ -18,6 +18,7 @@ static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.executi
 #define LOG(...)
 #define LOG_FINE(...)
 #define LOG_ALL(...)
+#define LOG_TIME(...)
 
 #endif // HAS_CXX11
  

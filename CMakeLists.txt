@@ -51,9 +51,6 @@ include(MergeStaticLibs)
 include(FortranEnabler)
 fortran_enabler()
 
-# Enable logging
-add_definitions(-DLOGGING_LEVEL_1)
-    
 # The Python interpreter is needed to run the MergeStaticLibs.py script
 # If the PYTHON_INTERPRETER variable is not empty, then the user passed a custom version
 # of the interpreter to be used. If that's the case, set PYTHON_EXECUTABLE accordingly and
@@ -68,6 +65,12 @@ endif()
 
 find_package(ZLIB REQUIRED) 
 include_directories(SYSTEM ${ZLIB_INCLUDE_DIRS})
+# librt   : needed for the timers (Linux only)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+   find_package(RT REQUIRED)
+   include_directories(SYSTEM "${LIBRT_INCLUDE_DIR}")
+   link_libraries("${LIBRT_LIBRARIES}")
+endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/external)

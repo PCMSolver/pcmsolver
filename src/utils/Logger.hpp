@@ -12,40 +12,28 @@
 
 namespace logging
 {
+    /*! \brief Returns date and time
+     */                                      
+    std::string getTime() {
+        std::string time_str;
+        time_t raw_time;
+                                          
+        std::time(&raw_time);
+        time_str = std::ctime(&raw_time);
+                                          
+        // Without the newline character
+        return time_str;
+    }
+
     template<typename logPolicy>
     class logger
     {
     private:
-        size_t logLineNumber_;
+	printLevel globalPrintLevel_;
         std::stringstream logStream_;
         logPolicy * policy_;
         std::mutex writeMutex_;
-
-        std::string getTime() {
-            std::string time_str;
-            time_t raw_time;
-
-            std::time(&raw_time);
-            time_str = std::ctime(&raw_time);
-
-            //without the newline character
-            return time_str.substr(0, time_str.size() - 1);
-        }
-        std::string getLoglineHeader() {
-            std::stringstream header;
-
-            header.str("");
-            header.fill('0');
-            header.width(7);
-            header << logLineNumber_++ << " < " << getTime() << " - ";
-
-            header.fill('0');
-            header.width(7);
-            header << clock() << " > ~ ";
-
-            return header.str();
-        }
-
+    
         /*! @name Core printing functionality
          *
          *  A variadic template is used, we specify the version
@@ -59,13 +47,13 @@ namespace logging
         /// @{
         /*! */
         void printImpl() {
-            policy_->write(getLoglineHeader() + logStream_.str());
+            policy_->write(logStream_.str());
             logStream_.str("");
         }
         template<typename First, typename...Rest>
         void printImpl(First parm1, Rest...parm) {
 	    logStream_.precision(std::numeric_limits<double>::digits10);
-            logStream_ << parm1;
+            logStream_ << parm1 << std::endl;
             printImpl(parm...);
         }
         /// @}
@@ -75,14 +63,16 @@ namespace logging
 	*  
 	*  The build parameters are logged first
          */
-        logger(const std::string & name) : logLineNumber_(0), policy_(new logPolicy) {
+        logger(const std::string & name, printLevel print = coarse) 
+		: globalPrintLevel_(print), policy_(new logPolicy) 
+	{
             if(!policy_) {
                 throw std::runtime_error("LOGGER: Unable to create the logger instance");
             }
             policy_->open_ostream(name);
 	    // Write the logfile header
-	    policy_->write("\t\tPCMSolver execution log\n");
-	    policy_->write(buildInfo());
+	    logStream_ << "\t\tPCMSolver execution log\n" 
+		       << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
         }
         /// Destructor
         ~logger() {
@@ -92,23 +82,16 @@ namespace logging
             }
         }
 
+	void globalPrintLevel(int print) { globalPrintLevel_ = print; }
+
         /// User interface for the logger class
-        template<severityType severity, typename...Args>
+        template<printLevel print, typename...Args>
         void print(Args...args) {
-            writeMutex_.lock();
-            switch(severity) {
-            case severityType::debug:
-                logStream_ << "<DEBUG> : \n";
-                break;
-            case severityType::warning:
-                logStream_ << "<WARNING> : \n";
-                break;
-            case severityType::error:
-                logStream_ << "<ERROR> : \n";
-                break;
-            };
-            printImpl(args...);
-            writeMutex_.unlock();
+	    if (globalPrintLevel_ >= print) {
+               writeMutex_.lock();   
+               printImpl(args...);
+               writeMutex_.unlock();
+	    }
         }
 
     };

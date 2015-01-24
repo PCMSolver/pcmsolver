@@ -33,8 +33,7 @@
 
 #include "Config.hpp"
 
-#include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 #include <boost/timer/timer.hpp>
 
 typedef std::map<std::string, boost::timer::cpu_timer> timersMap;
@@ -49,14 +48,13 @@ typedef std::pair<std::string, boost::timer::cpu_times> timingsPair;
  *  \author Roberto Di Remigio
  *  \date 2014
  *
- *  It is implemented as a Singleton. To time a code snippet:
+ *  To time a code snippet:
  *  \code{.cpp}
  *  timerON("code-snippet");
  *  // code-snippet
  *  timerOFF("code-snippet");
  *  \endcode
- *  The timings are printed out when all the checkpoints created
- *  by a call to timerON are closed by a call to timerOFF.
+ *  The timings are printed out by a call to the timerDONE function.
  */
 
 class Timer
@@ -66,22 +64,27 @@ private:
     timersMap timers_;
     /// Checkpoint-timing map
     timingsMap timings_;
-    /// File with the final report
-    std::ofstream report_;
+    /// Number of active timers
+    size_t active_;
 
-    Timer() : timers_(), timings_() {
-        report_.open("pcmsolver.timer.dat", std::ios::out | std::ios::app);
-        report_ << "            PCMSolver API timing results            " << std::endl;
-        report_ << "----------------------------------------------------" << std::endl;
+    std::ostream & printObject(std::ostream & os) const {
+        os << "            PCMSolver API timing results            " << std::endl;
+        os << "----------------------------------------------------" << std::endl;
+        timingsPair t_pair;
+        BOOST_FOREACH(t_pair, timings_) {
+            os << t_pair.first << " : " << boost::timer::format(t_pair.second);
+        }
+        if (active_ != 0) {
+            os << " These timers were not shut down:" << std::endl;
+            timersPair t_pair;
+            BOOST_FOREACH(t_pair, timers_) {                                
+                os << " - " << t_pair.first << std::endl;
+            }
+            os << " Reported timings might be unreliable!" << std::endl;
+        }
+        os << "----------------------------------------------------" << std::endl;
+        return os;
     }
-    Timer(const Timer & other);
-    Timer& operator=(const Timer & other);
-    ~Timer() {
-	printObject(report_);
-	report_ << std::endl;
-        report_.close();
-    }
-    std::ostream & printObject(std::ostream & os) const;
 public:
     static Timer& TheTimer() {
         static Timer obj;
@@ -92,51 +95,73 @@ public:
     }
 
     /*! \brief Inserts a checkpoint-timer pair in the timers_ map
+     *  \param[in] checkpoint timer to be stored
      */
-    void insertTimer(const timersPair & checkpoint);
+    void insertTimer(const timersPair & checkpoint) {
+        timers_.insert(checkpoint);
+        ++active_;
+    }
+
     /*! \brief Erases a checkpoint-timer pair in the timers_ map
+     *  \param[in] checkpoint_name timer to be erased
      */
-    void eraseTimer(const std::string & checkpoint_name);
+    void eraseTimer(const std::string & checkpoint_name) {
+        timers_.erase(checkpoint_name);
+        --active_;
+    }
 
     /*! \brief Inserts a checkpoint-timing pair in the timings_ map
+     *  \param[in] checkpoint_name timing to be stored
      */
-    void insertTiming(const std::string & checkpoint_name);
-
-    /*! \brief Returns number of active timers
-     */
-    int activeTimers() {
-        return timers_.size();
+    void insertTiming(const std::string & checkpoint_name) {
+        // Find timer associated with given checkpoint_name
+        timersMap::iterator checkpoint_timer = timers_.find(checkpoint_name);
+        // Get elapsed time, create a timingsPair and insert it into timings_ map
+        boost::timer::cpu_times const checkpoint_times((checkpoint_timer->second).elapsed());
+        timingsPair checkpoint = timingsMap::value_type(checkpoint_name, checkpoint_times);
+        timings_.insert(checkpoint);
     }
+
+    /*! Returns number of active timers */
+    int active() const { return active_; }
 };
 
-/*! \fn void timerON(const std::string & checkpoint_name)
+/*! \fn inline void timerON(const std::string & checkpoint_name)
  *  \param[in] checkpoint_name name of the checkpoint to be timed
  *  \brief Starts a timer with the given name
  *
  *  A timer is added to the timers_ map of the Timer object.
  */
-void timerON(const std::string & checkpoint_name);
+inline void timerON(const std::string & checkpoint_name)
+{
+    boost::timer::cpu_timer checkpoint_timer;
+    timersPair checkpoint = timersMap::value_type(checkpoint_name, checkpoint_timer);
+    Timer::TheTimer().insertTimer(checkpoint);
+}
 
-/*! \fn void timerOFF(const std::string & checkpoint_name)
+/*! \fn inline void timerOFF(const std::string & checkpoint_name)
  *  \param[in] checkpoint_name name of the checkpoint to be timed
  *  \brief Stops a timer with the given name
  *
  *  The timing results associated with the given timer
  *  are added to the timings_ map of the Timer object,
  *  the timer is then removed from the timers_ map.
- *  If no timers are left in the timers_ map, the final results
- *  are written to pcmsolver.timer.dat
  */
-void timerOFF(const std::string & checkpoint_name);
+inline void timerOFF(const std::string & checkpoint_name)
+{
+    Timer::TheTimer().insertTiming(checkpoint_name);
+    Timer::TheTimer().eraseTimer(checkpoint_name);
+}
 
-/*! \fn printTimings(const std::string & fname)
- *  \param[in] fname timers report filename
- *  \brief Writes timing results to given filename
- *  \warning fname is removed if already existent
- *
- *  This function is invoked by timerOFF when there
- *  are no more active timers in the timers_ map.
+/*! \fn inline void timerDONE(const std::string & fname)
+ *  \param[in] fname name for the timing report file
  */
-void printTimings(const std::string & fname);
+inline void timerDONE(const std::string & fname)
+{
+    std::ofstream timing_report;
+    timing_report.open(fname, std::ios::out);
+    timing_report << Timer::TheTimer() << std::endl;
+    timing_report.close();
+}
 
 #endif // TIMER_HPP

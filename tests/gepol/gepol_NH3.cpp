@@ -54,6 +54,7 @@ struct GePolCavityNH3Test {
         cavity = GePolCavity(molec, area, probeRadius, minRadius);
 	LOG(cavity);
         cavity.saveCavity("nh3.npz");
+	LOG_TIME;
     }
 };
 
@@ -93,3 +94,4 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityNH3Test)
     actualVolume /= 3;
     BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
+

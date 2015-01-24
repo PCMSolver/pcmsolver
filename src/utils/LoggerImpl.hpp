@@ -7,10 +7,11 @@
 
 namespace logging
 {
-    enum severityType {
-        debug = 1,
-        error,
-        warning
+    enum printLevel {
+	timings,
+        coarse,
+        fine,
+        everything
     };
 
     /*! \class ILogPolicy

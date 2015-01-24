@@ -90,7 +90,7 @@ void pwc_C6H6()
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity);
     int firstKind = 0;
-#ifdef DEBUG
+#ifdef DEBUG2
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif

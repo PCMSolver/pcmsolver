@@ -17,7 +17,7 @@ void WEMRHS2M(double **rhs, double *potential, GenericAnsatzFunction *af){
   Vector2 t;
   double w;
   unsigned int index;
-#ifdef DEBUG
+#ifdef DEBUG2
   FILE* debugFile = fopen("debug.out", "a");
   fprintf(debugFile,">>> POTENTIAL %d\n", af->quadratureLevel_);
 #endif
@@ -36,7 +36,7 @@ void WEMRHS2M(double **rhs, double *potential, GenericAnsatzFunction *af){
       //w = Q[af->quadratureLevel_].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
       index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
       w = Q[af->quadratureLevel_].weight[k]*potential[index*Q[af->quadratureLevel_].noP+k];
-#ifdef DEBUG
+#ifdef DEBUG2
       fprintf(debugFile,"%d %lf\n",index*Q[af->quadratureLevel_].noP+k, potential[index*Q[af->quadratureLevel_].noP+k]);
 #endif
       af->calculateCRHS(c,w,Q[af->quadratureLevel_].xi[k]);
@@ -45,7 +45,7 @@ void WEMRHS2M(double **rhs, double *potential, GenericAnsatzFunction *af){
       y[i][j] = h*c[j];
     }
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"<<< POTENTIAL\n");
   fclose(debugFile);
 #endif
@@ -121,7 +121,7 @@ void WEMRHS2M_test(double **rhs, double *potential, GenericAnsatzFunction *af){
   Vector2 t;
   double w;
   unsigned int index;
-#ifdef DEBUG
+#ifdef DEBUG2
   FILE* debugFile = fopen("debug.out", "a");
   fprintf(debugFile,">>> POTENTIAL %d\n", af->quadratureLevel_);
 #endif
@@ -140,7 +140,7 @@ void WEMRHS2M_test(double **rhs, double *potential, GenericAnsatzFunction *af){
       //w = Q[af->quadratureLevel_].weight[k]*f(af->interCoeff->Chi(t,af->elementTree.element[i].patch));
       index = (af->elementTree.element[i].patch*n*n + af->elementTree.element[i].index_t*n+af->elementTree.element[i].index_s);
       w = Q[af->quadratureLevel_].weight[k]*vector3Dot(df(af->interCoeff->Chi(t,af->elementTree.element[i].patch)),af->interCoeff->n_Chi(t, af->elementTree.element[i].patch));
-#ifdef DEBUG
+#ifdef DEBUG2
       fprintf(debugFile,"%d %lf\n",index*Q[af->quadratureLevel_].noP+k, potential[index*Q[af->quadratureLevel_].noP+k]);
 #endif
       af->calculateCRHS(c,w,Q[af->quadratureLevel_].xi[k]);
@@ -149,7 +149,7 @@ void WEMRHS2M_test(double **rhs, double *potential, GenericAnsatzFunction *af){
       y[i][j] = h*c[j];
     }
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   fprintf(debugFile,"<<< POTENTIAL\n");
   fclose(debugFile);
 #endif

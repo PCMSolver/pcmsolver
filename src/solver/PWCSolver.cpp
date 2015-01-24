@@ -48,6 +48,8 @@
 #include "IGreensFunction.hpp"
 #include "WaveletCavity.hpp"
 
+#include "Timer.hpp"
+
 static IGreensFunction *gf;
 
 static double SingleLayer(Vector3 x, Vector3 y)
@@ -160,9 +162,13 @@ void PWCSolver::buildSystemMatrix(const Cavity & cavity)
     try {
         const WaveletCavity & waveletCavity = dynamic_cast<const WaveletCavity&>(cavity);
         uploadCavity(waveletCavity);
+        timerON("preSystemMatrix");
         initInterpolation();
         constructWavelets();
+        timerOFF("preSystemMatrix");
+        timerON("SystemMatrix");
         constructSystemMatrix();
+        timerOFF("SystemMatrix");
     } catch (const std::bad_cast & e) {
         throw std::runtime_error(e.what() +
                                  std::string(" Wavelet type cavity needed for wavelet solver."));
@@ -175,7 +181,7 @@ void PWCSolver::initInterpolation()
     af->nNodes = af->genNet(pointList);
     double volume = calculateVolume(af);
     printf("Volume                     %lf\n",volume);
-#ifdef DEBUG
+#ifdef DEBUG2
     FILE* debugFile = fopen("debug.out", "a");
     fprintf(debugFile,">>> PPOINTLIST\n");
     for(unsigned int m = 0; m< af->nNodes; ++m) {
@@ -207,7 +213,7 @@ void PWCSolver::constructWavelets(){
     af->simplifyWaveletList();
     af->completeElementList();
     et_node* pF = af->elementTree.element;
-#ifdef DEBUG
+#ifdef DEBUG2
     FILE* debugFile = fopen("debug.out","a");
     fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
     for(unsigned int m = 0; m<af->waveletList.sizeWaveletList; ++m){
@@ -263,8 +269,10 @@ void PWCSolver::constructSi(){
             throw std::runtime_error("Unknown integral equation type.");
     }
     gf = greenInside_;
+    timerON("compression");
     apriori1_ = af->compression(&S_i_);
-#ifdef DEBUG 
+    timerOFF("compression");
+#ifdef DEBUG2
     FILE* debugFile = fopen("debug.out", "a");
 	  fprintf(debugFile,">>> SYSTEMMATRIX AC\n");
     fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
@@ -278,8 +286,10 @@ void PWCSolver::constructSi(){
 	  fflush(debugFile);
 	  fclose(debugFile);
 #endif
+    timerON("WEM");
     WEM(af, &S_i_, SingleLayer, DoubleLayer, factor);
-#ifdef DEBUG
+    timerOFF("WEM");
+#ifdef DEBUG2
     debugFile = fopen("debug.out", "a");
 	  fprintf(debugFile,">>> SYSTEMMATRIX AW\n");
     fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
@@ -293,8 +303,10 @@ void PWCSolver::constructSi(){
 	  fflush(debugFile);
 	  fclose(debugFile);
 #endif
+    timerON("postProc");
     aposteriori1_ = af->postProc(&S_i_);
-#ifdef DEBUG
+    timerOFF("postProc");
+#ifdef DEBUG2
     debugFile = fopen("debug.out", "a");
 	  fprintf(debugFile,">>> SYSTEMMATRIX AP\n");
     fprintf(debugFile, "%d %d\n", S_i_.m, S_i_.n);
@@ -347,7 +359,7 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential,
     double * chg = charge.data();
     double epsilon = greenOutside_->epsilon();
     WEMRHS2M(&rhs, pot, af);
-#ifdef DEBUG
+#ifdef DEBUG2
     FILE *debugFile = fopen("debug.out", "a");
     fprintf(debugFile,">>> WEMRHS21\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
@@ -357,7 +369,7 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential,
     fflush(debugFile);
 #endif
     int iter = WEMPGMRES2(&S_i_, rhs, v, threshold, af);
-#ifdef DEBUG
+#ifdef DEBUG2
     fprintf(debugFile,">>> WEMPGMRES1\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, v[i]);
@@ -376,7 +388,7 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential,
     for (size_t i = 0; i < af->waveletList.sizeWaveletList; ++i) {
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);
     }
-#ifdef DEBUG
+#ifdef DEBUG2
     fprintf(debugFile,">>> WEMRHS22\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, rhs[i]);
@@ -386,7 +398,7 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential,
 #endif
     memset(u, 0, af->waveletList.sizeWaveletList* sizeof(double));
     iter = WEMPCG(&S_i_, rhs, u, threshold, af);
-#ifdef DEBUG
+#ifdef DEBUG2
     fprintf(debugFile,">>> WEMPCG %g\n",threshold);
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %.10lf\n",i, u[i]);
@@ -416,7 +428,7 @@ void PWCSolver::solveSecondKind(const Eigen::VectorXd & potential,
     double * chg = charge.data();
     double epsilon = greenOutside_->epsilon();
     WEMRHS2M_test(&rhs, pot, af);
-#ifdef DEBUG
+#ifdef DEBUG2
     FILE *debugFile = fopen("debug.out", "a");
     fprintf(debugFile,">>> WEMRHS1\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
@@ -426,7 +438,7 @@ void PWCSolver::solveSecondKind(const Eigen::VectorXd & potential,
     fflush(debugFile);
 #endif
     int iter = WEMPGMRES1(&S_i_, rhs, u, threshold, af);
-#ifdef DEBUG
+#ifdef DEBUG2
     fprintf(debugFile,">>> WEMPGMRES1\n");
     for(unsigned int i = 0; i < af->waveletList.sizeWaveletList; ++i){
       fprintf(debugFile,"%d %lf\n",i, u[i]);

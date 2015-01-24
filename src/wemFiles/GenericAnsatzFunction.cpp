@@ -221,7 +221,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
     }
   }
 
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> COMP CC %lf %lf %lf\n", td, dp, op);
   for(unsigned int i  = 0; i < nLevels+1; ++i){
@@ -271,7 +271,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   fprintf(debugFile,">>> WAVELETWAVELETCRITERION\n"); 
   fclose(debugFile);
 #endif
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out", "a");
 #endif
   for(unsigned int i = 0; waveletList.W[i].level < nLevels; ++i){

@@ -33,7 +33,6 @@
 
 #include "Config.hpp"
 
-#include <boost/foreach.hpp>
 #include <boost/timer/timer.hpp>
 
 typedef std::map<std::string, boost::timer::cpu_timer> timersMap;
@@ -67,12 +66,16 @@ private:
     timingsMap timings_;
     /// Number of active timers
     size_t active_;
+    /// Final timings report
+    std::ostringstream report_;
 
-    Timer() : timers_(), timings_(), active_(0) {}
+    Timer();
     Timer(const Timer & other);
     Timer& operator=(const Timer & other);
-    ~Timer() {}
+    ~Timer();
     std::ostream & printObject(std::ostream & os) const;
+    /*! Returns names of active timers */
+    std::string activeTimers(); 
 public:
     static Timer& TheTimer() {
         static Timer obj;
@@ -83,33 +86,27 @@ public:
     }
 
     /*! \brief Inserts a checkpoint-timer pair in the timers_ map
+     *  \param[in] checkpoint timer to be stored 
      */
     void insertTimer(const timersPair & checkpoint);
+
     /*! \brief Erases a checkpoint-timer pair in the timers_ map
+     *  \param[in] checkpoint_name timer to be erased 
      */
     void eraseTimer(const std::string & checkpoint_name);
 
     /*! \brief Inserts a checkpoint-timing pair in the timings_ map
+     *  \param[in] checkpoint_name timing to be stored 
      */
     void insertTiming(const std::string & checkpoint_name);
 
-    /*! \brief Returns number of active timers
+    /*! \brief Appends timing to report_ stream
+     *  \param[in] checkpoint_name timings to be reported
      */
-    int active() {
-        return active_;
-    }
+    void reportTiming(const std::string & checkpoint_name);
 
-    /*! \brief Returns names of active timers
-     */
-    std::string checkActiveTimers() {
-	std::ostringstream tmp;
-        timersPair t_pair;                    
-        BOOST_FOREACH(t_pair, timers_) {
-	    tmp << " - " << t_pair.first << std::endl;
-        }
-	// Remove last newline
-	return tmp.str().substr(0, tmp.str().size() - 1);
-    }
+    /*! Returns number of active timers */
+    int active() { return active_; }
 };
 
 /*! \fn void timerON(const std::string & checkpoint_name)
@@ -129,13 +126,5 @@ void timerON(const std::string & checkpoint_name);
  *  the timer is then removed from the timers_ map.
  */
 void timerOFF(const std::string & checkpoint_name);
-
-/*! \fn std::string printTimings()
- *  \brief Prepares string with timing results
- *
- *  If there still are active timers a warning is printed
- *  to pcmsolver.execution.log
- */
-std::string printTimings();
 
 #endif // TIMER_HPP

@@ -31,6 +31,19 @@
 #include "Config.hpp"
 
 #include <boost/foreach.hpp>
+    
+Timer::Timer() : timers_(), timings_(), active_(0) 
+{
+    report_ << "            PCMSolver API timing results            " << std::endl; 
+    report_ << "----------------------------------------------------" << std::endl;
+}
+
+Timer::~Timer() 
+{
+    if (active_ != 0) {
+       report_ << activeTimers() << std::endl;
+    }
+}
 
 std::ostream & Timer::printObject(std::ostream & os) const
 {
@@ -63,6 +76,25 @@ void Timer::insertTiming(const std::string & checkpoint_name)
     timings_.insert(checkpoint);
 }
 
+void Timer::reportTiming(const std::string & checkpoint_name)
+{
+    timingsMap::iterator checkpoint = timings_.find(checkpoint_name);
+    report_ << checkpoint->first << " : " << boost::timer::format(checkpoint->second) << std::endl; 
+}
+    
+std::string Timer::activeTimers() 
+{
+    std::ostringstream tmp;
+    timersPair t_pair;                                   
+    tmp << " These timers were not shut down:" << std::endl;
+    BOOST_FOREACH(t_pair, timers_) {                     
+        tmp << " - " << t_pair.first << std::endl;       
+    }                                                    
+    tmp << " Reported timings might be unreliable!\n" << std::endl;
+    // Remove last newline                               
+    return tmp.str().substr(0, tmp.str().size() - 1);    
+}
+
 void timerON(const std::string & checkpoint_name)
 {
     boost::timer::cpu_timer checkpoint_timer;
@@ -74,18 +106,6 @@ void timerOFF(const std::string & checkpoint_name)
 {
     Timer::TheTimer().insertTiming(checkpoint_name);
     Timer::TheTimer().eraseTimer(checkpoint_name);
-}
-
-std::string printTimings()
-{
-    std::ostringstream timing_report;
-    timing_report << "            PCMSolver API timing results            " << std::endl;
-    timing_report << "----------------------------------------------------" << std::endl;
-    if (Timer::TheTimer().active() != 0) {
-       timing_report << " These timers were not shut down:" << std::endl;
-       timing_report << Timer::TheTimer().checkActiveTimers() << std::endl;
-       timing_report << " Reported timings might be unreliable!\n" << std::endl;
-    }
-    timing_report << Timer::TheTimer() << std::endl;
-    return timing_report.str();
+    // Write to report_ **after** timer has been erased
+    Timer::TheTimer().reportTiming(checkpoint_name);
 }

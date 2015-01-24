@@ -24,7 +24,7 @@ void addElement(Wavelet* w, et_root E, double* newWeights,unsigned int noNewWeig
     if ( w->noElements%delta == 0 ){      
       w->element = (unsigned int*) realloc(w->element, (w->noElements+delta)*sizeof(unsigned int));
       w->weight = (double*) realloc (w->weight, (w->noElements+delta)*noNewWeights*sizeof(double));
-#ifdef DEBUG
+#ifdef DEBUG2
       // make sure that we do not have rubbish in our data
       for( l = 0; l < delta; ++l){
         w->element[w->noElements+l] = 0;

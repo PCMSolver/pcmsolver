@@ -60,7 +60,7 @@ void ConAnsatzFunction::setQuadratureLevel() {
       }
     }
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   FILE* debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> WAVELET_TREE_QUADRATURE\n");
   for(unsigned int m = 0; m<waveletList.sizeWaveletList; ++m){
@@ -171,7 +171,7 @@ void ConAnsatzFunction :: generateWaveletList(){
       }
     }
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   FILE* debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> WAVELET_TREE\n");
   for(unsigned int i2 = 0; i2<waveletList.sizeWaveletList; ++i2){
@@ -295,7 +295,7 @@ unsigned int ConAnsatzFunction::waveletWaveletCriterion(unsigned int ind1, unsig
   double s2, t2, s1, t1;
   double dist;
 
-#ifdef DEBUG
+#ifdef DEBUG2
   FILE* debugFile = fopen("debug.out","a");
   fprintf(debugFile,"%d %d %lf %lf\n", ind1, ind2, c1, c2);
   fclose(debugFile);
@@ -433,7 +433,7 @@ void ConAnsatzFunction::computeBoundingBoxes(){
     B[i].my = 0.5*(maxY+minY);
     B[i].mz = 0.5*(maxZ+minZ);
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   FILE* debugFile = fopen("debug.out","a");
   fprintf(debugFile,">>> BBSQUARE\n");
   fclose(debugFile);
@@ -470,14 +470,14 @@ void ConAnsatzFunction::computeBoundingBoxes(){
 
     B2[i].mx = 0.5*(maxX+minX);
     B2[i].my = 0.5*(maxY+minY);
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out","a");
   fprintf(debugFile,"%d %lf %lf %lf %lf\n", i, B2[i].rx, B2[i].ry, B2[i].mx, B2[i].my);
   fclose(debugFile);
 #endif
 
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out","a");
   fprintf(debugFile,"<<< BBSQUARE\n");
   fclose(debugFile);

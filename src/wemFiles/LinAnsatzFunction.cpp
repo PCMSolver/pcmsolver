@@ -901,7 +901,7 @@ void LinAnsatzFunction :: setQuadratureLevel() {
 			}
 		}
 	}
-#ifdef DEBUG
+#ifdef DEBUG2
 	FILE* debugFile = fopen("debug.out","a");
 	fprintf(debugFile,">>> WAVELET_TREE_QUADRATURE\n");
 	for(unsigned int m = 0; m<waveletList.sizeWaveletList; ++m){
@@ -926,7 +926,7 @@ void LinAnsatzFunction :: setQuadratureLevel() {
 void LinAnsatzFunction :: generateTopology(unsigned int ****C) {
 	unsigned int n = 1<< nLevels;  // n*n elements on patch
 	unsigned int ze = nPatches*(n*n-1)/3; // index in element list
-#ifdef DEBUG
+#ifdef DEBUG2
 	FILE* debugFile = fopen("debug.out","a");
 	fprintf(debugFile,">>> GENERATETOPOLOGY C\n");
 #endif
@@ -944,20 +944,20 @@ void LinAnsatzFunction :: generateTopology(unsigned int ****C) {
 				else if ((i2 >	n/2) && (i3 >  n/2)) (*C)[i1][i2][i3] = elementTree.element[ze].vertex[2];
 				else								 (*C)[i1][i2][i3] = elementTree.element[ze].vertex[3];
 				if (i3 != n/2) ++ze;
-#ifdef DEBUG
+#ifdef DEBUG2
 				fprintf(debugFile, "%3d\t",(*C)[i1][i2][i3]);
 #endif
 			}
-#ifdef DEBUG
+#ifdef DEBUG2
 			fprintf(debugFile, "\n");
 #endif
 			if (i2 == n/2) ze -= n;
 		}
-#ifdef DEBUG
+#ifdef DEBUG2
 		fprintf(debugFile, "\n");
 #endif
 	}
-#ifdef DEBUG
+#ifdef DEBUG2
 	fprintf(debugFile,"<<< GENERATETOPOLOGY C\n");
 	fclose(debugFile);
 #endif
@@ -1081,7 +1081,7 @@ void LinAnsatzFunction :: generateWaveletList() {
   free(newWeights);
 	free(G);
 	free(C); // wird automatisch ge-freed am ende der funktion...
-#ifdef DEBUG
+#ifdef DEBUG2
 	FILE* debugFile = fopen("debug.out","a");
 	fprintf(debugFile,">>> WAVELET_TREE\n");
 	for(unsigned int m = 0; m<waveletList.sizeWaveletList; ++m){
@@ -1208,7 +1208,7 @@ void LinAnsatzFunction :: simplifyWaveletList() {
   // free memory for prototype indeces
 	free(prototype);
 	printf("%d prototypes\n",prototype_number);
-#ifdef DEBUG
+#ifdef DEBUG2
 	FILE* debugFile = fopen("debug.out","a");
 	fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
 	for(unsigned int m = 0; m<waveletList.sizeWaveletList; ++m){
@@ -1238,7 +1238,7 @@ unsigned int LinAnsatzFunction::waveletWaveletCriterion(unsigned int ind1, unsig
   double s2,t2, s1,t1;
   double dist;
 
-#ifdef DEBUG
+#ifdef DEBUG2
   FILE* debugFile = fopen("debug.out","a");
   fprintf(debugFile,"%d %d %lf %lf\n", ind1, ind2, c1, c2);
   fclose(debugFile);

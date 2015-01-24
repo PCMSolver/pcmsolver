@@ -124,8 +124,8 @@ double charge_ext(double *u, double *charge, GenericAnsatzFunction *af)
 					t = vector2Add(s,vector2SMul(h,Q[af->quadratureLevel_].xi[l]));
           charge[zi*Q[af->quadratureLevel_].noP+l] = Q[af->quadratureLevel_].weight[l] * af->calculateUEnergy(u, Q[af->quadratureLevel_].xi[l],zi) * h;
           C += charge[zi*Q[af->quadratureLevel_].noP+l];
-#ifdef DEBUG
-          //printf("%d %g\n",zi*Q[af->quadratureLevel_].noP+l,charge[zi*Q[af->quadratureLevel_].noP+l]);
+#ifdef DEBUG2
+          printf("%d %g\n",zi*Q[af->quadratureLevel_].noP+l,charge[zi*Q[af->quadratureLevel_].noP+l]);
 #endif
 				}
 				s.x += h;

@@ -6,7 +6,7 @@
 #ifndef WEM_HPP
 #define WEM_HPP
 
-#if defined DEBUG || defined DEBUG2
+#if defined DEBUG2
 #include <stdio.h>
 #endif
 
@@ -47,10 +47,10 @@ template <class T> void WEM(T* af, SparseMatrix *sM, double SingleLayer(Vector3,
 
   af->initRandwerte(g_max);
   initGaussSquare(&Q,g_max); // Kubatur-Formeln
-#if defined DEBUG || defined DEBUG2
+#if defined DEBUG2
   FILE *debugFile;
 #endif
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out","a");
   fprintf(debugFile, ">>> CUBATURE\n");
   for(int i = 0; i< g_max; i++) {
@@ -72,7 +72,7 @@ template <class T> void WEM(T* af, SparseMatrix *sM, double SingleLayer(Vector3,
       prec[i][j] += op*af->nLevels-af->dp*(2*af->nLevels-(i+j));
     }
   }
-#ifdef DEBUG
+#ifdef DEBUG2
   debugFile = fopen("debug.out","a");
   fprintf(debugFile, ">>> PREC\n");
   for(unsigned int i = 0; i< af->nLevels+1;i++) {

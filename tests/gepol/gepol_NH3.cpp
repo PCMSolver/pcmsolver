@@ -39,7 +39,6 @@
 #include "LoggerInterface.hpp"
 #include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
-#include "Timer.hpp"
 #include "TestingMolecules.hpp"
 #include "Symmetry.hpp"
 
@@ -55,6 +54,7 @@ struct GePolCavityNH3Test {
         cavity = GePolCavity(molec, area, probeRadius, minRadius);
 	LOG(cavity);
         cavity.saveCavity("nh3.npz");
+	LOG_TIME;
     }
 };
 

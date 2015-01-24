@@ -65,6 +65,12 @@ endif()
 
 find_package(ZLIB REQUIRED) 
 include_directories(SYSTEM ${ZLIB_INCLUDE_DIRS})
+# librt   : needed for the timers (Linux only)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+   find_package(RT REQUIRED)
+   include_directories(SYSTEM "${LIBRT_INCLUDE_DIR}")
+   link_libraries("${LIBRT_LIBRARIES}")
+endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/external)

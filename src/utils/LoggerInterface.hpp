@@ -11,6 +11,7 @@ static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.executi
 #define LOG loggerInstance.print<logging::printLevel::coarse>
 #define LOG_FINE loggerInstance.print<logging::printLevel::fine>
 #define LOG_ALL loggerInstance.print<logging::printLevel::everything>
+#define LOG_TIME loggerInstance.print<logging::printLevel::timings>(Timer::TheTimer());
 
 #else // HAS_CXX11
 

@@ -82,6 +82,8 @@ namespace logging
             }
         }
 
+	void globalPrintLevel(int print) { globalPrintLevel_ = print; }
+
         /// User interface for the logger class
         template<printLevel print, typename...Args>
         void print(Args...args) {

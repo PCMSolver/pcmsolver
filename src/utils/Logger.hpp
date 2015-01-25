@@ -82,12 +82,12 @@ namespace logging
             }
         }
 
-	void globalPrintLevel(int print) { globalPrintLevel_ = print; }
+	void globalPrintLevel(int printLvl) { globalPrintLevel_ = printLvl; }
 
         /// User interface for the logger class
-        template<printLevel print, typename...Args>
+        template<printLevel printLvl, typename...Args>
         void print(Args...args) {
-	    if (globalPrintLevel_ >= print) {
+	    if (globalPrintLevel_ >= printLvl) {
                writeMutex_.lock();   
                printImpl(args...);
                writeMutex_.unlock();

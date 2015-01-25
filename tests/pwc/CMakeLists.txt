@@ -1,6 +1,6 @@
 set(list_of_libraries solver green bi_operators cavity wemFiles wemSolvers wavcav utils)
 
-list(APPEND external_libraries ${ZLIB_LIBRARIES})
+list(APPEND external_libraries ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 # pwc_point test not yet done (wavelet cavity cannot generate a cavity from a single sphere) 
 #    add_boosttest(pwc_point "${list_of_libraries}" "${external_libraries}")
 add_boosttest(pwc_NH3  "${list_of_libraries}" "${external_libraries}")

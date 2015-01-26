@@ -6,12 +6,10 @@
 #include "Logger.hpp"
 #include "Timer.hpp"
 
-static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.execution.log");
-
-#define LOG loggerInstance.print<logging::printLevel::coarse>
-#define LOG_FINE loggerInstance.print<logging::printLevel::fine>
-#define LOG_ALL loggerInstance.print<logging::printLevel::everything>
-#define LOG_TIME loggerInstance.print<logging::printLevel::timings>(Timer::TheTimer());
+#define LOG logging::logger<logging::FileLogPolicy>::Instance().print<logging::printLevel::coarse>
+#define LOG_FINE logging::logger<logging::FileLogPolicy>::Instance().print<logging::printLevel::fine>
+#define LOG_ALL logging::logger<logging::FileLogPolicy>::Instance().print<logging::printLevel::everything>
+#define LOG_TIME logging::logger<logging::FileLogPolicy>::Instance().print<logging::printLevel::timings>(Timer::TheTimer());
 
 #else // HAS_CXX11
 

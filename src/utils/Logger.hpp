@@ -58,21 +58,21 @@ namespace logging
             printImpl(parm...);
         }
         /// @}
-       
-    public:
- 
-        /*! Constructor
+       /*! Constructor
         *  \param[in] name name for the log file
 	*  
 	*  The build parameters are logged first
          */
-        logger(const std::string & name, printLevel print = coarse) 
+        logger(const std::string & name = "", printLevel print = coarse) 
 		: globalPrintLevel_(print), policy_(new logPolicy) 
 	{
+            std::stringstream namestream;
+            namestream << "pcmsolver" << rand();
+            std::string nameB = namestream.str();
             if(!policy_) {
                 throw std::runtime_error("LOGGER: Unable to create the logger instance");
             }
-            policy_->open_ostream(name);
+            policy_->open_ostream(nameB);
 	    // Write the logfile header
 	    logStream_ << "\t\tPCMSolver execution log\n" 
 		       << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
@@ -86,7 +86,10 @@ namespace logging
             }
         }
 
-	void globalPrintLevel(int printLvl) { globalPrintLevel_ = printLvl; }
+
+    public:
+ 
+        void globalPrintLevel(int printLvl) { globalPrintLevel_ = printLvl; }
 
         /// User interface for the logger class
         template<printLevel printLvl, typename...Args>
@@ -97,7 +100,12 @@ namespace logging
                writeMutex_.unlock();
 	    }
         }
+        static logger& Instance(){
+            static logger<FileLogPolicy> loggerInstance;
+            return loggerInstance;
+        }
     };
+
 } // close namespace logging
 
 #endif // LOGGER_HPP

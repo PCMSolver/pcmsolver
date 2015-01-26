@@ -29,17 +29,21 @@ void read_data(const std::string &filename, Compression *comp,  std::vector<doub
     file.open(filename);
 
     if(file.is_open()) {
+        LOG(">>> DATA_FILE");
         file >> a >> dp >> b >> eps;
+        LOG(a, " ", dp, " ", b, " ", eps);
     	comp->aPrioriA = a;
     	comp->aPrioridPrime = dp;
     	comp->aPosterioriB = b;
         file >> nAtoms;
         for(unsigned int i = 0; i < nAtoms; ++i){
             file >> charge >> x >> y >> z;
+            LOG(charge, " ", x," ", y, " ", z);
             Eigen::Vector3d position(x,y,z);
             atoms_->push_back(position);
             charge_->push_back(charge);
         }
+        LOG("<<< DATA_FILE");
     } else {
         throw std::runtime_error("Data file could not be opened");
     }
@@ -53,7 +57,10 @@ int main(int argc, char* argv[]) {
     std::vector<double> charge_;
     std::vector<Eigen::Vector3d> atoms_;
     read_data(argv[2], &comp, &charge_, &atoms_);
-
+    
+    LOG(">>> GEOMETRY_FILE");
+    LOG(argv[1]);
+    LOG("<<< GEOMETRY_FILE");
     // Set up cavity, read it from Maharavo's file 
     WaveletCavity cavity(argv[1]);
     //cavity.scaleCavity(1./convertBohrToAngstrom);
@@ -73,6 +80,7 @@ int main(int argc, char* argv[]) {
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
+    LOG(">>> PCMSOLVER");
     PWCSolver solver(gfInside, gfOutside, comp, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
@@ -102,5 +110,9 @@ int main(int argc, char* argv[]) {
     LOG("totalFakeASC = ", totalFakeASC);
     LOG("Delta        = ", totalASC - totalFakeASC);
     LOG("Energy       = ", energy);
+    LOG("<<< PCMSOLVER");
+    LOG(">>> TIMING");
     LOG_TIME;
+    LOG("<<< TIMING");
+    LOG("# vim: foldmarker=>>>,<<< foldlevel=0 foldmethod=marker");
 }

@@ -67,7 +67,8 @@ namespace logging
 		: globalPrintLevel_(print), policy_(new logPolicy) 
 	{
             std::stringstream namestream;
-            namestream << "pcmsolver" << rand();
+            srand(time(NULL));
+            namestream << "pcmsolver" << "_" << rand() << "_" << getpid();
             std::string nameB = namestream.str();
             if(!policy_) {
                 throw std::runtime_error("LOGGER: Unable to create the logger instance");

@@ -56,7 +56,7 @@ static double SingleLayer(Vector3 x, Vector3 y)
 {
     Eigen::Vector3d vx(x.x, x.y, x.z);
     Eigen::Vector3d vy(y.x, y.y, y.z);
-    Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+    //Eigen::Vector3d foo = Eigen::Vector3d::Zero();
     double value = gf->function(vx, vy);
     return value;
 }
@@ -66,7 +66,7 @@ static double DoubleLayer(Vector3 x, Vector3 y, Vector3 n_y)
     Eigen::Vector3d vx(x.x, x.y, x.z);
     Eigen::Vector3d vy(y.x, y.y, y.z);
     Eigen::Vector3d vn_y(n_y.x, n_y.y, n_y.z);
-    Eigen::Vector3d foo = Eigen::Vector3d::Zero();
+    //Eigen::Vector3d foo = Eigen::Vector3d::Zero();
     double value = gf->derivative(vn_y, vx, vy);
     return value;
 }
@@ -114,8 +114,26 @@ void PWCSolver::initWEMMembers()
     af->waveletList.sizeWaveletList = 0;
 }
 
+PWCSolver::PWCSolver(const PWCSolver& old){
+    systemMatricesInitialized_ = old.systemMatricesInitialized_;
+    threshold = old.threshold;
+    af = new ConAnsatzFunction(*old.af);
+    if(old.pointList != NULL){
+        int n = (1<<af->nLevels);
+        allocPoints(&pointList, af->nPatches, af->nLevels);
+        for (size_t i = 0; i < af->nPatches; ++i) {
+            for (int j = 0; j <= n; ++j) {
+                for (int k = 0; k <= n; ++k) {
+                    pointList[i][j][k] = old.pointList[i][j][k];
+                }
+            }
+        }
+    } else pointList = NULL;
+}
+
 PWCSolver::~PWCSolver()
 {
+
     // TODO insert delete of af - ansatzFunction
     delete af;
     //if (nodeList != NULL)    free(nodeList);
@@ -128,6 +146,7 @@ PWCSolver::~PWCSolver()
     //if(elementTree != NULL) free_elementlist(&elementTree, nPatches,nLevels);
     //if(waveletList != NULL) free_waveletlist(&waveletList, nPatches,nLevels);
     //if(T_ != NULL)          free_interpolate(&T_,nPatches,nLevels);
+
 }
 
 void PWCSolver::uploadCavity(const WaveletCavity & cavity)

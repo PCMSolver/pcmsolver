@@ -786,7 +786,7 @@ int GenericAnsatzFunction::print_geometry(double* rho, char* dname) {
   fprintf(f, "SCALARS Cell_Density FLOAT\n");
   fprintf(f, "LOOKUP_TABLE default\n");
   if(rho != NULL){
-    for (i = 0; i < max; ++i)
+    for (i = 0; i < nFunctions; ++i)
       fprintf(f, "%20.16f\n", rho[i]);
   } else {
     for (i = 0; i < max; ++i)

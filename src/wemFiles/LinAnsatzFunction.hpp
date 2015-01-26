@@ -24,6 +24,8 @@ public:
    *  ceil(0.5*(td - op)) - 1
    */
   LinAnsatzFunction(const Compression & _comp);
+  LinAnsatzFunction(const LinAnsatzFunction &af);
+  LinAnsatzFunction(const GenericAnsatzFunction &af);
 
   void quadratureGrade(signed int *g1, signed int*g2, int level1, int level2, double dist, double alpha);
 

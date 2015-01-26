@@ -16,17 +16,23 @@
 #include "WaveletCavity.hpp"
 #include "PhysicalConstants.hpp"
 
+#include "LoggerInterface.hpp"
 
-void read_data(const std::string &filename, std::vector<double> *charge_, std::vector<Eigen::Vector3d> *atoms_){
+void read_data(const std::string &filename, Compression *comp,  std::vector<double> *charge_, std::vector<Eigen::Vector3d> *atoms_){
 
     unsigned int nAtoms;
     double charge;
     double x,y,z;
+    double a,dp,b, eps;
 
     std::ifstream file;
     file.open(filename);
 
     if(file.is_open()) {
+        file >> a >> dp >> b >> eps;
+    	comp->aPrioriA = a;
+    	comp->aPrioridPrime = dp;
+    	comp->aPosterioriB = b;
         file >> nAtoms;
         for(unsigned int i = 0; i < nAtoms; ++i){
             file >> charge >> x >> y >> z;
@@ -43,9 +49,10 @@ void read_data(const std::string &filename, std::vector<double> *charge_, std::v
 
 int main(int argc, char* argv[]) {
     //read_sphere();
+    Compression comp;
     std::vector<double> charge_;
     std::vector<Eigen::Vector3d> atoms_;
-    read_data(argv[2], &charge_, &atoms_);
+    read_data(argv[2], &comp, &charge_, &atoms_);
 
     // Set up cavity, read it from Maharavo's file 
     WaveletCavity cavity(argv[1]);
@@ -66,9 +73,7 @@ int main(int argc, char* argv[]) {
     FILE* debugFile = fopen("debug.out","w");
     fclose(debugFile);
 #endif
-    Compression comp(1.0, 2.25, 0.001);
-    PWLSolver solver(gfInside, gfOutside, comp, firstKind);
-    //PWCSolver solver(gfInside, gfOutside, firstKind);
+    PWCSolver solver(gfInside, gfOutside, comp, firstKind);
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
@@ -88,16 +93,15 @@ int main(int argc, char* argv[]) {
 
     double energy = 0.5 * (fake_mep.dot(fake_asc));
     energy *= 0.5291772;
-    
-    std::ofstream report;
-    report.open("report.out", std::ios::out);
-    report << cavity << std::endl;
-    report << solver << std::endl;
-    report << "------------------------------------------------------------" << std::endl;
-    report << "totalASC     = " << std::setprecision(20) << totalASC     << std::endl;
-    report << "totalFakeASC = " << std::setprecision(20) << totalFakeASC << std::endl;
-    report << "Delta        = " << std::setprecision(20) << totalASC - totalFakeASC << std::endl;
-    report << "Energy       = " << std::setprecision(20) << energy << std::endl;
-    report << "------------------------------------------------------------" << std::endl;
-    report.close();
+   
+    std::stringstream solverString;
+    solverString << solver; 
+    std::string solverString_ = solverString.str();
+    LOG(solverString_);
+    LOG(cavity);
+    LOG("totalASC     = ", totalASC);
+    LOG("totalFakeASC = ", totalFakeASC);
+    LOG("Delta        = ", totalASC - totalFakeASC);
+    LOG("Energy       = ", energy);
+    LOG_TIME;
 }

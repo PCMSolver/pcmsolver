@@ -63,4 +63,6 @@ void finishPattern2(SparseMatrix *A);
 void freeSparse(SparseMatrix *A);
 /// memory free function for type 2
 void freeSparse2(SparseMatrix *A);
+/// copy a sparse matrix to another
+void copySparse(SparseMatrix *A1, SparseMatrix *A2);
 #endif

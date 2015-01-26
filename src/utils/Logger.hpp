@@ -10,6 +10,8 @@
 #include "BuildInfo.hpp"
 #include "LoggerImpl.hpp"
 
+#include "PCMSolver.hpp"
+
 namespace logging
 {
     /*! \brief Returns date and time
@@ -50,10 +52,17 @@ namespace logging
             policy_->write(logStream_.str());
             logStream_.str("");
         }
+
+        template<typename...Rest>
+        void printImpl(PCMSolver* parm1, Rest...parm) {
+	    logStream_.precision(std::numeric_limits<double>::digits10);
+            logStream_ << *parm1;
+            printImpl(parm...);
+        }
         template<typename First, typename...Rest>
         void printImpl(First parm1, Rest...parm) {
 	    logStream_.precision(std::numeric_limits<double>::digits10);
-            logStream_ << parm1 << std::endl;
+            logStream_ << parm1;
             printImpl(parm...);
         }
         /// @}

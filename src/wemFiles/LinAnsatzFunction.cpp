@@ -136,13 +136,13 @@ void Curl_Phi_times_Curl_Phi(double *c, double weight, Vector2 xi, Vector2 eta,
 }
 
 LinAnsatzFunction :: LinAnsatzFunction(const Compression & _comp){
-	nLevels = 0;
-	nFunctions = 0;
-	nPatches = 0;
+  nLevels = 0;
+  nFunctions = 0;
+  nPatches = 0;
   /// @todo check that the grade in the Interpolation is correct
   // now using grade = 4!!! (coefficient is the log2 (grade)
-	//interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
-	noPhi = 4;
+  //interCoeff  = new Interpolation(pPointsIn, 2, NEWTON, nLevels, nPatches);
+  noPhi = 4;
 
   interCoeff = NULL;
 
@@ -155,6 +155,44 @@ LinAnsatzFunction :: LinAnsatzFunction(const Compression & _comp){
 
   quadratureLevel_=0;
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+}
+
+LinAnsatzFunction :: LinAnsatzFunction(const LinAnsatzFunction &af){
+  nLevels = af.nLevels;
+  nFunctions = af.nFunctions;
+  nPatches = af.nPatches;
+  minLevel = af.minLevel;
+  noPhi = af.noPhi;
+
+  B = NULL;
+
+  td = af.td;
+  dp = af.dp;
+  a = af.a; ///< compression constant,  a > 1
+  b = af.b; ///< compression constant, 0 < b < 1
+
+  quadratureLevel_ = af.quadratureLevel_;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+  copySparse(af.G, G);
+}
+
+LinAnsatzFunction :: LinAnsatzFunction(const GenericAnsatzFunction &af){
+  nLevels = af.nLevels;
+  nFunctions = af.nFunctions;
+  nPatches = af.nPatches;
+  minLevel = af.minLevel;
+  noPhi = af.noPhi;
+
+  B = NULL;
+
+  td = af.td;
+  dp = af.dp;
+  a = af.a; ///< compression constant,  a > 1
+  b = af.b; ///< compression constant, 0 < b < 1
+
+  quadratureLevel_ = af.quadratureLevel_;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+  copySparse(af.G, G);
 }
 
 /**

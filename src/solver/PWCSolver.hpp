@@ -69,6 +69,7 @@ public:
 	af( new ConAnsatzFunction(_comp) ), integralEquation(integralEquation_) {
         initWEMMembers();
     }
+    PWCSolver(const PWCSolver& old);
     virtual ~PWCSolver();
     Interpolation* getT_() {
         return af->interCoeff;

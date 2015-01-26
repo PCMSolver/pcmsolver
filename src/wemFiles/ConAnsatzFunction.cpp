@@ -28,6 +28,46 @@ ConAnsatzFunction :: ConAnsatzFunction(const Compression & _comp){
   G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
 }
 
+ConAnsatzFunction :: ConAnsatzFunction(const ConAnsatzFunction &af){
+  nLevels = af.nLevels;
+  nFunctions = af.nFunctions;
+  nPatches = af.nPatches;
+  minLevel = af.minLevel;
+  noPhi = af.noPhi;
+
+  B = NULL;
+  B2 = NULL;
+
+  td = af.td;
+  dp = af.dp;
+  a = af.a; ///< compression constant,  a > 1
+  b = af.b; ///< compression constant, 0 < b < 1
+
+  quadratureLevel_ = af.quadratureLevel_;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+  copySparse(af.G, G);
+}
+
+ConAnsatzFunction :: ConAnsatzFunction(const GenericAnsatzFunction &af){
+  nLevels = af.nLevels;
+  nFunctions = af.nFunctions;
+  nPatches = af.nPatches;
+  minLevel = af.minLevel;
+  noPhi = af.noPhi;
+
+  B = NULL;
+  B2 = NULL;
+
+  td = af.td;
+  dp = af.dp;
+  a = af.a; ///< compression constant,  a > 1
+  b = af.b; ///< compression constant, 0 < b < 1
+
+  quadratureLevel_ = af.quadratureLevel_;
+  G = (SparseMatrix*) malloc(sizeof(SparseMatrix));
+  copySparse(af.G, G);
+}
+
 void ConAnsatzFunction::setQuadratureLevel() {
   unsigned int  i, j, k, l;             // run index for wavelet/element list
   unsigned int  ind;                    // index of element under consideration
@@ -953,6 +993,7 @@ void ConAnsatzFunction::integratePoint(double *c, unsigned int i1, unsigned int 
 
 /// destructor - releases the memory assigned to this class
 ConAnsatzFunction::~ConAnsatzFunction(){
+  
   free(nodeList);
   for(unsigned int i = 0; i < elementTree.totalSizeElementList; ++i){
     free(elementTree.element[i].wavelet);
@@ -998,6 +1039,7 @@ ConAnsatzFunction::~ConAnsatzFunction(){
   delete(interCoeff);
 
   free(G);
+
 }
 
 std::ostream & ConAnsatzFunction::printAnsatzFunction(std::ostream & os) 
@@ -1007,6 +1049,6 @@ std::ostream & ConAnsatzFunction::printAnsatzFunction(std::ostream & os)
   os << " a  = " << a << std::endl;
   os << " d' = " << dp << std::endl;
   os << "A posteriori compression" << std::endl;
-  os << " b  = " << b;
+  os << " b  = " << b << std::endl;
   return os;
 }

@@ -40,6 +40,8 @@
 #include "WaveletCavity.hpp"
 #include "PhysicalConstants.hpp"
 
+#include "LoggerInterface.hpp"
+
 void pwc_C6H6();
 
 void read_sphere() {
@@ -59,6 +61,7 @@ void read_sphere() {
 int main() {
     //read_sphere();
     pwc_C6H6();
+    LOG_TIME;
 }
 
 

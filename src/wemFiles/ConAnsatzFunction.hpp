@@ -24,6 +24,8 @@ class ConAnsatzFunction : public GenericAnsatzFunction {
    *  ceil(0.5*(td - op)) - 1
    */
   ConAnsatzFunction(const Compression & _comp);
+  ConAnsatzFunction(const ConAnsatzFunction& af);
+  ConAnsatzFunction(const GenericAnsatzFunction& af);
 
   void quadratureGrade(signed int *g1, signed int*g2, int level1, int level2, double dist, double alpha);
 

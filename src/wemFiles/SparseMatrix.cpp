@@ -7,6 +7,48 @@
 #include <stdlib.h>
 #include "SparseMatrix.hpp"
 
+/// copy a sparse matrix to another
+void copySparse(SparseMatrix *from, SparseMatrix *to){
+  unsigned int    i;
+
+  to->m = from->m;
+  to->n = from->n;
+  if(from->value1){
+    to->value1 = (double**) malloc(to->m*sizeof(double*));
+    to->value2 = (double**) malloc(to->m*sizeof(double*));
+    to->index = (unsigned int**) malloc(to->m*sizeof(unsigned int*));
+    to->row_number = (unsigned int*) malloc(to->m*sizeof(unsigned int));
+    to->max_row_number = (unsigned int*) malloc(to->m*sizeof(unsigned int));
+    memcpy(to->row_number, from->row_number, to->m*sizeof(unsigned int));
+    memcpy(to->max_row_number, from->max_row_number, to->m*sizeof(unsigned int));
+
+    for (i=0; i<to->m; i++){
+      to->index[i] = (unsigned int*) malloc((to->m+1)*sizeof(unsigned int));
+      to->value1[i] = (double*) malloc((to->m)*sizeof(double));
+      to->value2[i] = (double*) malloc((to->m)*sizeof(double));
+
+      memcpy(to->value1[i], from->value1[i], (to->row_number[i])*sizeof(double));
+      memcpy(to->value2[i], from->value2[i], to->row_number[i]*sizeof(double));
+      memcpy(to->index[i], from->index[i], (to->row_number[i]+1)*sizeof(unsigned int));
+    }
+  }else{
+    to->value1 = to->value2 = NULL;
+    to->value = (double**) malloc(to->m*sizeof(double*));
+    to->index = (unsigned int**) malloc(to->m*sizeof(unsigned int*));
+    to->row_number = (unsigned int*) malloc(to->m*sizeof(unsigned int));
+    to->max_row_number = (unsigned int*) malloc(to->m*sizeof(unsigned int));
+    memcpy(to->row_number, from->row_number, to->m*sizeof(unsigned int));
+    memcpy(to->max_row_number, from->max_row_number, to->m*sizeof(unsigned int));
+
+    for (i=0; i<to->m; i++){
+      to->index[i] = (unsigned int*) malloc((to->m+1)*sizeof(unsigned int));
+      to->value[i] = (double*) malloc((to->m)*sizeof(double));
+
+      memcpy(to->value[i], from->value[i], (to->row_number[i])*sizeof(double));
+      memcpy(to->index[i], from->index[i], (to->row_number[i]+1)*sizeof(unsigned int));
+    }
+  }
+}
 /// binary search algorithm for element with index >= j
 unsigned int searchSparse(unsigned int *array, unsigned int rn, unsigned int j) {
   unsigned int	mid, low, high;

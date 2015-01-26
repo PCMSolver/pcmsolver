@@ -48,8 +48,7 @@
 #include "IGreensFunction.hpp"
 #include "WaveletCavity.hpp"
 
-#include "Timer.hpp"
-
+#include "LoggerInterface.hpp"
 static IGreensFunction *gf;
 
 static double SingleLayer(Vector3 x, Vector3 y)
@@ -199,7 +198,7 @@ void PWCSolver::initInterpolation()
     af->interCoeff = new Interpolation(pointList, interpolationGrade, interpolationType, af->nLevels, af->nPatches);
     af->nNodes = af->genNet(pointList);
     double volume = calculateVolume(af);
-    printf("Volume                     %lf\n",volume);
+    LOG("Volume                     ",volume);
 #ifdef DEBUG2
     FILE* debugFile = fopen("debug.out", "a");
     fprintf(debugFile,">>> PPOINTLIST\n");
@@ -231,8 +230,8 @@ void PWCSolver::constructWavelets(){
     af->setQuadratureLevel();
     af->simplifyWaveletList();
     af->completeElementList();
-    et_node* pF = af->elementTree.element;
 #ifdef DEBUG2
+    et_node* pF = af->elementTree.element;
     FILE* debugFile = fopen("debug.out","a");
     fprintf(debugFile,">>> WAVELET_TREE_SIMPLIFY\n");
     for(unsigned int m = 0; m<af->waveletList.sizeWaveletList; ++m){
@@ -291,6 +290,7 @@ void PWCSolver::constructSi(){
     timerON("compression");
     apriori1_ = af->compression(&S_i_);
     timerOFF("compression");
+    LOG("1.A-priori compression          ",apriori1_);
 #ifdef DEBUG2
     FILE* debugFile = fopen("debug.out", "a");
 	  fprintf(debugFile,">>> SYSTEMMATRIX AC\n");
@@ -325,6 +325,7 @@ void PWCSolver::constructSi(){
     timerON("postProc");
     aposteriori1_ = af->postProc(&S_i_);
     timerOFF("postProc");
+    LOG("1.A-posteriori compression      ",aposteriori1_);
 #ifdef DEBUG2
     debugFile = fopen("debug.out", "a");
 	  fprintf(debugFile,">>> SYSTEMMATRIX AP\n");
@@ -344,8 +345,10 @@ void PWCSolver::constructSi(){
 void PWCSolver::constructSe(){
     gf = greenOutside_; // sets the global pointer to pass GF to C code
     apriori2_ = af->compression(&S_e_);
+    LOG("2.A-priori compression          ",apriori2_);
     WEM(af, &S_e_, SingleLayer, DoubleLayer, -2*M_PI);
     aposteriori2_ = af->postProc(&S_e_);
+    LOG("2.A-posteriori compression      ",aposteriori2_);
 }
 
 void PWCSolver::computeCharge(const Eigen::VectorXd & potential,
@@ -403,6 +406,7 @@ void PWCSolver::solveFirstKind(const Eigen::VectorXd & potential,
         u[i] += af->G->value[i][j] *v[af->G->index[i][j]];
       }
     }
+    af->freeGram();
     af->dwt(u);
     for (size_t i = 0; i < af->waveletList.sizeWaveletList; ++i) {
         rhs[i] += 4 * M_PI * u[i] / (epsilon - 1);

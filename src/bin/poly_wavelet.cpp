@@ -96,8 +96,7 @@ int main(int argc, char* argv[]) {
    
     std::stringstream solverString;
     solverString << solver; 
-    std::string solverString_ = solverString.str();
-    LOG(solverString_);
+    LOG(solverString.str());
     LOG(cavity);
     LOG("totalASC     = ", totalASC);
     LOG("totalFakeASC = ", totalFakeASC);

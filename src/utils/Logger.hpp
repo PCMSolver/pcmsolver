@@ -10,13 +10,11 @@
 #include "BuildInfo.hpp"
 #include "LoggerImpl.hpp"
 
-#include "PCMSolver.hpp"
-
 namespace logging
 {
     /*! \brief Returns date and time
      */                                      
-    std::string getTime() {
+    inline std::string getTime() {
         std::string time_str;
         time_t raw_time;
                                           
@@ -53,12 +51,6 @@ namespace logging
             logStream_.str("");
         }
 
-        template<typename...Rest>
-        void printImpl(PCMSolver* parm1, Rest...parm) {
-	    logStream_.precision(std::numeric_limits<double>::digits10);
-            logStream_ << *parm1;
-            printImpl(parm...);
-        }
         template<typename First, typename...Rest>
         void printImpl(First parm1, Rest...parm) {
 	    logStream_.precision(std::numeric_limits<double>::digits10);
@@ -66,7 +58,9 @@ namespace logging
             printImpl(parm...);
         }
         /// @}
+       
     public:
+ 
         /*! Constructor
         *  \param[in] name name for the log file
 	*  
@@ -83,6 +77,7 @@ namespace logging
 	    logStream_ << "\t\tPCMSolver execution log\n" 
 		       << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
         }
+
         /// Destructor
         ~logger() {
             if(policy_) {
@@ -102,7 +97,6 @@ namespace logging
                writeMutex_.unlock();
 	    }
         }
-
     };
 } // close namespace logging
 

@@ -53,7 +53,7 @@ namespace logging
          *  \param[in] name name of the stream
          */
         virtual void open_ostream(const std::string & name) {
-            outStream_->open(name.c_str(), std::ios_base::binary | std::ios_base::out);
+            outStream_->open(name.c_str(), std::ios_base::binary | std::ios_base::out );
             if(!outStream_->is_open()) {
                 throw(std::runtime_error("LOGGER: Unable to open an output stream"));
             }

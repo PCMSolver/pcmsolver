@@ -198,7 +198,9 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   unsigned int ind1, ind2;
   unsigned int nnz;
   unsigned int *rn;
+#ifdef DEBUG2
   FILE* debugFile;
+#endif
 
   for(unsigned int i = 0; elementTree.element[i].level == 0; ++i)
     if( maxRadius < elementTree.element[i].radius)
@@ -405,7 +407,7 @@ unsigned int GenericAnsatzFunction :: compression(SparseMatrix *T){
   free (c1);
   free (c2);
   freeBoundingBoxes();
-  return 0;
+  return 100.0*nnz/waveletList.sizeWaveletList/waveletList.sizeWaveletList;
 }
 
 unsigned int GenericAnsatzFunction :: postProc(SparseMatrix *T){

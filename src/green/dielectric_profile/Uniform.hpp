@@ -41,7 +41,7 @@ class Uniform
 {
 private:
     double epsilon_;
-    virtual double value(double /* point */) const {
+    double value(double /* point */) const {
 	return epsilon_;
     }
     double derivative(double /* point */) const {
@@ -49,6 +49,17 @@ private:
     }
 public:
     Uniform(double e) : epsilon_(e) {}
+    /*! The permittivity profile of the transition layer
+     *  \param[out]  e the value of the dielectric constant at point r
+     *  \param[out] de the value of the derivative of the dielectric constant
+     *                 at point r
+     *  \param[in]   r evaluation point
+     */
+    void operator()(double & e, double & de, const double r) const 
+    {
+        e = value(r);
+        de = derivative(r);
+    }
 };
 
 #endif // UNIFORM_HPP

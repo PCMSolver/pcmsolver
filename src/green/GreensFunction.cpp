@@ -36,8 +36,8 @@
 
 #include "DerivativeTypes.hpp"
 
-template <typename T>
-void GreensFunction<T>::delta(double value)
+template <typename DerivativeTraits>
+void GreensFunction<DerivativeTraits>::delta(double value)
 {
     if (value <= 1.0e-10) {
         throw std::invalid_argument("Delta value must be larger than 1.0e-10");
@@ -45,11 +45,11 @@ void GreensFunction<T>::delta(double value)
     delta_ = value;
 }
 
-template <typename T>
-double GreensFunction<T>::function(const Eigen::Vector3d & source,
+template <typename DerivativeTraits>
+double GreensFunction<DerivativeTraits>::function(const Eigen::Vector3d & source,
                                    const Eigen::Vector3d & probe) const
 {
-    T sp[3], pp[3], res;
+    DerivativeTraits sp[3], pp[3], res;
     sp[0] = source(0);
     sp[1] = source(1);
     sp[2] = source(2);
@@ -75,11 +75,11 @@ double GreensFunction<double>::function(const Eigen::Vector3d & source,
     return res;
 }
 
-template <typename T>
-double GreensFunction<T>::derivativeSource(const Eigen::Vector3d & normal_p1,
+template <typename DerivativeTraits>
+double GreensFunction<DerivativeTraits>::derivativeSource(const Eigen::Vector3d & normal_p1,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-    T t1[3], t2[3], derivative;
+    DerivativeTraits t1[3], t2[3], derivative;
     //	direction.normalize();
     t1[0] = p1(0);
     t1[0][1] = normal_p1(0);
@@ -105,11 +105,11 @@ double GreensFunction<double>::derivativeSource(const Eigen::Vector3d & normal_p
     return (funcPlus - funcMinus)/(2.0*delta_);
 }
 
-template <typename T>
-double GreensFunction<T>::derivativeProbe(const Eigen::Vector3d & normal_p2,
+template <typename DerivativeTraits>
+double GreensFunction<DerivativeTraits>::derivativeProbe(const Eigen::Vector3d & normal_p2,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-    T t1[3], t2[3], derivative;
+    DerivativeTraits t1[3], t2[3], derivative;
     //	direction.normalize();
     t1[0] = p1(0);
     t1[1] = p1(1);
@@ -135,8 +135,8 @@ double GreensFunction<double>::derivativeProbe(const Eigen::Vector3d & normal_p2
     return (funcPlus - funcMinus)/(2.0*delta_);
 }
 
-template <typename T>
-Eigen::Vector3d GreensFunction<T>::gradientSource(const Eigen::Vector3d & p1,
+template <typename DerivativeTraits>
+Eigen::Vector3d GreensFunction<DerivativeTraits>::gradientSource(const Eigen::Vector3d & p1,
         const Eigen::Vector3d & p2) const
 {
     Eigen::Vector3d g;
@@ -144,11 +144,11 @@ Eigen::Vector3d GreensFunction<T>::gradientSource(const Eigen::Vector3d & p1,
     return g;
 }
 
-template <typename T>
-void GreensFunction<T>::gradientSource(Eigen::Vector3d & gradient,
+template <typename DerivativeTraits>
+void GreensFunction<DerivativeTraits>::gradientSource(Eigen::Vector3d & gradient,
                                        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-    T t1[3], t2[3], grad;
+    DerivativeTraits t1[3], t2[3], grad;
     t1[0] = p1(0);
     t1[0][1] = 1;
     t1[1] = p1(1);
@@ -188,8 +188,8 @@ void GreensFunction<AD_directional>::gradientSource(Eigen::Vector3d & gradient,
     gradient(2) = derivativeSource(direction, p1, p2);
 }
 
-template <typename T>
-Eigen::Vector3d GreensFunction<T>::gradientProbe(const Eigen::Vector3d & p1,
+template <typename DerivativeTraits>
+Eigen::Vector3d GreensFunction<DerivativeTraits>::gradientProbe(const Eigen::Vector3d & p1,
         const Eigen::Vector3d & p2) const
 {
     Eigen::Vector3d g;
@@ -197,11 +197,11 @@ Eigen::Vector3d GreensFunction<T>::gradientProbe(const Eigen::Vector3d & p1,
     return g;
 }
 
-template <typename T>
-void GreensFunction<T>::gradientProbe(Eigen::Vector3d & gradient,
+template <typename DerivativeTraits>
+void GreensFunction<DerivativeTraits>::gradientProbe(Eigen::Vector3d & gradient,
                                       const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-    T t1[3], t2[3], grad;
+    DerivativeTraits t1[3], t2[3], grad;
     t1[0] = p1(0);
     t1[1] = p1(1);
     t1[2] = p1(2);
@@ -241,8 +241,8 @@ void GreensFunction<AD_directional>::gradientProbe(Eigen::Vector3d & gradient,
     gradient(2) = derivativeProbe(direction, p1, p2);
 }
 
-template <typename T>
-std::ostream & GreensFunction<T>::printObject(std::ostream & os)
+template <typename DerivativeTraits>
+std::ostream & GreensFunction<DerivativeTraits>::printObject(std::ostream & os)
 {
     os << "Green's Function" << std::endl;
     os << "Delta = " << delta_ << std::endl;

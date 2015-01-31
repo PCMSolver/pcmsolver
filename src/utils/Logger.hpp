@@ -78,7 +78,6 @@ namespace logging
 	    logStream_ << "\t\tPCMSolver execution log\n" 
 		       << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
         }
-
         /// Destructor
         ~logger() {
             if(policy_) {

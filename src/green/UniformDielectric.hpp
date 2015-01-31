@@ -26,12 +26,14 @@
 #ifndef UNIFORMDIELECTRIC_HPP
 #define UNIFORMDIELECTRIC_HPP
 
+#include <cmath>
 #include <iosfwd>
 #include <string>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
+#include "taylor.hpp"
 
 template <typename DerivativeTraits>
 class UniformDielectric;

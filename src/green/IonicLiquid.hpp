@@ -26,17 +26,21 @@
 #ifndef IONICLIQUID_HPP
 #define IONICLIQUID_HPP
 
+#include <cmath>
 #include <iosfwd>
 #include <string>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
+#include "taylor.hpp"
 
-class DiagonalIntegrator;
+template <typename DerivativeTraits>
+class IonicLiquid;
 
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegratorFactory.hpp"
+#include "DiagonalIntegrator.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -47,16 +51,16 @@ class DiagonalIntegrator;
  *  \brief Green's functions for ionic liquid, described by the linearized Poisson-Boltzmann equation.
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2013-2014
- *  \tparam T evaluation strategy for the function and its derivatives
+ *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
 
-template <typename T>
-class IonicLiquid : public GreensFunction<T>
+template <typename DerivativeTraits>
+class IonicLiquid : public GreensFunction<DerivativeTraits>
 {
 public:
-    IonicLiquid(double epsilon, double kappa) : GreensFunction<T>(false),
+    IonicLiquid(double epsilon, double kappa) : GreensFunction<DerivativeTraits>(false),
         epsilon_(epsilon), kappa_(kappa) {}
-    IonicLiquid(double epsilon, double kappa, DiagonalIntegrator * diag) : GreensFunction<T>(false, diag),
+    IonicLiquid(double epsilon, double kappa, DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits>(false, diag),
         epsilon_(epsilon), kappa_(kappa) {}
     virtual ~IonicLiquid() {}
     /*!
@@ -71,19 +75,30 @@ public:
      *  \param[in]        p2 second point
      */
     virtual double derivative(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+    {
+        return epsilon_ * (this->derivativeProbe(direction, p1, p2));
+    }
 
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *  \param[in] area   area of the i-th tessera to be calculated
      */
-    virtual double diagonalS(double area) const;
+    virtual double diagonalS(double area) const
+    {
+            this->diagonal_->computeS(this, area);
+            return 1.0;
+    }
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
      *  \param[in] area   area of the i-th tessera to be calculated
      *  \param[in] radius radius of the sphere the tessera belongs to
      */
-    virtual double diagonalD(double area, double radius) const;
+    virtual double diagonalD(double area, double radius) const
+    {
+            this->diagonal_->computeD(this, area, radius);
+            return 1.0;
+    }
 
     virtual double epsilon() const { return epsilon_; }
 
@@ -94,13 +109,25 @@ private:
     /*!
      *  Evaluates the Green's function given a pair of points
      *
-     *  \param[in] source the source point
-     *  \param[in]  probe the probe point
+     *  \param[in] sp the source point
+     *  \param[in] pp the probe point
      */
-    virtual T operator()(T * source, T * probe) const;
+    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const
+    {
+        DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
+                          (sp[1] - pp[1]) * (sp[1] - pp[1]) +
+                          (sp[2] - pp[2]) * (sp[2] - pp[2]));
+        return (exp(-kappa_ * distance) / (epsilon_ * distance));
+    }
     double epsilon_;
     double kappa_;
-    virtual std::ostream & printObject(std::ostream & os);
+    virtual std::ostream & printObject(std::ostream & os)
+    {
+        os << "Green's function type: ionic liquid" << std::endl;
+        os << "Permittivity         = " << epsilon_ << std::endl;
+        os << "Inverse Debye length = " << kappa_;
+        return os;
+    }
 };
 
 namespace

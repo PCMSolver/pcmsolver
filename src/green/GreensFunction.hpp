@@ -48,7 +48,7 @@ class DiagonalIntegrator;
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
 
-template <typename DerivativeTraits>
+template <typename DerivativeTraits = AD_directional>
 class GreensFunction: public IGreensFunction
 {
 public:

@@ -55,11 +55,11 @@ class UniformDielectric;
  */
 
 template <typename DerivativeTraits>
-class UniformDielectric : public GreensFunction<DerivativeTraits>
+class UniformDielectric : public GreensFunction<DerivativeTraits, Uniform>
 {
 public:
-    UniformDielectric(double eps) : GreensFunction<DerivativeTraits>(true), epsilon_(eps) {}
-    explicit UniformDielectric(double eps, DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits>(true, diag), epsilon_(eps) {}
+    UniformDielectric(double eps) : GreensFunction<DerivativeTraits, Uniform>(true) { initProfilePolicy(eps); }
+    explicit UniformDielectric(double eps, DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits, Uniform>(true, diag) { initProfilePolicy(eps); }
     virtual ~UniformDielectric() {}
     /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
@@ -74,7 +74,7 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
-        return epsilon_ * (this->derivativeProbe(direction, p1, p2));
+        return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }
 
     /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
@@ -93,15 +93,13 @@ public:
             return this->diagonal_->computeD(this, area, radius);
     }
 
-    virtual void epsilon(double eps) { epsilon_ = eps; }
-    virtual double epsilon() const { return epsilon_; }
+    virtual double epsilon() const { return this->profile_.epsilon; }
 
     friend std::ostream & operator<<(std::ostream & os, UniformDielectric & gf) {
         return gf.printObject(os);
     }
 private:
-    /*!
-     *  Evaluates the Green's function given a pair of points
+    /*! Evaluates the Green's function given a pair of points
      *
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
@@ -111,15 +109,15 @@ private:
         DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
                           (sp[1] - pp[1]) * (sp[1] - pp[1]) +
                           (sp[2] - pp[2]) * (sp[2] - pp[2]));
-        return 1/(epsilon_ * distance);
+        return 1/(this->profile_.epsilon * distance);
     }
     virtual std::ostream & printObject(std::ostream & os)
     {
         os << "Green's function type: uniform dielectric" << std::endl;
-        os << "Permittivity = " << epsilon_ << std::endl;
+        os << "Permittivity = " << this->profile_.epsilon << std::endl;
         return os;
     }
-    double epsilon_;
+    void initProfilePolicy(double eps) { this->profile_ = Uniform(eps); }
 };
 
 namespace

@@ -26,40 +26,20 @@
 #ifndef UNIFORM_HPP
 #define UNIFORM_HPP
 
-#include <iosfwd>
-
 #include "Config.hpp"
 
 /*! \file Uniform.hpp
- *  \class Uniform
+ *  \struct Uniform
  *  \brief a uniform dielectric profile 
  *  \author Roberto Di Remigio
- *  \date 2014
+ *  \date 2015
  */
 
-class Uniform
+struct Uniform
 {
-private:
-    double epsilon_;
-    double value(double /* point */) const {
-	return epsilon_;
-    }
-    double derivative(double /* point */) const {
-	return 0.0;
-    }
-public:
-    Uniform(double e) : epsilon_(e) {}
-    /*! The permittivity profile of the transition layer
-     *  \param[out]  e the value of the dielectric constant at point r
-     *  \param[out] de the value of the derivative of the dielectric constant
-     *                 at point r
-     *  \param[in]   r evaluation point
-     */
-    void operator()(double & e, double & de, const double r) const 
-    {
-        e = value(r);
-        de = derivative(r);
-    }
+    double epsilon;
+    Uniform() : epsilon(1.0) {}
+    Uniform(double e) : epsilon(e) {}
 };
 
 #endif // UNIFORM_HPP

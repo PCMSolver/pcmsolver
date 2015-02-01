@@ -55,11 +55,11 @@ class Vacuum;
  */
 
 template <typename DerivativeTraits>
-class Vacuum : public GreensFunction<DerivativeTraits>
+class Vacuum : public GreensFunction<DerivativeTraits, Uniform>
 {
 public:
-    Vacuum() : GreensFunction<DerivativeTraits>(true), epsilon_(1.0) {}
-    Vacuum(DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits>(true, diag), epsilon_(1.0) {}
+    Vacuum() : GreensFunction<DerivativeTraits, Uniform>(true) {}
+    Vacuum(DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits, Uniform>(true, diag) {}
     virtual ~Vacuum() {}
     /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
@@ -95,7 +95,7 @@ public:
             return this->diagonal_->computeD(this, area, radius);
     }
 
-    virtual double epsilon() const { return 1.0; }
+    virtual double epsilon() const { return this->profile_.epsilon; }
 
     friend std::ostream & operator<<(std::ostream & os, Vacuum & gf) {
         return gf.printObject(os);
@@ -119,7 +119,7 @@ private:
         os << "Green's function type: vacuum";
         return os;
     }
-    double epsilon_;
+    void initProfilePolicy() { this->profile_ = Uniform(1.0); }
 };
 
 namespace

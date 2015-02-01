@@ -39,6 +39,7 @@ class DiagonalIntegrator;
 
 #include "DerivativeTypes.hpp"
 #include "IGreensFunction.hpp"
+#include "ProfileTypes.hpp"
 
 /*! \file GreensFunction.hpp
  *  \class GreensFunction
@@ -46,15 +47,17 @@ class DiagonalIntegrator;
  *  \author Luca Frediani and Roberto Di Remigio
  *  \date 2012-2014
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
+ *  \tparam ProfilePolicy    dielectric profile type
  */
 
-template <typename DerivativeTraits = AD_directional>
+template <typename DerivativeTraits = AD_directional,
+	  typename ProfilePolicy = Uniform>
 class GreensFunction: public IGreensFunction
 {
 public:
     GreensFunction(bool uniform) : IGreensFunction(uniform), delta_(1.0e-4) {}
     GreensFunction(bool uniform, DiagonalIntegrator * diag) : IGreensFunction(uniform, diag), delta_(1.0e-4) {}
-    virtual ~GreensFunction() {}
+    virtual ~GreensFunction() {} 
     /*! Returns value of the Greens's function for the pair
      *  of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
      *
@@ -159,6 +162,7 @@ protected:
         return os;
     }
     double delta_;
+    ProfilePolicy profile_;
 };
 
 template <>

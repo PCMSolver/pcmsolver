@@ -55,13 +55,11 @@ class IonicLiquid;
  */
 
 template <typename DerivativeTraits>
-class IonicLiquid : public GreensFunction<DerivativeTraits>
+class IonicLiquid : public GreensFunction<DerivativeTraits, Yukawa>
 {
 public:
-    IonicLiquid(double epsilon, double kappa) : GreensFunction<DerivativeTraits>(false),
-        epsilon_(epsilon), kappa_(kappa) {}
-    IonicLiquid(double epsilon, double kappa, DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits>(false, diag),
-        epsilon_(epsilon), kappa_(kappa) {}
+    IonicLiquid(double epsilon, double kappa) : GreensFunction<DerivativeTraits, Yukawa>(false) { initProfilePolicy(epsilon, kappa); }
+    IonicLiquid(double epsilon, double kappa, DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits, Yukawa>(false, diag) { initProfilePolicy(epsilon, kappa); }
     virtual ~IonicLiquid() {}
     /*!
      *  Returns value of the directional derivative of the
@@ -77,7 +75,7 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
-        return epsilon_ * (this->derivativeProbe(direction, p1, p2));
+        return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }
 
     /*!
@@ -100,7 +98,7 @@ public:
             return 1.0;
     }
 
-    virtual double epsilon() const { return epsilon_; }
+    virtual double epsilon() const { return this->profile_.epsilon; }
 
     friend std::ostream & operator<<(std::ostream & os, IonicLiquid & gf) {
         return gf.printObject(os);
@@ -114,20 +112,21 @@ private:
      */
     virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const
     {
+	double eps = this->profile_.epsilon;
+	double k = this->profile_.kappa; 
         DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
                           (sp[1] - pp[1]) * (sp[1] - pp[1]) +
                           (sp[2] - pp[2]) * (sp[2] - pp[2]));
-        return (exp(-kappa_ * distance) / (epsilon_ * distance));
+        return (exp(-k * distance) / (eps * distance));
     }
-    double epsilon_;
-    double kappa_;
     virtual std::ostream & printObject(std::ostream & os)
     {
         os << "Green's function type: ionic liquid" << std::endl;
-        os << "Permittivity         = " << epsilon_ << std::endl;
-        os << "Inverse Debye length = " << kappa_;
+        os << "Permittivity         = " << this->profile_.epsilon << std::endl;
+        os << "Inverse Debye length = " << this->profile_.kappa;
         return os;
     }
+    void initProfilePolicy(double eps, double k) { this->profile_ = Yukawa(eps, k); }
 };
 
 namespace
@@ -150,6 +149,39 @@ namespace
     const bool registeredIonicLiquid =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             IONICLIQUID, createIonicLiquid);
+}
+
+template <>
+inline double GreensFunction<double, Yukawa>::function(const Eigen::Vector3d & source,
+                                        const Eigen::Vector3d & probe) const
+{
+    double sp[3], pp[3], res;
+    sp[0] = source(0); sp[1] = source(1); sp[2] = source(2);
+    pp[0] = probe(0);  pp[1] = probe(1);  pp[2] = probe(2);
+    res = this->operator()(sp, pp);
+    return res;
+}
+
+template <>
+inline double GreensFunction<double, Yukawa>::derivativeSource(const Eigen::Vector3d & normal_p1,
+        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+{
+    Eigen::Vector3d deltaPlus  = p1 + normal_p1 * delta_ / normal_p1.norm();
+    Eigen::Vector3d deltaMinus = p1 - normal_p1 * delta_ / normal_p1.norm();
+    double funcPlus  = function(deltaPlus,  p2);
+    double funcMinus = function(deltaMinus, p2);
+    return (funcPlus - funcMinus)/(2.0*delta_);
+}
+
+template <>
+inline double GreensFunction<double, Yukawa>::derivativeProbe(const Eigen::Vector3d & normal_p2,
+        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+{
+    Eigen::Vector3d deltaPlus  = p2 + normal_p2 * delta_ / normal_p2.norm();
+    Eigen::Vector3d deltaMinus = p2 - normal_p2 * delta_ / normal_p2.norm();
+    double funcPlus  = function(p1, deltaPlus);
+    double funcMinus = function(p1, deltaMinus);
+    return (funcPlus - funcMinus)/(2.0*delta_);
 }
 
 #endif // IONICLIQUID_HPP

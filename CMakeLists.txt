@@ -28,6 +28,7 @@ option(ENABLE_CXX11_SUPPORT    "Enable C++11 compiler support"                  
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_SOURCE_DIR}/cmake
+    ${CMAKE_SOURCE_DIR}/cmake/build-info
     ${CMAKE_SOURCE_DIR}/cmake/compilers
     ${CMAKE_SOURCE_DIR}/cmake/math
     ${CMAKE_SOURCE_DIR}/cmake/testing)
@@ -49,7 +50,7 @@ include(MergeStaticLibs)
 # Access to the fortran_enabler macro
 include(FortranEnabler)
 fortran_enabler()
-    
+
 # The Python interpreter is needed to run the MergeStaticLibs.py script
 # If the PYTHON_INTERPRETER variable is not empty, then the user passed a custom version
 # of the interpreter to be used. If that's the case, set PYTHON_EXECUTABLE accordingly and
@@ -64,6 +65,12 @@ endif()
 
 find_package(ZLIB REQUIRED) 
 include_directories(SYSTEM ${ZLIB_INCLUDE_DIRS})
+# librt   : needed for the timers (Linux only)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+   find_package(RT REQUIRED)
+   include_directories(SYSTEM "${LIBRT_INCLUDE_DIR}")
+   link_libraries("${LIBRT_LIBRARIES}")
+endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/external)
@@ -186,6 +193,15 @@ endif()
 # This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
 merge_static_libs(pcm "${libs_to_merge}")
 install(TARGETS pcm ARCHIVE DESTINATION lib)
+add_dependencies(pcm generate_build_info)
 
+# configuration time in UTC
+execute_process(
+    COMMAND ${PYTHON_EXECUTABLE} -c "import datetime; print(datetime.datetime.utcnow())"
+    OUTPUT_VARIABLE CONFIGURATION_TIME
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+include(BuildInfo)
 # Printout useful info
 include(ConfigInfo)

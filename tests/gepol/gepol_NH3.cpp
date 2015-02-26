@@ -36,6 +36,7 @@
 #include <Eigen/Dense>
 
 #include "GePolCavity.hpp"
+#include "LoggerInterface.hpp"
 #include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
 #include "TestingMolecules.hpp"
@@ -50,10 +51,10 @@ struct GePolCavityNH3Test {
         double area = 0.3 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-        // C1
-        Symmetry pGroup = buildGroup(0, 0, 0, 0);
-        cavity = GePolCavity(molec, area, probeRadius, minRadius, pGroup);
+        cavity = GePolCavity(molec, area, probeRadius, minRadius);
+	LOG(cavity);
         cavity.saveCavity("nh3.npz");
+	LOG_TIME;
     }
 };
 
@@ -93,3 +94,4 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityNH3Test)
     actualVolume /= 3;
     BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }
+

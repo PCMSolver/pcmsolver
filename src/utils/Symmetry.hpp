@@ -26,9 +26,10 @@
 #ifndef SYMMETRY_HPP
 #define SYMMETRY_HPP
 
-#include "Config.hpp"
+#include <algorithm>
+#include <cmath>
 
-#include <Eigen/Dense>
+#include "Config.hpp"
 
 /*! \file Symmetry.hpp
  *  \class Symmetry
@@ -73,20 +74,9 @@ public:
 };
 
 /*! Builds Symmetry object.
+ *
+ * \note C1 is built as Symmetry C1 = buildGroup(0, 0, 0, 0);
  */
 Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3);
-
-/*! Returns parity of input integer.
- *      zyx         Parity
- *   0  000    E      1.0
- *   1  001   Oyz    -1.0
- *   2  010   Oxz    -1.0
- *   3  011   C2z     1.0
- *   4  100   Oxy    -1.0
- *   5  101   C2y     1.0
- *   6  110   C2x     1.0
- *   7  111    i     -1.0
- */
-double parity(int i);
 
 #endif // SYMMETRY_HPP

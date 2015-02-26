@@ -104,18 +104,20 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 
     addedSpheres = 0;
     // Number of generators and generators of the point group
-    int nr_gen = pointGroup_.nrGenerators();
-    int gen1 = pointGroup_.generators(0);
-    int gen2 = pointGroup_.generators(1);
-    int gen3 = pointGroup_.generators(2);
+    int nr_gen = molecule_.pointGroup().nrGenerators();
+    int gen1 = molecule_.pointGroup().generators(0);
+    int gen2 = molecule_.pointGroup().generators(1);
+    int gen3 = molecule_.pointGroup().generators(2);
 
     // Go PEDRA, Go!
+    timerON("GePolCavity::generatecavity_cpp");
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
                        xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph,
                        &nts, &ntsirr, &nSpheres_, &addedSpheres,
                        xe, ye, ze, rin, mass,
 		       &averageArea, &probeRadius, &minimalRadius,
                        &nr_gen, &gen1, &gen2, &gen3);
+    timerOFF("GePolCavity::generatecavity_cpp");
 
     // The "intensive" part of updating the spheres related class data members will be of course
     // executed iff addedSpheres != 0
@@ -217,7 +219,7 @@ std::ostream & GePolCavity::printCavity(std::ostream & os)
     os << "Number of spheres = " << nSpheres_ << " [initial = " << nSpheres_ -
        addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
     os << "Number of finite elements = " << nElements_;
-    if (pointGroup_.nrGenerators() != 0) {
+    if (molecule_.pointGroup().nrGenerators() != 0) {
         os << "\nNumber of irreducible finite elements = " << nIrrElements_;
     }
     /*

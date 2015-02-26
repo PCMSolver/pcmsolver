@@ -28,6 +28,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -69,5 +70,25 @@ private:
     std::string colour_;
     std::ostream & printObject(std::ostream & os);
 };
+
+/*! \fn inline void transfer_spheres(const std::vector<Sphere> & spheres, Eigen::Matrix3Xd & sphereCenter, Eigen::VectorXd & sphereRadius)
+ *  \brief Transfer info from std::vector<Sphere> to Eigen objects.
+ *  \param[in] spheres list of spheres as std::vector<Sphere>
+ *  \param[out] sphereCenter sphere centers as Eigen::Matrix3Xd (xyz * nSpheres)
+ *  \param[out] sphereRadius sphere radii as Eigen::VectorXd
+ *
+ *  This is used in the Cavity.hpp constructor
+ */
+inline void transfer_spheres(const std::vector<Sphere> & spheres,
+                             Eigen::Matrix3Xd & sphereCenter, Eigen::VectorXd & sphereRadius)
+{
+    size_t nSpheres = spheres.size();
+    sphereCenter.resize(Eigen::NoChange, nSpheres);
+    sphereRadius.resize(nSpheres);
+    for (size_t i = 0; i < nSpheres; ++i) {
+        sphereCenter.col(i) = spheres[i].center();
+        sphereRadius(i) = spheres[i].radius();
+    }
+}
 
 #endif // SPHERE_HPP

@@ -30,7 +30,6 @@
 
 #include "Config.hpp"
 
-
 class Cavity;
 
 #include "IGreensFunction.hpp"
@@ -48,15 +47,14 @@ class PCMSolver
 protected:
     IGreensFunction * greenInside_;
     IGreensFunction * greenOutside_;
-    bool allocated;
+    bool allocated_;
     virtual std::ostream & printSolver(std::ostream & os) = 0;
 public:
     PCMSolver() {}
-    PCMSolver(IGreensFunction * gfInside,
-              IGreensFunction * gfOutside) : greenInside_(gfInside), greenOutside_(gfOutside),
-        allocated(true) {}
+    PCMSolver(IGreensFunction * gfInside, IGreensFunction * gfOutside)
+            : greenInside_(gfInside), greenOutside_(gfOutside), allocated_(true) {}
     virtual ~PCMSolver() {
-        if (allocated) {
+        if (allocated_) {
             delete greenInside_;
             delete greenOutside_;
         }
@@ -69,21 +67,18 @@ public:
         return greenOutside_;
     }
 
-    /*! \brief Calculation of the PCM matrix.
+    /*! \brief Calculation of the PCM matrix, using the static permittivity.
      *  \param[in] cavity the cavity to be used.
      */
     virtual void buildSystemMatrix(const Cavity & cavity) = 0;
     /*! \brief Computation of ASC given the MEP.
-    *  \param[in] potential the vector containing the MEP at cavity points.
+     *  \param[in] potential the vector containing the MEP at cavity points.
      *  \param[out] charge the vector containing the ASC at cavity points.
      *  \param[in] irrep the irreducible representation of the MEP and ASC.
      *
      *  Given the MEP for a certain irrep, computes the corresponding ASC.
-     *  By default, we expect the totally symmetric irrep to be needed,
-     *  as in energy calculations..
      */
-    virtual void compCharge(const Eigen::VectorXd & potential, Eigen::VectorXd & charge,
-                            int irrep = 0) = 0;
+    virtual void computeCharge(const Eigen::VectorXd &potential, Eigen::VectorXd &charge, int irrep = 0) = 0;
     friend std::ostream & operator<<(std::ostream & os, PCMSolver & solver) {
         return solver.printSolver(os);
     }

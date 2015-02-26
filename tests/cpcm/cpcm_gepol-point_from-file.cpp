@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolRestart)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon}
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;

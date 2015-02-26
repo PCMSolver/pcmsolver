@@ -33,6 +33,8 @@
 
 #include "Getkw.h"
 
+#include "CavityData.hpp"
+#include "GreenData.hpp"
 #include "InputManager.hpp"
 #include "Molecule.hpp"
 #include "Solvent.hpp"
@@ -48,6 +50,7 @@
  *   input ---> parsed input (Python script) ---> Input object (contains all the input data)
  *  Definition of input parameters is to be done in the Python script and in this class.
  *  They must be specified as private data members with public accessor methods (get-ters).
+ *  Most of the data members are anyway accessed through the input wrapping struct-s
  *  In general, no mutator methods (set-ters) should be needed, exceptions to this rule
  *  should be carefully considered.
  */
@@ -62,20 +65,17 @@ public:
     /// Constructor from host input structs
     Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
 
-    // Accessor methods
+    /// Accessor methods
+
+    /// Top-level section input
     std::string units() { return units_; }
     int CODATAyear() { return CODATAyear_; }
-    // Cavity section input
-    std::string cavityFilename() { return cavFilename_; }
+    /// @}
+
+    /// Cavity section input
     std::string cavityType() { return type_; }
-    int patchLevel() { return patchLevel_; }
-    double coarsity() { return coarsity_; }
-    double area() { return area_; }
-    double minDistance() { return minDistance_; }
-    int derOrder() { return derOrder_; }
     bool scaling() { return scaling_; }
     std::string radiiSet() { return radiiSet_; }
-    double minimalRadius() { return minimalRadius_; }
     std::string mode() { return mode_; }
     std::vector<int> atoms() { return atoms_; }
     int atoms(int i) { return atoms_[i]; }
@@ -86,25 +86,32 @@ public:
     Molecule molecule() { return molecule_; }
     /// This method sets the molecule and the list of spheres
     void molecule(const Molecule & m) { molecule_ = m; spheres_ = molecule_.spheres(); }
-    // Medium section input
+    /// @}
+
+    /// Medium section input
     Solvent solvent() { return solvent_; }
     bool fromSolvent() { return hasSolvent_; }
     std::string solverType() { return solverType_; }
     int equationType() { return equationType_; }
     double correction() { return correction_; }
     bool hermitivitize() { return hermitivitize_; }
-    double probeRadius() { return probeRadius_; }
+    /// @}
+
+    /// Green's functin section input
     std::string greenInsideType() { return greenInsideType_; }
     std::string greenOutsideType() { return greenOutsideType_; }
-    int derivativeInsideType() { return derivativeInsideType_; }
-    int derivativeOutsideType() { return derivativeOutsideType_; }
-    double epsilonInside() { return epsilonInside_; }
-    double epsilonOutside() { return epsilonOutside_; }
-    double epsilonReal() { return epsilonReal_; }
-    double epsilonImaginary() { return epsilonImaginary_; }
-    std::vector<double> spherePosition() { return spherePosition_; }
-    double sphereRadius() { return sphereRadius_; }
+    /// @}
+
+    /// Keeps track of who did the parsing: the API or the host program
     std::string providedBy() { return providedBy_; }
+
+    /// Get-ters for input wrapping structs
+    cavityData cavityParams();
+    greenData insideGreenParams();
+    greenData outsideStaticGreenParams();
+    greenData outsideDynamicGreenParams();
+    /// @}
+
     /// Operators
     /// operator<<
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
@@ -180,6 +187,8 @@ private:
     bool hermitivitize_;
     /// Solvent probe radius
     double probeRadius_;
+    /// Type of integrator for the diagonal of the boundary integral operators
+    std::string integratorType_;
     /// The Green's function type inside the cavity
     std::string greenInsideType_;
     /// The Green's function type outside the cavity
@@ -190,8 +199,10 @@ private:
     int derivativeOutsideType_;
     /// Permittivity inside the cavity
     double epsilonInside_;
-    /// Permittivity outside the cavity
-    double epsilonOutside_;
+    /// Static permittivity outside the cavity
+    double epsilonStaticOutside_;
+    /// Dynamic permittivity outside the cavity
+    double epsilonDynamicOutside_;
     /// Real part of the metal NP permittivity
     double epsilonReal_;
     /// Imaginary part of the metal NP permittivity
@@ -202,6 +213,14 @@ private:
     double sphereRadius_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
+    /// Input wrapping struct for the cavity
+    cavityData cavData_;
+    /// Input wrapping struct for the Green's function inside
+    greenData insideGreenData_;
+    /// Input wrapping struct for the Green's function outside (static permittivity)
+    greenData outsideStaticGreenData_;
+    /// Input wrapping struct for the Green's function outside (dynamic permittivity)
+    greenData outsideDynamicGreenData_;
 };
 
 /*!

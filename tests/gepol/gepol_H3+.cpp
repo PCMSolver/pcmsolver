@@ -44,13 +44,11 @@ struct GePolCavityH3Test {
     GePolCavity cavity;
     GePolCavityH3Test() { SetUp(); }
     void SetUp() {
+	Molecule molec = H3<0>();
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = H3();
-        // C1
-        Symmetry pGroup = buildGroup(0, 0, 0, 0);
-        cavity = GePolCavity(molec, area, probeRadius, minRadius, pGroup);
+        cavity = GePolCavity(molec, area, probeRadius, minRadius);
         cavity.saveCavity("h3+.npz");
     }
 };

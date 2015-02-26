@@ -60,9 +60,7 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     double area = 0.4;
     double probeRadius = 0.0;
     double minRadius = 100.0;
-    // C1
-    Symmetry group = buildGroup(0, 0, 0, 0);
-    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, group);
+    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
     cavity.saveCavity("nh3.npz");
 
     CollocationIntegrator * diag = new CollocationIntegrator();
@@ -91,7 +89,7 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon + correction]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.compCharge(fake_mep, fake_asc);
+    solver.computeCharge(fake_mep, fake_asc);
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) /
                       (permittivity + correction);
     double totalFakeASC = fake_asc.sum();

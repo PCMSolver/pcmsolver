@@ -485,11 +485,14 @@ void setupInput(bool from_host)
     } else {
 	    parsedInput = boost::make_shared<Input>(Input("@pcmsolver.inp"));
     }
+    std::string _mode = parsedInput->mode();
     // The only thing we can't create immediately is the molecule
     // from which the cavity is to be built.
-    Molecule molec;
-    initMolecule(molec);
-    parsedInput->molecule(molec);
+    if (_mode != "EXPLICIT") {
+       Molecule molec;
+       initMolecule(molec);
+       parsedInput->molecule(molec);
+    }
 }
 
 void initCavity()

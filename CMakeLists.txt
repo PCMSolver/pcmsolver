@@ -9,11 +9,11 @@ endif()
 #  Declare project name and programming languages
 #
 project(PCMSolver CXX C Fortran)
-#  
-#  Options  
+#
+#  Options
 #   There still is nothing going on inside the code regarding MPI and OpenMP!!
 #
-option(ENABLE_MPI              "Enable MPI parallelization"                                       OFF) 
+option(ENABLE_MPI              "Enable MPI parallelization"                                       OFF)
 option(ENABLE_OPENMP           "Enable OpenMP parallelization"                                    OFF)
 option(ENABLE_VECTORIZATION    "Enable vectorization"                                             OFF)
 option(ENABLE_TESTS            "Enable compilation of unit tests"                                 OFF)
@@ -45,7 +45,6 @@ include(PerTargetCompilerFlags)
 include(ConfigDocumentation)
 include(ConfigExternal)
 include(GenericMacros)
-include(ConfigGitRevision) # Has to come after ConfigVersion.cmake
 include(MergeStaticLibs)
 # Access to the fortran_enabler macro
 include(FortranEnabler)
@@ -61,9 +60,9 @@ else()
    set(PYTHONINTERP_FOUND TRUE)
    set(PYTHON_EXECUTABLE "${PYTHON_INTERPRETER}")
    find_package(PythonInterp 2.4 REQUIRED)
-endif()	
+endif()
 
-find_package(ZLIB REQUIRED) 
+find_package(ZLIB REQUIRED)
 include_directories(SYSTEM ${ZLIB_INCLUDE_DIRS})
 # librt   : needed for the timers (Linux only)
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -104,7 +103,7 @@ endif()
 include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
 if(ENABLE_EIGEN_MKL)
-   message(STATUS "ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3") 
+   message(STATUS "ENABLE_EIGEN_MKL option requires at least Eigen 3.1.0 and Intel MKL 10.3")
    message(STATUS "   Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
    include(ConfigMath)
    set(EIGEN_USE_MKL_ALL ON)
@@ -130,7 +129,7 @@ if(BUILD_CUSTOM_BOOST)
 endif()
 set(GETKW_PYTHON_DIR ${EXTERNAL_PROJECT_INSTALL_PREFIX}/share/libgetkw)
 
-set(TaylorCMakeArgs 
+set(TaylorCMakeArgs
    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
    -DCMAKE_INSTALL_PREFIX=${EXTERNAL_PROJECT_INSTALL_PREFIX}
    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -149,7 +148,7 @@ ExternalProject_Add(libtaylor
 configure_files()
 
 # To be included as system headers
-include_directories(SYSTEM 
+include_directories(SYSTEM
 		    ${CMAKE_SOURCE_DIR}/external
                     ${EXTERNAL_PROJECT_INSTALL_PREFIX}/include)
 # To be included as project headers
@@ -163,28 +162,28 @@ include_directories(${header_dir_list})
 link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
 
-install(FILES 
-	${CMAKE_BINARY_DIR}/bin/pcmsolver.py 
+install(FILES
+	${CMAKE_BINARY_DIR}/bin/pcmsolver.py
 	DESTINATION bin)
 
-install(FILES 
-	${CMAKE_BINARY_DIR}/include/Config.hpp 
+install(FILES
+	${CMAKE_BINARY_DIR}/include/Config.hpp
 	DESTINATION include)
 
-install(FILES 
-	${CMAKE_BINARY_DIR}/include/FCMangle.hpp 
+install(FILES
+	${CMAKE_BINARY_DIR}/include/FCMangle.hpp
 	DESTINATION include)
 
-install(FILES 
-	${CMAKE_BINARY_DIR}/include/Includer.hpp 
+install(FILES
+	${CMAKE_BINARY_DIR}/include/Includer.hpp
 	DESTINATION include)
 
 if(ENABLE_TESTS)
    include(ConfigFramework)
    include(TestingMacros)
-   
+
    setup_boosttest()
-   
+
    enable_testing()
    add_subdirectory(tests) # This must come last!!
 endif()

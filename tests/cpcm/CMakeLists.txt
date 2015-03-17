@@ -5,13 +5,5 @@ add_boosttest(cpcm_gepol-point "${list_of_libraries}" "${external_libraries}")
 add_boosttest(cpcm_gepol-NH3 "${list_of_libraries}" "${external_libraries}")
 add_boosttest(cpcm_gepol-point_from-file "${list_of_libraries}" "${external_libraries}")
 add_boosttest(cpcm_gepol-NH3_from-file "${list_of_libraries}" "${external_libraries}")
-
-if(DEVELOPMENT_CODE)
-    set(list_of_libraries solver green bi_operators cavity tsless pedra utils)
-    add_boosttest(cpcm_tsless-point "${list_of_libraries}" "${external_libraries}")
-    add_boosttest(cpcm_tsless-NH3 "${list_of_libraries}" "${external_libraries}")
-endif()
-
-list(APPEND external_libraries ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 add_boosttest(cpcm_symmetry "${list_of_libraries}" "${external_libraries}")
 

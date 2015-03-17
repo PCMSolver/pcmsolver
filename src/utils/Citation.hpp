@@ -51,24 +51,9 @@ inline std::string citation_message()
     rest << "   Main authors: R. Di Remigio, L. Frediani, K. Mozgawa" << std::endl;
     rest << "    With contributions from:" << std::endl;
     rest << "     R. Bast            (CMake framework)" << std::endl;
-#if defined (DEVELOPMENT_CODE)
-    rest << "     S. Corni           (Metal sphere Green's function)" << std::endl;
-#endif
     rest << "     U. Ekstroem        (automatic differentiation library)" << std::endl;
-#if defined (WAVELET_DEVELOPMENT)
-    rest << "     H. Harbrecht       (wavelet cavity and solvers libraries)" <<
-         std::endl;
-#endif
     rest << "     J. Juselius        (input parsing library and CMake framework)" <<
          std::endl;
-#if defined (TSLESS_DEVELOPMENT)
-    rest << "     C. S. Pomelli      (TsLess cavity library)" << std::endl;
-#endif
-#if defined (WAVELET_DEVELOPMENT)
-    rest << "     M. Randrianarivony (wavelet cavity library)" << std::endl;
-    rest << "     V. Weijo           (wavelet libraries and cavity visualization scripts)"
-         << std::endl;
-#endif
     rest << "   Theory: - J. Tomasi, B. Mennucci and R. Cammi:" << std::endl;
     rest << "            \"Quantum Mechanical Continuum Solvation Models\", Chem. Rev., 105 (2005) 2999"
          << std::endl;

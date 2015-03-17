@@ -21,7 +21,7 @@ macro(add_external _project)
     else()
         set(UPDATE_COMMAND echo)
     endif()
-    
+
     add_custom_target(
         check_external_timestamp_${_project}
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/cmake/check_external_timestamp.py
@@ -32,7 +32,7 @@ macro(add_external _project)
 
     # Set the testing command
     set(_testing_command "${ARGV1}")
-    # Set the external project args. 
+    # Set the external project args.
     # In case no argument was passed for this, use the global variable
     set(_external_project_cmake_args "")
     if("${ARGV2}" STREQUAL "")
@@ -40,9 +40,9 @@ macro(add_external _project)
     else()
 	    set(_external_project_cmake_args "${ARGV2}")
     endif()
-    
+
     if("${_testing_command}" STREQUAL "")
-       ExternalProject_Add(${_project}                                 
+       ExternalProject_Add(${_project}
            DOWNLOAD_COMMAND ${UPDATE_COMMAND}
            DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
            SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/${_project}
@@ -55,7 +55,7 @@ macro(add_external _project)
     else()
        # For unfathomable reasons, CMake expects the TEST_COMMAND to be a ;-separated list...
        separate_arguments(_testing_command)
-       ExternalProject_Add(${_project}                                 
+       ExternalProject_Add(${_project}
            DOWNLOAD_COMMAND ${UPDATE_COMMAND}
            DOWNLOAD_DIR ${CMAKE_SOURCE_DIR}
            SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/${_project}
@@ -68,7 +68,7 @@ macro(add_external _project)
 	   TEST_COMMAND "${_testing_command}"
 	   LOG_TEST 1
            )
-    endif()	    
+    endif()
 
     include_directories(${CMAKE_BINARY_DIR}/external/${_project}-build)
     link_directories(${CMAKE_BINARY_DIR}/external/lib)

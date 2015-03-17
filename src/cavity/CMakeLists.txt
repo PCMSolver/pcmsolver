@@ -1,12 +1,7 @@
 set(headers_list "")
 # Get headers with .hpp extension
 get_hpp_headers(headers_list)
-# If you want to remove some headers specify them explictly here
-if(DEVELOPMENT_CODE)
-	list(REMOVE_ITEM headers_list "")
-else()
-	list(REMOVE_ITEM headers_list "TsLessCavity.hpp" "WaveletCavity.hpp")
-endif()	
+list(REMOVE_ITEM headers_list "")
 # Sort alphabetically
 list(SORT headers_list)
 set(to_includer "${headers_list}")
@@ -18,11 +13,7 @@ set(sources_list "")
 # Get sources with .cpp extension
 get_cpp_sources(sources_list)
 # If you want to remove some sources specify them explictly here
-if(DEVELOPMENT_CODE)
-	list(REMOVE_ITEM sources_list "")
-else()
-	list(REMOVE_ITEM sources_list "TsLessCavity.cpp" "WaveletCavity.cpp")
-endif()	
+list(REMOVE_ITEM sources_list "")
 
 # Write list of files to be passed to cloc for counting lines of code.
 # Only files that are actually compiled are counted.
@@ -32,14 +23,10 @@ write_to_cloc_list("${to_count}")
 # Build static library
 add_library(cavity STATIC ${sources_list})
 set(libs_to_merge cavity ${libs_to_merge} PARENT_SCOPE)
-if(DEVELOPMENT_CODE)
-        add_dependencies(cavity pedra tsless wavcav wem)
-else()
-        add_dependencies(cavity pedra)
-endif()
+add_dependencies(cavity pedra)
 if(BUILD_CUSTOM_BOOST)
 	add_dependencies(cavity custom_boost)
-endif()	
+endif()
 install(TARGETS cavity ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list

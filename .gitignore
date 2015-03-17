@@ -1,7 +1,6 @@
 *~
 *#
 *.out
-external/libgetkw
 output*
 release*
 Release*

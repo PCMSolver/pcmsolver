@@ -12,18 +12,7 @@
 
 namespace logging
 {
-    /*! \brief Returns date and time
-     */                                      
-    std::string getTime() {
-        std::string time_str;
-        time_t raw_time;
-                                          
-        std::time(&raw_time);
-        time_str = std::ctime(&raw_time);
-                                          
-        // Without the newline character
-        return time_str;
-    }
+    std::string getTime();
 
     template<typename logPolicy>
     class logger
@@ -33,7 +22,7 @@ namespace logging
         std::stringstream logStream_;
         logPolicy * policy_;
         std::mutex writeMutex_;
-    
+
         /*! @name Core printing functionality
          *
          *  A variadic template is used, we specify the version
@@ -60,18 +49,18 @@ namespace logging
     public:
         /*! Constructor
         *  \param[in] name name for the log file
-	*  
+	*
 	*  The build parameters are logged first
          */
-        logger(const std::string & name, printLevel print = coarse) 
-		: globalPrintLevel_(print), policy_(new logPolicy) 
+        logger(const std::string & name, printLevel print = coarse)
+		: globalPrintLevel_(print), policy_(new logPolicy)
 	{
             if(!policy_) {
                 throw std::runtime_error("LOGGER: Unable to create the logger instance");
             }
             policy_->open_ostream(name);
 	    // Write the logfile header
-	    logStream_ << "\t\tPCMSolver execution log\n" 
+	    logStream_ << "\t\tPCMSolver execution log\n"
 		       << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
         }
         /// Destructor
@@ -88,13 +77,27 @@ namespace logging
         template<printLevel printLvl, typename...Args>
         void print(Args...args) {
 	    if (globalPrintLevel_ >= printLvl) {
-               writeMutex_.lock();   
+               writeMutex_.lock();
                printImpl(args...);
                writeMutex_.unlock();
 	    }
         }
 
     };
+
+    /*! \brief Returns date and time
+     */
+    std::string getTime() {
+        std::string time_str;
+        time_t raw_time;
+
+        std::time(&raw_time);
+        time_str = std::ctime(&raw_time);
+
+        // Without the newline character
+        return time_str;
+    }
+
 } // close namespace logging
 
 #endif // LOGGER_HPP

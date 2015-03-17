@@ -21,7 +21,9 @@ add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)
 # This directory contains source file for executables
-add_subdirectory(bin)
+if(BUILD_STANDALONE)
+   add_subdirectory(bin)
+endif()
 
 # We need to export header_dir_list one level up
 set(header_dir_list ${header_dir_list} PARENT_SCOPE)

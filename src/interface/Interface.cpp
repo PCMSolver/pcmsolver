@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -63,14 +63,6 @@ typedef std::pair<std::string, SharedSurfaceFunction > SharedSurfaceFunctionPair
 // The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
 // then maybe manage them through "objectification" of this interface.
 Cavity        * _cavity = NULL;
-#if defined (DEVELOPMENT_CODE)
-WaveletCavity * _waveletCavity = NULL;
-
-PWCSolver * _PWCSolver = NULL;
-PWCSolver * _noneqPWCSolver = NULL;
-PWLSolver * _PWLSolver = NULL;
-PWLSolver * _noneqPWLSolver = NULL;
-#endif
 PCMSolver * _solver = NULL;
 PCMSolver * _noneqSolver = NULL;
 bool noneqExists = false;
@@ -245,14 +237,14 @@ extern "C" void load_surface_function(const char * name)
     std::string fname = functionName + ".npy";
     cnpy::NpyArray raw_surfFunc = cnpy::npy_load(fname);
     int dim = raw_surfFunc.shape[0];
-    if (dim != _cavity->size()) { 
+    if (dim != _cavity->size()) {
         throw std::runtime_error("Inconsistent dimension of loaded surface function!");
     } else {
-	Eigen::VectorXd values = getFromRawBuffer<double>(dim, 1, raw_surfFunc.data); 
+	Eigen::VectorXd values = getFromRawBuffer<double>(dim, 1, raw_surfFunc.data);
         SharedSurfaceFunction func( new SurfaceFunction(functionName, dim, values) );
 	// Append to global map
         SharedSurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
-        if ( iter == functions.end()  ||  iter->first != functionName ) {                                   
+        if ( iter == functions.end()  ||  iter->first != functionName ) {
             if ( iter != functions.begin() ) --iter;
             SharedSurfaceFunctionPair insertion = SharedSurfaceFunctionMap::value_type(functionName, func);
             iter = functions.insert(iter, insertion);
@@ -498,19 +490,8 @@ void setupInput(bool from_host)
 void initCavity()
 {
     // Get the right cavity from the Factory
-    // TODO: since WaveletCavity extends cavity in a significant way, use of the Factory Method design pattern does not work for wavelet cavities. (8/7/13)
     std::string modelType = parsedInput->solverType();
-#if defined (DEVELOPMENT_CODE)    
-    if (modelType == "WAVELET" || modelType == "LINEAR") {
-        // Both PWC and PWL require a WaveletCavity
-        initWaveletCavity();
-    } else {
-        // This means in practice that the CavityFactory is now working only for GePol.
-        _cavity = CavityFactory::TheCavityFactory().createCavity(parsedInput->cavityType(), parsedInput->cavityParams());
-    }
-#else    
     _cavity = CavityFactory::TheCavityFactory().createCavity(parsedInput->cavityType(), parsedInput->cavityParams());
-#endif    
 }
 
 void initSolver()
@@ -518,45 +499,20 @@ void initSolver()
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
-    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(), 
+    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(),
 		                                              parsedInput->insideGreenParams());
     // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
-    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(), 
+    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(),
 		                                               parsedInput->outsideStaticGreenParams());
     // And all this to finally create the solver!
     std::string modelType = parsedInput->solverType();
-    solverData solverInput(gfInside, gfOutside, 
+    solverData solverInput(gfInside, gfOutside,
 		           parsedInput->correction(),
-			   parsedInput->equationType(), 
+			   parsedInput->equationType(),
 			   parsedInput->hermitivitize());
 
-    // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
-    // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
-    // (...not our fault, but should remedy somehow)
-#if defined (DEVELOPMENT_CODE)    
-    if (modelType == "WAVELET") {
-        _PWCSolver = new PWCSolver(gfInside, gfOutside);
-        _PWCSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_PWCSolver->getQuadratureLevel(), _PWCSolver->getT_(),
-                                     false); // WTF is happening here???
-        _cavity = _waveletCavity;
-        _solver = _PWCSolver;
-    } else if (modelType == "LINEAR") {
-        _PWLSolver = new PWLSolver(gfInside, gfOutside);
-        _PWLSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_PWLSolver->getQuadratureLevel(),_PWLSolver->getT_(),
-                                     true); // WTF is happening here???
-        _cavity = _waveletCavity;
-        _solver = _PWLSolver;
-    } else {
-        // This means that the factory is properly working only for IEFSolver and CPCMSolver
-        _solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
-        _solver->buildSystemMatrix(*_cavity);
-    }
-#else
     _solver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
     _solver->buildSystemMatrix(*_cavity);
-#endif    
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of
     // the WaveletCavity on the wavelet solvers it has to be done here...
@@ -568,45 +524,20 @@ void initNonEqSolver()
     GreensFunctionFactory & factory = GreensFunctionFactory::TheGreensFunctionFactory();
     // Get the input data for generating the inside & outside Green's functions
     // INSIDE
-    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(), 
+    IGreensFunction * gfInside = factory.createGreensFunction(parsedInput->greenInsideType(),
 		                                              parsedInput->insideGreenParams());
     // OUTSIDE, reuse the variables holding the parameters for the Green's function inside.
-    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(), 
+    IGreensFunction * gfOutside = factory.createGreensFunction(parsedInput->greenOutsideType(),
 		                                               parsedInput->outsideDynamicGreenParams());
     // And all this to finally create the solver!
     std::string modelType = parsedInput->solverType();
-    solverData solverInput(gfInside, gfOutside, 
+    solverData solverInput(gfInside, gfOutside,
 		           parsedInput->correction(),
-			   parsedInput->equationType(), 
+			   parsedInput->equationType(),
 			   parsedInput->hermitivitize());
 
-    // This thing is rather ugly I admit, but will be changed (as soon as wavelet PCM is working with DALTON)
-    // it is needed because: 1. comment above on cavities; 2. wavelet cavity and solver depends on each other
-    // (...not our fault, but should remedy somehow)
-#if defined (DEVELOPMENT_CODE)    
-    if (modelType == "WAVELET") {
-        _noneqPWCSolver = new PWCSolver(gfInside, gfOutside);
-        _noneqPWCSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_noneqPWCSolver->getQuadratureLevel(), _noneqPWCSolver->getT_(),
-                                     false); // WTF is happening here???
-        _cavity = _waveletCavity;
-        _noneqSolver = _noneqPWCSolver;
-    } else if (modelType == "LINEAR") {
-        _noneqPWLSolver = new PWLSolver(gfInside, gfOutside);
-        _noneqPWLSolver->buildSystemMatrix(*_waveletCavity);
-        _waveletCavity->uploadPoints(_noneqPWLSolver->getQuadratureLevel(), _noneqPWLSolver->getT_(),
-                                     true); // WTF is happening here???
-        _cavity = _waveletCavity;
-        _noneqSolver = _noneqPWLSolver;
-    } else {
-        // This means that the factory is properly working only for IEFSolver and CPCMSolver
-        _noneqSolver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
-        _noneqSolver->buildSystemMatrix(*_cavity);
-    }
-#else
     _noneqSolver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
     _noneqSolver->buildSystemMatrix(*_cavity);
-#endif    
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of
     // the WaveletCavity on the wavelet solvers it has to be done here...
@@ -631,7 +562,7 @@ void initMolecule(Molecule & molecule_)
     int nuclei;
     collect_nctot(&nuclei);
     // 2. position and charges of atomic centers
-    Eigen::Matrix3Xd centers; 
+    Eigen::Matrix3Xd centers;
     centers.resize(Eigen::NoChange, nuclei);
     Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
     double * chg = charges.data();
@@ -666,7 +597,7 @@ void initMolecule(Molecule & molecule_)
     // the spheres list might need postprocessing
     std::string _mode = parsedInput->mode();
     if ( _mode == "ATOMS" ) {
-       initSpheresAtoms(centers, spheres);	 
+       initSpheresAtoms(centers, spheres);
     }
     // 5. molecular point group
     int nr_gen;
@@ -715,23 +646,6 @@ void initSpheresImplicit(const Eigen::VectorXd & charges_,
         spheres_.push_back(Sphere(sphereCenter_.col(i), radius));
     }
 }
-
-#if defined (DEVELOPMENT_CODE)
-void initWaveletCavity()
-{
-    // Just throw at this point if the user asked for a cavity for a single sphere...
-    // the wavelet code will die without any further notice anyway
-    if (spheres.size() == 1) {
-        throw std::runtime_error("Wavelet cavity generator cannot manage a single sphere...");
-    }
-
-    _waveletCavity = new WaveletCavity(parsedInput->spheres(), 
-		                       parsedInput->cavityParams().probeRadius_, 
-				       parsedInput->cavityParams().patchLevel_, 
-				       parsedInput->cavityParams().coarsity_);
-    _waveletCavity->readCavity("molec_dyadic.dat");
-}
-#endif
 
 bool surfaceFunctionExists(const std::string & name)
 {

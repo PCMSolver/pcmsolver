@@ -77,7 +77,7 @@ private:
         if (active_ != 0) {
             os << " These timers were not shut down:" << std::endl;
             timersPair t_pair;
-            BOOST_FOREACH(t_pair, timers_) {                                
+            BOOST_FOREACH(t_pair, timers_) {
                 os << " - " << t_pair.first << std::endl;
             }
             os << " Reported timings might be unreliable!" << std::endl;
@@ -139,20 +139,6 @@ inline void timerON(const std::string & checkpoint_name)
     Timer::TheTimer().insertTimer(checkpoint);
 }
 
-/*! \fn inline void timerON(char * chkpt_name)
- *  \param[in] chkpt_name name of the checkpoint to be timed
- *  \brief Starts a timer with the given name
- *
- *  A timer is added to the timers_ map of the Timer object.
- */
-inline void timerON(char * chkpt_name)
-{
-    std::string checkpoint_name(chkpt_name);
-    boost::timer::cpu_timer checkpoint_timer;
-    timersPair checkpoint = timersMap::value_type(checkpoint_name, checkpoint_timer);
-    Timer::TheTimer().insertTimer(checkpoint);
-}
-
 /*! \fn inline void timerOFF(const std::string & checkpoint_name)
  *  \param[in] checkpoint_name name of the checkpoint to be timed
  *  \brief Stops a timer with the given name
@@ -167,21 +153,6 @@ inline void timerOFF(const std::string & checkpoint_name)
     Timer::TheTimer().eraseTimer(checkpoint_name);
 }
 
-/*! \fn inline void timerOFF(char * chkpt_name)
- *  \param[in] chkpt_name name of the checkpoint to be timed
- *  \brief Stops a timer with the given name
- *
- *  The timing results associated with the given timer
- *  are added to the timings_ map of the Timer object,
- *  the timer is then removed from the timers_ map.
- */
-inline void timerOFF(char * chkpt_name)
-{
-    std::string checkpoint_name(chkpt_name);
-    Timer::TheTimer().insertTiming(checkpoint_name);
-    Timer::TheTimer().eraseTimer(checkpoint_name);
-}
-
 /*! \fn inline void timerDONE(const std::string & fname)
  *  \param[in] fname name for the timing report file
  */
@@ -189,17 +160,6 @@ inline void timerDONE(const std::string & fname)
 {
     std::ofstream timing_report;
     timing_report.open(fname, std::ios::out);
-    timing_report << Timer::TheTimer() << std::endl;
-    timing_report.close();
-}
-
-/*! \fn inline void timerDONE(char * fname)
- *  \param[in] fname name for the timing report file
- */
-inline void timerDONE(char * fname)
-{
-    std::ofstream timing_report;
-    timing_report.open(std::string(fname), std::ios::out);
     timing_report << Timer::TheTimer() << std::endl;
     timing_report.close();
 }

@@ -43,7 +43,7 @@ include(CheckIncludeFile)
 include(ConfigCompilerFlags)
 include(PerTargetCompilerFlags)
 include(ConfigDocumentation)
-include(ConfigExternal)
+include(ExternalProject)
 include(GenericMacros)
 include(MergeStaticLibs)
 # Access to the fortran_enabler macro
@@ -119,9 +119,17 @@ set(GetkwCMakeArgs
    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
    -DBOOST_INCLUDEDIR=${Boost_INCLUDE_DIRS}
-   -DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS})
+   -DBOOST_LIBRARYDIR=${Boost_LIBRARY_DIRS}
+   )
 
-add_external(libgetkw "" "${GetkwCMakeArgs}")
+ExternalProject_Add(libgetkw
+	PREFIX ${CMAKE_SOURCE_DIR}/external
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/libgetkw
+	BINARY_DIR ${CMAKE_BINARY_DIR}/external/libgetkw-build
+    STAMP_DIR ${CMAKE_BINARY_DIR}/external/libgetkw-stamp
+    TMP_DIR ${CMAKE_BINARY_DIR}/external/libgetkw-tmp
+    INSTALL_DIR ${CMAKE_BINARY_DIR}/external
+    CMAKE_ARGS ${GetkwCMakeArgs})
 # In case we need to build Boost, let libgetkw depend on custom_boost
 # so that's the first thing it's done
 if(BUILD_CUSTOM_BOOST)
@@ -140,10 +148,10 @@ ExternalProject_Add(libtaylor
 	PREFIX ${CMAKE_SOURCE_DIR}/external
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/libtaylor
 	BINARY_DIR ${CMAKE_BINARY_DIR}/external/libtaylor-build
-        STAMP_DIR ${CMAKE_BINARY_DIR}/external/libtaylor-stamp
-        TMP_DIR ${CMAKE_BINARY_DIR}/external/libtaylor-tmp
-        INSTALL_DIR ${CMAKE_BINARY_DIR}/external
-        CMAKE_ARGS ${TaylorCMakeArgs})
+    STAMP_DIR ${CMAKE_BINARY_DIR}/external/libtaylor-stamp
+    TMP_DIR ${CMAKE_BINARY_DIR}/external/libtaylor-tmp
+    INSTALL_DIR ${CMAKE_BINARY_DIR}/external
+    CMAKE_ARGS ${TaylorCMakeArgs})
 
 configure_files()
 

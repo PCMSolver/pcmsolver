@@ -39,6 +39,22 @@
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 
+/*! Returns the ammonia molecule
+ */
+Molecule NH3();
+
+/*! Returns the CH3+ molecule
+ */
+Molecule CH3();
+
+/*! Returns the C2H4 molecule
+ */
+Molecule C2H4();
+
+/*! Returns the benzene molecule
+ */
+Molecule C6H6();
+
 /*! Returns a single dummy atom, centered at the origin and with the given radius
  */
 template <int group>
@@ -94,8 +110,6 @@ Molecule dummy(double radius = 1.0)
     return dummy;
 };
 
-/*! Returns the ammonia molecule
- */
 Molecule NH3()
 {
     int nAtoms = 4;
@@ -266,8 +280,6 @@ Molecule CO2()
     return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
 
-/*! Returns the CH3+ molecule
- */
 Molecule CH3()
 {
     int nAtoms = 4;
@@ -310,8 +322,6 @@ Molecule CH3()
     return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
 
-/*! Returns the C2H4 molecule
- */
 Molecule C2H4()
 {
     int nAtoms = 6;
@@ -364,8 +374,6 @@ Molecule C2H4()
     return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
 
-/*! Returns the benzene molecule
- */
 Molecule C6H6()
 {
     int nAtoms = 12;

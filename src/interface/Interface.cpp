@@ -166,7 +166,7 @@ extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, i
     }
 
     // If it already exists there's no problem, we will pass a reference to its values to
-    _solver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
+    _noneqSolver->computeCharge(iter_pot->second->vector(), iter_chg->second->vector(), *irrep);
     // Renormalization of charges: divide by the number of symmetry operations in the group
     (*iter_chg->second) /= double(_cavity->pointGroup().nrIrrep());
 }
@@ -184,17 +184,18 @@ extern "C" void compute_polarization_energy(double * energy)
         SharedSurfaceFunctionMap::const_iterator iter_ele_pot = functions.find("EleMEP");
         SharedSurfaceFunctionMap::const_iterator iter_ele_chg = functions.find("EleASC");
 
-        double UNN = (*iter_nuc_pot->second) *  (*iter_nuc_chg->second);
-        double UEN = (*iter_ele_pot->second) *  (*iter_nuc_chg->second);
-        double UNE = (*iter_nuc_pot->second) *  (*iter_ele_chg->second);
-        double UEE = (*iter_ele_pot->second) *  (*iter_ele_chg->second);
+        double UNN = (*iter_nuc_pot->second) * (*iter_nuc_chg->second);
+        double UEN = (*iter_ele_pot->second) * (*iter_nuc_chg->second);
+        double UNE = (*iter_nuc_pot->second) * (*iter_ele_chg->second);
+        double UEE = (*iter_ele_pot->second) * (*iter_ele_chg->second);
 
         std::ostringstream out_stream;
         out_stream << "Polarization energy components" << std::endl;
-        out_stream << "   U_ee = " << boost::format("%20.14f") % UEE;
-        out_stream << " , U_en = " << boost::format("%20.14f") % UEN;
-        out_stream << " , U_ne = " << boost::format("%20.14f") % UNE;
-        out_stream << " , U_nn = " << boost::format("%20.14f\n") % UNN;
+        out_stream << "  U_ee = " << boost::format("%20.14f\n") % (UEE / 2.0);
+        out_stream << "  U_en = " << boost::format("%20.14f\n") % (UEN / 2.0);
+        out_stream << "  U_ne = " << boost::format("%20.14f\n") % (UNE / 2.0);
+        out_stream << "  U_nn = " << boost::format("%20.14f\n") % (UNN / 2.0);
+        out_stream << "  U_en - U_ne = " << boost::format("%20.14E\n") % (UEN - UNE);
         printer(out_stream);
 
         *energy = 0.5 * ( UNN + UEN + UNE + UEE );
@@ -397,8 +398,8 @@ extern "C" void clear_surface_function(char * name)
     std::string functionName(name);
 
     SharedSurfaceFunctionMap::const_iterator iter = functions.find(name);
-
-    iter->second->clear();
+    // Clear contents if found
+    if (iter != functions.end() ) iter->second->clear();
 }
 
 extern "C" void append_surface_function(char * name)
@@ -538,10 +539,7 @@ void initNonEqSolver()
 
     _noneqSolver = SolverFactory::TheSolverFactory().createSolver(modelType, solverInput);
     _noneqSolver->buildSystemMatrix(*_cavity);
-    // Always save the cavity in a cavity.npz binary file
-    // Cavity should be saved to file in initCavity(), due to the dependencies of
-    // the WaveletCavity on the wavelet solvers it has to be done here...
-    _cavity->saveCavity();
+    noneqExists = true;
 }
 
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)

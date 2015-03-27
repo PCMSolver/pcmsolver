@@ -135,7 +135,7 @@ else:
 
 # Once the lists of files are ready update the copyright notices
 if fortran_file_l:
-    update_notice_fortan(fortran_file_l)
+    update_notice_fortran(fortran_file_l)
 if c_file_l:
     update_notice_c(c_file_l)
 if h_file_l:

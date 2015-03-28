@@ -159,7 +159,7 @@ inline void timerOFF(const std::string & checkpoint_name)
 inline void timerDONE(const std::string & fname)
 {
     std::ofstream timing_report;
-    timing_report.open(fname, std::ios::out);
+    timing_report.open(fname.c_str(), std::ios::out);
     timing_report << Timer::TheTimer() << std::endl;
     timing_report.close();
 }

@@ -1,6 +1,6 @@
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.11910.png)](http://dx.doi.org/10.5281/zenodo.11910)
 [![Build Status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=release)](https://travis-ci.org/PCMSolver/pcmsolver)
-[![Coverage Status](https://img.shields.io/coveralls/PCMSolver/pcmsolver.svg)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
+[![Coverage Status](https://coveralls.io/repos/PCMSolver/pcmsolver/badge.svg?branch=release)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
 [![Coverity Scan Build](https://scan.coverity.com/projects/3046/badge.svg)](https://scan.coverity.com/projects/3046)
 
 PCMSolver

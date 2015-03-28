@@ -1,53 +1,53 @@
 !pcmsolver_copyright_start
 !       PCMSolver, an API for the Polarizable Continuum Model
 !       Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
-!       
+!
 !       This file is part of PCMSolver.
-! 
-!       PCMSolver is free software: you can redistribute it and/or modify       
+!
+!       PCMSolver is free software: you can redistribute it and/or modify
 !       it under the terms of the GNU Lesser General Public License as published by
 !       the Free Software Foundation, either version 3 of the License, or
 !       (at your option) any later version.
-!                                                                            
+!
 !       PCMSolver is distributed in the hope that it will be useful,
 !       but WITHOUT ANY WARRANTY; without even the implied warranty of
 !       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 !       GNU Lesser General Public License for more details.
-!                                                                            
+!
 !       You should have received a copy of the GNU Lesser General Public License
 !       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
+!
 !       For information on the complete list of contributors to the
 !       PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
 !pcmsolver_copyright_end
 
     module pedra_cavity_derivatives
-    
+
     use pedra_precision
 
     implicit none
 
     public cavder
-    
+
     private
-    
+
     contains
-    
+
     subroutine cavder(nsj, nsjr, icoord, intsph, newsph)
 
 #include "pcm_mxcent.h"
 #include "pcm_nuclei.h"
 #include "pcm_pcmdef.h"
 #include "pcm_pcm.h"
-    
+
     integer(kind=regint_k) :: nsj, nsjr, icoord
     integer(kind=regint_k) :: intsph(mxts, 10), newsph(mxsp, 2)
-    
+
     real(kind=dp), parameter :: d0 = 0.0d0
     integer(kind=regint_k) :: alge(63), casca(10)
     real(kind=dp) :: ddr, ddx, ddy, ddz, der, dr1, dx, dy, dz
     real(kind=dp) :: fact
-    integer(kind=regint_k) :: i, ii, index, k, livel, ll, max, icont, min 
+    integer(kind=regint_k) :: i, ii, index, k, livel, ll, max, icont, min
     integer(kind=regint_k) :: ns1, ns2, nsa, nsub, number
 
 
@@ -75,9 +75,9 @@
         DO II = 1, 63
             ALGE(II) = 0
         end do
-    
+
     !     Costruiamo l'"albero genealogico" della sfera NSA
-    
+
         ALGE(1) = NSA
         ALGE(2) = ABS(NEWSPH(NSA,1))
         ALGE(3) = ABS(NEWSPH(NSA,2))
@@ -94,10 +94,10 @@
         NUMBER = NUMBER * 2
         LIVEL = LIVEL + NUMBER
         IF(NUMBER < 32) go to 510
-    
+
     !     Quando un elemento di ALGE e' = NSJR, costruisce la corrispondente
     !     "cascata" di sfere aggiunte che collega NSJR a NSA
-    
+
         DO 600 LIVEL = 2, 6
             MIN = 2**(LIVEL-1)
             MAX = (2**LIVEL) - 1
@@ -120,11 +120,11 @@
                 DO K = 1, 10
                     IF(CASCA(K) /= 0) ICONT = ICONT + 1
                 end do
-            
+
             !     Costruiamo le derivate composte del raggio e delle coordinate di
             !     NSA (ultimo elemento di CASCA)
             !     rispetto alla coordinata ICOORD di NSJ (primo elemento di CASCA)
-            
+
                 NS1 = CASCA(1)
                 NS2 = CASCA(2)
                 CALL DRRDCN(NS2,ICOORD,NS1,DR1,NEWSPH)
@@ -138,10 +138,10 @@
                     DDZ = D0
                     NS1 = CASCA(I-1)
                     NS2 = CASCA(I)
-                
+
                 !     Derivata del raggio dell'elemento I di CASCA rispetto
                 !     alla coord. ICOORD dell'elemento 1 di CASCA
-                
+
                     CALL DRRDRD(NS2,NS1,DER,NEWSPH)
                     DDR = DER * DR1
                     CALL DRRDCN(NS2,1,NS1,DER,NEWSPH)
@@ -150,10 +150,10 @@
                     DDR = DDR + DER * DY
                     CALL DRRDCN(NS2,3,NS1,DER,NEWSPH)
                     DDR = DDR + DER * DZ
-                
+
                 !     Derivata della coord. X dell'elemento I di CASCA rispetto
                 !     alla coord. ICOORD dell'elemento 1 di CASCA
-                
+
                     CALL DRCNRD(1,NS2,NS1,DER,NEWSPH)
                     DDX = DER * DR1
                     CALL DRCNCN(1,NS2,1,NS1,DER,NEWSPH)
@@ -162,10 +162,10 @@
                     DDX = DDX + DER * DY
                     CALL DRCNCN(1,NS2,3,NS1,DER,NEWSPH)
                     DDX = DDX + DER * DZ
-                
+
                 !     Derivata della coord. Y dell'elemento I di CASCA rispetto
                 !     alla coord. ICOORD dell'elemento 1 di CASCA
-                
+
                     CALL DRCNRD(2,NS2,NS1,DER,NEWSPH)
                     DDY = DER * DR1
                     CALL DRCNCN(2,NS2,1,NS1,DER,NEWSPH)
@@ -174,10 +174,10 @@
                     DDY = DDY + DER * DY
                     CALL DRCNCN(2,NS2,3,NS1,DER,NEWSPH)
                     DDY = DDY + DER * DZ
-                
+
                 !     Derivata della coord. Z dell'elemento I di CASCA rispetto
                 !     alla coord. ICOORD dell'elemento 1 di CASCA
-                
+
                     CALL DRCNRD(3,NS2,NS1,DER,NEWSPH)
                     DDZ = DER * DR1
                     CALL DRCNCN(3,NS2,1,NS1,DER,NEWSPH)
@@ -186,16 +186,16 @@
                     DDZ = DDZ + DER * DY
                     CALL DRCNCN(3,NS2,3,NS1,DER,NEWSPH)
                     DDZ = DDZ + DER * DZ
-                
+
                     DR1 = DDR
                     DX = DDX
                     DY = DDY
                     DZ = DDZ
                 800 end do
-            
+
             !     Se NS e' una sfera aggiunta, memorizza le derivate del raggio
             !     e delle coordinate del centro:
-            
+
                 DERRAD(NSA,NSJ,ICOORD) = DR1
                 DERCEN(NSA,NSJ,ICOORD,1) = DX
                 DERCEN(NSA,NSJ,ICOORD,2) = DY
@@ -205,7 +205,7 @@
     500 end do
 
     end subroutine cavder
-    
+
     subroutine drcnrd(jj,nsi,nsj,dc,newsph)
 
 #include "pcm_mxcent.h"
@@ -264,7 +264,7 @@
 
     200 CONTINUE
     end subroutine drcnrd
-    
+
     subroutine drcncn(jj,nsi,icoord,nsj,dc,newsph)
 
 #include "pcm_mxcent.h"
@@ -279,7 +279,7 @@
     real(kind=dp) :: coordj(3), coordk(3)
     real(kind=dp), parameter :: d0 = 0.0d0
     real(kind=dp) :: d, d2
-    integer(kind=regint_k) :: k, nsk 
+    integer(kind=regint_k) :: k, nsk
 
 !     Trova la derivata della coordinata JJ del centro della sfera
 !     NSI rispetto alla coordinata ICOORD di NSJ, che interseca NSI.
@@ -331,7 +331,7 @@
 
     200 CONTINUE
     end subroutine drcncn
-    
+
     subroutine drrdrd(nsi,nsj,dr1,newsph)
 
 #include "pcm_mxcent.h"
@@ -341,7 +341,7 @@
 
     integer(kind=regint_k) :: nsi, nsj, newsph(mxsp, 2)
     real(kind=dp) :: dr1
-    
+
     real(kind=dp), parameter :: d0 = 0.0d0
     real(kind=dp) :: d, d2, ri, rj, rk, rs
     integer(kind=regint_k) :: nsk
@@ -394,7 +394,7 @@
     end if
     200 CONTINUE
     end subroutine drrdrd
-    
+
     subroutine drrdcn(nsi, icoord, nsj, dr1, newsph)
 
 #include "pcm_mxcent.h"
@@ -404,7 +404,7 @@
 
     integer(kind=regint_k) :: nsi, icoord, nsj, newsph(mxsp, 2)
     real(kind=dp) :: dr1
-    
+
     real(kind=dp) :: coordj(3), coordk(3)
     real(kind=dp), parameter :: d0 = 0.0d0
     real(kind=dp) :: a, b, d, d2, diff, fac, ri, rj, rk, rs

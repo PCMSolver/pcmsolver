@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -70,7 +70,7 @@ public:
      */
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
-    
+
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *  \param[in] area   area of the i-th tessera
@@ -95,7 +95,7 @@ private:
      *  \param[in] source the source point
      *  \param[in]  probe the probe point
      */
-    virtual T operator()(T * source, T * probe) const;
+    virtual T operator()(T source[3], T probe[3]) const;
     virtual std::ostream & printObject(std::ostream & os);
     double epsilon_;
 };
@@ -105,7 +105,7 @@ namespace
     struct buildVacuum {
         template <typename DerivativeType>
         IGreensFunction * operator()(const greenData & _data) {
-            DiagonalIntegrator * integrator = 
+            DiagonalIntegrator * integrator =
 		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
             return new Vacuum<DerivativeType>(integrator);
         }

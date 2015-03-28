@@ -16,7 +16,7 @@ project(PCMSolver CXX C Fortran)
 option(ENABLE_MPI              "Enable MPI parallelization"                                       OFF)
 option(ENABLE_OPENMP           "Enable OpenMP parallelization"                                    OFF)
 option(ENABLE_VECTORIZATION    "Enable vectorization"                                             OFF)
-option(ENABLE_TESTS            "Enable compilation of unit tests"                                 OFF)
+option(ENABLE_TESTS            "Enable compilation of unit tests"                                 ON)
 option(ENABLE_CODE_COVERAGE    "Enable code coverage"                                             OFF)
 option(DISABLE_EIGEN_OWN       "Do not use Eigen3 headers shipped with the module"                OFF)
 option(ENABLE_EIGEN_MKL        "Enable Eigen3 automatic fallback to some of Intel MKL algorithms" OFF)
@@ -164,6 +164,10 @@ include_directories(${CMAKE_SOURCE_DIR}
 		    ${CMAKE_BINARY_DIR}/include
                     ${CMAKE_Fortran_MODULE_DIRECTORY})
 
+if(ENABLE_TESTS)
+  # Build also standalone executables in src/bin
+  set(BUILD_STANDALONE TRUE)
+endif()
 add_subdirectory(src)
 include_directories(${header_dir_list})
 

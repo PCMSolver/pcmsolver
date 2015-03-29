@@ -11,5 +11,5 @@ An API for the Polarizable Continuum Model.
 - [Project website](https://gitlab.com/PCMSolver/pcmsolver)
 - [Documentation](http://pcmsolver.github.io/pcmsolver-doc)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
-- Status: release 1.0.0 available.
+- Status: v1.0.3 available.
 - Licensed under [LGPLv3](../release/COPYING.LESSER).

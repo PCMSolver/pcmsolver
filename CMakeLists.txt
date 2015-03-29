@@ -22,6 +22,8 @@ option(DISABLE_EIGEN_OWN       "Do not use Eigen3 headers shipped with the modul
 option(ENABLE_EIGEN_MKL        "Enable Eigen3 automatic fallback to some of Intel MKL algorithms" OFF)
 option(ENABLE_64BIT_INTEGERS   "Enable 64-bit integers"                                           OFF)
 option(ENABLE_CXX11_SUPPORT    "Enable C++11 compiler support"                                    ON)
+# Developers only options
+option(ENABLE_LOGGER           "Enables logger: needs C++11 support"                              ON)
 #
 #  CMake modules
 #
@@ -49,6 +51,12 @@ include(MergeStaticLibs)
 # Access to the fortran_enabler macro
 include(FortranEnabler)
 fortran_enabler()
+
+# If C++11 support was not detected or was disabled by the user, disable the logger
+get_property(has_cxx11_support GLOBAL PROPERTY CXX11_SUPPORT)
+if(NOT has_cxx11_support)
+   set(ENABLE_LOGGER OFF)
+endif()
 
 # The Python interpreter is needed to run the MergeStaticLibs.py script
 # If the PYTHON_INTERPRETER variable is not empty, then the user passed a custom version
@@ -204,7 +212,6 @@ endif()
 # This is the very last thing we do, i.e. DO NOT add anything depending on this target!!!
 merge_static_libs(pcm "${libs_to_merge}")
 install(TARGETS pcm ARCHIVE DESTINATION lib)
-add_dependencies(pcm generate_build_info)
 
 # configuration time in UTC
 execute_process(

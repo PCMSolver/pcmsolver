@@ -42,6 +42,6 @@ if(DEVELOPMENT_CODE)
             COMMAND ${GIT_EXECUTABLE} status -uno
             OUTPUT_FILE ${PROJECT_BINARY_DIR}/GIT_STATUS_AT_BUILD
             ERROR_QUIET
-        )  
+        )
     endif()
 endif()

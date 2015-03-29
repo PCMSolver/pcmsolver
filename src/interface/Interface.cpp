@@ -100,11 +100,16 @@ extern "C" void set_up_pcm(int * host_provides_input)
 extern "C" void tear_down_pcm()
 {
     // Delete all the global pointers, maybe in a more refined way...
-
     functions.clear();
 
     safe_delete(_cavity);
     safe_delete(_solver);
+}
+
+extern "C" void write_timings()
+{
+    // Print out timings to pcmsolver.timer.dat
+    timerDONE("pcmsolver.timer.dat");
 }
 
 extern "C" void compute_asc(char * potString, char * chgString, int * irrep)

@@ -64,6 +64,13 @@ extern "C" void set_up_pcm(int * host_provides_input);
 	FortranCInterface_GLOBAL_(tear_down_pcm, TEAR_DOWN_PCM)
 extern "C" void tear_down_pcm();
 
+#define write_timings \
+	FortranCInterface_GLOBAL_(write_timings, WRITE_TIMINGS)
+/*! \fn extern "C" void write_timings()
+ *  \brief Write API timings to pcmsolver.timer.dat
+ */
+extern "C" void write_timings();
+
 #define compute_asc \
 	FortranCInterface_GLOBAL_(compute_asc, COMPUTE_ASC)
 /*! \fn extern "C" void compute_asc(char * potString, char * chgString, int * irrep)

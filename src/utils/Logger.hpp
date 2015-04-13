@@ -39,7 +39,6 @@ namespace logging
             policy_->write(logStream_.str());
             logStream_.str("");
         }
-
         template<typename First, typename...Rest>
         void printImpl(First parm1, Rest...parm) {
 	    logStream_.precision(std::numeric_limits<double>::digits10);
@@ -56,14 +55,10 @@ namespace logging
         logger(const std::string & name, printLevel print = coarse)
 		: globalPrintLevel_(print), policy_(new logPolicy)
 	{
-            std::stringstream namestream;
-            srand(time(NULL));
-            namestream << "pcmsolver" << "_" << rand() << "_" << getpid();
-            std::string nameB = namestream.str();
             if(!policy_) {
                 throw std::runtime_error("LOGGER: Unable to create the logger instance");
             }
-            policy_->open_ostream(nameB);
+            policy_->open_ostream(name);
 	    // Write the logfile header
 	    logStream_ << "\t\tPCMSolver execution log\n"
 		       << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
@@ -87,10 +82,7 @@ namespace logging
                writeMutex_.unlock();
 	    }
         }
-        static logger& Instance(){
-            static logger<FileLogPolicy> loggerInstance;
-            return loggerInstance;
-        }
+
     };
 
     /*! \brief Returns date and time

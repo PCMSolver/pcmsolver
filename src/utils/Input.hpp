@@ -34,7 +34,6 @@
 #include "Getkw.h"
 
 #include "CavityData.hpp"
-#include "Compression.hpp"
 #include "GreenData.hpp"
 #include "InputManager.hpp"
 #include "Molecule.hpp"
@@ -94,7 +93,6 @@ public:
     bool fromSolvent() { return hasSolvent_; }
     std::string solverType() { return solverType_; }
     int equationType() { return equationType_; }
-    Compression compression() { return compression_; }
     double correction() { return correction_; }
     bool hermitivitize() { return hermitivitize_; }
     /// @}
@@ -185,8 +183,6 @@ private:
     std::string solverType_;
     /// The integral equation type (wavelet solvers)
     int equationType_;
-    /// Wavelet solvers compression parameters
-    Compression compression_;
     /// Correction factor (C-PCM)
     double correction_;
     /// Whether the PCM matrix should be hermitivitized (collocation solvers)

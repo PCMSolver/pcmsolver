@@ -54,7 +54,7 @@ def convert_to_upper_case(filename):
     Reads contents of filename and converts them to uppercase.
     The case-converted contents are written back to filename.
     """
-    contents = '' 
+    contents = ''
     final    = ''
     with open(filename, 'r') as inputFile:
         contents  = inputFile.readlines()
@@ -70,9 +70,9 @@ def convert_to_upper_case(filename):
             rst_split = rst_split[0].upper() + ' = ' + rst_split[1]
             line = ''.join(rst_split)
         else:
-            line = line.upper() 
-        final += line    
-    # Convert also occurences of TRUE/FALSE to True/False, 
+            line = line.upper()
+        final += line
+    # Convert also occurences of TRUE/FALSE to True/False,
     # Python will otherwise interpret them as strings!
     final = re.sub('FALSE', 'False', final)
     final = re.sub('TRUE',  'True',  final)
@@ -149,10 +149,10 @@ def setup_keywords():
     top.set_status(True)
     # Define units of measure
     # Valid values: AU (atomic units) or ANGSTROM
-    # Default: AU 
+    # Default: AU
     top.add_kw('UNITS',  'STR', 'AU')
     # Define set of CODATA constants
-    # Valid values: 2010, 2006, 2002, 1998 
+    # Valid values: 2010, 2006, 2002, 1998
     # Default: 2010
     top.add_kw('CODATA', 'INT', 2010)
 
@@ -165,7 +165,7 @@ def setup_keywords():
     # Valid for: Restart cavity
     # Default: empty string
     cavity.add_kw('NPZFILE',     'STR', '')
-    # Name of the file containing the list of points for a wavelet cavity 
+    # Name of the file containing the list of points for a wavelet cavity
     # Valid for: Wavelet cavity
     # Default: empty string
     cavity.add_kw('DYADICFILE',     'STR', '')
@@ -260,7 +260,7 @@ def setup_keywords():
     # Valid values: double greater than 1.0
     # Default: 1.25
     medium.add_kw('A', 'DBL', 1.25)
-    # A priori compression parameter d' 
+    # A priori compression parameter d'
     # Valid for: wavelet solvers
     # Valid values: double greater than 1.0
     # Default: 1.25 (PWC) or 2.25 (PWL)
@@ -271,7 +271,7 @@ def setup_keywords():
     # Default: 0.001
     medium.add_kw('B', 'DBL', 0.001)
     top.add_sect(medium)
-    
+
     # Green's function section
     green = getkw.Section('GREEN', callback = verify_green)
     # Green's function type
@@ -494,7 +494,7 @@ def verify_medium(section):
     if (val not in allowed_equations):
         print('Allowed equations are: {}'.format(allowed_equations))
         sys.exit(1)
-    
+
     a = section.get('A')
     if (a.get() < 1.0):
         print('A priori compression parameter a has to be greater than 1.0')

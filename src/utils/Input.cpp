@@ -39,7 +39,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include "CavityData.hpp"
-#include "Compression.hpp"
 #include "GreenData.hpp"
 #include "InputManager.hpp"
 #include "PhysicalConstants.hpp"
@@ -152,10 +151,6 @@ void Input::reader(const char * pythonParsed)
 
     solverType_ = medium.getStr("SOLVERTYPE");
     equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
-    double aPrioriA = medium.getDbl("A");
-    double aPrioridPrime = medium.getDbl("DPRIME");
-    double aPosterioriB = medium.getDbl("B");
-    compression_ = Compression(aPrioriA, aPrioridPrime, aPosterioriB);
     correction_ = medium.getDbl("CORRECTION");
     hermitivitize_ = medium.getBool("MATRIXSYMM");
 
@@ -220,14 +215,6 @@ void Input::reader(const cavityInput & cav, const solverInput & solv,
     solverType_ = to_upper_copy(std::string(solv.solver_type));
     std::string inteq = to_upper_copy(std::string(solv.equation_type));
     equationType_ = integralEquation(inteq);
-    // Initialize compression parameters to safe values
-    if (solverType_ == "WAVELET") {
-	/* aPrioriA = 1.25; aPrioridPrime = 1.25; aPosterioriB = 0.01; */
-	compression_ = Compression(1.25, 1.25, 0.01);
-    } else if (solverType_ == "LINEAR") {
-	/* aPrioriA = 1.25; aPrioridPrime = 2.25; aPosterioriB = 0.01; */
-	compression_ = Compression(1.25, 2.25, 0.01);
-    }
     correction_ = solv.correction;
     hermitivitize_ = true;
 

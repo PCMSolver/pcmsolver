@@ -28,8 +28,6 @@
 
 #include "Config.hpp"
 
-#include "Compression.hpp"
-
 class IGreensFunction;
 
 /*! @struct solverData
@@ -51,14 +49,13 @@ class IGreensFunction;
 struct solverData {
     IGreensFunction * gfInside;
     IGreensFunction * gfOutside;
-    Compression compressionParameters;
     double correction;
     int integralEquation;
     bool hermitivitize;
     solverData() {}
     solverData(IGreensFunction * _gfInside, IGreensFunction * _gfOutside,
-	       Compression & _comp, double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
-        gfInside(_gfInside), gfOutside(_gfOutside), compressionParameters(_comp), correction(_correction),
+	       double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
+        gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction),
 	integralEquation(_integralEquation), hermitivitize(_symm) {}
 };
 

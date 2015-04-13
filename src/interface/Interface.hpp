@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -56,13 +56,20 @@ extern "C" void hello_pcm(int * a, double * b);
 #define set_up_pcm \
 	FortranCInterface_GLOBAL_(set_up_pcm, SET_UP_PCM)
 /*! \fn extern "C" void set_up_pcm(int * host_provides_input)
- *  \param[in] host_provides_input whether the host does syntactic parsing for API 
+ *  \param[in] host_provides_input whether the host does syntactic parsing for API
  */
 extern "C" void set_up_pcm(int * host_provides_input);
 
 #define tear_down_pcm \
 	FortranCInterface_GLOBAL_(tear_down_pcm, TEAR_DOWN_PCM)
 extern "C" void tear_down_pcm();
+
+#define write_timings \
+	FortranCInterface_GLOBAL_(write_timings, WRITE_TIMINGS)
+/*! \fn extern "C" void write_timings()
+ *  \brief Write API timings to pcmsolver.timer.dat
+ */
+extern "C" void write_timings();
 
 #define compute_asc \
 	FortranCInterface_GLOBAL_(compute_asc, COMPUTE_ASC)
@@ -71,7 +78,7 @@ extern "C" void tear_down_pcm();
  *  \param[in] potString name of the potential SurfaceFunction
  *  \param[in] chgString name of the charge SurfaceFunction
  *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
- *  
+ *
  *  The equilibrium PCM matrix is used in the computation of the ASC
  */
 extern "C" void compute_asc(char * potString, char * chgString, int * irrep);
@@ -83,7 +90,7 @@ extern "C" void compute_asc(char * potString, char * chgString, int * irrep);
  *  \param[in] potString name of the potential SurfaceFunction
  *  \param[in] chgString name of the charge SurfaceFunction
  *  \param[in] irrep     the irreducible representation the potential/charge pair belongs to
- *  
+ *
  *  The nonequilibrium PCM matrix is used in the computation of the ASC
  */
 extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep);
@@ -128,7 +135,7 @@ extern "C" void load_surface_function(const char * name);
 #define dot_surface_functions \
 	FortranCInterface_GLOBAL_(dot_surface_functions, DOT_SURFACE_FUNCTIONS)
 /*! \fn extern "C" void dot_surface_functions(double * result, const char * potString, const char * chgString)
- *  \param[out]   result dot product of the surface function pair 
+ *  \param[out]   result dot product of the surface function pair
  *  \param[in] potString name of the potential SurfaceFunction
  *  \param[in] chgString name of the chareg SurfaceFunction
  */
@@ -162,7 +169,7 @@ extern "C" void set_point_group(int * nr_generators, int * gen1, int * gen2,
                                 int * gen3);
 
 /*! \fn extern "C" void host_input(cavityInput * cav, solverInput * solv, greenInput * green)
- *  \brief Pushes input parameters defined host-side to the API 
+ *  \brief Pushes input parameters defined host-side to the API
  *  \param[in] cav   cavity input data
  *  \param[in] solv  solver input data
  *  \param[in] green Green's function input data
@@ -237,8 +244,8 @@ extern "C" void get_surface_function(int * nts, double * values, char * name);
 /*! \fn extern "C" void add_surface_function(char * result, double * coeff, char * part)
  *  \brief DAXPY-like utility for SurfaceFunction \f$ f_\mathrm{result} := f_\mathrm{result} + c f_\mathrm{part} \f$
  *  \param[in] result label for the resulting SurfaceFunction
- *  \param[in]  coeff coefficient 
- *  \param[in]   part label for the LHS SurfaceFunction 
+ *  \param[in]  coeff coefficient
+ *  \param[in]   part label for the LHS SurfaceFunction
  */
 extern "C" void add_surface_function(char * result, double * coeff, char * part);
 
@@ -260,7 +267,7 @@ extern "C" void clear_surface_function(char * name);
 #define append_surface_function \
 	FortranCInterface_GLOBAL_(append_surface_function, APPEND_SURFACE_FUNCTION)
 /*! \fn extern "C" void append_surface_function(char * name)
- *  \brief Appends a new SurfaceFunction to the global map 
+ *  \brief Appends a new SurfaceFunction to the global map
  *  \param[in] name label for the new SurfaceFunction
  */
 extern "C" void append_surface_function(char * name);
@@ -304,12 +311,6 @@ void initSolver();
  */
 void initNonEqSolver();
 
-/*! \fn void initWaveletCavity()
- *
- *  Initializes the _waveletCavity global object
- */
-void initWaveletCavity();
-
 /*! \fn void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_)
  *  \param[in] charges_      contains charges of atomic centers
  *  \param[in] sphereCenter_ contains coordinates of atomic centers
@@ -319,7 +320,7 @@ void initWaveletCavity();
 void initAtoms(Eigen::VectorXd & charges_, Eigen::Matrix3Xd & sphereCenter_);
 
 /*! \fn void initMolecule(Molecule & molecule_, Eigen::Matrix3Xd & sphereCenter_)
- *  \param[out] molecule_  a Molecule object 
+ *  \param[out] molecule_  a Molecule object
  *
  *  Initializes Molecule object with all the information on charges, masses and positions of atomic centers
  */

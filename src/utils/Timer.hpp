@@ -77,7 +77,7 @@ private:
         if (active_ != 0) {
             os << " These timers were not shut down:" << std::endl;
             timersPair t_pair;
-            BOOST_FOREACH(t_pair, timers_) {                                
+            BOOST_FOREACH(t_pair, timers_) {
                 os << " - " << t_pair.first << std::endl;
             }
             os << " Reported timings might be unreliable!" << std::endl;
@@ -159,7 +159,7 @@ inline void timerOFF(const std::string & checkpoint_name)
 inline void timerDONE(const std::string & fname)
 {
     std::ofstream timing_report;
-    timing_report.open(fname, std::ios::out);
+    timing_report.open(fname.c_str(), std::ios::out);
     timing_report << Timer::TheTimer() << std::endl;
     timing_report.close();
 }

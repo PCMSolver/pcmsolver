@@ -1,24 +1,14 @@
 # List here all directories that contain *.h or *.hpp
 # header files. This is needed in order to set the list
 # of directories where CMake will go look for headers
-set(header_dir_list 
-	${CMAKE_CURRENT_SOURCE_DIR}/cavity 
+set(header_dir_list
+	${CMAKE_CURRENT_SOURCE_DIR}/cavity
 	${CMAKE_CURRENT_SOURCE_DIR}/green
 	${CMAKE_CURRENT_SOURCE_DIR}/green/dielectric_profile
 	${CMAKE_CURRENT_SOURCE_DIR}/interface
 	${CMAKE_CURRENT_SOURCE_DIR}/bi_operators # Stands for Boundary Integral operators
 	${CMAKE_CURRENT_SOURCE_DIR}/solver
 	${CMAKE_CURRENT_SOURCE_DIR}/utils)
-if(DEVELOPMENT_CODE)
-        set(header_dir_list_DEVELOPMENT
-            ${CMAKE_CURRENT_SOURCE_DIR}/wemSolvers
-            ${CMAKE_CURRENT_SOURCE_DIR}/wemFiles      
-       	    ${CMAKE_CURRENT_SOURCE_DIR}/wavcav
-            ${CMAKE_CURRENT_SOURCE_DIR}/wem
-           )
-	list(APPEND header_dir_list "${header_dir_list_DEVELOPMENT}")
-	list(SORT header_dir_list)
-endif()	
 include_directories(${header_dir_list})
 
 init_Includer()
@@ -31,14 +21,10 @@ add_subdirectory(bi_operators)
 add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)
-if(DEVELOPMENT_CODE)
-    add_subdirectory(wemFiles)
-    add_subdirectory(wemSolvers)
-    add_subdirectory(tsless)
-    add_subdirectory(wavcav)
-endif()
 # This directory contains source file for executables
-add_subdirectory(bin)
+if(BUILD_STANDALONE)
+   add_subdirectory(bin)
+endif()
 
 # We need to export header_dir_list one level up
 set(header_dir_list ${header_dir_list} PARENT_SCOPE)

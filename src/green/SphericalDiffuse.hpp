@@ -52,6 +52,15 @@ class SphericalDiffuse;
  *  \author Hui Cao, Ville Weijo, Luca Frediani and Roberto Di Remigio
  *  \date 2010-2015
  *  \tparam ProfilePolicy functional form of the diffuse layer
+ *
+ *  This class is general, in the sense that no specific dielectric
+ *  profile has been set in its definition.
+ *  In principle any profile that can be described by:
+ *  1. a left-side dielectric constant;
+ *  2. a right-side dielectric constant;
+ *  3. an interface layer width;
+ *  4. an interface layer center
+ *  can be used to define a new diffuse interface with spherical symmetry.
  */
 
 template <typename ProfilePolicy>
@@ -132,7 +141,7 @@ private:
     }
     virtual std::ostream & printObject(std::ostream & os)
     {
-        os << "Green's function type: vacuum";
+        os << "Green's function type: spherical diffuse";
         return os;
     }
     /*!

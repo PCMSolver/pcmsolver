@@ -113,7 +113,7 @@ private:
     virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const
     {
 	double eps = this->profile_.epsilon;
-	double k = this->profile_.kappa; 
+	double k = this->profile_.kappa;
         DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
                           (sp[1] - pp[1]) * (sp[1] - pp[1]) +
                           (sp[2] - pp[2]) * (sp[2] - pp[2]));
@@ -152,10 +152,10 @@ namespace
 }
 
 template <>
-inline double GreensFunction<double, Yukawa>::function(const Eigen::Vector3d & source,
+inline Numerical GreensFunction<Numerical, Yukawa>::function(const Eigen::Vector3d & source,
                                         const Eigen::Vector3d & probe) const
 {
-    double sp[3], pp[3], res;
+    Numerical sp[3], pp[3], res;
     sp[0] = source(0); sp[1] = source(1); sp[2] = source(2);
     pp[0] = probe(0);  pp[1] = probe(1);  pp[2] = probe(2);
     res = this->operator()(sp, pp);
@@ -163,24 +163,24 @@ inline double GreensFunction<double, Yukawa>::function(const Eigen::Vector3d & s
 }
 
 template <>
-inline double GreensFunction<double, Yukawa>::derivativeSource(const Eigen::Vector3d & normal_p1,
+inline Numerical GreensFunction<Numerical, Yukawa>::derivativeSource(const Eigen::Vector3d & normal_p1,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     Eigen::Vector3d deltaPlus  = p1 + normal_p1 * delta_ / normal_p1.norm();
     Eigen::Vector3d deltaMinus = p1 - normal_p1 * delta_ / normal_p1.norm();
-    double funcPlus  = function(deltaPlus,  p2);
-    double funcMinus = function(deltaMinus, p2);
+    Numerical funcPlus  = function(deltaPlus,  p2);
+    Numerical funcMinus = function(deltaMinus, p2);
     return (funcPlus - funcMinus)/(2.0*delta_);
 }
 
 template <>
-inline double GreensFunction<double, Yukawa>::derivativeProbe(const Eigen::Vector3d & normal_p2,
+inline Numerical GreensFunction<Numerical, Yukawa>::derivativeProbe(const Eigen::Vector3d & normal_p2,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     Eigen::Vector3d deltaPlus  = p2 + normal_p2 * delta_ / normal_p2.norm();
     Eigen::Vector3d deltaMinus = p2 - normal_p2 * delta_ / normal_p2.norm();
-    double funcPlus  = function(p1, deltaPlus);
-    double funcMinus = function(p1, deltaMinus);
+    Numerical funcPlus  = function(p1, deltaPlus);
+    Numerical funcMinus = function(p1, deltaMinus);
     return (funcPlus - funcMinus)/(2.0*delta_);
 }
 

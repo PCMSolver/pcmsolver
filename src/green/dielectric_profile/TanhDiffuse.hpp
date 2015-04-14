@@ -63,7 +63,7 @@ public:
      *                 at point r
      *  \param[in]   r evaluation point
      */
-    void operator()(double & e, double & de, const double r) const 
+    void operator()(double & e, double & de, const double r) const
     {
         e = value(r);
         de = derivative(r);

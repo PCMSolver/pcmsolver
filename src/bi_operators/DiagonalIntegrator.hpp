@@ -11,6 +11,7 @@
 #include "IonicLiquid.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
+#include "TanhSphericalDiffuse.hpp"
 
 /*! \file DiagonalIntegrator.hpp
  *  \class DiagonalIntegrator
@@ -55,6 +56,10 @@ public:
     virtual double computeD(const IonicLiquid<AD_directional> * gf, double area, double radius) const = 0;
     virtual double computeD(const IonicLiquid<AD_gradient> * gf, double area, double radius) const = 0;
     virtual double computeD(const IonicLiquid<AD_hessian> * gf, double area, double radius) const = 0;
+
+    virtual double computeS(const TanhSphericalDiffuse * gf, double area) const = 0;
+
+    virtual double computeD(const TanhSphericalDiffuse * gf, double area, double radius) const = 0;
 };
 
 #endif // DIAGONALINTEGRATOR_HPP

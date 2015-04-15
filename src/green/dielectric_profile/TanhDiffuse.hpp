@@ -55,6 +55,7 @@ private:
                 * ( 1 - tanh_r * tanh_r) / width_); //first derivative of epsilon(r)
     }
 public:
+    TanhDiffuse() {}
     TanhDiffuse(double eL, double eR, double w, double c) :
         epsilonLeft_(eL), epsilonRight_(eR), width_(w), center_(c) {}
     /*! The permittivity profile of the transition layer

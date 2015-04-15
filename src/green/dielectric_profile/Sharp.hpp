@@ -55,8 +55,6 @@ public:
         epsilonLeft_(eL), epsilonRight_(eR), center_(c) {}
     /*! The permittivity profile of the transition layer
      *  \param[out]  e the value of the dielectric constant at point r
-     *  \param[out] de the value of the derivative of the dielectric constant
-     *                 at point r
      *  \param[in]   r evaluation point
      */
     void operator()(double & e, const double r) const

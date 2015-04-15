@@ -13,6 +13,7 @@
 #include "IonicLiquid.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
+#include "TanhSphericalDiffuse.hpp"
 
 /*! \file NumericalIntegrator.hpp
  *  \class NumericalIntegrator
@@ -56,6 +57,10 @@ public:
     virtual double computeD(const IonicLiquid<AD_directional> * gf, double area, double radius) const;
     virtual double computeD(const IonicLiquid<AD_gradient> * gf, double area, double radius) const;
     virtual double computeD(const IonicLiquid<AD_hessian> * gf, double area, double radius) const;
+
+    virtual double computeS(const TanhSphericalDiffuse * gf, double area) const;
+
+    virtual double computeD(const TanhSphericalDiffuse * gf, double area, double radius) const;
 };
 namespace
 {

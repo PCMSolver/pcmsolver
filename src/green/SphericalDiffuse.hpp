@@ -82,9 +82,10 @@ public:
      * \param[in] eR right-side dielectric constant
      * \param[in] w width of the interface layer
      * \param[in] c center of the diffuse layer
+     * \param[in] diag strategy to calculate the diagonal elements of the boundary integral operator
      */
-    SphericalDiffuse(double eL, double eR, double w, double c,
-            DiagonalIntegrator * diag) : GreensFunction<Numerical, ProfilePolicy>(false, diag)
+    SphericalDiffuse(double eL, double eR, double w, double c, DiagonalIntegrator * diag)
+        : GreensFunction<Numerical, ProfilePolicy>(false, diag)
     {
         initProfilePolicy(eL, eR, w, c);
     }
@@ -123,7 +124,7 @@ public:
             return this->diagonal_->computeD(this, area, radius);
     }
 
-    virtual double epsilon() const { return this->profile_.epsilon; }
+    virtual double epsilon() const { return 0.0; }
 
     friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
         return gf.printObject(os);

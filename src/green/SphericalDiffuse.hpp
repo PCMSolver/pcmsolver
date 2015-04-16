@@ -76,6 +76,7 @@ public:
     SphericalDiffuse(double eL, double eR, double w, double c) : GreensFunction<Numerical, ProfilePolicy>(false)
     {
         initProfilePolicy(eL, eR, w, c);
+        initSphericalDiffuse();
     }
     /*!
      * \param[in] eL left-side dielectric constant
@@ -88,6 +89,7 @@ public:
         : GreensFunction<Numerical, ProfilePolicy>(false, diag)
     {
         initProfilePolicy(eL, eR, w, c);
+        initSphericalDiffuse();
     }
     virtual ~SphericalDiffuse() {}
     /*! Returns value of the directional derivative of the
@@ -153,6 +155,8 @@ private:
      */
     void initProfilePolicy(double eL, double eR, double w, double c)
     { this->profile_ = ProfilePolicy(eL, eR, w, c); }
+    /*! This calculates all the components needed to evaluate the Green's function */
+    void initSphericalDiffuse();
 };
 
 #endif // SPHERICALDIFFUSE_HPP

@@ -35,6 +35,15 @@
 #include <Eigen/Dense>
 #include "taylor.hpp"
 
+#include <boost/bind.hpp>
+#include <boost/bind/placeholders.hpp>
+#include <boost/function.hpp>
+#include <boost/numeric/odeint/config.hpp>
+#include <boost/numeric/odeint.hpp>
+#include <boost/numeric/odeint/stepper/bulirsch_stoer.hpp>
+#include <boost/numeric/odeint/stepper/bulirsch_stoer_dense_out.hpp>
+
+
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegratorFactory.hpp"
 #include "DiagonalIntegrator.hpp"
@@ -51,8 +60,85 @@
  *  \author Hui Cao, Ville Weijo, Luca Frediani and Roberto Di Remigio
  *  \date 2010-2015
  */
-
 typedef SphericalDiffuse<TanhDiffuse> TanhSphericalDiffuse;
+
+/*! \typedef StateType
+ *  \brief state vector for the differential equation integrator
+ */
+typedef std::vector<double> StateType;
+/*! \typedef ProfileEvaluator
+ *  \brief boosted-up function pointer to the dielectric profile evaluation function
+ */
+typedef boost::function<void (double, double, double)> ProfileEvaluator;
+
+/*! \file TanhSphericalDiffuse.hpp
+ *  \class LogTransformedRadial
+ *  \brief system of log-transformed first-order radial differential equations
+ *  \author Roberto Di Remigio
+ *  \date 2015
+ *
+ *  Provides a handle to the system of differential equations for the integrator.
+ *  The dielectric profile comes in as a boost::function object.
+ */
+class LogTransformedRadial
+{
+    private:
+        /*! Angular momentum */
+        size_t l_;
+        /*! Dielectric profile function and derivative evaluation */
+        ProfileEvaluator eval_;
+    public:
+        LogTransformedRadial( int l, const ProfileEvaluator & e)
+            : l_(l), eval_(e) { }
+        void operator()( const StateType & R , StateType & dRdr , const double r)
+        {
+            // Evaluate the dielectric profile
+            double eps = 0.0, epsPrime = 0.0;
+            eval_(eps, epsPrime, r);
+            // System of equations is defined here
+            dRdr[0] = R[1];
+            dRdr[1] = -R[1]*(2.0/r + epsPrime/eps + R[1]) + l_ * (l_ + 1) / std::pow(r, 2);
+        }
+};
+
+/*! \file TanhSphericalDiffuse.hpp
+ *  \struct IntegratorObserver
+ *  \brief reports progress of differential equation integrator
+ *  \author Roberto Di Remigio
+ *  \date 2015
+ */
+struct IntegratorObserver
+{
+    void operator()(const StateType & x, const double r) const
+    {
+        std::cout << r << "     " << x[0] << "      " << x[1] << std::endl;
+    }
+};
+
+template <>
+inline void TanhSphericalDiffuse::initSphericalDiffuse()
+{
+    namespace odeint = boost::numeric::odeint;
+    // Parameters for the numerical solution of the radial differential equation
+    /*! Maximum angular momentum in the final summation over Legendre polynomials to obtain G */
+    size_t maxLGreen_ = 30;
+    /*! Maximum angular momentum to obtain C(r, r'), needed to separate the Coulomb singularity */
+    size_t maxLC_     = maxLGreen_ + 30;
+    /*! Number of integration steps (determined by the adaptive integrator) */
+    size_t nSteps_ = 0;
+    // Bind the TanhDiffuse::operator() to an evaluator function
+    ProfileEvaluator eval = boost::bind(&TanhDiffuse::operator(), this->profile_, _1, _2, _3);
+    // Initialize the system of differential equations
+    // Integrator parameters
+    double eps_abs_     = 1.0e-8; /*! Absolute tolerance level */
+    double eps_rel_     = 0.0;    /*! Relative tolerance level */
+    double factor_x_    = 0.0;    /*! Weight of the state      */
+    double factor_dxdt_ = 0.0;    /*! Weight of the state derivative */
+    odeint::bulirsch_stoer_dense_out<StateType> stepper( eps_abs_, eps_rel_, factor_x_, factor_dxdt_ );
+    for (size_t l = 0; l < maxLGreen_; ++l) {
+        LogTransformedRadial system(l, eval);
+    }
+}
 
 template <>
 inline Numerical GreensFunction<Numerical, TanhDiffuse>::function(const Eigen::Vector3d & source,

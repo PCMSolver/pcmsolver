@@ -134,7 +134,11 @@ void Input::reader(const char * pythonParsed)
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
         std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
-        solvent_ = solvents[name];
+        if (solvents.find(name) == solvents.end()) {
+            throw std::runtime_error("Solvent " + name + " NOT found!");
+        } else {
+            solvent_ = solvents[name];
+        }
         probeRadius_ = solvent_.probeRadius() * angstromToBohr(CODATAyear_);
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class

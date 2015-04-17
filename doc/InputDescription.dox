@@ -6,13 +6,13 @@
 
 Method 1 is more flexible: all parameters that can be modified by the user are available.
 The host program needs only copy the additional input file to the scratch directory before execution.
-Method 2 just gives access to the core parameters. 
+Method 2 just gives access to the core parameters.
 
 In this page, input style and input parameters available in Method 1 will be documented.
 
 ### %Input style
 
-The input for `%PCMSolver` is parsed through the [Getkw](https://repo.ctcc.no/projects/libgetkw/wiki/Wiki) 
+The input for `%PCMSolver` is parsed through the [Getkw](https://repo.ctcc.no/projects/libgetkw/wiki/Wiki)
 library written by Jonas Juselius and is organized in **sections** and **keywords**.
 %Input reading is case-insensitive. An example input structure is shown below,
 there are also some working examples in the directory `examples`.
@@ -20,10 +20,10 @@ A general input parameter has the following form (Keyword = [Data type]):
 
 \include example_input-all.inp
 
-Array-valued keywords will expect the array to be given in comma-separated format and enclosed 
-in square brackets. The purpose of tags is to distinguish between cases in which multiple 
-instances of the same kind of object can be managed by the program. 
-There exist only certain legal tagnames and these are determined in the C++ code. 
+Array-valued keywords will expect the array to be given in comma-separated format and enclosed
+in square brackets. The purpose of tags is to distinguish between cases in which multiple
+instances of the same kind of object can be managed by the program.
+There exist only certain legal tagnames and these are determined in the C++ code.
 Be aware that the input parsing script does not check the correctness of tags.
 
 \warning Some options might not be available or might have no effect in the released version (*vide infra*)
@@ -88,10 +88,10 @@ to switching off the use of added spheres, which is the default.
 \keyword{Mode\n, string\n, Implicit | Atoms | Explicit\n, all cavities except Restart\n, Implicit\n}
 How to create the list of spheres for the generation of the molecular surface:
 + in Implicit mode, the atomic coordinates and charges will be obtained from the QM host program.
-Spheres will be centered on the atoms and the atomic radii, as specified in one the built-in sets, 
+Spheres will be centered on the atoms and the atomic radii, as specified in one the built-in sets,
 will be used. Scaling by 1.2 will be applied according to the keyword Scaling;
 + in Atoms mode, the atomic coordinates and charges will be obtained from the QM host program.
-For the atoms specified by the array given in keyword Atoms, the built-in radii will be substituted 
+For the atoms specified by the array given in keyword Atoms, the built-in radii will be substituted
 by the radii provided in the keyword Radii. Scaling by 1.2 will be applied according to the keyword
 Scaling;
 + in Explicit mode, both centers and radii of the spheres are to be specified in the keyword Spheres.
@@ -124,24 +124,24 @@ used with a wavelet cavity.
 Specification of the dielectric medium outside the cavity. This keyword **must always** be
 given a value. Allowed values are:
 + Water               , H2O;
-+ Methanol            , CH3OH;                        
-+ Ethanol             , CH3CH2OH;                     
-+ Chloroform          , CHCL3;                        
-+ Methylenechloride   , CH2CL2;                       
-+ 1,2-Dichloroethane  , C2H4CL2;                      
-+ Carbon Tetrachloride, CCL4;                         
-+ Benzene             , C6H6;                         
-+ Toluene             , C6H5CH3;                      
-+ Chlorobenzene       , C6H5CL;                       
-+ Nitromethane        , CH3NO2;                       
-+ N-heptane           , C7H16;                        
-+ Cyclohexane         , C6H12;                        
-+ Aniline             , C6H5NH2;                      
-+ Acetone             , C2H6CO;                       
-+ Tetrahydrofurane    , THF;                          
-+ Dimethylsulfoxide   , DMSO;                         
-+ Acetonitrile        , CH3CN;                        
-+ Explicit. 
++ Methanol            , CH3OH;
++ Ethanol             , CH3CH2OH;
++ Chloroform          , CHCL3;
++ Methylenechloride   , CH2CL2;
++ 1,2-Dichloroethane  , C2H4CL2;
++ Carbon Tetrachloride, CCL4;
++ Benzene             , C6H6;
++ Toluene             , C6H5CH3;
++ Chlorobenzene       , C6H5CL;
++ Nitromethane        , CH3NO2;
++ N-heptane           , C7H16;
++ Cyclohexane         , C6H12;
++ Aniline             , C6H5NH2;
++ Acetone             , C2H6CO;
++ Tetrahydrofurane    , THF;
++ Dimethylsulfoxide   , DMSO;
++ Acetonitrile        , CH3CN;
++ Explicit.
 
 If the solvent name given is different from Explicit any other settings in the Green's function
 section will be overridden by the built-in values for the solvent specified.
@@ -172,7 +172,7 @@ for the chosen solvent.
 
 If Solvent = Explicit, **two** Green's functions sections must be specified with
 tags `inside` and `outside`, i.e. `Green<inside>` and `Green<outside>`.
-The Green's function inside will always be the vacuum, while the 
+The Green's function inside will always be the vacuum, while the
 Green's function outside might vary. Currently, only isotropic uniform dielectrics
 are implemented.
 
@@ -198,13 +198,13 @@ The macroscopic properties for the built-in list of solvents are:
 
 List of available solvents:
 + Water, \f$\varepsilon_s = 78.39\f$, \f$\varepsilon_\infty = 1.776\f$, \f$r_\mathrm{probe} = 1.385\f$;
-+ Methanol, \f$\varepsilon_s = 2.63\f$, \f$\varepsilon_\infty = 1.758\f$, \f$r_\mathrm{probe} = 1.855\f$;
++ Methanol, \f$\varepsilon_s = 32.63\f$, \f$\varepsilon_\infty = 1.758\f$, \f$r_\mathrm{probe} = 1.855\f$;
 + Ethanol, \f$\varepsilon_s = 24.55\f$, \f$\varepsilon_\infty = 1.847\f$, \f$r_\mathrm{probe} = 2.18\f$;
 + Chloroform, \f$\varepsilon_s = 4.90\f$, \f$\varepsilon_\infty = 2.085\f$, \f$r_\mathrm{probe} = 2.48\f$;
 + Methylenechloride, \f$\varepsilon_s = 8.93\f$, \f$\varepsilon_\infty = 2.020\f$, \f$r_\mathrm{probe} = 2.27\f$;
 + 1,2-Dichloroethane, \f$\varepsilon_s = 10.36\f$, \f$\varepsilon_\infty = 2.085\f$, \f$r_\mathrm{probe} = 2.505\f$;
 + Carbon tetrachloride, \f$\varepsilon_s = 2.228\f$, \f$\varepsilon_\infty = 2.129\f$, \f$r_\mathrm{probe} = 2.685\f$;
-+ Benzene, \f$\varepsilon_s = 2.247\f$, \f$\varepsilon_\infty = 2.244\f$, \f$r_\mathrm{probe} = 2.630\f$;          
++ Benzene, \f$\varepsilon_s = 2.247\f$, \f$\varepsilon_\infty = 2.244\f$, \f$r_\mathrm{probe} = 2.630\f$;
 + Toluene, \f$\varepsilon_s = 2.379\f$, \f$\varepsilon_\infty = 2.232\f$, \f$r_\mathrm{probe} = 2.82\f$;
 + Chlorobenzene, \f$\varepsilon_s = 5.621\f$, \f$\varepsilon_\infty = 2.320\f$, \f$r_\mathrm{probe} = 2.805\f$;
 + Nitromethane, \f$\varepsilon_s = 38.20\f$, \f$\varepsilon_\infty = 1.904\f$, \f$r_\mathrm{probe} = 2.155\f$;

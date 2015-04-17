@@ -54,7 +54,7 @@ def convert_to_upper_case(filename):
     Reads contents of filename and converts them to uppercase.
     The case-converted contents are written back to filename.
     """
-    contents = '' 
+    contents = ''
     final    = ''
     with open(filename, 'r') as inputFile:
         contents  = inputFile.readlines()
@@ -65,13 +65,13 @@ def convert_to_upper_case(filename):
     npz_file = re.compile('NPZFILE', re.IGNORECASE)
     for line in contents:
         if not npz_file.search(line):
-            line = line.upper() 
+            line = line.upper()
         else:
             rst_split = re.split(r"=", line)
             rst_split = rst_split[0].upper() + ' = ' + rst_split[1]
             line = ''.join(rst_split)
-        final += line    
-    # Convert also occurences of TRUE/FALSE to True/False, 
+        final += line
+    # Convert also occurences of TRUE/FALSE to True/False,
     # Python will otherwise interpret them as strings!
     final = re.sub('FALSE', 'False', final)
     final = re.sub('TRUE',  'True',  final)
@@ -148,10 +148,10 @@ def setup_keywords():
     top.set_status(True)
     # Define units of measure
     # Valid values: AU (atomic units) or ANGSTROM
-    # Default: AU 
+    # Default: AU
     top.add_kw('UNITS',  'STR', 'AU')
     # Define set of CODATA constants
-    # Valid values: 2010, 2006, 2002, 1998 
+    # Valid values: 2010, 2006, 2002, 1998
     # Default: 2010
     top.add_kw('CODATA', 'INT', 2010)
 
@@ -444,6 +444,9 @@ def verify_medium(section):
     for i, v in allowedSolvents.iteritems():
         if (solvent.get() in v):
             solventName = i
+            # Set name to the first value in the value pair
+            # C++ will look for this name!
+            solvent.set(v[0])
             solventFound = True
             break
     if (not solventFound):

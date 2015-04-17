@@ -464,6 +464,9 @@ def verify_medium(section):
     for i, v in allowedSolvents.iteritems():
         if (solvent.get() in v):
             solventName = i
+            # Set name to the first value in the value pair
+            # C++ will look for this name!
+            solvent.set(v[0])
             solventFound = True
             break
     if (not solventFound):

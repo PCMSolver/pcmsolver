@@ -1,8 +1,8 @@
 /** \page CodeStats Code statistics
 
-Blank lines: 8565, Comment lines: 8384\n
-C++ code lines: 6540, C code lines: 45897, Fortran code lines: 3011
-Total code lines: 55448
+Blank lines: 1556, Comment lines: 4624\n
+C++ code lines: 5640, C code lines: 0, Fortran code lines: 2997
+Total code lines: 8637
 
 \image html total.png
 

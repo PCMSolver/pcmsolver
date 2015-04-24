@@ -69,6 +69,10 @@ public:
         e = value(r);
         de = derivative(r);
     }
+    double epsilonLeft() const { return epsilonLeft_; }
+    double epsilonRight() const { return epsilonRight_; }
+    double width() const { return width_; }
+    double center() const { return center_; }
 };
 
 #endif // TANHDIFFUSE_HPP

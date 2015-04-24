@@ -1,0 +1,9 @@
+% Differential and partial derivative
+\newcommand*{\diff}{\mathop{}\!\mathrm{d}}
+\newcommand*{\diel}{\varepsilon}
+
+\newcommand*{\deriv}[3][]{%
+\frac{\diff^{#1}#2}{\diff #3^{#1}}}
+\newcommand*{\pderiv}[3][]{%
+\frac{\partial^{#1}#2}%
+{\partial #3^{#1}}}

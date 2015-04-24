@@ -87,7 +87,7 @@ namespace logging
 
     /*! \brief Returns date and time
      */
-    std::string getTime() {
+    inline std::string getTime() {
         std::string time_str;
         time_t raw_time;
 

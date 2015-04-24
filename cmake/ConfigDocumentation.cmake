@@ -10,20 +10,17 @@ if(DOXYGEN_FOUND)
 	bar_charts
 	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_BINARY_DIR}/bin/counter.py"
 	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/cavity.py"       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
-	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/green.py"        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx 
-	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/interface.py"    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx 
-	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/metal.py"        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx 
+	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/green.py"        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/interface.py"    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
+	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/metal.py"        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
 	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/bi_operators.py" WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
 	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/pedra.py"        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
-	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/pwl.py"          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx 
 	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/solver.py"       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
 	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/total.py"        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
-	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/tsless.py"       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx 
 	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/utils.py"        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
-	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/wavcav.py"       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx
-	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/doc/gfx/matplotlib/wem.py"          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/gfx) 
-    add_custom_target(                                                                            
-        doc                                                                                       
+    )
+    add_custom_target(
+        doc
 	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_BINARY_DIR}/bin/counter.py"
         COMMAND ${DOXYGEN_EXECUTABLE} WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     add_dependencies(doc bar_charts)

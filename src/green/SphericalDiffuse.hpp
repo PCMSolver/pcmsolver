@@ -29,11 +29,15 @@
 #include <cmath>
 #include <iosfwd>
 #include <string>
+#include <array>
+#include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
 #include "taylor.hpp"
+
+#include <boost/function.hpp>
 
 template <typename ProfilePolicy>
 class SphericalDiffuse;
@@ -62,6 +66,45 @@ class SphericalDiffuse;
  *  4. an interface layer center
  *  can be used to define a new diffuse interface with spherical symmetry.
  */
+
+/*! \typedef ProfileEvaluator
+ *  \brief boosted-up function pointer to the dielectric profile evaluation function
+ */
+typedef boost::function<void (double, double, double)> ProfileEvaluator;
+
+/*! \typedef StateType
+ *  \brief state vector for the differential equation integrator
+ */
+typedef std::vector<double> StateType;
+
+/*! \typedef RadialFunction
+ *  \brief holds a solution to the radial equation: grid, function and first derivative
+ */
+typedef std::array<StateType, 3> RadialFunction;
+
+/*! \struct IntegratorParameters
+ *  \brief holds parameters for the integrator
+ */
+struct IntegratorParameters
+{
+    /*! Absolute tolerance level */
+    double eps_abs_     ;
+    /*! Relative tolerance level */
+    double eps_rel_     ;
+    /*! Weight of the state      */
+    double factor_x_    ;
+    /*! Weight of the state derivative */
+    double factor_dxdt_ ;
+    /*! Lower bound of the integration interval */
+    double r_0_         ;
+    /*! Upper bound of the integration interval */
+    double r_infinity_  ;
+    /*! Time step between observer calls */
+    double observer_step_;
+    IntegratorParameters(double e_abs, double e_rel, double f_x, double f_dxdt, double r0, double rinf, double step)
+        : eps_abs_(e_abs), eps_rel_(e_rel), factor_x_(f_x),
+        factor_dxdt_(f_dxdt), r_0_(r0), r_infinity_(rinf), observer_step_(step) {}
+};
 
 template <typename ProfilePolicy>
 class SphericalDiffuse : public GreensFunction<Numerical, ProfilePolicy>
@@ -157,6 +200,42 @@ private:
     { this->profile_ = ProfilePolicy(eL, eR, w, c); }
     /*! This calculates all the components needed to evaluate the Green's function */
     void initSphericalDiffuse();
+
+    /**@{ Parameters and functions for the calculation of the Green's function, including Coulomb singularity */
+    /*! Maximum angular momentum in the final summation over Legendre polynomials to obtain G */
+    size_t maxLGreen_ = 30;
+    /*! \brief First independent radial solution, used to build Green's function.
+     *  \note The vector has dimension maxLGreen_ and has r^l behavior
+     */
+    std::vector<RadialFunction> zeta_;
+    /*! \brief Second independent radial solution, used to build Green's function.
+     *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
+     */
+    std::vector<RadialFunction> omega_;
+    /*! Calculates 1st radial solution, i.e. the one with r^l behavior
+     *  \param[in] params parameters for the integrator
+     */
+    void computeZeta(const ProfileEvaluator & eval, const IntegratorParameters & params);
+    /*! Calculates 2nd radial solution, i.e. the one with r^(-l-1) behavior
+     *  \param[in] params parameters for the integrator
+     */
+    void computeOmega(const ProfileEvaluator & eval, const IntegratorParameters & params);
+    /**@}*/
+
+    /**@{ Parameters and functions for the calculation of the Coulomb singularity separation coefficient */
+    /*! Maximum angular momentum to obtain C(r, r'), needed to separate the Coulomb singularity */
+    size_t maxLC_     = maxLGreen_ + 30;
+    /*! \brief First independent radial solution, used to build coefficient.
+     *  \note This is needed to separate the Coulomb singularity and has r^l behavior
+     */
+    RadialFunction zetaC_;
+    /*! \brief Second independent radial solution, used to build coefficient.
+     *  \note This is needed to separate the Coulomb singularity and has r^(-l-1) behavior
+     */
+    RadialFunction omegaC_;
+    /*! Calculates zetaC_ and omegaC_ needed for separation of the Coulomb singularity */
+    void computeZetaAndOmega(const ProfileEvaluator & eval, const IntegratorParameters & params);
+    /**@}*/
 };
 
 #endif // SPHERICALDIFFUSE_HPP

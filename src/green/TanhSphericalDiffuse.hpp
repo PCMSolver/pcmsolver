@@ -72,9 +72,6 @@ class LnTransformedRadial
         /*! Angular momentum */
         size_t l_;
     public:
-        void l(size_t val) { l_ = val; }
-        /*! Constructor from profile evaluator */
-        LnTransformedRadial(const ProfileEvaluator & e) : eval_(e), l_(0) {}
         /*! Constructor from profile evaluator and angular momentum */
         LnTransformedRadial(const ProfileEvaluator & e, size_t lval) : eval_(e), l_(lval) {}
         /*! Provides a functor for the evaluation of the system
@@ -112,8 +109,6 @@ inline void observer(RadialFunction & f, const StateType & x, double r)
     f[2].push_back(x[1]);
 }
 
-typedef std::function<void (const StateType &, double)> IntegratorObserver;
-
 /*! \brief Calculates 1st radial solution, i.e. the one with r^l behavior
  *  \param[in]  L      angular momentum of the required solution
  *  \param[out] f      solution to the radial equation
@@ -130,7 +125,7 @@ inline void computeZeta(const size_t L, RadialFunction & f, const ProfileEvaluat
     // Holds the initial conditions
     StateType init_zeta_(2);
     // Partial application of observer
-    IntegratorObserver observer_ = std::bind(observer, f, _1, _2);
+    auto observer_ = std::bind(observer, f, _1, _2);
     // Set initial conditions
     init_zeta_[0] = L * std::log(params.r_0_);
     init_zeta_[1] = L / params.r_0_;

@@ -27,6 +27,7 @@
 #define TANHSPHERICALDIFFUSE_HPP
 
 #include <cmath>
+#include <functional>
 #include <iosfwd>
 #include <string>
 
@@ -35,19 +36,15 @@
 #include <Eigen/Dense>
 #include "taylor.hpp"
 
-// Boost general purpose includes
-#include <boost/bind.hpp>
-#include <boost/bind/placeholders.hpp>
-#include <boost/function.hpp>
 // Boost.Odeint includes
 #include <boost/numeric/odeint/config.hpp>
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/odeint/stepper/bulirsch_stoer.hpp>
 #include <boost/numeric/odeint/stepper/bulirsch_stoer_dense_out.hpp>
+// Boost.Math includes
+#include <boost/math/special_functions/legendre.hpp>
 
 #include "DerivativeTypes.hpp"
-#include "DiagonalIntegratorFactory.hpp"
-#include "DiagonalIntegrator.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -56,14 +53,7 @@
 #include "TanhDiffuse.hpp"
 #include "Timer.hpp"
 #include "LoggerInterface.hpp"
-
-/*! \file TanhSphericalDiffuse.hpp
- *  \typedef TanhSphericalDiffuse
- *  \brief Green's function for a diffuse interface with spherical symmetry and tanh profile
- *  \author Hui Cao, Ville Weijo, Luca Frediani and Roberto Di Remigio
- *  \date 2010-2015
- */
-typedef SphericalDiffuse<TanhDiffuse> TanhSphericalDiffuse;
+#include "MathUtils.hpp"
 
 /*! \file TanhSphericalDiffuse.hpp
  *  \class LnTransformedRadial
@@ -108,106 +98,74 @@ class LnTransformedRadial
 };
 
 /*! \file TanhSphericalDiffuse.hpp
- *  \struct Observer
  *  \brief reports progress of differential equation integrator
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-struct Observer
+inline void observer(RadialFunction & f, const StateType & x, double r)
 {
-    void operator()(RadialFunction & f, const StateType & x, double r) const
-    {
-        /* Save grid points */
-        f[0].push_back(r);
-        /* Save function */
-        f[1].push_back(x[0]);
-        /* Save first derivative of function */
-        f[2].push_back(x[1]);
-    }
-};
+    /* Save grid points */
+    f[0].push_back(r);
+    /* Save function */
+    f[1].push_back(x[0]);
+    /* Save first derivative of function */
+    f[2].push_back(x[1]);
+}
 
-/*! \typedef IntegratorObserver
- *  \brief boosted-up function pointer to the observer operator()
+typedef std::function<void (const StateType &, double)> IntegratorObserver;
+
+/*! \brief Calculates 1st radial solution, i.e. the one with r^l behavior
+ *  \param[in]  L      angular momentum of the required solution
+ *  \param[out] f      solution to the radial equation
+ *  \param[in]  eval   dielectric profile evaluator function object
+ *  \param[in]  params parameters for the integrator
  */
-typedef boost::function<void (const StateType &, double)> IntegratorObserver;
-
-template <>
-inline void TanhSphericalDiffuse::computeZeta(const ProfileEvaluator & eval, const IntegratorParameters & params)
+inline void computeZeta(const size_t L, RadialFunction & f, const ProfileEvaluator & eval, const IntegratorParameters & params)
 {
+    using namespace std::placeholders;
     namespace odeint = boost::numeric::odeint;
     odeint::bulirsch_stoer_dense_out<StateType> stepper_(params.eps_abs_, params.eps_rel_, params.factor_x_, params.factor_dxdt_);
-    LnTransformedRadial system_(eval); /*! The system of first-order ODEs */
-    StateType init_zeta_(2);           /*! Holds the initial conditions */
-    Observer obs_;
-    for (size_t L = 0; L < maxLGreen_; ++L) {
-        // Create an empty RadialFunction
-        RadialFunction f_;
-        // Partial application of Observer::operator()
-        IntegratorObserver observer_ = boost::bind(&Observer::operator(), obs_, f_, _1, _2);
-        // Set angular momentum
-        system_.l(L);
-        // Set initial conditions
-        init_zeta_[0] = L * std::log(params.r_0_);
-        init_zeta_[1] = L / params.r_0_;
-        odeint::integrate_adaptive(stepper_, system_, init_zeta_, params.r_0_, params.r_infinity_, params.observer_step_, observer_);
-        zeta_.push_back(f_);
-    }
-}
-
-template <>
-inline void TanhSphericalDiffuse::computeOmega(const ProfileEvaluator & eval, const IntegratorParameters & params)
-{
-    namespace odeint = boost::numeric::odeint;
-    odeint::bulirsch_stoer_dense_out<StateType> stepper_(params.eps_abs_, params.eps_rel_, params.factor_x_, params.factor_dxdt_);
-    LnTransformedRadial system_(eval); /*! The system of first-order ODEs */
-    StateType init_omega_(2);          /*! Holds the initial conditions */
-    Observer obs_;
-    for (size_t L = 0; L < maxLGreen_; ++L) {
-        // Create an empty RadialFunction
-        RadialFunction f_;
-        // Partial application of Observer::operator()
-        IntegratorObserver observer_ = boost::bind(&Observer::operator(), obs_, f_, _1, _2);
-        // Set angular momentum
-        system_.l(L);
-        // Set initial conditions
-        init_omega_[0] = -(L + 1) * std::log(params.r_infinity_);
-        init_omega_[1] = -(L + 1) / params.r_infinity_;
-        // Notice that we integrate BACKWARDS, so we pass -params.observer_step_ to integrate_adaptive
-        odeint::integrate_adaptive(stepper_, system_, init_omega_, params.r_infinity_, params.r_0_, -params.observer_step_, observer_);
-        omega_.push_back(f_);
-    }
-}
-
-template <>
-inline void TanhSphericalDiffuse::computeZetaAndOmega(const ProfileEvaluator & eval, const IntegratorParameters & params)
-{
-    namespace odeint = boost::numeric::odeint;
-    odeint::bulirsch_stoer_dense_out<StateType> stepper_(params.eps_abs_, params.eps_rel_, params.factor_x_, params.factor_dxdt_);
-    LnTransformedRadial system_(eval, maxLC_); /*! The system of first-order ODEs */
-    Observer obs_;
-    // Partial application of Observer::operator()
-    IntegratorObserver observer_zeta_ = boost::bind(&Observer::operator(), obs_, zetaC_, _1, _2);
-    // Set initial conditions for zeta
+    // The system of first-order ODEs
+    LnTransformedRadial system_(eval, L);
+    // Holds the initial conditions
     StateType init_zeta_(2);
-    init_zeta_[0] = maxLC_ * std::log(params.r_0_);
-    init_zeta_[1] = maxLC_ / params.r_0_;
-    // Integrate for zeta
-    odeint::integrate_adaptive(stepper_, system_, init_zeta_, params.r_0_, params.r_infinity_, params.observer_step_, observer_zeta_);
+    // Partial application of observer
+    IntegratorObserver observer_ = std::bind(observer, f, _1, _2);
+    // Set initial conditions
+    init_zeta_[0] = L * std::log(params.r_0_);
+    init_zeta_[1] = L / params.r_0_;
+    odeint::integrate_adaptive(stepper_, system_, init_zeta_, params.r_0_, params.r_infinity_, params.observer_step_, observer_);
+}
 
-    // Partial application of Observer::operator()
-    IntegratorObserver observer_omega_ = boost::bind(&Observer::operator(), obs_, omegaC_, _1, _2);
-    // Set initial conditions for omega
+/*! \brief Calculates 2nd radial solution, i.e. the one with r^(-l-1) behavior
+ *  \param[in]  L      angular momentum of the required solution
+ *  \param[out] f      solution to the radial equation
+ *  \param[in]  eval   dielectric profile evaluator function object
+ *  \param[in]  params parameters for the integrator
+ */
+inline void computeOmega(const size_t L, RadialFunction & f, const ProfileEvaluator & eval, const IntegratorParameters & params)
+{
+    using namespace std::placeholders;
+    namespace odeint = boost::numeric::odeint;
+    odeint::bulirsch_stoer_dense_out<StateType> stepper_(params.eps_abs_, params.eps_rel_, params.factor_x_, params.factor_dxdt_);
+    // The system of first-order ODEs
+    LnTransformedRadial system_(eval, L);
+    // Holds the initial conditions
     StateType init_omega_(2);
-    init_omega_[0] = -(maxLC_ + 1) * std::log(params.r_infinity_);
-    init_omega_[1] = -(maxLC_ + 1) / params.r_infinity_;
-    // Integrate for omega
+    // Partial application of observer
+    auto observer_ = std::bind(observer, f, _1, _2);
+    // Set initial conditions
+    init_omega_[0] = -(L + 1) * std::log(params.r_infinity_);
+    init_omega_[1] = -(L + 1) / params.r_infinity_;
     // Notice that we integrate BACKWARDS, so we pass -params.observer_step_ to integrate_adaptive
-    odeint::integrate_adaptive(stepper_, system_, init_omega_, params.r_infinity_, params.r_0_, -params.observer_step_, observer_omega_);
+    odeint::integrate_adaptive(stepper_, system_, init_omega_, params.r_infinity_, params.r_0_, -params.observer_step_, observer_);
 }
 
 template <>
 inline void TanhSphericalDiffuse::initSphericalDiffuse()
 {
+    using namespace std::placeholders;
+
     LOG("TanhSphericalDiffuse::initSphericalDiffuse");
     // Parameters for the numerical solution of the radial differential equation
     // Initialize the system of differential equations
@@ -219,33 +177,144 @@ inline void TanhSphericalDiffuse::initSphericalDiffuse()
     double r_infinity_  = profile_.center() + 100.0; /*! Upper bound of the integration interval */
     double observer_step_ = 5.0e-04; /*! Time step between observer calls */
     IntegratorParameters params_(eps_abs_, eps_rel_, factor_x_, factor_dxdt_, r_0_, r_infinity_, observer_step_);
-    // Bind the TanhDiffuse::operator() to an evaluator function
-    ProfileEvaluator eval_ = boost::bind(&TanhDiffuse::operator(), this->profile_, _1, _2, _3);
+    ProfileEvaluator eval_ = std::bind(&TanhDiffuse::operator(), this->profile_, _1, _2, _3);
 
     LOG("Computing coefficient for the separation of the Coulomb singularity");
-    timerON("TanhSphericalDiffuse::computeZetaAndOmega");
-    computeZetaAndOmega(eval_, params_);
-    timerOFF("TanhSphericalDiffuse::computeZetaAndOmega");
+    LOG("Computing first radial solution L = ", maxLC_);
+    timerON("TanhSphericalDiffuse::computeZeta for coefficient");
+    computeZeta(maxLC_, zetaC_, eval_, params_);
+    timerOFF("TanhSphericalDiffuse::computeZeta for coefficient");
+    LOG("DONE: Computing first radial solution L = ", maxLC_);
 
-    LOG("Computing first radial solution");
-    timerON("TanhSphericalDiffuse::computeZeta");
-    computeZeta(eval_, params_);
-    timerOFF("TanhSphericalDiffuse::computeZeta");
-
-    LOG("Computing second radial solution");
+    LOG("Computing first radial solution L = ", maxLC_);
     timerON("TanhSphericalDiffuse::computeOmega");
-    computeOmega(eval_, params_);
+    computeOmega(maxLC_, omegaC_, eval_, params_);
     timerOFF("TanhSphericalDiffuse::computeOmega");
+    LOG("Computing second radial solution L = ", maxLC_);
+    LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
+
+    LOG("Computing radial solutions for Green's function");
+    timerON("   Looping over angular momentum");
+    for (size_t L = 0; L < maxLGreen_; ++L) {
+        // First radial solution
+        LOG("Computing first radial solution L = ", L);
+        timerON("TanhSphericalDiffuse::computeZeta");
+        // Create an empty RadialFunction
+        RadialFunction tmp_zeta_;
+        computeZeta(L, tmp_zeta_, eval_, params_);
+        zeta_.push_back(tmp_zeta_);
+        timerOFF("TanhSphericalDiffuse::computeZeta");
+        LOG("DONE: Computing first radial solution L = ", L);
+
+        // Second radial solution
+        LOG("Computing first radial solution L = ", L);
+        timerON("TanhSphericalDiffuse::computeOmega");
+        // Create an empty RadialFunction
+        RadialFunction tmp_omega_;
+        computeOmega(L, tmp_omega_, eval_, params_);
+        omega_.push_back(tmp_omega_);
+        timerOFF("TanhSphericalDiffuse::computeOmega");
+        LOG("Computing second radial solution L = ", L);
+    }
+    timerOFF("   Looping over angular momentum");
+    LOG("DONE: Computing radial solutions for Green's function");
 }
 
+template <>
+inline double TanhSphericalDiffuse::coefficient(double r1, double r2) const
+{
+    /* Value of zetaC_ at point with index 1 */
+    double zeta1  = linearInterpolation(r1, zetaC_[0], zetaC_[1]);
+    /* Value of zetaC_ at point with index 2 */
+    double zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[1]);
+    /* Value of omegaC_ at point with index 1 */
+    double omega1 = linearInterpolation(r1, omegaC_[0], omegaC_[1]);
+    /* Value of omegaC_ at point with index 2 */
+    double omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[1]);
 
+    /* Components for the evaluation of the Wronskian */
+    /* Value of derivative of zetaC_ at point with index 2 */
+    double d_zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[2]);
+    /* Value of derivative of omegaC_ at point with index 2 */
+    double d_omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[2]);
+
+    double tmp = 0.0, coeff = 0.0;
+    double eps_r2 = 0.0, epsPrime_r2 = 0.0;
+    this->profile_(eps_r2, epsPrime_r2, r2);
+
+    double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
+
+    if (r1 < r2) {
+        tmp = std::exp(zeta1 - zeta2) * (2*maxLC_ +1) / denominator;
+        coeff = std::pow(r1/r2, maxLC_) / (tmp * r2);
+    } else {
+        tmp = std::exp(omega1 - omega2) * (2*maxLC_ +1) / denominator;
+        coeff = std::pow(r2/r1, maxLC_) / (tmp * r1);
+    }
+
+    return coeff;
+}
+
+template <>
+inline double TanhSphericalDiffuse::functionSummation(size_t L, double r1, double r2, double cos_gamma, double Cr12) const
+{
+    double gr12 = 0.0;
+    // Evaluate Legendre polynomial of order L
+    double pl_x = boost::math::legendre_p(L, cos_gamma);
+
+    /* Value of zeta_[L] at point with index 1 */
+    double zeta1  = linearInterpolation(r1, zeta_[L][0], zeta_[L][1]);
+    /* Value of zeta_[L} at point with index 2 */
+    double zeta2  = linearInterpolation(r2, zeta_[L][0], zeta_[L][1]);
+    /* Value of omega_[L] at point with index 1 */
+    double omega1 = linearInterpolation(r1, omega_[L][0], omega_[L][1]);
+    /* Value of omega_[L} at point with index 2 */
+    double omega2 = linearInterpolation(r2, omega_[L][0], omega_[L][1]);
+
+    /* Components for the evaluation of the Wronskian */
+    /* Value of derivative of zeta_[L] at point with index 2 */
+    double d_zeta2  = linearInterpolation(r2, zeta_[L][0], zeta_[L][2]);
+    /* Value of derivative of omega_[L] at point with index 2 */
+    double d_omega2 = linearInterpolation(r2, omega_[L][0], omega_[L][2]);
+
+    double eps_r2 = 0.0, epsPrime_r2 = 0.0;
+    this->profile_(eps_r2, epsPrime_r2, r2);
+
+    double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
+
+    if (r1 < r2) {
+        gr12 = std::exp(zeta1 - zeta2) * (2*L +1) / denominator;
+        gr12 = (gr12 - std::pow(r1/r2, L) / (r2 * Cr12) ) * pl_x ;
+    } else {
+        gr12 = std::exp(omega1 - omega2) * (2*L +1) / denominator;
+        gr12 = (gr12 - std::pow(r2/r1, L) / (r1 * Cr12) ) * pl_x ;
+    }
+
+    return gr12;
+}
+
+/*! Calcualtes the Green's function given a pair of points */
 template <>
 inline Numerical GreensFunction<Numerical, TanhDiffuse>::function(const Eigen::Vector3d & source,
                                         const Eigen::Vector3d & probe) const
 {
-    // To be implemented
-    return 0.0;
+    Numerical sp[3], pp[3];
+    sp[0] = source(0); sp[1] = source(1); sp[2] = source(2);
+    pp[0] = probe(0);  pp[1] = probe(1);  pp[2] = probe(2);
+    return this->operator()(sp, pp);
 }
+
+
+/* Derivative of Legendre polynomials can be obtained in terms of the associated
+ * Legendre polynomials (see http://en.wikipedia.org/wiki/Associated_Legendre_polynomials)
+ * Condon-Shortley phase is assumed.
+ *
+ * This is the source code for DOLFIN
+ * First derivative of Legendre polynomial of order l at point x:
+ * double pl_first_x = -boost::math::legendre_p(l, 1, x) / (std::sqrt(1.0 - x*x));
+ * Second derivative of Legendre polynomial of order l at point x:
+ * double pl_second_x = boost::math::legendre_p(l, 2, x)/ (1.0 - x*x);
+ */
 
 template <>
 inline Numerical GreensFunction<Numerical, TanhDiffuse>::derivativeSource(const Eigen::Vector3d & normal_p1,
@@ -278,45 +347,5 @@ namespace
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             TANHSPHERICALDIFFUSE, createTanhSphericalDiffuse);
 }
-
-/*! \file TanhSphericalDiffuse.hpp
- *  \class LnTransformedReducedRadial
- *  \brief system of ln-transformed first-order reduced radial differential equations
- *  \author Roberto Di Remigio
- *  \date 2015
- *
- *  Provides a handle to the system of differential equations for the integrator.
- *  The dielectric profile comes in as a boost::function object.
- */
-class LnTransformedReducedRadial
-{
-    private:
-        /*! Dielectric profile function and derivative evaluation */
-        ProfileEvaluator eval_;
-        /*! Angular momentum */
-        size_t l_;
-    public:
-        void l(size_t val) { l_ = val; }
-        /*! Constructor from profile evaluator */
-        LnTransformedReducedRadial(const ProfileEvaluator & e) : eval_(e) { l_ = 0; }
-        /*! Provides a functor for the evaluation of the system
-         *  of first-order ODEs needed by Boost.Odeint
-         *  The second-order ODE and the system of first-order ODEs
-         *  are reported in the manuscript.
-         *  \param[in] xi state vector holding the function and its first derivative
-         *  \param[out] dxidr state vector holding the first and second derivative
-         *  \param[in] r position on the integration grid
-         */
-        void operator()(const StateType & xi, StateType & dxidr, const double r)
-        {
-            // Evaluate the dielectric profile
-            double eps = 0.0, epsPrime = 0.0;
-            eval_(eps, epsPrime, r);
-            double gamma_epsilon = epsPrime / eps;
-            // System of equations is defined here
-            dxidr[0] = xi[1];
-            dxidr[1] = -xi[1] * (xi[1] + gamma_epsilon * (1 - 1/r)) + l_ * (l_ + 1) / std::pow(r, 2);
-        }
-};
 
 #endif // TANHSPHERICALDIFFUSE_HPP

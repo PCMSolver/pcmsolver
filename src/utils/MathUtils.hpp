@@ -26,8 +26,11 @@
 #ifndef MATHUTILS_HPP
 #define MATHUTILS_HPP
 
+#include <algorithm>
 #include <bitset>
 #include <cmath>
+#include <iterator>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -227,6 +230,30 @@ inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(
             _rows, _columns);
     _outData = mapped_data;
     return _outData;
+}
+
+/*! \brief Return value of function defined on grid at an arbitrary point
+ *  \param[in] point     where the function has to be evaluated
+ *  \param[in] grid      holds points on grid where function is known
+ *  \param[in] function  holds known function values
+ *
+ *  The function finds the nearest values for the given point
+ *  and performs a linear interpolation
+ *  \warning This function assumes that grid has already been sorted!
+ */
+inline double linearInterpolation(const double point, const std::vector<double> & grid,
+        const std::vector<double> & function)
+{
+    // Find nearest points on grid to the arbitrary point given
+    std::vector<double>::const_iterator pos = std::lower_bound(grid.begin(), grid.end(), point);
+    size_t index = std::distance(pos, grid.begin());
+
+    // Parameters for the interpolating line
+    double f_idx1 = function[index+1], f_idx = function[index];
+    double g_idx1 = grid[index+1], g_idx = grid[index];
+    double m = (f_idx1 - f_idx) / (g_idx1 - g_idx);
+
+    return (m * (point - g_idx) + f_idx);
 }
 
 #endif // MATHUTILS_HPP

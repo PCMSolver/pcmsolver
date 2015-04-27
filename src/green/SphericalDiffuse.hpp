@@ -26,10 +26,11 @@
 #ifndef SPHERICALDIFFUSE_HPP
 #define SPHERICALDIFFUSE_HPP
 
+#include <array>
 #include <cmath>
+#include <functional>
 #include <iosfwd>
 #include <string>
-#include <array>
 #include <vector>
 
 #include "Config.hpp"
@@ -37,10 +38,16 @@
 #include <Eigen/Dense>
 #include "taylor.hpp"
 
-#include <boost/function.hpp>
-
 template <typename ProfilePolicy>
 class SphericalDiffuse;
+
+/*! \file SphericalDiffuse.hpp
+ *  \typedef TanhSphericalDiffuse
+ *  \brief Green's function for a diffuse interface with spherical symmetry and tanh profile
+ *  \author Hui Cao, Ville Weijo, Luca Frediani and Roberto Di Remigio
+ *  \date 2010-2015
+ */
+typedef SphericalDiffuse<TanhDiffuse> TanhSphericalDiffuse;
 
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegratorFactory.hpp"
@@ -67,11 +74,6 @@ class SphericalDiffuse;
  *  can be used to define a new diffuse interface with spherical symmetry.
  */
 
-/*! \typedef ProfileEvaluator
- *  \brief boosted-up function pointer to the dielectric profile evaluation function
- */
-typedef boost::function<void (double, double, double)> ProfileEvaluator;
-
 /*! \typedef StateType
  *  \brief state vector for the differential equation integrator
  */
@@ -81,6 +83,11 @@ typedef std::vector<double> StateType;
  *  \brief holds a solution to the radial equation: grid, function and first derivative
  */
 typedef std::array<StateType, 3> RadialFunction;
+
+/*! \typedef ProfileEvaluator
+ *  \brief sort of a function pointer to the dielectric profile evaluation function
+ */
+typedef std::function<void(double &, double &, double)> ProfileEvaluator;
 
 /*! \struct IntegratorParameters
  *  \brief holds parameters for the integrator
@@ -182,8 +189,22 @@ private:
      */
     virtual Numerical operator()(Numerical * sp, Numerical * pp) const
     {
-        Numerical res = 0.0;
-        return res;
+        // Transfer raw arrays to Eigen vectors using the Map type
+        Eigen::Map<Eigen::Matrix<double, 3, 1> > p1(sp), p2(pp);
+        double r1  = p1.norm();
+        double r2  = p2.norm();
+        double r12 = (p1 - p2).norm();
+        double cos_gamma = p1.dot(p2) / (r1 * r2);
+
+        // Obtain coefficient for the separation of the Coulomb singularity
+        double Cr12 = this->coefficient(r1, r2);
+
+        double gr12 = 0.0;
+        for (size_t L = 0; L < maxLGreen_; ++L) {
+            gr12 += this->functionSummation(L, r1, r2, cos_gamma, Cr12);
+        }
+
+        return (1.0 / (Cr12 * r12) + gr12);
     }
     virtual std::ostream & printObject(std::ostream & os)
     {
@@ -212,14 +233,6 @@ private:
      *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
      */
     std::vector<RadialFunction> omega_;
-    /*! Calculates 1st radial solution, i.e. the one with r^l behavior
-     *  \param[in] params parameters for the integrator
-     */
-    void computeZeta(const ProfileEvaluator & eval, const IntegratorParameters & params);
-    /*! Calculates 2nd radial solution, i.e. the one with r^(-l-1) behavior
-     *  \param[in] params parameters for the integrator
-     */
-    void computeOmega(const ProfileEvaluator & eval, const IntegratorParameters & params);
     /**@}*/
 
     /**@{ Parameters and functions for the calculation of the Coulomb singularity separation coefficient */
@@ -233,9 +246,10 @@ private:
      *  \note This is needed to separate the Coulomb singularity and has r^(-l-1) behavior
      */
     RadialFunction omegaC_;
-    /*! Calculates zetaC_ and omegaC_ needed for separation of the Coulomb singularity */
-    void computeZetaAndOmega(const ProfileEvaluator & eval, const IntegratorParameters & params);
     /**@}*/
+
+    double coefficient(double r1, double r2) const;
+    double functionSummation(size_t L, double r1, double r2, double cos_gamma, double Cr12) const;
 };
 
 #endif // SPHERICALDIFFUSE_HPP

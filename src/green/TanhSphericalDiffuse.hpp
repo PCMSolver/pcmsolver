@@ -123,12 +123,12 @@ inline void computeZeta(int L, RadialFunction & f, const ProfileEvaluator & eval
     LnTransformedRadial system_(eval, L);
     // Holds the initial conditions
     StateType init_zeta_(2);
-    // Partial application of observer
-    auto observer_ = std::bind(observer, std::ref(f), _1, _2);
     // Set initial conditions
     init_zeta_[0] = L * std::log(params.r_0_);
     init_zeta_[1] = L / params.r_0_;
-    odeint::integrate_adaptive(stepper_, system_, init_zeta_, params.r_0_, params.r_infinity_, params.observer_step_, observer_);
+    odeint::integrate_adaptive(stepper_, system_, init_zeta_,
+            params.r_0_, params.r_infinity_, params.observer_step_,
+            std::bind(observer, std::ref(f), _1, _2));
 }
 
 /*! \brief Calculates 2nd radial solution, i.e. the one with r^(-l-1) behavior
@@ -146,13 +146,13 @@ inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eva
     LnTransformedRadial system_(eval, L);
     // Holds the initial conditions
     StateType init_omega_(2);
-    // Partial application of observer
-    auto observer_ = std::bind(observer, std::ref(f), _1, _2);
     // Set initial conditions
     init_omega_[0] = -(L + 1) * std::log(params.r_infinity_);
     init_omega_[1] = -(L + 1) / params.r_infinity_;
     // Notice that we integrate BACKWARDS, so we pass -params.observer_step_ to integrate_adaptive
-    odeint::integrate_adaptive(stepper_, system_, init_omega_, params.r_infinity_, params.r_0_, -params.observer_step_, observer_);
+    odeint::integrate_adaptive(stepper_, system_, init_omega_,
+            params.r_infinity_, params.r_0_, -params.observer_step_,
+            std::bind(observer, std::ref(f), _1, _2));
 }
 
 template <>

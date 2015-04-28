@@ -48,7 +48,7 @@ struct TanhSphericalDiffuseTest {
         epsOutside = 2.0;
 	    sphereCenter << 0.0, 0.0, 0.0;
         sphereRadius = 100.0;
-	    width = 1.0;
+	    width = 5.0;
 	    // Evaluation inside the sphere
         source1 << 1.0, 0.0, 0.0;
         sourceNormal1 = source1; // + Eigen::Vector3d::Random();
@@ -104,17 +104,17 @@ BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
 /*! \class TanhSphericalDiffuse
  *  \test \b TanhSphericalDiffuseTest_outside tests the evaluation of the TanhSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
-/*
 BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
 {
-    TanhSphericalDiffuse gf(epsInside, epsOutside, sphereCenter, sphereRadius, width);
-    std::cout << gf << std::endl;
+    TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius);
+    //std::cout << gf << std::endl;
     double value = resultOutside(0);
     double gf_value = gf.function(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
     BOOST_CHECK_CLOSE(value, gf_value, 1.0e-12);
 
+    /*
     double derProbe = resultOutside(1);
     double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
     BOOST_TEST_MESSAGE("derProbe    = " << std::setprecision(std::numeric_limits<long double>::digits10) << derProbe);
@@ -126,9 +126,10 @@ BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
     BOOST_TEST_MESSAGE("derSource    = " << std::setprecision(std::numeric_limits<long double>::digits10) << derSource);
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
     BOOST_CHECK_CLOSE(derSource, gf_derSource, 1.0e-06);
+    */
 }
-*/
 BOOST_AUTO_TEST_SUITE_END()
+
 /*
 struct TanhSphericalDiffuseBogusTest {
     double epsInside, epsOutside, sphereRadius, width;

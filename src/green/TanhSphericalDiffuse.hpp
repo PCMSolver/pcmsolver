@@ -108,6 +108,18 @@ inline void observer(RadialFunction & f, const StateType & x, double r)
     f[2].push_back(x[1]);
 }
 
+/*! \brief reverse contents of a RadialFunction
+ *  \param[in] f RadialFunction whose contents have to be reversed
+ *  \author Roberto Di Remigio
+ *  \date 2015
+ */
+inline void reverse(RadialFunction & f)
+{
+    std::reverse(f[0].begin(), f[0].end());
+    std::reverse(f[1].begin(), f[1].end());
+    std::reverse(f[2].begin(), f[2].end());
+}
+
 /*! \brief Calculates 1st radial solution, i.e. the one with r^l behavior
  *  \param[in]  L      angular momentum of the required solution
  *  \param[out] f      solution to the radial equation
@@ -153,6 +165,9 @@ inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eva
     odeint::integrate_adaptive(stepper_, system_, init_omega_,
             params.r_infinity_, params.r_0_, -params.observer_step_,
             std::bind(observer, std::ref(f), _1, _2));
+    // Reverse order of StateType-s in RadialFunction
+    // this ensures that they are in ascending order (as later expected by linearInterpolation)
+    reverse(f);
 }
 
 template <>

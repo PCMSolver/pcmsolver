@@ -237,16 +237,15 @@ inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(
  *  \param[in] grid      holds points on grid where function is known
  *  \param[in] function  holds known function values
  *
- *  The function finds the nearest values for the given point
- *  and performs a linear interpolation
+ *  This function finds the nearest values for the given point
+ *  and performs a linear interpolation.
  *  \warning This function assumes that grid has already been sorted!
  */
 inline double linearInterpolation(const double point, const std::vector<double> & grid,
         const std::vector<double> & function)
 {
     // Find nearest points on grid to the arbitrary point given
-    std::vector<double>::const_iterator pos = std::lower_bound(grid.begin(), grid.end(), point);
-    size_t index = std::distance(pos, grid.begin());
+    size_t index = std::distance(grid.begin(), std::lower_bound(grid.begin(), grid.end(), point));
 
     // Parameters for the interpolating line
     double f_idx1 = function[index+1], f_idx = function[index];

@@ -87,7 +87,7 @@ typedef std::array<StateType, 3> RadialFunction;
 /*! \typedef ProfileEvaluator
  *  \brief sort of a function pointer to the dielectric profile evaluation function
  */
-typedef std::function<void(double &, double &, double)> ProfileEvaluator;
+typedef std::function<void(double &, double &, const double)> ProfileEvaluator;
 
 /*! \struct IntegratorParameters
  *  \brief holds parameters for the integrator
@@ -200,7 +200,7 @@ private:
         double Cr12 = this->coefficient(r1, r2);
 
         double gr12 = 0.0;
-        for (size_t L = 0; L < maxLGreen_; ++L) {
+        for (int L = 0; L <= maxLGreen_; ++L) {
             gr12 += this->functionSummation(L, r1, r2, cos_gamma, Cr12);
         }
 
@@ -224,7 +224,7 @@ private:
 
     /**@{ Parameters and functions for the calculation of the Green's function, including Coulomb singularity */
     /*! Maximum angular momentum in the final summation over Legendre polynomials to obtain G */
-    size_t maxLGreen_ = 30;
+    int maxLGreen_ = 30;
     /*! \brief First independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_ and has r^l behavior
      */
@@ -237,7 +237,7 @@ private:
 
     /**@{ Parameters and functions for the calculation of the Coulomb singularity separation coefficient */
     /*! Maximum angular momentum to obtain C(r, r'), needed to separate the Coulomb singularity */
-    size_t maxLC_     = maxLGreen_ + 30;
+    int maxLC_     = maxLGreen_ + 30;
     /*! \brief First independent radial solution, used to build coefficient.
      *  \note This is needed to separate the Coulomb singularity and has r^l behavior
      */
@@ -249,7 +249,7 @@ private:
     /**@}*/
 
     double coefficient(double r1, double r2) const;
-    double functionSummation(size_t L, double r1, double r2, double cos_gamma, double Cr12) const;
+    double functionSummation(int L, double r1, double r2, double cos_gamma, double Cr12) const;
 };
 
 #endif // SPHERICALDIFFUSE_HPP

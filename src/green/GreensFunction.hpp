@@ -110,7 +110,7 @@ public:
      *  Notice that this method returns the directional derivative with respect
      *  to the probe point.
      *
-     *  \param[in] normal_p2 the normal vector to p1
+     *  \param[in] normal_p2 the normal vector to p2
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
      */

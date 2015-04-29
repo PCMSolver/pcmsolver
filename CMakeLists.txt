@@ -223,6 +223,3 @@ execute_process(
 include(BuildInfo)
 # Printout useful info
 include(ConfigInfo)
-
-add_executable(plot_green_spherical.x ${PROJECT_SOURCE_DIR}/src/plot_green_spherical.cpp)
-target_link_libraries(plot_green_spherical.x green bi_operators utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})

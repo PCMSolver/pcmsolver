@@ -181,6 +181,8 @@ public:
     friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
         return gf.printObject(os);
     }
+    double Coulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const;
+    double imagePotential(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const;
 private:
     /*! Evaluates the Green's function given a pair of points
      *
@@ -222,7 +224,7 @@ private:
     /*! This calculates all the components needed to evaluate the Green's function */
     void initSphericalDiffuse();
 
-    /**@{ Parameters and functions for the calculation of the Green's function, including Coulomb singularity */
+    /**@{ Parameters for the calculation of the Green's function, including Coulomb singularity */
     /*! Maximum angular momentum in the final summation over Legendre polynomials to obtain G */
     int maxLGreen_ = 30;
     /*! \brief First independent radial solution, used to build Green's function.
@@ -235,7 +237,7 @@ private:
     std::vector<RadialFunction> omega_;
     /**@}*/
 
-    /**@{ Parameters and functions for the calculation of the Coulomb singularity separation coefficient */
+    /**@{ Parameters for the calculation of the Coulomb singularity separation coefficient */
     /*! Maximum angular momentum to obtain C(r, r'), needed to separate the Coulomb singularity */
     int maxLC_     = maxLGreen_ + 30;
     /*! \brief First independent radial solution, used to build coefficient.
@@ -250,6 +252,9 @@ private:
 
     double coefficient(double r1, double r2) const;
     double functionSummation(int L, double r1, double r2, double cos_gamma, double Cr12) const;
+
+    Eigen::Vector3d coefficientGradient(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
+    Eigen::Vector3d functionSummationGradient(int L, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2, double Cr12) const;
 };
 
 #endif // SPHERICALDIFFUSE_HPP

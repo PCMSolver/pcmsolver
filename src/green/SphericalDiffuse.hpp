@@ -181,8 +181,10 @@ public:
     friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
         return gf.printObject(os);
     }
+    double coefficientCoulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const;
     double Coulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const;
     double imagePotential(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const;
+    void epsilon(double & v, double & d, double point) const { this->profile_(v, d, point); }
 private:
     /*! Evaluates the Green's function given a pair of points
      *

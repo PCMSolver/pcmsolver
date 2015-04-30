@@ -182,7 +182,7 @@ inline void TanhSphericalDiffuse::initSphericalDiffuse()
     double factor_x_    = 1.0;     /*! Weight of the state      */
     double factor_dxdt_ = 1.0;     /*! Weight of the state derivative */
     double r_0_         = 0.5;     /*! Lower bound of the integration interval */
-    double r_infinity_  = profile_.center() + 100.0; /*! Upper bound of the integration interval */
+    double r_infinity_  = profile_.center() + 200.0; /*! Upper bound of the integration interval */
     double observer_step_ = 1.0e-03; /*! Time step between observer calls */
     IntegratorParameters params_(eps_abs_, eps_rel_, factor_x_, factor_dxdt_, r_0_, r_infinity_, observer_step_);
     ProfileEvaluator eval_ = std::bind(&TanhDiffuse::operator(), this->profile_, _1, _2, _3);
@@ -313,12 +313,22 @@ inline Numerical GreensFunction<Numerical, TanhDiffuse>::function(const Eigen::V
 }
 
 template <>
+inline double TanhSphericalDiffuse::coefficientCoulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const
+{
+    double r1  = source.norm();
+    double r2  = probe.norm();
+    double r12 = (source - probe).norm();
+
+    // Obtain coefficient for the separation of the Coulomb singularity
+    return this->coefficient(r1, r2);
+}
+
+template <>
 inline double TanhSphericalDiffuse::Coulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const
 {
     double r1  = source.norm();
     double r2  = probe.norm();
     double r12 = (source - probe).norm();
-    double cos_gamma = source.dot(probe) / (r1 * r2);
 
     // Obtain coefficient for the separation of the Coulomb singularity
     return (1.0 / (this->coefficient(r1, r2) * r12));
@@ -329,7 +339,6 @@ inline double TanhSphericalDiffuse::imagePotential(const Eigen::Vector3d & sourc
 {
     double r1  = source.norm();
     double r2  = probe.norm();
-    double r12 = (source - probe).norm();
     double cos_gamma = source.dot(probe) / (r1 * r2);
 
     // Obtain coefficient for the separation of the Coulomb singularity

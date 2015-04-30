@@ -80,7 +80,6 @@ BOOST_FIXTURE_TEST_SUITE(TanhSphericalDiffuse1, TanhSphericalDiffuseTest)
 BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
 {
     TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius);
-    //std::cout << gf << std::endl;
     double value = resultInside(0);
     double gf_value = gf.function(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -107,7 +106,6 @@ BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
 BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
 {
     TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius);
-    //std::cout << gf << std::endl;
     double value = resultOutside(0);
     double gf_value = gf.function(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);

@@ -29,6 +29,7 @@
 #include "Config.hpp"
 
 #include "TanhDiffuse.hpp"
+#include "TanhMembrane.hpp"
 #include "Uniform.hpp"
 #include "Yukawa.hpp"
 

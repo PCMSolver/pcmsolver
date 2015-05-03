@@ -449,9 +449,10 @@ inline Eigen::Vector3d TanhSphericalDiffuse::functionSummationGradient(int L, co
 }
 
 template <>
-inline double SphericalDiffuse<TanhDiffuse>::derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+inline double GreensFunction<Numerical, TanhDiffuse>::derivativeProbe(const Eigen::Vector3d & /* normal_p2 */,
+                                   const Eigen::Vector3d & /* p1 */, const Eigen::Vector3d & /* p2 */) const
 {
+    /*
     double eps_r2 = 0.0, epsPrime_r2 = 0.0;
     this->profile_(eps_r2, epsPrime_r2, p2.norm());
 
@@ -468,11 +469,14 @@ inline double SphericalDiffuse<TanhDiffuse>::derivativeProbe(const Eigen::Vector
     gr_d *= -1;
 
     return (eps_r2 * grad.dot(normal_p2));
+    */
+    // To be implemented
+    return 0.0;
 }
 
 template <>
-inline double GreensFunction<Numerical, TanhDiffuse>::derivativeSource(const Eigen::Vector3d & normal_p1,
-        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+inline double GreensFunction<Numerical, TanhDiffuse>::derivativeSource(const Eigen::Vector3d & /* normal_p1 */,
+        const Eigen::Vector3d & /* p1 */, const Eigen::Vector3d & /* p2 */) const
 {
     // To be implemented
     return 0.0;

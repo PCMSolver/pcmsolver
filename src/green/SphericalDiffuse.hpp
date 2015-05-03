@@ -117,10 +117,23 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
-        return this->derivativeProbe(direction, p1, p2);
+        double eps_r2 = 0.0, epsPrime_r2 = 0.0;
+        this->profile_(eps_r2, epsPrime_r2, p2.norm());
+
+        Eigen::Vector3d Cr12_grad = this->coefficientGradient(p1, p2);
+        Eigen::Vector3d grad = Eigen::Vector3d::Zero();
+        for (int L = 0; L < maxLGreen_; ++L) {
+            grad += this->functionSummationGradient(L, p1, p2, Cr12_grad);
+        }
+
+        double r12 = (p1 - p2).norm();
+        Eigen::Vector3d gr_d = Eigen::Vector3d::Zero();
+        gr_d.array() = (p1.array() - p2.array()) /
+	                   (Cr12_grad.array() * std::pow(r12, 3)) + grad.array();
+        gr_d *= -1;
+
+        return (eps_r2 * grad.dot(direction));
     }
-    virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
     /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *
      *  \param[in] area   area of the i-th tessera

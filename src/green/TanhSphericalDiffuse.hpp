@@ -42,6 +42,7 @@
 #include <boost/math/special_functions/legendre.hpp>
 
 #include "DerivativeTypes.hpp"
+#include "InterfacesDef.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -50,75 +51,6 @@
 #include "TanhDiffuse.hpp"
 #include "Timer.hpp"
 #include "LoggerInterface.hpp"
-#include "MathUtils.hpp"
-#include "GeneralPurpose.hpp"
-
-/*! \file TanhSphericalDiffuse.hpp
- *  \class LnTransformedRadial
- *  \brief system of ln-transformed first-order radial differential equations
- *  \author Roberto Di Remigio
- *  \date 2015
- *
- *  Provides a handle to the system of differential equations for the integrator.
- *  The dielectric profile comes in as a boost::function object.
- */
-class LnTransformedRadial
-{
-    private:
-        /*! Dielectric profile function and derivative evaluation */
-        ProfileEvaluator eval_;
-        /*! Angular momentum */
-        int l_;
-    public:
-        /*! Constructor from profile evaluator and angular momentum */
-        LnTransformedRadial(const ProfileEvaluator & e, int lval) : eval_(e), l_(lval) {}
-        /*! Provides a functor for the evaluation of the system
-         *  of first-order ODEs needed by Boost.Odeint
-         *  The second-order ODE and the system of first-order ODEs
-         *  are reported in the manuscript.
-         *  \param[in] rho state vector holding the function and its first derivative
-         *  \param[out] drhodr state vector holding the first and second derivative
-         *  \param[in] r position on the integration grid
-         */
-        void operator()(const StateType & rho, StateType & drhodr, const double r)
-        {
-            // Evaluate the dielectric profile
-            double eps = 0.0, epsPrime = 0.0;
-            eval_(eps, epsPrime, r);
-            if (numericalZero(eps)) throw std::invalid_argument("Division by zero!");
-            double gamma_epsilon = epsPrime / eps;
-            // System of equations is defined here
-            drhodr[0] = rho[1];
-            drhodr[1] = -rho[1] * (rho[1] + 2.0/r + gamma_epsilon) + l_ * (l_ + 1) / std::pow(r, 2);
-        }
-};
-
-/*! \file TanhSphericalDiffuse.hpp
- *  \brief reports progress of differential equation integrator
- *  \author Roberto Di Remigio
- *  \date 2015
- */
-inline void observer(RadialFunction & f, const StateType & x, double r)
-{
-    /* Save grid points */
-    f[0].push_back(r);
-    /* Save function */
-    f[1].push_back(x[0]);
-    /* Save first derivative of function */
-    f[2].push_back(x[1]);
-}
-
-/*! \brief reverse contents of a RadialFunction
- *  \param[in] f RadialFunction whose contents have to be reversed
- *  \author Roberto Di Remigio
- *  \date 2015
- */
-inline void reverse(RadialFunction & f)
-{
-    std::reverse(f[0].begin(), f[0].end());
-    std::reverse(f[1].begin(), f[1].end());
-    std::reverse(f[2].begin(), f[2].end());
-}
 
 /*! \brief Calculates 1st radial solution, i.e. the one with r^l behavior
  *  \param[in]  L      angular momentum of the required solution
@@ -177,14 +109,10 @@ inline void TanhSphericalDiffuse::initSphericalDiffuse()
 
     LOG("TanhSphericalDiffuse::initSphericalDiffuse");
     // Parameters for the numerical solution of the radial differential equation
-    double eps_abs_     = 1.0e-10; /*! Absolute tolerance level */
-    double eps_rel_     = 1.0e-06; /*! Relative tolerance level */
-    double factor_x_    = 1.0;     /*! Weight of the state      */
-    double factor_dxdt_ = 1.0;     /*! Weight of the state derivative */
     double r_0_         = 0.5;     /*! Lower bound of the integration interval */
     double r_infinity_  = profile_.center() + 200.0; /*! Upper bound of the integration interval */
     double observer_step_ = 1.0e-03; /*! Time step between observer calls */
-    IntegratorParameters params_(eps_abs_, eps_rel_, factor_x_, factor_dxdt_, r_0_, r_infinity_, observer_step_);
+    IntegratorParameters params_(r_0_, r_infinity_, observer_step_);
     ProfileEvaluator eval_ = std::bind(&TanhDiffuse::operator(), this->profile_, _1, _2, _3);
 
     LOG("Computing coefficient for the separation of the Coulomb singularity");
@@ -317,7 +245,6 @@ inline double TanhSphericalDiffuse::coefficientCoulomb(const Eigen::Vector3d & s
 {
     double r1  = source.norm();
     double r2  = probe.norm();
-    double r12 = (source - probe).norm();
 
     // Obtain coefficient for the separation of the Coulomb singularity
     return this->coefficient(r1, r2);
@@ -373,9 +300,7 @@ inline Eigen::Vector3d TanhSphericalDiffuse::coefficientGradient(const Eigen::Ve
     double r2_2 = std::pow(r2, 2);
     double r2_3 = std::pow(r2, 3);
     double prod = p1.dot(p2);
-    double r12 = (p1 - p2).norm();
     double cos_gamma = p1.dot(p2) / (r1 * r2);
-    double cos_gamma_2 = std::pow(cos_gamma, 2);
 
     double pl_x = boost::math::legendre_p(maxLC_, cos_gamma);
     double pl_first_x = -boost::math::legendre_p(maxLC_, 1, cos_gamma)
@@ -463,9 +388,7 @@ inline Eigen::Vector3d TanhSphericalDiffuse::functionSummationGradient(int L, co
     double r2_2 = std::pow(r2, 2);
     double r2_3 = std::pow(r2, 3);
     double prod = p1.dot(p2);
-    double r12 = (p1 - p2).norm();
     double cos_gamma = p1.dot(p2) / (r1 * r2);
-    double cos_gamma_2 = std::pow(cos_gamma, 2);
 
     double pl_x = boost::math::legendre_p(maxLC_, cos_gamma);
     double pl_first_x = -boost::math::legendre_p(maxLC_, 1, cos_gamma)

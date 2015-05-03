@@ -166,7 +166,7 @@ protected:
 };
 
 template <>
-inline Numerical GreensFunction<Numerical>::function(const Eigen::Vector3d & source,
+inline double GreensFunction<Numerical, Uniform>::function(const Eigen::Vector3d & source,
                                         const Eigen::Vector3d & probe) const
 {
     Numerical sp[3], pp[3], res;
@@ -177,7 +177,7 @@ inline Numerical GreensFunction<Numerical>::function(const Eigen::Vector3d & sou
 }
 
 template <>
-inline Numerical GreensFunction<Numerical>::derivativeSource(const Eigen::Vector3d & normal_p1,
+inline double GreensFunction<Numerical, Uniform>::derivativeSource(const Eigen::Vector3d & normal_p1,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     Eigen::Vector3d deltaPlus  = p1 + normal_p1 * delta_ / normal_p1.norm();
@@ -188,7 +188,7 @@ inline Numerical GreensFunction<Numerical>::derivativeSource(const Eigen::Vector
 }
 
 template <>
-inline Numerical GreensFunction<Numerical>::derivativeProbe(const Eigen::Vector3d & normal_p2,
+inline double GreensFunction<Numerical, Uniform>::derivativeProbe(const Eigen::Vector3d & normal_p2,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     Eigen::Vector3d deltaPlus  = p2 + normal_p2 * delta_ / normal_p2.norm();

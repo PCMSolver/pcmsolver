@@ -301,9 +301,9 @@ inline double TanhSphericalDiffuse::functionSummation(int L, double r1, double r
     return gr12;
 }
 
-/*! Calcualtes the Green's function given a pair of points */
+/*! Calculates the Green's function given a pair of points */
 template <>
-inline Numerical GreensFunction<Numerical, TanhDiffuse>::function(const Eigen::Vector3d & source,
+inline double GreensFunction<Numerical, TanhDiffuse>::function(const Eigen::Vector3d & source,
                                         const Eigen::Vector3d & probe) const
 {
     Numerical sp[3], pp[3];
@@ -372,6 +372,7 @@ inline Eigen::Vector3d TanhSphericalDiffuse::coefficientGradient(const Eigen::Ve
     double r2  = p2.norm();
     double r2_2 = std::pow(r2, 2);
     double r2_3 = std::pow(r2, 3);
+    double prod = p1.dot(p2);
     double r12 = (p1 - p2).norm();
     double cos_gamma = p1.dot(p2) / (r1 * r2);
     double cos_gamma_2 = std::pow(cos_gamma, 2);
@@ -416,11 +417,11 @@ inline Eigen::Vector3d TanhSphericalDiffuse::coefficientGradient(const Eigen::Ve
     Eigen::Vector3d tmp_grad = Eigen::Vector3d::Zero();
     if (r1 < r2) {
         double expFact = std::exp(zeta1 -zeta2) * (2*maxLC_ + 1);
-        tmp_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (x1*r2*r2/x2-r12)*pl_first_x/
+        tmp_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (x1*r2*r2/x2-prod)*pl_first_x/
                       (r1*r2*r2));
-        tmp_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (y1*r2*r2/y2-r12)*pl_first_x/
+        tmp_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (y1*r2*r2/y2-prod)*pl_first_x/
                       (r1*r2*r2));
-        tmp_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (z1*r2*r2/z2-r12)*pl_first_x/
+        tmp_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (z1*r2*r2/z2-prod)*pl_first_x/
                       (r1*r2*r2));
 
         double powl = std::pow(r1/r2, maxLC_);
@@ -432,12 +433,12 @@ inline Eigen::Vector3d TanhSphericalDiffuse::coefficientGradient(const Eigen::Ve
                                     p2)))/(r1*r2))/(r2_3*tmp_grad(2));
     } else {
         double expFact = exp(omega1 - omega2) * (2*maxLC_ + 1);
-        tmp_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (x1*r2*r2/x2-r12)*pl_first_x/
-                      (r1*r2*r2));
-        tmp_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (y1*r2*r2/y2-r12)*pl_first_x/
-                      (r1*r2*r2));
-        tmp_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (z1*r2*r2/z2-r12)*pl_first_x/
-                      (r1*r2*r2));
+        tmp_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) *
+            (a + c - (x1*r2*r2/x2 - prod) * pl_first_x / (r1*r2*r2));
+        tmp_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) *
+            (a + c - (y1*r2*r2/y2 - prod) * pl_first_x / (r1*r2*r2));
+        tmp_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2)
+            * (a + c - (z1*r2*r2/z2 - prod) * pl_first_x / (r1*r2*r2));
 
         double powl = std::pow(r2/r1, maxLC_);
         coeff_grad(0) = powl*(pl_x*p2(0)*maxLC_+pl_first_x*(p1(0)*r2_2 -p2(0)*(p1.dot(p2)))/
@@ -453,112 +454,48 @@ inline Eigen::Vector3d TanhSphericalDiffuse::coefficientGradient(const Eigen::Ve
 
 template <>
 inline Eigen::Vector3d TanhSphericalDiffuse::functionSummationGradient(int L, const Eigen::Vector3d & p1,
-        const Eigen::Vector3d & p2, double Cr12) const
+        const Eigen::Vector3d & p2, const Eigen::Vector3d & Cr12_grad) const
 {
     Eigen::Vector3d gr12_grad = Eigen::Vector3d::Zero();
-    return gr12_grad;
-}
 
-template <>
-inline Numerical GreensFunction<Numerical, TanhDiffuse>::derivativeProbe(const Eigen::Vector3d & normal_p2,
-        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
-{
-    double eps_r2 = 0.0, epsPrime_r2 = 0.0;
-    this->profile_(eps_r2, epsPrime_r2, p2.norm());
-    Eigen::Vector3d grad = Eigen::Vector3d::Zero();
-
-    // To be implemented
-    return (eps_r2 * grad.dot(normal_p2));
-}
-
-/*
-Eigen::Vector3d SphericalInterface::converged_deri_gf(const Eigen::VectorXd & p1,
-        const Eigen::VectorXd & p2, double *plx,
-        double *dplx) const
-{
-    Eigen::Vector3d greenGradient(0.0, 0.0, 0.0);
-    Eigen::Vector3d Cr12Gradient(0.0, 0.0, 0.0);
-    double r1 = p1.norm();
-    double r2 = p2.norm();
-    double eps2, deps2;
-    profile(&eps2, &deps2, r2);
-
-    double pl = plx[maxLEpsilon_];
-    double dpl = dplx[maxLEpsilon_];
-
-    Cr12Gradient.Zero();
-    greenGradient = greenfunc_der(p1, p2, Cr12Gradient, radialC1_, radialC2_,
-                                  pl, dpl, maxLEpsilon_, 0);
-    if (r1 < r2) {
-        double powl = std::pow(r1/r2, maxLEpsilon_);
-        Cr12Gradient(0) = powl*(pl*p2(0)*(-maxLEpsilon_-1)+dpl*(p1(0)*r2*r2-p2(0)*(p1.dot(
-                                    p2)))/(r1*r2))/(r2*r2*r2*greenGradient(0));
-        Cr12Gradient(1) = powl*(pl*p2(1)*(-maxLEpsilon_-1)+dpl*(p1(1)*r2*r2-p2(1)*(p1.dot(
-                                    p2)))/(r1*r2))/(r2*r2*r2*greenGradient(1));
-        Cr12Gradient(2) = powl*(pl*p2(2)*(-maxLEpsilon_-1)+dpl*(p1(2)*r2*r2-p2(2)*(p1.dot(
-                                    p2)))/(r1*r2))/(r2*r2*r2*greenGradient(2));
-    } else {
-        double powl = std::pow(r2/r1, maxLEpsilon_);
-        Cr12Gradient(0) = powl*(pl*p2(0)*maxLEpsilon_+dpl*(p1(0)*r2*r2-p2(0)*(p1.dot(p2)))/
-                                (r1*r2))/(r1*r2*r2*greenGradient(0));
-        Cr12Gradient(1) = powl*(pl*p2(1)*maxLEpsilon_+dpl*(p1(1)*r2*r2-p2(1)*(p1.dot(p2)))/
-                                (r1*r2))/(r1*r2*r2*greenGradient(1));
-        Cr12Gradient(2) = powl*(pl*p2(2)*maxLEpsilon_+dpl*(p1(2)*r2*r2-p2(2)*(p1.dot(p2)))/
-                                (r1*r2))/(r1*r2*r2*greenGradient(2));
-    }
-
-    greenGradient.Zero();
-
-    for (int l = 0; l < maxLGreen_; ++l) {
-        Eigen::Vector3d gl = greenfunc_der(p1, p2, Cr12Gradient, radialG1_[l],
-                                           radialG2_[l], plx[l], dplx[l], l, 1);
-        greenGradient += gl;
-    }
-
-    double r12 = (p1-p2).norm();
-    Eigen::Vector3d gr_d;
-    gr_d.array() = (p1.array() - p2.array()) /
-                   (Cr12Gradient.array() * r12 * r12 * r12) + greenGradient.array();
-    gr_d *= -1;
-    return gr_d;
-}
-
-// greenGradient = greenfunc_der(p1, p2, Cr12Gradient, radialC1_, radialC2_, pl, dpl, maxLEpsilon_, 0);
-
-Eigen::Vector3d SphericalInterface::greenfunc_der(const Eigen::Vector3d & p1,
-        const Eigen::Vector3d & p2, const Eigen::Vector3d & Cr12,
-        const FuncGrid & f1, const FuncGrid & f2, double plx,
-        double dplx, int l, int flagCr12) const
-{
-    double eps2, deps2;
+    double r1  = p1.norm();
+    double r2  = p2.norm();
+    double r2_2 = std::pow(r2, 2);
+    double r2_3 = std::pow(r2, 3);
     double prod = p1.dot(p2);
-    double r1 = p1.norm();
-    double r2 = p2.norm();
-    double r2_3 = r2 * r2 * r2;
-    profile(&eps2, &deps2, r2);
+    double r12 = (p1 - p2).norm();
+    double cos_gamma = p1.dot(p2) / (r1 * r2);
+    double cos_gamma_2 = std::pow(cos_gamma, 2);
 
-    //calculate Legendre function of L and x--cos_angle
+    double pl_x = boost::math::legendre_p(maxLC_, cos_gamma);
+    double pl_first_x = -boost::math::legendre_p(maxLC_, 1, cos_gamma)
+                                 / (std::sqrt(1.0 - std::pow(cos_gamma, 2)));
 
-    int idx1 = int((r1-rBegin_) / hStep_) - 1;
-    int idx2 = int((r2-rBegin_) / hStep_) - 1;
+    double eps_r2 = 0.0, epsPrime_r2 = 0.0;
+    this->profile_(eps_r2, epsPrime_r2, r2);
 
-    double delta1 = r1 - grid_(idx1);
-    double delta2 = r2 - grid_(idx2);
+    /* Value of zetaC_ at point with index 1 */
+    double zeta1  = linearInterpolation(r1, zetaC_[0], zetaC_[1]);
+    /* Value of zetaC_ at point with index 2 */
+    double zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[1]);
+    /* Value of omegaC_ at point with index 1 */
+    double omega1 = linearInterpolation(r1, omegaC_[0], omegaC_[1]);
+    /* Value of omegaC_ at point with index 2 */
+    double omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[1]);
 
+    /* Value of derivative of zetaC_ at point with index 2 */
+    double d_zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[2]);
+    /* Value of derivative of omegaC_ at point with index 2 */
+    double d_omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[2]);
 
-    double u11 = f1(0, idx1) + (f1(0, idx1 + 1) - f1(0, idx1)) * delta1 / hStep_;
-    double u12 = f1(0, idx2) + (f1(0, idx2 + 1) - f1(0, idx2)) * delta2 / hStep_;
-    double u21 = f2(0, idx1) + (f2(0, idx1 + 1) - f2(0, idx1)) * delta1 / hStep_;
-    double u22 = f2(0, idx2) + (f2(0, idx2 + 1) - f2(0, idx2)) * delta2 / hStep_;
+    /*! Value of second derivative of zetaC_ at point with index 2 */
+    double d2_zeta2 = maxLC_ * (maxLC_ + 1) / r2_2 - std::pow(d_zeta2, 2) - (2.0 / r2 + epsPrime_r2 / eps_r2) * d_zeta2;
+    /*! Value of second derivative of omegaC_ at point with index 2 */
+    double d2_omega2 = maxLC_ * (maxLC_ + 1) / r2_2 - std::pow(d_omega2, 2) - (2.0 / r2 + epsPrime_r2 / eps_r2) * d_omega2;
 
-    double d11 = f1(1, idx1) + (f1(1, idx1 + 1) - f1(1, idx1)) * delta1 / hStep_;
-    double d12 = f1(1, idx2) + (f1(1, idx2 + 1) - f1(1, idx2)) * delta2 / hStep_;
-    double d21 = f2(1, idx1) + (f2(1, idx1 + 1) - f2(1, idx1)) * delta1 / hStep_;
-    double d22 = f2(1, idx2) + (f2(1, idx2 + 1) - f2(1, idx2)) * delta2 / hStep_;
-
-    double d2u12 = l * (l + 1) / (r2*r2) - d12 * d12 - (2.0 / r2 + deps2 / eps2) * d12;
-    double d2u22 = l * (l + 1) / (r2*r2) - d22 * d22 - (2.0 / r2 + deps2 / eps2) * d22;
-    Eigen::Vector3d g12_deri;
+    double a = (epsPrime_r2 * r2 + 2.0 * eps_r2) * pl_x / (eps_r2 * r2);
+    double b = (d_zeta2 * (d_zeta2 - d_omega2) + d2_zeta2 - d2_omega2) * pl_x / (d_zeta2 - d_omega2);
+    double c = (d_omega2 * (d_zeta2 - d_omega2) + d2_zeta2 - d2_omega2) * pl_x / (d_zeta2 - d_omega2);
 
     double x1 = p1(0);
     double y1 = p1(1);
@@ -567,48 +504,51 @@ Eigen::Vector3d SphericalInterface::greenfunc_der(const Eigen::Vector3d & p1,
     double y2 = p2(1);
     double z2 = p2(2);
 
-    double a = (deps2*r2+2.0*eps2)*plx/(eps2*r2);
-    double b = (d12*(d12-d22)+d2u12-d2u22)*plx/(d12-d22);
-    double c = (d22*(d12-d22)+d2u12-d2u22)*plx/(d12-d22);
-    if (r1<r2) {
-        double expFact = exp(u11-u12)*(2*l+1);
-        g12_deri(0) = -expFact*x2/((d12-d22)*r2_3*eps2) * (a + b - (x1*r2*r2/x2-prod)*dplx/
-                      (r1*r2*r2));
-        g12_deri(1) = -expFact*y2/((d12-d22)*r2_3*eps2) * (a + b - (y1*r2*r2/y2-prod)*dplx/
-                      (r1*r2*r2));
-        g12_deri(2) = -expFact*z2/((d12-d22)*r2_3*eps2) * (a + b - (z1*r2*r2/z2-prod)*dplx/
-                      (r1*r2*r2));
-        if (flagCr12 == 1) {
-            g12_deri(0) -= (std::pow(r1/r2,
-                                l)*(plx*x2*(-l-1)+dplx*(x1*r2*r2-x2*prod)/(r1*r2))/(r2_3*Cr12(0)));
-            g12_deri(1) -= (std::pow(r1/r2,
-                                l)*(plx*y2*(-l-1)+dplx*(y1*r2*r2-y2*prod)/(r1*r2))/(r2_3*Cr12(1)));
-            g12_deri(2) -= (std::pow(r1/r2,
-                                l)*(plx*z2*(-l-1)+dplx*(z1*r2*r2-z2*prod)/(r1*r2))/(r2_3*Cr12(2)));
-        }
-    } else {
-        double expFact = exp(u21-u22)*(2*l+1);
-        g12_deri(0) = -expFact*x2/((d12-d22)*r2_3*eps2) * (a + c - (x1*r2*r2/x2-prod)*dplx/
-                      (r1*r2*r2));
-        g12_deri(1) = -expFact*y2/((d12-d22)*r2_3*eps2) * (a + c - (y1*r2*r2/y2-prod)*dplx/
-                      (r1*r2*r2));
-        g12_deri(2) = -expFact*z2/((d12-d22)*r2_3*eps2) * (a + c - (z1*r2*r2/z2-prod)*dplx/
-                      (r1*r2*r2));
-        if (flagCr12 == 1) {
-            g12_deri(0) -= (std::pow(r2/r1,
-                                l)*(plx*x2*l+dplx*(x1*r2*r2-x2*prod)/(r1*r2))/(r1*r2*r2*Cr12(0)));
-            g12_deri(1) -= (std::pow(r2/r1,
-                                l)*(plx*y2*l+dplx*(y1*r2*r2-y2*prod)/(r1*r2))/(r1*r2*r2*Cr12(1)));
-            g12_deri(2) -= (std::pow(r2/r1,
-                                l)*(plx*z2*l+dplx*(z1*r2*r2-z2*prod)/(r1*r2))/(r1*r2*r2*Cr12(2)));
-        }
-    }
-    return g12_deri;
+	if (r1 < r2) {
+		double expFact = exp(zeta1-zeta2)*(2*L+1);
+		gr12_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (x1*r2*r2/x2-prod)*pl_first_x/(r1*r2*r2));
+		gr12_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (y1*r2*r2/y2-prod)*pl_first_x/(r1*r2*r2));
+		gr12_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (z1*r2*r2/z2-prod)*pl_first_x/(r1*r2*r2));
+		gr12_grad(0) -= (pow(r1/r2,L)*(pl_x*x2*(-L-1)+pl_first_x*(x1*r2*r2-x2*prod)/(r1*r2))/(r2_3*Cr12_grad(0)));
+		gr12_grad(1) -= (pow(r1/r2,L)*(pl_x*y2*(-L-1)+pl_first_x*(y1*r2*r2-y2*prod)/(r1*r2))/(r2_3*Cr12_grad(1)));
+		gr12_grad(2) -= (pow(r1/r2,L)*(pl_x*z2*(-L-1)+pl_first_x*(z1*r2*r2-z2*prod)/(r1*r2))/(r2_3*Cr12_grad(2)));
+	} else {
+		double expFact = exp(omega1-omega2)*(2*L+1);
+		gr12_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (x1*r2*r2/x2-prod)*pl_first_x/(r1*r2*r2));
+		gr12_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (y1*r2*r2/y2-prod)*pl_first_x/(r1*r2*r2));
+		gr12_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (z1*r2*r2/z2-prod)*pl_first_x/(r1*r2*r2));
+		gr12_grad(0) -= (pow(r2/r1,L)*(pl_x*x2*L+pl_first_x*(x1*r2*r2-x2*prod)/(r1*r2))/(r1*r2*r2*Cr12_grad(0)));
+		gr12_grad(1) -= (pow(r2/r1,L)*(pl_x*y2*L+pl_first_x*(y1*r2*r2-y2*prod)/(r1*r2))/(r1*r2*r2*Cr12_grad(1)));
+		gr12_grad(2) -= (pow(r2/r1,L)*(pl_x*z2*L+pl_first_x*(z1*r2*r2-z2*prod)/(r1*r2))/(r1*r2*r2*Cr12_grad(2)));
+	}
+
+    return gr12_grad;
 }
-*/
 
 template <>
-inline Numerical GreensFunction<Numerical, TanhDiffuse>::derivativeSource(const Eigen::Vector3d & normal_p1,
+inline double SphericalDiffuse<TanhDiffuse>::derivativeProbe(const Eigen::Vector3d & normal_p2,
+                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+{
+    double eps_r2 = 0.0, epsPrime_r2 = 0.0;
+    this->profile_(eps_r2, epsPrime_r2, p2.norm());
+
+    Eigen::Vector3d Cr12_grad = this->coefficientGradient(p1, p2);
+    Eigen::Vector3d grad = Eigen::Vector3d::Zero();
+    for (int L = 0; L < maxLGreen_; ++L) {
+        grad += this->functionSummationGradient(L, p1, p2, Cr12_grad);
+    }
+
+    double r12 = (p1 - p2).norm();
+    Eigen::Vector3d gr_d = Eigen::Vector3d::Zero();
+    gr_d.array() = (p1.array() - p2.array()) /
+	               (Cr12_grad.array() * std::pow(r12, 3)) + grad.array();
+    gr_d *= -1;
+
+    return (eps_r2 * grad.dot(normal_p2));
+}
+
+template <>
+inline double GreensFunction<Numerical, TanhDiffuse>::derivativeSource(const Eigen::Vector3d & normal_p1,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     // To be implemented

@@ -157,7 +157,6 @@ public:
     {
         return this->derivativeProbe(direction, p1, p2);
     }
-
     /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *
      *  \param[in] area   area of the i-th tessera
@@ -256,7 +255,7 @@ private:
     double functionSummation(int L, double r1, double r2, double cos_gamma, double Cr12) const;
 
     Eigen::Vector3d coefficientGradient(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
-    Eigen::Vector3d functionSummationGradient(int L, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2, double Cr12) const;
+    Eigen::Vector3d functionSummationGradient(int L, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2, const Eigen::Vector3d & Cr12_grad) const;
 };
 
 #endif // SPHERICALDIFFUSE_HPP

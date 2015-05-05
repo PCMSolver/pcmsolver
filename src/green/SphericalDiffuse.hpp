@@ -174,6 +174,17 @@ public:
      */
     double imagePotential(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const;
     /*! Returns value of the directional derivative of the
+     *  Coulomb singularity separation coefficient for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  Notice that this method returns the directional derivative with respect
+     *  to the probe point, thus assuming that the direction is relative to that point.
+     *
+     *  \param[in] direction the direction
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    double coefficientCoulombDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
+    /*! Returns value of the directional derivative of the
      *  singular part of the Greens's function for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  Notice that this method returns the directional derivative with respect

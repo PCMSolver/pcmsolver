@@ -280,6 +280,15 @@ inline double TanhSphericalDiffuse::imagePotential(const Eigen::Vector3d & sourc
 }
 
 template <>
+inline double TanhSphericalDiffuse::coefficientCoulombDerivative(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+{
+    using namespace std::placeholders;
+    return threePointStencil(std::bind(&TanhSphericalDiffuse::coefficientCoulomb, this, _1, _2),
+                p2, p1, direction, this->delta_);
+}
+
+template <>
 inline double TanhSphericalDiffuse::CoulombDerivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {

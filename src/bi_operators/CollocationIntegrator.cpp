@@ -173,14 +173,18 @@ double CollocationIntegrator::computeD(const AnisotropicLiquid<AD_hessian> * /* 
 double CollocationIntegrator::computeS(const TanhSphericalDiffuse * gf, const Element & e) const {
     // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
 	double area = e.area();
-	double epsInv = 1.0 / gf->epsilon();
-	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
+    double coulomb_coeff = 1.0 / gf->coefficientCoulomb(e.center(), e.center());
+    double image = gf->imagePotential(e.center(), e.center());
+	return (factor_ * std::sqrt(4 * M_PI / area) * coulomb_coeff + image);
 }
 
 double CollocationIntegrator::computeD(const TanhSphericalDiffuse * gf, const Element & e) const {
     // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
 	double area = e.area();
 	double radius = e.sphere().radius();
-	double epsInv = 1.0 / gf->epsilon();
-    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
+    double coulomb_coeff = 1.0 / gf->coefficientCoulomb(e.center(), e.center());
+    double coeff_grad = gf->coefficientCoulombDerivative(e.normal(), e.center, e.center());
+    coeff_grad /= std::pow(coulomb_coeff, 2);
+    double image_grad = gf->imagePotentialDerivative(e.normal(), e.center(), e.center());
+    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * coulomb_coeff - coeff_grad + image_grad);
 }

@@ -279,6 +279,78 @@ inline double TanhSphericalDiffuse::imagePotential(const Eigen::Vector3d & sourc
     return gr12;
 }
 
+template <>
+inline double TanhSphericalDiffuse::CoulombDerivative(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+{
+    using namespace std::placeholders;
+    return threePointStencil(std::bind(&TanhSphericalDiffuse::Coulomb, this, _1, _2),
+            p2, p1, direction, this->delta_);
+}
+
+template <>
+inline double TanhSphericalDiffuse::imagePotentialDerivative(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+{
+    using namespace std::placeholders;
+    return threePointStencil(std::bind(&TanhSphericalDiffuse::imagePotential, this, _1, _2),
+                p2, p1, direction, this->delta_);
+}
+
+template <>
+inline double GreensFunction<Numerical, TanhDiffuse>::derivativeProbe(const Eigen::Vector3d & /* normal_p2 */,
+            const Eigen::Vector3d & /* p1 */, const Eigen::Vector3d & /* p2 */) const
+{
+    /*
+    Eigen::Vector3d deltaPlus  = p2 + normal_p2 * this->delta_ / normal_p2.norm();
+    Eigen::Vector3d deltaMinus = p2 - normal_p2 * this->delta_ / normal_p2.norm();
+    double CoulombPlus = this->Coulomb(p1, deltaPlus);
+    double CoulombMinus = this->Coulomb(p1, deltaMinus);
+    double CoulombDeriv = (CoulombPlus - CoulombMinus) / (2.0 * this->delta_);
+    double imagePlus = this->imagePotential(p1, deltaPlus);
+    double imageMinus = this->imagePotential(p1, deltaMinus);
+    double imageDeriv = (imagePlus - imageMinus) / (2.0 * this->delta_);
+
+    return (CoulombDeriv + imageDeriv);
+    */
+    return 0.0;
+}
+
+template <>
+inline double GreensFunction<Numerical, TanhDiffuse>::derivativeSource(const Eigen::Vector3d & /* normal_p1 */,
+            const Eigen::Vector3d & /* p1 */, const Eigen::Vector3d & /* p2 */) const
+{
+    /*
+    Eigen::Vector3d deltaPlus  = p1 + normal_p1 * this->delta_ / normal_p1.norm();
+    Eigen::Vector3d deltaMinus = p1 - normal_p1 * this->delta_ / normal_p1.norm();
+    double CoulombPlus = this->Coulomb(deltaPlus, p2);
+    double CoulombMinus = this->Coulomb(deltaMinus, p2);
+    double CoulombDeriv = (CoulombPlus - CoulombMinus) / (2.0 * this->delta_);
+    double imagePlus = this->imagePotential(deltaPlus, p2);
+    double imageMinus = this->imagePotential(deltaMinus, p2);
+    double imageDeriv = (imagePlus - imageMinus) / (2.0 * this->delta_);
+
+    return (CoulombDeriv + imageDeriv);
+    */
+    return 0.0;
+}
+
+namespace
+{
+    IGreensFunction * createTanhSphericalDiffuse(const greenData & _data)
+    {
+        double eL, eR, w, c; // To be read from _data
+        eL = 0.0, eR = 0.0, w = 0.0, c = 0.0;
+        DiagonalIntegrator * integrator =
+		DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
+        return new TanhSphericalDiffuse(eL, eR, w, c, integrator);
+    }
+    const std::string TANHSPHERICALDIFFUSE("TANHSPHERICALDIFFUSE");
+    const bool registeredTanhSphericalDiffuse =
+        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
+            TANHSPHERICALDIFFUSE, createTanhSphericalDiffuse);
+}
+
 /* Derivative of Legendre polynomials can be obtained in terms of the associated
  * Legendre polynomials (see http://en.wikipedia.org/wiki/Associated_Legendre_polynomials)
  * Condon-Shortley phase is assumed.
@@ -289,6 +361,32 @@ inline double TanhSphericalDiffuse::imagePotential(const Eigen::Vector3d & sourc
  * Second derivative of Legendre polynomial of order l at point x:
  * double pl_second_x = boost::math::legendre_p(l, 2, x)/ (1.0 - x*x);
  */
+
+/*
+        // This should be the semi-analytic implementation...
+        // But I get NaN-s and inf-s out of it, so I switched to
+        // the good old three-point stencil.
+template <>
+inline double TanhSphericalDiffuse::derivative(const Eigen::Vector3d & direction,
+                 const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
+{
+        double eps_r2 = 0.0, epsPrime_r2 = 0.0;
+        this->profile_(eps_r2, epsPrime_r2, p2.norm());
+
+        Eigen::Vector3d Cr12_grad = this->coefficientGradient(p1, p2);
+        Eigen::Vector3d grad = Eigen::Vector3d::Zero();
+        for (int L = 0; L < maxLGreen_; ++L) {
+            grad += this->functionSummationGradient(L, p1, p2, Cr12_grad);
+        }
+
+        double r12 = (p1 - p2).norm();
+        Eigen::Vector3d gr_d = Eigen::Vector3d::Zero();
+        gr_d.array() = (p1.array() - p2.array()) /
+	                   (Cr12_grad.array() * std::pow(r12, 3)) + grad.array();
+        gr_d *= -1;
+
+        return (eps_r2 * grad.dot(direction));
+}
 
 template <>
 inline Eigen::Vector3d TanhSphericalDiffuse::coefficientGradient(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
@@ -309,23 +407,23 @@ inline Eigen::Vector3d TanhSphericalDiffuse::coefficientGradient(const Eigen::Ve
     double eps_r2 = 0.0, epsPrime_r2 = 0.0;
     this->profile_(eps_r2, epsPrime_r2, r2);
 
-    /* Value of zetaC_ at point with index 1 */
+    // Value of zetaC_ at point with index 1
     double zeta1  = linearInterpolation(r1, zetaC_[0], zetaC_[1]);
-    /* Value of zetaC_ at point with index 2 */
+    // Value of zetaC_ at point with index 2/
     double zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[1]);
-    /* Value of omegaC_ at point with index 1 */
+    // Value of omegaC_ at point with index 1
     double omega1 = linearInterpolation(r1, omegaC_[0], omegaC_[1]);
-    /* Value of omegaC_ at point with index 2 */
+    // Value of omegaC_ at point with index 2
     double omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[1]);
 
-    /* Value of derivative of zetaC_ at point with index 2 */
+    // Value of derivative of zetaC_ at point with index 2
     double d_zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[2]);
-    /* Value of derivative of omegaC_ at point with index 2 */
+    // Value of derivative of omegaC_ at point with index 2
     double d_omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[2]);
 
-    /*! Value of second derivative of zetaC_ at point with index 2 */
+    // Value of second derivative of zetaC_ at point with index 2
     double d2_zeta2 = maxLC_ * (maxLC_ + 1) / r2_2 - std::pow(d_zeta2, 2) - (2.0 / r2 + epsPrime_r2 / eps_r2) * d_zeta2;
-    /*! Value of second derivative of omegaC_ at point with index 2 */
+    // Value of second derivative of omegaC_ at point with index 2
     double d2_omega2 = maxLC_ * (maxLC_ + 1) / r2_2 - std::pow(d_omega2, 2) - (2.0 / r2 + epsPrime_r2 / eps_r2) * d_omega2;
 
     double a = (epsPrime_r2 * r2 + 2.0 * eps_r2) * pl_x / (eps_r2 * r2);
@@ -339,39 +437,37 @@ inline Eigen::Vector3d TanhSphericalDiffuse::coefficientGradient(const Eigen::Ve
     double y2 = p2(1);
     double z2 = p2(2);
 
+    double factor_x = (x1 * r2_2 - x2 * prod) / (r1*r2);
+    double factor_y = (y1 * r2_2 - y2 * prod) / (r1*r2);
+    double factor_z = (z1 * r2_2 - z2 * prod) / (r1*r2);
+
     Eigen::Vector3d tmp_grad = Eigen::Vector3d::Zero();
     if (r1 < r2) {
         double expFact = std::exp(zeta1 -zeta2) * (2*maxLC_ + 1);
-        tmp_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (x1*r2*r2/x2-prod)*pl_first_x/
-                      (r1*r2*r2));
-        tmp_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (y1*r2*r2/y2-prod)*pl_first_x/
-                      (r1*r2*r2));
-        tmp_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (z1*r2*r2/z2-prod)*pl_first_x/
-                      (r1*r2*r2));
+        tmp_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) *
+            (a + b - (x1*r2_2/(x2-prod)) * pl_first_x / (r1*r2_2));
+        tmp_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) *
+            (a + b - (y1*r2_2/(y2-prod))*pl_first_x / (r1*r2_2));
+        tmp_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) *
+            (a + b - (z1*r2_2/(z2-prod))*pl_first_x/(r1*r2_2));
 
-        double powl = std::pow(r1/r2, maxLC_);
-        coeff_grad(0) = powl*(pl_x*p2(0)*(-maxLC_-1)+pl_first_x*(p1(0)*r2_2 -p2(0)*(p1.dot(
-                                    p2)))/(r1*r2))/(r2_3*tmp_grad(0));
-        coeff_grad(1) = powl*(pl_x*p2(1)*(-maxLC_-1)+pl_first_x*(p1(1)*r2_2-p2(1)*(p1.dot(
-                                    p2)))/(r1*r2))/(r2_3*tmp_grad(1));
-        coeff_grad(2) = powl*(pl_x*p2(2)*(-maxLC_-1)+pl_first_x*(p1(2)*r2_2-p2(2)*(p1.dot(
-                                    p2)))/(r1*r2))/(r2_3*tmp_grad(2));
+        double powl = std::pow(r1 / r2, maxLC_);
+        coeff_grad(0) = powl * (pl_x * x2 * (-maxLC_-1) + pl_first_x * factor_x) / (r2_3 * tmp_grad(0));
+        coeff_grad(1) = powl * (pl_x * y2 * (-maxLC_-1) + pl_first_x * factor_y) / (r2_3 * tmp_grad(1));
+        coeff_grad(2) = powl * (pl_x * z2 * (-maxLC_-1) + pl_first_x * factor_z) / (r2_3 * tmp_grad(2));
     } else {
         double expFact = exp(omega1 - omega2) * (2*maxLC_ + 1);
         tmp_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) *
-            (a + c - (x1*r2*r2/x2 - prod) * pl_first_x / (r1*r2*r2));
+            (a + c - (x1*r2_2/(x2 - prod)) * pl_first_x / (r1*r2_2));
         tmp_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) *
-            (a + c - (y1*r2*r2/y2 - prod) * pl_first_x / (r1*r2*r2));
+            (a + c - (y1*r2_2/(y2 - prod)) * pl_first_x / (r1*r2_2));
         tmp_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2)
-            * (a + c - (z1*r2*r2/z2 - prod) * pl_first_x / (r1*r2*r2));
+            * (a + c - (z1*r2_2/(z2 - prod)) * pl_first_x / (r1*r2_2));
 
-        double powl = std::pow(r2/r1, maxLC_);
-        coeff_grad(0) = powl*(pl_x*p2(0)*maxLC_+pl_first_x*(p1(0)*r2_2 -p2(0)*(p1.dot(p2)))/
-                                (r1*r2))/(r1*r2_2*tmp_grad(0));
-        coeff_grad(1) = powl*(pl_x*p2(1)*maxLC_+pl_first_x*(p1(1)*r2_2 -p2(1)*(p1.dot(p2)))/
-                                (r1*r2))/(r1*r2_2*tmp_grad(1));
-        coeff_grad(2) = powl*(pl_x*p2(2)*maxLC_+pl_first_x*(p1(2)*r2_2 -p2(2)*(p1.dot(p2)))/
-                                (r1*r2))/(r1*r2_2*tmp_grad(2));
+        double powl = std::pow(r2 / r1, maxLC_);
+        coeff_grad(0) = powl * (pl_x * x2 * maxLC_ + pl_first_x * factor_x) / (r1 * r2_2 * tmp_grad(0));
+        coeff_grad(1) = powl * (pl_x * y2 * maxLC_ + pl_first_x * factor_y) / (r1 * r2_2 * tmp_grad(1));
+        coeff_grad(2) = powl * (pl_x * z2 * maxLC_ + pl_first_x * factor_z) / (r1 * r2_2 * tmp_grad(2));
     }
 
     return coeff_grad;
@@ -397,23 +493,23 @@ inline Eigen::Vector3d TanhSphericalDiffuse::functionSummationGradient(int L, co
     double eps_r2 = 0.0, epsPrime_r2 = 0.0;
     this->profile_(eps_r2, epsPrime_r2, r2);
 
-    /* Value of zetaC_ at point with index 1 */
+    // Value of zetaC_ at point with index 1
     double zeta1  = linearInterpolation(r1, zetaC_[0], zetaC_[1]);
-    /* Value of zetaC_ at point with index 2 */
+    // Value of zetaC_ at point with index 2
     double zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[1]);
-    /* Value of omegaC_ at point with index 1 */
+    // Value of omegaC_ at point with index 1
     double omega1 = linearInterpolation(r1, omegaC_[0], omegaC_[1]);
-    /* Value of omegaC_ at point with index 2 */
+    // Value of omegaC_ at point with index 2
     double omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[1]);
 
-    /* Value of derivative of zetaC_ at point with index 2 */
+    // Value of derivative of zetaC_ at point with index 2
     double d_zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[2]);
-    /* Value of derivative of omegaC_ at point with index 2 */
+    // Value of derivative of omegaC_ at point with index 2
     double d_omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[2]);
 
-    /*! Value of second derivative of zetaC_ at point with index 2 */
+    // Value of second derivative of zetaC_ at point with index 2
     double d2_zeta2 = maxLC_ * (maxLC_ + 1) / r2_2 - std::pow(d_zeta2, 2) - (2.0 / r2 + epsPrime_r2 / eps_r2) * d_zeta2;
-    /*! Value of second derivative of omegaC_ at point with index 2 */
+    // Value of second derivative of omegaC_ at point with index 2
     double d2_omega2 = maxLC_ * (maxLC_ + 1) / r2_2 - std::pow(d_omega2, 2) - (2.0 / r2 + epsPrime_r2 / eps_r2) * d_omega2;
 
     double a = (epsPrime_r2 * r2 + 2.0 * eps_r2) * pl_x / (eps_r2 * r2);
@@ -429,17 +525,17 @@ inline Eigen::Vector3d TanhSphericalDiffuse::functionSummationGradient(int L, co
 
 	if (r1 < r2) {
 		double expFact = exp(zeta1-zeta2)*(2*L+1);
-		gr12_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (x1*r2*r2/x2-prod)*pl_first_x/(r1*r2*r2));
-		gr12_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (y1*r2*r2/y2-prod)*pl_first_x/(r1*r2*r2));
-		gr12_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (z1*r2*r2/z2-prod)*pl_first_x/(r1*r2*r2));
+		gr12_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (x1*r2*r2/(x2-prod))*pl_first_x/(r1*r2*r2));
+		gr12_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (y1*r2*r2/(y2-prod))*pl_first_x/(r1*r2*r2));
+		gr12_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + b - (z1*r2*r2/(z2-prod))*pl_first_x/(r1*r2*r2));
 		gr12_grad(0) -= (pow(r1/r2,L)*(pl_x*x2*(-L-1)+pl_first_x*(x1*r2*r2-x2*prod)/(r1*r2))/(r2_3*Cr12_grad(0)));
 		gr12_grad(1) -= (pow(r1/r2,L)*(pl_x*y2*(-L-1)+pl_first_x*(y1*r2*r2-y2*prod)/(r1*r2))/(r2_3*Cr12_grad(1)));
 		gr12_grad(2) -= (pow(r1/r2,L)*(pl_x*z2*(-L-1)+pl_first_x*(z1*r2*r2-z2*prod)/(r1*r2))/(r2_3*Cr12_grad(2)));
 	} else {
 		double expFact = exp(omega1-omega2)*(2*L+1);
-		gr12_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (x1*r2*r2/x2-prod)*pl_first_x/(r1*r2*r2));
-		gr12_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (y1*r2*r2/y2-prod)*pl_first_x/(r1*r2*r2));
-		gr12_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (z1*r2*r2/z2-prod)*pl_first_x/(r1*r2*r2));
+		gr12_grad(0) = -expFact*x2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (x1*r2*r2/(x2-prod))*pl_first_x/(r1*r2*r2));
+		gr12_grad(1) = -expFact*y2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (y1*r2*r2/(y2-prod))*pl_first_x/(r1*r2*r2));
+		gr12_grad(2) = -expFact*z2/((d_zeta2-d_omega2)*r2_3*eps_r2) * (a + c - (z1*r2*r2/(z2-prod))*pl_first_x/(r1*r2*r2));
 		gr12_grad(0) -= (pow(r2/r1,L)*(pl_x*x2*L+pl_first_x*(x1*r2*r2-x2*prod)/(r1*r2))/(r1*r2*r2*Cr12_grad(0)));
 		gr12_grad(1) -= (pow(r2/r1,L)*(pl_x*y2*L+pl_first_x*(y1*r2*r2-y2*prod)/(r1*r2))/(r1*r2*r2*Cr12_grad(1)));
 		gr12_grad(2) -= (pow(r2/r1,L)*(pl_x*z2*L+pl_first_x*(z1*r2*r2-z2*prod)/(r1*r2))/(r1*r2*r2*Cr12_grad(2)));
@@ -447,55 +543,6 @@ inline Eigen::Vector3d TanhSphericalDiffuse::functionSummationGradient(int L, co
 
     return gr12_grad;
 }
-
-template <>
-inline double GreensFunction<Numerical, TanhDiffuse>::derivativeProbe(const Eigen::Vector3d & /* normal_p2 */,
-                                   const Eigen::Vector3d & /* p1 */, const Eigen::Vector3d & /* p2 */) const
-{
-    /*
-    double eps_r2 = 0.0, epsPrime_r2 = 0.0;
-    this->profile_(eps_r2, epsPrime_r2, p2.norm());
-
-    Eigen::Vector3d Cr12_grad = this->coefficientGradient(p1, p2);
-    Eigen::Vector3d grad = Eigen::Vector3d::Zero();
-    for (int L = 0; L < maxLGreen_; ++L) {
-        grad += this->functionSummationGradient(L, p1, p2, Cr12_grad);
-    }
-
-    double r12 = (p1 - p2).norm();
-    Eigen::Vector3d gr_d = Eigen::Vector3d::Zero();
-    gr_d.array() = (p1.array() - p2.array()) /
-	               (Cr12_grad.array() * std::pow(r12, 3)) + grad.array();
-    gr_d *= -1;
-
-    return (eps_r2 * grad.dot(normal_p2));
-    */
-    // To be implemented
-    return 0.0;
-}
-
-template <>
-inline double GreensFunction<Numerical, TanhDiffuse>::derivativeSource(const Eigen::Vector3d & /* normal_p1 */,
-        const Eigen::Vector3d & /* p1 */, const Eigen::Vector3d & /* p2 */) const
-{
-    // To be implemented
-    return 0.0;
-}
-
-namespace
-{
-    IGreensFunction * createTanhSphericalDiffuse(const greenData & _data)
-    {
-        double eL, eR, w, c; // To be read from _data
-        eL = 0.0, eR = 0.0, w = 0.0, c = 0.0;
-        DiagonalIntegrator * integrator =
-		DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
-        return new TanhSphericalDiffuse(eL, eR, w, c, integrator);
-    }
-    const std::string TANHSPHERICALDIFFUSE("TANHSPHERICALDIFFUSE");
-    const bool registeredTanhSphericalDiffuse =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            TANHSPHERICALDIFFUSE, createTanhSphericalDiffuse);
-}
+*/
 
 #endif // TANHSPHERICALDIFFUSE_HPP

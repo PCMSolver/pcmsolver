@@ -39,6 +39,7 @@ class DiagonalIntegrator;
 
 #include "DerivativeTypes.hpp"
 #include "IGreensFunction.hpp"
+#include "MathUtils.hpp"
 #include "ProfileTypes.hpp"
 
 /*! \file GreensFunction.hpp
@@ -180,22 +181,18 @@ template <>
 inline double GreensFunction<Numerical, Uniform>::derivativeSource(const Eigen::Vector3d & normal_p1,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-    Eigen::Vector3d deltaPlus  = p1 + normal_p1 * delta_ / normal_p1.norm();
-    Eigen::Vector3d deltaMinus = p1 - normal_p1 * delta_ / normal_p1.norm();
-    Numerical funcPlus  = function(deltaPlus,  p2);
-    Numerical funcMinus = function(deltaMinus, p2);
-    return (funcPlus - funcMinus)/(2.0*delta_);
+    using namespace std::placeholders;
+    return fivePointStencil(std::bind(&GreensFunction<Numerical, Uniform>::function, this, _1, _2),
+                            p1, p2, normal_p1, this->delta_);
 }
 
 template <>
 inline double GreensFunction<Numerical, Uniform>::derivativeProbe(const Eigen::Vector3d & normal_p2,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-    Eigen::Vector3d deltaPlus  = p2 + normal_p2 * delta_ / normal_p2.norm();
-    Eigen::Vector3d deltaMinus = p2 - normal_p2 * delta_ / normal_p2.norm();
-    Numerical funcPlus  = function(p1, deltaPlus);
-    Numerical funcMinus = function(p1, deltaMinus);
-    return (funcPlus - funcMinus)/(2.0*delta_);
+    using namespace std::placeholders;
+    return fivePointStencil(std::bind(&GreensFunction<Numerical, Uniform>::function, this, _1, _2),
+                            p2, p1, normal_p2, this->delta_);
 }
 
 #endif // GREENSFUNCTION_HPP

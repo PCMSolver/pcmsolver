@@ -30,11 +30,19 @@ int main()
     TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius);
     std::ofstream out;
     out.open("gf_spherical.log");
-    out << "#" << '\t' << "Distance" << '\t' << "gf_value" << '\t' << "image" << '\t' << "coefficient" << std::endl;
+    out << "#" << '\t' << "Distance" << '\t' << "gf_value" << '\t' << "image" << '\t' << "coefficient" << '\t' << "derivative" << std::endl;
     out.precision(16);
     for (int i = 0; i < nPoints; ++i) {
         probe(2) = zMin + i*step;
-        out << '\t' << probe(2) << '\t' << gf.function(source, probe) << '\t' << gf.imagePotential(source, probe) << '\t' << gf.Coulomb(source, probe) << std::endl;
+        Eigen::Vector3d direction = probe;
+        direction.normalize();
+        out << '\t' << probe(2)
+            << '\t' << gf.function(source, probe)
+            << '\t' << gf.imagePotential(source, probe)
+            << '\t' << gf.Coulomb(source, probe)
+            << '\t' << gf.derivative(direction, source, probe)
+            << '\t' << gf.CoulombDerivative(direction, source, probe)
+            << '\t' << gf.imagePotentialDerivative(direction, source, probe) << std::endl;
     }
     out.close();
 
@@ -44,7 +52,11 @@ int main()
     out.precision(16);
     for (int i = 0; i < nPoints; ++i) {
         probe(2) = zMin + i*step;
-        out << '\t' << probe(2) << '\t' << gf_inside.function(source, probe) << std::endl;
+        Eigen::Vector3d direction = probe;
+        direction.normalize();
+        out << '\t' << probe(2)
+            << '\t' << gf_inside.function(source, probe)
+            << '\t' << gf_inside.derivative(direction, source, probe) << std::endl;
     }
     out.close();
 
@@ -54,7 +66,11 @@ int main()
     out.precision(16);
     for (int i = 0; i < nPoints; ++i) {
         probe(2) = zMin + i*step;
-        out << '\t' << probe(2) << '\t' << gf_outside.function(source, probe) << std::endl;
+        Eigen::Vector3d direction = probe;
+        direction.normalize();
+        out << '\t' << probe(2)
+            << '\t' << gf_outside.function(source, probe)
+            << '\t' << gf_outside.derivative(direction, source, probe) << std::endl;
     }
     out.close();
 }

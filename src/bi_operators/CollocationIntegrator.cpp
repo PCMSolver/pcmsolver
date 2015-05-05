@@ -85,7 +85,7 @@ double CollocationIntegrator::computeD(const UniformDielectric<AD_directional> *
 }
 double CollocationIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, double area, double radius) const {
 	double epsInv = 1.0 / gf->epsilon();
-        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
+    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
 double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, double area, double radius) const {
 	double epsInv = 1.0 / gf->epsilon();

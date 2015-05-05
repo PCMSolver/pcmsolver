@@ -118,10 +118,14 @@ double CollocationIntegrator::computeD(const IonicLiquid<AD_hessian> * /* gf */,
 	return 0.0;
 }
 
-double CollocationIntegrator::computeS(const TanhSphericalDiffuse * /* gf */, double /* area */) const {
-	return 0.0;
+double CollocationIntegrator::computeS(const TanhSphericalDiffuse * gf, double area) const {
+    // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
+	double epsInv = 1.0 / gf->epsilon();
+	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
 }
 
-double CollocationIntegrator::computeD(const TanhSphericalDiffuse * /* gf */, double /* area */, double /* radius */) const {
-	return 0.0;
+double CollocationIntegrator::computeD(const TanhSphericalDiffuse * gf, double area, double radius) const {
+    // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
+	double epsInv = 1.0 / gf->epsilon();
+    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }

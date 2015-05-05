@@ -1,4 +1,4 @@
-/** \page Maintenance Maintenance 
+/** \page Maintenance Maintenance
 
 Description and how-to for maintenance operations
 
@@ -7,7 +7,7 @@ Description and how-to for maintenance operations
 Version numbering follows the guidelines of [semantic versioning](http://semver.org/)
 To update, change the relevant field in `cmake/ConfigVersio.cmake`.
 
-## Updating Eigen distribution 
+## Updating Eigen distribution
 
 The C++ linear algebra library Eigen comes bundled with the module. To update the distributed version one has to:
 1. download the desired version of the library to a scratch location. Eigen's website is: http://eigen.tuxfamily.org/
@@ -43,10 +43,10 @@ still unreleased.
 
 Once you have your code properly marked, compiling and thoroughly tested **on your branch**, you will first need to merge it with
 the `master` branch. If it compiles and all the unit tests pass, remove the marking from all the `CMakeLists.txt` and within the
-code. You can now merge the `master` branch with the `release` branch. 
+code. You can now merge the `master` branch with the `release` branch.
 \warning **NEVER** merge `release` into `master`!!!
 
-You then need to compile the to-be-released code and run the unit test suite. 
+You then need to compile the to-be-released code and run the unit test suite.
 If compilation works and all unit tests are passing then the code is ready to be released:
 
 	git push Origin release
@@ -62,15 +62,15 @@ Switch to the `release` branch and merge it with `master`.
 
 You will have to **remove** (`git rm`) the directories/files that should not be in the release.
 
-You then need to compile the to-be-released code and run the unit test suite. 
+You then need to compile the to-be-released code and run the unit test suite.
 If compilation works and all unit tests are passing then the code is ready to be released:
 
 	git push Origin release
 
 Notice that `Origin` has been spelled with a capital `O` the reason being that the release branch gets pushed both to the private
-and the public repositories. 
+and the public repositories.
 The trick is explained [here](http://stackoverflow.com/questions/849308/pull-push-from-multiple-remote-locations)
-in some detail. 
+in some detail.
 In brief, you need to have a `.git/config` file that resembles the following:
 
 \code
@@ -88,6 +88,6 @@ In brief, you need to have a `.git/config` file that resembles the following:
 [remote "Origin"]
 	url = git@repo.ctcc.no:pcmsolver.git
 	url = git@github.com:PCMSolver/pcmsolver.git
-\endcode	
+\endcode
 
 */

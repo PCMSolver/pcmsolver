@@ -27,6 +27,7 @@
 #define SYMMETRY_HPP
 
 #include <algorithm>
+#include <cmath>
 
 #include "Config.hpp"
 
@@ -73,7 +74,7 @@ public:
 };
 
 /*! Builds Symmetry object.
- * 
+ *
  * \note C1 is built as Symmetry C1 = buildGroup(0, 0, 0, 0);
  */
 Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3);

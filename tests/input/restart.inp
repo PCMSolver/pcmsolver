@@ -1,10 +1,10 @@
 UNITS = AU
-MEDIUM 
+MEDIUM
 {
-	SOLVENT = WATER
+	SOLVENT = h2o
 }
 
-CAVITY 
+CAVITY
 {
 	TYPE = RESTART
 	NPZFILE  =  cavity.npz

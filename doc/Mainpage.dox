@@ -40,6 +40,7 @@ Ville Weijo    (initial structure)\n
 - \subpage GreensFunctions
 - \subpage Solvers
 - \subpage HelperClasses
+- \subpage LoggerClass
 - \subpage Testing
 */
 

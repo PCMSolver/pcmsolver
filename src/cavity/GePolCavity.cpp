@@ -168,6 +168,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     int gen3 = molecule_.pointGroup().generators(2);
 
     // Go PEDRA, Go!
+    timerON("GePolCavity::generatecavity_cpp");
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
                        xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph,
                        &nts, &ntsirr, &nSpheres_, &addedSpheres,
@@ -175,6 +176,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 		       &averageArea, &probeRadius, &minimalRadius,
                        &nr_gen, &gen1, &gen2, &gen3,
                 nvert, vert, centr);
+    timerOFF("GePolCavity::generatecavity_cpp");
 
     // The "intensive" part of updating the spheres related class data members will be of course
     // executed iff addedSpheres != 0

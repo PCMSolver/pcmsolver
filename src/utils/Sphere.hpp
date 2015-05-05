@@ -28,6 +28,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -78,7 +79,8 @@ private:
  *
  *  This is used in the Cavity.hpp constructor
  */
-inline void transfer_spheres(const std::vector<Sphere> & spheres, Eigen::Matrix3Xd & sphereCenter, Eigen::VectorXd & sphereRadius)
+inline void transfer_spheres(const std::vector<Sphere> & spheres,
+                             Eigen::Matrix3Xd & sphereCenter, Eigen::VectorXd & sphereRadius)
 {
     size_t nSpheres = spheres.size();
     sphereCenter.resize(Eigen::NoChange, nSpheres);

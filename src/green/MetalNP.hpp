@@ -23,9 +23,10 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef PLANARINTERFACE_HPP
-#define PLANARINTERFACE_HPP
+#ifndef METALNP_HPP
+#define METALNP_HPP
 
+#include <complex>
 #include <iosfwd>
 #include <string>
 
@@ -35,35 +36,41 @@
 
 class Element;
 
-#include "DerivativeTypes.hpp"
 #include "DiagonalIntegrator.hpp"
-#include "ForIdGreen.hpp"
+#include "DiagonalIntegratorFactory.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
 
-/*! \file PlanarInterface.hpp
- *  \class PlanarInterface
- *  \brief Green's functions for a planar interface
- *  \author Luca Frediani, Roberto Di Remigio
- *  \date 2013-2014
- *  \tparam T evaluation strategy for the function and its derivatives
+/*! \file MetalNP.hpp
+ *  \class MetalNP
+ *  \brief Class to describe spherical metal nanoparticles.
+ *  \author Stefano Corni, Luca Frediani, Roberto Di Remigio
+ *  \date 2011, 2014
  *
- *  Reference:
- *  http://dx.doi.org/10.1063/1.1643727
+ *  This class is a wrapper around the Fortran routines written
+ *  by Stefano Corni et al. to take into account the presence
+ *  of metal nanoparticles.
+ *  References:
+ *  http://dx.doi.org/10.1063/1.1342241
+ *  http://dx.doi.org/10.1063/1.1507579
+ *  http://dx.doi.org/10.1063/1.1558036
  */
 
-template <typename T>
-class PlanarInterface : public GreensFunction<T>
+class MetalNP : public GreensFunction<double>
 {
+private:
+    typedef std::complex<double> dcomplex;
 public:
-    PlanarInterface(double eps1, double eps2, const Eigen::Vector3d & pos, double width)
-        : GreensFunction<T>(false), eps1_(eps1), eps2_(eps2), pos_(pos), width_(width),
-          computed_(false) {}
-    PlanarInterface(double eps1, double eps2, const Eigen::Vector3d & pos, double width, DiagonalIntegrator * diag)
-        : GreensFunction<T>(false, diag), eps1_(eps1), eps2_(eps2), pos_(pos), width_(width),
-          computed_(false) {}
-    virtual ~PlanarInterface() {}
+    MetalNP(double eps, double epsRe, double epsIm,
+                const Eigen::Vector3d & pos, double radius)
+        : GreensFunction<double>(false), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
+          sphPosition_(pos), sphRadius_(radius) {}
+    MetalNP(double eps, double epsRe, double epsIm,
+                const Eigen::Vector3d & pos, double radius, DiagonalIntegrator * diag)
+        : GreensFunction<double>(false, diag), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
+          sphPosition_(pos), sphRadius_(radius) {}
+    virtual ~MetalNP() {}
     /*!
      *  Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
@@ -78,16 +85,16 @@ public:
     virtual double derivative(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
 
-    virtual double diagonalS(const Element & e) const {
+    virtual double diagonalS(const Element & /* e */) const {
 	    return 1.0;
     }
-    virtual double diagonalD(const Element & e) const {
+    virtual double diagonalD(const Element & /* e */) const {
 	    return 1.0;
     }
 
-    virtual double epsilon() const { return eps1_; } // This is just to get it to compile...
+    virtual double epsilon() const { return epsSolvent_; } // This is just to get it to compile...
 
-    friend std::ostream & operator<<(std::ostream & os, PlanarInterface & gf) {
+    friend std::ostream & operator<<(std::ostream & os, MetalNP & gf) {
         return gf.printObject(os);
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
@@ -98,36 +105,33 @@ private:
      *  \param[in] source the source point
      *  \param[in]  probe the probe point
      */
-    virtual T operator()(T * source, T * probe) const;
-    double eps1_;
-    double eps2_;
-    Eigen::Vector3d pos_;
-    double width_;
-    bool computed_;
+    virtual double operator()(double * source, double * probe) const;
+    double epsSolvent_;
+    dcomplex epsMetal_;
+    Eigen::Vector3d sphPosition_;
+    double sphRadius_;
     virtual std::ostream & printObject(std::ostream & os);
 };
 
 namespace
 {
-    struct buildPlanarInterface {
-        template <typename DerivativeType>
-        IGreensFunction * operator()(const greenData & _data) {
-            // We pass some bogus arguments...
-            Eigen::Vector3d orig;
-            orig << 0.0, 0.0, 0.0;
-            return new PlanarInterface<DerivativeType>(_data.epsilon, 0.0, orig, 0.0, _data.integrator);
-        }
-    };
-
-    IGreensFunction * createPlanarInterface(const greenData & _data)
+    // The build functor and use of for_id are not necessary as MetalNP
+    // inherits from a GreensFunction<double>
+    IGreensFunction * createMetalNP(const greenData & _data)
     {
-        buildPlanarInterface build;
-        return for_id<derivative_types>(build, _data, _data.how);
+         DiagonalIntegrator * integrator = 
+		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
+	// The NP center is in a std::vector<double> but we need an Eigen::Vector3d
+	// We are currently assuming that there is only one spherical metal NP
+	Eigen::Vector3d center = Eigen::Vector3d::Zero();
+	for (int i = 0; i < 3; ++i) {
+		center(i) = _data.NPspheres[i];
+	}
+        return new MetalNP(_data.epsilon, _data.epsilonReal, _data.epsilonImaginary, center, _data.NPradii, integrator);
     }
-    const std::string PLANARINTERFACE("PLANARINTERFACE");
-    const bool registeredPlanarInterface =
+    const std::string METALNP("MetalNP");
+    const bool registeredMetalNP =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            PLANARINTERFACE, createPlanarInterface);
+            METALNP, createMetalNP);
 }
-
-#endif // PLANARINTERFACE_HPP
+#endif // METALNP_HPP

@@ -136,22 +136,21 @@ public:
 
         return (eps_r2 * CoulombDeriv + imageDeriv);
     }
-    /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *
-     *  \param[in] area   area of the i-th tessera
+    /*!
+     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalS(double area) const
+    virtual double diagonalS(const Element & e) const
     {
-            return this->diagonal_->computeS(this, area);
+            return this->diagonal_->computeS(this, e);
     }
-    /*! Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *
-     *  \param[in] area   area of the i-th tessera
-     *  \param[in] radius radius of the sphere the tessera belongs to
+    /*!
+     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalD(double area, double radius) const
+    virtual double diagonalD(const Element & e) const
     {
-            return this->diagonal_->computeD(this, area, radius);
+            return this->diagonal_->computeD(this, e);
     }
 
     virtual double epsilon() const { return 0.0; }

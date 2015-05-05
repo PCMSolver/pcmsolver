@@ -25,6 +25,7 @@
 
 #include "GePolCavity.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -38,13 +39,54 @@
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 
+/*! \fn extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
+ *                                 double * xtscor, double * ytscor, double * ztscor, double * ar,
+ *                                 double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
+ *                                 int * nts, int * ntsirr, int * nesfp, int * addsph,
+ *                                 double * xe, double * ye, double * ze, double * rin,
+ *                                 double * avgArea, double * rsolv, double * ret,
+ *                                 int * nr_gen, int * gen1, int * gen2, int * gen3,
+ *                                 int * nvert, double * vert, double * centr)
+ *  \param[in] maxts maximum number of tesserae allowed
+ *  \param[in] maxsph maximum number of spheres allowed
+ *  \param[in] maxvert maximum number of vertices allowed
+ *  \param[out] xtscor x-coordinate of tesserae centers (dimension maxts)
+ *  \param[out] ytscor y-coordinate of tesserae centers (dimension maxts)
+ *  \param[out] ztscor z-coordinate of tesserae centers (dimension maxts)
+ *  \param[out] ar area of the tessera (dimension maxts)
+ *  \param[out] xsphcor x-coordinate of the sphere center the tessera belongs to (dimension maxts)
+ *  \param[out] ysphcor y-coordinate of the sphere center the tessera belongs to (dimension maxts)
+ *  \param[out] zsphcor z-coordinate of the sphere center the tessera belongs to (dimension maxts)
+ *  \param[out] rsph radii of the sphere the tessera belongs to, i.e. its curvature (dimension maxts)
+ *  \param[out] nts number of generated tesserae
+ *  \param[out] ntsirr number of generated irreducible tesserae
+ *  \param[out] nesfp number of spheres (original + added)
+ *  \param[out] addsph number of added spheres
+ *  \param[out] xe x-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
+ *  \param[out] ye y-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
+ *  \param[out] ze z-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
+ *  \param[out] rin radius of the spheres (dimension nSpheres_ + maxAddedSpheres)
+ *  \param[in] masses atomic masses (for inertia tensor formation in PEDRA)
+ *  \param[in] avgArea average tesserae area
+ *  \param[in] rsolv solvent probe radius
+ *  \param[in] ret minimal radius for an added sphere
+ *  \param[in] nr_gen number of symmetry generators
+ *  \param[in] gen1 first generator
+ *  \param[in] gen2 second generator
+ *  \param[in] gen3 third generator
+ *  \param[out] nvert number of vertices per tessera
+ *  \param[out] vert coordinates of tesserae vertices
+ *  \param[out] centr centers of arcs defining the edges of the tesserae
+ */
 extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
                                    double * xtscor, double * ytscor, double * ztscor, double * ar,
                                    double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
                                    int * nts, int * ntsirr, int * nesfp, int * addsph,
                                    double * xe, double * ye, double * ze, double * rin, double * masses,
                                    double * avgArea, double * rsolv, double * ret,
-                                   int * nr_gen, int * gen1, int * gen2, int * gen3);
+                                   int * nr_gen, int * gen1, int * gen2, int * gen3,
+				   int * nvert, double * vert, double * centr);
+
 
 void GePolCavity::build(int maxts, int maxsph, int maxvert)
 {
@@ -62,6 +104,22 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     double * ysphcor = new double[maxts];
     double * zsphcor = new double[maxts];
     double * rsph    = new double[maxts];
+    int    * nvert   = new int[maxts];
+    double * vert    = new double[30 * maxts];
+    double * centr   = new double[30 * maxts];
+    
+    // Clean-up possible heap-crap
+    std::fill_n(xtscor, maxts, 0.0);
+    std::fill_n(ytscor, maxts, 0.0);
+    std::fill_n(ztscor, maxts, 0.0);
+    std::fill_n(ar, maxts, 0.0);
+    std::fill_n(xsphcor, maxts, 0.0);
+    std::fill_n(ysphcor, maxts, 0.0);
+    std::fill_n(zsphcor, maxts, 0.0);
+    std::fill_n(rsph, maxts, 0.0);
+    std::fill_n(nvert, maxts, 0);
+    std::fill_n(vert, 30*maxts, 0.0);
+    std::fill_n(centr, 30*maxts, 0.0);
 
     int nts = 0;
     int ntsirr = 0;
@@ -116,7 +174,8 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
                        &nts, &ntsirr, &nSpheres_, &addedSpheres,
                        xe, ye, ze, rin, mass,
 		       &averageArea, &probeRadius, &minimalRadius,
-                       &nr_gen, &gen1, &gen2, &gen3);
+                       &nr_gen, &gen1, &gen2, &gen3,
+                nvert, vert, centr);
     timerOFF("GePolCavity::generatecavity_cpp");
 
     // The "intensive" part of updating the spheres related class data members will be of course
@@ -194,6 +253,35 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
         elementNormal_.col(i) /= elementNormal_.col(i).norm();
     }
 
+    // Fill elements_ vector
+    for (int i = 0; i < nElements_; ++i) {
+	    int i_off = i + 1;
+	    bool irr = false;
+	    // PEDRA puts the irreducible tesserae first
+	    if (i < nIrrElements_) irr = true;
+	    Sphere sph(elementSphereCenter_.col(i), elementRadius_(i));
+	    int nv = nvert[i];
+	    Eigen::Matrix3Xd vertices, arcs;
+	    vertices.resize(Eigen::NoChange, nv);
+	    arcs.resize(Eigen::NoChange, nv);
+	    // Populate vertices and arcs
+	    for (int j = 0; j < nv; ++j) {
+		int j_off = (j + 1) * nElements_ - 1;
+	        for (int k = 0; k < 3; ++k) {
+			int k_off = (k + 1) * nElements_ * nv; 
+			int offset = i_off + j_off + k_off;
+	  		vertices(k, j) = vert[offset];
+			arcs(k, j) = centr[offset];
+		}
+	    }
+	    elements_.push_back(Element(nv, 
+				        elementArea_(i),
+					elementCenter_.col(i),
+					elementNormal_.col(i),
+					irr, sph,
+					vertices, arcs));
+    }
+
     // Clean-up
     delete[] xtscor;
     delete[] ytscor;
@@ -203,6 +291,9 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     delete[] ysphcor;
     delete[] zsphcor;
     delete[] rsph;
+    delete[] nvert;
+    delete[] vert;
+    delete[] centr;
     delete[] mass;
 
     built = true;

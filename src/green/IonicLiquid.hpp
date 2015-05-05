@@ -27,13 +27,12 @@
 #define IONICLIQUID_HPP
 
 #include <cmath>
+#include <functional>
 #include <iosfwd>
-#include <string>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-#include "taylor.hpp"
 
 template <typename DerivativeTraits>
 class IonicLiquid;
@@ -80,21 +79,20 @@ public:
 
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalS(double area) const
+    virtual double diagonalS(const Element & e) const
     {
-            this->diagonal_->computeS(this, area);
+            this->diagonal_->computeS(this, e);
             return 1.0;
     }
     /*!
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
-     *  \param[in] radius radius of the sphere the tessera belongs to
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalD(double area, double radius) const
+    virtual double diagonalD(const Element & e) const
     {
-            this->diagonal_->computeD(this, area, radius);
+            this->diagonal_->computeD(this, e);
             return 1.0;
     }
 
@@ -152,7 +150,7 @@ namespace
 }
 
 template <>
-inline Numerical GreensFunction<Numerical, Yukawa>::function(const Eigen::Vector3d & source,
+inline double GreensFunction<Numerical, Yukawa>::function(const Eigen::Vector3d & source,
                                         const Eigen::Vector3d & probe) const
 {
     Numerical sp[3], pp[3], res;
@@ -163,25 +161,21 @@ inline Numerical GreensFunction<Numerical, Yukawa>::function(const Eigen::Vector
 }
 
 template <>
-inline Numerical GreensFunction<Numerical, Yukawa>::derivativeSource(const Eigen::Vector3d & normal_p1,
+inline double GreensFunction<Numerical, Yukawa>::derivativeSource(const Eigen::Vector3d & normal_p1,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-    Eigen::Vector3d deltaPlus  = p1 + normal_p1 * delta_ / normal_p1.norm();
-    Eigen::Vector3d deltaMinus = p1 - normal_p1 * delta_ / normal_p1.norm();
-    Numerical funcPlus  = function(deltaPlus,  p2);
-    Numerical funcMinus = function(deltaMinus, p2);
-    return (funcPlus - funcMinus)/(2.0*delta_);
+    using namespace std::placeholders;
+    return threePointStencil(std::bind(&GreensFunction<Numerical, Yukawa>::function, this, _1, _2),
+                            p1, p2, normal_p1, this->delta_);
 }
 
 template <>
-inline Numerical GreensFunction<Numerical, Yukawa>::derivativeProbe(const Eigen::Vector3d & normal_p2,
+inline double GreensFunction<Numerical, Yukawa>::derivativeProbe(const Eigen::Vector3d & normal_p2,
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
-    Eigen::Vector3d deltaPlus  = p2 + normal_p2 * delta_ / normal_p2.norm();
-    Eigen::Vector3d deltaMinus = p2 - normal_p2 * delta_ / normal_p2.norm();
-    Numerical funcPlus  = function(p1, deltaPlus);
-    Numerical funcMinus = function(p1, deltaMinus);
-    return (funcPlus - funcMinus)/(2.0*delta_);
+    using namespace std::placeholders;
+    return threePointStencil(std::bind(&GreensFunction<Numerical, Yukawa>::function, this, _1, _2),
+                            p2, p1, normal_p2, this->delta_);
 }
 
 #endif // IONICLIQUID_HPP

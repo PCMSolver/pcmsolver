@@ -37,6 +37,7 @@
 
 template <typename DerivativeTraits>
 class Vacuum;
+class Element;
 
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegratorFactory.hpp"
@@ -61,11 +62,12 @@ public:
     Vacuum() : GreensFunction<DerivativeTraits, Uniform>(true) {}
     Vacuum(DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits, Uniform>(true, diag) {}
     virtual ~Vacuum() {}
-    /*! Returns value of the directional derivative of the
-     *  Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the probe point, thus assuming that the direction is relative to that point.
+    /*!
+     *  Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
+     *  for the pair of points p1, p2:
+     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
+     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
      *
      *  \param[in] direction the direction
      *  \param[in]        p1 first point
@@ -76,23 +78,20 @@ public:
     {
         return this->derivativeProbe(direction, p1, p2);
     }
-    
+
     /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *
-     *  \param[in] area   area of the i-th tessera
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalS(double area) const
+    virtual double diagonalS(const Element & e) const
     {
-            return this->diagonal_->computeS(this, area);
+            return this->diagonal_->computeS(this, e);
     }
     /*! Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *
-     *  \param[in] area   area of the i-th tessera
-     *  \param[in] radius radius of the sphere the tessera belongs to
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalD(double area, double radius) const
+    virtual double diagonalD(const Element & e) const
     {
-            return this->diagonal_->computeD(this, area, radius);
+            return this->diagonal_->computeD(this, e);
     }
 
     virtual double epsilon() const { return this->profile_.epsilon; }

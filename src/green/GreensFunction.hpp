@@ -26,16 +26,17 @@
 #ifndef GREENSFUNCTION_HPP
 #define GREENSFUNCTION_HPP
 
-#include <iosfwd>
 #include <cmath>
+#include <functional>
+#include <iosfwd>
 #include <stdexcept>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-#include "taylor.hpp"
 
 class DiagonalIntegrator;
+class Element;
 
 #include "DerivativeTypes.hpp"
 #include "IGreensFunction.hpp"
@@ -59,8 +60,9 @@ public:
     GreensFunction(bool uniform) : IGreensFunction(uniform), delta_(1.0e-4) {}
     GreensFunction(bool uniform, DiagonalIntegrator * diag) : IGreensFunction(uniform, diag), delta_(1.0e-4) {}
     virtual ~GreensFunction() {}
-    /*! Returns value of the Greens's function for the pair
-     *  of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
+    /*!
+     *  Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
+     *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
      *
      *  \param[in] p1 first point
      *  \param[in] p2 second point
@@ -73,11 +75,12 @@ public:
         res = this->operator()(sp, pp);
         return res[0];
     }
-    /*! Returns value of the directional derivative of the
-     *  Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the probe point, thus assuming that the direction is relative to that point.
+    /*!
+     *  Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
+     *  for the pair of points p1, p2:
+     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
+     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
      *
      *  \param[in] direction the direction
      *  \param[in]        p1 first point
@@ -126,14 +129,16 @@ public:
         return der[1];
     }
 
-    /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
+    /*!
+     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalS(double area) const = 0;
-    /*! Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] area   area of the i-th tessera to be calculated
+    virtual double diagonalS(const Element & e) const = 0;
+    /*!
+     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
+     *  \param[in] e i-th finite element
      */
-    virtual double diagonalD(double area, double radius) const = 0;
+    virtual double diagonalD(const Element & e) const = 0;
 
     virtual void delta(double value)
     {
@@ -182,7 +187,7 @@ inline double GreensFunction<Numerical, Uniform>::derivativeSource(const Eigen::
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     using namespace std::placeholders;
-    return fivePointStencil(std::bind(&GreensFunction<Numerical, Uniform>::function, this, _1, _2),
+    return threePointStencil(std::bind(&GreensFunction<Numerical, Uniform>::function, this, _1, _2),
                             p1, p2, normal_p1, this->delta_);
 }
 
@@ -191,7 +196,7 @@ inline double GreensFunction<Numerical, Uniform>::derivativeProbe(const Eigen::V
         const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
 {
     using namespace std::placeholders;
-    return fivePointStencil(std::bind(&GreensFunction<Numerical, Uniform>::function, this, _1, _2),
+    return threePointStencil(std::bind(&GreensFunction<Numerical, Uniform>::function, this, _1, _2),
                             p2, p1, normal_p2, this->delta_);
 }
 

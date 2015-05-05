@@ -32,100 +32,155 @@
 
 #include <Eigen/Dense>
 
-double CollocationIntegrator::computeS(const Vacuum<double> * /* gf */, double area) const {
+#include "Element.hpp"
+
+double CollocationIntegrator::computeS(const Vacuum<double> * /* gf */, const Element & e) const {
+	double area = e.area();
 	return (factor_ * std::sqrt(4 * M_PI / area));
 }
-double CollocationIntegrator::computeS(const Vacuum<AD_directional> * /* gf */, double area) const {
+double CollocationIntegrator::computeS(const Vacuum<AD_directional> * /* gf */, const Element & e) const {
+	double area = e.area();
 	return (factor_ * std::sqrt(4 * M_PI / area));
 }
-double CollocationIntegrator::computeS(const Vacuum<AD_gradient> * /* gf */, double area) const {
+double CollocationIntegrator::computeS(const Vacuum<AD_gradient> * /* gf */, const Element & e) const {
+	double area = e.area();
 	return (factor_ * std::sqrt(4 * M_PI / area));
 }
-double CollocationIntegrator::computeS(const Vacuum<AD_hessian> * /* gf */, double area) const {
+double CollocationIntegrator::computeS(const Vacuum<AD_hessian> * /* gf */, const Element & e) const {
+	double area = e.area();
 	return (factor_ * std::sqrt(4 * M_PI / area));
 }
 
-double CollocationIntegrator::computeD(const Vacuum<double> * /* gf */, double area, double radius) const {
+double CollocationIntegrator::computeD(const Vacuum<double> * /* gf */, const Element & e) const {
+	double area = e.area();
+	double radius = e.sphere().radius();
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const Vacuum<AD_directional> * /* gf */, double area, double radius) const {
+double CollocationIntegrator::computeD(const Vacuum<AD_directional> * /* gf */, const Element & e) const {
+	double area = e.area();
+	double radius = e.sphere().radius();
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const Vacuum<AD_gradient> * /* gf */, double area, double radius) const {
+double CollocationIntegrator::computeD(const Vacuum<AD_gradient> * /* gf */, const Element & e) const {
+	double area = e.area();
+	double radius = e.sphere().radius();
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const Vacuum<AD_hessian> * /* gf */, double area, double radius) const {
+double CollocationIntegrator::computeD(const Vacuum<AD_hessian> * /* gf */, const Element & e) const {
+	double area = e.area();
+	double radius = e.sphere().radius();
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
 
-double CollocationIntegrator::computeS(const UniformDielectric<double> * gf, double area) const {
+double CollocationIntegrator::computeS(const UniformDielectric<double> * gf, const Element & e) const {
 	double epsInv = 1.0 / gf->epsilon();
+	double area = e.area();
 	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
 }
-double CollocationIntegrator::computeS(const UniformDielectric<AD_directional> * gf, double area) const {
+double CollocationIntegrator::computeS(const UniformDielectric<AD_directional> * gf, const Element & e) const {
 	double epsInv = 1.0 / gf->epsilon();
+	double area = e.area();
 	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
 }
-double CollocationIntegrator::computeS(const UniformDielectric<AD_gradient> * gf, double area) const {
+double CollocationIntegrator::computeS(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
 	double epsInv = 1.0 / gf->epsilon();
+	double area = e.area();
 	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
 }
-double CollocationIntegrator::computeS(const UniformDielectric<AD_hessian> * gf, double area) const {
+double CollocationIntegrator::computeS(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
 	double epsInv = 1.0 / gf->epsilon();
+	double area = e.area();
 	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
 }
 
-double CollocationIntegrator::computeD(const UniformDielectric<double> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const UniformDielectric<double> * gf, const Element & e) const {
 	double epsInv = 1.0 / gf->epsilon();
+	double area = e.area();
+	double radius = e.sphere().radius();
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_directional> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const {
 	double epsInv = 1.0 / gf->epsilon();
+	double area = e.area();
+	double radius = e.sphere().radius();
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
 	double epsInv = 1.0 / gf->epsilon();
-    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
+	double area = e.area();
+	double radius = e.sphere().radius();
+        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
 	double epsInv = 1.0 / gf->epsilon();
+	double area = e.area();
+	double radius = e.sphere().radius();
         return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
 
-double CollocationIntegrator::computeS(const IonicLiquid<double> * /* gf */, double /* area */) const {
+double CollocationIntegrator::computeS(const IonicLiquid<double> * /* gf */, const Element & /* e */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeS(const IonicLiquid<AD_directional> * /* gf */, double /* area */) const {
+double CollocationIntegrator::computeS(const IonicLiquid<AD_directional> * /* gf */, const Element & /* e */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeS(const IonicLiquid<AD_gradient> * /* gf */, double /* area */) const {
+double CollocationIntegrator::computeS(const IonicLiquid<AD_gradient> * /* gf */, const Element & /* e */) const {
 	return 0.0;
 }
-double CollocationIntegrator::computeS(const IonicLiquid<AD_hessian> * /* gf */, double /* area */) const {
-	return 0.0;
-}
-
-double CollocationIntegrator::computeD(const IonicLiquid<double> * /* gf */, double /* area */, double /* radius */) const {
-	return 0.0;
-}
-double CollocationIntegrator::computeD(const IonicLiquid<AD_directional> * /* gf */, double /* area */, double /* radius */) const {
-	return 0.0;
-}
-double CollocationIntegrator::computeD(const IonicLiquid<AD_gradient> * /* gf */, double /* area */, double /* radius */) const {
-	return 0.0;
-}
-double CollocationIntegrator::computeD(const IonicLiquid<AD_hessian> * /* gf */, double /* area */, double /* radius */) const {
+double CollocationIntegrator::computeS(const IonicLiquid<AD_hessian> * /* gf */, const Element & /* e */) const {
 	return 0.0;
 }
 
-double CollocationIntegrator::computeS(const TanhSphericalDiffuse * gf, double area) const {
+double CollocationIntegrator::computeD(const IonicLiquid<double> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const IonicLiquid<AD_directional> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const IonicLiquid<AD_gradient> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const IonicLiquid<AD_hessian> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+
+double CollocationIntegrator::computeS(const AnisotropicLiquid<double> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeS(const AnisotropicLiquid<AD_directional> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeS(const AnisotropicLiquid<AD_gradient> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeS(const AnisotropicLiquid<AD_hessian> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+
+double CollocationIntegrator::computeD(const AnisotropicLiquid<double> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const AnisotropicLiquid<AD_directional> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const AnisotropicLiquid<AD_gradient> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+double CollocationIntegrator::computeD(const AnisotropicLiquid<AD_hessian> * /* gf */, const Element & /* e */) const {
+	return 0.0;
+}
+
+double CollocationIntegrator::computeS(const TanhSphericalDiffuse * gf, const Element & e) const {
     // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
+	double area = e.area();
 	double epsInv = 1.0 / gf->epsilon();
 	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
 }
 
-double CollocationIntegrator::computeD(const TanhSphericalDiffuse * gf, double area, double radius) const {
+double CollocationIntegrator::computeD(const TanhSphericalDiffuse * gf, const Element & e) const {
     // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
+	double area = e.area();
+	double radius = e.sphere().radius();
 	double epsInv = 1.0 / gf->epsilon();
     return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }

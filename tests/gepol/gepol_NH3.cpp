@@ -52,9 +52,7 @@ struct GePolCavityNH3Test {
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
         cavity = GePolCavity(molec, area, probeRadius, minRadius);
-	    LOG(cavity);
         cavity.saveCavity("nh3.npz");
-	    LOG_TIME;
     }
 };
 

@@ -28,6 +28,7 @@
 
 #include "Config.hpp"
 
+#include "Anisotropic.hpp"
 #include "TanhDiffuse.hpp"
 #include "TanhMembrane.hpp"
 #include "Uniform.hpp"
@@ -35,7 +36,7 @@
 
 #include <boost/mpl/vector.hpp>
 
-typedef boost::mpl::vector<TanhDiffuse, Uniform, Yukawa, TanhMembrane>
+typedef boost::mpl::vector<TanhDiffuse, Uniform, Yukawa, TanhMembrane, Anisotropic>
 profile_types;
 
 #endif // PROFILETYPES_HPP

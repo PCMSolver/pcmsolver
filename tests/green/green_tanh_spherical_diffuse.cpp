@@ -66,20 +66,20 @@ BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
     double gf_value = gf.function(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
-    BOOST_CHECK_CLOSE(gf_value, value, 1.0e-08);
+    BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
     double deriv = deriv_inside_reference;
     double gf_deriv = gf.derivative(probeNormal1, source1, probe1);
     BOOST_TEST_MESSAGE("deriv    = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
     BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
-    BOOST_CHECK_CLOSE(gf_deriv, deriv, 1.0e-06);
+    BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
 
     /*
     double derSource = resultInside(2);
     double gf_derSource = gf.derivativeSource(sourceNormal1, source1, probe1);
     BOOST_TEST_MESSAGE("derSource    = " << std::setprecision(std::numeric_limits<long double>::digits10) << derSource);
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
-    BOOST_CHECK_CLOSE(derSource, gf_derSource, 1.0e-06);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
     */
 }
 /*! \class TanhSphericalDiffuse
@@ -92,20 +92,20 @@ BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
     double gf_value = gf.function(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
-    BOOST_CHECK_CLOSE(gf_value, value, 1.0e-08);
+    BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
     double deriv = deriv_outside_reference;
     double gf_deriv = gf.derivative(probeNormal2, source2, probe2);
     BOOST_TEST_MESSAGE("deriv    = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
     BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
-    BOOST_CHECK_CLOSE(gf_deriv, deriv, 1.0e-06);
+    BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
 
     /*
     double derSource = resultOutside(2);
     double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
     BOOST_TEST_MESSAGE("derSource    = " << std::setprecision(std::numeric_limits<long double>::digits10) << derSource);
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
-    BOOST_CHECK_CLOSE(derSource, gf_derSource, 1.0e-06);
+    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
     */
 }
 BOOST_AUTO_TEST_SUITE_END()

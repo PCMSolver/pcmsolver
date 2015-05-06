@@ -98,7 +98,7 @@ class LnTransformedRadial
             // Evaluate the dielectric profile
             double eps = 0.0, epsPrime = 0.0;
             eval_(eps, epsPrime, r);
-            if (numericalZero(eps)) throw std::invalid_argument("Division by zero!");
+            if (numericalZero(eps)) throw std::domain_error("Division by zero!");
             double gamma_epsilon = epsPrime / eps;
             // System of equations is defined here
             drhodr[0] = rho[1];

@@ -196,6 +196,10 @@ inline double TanhSphericalDiffuse::functionSummation(int L, double r1, double r
 {
     double gr12 = 0.0;
     // Evaluate Legendre polynomial of order L
+    // First of all clean-up cos_gamma, Legendre polynomials
+    // are only defined for -1 <= x <= 1
+    if (numericalZero(cos_gamma - 1)) cos_gamma = 1.0;
+    if (numericalZero(cos_gamma + 1)) cos_gamma = -1.0;
     double pl_x = boost::math::legendre_p(L, cos_gamma);
 
     /* Value of zeta_[L] at point with index 1 */

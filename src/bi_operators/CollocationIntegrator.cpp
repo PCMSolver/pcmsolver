@@ -173,18 +173,30 @@ double CollocationIntegrator::computeD(const AnisotropicLiquid<AD_hessian> * /* 
 double CollocationIntegrator::computeS(const TanhSphericalDiffuse * gf, const Element & e) const {
     // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
 	double area = e.area();
-    double coulomb_coeff = 1.0 / gf->coefficientCoulomb(e.center(), e.center());
+    // Diagonal of S inside the cavity
+    double Sii_I = factor_ * std::sqrt(4 * M_PI / area);
+    // "Diagonal" of Coulomb singularity separation coefficient
+    double coulomb_coeff = gf->coefficientCoulomb(e.center(), e.center());
+    // "Diagonal" of the image Green's function
     double image = gf->imagePotential(e.center(), e.center());
-	return (factor_ * std::sqrt(4 * M_PI / area) * coulomb_coeff + image);
+
+	return (Sii_I / coulomb_coeff + image);
 }
 
 double CollocationIntegrator::computeD(const TanhSphericalDiffuse * gf, const Element & e) const {
     // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
 	double area = e.area();
 	double radius = e.sphere().radius();
-    double coulomb_coeff = 1.0 / gf->coefficientCoulomb(e.center(), e.center());
-    double coeff_grad = gf->coefficientCoulombDerivative(e.normal(), e.center, e.center());
-    coeff_grad /= std::pow(coulomb_coeff, 2);
+    // Diagonal of S inside the cavity
+    double Sii_I = factor_ * std::sqrt(4 * M_PI / area);
+    // Diagonal of D inside the cavity
+    double Dii_I = -factor_ * std::sqrt(M_PI/ area) * (1.0 / radius);
+    // "Diagonal" of Coulomb singularity separation coefficient
+    double coulomb_coeff = gf->coefficientCoulomb(e.center(), e.center());
+    // "Diagonal" of the directional derivative of the Coulomb singularity separation coefficient
+    double coeff_grad = gf->coefficientCoulombDerivative(e.normal(), e.center(), e.center()) / std::pow(coulomb_coeff, 2);
+    // "Diagonal" of the directional derivative of the image Green's function
     double image_grad = gf->imagePotentialDerivative(e.normal(), e.center(), e.center());
-    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * coulomb_coeff - coeff_grad + image_grad);
+
+    return (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad);
 }

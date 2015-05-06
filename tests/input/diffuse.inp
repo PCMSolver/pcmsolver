@@ -1,0 +1,37 @@
+units = angstrom
+codata = 1998
+medium
+{
+
+	solvertype = wavelet
+        equationtype = firstkind
+	proberadius = 1.385
+        solvent = explicit
+	green<inside>
+	{
+		type=vacuum
+		der = numerical
+	}
+	green<outside>
+	{
+		type = sphericaldiffuse
+        profile = tanh
+	    eps1 = 78.39
+		epsdyn1 = 10.423
+        eps2 = 20.0
+        epsdyn2 = 4.0
+		der = numerical
+	}
+}
+
+cavity
+{
+	type = wavelet
+	dyadicfile      =      benzene2.dat
+	patchlevel = 1
+	coarsity = 0.3
+	mode = explicit
+	spheres = [ 0.00,   0.00,  0.00,  1.80,
+		    0.00,  -0.96,  0.00,  1.44,
+		   -0.905,  0.32,  0.00,  1.44]
+}

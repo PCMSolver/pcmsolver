@@ -106,7 +106,7 @@ void Input::reader(const char * pythonParsed)
     const Section & medium = input.getSect("MEDIUM");
     // Get the name of the solvent
     std::string name = medium.getStr("SOLVENT");
-    if (name == "EXPLICIT") {
+    if (name == "EXPLICIT" || name == "E") {
         hasSolvent_ = false;
         // Get the probe radius
         probeRadius_ = medium.getDbl("PROBERADIUS");
@@ -130,6 +130,13 @@ void Input::reader(const char * pythonParsed)
             spherePosition_ = outside.getDblVec("SPHEREPOSITION");
             sphereRadius_ = outside.getDbl("SPHERERADIUS");
         }
+        // Currently HARDCODED for a tanh-profile (does not cover membranes...)
+        epsilonStatic1_ = outside.getDbl("EPS1");
+        epsilonDynamic1_ = outside.getDbl("EPSDYN1");
+        epsilonStatic2_ = outside.getDbl("EPS2");
+        epsilonDynamic2_ = outside.getDbl("EPSDYN2");
+        center_ = outside.getDbl("CENTER");
+        width_ = outside.getDbl("WIDTH");
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -251,6 +258,10 @@ greenData Input::outsideStaticGreenParams()
     if (outsideStaticGreenData_.empty) {
         outsideStaticGreenData_ = greenData(derivativeOutsideType_, epsilonStaticOutside_,
                                             integratorType_);
+        outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
+        outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
+        outsideStaticGreenData_.center   = center_;
+        outsideStaticGreenData_.width    = width_;
     }
     return outsideStaticGreenData_;
 }
@@ -260,6 +271,10 @@ greenData Input::outsideDynamicGreenParams()
     if (outsideDynamicGreenData_.empty) {
         outsideDynamicGreenData_ = greenData(derivativeOutsideType_, epsilonDynamicOutside_,
                                              integratorType_);
+        outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
+        outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
+        outsideDynamicGreenData_.center   = center_;
+        outsideDynamicGreenData_.width    = width_;
     }
     return outsideDynamicGreenData_;
 }

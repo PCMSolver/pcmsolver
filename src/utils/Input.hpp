@@ -97,7 +97,7 @@ public:
     bool hermitivitize() { return hermitivitize_; }
     /// @}
 
-    /// Green's functin section input
+    /// Green's function section input
     std::string greenInsideType() { return greenInsideType_; }
     std::string greenOutsideType() { return greenOutsideType_; }
     /// @}
@@ -213,6 +213,18 @@ private:
     std::vector<double> spherePosition_;
     /// Radius of the spherical metal NP
     double sphereRadius_;
+    /// Diffuse interface: static permittivity inside the interface
+    double epsilonStatic1_;
+    /// Diffuse interface: dynamic permittivity inside the interface
+    double epsilonDynamic1_;
+    /// Diffuse interface: static permittivity outside the interface
+    double epsilonStatic2_;
+    /// Diffuse interface: dynamic permittivity outside the interface
+    double epsilonDynamic2_;
+    /// Center of the diffuse interface
+    double center_;
+    /// Width of the diffuse interface
+    double width_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
     /// Input wrapping struct for the cavity

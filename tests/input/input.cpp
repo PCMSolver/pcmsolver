@@ -2,28 +2,28 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE Input 
+#define BOOST_TEST_MODULE Input
 
 #include <iostream>
 #include <string>
@@ -105,13 +105,13 @@ struct InputTsLessTest {
 
 BOOST_FIXTURE_TEST_SUITE(InputTsLess, InputTsLessTest)
 
-/*! \class Input 
+/*! \class Input
  *  \test \b InputTsLessTest_TsLess tests input reading on an input file parsed by pcmsolver.py
  */
 BOOST_FIXTURE_TEST_CASE(TsLess, InputTsLessTest)
 {
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
-    BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
+    BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());
     BOOST_REQUIRE_EQUAL(type,                  parsedInput.cavityType());
     BOOST_REQUIRE_CLOSE(area,                  parsedInput.cavityParams().area, 1.0e-11);
     BOOST_REQUIRE_CLOSE(minDistance,           parsedInput.cavityParams().minDistance, 1.0e-10);
@@ -188,7 +188,7 @@ struct InputRestartTest {
 	mode = "IMPLICIT";
 	solvent = "Water"; // Name in the Solvent object
 	solverType = "IEFPCM";
-	equationType = 1; 
+	equationType = 1;
 	correction = 0.0;
 	hermitivitize = true;
 	probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
@@ -201,14 +201,14 @@ struct InputRestartTest {
 
 BOOST_FIXTURE_TEST_SUITE(InputRestart, InputRestartTest)
 
-/*! \class Input 
+/*! \class Input
  *  \test \b InputRestartTest_Restart tests input reading on an input file parsed by pcmsolver.py
  */
 BOOST_FIXTURE_TEST_CASE(Restart, InputRestartTest)
 {
     double threshold = 1.0e-12;
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
-    BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
+    BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());
     BOOST_REQUIRE_EQUAL(type,                  parsedInput.cavityType());
     BOOST_REQUIRE_EQUAL(cavFilename,           parsedInput.cavityParams().filename);
     BOOST_REQUIRE_EQUAL(patchLevel,            parsedInput.cavityParams().patchLevel);
@@ -304,14 +304,14 @@ struct InputWaveletTest {
 
 BOOST_FIXTURE_TEST_SUITE(InputWavelet, InputWaveletTest)
 
-/*! \class Input 
+/*! \class Input
  *  \test \b InputWaveletTest_Wavelet tests input reading on an input file parsed by pcmsolver.py
  */
 BOOST_FIXTURE_TEST_CASE(Wavelet, InputWaveletTest)
 {
     double threshold = 1.0e-12;
     BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
-    BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());           
+    BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());
     BOOST_REQUIRE_EQUAL(type,                  parsedInput.cavityType());
     BOOST_REQUIRE_EQUAL(patchLevel,            parsedInput.cavityParams().patchLevel);
     BOOST_REQUIRE_CLOSE(coarsity,              parsedInput.cavityParams().coarsity, threshold);
@@ -334,6 +334,122 @@ BOOST_FIXTURE_TEST_CASE(Wavelet, InputWaveletTest)
     BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.insideGreenParams().epsilon, threshold);
     BOOST_REQUIRE_CLOSE(epsilonStaticOutside,  parsedInput.outsideStaticGreenParams().epsilon, threshold);
     BOOST_REQUIRE_CLOSE(epsilonDynamicOutside, parsedInput.outsideDynamicGreenParams().epsilon, threshold);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+struct InputDiffuseTest {
+    std::string filename;
+    Input parsedInput;
+    InputDiffuseTest() { SetUp(); }
+    // List the contents of the input file here
+    std::string units;
+    int CODATAyear;
+    std::string type;
+    std::string cavFilename;
+    int patchLevel;
+    double coarsity;
+    double area;
+    double minDistance;
+    int derOrder;
+    bool scaling;
+    std::string radiiSet;
+    double minimalRadius;
+    std::string mode;
+    std::vector<int> atoms;
+    std::vector<double> radii;
+    std::vector<Sphere> spheres;
+    std::string solvent;
+    bool hasSolvent;
+    std::string solverType;
+    int equationType;
+    double correction;
+    bool hermitivitize;
+    double probeRadius;
+    std::string greenInsideType;
+    std::string greenOutsideType;
+    int derivativeInsideType;
+    int derivativeOutsideType;
+    double epsilonInside;
+    double epsilonStatic1;
+    double epsilonDynamic1;
+    double epsilonStatic2;
+    double epsilonDynamic2;
+    double center;
+    double width;
+    void SetUp() {
+	filename = "@diffuse.inp";
+	parsedInput = Input(filename);
+	units = "ANGSTROM";
+	CODATAyear = 1998;
+        type = "WAVELET";
+	patchLevel = 1;
+	coarsity   = 0.3;
+        scaling = true;
+	radiiSet = "BONDI";
+	mode = "EXPLICIT";
+	Eigen::Vector3d c1, c2, c3;
+	c1 <<  0.00,  0.00, 0.00;
+	c2 <<  0.00, -0.96, 0.00;
+	c3 << -0.905, 0.32, 0.00;
+	c2 *= angstromToBohr(CODATAyear);
+	c3 *= angstromToBohr(CODATAyear);
+	Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
+	Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
+	Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
+	solverType = "WAVELET";
+	equationType = 0;
+	probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+	greenInsideType = "VACUUM";
+	greenOutsideType = "SPHERICALDIFFUSE";
+	derivativeInsideType = 0;
+	derivativeOutsideType = 0;
+	epsilonInside = 1.0;
+	epsilonStatic1 = 78.39;
+	epsilonDynamic1 = 10.423;
+	epsilonStatic2 = 20.0;
+	epsilonDynamic2 = 4.0;
+    center = 100.0 * angstromToBohr(CODATAyear);
+    width  = 5.0 * angstromToBohr(CODATAyear);
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(InputDiffuse, InputDiffuseTest)
+
+/*! \class Input
+ *  \test \b InputDiffuseTest_Diffuse tests input reading on an input file parsed by pcmsolver.py
+ */
+BOOST_FIXTURE_TEST_CASE(Diffuse, InputDiffuseTest)
+{
+    double threshold = 1.0e-12;
+    BOOST_REQUIRE_EQUAL(units,                 parsedInput.units());
+    BOOST_REQUIRE_EQUAL(CODATAyear,            parsedInput.CODATAyear());
+    BOOST_REQUIRE_EQUAL(type,                  parsedInput.cavityType());
+    BOOST_REQUIRE_EQUAL(patchLevel,            parsedInput.cavityParams().patchLevel);
+    BOOST_REQUIRE_CLOSE(coarsity,              parsedInput.cavityParams().coarsity, threshold);
+    BOOST_REQUIRE_EQUAL(scaling,               parsedInput.scaling());
+    BOOST_REQUIRE_EQUAL(radiiSet,              parsedInput.radiiSet());
+    BOOST_REQUIRE_EQUAL(mode,                  parsedInput.mode());
+    for (size_t i = 0; i < spheres.size(); ++i) {
+	    for (size_t j = 0; j < 3; ++j) {
+	    	BOOST_REQUIRE_CLOSE(spheres[i].center(j),      parsedInput.spheres(i).center(j), threshold);
+	    }
+	    BOOST_REQUIRE_CLOSE(spheres[i].radius(),      parsedInput.spheres(i).radius(), threshold);
+    }
+    BOOST_REQUIRE_EQUAL(solverType,            parsedInput.solverType());
+    BOOST_REQUIRE_EQUAL(equationType,          parsedInput.equationType());
+    BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-10);
+    BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
+    BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.insideGreenParams().epsilon, threshold);
+    BOOST_REQUIRE_CLOSE(epsilonStatic1,  parsedInput.outsideStaticGreenParams().epsilon1, threshold);
+    BOOST_REQUIRE_CLOSE(epsilonStatic2,  parsedInput.outsideStaticGreenParams().epsilon2, threshold);
+    BOOST_REQUIRE_CLOSE(epsilonDynamic1, parsedInput.outsideDynamicGreenParams().epsilon1, threshold);
+    BOOST_REQUIRE_CLOSE(epsilonDynamic2, parsedInput.outsideDynamicGreenParams().epsilon2, threshold);
+    BOOST_REQUIRE_CLOSE(center, parsedInput.outsideDynamicGreenParams().center, 1.0e-10);
+    BOOST_REQUIRE_CLOSE(width, parsedInput.outsideDynamicGreenParams().width, 1.0e-10);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

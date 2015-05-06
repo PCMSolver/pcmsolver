@@ -68,6 +68,10 @@ struct greenData {
     double epsilonImaginary;
     std::vector<double> NPspheres;
     double NPradii;
+    double epsilon1;
+    double epsilon2;
+    double center;
+    double width;
     bool empty;
 
     greenData() { empty = true;}
@@ -76,11 +80,11 @@ struct greenData {
               const Eigen::Vector3d & epstens = Eigen::Vector3d::Zero(), const Eigen::Vector3d & euler = Eigen::Vector3d::Zero(),
               double _epsReal = 0.0, double _epsImaginary = 0.0,
               const std::vector<double> & _sphere = std::vector<double>(),
-              double _sphRadius = 0.0) :
-        how(_how), epsilon(_epsilon), integratorType(_diag), 
+              double _sphRadius = 0.0, double _e1 = 1.0, double _e2 = 1.0, double _c = 100.0, double _w = 5.0) :
+        how(_how), epsilon(_epsilon), integratorType(_diag),
     kappa(_kappa), epsilonTensor(epstens), eulerAngles(euler),
 	epsilonReal(_epsReal), epsilonImaginary(_epsImaginary),
-        NPspheres(_sphere), NPradii(_sphRadius) { empty = false; }
+        NPspheres(_sphere), NPradii(_sphRadius), epsilon1(_e1), epsilon2(_e2), center(_c), width(_w) { empty = false; }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 };
 

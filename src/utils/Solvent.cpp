@@ -56,6 +56,7 @@ Solvent::SolventMap & Solvent::initSolventMap()
     availableSolvents["DIMETHYLSULFOXIDE"]    = Solvent("Dimethylsulfoxide",   46.700, 2.179, 2.455);
     availableSolvents["WATER"]                = Solvent("Water",               78.390, 1.776, 1.385);
     availableSolvents["EXPLICIT"]             = Solvent("Explicit", 0.0, 0.0, 0.0);
+    availableSolvents["E"]                    = Solvent("Explicit", 0.0, 0.0, 0.0); // This is an hack to avoid a glitch in Getkw (RDR 6 May 2015)
     // ------------------------------------------------------------
     return availableSolvents;
 }

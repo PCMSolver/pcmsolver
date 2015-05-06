@@ -64,14 +64,27 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     Eigen::MatrixXd DE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
 
-    // This is the very core of PCMSolver
-    throw std::runtime_error("Calculation of anisotropic matrix elements not yet implemented.");
-    /*
-    greenInside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SI, DI);
-    greenInside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SI, DI);
-    greenOutside_->compOffDiagonal(cav.elementCenter(), cav.elementNormal(), SE, DE);
-    greenOutside_->compDiagonal(cav.elementArea(), cav.elementRadius(), SE, DE);
-    */
+    // Compute SI, DI and SE, DE on the whole cavity, regardless of symmetry
+    for (int i = 0; i < cavitySize; ++i) {
+        SI(i, i) = greenInside_->diagonalS(cav.elements(i));
+        SE(i, i) = greenOutside_->diagonalD(cav.elements(i));
+        DI(i, i) = greenInside_->diagonalD(cav.elements(i));
+        DE(i, i) = greenOutside_->diagonalD(cav.elements(i));
+
+        Eigen::Vector3d source = cav.elementCenter().col(i);
+        for (int j = 0; j < cavitySize; ++j) {
+            Eigen::Vector3d probe = cav.elementCenter().col(j);
+            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
+            probeNormal.normalize();
+            if (i != j) {
+                SI(i, j) = greenInside_->function(source, probe);
+                SE(i, j) = greenOutside_->function(source, probe);
+                DI(i, j) = greenInside_->derivative(probeNormal, source, probe);
+                DE(i, j) = greenOutside_->derivative(probeNormal, source, probe);
+            }
+        }
+    }
+
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.
@@ -86,8 +99,8 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
     aInv = 2 * M_PI * a.inverse();
 
+    // 1. Form T
     fullPCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose().eval()));
-    fullPCMMatrix = fullPCMMatrix.inverse();
     // 2. Invert T using LU decomposition with full pivoting
     //    This is a rank-revealing LU decomposition, this allows us
     //    to test if T is invertible before attempting to invert it.
@@ -115,7 +128,6 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     builtAnisotropicMatrix = true;
     builtIsotropicMatrix = false;
 }
-
 
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 {

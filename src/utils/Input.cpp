@@ -130,7 +130,10 @@ void Input::reader(const char * pythonParsed)
             spherePosition_ = outside.getDblVec("SPHEREPOSITION");
             sphereRadius_ = outside.getDbl("SPHERERADIUS");
         }
-        // Currently HARDCODED for a tanh-profile (does not cover membranes...)
+        if (greenOutsideType_ == "SPHERICALDIFFUSE") {
+            // Attach profile type in front of diffuse interface type
+            greenOutsideType_.insert(0, outside.getStr("PROFILE"));
+        }
         epsilonStatic1_ = outside.getDbl("EPS1");
         epsilonDynamic1_ = outside.getDbl("EPSDYN1");
         epsilonStatic2_ = outside.getDbl("EPS2");

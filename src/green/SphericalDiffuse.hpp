@@ -236,7 +236,10 @@ private:
     }
     virtual std::ostream & printObject(std::ostream & os)
     {
-        os << "Green's function type: spherical diffuse";
+        os << "Green's function type: spherical diffuse" << std::endl;
+        os << this->profile_ << std::endl;
+        os << "Angular momentum (Green's function)    = " << this->maxLGreen_ << std::endl;
+        os << "Angular momentum (Coulomb coefficient) = " << this->maxLC_;
         return os;
     }
     /*!

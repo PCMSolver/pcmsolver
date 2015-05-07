@@ -54,6 +54,14 @@ private:
         return (0.5 * (epsilonLeft_ - epsilonRight_)
                 * ( 1 - tanh_r * tanh_r) / width_); //first derivative of epsilon(r)
     }
+    std::ostream & printObject(std::ostream & os)
+    {
+        os << "Permittivity inside  = " << epsilonLeft_  << std::endl;
+        os << "Permittivity outside = " << epsilonRight_ << std::endl;
+        os << "Profile center       = " << center_       << std::endl;
+        os << "Profile width        = " << width_;
+        return os;
+    }
 public:
     TanhDiffuse() {}
     TanhDiffuse(double eL, double eR, double w, double c) :
@@ -73,6 +81,9 @@ public:
     double epsilonRight() const { return epsilonRight_; }
     double width() const { return width_; }
     double center() const { return center_; }
+    friend std::ostream & operator<<(std::ostream & os, TanhDiffuse & th) {
+        return th.printObject(os);
+    }
 };
 
 #endif // TANHDIFFUSE_HPP

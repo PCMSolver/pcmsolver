@@ -353,7 +353,7 @@ namespace
     IGreensFunction * createTanhSphericalDiffuse(const greenData & _data)
     {
         double eL, eR, w, c; // To be read from _data
-        eL = 0.0, eR = 0.0, w = 0.0, c = 0.0;
+        eL = _data.epsilon2, eR = _data.epsilon1, w = _data.width, c = _data.center;
         DiagonalIntegrator * integrator =
 		DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
         return new TanhSphericalDiffuse(eL, eR, w, c, integrator);

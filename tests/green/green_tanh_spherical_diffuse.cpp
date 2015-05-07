@@ -16,7 +16,7 @@
 #include "TanhSphericalDiffuse.hpp"
 
 struct TanhSphericalDiffuseTest {
-    double epsInside, epsOutside, sphereRadius, width;
+    double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
     double deriv_inside_reference, deriv_outside_reference;
     Eigen::Vector3d sphereCenter;
@@ -24,8 +24,10 @@ struct TanhSphericalDiffuseTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     TanhSphericalDiffuseTest() { SetUp(); }
     void SetUp() {
-        epsInside = 80.0;
-        epsOutside = 2.0;
+        // High dielectric constant inside
+        eps1 = 80.0;
+        // Low dielectric constant outside
+        eps2 = 2.0;
 	    sphereCenter << 0.0, 0.0, 0.0;
         sphereRadius = 100.0;
 	    width = 5.0;
@@ -61,7 +63,7 @@ BOOST_FIXTURE_TEST_SUITE(TanhSphericalDiffuse1, TanhSphericalDiffuseTest)
  */
 BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
 {
-    TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius);
+    TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius);
     double value = inside_reference;
     double gf_value = gf.function(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -87,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
  */
 BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
 {
-    TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius);
+    TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius);
     double value = outside_reference;
     double gf_value = gf.function(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);

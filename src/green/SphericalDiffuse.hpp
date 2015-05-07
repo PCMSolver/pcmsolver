@@ -82,27 +82,27 @@ class SphericalDiffuse : public GreensFunction<Numerical, ProfilePolicy>
 {
 public:
     /*!
-     * \param[in] eL left-side dielectric constant
-     * \param[in] eR right-side dielectric constant
+     * \param[in] e1 left-side dielectric constant
+     * \param[in] e2 right-side dielectric constant
      * \param[in] w width of the interface layer
      * \param[in] c center of the diffuse layer
      */
-    SphericalDiffuse(double eL, double eR, double w, double c) : GreensFunction<Numerical, ProfilePolicy>(false)
+    SphericalDiffuse(double e1, double e2, double w, double c) : GreensFunction<Numerical, ProfilePolicy>(false)
     {
-        initProfilePolicy(eL, eR, w, c);
+        initProfilePolicy(e1, e2, w, c);
         initSphericalDiffuse();
     }
     /*!
-     * \param[in] eL left-side dielectric constant
-     * \param[in] eR right-side dielectric constant
+     * \param[in] e1 left-side dielectric constant
+     * \param[in] e2 right-side dielectric constant
      * \param[in] w width of the interface layer
      * \param[in] c center of the diffuse layer
      * \param[in] diag strategy to calculate the diagonal elements of the boundary integral operator
      */
-    SphericalDiffuse(double eL, double eR, double w, double c, DiagonalIntegrator * diag)
+    SphericalDiffuse(double e1, double e2, double w, double c, DiagonalIntegrator * diag)
         : GreensFunction<Numerical, ProfilePolicy>(false, diag)
     {
-        initProfilePolicy(eL, eR, w, c);
+        initProfilePolicy(e1, e2, w, c);
         initSphericalDiffuse();
     }
     virtual ~SphericalDiffuse() {}
@@ -243,13 +243,13 @@ private:
         return os;
     }
     /*!
-     * \param[in] eL left-side dielectric constant
-     * \param[in] eR right-side dielectric constant
+     * \param[in] e1 left-side dielectric constant
+     * \param[in] e2 right-side dielectric constant
      * \param[in] w width of the interface layer
      * \param[in] c center of the diffuse layer
      */
-    void initProfilePolicy(double eL, double eR, double w, double c)
-    { this->profile_ = ProfilePolicy(eL, eR, w, c); }
+    void initProfilePolicy(double e1, double e2, double w, double c)
+    { this->profile_ = ProfilePolicy(e1, e2, w, c); }
     /*! This calculates all the components needed to evaluate the Green's function */
     void initSphericalDiffuse();
 

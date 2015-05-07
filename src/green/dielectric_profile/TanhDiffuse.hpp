@@ -40,32 +40,33 @@
 class TanhDiffuse
 {
 private:
-    double epsilonLeft_;
-    double epsilonRight_;
+    double epsilon1_;
+    double epsilon2_;
     double width_;
     double center_;
     double value(double point) const {
+        double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
+        double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
         double tanh_r = std::tanh((point - center_) / width_);
-        return (0.5 * (epsilonLeft_ + epsilonRight_)
-                + 0.5 * (epsilonRight_ - epsilonLeft_) * tanh_r);     //epsilon(r)
+        return (epsPlus + epsMinus * tanh_r); //epsilon(r)
     }
     double derivative(double point) const {
+        double factor = (epsilon1_ - epsilon2_) / (2.0 * width_);
         double tanh_r = std::tanh((point - center_) / width_);
-        return (0.5 * (epsilonLeft_ - epsilonRight_)
-                * ( 1 - tanh_r * tanh_r) / width_); //first derivative of epsilon(r)
+        return (factor * (1 - std::pow(tanh_r, 2))); //first derivative of epsilon(r)
     }
     std::ostream & printObject(std::ostream & os)
     {
-        os << "Permittivity inside  = " << epsilonLeft_  << std::endl;
-        os << "Permittivity outside = " << epsilonRight_ << std::endl;
-        os << "Profile center       = " << center_       << std::endl;
-        os << "Profile width        = " << width_;
+        os << "Permittivity inside  = " << epsilon1_ << std::endl;
+        os << "Permittivity outside = " << epsilon2_ << std::endl;
+        os << "Profile width        = " << width_    << std::endl;
+        os << "Profile center       = " << center_;
         return os;
     }
 public:
     TanhDiffuse() {}
-    TanhDiffuse(double eL, double eR, double w, double c) :
-        epsilonLeft_(eL), epsilonRight_(eR), width_(w), center_(c) {}
+    TanhDiffuse(double e1, double e2, double w, double c) :
+        epsilon1_(e1), epsilon2_(e2), width_(w), center_(c) {}
     /*! The permittivity profile of the transition layer
      *  \param[out]  e the value of the dielectric constant at point r
      *  \param[out] de the value of the derivative of the dielectric constant
@@ -77,8 +78,8 @@ public:
         e = value(r);
         de = derivative(r);
     }
-    double epsilonLeft() const { return epsilonLeft_; }
-    double epsilonRight() const { return epsilonRight_; }
+    double epsilon1() const { return epsilon1_; }
+    double epsilon2() const { return epsilon2_; }
     double width() const { return width_; }
     double center() const { return center_; }
     friend std::ostream & operator<<(std::ostream & os, TanhDiffuse & th) {

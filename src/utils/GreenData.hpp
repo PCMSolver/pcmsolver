@@ -55,6 +55,14 @@
  *  Radius of the the metal sphere.
  *  @var greenData::integratorType
  *  strategy to calculate the diagonal elements of S and D operator
+ *  @var greenData::epsilon1
+ *  Permittivity inside the interface
+ *  @var greenData::epsilon2
+ *  Permittivity outside the interface
+ *  @var greenData::center
+ *  Center of the diffuse layer
+ *  @var greenData::width
+ *  Width of the diffuse layer
  */
 
 struct greenData {

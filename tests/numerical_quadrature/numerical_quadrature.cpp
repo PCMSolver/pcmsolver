@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(sphere_1r)
     for (int i = 0; i < cavity.size(); ++i) {
 	results(i) = integrator<32, 16>(F, cavity.elements(i));
 	double diff = results(i) - (cavity.elementArea(i)/radius);
-	if (std::abs(diff) > 1.0e-12) {
+	if (std::abs(diff) > 1.0e-11) {
 	    BOOST_TEST_MESSAGE("Test versus area divided by radius for single sphere");
             BOOST_TEST_MESSAGE("Tessera n. " << i+1);
 	    BOOST_TEST_MESSAGE("diff = " << results(i) - (cavity.elementArea(i)/radius) );
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(sphere_1r)
     }
 
     for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(results(i), (cavity.elementArea(i)/radius), 1.0e-12);
+    	BOOST_REQUIRE_CLOSE(results(i), (cavity.elementArea(i)/radius), 1.0e-11);
     }
 }
 
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(molecule)
     for (int i = 0; i < cavity.size(); ++i) {
 	results(i) = integrator<64, 16>(F, cavity.elements(i));
 	double diff = results(i) - cavity.elementArea(i);
-	if (std::abs(diff) > 1.0e-12) {
+	if (std::abs(diff) > 1.0e-11) {
 	    BOOST_TEST_MESSAGE("Test versus area for H2 molecule");
             BOOST_TEST_MESSAGE("Tessera n. " << i+1);
 	    BOOST_TEST_MESSAGE("diff = " << results(i) - cavity.elementArea(i));
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(molecule)
     reference = getFromRawBuffer<double>(dim, 1, raw_ref.data);
 
     for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(results(i), reference(i), 1.0e-12);
+    	BOOST_REQUIRE_CLOSE(results(i), reference(i), 1.0e-11);
     }
 }
 
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(molecule_1r)
     for (int i = 0; i < cavity.size(); ++i) {
 	results(i) = integrator<64, 16>(F, cavity.elements(i));
 	double diff = results(i) - (cavity.elementArea(i)/sph1.radius());
-	if (std::abs(diff) > 1.0e-12) {
+	if (std::abs(diff) > 1.0e-11) {
 	    BOOST_TEST_MESSAGE("Test versus area divided by radius for H2 molecule");
             BOOST_TEST_MESSAGE("Tessera n. " << i+1);
 	    BOOST_TEST_MESSAGE("diff = " << results(i) - (cavity.elementArea(i)/sph1.radius()) );
@@ -197,6 +197,6 @@ BOOST_AUTO_TEST_CASE(molecule_1r)
     reference = getFromRawBuffer<double>(dim, 1, raw_ref.data);
 
     for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(results(i), reference(i), 1.0e-12);
+    	BOOST_REQUIRE_CLOSE(results(i), reference(i), 1.0e-11);
     }
 }

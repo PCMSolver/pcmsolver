@@ -221,7 +221,7 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
     Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim_read);
     D_reference = getFromRawBuffer<double>(dim_read, 1, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_CHECK_CLOSE(D_reference(i), D_results(i), 1.0e-08);
+    	BOOST_CHECK_CLOSE(D_reference(i), D_results(i), 1.0e-06);
     }
     BOOST_TEST_MESSAGE("D operator diagonal by collocation");
     for (int i = 0; i < cavity.size(); ++i) {

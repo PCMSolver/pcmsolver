@@ -31,6 +31,7 @@
 #include <functional>
 #include <iosfwd>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "Config.hpp"
@@ -120,8 +121,8 @@ public:
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
         /*
-        double eps_r2 = 0.0, epsPrime_r2 = 0.0;
-        this->profile_(eps_r2, epsPrime_r2, p2.norm());
+        double eps_r2 = 0.0;
+        std::tie(eps_r2, std::ignore) = this->profile_(p2.norm());
 
         return (eps_r2 * this->derivativeProbe(direction, p1, p2));
         */
@@ -131,8 +132,8 @@ public:
         double imageDeriv = threePointStencil(std::bind(&SphericalDiffuse::imagePotential, this, _1, _2),
                 p2, p1, direction, this->delta_);
 
-        double eps_r2 = 0.0, epsPrime_r2 = 0.0;
-        this->profile_(eps_r2, epsPrime_r2, p2.norm());
+        double eps_r2 = 0.0;
+        std::tie(eps_r2, std::ignore) = this->profile_(p2.norm());
 
         return (eps_r2 * CoulombDeriv + imageDeriv);
     }
@@ -208,7 +209,7 @@ public:
     double imagePotentialDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
     /*! Handle to the dielectric profile evaluation
      */
-    void epsilon(double & v, double & d, double point) const { this->profile_(v, d, point); }
+    void epsilon(double & v, double & d, double point) const { std::tie(v, d) = this->profile_(point); }
 private:
     /*! Evaluates the Green's function given a pair of points
      *

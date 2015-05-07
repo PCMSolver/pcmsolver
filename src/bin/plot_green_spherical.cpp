@@ -11,7 +11,7 @@
 int main()
 {
     int nPoints = 10000;
-    double epsInside = 2.0;
+    double epsInside = 80.0;
     double epsOutside = 2.0;
     Eigen::Vector3d sphereCenter;
     sphereCenter << 0.0, 0.0, 0.0;
@@ -19,7 +19,7 @@ int main()
     double width = 10.0;
 
     Eigen::Vector3d source;
-    source << 4.0, 0.0, 100.0;
+    source << 0.0, 0.0, 1.0;
     Eigen::Vector3d probe;
     probe << 0.0, 0.0, 0.0;
 

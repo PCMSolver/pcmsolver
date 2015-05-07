@@ -30,6 +30,7 @@
 #include <functional>
 #include <iosfwd>
 #include <string>
+#include <tuple>
 
 #include "Config.hpp"
 
@@ -113,7 +114,7 @@ inline void TanhSphericalDiffuse::initSphericalDiffuse()
     double r_infinity_  = profile_.center() + 200.0; /*! Upper bound of the integration interval */
     double observer_step_ = 1.0e-03; /*! Time step between observer calls */
     IntegratorParameters params_(r_0_, r_infinity_, observer_step_);
-    ProfileEvaluator eval_ = std::bind(&TanhDiffuse::operator(), this->profile_, _1, _2, _3);
+    ProfileEvaluator eval_ = std::bind(&TanhDiffuse::operator(), this->profile_, _1);
 
     LOG("Computing coefficient for the separation of the Coulomb singularity");
     LOG("Computing first radial solution L = " + std::to_string(maxLC_));
@@ -175,8 +176,8 @@ inline double TanhSphericalDiffuse::coefficient(double r1, double r2) const
     double d_omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[2]);
 
     double tmp = 0.0, coeff = 0.0;
-    double eps_r2 = 0.0, epsPrime_r2 = 0.0;
-    this->profile_(eps_r2, epsPrime_r2, r2);
+    double eps_r2 = 0.0;
+    std::tie(eps_r2, std::ignore) = this->profile_(r2);
 
     double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 
@@ -217,8 +218,8 @@ inline double TanhSphericalDiffuse::functionSummation(int L, double r1, double r
     /* Value of derivative of omega_[L] at point with index 2 */
     double d_omega2 = linearInterpolation(r2, omega_[L][0], omega_[L][2]);
 
-    double eps_r2 = 0.0, epsPrime_r2 = 0.0;
-    this->profile_(eps_r2, epsPrime_r2, r2);
+    double eps_r2 = 0.0;
+    std::tie(eps_r2, std::ignore) = this->profile_(r2);
 
     double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 

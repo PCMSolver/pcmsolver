@@ -29,6 +29,7 @@
 #include <array>
 #include <cmath>
 #include <functional>
+#include <tuple>
 #include <vector>
 
 #include "Config.hpp"
@@ -50,7 +51,7 @@ typedef std::array<StateType, 3> RadialFunction;
 /*! \typedef ProfileEvaluator
  *  \brief sort of a function pointer to the dielectric profile evaluation function
  */
-typedef std::function<void(double &, double &, const double)> ProfileEvaluator;
+typedef std::function< std::tuple<double, double>(const double) > ProfileEvaluator;
 
 /*! \struct IntegratorParameters
  *  \brief holds parameters for the integrator
@@ -97,7 +98,7 @@ class LnTransformedRadial
         {
             // Evaluate the dielectric profile
             double eps = 0.0, epsPrime = 0.0;
-            eval_(eps, epsPrime, r);
+            std::tie(eps, epsPrime) = eval_(r);
             if (numericalZero(eps)) throw std::domain_error("Division by zero!");
             double gamma_epsilon = epsPrime / eps;
             // System of equations is defined here

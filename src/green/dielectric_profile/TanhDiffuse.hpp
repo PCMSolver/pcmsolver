@@ -27,6 +27,7 @@
 #define TANHDIFFUSE_HPP
 
 #include <iosfwd>
+#include <tuple>
 
 #include "Config.hpp"
 
@@ -40,16 +41,26 @@
 class TanhDiffuse
 {
 private:
+    /// Dielectric constant on the left of the interface
     double epsilon1_;
+    /// Dielectric constant one the right of the interface
     double epsilon2_;
+    /// Width of the transition layer
     double width_;
+    /// Center of the transition layer
     double center_;
+    /*! Returns value of dielectric profile at given point
+     *  \param[in] point where to evaluate the profile
+     */
     double value(double point) const {
         double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
         double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
         double tanh_r = std::tanh((point - center_) / width_);
         return (epsPlus + epsMinus * tanh_r); //epsilon(r)
     }
+    /*! Returns value of derivative of dielectric profile at given point
+     *  \param[in] point where to evaluate the derivative
+     */
     double derivative(double point) const {
         double factor = (epsilon1_ - epsilon2_) / (2.0 * width_);
         double tanh_r = std::tanh((point - center_) / width_);
@@ -59,24 +70,20 @@ private:
     {
         os << "Permittivity inside  = " << epsilon1_ << std::endl;
         os << "Permittivity outside = " << epsilon2_ << std::endl;
-        os << "Profile width        = " << width_    << std::endl;
-        os << "Profile center       = " << center_;
+        os << "Profile width        = " << width_    << " AU" << std::endl;
+        os << "Profile center       = " << center_   << " AU";
         return os;
     }
 public:
     TanhDiffuse() {}
     TanhDiffuse(double e1, double e2, double w, double c) :
         epsilon1_(e1), epsilon2_(e2), width_(w), center_(c) {}
-    /*! The permittivity profile of the transition layer
-     *  \param[out]  e the value of the dielectric constant at point r
-     *  \param[out] de the value of the derivative of the dielectric constant
-     *                 at point r
+    /*! Returns a tuple holding the permittivity and its derivative
      *  \param[in]   r evaluation point
      */
-    void operator()(double & e, double & de, const double r) const
+    std::tuple<double, double> operator()(const double r) const
     {
-        e = value(r);
-        de = derivative(r);
+        return std::make_tuple(value(r), derivative(r));
     }
     double epsilon1() const { return epsilon1_; }
     double epsilon2() const { return epsilon2_; }

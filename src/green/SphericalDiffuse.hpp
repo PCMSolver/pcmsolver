@@ -135,7 +135,7 @@ public:
                 p2, p1, direction, this->delta_);
 
         double eps_r2 = 0.0;
-        std::tie(eps_r2, std::ignore) = this->profile_(p2.norm());
+        std::tie(eps_r2, std::ignore) = this->profile_((p2 - this->origin_).norm());
 
         return (eps_r2 * CoulombDeriv + imageDeriv);
     }
@@ -215,18 +215,21 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     /*! Evaluates the Green's function given a pair of points
-     *
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
+     *
+     *  \note This takes care of the origin shift
      */
     virtual Numerical operator()(Numerical * sp, Numerical * pp) const
     {
         // Transfer raw arrays to Eigen vectors using the Map type
         Eigen::Map<Eigen::Matrix<double, 3, 1> > p1(sp), p2(pp);
-        double r1  = p1.norm();
-        double r2  = p2.norm();
-        double r12 = (p1 - p2).norm();
-        double cos_gamma = p1.dot(p2) / (r1 * r2);
+        Eigen::Vector3d source = p1 - this->origin_;
+        Eigen::Vector3d probe  = p2 - this->origin_;
+        double r1  = source.norm();
+        double r2  = probe.norm();
+        double r12 = (source - probe).norm();
+        double cos_gamma = source.dot(probe) / (r1 * r2);
 
         // Obtain coefficient for the separation of the Coulomb singularity
         double Cr12 = this->coefficient(r1, r2);

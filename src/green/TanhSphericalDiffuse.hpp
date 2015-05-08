@@ -234,7 +234,8 @@ inline double TanhSphericalDiffuse::functionSummation(int L, double r1, double r
     return gr12;
 }
 
-/*! Calculates the Green's function given a pair of points */
+/*! Calculates the Green's function given a pair of points
+ */
 template <>
 inline double GreensFunction<Numerical, TanhDiffuse>::function(const Eigen::Vector3d & source,
                                         const Eigen::Vector3d & probe) const
@@ -248,8 +249,8 @@ inline double GreensFunction<Numerical, TanhDiffuse>::function(const Eigen::Vect
 template <>
 inline double TanhSphericalDiffuse::coefficientCoulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const
 {
-    double r1  = source.norm();
-    double r2  = probe.norm();
+    double r1  = (source - this->origin_).norm();
+    double r2  = (probe  - this->origin_).norm();
 
     // Obtain coefficient for the separation of the Coulomb singularity
     return this->coefficient(r1, r2);
@@ -258,9 +259,11 @@ inline double TanhSphericalDiffuse::coefficientCoulomb(const Eigen::Vector3d & s
 template <>
 inline double TanhSphericalDiffuse::Coulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const
 {
-    double r1  = source.norm();
-    double r2  = probe.norm();
-    double r12 = (source - probe).norm();
+    Eigen::Vector3d source_shifted = source - this->origin_;
+    Eigen::Vector3d probe_shifted  = probe  - this->origin_;
+    double r1  = source_shifted.norm();
+    double r2  = probe_shifted.norm();
+    double r12 = (source_shifted - probe_shifted).norm();
 
     // Obtain coefficient for the separation of the Coulomb singularity
     return (1.0 / (this->coefficient(r1, r2) * r12));
@@ -269,9 +272,11 @@ inline double TanhSphericalDiffuse::Coulomb(const Eigen::Vector3d & source, cons
 template <>
 inline double TanhSphericalDiffuse::imagePotential(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const
 {
-    double r1  = source.norm();
-    double r2  = probe.norm();
-    double cos_gamma = source.dot(probe) / (r1 * r2);
+    Eigen::Vector3d source_shifted = source - this->origin_;
+    Eigen::Vector3d probe_shifted  = probe  - this->origin_;
+    double r1  = source_shifted.norm();
+    double r2  = probe_shifted.norm();
+    double cos_gamma = source_shifted.dot(probe_shifted) / (r1 * r2);
 
     // Obtain coefficient for the separation of the Coulomb singularity
     double Cr12 = this->coefficient(r1, r2);

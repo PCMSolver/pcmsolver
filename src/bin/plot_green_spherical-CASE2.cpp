@@ -7,6 +7,7 @@
 #include "DerivativeTypes.hpp"
 #include "UniformDielectric.hpp"
 #include "TanhSphericalDiffuse.hpp"
+#include "LoggerInterface.hpp"
 
 int main()
 {
@@ -19,7 +20,7 @@ int main()
     double width = 10.0;
 
     Eigen::Vector3d source;
-    source << 0.0, 0.0, 1.0;
+    source << 4.0, 0.0, 150.0;
     Eigen::Vector3d probe;
     probe << 0.0, 0.0, 0.0;
 
@@ -28,6 +29,7 @@ int main()
     double step = (zMax - zMin) / nPoints;
 
     TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius, sphereCenter);
+    LOG(gf);
     std::ofstream out;
     out.open("gf_spherical.log");
     out << "#" << '\t' << "Distance" << '\t' << "gf_value" << '\t' << "image" << '\t' << "coefficient" << '\t' << "derivative" << std::endl;
@@ -45,6 +47,7 @@ int main()
             << '\t' << gf.imagePotentialDerivative(direction, source, probe) << std::endl;
     }
     out.close();
+    LOG_TIME;
 
     UniformDielectric<AD_directional> gf_inside(epsInside);
     out.open("gf_uniform_inside.log");

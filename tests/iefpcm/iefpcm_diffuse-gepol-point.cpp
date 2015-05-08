@@ -44,12 +44,15 @@
 
 /*! \class IEFSolver
  *  \test \b pointChargeDiffuseGePol tests IEFSolver using a point charge with a GePol cavity and a spherical diffuse interface
+ *  The spherical diffuse interface is centered at the origin, while the point charge is away from the origin.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePol)
+BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
 {
     // Set up cavity
-    Molecule point = dummy<0>(2.929075493);
-    double area = 100.0;
+    Eigen::Vector3d origin;
+    origin << 68.0375, -21.1234, 56.6198;
+    Molecule point = dummy<0>(2.929075493, origin);
+    double area = 0.4;
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
@@ -60,8 +63,60 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     double eps2 = 78.39;
     double center = 100.0;
     double width = 5.0;
-    Eigen::Vector3d origin = 100 * Eigen::Vector3d::Random();
-    std::cout << "origin " << origin.transpose() << std::endl;
+    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
+    TanhSphericalDiffuse * gfOutside = new TanhSphericalDiffuse(eps1, eps2, width, center, Eigen::Vector3d::Zero(), diag);
+    bool symm = true;
+    IEFSolver solver(gfInside, gfOutside, symm);
+    solver.buildSystemMatrix(cavity);
+
+    double charge = 8.0;
+    int size = cavity.size();
+    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+    for (int i = 0; i < size; ++i) {
+        Eigen::Vector3d center = cavity.elementCenter(i);
+        double distance = (origin - center).norm();
+        fake_mep(i) = charge / distance;
+    }
+    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+    solver.computeCharge(fake_mep, fake_asc);
+
+    for (int i = 0; i < size; ++i) {
+        BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
+    }
+    for (int i = 0; i < size; ++i) {
+        BOOST_TEST_MESSAGE("fake_asc(" << i << ") = " << fake_asc(i));
+    }
+
+    double totalASC = - charge * (eps1 - 1) / eps1;
+    double totalFakeASC = fake_asc.sum();
+    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
+}
+
+/*! \class IEFSolver
+ *  \test \b pointChargeDiffuseShiftedGePol tests IEFSolver using a point charge with a GePol cavity and a spherical diffuse interface
+ *  The spherical diffuse interface is centered away from the origin, while the point charge is at the origin.
+ */
+BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
+{
+    // Set up cavity
+    Molecule point = dummy<0>(2.929075493);
+    double area = 0.4;
+    double probeRadius = 0.0;
+    double minRadius = 100.0;
+    GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
+    cavity.saveCavity("point.npz");
+
+    CollocationIntegrator * diag = new CollocationIntegrator();
+    double eps1 = 78.39;
+    double eps2 = 78.39;
+    double center = 100.0;
+    double width = 5.0;
+    Eigen::Vector3d origin;
+    origin << 68.0375, -21.1234, 56.6198;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
     TanhSphericalDiffuse * gfOutside = new TanhSphericalDiffuse(eps1, eps2, width, center, origin, diag);
     bool symm = true;
@@ -79,8 +134,18 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
     solver.computeCharge(fake_mep, fake_asc);
+
+    for (int i = 0; i < size; ++i) {
+        BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
+    }
+    for (int i = 0; i < size; ++i) {
+        BOOST_TEST_MESSAGE("fake_asc(" << i << ") = " << fake_asc(i));
+    }
+
     double totalASC = - charge * (eps1 - 1) / eps1;
     double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
+    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

@@ -58,11 +58,10 @@ Molecule C6H6();
 /*! Returns a single dummy atom, centered at the origin and with the given radius
  */
 template <int group>
-Molecule dummy(double radius = 1.0)
+Molecule dummy(double radius = 1.0, const Eigen::Vector3d & center = Eigen::Vector3d::Zero())
 {
-    Eigen::Vector3d origin(0.0, 0.0, 0.0);
     std::vector<Sphere> spheres;
-    Sphere sph1(origin,  radius);
+    Sphere sph1(center,  radius);
     spheres.push_back(sph1);
 
     enum pointGroup { pgC1, pgC2, pgCs, pgCi, pgD2, pgC2v, pgC2h, pgD2h };
@@ -211,14 +210,14 @@ Molecule H2() {
 
     Eigen::Vector3d H1( 0.735000, 0.000000, 0.000000);
     Eigen::Vector3d H2(-0.735000, 0.000000, 0.000000);
-    
+
     Eigen::MatrixXd geom(3, nAtoms);
     geom.col(0) = H1.transpose();
     geom.col(1) = H2.transpose();
     Eigen::Vector2d charges, masses;
     charges << 1.0, 1.0;
     masses  << 1.0078250, 1.0078250;
-   
+
     std::vector<Atom> atoms;
     double radiusH = 1.20;
     atoms.push_back( Atom("Hydrogen", "H", charges(0), masses(0), radiusH, H1, 1.0) );
@@ -229,7 +228,7 @@ Molecule H2() {
     Sphere sph3(H2, radiusH);
     spheres.push_back(sph2);
     spheres.push_back(sph3);
-    
+
     Symmetry pGroup = buildGroup(0, 0, 0, 0);
 
     return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);

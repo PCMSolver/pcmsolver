@@ -124,36 +124,36 @@ inline void TanhSphericalDiffuse::initSphericalDiffuse()
     LOG("DONE: Computing first radial solution L = " + std::to_string(maxLC_));
 
     LOG("Computing second radial solution L = " + std::to_string(maxLC_));
-    timerON("TanhSphericalDiffuse::computeOmega");
+    timerON("TanhSphericalDiffuse::computeOmega for coefficient");
     computeOmega(maxLC_, omegaC_, eval_, params_);
-    timerOFF("TanhSphericalDiffuse::computeOmega");
+    timerOFF("TanhSphericalDiffuse::computeOmega for coefficient");
     LOG("Computing second radial solution L = " + std::to_string(maxLC_));
     LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
 
     LOG("Computing radial solutions for Green's function");
-    timerON("   Looping over angular momentum");
+    timerON("TanhSphericalDiffuse: Looping over angular momentum");
     for (int L = 0; L <= maxLGreen_; ++L) {
         // First radial solution
         LOG("Computing first radial solution L = " + std::to_string(L));
-        timerON("TanhSphericalDiffuse::computeZeta");
+        timerON("TanhSphericalDiffuse::computeZeta L = " + std::to_string(L));
         // Create an empty RadialFunction
         RadialFunction tmp_zeta_;
         computeZeta(L, tmp_zeta_, eval_, params_);
         zeta_.push_back(tmp_zeta_);
-        timerOFF("TanhSphericalDiffuse::computeZeta");
+        timerOFF("TanhSphericalDiffuse::computeZeta L = " + std::to_string(L));
         LOG("DONE: Computing first radial solution L = " + std::to_string(L));
 
         // Second radial solution
         LOG("Computing second radial solution L = " + std::to_string(L));
-        timerON("TanhSphericalDiffuse::computeOmega");
+        timerON("TanhSphericalDiffuse::computeOmega L = " + std::to_string(L));
         // Create an empty RadialFunction
         RadialFunction tmp_omega_;
         computeOmega(L, tmp_omega_, eval_, params_);
         omega_.push_back(tmp_omega_);
-        timerOFF("TanhSphericalDiffuse::computeOmega");
+        timerOFF("TanhSphericalDiffuse::computeOmega L = " + std::to_string(L));
         LOG("DONE: Computing second radial solution L = " + std::to_string(L));
     }
-    timerOFF("   Looping over angular momentum");
+    timerOFF("TanhSphericalDiffuse: Looping over angular momentum");
     LOG("DONE: Computing radial solutions for Green's function");
 }
 

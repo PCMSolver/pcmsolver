@@ -182,7 +182,7 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
 {
     double width = 5.0;
     double sphereRadius = 100.0;
-    TanhSphericalDiffuse gf(epsilon, epsilon, width, sphereRadius, diag);
+    TanhSphericalDiffuse gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), diag);
 
     BOOST_TEST_MESSAGE("TanhSphericalDiffuse");
     Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());

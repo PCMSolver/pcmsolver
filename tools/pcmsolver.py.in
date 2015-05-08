@@ -311,7 +311,7 @@ def setup_keywords():
     # Position of the metal sphere (in au)
     # Valid for: METALSPHERE
     # Valid values: array of doubles
-    green.add_kw('SPHEREPOSITION', 'DBL_ARRAY')
+    green.add_kw('SPHEREPOSITION', 'DBL_ARRAY', [0.0, 0.0, 0.0])
     # Dielectric profile type
     # Valid for: SPHERICALDIFFUSE
     # Valid values: TANH
@@ -349,6 +349,10 @@ def setup_keywords():
     # Default: 5.0
     # Notes: this is used differently for different profiles
     green.add_kw('WIDTH', 'DBL', 5.0)
+    # Center of the diffuse interface
+    # Valid for: SPHERICALDIFFUSE
+    # Valid values: array of doubles
+    green.add_kw('INTERFACEORIGIN', 'DBL_ARRAY')
     medium.add_sect(green)
 
     green_part = deepcopy(green)
@@ -569,6 +573,7 @@ def verify_green(section):
     radius = section.get('SPHERERADIUS')
     convert_length_scalar(section.get('CENTER'))
     convert_length_scalar(section.get('WIDTH'))
+    convert_length_array(section.get('INTERFACEORIGIN'))
 
     type = section.get('TYPE')
     if (type.get() not in allowed):

@@ -357,9 +357,10 @@ namespace
         double e2 = _data.epsilon2;
         double w = _data.width;
         double c = _data.center;
+        Eigen::Vector3d o = _data.origin;
         DiagonalIntegrator * integrator =
 		DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
-        return new TanhSphericalDiffuse(e1, e2, w, c, integrator);
+        return new TanhSphericalDiffuse(e1, e2, w, c, o, integrator);
     }
     const std::string TANHSPHERICALDIFFUSE("TANHSPHERICALDIFFUSE");
     const bool registeredTanhSphericalDiffuse =

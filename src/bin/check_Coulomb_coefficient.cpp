@@ -27,7 +27,7 @@ int main()
     double zMax = 200.0;
     double step = (zMax - zMin) / nPoints;
 
-    TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius);
+    TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius, sphereCenter);
     // Plot Green's function, image potential and separation coefficient
     std::ofstream out, out_err;
     out.open("checkCoulomb_spherical.log");

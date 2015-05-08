@@ -140,6 +140,7 @@ void Input::reader(const char * pythonParsed)
         epsilonDynamic2_ = outside.getDbl("EPSDYN2");
         center_ = outside.getDbl("CENTER");
         width_ = outside.getDbl("WIDTH");
+        origin_ = outside.getDblVec("INTERFACEORIGIN");
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -261,10 +262,13 @@ greenData Input::outsideStaticGreenParams()
     if (outsideStaticGreenData_.empty) {
         outsideStaticGreenData_ = greenData(derivativeOutsideType_, epsilonStaticOutside_,
                                             integratorType_);
-        outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
-        outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
-        outsideStaticGreenData_.center   = center_;
-        outsideStaticGreenData_.width    = width_;
+        if (not hasSolvent_) {
+           outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
+           outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
+           outsideStaticGreenData_.center   = center_;
+           outsideStaticGreenData_.width    = width_;
+           outsideStaticGreenData_.origin   << origin_[0], origin_[1], origin_[2];
+        }
     }
     return outsideStaticGreenData_;
 }
@@ -274,10 +278,13 @@ greenData Input::outsideDynamicGreenParams()
     if (outsideDynamicGreenData_.empty) {
         outsideDynamicGreenData_ = greenData(derivativeOutsideType_, epsilonDynamicOutside_,
                                              integratorType_);
-        outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
-        outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
-        outsideDynamicGreenData_.center   = center_;
-        outsideDynamicGreenData_.width    = width_;
+        if (not hasSolvent_) {
+           outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
+           outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
+           outsideDynamicGreenData_.center   = center_;
+           outsideDynamicGreenData_.width    = width_;
+           outsideDynamicGreenData_.origin   << origin_[0], origin_[1], origin_[2];
+        }
     }
     return outsideDynamicGreenData_;
 }

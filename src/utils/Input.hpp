@@ -225,6 +225,8 @@ private:
     double center_;
     /// Width of the diffuse interface
     double width_;
+    /// Center of the dielectric sphere
+    std::vector<double> origin_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
     /// Input wrapping struct for the cavity

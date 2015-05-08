@@ -60,8 +60,10 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     double eps2 = 78.39;
     double center = 100.0;
     double width = 5.0;
+    Eigen::Vector3d origin = 100 * Eigen::Vector3d::Random();
+    std::cout << "origin " << origin.transpose() << std::endl;
     Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    TanhSphericalDiffuse * gfOutside = new TanhSphericalDiffuse(eps1, eps2, width, center, diag);
+    TanhSphericalDiffuse * gfOutside = new TanhSphericalDiffuse(eps1, eps2, width, center, origin, diag);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);

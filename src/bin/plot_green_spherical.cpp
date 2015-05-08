@@ -27,7 +27,7 @@ int main()
     double zMax = 300.0;
     double step = (zMax - zMin) / nPoints;
 
-    TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius);
+    TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius, sphereCenter);
     std::ofstream out;
     out.open("gf_spherical.log");
     out << "#" << '\t' << "Distance" << '\t' << "gf_value" << '\t' << "image" << '\t' << "coefficient" << '\t' << "derivative" << std::endl;

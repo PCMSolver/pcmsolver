@@ -87,8 +87,10 @@ public:
      * \param[in] e2 right-side dielectric constant
      * \param[in] w width of the interface layer
      * \param[in] c center of the diffuse layer
+     * \param[in] o center of the sphere
      */
-    SphericalDiffuse(double e1, double e2, double w, double c) : GreensFunction<Numerical, ProfilePolicy>(false)
+    SphericalDiffuse(double e1, double e2, double w, double c, const Eigen::Vector3d & o)
+        : GreensFunction<Numerical, ProfilePolicy>(false), origin_(o)
     {
         initProfilePolicy(e1, e2, w, c);
         initSphericalDiffuse();
@@ -100,8 +102,8 @@ public:
      * \param[in] c center of the diffuse layer
      * \param[in] diag strategy to calculate the diagonal elements of the boundary integral operator
      */
-    SphericalDiffuse(double e1, double e2, double w, double c, DiagonalIntegrator * diag)
-        : GreensFunction<Numerical, ProfilePolicy>(false, diag)
+    SphericalDiffuse(double e1, double e2, double w, double c, const Eigen::Vector3d & o, DiagonalIntegrator * diag)
+        : GreensFunction<Numerical, ProfilePolicy>(false, diag), origin_(o)
     {
         initProfilePolicy(e1, e2, w, c);
         initSphericalDiffuse();
@@ -210,6 +212,7 @@ public:
     /*! Handle to the dielectric profile evaluation
      */
     void epsilon(double & v, double & d, double point) const { std::tie(v, d) = this->profile_(point); }
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     /*! Evaluates the Green's function given a pair of points
      *
@@ -239,6 +242,7 @@ private:
     {
         os << "Green's function type: spherical diffuse" << std::endl;
         os << this->profile_ << std::endl;
+        os << "Sphere center = " << this->origin_.transpose() << std::endl;
         os << "Angular momentum (Green's function)    = " << this->maxLGreen_ << std::endl;
         os << "Angular momentum (Coulomb coefficient) = " << this->maxLC_;
         return os;
@@ -253,6 +257,9 @@ private:
     { this->profile_ = ProfilePolicy(e1, e2, w, c); }
     /*! This calculates all the components needed to evaluate the Green's function */
     void initSphericalDiffuse();
+
+    /*! Center of the dielectric sphere */
+    Eigen::Vector3d origin_;
 
     /**@{ Parameters and functions for the calculation of the Green's function, including Coulomb singularity */
     /*! Maximum angular momentum in the final summation over Legendre polynomials to obtain G */

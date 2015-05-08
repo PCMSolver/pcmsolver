@@ -377,15 +377,16 @@ struct InputDiffuseTest {
     double epsilonDynamic2;
     double center;
     double width;
+    Eigen::Vector3d origin;
     void SetUp() {
 	filename = "@diffuse.inp";
 	parsedInput = Input(filename);
 	units = "ANGSTROM";
 	CODATAyear = 1998;
-        type = "WAVELET";
+    type = "WAVELET";
 	patchLevel = 1;
 	coarsity   = 0.3;
-        scaling = true;
+    scaling = true;
 	radiiSet = "BONDI";
 	mode = "EXPLICIT";
 	Eigen::Vector3d c1, c2, c3;
@@ -411,6 +412,8 @@ struct InputDiffuseTest {
 	epsilonDynamic2 = 4.0;
     center = 100.0 * angstromToBohr(CODATAyear);
     width  = 5.0 * angstromToBohr(CODATAyear);
+    origin << 70.0, 1.0, 23.0;
+    origin *= angstromToBohr(CODATAyear);
     }
 };
 
@@ -450,6 +453,10 @@ BOOST_FIXTURE_TEST_CASE(Diffuse, InputDiffuseTest)
     BOOST_REQUIRE_CLOSE(epsilonDynamic2, parsedInput.outsideDynamicGreenParams().epsilon2, threshold);
     BOOST_REQUIRE_CLOSE(center, parsedInput.outsideDynamicGreenParams().center, 1.0e-10);
     BOOST_REQUIRE_CLOSE(width, parsedInput.outsideDynamicGreenParams().width, 1.0e-10);
+    for (size_t i = 0; i < 3; ++i) {
+	   	BOOST_REQUIRE_CLOSE(origin(i),      parsedInput.outsideStaticGreenParams().origin(i), 1.0e-09);
+	   	BOOST_REQUIRE_CLOSE(origin(i),      parsedInput.outsideDynamicGreenParams().origin(i), 1.0e-09);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

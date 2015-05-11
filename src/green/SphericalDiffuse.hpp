@@ -213,6 +213,7 @@ public:
     void epsilon(double & v, double & d, double point) const { std::tie(v, d) = this->profile_(point); }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
+    using RadialFunction = interfaces::RadialFunction;
     /*! Evaluates the Green's function given a pair of points
      *  \param[in] sp the source point
      *  \param[in] pp the probe point

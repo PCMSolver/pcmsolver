@@ -23,8 +23,8 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef INTERFACESDEF_HPP
-#define INTERFACESDEF_HPP
+#ifndef INTERFACESIMPL_HPP
+#define INTERFACESIMPL_HPP
 
 #include <array>
 #include <cmath>
@@ -41,6 +41,7 @@
 
 #include "MathUtils.hpp"
 
+namespace interfaces {
 /*! \typedef StateType
  *  \brief state vector for the differential equation integrator
  */
@@ -185,5 +186,6 @@ inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eva
     // this ensures that they are in ascending order (as later expected by linearInterpolation)
     reverse(f);
 }
+} // namespace interfaces
 
-#endif // INTERFACESDEF_HPP
+#endif // INTERFACESIMPL_HPP

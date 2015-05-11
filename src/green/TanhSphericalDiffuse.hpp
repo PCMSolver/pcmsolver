@@ -36,8 +36,8 @@
 
 #include <Eigen/Dense>
 
-// Boost.Odeint includes
-#include <boost/numeric/odeint.hpp>
+// Has to be included at this point!
+#include "InterfacesImpl.hpp"
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
@@ -46,7 +46,6 @@
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
-#include "InterfacesImpl.hpp"
 #include "LoggerInterface.hpp"
 #include "SphericalDiffuse.hpp"
 #include "TanhDiffuse.hpp"
@@ -56,6 +55,7 @@ template <>
 inline void TanhSphericalDiffuse::initSphericalDiffuse()
 {
     using namespace std::placeholders;
+    using namespace interfaces;
 
     LOG("TanhSphericalDiffuse::initSphericalDiffuse");
     // Parameters for the numerical solution of the radial differential equation

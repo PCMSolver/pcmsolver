@@ -42,15 +42,15 @@
 #include <boost/math/special_functions/legendre.hpp>
 
 #include "DerivativeTypes.hpp"
-#include "InterfacesImpl.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
+#include "InterfacesImpl.hpp"
+#include "LoggerInterface.hpp"
 #include "SphericalDiffuse.hpp"
 #include "TanhDiffuse.hpp"
 #include "Timer.hpp"
-#include "LoggerInterface.hpp"
 
 /*! \brief Calculates 1st radial solution, i.e. the one with r^l behavior
  *  \param[in]  L      angular momentum of the required solution

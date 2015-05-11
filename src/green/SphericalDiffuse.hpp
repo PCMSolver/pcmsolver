@@ -37,7 +37,6 @@
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-#include "taylor.hpp"
 
 #include "MathUtils.hpp"
 
@@ -55,11 +54,11 @@ typedef SphericalDiffuse<TanhDiffuse> TanhSphericalDiffuse;
 #include "DerivativeTypes.hpp"
 #include "DiagonalIntegratorFactory.hpp"
 #include "DiagonalIntegrator.hpp"
-#include "InterfacesDef.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
+#include "InterfacesDef.hpp"
 
 /*! \file SphericalDiffuse.hpp
  *  \class SphericalDiffuse

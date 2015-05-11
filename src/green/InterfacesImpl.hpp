@@ -36,6 +36,9 @@
 
 #include <Eigen/Dense>
 
+// Boost.Odeint includes
+#include <boost/numeric/odeint.hpp>
+
 #include "MathUtils.hpp"
 
 /*! \typedef StateType
@@ -131,6 +134,56 @@ inline void reverse(RadialFunction & f)
     std::reverse(f[0].begin(), f[0].end());
     std::reverse(f[1].begin(), f[1].end());
     std::reverse(f[2].begin(), f[2].end());
+}
+
+/*! \brief Calculates 1st radial solution, i.e. the one with r^l behavior
+ *  \param[in]  L      angular momentum of the required solution
+ *  \param[out] f      solution to the radial equation
+ *  \param[in]  eval   dielectric profile evaluator function object
+ *  \param[in]  params parameters for the integrator
+ */
+inline void computeZeta(int L, RadialFunction & f, const ProfileEvaluator & eval, const IntegratorParameters & params)
+{
+    using namespace std::placeholders;
+    namespace odeint = boost::numeric::odeint;
+    odeint::runge_kutta_fehlberg78<StateType> stepper_;
+    // The system of first-order ODEs
+    LnTransformedRadial system_(eval, L);
+    // Holds the initial conditions
+    StateType init_zeta_(2);
+    // Set initial conditions
+    init_zeta_[0] = L * std::log(params.r_0_);
+    init_zeta_[1] = L / params.r_0_;
+    odeint::integrate_const(stepper_, system_, init_zeta_,
+            params.r_0_, params.r_infinity_, params.observer_step_,
+            std::bind(observer, std::ref(f), _1, _2));
+}
+
+/*! \brief Calculates 2nd radial solution, i.e. the one with r^(-l-1) behavior
+ *  \param[in]  L      angular momentum of the required solution
+ *  \param[out] f      solution to the radial equation
+ *  \param[in]  eval   dielectric profile evaluator function object
+ *  \param[in]  params parameters for the integrator
+ */
+inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eval, const IntegratorParameters & params)
+{
+    using namespace std::placeholders;
+    namespace odeint = boost::numeric::odeint;
+    odeint::runge_kutta_fehlberg78<StateType> stepper_;
+    // The system of first-order ODEs
+    LnTransformedRadial system_(eval, L);
+    // Holds the initial conditions
+    StateType init_omega_(2);
+    // Set initial conditions
+    init_omega_[0] = -(L + 1) * std::log(params.r_infinity_);
+    init_omega_[1] = -(L + 1) / params.r_infinity_;
+    // Notice that we integrate BACKWARDS, so we pass -params.observer_step_ to integrate_adaptive
+    odeint::integrate_const(stepper_, system_, init_omega_,
+            params.r_infinity_, params.r_0_, -params.observer_step_,
+            std::bind(observer, std::ref(f), _1, _2));
+    // Reverse order of StateType-s in RadialFunction
+    // this ensures that they are in ascending order (as later expected by linearInterpolation)
+    reverse(f);
 }
 
 #endif // INTERFACESDEF_HPP

@@ -43,7 +43,7 @@
 #include <boost/math/special_functions/legendre.hpp>
 
 #include "DerivativeTypes.hpp"
-#include "InterfacesDef.hpp"
+#include "InterfacesImpl.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"

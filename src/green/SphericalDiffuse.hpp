@@ -58,7 +58,7 @@ typedef SphericalDiffuse<TanhDiffuse> TanhSphericalDiffuse;
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "GreensFunctionFactory.hpp"
-#include "InterfacesDef.hpp"
+#include "InterfacesImpl.hpp"
 
 /*! \file SphericalDiffuse.hpp
  *  \class SphericalDiffuse

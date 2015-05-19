@@ -31,7 +31,7 @@ int main()
     TanhSphericalDiffuse gf(epsInside, epsOutside, width, sphereRadius, sphereCenter);
     LOG(gf);
     std::ofstream out;
-    out.open("gf_spherical.log");
+    out.open("gf_spherical_CASE3.dat");
     out << "#" << '\t' << "Distance" << '\t' << "gf_value" << '\t' << "image" << '\t' << "coefficient" << '\t' << "derivative" << std::endl;
     out.precision(16);
     for (int i = 0; i < nPoints; ++i) {
@@ -50,7 +50,7 @@ int main()
     LOG_TIME;
 
     UniformDielectric<AD_directional> gf_inside(epsInside);
-    out.open("gf_uniform_inside.log");
+    out.open("gf_uniform_inside_CASE3.dat");
     out << "#" << '\t' << "Distance" << '\t' << "gf_value" << std::endl;
     out.precision(16);
     for (int i = 0; i < nPoints; ++i) {
@@ -64,7 +64,7 @@ int main()
     out.close();
 
     UniformDielectric<AD_directional> gf_outside(epsOutside);
-    out.open("gf_uniform_outside.log");
+    out.open("gf_uniform_outside_CASE3.dat");
     out << "#" << '\t' << "Distance" << '\t' << "gf_value" << std::endl;
     out.precision(16);
     for (int i = 0; i < nPoints; ++i) {

@@ -36,6 +36,8 @@
  *  \brief A tanh dielectric profile as in \cite Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2014
+ *  \note width_ is the parameter from user input. The division by 6.0 is
+ *  to keep consistency with \cite Frediani2004a
  */
 
 class TanhDiffuse
@@ -53,24 +55,26 @@ private:
      *  \param[in] point where to evaluate the profile
      */
     double value(double point) const {
+	double effWidth = width_ / 6.0;
         double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
         double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-        double tanh_r = std::tanh((point - center_) / width_);
+        double tanh_r = std::tanh((point - center_) / effWidth);
         return (epsPlus + epsMinus * tanh_r); //epsilon(r)
     }
     /*! Returns value of derivative of dielectric profile at given point
      *  \param[in] point where to evaluate the derivative
      */
     double derivative(double point) const {
-        double factor = (epsilon1_ - epsilon2_) / (2.0 * width_);
-        double tanh_r = std::tanh((point - center_) / width_);
+	double effWidth = width_ / 6.0;
+        double factor = (epsilon1_ - epsilon2_) / (2.0 * effWidth);
+        double tanh_r = std::tanh((point - center_) / effWidth);
         return (factor * (1 - std::pow(tanh_r, 2))); //first derivative of epsilon(r)
     }
     std::ostream & printObject(std::ostream & os)
     {
         os << "Permittivity inside  = " << epsilon1_ << std::endl;
         os << "Permittivity outside = " << epsilon2_ << std::endl;
-        os << "Profile width        = " << width_    << " AU" << std::endl;
+        os << "Profile width        = " << width_ / 6.0    << " AU" << std::endl;
         os << "Profile center       = " << center_   << " AU";
         return os;
     }
@@ -87,7 +91,7 @@ public:
     }
     double epsilon1() const { return epsilon1_; }
     double epsilon2() const { return epsilon2_; }
-    double width() const { return width_; }
+    double width() const { return (width_ / 6.0); }
     double center() const { return center_; }
     friend std::ostream & operator<<(std::ostream & os, TanhDiffuse & th) {
         return th.printObject(os);

@@ -40,7 +40,7 @@ struct TanhSphericalDiffuseTest {
         probeNormal1.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        inside_reference = 0.012377848015483936;
+        inside_reference = 0.01237809396735725;
         deriv_inside_reference = -1.0601898887311156;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
@@ -51,8 +51,8 @@ struct TanhSphericalDiffuseTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.50008829802731714;
-        deriv_outside_reference = -0.5799074235842071;
+        outside_reference = 0.5000684359884966;
+        deriv_outside_reference = -0.579907237954127686;
     }
 };
 
@@ -65,13 +65,13 @@ BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
     TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius, sphereCenter);
     double value = inside_reference;
     double gf_value = gf.function(source1, probe1);
-    BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
+    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
     BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
     double deriv = deriv_inside_reference;
     double gf_deriv = gf.derivative(probeNormal1, source1, probe1);
-    BOOST_TEST_MESSAGE("deriv    = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
+    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
     BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
     BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
     /*
@@ -90,13 +90,13 @@ BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
     TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius, sphereCenter);
     double value = outside_reference;
     double gf_value = gf.function(source2, probe2);
-    BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
+    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
     BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
     double deriv = deriv_outside_reference;
     double gf_deriv = gf.derivative(probeNormal2, source2, probe2);
-    BOOST_TEST_MESSAGE("deriv    = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
+    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
     BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
     BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
 
@@ -136,7 +136,7 @@ struct TanhSphericalDiffuseShiftedTest {
         probeNormal1.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        inside_reference = 0.012377848015483936;
+        inside_reference = 0.01237809396735725;
         deriv_inside_reference = -1.0601898887311156;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
@@ -147,8 +147,8 @@ struct TanhSphericalDiffuseShiftedTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.5000891977645715;
-        deriv_outside_reference = -0.57990825766255294;
+        outside_reference = 0.50006911963511314;
+        deriv_outside_reference = -0.5799081943117862;
     }
 };
 
@@ -162,13 +162,13 @@ BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseShiftedTest)
     TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius, sphereCenter);
     double value = inside_reference;
     double gf_value = gf.function(source1, probe1);
-    BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
+    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
     BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
     double deriv = deriv_inside_reference;
     double gf_deriv = gf.derivative(probeNormal1, source1, probe1);
-    BOOST_TEST_MESSAGE("deriv    = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
+    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
     BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
     BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
 
@@ -188,13 +188,13 @@ BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseShiftedTest)
     TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius, sphereCenter);
     double value = outside_reference;
     double gf_value = gf.function(source2, probe2);
-    BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
+    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
     BOOST_CHECK_CLOSE(gf_value, value, 1.0e-08);
 
     double deriv = deriv_outside_reference;
     double gf_deriv = gf.derivative(probeNormal2, source2, probe2);
-    BOOST_TEST_MESSAGE("deriv    = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
+    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
     BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
     BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
 

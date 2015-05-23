@@ -41,7 +41,7 @@
 
 void CPCMSolver::buildSystemMatrix(const Cavity & cavity)
 {
-    if (greenInside_->isUniform() && greenOutside_->isUniform()) {
+    if (greenInside_->uniform() && greenOutside_->uniform()) {
         buildIsotropicMatrix(cavity);
     } else {
         throw std::runtime_error("C-PCM is defined only for isotropic environments!");
@@ -80,7 +80,7 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
         symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
     }
 
-    double epsilon = greenOutside_->epsilon();
+    double epsilon = profiles::epsilon(greenOutside_->permittivity());
     double fact = (epsilon - 1.0)/(epsilon + correction_);
     // Invert SI  using LU decomposition with full pivoting
     // This is a rank-revealing LU decomposition, this allows us

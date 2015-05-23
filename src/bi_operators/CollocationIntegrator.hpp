@@ -10,13 +10,10 @@
 class Element;
 
 #include "DerivativeTypes.hpp"
-#include "DiagonalIntegrator.hpp"
-#include "DiagonalIntegratorFactory.hpp"
 #include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
-#include "TanhSphericalDiffuse.hpp"
 
 /*! \file CollocationIntegrator.hpp
  *  \class CollocationIntegrator
@@ -34,69 +31,51 @@ class Element;
  *  \f]
  */
 
-class CollocationIntegrator : public DiagonalIntegrator
+template <typename DerivativeTraits,
+          typename ProfilePolicy>
+struct CollocationIntegrator
 {
-public:
     CollocationIntegrator() : factor_(1.07) {}
-    virtual ~CollocationIntegrator() {}
+    ~CollocationIntegrator() {}
 
-    virtual double computeS(const Vacuum<double> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_hessian> * gf, const Element & e) const;
+    double computeS(const Vacuum<DerivativeTraits, CollocationIntegrator> & /* gf */, const Element & e) const {
+        double area = e.area();
+	    return (factor_ * std::sqrt(4 * M_PI / area));
+    }
+    double computeD(const Vacuum<DerivativeTraits, CollocationIntegrator> & /* gf */, const Element & e) const {
+        double area = e.area();
+	    double radius = e.sphere().radius();
+        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
+    }
 
-    virtual double computeD(const Vacuum<double> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_hessian> * gf, const Element & e) const;
+    double computeS(const UniformDielectric<DerivativeTraits, CollocationIntegrator> & gf, const Element & e) const {
+        double epsInv = 1.0 / gf.epsilon();
+	    double area = e.area();
+	    return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
+    }
+    double computeD(const UniformDielectric<DerivativeTraits, CollocationIntegrator> & gf, const Element & e) const {
+        double epsInv = 1.0 / gf.epsilon();
+	    double area = e.area();
+	    double radius = e.sphere().radius();
+        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
+    }
 
-    virtual double computeS(const UniformDielectric<double> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_hessian> * gf, const Element & e) const;
+    double computeS(const IonicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const Element & /* e */) const {
+        return 1.0;
+    }
+    double computeD(const IonicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const Element & /* e */) const {
+        return 1.0;
+    }
 
-    virtual double computeD(const UniformDielectric<double> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const;
+    double computeS(const AnisotropicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const Element & /* e */) const {
+        return 1.0;
+    }
+    double computeD(const AnisotropicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const Element & /* e */) const {
+        return 1.0;
+    }
 
-    virtual double computeS(const IonicLiquid<double> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const IonicLiquid<double> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const AnisotropicLiquid<double> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const AnisotropicLiquid<double> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const TanhSphericalDiffuse * gf, const Element & e) const;
-
-    virtual double computeD(const TanhSphericalDiffuse * gf, const Element & e) const;
-private:
     /// Scaling factor for the collocation formulas
     double factor_;
 };
-
-namespace
-{
-    DiagonalIntegrator * createCollocationIntegrator()
-    {
-        return new CollocationIntegrator();
-    }
-    const std::string COLLOCATION("COLLOCATION");
-    const bool registeredCollocationIntegrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().registerDiagonalIntegrator(
-                                         COLLOCATION, createCollocationIntegrator);
-}
 
 #endif // COLLOCATIONINTEGRATOR_HPP

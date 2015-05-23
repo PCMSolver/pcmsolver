@@ -83,7 +83,6 @@ public:
     const Eigen::Matrix3d & epsilon() const { return epsilon_; }
     const Eigen::Matrix3d & epsilonInv() const { return epsilonInv_; }
     double detEps() const { return detEps_; }
-    bool isUniform() const { return false; }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 };
 

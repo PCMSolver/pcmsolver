@@ -1,22 +1,31 @@
 #ifndef NUMERICALINTEGRATOR_HPP
 #define NUMERICALINTEGRATOR_HPP
 
+#include <algorithm>
+#include <cmath>
+#include <functional>
 #include <iosfwd>
+#include <stdexcept>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
 
-class Element;
-
+#include "Element.hpp"
+#include "MathUtils.hpp"
+#include "QuadratureRules.hpp"
+#include "Sphere.hpp"
 #include "DerivativeTypes.hpp"
-#include "DiagonalIntegrator.hpp"
-#include "DiagonalIntegratorFactory.hpp"
 #include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
-#include "TanhSphericalDiffuse.hpp"
+
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
+singleLayerIntegrand;
+
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
+		        const Eigen::Vector3d &)> doubleLayerIntegrand;
 
 /*! \file NumericalIntegrator.hpp
  *  \class NumericalIntegrator
@@ -28,62 +37,53 @@ class Element;
  *  integration.
  */
 
-class NumericalIntegrator : public DiagonalIntegrator
+template <typename DerivativeTraits,
+          typename ProfilePolicy>
+struct NumericalIntegrator
 {
-public:
-    virtual double computeS(const Vacuum<double> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const Vacuum<double> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const UniformDielectric<double> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const UniformDielectric<double> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const IonicLiquid<double> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const IonicLiquid<double> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const AnisotropicLiquid<double> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const AnisotropicLiquid<double> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const TanhSphericalDiffuse * gf, const Element & e) const;
-
-    virtual double computeD(const TanhSphericalDiffuse * gf, const Element & e) const;
-};
-namespace
-{
-    DiagonalIntegrator * createNumericalIntegrator()
-    {
-        return new NumericalIntegrator();
+    double computeS(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
+        using namespace std::placeholders;
+	    singleLayerIntegrand F = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::function, gf, _1, _2);
+        return integrator<32, 16>(F, e);
     }
-    const std::string NUMERICAL("NUMERICAL");
-    const bool registeredNumericalIntegrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().registerDiagonalIntegrator(
-                                         NUMERICAL, createNumericalIntegrator);
-}
+    double computeD(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
+        using namespace std::placeholders;
+	    doubleLayerIntegrand F = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::derivative, gf, _1, _2, _3);
+        return integrator<32, 16>(F, e);
+    }
+
+    double computeS(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
+        using namespace std::placeholders;
+	    singleLayerIntegrand F = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::function, gf, _1, _2);
+        return integrator<32, 16>(F, e);
+    }
+    double computeD(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
+        using namespace std::placeholders;
+	    doubleLayerIntegrand F = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::derivative, gf, _1, _2, _3);
+        return integrator<32, 16>(F, e);
+    }
+
+    double computeS(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
+        using namespace std::placeholders;
+	    singleLayerIntegrand F = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::function, gf, _1, _2);
+        return integrator<32, 16>(F, e);
+    }
+    double computeD(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
+        using namespace std::placeholders;
+	    doubleLayerIntegrand F = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::derivative, gf, _1, _2, _3);
+        return integrator<32, 16>(F, e);
+    }
+
+    double computeS(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
+        using namespace std::placeholders;
+	    singleLayerIntegrand F = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::function, gf, _1, _2);
+        return integrator<32, 16>(F, e);
+    }
+    double computeD(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
+        using namespace std::placeholders;
+	    doubleLayerIntegrand F = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::derivative, gf, _1, _2, _3);
+        return integrator<32, 16>(F, e);
+    }
+};
 
 #endif // NUMERICALINTEGRATOR_HPP

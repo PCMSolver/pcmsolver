@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
     Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
     Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
-    
+
     Molecule molec = NH3();
 
     double area = 0.4;
@@ -63,11 +63,10 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
     cavity.saveCavity("nh3.npz");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);

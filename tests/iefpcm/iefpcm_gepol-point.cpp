@@ -56,11 +56,10 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
     cavity.saveCavity("point.npz");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -76,6 +75,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
     solver.computeCharge(fake_mep, fake_asc);
+
+    delete gfInside;
+    delete gfOutside;
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
@@ -107,11 +109,10 @@ BOOST_AUTO_TEST_CASE(pointChargeShiftedGePol)
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
     cavity.saveCavity("point.npz");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);

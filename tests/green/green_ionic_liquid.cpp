@@ -36,9 +36,9 @@
 #include <Eigen/Dense>
 
 #include "AnalyticEvaluate.hpp"
-#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "IonicLiquid.hpp"
+#include "CollocationIntegrator.hpp"
 
 struct IonicLiquidTest {
     double epsilon;
@@ -66,7 +66,7 @@ BOOST_FIXTURE_TEST_CASE(numerical, IonicLiquidTest)
 {
     IonicLiquid<Numerical, CollocationIntegrator<Numerical, Yukawa> > gf(epsilon, kappa);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE(directional_AD, IonicLiquidTest)
 {
     IonicLiquid<AD_directional, CollocationIntegrator<AD_directional, Yukawa> > gf(epsilon, kappa);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -106,7 +106,7 @@ BOOST_FIXTURE_TEST_CASE(gradient_AD, IonicLiquidTest)
 {
     IonicLiquid<AD_gradient, CollocationIntegrator<AD_gradient, Yukawa> > gf(epsilon, kappa);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE(hessian_AD, IonicLiquidTest)
 {
     IonicLiquid<AD_hessian, CollocationIntegrator<AD_hessian, Yukawa> > gf(epsilon, kappa);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);

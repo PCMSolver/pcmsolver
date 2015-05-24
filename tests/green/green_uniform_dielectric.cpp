@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(numerical, UniformDielectricTest)
 {
     UniformDielectric<Numerical, CollocationIntegrator<Numerical, Uniform> > gf(epsilon);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -84,7 +84,7 @@ BOOST_FIXTURE_TEST_CASE(directional_AD, UniformDielectricTest)
 {
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > gf(epsilon);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -104,7 +104,7 @@ BOOST_FIXTURE_TEST_CASE(gradient_AD, UniformDielectricTest)
 {
     UniformDielectric<AD_gradient, CollocationIntegrator<AD_gradient, Uniform> > gf(epsilon);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -124,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE(hessian_AD, UniformDielectricTest)
 {
     UniformDielectric<AD_hessian, CollocationIntegrator<AD_hessian, Uniform> > gf(epsilon);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);

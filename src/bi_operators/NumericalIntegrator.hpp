@@ -21,10 +21,10 @@
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 
-typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
+typedef std::kernelS<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
 singleLayerIntegrand;
 
-typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
+typedef std::kernelS<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
 		        const Eigen::Vector3d &)> doubleLayerIntegrand;
 
 /*! \file NumericalIntegrator.hpp
@@ -43,45 +43,45 @@ struct NumericalIntegrator
 {
     double computeS(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
         using namespace std::placeholders;
-	    singleLayerIntegrand F = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::function, gf, _1, _2);
+	    singleLayerIntegrand F = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
         return integrator<32, 16>(F, e);
     }
     double computeD(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
         using namespace std::placeholders;
-	    doubleLayerIntegrand F = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::derivative, gf, _1, _2, _3);
+	    doubleLayerIntegrand F = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
         return integrator<32, 16>(F, e);
     }
 
     double computeS(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
         using namespace std::placeholders;
-	    singleLayerIntegrand F = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::function, gf, _1, _2);
+	    singleLayerIntegrand F = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
         return integrator<32, 16>(F, e);
     }
     double computeD(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
         using namespace std::placeholders;
-	    doubleLayerIntegrand F = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::derivative, gf, _1, _2, _3);
+	    doubleLayerIntegrand F = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
         return integrator<32, 16>(F, e);
     }
 
     double computeS(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
         using namespace std::placeholders;
-	    singleLayerIntegrand F = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::function, gf, _1, _2);
+	    singleLayerIntegrand F = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
         return integrator<32, 16>(F, e);
     }
     double computeD(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
         using namespace std::placeholders;
-	    doubleLayerIntegrand F = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::derivative, gf, _1, _2, _3);
+	    doubleLayerIntegrand F = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
         return integrator<32, 16>(F, e);
     }
 
     double computeS(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
         using namespace std::placeholders;
-	    singleLayerIntegrand F = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::function, gf, _1, _2);
+	    singleLayerIntegrand F = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
         return integrator<32, 16>(F, e);
     }
     double computeD(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const Element & e) const {
         using namespace std::placeholders;
-	    doubleLayerIntegrand F = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::derivative, gf, _1, _2, _3);
+	    doubleLayerIntegrand F = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
         return integrator<32, 16>(F, e);
     }
 };

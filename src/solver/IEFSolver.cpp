@@ -77,10 +77,10 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
             Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
             probeNormal.normalize();
             if (i != j) {
-                SI(i, j) = greenInside_->function(source, probe);
-                SE(i, j) = greenOutside_->function(source, probe);
-                DI(i, j) = greenInside_->derivative(probeNormal, source, probe);
-                DE(i, j) = greenOutside_->derivative(probeNormal, source, probe);
+                SI(i, j) = greenInside_->kernelS(source, probe);
+                SE(i, j) = greenOutside_->kernelS(source, probe);
+                DI(i, j) = greenInside_->kernelD(probeNormal, source, probe);
+                DE(i, j) = greenOutside_->kernelD(probeNormal, source, probe);
             }
         }
     }
@@ -151,8 +151,8 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
             Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
             probeNormal.normalize();
             if (i != j) {
-                SI(i, j) = greenInside_->function(source, probe);
-                DI(i, j) = greenInside_->derivative(probeNormal, source, probe);
+                SI(i, j) = greenInside_->kernelS(source, probe);
+                DI(i, j) = greenInside_->kernelD(probeNormal, source, probe);
             }
         }
     }

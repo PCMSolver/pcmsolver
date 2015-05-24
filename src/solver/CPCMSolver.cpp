@@ -69,7 +69,7 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
             Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
             probeNormal.normalize();
             if (i != j) {
-                SI(i, j) = greenInside_->function(source, probe);
+                SI(i, j) = greenInside_->kernelS(source, probe);
             }
         }
     }

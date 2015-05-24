@@ -54,7 +54,7 @@ class Element;
 
 template <typename DerivativeTraits,
           typename IntegratorPolicy>
-class Vacuum : public GreensFunction<DerivativeTraits, IntegratorPolicy, Uniform,
+class Vacuum final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Uniform,
                                      Vacuum<DerivativeTraits, IntegratorPolicy> >
 {
 public:
@@ -64,7 +64,7 @@ public:
         this->profile_ = Uniform(1.0);
     }
     virtual ~Vacuum() {}
-    /*! Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
+    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator
      *  for the pair of points p1, p2:
      *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
@@ -74,7 +74,7 @@ public:
      *  \param[in]        p2 second point
      */
     virtual double kernelD(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
     {
         return this->derivativeProbe(direction, p1, p2);
     }
@@ -82,14 +82,14 @@ public:
     /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *  \param[in] e i-th finite element
      */
-    virtual double diagonalS(const Element & e) const
+    virtual double diagonalS(const Element & e) const override
     {
             return this->diagonal_.computeS(*this, e);
     }
     /*! Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
      *  \param[in] e i-th finite element
      */
-    virtual double diagonalD(const Element & e) const
+    virtual double diagonalD(const Element & e) const override
     {
             return this->diagonal_.computeD(*this, e);
     }
@@ -102,7 +102,7 @@ private:
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
      */
-    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const
+    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const override
     {
         DerivativeTraits res;
         res = 1.0/sqrt((sp[0]-pp[0])*(sp[0]-pp[0])+
@@ -110,7 +110,7 @@ private:
                        (sp[2]-pp[2])*(sp[2]-pp[2]));
         return res;
     }
-    virtual std::ostream & printObject(std::ostream & os)
+    virtual std::ostream & printObject(std::ostream & os) override
     {
         os << "Green's function type: vacuum";
         return os;

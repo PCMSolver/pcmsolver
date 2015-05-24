@@ -53,7 +53,7 @@ class Element;
 
 template <typename DerivativeTraits,
           typename IntegratorPolicy>
-class IonicLiquid : public GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
+class IonicLiquid final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
                                      IonicLiquid<DerivativeTraits, IntegratorPolicy> >
 {
 public:
@@ -70,7 +70,7 @@ public:
      *  \param[in]        p2 second point
      */
     virtual double kernelD(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
     {
         return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }
@@ -79,7 +79,7 @@ public:
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *  \param[in] e i-th finite element
      */
-    virtual double diagonalS(const Element & e) const
+    virtual double diagonalS(const Element & e) const override
     {
             return this->diagonal_.computeS(*this, e);
     }
@@ -87,7 +87,7 @@ public:
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
      *  \param[in] e i-th finite element
      */
-    virtual double diagonalD(const Element & e) const
+    virtual double diagonalD(const Element & e) const override
     {
             return this->diagonal_.computeD(*this, e);
     }
@@ -102,7 +102,7 @@ private:
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
      */
-    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const
+    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const override
     {
         double eps = this->profile_.epsilon;
 	    double k = this->profile_.kappa;
@@ -111,11 +111,10 @@ private:
                           (sp[2] - pp[2]) * (sp[2] - pp[2]));
         return (exp(-k * distance) / (eps * distance));
     }
-    virtual std::ostream & printObject(std::ostream & os)
+    virtual std::ostream & printObject(std::ostream & os) override
     {
         os << "Green's function type: ionic liquid" << std::endl;
-        os << "Permittivity         = " << this->profile_.epsilon << std::endl;
-        os << "Inverse Debye length = " << this->profile_.kappa;
+        os << this->profile_;
         return os;
     }
 };

@@ -26,20 +26,26 @@
 #ifndef UNIFORM_HPP
 #define UNIFORM_HPP
 
+#include <iostream>
+
 #include "Config.hpp"
 
 /*! \file Uniform.hpp
  *  \struct Uniform
- *  \brief a uniform dielectric profile 
+ *  \brief a uniform dielectric profile
  *  \author Roberto Di Remigio
  *  \date 2015
  */
 
-struct Uniform
+struct Uniform final
 {
     double epsilon;
     Uniform() : epsilon(1.0) {}
     Uniform(double e) : epsilon(e) {}
+    friend std::ostream & operator<<(std::ostream & os, Uniform & arg) {
+        os << "Permittivity = " << arg.epsilon;
+        return os;
+    }
 };
 
 #endif // UNIFORM_HPP

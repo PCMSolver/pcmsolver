@@ -53,7 +53,7 @@ class Element;
 
 template <typename DerivativeTraits,
           typename IntegratorPolicy>
-class AnisotropicLiquid : public GreensFunction<DerivativeTraits, IntegratorPolicy, Anisotropic,
+class AnisotropicLiquid final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Anisotropic,
                                      AnisotropicLiquid<DerivativeTraits, IntegratorPolicy> >
 {
 public:
@@ -73,22 +73,19 @@ public:
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
      */
-    virtual double kernelD(const Eigen::Vector3d & /* direction */,
-                              const Eigen::Vector3d & /* p1 */, const Eigen::Vector3d & /* p2 */) const
+    virtual double kernelD(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
     {
         // Need the full gradient to get the kernel of D and D^\dagger
-        /*
         Eigen::Vector3d scratch = this->profile_.epsilon() * (this->gradientProbe(p1, p2));
         return scratch.dot(direction);
-        */
-        return 0.0;
     }
 
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
      *  \param[in] e i-th finite element
      */
-    virtual double diagonalS(const Element & e) const
+    virtual double diagonalS(const Element & e) const override
     {
         return this->diagonal_.computeS(*this, e);
     }
@@ -96,12 +93,10 @@ public:
      *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
      *  \param[in] e i-th finite element
      */
-    virtual double diagonalD(const Element & e) const
+    virtual double diagonalD(const Element & e) const override
     {
         return this->diagonal_.computeD(*this, e);
     }
-
-    virtual double epsilon() const { return 0.0; }
 
     friend std::ostream & operator<<(std::ostream & os, AnisotropicLiquid & gf) {
         return gf.printObject(os);
@@ -113,7 +108,7 @@ private:
      *  \param[in] source the source point
      *  \param[in]  probe the probe point
      */
-    virtual DerivativeTraits operator()(DerivativeTraits * source, DerivativeTraits * probe) const
+    virtual DerivativeTraits operator()(DerivativeTraits * source, DerivativeTraits * probe) const override
     {
         // The distance has to be calculated using epsilonInv_ as metric:
         DerivativeTraits scratch = 0.0;
@@ -128,14 +123,10 @@ private:
 
         return (1.0/(sqrt(detEps_) * distance));
     }
-    virtual std::ostream & printObject(std::ostream & os)
+    virtual std::ostream & printObject(std::ostream & os) override
     {
         os << "Green's function type: anisotropic liquid" << std::endl;
-        /*
-        os << "Permittivity tensor diagonal (lab frame)   = " << epsilonLab_.transpose() << std::endl;
-        os << "Permittivity tensor (molecule-fixed frame) =\n" << epsilon_ << std::endl;
-        os << "Euler angles (molecule-to-lab frame)       = " << eulerAngles_.transpose();
-        */
+        os << this->profile_;
         return os;
     }
 };

@@ -63,8 +63,10 @@ public:
      *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
      *  \param[in] p1 first point
      *  \param[in] p2 second point
+     *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
+     *  need to implement. Thus this method is marked final.
      */
-    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
     {
         DerivativeTraits sp[3], pp[3], res;
         sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
@@ -119,20 +121,48 @@ public:
     virtual Eigen::Vector3d gradientSource(const Eigen::Vector3d & p1,
                                            const Eigen::Vector3d & p2) const
     {
-        return static_cast<const Derived *>(this)->gradientSource(p1, p2);
+        Eigen::Vector3d gradient = Eigen::Vector3d::Zero();
+
+        DerivativeTraits t1[3], t2[3], grad;
+        t1[0] = p1(0);
+        t1[0][1] = 1;
+        t1[1] = p1(1);
+        t1[1][2] = 1;
+        t1[2] = p1(2);
+        t1[2][3] = 1;
+        t2[0] = p2(0);
+        t2[1] = p2(1);
+        t2[2] = p2(2);
+        grad = this->operator()(t1, t2);
+
+        gradient << grad[1], grad[2], grad[3];
+        return gradient;
     }
-    /*!
-     *  Returns full gradient of Greens's function for the pair of points p1, p2:
+    /*! Returns full gradient of Greens's function for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
      *  Notice that this method returns the gradient with respect to the probe point.
-     *
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      */
     virtual Eigen::Vector3d gradientProbe(const Eigen::Vector3d & p1,
                                           const Eigen::Vector3d & p2) const
     {
-        return static_cast<const Derived *>(this)->gradientProbe(p1, p2);
+        Eigen::Vector3d gradient = Eigen::Vector3d::Zero();
+
+        DerivativeTraits t1[3], t2[3], grad;
+        t1[0] = p1(0);
+        t1[1] = p1(1);
+        t1[2] = p1(2);
+        t2[0] = p2(0);
+        t2[0][1] = 1;
+        t2[1] = p2(1);
+        t2[1][2] = 1;
+        t2[2] = p2(2);
+        t2[2][3] = 1;
+        grad = this->operator()(t1, t2);
+
+        gradient << grad[1], grad[2], grad[3];
+        return gradient;
     }
 
     /*! Whether the Green's function describes a uniform environment */
@@ -171,8 +201,10 @@ public:
      *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
      *  \param[in] p1 first point
      *  \param[in] p2 second point
+     *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
+     *  need to implement. Thus this method is marked final.
      */
-    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
     {
         Numerical sp[3], pp[3], res;
         sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
@@ -221,7 +253,13 @@ public:
     virtual Eigen::Vector3d gradientSource(const Eigen::Vector3d & p1,
                                            const Eigen::Vector3d & p2) const
     {
-        return static_cast<const Derived *>(this)->gradientSource(p1, p2);
+        Eigen::Vector3d gradient;
+
+        gradient(0) = derivativeSource(Eigen::Vector3d::UnitX(), p1, p2);
+        gradient(1) = derivativeSource(Eigen::Vector3d::UnitY(), p1, p2);
+        gradient(2) = derivativeSource(Eigen::Vector3d::UnitZ(), p1, p2);
+
+        return gradient;
     }
     /*!
      *  Returns full gradient of Greens's function for the pair of points p1, p2:
@@ -234,7 +272,13 @@ public:
     virtual Eigen::Vector3d gradientProbe(const Eigen::Vector3d & p1,
                                           const Eigen::Vector3d & p2) const
     {
-        return static_cast<const Derived *>(this)->gradientProbe(p1, p2);
+        Eigen::Vector3d gradient;
+
+        gradient(0) = derivativeProbe(Eigen::Vector3d::UnitX(), p1, p2);
+        gradient(1) = derivativeProbe(Eigen::Vector3d::UnitY(), p1, p2);
+        gradient(2) = derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2);
+
+        return gradient;
     }
 
     /*! Whether the Green's function describes a uniform environment */

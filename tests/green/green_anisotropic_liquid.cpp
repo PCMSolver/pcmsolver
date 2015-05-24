@@ -36,9 +36,9 @@
 #include <Eigen/Dense>
 
 #include "AnalyticEvaluate.hpp"
-#include "CollocationIntegrator.hpp"
-#include "DerivativeTypes.hpp"
 #include "AnisotropicLiquid.hpp"
+#include "DerivativeTypes.hpp"
+#include "CollocationIntegrator.hpp"
 
 struct AnisotropicLiquidTest {
     Eigen::Vector3d epsilon;
@@ -68,7 +68,7 @@ BOOST_FIXTURE_TEST_CASE(numerical, AnisotropicLiquidTest)
 {
     AnisotropicLiquid<Numerical, CollocationIntegrator<Numerical, Anisotropic> > gf(epsilon, euler);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -88,7 +88,7 @@ BOOST_FIXTURE_TEST_CASE(directional_AD, AnisotropicLiquidTest)
 {
     AnisotropicLiquid<AD_directional, CollocationIntegrator<AD_directional, Anisotropic> > gf(epsilon, euler);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -108,7 +108,7 @@ BOOST_FIXTURE_TEST_CASE(gradient_AD, AnisotropicLiquidTest)
 {
     AnisotropicLiquid<AD_gradient, CollocationIntegrator<AD_gradient, Anisotropic> > gf(epsilon, euler);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -128,7 +128,7 @@ BOOST_FIXTURE_TEST_CASE(hessian_AD, AnisotropicLiquidTest)
 {
     AnisotropicLiquid<AD_hessian, CollocationIntegrator<AD_hessian, Anisotropic> > gf(epsilon, euler);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(numerical, AnisotropicLiquidUniformTest)
 {
     AnisotropicLiquid<Numerical, CollocationIntegrator<Numerical, Anisotropic> > gf(epsilon, euler);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -196,7 +196,7 @@ BOOST_FIXTURE_TEST_CASE(directional_AD, AnisotropicLiquidUniformTest)
 {
     AnisotropicLiquid<AD_directional, CollocationIntegrator<AD_directional, Anisotropic> > gf(epsilon, euler);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -216,7 +216,7 @@ BOOST_FIXTURE_TEST_CASE(gradient_AD, AnisotropicLiquidUniformTest)
 {
     AnisotropicLiquid<AD_gradient, CollocationIntegrator<AD_gradient, Anisotropic> > gf(epsilon, euler);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);
@@ -236,7 +236,7 @@ BOOST_FIXTURE_TEST_CASE(hessian_AD, AnisotropicLiquidUniformTest)
 {
     AnisotropicLiquid<AD_hessian, CollocationIntegrator<AD_hessian, Anisotropic> > gf(epsilon, euler);
     double value = result(0);
-    double gf_value = gf.function(source, probe);
+    double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
 
     double derProbe = result(1);

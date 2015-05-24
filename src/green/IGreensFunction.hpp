@@ -52,10 +52,9 @@ public:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      */
-    virtual double function(const Eigen::Vector3d & p1,
-                            const Eigen::Vector3d &p2) const = 0;
-    /*! Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
-     *  for the pair of points p1, p2:
+    virtual double kernelS(const Eigen::Vector3d & p1,
+                           const Eigen::Vector3d &p2) const = 0;
+    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the pair of points p1, p2:
      *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
      *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
@@ -63,30 +62,8 @@ public:
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
      */
-    virtual double derivative(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const = 0;
-    /*! Returns value of the directional derivative of the
-     *  Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_1}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the source point.
-     *  \param[in] normal_p1 the normal vector to p1
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    virtual double derivativeSource(const Eigen::Vector3d & normal_p1,
-                                    const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const = 0;
-    /*! Returns value of the directional derivative of the
-     *  Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the probe point.
-     *  \param[in] normal_p2 the normal vector to p1
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const = 0;
+    virtual double kernelD(const Eigen::Vector3d & direction,
+                           const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const = 0;
 
     /*! Whether the Green's function describes a uniform environment */
     virtual bool uniform() const = 0;

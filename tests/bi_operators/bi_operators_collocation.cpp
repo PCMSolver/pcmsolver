@@ -53,7 +53,6 @@ struct CollocationIntegratorTest {
     double epsilon;
     Eigen::Vector3d source, probe, sourceNormal, probeNormal;
     GePolCavity cavity;
-    CollocationIntegrator * diag;
     CollocationIntegratorTest() { SetUp(); }
     void SetUp() {
 	    epsilon = 80.0;
@@ -67,22 +66,20 @@ struct CollocationIntegratorTest {
 	    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
         double area = 10.0;
         cavity = GePolCavity(molec, area, 0.0, 100.0);
-
-	    diag = new CollocationIntegrator();
     }
 };
 
 /*! \class CollocationIntegrator
- *  \test \b CollocationIntegratorTest_vacuum tests the numerical evaluation of the vacuum diagonal elements of S and D
+ *  \test \b CollocationIntegratorTest_vacuum tests the numerical evaluation of the vacuum onal elements of S and D
  */
 BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
 {
-    Vacuum<AD_directional> gf(diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > gf;
 
     BOOST_TEST_MESSAGE("Vacuum");
     Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	S_results(i) = gf.diagonalS(cavity.elements(i));
+	S_results(i) = gf.onalS(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -97,7 +94,7 @@ BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(S_reference(i), S_results(i), 1.0e-12);
     }
-    BOOST_TEST_MESSAGE("S operator diagonal by collocation");
+    BOOST_TEST_MESSAGE("S operator onal by collocation");
     for (int i = 0; i < cavity.size(); ++i) {
 	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
@@ -105,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
 
     Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	D_results(i) = gf.diagonalD(cavity.elements(i));
+	D_results(i) = gf.onalD(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -118,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(D_reference(i), D_results(i), 1.0e-12);
     }
-    BOOST_TEST_MESSAGE("D operator diagonal by collocation");
+    BOOST_TEST_MESSAGE("D operator onal by collocation");
     for (int i = 0; i < cavity.size(); ++i) {
 	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << D_results(i));
@@ -126,16 +123,16 @@ BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
 }
 
 /*! \class CollocationIntegrator
- *  \test \b CollocationIntegratorTest_uniformdielectric tests the numerical evaluation of the uniform dielectric diagonal elements of S and D
+ *  \test \b CollocationIntegratorTest_uniformdielectric tests the numerical evaluation of the uniform dielectric onal elements of S and D
  */
 BOOST_FIXTURE_TEST_CASE(uniformdielectric, CollocationIntegratorTest)
 {
-    UniformDielectric<AD_directional> gf(epsilon, diag);
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > gf(epsilon);
 
     BOOST_TEST_MESSAGE("UniformDielectric");
     Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	S_results(i) = gf.diagonalS(cavity.elements(i));
+	S_results(i) = gf.onalS(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -150,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(S_reference(i), S_results(i), 1.0e-12);
     }
-    BOOST_TEST_MESSAGE("S operator diagonal by collocation");
+    BOOST_TEST_MESSAGE("S operator onal by collocation");
     for (int i = 0; i < cavity.size(); ++i) {
 	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
@@ -158,7 +155,7 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, CollocationIntegratorTest)
 
     Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	D_results(i) = gf.diagonalD(cavity.elements(i));
+	D_results(i) = gf.onalD(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -171,7 +168,7 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(D_reference(i), D_results(i), 1.0e-12);
     }
-    BOOST_TEST_MESSAGE("D operator diagonal by collocation");
+    BOOST_TEST_MESSAGE("D operator onal by collocation");
     for (int i = 0; i < cavity.size(); ++i) {
 	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << D_results(i));
@@ -182,12 +179,12 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
 {
     double width = 5.0;
     double sphereRadius = 100.0;
-    TanhSphericalDiffuse gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), diag);
+    TanhSphericalDiffuse gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero());
 
     BOOST_TEST_MESSAGE("TanhSphericalDiffuse");
     Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	    S_results(i) = gf.diagonalS(cavity.elements(i));
+	    S_results(i) = gf.onalS(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -202,7 +199,7 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_CHECK_CLOSE(S_reference(i), S_results(i), 1.0e-08);
     }
-    BOOST_TEST_MESSAGE("S operator diagonal by collocation");
+    BOOST_TEST_MESSAGE("S operator onal by collocation");
     for (int i = 0; i < cavity.size(); ++i) {
 	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
@@ -210,7 +207,7 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
 
     Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	    D_results(i) = gf.diagonalD(cavity.elements(i));
+	    D_results(i) = gf.onalD(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -223,7 +220,7 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
     	BOOST_CHECK_CLOSE(D_reference(i), D_results(i), 1.0e-06);
     }
-    BOOST_TEST_MESSAGE("D operator diagonal by collocation");
+    BOOST_TEST_MESSAGE("D operator onal by collocation");
     for (int i = 0; i < cavity.size(); ++i) {
 	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << D_results(i));

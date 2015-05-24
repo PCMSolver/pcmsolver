@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -58,11 +58,11 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c1");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
+
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -99,11 +99,11 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
+
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -143,11 +143,11 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.cs");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
+
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -187,11 +187,11 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.ci");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
+
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -231,11 +231,11 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.d2");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
+
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -275,11 +275,11 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
+
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -319,11 +319,11 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
         GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
+
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);
@@ -363,11 +363,11 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
+
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);

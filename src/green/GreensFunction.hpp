@@ -123,19 +123,10 @@ public:
     {
         Eigen::Vector3d gradient = Eigen::Vector3d::Zero();
 
-        DerivativeTraits t1[3], t2[3], grad;
-        t1[0] = p1(0);
-        t1[0][1] = 1;
-        t1[1] = p1(1);
-        t1[1][2] = 1;
-        t1[2] = p1(2);
-        t1[2][3] = 1;
-        t2[0] = p2(0);
-        t2[1] = p2(1);
-        t2[2] = p2(2);
-        grad = this->operator()(t1, t2);
+        gradient(0) = derivativeSource(Eigen::Vector3d::UnitX(), p1, p2);
+        gradient(1) = derivativeSource(Eigen::Vector3d::UnitY(), p1, p2);
+        gradient(2) = derivativeSource(Eigen::Vector3d::UnitZ(), p1, p2);
 
-        gradient << grad[1], grad[2], grad[3];
         return gradient;
     }
     /*! Returns full gradient of Greens's function for the pair of points p1, p2:
@@ -149,19 +140,10 @@ public:
     {
         Eigen::Vector3d gradient = Eigen::Vector3d::Zero();
 
-        DerivativeTraits t1[3], t2[3], grad;
-        t1[0] = p1(0);
-        t1[1] = p1(1);
-        t1[2] = p1(2);
-        t2[0] = p2(0);
-        t2[0][1] = 1;
-        t2[1] = p2(1);
-        t2[1][2] = 1;
-        t2[2] = p2(2);
-        t2[2][3] = 1;
-        grad = this->operator()(t1, t2);
+        gradient(0) = derivativeProbe(Eigen::Vector3d::UnitX(), p1, p2);
+        gradient(1) = derivativeProbe(Eigen::Vector3d::UnitY(), p1, p2);
+        gradient(2) = derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2);
 
-        gradient << grad[1], grad[2], grad[3];
         return gradient;
     }
 

@@ -2,28 +2,28 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE NumericalIntegrator 
+#define BOOST_TEST_MODULE NumericalIntegrator
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -61,42 +61,39 @@ struct NumericalIntegratorTest {
     double kappa;
     Eigen::Vector3d source, probe, sourceNormal, probeNormal;
     GePolCavity cavity;
-    NumericalIntegrator * diag;
     NumericalIntegratorTest() { SetUp(); }
     void SetUp() {
-/*    	epsilon << 2.0, 80.0, 15.0;
-    	euler << 6.0, 40.0, 15.0;*/
-	epsilon << 80.0, 80.0, 80.0;
-	euler << 0.0, 0.0, 0.0;
-	eps = 80.0;
-	kappa = 1.5;
+        /*    	epsilon << 2.0, 80.0, 15.0;
+                euler << 6.0, 40.0, 15.0;*/
+        epsilon << 80.0, 80.0, 80.0;
+        euler << 0.0, 0.0, 0.0;
+        eps = 80.0;
+        kappa = 1.5;
         source = Eigen::Vector3d::Random();
         sourceNormal = source + Eigen::Vector3d::Random();
         sourceNormal.normalize();
         probe = Eigen::Vector3d::Random();
         probeNormal = probe + Eigen::Vector3d::Random();
         probeNormal.normalize();
-        
-	Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+
+        Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
         double area = 10.0;
         cavity = GePolCavity(molec, area, 0.0, 100.0);
-	
-	diag = new NumericalIntegrator();
     }
 };
 
-/*! \class NumericalIntegrator 
+/*! \class NumericalIntegrator
  *  \test \b NumericalIntegratorTest_vacuum tests the numerical evaluation of the vacuum diagonal elements of S and D
  */
 BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
 {
     fs::rename("PEDRA.OUT", "PEDRA.OUT.vacuum");
-    Vacuum<AD_directional> gf(diag);
+    Vacuum<AD_directional, NumericalIntegrator<AD_directional, Uniform> > gf;
 
     BOOST_TEST_MESSAGE("Vacuum");
     Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	S_results(i) = gf.diagonalS(cavity.elements(i)); 
+        S_results(i) = gf.diagonalS(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -113,15 +110,14 @@ BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
     */
     BOOST_TEST_MESSAGE("S operator diagonal by numerical quadrature");
     for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = " 
+	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
     }
-    
+
     Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	D_results(i) = gf.diagonalD(cavity.elements(i)); 
+        D_results(i) = gf.diagonalD(cavity.elements(i));
     }
-    double sum_D = D_results.sum();
     // In case you need to update the reference files...
     /*
     cnpy::npy_save("vacuum_D_numerical.npy", D_results.data(), shape, 1, "w", false);
@@ -137,23 +133,23 @@ BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
     */
     BOOST_TEST_MESSAGE("D operator diagonal by numerical quadrature");
     for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = " 
+	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << D_results(i));
     }
 }
 
-/*! \class NumericalIntegrator 
+/*! \class NumericalIntegrator
  *  \test \b NumericalIntegratorTest_uniformdielectric tests the numerical evaluation of the uniform dielectric diagonal elements of S and D
  */
 BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
 {
     fs::rename("PEDRA.OUT", "PEDRA.OUT.uniform");
-    UniformDielectric<AD_directional> gf(eps, diag);
-    
+    UniformDielectric<AD_directional, NumericalIntegrator<AD_directional, Uniform> > gf(eps);
+
     BOOST_TEST_MESSAGE("UniformDielectric");
     Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	S_results(i) = gf.diagonalS(cavity.elements(i)); 
+        S_results(i) = gf.diagonalS(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -170,13 +166,13 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
     */
     BOOST_TEST_MESSAGE("S operator diagonal by numerical quadrature");
     for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = " 
+	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
     }
-    
+
     Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	D_results(i) = gf.diagonalD(cavity.elements(i)); 
+        D_results(i) = gf.diagonalD(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -196,18 +192,18 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
     }
 }
 
-/*! \class NumericalIntegrator 
+/*! \class NumericalIntegrator
  *  \test \b NumericalIntegratorTest_ionic tests the numerical evaluation of the ionic liquid diagonal elements of S and D
  */
 BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
 {
     fs::rename("PEDRA.OUT", "PEDRA.OUT.ionic");
-    IonicLiquid<AD_directional> gf(eps, kappa, diag);
+    IonicLiquid<AD_directional, NumericalIntegrator<AD_directional, Yukawa> > gf(eps, kappa);
 
     BOOST_TEST_MESSAGE("IonicLiquid");
     Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	S_results(i) = gf.diagonalS(cavity.elements(i)); 
+        S_results(i) = gf.diagonalS(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -224,13 +220,13 @@ BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
     */
     BOOST_TEST_MESSAGE("S operator diagonal by numerical quadrature");
     for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = " 
+	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
     }
-    
+
     Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	D_results(i) = gf.diagonalD(cavity.elements(i)); 
+        D_results(i) = gf.diagonalD(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -250,18 +246,18 @@ BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
     }
 }
 
-/*! \class NumericalIntegrator 
+/*! \class NumericalIntegrator
  *  \test \b NumericalIntegratorTest_anisotropic tests the numerical evaluation of the anisotropic liquid diagonal elements of S and D
  */
 BOOST_FIXTURE_TEST_CASE(anisotropic, NumericalIntegratorTest)
 {
     fs::rename("PEDRA.OUT", "PEDRA.OUT.anisotropic");
-    AnisotropicLiquid<AD_directional> gf(epsilon, euler, diag);
+    AnisotropicLiquid<AD_directional, NumericalIntegrator<AD_directional, Anisotropic> > gf(epsilon, euler);
 
     BOOST_TEST_MESSAGE("AnisotropicLiquid");
     Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	S_results(i) = gf.diagonalS(cavity.elements(i)); 
+        S_results(i) = gf.diagonalS(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*
@@ -278,13 +274,13 @@ BOOST_FIXTURE_TEST_CASE(anisotropic, NumericalIntegratorTest)
     */
     BOOST_TEST_MESSAGE("S operator diagonal by numerical quadrature");
     for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = " 
+	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
 			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
     }
-    
+
     Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
     for (int i = 0; i < cavity.size(); ++i) {
-	D_results(i) = gf.diagonalD(cavity.elements(i)); 
+        D_results(i) = gf.diagonalD(cavity.elements(i));
     }
     // In case you need to update the reference files...
     /*

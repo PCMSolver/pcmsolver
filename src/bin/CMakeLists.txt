@@ -5,13 +5,13 @@
 #target_link_libraries(debug_wavcav.x solver green cavity wavcav pwl wem utils)
 
 add_executable(plot_green_spherical-CASE1.x plot_green_spherical-CASE1.cpp)
-target_link_libraries(plot_green_spherical-CASE1.x green bi_operators utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+target_link_libraries(plot_green_spherical-CASE1.x green utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 add_executable(plot_green_spherical-CASE2.x plot_green_spherical-CASE2.cpp)
-target_link_libraries(plot_green_spherical-CASE2.x green bi_operators utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+target_link_libraries(plot_green_spherical-CASE2.x green utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 add_executable(plot_green_spherical-CASE3.x plot_green_spherical-CASE3.cpp)
-target_link_libraries(plot_green_spherical-CASE3.x green bi_operators utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+target_link_libraries(plot_green_spherical-CASE3.x green utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 add_executable(plot_green_spherical-CASE4.x plot_green_spherical-CASE4.cpp)
-target_link_libraries(plot_green_spherical-CASE4.x green bi_operators utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+target_link_libraries(plot_green_spherical-CASE4.x green utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 
 #add_executable(check_Coulomb_coefficient.x check_Coulomb_coefficient.cpp)
-#target_link_libraries(check_Coulomb_coefficient.x green bi_operators utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+#target_link_libraries(check_Coulomb_coefficient.x green utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})

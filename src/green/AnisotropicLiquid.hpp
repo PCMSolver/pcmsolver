@@ -76,7 +76,8 @@ public:
     virtual double kernelD(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
     {
-        // Need the full gradient to get the kernel of D and D^\dagger
+        // Since the permittivity is a tensorial quantity,
+        // the full gradient is needed to get the kernel of D and D^\dagger
         Eigen::Vector3d scratch = this->profile_.epsilon() * (this->gradientProbe(p1, p2));
         return scratch.dot(direction);
     }

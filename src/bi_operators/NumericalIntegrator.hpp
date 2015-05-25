@@ -21,10 +21,10 @@
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 
-typedef std::kernelS<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
 singleLayerIntegrand;
 
-typedef std::kernelS<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
 		        const Eigen::Vector3d &)> doubleLayerIntegrand;
 
 /*! \file NumericalIntegrator.hpp

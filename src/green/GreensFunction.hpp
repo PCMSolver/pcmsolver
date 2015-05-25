@@ -118,7 +118,7 @@ public:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      */
-    virtual Eigen::Vector3d gradientSource(const Eigen::Vector3d & p1,
+    Eigen::Vector3d gradientSource(const Eigen::Vector3d & p1,
                                            const Eigen::Vector3d & p2) const
     {
         Eigen::Vector3d gradient = Eigen::Vector3d::Zero();
@@ -144,7 +144,7 @@ public:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      */
-    virtual Eigen::Vector3d gradientProbe(const Eigen::Vector3d & p1,
+    Eigen::Vector3d gradientProbe(const Eigen::Vector3d & p1,
                                           const Eigen::Vector3d & p2) const
     {
         Eigen::Vector3d gradient = Eigen::Vector3d::Zero();
@@ -250,7 +250,7 @@ public:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      */
-    virtual Eigen::Vector3d gradientSource(const Eigen::Vector3d & p1,
+    Eigen::Vector3d gradientSource(const Eigen::Vector3d & p1,
                                            const Eigen::Vector3d & p2) const
     {
         Eigen::Vector3d gradient;
@@ -269,7 +269,7 @@ public:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      */
-    virtual Eigen::Vector3d gradientProbe(const Eigen::Vector3d & p1,
+     Eigen::Vector3d gradientProbe(const Eigen::Vector3d & p1,
                                           const Eigen::Vector3d & p2) const
     {
         Eigen::Vector3d gradient;

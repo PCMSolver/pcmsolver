@@ -76,9 +76,6 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
     solver.computeCharge(fake_mep, fake_asc);
 
-    delete gfInside;
-    delete gfOutside;
-
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
     }

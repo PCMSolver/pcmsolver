@@ -23,7 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE IEFSolverpointChargeGePolSymmetry
+#define BOOST_TEST_MODULE IEFSolveranisotropicPointChargeGePolSymmetry
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -47,9 +47,10 @@
 namespace fs = boost::filesystem;
 
 /*! \class IEFSolver
- *  \test \b pointChargeGePolC1 tests IEFSolver using a point charge with a GePol cavity in C1 symmetry
+ *  \test \b anisotropicPointChargeGePolC1 tests IEFSolver using a point charge with a GePol cavity in C1 symmetry
+ *  We are forcing the usage of the buildAnisotropicMatrix method.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
+BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC1)
 {
     // Set up cavity
     Molecule point = dummy<0>(2.929075493);
@@ -65,7 +66,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    solver.buildAnisotropicMatrix(cavity);
 
     double charge = 8.0;
     int size = cavity.size();
@@ -81,15 +82,16 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
- *  \test \b pointChargeGePolC2 tests IEFSolver using a point charge with a GePol cavity in C2 symmetry
+ *  \test \b anisotropicPointChargeGePolC2 tests IEFSolver using a point charge with a GePol cavity in C2 symmetry
+ *  We are forcing the usage of the buildAnisotropicMatrix method.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
+BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2)
 {
     // Set up cavity
     Molecule point = dummy<1>(2.929075493);
@@ -105,7 +107,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    solver.buildAnisotropicMatrix(cavity);
 
     double charge = 8.0;
     int irr_size = cavity.irreducible_size();
@@ -124,15 +126,16 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
- *  \test \b pointChargeGePolCs tests IEFSolver using a point charge with a GePol cavity in Cs symmetry
+ *  \test \b anisotropicPointChargeGePolCs tests IEFSolver using a point charge with a GePol cavity in Cs symmetry
+ *  We are forcing the usage of the buildAnisotropicMatrix method.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
+BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolCs)
 {
     // Set up cavity
     Molecule point = dummy<2>(2.929075493);
@@ -148,7 +151,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    solver.buildAnisotropicMatrix(cavity);
 
     double charge = 8.0;
     int irr_size = cavity.irreducible_size();
@@ -167,15 +170,16 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
- *  \test \b pointChargeGePolCi tests IEFSolver using a point charge with a GePol cavity in Ci symmetry
+ *  \test \b anisotropicPointChargeGePolCi tests IEFSolver using a point charge with a GePol cavity in Ci symmetry
+ *  We are forcing the usage of the buildAnisotropicMatrix method.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
+BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolCi)
 {
     // Set up cavity
     Molecule point = dummy<3>(2.929075493);
@@ -191,7 +195,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    solver.buildAnisotropicMatrix(cavity);
 
     double charge = 8.0;
     int irr_size = cavity.irreducible_size();
@@ -210,15 +214,16 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
- *  \test \b pointChargeGePolD2 tests IEFSolver using a point charge with a GePol cavity in D2 symmetry
+ *  \test \b anisotropicPointChargeGePolD2 tests IEFSolver using a point charge with a GePol cavity in D2 symmetry
+ *  We are forcing the usage of the buildAnisotropicMatrix method.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
+BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolD2)
 {
     // Set up cavity
     Molecule point = dummy<4>(2.929075493);
@@ -234,7 +239,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    solver.buildAnisotropicMatrix(cavity);
 
     double charge = 8.0;
     int irr_size = cavity.irreducible_size();
@@ -253,15 +258,16 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
- *  \test \b pointChargeGePolC2v tests IEFSolver using a point charge with a GePol cavity in C2v symmetry
+ *  \test \b anisotropicPointChargeGePolC2v tests IEFSolver using a point charge with a GePol cavity in C2v symmetry
+ *  We are forcing the usage of the buildAnisotropicMatrix method.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
+BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2v)
 {
     // Set up cavity
     Molecule point = dummy<5>(2.929075493);
@@ -277,7 +283,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    solver.buildAnisotropicMatrix(cavity);
 
     double charge = 8.0;
     int irr_size = cavity.irreducible_size();
@@ -296,15 +302,16 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
- *  \test \b pointChargeGePolC2h tests IEFSolver using a point charge with a GePol cavity in C2h symmetry
+ *  \test \b anisotropicPointChargeGePolC2h tests IEFSolver using a point charge with a GePol cavity in C2h symmetry
+ *  We are forcing the usage of the buildAnisotropicMatrix method.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
+BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2h)
 {
     // Set up cavity
     Molecule point = dummy<6>(2.929075493);
@@ -320,7 +327,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    solver.buildAnisotropicMatrix(cavity);
 
     double charge = 8.0;
     int irr_size = cavity.irreducible_size();
@@ -339,15 +346,16 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }
 
 /*! \class IEFSolver
- *  \test \b pointChargeGePolD2h tests IEFSolver using a point charge with a GePol cavity in D2h symmetry
+ *  \test \b anisotropicPointChargeGePolD2h tests IEFSolver using a point charge with a GePol cavity in D2h symmetry
+ *  We are forcing the usage of the buildAnisotropicMatrix method.
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
+BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolD2h)
 {
     // Set up cavity
     Molecule point = dummy<7>(2.929075493);
@@ -363,7 +371,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
     UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    solver.buildAnisotropicMatrix(cavity);
 
     double charge = 8.0;
     int irr_size = cavity.irreducible_size();
@@ -382,7 +390,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
+    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
     BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

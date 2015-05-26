@@ -136,7 +136,7 @@ public:
         double eps_r2 = 0.0;
         std::tie(eps_r2, std::ignore) = this->profile_((p2 - this->origin_).norm());
 
-        return (eps_r2 * CoulombDeriv + imageDeriv);
+        return (eps_r2 * (CoulombDeriv + imageDeriv));
     }
     /*!
      *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$

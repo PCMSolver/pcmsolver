@@ -40,6 +40,7 @@
 #include "Element.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
+#include "SolverHelperFunctions.hpp"
 
 void IEFSolver::buildSystemMatrix(const Cavity & cavity)
 {
@@ -52,6 +53,7 @@ void IEFSolver::buildSystemMatrix(const Cavity & cavity)
 
 void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 {
+    using namespace std::placeholders;
     // The total size of the cavity
     int cavitySize = cav.size();
     // The number of irreps in the group
@@ -59,31 +61,22 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     // The size of the irreducible portion of the cavity
     int dimBlock = cav.irreducible_size();
 
-    Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd SE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd DE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-
     // Compute SI, DI and SE, DE on the whole cavity, regardless of symmetry
-    for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = greenInside_->diagonalS(cav.elements(i));
-        SE(i, i) = greenOutside_->diagonalD(cav.elements(i));
-        DI(i, i) = greenInside_->diagonalD(cav.elements(i));
-        DE(i, i) = greenOutside_->diagonalD(cav.elements(i));
+    Diagonal diagS_in = std::bind(&IGreensFunction::diagonalS, greenInside_, _1);
+    KernelS  kernS_in = std::bind(&IGreensFunction::kernelS,   greenInside_, _1, _2);
+    Eigen::MatrixXd SI = singleLayer(cav.elements(), diagS_in, kernS_in);
 
-        Eigen::Vector3d source = cav.elementCenter().col(i);
-        for (int j = 0; j < cavitySize; ++j) {
-            Eigen::Vector3d probe = cav.elementCenter().col(j);
-            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
-            probeNormal.normalize();
-            if (i != j) {
-                SI(i, j) = greenInside_->kernelS(source, probe);
-                SE(i, j) = greenOutside_->kernelS(source, probe);
-                DI(i, j) = greenInside_->kernelD(probeNormal, source, probe);
-                DE(i, j) = greenOutside_->kernelD(probeNormal, source, probe);
-            }
-        }
-    }
+    Diagonal diagS_out = std::bind(&IGreensFunction::diagonalS, greenOutside_, _1);
+    KernelS  kernS_out = std::bind(&IGreensFunction::kernelS,   greenOutside_, _1, _2);
+    Eigen::MatrixXd SE = singleLayer(cav.elements(), diagS_out, kernS_out);
+
+    Diagonal diagD_in = std::bind(&IGreensFunction::diagonalD, greenInside_, _1);
+    KernelD  kernD_in = std::bind(&IGreensFunction::kernelD,   greenInside_, _1, _2, _3);
+    Eigen::MatrixXd DI = doubleLayer(cav.elements(), diagD_in, kernD_in);
+
+    Diagonal diagD_out = std::bind(&IGreensFunction::diagonalD, greenOutside_, _1);
+    KernelD  kernD_out = std::bind(&IGreensFunction::kernelD,   greenOutside_, _1, _2, _3);
+    Eigen::MatrixXd DE = doubleLayer(cav.elements(), diagD_out, kernD_out);
 
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
@@ -131,6 +124,7 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 {
+    using namespace std::placeholders;
     // The total size of the cavity
     int cavitySize = cav.size();
     // The number of irreps in the group
@@ -138,24 +132,15 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     // The size of the irreducible portion of the cavity
     int dimBlock = cav.irreducible_size();
 
-    Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = greenInside_->diagonalS(cav.elements(i));
-        DI(i, i) = greenInside_->diagonalD(cav.elements(i));
-        Eigen::Vector3d source = cav.elementCenter().col(i);
-        for (int j = 0; j < cavitySize; ++j) {
-            Eigen::Vector3d probe = cav.elementCenter().col(j);
-            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
-            probeNormal.normalize();
-            if (i != j) {
-                SI(i, j) = greenInside_->kernelS(source, probe);
-                DI(i, j) = greenInside_->kernelD(probeNormal, source, probe);
-            }
-        }
-    }
+    Diagonal diagS_in = std::bind(&IGreensFunction::diagonalS, greenInside_, _1);
+    KernelS  kernS_in = std::bind(&IGreensFunction::kernelS,   greenInside_, _1, _2);
+    Eigen::MatrixXd SI = singleLayer(cav.elements(), diagS_in, kernS_in);
+
+    Diagonal diagD_in = std::bind(&IGreensFunction::diagonalD, greenInside_, _1);
+    KernelD  kernD_in = std::bind(&IGreensFunction::kernelD,   greenInside_, _1, _2, _3);
+    Eigen::MatrixXd DI = doubleLayer(cav.elements(), diagD_in, kernD_in);
+
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.

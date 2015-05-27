@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -44,7 +44,7 @@
  * \brief Abstract Base Class for cavities.
  * \author Krzysztof Mozgawa
  * \date 2011
- * 
+ *
  * This class represents a cavity made of spheres, its surface being discretized in
  * terms of finite elements.
  */
@@ -92,13 +92,13 @@ private:
 public:
     //! Default constructor
     Cavity() : nElements_(0), built(false) {}
-    /*! \brief Constructor from list of spheres 
+    /*! \brief Constructor from list of spheres
      *  \param[in] sph the list of spheres
      *
      *  Only used when we have to deal with a single sphere, i.e. in the unit tests
      */
     Cavity(const std::vector<Sphere> & sph) : spheres_(sph), built(false) {
-	molecule_ = Molecule(spheres_); 
+	molecule_ = Molecule(spheres_);
         nSpheres_ = spheres_.size();
 	transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
     }

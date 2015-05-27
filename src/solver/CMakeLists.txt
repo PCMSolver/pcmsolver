@@ -7,7 +7,7 @@ list(REMOVE_ITEM headers_list "")
 list(SORT headers_list)
 # Write headers to Includer.hpp
 file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Solvers\n")
-write_to_Includer("${headers_list}" "")
+write_to_Includer("${headers_list}" "SolverHelperFunctions.hpp")
 
 set(sources_list "")
 # Get sources with .cpp extension

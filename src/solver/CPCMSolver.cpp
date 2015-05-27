@@ -26,6 +26,7 @@
 #include "CPCMSolver.hpp"
 
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -38,6 +39,7 @@
 #include "Element.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
+#include "SolverHelperFunctions.hpp"
 
 void CPCMSolver::buildSystemMatrix(const Cavity & cavity)
 {
@@ -51,6 +53,7 @@ void CPCMSolver::buildSystemMatrix(const Cavity & cavity)
 
 void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
 {
+    using namespace std::placeholders;
     // The total size of the cavity
     int cavitySize = cav.size();
     // The number of irreps in the group
@@ -58,21 +61,11 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
     // The size of the irreducible portion of the cavity
     int dimBlock = cav.irreducible_size();
 
-    Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-
     // Compute SI on the whole cavity, regardless of symmetry
-    for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = greenInside_->diagonalS(cav.elements(i));
-        Eigen::Vector3d source = cav.elementCenter().col(i);
-        for (int j = 0; j < cavitySize; ++j) {
-            Eigen::Vector3d probe = cav.elementCenter().col(j);
-            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
-            probeNormal.normalize();
-            if (i != j) {
-                SI(i, j) = greenInside_->kernelS(source, probe);
-            }
-        }
-    }
+    Diagonal diagS_in = std::bind(&IGreensFunction::diagonalS, greenInside_, _1);
+    KernelS  kernS_in = std::bind(&IGreensFunction::kernelS,   greenInside_, _1, _2);
+    Eigen::MatrixXd SI = singleLayer(cav.elements(), diagS_in, kernS_in);
+
     // Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.

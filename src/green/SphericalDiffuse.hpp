@@ -210,7 +210,9 @@ public:
     double imagePotentialDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
     /*! Handle to the dielectric profile evaluation
      */
-    void epsilon(double & v, double & d, double point) const { std::tie(v, d) = this->profile_(point); }
+    void epsilon(double & v, double & d, const Eigen::Vector3d & point) const {
+        std::tie(v, d) = this->profile_((point - this->origin_).norm());
+    }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     using RadialFunction = interfaces::RadialFunction;
@@ -226,17 +228,14 @@ private:
         Eigen::Map<Eigen::Matrix<double, 3, 1> > p1(sp), p2(pp);
         Eigen::Vector3d source = p1 - this->origin_;
         Eigen::Vector3d probe  = p2 - this->origin_;
-        double r1  = source.norm();
-        double r2  = probe.norm();
         double r12 = (source - probe).norm();
-        double cos_gamma = source.dot(probe) / (r1 * r2);
 
         // Obtain coefficient for the separation of the Coulomb singularity
-        double Cr12 = this->coefficient(r1, r2);
+        double Cr12 = this->coefficient(source.norm(), probe.norm());
 
         double gr12 = 0.0;
         for (int L = 0; L <= maxLGreen_; ++L) {
-            gr12 += this->functionSummation(L, r1, r2, cos_gamma, Cr12);
+            gr12 += this->functionSummation(L, source, probe, Cr12);
         }
 
         return (1.0 / (Cr12 * r12) + gr12);
@@ -277,12 +276,13 @@ private:
     std::vector<RadialFunction> omega_;
     /*! \brief Returns L-th component of the radial part of the Green's function
      *  \param[in] L  angular momentum
-     *  \param[in] r1 first point
-     *  \param[in] r2 second point
-     *  \param[in] cos_gamma cosine of the angle in between first and second point
+     *  \param[in] sp source point, already shifted
+     *  \param[in] pp probe point, already shifted
      *  \param[in] Cr12 Coulomb singularity separation coefficient
+     *  \note This function expects that the source and probe points have been correctly shifted
+     *  to account for the position of the origin of the dielectric sphere.
      */
-    double functionSummation(int L, double r1, double r2, double cos_gamma, double Cr12) const;
+    double functionSummation(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp, double Cr12) const;
     /**@}*/
 
     /**@{ Parameters and functions for the calculation of the Coulomb singularity separation coefficient */

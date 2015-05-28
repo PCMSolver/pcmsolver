@@ -194,5 +194,9 @@ double CollocationIntegrator::computeD(const TanhSphericalDiffuse * gf, const El
     // "Diagonal" of the directional derivative of the image Green's function
     double image_grad = gf->imagePotentialDerivative(e.normal(), e.center(), e.center());
 
-    return (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad);
+    double eps_r2 = 0.0;
+    double d_eps_r2 = 0.0;
+    gf->epsilon(eps_r2, d_eps_r2, e.center());
+
+    return eps_r2 * (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad);
 }

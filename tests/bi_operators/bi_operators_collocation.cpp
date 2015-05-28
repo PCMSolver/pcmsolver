@@ -84,12 +84,6 @@ BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
 	S_results(i) = gf.diagonalS(cavity.elements(i));
     }
-    // In case you need to update the reference files...
-    /*
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim};
-    cnpy::npy_save("vacuum_S_collocation.npy", S_results.data(), shape, 1, "w", false);
-    */
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("vacuum_S_collocation.npy");
     int dim_read = raw_S_ref.shape[0];
     Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim_read);
@@ -107,10 +101,6 @@ BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
 	D_results(i) = gf.diagonalD(cavity.elements(i));
     }
-    // In case you need to update the reference files...
-    /*
-    cnpy::npy_save("vacuum_D_collocation.npy", D_results.data(), shape, 1, "w", false);
-    */
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("vacuum_D_collocation.npy");
     dim_read = raw_D_ref.shape[0];
     Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim_read);
@@ -137,12 +127,6 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
 	S_results(i) = gf.diagonalS(cavity.elements(i));
     }
-    // In case you need to update the reference files...
-    /*
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim};
-    cnpy::npy_save("uniformdielectric_S_collocation.npy", S_results.data(), shape, 1, "w", false);
-    */
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("uniformdielectric_S_collocation.npy");
     int dim_read = raw_S_ref.shape[0];
     Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim_read);
@@ -160,10 +144,6 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
 	D_results(i) = gf.diagonalD(cavity.elements(i));
     }
-    // In case you need to update the reference files...
-    /*
-    cnpy::npy_save("uniformdielectric_D_collocation.npy", D_results.data(), shape, 1, "w", false);
-    */
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("uniformdielectric_D_collocation.npy");
     dim_read = raw_D_ref.shape[0];
     Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim_read);
@@ -189,12 +169,6 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
 	    S_results(i) = gf.diagonalS(cavity.elements(i));
     }
-    // In case you need to update the reference files...
-    /*
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim};
-    cnpy::npy_save("tanhsphericaldiffuse_S_collocation.npy", S_results.data(), shape, 1, "w", false);
-    */
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("tanhsphericaldiffuse_S_collocation.npy");
     int dim_read = raw_S_ref.shape[0];
     Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim_read);
@@ -212,10 +186,6 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
     for (int i = 0; i < cavity.size(); ++i) {
 	    D_results(i) = gf.diagonalD(cavity.elements(i));
     }
-    // In case you need to update the reference files...
-    /*
-    cnpy::npy_save("tanhsphericaldiffuse_D_collocation.npy", D_results.data(), shape, 1, "w", false);
-    */
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("tanhsphericaldiffuse_D_collocation.npy");
     dim_read = raw_D_ref.shape[0];
     Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim_read);

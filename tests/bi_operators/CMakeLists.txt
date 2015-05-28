@@ -1,6 +1,10 @@
 set(list_of_libraries green bi_operators cavity pedra utils)
 
+
 list(APPEND external_libraries ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+add_executable(update_reference_files.x update_reference_files.cpp)
+target_link_libraries(update_reference_files.x "${list_of_libraries}" "${external_libraries}")
+
 add_boosttest(bi_operators_collocation "${list_of_libraries}" "${external_libraries}")
 add_reference(vacuum_S_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
 add_reference(vacuum_D_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})

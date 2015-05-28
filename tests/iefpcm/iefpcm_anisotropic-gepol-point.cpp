@@ -45,6 +45,7 @@
 /*! \class IEFSolver
  *  \test \b anisotropicPointChargeGePol tests IEFSolver using a point charge with a GePol cavity
  *  We are forcing the usage of the buildAnisotropicMatrix method.
+ *  The results are compared with Gauss' theorem and the results from the buildIsotropicMatrix method
  *  The point charge is at the origin.
  */
 BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
@@ -63,8 +64,11 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity, diag);
     bool symm = true;
-    IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildAnisotropicMatrix(cavity);
+    IEFSolver aniso_solver(gfInside, gfOutside, symm);
+    aniso_solver.buildAnisotropicMatrix(cavity);
+
+    IEFSolver iso_solver(gfInside, gfOutside, symm);
+    iso_solver.buildIsotropicMatrix(cavity);
 
     double charge = 8.0;
     int size = cavity.size();
@@ -74,28 +78,37 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
         double distance = center.norm();
         fake_mep(i) = charge / distance;
     }
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.computeCharge(fake_mep, fake_asc);
+    Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(size);
+    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+
+    Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(size);
+    iso_solver.computeCharge(fake_mep, iso_fake_asc);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
     }
     for (int i = 0; i < size; ++i) {
-        BOOST_TEST_MESSAGE("fake_asc(" << i << ") = " << fake_asc(i));
+        BOOST_TEST_MESSAGE("aniso_fake_asc(" << i << ") = " << aniso_fake_asc(i));
+    }
+    for (int i = 0; i < size; ++i) {
+        BOOST_TEST_MESSAGE("iso_fake_asc(" << i << ") = " << iso_fake_asc(i));
     }
 
+    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum();
+    double totalAnisoASC = aniso_fake_asc.sum();
+    double totalIsoASC = iso_fake_asc.sum();
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
+    BOOST_TEST_MESSAGE("totalAnisoASC = " << totalAnisoASC);
+    BOOST_TEST_MESSAGE("totalASC - totalAnisoASC = " << totalASC - totalAnisoASC);
+    BOOST_REQUIRE_CLOSE(totalASC, totalAnisoASC, 4e-02);
+    BOOST_REQUIRE_CLOSE(totalIsoASC, totalAnisoASC, 1.0e-09);
 }
 
 /*! \class IEFSolver
  *  \test \b anisotropicPointChargeShiftedGePol tests IEFSolver using a point charge with a GePol cavity
  *  We are forcing the usage of the buildAnisotropicMatrix method.
+ *  The results are compared with Gauss' theorem and the results from the buildIsotropicMatrix method
  *  The point charge is away from the origin.
  */
 BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
@@ -115,8 +128,11 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
     UniformDielectric<AD_directional> * gfOutside = new
     UniformDielectric<AD_directional>(permittivity, diag);
     bool symm = true;
-    IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildAnisotropicMatrix(cavity);
+    IEFSolver aniso_solver(gfInside, gfOutside, symm);
+    aniso_solver.buildAnisotropicMatrix(cavity);
+
+    IEFSolver iso_solver(gfInside, gfOutside, symm);
+    iso_solver.buildIsotropicMatrix(cavity);
 
     double charge = 8.0;
     int size = cavity.size();
@@ -126,21 +142,29 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
         double distance = (center - origin).norm();
         fake_mep(i) = charge / distance;
     }
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.computeCharge(fake_mep, fake_asc);
+    Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(size);
+    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+
+    Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(size);
+    iso_solver.computeCharge(fake_mep, iso_fake_asc);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
     }
     for (int i = 0; i < size; ++i) {
-        BOOST_TEST_MESSAGE("fake_asc(" << i << ") = " << fake_asc(i));
+        BOOST_TEST_MESSAGE("aniso_fake_asc(" << i << ") = " << aniso_fake_asc(i));
+    }
+    for (int i = 0; i < size; ++i) {
+        BOOST_TEST_MESSAGE("iso_fake_asc(" << i << ") = " << iso_fake_asc(i));
     }
 
+    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum();
+    double totalAnisoASC = aniso_fake_asc.sum();
+    double totalIsoASC = iso_fake_asc.sum();
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
+    BOOST_TEST_MESSAGE("totalAnisoFakeASC = " << totalAnisoASC);
+    BOOST_TEST_MESSAGE("totalASC - totalAnisoASC = " << totalASC - totalAnisoASC);
+    BOOST_REQUIRE_CLOSE(totalASC, totalAnisoASC, 4e-02);
+    BOOST_REQUIRE_CLOSE(totalIsoASC, totalAnisoASC, 1.0e-09);
 }

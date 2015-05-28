@@ -657,13 +657,6 @@ bool surfaceFunctionExists(const std::string & name)
     return iter != functions.end();
 }
 
-template <typename T>
-void safe_delete(T *& ptr)
-{
-    delete ptr;
-    ptr = NULL;
-}
-
 inline void printer(const std::string & message)
 {
     // Extract C-style string from C++-style string and get its length

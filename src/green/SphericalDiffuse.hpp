@@ -157,16 +157,13 @@ public:
     double imagePotential(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
         Eigen::Vector3d source_shifted = source - this->origin_;
         Eigen::Vector3d probe_shifted  = probe  - this->origin_;
-        double r1  = source_shifted.norm();
-        double r2  = probe_shifted.norm();
-        double cos_gamma = source_shifted.dot(probe_shifted) / (r1 * r2);
 
         // Obtain coefficient for the separation of the Coulomb singularity
-        double Cr12 = this->coefficient(r1, r2);
+        double Cr12 = this->coefficient(source_shifted.norm(), probe_shifted.norm());
 
         double gr12 = 0.0;
         for (int L = 0; L <= maxLGreen_; ++L) {
-            gr12 += this->functionSummation(L, r1, r2, cos_gamma, Cr12);
+            gr12 += this->functionSummation(L, source_shifted, probe_shifted, Cr12);
         }
 
         return gr12;
@@ -217,7 +214,9 @@ public:
                 p2, p1, direction, this->delta_);
     }
     /*! Handle to the dielectric profile evaluation */
-    void epsilon(double & v, double & d, double point) const { std::tie(v, d) = this->profile_(point); }
+    std::tuple<double, double> epsilon(const Eigen::Vector3d & point) const {
+        return this->profile_((point - this->origin_).norm());
+    }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     using RadialFunction = interfaces::RadialFunction;
@@ -233,18 +232,15 @@ private:
         Eigen::Map<Eigen::Matrix<double, 3, 1> > p1(sp), p2(pp);
         Eigen::Vector3d source = p1 - this->origin_;
         Eigen::Vector3d probe  = p2 - this->origin_;
-        double r1  = source.norm();
-        double r2  = probe.norm();
-        double r12 = (source - probe).norm();
-        double cos_gamma = source.dot(probe) / (r1 * r2);
 
         // Obtain coefficient for the separation of the Coulomb singularity
-        double Cr12 = this->coefficient(r1, r2);
+        double Cr12 = this->coefficient(source.norm(), probe.norm());
 
         double gr12 = 0.0;
         for (int L = 0; L <= maxLGreen_; ++L) {
-            gr12 += this->functionSummation(L, r1, r2, cos_gamma, Cr12);
+            gr12 += this->functionSummation(L, source, probe, Cr12);
         }
+        double r12 = (source - probe).norm();
 
         return (1.0 / (Cr12 * r12) + gr12);
     }
@@ -335,13 +331,16 @@ private:
     std::vector<RadialFunction> omega_;
     /*! \brief Returns L-th component of the radial part of the Green's function
      *  \param[in] L  angular momentum
-     *  \param[in] r1 first point
-     *  \param[in] r2 second point
-     *  \param[in] cos_gamma cosine of the angle in between first and second point
+     *  \param[in] sp source point, shifted by origin_
+     *  \param[in] pp probe point, shifted by origin_
      *  \param[in] Cr12 Coulomb singularity separation coefficient
+     *  \note This function expects that the source and probe points have been correctly shifted
+     *  to account for the position of the origin of the dielectric sphere.
      */
-    double functionSummation(int L, double r1, double r2, double cos_gamma, double Cr12) const {
-        double gr12 = 0.0;
+    double functionSummation(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp, double Cr12) const {
+        double r1 = sp.norm();
+        double r2 = pp.norm();
+        double cos_gamma = sp.dot(pp) / (r1 * r2);
         // Evaluate Legendre polynomial of order L
         // First of all clean-up cos_gamma, Legendre polynomials
         // are only defined for -1 <= x <= 1
@@ -369,6 +368,7 @@ private:
 
         double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 
+        double gr12 = 0.0;
         if (r1 < r2) {
             gr12 = std::exp(zeta1 - zeta2) * (2*L +1) / denominator;
             gr12 = (gr12 - std::pow(r1/r2, L) / (r2 * Cr12) ) * pl_x ;

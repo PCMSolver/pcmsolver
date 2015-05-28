@@ -54,10 +54,10 @@ public:
     PCMSolver(IGreensFunction * gfInside, IGreensFunction * gfOutside)
             : greenInside_(gfInside), greenOutside_(gfOutside), allocated_(true) {}
     virtual ~PCMSolver() {
-        if (allocated_) {
-            delete greenInside_;
-            delete greenOutside_;
-        }
+      //if (allocated_) {
+      //    delete greenInside_;
+      //    delete greenOutside_;
+      //}
     }
 
     IGreensFunction * greenInside() const {

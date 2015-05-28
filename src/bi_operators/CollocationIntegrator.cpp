@@ -93,29 +93,25 @@ double CollocationIntegrator::computeS(const UniformDielectric<AD_hessian> * gf,
 	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
 }
 
-double CollocationIntegrator::computeD(const UniformDielectric<double> * gf, const Element & e) const {
-	double epsInv = 1.0 / gf->epsilon();
+double CollocationIntegrator::computeD(const UniformDielectric<double> * /* gf */, const Element & e) const {
 	double area = e.area();
 	double radius = e.sphere().radius();
-        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
+    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const {
-	double epsInv = 1.0 / gf->epsilon();
+double CollocationIntegrator::computeD(const UniformDielectric<AD_directional> * /* gf */, const Element & e) const {
 	double area = e.area();
 	double radius = e.sphere().radius();
-        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
+    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
-	double epsInv = 1.0 / gf->epsilon();
+double CollocationIntegrator::computeD(const UniformDielectric<AD_gradient> * /* gf */, const Element & e) const {
 	double area = e.area();
 	double radius = e.sphere().radius();
-        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
+    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
-	double epsInv = 1.0 / gf->epsilon();
+double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * /* gf */, const Element & e) const {
 	double area = e.area();
 	double radius = e.sphere().radius();
-        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
+    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
 }
 
 double CollocationIntegrator::computeS(const IonicLiquid<double> * /* gf */, const Element & /* e */) const {

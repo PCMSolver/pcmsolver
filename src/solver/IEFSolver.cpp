@@ -67,7 +67,7 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     // Compute SI, DI and SE, DE on the whole cavity, regardless of symmetry
     for (int i = 0; i < cavitySize; ++i) {
         SI(i, i) = greenInside_->diagonalS(cav.elements(i));
-        SE(i, i) = greenOutside_->diagonalD(cav.elements(i));
+        SE(i, i) = greenOutside_->diagonalS(cav.elements(i));
         DI(i, i) = greenInside_->diagonalD(cav.elements(i));
         DE(i, i) = greenOutside_->diagonalD(cav.elements(i));
 

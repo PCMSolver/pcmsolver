@@ -139,7 +139,8 @@ template <int D,
           typename T2 = typename mpl::deref<B2>::type,
           typename T3 = typename mpl::deref<B3>::type
          >
-struct for_id_impl {
+struct for_id_impl
+{
     /*! Executes given functor with selected template arguments
      *  \param[in] f the creational functor to be applied
      *  \param[in] data the data needed to create the correct Green's function
@@ -149,25 +150,26 @@ struct for_id_impl {
      *  \tparam T the type of the Green's function
      */
     template <typename T>
-    static IGreensFunction * execute(T & f, const greenData & data, int id1, int id2 = 0, int id3 = 0) {
-        if (position<S1, typename mpl::deref<B1>::type>::value == id1) { // Desired type in S1 found
-            if (1 == D) { // One-dimensional, we're done!
-                ApplyFunctor<D, typename mpl::deref<B1>::type, T2, T3>::apply(f, data);
-            } else { // Resolve second and third dimensions
-                // Call first partial specialization of for_id_impl
-                // B1 is not "passed", since the type desired from S1 has been resolved
-                // The resolved type is "saved" into T1 and "passed" to the first partial specialization
-                return (for_id_impl<D, S1, S2, S3, B2, B3, E1, E2, E3,
-                                    typename mpl::deref<B1>::type, T2, T3>::execute(f, data, id1, id2, id3));
+        static IGreensFunction * execute(T & f, const greenData & data, int id1, int id2 = 0, int id3 = 0) {
+            if (position<S1, typename mpl::deref<B1>::type>::value == id1) { // Desired type in S1 found
+                if (1 == D) { // One-dimensional, we're done!
+                    ApplyFunctor<D, typename mpl::deref<B1>::type, T2, T3>::apply(f, data);
+                } else { // Resolve second and third dimensions
+                    // Call first partial specialization of for_id_impl
+                    // B1 is not "passed", since the type desired from S1 has been resolved
+                    // The resolved type is "saved" into T1 and "passed" to the first partial specialization
+                    return (for_id_impl<D, S1, S2, S3, B2, B3, E1, E2, E3,
+                            typename mpl::deref<B1>::type, T2, T3>::execute(f, data, id1, id2, id3));
+                }
+            } else if (1 == mpl::distance<B1, E1>::value) { // Desired type NOT found in S1
+                throw std::invalid_argument("Invalid derivative type (id1 = " +
+                        boost::lexical_cast<std::string>(id1) + ") in for_id metafunction.");
+            } else { // First type not resolved, but S1 type sequence not exhausted
+                // Call for_id_impl primary template with type of B1 moved to the next type in S1
+                return (for_id_impl<D, S1, S2, S3,
+                        typename mpl::next<B1>::type, B2, B3,
+                        E1, E2, E3, T1, T2, T3>::execute(f, data, id1, id2, id3));
             }
-        } else if (1 == mpl::distance<B1, E1>::value) { // Desired type NOT found in S1
-            throw std::invalid_argument("Invalid derivative type (id = " +
-                                        boost::lexical_cast<std::string>(id) + ") in for_id metafunction.");
-        } else { // First type not resolved, but S1 type sequence not exhausted
-            // Call for_id_impl primary template with type of B1 moved to the next type in S1
-            return (for_id_impl<D, S1, S2, S3,
-                                typename mpl::next<B1>::type, B2, B3,
-                                E1, E2, E3, T1, T2, T3>::execute(f, data, id1, id2, id3));
         }
 };
 
@@ -196,7 +198,8 @@ template <int D,
                        typename B2, typename B3,
           typename E1, typename E2, typename E3,
           typename T1, typename T2, typename T3>
-struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3> {
+struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3>
+{
     /*! Executes given functor with selected template arguments
      *  \param[in] f the creational functor to be applied
      *  \param[in] data the data needed to create the correct Green's function
@@ -218,14 +221,15 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3> {
                                     T1, typename mpl::deref<B2>::type, T3>::execute(f, data, id1, id2, id3));
             }
         } else if (1 == mpl::distance<B2, E2>::value) { // Desired type NOT found in S2
-            throw std::invalid_argument("Invalid derivative type (id = " +
-                                        boost::lexical_cast<std::string>(id) + ") in for_id metafunction.");
+            throw std::invalid_argument("Invalid derivative type (id2 = " +
+                                        boost::lexical_cast<std::string>(id2) + ") in for_id metafunction.");
         } else { // Second type not resolved, but S2 type sequence not exhausted
             // Call for_id_impl first partial specialization with type of B2 moved to the next type in S2
             return (for_id_impl<D, S1, S2, S3,
                                 typename mpl::next<B2>::type, B3,
                                 E1, E2, E3, T1, T2, T3>::execute(f, data, id1, id2, id3));
         }
+    }
 };
 
 /*! \brief Iterates over type sequences either until the position of the actual type matches the
@@ -252,7 +256,8 @@ template <int D,
                                     typename B3,
           typename E1, typename E2, typename E3,
           typename T1, typename T2, typename T3>
-struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3> {
+struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3>
+{
     /*! Executes given functor with selected template arguments
      *  \param[in] f the creational functor to be applied
      *  \param[in] data the data needed to create the correct Green's function
@@ -266,14 +271,15 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3> {
         if (position<S3, typename mpl::deref<B3>::type>::value == id3) { // Desired type in S3 found, we're done!
                 ApplyFunctor<D, T1, T2, typename mpl::deref<B3>::type>::apply(f, data);
         } else if (1 == mpl::distance<B3, E3>::value) { // Desired type NOT found in S3
-            throw std::invalid_argument("Invalid derivative type (id = " +
-                                        boost::lexical_cast<std::string>(id) + ") in for_id metafunction.");
+            throw std::invalid_argument("Invalid derivative type (id3 = " +
+                                        boost::lexical_cast<std::string>(id3) + ") in for_id metafunction.");
         } else { // Third type not resolved, but S3 type sequence not exhausted
             // Call for_id_impl second partial specialization with type of B3 moved to the next type in S3
             return (for_id_impl<D, S1, S2, S3,
                                 typename mpl::next<B3>::type,
                                 E1, E2, E3, T1, T2, T3>::execute(f, data, id1, id2, id3));
         }
+    }
 };
 
 /*! \brief Iterates over type sequences either until the position of the actual type matches the
@@ -297,7 +303,8 @@ template <int D,
           typename S1, typename S2, typename S3,
           typename E1, typename E2, typename E3,
           typename T1, typename T2, typename T3>
-struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3> {
+struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3>
+{
     /*! Executes given functor with selected template arguments
      *  \param[in] f the creational functor to be applied
      *  \param[in] data the data needed to create the correct Green's function

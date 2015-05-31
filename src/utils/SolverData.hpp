@@ -32,26 +32,21 @@ class IGreensFunction;
 
 /*! @struct solverData
  *  @brief Contains all data defined from user input in the solver section.
- *  @var solverData::gfInside
- *  The Green's function inside the cavity.
- *  @var solverData::gfOutside
- *  The Green's function outside the cavity.
- *  @var solverData::compressionParameters
- *  A priori and a posteriori compression settings for wavelet solvers.
- *  @var solverData::correction
- *  The correction factor to be use in a CPCM calculation.
- *  @var solverData::integralEquation
- *  The type of integral equation to solve, relevant only for wavelet solvers.
- *  @var solverData::hermitivitize
- *  Triggers hermitivitization of the PCM matrix obtained by collocation.
  */
 
-struct solverData {
+struct solverData
+{
+    /*! The Green's function inside the cavity */
     IGreensFunction * gfInside;
+    /*! The Green's function outside the cavity */
     IGreensFunction * gfOutside;
+    /*! The correction factor to be use in a CPCM calculation */
     double correction;
+    /*! The type of integral equation to solve, relevant only for wavelet solvers */
     int integralEquation;
+    /*! Triggers hermitivitization of the PCM matrix obtained by collocation */
     bool hermitivitize;
+
     solverData() {}
     solverData(IGreensFunction * _gfInside, IGreensFunction * _gfOutside,
 	       double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :

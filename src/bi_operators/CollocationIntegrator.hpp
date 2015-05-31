@@ -8,10 +8,9 @@
 
 #include <Eigen/Dense>
 
-class Element;
-
 #include "DerivativeTypes.hpp"
 #include "AnisotropicLiquid.hpp"
+#include "Element.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"
 #include "UniformDielectric.hpp"

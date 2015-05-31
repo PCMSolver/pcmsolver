@@ -36,7 +36,6 @@
 
 class Element;
 
-#include "DerivativeTypes.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"

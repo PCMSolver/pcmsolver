@@ -34,65 +34,61 @@
 
 /*! @struct greenData
  *  @brief Contains all data defined from user input in the green section.
- *  @var greenData::how
- *  The way the derivatives of the Green's function are evaluated.
- *  @var greenData::epsilon
- *  The permittivity.
- *  @var greenData::kappa
- *  Inverse of the Debye length.
- *  @var greenData::epsilonTensor
- *  Diagonal values of the permittivity tensor with respect to the lab frame
- *  @var greenData::eulerAngles
- *  Euler angles giving the rotation of the solvent orientation with respect to the lab frame
- *  Default is zero degrees for all three angles
- *  @var greenData::epsilonReal
- *  Real part of the permittivity of a metal sphere.
- *  @var greenData::epsilonImaginary
- *  Imaginary part of the permittivity of a metal sphere.
- *  @var greenData::NPspheres
- *  Coordinates of the metal sphere center.
- *  @var greenData::NPradii
- *  Radius of the the metal sphere.
- *  @var greenData::integratorType
- *  strategy to calculate the diagonal elements of S and D operator
- *  @var greenData::epsilon1
- *  Permittivity inside the interface
- *  @var greenData::epsilon2
- *  Permittivity outside the interface
- *  @var greenData::center
- *  Center of the diffuse layer
- *  @var greenData::width
- *  Width of the diffuse layer
  */
 
 struct greenData {
-    int how;
+    /*! The way the derivatives of the Green's function are evaluated */
+    int howDerivative;
+    /*! Evaluation policy for the diagonal of the S and D operators */
+    int howIntegrator;
+    /*! Dielectric profile type */
+    int howProfile;
+    /*! The permittivity */
     double epsilon;
-    std::string integratorType;
+    /*! Inverse of the Debye length */
     double kappa;
+    /*! Diagonal values of the permittivity tensor with respect to the lab frame */
     Eigen::Vector3d epsilonTensor;
+    /*! Euler angles giving the rotation of the solvent orientation with respect to the lab frame */
     Eigen::Vector3d eulerAngles;
+    /*! Real part of the permittivity of a metal sphere */
     double epsilonReal;
+    /*! Imaginary part of the permittivity of a metal sphere */
     double epsilonImaginary;
+    /*! Coordinates of the metal sphere center */
     std::vector<double> NPspheres;
+    /*! Radius of the the metal sphere */
     double NPradii;
+    /*! Permittivity inside the interface */
     double epsilon1;
+    /*! Permittivity outside the interface */
     double epsilon2;
+    /*! Center of the diffuse layer */
     double center;
+    /*! Width of the diffuse layer */
     double width;
+    /*! Origin of the dielectric layer */
     Eigen::Vector3d origin;
+    /*! Whether the structure was initialized with user input or not */
     bool empty;
 
     greenData() { empty = true;}
-    greenData(int _how, double _epsilon = 1.0, const std::string & _diag = "COLLOCATION",
+    greenData(int how_d, int how_i, int how_p,
+              double _epsilon = 1.0,
               double _kappa = 0.0,
-              const Eigen::Vector3d & epstens = Eigen::Vector3d::Zero(), const Eigen::Vector3d & euler = Eigen::Vector3d::Zero(),
-              double _epsReal = 0.0, double _epsImaginary = 0.0,
+              const Eigen::Vector3d & epstens = Eigen::Vector3d::Zero(),
+              const Eigen::Vector3d & euler = Eigen::Vector3d::Zero(),
+              double _epsReal = 0.0,
+              double _epsImaginary = 0.0,
               const std::vector<double> & _sphere = std::vector<double>(),
               double _sphRadius = 0.0,
-              double _e1 = 1.0, double _e2 = 1.0, double _c = 100.0, double _w = 5.0, const Eigen::Vector3d & _o = Eigen::Vector3d::Zero()) :
-        how(_how), epsilon(_epsilon), integratorType(_diag),
-    kappa(_kappa), epsilonTensor(epstens), eulerAngles(euler),
+              double _e1 = 1.0,
+              double _e2 = 1.0,
+              double _c = 100.0,
+              double _w = 5.0,
+              const Eigen::Vector3d & _o = Eigen::Vector3d::Zero()) :
+        howDerivative(how_d), howIntegrator(how_i), howProfile(how_p),
+    epsilon(_epsilon), kappa(_kappa), epsilonTensor(epstens), eulerAngles(euler),
 	epsilonReal(_epsReal), epsilonImaginary(_epsImaginary),
     NPspheres(_sphere), NPradii(_sphRadius),
     epsilon1(_e1), epsilon2(_e2), center(_c), width(_w), origin(_o) { empty = false; }

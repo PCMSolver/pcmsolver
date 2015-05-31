@@ -37,7 +37,6 @@
 
 class Element;
 
-#include "DerivativeTypes.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -117,28 +116,29 @@ private:
     }
 };
 
-/*
 namespace
 {
+#include "DerivativeTypes.hpp"
+#include "IntegratorTypes.hpp"
+
     struct buildVacuum {
-        template <typename DerivativeType>
-        IGreensFunction * operator()(const greenData & _data) {
-            DiagonalIntegrator * integrator =
-		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
-            return new Vacuum<DerivativeType>(integrator);
+        template <typename DerivativeType, typename IntegratorPolicy>
+        IGreensFunction * operator()(const greenData & /* data */) {
+            return new Vacuum<DerivativeType, IntegratorPolicy>();
         }
     };
 
-    IGreensFunction * createVacuum(const greenData & _data)
+    IGreensFunction * createVacuum(const greenData & data)
     {
         buildVacuum build;
-        return for_id<derivative_types>(build, _data, _data.how);
+        // "Clever" trick...
+        int howIntegrator = data.howIntegrator + data.howDerivative + data.howProfile;
+        return for_id<derivative_types, integrator_types_uniform>(build, data, data.howDerivative, howIntegrator);
     }
     const std::string VACUUM("VACUUM");
     const bool registeredVacuum =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             VACUUM, createVacuum);
 }
-*/
 
 #endif // VACUUM_HPP

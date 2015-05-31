@@ -97,9 +97,9 @@ struct position : mpl::distance<typename mpl::begin<S>::type,
 
 /*! Convenience wrapper to the functor
  *  \tparam D  dimension of the problem, i.e. the maximum number of type sequences allowed
- *  \tparam T1
- *  \tparam T2
- *  \tparam T3
+ *  \tparam T1 type selected from S1
+ *  \tparam T2 type selected from S2
+ *  \tparam T3 type selected from S3
  */
 template <int D, typename T1, typename T2, typename T3>
 struct ApplyFunctor;
@@ -116,9 +116,9 @@ struct ApplyFunctor;
  *  \tparam E1 type of the last element in S1
  *  \tparam E2 type of the last element in S2
  *  \tparam E3 type of the last element in S3
- *  \tparam T1
- *  \tparam T2
- *  \tparam T3
+ *  \tparam T1 type selected from S1
+ *  \tparam T2 type selected from S2
+ *  \tparam T3 type selected from S3
  *
  *  This is the primary template. As such, it has (4D + 1) template parameters, 4D
  *  of which type template parameters.
@@ -145,21 +145,21 @@ struct for_id_impl
      *  \param[in] f the creational functor to be applied
      *  \param[in] data the data needed to create the correct Green's function
      *  \param[in] id1 the type of derivative
-     *  \param[in] id2
-     *  \param[in] id3
+     *  \param[in] id2 index for the second type
+     *  \param[in] id3 index for the third type
      *  \tparam T the type of the Green's function
      */
     template <typename T>
         static IGreensFunction * execute(T & f, const greenData & data, int id1, int id2 = 0, int id3 = 0) {
             if (position<S1, typename mpl::deref<B1>::type>::value == id1) { // Desired type in S1 found
                 if (1 == D) { // One-dimensional, we're done!
-                    ApplyFunctor<D, typename mpl::deref<B1>::type, T2, T3>::apply(f, data);
+                    return ApplyFunctor<D, typename mpl::deref<B1>::type, T2, T3>::apply(f, data);
                 } else { // Resolve second and third dimensions
                     // Call first partial specialization of for_id_impl
                     // B1 is not "passed", since the type desired from S1 has been resolved
                     // The resolved type is "saved" into T1 and "passed" to the first partial specialization
-                    return (for_id_impl<D, S1, S2, S3, B2, B3, E1, E2, E3,
-                            typename mpl::deref<B1>::type, T2, T3>::execute(f, data, id1, id2, id3));
+                    return (for_id_impl<D, S1, S2, S3, E1, B2, B3,
+                                           E1, E2, E3, typename mpl::deref<B1>::type, T2>::execute(f, data, id1, id2, id3));
                 }
             } else if (1 == mpl::distance<B1, E1>::value) { // Desired type NOT found in S1
                 throw std::invalid_argument("Invalid derivative type (id1 = " +
@@ -184,9 +184,9 @@ struct for_id_impl
  *  \tparam E1 type of the last element in S1
  *  \tparam E2 type of the last element in S2
  *  \tparam E3 type of the last element in S3
- *  \tparam T1
- *  \tparam T2
- *  \tparam T3
+ *  \tparam T1 type selected from S1
+ *  \tparam T2 type selected from S2
+ *  \tparam T3 type selected from S3
  *
  *  This is the fist partial specialization. As such, it has 4D template parameters, (4D - 1)
  *  of which type template parameters.
@@ -204,21 +204,21 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3>
      *  \param[in] f the creational functor to be applied
      *  \param[in] data the data needed to create the correct Green's function
      *  \param[in] id1 the type of derivative
-     *  \param[in] id2
-     *  \param[in] id3
+     *  \param[in] id2 index for the second type
+     *  \param[in] id3 index for the third type
      *  \tparam T the type of the Green's function
      */
     template <typename T>
     static IGreensFunction * execute(T & f, const greenData & data, int id1, int id2 = 0, int id3 = 0) {
         if (position<S2, typename mpl::deref<B2>::type>::value == id2) { // Desired type in S2 found
             if (2 == D) { // Two-dimensional, we're done!
-                ApplyFunctor<D, T1, typename mpl::deref<B2>::type, T3>::apply(f, data);
+                return ApplyFunctor<D, T1, typename mpl::deref<B2>::type, T3>::apply(f, data);
             } else { // Resolve third dimension
                 // Call second partial specialization of for_id_impl
                 // B2 is not "passed", since the type desired from S2 has been resolved
                 // The resolved type is "saved" into T2 and "passed" to the first partial specialization
-                return (for_id_impl<D, S1, S2, S3, B3, E1, E2, E3,
-                                    T1, typename mpl::deref<B2>::type, T3>::execute(f, data, id1, id2, id3));
+                return (for_id_impl<D, S1, S2, S3, E1, E2, B3,
+                                       E1, E2, E3, typename mpl::deref<B2>::type>::execute(f, data, id1, id2, id3));
             }
         } else if (1 == mpl::distance<B2, E2>::value) { // Desired type NOT found in S2
             throw std::invalid_argument("Invalid derivative type (id2 = " +
@@ -242,9 +242,9 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3>
  *  \tparam E1 type of the last element in S1
  *  \tparam E2 type of the last element in S2
  *  \tparam E3 type of the last element in S3
- *  \tparam T1
- *  \tparam T2
- *  \tparam T3
+ *  \tparam T1 type selected from S1
+ *  \tparam T2 type selected from S2
+ *  \tparam T3 type selected from S3
  *
  *  This is the second partial specialization. As such, it has (4D - 1) template parameters, (4D - 2)
  *  of which type template parameters.
@@ -262,14 +262,14 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3>
      *  \param[in] f the creational functor to be applied
      *  \param[in] data the data needed to create the correct Green's function
      *  \param[in] id1 the type of derivative
-     *  \param[in] id2
-     *  \param[in] id3
+     *  \param[in] id2 index for the second type
+     *  \param[in] id3 index for the third type
      *  \tparam T the type of the Green's function
      */
     template <typename T>
     static IGreensFunction * execute(T & f, const greenData & data, int id1, int id2 = 0, int id3 = 0) {
         if (position<S3, typename mpl::deref<B3>::type>::value == id3) { // Desired type in S3 found, we're done!
-                ApplyFunctor<D, T1, T2, typename mpl::deref<B3>::type>::apply(f, data);
+            return ApplyFunctor<D, T1, T2, typename mpl::deref<B3>::type>::apply(f, data);
         } else if (1 == mpl::distance<B3, E3>::value) { // Desired type NOT found in S3
             throw std::invalid_argument("Invalid derivative type (id3 = " +
                                         boost::lexical_cast<std::string>(id3) + ") in for_id metafunction.");
@@ -291,9 +291,9 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3>
  *  \tparam E1 type of the last element in S1
  *  \tparam E2 type of the last element in S2
  *  \tparam E3 type of the last element in S3
- *  \tparam T1
- *  \tparam T2
- *  \tparam T3
+ *  \tparam T1 type selected from S1
+ *  \tparam T2 type selected from S2
+ *  \tparam T3 type selected from S3
  *
  *  This is the third partial specialization. As such, it has (4D - 2) template parameters, (4D - 3)
  *  of which type template parameters.
@@ -306,11 +306,6 @@ template <int D,
 struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3>
 {
     /*! Executes given functor with selected template arguments
-     *  \param[in] f the creational functor to be applied
-     *  \param[in] data the data needed to create the correct Green's function
-     *  \param[in] id1 the type of derivative
-     *  \param[in] id2
-     *  \param[in] id3
      *  \tparam T the type of the Green's function
      */
     template <typename T>
@@ -322,9 +317,9 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3>
 
 /**@{ Wrappers to the functor */
 /*! Wrapper to the three-dimensional case
- *  \tparam T1
- *  \tparam T2
- *  \tparam T3
+ *  \tparam T1 type selected from S1
+ *  \tparam T2 type selected from S2
+ *  \tparam T3 type selected from S3
  */
 template <typename T1, typename T2, typename T3>
 struct ApplyFunctor<3, T1, T2, T3>
@@ -336,9 +331,9 @@ struct ApplyFunctor<3, T1, T2, T3>
 };
 
 /*! Wrapper to the two-dimensional case
- *  \tparam T1
- *  \tparam T2
- *  \tparam T3
+ *  \tparam T1 type selected from S1
+ *  \tparam T2 type selected from S2
+ *  \tparam T3 type selected from S3
  */
 template <typename T1, typename T2, typename T3>
 struct ApplyFunctor<2, T1, T2, T3>
@@ -350,9 +345,9 @@ struct ApplyFunctor<2, T1, T2, T3>
 };
 
 /*! Wrapper to the one-dimensional case
- *  \tparam T1
- *  \tparam T2
- *  \tparam T3
+ *  \tparam T1 type selected from S1
+ *  \tparam T2 type selected from S2
+ *  \tparam T3 type selected from S3
  */
 template <typename T1, typename T2, typename T3>
 struct ApplyFunctor<1, T1, T2, T3>
@@ -370,7 +365,7 @@ struct ApplyFunctor<1, T1, T2, T3>
  *  \tparam S2 type sequence 2
  *  \tparam S3 type sequence 3
  *  \tparam T  type of the functor
- *  \param[inout] f functor
+ *  \param[in,out] f functor
  *  \param[in] data input arguments for functor
  *  \param[in] id1  index of the first template argument, selected in S1
  *  \param[in] id2  index of the second template argument, selected in S2
@@ -385,7 +380,7 @@ IGreensFunction * for_id(T & f, const greenData & data, int id1, int id2, int id
  *  \tparam S1 type sequence 1
  *  \tparam S2 type sequence 2
  *  \tparam T  type of the functor
- *  \param[inout] f functor
+ *  \param[in,out] f functor
  *  \param[in] data input arguments for functor
  *  \param[in] id1  index of the first template argument, selected in S1
  *  \param[in] id2  index of the second template argument, selected in S2
@@ -395,10 +390,10 @@ IGreensFunction * for_id(T & f, const greenData & data, int id1, int id2) {
     return for_id_impl<2, S1, S2>::execute(f, data, id1, id2);
 }
 
-/*! Wrapper for the two-dimensional case.
+/*! Wrapper for the one-dimensional case.
  *  \tparam S1 type sequence 1
  *  \tparam T  type of the functor
- *  \param[inout] f functor
+ *  \param[in,out] f functor
  *  \param[in] data input arguments for functor
  *  \param[in] id1  index of the first template argument, selected in S1
  */

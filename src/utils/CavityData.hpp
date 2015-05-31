@@ -34,43 +34,33 @@
 
 /*! @struct cavityData
  *  @brief Contains all data defined from user input in the cavity section.
- *  @var cavityData::molecule
- *  Molecule object with the relevant data for cavity generation.
- *  @var cavityData::area
- *  The average tesserae area. Relevant for GePolCavity.
- *  @var cavityData::probeRadius
- *  The radius of the spherical probe representing the solvent.
- *  @var cavityData::minDistance
- *  The minimal distance between two sampling
- *  points on different spheres. Relevant for TsLessCavity.
- *  @var cavityData::derOrder
- *  The maximum derivative order to be used in the definition
- *  of the smoothing function. Relevant for TsLessCavity.
- *  @var cavityData::minimalRadius
- *  Triggers the addition of spheres not centered on atoms.
- *  Relevant for GePolCavity.
- *  @var cavityData::patchLevel
- *  Relevant for WaveletCavity.
- *  @var cavityData::coarsity
- *  Relevant for WaveletCavity.
- *  @var cavityData::filename
- *  Name of the file containing the cavity
- *  specification for a restart.
- *  @var cavityData::dyadicFile
  */
 
-struct cavityData {
+struct cavityData
+{
+    /*! Molecule object with the relevant data for cavity generation */
     Molecule molecule;
+    /*! The average tesserae area. Relevant for GePolCavity */
     double area;
+    /*! The radius of the spherical probe representing the solvent */
     double probeRadius;
+    /*! The minimal distance between two sampling points on different spheres. Relevant for TsLessCavity */
     double minDistance;
+    /*! The maximum derivative order to be used in the definition of the smoothing function. Relevant for TsLessCavity */
     int derOrder;
+    /*! Triggers the addition of spheres not centered on atoms, relevant for GePolCavity */
     double minimalRadius;
+    /*! Patch level, relevant for WaveletCavity */
     int patchLevel;
+    /*! Relevant for WaveletCavity */
     double coarsity;
+    /*! Name of the .npz file containing the cavity specification for a restart */
     std::string filename;
+    /*! Name of the text file with list of points for a wavelet cavityr restart */
     std::string dyadicFile;
+    /*! Whether the structure was initialized with user input or not */
     bool empty;
+
     cavityData() { empty = true; }
     cavityData(const Molecule & _molec, double _area, double _probeRadius,
                double _minDistance, int _derOrder, double _minRadius,

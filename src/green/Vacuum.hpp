@@ -132,8 +132,8 @@ namespace
     {
         buildVacuum build;
         // "Clever" trick...
-        int howIntegrator = data.howIntegrator + data.howDerivative + data.howProfile;
-        return for_id<derivative_types, integrator_types_uniform>(build, data, data.howDerivative, howIntegrator);
+        //int howIntegrator = data.howIntegrator + data.howDerivative + data.howProfile;
+        return for_id<derivative_types, integrator_types_uniform>(build, data, data.howDerivative, data.howIntegrator);
     }
     const std::string VACUUM("VACUUM");
     const bool registeredVacuum =

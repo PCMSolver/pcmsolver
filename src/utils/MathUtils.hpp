@@ -287,14 +287,17 @@ inline double linearInterpolation(const double point, const std::vector<double> 
         const std::vector<double> & function)
 {
     // Find nearest points on grid to the arbitrary point given
+    // std::lower_bound returns an iterator pointing to the first element in the range
+    // [first, last) that is not less than (i.e. greater or equal to) value.
     size_t index = std::distance(grid.begin(), std::lower_bound(grid.begin(), grid.end(), point));
 
     // Parameters for the interpolating line
-    double f_idx1 = function[index+1], f_idx = function[index];
-    double g_idx1 = grid[index+1], g_idx = grid[index];
-    double m = (f_idx1 - f_idx) / (g_idx1 - g_idx);
+    // up is the index found by using lower_bound, down is the index right before
+    double f_up = function[index], f_down = function[index-1];
+    double g_up = grid[index], g_down = grid[index-1];
+    double m = (f_up - f_down) / (g_up - g_down);
 
-    return (m * (point - g_idx) + f_idx);
+    return (m * (point - g_down) + f_down);
 }
 
 /*! \typedef DifferentiableFunction

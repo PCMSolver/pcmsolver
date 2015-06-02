@@ -186,6 +186,15 @@ inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eva
     // this ensures that they are in ascending order (as later expected by linearInterpolation)
     reverse(f);
 }
+
+inline void printRadialFunction(const RadialFunction & f)
+{
+    std::cout << "Grid" << '\t' << "Function" << '\t' << "Derivative" << std::endl;
+    for (size_t i =0; i < f[0].size(); ++i) {
+        std::cout << f[0][i] << '\t' << f[1][i] << '\t' << f[2][i] << std::endl;
+    }
+}
+
 } // namespace interfaces
 
 #endif // INTERFACESIMPL_HPP

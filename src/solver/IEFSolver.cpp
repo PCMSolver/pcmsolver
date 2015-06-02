@@ -96,20 +96,20 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     }
 
     Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-    Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    aInv = 2 * M_PI * a.inverse();
+    Eigen::MatrixXd aInv = a.inverse();
 
     // 1. Form T
-    fullPCMMatrix = ((aInv - DE) * a * SI + SE * a * (aInv + DI.transpose().eval()));
+    fullPCMMatrix = ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.adjoint().eval()));
     // 2. Invert T using LU decomposition with full pivoting
     //    This is a rank-revealing LU decomposition, this allows us
     //    to test if T is invertible before attempting to invert it.
     Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
-    if (!(T_LU.isInvertible()))
-        throw std::runtime_error("T matrix is not invertible!");
+    if (!(T_LU.isInvertible())) throw std::runtime_error("T matrix is not invertible!");
     fullPCMMatrix = T_LU.inverse();
-    fullPCMMatrix *= ((aInv - DE) - SE * SI.inverse() * (aInv - DI));
-    fullPCMMatrix = fullPCMMatrix * a;
+    Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
+    if (!(SI_LU.isInvertible())) throw std::runtime_error("SI matrix is not invertible!");
+    fullPCMMatrix *= ((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI));
+    fullPCMMatrix *= a;
     // 5. Symmetrize K := (K + K+)/2
     if (hermitivitize_) {
         hermitivitize(fullPCMMatrix);
@@ -165,8 +165,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     }
 
     Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-    Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    aInv = a.inverse();
+    Eigen::MatrixXd aInv = a.inverse();
 
     // Tq = -Rv -> q = -(T^-1 * R)v = -Kv
     // T = (2 * M_PI * fact * aInv - DI) * a * SI; R = (2 * M_PI * aInv - DI)
@@ -179,8 +178,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     //    This is a rank-revealing LU decomposition, this allows us
     //    to test if T is invertible before attempting to invert it.
     Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
-    if (!(T_LU.isInvertible()))
-        throw std::runtime_error("T matrix is not invertible!");
+    if (!(T_LU.isInvertible())) throw std::runtime_error("T matrix is not invertible!");
     fullPCMMatrix = T_LU.inverse();
     // 3. Multiply T^-1 and R
     fullPCMMatrix *= (2 * M_PI * aInv - DI);
@@ -230,8 +228,9 @@ void IEFSolver::computeCharge(const Eigen::VectorXd &potential,
     int nrBlocks = blockPCMMatrix.size();
     int irrDim = int(fullDim/nrBlocks);
     if (builtIsotropicMatrix or builtAnisotropicMatrix) {
-        charge.segment(irrep*irrDim,
+       charge.segment(irrep*irrDim,
                        irrDim)= - blockPCMMatrix[irrep] * potential.segment(irrep*irrDim, irrDim);
+
     } else {
         throw std::runtime_error("PCM matrix not initialized!");
     }

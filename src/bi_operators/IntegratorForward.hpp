@@ -23,15 +23,9 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef INTEGRATORTYPES_HPP
-#define INTEGRATORTYPES_HPP
+#ifndef INTEGRATORFORWARD_HPP
+#define INTEGRATORFORWARD_HPP
 
-#include "Config.hpp"
+struct CollocationIntegrator;
 
-#include <boost/mpl/vector.hpp>
-
-#include "CollocationIntegrator.hpp"
-
-typedef boost::mpl::vector<CollocationIntegrator> integrator_types;
-
-#endif // INTEGRATORTYPES_HPP
+#endif // INTEGRATORFORWARD_HPP

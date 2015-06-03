@@ -37,6 +37,7 @@
 
 class Element;
 
+#include "IntegratorForward.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -78,19 +79,19 @@ public:
         return this->derivativeProbe(direction, p1, p2);
     }
 
-    /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the S operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalS(const Element & e) const override
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
     {
-            return this->diagonal_.computeS(*this, e);
+        return this->integrator_.singleLayer(*this, e);
     }
-    /*! Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the D operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalD(const Element & e) const override
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
     {
-            return this->diagonal_.computeD(*this, e);
+        return this->integrator_.doubleLayer(*this, e);
     }
 
     friend std::ostream & operator<<(std::ostream & os, Vacuum & gf) {
@@ -122,18 +123,16 @@ namespace
 #include "IntegratorTypes.hpp"
 
     struct buildVacuum {
-        template <typename DerivativeType, typename IntegratorPolicy>
+        template <typename T, typename U>
         IGreensFunction * operator()(const greenData & /* data */) {
-            return new Vacuum<DerivativeType, IntegratorPolicy>();
+            return new Vacuum<T, U>();
         }
     };
 
     IGreensFunction * createVacuum(const greenData & data)
     {
         buildVacuum build;
-        // "Clever" trick...
-        //int howIntegrator = data.howIntegrator + data.howDerivative + data.howProfile;
-        return for_id<derivative_types, integrator_types_uniform>(build, data, data.howDerivative, data.howIntegrator);
+        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
     }
     const std::string VACUUM("VACUUM");
     const bool registeredVacuum =

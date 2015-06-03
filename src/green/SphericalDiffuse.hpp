@@ -43,7 +43,7 @@
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
-#include "DerivativeTypes.hpp"
+#include "IntegratorForward.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -107,19 +107,19 @@ public:
         return (eps_r2 * this->derivativeProbe(direction, p1, p2));
     }
 
-    /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the S operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalS(const Element & e) const
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
     {
-            return this->diagonal_.computeS(*this, e);
+        return this->integrator_.singleLayer(*this, e);
     }
-    /*! Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the D operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalD(const Element & e) const
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
     {
-            return this->diagonal_.computeD(*this, e);
+        return this->integrator_.doubleLayer(*this, e);
     }
 
     friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
@@ -430,5 +430,29 @@ private:
     }
     /**@}*/
 };
+
+namespace
+{
+#include "IntegratorTypes.hpp"
+#include "ProfileTypes.hpp"
+
+    struct buildSphericalDiffuse {
+        template <typename T, typename U>
+        IGreensFunction * operator()(const greenData & data) {
+            return new SphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin);
+        }
+    };
+
+    IGreensFunction * createSphericalDiffuse(const greenData & data)
+    {
+        buildSphericalDiffuse build;
+        return for_id<integrator_types, onelayer_diffuse_profile_types>(build, data, data.howDerivative, data.howIntegrator);
+    }
+    // Here the name has to change based on the profile type...
+    const std::string TANHSPHERICALDIFFUSE("TANHSPHERICALDIFFUSE");
+    const bool registeredTanhSphericalDiffuse =
+        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
+            TANHSPHERICALDIFFUSE, createSphericalDiffuse);
+}
 
 #endif // SPHERICALDIFFUSE_HPP

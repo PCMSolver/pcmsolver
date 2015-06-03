@@ -60,7 +60,7 @@ struct VacuumTest {
  */
 BOOST_FIXTURE_TEST_CASE(numerical, VacuumTest)
 {
-    Vacuum<Numerical, CollocationIntegrator<Numerical, Uniform> > gf;
+    Vacuum<Numerical, CollocationIntegrator> gf;
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
@@ -80,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE(numerical, VacuumTest)
  */
 BOOST_FIXTURE_TEST_CASE(directional_AD, VacuumTest)
 {
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > gf;
+    Vacuum<AD_directional, CollocationIntegrator> gf;
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
@@ -100,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(directional_AD, VacuumTest)
  */
 BOOST_FIXTURE_TEST_CASE(gradient_AD, VacuumTest)
 {
-    Vacuum<AD_gradient, CollocationIntegrator<AD_gradient, Uniform> > gf;
+    Vacuum<AD_gradient, CollocationIntegrator> gf;
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
@@ -120,7 +120,7 @@ BOOST_FIXTURE_TEST_CASE(gradient_AD, VacuumTest)
  */
 BOOST_FIXTURE_TEST_CASE(hessian_AD, VacuumTest)
 {
-    Vacuum<AD_hessian, CollocationIntegrator<AD_hessian, Uniform> > gf;
+    Vacuum<AD_hessian, CollocationIntegrator> gf;
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);

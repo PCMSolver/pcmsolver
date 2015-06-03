@@ -29,6 +29,7 @@
 #include <cmath>
 #include <functional>
 #include <iosfwd>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -36,7 +37,7 @@
 
 class Element;
 
-#include "DerivativeTypes.hpp"
+#include "IntegratorForward.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -75,21 +76,19 @@ public:
         return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }
 
-    /*!
-     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the S operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalS(const Element & e) const override
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
     {
-            return this->diagonal_.computeS(*this, e);
+        return this->integrator_.singleLayer(*this, e);
     }
-    /*!
-     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the D operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalD(const Element & e) const override
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
     {
-            return this->diagonal_.computeD(*this, e);
+        return this->integrator_.doubleLayer(*this, e);
     }
 
     friend std::ostream & operator<<(std::ostream & os, IonicLiquid & gf) {
@@ -119,28 +118,27 @@ private:
     }
 };
 
-/*
 namespace
 {
+#include "DerivativeTypes.hpp"
+#include "IntegratorTypes.hpp"
+
     struct buildIonicLiquid {
-        template <typename DerivativeType>
-        IGreensFunction * operator()(const greenData & _data) {
-            DiagonalIntegrator * integrator =
-		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
-            return new IonicLiquid<DerivativeType>(_data.epsilon, _data.kappa, integrator);
+        template <typename T, typename U>
+        IGreensFunction * operator()(const greenData & data) {
+            return new IonicLiquid<T, U>(data.epsilon, data.kappa);
         }
     };
 
-    IGreensFunction * createIonicLiquid(const greenData & _data)
+    IGreensFunction * createIonicLiquid(const greenData & data)
     {
         buildIonicLiquid build;
-        return for_id<derivative_types>(build, _data, _data.how);
+        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
     }
     const std::string IONICLIQUID("IONICLIQUID");
     const bool registeredIonicLiquid =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             IONICLIQUID, createIonicLiquid);
 }
-*/
 
 #endif // IONICLIQUID_HPP

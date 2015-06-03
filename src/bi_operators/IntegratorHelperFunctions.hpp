@@ -23,8 +23,8 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef SOLVERHELPERFUNCTIONS_HPP
-#define SOLVERHELPERFUNCTIONS_HPP
+#ifndef INTEGRATORHELPERFUNCTIONS_HPP
+#define INTEGRATORHELPERFUNCTIONS_HPP
 
 #include <cmath>
 #include <functional>
@@ -36,15 +36,21 @@
 
 #include "Element.hpp"
 
-/*! \typedef Diagonal
- *  \brief functor handle to the diagonalS and diagonalD methods in IGreensFunction
+namespace integrator {
+/*! \typedef DiagonalS
+ *  \brief functor handle to the calculation of the diagonal of S
  */
-typedef std::function<double(const Element &)> Diagonal;
+typedef std::function<double(double)> DiagonalS;
 
 /*! \typedef KernelS
  *  \brief functor handle to the kernelS method in IGreensFunction
  */
 typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelS;
+
+/*! \typedef DiagonalD
+ *  \brief functor handle to the calculation of the diagonal of D
+ */
+typedef std::function<double(double, double)> DiagonalD;
 
 /*! \typedef KernelD
  *  \brief functor handle to the kernelD method in IGreensFunction
@@ -57,13 +63,13 @@ typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &, c
  *  \param[in] kern     function for the evaluation of the off-diagonal of S
  */
 inline Eigen::MatrixXd singleLayer(const std::vector<Element> & elements,
-                                   const Diagonal & diag, const KernelS & kern)
+                                   const DiagonalS & diag, const KernelS & kern)
 {
     size_t mat_size = elements.size();
     Eigen::MatrixXd S = Eigen::MatrixXd::Zero(mat_size, mat_size);
     for (size_t i = 0; i < mat_size; ++i) {
         // Fill diagonal
-        S(i, i) = diag(elements[i]);
+        S(i, i) = diag(elements[i].area());
         Eigen::Vector3d source = elements[i].center();
         for (size_t j = 0; j < mat_size; ++j) {
             // Fill off-diagonal
@@ -80,13 +86,13 @@ inline Eigen::MatrixXd singleLayer(const std::vector<Element> & elements,
  *  \param[in] kern     function for the evaluation of the off-diagonal of D
  */
 inline Eigen::MatrixXd doubleLayer(const std::vector<Element> & elements,
-                                   const Diagonal & diag, const KernelD & kern)
+                                   const DiagonalD & diag, const KernelD & kern)
 {
     size_t mat_size = elements.size();
     Eigen::MatrixXd D = Eigen::MatrixXd::Zero(mat_size, mat_size);
     for (size_t i = 0; i < mat_size; ++i) {
         // Fill diagonal
-        D(i, i) = diag(elements[i]);
+        D(i, i) = diag(elements[i].area(), elements[i].sphere().radius());
         Eigen::Vector3d source = elements[i].center();
         for (size_t j = 0; j < mat_size; ++j) {
             // Fill off-diagonal
@@ -98,5 +104,6 @@ inline Eigen::MatrixXd doubleLayer(const std::vector<Element> & elements,
     }
     return D;
 }
+} // namespace integrator
 
-#endif // SOLVERHELPERFUNCTIONS_HPP
+#endif // INTEGRATORHELPERFUNCTIONS_HPP

@@ -392,7 +392,7 @@ typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
 singleLayerIntegrand;
 
 template <int PhiPoints_, int ThetaPoints_>
-inline double integrator(const singleLayerIntegrand & F, const Element & e)
+inline double integrate(const singleLayerIntegrand & F, const Element & e)
 {
     double result = 0.0;
 
@@ -500,7 +500,7 @@ typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
 		        const Eigen::Vector3d &)> doubleLayerIntegrand;
 
 template <int PhiPoints_, int ThetaPoints_>
-inline double integrator(const doubleLayerIntegrand & F, const Element & e)
+inline double integrate(const doubleLayerIntegrand & F, const Element & e)
 {
     double result = 0.0;
 

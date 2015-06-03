@@ -40,9 +40,17 @@
 #include "Uniform.hpp"
 #include "Yukawa.hpp"
 
+/*! All possible profile types */
 typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, TanhDiffuse, TanhMembrane>
 profile_types;
 
+/*! One-layer diffuse profile types */
+typedef boost::mpl::vector<TanhDiffuse> onelayer_diffuse_profile_types;
+
+/*! Two-layer (aka membrane-like) diffuse profile types */
+typedef boost::mpl::vector<TanhMembrane> membrane_diffuse_profile_types;
+
+/*! An object of Permittivity type can have one of the types in the type sequence profile_types */
 typedef boost::make_variant_over<profile_types>::type Permittivity;
 
 namespace profiles {

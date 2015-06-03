@@ -57,7 +57,7 @@ template <typename DerivativeTraits,
 class GreensFunction: public IGreensFunction
 {
 public:
-    GreensFunction() : delta_(1.0e-04), diagonal_(IntegratorPolicy()) {}
+    GreensFunction() : delta_(1.0e-04), integrator_(IntegratorPolicy()) {}
     virtual ~GreensFunction() {}
     /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
      *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
@@ -167,7 +167,7 @@ protected:
         return os;
     }
     double delta_;
-    IntegratorPolicy diagonal_;
+    IntegratorPolicy integrator_;
     ProfilePolicy profile_;
 };
 
@@ -177,7 +177,7 @@ template <typename IntegratorPolicy,
 class GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>: public IGreensFunction
 {
 public:
-    GreensFunction() : delta_(1.0e-04), diagonal_(IntegratorPolicy()) {}
+    GreensFunction() : delta_(1.0e-04), integrator_(IntegratorPolicy()) {}
     virtual ~GreensFunction() {}
     /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
      *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
@@ -283,7 +283,7 @@ protected:
         return os;
     }
     double delta_;
-    IntegratorPolicy diagonal_;
+    IntegratorPolicy integrator_;
     ProfilePolicy profile_;
 };
 

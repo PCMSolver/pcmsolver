@@ -27,6 +27,7 @@
 #define IGREENSFUNCTION_HPP
 
 #include <iosfwd>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -70,14 +71,14 @@ public:
     /*! Returns a dielectric permittivity profile */
     virtual Permittivity permittivity() const = 0;
 
-    /*! Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the S operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalS(const Element & e) const = 0;
-    /*! Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] e i-th finite element
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const = 0;
+    /*! Calculates the matrix representation of the D operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalD(const Element & e) const = 0;
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const = 0;
 
     friend std::ostream & operator<<(std::ostream & os, IGreensFunction & gf) {
         return gf.printObject(os);

@@ -36,6 +36,7 @@
 
 class Element;
 
+#include "IntegratorForward.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
@@ -81,21 +82,19 @@ public:
         return scratch.dot(direction);
     }
 
-    /*!
-     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the S operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalS(const Element & e) const override
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
     {
-        return this->diagonal_.computeS(*this, e);
+        return this->integrator_.singleLayer(*this, e);
     }
-    /*!
-     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the D operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalD(const Element & e) const override
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
     {
-        return this->diagonal_.computeD(*this, e);
+        return this->integrator_.doubleLayer(*this, e);
     }
 
     friend std::ostream & operator<<(std::ostream & os, AnisotropicLiquid & gf) {
@@ -131,29 +130,27 @@ private:
     }
 };
 
-/*
 namespace
 {
+#include "DerivativeTypes.hpp"
+#include "IntegratorTypes.hpp"
+
     struct buildAnisotropicLiquid {
-        template <typename DerivativeType>
-        IGreensFunction * operator()(const greenData & _data) {
-            DiagonalIntegrator * integrator =
-		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
-            return new AnisotropicLiquid<DerivativeType>(_data.epsilonTensor, _data.eulerAngles, integrator);
+        template <typename T, typename U>
+        IGreensFunction * operator()(const greenData & data) {
+            return new AnisotropicLiquid<T, U>(data.epsilonTensor, data.eulerAngles);
         }
     };
 
-    IGreensFunction * createAnisotropicLiquid(const greenData & _data)
+    IGreensFunction * createAnisotropicLiquid(const greenData & data)
     {
         buildAnisotropicLiquid build;
-        return for_id<derivative_types>(build, _data, _data.how);
+        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
     }
     const std::string ANISOTROPICLIQUID("AnisotropicLiquid");
     const bool registeredAnisotropicLiquid =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             ANISOTROPICLIQUID, createAnisotropicLiquid);
 }
-*/
-
 
 #endif // ANISOTROPICLIQUID_HPP

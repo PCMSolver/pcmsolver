@@ -28,21 +28,16 @@
 
 #include <cmath>
 #include <iosfwd>
-#include <string>
 #include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-#include "taylor.hpp"
 
 class Element;
 
-#include "IntegratorForward.hpp"
-#include "ForIdGreen.hpp"
-#include "GreenData.hpp"
 #include "GreensFunction.hpp"
-#include "GreensFunctionFactory.hpp"
+#include "Uniform.hpp"
 
 /*! \file UniformDielectric.hpp
  *  \class UniformDielectric
@@ -117,28 +112,5 @@ private:
         return os;
     }
 };
-
-namespace
-{
-#include "DerivativeTypes.hpp"
-#include "IntegratorTypes.hpp"
-
-    struct buildUniformDielectric {
-        template <typename T, typename U>
-        IGreensFunction * operator()(const greenData & data) {
-            return new UniformDielectric<T, U>(data.epsilon);
-        }
-    };
-
-    IGreensFunction * createUniformDielectric(const greenData & data)
-    {
-        buildUniformDielectric build;
-        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
-    }
-    const std::string UNIFORMDIELECTRIC("UNIFORMDIELECTRIC");
-    const bool registeredUniformDielectric =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            UNIFORMDIELECTRIC, createUniformDielectric);
-}
 
 #endif // UNIFORMDIELECTRIC_HPP

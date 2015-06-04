@@ -64,8 +64,8 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
     double width = 5.0;
     Vacuum<AD_directional, CollocationIntegrator> * gfInside =
         new Vacuum<AD_directional, CollocationIntegrator>();
-    SphericalDiffuse<CollocationIntegrator, TanhDiffuse> * gfOutside =
-        new SphericalDiffuse<CollocationIntegrator, TanhDiffuse>(eps1, eps2, width, center, Eigen::Vector3d::Zero());
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> * gfOutside =
+        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero());
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -118,8 +118,8 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
     Eigen::Vector3d origin;
     origin << 68.0375, -21.1234, 56.6198;
     Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
-    SphericalDiffuse<CollocationIntegrator, TanhDiffuse> * gfOutside =
-        new SphericalDiffuse<CollocationIntegrator, TanhDiffuse>(eps1, eps2, width, center, origin);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> * gfOutside =
+        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, origin);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);

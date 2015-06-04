@@ -37,11 +37,8 @@
 
 class Element;
 
-#include "IntegratorForward.hpp"
-#include "ForIdGreen.hpp"
-#include "GreenData.hpp"
 #include "GreensFunction.hpp"
-#include "GreensFunctionFactory.hpp"
+#include "Yukawa.hpp"
 
 /*! \file IonicLiquid.hpp
  *  \class IonicLiquid
@@ -117,28 +114,5 @@ private:
         return os;
     }
 };
-
-namespace
-{
-#include "DerivativeTypes.hpp"
-#include "IntegratorTypes.hpp"
-
-    struct buildIonicLiquid {
-        template <typename T, typename U>
-        IGreensFunction * operator()(const greenData & data) {
-            return new IonicLiquid<T, U>(data.epsilon, data.kappa);
-        }
-    };
-
-    IGreensFunction * createIonicLiquid(const greenData & data)
-    {
-        buildIonicLiquid build;
-        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
-    }
-    const std::string IONICLIQUID("IONICLIQUID");
-    const bool registeredIonicLiquid =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            IONICLIQUID, createIonicLiquid);
-}
 
 #endif // IONICLIQUID_HPP

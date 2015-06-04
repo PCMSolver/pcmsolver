@@ -28,20 +28,15 @@
 
 #include <cmath>
 #include <iosfwd>
-#include <string>
+#include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
-#include "taylor.hpp"
 
 class Element;
 
-#include "IntegratorForward.hpp"
-#include "ForIdGreen.hpp"
-#include "GreenData.hpp"
 #include "GreensFunction.hpp"
-#include "GreensFunctionFactory.hpp"
 
 /*! \file Vacuum.hpp
  *  \class Vacuum
@@ -116,28 +111,5 @@ private:
         return os;
     }
 };
-
-namespace
-{
-#include "DerivativeTypes.hpp"
-#include "IntegratorTypes.hpp"
-
-    struct buildVacuum {
-        template <typename T, typename U>
-        IGreensFunction * operator()(const greenData & /* data */) {
-            return new Vacuum<T, U>();
-        }
-    };
-
-    IGreensFunction * createVacuum(const greenData & data)
-    {
-        buildVacuum build;
-        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
-    }
-    const std::string VACUUM("VACUUM");
-    const bool registeredVacuum =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            VACUUM, createVacuum);
-}
 
 #endif // VACUUM_HPP

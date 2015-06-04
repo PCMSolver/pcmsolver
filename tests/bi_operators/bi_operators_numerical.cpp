@@ -83,219 +83,147 @@ struct NumericalIntegratorTest {
 };
 
 /*! \class NumericalIntegrator
- *  \test \b NumericalIntegratorTest_vacuum tests the numerical evaluation of the vacuum diagonal elements of S and D
+ *  \test \b NumericalIntegratorTest_vacuum tests the numerical evaluation of the vacuum matrix representations of S and D
  */
 BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
 {
     fs::rename("PEDRA.OUT", "PEDRA.OUT.vacuum");
-    Vacuum<AD_directional, NumericalIntegrator<AD_directional, Uniform> > gf;
+    Vacuum<AD_directional, NumericalIntegrator> gf;
 
     BOOST_TEST_MESSAGE("Vacuum");
-    Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
-    for (int i = 0; i < cavity.size(); ++i) {
-        S_results(i) = gf.diagonalS(cavity.elements(i));
-    }
-    // In case you need to update the reference files...
-    /*
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim};
-    cnpy::npy_save("vacuum_S_numerical.npy", S_results.data(), shape, 1, "w", false);
+    Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+    /* Numerical integrator not really working now...
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("vacuum_S_numerical.npy");
-    int dim = raw_S_ref.shape[0];
-    Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim);
-    S_reference = getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
+    int dim_read = raw_S_ref.shape[0];
+    Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+    S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(S_results(i), S_reference(i), 1.0e-12);
+        for (int j = 0; j < cavity.size(); ++j) {
+            BOOST_REQUIRE_CLOSE(S_reference(i, j), S_results(i, j), 1.0e-12);
+        }
     }
     */
-    BOOST_TEST_MESSAGE("S operator diagonal by numerical quadrature");
-    for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
-			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
-    }
 
-    Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
-    for (int i = 0; i < cavity.size(); ++i) {
-        D_results(i) = gf.diagonalD(cavity.elements(i));
-    }
-    // In case you need to update the reference files...
-    /*
-    cnpy::npy_save("vacuum_D_numerical.npy", D_results.data(), shape, 1, "w", false);
+    Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+    /* Numerical integrator not really working now...
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("vacuum_D_numerical.npy");
-    dim = raw_D_ref.shape[0];
-    Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim);
-    D_reference = getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
+    dim_read = raw_D_ref.shape[0];
+    Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+    D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
+        for (int j = 0; j < cavity.size(); ++j) {
+            BOOST_REQUIRE_CLOSE(D_reference(i, j), D_results(i, j), 1.0e-12);
+        }
     }
     // Checks sum rule for D operator
     BOOST_REQUIRE_CLOSE(D_sum, 2 * M_PI, 1.0e-12);
     */
-    BOOST_TEST_MESSAGE("D operator diagonal by numerical quadrature");
-    for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = "
-			    << std::setprecision(std::numeric_limits<long double>::digits10) << D_results(i));
-    }
 }
 
 /*! \class NumericalIntegrator
- *  \test \b NumericalIntegratorTest_uniformdielectric tests the numerical evaluation of the uniform dielectric diagonal elements of S and D
+ *  \test \b NumericalIntegratorTest_uniformdielectric tests the numerical evaluation of the uniform dielectric matrix representations of S and D
  */
 BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
 {
     fs::rename("PEDRA.OUT", "PEDRA.OUT.uniform");
-    UniformDielectric<AD_directional, NumericalIntegrator<AD_directional, Uniform> > gf(eps);
+    UniformDielectric<AD_directional, NumericalIntegrator> gf(eps);
 
     BOOST_TEST_MESSAGE("UniformDielectric");
-    Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
-    for (int i = 0; i < cavity.size(); ++i) {
-        S_results(i) = gf.diagonalS(cavity.elements(i));
-    }
-    // In case you need to update the reference files...
-    /*
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim};
-    cnpy::npy_save("uniformdielectric_S_numerical.npy", S_results.data(), shape, 1, "w", false);
+    Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+    /* Numerical integrator not really working now...
     cnpy::NpyArray raw_S_ref = cnpy::npy_load("uniformdielectric_S_numerical.npy");
-    int dim = raw_S_ref.shape[0];
-    Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim);
-    S_reference = getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
+    int dim_read = raw_S_ref.shape[0];
+    Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+    S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(S_results(i), S_reference(i), 1.0e-12);
+        for (int j = 0; j < cavity.size(); ++j) {
+            BOOST_REQUIRE_CLOSE(S_reference(i, j), S_results(i, j), 1.0e-12);
+        }
     }
     */
-    BOOST_TEST_MESSAGE("S operator diagonal by numerical quadrature");
-    for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
-			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
-    }
 
-    Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
-    for (int i = 0; i < cavity.size(); ++i) {
-        D_results(i) = gf.diagonalD(cavity.elements(i));
-    }
-    // In case you need to update the reference files...
-    /*
-    cnpy::npy_save("uniformdielectric_D_numerical.npy", D_results.data(), shape, 1, "w", false);
+    Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+    /* Numerical integrator not really working now...
     cnpy::NpyArray raw_D_ref = cnpy::npy_load("uniformdielectric_D_numerical.npy");
-    dim = raw_D_ref.shape[0];
-    Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim);
-    D_reference = getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
+    dim_read = raw_D_ref.shape[0];
+    Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+    D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
+        for (int j = 0; j < cavity.size(); ++j) {
+            BOOST_REQUIRE_CLOSE(D_reference(i, j), D_results(i, j), 1.0e-12);
+        }
     }
     */
-    BOOST_TEST_MESSAGE("D operator diagonal by numerical quadrature");
-    for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = "
-			    << std::setprecision(std::numeric_limits<long double>::digits10) << D_results(i));
-    }
 }
 
 /*! \class NumericalIntegrator
- *  \test \b NumericalIntegratorTest_ionic tests the numerical evaluation of the ionic liquid diagonal elements of S and D
+ *  \test \b NumericalIntegratorTest_ionic tests the numerical evaluation of the ionic liquid matrix representations of S and D
  */
 BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
 {
     fs::rename("PEDRA.OUT", "PEDRA.OUT.ionic");
-    IonicLiquid<AD_directional, NumericalIntegrator<AD_directional, Yukawa> > gf(eps, kappa);
+    IonicLiquid<AD_directional, NumericalIntegrator> gf(eps, kappa);
 
     BOOST_TEST_MESSAGE("IonicLiquid");
-    Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
+    Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+    /* Numerical integrator not really working now...
+    cnpy::NpyArray raw_S_ref = cnpy::npy_load("ionicliquid_S_numerical.npy");
+    int dim_read = raw_S_ref.shape[0];
+    Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+    S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-        S_results(i) = gf.diagonalS(cavity.elements(i));
-    }
-    // In case you need to update the reference files...
-    /*
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim};
-    cnpy::npy_save("ionic_S_numerical.npy", S_results.data(), shape, 1, "w", false);
-    cnpy::NpyArray raw_S_ref = cnpy::npy_load("ionic_S_numerical.npy");
-    int dim = raw_S_ref.shape[0];
-    Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim);
-    S_reference = getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(S_results(i), S_reference(i), 1.0e-12);
+        for (int j = 0; j < cavity.size(); ++j) {
+            BOOST_REQUIRE_CLOSE(S_reference(i, j), S_results(i, j), 1.0e-12);
+        }
     }
     */
-    BOOST_TEST_MESSAGE("S operator diagonal by numerical quadrature");
-    for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
-			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
-    }
 
-    Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
+    Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+    /* Numerical integrator not really working now...
+    cnpy::NpyArray raw_D_ref = cnpy::npy_load("ionicliquid_D_numerical.npy");
+    dim_read = raw_D_ref.shape[0];
+    Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+    D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-        D_results(i) = gf.diagonalD(cavity.elements(i));
-    }
-    // In case you need to update the reference files...
-    /*
-    cnpy::npy_save("ionic_D_numerical.npy", D_results.data(), shape, 1, "w", false);
-    cnpy::NpyArray raw_D_ref = cnpy::npy_load("ionic_D_numerical.npy");
-    dim = raw_D_ref.shape[0];
-    Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim);
-    D_reference = getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
+        for (int j = 0; j < cavity.size(); ++j) {
+            BOOST_REQUIRE_CLOSE(D_reference(i, j), D_results(i, j), 1.0e-12);
+        }
     }
     */
-    BOOST_TEST_MESSAGE("D operator diagonal by numerical quadrature");
-    for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = "
-			    << std::setprecision(std::numeric_limits<long double>::digits10) << D_results(i));
-    }
 }
 
 /*! \class NumericalIntegrator
- *  \test \b NumericalIntegratorTest_anisotropic tests the numerical evaluation of the anisotropic liquid diagonal elements of S and D
+ *  \test \b NumericalIntegratorTest_anisotropic tests the numerical evaluation of the anisotropic liquid matrix representations of S and D
  */
 BOOST_FIXTURE_TEST_CASE(anisotropic, NumericalIntegratorTest)
 {
     fs::rename("PEDRA.OUT", "PEDRA.OUT.anisotropic");
-    AnisotropicLiquid<AD_directional, NumericalIntegrator<AD_directional, Anisotropic> > gf(epsilon, euler);
+    AnisotropicLiquid<AD_directional, NumericalIntegrator> gf(epsilon, euler);
 
     BOOST_TEST_MESSAGE("AnisotropicLiquid");
-    Eigen::VectorXd S_results = Eigen::VectorXd::Zero(cavity.size());
+    Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+    /* Numerical integrator not really working now...
+    cnpy::NpyArray raw_S_ref = cnpy::npy_load("anisotropicliquid_S_numerical.npy");
+    int dim_read = raw_S_ref.shape[0];
+    Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+    S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-        S_results(i) = gf.diagonalS(cavity.elements(i));
-    }
-    // In case you need to update the reference files...
-    /*
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim};
-    cnpy::npy_save("anisotropic_S_numerical.npy", S_results.data(), shape, 1, "w", false);
-    cnpy::NpyArray raw_S_ref = cnpy::npy_load("anisotropic_S_numerical.npy");
-    int dim = raw_S_ref.shape[0];
-    Eigen::VectorXd S_reference = Eigen::VectorXd::Zero(dim);
-    S_reference = getFromRawBuffer<double>(dim, 1, raw_S_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(S_results(i), S_reference(i), 1.0e-12);
+        for (int j = 0; j < cavity.size(); ++j) {
+            BOOST_REQUIRE_CLOSE(S_reference(i, j), S_results(i, j), 1.0e-12);
+        }
     }
     */
-    BOOST_TEST_MESSAGE("S operator diagonal by numerical quadrature");
-    for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("S_{" << i+1 << ", " << i+1 << "} = "
-			    << std::setprecision(std::numeric_limits<long double>::digits10) << S_results(i));
-    }
 
-    Eigen::VectorXd D_results = Eigen::VectorXd::Zero(cavity.size());
+    Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+    /* Numerical integrator not really working now...
+    cnpy::NpyArray raw_D_ref = cnpy::npy_load("anisotropicliquid_D_numerical.npy");
+    dim_read = raw_D_ref.shape[0];
+    Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+    D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
     for (int i = 0; i < cavity.size(); ++i) {
-        D_results(i) = gf.diagonalD(cavity.elements(i));
-    }
-    // In case you need to update the reference files...
-    /*
-    cnpy::npy_save("anisotropic_D_numerical.npy", D_results.data(), shape, 1, "w", false);
-    cnpy::NpyArray raw_D_ref = cnpy::npy_load("anisotropic_D_numerical.npy");
-    dim = raw_D_ref.shape[0];
-    Eigen::VectorXd D_reference = Eigen::VectorXd::Zero(dim);
-    D_reference = getFromRawBuffer<double>(dim, 1, raw_D_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-    	BOOST_REQUIRE_CLOSE(D_results(i), D_reference(i), 1.0e-12);
+        for (int j = 0; j < cavity.size(); ++j) {
+            BOOST_REQUIRE_CLOSE(D_reference(i, j), D_results(i, j), 1.0e-12);
+        }
     }
     */
-    BOOST_TEST_MESSAGE("D operator diagonal by numerical quadrature");
-    for (int i = 0; i < cavity.size(); ++i) {
-	    BOOST_TEST_MESSAGE("D_{" << i+1 << ", " << i+1 << "} = "
-			    << std::setprecision(std::numeric_limits<long double>::digits10) << D_results(i));
-    }
 }

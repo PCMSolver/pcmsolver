@@ -30,7 +30,6 @@
 #include <cmath>
 #include <functional>
 #include <iosfwd>
-#include <string>
 #include <tuple>
 #include <vector>
 
@@ -43,11 +42,7 @@
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
-#include "IntegratorForward.hpp"
-#include "ForIdGreen.hpp"
-#include "GreenData.hpp"
 #include "GreensFunction.hpp"
-#include "GreensFunctionFactory.hpp"
 #include "LoggerInterface.hpp"
 #include "MathUtils.hpp"
 #include "Timer.hpp"
@@ -272,7 +267,7 @@ private:
         double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         double observer_step_ = 1.0e-03; /*! Time step between observer calls */
         IntegratorParameters params_(r_0_, r_infinity_, observer_step_);
-        ProfileEvaluator eval_ = std::bind(&TanhDiffuse::operator(), this->profile_, _1);
+        ProfileEvaluator eval_ = std::bind(&ProfilePolicy::operator(), this->profile_, _1);
 
         LOG("Computing coefficient for the separation of the Coulomb singularity");
         LOG("Computing first radial solution L = " + std::to_string(maxLC_));
@@ -430,29 +425,5 @@ private:
     }
     /**@}*/
 };
-
-namespace
-{
-#include "IntegratorTypes.hpp"
-#include "ProfileTypes.hpp"
-
-    struct buildSphericalDiffuse {
-        template <typename T, typename U>
-        IGreensFunction * operator()(const greenData & data) {
-            return new SphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin);
-        }
-    };
-
-    IGreensFunction * createSphericalDiffuse(const greenData & data)
-    {
-        buildSphericalDiffuse build;
-        return for_id<integrator_types, onelayer_diffuse_profile_types>(build, data, data.howDerivative, data.howIntegrator);
-    }
-    // Here the name has to change based on the profile type...
-    const std::string TANHSPHERICALDIFFUSE("TANHSPHERICALDIFFUSE");
-    const bool registeredTanhSphericalDiffuse =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            TANHSPHERICALDIFFUSE, createSphericalDiffuse);
-}
 
 #endif // SPHERICALDIFFUSE_HPP

@@ -35,20 +35,20 @@
 #include <boost/variant.hpp>
 
 #include "Anisotropic.hpp"
-#include "TanhDiffuse.hpp"
-#include "TanhMembrane.hpp"
+#include "OneLayerTanh.hpp"
+#include "MembraneTanh.hpp"
 #include "Uniform.hpp"
 #include "Yukawa.hpp"
 
 /*! All possible profile types */
-typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, TanhDiffuse, TanhMembrane>
+typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, OneLayerTanh, MembraneTanh>
 profile_types;
 
 /*! One-layer diffuse profile types */
-typedef boost::mpl::vector<TanhDiffuse> onelayer_diffuse_profile_types;
+typedef boost::mpl::vector<OneLayerTanh> onelayer_diffuse_profile_types;
 
 /*! Two-layer (aka membrane-like) diffuse profile types */
-typedef boost::mpl::vector<TanhMembrane> membrane_diffuse_profile_types;
+typedef boost::mpl::vector<MembraneTanh> membrane_diffuse_profile_types;
 
 /*! An object of Permittivity type can have one of the types in the type sequence profile_types */
 typedef boost::make_variant_over<profile_types>::type Permittivity;
@@ -60,8 +60,8 @@ namespace profiles {
         bool operator()(const Uniform & /* arg */) const { return true; }
         bool operator()(const Yukawa & /* arg */) const { return false; }
         bool operator()(const Anisotropic & /* arg */) const { return false; }
-        bool operator()(const TanhDiffuse & /* arg */) const { return false; }
-        bool operator()(const TanhMembrane & /* arg */) const { return false; }
+        bool operator()(const OneLayerTanh & /* arg */) const { return false; }
+        bool operator()(const MembraneTanh & /* arg */) const { return false; }
     };
 
     inline bool uniform(const Permittivity & arg) {
@@ -76,8 +76,8 @@ namespace profiles {
             return std::make_tuple(arg.epsilon, arg.kappa);
         }
         bool operator()(const Anisotropic & /* arg */) const { return false; }
-        bool operator()(const TanhDiffuse & /* arg */) const { return false; }
-        bool operator()(const TanhMembrane & /* arg */) const { return false; }
+        bool operator()(const OneLayerTanh & /* arg */) const { return false; }
+        bool operator()(const MembraneTanh & /* arg */) const { return false; }
     };
 
     inline double epsilon(const Permittivity & arg) {

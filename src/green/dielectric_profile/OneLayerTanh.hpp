@@ -23,22 +23,22 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef TANHDIFFUSE_HPP
-#define TANHDIFFUSE_HPP
+#ifndef ONELAYERTANH_HPP
+#define ONELAYERTANH_HPP
 
 #include <iosfwd>
 #include <tuple>
 
 #include "Config.hpp"
 
-/*! \file TanhDiffuse.hpp
- *  \class TanhDiffuse
+/*! \file OneLayerTanh.hpp
+ *  \class OneLayerTanh
  *  \brief A tanh dielectric profile as in \cite Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2014
  */
 
-class TanhDiffuse
+class OneLayerTanh
 {
 private:
     /// Dielectric constant on the left of the interface
@@ -75,8 +75,8 @@ private:
         return os;
     }
 public:
-    TanhDiffuse() {}
-    TanhDiffuse(double e1, double e2, double w, double c) :
+    OneLayerTanh() {}
+    OneLayerTanh(double e1, double e2, double w, double c) :
         epsilon1_(e1), epsilon2_(e2), width_(w), center_(c) {}
     /*! Returns a tuple holding the permittivity and its derivative
      *  \param[in]   r evaluation point
@@ -89,9 +89,9 @@ public:
     double epsilon2() const { return epsilon2_; }
     double width() const { return width_; }
     double center() const { return center_; }
-    friend std::ostream & operator<<(std::ostream & os, TanhDiffuse & th) {
+    friend std::ostream & operator<<(std::ostream & os, OneLayerTanh & th) {
         return th.printObject(os);
     }
 };
 
-#endif // TANHDIFFUSE_HPP
+#endif // ONELAYERTANH_HPP

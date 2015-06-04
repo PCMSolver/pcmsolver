@@ -27,8 +27,8 @@
 #define ANISOTROPICLIQUID_HPP
 
 #include <cmath>
-#include <functional>
 #include <iosfwd>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -36,11 +36,8 @@
 
 class Element;
 
-#include "IntegratorForward.hpp"
-#include "ForIdGreen.hpp"
-#include "GreenData.hpp"
+#include "Anisotropic.hpp"
 #include "GreensFunction.hpp"
-#include "GreensFunctionFactory.hpp"
 
 /*! \file AnisotropicLiquid.hpp
  *  \class AnisotropicLiquid
@@ -129,28 +126,5 @@ private:
         return os;
     }
 };
-
-namespace
-{
-#include "DerivativeTypes.hpp"
-#include "IntegratorTypes.hpp"
-
-    struct buildAnisotropicLiquid {
-        template <typename T, typename U>
-        IGreensFunction * operator()(const greenData & data) {
-            return new AnisotropicLiquid<T, U>(data.epsilonTensor, data.eulerAngles);
-        }
-    };
-
-    IGreensFunction * createAnisotropicLiquid(const greenData & data)
-    {
-        buildAnisotropicLiquid build;
-        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
-    }
-    const std::string ANISOTROPICLIQUID("AnisotropicLiquid");
-    const bool registeredAnisotropicLiquid =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            ANISOTROPICLIQUID, createAnisotropicLiquid);
-}
 
 #endif // ANISOTROPICLIQUID_HPP

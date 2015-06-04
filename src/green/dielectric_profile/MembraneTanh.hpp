@@ -23,21 +23,21 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef TANHMEMBRANE_HPP
-#define TANHMEMBRANE_HPP
+#ifndef MEMBRANETANH_HPP
+#define MEMBRANETANH_HPP
 
 #include <iosfwd>
 
 #include "Config.hpp"
 
-/*! \file TanhMembrane.hpp
- *  \class TanhMembrane
+/*! \file MembraneTanh.hpp
+ *  \class MembraneTanh
  *  \brief A dielectric profile mimicking a memmbrane as in Eq. 30 in \cite Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2015
  */
 
-class TanhMembrane
+class MembraneTanh
 {
 private:
     double epsilon1_;
@@ -64,8 +64,8 @@ private:
                 - factor_23 * (1 - std::pow(tanh_r_23, 2))); //first derivative of epsilon(r)
     }
 public:
-    TanhMembrane() {}
-    TanhMembrane(double e1, double e2, double e3,
+    MembraneTanh() {}
+    MembraneTanh(double e1, double e2, double e3,
             double w12, double w23, double c12, double c23) :
         epsilon1_(e1), epsilon2_(e2), epsilon3_(e3),
         width12_(w12), width23_(w23), center12_(c12), center23_(c23) {}
@@ -89,4 +89,4 @@ public:
     double center23() const { return center23_; }
 };
 
-#endif // TANHMEMBRANE_HPP
+#endif // MEMBRANETANH_HPP

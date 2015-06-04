@@ -64,9 +64,9 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     cavity.saveCavity("nh3.npz");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform>> * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform>>(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     double correction = 0.8;
     CPCMSolver solver(gfInside, gfOutside, symm, correction);

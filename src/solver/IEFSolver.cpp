@@ -40,7 +40,6 @@
 #include "Element.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
-#include "SolverHelperFunctions.hpp"
 
 void IEFSolver::buildSystemMatrix(const Cavity & cavity)
 {
@@ -62,21 +61,10 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     int dimBlock = cav.irreducible_size();
 
     // Compute SI, DI and SE, DE on the whole cavity, regardless of symmetry
-    Diagonal diagS_in = std::bind(&IGreensFunction::diagonalS, greenInside_, _1);
-    KernelS  kernS_in = std::bind(&IGreensFunction::kernelS,   greenInside_, _1, _2);
-    Eigen::MatrixXd SI = singleLayer(cav.elements(), diagS_in, kernS_in);
-
-    Diagonal diagS_out = std::bind(&IGreensFunction::diagonalS, greenOutside_, _1);
-    KernelS  kernS_out = std::bind(&IGreensFunction::kernelS,   greenOutside_, _1, _2);
-    Eigen::MatrixXd SE = singleLayer(cav.elements(), diagS_out, kernS_out);
-
-    Diagonal diagD_in = std::bind(&IGreensFunction::diagonalD, greenInside_, _1);
-    KernelD  kernD_in = std::bind(&IGreensFunction::kernelD,   greenInside_, _1, _2, _3);
-    Eigen::MatrixXd DI = doubleLayer(cav.elements(), diagD_in, kernD_in);
-
-    Diagonal diagD_out = std::bind(&IGreensFunction::diagonalD, greenOutside_, _1);
-    KernelD  kernD_out = std::bind(&IGreensFunction::kernelD,   greenOutside_, _1, _2, _3);
-    Eigen::MatrixXd DE = doubleLayer(cav.elements(), diagD_out, kernD_out);
+    Eigen::MatrixXd SI = greenInside_->singleLayer(cav.elements());
+    Eigen::MatrixXd DI = greenInside_->doubleLayer(cav.elements());
+    Eigen::MatrixXd SE = greenOutside_->singleLayer(cav.elements());
+    Eigen::MatrixXd DE = greenOutside_->doubleLayer(cav.elements());
 
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
@@ -133,13 +121,8 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     int dimBlock = cav.irreducible_size();
 
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    Diagonal diagS_in = std::bind(&IGreensFunction::diagonalS, greenInside_, _1);
-    KernelS  kernS_in = std::bind(&IGreensFunction::kernelS,   greenInside_, _1, _2);
-    Eigen::MatrixXd SI = singleLayer(cav.elements(), diagS_in, kernS_in);
-
-    Diagonal diagD_in = std::bind(&IGreensFunction::diagonalD, greenInside_, _1);
-    KernelD  kernD_in = std::bind(&IGreensFunction::kernelD,   greenInside_, _1, _2, _3);
-    Eigen::MatrixXd DI = doubleLayer(cav.elements(), diagD_in, kernD_in);
+    Eigen::MatrixXd SI = greenInside_->singleLayer(cav.elements());
+    Eigen::MatrixXd DI = greenInside_->doubleLayer(cav.elements());
 
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix

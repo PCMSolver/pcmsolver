@@ -60,9 +60,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c1");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -100,9 +100,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -143,9 +143,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
     fs::rename("PEDRA.OUT", "PEDRA.OUT.cs");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -186,9 +186,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
     fs::rename("PEDRA.OUT", "PEDRA.OUT.ci");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -229,9 +229,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
     fs::rename("PEDRA.OUT", "PEDRA.OUT.d2");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -272,9 +272,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -315,9 +315,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -358,9 +358,9 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
     fs::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfInside = new Vacuum<AD_directional, CollocationIntegrator<AD_directional, Uniform> >();
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> >(permittivity);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);

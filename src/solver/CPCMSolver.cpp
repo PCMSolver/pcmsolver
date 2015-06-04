@@ -39,7 +39,6 @@
 #include "Element.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
-#include "SolverHelperFunctions.hpp"
 
 void CPCMSolver::buildSystemMatrix(const Cavity & cavity)
 {
@@ -62,9 +61,7 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
     int dimBlock = cav.irreducible_size();
 
     // Compute SI on the whole cavity, regardless of symmetry
-    Diagonal diagS_in = std::bind(&IGreensFunction::diagonalS, greenInside_, _1);
-    KernelS  kernS_in = std::bind(&IGreensFunction::kernelS,   greenInside_, _1, _2);
-    Eigen::MatrixXd SI = singleLayer(cav.elements(), diagS_in, kernS_in);
+    Eigen::MatrixXd SI = greenInside_->singleLayer(cav.elements());
 
     // Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix

@@ -27,5 +27,7 @@
 #define INTEGRATORFORWARD_HPP
 
 struct CollocationIntegrator;
+struct NumericalIntegrator;
+struct PurisimaIntegrator;
 
 #endif // INTEGRATORFORWARD_HPP

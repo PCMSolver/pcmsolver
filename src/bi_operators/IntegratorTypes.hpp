@@ -31,7 +31,7 @@
 #include <boost/mpl/vector.hpp>
 
 #include "CollocationIntegrator.hpp"
-#include "PurisimaIntegator.hpp"
+#include "PurisimaIntegrator.hpp"
 #include "NumericalIntegrator.hpp"
 
 typedef boost::mpl::vector<CollocationIntegrator, PurisimaIntegrator, NumericalIntegrator> integrator_types;

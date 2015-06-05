@@ -44,15 +44,15 @@ char cnpy::map_type(const std::type_info & t)
     else return '?';
 }
 
-template<> std::vector<char>& cnpy::operator+=(std::vector<char>& lhs,
-        const std::string rhs)
+template <>
+std::vector<char> & cnpy::operator+=(std::vector<char> & lhs, const std::string rhs)
 {
     lhs.insert(lhs.end(), rhs.begin(), rhs.end());
     return lhs;
 }
 
-template<> std::vector<char>& cnpy::operator+=(std::vector<char>& lhs,
-        const char* rhs)
+template <>
+std::vector<char> & cnpy::operator+=(std::vector<char> & lhs, const char* rhs)
 {
     //write in little endian
     size_t len = strlen(rhs);
@@ -63,8 +63,7 @@ template<> std::vector<char>& cnpy::operator+=(std::vector<char>& lhs,
     return lhs;
 }
 
-void cnpy::parse_npy_header(FILE* fp, unsigned int& word_size, unsigned int*& shape,
-                            unsigned int& ndims, bool& fortran_order)
+void cnpy::parse_npy_header(FILE * fp, unsigned int & word_size, unsigned int *& shape, unsigned int & ndims, bool & fortran_order)
 {
     char buffer[256];
     size_t res = fread(buffer, sizeof(char), 11, fp);
@@ -107,8 +106,8 @@ void cnpy::parse_npy_header(FILE* fp, unsigned int& word_size, unsigned int*& sh
     word_size = atoi(str_ws.substr(0,loc2).c_str());
 }
 
-void cnpy::parse_zip_footer(FILE* fp, unsigned short& nrecs,
-                            unsigned int& global_header_size, unsigned int& global_header_offset)
+void cnpy::parse_zip_footer(FILE * fp, unsigned short & nrecs,
+                            unsigned int & global_header_size, unsigned int & global_header_offset)
 {
     std::vector<char> footer(22);
     fseek(fp,-22,SEEK_END);

@@ -24,7 +24,8 @@
 
 namespace cnpy
 {
-    struct NpyArray {
+    struct NpyArray
+    {
         char* data;
         std::vector<unsigned int> shape;
         unsigned int word_size;
@@ -34,7 +35,8 @@ namespace cnpy
         }
     };
 
-    struct npz_t : public std::map<std::string, NpyArray> {
+    struct npz_t : public std::map<std::string, NpyArray>
+    {
         void destruct() {
             npz_t::iterator it = this->begin();
             for(; it != this->end(); ++it) (*it).second.destruct();
@@ -43,8 +45,8 @@ namespace cnpy
 
     char BigEndianTest();
     char map_type(const std::type_info& t);
-    template<typename T> std::vector<char> create_npy_header(const T* data,
-            const unsigned int* shape, const unsigned int ndims, bool fortran_order = false);
+    template <typename T>
+    std::vector<char> create_npy_header(const T* data, const unsigned int* shape, const unsigned int ndims, bool fortran_order = false);
     void parse_npy_header(FILE* fp,unsigned int& word_size, unsigned int*& shape,
                           unsigned int& ndims, bool& fortran_order);
     void parse_zip_footer(FILE* fp, unsigned short& nrecs,
@@ -53,8 +55,8 @@ namespace cnpy
     NpyArray npz_load(std::string fname, std::string varname);
     NpyArray npy_load(std::string fname);
 
-    template<typename T> std::vector<char>& operator+=(std::vector<char>& lhs,
-            const T rhs)
+    template <typename T>
+    std::vector<char> & operator+=(std::vector<char> & lhs, const T rhs)
     {
         //write in little endian
         for(size_t byte = 0; byte < sizeof(T); byte++) {
@@ -64,21 +66,22 @@ namespace cnpy
         return lhs;
     }
 
-    template<> std::vector<char>& operator+=(std::vector<char>& lhs,
-            const std::string rhs);
-    template<> std::vector<char>& operator+=(std::vector<char>& lhs, const char* rhs);
+    template <>
+    std::vector<char> & operator+=(std::vector<char> & lhs, const std::string rhs);
+    template <>
+    std::vector<char> & operator+=(std::vector<char> & lhs, const char * rhs);
 
-    template<typename T> std::string tostring(T i, int /* pad */ = 0,
-            char /* padval */ = ' ')
+    template <typename T>
+    std::string tostring(T i, int /* pad */ = 0, char /* padval */ = ' ')
     {
         std::stringstream s;
         s << i;
         return s.str();
     }
 
-    template<typename T> void npy_save(std::string fname, const T* data,
-                                       const unsigned int* shape, const unsigned int ndims, std::string mode = "w",
-                                       bool fortran_order = false)
+    template <typename T>
+    void npy_save(std::string fname, const T* data, const unsigned int* shape, const unsigned int ndims,
+                  std::string mode = "w", bool fortran_order = false)
     {
         FILE* fp = NULL;
 
@@ -131,9 +134,9 @@ namespace cnpy
         fclose(fp);
     }
 
-    template<typename T> void npz_save(std::string zipname, std::string fname,
-                                       const T* data, const unsigned int* shape, const unsigned int ndims,
-                                       std::string mode = "w", bool fortran_order = false)
+    template <typename T>
+    void npz_save(std::string zipname, std::string fname, const T* data, const unsigned int* shape, const unsigned int ndims,
+                  std::string mode = "w", bool fortran_order = false)
     {
         //first, append a .npy to the fname
         fname += ".npy";
@@ -226,8 +229,8 @@ namespace cnpy
         fclose(fp);
     }
 
-    template<typename T> std::vector<char> create_npy_header(const T* /* data */,
-            const unsigned int* shape, const unsigned int ndims, bool fortran_order)
+    template <typename T>
+    std::vector<char> create_npy_header(const T * /* data */, const unsigned int* shape, const unsigned int ndims, bool fortran_order)
     {
 
         std::vector<char> dict;
@@ -265,4 +268,4 @@ namespace cnpy
 
 } // closes namespace
 
-#endif // LIBCNPY_H_ 
+#endif // LIBCNPY_H_

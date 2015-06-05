@@ -30,7 +30,7 @@ int main()
     double zMax = 300.0;
     double step = (zMax - zMin) / nPoints;
 
-    SphericalDiffuse<CollocationIntegrator<Numerical, TanhDiffuse>, TanhDiffuse> gf(epsInside, epsOutside, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsInside, epsOutside, width, sphereRadius, sphereCenter);
     LOG(gf);
     std::ofstream out;
     out.open("gf_spherical_CASE1.dat");
@@ -50,7 +50,7 @@ int main()
     out.close();
     LOG_TIME;
 
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > gf_inside(epsInside);
+    UniformDielectric<AD_directional, CollocationIntegrator> gf_inside(epsInside);
     out.open("gf_uniform_inside_CASE1.dat");
     out << "#" << '\t' << "Distance" << '\t' << "gf_value" << '\t' << "derivativeProbe" << std::endl;
     out.precision(16);
@@ -62,7 +62,7 @@ int main()
     }
     out.close();
 
-    UniformDielectric<AD_directional, CollocationIntegrator<AD_directional, Uniform> > gf_outside(epsOutside);
+    UniformDielectric<AD_directional, CollocationIntegrator> gf_outside(epsOutside);
     out.open("gf_uniform_outside_CASE1.dat");
     out << "#" << '\t' << "Distance" << '\t' << "gf_value" << '\t' << "derivativeProbe" << std::endl;
     out.precision(16);

@@ -1,4 +1,4 @@
-set(list_of_libraries green)
+set(list_of_libraries green utils)
 
 list(APPEND external_libraries ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 add_boosttest(green_vacuum "${list_of_libraries}" "${external_libraries}")

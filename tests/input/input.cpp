@@ -131,8 +131,8 @@ BOOST_FIXTURE_TEST_CASE(TsLess, InputTsLessTest)
     BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-12);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().howDerivative);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().howDerivative);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -228,8 +228,8 @@ BOOST_FIXTURE_TEST_CASE(Restart, InputRestartTest)
     BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, threshold);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().howDerivative);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().howDerivative);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -329,8 +329,8 @@ BOOST_FIXTURE_TEST_CASE(Wavelet, InputWaveletTest)
     BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-10);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().howDerivative);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().howDerivative);
     BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.insideGreenParams().epsilon, threshold);
     BOOST_REQUIRE_CLOSE(epsilonStaticOutside,  parsedInput.outsideStaticGreenParams().epsilon, threshold);
     BOOST_REQUIRE_CLOSE(epsilonDynamicOutside, parsedInput.outsideDynamicGreenParams().epsilon, threshold);
@@ -444,8 +444,8 @@ BOOST_FIXTURE_TEST_CASE(Diffuse, InputDiffuseTest)
     BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-10);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().howDerivative);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().howDerivative);
     BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.insideGreenParams().epsilon, threshold);
     BOOST_REQUIRE_CLOSE(epsilonStatic1,  parsedInput.outsideStaticGreenParams().epsilon1, threshold);
     BOOST_REQUIRE_CLOSE(epsilonStatic2,  parsedInput.outsideStaticGreenParams().epsilon2, threshold);

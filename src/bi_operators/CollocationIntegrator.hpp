@@ -39,6 +39,7 @@
 
 #include "IntegratorHelperFunctions.hpp"
 #include "Element.hpp"
+#include "Exception.hpp"
 #include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"
@@ -124,22 +125,22 @@ struct CollocationIntegrator
     /**@{ Single and double layer potentials for a IonicLiquid Green's function by collocation */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const IonicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
-        throw std::runtime_error("Not implemented yet!");
+        PCMSOLVER_ERROR("CollocationIntegrator::singleLayer not implemented yet for IonicLiquid");
     }
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const IonicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
-        throw std::runtime_error("Not implemented yet!");
+        PCMSOLVER_ERROR("CollocationIntegrator::doubleLayer not implemented yet for IonicLiquid");
     }
     /**@}*/
 
     /**@{ Single and double layer potentials for an AnisotropicLiquid Green's function by collocation */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const AnisotropicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
-        throw std::runtime_error("Not implemented yet!");
+        PCMSOLVER_ERROR("CollocationIntegrator::singleLayer not implemented yet for AnisotropicLiquid");
     }
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const AnisotropicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
-        throw std::runtime_error("Not implemented yet!");
+        PCMSOLVER_ERROR("CollocationIntegrator::doubleLayer not implemented yet for AnisotropicLiquid");
     }
     /**@}*/
 

@@ -123,7 +123,7 @@ namespace
         buildAnisotropicLiquid build;
         return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
     }
-    const std::string ANISOTROPICLIQUID("AnisotropicLiquid");
+    const std::string ANISOTROPICLIQUID("ANISOTROPICLIQUID");
     const bool registeredAnisotropicLiquid =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
             ANISOTROPICLIQUID, createAnisotropicLiquid);
@@ -141,13 +141,12 @@ namespace
     IGreensFunction * createSphericalDiffuse(const greenData & data)
     {
         buildSphericalDiffuse build;
-        return for_id<integrator_types, onelayer_diffuse_profile_types>(build, data, data.howDerivative, data.howIntegrator);
+        return for_id<integrator_types, onelayer_diffuse_profile_types>(build, data, data.howIntegrator, data.howProfile);
     }
-    // Here the name has to change based on the profile type...
-    const std::string TANHSPHERICALDIFFUSE("TANHSPHERICALDIFFUSE");
-    const bool registeredTanhSphericalDiffuse =
+    const std::string SPHERICALDIFFUSE("SPHERICALDIFFUSE");
+    const bool registeredSphericalDiffuse =
         GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            TANHSPHERICALDIFFUSE, createSphericalDiffuse);
+            SPHERICALDIFFUSE, createSphericalDiffuse);
 }
 
 #endif // REGISTERTOFACTORY_HPP

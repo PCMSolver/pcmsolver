@@ -226,7 +226,7 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3>
         } else { // Second type not resolved, but S2 type sequence not exhausted
             // Call for_id_impl first partial specialization with type of B2 moved to the next type in S2
             return (for_id_impl<D, S1, S2, S3,
-                                typename mpl::next<B2>::type, B3,
+                                E1, typename mpl::next<B2>::type, B3,
                                 E1, E2, E3, T1, T2, T3>::execute(f, data, id1, id2, id3));
         }
     }

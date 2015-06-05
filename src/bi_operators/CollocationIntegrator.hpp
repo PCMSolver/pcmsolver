@@ -71,7 +71,7 @@ struct CollocationIntegrator
     ~CollocationIntegrator() {}
 
     /**@{ Single and double layer potentials for a Vacuum Green's function by collocation */
-    /*! \tparam DerivativeTraits how the derivative of the Greens's function are calculated
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
      *  \param[in] e  list of finite elements
      */
@@ -82,7 +82,7 @@ struct CollocationIntegrator
         auto kernelS = std::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelS, gf, _1, _2);
         return integrator::singleLayer(e, diagonal, kernelS);
     }
-    /*! \tparam DerivativeTraits how the derivative of the Greens's function are calculated
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
      *  \param[in] e  list of finite elements
      */
@@ -96,7 +96,7 @@ struct CollocationIntegrator
     /**@}*/
 
     /**@{ Single and double layer potentials for a UniformDielectric Green's function by collocation */
-    /*! \tparam DerivativeTraits how the derivative of the Greens's function are calculated
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
      *  \param[in] e  list of finite elements
      */
@@ -108,7 +108,7 @@ struct CollocationIntegrator
         auto kernelS = std::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelS, gf, _1, _2);
         return integrator::singleLayer(e, diagonal, kernelS);
     }
-    /*! \tparam DerivativeTraits how the derivative of the Greens's function are calculated
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
      *  \param[in] e  list of finite elements
      */

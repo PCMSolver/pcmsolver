@@ -38,8 +38,8 @@
 #include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
 #include "Vacuum.hpp"
-#include "TanhSphericalDiffuse.hpp"
 #include "IEFSolver.hpp"
+#include "SphericalDiffuse.hpp"
 #include "TestingMolecules.hpp"
 
 /*! \class IEFSolver
@@ -58,13 +58,14 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
     cavity.saveCavity("point.npz");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double eps1 = 78.39;
     double eps2 = 78.39;
     double center = 100.0;
     double width = 5.0;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    TanhSphericalDiffuse * gfOutside = new TanhSphericalDiffuse(eps1, eps2, width, center, Eigen::Vector3d::Zero(), diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside =
+        new Vacuum<AD_directional, CollocationIntegrator>();
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> * gfOutside =
+        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero());
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -79,7 +80,7 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
@@ -110,15 +111,15 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
     cavity.saveCavity("point.npz");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double eps1 = 78.39;
     double eps2 = 78.39;
     double center = 100.0;
     double width = 5.0;
     Eigen::Vector3d origin;
     origin << 68.0375, -21.1234, 56.6198;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    TanhSphericalDiffuse * gfOutside = new TanhSphericalDiffuse(eps1, eps2, width, center, origin, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> * gfOutside =
+        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, origin);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -133,7 +134,7 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));

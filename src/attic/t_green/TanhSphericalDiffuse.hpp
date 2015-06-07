@@ -142,11 +142,9 @@ inline double TanhSphericalDiffuse::coefficient(double r1, double r2) const
 }
 
 template <>
-inline double TanhSphericalDiffuse::functionSummation(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp, double Cr12) const
+inline double TanhSphericalDiffuse::functionSummation(int L, double r1, double r2, double cos_gamma, double Cr12) const
 {
-    double r1 = sp.norm();
-    double r2 = pp.norm();
-    double cos_gamma = sp.dot(pp) / (r1 * r2);
+    double gr12 = 0.0;
     // Evaluate Legendre polynomial of order L
     // First of all clean-up cos_gamma, Legendre polynomials
     // are only defined for -1 <= x <= 1
@@ -174,7 +172,6 @@ inline double TanhSphericalDiffuse::functionSummation(int L, const Eigen::Vector
 
     double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 
-    double gr12 = 0.0;
     if (r1 < r2) {
         gr12 = std::exp(zeta1 - zeta2) * (2*L +1) / denominator;
         gr12 = (gr12 - std::pow(r1/r2, L) / (r2 * Cr12) ) * pl_x ;
@@ -228,13 +225,14 @@ inline double TanhSphericalDiffuse::imagePotential(const Eigen::Vector3d & sourc
     Eigen::Vector3d probe_shifted  = probe  - this->origin_;
     double r1  = source_shifted.norm();
     double r2  = probe_shifted.norm();
+    double cos_gamma = source_shifted.dot(probe_shifted) / (r1 * r2);
 
     // Obtain coefficient for the separation of the Coulomb singularity
     double Cr12 = this->coefficient(r1, r2);
 
     double gr12 = 0.0;
     for (int L = 0; L <= maxLGreen_; ++L) {
-        gr12 += this->functionSummation(L, source_shifted, probe_shifted, Cr12);
+        gr12 += this->functionSummation(L, r1, r2, cos_gamma, Cr12);
     }
 
     return gr12;

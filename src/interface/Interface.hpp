@@ -354,6 +354,15 @@ void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
  */
 bool surfaceFunctionExists(const std::string & name);
 
+/*! \fn template<typename T> void safe_delete( T *& ptr );
+ *  \param[in] ptr the pointer to be deleted
+ *  \tparam    T   the type of the pointed-to object
+ *
+ *  Implements safe deletion of pointers
+ */
+template<typename T>
+void safe_delete( T *& ptr );
+
 /*! \fn inline void printer(const std::string & message)
  *  \param[in] message the message to be printed
  *

@@ -6,9 +6,10 @@ set(header_dir_list
 	${CMAKE_CURRENT_SOURCE_DIR}/green
 	${CMAKE_CURRENT_SOURCE_DIR}/green/dielectric_profile
 	${CMAKE_CURRENT_SOURCE_DIR}/interface
-	${CMAKE_CURRENT_SOURCE_DIR}/bi_operators # Stands for Boundary Integral operators
+    ${CMAKE_CURRENT_SOURCE_DIR}/bi_operators # Stands for Boundary Integral operators
 	${CMAKE_CURRENT_SOURCE_DIR}/solver
-	${CMAKE_CURRENT_SOURCE_DIR}/utils)
+	${CMAKE_CURRENT_SOURCE_DIR}/utils
+    )
 include_directories(${header_dir_list})
 
 init_Includer()

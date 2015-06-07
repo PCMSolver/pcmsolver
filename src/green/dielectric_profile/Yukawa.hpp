@@ -26,21 +26,28 @@
 #ifndef YUKAWA_HPP
 #define YUKAWA_HPP
 
+#include <iostream>
+
 #include "Config.hpp"
 
 /*! \file Yukawa.hpp
  *  \struct Yukawa
- *  \brief describes a medium with damping, i.e. ionic liquid 
+ *  \brief describes a medium with damping, i.e. ionic liquid
  *  \author Roberto Di Remigio
  *  \date 2015
  */
 
-struct Yukawa
+struct Yukawa final
 {
     double epsilon;
     double kappa;
     Yukawa() : epsilon(1.0), kappa(0.0) {}
     Yukawa(double eps, double k) : epsilon(eps), kappa(k) {}
+    friend std::ostream & operator<<(std::ostream & os, Yukawa & arg) {
+        os << "Permittivity         = " << arg.epsilon << std::endl;
+        os << "Inverse Debye length = " << arg.kappa;
+        return os;
+    }
 };
 
 #endif // YUKAWA_HPP

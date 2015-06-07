@@ -93,25 +93,29 @@ double CollocationIntegrator::computeS(const UniformDielectric<AD_hessian> * gf,
 	return (factor_ * std::sqrt(4 * M_PI / area) * epsInv);
 }
 
-double CollocationIntegrator::computeD(const UniformDielectric<double> * /* gf */, const Element & e) const {
+double CollocationIntegrator::computeD(const UniformDielectric<double> * gf, const Element & e) const {
+	double epsInv = 1.0 / gf->epsilon();
 	double area = e.area();
 	double radius = e.sphere().radius();
-    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
+        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_directional> * /* gf */, const Element & e) const {
+double CollocationIntegrator::computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const {
+	double epsInv = 1.0 / gf->epsilon();
 	double area = e.area();
 	double radius = e.sphere().radius();
-    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
+        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_gradient> * /* gf */, const Element & e) const {
+double CollocationIntegrator::computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const {
+	double epsInv = 1.0 / gf->epsilon();
 	double area = e.area();
 	double radius = e.sphere().radius();
-    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
+        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
-double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * /* gf */, const Element & e) const {
+double CollocationIntegrator::computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const {
+	double epsInv = 1.0 / gf->epsilon();
 	double area = e.area();
 	double radius = e.sphere().radius();
-    return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius));
+        return (-factor_ * std::sqrt(M_PI/ area) * (1.0 / radius) * epsInv);
 }
 
 double CollocationIntegrator::computeS(const IonicLiquid<double> * /* gf */, const Element & /* e */) const {
@@ -194,9 +198,5 @@ double CollocationIntegrator::computeD(const TanhSphericalDiffuse * gf, const El
     // "Diagonal" of the directional derivative of the image Green's function
     double image_grad = gf->imagePotentialDerivative(e.normal(), e.center(), e.center());
 
-    double eps_r2 = 0.0;
-    double d_eps_r2 = 0.0;
-    gf->epsilon(eps_r2, d_eps_r2, e.center());
-
-    return eps_r2 * (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad);
+    return (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad);
 }

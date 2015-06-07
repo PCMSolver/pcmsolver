@@ -162,7 +162,7 @@ void Input::reader(const char * pythonParsed)
         epsilonStaticOutside_ = solvent_.epsStatic();
         epsilonDynamicOutside_ = solvent_.epsDynamic();
     }
-    integratorType_ = "COLLOCATION"; // Currently hardcoded!!!
+    integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
 
     solverType_ = medium.getStr("SOLVERTYPE");
     equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
@@ -225,7 +225,7 @@ void Input::reader(const cavityInput & cav, const solverInput & solv,
         epsilonStaticOutside_ = solvent_.epsStatic();
         epsilonDynamicOutside_ = solvent_.epsDynamic();
     }
-    integratorType_ = "COLLOCATION"; // Currently hardcoded!!!
+    integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
 
     solverType_ = to_upper_copy(std::string(solv.solver_type));
     std::string inteq = to_upper_copy(std::string(solv.equation_type));
@@ -252,7 +252,8 @@ cavityData Input::cavityParams()
 greenData Input::insideGreenParams()
 {
     if (insideGreenData_.empty) {
-        insideGreenData_ = greenData(derivativeInsideType_, epsilonInside_, integratorType_);
+        int profile = profilePolicy("UNIFORM");
+        insideGreenData_ = greenData(derivativeInsideType_, integratorType_, profile, epsilonInside_);
     }
     return insideGreenData_;
 }
@@ -260,9 +261,11 @@ greenData Input::insideGreenParams()
 greenData Input::outsideStaticGreenParams()
 {
     if (outsideStaticGreenData_.empty) {
-        outsideStaticGreenData_ = greenData(derivativeOutsideType_, epsilonStaticOutside_,
-                                            integratorType_);
+        int profile = profilePolicy("UNIFORM");
+        outsideStaticGreenData_ = greenData(derivativeOutsideType_,
+                                            integratorType_, profile,  epsilonStaticOutside_);
         if (not hasSolvent_) {
+           outsideStaticGreenData_.howProfile  = profilePolicy("TANHDIFFUSE");
            outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
            outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
            outsideStaticGreenData_.center   = center_;
@@ -276,9 +279,11 @@ greenData Input::outsideStaticGreenParams()
 greenData Input::outsideDynamicGreenParams()
 {
     if (outsideDynamicGreenData_.empty) {
-        outsideDynamicGreenData_ = greenData(derivativeOutsideType_, epsilonDynamicOutside_,
-                                             integratorType_);
+        int profile = profilePolicy("UNIFORM");
+        outsideDynamicGreenData_ = greenData(derivativeOutsideType_,
+                                             integratorType_, profile, epsilonDynamicOutside_);
         if (not hasSolvent_) {
+           outsideDynamicGreenData_.howProfile  = profilePolicy("TANHDIFFUSE");
            outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
            outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
            outsideDynamicGreenData_.center   = center_;
@@ -291,24 +296,41 @@ greenData Input::outsideDynamicGreenParams()
 
 int derivativeTraits(const std::string & name)
 {
-    static std::map<std::string, int> mapStringToIntDerType;
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("NUMERICAL", 0));
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("DERIVATIVE",
-                                 1));
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("GRADIENT", 2));
-    mapStringToIntDerType.insert(std::map<std::string, int>::value_type("HESSIAN", 3));
+    static std::map<std::string, int> mapStringToInt;
+    mapStringToInt.insert(std::map<std::string, int>::value_type("NUMERICAL", 0));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("DERIVATIVE", 1));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("GRADIENT", 2));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("HESSIAN", 3));
 
-    return mapStringToIntDerType.find(name)->second;
+    return mapStringToInt.find(name)->second;
+}
+
+int integratorPolicy(const std::string & name)
+{
+    static std::map<std::string, int> mapStringToInt;
+    mapStringToInt.insert(std::map<std::string, int>::value_type("COLLOCATION", 0));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("NUMERICAL", 1));
+
+    return mapStringToInt.find(name)->second;
+}
+
+int profilePolicy(const std::string & name)
+{
+    static std::map<std::string, int> mapStringToInt;
+    mapStringToInt.insert(std::map<std::string, int>::value_type("UNIFORM", 0));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("YUKAWA", 1));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("ANISOTROPIC", 2));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("TANHDIFFUSE", 3));
+
+    return mapStringToInt.find(name)->second;
 }
 
 int integralEquation(const std::string & name)
 {
-    static std::map<std::string, int> mapStringToIntEquationType;
-    mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FIRSTKIND",
-                                      0));
-    mapStringToIntEquationType.insert(
-        std::map<std::string, int>::value_type("SECONDKIND", 1));
-    mapStringToIntEquationType.insert(std::map<std::string, int>::value_type("FULL", 2));
+    static std::map<std::string, int> mapStringToInt;
+    mapStringToInt.insert(std::map<std::string, int>::value_type("FIRSTKIND",0));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("SECONDKIND", 1));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("FULL", 2));
 
-    return mapStringToIntEquationType.find(name)->second;
+    return mapStringToInt.find(name)->second;
 }

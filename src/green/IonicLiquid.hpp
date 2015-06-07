@@ -29,74 +29,64 @@
 #include <cmath>
 #include <functional>
 #include <iosfwd>
+#include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
 
-template <typename DerivativeTraits>
-class IonicLiquid;
+class Element;
 
-#include "DerivativeTypes.hpp"
-#include "DiagonalIntegratorFactory.hpp"
-#include "DiagonalIntegrator.hpp"
-#include "ForIdGreen.hpp"
-#include "GreenData.hpp"
 #include "GreensFunction.hpp"
-#include "GreensFunctionFactory.hpp"
+#include "Yukawa.hpp"
 
 /*! \file IonicLiquid.hpp
  *  \class IonicLiquid
  *  \brief Green's functions for ionic liquid, described by the linearized Poisson-Boltzmann equation.
  *  \author Luca Frediani, Roberto Di Remigio
- *  \date 2013-2014
+ *  \date 2013-2015
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
+ *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation of S and D
  */
 
-template <typename DerivativeTraits>
-class IonicLiquid : public GreensFunction<DerivativeTraits, Yukawa>
+template <typename DerivativeTraits,
+          typename IntegratorPolicy>
+class IonicLiquid final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
+                                     IonicLiquid<DerivativeTraits, IntegratorPolicy> >
 {
 public:
-    IonicLiquid(double epsilon, double kappa) : GreensFunction<DerivativeTraits, Yukawa>(false) { initProfilePolicy(epsilon, kappa); }
-    IonicLiquid(double epsilon, double kappa, DiagonalIntegrator * diag) : GreensFunction<DerivativeTraits, Yukawa>(false, diag) { initProfilePolicy(epsilon, kappa); }
+    IonicLiquid(double eps, double k) : GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
+                                                  IonicLiquid<DerivativeTraits, IntegratorPolicy> >() { this->profile_ = Yukawa(eps, k); }
     virtual ~IonicLiquid() {}
-    /*!
-     *  Returns value of the directional derivative of the
+    /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  Notice that this method returns the directional derivative with respect
      *  to the probe point, thus assuming that the direction is relative to that point.
-     *
      *  \param[in] direction the direction
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
      */
-    virtual double derivative(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+    virtual double kernelD(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
     {
         return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }
 
-    /*!
-     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the S operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalS(const Element & e) const
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
     {
-            this->diagonal_->computeS(this, e);
-            return 1.0;
+        return this->integrator_.singleLayer(*this, e);
     }
-    /*!
-     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Calculates the matrix representation of the D operator
+     *  \param[in] e list of finite elements
      */
-    virtual double diagonalD(const Element & e) const
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
     {
-            this->diagonal_->computeD(this, e);
-            return 1.0;
+        return this->integrator_.doubleLayer(*this, e);
     }
-
-    virtual double epsilon() const { return this->profile_.epsilon; }
 
     friend std::ostream & operator<<(std::ostream & os, IonicLiquid & gf) {
         return gf.printObject(os);
@@ -108,74 +98,21 @@ private:
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
      */
-    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const
+    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const override
     {
-	double eps = this->profile_.epsilon;
-	double k = this->profile_.kappa;
+        double eps = this->profile_.epsilon;
+	    double k = this->profile_.kappa;
         DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
                           (sp[1] - pp[1]) * (sp[1] - pp[1]) +
                           (sp[2] - pp[2]) * (sp[2] - pp[2]));
         return (exp(-k * distance) / (eps * distance));
     }
-    virtual std::ostream & printObject(std::ostream & os)
+    virtual std::ostream & printObject(std::ostream & os) override
     {
         os << "Green's function type: ionic liquid" << std::endl;
-        os << "Permittivity         = " << this->profile_.epsilon << std::endl;
-        os << "Inverse Debye length = " << this->profile_.kappa;
+        os << this->profile_;
         return os;
     }
-    void initProfilePolicy(double eps, double k) { this->profile_ = Yukawa(eps, k); }
 };
-
-namespace
-{
-    struct buildIonicLiquid {
-        template <typename DerivativeType>
-        IGreensFunction * operator()(const greenData & _data) {
-            DiagonalIntegrator * integrator =
-		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
-            return new IonicLiquid<DerivativeType>(_data.epsilon, _data.kappa, integrator);
-        }
-    };
-
-    IGreensFunction * createIonicLiquid(const greenData & _data)
-    {
-        buildIonicLiquid build;
-        return for_id<derivative_types>(build, _data, _data.how);
-    }
-    const std::string IONICLIQUID("IONICLIQUID");
-    const bool registeredIonicLiquid =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            IONICLIQUID, createIonicLiquid);
-}
-
-template <>
-inline double GreensFunction<Numerical, Yukawa>::function(const Eigen::Vector3d & source,
-                                        const Eigen::Vector3d & probe) const
-{
-    Numerical sp[3], pp[3], res;
-    sp[0] = source(0); sp[1] = source(1); sp[2] = source(2);
-    pp[0] = probe(0);  pp[1] = probe(1);  pp[2] = probe(2);
-    res = this->operator()(sp, pp);
-    return res;
-}
-
-template <>
-inline double GreensFunction<Numerical, Yukawa>::derivativeSource(const Eigen::Vector3d & normal_p1,
-        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
-{
-    using namespace std::placeholders;
-    return threePointStencil(std::bind(&GreensFunction<Numerical, Yukawa>::function, this, _1, _2),
-                            p1, p2, normal_p1, this->delta_);
-}
-
-template <>
-inline double GreensFunction<Numerical, Yukawa>::derivativeProbe(const Eigen::Vector3d & normal_p2,
-        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
-{
-    using namespace std::placeholders;
-    return threePointStencil(std::bind(&GreensFunction<Numerical, Yukawa>::function, this, _1, _2),
-                            p2, p1, normal_p2, this->delta_);
-}
 
 #endif // IONICLIQUID_HPP

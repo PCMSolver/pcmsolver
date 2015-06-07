@@ -27,7 +27,6 @@
 #define GREENSFUNCTION_HPP
 
 #include <cmath>
-#include <functional>
 #include <iosfwd>
 #include <stdexcept>
 
@@ -35,7 +34,6 @@
 
 #include <Eigen/Dense>
 
-class DiagonalIntegrator;
 class Element;
 
 #include "DerivativeTypes.hpp"
@@ -52,22 +50,23 @@ class Element;
  *  \tparam ProfilePolicy    dielectric profile type
  */
 
-template <typename DerivativeTraits = AD_directional,
-	  typename ProfilePolicy = Uniform>
+template <typename DerivativeTraits,
+          typename IntegratorPolicy,
+          typename ProfilePolicy,
+          typename Derived>
 class GreensFunction: public IGreensFunction
 {
 public:
-    GreensFunction(bool uniform) : IGreensFunction(uniform), delta_(1.0e-4) {}
-    GreensFunction(bool uniform, DiagonalIntegrator * diag) : IGreensFunction(uniform, diag), delta_(1.0e-4) {}
+    GreensFunction() : delta_(1.0e-04), integrator_(IntegratorPolicy()) {}
     virtual ~GreensFunction() {}
-    /*!
-     *  Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
+    /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
      *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
-     *
      *  \param[in] p1 first point
      *  \param[in] p2 second point
+     *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
+     *  need to implement. Thus this method is marked final.
      */
-    virtual double function(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
     {
         DerivativeTraits sp[3], pp[3], res;
         sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
@@ -75,25 +74,11 @@ public:
         res = this->operator()(sp, pp);
         return res[0];
     }
-    /*!
-     *  Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
-     *  for the pair of points p1, p2:
-     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
-     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
-     *
-     *  \param[in] direction the direction
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    virtual double derivative(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const = 0;
     /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_1}\f$
      *  Notice that this method returns the directional derivative with respect
      *  to the source point.
-     *
      *  \param[in] normal_p1 the normal vector to p1
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
@@ -113,7 +98,6 @@ public:
      *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  Notice that this method returns the directional derivative with respect
      *  to the probe point.
-     *
      *  \param[in] normal_p2 the normal vector to p2
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
@@ -128,34 +112,51 @@ public:
         der = this->operator()(t1, t2);
         return der[1];
     }
-
-    /*!
-     *  Calculates the diagonal elements of the S operator: \f$ S_{ii} \f$
-     *  \param[in] e i-th finite element
+    /*! Returns full gradient of Greens's function for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  Notice that this method returns the gradient with respect to the source point.
+     *  \param[in] p1 first point
+     *  \param[in] p2 second point
      */
-    virtual double diagonalS(const Element & e) const = 0;
-    /*!
-     *  Calculates the diagonal elements of the D operator: \f$ D_{ii} \f$
-     *  \param[in] e i-th finite element
-     */
-    virtual double diagonalD(const Element & e) const = 0;
-
-    virtual void delta(double value)
+    Eigen::Vector3d gradientSource(const Eigen::Vector3d & p1,
+                                           const Eigen::Vector3d & p2) const
     {
-        if (value <= 1.0e-10) {
-            throw std::invalid_argument("Delta value must be larger than 1.0e-10");
-        }
-        delta_ = value;
+        Eigen::Vector3d gradient = Eigen::Vector3d::Zero();
+
+        gradient(0) = derivativeSource(Eigen::Vector3d::UnitX(), p1, p2);
+        gradient(1) = derivativeSource(Eigen::Vector3d::UnitY(), p1, p2);
+        gradient(2) = derivativeSource(Eigen::Vector3d::UnitZ(), p1, p2);
+
+        return gradient;
     }
-    virtual double delta() { return delta_; }
-    virtual double epsilon() const = 0;
+    /*! Returns full gradient of Greens's function for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  Notice that this method returns the gradient with respect to the probe point.
+     *  \param[in] p1 first point
+     *  \param[in] p2 second point
+     */
+    Eigen::Vector3d gradientProbe(const Eigen::Vector3d & p1,
+                                          const Eigen::Vector3d & p2) const
+    {
+        Eigen::Vector3d gradient = Eigen::Vector3d::Zero();
+
+        gradient(0) = derivativeProbe(Eigen::Vector3d::UnitX(), p1, p2);
+        gradient(1) = derivativeProbe(Eigen::Vector3d::UnitY(), p1, p2);
+        gradient(2) = derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2);
+
+        return gradient;
+    }
+
+    /*! Whether the Green's function describes a uniform environment */
+    virtual bool uniform() const final { return profiles::uniform(this->profile_); }
+    /*! Returns a dielectric permittivity profile */
+    virtual Permittivity permittivity() const final { return this->profile_; }
 
     friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
         return gf.printObject(os);
     }
 protected:
     /*! Evaluates the Green's function given a pair of points
-     *
      *  \param[in] source the source point
      *  \param[in]  probe the probe point
      */
@@ -163,41 +164,127 @@ protected:
     virtual std::ostream & printObject(std::ostream & os)
     {
         os << "Green's Function" << std::endl;
-        os << "Delta = " << delta_ << std::endl;
-        os << "Uniform = " << uniform_;
         return os;
     }
     double delta_;
+    IntegratorPolicy integrator_;
     ProfilePolicy profile_;
 };
 
-template <>
-inline double GreensFunction<Numerical, Uniform>::function(const Eigen::Vector3d & source,
-                                        const Eigen::Vector3d & probe) const
+template <typename IntegratorPolicy,
+          typename ProfilePolicy,
+          typename Derived>
+class GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>: public IGreensFunction
 {
-    Numerical sp[3], pp[3], res;
-    sp[0] = source(0); sp[1] = source(1); sp[2] = source(2);
-    pp[0] = probe(0);  pp[1] = probe(1);  pp[2] = probe(2);
-    res = this->operator()(sp, pp);
-    return res;
-}
+public:
+    GreensFunction() : delta_(1.0e-04), integrator_(IntegratorPolicy()) {}
+    virtual ~GreensFunction() {}
+    /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
+     *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  \param[in] p1 first point
+     *  \param[in] p2 second point
+     *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
+     *  need to implement. Thus this method is marked final.
+     */
+    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
+    {
+        Numerical sp[3], pp[3], res;
+        sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
+        pp[0] = p2(0); pp[1] = p2(1); pp[2] = p2(2);
+        res = this->operator()(sp, pp);
+        return res;
+    }
+    /*! Returns value of the directional derivative of the
+     *  Greens's function for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_1}\f$
+     *  Notice that this method returns the directional derivative with respect
+     *  to the source point.
+     *  \param[in] normal_p1 the normal vector to p1
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    virtual double derivativeSource(const Eigen::Vector3d & normal_p1,
+                            const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+    {
+        using namespace std::placeholders;
+        return threePointStencil(std::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, _1, _2),
+                                p1, p2, normal_p1, this->delta_);
+    }
+    /*! Returns value of the directional derivative of the
+     *  Greens's function for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  Notice that this method returns the directional derivative with respect
+     *  to the probe point.
+     *  \param[in] normal_p2 the normal vector to p2
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
+                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+    {
+        using namespace std::placeholders;
+        return threePointStencil(std::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, _1, _2),
+                                p2, p1, normal_p2, this->delta_);
+    }
+    /*! Returns full gradient of Greens's function for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  Notice that this method returns the gradient with respect to the source point.
+     *  \param[in] p1 first point
+     *  \param[in] p2 second point
+     */
+    Eigen::Vector3d gradientSource(const Eigen::Vector3d & p1,
+                                           const Eigen::Vector3d & p2) const
+    {
+        Eigen::Vector3d gradient;
 
-template <>
-inline double GreensFunction<Numerical, Uniform>::derivativeSource(const Eigen::Vector3d & normal_p1,
-        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
-{
-    using namespace std::placeholders;
-    return threePointStencil(std::bind(&GreensFunction<Numerical, Uniform>::function, this, _1, _2),
-                            p1, p2, normal_p1, this->delta_);
-}
+        gradient(0) = derivativeSource(Eigen::Vector3d::UnitX(), p1, p2);
+        gradient(1) = derivativeSource(Eigen::Vector3d::UnitY(), p1, p2);
+        gradient(2) = derivativeSource(Eigen::Vector3d::UnitZ(), p1, p2);
 
-template <>
-inline double GreensFunction<Numerical, Uniform>::derivativeProbe(const Eigen::Vector3d & normal_p2,
-        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
-{
-    using namespace std::placeholders;
-    return threePointStencil(std::bind(&GreensFunction<Numerical, Uniform>::function, this, _1, _2),
-                            p2, p1, normal_p2, this->delta_);
-}
+        return gradient;
+    }
+    /*!
+     *  Returns full gradient of Greens's function for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  Notice that this method returns the gradient with respect to the probe point.
+     *
+     *  \param[in] p1 first point
+     *  \param[in] p2 second point
+     */
+     Eigen::Vector3d gradientProbe(const Eigen::Vector3d & p1,
+                                          const Eigen::Vector3d & p2) const
+    {
+        Eigen::Vector3d gradient;
+
+        gradient(0) = derivativeProbe(Eigen::Vector3d::UnitX(), p1, p2);
+        gradient(1) = derivativeProbe(Eigen::Vector3d::UnitY(), p1, p2);
+        gradient(2) = derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2);
+
+        return gradient;
+    }
+
+    /*! Whether the Green's function describes a uniform environment */
+    virtual bool uniform() const final { return profiles::uniform(this->profile_); }
+    /*! Returns a dielectric permittivity profile */
+    virtual Permittivity permittivity() const final { return this->profile_; }
+
+    friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
+        return gf.printObject(os);
+    }
+protected:
+    /*! Evaluates the Green's function given a pair of points
+     *  \param[in] source the source point
+     *  \param[in]  probe the probe point
+     */
+    virtual Numerical operator()(Numerical * source, Numerical * probe) const = 0;
+    virtual std::ostream & printObject(std::ostream & os)
+    {
+        os << "Green's Function" << std::endl;
+        return os;
+    }
+    double delta_;
+    IntegratorPolicy integrator_;
+    ProfilePolicy profile_;
+};
 
 #endif // GREENSFUNCTION_HPP

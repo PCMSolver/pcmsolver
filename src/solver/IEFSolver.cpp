@@ -28,7 +28,7 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
-#include <stdexcept>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -38,12 +38,13 @@
 
 #include "Cavity.hpp"
 #include "Element.hpp"
+#include "Exception.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
-void IEFSolver::buildSystemMatrix(const Cavity & cavity)
+void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity)
 {
-    if (greenInside_->isUniform() && greenOutside_->isUniform()) {
+    if (greenInside_->uniform() && greenOutside_->uniform()) {
         buildIsotropicMatrix(cavity);
     } else {
         buildAnisotropicMatrix(cavity);
@@ -52,6 +53,7 @@ void IEFSolver::buildSystemMatrix(const Cavity & cavity)
 
 void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 {
+    using namespace std::placeholders;
     // The total size of the cavity
     int cavitySize = cav.size();
     // The number of irreps in the group
@@ -59,31 +61,11 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     // The size of the irreducible portion of the cavity
     int dimBlock = cav.irreducible_size();
 
-    Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd SE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd DE = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-
     // Compute SI, DI and SE, DE on the whole cavity, regardless of symmetry
-    for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = greenInside_->diagonalS(cav.elements(i));
-        SE(i, i) = greenOutside_->diagonalS(cav.elements(i));
-        DI(i, i) = greenInside_->diagonalD(cav.elements(i));
-        DE(i, i) = greenOutside_->diagonalD(cav.elements(i));
-
-        Eigen::Vector3d source = cav.elementCenter().col(i);
-        for (int j = 0; j < cavitySize; ++j) {
-            Eigen::Vector3d probe = cav.elementCenter().col(j);
-            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
-            probeNormal.normalize();
-            if (i != j) {
-                SI(i, j) = greenInside_->function(source, probe);
-                SE(i, j) = greenOutside_->function(source, probe);
-                DI(i, j) = greenInside_->derivative(probeNormal, source, probe);
-                DE(i, j) = greenOutside_->derivative(probeNormal, source, probe);
-            }
-        }
-    }
+    Eigen::MatrixXd SI = greenInside_->singleLayer(cav.elements());
+    Eigen::MatrixXd DI = greenInside_->doubleLayer(cav.elements());
+    Eigen::MatrixXd SE = greenOutside_->singleLayer(cav.elements());
+    Eigen::MatrixXd DE = greenOutside_->doubleLayer(cav.elements());
 
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
@@ -99,38 +81,38 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd aInv = a.inverse();
 
     // 1. Form T
-    fullPCMMatrix = ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.adjoint().eval()));
+    fullPCMMatrix_ = ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.transpose().eval()));
     // 2. Invert T using LU decomposition with full pivoting
     //    This is a rank-revealing LU decomposition, this allows us
     //    to test if T is invertible before attempting to invert it.
-    Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
-    if (!(T_LU.isInvertible())) throw std::runtime_error("T matrix is not invertible!");
-    fullPCMMatrix = T_LU.inverse();
+    Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix_);
+    if (!(T_LU.isInvertible())) PCMSOLVER_ERROR("T matrix is not invertible!");
+    fullPCMMatrix_ = T_LU.inverse();
     Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
-    if (!(SI_LU.isInvertible())) throw std::runtime_error("SI matrix is not invertible!");
-    fullPCMMatrix *= ((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI));
-    fullPCMMatrix *= a;
+    if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!");
+    fullPCMMatrix_ *= ((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI));
+    fullPCMMatrix_ *= a;
     // 5. Symmetrize K := (K + K+)/2
     if (hermitivitize_) {
-        hermitivitize(fullPCMMatrix);
+        hermitivitize(fullPCMMatrix_);
     }
     // Pack into a block diagonal matrix
     // For the moment just packs into a std::vector<Eigen::MatrixXd>
-    symmetryPacking(blockPCMMatrix, fullPCMMatrix, dimBlock, nrBlocks);
+    symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
     std::ofstream matrixOut("PCM_matrix");
     matrixOut << "fullPCMMatrix" << std::endl;
-    matrixOut << fullPCMMatrix << std::endl;
+    matrixOut << fullPCMMatrix_ << std::endl;
     for (int i = 0; i < nrBlocks; ++i) {
         matrixOut << "Block number " << i << std::endl;
-        matrixOut << blockPCMMatrix[i] << std::endl;
+        matrixOut << blockPCMMatrix_[i] << std::endl;
     }
 
-    builtAnisotropicMatrix = true;
-    builtIsotropicMatrix = false;
+    built_ = true;
 }
 
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 {
+    using namespace std::placeholders;
     // The total size of the cavity
     int cavitySize = cav.size();
     // The number of irreps in the group
@@ -138,24 +120,10 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     // The size of the irreducible portion of the cavity
     int dimBlock = cav.irreducible_size();
 
-    Eigen::MatrixXd SI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    Eigen::MatrixXd DI = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    for (int i = 0; i < cavitySize; ++i) {
-        SI(i, i) = greenInside_->diagonalS(cav.elements(i));
-        DI(i, i) = greenInside_->diagonalD(cav.elements(i));
-        Eigen::Vector3d source = cav.elementCenter().col(i);
-        for (int j = 0; j < cavitySize; ++j) {
-            Eigen::Vector3d probe = cav.elementCenter().col(j);
-            Eigen::Vector3d probeNormal = cav.elementNormal().col(j);
-            probeNormal.normalize();
-            if (i != j) {
-                SI(i, j) = greenInside_->function(source, probe);
-                DI(i, j) = greenInside_->derivative(probeNormal, source, probe);
-            }
-        }
-    }
+    Eigen::MatrixXd SI = greenInside_->singleLayer(cav.elements());
+    Eigen::MatrixXd DI = greenInside_->doubleLayer(cav.elements());
+
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.
@@ -165,81 +133,63 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     }
 
     Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-    Eigen::MatrixXd aInv = a.inverse();
+    Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
+    aInv = a.inverse();
 
     // Tq = -Rv -> q = -(T^-1 * R)v = -Kv
     // T = (2 * M_PI * fact * aInv - DI) * a * SI; R = (2 * M_PI * aInv - DI)
-    // fullPCMMatrix = K = T^-1 * R * a
+    // fullPCMMatrix_ = K = T^-1 * R * a
     // 1. Form T
-    double epsilon = greenOutside_->epsilon();
+    double epsilon = profiles::epsilon(greenOutside_->permittivity());
     double fact = (epsilon + 1.0)/(epsilon - 1.0);
-    fullPCMMatrix = (2 * M_PI * fact * aInv - DI) * a * SI;
+    fullPCMMatrix_ = (2 * M_PI * fact * aInv - DI) * a * SI;
     // 2. Invert T using LU decomposition with full pivoting
     //    This is a rank-revealing LU decomposition, this allows us
     //    to test if T is invertible before attempting to invert it.
-    Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
-    if (!(T_LU.isInvertible())) throw std::runtime_error("T matrix is not invertible!");
-    fullPCMMatrix = T_LU.inverse();
+    Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix_);
+    if (!(T_LU.isInvertible()))
+        throw std::runtime_error("T matrix is not invertible!");
+    fullPCMMatrix_ = T_LU.inverse();
     // 3. Multiply T^-1 and R
-    fullPCMMatrix *= (2 * M_PI * aInv - DI);
+    fullPCMMatrix_ *= (2 * M_PI * aInv - DI);
     // 4. Multiply by a
-    fullPCMMatrix *= a;
+    fullPCMMatrix_ *= a;
     // 5. Symmetrize K := (K + K+)/2
     if (hermitivitize_) {
-        hermitivitize(fullPCMMatrix);
+        hermitivitize(fullPCMMatrix_);
     }
-    // Diagonalize and print out some useful info.
-    // This should be done only when debugging...
-    /*
-    	std::ofstream matrixOut("PCM_matrix");
-    	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(fullPCMMatrix);
-    	if (solver.info() != Eigen::Success)
-           throw std::runtime_error("fullPCMMatrix diagonalization not successful");
-    	matrixOut << "PCM matrix printout" << std::endl;
-    matrixOut << "Number of Tesserae: " << cavitySize << std::endl;
-    	matrixOut << "Largest Eigenvalue: " << solver.eigenvalues()[cavitySize-1] << std::endl;
-    	matrixOut << "Lowest Eigenvalue: " << solver.eigenvalues()[0] << std::endl;
-    	matrixOut << "Average of Eigenvalues: " << (solver.eigenvalues().sum() / cavitySize)<< std::endl;
-    	matrixOut << "List of Eigenvalues:\n" << solver.eigenvalues() << std::endl;
-    	matrixOut.close();
-    */
     // Pack into a block diagonal matrix
     // For the moment just packs into a std::vector<Eigen::MatrixXd>
-    symmetryPacking(blockPCMMatrix, fullPCMMatrix, dimBlock, nrBlocks);
+    symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
     std::ofstream matrixOut("PCM_matrix");
     matrixOut << "fullPCMMatrix" << std::endl;
-    matrixOut << fullPCMMatrix << std::endl;
+    matrixOut << fullPCMMatrix_ << std::endl;
     for (int i = 0; i < nrBlocks; ++i) {
         matrixOut << "Block number " << i << std::endl;
-        matrixOut << blockPCMMatrix[i] << std::endl;
+        matrixOut << blockPCMMatrix_[i] << std::endl;
     }
 
-    builtIsotropicMatrix = true;
-    builtAnisotropicMatrix = false;
+    built_ = true;
 }
 
-void IEFSolver::computeCharge(const Eigen::VectorXd &potential,
-        Eigen::VectorXd &charge, int irrep)
+Eigen::VectorXd IEFSolver::computeCharge_impl(const Eigen::VectorXd & potential, int irrep) const
 {
     // The potential and charge vector are of dimension equal to the
     // full dimension of the cavity. We have to select just the part
     // relative to the irrep needed.
-    int fullDim = fullPCMMatrix.rows();
-    int nrBlocks = blockPCMMatrix.size();
+    int fullDim = fullPCMMatrix_.rows();
+    Eigen::VectorXd charge = Eigen::VectorXd::Zero(fullDim);
+    int nrBlocks = blockPCMMatrix_.size();
     int irrDim = int(fullDim/nrBlocks);
-    if (builtIsotropicMatrix or builtAnisotropicMatrix) {
-       charge.segment(irrep*irrDim,
-                       irrDim)= - blockPCMMatrix[irrep] * potential.segment(irrep*irrDim, irrDim);
-
-    } else {
-        throw std::runtime_error("PCM matrix not initialized!");
-    }
+    charge.segment(irrep*irrDim, irrDim) =
+        - blockPCMMatrix_[irrep] * potential.segment(irrep*irrDim, irrDim);
+    return charge;
 }
 
 std::ostream & IEFSolver::printSolver(std::ostream & os)
 {
     std::string type;
-    if (builtAnisotropicMatrix) {
+    if (greenInside_->uniform() && greenOutside_->uniform()) {
         type = "IEFPCM, anisotropic";
     } else {
         type = "IEFPCM, isotropic";
@@ -250,6 +200,10 @@ std::ostream & IEFSolver::printSolver(std::ostream & os)
     } else {
         os << "PCM matrix NOT hermitivitized (matches old DALTON)";
     }
+    os << ".... Inside " << std::endl;
+    os << *greenInside_ << std::endl;
+    os << ".... Outside " << std::endl;
+    os << *greenOutside_;
     return os;
 }
 

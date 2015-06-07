@@ -7,7 +7,7 @@ list(REMOVE_ITEM headers_list "")
 list(SORT headers_list)
 # Write headers to Includer.hpp
 file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Solvers\n")
-write_to_Includer("${headers_list}" "")
+write_to_Includer("${headers_list}" "SolverHelperFunctions.hpp")
 
 set(sources_list "")
 # Get sources with .cpp extension
@@ -23,7 +23,7 @@ write_to_cloc_list("${to_count}")
 # Build static library
 add_library(solver STATIC ${sources_list})
 set(libs_to_merge solver ${libs_to_merge} PARENT_SCOPE)
-add_dependencies(solver cavity green)
+add_dependencies(solver cavity)
 install(TARGETS solver ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list

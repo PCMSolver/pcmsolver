@@ -1,89 +1,194 @@
+/* pcmsolver_copyright_start */
+/*
+ *     PCMSolver, an API for the Polarizable Continuum Model
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+ *
+ *     This file is part of PCMSolver.
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Lesser General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     PCMSolver is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Lesser General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     For information on the complete list of contributors to the
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+ */
+/* pcmsolver_copyright_end */
+
 #ifndef NUMERICALINTEGRATOR_HPP
 #define NUMERICALINTEGRATOR_HPP
 
+#include <cmath>
+#include <functional>
 #include <iosfwd>
+#include <stdexcept>
+#include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Dense>
 
-class Element;
-
-#include "DerivativeTypes.hpp"
-#include "DiagonalIntegrator.hpp"
-#include "DiagonalIntegratorFactory.hpp"
+#include "IntegratorHelperFunctions.hpp"
+#include "Element.hpp"
 #include "AnisotropicLiquid.hpp"
+#include "SphericalDiffuse.hpp"
 #include "IonicLiquid.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
-#include "TanhSphericalDiffuse.hpp"
 
 /*! \file NumericalIntegrator.hpp
- *  \class NumericalIntegrator
- *  \brief Implementation of diagonal elements of S and D using numerical integration
+ *  \struct NumericalIntegrator
+ *  \brief Implementation of the single and double layer operators matrix representation using one-point collocation
  *  \author Roberto Di Remigio
- *  \date 2014
+ *  \date 2015
  *
- *  Calculates the diagonal elements of S and D by collocation, using numerical
- *  integration.
+ *  Calculates the diagonal elements of S and D by collocation, using numerical integration.
  */
 
-class NumericalIntegrator : public DiagonalIntegrator
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+
+struct NumericalIntegrator
 {
-public:
-    virtual double computeS(const Vacuum<double> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const Vacuum<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const Vacuum<double> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const Vacuum<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const UniformDielectric<double> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const UniformDielectric<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const UniformDielectric<double> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const UniformDielectric<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const IonicLiquid<double> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const IonicLiquid<double> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const IonicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const AnisotropicLiquid<double> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeS(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeD(const AnisotropicLiquid<double> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_directional> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_gradient> * gf, const Element & e) const;
-    virtual double computeD(const AnisotropicLiquid<AD_hessian> * gf, const Element & e) const;
-
-    virtual double computeS(const TanhSphericalDiffuse * gf, const Element & e) const;
-
-    virtual double computeD(const TanhSphericalDiffuse * gf, const Element & e) const;
-};
-namespace
-{
-    DiagonalIntegrator * createNumericalIntegrator()
-    {
-        return new NumericalIntegrator();
+    /**@{ Single and double layer potentials for a Vacuum Green's function by collocation: numerical integration of diagonal */
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
+     *  \param[in] gf Green's function
+     *  \param[in] e  list of finite elements
+     */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd singleLayer(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
+        auto kernelS = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
+        auto diagonal = [kernelS] (const Element & el) -> double { return integrator::integrateS<32, 16>(kernelS, el); };
+        return integrator::singleLayer(e, diagonal, kernelS);
     }
-    const std::string NUMERICAL("NUMERICAL");
-    const bool registeredNumericalIntegrator = DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().registerDiagonalIntegrator(
-                                         NUMERICAL, createNumericalIntegrator);
-}
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
+     *  \param[in] gf Green's function
+     *  \param[in] e  list of finite elements
+     */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd doubleLayer(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
+        auto kernelD = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
+        auto diagonal = [kernelD] (const Element & el) -> double { return integrator::integrateD<32, 16>(kernelD, el); };
+        return integrator::doubleLayer(e, diagonal, kernelD);
+    }
+    /**@}*/
+
+    /**@{ Single and double layer potentials for a UniformDielectric Green's function by collocation: numerical integration of diagonal */
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
+     *  \param[in] gf Green's function
+     *  \param[in] e  list of finite elements
+     */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd singleLayer(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
+        auto kernelS = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
+        auto diagonal = [kernelS] (const Element & el) -> double { return integrator::integrateS<32, 16>(kernelS, el); };
+        return integrator::singleLayer(e, diagonal, kernelS);
+    }
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
+     *  \param[in] gf Green's function
+     *  \param[in] e  list of finite elements
+     */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd doubleLayer(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
+        auto kernelD = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
+        auto diagonal = [kernelD] (const Element & el) -> double { return integrator::integrateD<32, 16>(kernelD, el); };
+        return integrator::doubleLayer(e, diagonal, kernelD);
+    }
+    /**@}*/
+
+    /**@{ Single and double layer potentials for a IonicLiquid Green's function by collocation: numerical integration of diagonal */
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
+     *  \param[in] gf Green's function
+     *  \param[in] e  list of finite elements
+     */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd singleLayer(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
+        auto kernelS = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
+        auto diagonal = [kernelS] (const Element & el) -> double { return integrator::integrateS<32, 16>(kernelS, el); };
+        return integrator::singleLayer(e, diagonal, kernelS);
+    }
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
+     *  \param[in] gf Green's function
+     *  \param[in] e  list of finite elements
+     */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd doubleLayer(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
+        auto kernelD = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
+        auto diagonal = [kernelD] (const Element & el) -> double { return integrator::integrateD<32, 16>(kernelD, el); };
+        return integrator::doubleLayer(e, diagonal, kernelD);
+    }
+    /**@}*/
+
+    /**@{ Single and double layer potentials for a AnisotropicLiquid Green's function by collocation: numerical integration of diagonal */
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
+     *  \param[in] gf Green's function
+     *  \param[in] e  list of finite elements
+     */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd singleLayer(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
+        auto kernelS = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
+        auto diagonal = [kernelS] (const Element & el) -> double { return integrator::integrateS<32, 16>(kernelS, el); };
+        return integrator::singleLayer(e, diagonal, kernelS);
+    }
+    /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
+     *  \param[in] gf Green's function
+     *  \param[in] e  list of finite elements
+     */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd doubleLayer(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
+        auto kernelD = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
+        auto diagonal = [kernelD] (const Element & el) -> double { return integrator::integrateD<32, 16>(kernelD, el); };
+        return integrator::doubleLayer(e, diagonal, kernelD);
+    }
+    /**@}*/
+
+    /**@{ Single and double layer potentials for a SphericalDiffuse Green's function by collocation: numerical integration of diagonal */
+    template <typename ProfilePolicy>
+    Eigen::MatrixXd singleLayer(const SphericalDiffuse<NumericalIntegrator, ProfilePolicy> & /* gf */, const std::vector<Element> & e) const {
+//      // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
+//      double area = e.area();
+//      // Diagonal of S inside the cavity
+//      double Sii_I = factor_ * std::sqrt(4 * M_PI / area);
+//      // "Diagonal" of Coulomb singularity separation coefficient
+//      double coulomb_coeff = gf.coefficientCoulomb(e.center(), e.center());
+//      // "Diagonal" of the image Green's function
+//      double image = gf.imagePotential(e.center(), e.center());
+
+//      return (Sii_I / coulomb_coeff + image);
+        return Eigen::MatrixXd::Zero(e.size(), e.size());
+    }
+    template <typename ProfilePolicy>
+    Eigen::MatrixXd doubleLayer(const SphericalDiffuse<NumericalIntegrator, ProfilePolicy> & /* gf */, const std::vector<Element> & e) const {
+//      // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
+//      double area = e.area();
+//      double radius = e.sphere().radius();
+//      // Diagonal of S inside the cavity
+//      double Sii_I = factor_ * std::sqrt(4 * M_PI / area);
+//      // Diagonal of D inside the cavity
+//      double Dii_I = -factor_ * std::sqrt(M_PI/ area) * (1.0 / radius);
+//      // "Diagonal" of Coulomb singularity separation coefficient
+//      double coulomb_coeff = gf.coefficientCoulomb(e.center(), e.center());
+//      // "Diagonal" of the directional derivative of the Coulomb singularity separation coefficient
+//      double coeff_grad = gf.coefficientCoulombDerivative(e.normal(), e.center(), e.center()) / std::pow(coulomb_coeff, 2);
+//      // "Diagonal" of the directional derivative of the image Green's function
+//      double image_grad = gf.imagePotentialDerivative(e.normal(), e.center(), e.center());
+
+//      double eps_r2 = 0.0;
+//      std::tie(eps_r2, std::ignore) = gf.epsilon(e.center());
+
+//      return eps_r2 * (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad);
+        return Eigen::MatrixXd::Zero(e.size(), e.size());
+    }
+    /**@}*/
+};
 
 #endif // NUMERICALINTEGRATOR_HPP

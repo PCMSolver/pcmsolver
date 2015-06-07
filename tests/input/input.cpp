@@ -131,8 +131,8 @@ BOOST_FIXTURE_TEST_CASE(TsLess, InputTsLessTest)
     BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-12);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().howDerivative);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().howDerivative);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -228,8 +228,8 @@ BOOST_FIXTURE_TEST_CASE(Restart, InputRestartTest)
     BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, threshold);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().howDerivative);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().howDerivative);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -270,35 +270,35 @@ struct InputWaveletTest {
     double epsilonStaticOutside;
     double epsilonDynamicOutside;
     void SetUp() {
-	filename = "@wavelet.inp";
-	parsedInput = Input(filename);
-	units = "ANGSTROM";
-	CODATAyear = 1998;
+        filename = "@wavelet.inp";
+        parsedInput = Input(filename);
+        units = "ANGSTROM";
+        CODATAyear = 1998;
         type = "WAVELET";
-	patchLevel = 1;
-	coarsity   = 0.3;
+        patchLevel = 1;
+        coarsity   = 0.3;
         scaling = true;
-	radiiSet = "BONDI";
-	mode = "EXPLICIT";
-	Eigen::Vector3d c1, c2, c3;
-	c1 <<  0.00,  0.00, 0.00;
-	c2 <<  0.00, -0.96, 0.00;
-	c3 << -0.905, 0.32, 0.00;
-	c2 *= angstromToBohr(CODATAyear);
-	c3 *= angstromToBohr(CODATAyear);
-	Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
-	Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
-	Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
-	solverType = "WAVELET";
-	equationType = 0;
-	probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
-	greenInsideType = "VACUUM";
-	greenOutsideType = "UNIFORMDIELECTRIC";
-	derivativeInsideType = 0;
-	derivativeOutsideType = 2;
-	epsilonInside = 1.0;
-	epsilonStaticOutside = 78.39;
-	epsilonDynamicOutside = 10.423;
+        radiiSet = "BONDI";
+        mode = "EXPLICIT";
+        Eigen::Vector3d c1, c2, c3;
+        c1 <<  0.00,  0.00, 0.00;
+        c2 <<  0.00, -0.96, 0.00;
+        c3 << -0.905, 0.32, 0.00;
+        c2 *= angstromToBohr(CODATAyear);
+        c3 *= angstromToBohr(CODATAyear);
+        Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
+        Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
+        Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
+        solverType = "WAVELET";
+        equationType = 0;
+        probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+        greenInsideType = "VACUUM";
+        greenOutsideType = "UNIFORMDIELECTRIC";
+        derivativeInsideType = 0;
+        derivativeOutsideType = 2;
+        epsilonInside = 1.0;
+        epsilonStaticOutside = 78.39;
+        epsilonDynamicOutside = 10.423;
     }
 };
 
@@ -329,8 +329,8 @@ BOOST_FIXTURE_TEST_CASE(Wavelet, InputWaveletTest)
     BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-10);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().howDerivative);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().howDerivative);
     BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.insideGreenParams().epsilon, threshold);
     BOOST_REQUIRE_CLOSE(epsilonStaticOutside,  parsedInput.outsideStaticGreenParams().epsilon, threshold);
     BOOST_REQUIRE_CLOSE(epsilonDynamicOutside, parsedInput.outsideDynamicGreenParams().epsilon, threshold);
@@ -379,41 +379,41 @@ struct InputDiffuseTest {
     double width;
     Eigen::Vector3d origin;
     void SetUp() {
-	filename = "@diffuse.inp";
-	parsedInput = Input(filename);
-	units = "ANGSTROM";
-	CODATAyear = 1998;
-    type = "WAVELET";
-	patchLevel = 1;
-	coarsity   = 0.3;
-    scaling = true;
-	radiiSet = "BONDI";
-	mode = "EXPLICIT";
-	Eigen::Vector3d c1, c2, c3;
-	c1 <<  0.00,  0.00, 0.00;
-	c2 <<  0.00, -0.96, 0.00;
-	c3 << -0.905, 0.32, 0.00;
-	c2 *= angstromToBohr(CODATAyear);
-	c3 *= angstromToBohr(CODATAyear);
-	Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
-	Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
-	Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
-	solverType = "WAVELET";
-	equationType = 0;
-	probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
-	greenInsideType = "VACUUM";
-	greenOutsideType = "TANHSPHERICALDIFFUSE";
-	derivativeInsideType = 0;
-	derivativeOutsideType = 0;
-	epsilonInside = 1.0;
-	epsilonStatic1 = 78.39;
-	epsilonDynamic1 = 10.423;
-	epsilonStatic2 = 20.0;
-	epsilonDynamic2 = 4.0;
-    center = 100.0 * angstromToBohr(CODATAyear);
-    width  = 5.0 * angstromToBohr(CODATAyear);
-    origin << 70.0, 1.0, 23.0;
-    origin *= angstromToBohr(CODATAyear);
+        filename = "@diffuse.inp";
+        parsedInput = Input(filename);
+        units = "ANGSTROM";
+        CODATAyear = 1998;
+        type = "WAVELET";
+        patchLevel = 1;
+        coarsity   = 0.3;
+        scaling = true;
+        radiiSet = "BONDI";
+        mode = "EXPLICIT";
+        Eigen::Vector3d c1, c2, c3;
+        c1 <<  0.00,  0.00, 0.00;
+        c2 <<  0.00, -0.96, 0.00;
+        c3 << -0.905, 0.32, 0.00;
+        c2 *= angstromToBohr(CODATAyear);
+        c3 *= angstromToBohr(CODATAyear);
+        Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
+        Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
+        Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
+        solverType = "WAVELET";
+        equationType = 0;
+        probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+        greenInsideType = "VACUUM";
+        greenOutsideType = "TANHSPHERICALDIFFUSE";
+        derivativeInsideType = 0;
+        derivativeOutsideType = 0;
+        epsilonInside = 1.0;
+        epsilonStatic1 = 78.39;
+        epsilonDynamic1 = 10.423;
+        epsilonStatic2 = 20.0;
+        epsilonDynamic2 = 4.0;
+        center = 100.0 * angstromToBohr(CODATAyear);
+        width  = 5.0 * angstromToBohr(CODATAyear);
+        origin << 70.0, 1.0, 23.0;
+        origin *= angstromToBohr(CODATAyear);
     }
 };
 
@@ -444,8 +444,8 @@ BOOST_FIXTURE_TEST_CASE(Diffuse, InputDiffuseTest)
     BOOST_REQUIRE_CLOSE(probeRadius,           parsedInput.cavityParams().probeRadius, 1.0e-10);
     BOOST_REQUIRE_EQUAL(greenInsideType,       parsedInput.greenInsideType());
     BOOST_REQUIRE_EQUAL(greenOutsideType,      parsedInput.greenOutsideType());
-    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().how);
-    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().how);
+    BOOST_REQUIRE_EQUAL(derivativeInsideType,  parsedInput.insideGreenParams().howDerivative);
+    BOOST_REQUIRE_EQUAL(derivativeOutsideType, parsedInput.outsideStaticGreenParams().howDerivative);
     BOOST_REQUIRE_CLOSE(epsilonInside,         parsedInput.insideGreenParams().epsilon, threshold);
     BOOST_REQUIRE_CLOSE(epsilonStatic1,  parsedInput.outsideStaticGreenParams().epsilon1, threshold);
     BOOST_REQUIRE_CLOSE(epsilonStatic2,  parsedInput.outsideStaticGreenParams().epsilon2, threshold);

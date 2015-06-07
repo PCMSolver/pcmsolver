@@ -40,14 +40,14 @@
 #include "cnpyPimpl.hpp"
 #include "Element.hpp"
 #include "GePolCavity.hpp"
-#include "MathUtils.hpp"
+#include "IntegratorHelperFunctions.hpp"
 #include "PhysicalConstants.hpp"
 #include "TestingMolecules.hpp"
 
-typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
-singleLayerIntegrand;
-typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
-		        const Eigen::Vector3d &)> doubleLayerIntegrand;
+using integrator::KernelS;
+using integrator::KernelD;
+using integrator::integrateS;
+using integrator::integrateD;
 
 /*! \class NumericalQuadrature
  *  \test \b NumericalQuadrature_sphere tests numerical quadrature on a sphere for integrand = 1.0
@@ -64,10 +64,10 @@ BOOST_AUTO_TEST_CASE(sphere)
     GePolCavity cavity(point, area, 0.0, 100.0);
     Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
 
-    singleLayerIntegrand F = f();
+    KernelS F = f();
 
     for (int i = 0; i < cavity.size(); ++i) {
-	results(i) = integrator<32, 16>(F, cavity.elements(i));
+	results(i) = integrateS<32, 16>(F, cavity.elements(i));
 	double diff = results(i) - cavity.elementArea(i);
 	if (std::abs(diff) > 1.0e-12) {
 	    BOOST_TEST_MESSAGE("Test versus area for single sphere");
@@ -97,10 +97,10 @@ BOOST_AUTO_TEST_CASE(sphere_1r)
 
     Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
 
-    singleLayerIntegrand F = f();
+    KernelS F = f();
 
     for (int i = 0; i < cavity.size(); ++i) {
-	results(i) = integrator<32, 16>(F, cavity.elements(i));
+	results(i) = integrateS<32, 16>(F, cavity.elements(i));
 	double diff = results(i) - (cavity.elementArea(i)/radius);
 	if (std::abs(diff) > 1.0e-11) {
 	    BOOST_TEST_MESSAGE("Test versus area divided by radius for single sphere");
@@ -130,10 +130,10 @@ BOOST_AUTO_TEST_CASE(molecule)
     GePolCavity cavity(molec, area, probeRadius, minRadius);
     Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
 
-    singleLayerIntegrand F = f();
+    KernelS F = f();
 
     for (int i = 0; i < cavity.size(); ++i) {
-	results(i) = integrator<64, 16>(F, cavity.elements(i));
+	results(i) = integrateS<64, 16>(F, cavity.elements(i));
 	double diff = results(i) - cavity.elementArea(i);
 	if (std::abs(diff) > 1.0e-11) {
 	    BOOST_TEST_MESSAGE("Test versus area for H2 molecule");
@@ -174,10 +174,10 @@ BOOST_AUTO_TEST_CASE(molecule_1r)
     GePolCavity cavity(molec, area, probeRadius, minRadius);
     Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
 
-    singleLayerIntegrand F = f();
+    KernelS F = f();
 
     for (int i = 0; i < cavity.size(); ++i) {
-	results(i) = integrator<64, 16>(F, cavity.elements(i));
+	results(i) = integrateS<64, 16>(F, cavity.elements(i));
 	double diff = results(i) - (cavity.elementArea(i)/sph1.radius());
 	if (std::abs(diff) > 1.0e-11) {
 	    BOOST_TEST_MESSAGE("Test versus area divided by radius for H2 molecule");

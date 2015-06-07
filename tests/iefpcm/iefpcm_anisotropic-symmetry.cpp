@@ -62,11 +62,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC1)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c1");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -83,10 +82,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC1)
         fake_mep(i) = charge / distance;
     }
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -115,11 +114,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -140,10 +138,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -172,11 +170,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolCs)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.cs");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -197,10 +194,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolCs)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -229,11 +226,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolCi)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.ci");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -254,10 +250,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolCi)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -286,11 +282,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolD2)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.d2");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -311,10 +306,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolD2)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -343,11 +338,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2v)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -368,10 +362,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2v)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -400,11 +394,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2h)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -425,10 +418,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2h)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -457,11 +450,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolD2h)
     GePolCavity cavity(point, area, probeRadius, minRadius);
     fs::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -482,10 +474,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolD2h)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;

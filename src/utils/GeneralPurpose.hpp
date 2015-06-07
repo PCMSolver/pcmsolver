@@ -69,18 +69,4 @@ inline void PRINT_MAPPED_ELEMENTS (const T& coll,
     std::cout << std::endl;
 }
 
-/*! \fn template<typename T> inline void safe_delete( T *& ptr );
- *  \param[in] ptr the pointer to be deleted
- *  \tparam    T   the type of the pointed-to object
- *
- *  Implements safe deletion of pointers
- */
-
-template <typename T>
-inline void safe_delete(T *& ptr)
-{
-    delete ptr;
-    ptr = NULL;
-}
-
-#endif /* GENERALPURPOSE_HPP */
+#endif /*GENERALPURPOSE_HPP*/

@@ -12,13 +12,16 @@
 
 #include <Eigen/Dense>
 
+#include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
-#include "TanhSphericalDiffuse.hpp"
+#include "SphericalDiffuse.hpp"
+#include "OneLayerTanh.hpp"
 
 struct TanhSphericalDiffuseTest {
     double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
-    double deriv_inside_reference, deriv_outside_reference;
+    double der_probe_inside_reference, der_source_inside_reference;
+    double der_probe_outside_reference, der_source_outside_reference;
     Eigen::Vector3d sphereCenter;
     Eigen::Vector3d source1, probe1, sourceNormal1, probeNormal1;
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
@@ -40,8 +43,9 @@ struct TanhSphericalDiffuseTest {
         probeNormal1.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        inside_reference = 0.01237809396735725;
-        deriv_inside_reference = -1.0601898887311156;
+        inside_reference = 0.012377848015483936;
+        der_probe_inside_reference = -0.0125248562596845525;
+        der_source_inside_reference = 0.0125498847608398328;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
         sourceNormal2 = source2; // + Eigen::Vector3d::Random();
@@ -51,62 +55,60 @@ struct TanhSphericalDiffuseTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.5000684359884966;
-        deriv_outside_reference = -0.579907237954127686;
+        outside_reference = 0.50008829802731714;
+        der_probe_outside_reference = -0.289954122292268579;
+        der_source_outside_reference = 0.288674001099886723;
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(TanhSphericalDiffuse1, TanhSphericalDiffuseTest)
-/*! \class TanhSphericalDiffuse
+BOOST_FIXTURE_TEST_SUITE(TanhSphericalDiffuse, TanhSphericalDiffuseTest)
+/*! \class SphericalDiffuse
  *  \test \b TanhSphericalDiffuseTest_inside tests the evaluation of the TanhSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
 BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
 {
-    TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter);
     double value = inside_reference;
-    double gf_value = gf.function(source1, probe1);
-    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
+    double gf_value = gf.kernelS(source1, probe1);
+    BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
     BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
-    double deriv = deriv_inside_reference;
-    double gf_deriv = gf.derivative(probeNormal1, source1, probe1);
-    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
-    BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
-    BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
-    /*
-    double derSource = resultInside(2);
+    double der_probe = der_probe_inside_reference;
+    double gf_derProbe = gf.derivativeProbe(probeNormal1, source1, probe1);
+    BOOST_TEST_MESSAGE("der_probe   = " << std::setprecision(std::numeric_limits<long double>::digits10) << der_probe);
+    BOOST_TEST_MESSAGE("gf_derProbe = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derProbe);
+    BOOST_REQUIRE_CLOSE(gf_derProbe, der_probe, 1.0e-06);
+
+    double der_source = der_source_inside_reference;
     double gf_derSource = gf.derivativeSource(sourceNormal1, source1, probe1);
-    BOOST_TEST_MESSAGE("derSource    = " << std::setprecision(std::numeric_limits<long double>::digits10) << derSource);
+    BOOST_TEST_MESSAGE("der_source   = " << std::setprecision(std::numeric_limits<long double>::digits10) << der_source);
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
-    */
+    BOOST_REQUIRE_CLOSE(gf_derSource, der_source, 1.0e-06);
 }
-/*! \class TanhSphericalDiffuse
+/*! \class SphericalDiffuse
  *  \test \b TanhSphericalDiffuseTest_outside tests the evaluation of the TanhSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
 BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
 {
-    TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter);
     double value = outside_reference;
-    double gf_value = gf.function(source2, probe2);
-    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
+    double gf_value = gf.kernelS(source2, probe2);
+    BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
     BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
-    double deriv = deriv_outside_reference;
-    double gf_deriv = gf.derivative(probeNormal2, source2, probe2);
-    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
-    BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
-    BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
+    double der_probe = der_probe_outside_reference;
+    double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
+    BOOST_TEST_MESSAGE("der_probe   = " << std::setprecision(std::numeric_limits<long double>::digits10) << der_probe);
+    BOOST_TEST_MESSAGE("gf_derProbe = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derProbe);
+    BOOST_REQUIRE_CLOSE(gf_derProbe, der_probe, 1.0e-06);
 
-    /*
-    double derSource = resultOutside(2);
+    double der_source = der_source_outside_reference;
     double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
-    BOOST_TEST_MESSAGE("derSource    = " << std::setprecision(std::numeric_limits<long double>::digits10) << derSource);
+    BOOST_TEST_MESSAGE("der_source   = " << std::setprecision(std::numeric_limits<long double>::digits10) << der_source);
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
-    */
+    BOOST_REQUIRE_CLOSE(gf_derSource, der_source, 1.0e-06);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -114,7 +116,8 @@ BOOST_AUTO_TEST_SUITE_END()
 struct TanhSphericalDiffuseShiftedTest {
     double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
-    double deriv_inside_reference, deriv_outside_reference;
+    double der_probe_inside_reference, der_source_inside_reference;
+    double der_probe_outside_reference, der_source_outside_reference;
     Eigen::Vector3d sphereCenter;
     Eigen::Vector3d source1, probe1, sourceNormal1, probeNormal1;
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
@@ -136,8 +139,9 @@ struct TanhSphericalDiffuseShiftedTest {
         probeNormal1.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        inside_reference = 0.01237809396735725;
-        deriv_inside_reference = -1.0601898887311156;
+        inside_reference = 0.012377848015483936;
+        der_probe_inside_reference = -0.0125248562565360294;
+        der_source_inside_reference = 0.0125498847577173306;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
         sourceNormal2 = source2; // + Eigen::Vector3d::Random();
@@ -147,64 +151,61 @@ struct TanhSphericalDiffuseShiftedTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.50006911963511314;
-        deriv_outside_reference = -0.5799081943117862;
+        outside_reference = 0.5000891977645715;
+        der_probe_outside_reference = -0.289954254408808509;
+        der_source_outside_reference = 0.288674994271542751;
     }
 };
 
 BOOST_FIXTURE_TEST_SUITE(TanhSphericalDiffuseShifted1, TanhSphericalDiffuseShiftedTest)
 
-/*! \class TanhSphericalDiffuse
+/*! \class SphericalDiffuse
  *  \test \b TanhSphericalDiffuseTest_inside tests the evaluation of the TanhSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
 BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseShiftedTest)
 {
-    TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter);
     double value = inside_reference;
-    double gf_value = gf.function(source1, probe1);
-    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
+    double gf_value = gf.kernelS(source1, probe1);
+    BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
     BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
-    double deriv = deriv_inside_reference;
-    double gf_deriv = gf.derivative(probeNormal1, source1, probe1);
-    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
-    BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
-    BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
+    double der_probe = der_probe_inside_reference;
+    double gf_derProbe = gf.derivativeProbe(probeNormal1, source1, probe1);
+    BOOST_TEST_MESSAGE("der_probe   = " << std::setprecision(std::numeric_limits<long double>::digits10) << der_probe);
+    BOOST_TEST_MESSAGE("gf_derProbe = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derProbe);
+    BOOST_REQUIRE_CLOSE(gf_derProbe, der_probe, 1.0e-06);
 
-    /*
-    double derSource = resultInside(2);
+    double der_source = der_source_inside_reference;
     double gf_derSource = gf.derivativeSource(sourceNormal1, source1, probe1);
-    BOOST_TEST_MESSAGE("derSource    = " << std::setprecision(std::numeric_limits<long double>::digits10) << derSource);
+    BOOST_TEST_MESSAGE("der_source   = " << std::setprecision(std::numeric_limits<long double>::digits10) << der_source);
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
-    */
+    BOOST_REQUIRE_CLOSE(gf_derSource, der_source, 1.0e-06);
 }
-/*! \class TanhSphericalDiffuse
+/*! \class SphericalDiffuse
  *  \test \b TanhSphericalDiffuseTest_outside tests the evaluation of the TanhSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
 BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseShiftedTest)
 {
-    TanhSphericalDiffuse gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter);
     double value = outside_reference;
-    double gf_value = gf.function(source2, probe2);
-    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
+    double gf_value = gf.kernelS(source2, probe2);
+    BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
     BOOST_TEST_MESSAGE("gf_value = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_value);
-    BOOST_CHECK_CLOSE(gf_value, value, 1.0e-08);
+    BOOST_REQUIRE_CLOSE(gf_value, value, 1.0e-08);
 
-    double deriv = deriv_outside_reference;
-    double gf_deriv = gf.derivative(probeNormal2, source2, probe2);
-    BOOST_TEST_MESSAGE("Reference value = " << std::setprecision(std::numeric_limits<long double>::digits10) << deriv);
-    BOOST_TEST_MESSAGE("gf_deriv = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_deriv);
-    BOOST_REQUIRE_CLOSE(gf_deriv, deriv, 1.0e-06);
+    double der_probe = der_probe_outside_reference;
+    double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
+    BOOST_TEST_MESSAGE("der_probe   = " << std::setprecision(std::numeric_limits<long double>::digits10) << der_probe);
+    BOOST_TEST_MESSAGE("gf_derProbe = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derProbe);
+    BOOST_REQUIRE_CLOSE(gf_derProbe, der_probe, 1.0e-06);
 
-    /*
-    double derSource = resultOutside(2);
+    double der_source = der_source_outside_reference;
     double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
-    BOOST_TEST_MESSAGE("derSource    = " << std::setprecision(std::numeric_limits<long double>::digits10) << derSource);
+    BOOST_TEST_MESSAGE("der_source   = " << std::setprecision(std::numeric_limits<long double>::digits10) << der_source);
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-06);
-    */
+    BOOST_REQUIRE_CLOSE(gf_derSource, der_source, 1.0e-06);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

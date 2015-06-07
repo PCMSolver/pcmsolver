@@ -1,37 +1,38 @@
-units = angstrom
-codata = 1998
-medium
+UNITS = ANGSTROM
+CODATA = 1998
+MEDIUM
 {
 
-	solvertype = wavelet
-        equationtype = firstkind
-	proberadius = 1.385
-        solvent = explicit
-	green<inside>
+	SOLVERTYPE = WAVELET
+    EQUATIONTYPE = FIRSTKIND
+	PROBERADIUS = 1.385
+    SOLVENT = EXPLICIT
+	GREEN<INSIDE>
 	{
-		type=vacuum
-		der = numerical
+		TYPE=VACUUM
+		DER = NUMERICAL
 	}
-	green<outside>
+	GREEN<OUTSIDE>
 	{
-		type = sphericaldiffuse
-        profile = tanh
-	    eps1 = 78.39
-		epsdyn1 = 10.423
-        eps2 = 20.0
-        epsdyn2 = 4.0
-		der = numerical
+		TYPE = SPHERICALDIFFUSE
+        PROFILE = TANH
+	    EPS1 = 78.39
+		EPSDYN1 = 10.423
+        EPS2 = 20.0
+        EPSDYN2 = 4.0
+		DER = NUMERICAL
+        INTERFACEORIGIN = [70.0, 1.0, 23.0]
 	}
 }
 
-cavity
+CAVITY
 {
-	type = wavelet
-	dyadicfile      =      benzene2.dat
-	patchlevel = 1
-	coarsity = 0.3
-	mode = explicit
-	spheres = [ 0.00,   0.00,  0.00,  1.80,
+	TYPE = WAVELET
+	DYADICFILE       =       benzene2.dat
+	PATCHLEVEL = 1
+	COARSITY = 0.3
+	MODE = EXPLICIT
+	SPHERES = [ 0.00,   0.00,  0.00,  1.80,
 		    0.00,  -0.96,  0.00,  1.44,
 		   -0.905,  0.32,  0.00,  1.44]
 }

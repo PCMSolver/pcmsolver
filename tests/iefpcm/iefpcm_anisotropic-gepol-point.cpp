@@ -58,11 +58,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
     cavity.saveCavity("point.npz");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -79,10 +78,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
         fake_mep(i) = charge / distance;
     }
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
@@ -122,11 +121,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
     cavity.saveCavity("point.npz");
 
-    CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
-    UniformDielectric<AD_directional>(permittivity, diag);
+    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -143,10 +141,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
         fake_mep(i) = charge / distance;
     }
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));

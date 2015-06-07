@@ -5,6 +5,7 @@ add_subdirectory(numerical_quadrature)
 # Cavity generators
 add_subdirectory(gepol)
 # Green's functions
+#add_subdirectory(dielectric_profile)
 add_subdirectory(green)
 add_subdirectory(bi_operators)
 # Solvers

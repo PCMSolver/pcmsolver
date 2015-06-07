@@ -41,7 +41,7 @@
  *  \date 2014
  */
 
-class Anisotropic
+class Anisotropic final
 {
 private:
     /// Diagonal of the permittivity tensor in the lab-fixed frame
@@ -83,7 +83,12 @@ public:
     const Eigen::Matrix3d & epsilon() const { return epsilon_; }
     const Eigen::Matrix3d & epsilonInv() const { return epsilonInv_; }
     double detEps() const { return detEps_; }
-    bool isUniform() const { return false; }
+    friend std::ostream & operator<<(std::ostream & os, Anisotropic & arg) {
+        os << "Permittivity tensor diagonal (lab frame)   = " << arg.epsilonLab_.transpose() << std::endl;
+        os << "Euler angles (molecule-to-lab frame)       = " << arg.eulerAngles_.transpose() << std::endl;
+        os << "Permittivity tensor (molecule-fixed frame) =\n" << arg.epsilon_;
+        return os;
+    }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 };
 

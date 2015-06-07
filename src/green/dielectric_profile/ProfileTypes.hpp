@@ -26,17 +26,63 @@
 #ifndef PROFILETYPES_HPP
 #define PROFILETYPES_HPP
 
+#include <tuple>
+
 #include "Config.hpp"
 
+#include <boost/any.hpp>
+#include <boost/mpl/vector.hpp>
+#include <boost/variant.hpp>
+
 #include "Anisotropic.hpp"
-#include "TanhDiffuse.hpp"
-#include "TanhMembrane.hpp"
+#include "OneLayerTanh.hpp"
+#include "MembraneTanh.hpp"
 #include "Uniform.hpp"
 #include "Yukawa.hpp"
 
-#include <boost/mpl/vector.hpp>
-
-typedef boost::mpl::vector<TanhDiffuse, Uniform, Yukawa, TanhMembrane, Anisotropic>
+/*! All possible profile types */
+typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, OneLayerTanh, MembraneTanh>
 profile_types;
+
+/*! One-layer diffuse profile types */
+typedef boost::mpl::vector<OneLayerTanh> onelayer_diffuse_profile_types;
+
+/*! Two-layer (aka membrane-like) diffuse profile types */
+typedef boost::mpl::vector<MembraneTanh> membrane_diffuse_profile_types;
+
+/*! An object of Permittivity type can have one of the types in the type sequence profile_types */
+typedef boost::make_variant_over<profile_types>::type Permittivity;
+
+namespace profiles {
+    class isUniform : public boost::static_visitor<bool>
+    {
+    public:
+        bool operator()(const Uniform & /* arg */) const { return true; }
+        bool operator()(const Yukawa & /* arg */) const { return false; }
+        bool operator()(const Anisotropic & /* arg */) const { return false; }
+        bool operator()(const OneLayerTanh & /* arg */) const { return false; }
+        bool operator()(const MembraneTanh & /* arg */) const { return false; }
+    };
+
+    inline bool uniform(const Permittivity & arg) {
+        return boost::apply_visitor(isUniform(), arg);
+    }
+
+    class epsilonValue : public boost::static_visitor<boost::any>
+    {
+    public:
+        double operator()(const Uniform & arg) const { return arg.epsilon; }
+        std::tuple<double, double> operator()(const Yukawa & arg) const {
+            return std::make_tuple(arg.epsilon, arg.kappa);
+        }
+        bool operator()(const Anisotropic & /* arg */) const { return false; }
+        bool operator()(const OneLayerTanh & /* arg */) const { return false; }
+        bool operator()(const MembraneTanh & /* arg */) const { return false; }
+    };
+
+    inline double epsilon(const Permittivity & arg) {
+        return boost::any_cast<double>(boost::apply_visitor(epsilonValue(), arg));
+    }
+} // namespace profiles
 
 #endif // PROFILETYPES_HPP

@@ -26,6 +26,7 @@
 #ifndef INPUT_HPP
 #define INPUT_HPP
 
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -190,7 +191,7 @@ private:
     /// Solvent probe radius
     double probeRadius_;
     /// Type of integrator for the diagonal of the boundary integral operators
-    std::string integratorType_;
+    int integratorType_;
     /// The Green's function type inside the cavity
     std::string greenInsideType_;
     /// The Green's function type outside the cavity
@@ -239,14 +240,20 @@ private:
     greenData outsideDynamicGreenData_;
 };
 
-/*!
- * A useful map to convert the Der string to an integer which will be passed to the Green's function CTOR.
- */
+/*! A useful map to convert the Der string to an integer which will be passed to the Green's function CTOR. */
 int derivativeTraits(const std::string & name);
 
-/*!
- * A useful map to convert the EquationType string to an integer which will be passed to the Solver CTOR.
+/*! A useful map to convert the Integrator string to an integer which will be passed to the Green's function CTOR. */
+int integratorPolicy(const std::string & name);
+
+/*! A useful map to convert from a string specifying the dielectric profile to an integer
+ *  which will be passed to the Green's function CTOR.
  */
+int profilePolicy(const std::string & name);
+
+/*! A useful map to convert the EquationType string to an integer which will be passed to the Solver CTOR. */
 int integralEquation(const std::string & name);
+
+typedef std::shared_ptr<Input> SharedInput;
 
 #endif // INPUT_HPP

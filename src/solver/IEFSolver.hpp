@@ -27,41 +27,45 @@
 #define IEFSOLVER_HPP
 
 #include <iosfwd>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "Config.hpp"
 
-
 class Cavity;
 
+#include "Factory.hpp"
 #include "IGreensFunction.hpp"
 #include "PCMSolver.hpp"
 #include "SolverData.hpp"
-#include "SolverFactory.hpp"
 
-/*!
- * \file IEFSolver.hpp
- * \class IEFSolver
- * \brief Traditional solver.
- * \author Luca Frediani
- * \date 2011
+/*! \file IEFSolver.hpp
+ *  \class IEFSolver
+ *  \brief IEFPCM, collocation-based solver
+ *  \author Luca Frediani, Roberto Di Remigio
+ *  \date 2011, 2015
  */
 
 class IEFSolver : public PCMSolver
 {
-private:
-    bool builtIsotropicMatrix;
-    bool builtAnisotropicMatrix;
-    bool hermitivitize_;
-    Eigen::MatrixXd fullPCMMatrix;
-    std::vector<Eigen::MatrixXd> blockPCMMatrix;
-    virtual std::ostream & printSolver(std::ostream & os);
 public:
     IEFSolver() {}
-    IEFSolver(IGreensFunction * gfInside, IGreensFunction * gfOutside, bool symm)
-        : PCMSolver(gfInside, gfOutside), builtIsotropicMatrix(false),
-          builtAnisotropicMatrix(false), hermitivitize_(symm) {}
+    /*! \brief Construct solver from two shared_ptr to Green's functions
+     *  \param[in] gf_i Green's function inside the cavity
+     *  \param[in] gf_o Green's function outside the cavity
+     *  \param[in] symm whether the system matrix has to be symmetrized
+     */
+    IEFSolver(const SharedIGreensFunction & gf_i, const SharedIGreensFunction & gf_o, bool symm)
+        : PCMSolver(gf_i, gf_o), hermitivitize_(symm) {}
+    /*! \brief Construct solver from two raw pointers to Green's functions
+     *  \param[in] gf_i Green's function inside the cavity
+     *  \param[in] gf_o Green's function outside the cavity
+     *  \param[in] symm whether the system matrix has to be symmetrized
+     *  \warning Responsibility for the deallocation of the Green's functions rests on the client code
+     */
+    IEFSolver(IGreensFunction * gf_i, IGreensFunction * gf_o, bool symm)
+        : PCMSolver(gf_i, gf_o), hermitivitize_(symm) {}
     virtual ~IEFSolver() {}
     /*! \brief Builds PCM matrix for an anisotropic environment
      *  \param[in] cavity the cavity to be used.
@@ -71,22 +75,40 @@ public:
      *  \param[in] cavity the cavity to be used.
      */
     void buildIsotropicMatrix(const Cavity & cavity);
-    virtual void buildSystemMatrix(const Cavity & cavity);
-    virtual void computeCharge(const Eigen::VectorXd &potential, Eigen::VectorXd &charge,
-            int irrep = 0);
     friend std::ostream & operator<<(std::ostream & os, IEFSolver & solver) {
         return solver.printSolver(os);
     }
+private:
+    /*! Whether the system matrix has to be symmetrized */
+    bool hermitivitize_;
+    /*! PCM matrix, not symmetry blocked */
+    Eigen::MatrixXd fullPCMMatrix_;
+    /*! PCM matrix, symmetry blocked form */
+    std::vector<Eigen::MatrixXd> blockPCMMatrix_;
+
+    /*! \brief Calculation of the PCM matrix
+     *  \param[in] cavity the cavity to be used
+     */
+    virtual void buildSystemMatrix_impl(const Cavity & cavity) override;
+    /*! \brief Returns the ASC given the MEP and the desired irreducible representation
+     *  \param[in] potential the vector containing the MEP at cavity points
+     *  \param[in] irrep the irreducible representation of the MEP and ASC
+     */
+    virtual Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential,
+            int irrep = 0) const override;
+    virtual std::ostream & printSolver(std::ostream & os) override;
 };
 
 namespace
 {
-    PCMSolver * createIEFSolver(const solverData & _data)
+    PCMSolver * createIEFSolver(const solverData & data, const SharedIGreensFunction & gf_i,
+            const SharedIGreensFunction & gf_o)
     {
-        return new IEFSolver(_data.gfInside, _data.gfOutside, _data.hermitivitize);
+        return new IEFSolver(gf_i, gf_o, data.hermitivitize);
     }
     const std::string IEFSOLVER("IEFPCM");
-    const bool registeredIEFSolver = SolverFactory::TheSolverFactory().registerSolver(
+    const bool registeredIEFSolver =
+        Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().registerObject(
                                          IEFSOLVER, createIEFSolver);
 }
 

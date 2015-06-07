@@ -322,10 +322,7 @@ int integratorPolicy(const std::string & name)
 int profilePolicy(const std::string & name)
 {
     static std::map<std::string, int> mapStringToInt;
-    mapStringToInt.insert(std::map<std::string, int>::value_type("UNIFORM", 0));
-    mapStringToInt.insert(std::map<std::string, int>::value_type("YUKAWA", 1));
-    mapStringToInt.insert(std::map<std::string, int>::value_type("ANISOTROPIC", 2));
-    mapStringToInt.insert(std::map<std::string, int>::value_type("ONELAYERTANH", 3));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("ONELAYERTANH", 0));
 
     return mapStringToInt.find(name)->second;
 }

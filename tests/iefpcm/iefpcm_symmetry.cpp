@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
     int nr_irrep = cavity.pointGroup().nrIrrep();
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
     int nr_irrep = cavity.pointGroup().nrIrrep();
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
     int nr_irrep = cavity.pointGroup().nrIrrep();
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
     int nr_irrep = cavity.pointGroup().nrIrrep();
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
     int nr_irrep = cavity.pointGroup().nrIrrep();
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
     int nr_irrep = cavity.pointGroup().nrIrrep();
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
     int nr_irrep = cavity.pointGroup().nrIrrep();
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum() * nr_irrep;
     BOOST_TEST_MESSAGE("totalASC = " << totalASC);

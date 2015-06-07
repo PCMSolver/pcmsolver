@@ -82,10 +82,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC1)
         fake_mep(i) = charge / distance;
     }
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -138,10 +138,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -194,10 +194,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolCs)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -250,10 +250,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolCi)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -306,10 +306,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolD2)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -362,10 +362,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2v)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -418,10 +418,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolC2h)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;
@@ -474,10 +474,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePolD2h)
     int nr_irrep = cavity.pointGroup().nrIrrep();
 
     Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    aniso_solver.computeCharge(fake_mep, aniso_fake_asc);
+    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(irr_size);
-    iso_solver.computeCharge(fake_mep, iso_fake_asc);
+    iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     double totalASC = - charge * (permittivity - 1) / permittivity;

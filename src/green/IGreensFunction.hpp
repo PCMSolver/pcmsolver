@@ -27,6 +27,7 @@
 #define IGREENSFUNCTION_HPP
 
 #include <iosfwd>
+#include <memory>
 #include <vector>
 
 #include "Config.hpp"
@@ -86,5 +87,7 @@ public:
 protected:
     virtual std::ostream & printObject(std::ostream & os) = 0;
 };
+
+typedef std::shared_ptr<IGreensFunction> SharedIGreensFunction;
 
 #endif // IGREENSFUNCTION_HPP

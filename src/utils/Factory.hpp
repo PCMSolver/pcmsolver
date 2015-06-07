@@ -42,41 +42,52 @@
  *	\date 2015
  *  \tparam Object type of the object the factory will create
  *  \tparam ObjectInput type of the input wrapper struct
+ *  \tparam Args any additional argument for object creation not wrapped in the input struct
  *
  * 	Factory method implementation shamelessly copied from here \cite Alexandrescu2001
  * 	It is implemented as a Singleton.
  */
 
 template <typename Object,
-          typename ObjectInput>
-class Factory
+          typename ObjectInput,
+          typename ... Args>
+class Factory final
 {
 public:
-    /*! Callback function for object creation */
-    typedef std::function<std::shared_ptr<Object>(const ObjectInput &)> creationalFunctor;
+    /*! \brief Callback function for object creation
+     *  Returns a raw pointer of type Object; accepts an ObjectInput type and a variadic
+     *  parameter pack
+     */
+    typedef std::function<Object * (const ObjectInput &, const Args & ...)> creationalFunctor;
 private:
-    /*! A map from the object type identifier (a string) to its callback function */
+    /*! std::map from the object type identifier (a string) to its callback function */
     typedef std::map<std::string, creationalFunctor> CallbackMap;
+    /*! std::pair of an object type identifier and a callback function */
+    typedef std::pair<std::string, creationalFunctor> CallbackPair;
 public:
     /*! \brief Returns true on successful registration of the objID
      * \param[in] objID  the object's identification string
-     * \param[in] create the creation function related to the object type given
+     * \param[in] functor the creation function related to the object type given
      */
     bool registerObject(const std::string & objID, const creationalFunctor & functor) {
-        return callbacks.insert(CallbackMap::value_type(objID, functor)).second;
+        return callbacks_.insert(typename CallbackMap::value_type(objID, functor)).second;
     }
     /*! \brief Returns true if objID was already registered
      *  \param objID the object's identification string
      */
     bool unRegisterObject(const std::string & objID) {
-        return callbacks.erase(objID) == 1;
+        return callbacks_.erase(objID) == 1;
     }
-    /*! Calls the appropriate creation function, based on the passed objID */
-    std::shared_ptr<Object> create(const std::string & objID, const ObjectInput & data) {
+    /*! \brief Calls the appropriate creation functor, based on the passed objID
+     *  \note The pointer returned by the creationalFunctor is wrapped into a std::shared_ptr
+     *  \param[in] objID the object's identification string
+     *  \param[in] data  input data for the creation of the object
+     */
+    std::shared_ptr<Object> create(const std::string & objID, const ObjectInput & data, const Args & ... more_args) {
         if (objID.empty()) PCMSOLVER_ERROR("No object identification string provided to the Factory.");
-        CallbackMap::const_iterator i = callbacks.find(objID);
-        if (i == callbacks.end()) PCMSOLVER_ERROR("The unknown object ID " + objID + " occurred in the Factory.");
-        return (i->second)(data);
+        typename CallbackMap::const_iterator i = callbacks_.find(objID);
+        if (i == callbacks_.end()) PCMSOLVER_ERROR("The unknown object ID " + objID + " occurred in the Factory.");
+        return std::shared_ptr<Object>((i->second)(data, more_args...));
     }
     /*! Unique point of access to the unique instance of the Factory */
     static Factory & TheFactory() {
@@ -89,7 +100,7 @@ private:
     Factory(const Factory & other);
     Factory& operator=(const Factory & other);
     ~Factory() {}
-    CallbackMap callbacks;
+    CallbackMap callbacks_;
 };
 
 #endif // FACTORY_HPP

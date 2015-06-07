@@ -28,18 +28,12 @@
 
 #include "Config.hpp"
 
-class IGreensFunction;
-
 /*! @struct solverData
  *  @brief Contains all data defined from user input in the solver section.
  */
 
 struct solverData
 {
-    /*! The Green's function inside the cavity */
-    IGreensFunction * gfInside;
-    /*! The Green's function outside the cavity */
-    IGreensFunction * gfOutside;
     /*! The correction factor to be use in a CPCM calculation */
     double correction;
     /*! The type of integral equation to solve, relevant only for wavelet solvers */
@@ -48,10 +42,8 @@ struct solverData
     bool hermitivitize;
 
     solverData() {}
-    solverData(IGreensFunction * _gfInside, IGreensFunction * _gfOutside,
-	       double _correction = 0.0,  int _integralEquation = 1, bool _symm = true) :
-        gfInside(_gfInside), gfOutside(_gfOutside), correction(_correction),
-	integralEquation(_integralEquation), hermitivitize(_symm) {}
+    solverData(double corr = 0.0,  int int_eq = 1, bool symm = true) :
+       correction(corr), integralEquation(int_eq), hermitivitize(symm) {}
 };
 
 #endif // SOLVERDATA_HPP

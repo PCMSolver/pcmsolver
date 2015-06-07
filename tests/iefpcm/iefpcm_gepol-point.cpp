@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(pointChargeShiftedGePol)
     }
     // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    solver.computeCharge(fake_mep, fake_asc);
+    fake_asc = solver.computeCharge(fake_mep);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));

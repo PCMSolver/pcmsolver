@@ -33,7 +33,7 @@
 #include "DerivativeTypes.hpp"
 #include "ForIdGreen.hpp"
 #include "GreenData.hpp"
-#include "GreensFunctionFactory.hpp"
+#include "Factory.hpp"
 #include "IntegratorForward.hpp"
 #include "IntegratorTypes.hpp"
 
@@ -65,7 +65,7 @@ namespace
     }
     const std::string VACUUM("VACUUM");
     const bool registeredVacuum =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
+        Factory<IGreensFunction, greenData>::TheFactory().registerObject(
             VACUUM, createVacuum);
 }
 
@@ -85,7 +85,7 @@ namespace
     }
     const std::string UNIFORMDIELECTRIC("UNIFORMDIELECTRIC");
     const bool registeredUniformDielectric =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
+        Factory<IGreensFunction, greenData>::TheFactory().registerObject(
             UNIFORMDIELECTRIC, createUniformDielectric);
 }
 
@@ -105,7 +105,7 @@ namespace
     }
     const std::string IONICLIQUID("IONICLIQUID");
     const bool registeredIonicLiquid =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
+        Factory<IGreensFunction, greenData>::TheFactory().registerObject(
             IONICLIQUID, createIonicLiquid);
 }
 
@@ -125,7 +125,7 @@ namespace
     }
     const std::string ANISOTROPICLIQUID("ANISOTROPICLIQUID");
     const bool registeredAnisotropicLiquid =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
+        Factory<IGreensFunction, greenData>::TheFactory().registerObject(
             ANISOTROPICLIQUID, createAnisotropicLiquid);
 }
 
@@ -145,7 +145,7 @@ namespace
     }
     const std::string SPHERICALDIFFUSE("SPHERICALDIFFUSE");
     const bool registeredSphericalDiffuse =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
+        Factory<IGreensFunction, greenData>::TheFactory().registerObject(
             SPHERICALDIFFUSE, createSphericalDiffuse);
 }
 

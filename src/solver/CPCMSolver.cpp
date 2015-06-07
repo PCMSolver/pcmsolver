@@ -28,7 +28,6 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
-#include <stdexcept>
 #include <string>
 
 #include "Config.hpp"
@@ -37,36 +36,32 @@
 
 #include "Cavity.hpp"
 #include "Element.hpp"
+#include "Exception.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
-void CPCMSolver::buildSystemMatrix(const Cavity & cavity)
-{
-    if (greenInside_->uniform() && greenOutside_->uniform()) {
-        buildIsotropicMatrix(cavity);
-    } else {
-        throw std::runtime_error("C-PCM is defined only for isotropic environments!");
-    }
-}
-
-
-void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
+void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity)
 {
     using namespace std::placeholders;
+
+    if (!(greenInside_->uniform() && greenOutside_->uniform())) {
+        PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
+    }
+
     // The total size of the cavity
-    int cavitySize = cav.size();
+    int cavitySize = cavity.size();
     // The number of irreps in the group
-    int nrBlocks = cav.pointGroup().nrIrrep();
+    int nrBlocks = cavity.pointGroup().nrIrrep();
     // The size of the irreducible portion of the cavity
-    int dimBlock = cav.irreducible_size();
+    int dimBlock = cavity.irreducible_size();
 
     // Compute SI on the whole cavity, regardless of symmetry
-    Eigen::MatrixXd SI = greenInside_->singleLayer(cav.elements());
+    Eigen::MatrixXd SI = greenInside_->singleLayer(cavity.elements());
 
     // Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
     // into "block diagonal" when all other manipulations are done.
-    if (cav.pointGroup().nrGenerators() != 0) {
+    if (cavity.pointGroup().nrGenerators() != 0) {
         symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
     }
 
@@ -78,49 +73,28 @@ void CPCMSolver::buildIsotropicMatrix(const Cavity & cav)
     Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
     if (!(SI_LU.isInvertible()))
         throw std::runtime_error("SI matrix is not invertible!");
-    fullPCMMatrix = fact * SI_LU.inverse();
+    fullPCMMatrix_ = fact * SI_LU.inverse();
     // 5. Symmetrize K := (K + K+)/2
     if (hermitivitize_) {
-        hermitivitize(fullPCMMatrix);
+        hermitivitize(fullPCMMatrix_);
     }
-    // Diagonalize and print out some useful info.
-    // This should be done only when debugging...
-    /*
-    	std::ofstream matrixOut("PCM_matrix");
-    	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(fullPCMMatrix);
-    	if (solver.info() != Eigen::Success)
-           throw std::runtime_error("fullPCMMatrix diagonalization not successful");
-    	matrixOut << "PCM matrix printout" << std::endl;
-    matrixOut << "Number of Tesserae: " << cavitySize << std::endl;
-    	matrixOut << "Largest Eigenvalue: " << solver.eigenvalues()[cavitySize-1] << std::endl;
-    	matrixOut << "Lowest Eigenvalue: " << solver.eigenvalues()[0] << std::endl;
-    	matrixOut << "Average of Eigenvalues: " << (solver.eigenvalues().sum() / cavitySize)<< std::endl;
-    	matrixOut << "List of Eigenvalues:\n" << solver.eigenvalues() << std::endl;
-    	matrixOut.close();
-    */
-    // Pack into a block diagonal matrix
-    // For the moment just packs into a std::vector<Eigen::MatrixXd>
-    symmetryPacking(blockPCMMatrix, fullPCMMatrix, dimBlock, nrBlocks);
+    symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
 
-    builtIsotropicMatrix = true;
-    builtAnisotropicMatrix = false;
+    built_ = true;
 }
 
-void CPCMSolver::computeCharge(const Eigen::VectorXd &potential,
-        Eigen::VectorXd &charge, int irrep)
+Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential, int irrep) const
 {
     // The potential and charge vector are of dimension equal to the
     // full dimension of the cavity. We have to select just the part
     // relative to the irrep needed.
-    int fullDim = fullPCMMatrix.rows();
-    int nrBlocks = blockPCMMatrix.size();
+    int fullDim = fullPCMMatrix_.rows();
+    Eigen::VectorXd charge = Eigen::VectorXd::Zero(fullDim);
+    int nrBlocks = blockPCMMatrix_.size();
     int irrDim = int(fullDim/nrBlocks);
-    if (builtIsotropicMatrix) {
-        charge.segment(irrep*irrDim,
-                       irrDim)= - blockPCMMatrix[irrep] * potential.segment(irrep*irrDim, irrDim);
-    } else {
-        throw std::runtime_error("PCM matrix not initialized!");
-    }
+    charge.segment(irrep*irrDim, irrDim) =
+        - blockPCMMatrix_[irrep] * potential.segment(irrep*irrDim, irrDim);
+    return charge;
 }
 
 std::ostream & CPCMSolver::printSolver(std::ostream & os)
@@ -131,6 +105,10 @@ std::ostream & CPCMSolver::printSolver(std::ostream & os)
     } else {
         os << "PCM matrix NOT hermitivitized (matches old DALTON)";
     }
+    os << ".... Inside " << std::endl;
+    os << *greenInside_ << std::endl;
+    os << ".... Outside " << std::endl;
+    os << *greenOutside_;
     return os;
 }
 

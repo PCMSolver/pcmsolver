@@ -27,6 +27,7 @@
 #define CAVITY_HPP
 
 #include <iosfwd>
+#include <memory>
 #include <vector>
 
 #include "Config.hpp"
@@ -165,5 +166,7 @@ public:
         return cavity.printCavity(os);
     }
 };
+
+typedef std::shared_ptr<Cavity> SharedCavity;
 
 #endif // CAVITY_HPP

@@ -38,6 +38,7 @@
 
 #include "Cavity.hpp"
 #include "Element.hpp"
+#include "Exception.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
@@ -77,8 +78,7 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     }
 
     Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-    Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    aInv = a.inverse();
+    Eigen::MatrixXd aInv = a.inverse();
 
     // 1. Form T
     fullPCMMatrix_ = ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.transpose().eval()));
@@ -86,10 +86,11 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     //    This is a rank-revealing LU decomposition, this allows us
     //    to test if T is invertible before attempting to invert it.
     Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix_);
-    if (!(T_LU.isInvertible()))
-        throw std::runtime_error("T matrix is not invertible!");
+    if (!(T_LU.isInvertible())) PCMSOLVER_ERROR("T matrix is not invertible!");
     fullPCMMatrix_ = T_LU.inverse();
-    fullPCMMatrix_ *= ((2 * M_PI * aInv - DE) - SE * SI.inverse() * (2 * M_PI * aInv - DI));
+    Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
+    if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!");
+    fullPCMMatrix_ *= ((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI));
     fullPCMMatrix_ *= a;
     // 5. Symmetrize K := (K + K+)/2
     if (hermitivitize_) {

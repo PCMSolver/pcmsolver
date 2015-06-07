@@ -46,7 +46,7 @@ class Element;
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2013-2015
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
- *  \tparam IntegratorPolicy policy for the calculation of diagonal elements
+ *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation of S and D
  */
 
 template <typename DerivativeTraits,

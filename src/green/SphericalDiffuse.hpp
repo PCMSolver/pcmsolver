@@ -52,6 +52,7 @@
  *  \brief Green's function for a diffuse interface with spherical symmetry
  *  \author Hui Cao, Ville Weijo, Luca Frediani and Roberto Di Remigio
  *  \date 2010-2015
+ *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation of S and D
  *  \tparam ProfilePolicy functional form of the diffuse layer
  *
  *  This class is general, in the sense that no specific dielectric

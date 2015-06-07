@@ -23,7 +23,7 @@ write_to_cloc_list("${to_count}")
 # Build static library
 add_library(solver STATIC ${sources_list})
 set(libs_to_merge solver ${libs_to_merge} PARENT_SCOPE)
-add_dependencies(solver cavity green)
+add_dependencies(solver cavity)
 install(TARGETS solver ARCHIVE DESTINATION lib)
 
 # Sets install directory for all the headers in the list

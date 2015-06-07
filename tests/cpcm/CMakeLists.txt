@@ -1,4 +1,4 @@
-set(list_of_libraries solver green cavity pedra utils)
+set(list_of_libraries solver cavity pedra utils)
 
 list(APPEND external_libraries ${ZLIB_LIBRARIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 add_boosttest(cpcm_gepol-point "${list_of_libraries}" "${external_libraries}")

@@ -27,6 +27,7 @@
 #define SURFACEFUNCTION_HPP
 
 #include <iosfwd>
+#include <memory>
 #include <string>
 
 #include "Config.hpp"
@@ -151,5 +152,7 @@ inline SurfaceFunction operator*(double scaling, SurfaceFunction & object)
     object *= scaling;
     return object;
 }
+
+typedef std::shared_ptr<SurfaceFunction> SharedSurfaceFunction;
 
 #endif // SURFACEFUNCTION_HPP

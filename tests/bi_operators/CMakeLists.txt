@@ -1,4 +1,4 @@
-set(list_of_libraries green cavity pedra utils)
+set(list_of_libraries cavity pedra utils)
 
 list(APPEND external_libraries ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 add_executable(update_reference_files.x update_reference_files.cpp)

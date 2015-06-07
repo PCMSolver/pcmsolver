@@ -40,10 +40,12 @@ struct solverData
     int integralEquation;
     /*! Triggers hermitivitization of the PCM matrix obtained by collocation */
     bool hermitivitize;
+    /*! Whether the structure was initialized with user input or not */
+    bool empty;
 
-    solverData() {}
-    solverData(double corr = 0.0,  int int_eq = 1, bool symm = true) :
-       correction(corr), integralEquation(int_eq), hermitivitize(symm) {}
+    solverData() { empty = true; }
+    solverData(double corr,  int int_eq = 1, bool symm = true) :
+       correction(corr), integralEquation(int_eq), hermitivitize(symm) { empty = false; }
 };
 
 #endif // SOLVERDATA_HPP

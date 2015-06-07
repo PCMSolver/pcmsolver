@@ -40,6 +40,7 @@
 
 #include "CavityData.hpp"
 #include "GreenData.hpp"
+#include "SolverData.hpp"
 #include "InputManager.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
@@ -129,10 +130,6 @@ void Input::reader(const char * pythonParsed)
             epsilonImaginary_ = outside.getDbl("EPSIMG");
             spherePosition_ = outside.getDblVec("SPHEREPOSITION");
             sphereRadius_ = outside.getDbl("SPHERERADIUS");
-        }
-        if (greenOutsideType_ == "SPHERICALDIFFUSE") {
-            // Attach profile type in front of diffuse interface type
-            greenOutsideType_.insert(0, outside.getStr("PROFILE"));
         }
         epsilonStatic1_ = outside.getDbl("EPS1");
         epsilonDynamic1_ = outside.getDbl("EPSDYN1");
@@ -265,7 +262,7 @@ greenData Input::outsideStaticGreenParams()
         outsideStaticGreenData_ = greenData(derivativeOutsideType_,
                                             integratorType_, profile,  epsilonStaticOutside_);
         if (not hasSolvent_) {
-           outsideStaticGreenData_.howProfile  = profilePolicy("TANHDIFFUSE");
+           outsideStaticGreenData_.howProfile  = profilePolicy("ONELAYERTANH");
            outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
            outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
            outsideStaticGreenData_.center   = center_;
@@ -283,7 +280,7 @@ greenData Input::outsideDynamicGreenParams()
         outsideDynamicGreenData_ = greenData(derivativeOutsideType_,
                                              integratorType_, profile, epsilonDynamicOutside_);
         if (not hasSolvent_) {
-           outsideDynamicGreenData_.howProfile  = profilePolicy("TANHDIFFUSE");
+           outsideDynamicGreenData_.howProfile  = profilePolicy("ONELAYERTANH");
            outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
            outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
            outsideDynamicGreenData_.center   = center_;
@@ -292,6 +289,14 @@ greenData Input::outsideDynamicGreenParams()
         }
     }
     return outsideDynamicGreenData_;
+}
+
+solverData Input::solverParams()
+{
+    if (solverData_.empty) {
+        solverData_ = solverData(correction_, equationType_, hermitivitize_);
+    }
+    return solverData_;
 }
 
 int derivativeTraits(const std::string & name)
@@ -320,7 +325,7 @@ int profilePolicy(const std::string & name)
     mapStringToInt.insert(std::map<std::string, int>::value_type("UNIFORM", 0));
     mapStringToInt.insert(std::map<std::string, int>::value_type("YUKAWA", 1));
     mapStringToInt.insert(std::map<std::string, int>::value_type("ANISOTROPIC", 2));
-    mapStringToInt.insert(std::map<std::string, int>::value_type("TANHDIFFUSE", 3));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("ONELAYERTANH", 3));
 
     return mapStringToInt.find(name)->second;
 }

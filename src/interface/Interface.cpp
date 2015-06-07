@@ -496,13 +496,8 @@ void initSolver()
     // OUTSIDE
     SharedIGreensFunction gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(parsedInput->greenOutsideType(),
 		                                              parsedInput->outsideStaticGreenParams());
-    // And all this to finally create the solver!
     std::string modelType = parsedInput->solverType();
-    solverData solverInput(parsedInput->correction(),
-			               parsedInput->equationType(),
-			               parsedInput->hermitivitize());
-
-    _solver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(modelType, solverInput, gf_i, gf_o);
+    _solver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(modelType, parsedInput->solverParams(), gf_i, gf_o);
     _solver->buildSystemMatrix(*_cavity);
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of
@@ -518,13 +513,8 @@ void initNonEqSolver()
     // OUTSIDE
     SharedIGreensFunction gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(parsedInput->greenOutsideType(),
 		                                               parsedInput->outsideDynamicGreenParams());
-    // And all this to finally create the solver!
     std::string modelType = parsedInput->solverType();
-    solverData solverInput(parsedInput->correction(),
-			               parsedInput->equationType(),
-			               parsedInput->hermitivitize());
-
-    _solver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(modelType, solverInput, gf_i, gf_o);
+    _solver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(modelType, parsedInput->solverParams(), gf_i, gf_o);
     _solver->buildSystemMatrix(*_cavity);
     noneqExists = true;
 }

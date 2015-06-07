@@ -402,7 +402,7 @@ struct InputDiffuseTest {
         equationType = 0;
         probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
         greenInsideType = "VACUUM";
-        greenOutsideType = "TANHSPHERICALDIFFUSE";
+        greenOutsideType = "SPHERICALDIFFUSE";
         derivativeInsideType = 0;
         derivativeOutsideType = 0;
         epsilonInside = 1.0;

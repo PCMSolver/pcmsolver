@@ -36,6 +36,7 @@
 
 #include "CavityData.hpp"
 #include "GreenData.hpp"
+#include "SolverData.hpp"
 #include "InputManager.hpp"
 #include "Molecule.hpp"
 #include "Solvent.hpp"
@@ -111,6 +112,7 @@ public:
     greenData insideGreenParams();
     greenData outsideStaticGreenParams();
     greenData outsideDynamicGreenParams();
+    solverData solverParams();
     /// @}
 
     /// Operators
@@ -238,6 +240,8 @@ private:
     greenData outsideStaticGreenData_;
     /// Input wrapping struct for the Green's function outside (dynamic permittivity)
     greenData outsideDynamicGreenData_;
+    /// Input wrapping struct for the solver
+    solverData solverData_;
 };
 
 /*! A useful map to convert the Der string to an integer which will be passed to the Green's function CTOR. */

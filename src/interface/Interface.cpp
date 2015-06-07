@@ -140,7 +140,7 @@ extern "C" void compute_nonequilibrium_asc(char * potString, char * chgString, i
 {
     // Check that the nonequilibrium solver has been created
     if (!noneqExists) {
-	initNonEqSolver();
+        initNonEqSolver();
     }
 
     std::string potFuncName(potString);
@@ -514,8 +514,8 @@ void initNonEqSolver()
     SharedIGreensFunction gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(parsedInput->greenOutsideType(),
 		                                               parsedInput->outsideDynamicGreenParams());
     std::string modelType = parsedInput->solverType();
-    _solver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(modelType, parsedInput->solverParams(), gf_i, gf_o);
-    _solver->buildSystemMatrix(*_cavity);
+    _noneqSolver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(modelType, parsedInput->solverParams(), gf_i, gf_o);
+    _noneqSolver->buildSystemMatrix(*_cavity);
     noneqExists = true;
 }
 

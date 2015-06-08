@@ -55,14 +55,18 @@
  *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation of S and D
  *  \tparam ProfilePolicy functional form of the diffuse layer
  *
- *  This class is general, in the sense that no specific dielectric
- *  profile has been set in its definition.
+ *  This class is general, in the sense that no specific dielectric profile has been set in its definition.
  *  In principle any profile that can be described by:
  *  1. a left-side dielectric constant;
  *  2. a right-side dielectric constant;
  *  3. an interface layer width;
  *  4. an interface layer center
  *  can be used to define a new diffuse interface with spherical symmetry.
+ *  The origin of the dielectric sphere can be changed by means of the constructor.
+ *  The solution of the differential equation defining the Green's function is **always**
+ *  performed assuming that the dielectric sphere is centered in the origin of the coordinate
+ *  system. Whenever the public methods are invoked to "sample" the Green's function
+ *  at a pair of points, a translation of the sampling points is performed first.
  */
 
 template <typename IntegratorPolicy,
@@ -85,8 +89,7 @@ public:
         initSphericalDiffuse();
     }
     virtual ~SphericalDiffuse() {}
-    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator
-     *  for the pair of points p1, p2:
+    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the pair of points p1, p2:
      *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
      *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
@@ -98,7 +101,8 @@ public:
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
         double eps_r2 = 0.0;
-        std::tie(eps_r2, std::ignore) = this->profile_(p2.norm());
+        // Shift p2 by origin_
+        std::tie(eps_r2, std::ignore) = this->profile_((p2 - this->origin_).norm());
 
         return (eps_r2 * this->derivativeProbe(direction, p1, p2));
     }
@@ -242,9 +246,10 @@ private:
     }
     virtual std::ostream & printObject(std::ostream & os)
     {
+        Eigen::IOFormat CleanFmt(Eigen::StreamPrecision, 0, ", ", "\n", "(", ")");
         os << "Green's function type: spherical diffuse" << std::endl;
         os << this->profile_ << std::endl;
-        os << "Sphere center = " << this->origin_.transpose() << std::endl;
+        os << "Sphere center        = " << this->origin_.transpose().format(CleanFmt) << std::endl;
         os << "Angular momentum (Green's function)    = " << this->maxLGreen_ << std::endl;
         os << "Angular momentum (Coulomb coefficient) = " << this->maxLC_;
         return os;
@@ -255,8 +260,9 @@ private:
      *  \param[in] w width of the interface layer
      *  \param[in] c center of the diffuse layer
      */
-    void initProfilePolicy(double e1, double e2, double w, double c)
-    { this->profile_ = ProfilePolicy(e1, e2, w, c); }
+    void initProfilePolicy(double e1, double e2, double w, double c) {
+        this->profile_ = ProfilePolicy(e1, e2, w, c);
+    }
     /*! This calculates all the components needed to evaluate the Green's function */
     void initSphericalDiffuse() {
         using namespace std::placeholders;

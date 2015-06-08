@@ -28,6 +28,8 @@
 
 #include <iosfwd>
 #include <memory>
+#include <sstream>
+#include <string>
 
 #include "Config.hpp"
 
@@ -75,6 +77,14 @@ public:
     Eigen::VectorXd computeCharge(const Eigen::VectorXd & potential, int irrep = 0) const {
         if (!built_) PCMSOLVER_ERROR("PCM matrix not calculated yet");
         return computeCharge_impl(potential, irrep);
+    }
+    std::string printGreensFunctions() {
+        std::stringstream tmp;
+        tmp << ".... Inside " << std::endl;
+        tmp << *greenInside_ << std::endl;
+        tmp << ".... Outside " << std::endl;
+        tmp << *greenOutside_;
+        return tmp.str();
     }
 
     friend std::ostream & operator<<(std::ostream & os, PCMSolver & solver) {

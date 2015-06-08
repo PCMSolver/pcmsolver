@@ -105,10 +105,6 @@ std::ostream & CPCMSolver::printSolver(std::ostream & os)
     } else {
         os << "PCM matrix NOT hermitivitized (matches old DALTON)";
     }
-    os << ".... Inside " << std::endl;
-    os << *greenInside_ << std::endl;
-    os << ".... Outside " << std::endl;
-    os << *greenOutside_;
     return os;
 }
 

@@ -190,9 +190,9 @@ std::ostream & IEFSolver::printSolver(std::ostream & os)
 {
     std::string type;
     if (greenInside_->uniform() && greenOutside_->uniform()) {
-        type = "IEFPCM, anisotropic";
-    } else {
         type = "IEFPCM, isotropic";
+    } else {
+        type = "IEFPCM, anisotropic";
     }
     os << "Solver Type: " << type << std::endl;
     if (hermitivitize_) {
@@ -200,10 +200,6 @@ std::ostream & IEFSolver::printSolver(std::ostream & os)
     } else {
         os << "PCM matrix NOT hermitivitized (matches old DALTON)";
     }
-    os << ".... Inside " << std::endl;
-    os << *greenInside_ << std::endl;
-    os << ".... Outside " << std::endl;
-    os << *greenOutside_;
     return os;
 }
 

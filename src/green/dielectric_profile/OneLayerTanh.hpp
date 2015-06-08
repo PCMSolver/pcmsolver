@@ -36,6 +36,8 @@
  *  \brief A tanh dielectric profile as in \cite Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2014
+ *  \note The parameter given from user input for width_ is divided by 6.0 in
+ *  the constructor to keep consistency with \cite Frediani2004a
  */
 
 class OneLayerTanh
@@ -68,6 +70,7 @@ private:
     }
     std::ostream & printObject(std::ostream & os)
     {
+        os << "Profile functional form: tanh" << std::endl;
         os << "Permittivity inside  = " << epsilon1_ << std::endl;
         os << "Permittivity outside = " << epsilon2_ << std::endl;
         os << "Profile width        = " << width_    << " AU" << std::endl;
@@ -77,7 +80,7 @@ private:
 public:
     OneLayerTanh() {}
     OneLayerTanh(double e1, double e2, double w, double c) :
-        epsilon1_(e1), epsilon2_(e2), width_(w), center_(c) {}
+        epsilon1_(e1), epsilon2_(e2), width_(w/6.0), center_(c) {}
     /*! Returns a tuple holding the permittivity and its derivative
      *  \param[in]   r evaluation point
      */

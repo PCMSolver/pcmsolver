@@ -317,6 +317,7 @@ extern "C" void print_pcm()
         Solvent solvent = parsedInput->solvent();
         out_stream << solvent << std::endl;
     }
+    out_stream << _solver->printGreensFunctions() << std::endl;
     printer(out_stream);
 }
 

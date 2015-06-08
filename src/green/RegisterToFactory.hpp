@@ -149,4 +149,26 @@ namespace
             SPHERICALDIFFUSE, createSphericalDiffuse);
 }
 
+namespace
+{
+    struct buildMetalNP {
+        template <typename T, typename U>
+        IGreensFunction * operator()(const greenData & data) {
+            Eigen::Vector3d center = Eigen::Vector3d::Zero();
+            center << data.NPspheres[0], data.NPspheres[1], data.NPspheres[2];
+            return new MetalNP<T, U>(data.epsilon, data.epsilonReal, data.epsilonImaginary, center, data.NPradii);
+        }
+    };
+
+    IGreensFunction * createMetalNP(const greenData & data)
+    {
+        buildMetalNP build;
+        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
+    }
+    const std::string METALNP("METALNP");
+    const bool registeredMetalNP =
+        Factory<IGreensFunction, greenData>::TheFactory().registerObject(
+            METALNP, createMetalNP);
+}
+
 #endif // REGISTERTOFACTORY_HPP

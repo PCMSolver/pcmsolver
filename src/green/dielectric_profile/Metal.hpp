@@ -23,40 +23,31 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef SHARP_HPP
-#define SHARP_HPP
+#ifndef METAL_HPP
+#define METAL_HPP
 
+#include <complex>
 #include <iosfwd>
 
 #include "Config.hpp"
 
-/*! \file Sharp.hpp
- *  \class Sharp
- *  \brief A sharp dielectric separation
+/*! \file Metal.hpp
+ *  \struct Metal
+ *  \brief An object with complex permittivity
  *  \author Roberto Di Remigio
  *  \date 2015
  */
 
-class Sharp
+struct Metal final
 {
-private:
-    double epsilonLeft_;
-    double epsilonRight_;
-    double center_;
-    double value(double point) const {
-        return (point >= center_ ? epsilonRight_ : epsilonLeft_);
-    }
-public:
-    Sharp(double eL, double eR, double c) :
-        epsilonLeft_(eL), epsilonRight_(eR), center_(c) {}
-    /*! The permittivity profile of the transition layer
-     *  \param[out]  e the value of the dielectric constant at point r
-     *  \param[in]   r evaluation point
-     */
-    void operator()(double & e, const double r) const
-    {
-        e = value(r);
+    std::complex<double> epsilon;
+    Metal() : epsilon(std::complex<double>(1.0, 1.0)) {}
+    Metal(double eRe, double eIm) : epsilon(std::complex<double>(eRe, eIm)) {}
+    Metal(const std::complex<double> & e) : epsilon(e) {}
+    friend std::ostream & operator<<(std::ostream & os, Metal & arg) {
+        os << "Permittivity = " << arg.epsilon;
+        return os;
     }
 };
 
-#endif // SHARP_HPP
+#endif // METAL_HPP

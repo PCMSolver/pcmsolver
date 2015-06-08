@@ -36,11 +36,8 @@
 
 class Element;
 
-#include "DiagonalIntegrator.hpp"
-#include "DiagonalIntegratorFactory.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
-#include "GreensFunctionFactory.hpp"
 
 /*! \file MetalNP.hpp
  *  \class MetalNP
@@ -57,81 +54,84 @@ class Element;
  *  http://dx.doi.org/10.1063/1.1558036
  */
 
-class MetalNP : public GreensFunction<double>
+template <typename DerivativeTraits,
+          typename IntegratorPolicy>
+class MetalNP : public GreensFunction<DerivativeTraits, IntegratorPolicy, Metal,
+                                      MetalNP<DerivativeTraits, IntegratorPolicy> >
 {
 private:
     typedef std::complex<double> dcomplex;
 public:
-    MetalNP(double eps, double epsRe, double epsIm,
-                const Eigen::Vector3d & pos, double radius)
-        : GreensFunction<double>(false), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
-          sphPosition_(pos), sphRadius_(radius) {}
-    MetalNP(double eps, double epsRe, double epsIm,
-                const Eigen::Vector3d & pos, double radius, DiagonalIntegrator * diag)
-        : GreensFunction<double>(false, diag), epsSolvent_(eps), epsMetal_(dcomplex(epsRe, epsIm)),
-          sphPosition_(pos), sphRadius_(radius) {}
+    /*! \param[in] e   solvent permittivity
+     *  \param[in] eRe real part of the metal nanosphere permittivity
+     *  \param[in] eIm imaginary part of the matal nanosphere permittivity
+     *  \param[in] o   center of the metal nanosphere
+     *  \param[in] r   radius of the metal nanosphere
+     */
+    MetalNP(double e, double eRe, double eIm, const Eigen::Vector3d & o, double r)
+        : GreensFunction<DerivativeTraits, IntegratorPolicy, Metal,
+                MetalNP<DerivativeTraits, IntegratorPolicy> >(),
+                epsilonSolvent_(e), spherePosition_(o), sphereRadius_(r) { this->profile_ = Metal(eRe, eIm); }
     virtual ~MetalNP() {}
-    /*!
-     *  Returns value of the directional derivative of the
+    /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  Notice that this method returns the directional derivative with respect
      *  to the probe point, thus assuming that the direction is relative to that point.
-     *
      *  \param[in] direction the direction
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
      */
-    virtual double derivative(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const;
-
-    virtual double diagonalS(const Element & /* e */) const {
-	    return 1.0;
-    }
-    virtual double diagonalD(const Element & /* e */) const {
-	    return 1.0;
+    virtual double kernelD(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
+    {
+        return this->epsilonSolvent_ * (this->derivativeProbe(direction, p1, p2));
     }
 
-    virtual double epsilon() const { return epsSolvent_; } // This is just to get it to compile...
+    /*! Calculates the matrix representation of the S operator
+     *  \param[in] e list of finite elements
+     */
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
+    {
+        return this->integrator_.singleLayer(*this, e);
+    }
+    /*! Calculates the matrix representation of the D operator
+     *  \param[in] e list of finite elements
+     */
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
+    {
+        return this->integrator_.doubleLayer(*this, e);
+    }
 
     friend std::ostream & operator<<(std::ostream & os, MetalNP & gf) {
         return gf.printObject(os);
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
-    /*!
-     *  Evaluates the Green's function given a pair of points
-     *
-     *  \param[in] source the source point
-     *  \param[in]  probe the probe point
+    /*! Evaluates the Green's function given a pair of points
+     *  \param[in] sp the source point
+     *  \param[in] pp the probe point
      */
-    virtual double operator()(double * source, double * probe) const;
-    double epsSolvent_;
-    dcomplex epsMetal_;
-    Eigen::Vector3d sphPosition_;
-    double sphRadius_;
-    virtual std::ostream & printObject(std::ostream & os);
+    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const override
+    {
+        // Just to silence warnings...
+        DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
+                          (sp[1] - pp[1]) * (sp[1] - pp[1]) +
+                          (sp[2] - pp[2]) * (sp[2] - pp[2]));
+        return 1/(this->epsilonSolvent_ * distance);
+    }
+    double epsilonSolvent_;
+    Eigen::Vector3d spherePosition_;
+    double sphereRadius_;
+    virtual std::ostream & printObject(std::ostream & os)
+    {
+        os << "Green's function type: metal sphere" << std::endl;
+        os << this->profile_ << std::endl;
+        os << "Sphere position               = " << spherePosition_ << std::endl;
+        os << "Sphere radius                 = " << sphereRadius_ << std::endl;
+        os << "Solvent permittivity          = " << epsilonSolvent_;
+        return os;
+    }
 };
 
-namespace
-{
-    // The build functor and use of for_id are not necessary as MetalNP
-    // inherits from a GreensFunction<double>
-    IGreensFunction * createMetalNP(const greenData & _data)
-    {
-         DiagonalIntegrator * integrator =
-		    DiagonalIntegratorFactory::TheDiagonalIntegratorFactory().createDiagonalIntegrator(_data.integratorType);
-	// The NP center is in a std::vector<double> but we need an Eigen::Vector3d
-	// We are currently assuming that there is only one spherical metal NP
-	Eigen::Vector3d center = Eigen::Vector3d::Zero();
-	for (int i = 0; i < 3; ++i) {
-		center(i) = _data.NPspheres[i];
-	}
-        return new MetalNP(_data.epsilon, _data.epsilonReal, _data.epsilonImaginary, center, _data.NPradii, integrator);
-    }
-    const std::string METALNP("MetalNP");
-    const bool registeredMetalNP =
-        GreensFunctionFactory::TheGreensFunctionFactory().registerGreensFunction(
-            METALNP, createMetalNP);
-}
 #endif // METALNP_HPP

@@ -29,6 +29,7 @@
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <iostream>
+#include <memory>
 
 #include "Config.hpp"
 
@@ -59,9 +60,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
     cavity.saveCavity("point.npz");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+    std::shared_ptr<Vacuum<AD_directional, CollocationIntegrator> > gfInside = 
+	    std::make_shared<Vacuum<AD_directional, CollocationIntegrator> >(Vacuum<AD_directional, CollocationIntegrator>());
+    std::shared_ptr<UniformDielectric<AD_directional, CollocationIntegrator> > gfOutside 
+	    = std::make_shared<UniformDielectric<AD_directional, CollocationIntegrator> >(UniformDielectric<AD_directional, CollocationIntegrator>(permittivity));
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -77,11 +79,9 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
         double distance = center.norm();
         fake_mep(i) = charge / distance;
     }
-    Eigen::VectorXd aniso_fake_asc = Eigen::VectorXd::Zero(size);
-    aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
+    Eigen::VectorXd aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
 
-    Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(size);
-    iso_fake_asc = iso_solver.computeCharge(fake_mep);
+    Eigen::VectorXd iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
     for (int i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
@@ -122,9 +122,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
     cavity.saveCavity("point.npz");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+    std::shared_ptr<Vacuum<AD_directional, CollocationIntegrator> > gfInside = 
+	    std::make_shared<Vacuum<AD_directional, CollocationIntegrator> >(Vacuum<AD_directional, CollocationIntegrator>());
+    std::shared_ptr<UniformDielectric<AD_directional, CollocationIntegrator> > gfOutside 
+	    = std::make_shared<UniformDielectric<AD_directional, CollocationIntegrator> >(UniformDielectric<AD_directional, CollocationIntegrator>(permittivity));
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);

@@ -43,9 +43,9 @@ struct TanhSphericalDiffuseTest {
         probeNormal1.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        inside_reference = 0.012377848015483936;
-        der_probe_inside_reference = -0.0125248562596845525;
-        der_source_inside_reference = 0.0125498847608398328;
+        inside_reference = 0.01237809396735725;
+        der_probe_inside_reference = -0.012524856460435427;        
+	der_source_inside_reference = 0.0125498847608398328;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
         sourceNormal2 = source2; // + Eigen::Vector3d::Random();
@@ -55,9 +55,9 @@ struct TanhSphericalDiffuseTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.50008829802731714;
-        der_probe_outside_reference = -0.289954122292268579;
-        der_source_outside_reference = 0.288674001099886723;
+        outside_reference = 0.5000684359884966;
+        der_probe_outside_reference = -0.28995393666186864;
+        der_source_outside_reference = 0.28867418713829363;
     }
 };
 
@@ -139,8 +139,8 @@ struct TanhSphericalDiffuseShiftedTest {
         probeNormal1.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        inside_reference = 0.012377848015483936;
-        der_probe_inside_reference = -0.0125248562565360294;
+        inside_reference = 0.01237809396735725;
+        der_probe_inside_reference = -0.012524856457286904; 
         der_source_inside_reference = 0.0125498847577173306;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
@@ -151,9 +151,9 @@ struct TanhSphericalDiffuseShiftedTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.5000891977645715;
-        der_probe_outside_reference = -0.289954254408808509;
-        der_source_outside_reference = 0.288674994271542751;
+        outside_reference = 0.50006911963511325; 
+        der_probe_outside_reference = -0.2899541910583725; 
+        der_source_outside_reference = 0.28867505655949532;
     }
 };
 

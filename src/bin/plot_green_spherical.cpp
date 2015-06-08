@@ -51,7 +51,7 @@ std::string header()
 
 void case1()
 {
-    size_t nPoints = 10000;
+    size_t nPoints = 100;
     double epsInside = 80.0;
     double epsOutside = 2.0;
     Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
@@ -78,15 +78,17 @@ void case1()
     out << header();
     out.precision(16);
     for (size_t i = 0; i < nPoints; ++i) {
-        probe << x[i], 0.0, z[i];
-        out << '\t' << x[i]
-            << '\t' << z[i]
-            << '\t' << gf.kernelS(source, probe)
-            << '\t' << gf.imagePotential(source, probe)
-            << '\t' << gf.Coulomb(source, probe)
-            << '\t' << gf.derivativeProbe(Eigen::Vector3d::UnitZ(), source, probe)
-            << '\t' << gf.CoulombDerivative(Eigen::Vector3d::UnitZ(), source, probe)
-            << '\t' << gf.imagePotentialDerivative(Eigen::Vector3d::UnitZ(), source, probe) << std::endl;
+        for (size_t j = 0; j < nPoints; ++j) {
+            probe << x[i], 0.0, z[j];
+            out << '\t' << x[i]
+                << '\t' << z[j]
+                << '\t' << gf.kernelS(source, probe)
+                << '\t' << gf.imagePotential(source, probe)
+                << '\t' << gf.Coulomb(source, probe)
+                << '\t' << gf.derivativeProbe(Eigen::Vector3d::UnitZ(), source, probe)
+                << '\t' << gf.CoulombDerivative(Eigen::Vector3d::UnitZ(), source, probe)
+                << '\t' << gf.imagePotentialDerivative(Eigen::Vector3d::UnitZ(), source, probe) << std::endl;
+        }
     }
     out.close();
     LOG_TIME;
@@ -95,14 +97,16 @@ void case1()
     out.open("gf_uniform_inside_CASE1.dat");
     out << "#" << '\t' << "x_2" << '\t' << "z_2" << '\t';
     out << "gf_value" << '\t' << "derivativeProbe" << std::endl;
-    out.precision(16);
     for (size_t i = 0; i < nPoints; ++i) {
-        probe << x[i], 0.0, z[i];
-        out << '\t' << x[i]
-            << '\t' << z[i]
-            << '\t' << gf_inside.kernelS(source, probe)
-            << '\t' << gf_inside.derivativeProbe(Eigen::Vector3d::UnitZ(), source, probe) << std::endl;
+        for (size_t j = 0; j < nPoints; ++j) {
+            probe << x[i], 0.0, z[j];
+            out << '\t' << x[i]
+                << '\t' << z[j]
+                << '\t' << gf_inside.kernelS(source, probe)
+                << '\t' << gf_inside.derivativeProbe(Eigen::Vector3d::UnitZ(), source, probe) << std::endl;
+        }
     }
+    out.precision(16);
     out.close();
 
     UniformDielectric<AD_directional, CollocationIntegrator> gf_outside(epsOutside);
@@ -111,11 +115,13 @@ void case1()
     out << "gf_value" << '\t' << "derivativeProbe" << std::endl;
     out.precision(16);
     for (size_t i = 0; i < nPoints; ++i) {
-        probe << x[i], 0.0, z[i];
-        out << '\t' << x[i]
-            << '\t' << z[i]
-            << '\t' << gf_outside.kernelS(source, probe)
-            << '\t' << gf_outside.derivativeProbe(Eigen::Vector3d::UnitZ(), source, probe) << std::endl;
+        for (size_t j = 0; j < nPoints; ++j) {
+            probe << x[i], 0.0, z[j];
+            out << '\t' << x[i]
+                << '\t' << z[j]
+                << '\t' << gf_outside.kernelS(source, probe)
+                << '\t' << gf_outside.derivativeProbe(Eigen::Vector3d::UnitZ(), source, probe) << std::endl;
+        }
     }
     out.close();
 }

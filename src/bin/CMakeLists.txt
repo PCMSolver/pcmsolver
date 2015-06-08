@@ -4,6 +4,9 @@
 #add_executable(debug_wavcav.x debug_wavcav.cpp)
 #target_link_libraries(debug_wavcav.x solver cavity wavcav pwl wem utils)
 
+add_executable(plot_green_spherical.x plot_green_spherical.cpp)
+target_link_libraries(plot_green_spherical.x utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+
 add_executable(plot_green_spherical-CASE1.x plot_green_spherical-CASE1.cpp)
 target_link_libraries(plot_green_spherical-CASE1.x utils ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 add_executable(plot_green_spherical-CASE2.x plot_green_spherical-CASE2.cpp)

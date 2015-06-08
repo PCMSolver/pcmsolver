@@ -15,7 +15,7 @@ MEDIUM
 	GREEN<OUTSIDE>
 	{
 		TYPE = SPHERICALDIFFUSE
-        PROFILE = TANH
+        PROFILE = ERF
 	    EPS1 = 78.39
 		EPSDYN1 = 10.423
         EPS2 = 20.0
@@ -28,7 +28,7 @@ MEDIUM
 CAVITY
 {
 	TYPE = WAVELET
-	DYADICFILE       =       benzene2.dat
+	DYADICFILE        =        benzene2.dat
 	PATCHLEVEL = 1
 	COARSITY = 0.3
 	MODE = EXPLICIT

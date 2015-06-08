@@ -2,19 +2,19 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
  *
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *                                                                          
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *                                                                          
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
  *
@@ -35,10 +35,11 @@
 
 #include <boost/math/special_functions/sign.hpp>
 
+#include "Exception.hpp"
 #include "Sphere.hpp"
-    
+
 void Element::spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
- 	               std::vector<double> & theta, std::vector<double> & phi,
+               std::vector<double> & theta, std::vector<double> & phi,
 		       std::vector<double> & phinumb, std::vector<int> & numb) const
 {
 	Eigen::Vector3d sph_center = sphere_.center();
@@ -68,7 +69,7 @@ void Element::spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
 		phi[i] = phi[i] - phi[0];
 		if (phi[i] < 0.0) phi[i] = 2 * M_PI + phi[i];
 	}
-        // Rewrite tangent as linear combination of original tangent and bitangent 
+        // Rewrite tangent as linear combination of original tangent and bitangent
         // then recalculate bitangent so that it's orthogonal to the tangent
         t_ = t_ * std::cos(phi[0]) + b_ * std::sin(phi[0]);
         b_ = normal_.cross(t_);
@@ -77,7 +78,7 @@ void Element::spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
 	numb[0] = 0; numb[1] = 1;
 	phinumb[0] = phi[0]; phinumb[1] = phi[1];
 	for (int i = 2; i < nVertices_; ++i) {// This loop is 2-based
-		for (int j = 1; j < i; ++j) {// This loop is 1-based 
+		for (int j = 1; j < i; ++j) {// This loop is 1-based
 			if (phi[i] < phinumb[j]) {
 				for (int k = 0; k < (i - j); ++k) {
 					numb[i - k] = numb[i - k -1];
@@ -100,27 +101,27 @@ void Element::spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
 void tangent_and_bitangent(const Eigen::Vector3d & n_,
 		           Eigen::Vector3d & t_, Eigen::Vector3d & b_)
 {
-        double rmin = 0.99;
-	double n0 = n_(0), n1 = n_(1), n2 = n_(2);
-        if (std::abs(n0) <= rmin) {
-        	rmin = std::abs(n0);
-        	t_(0) = 0.0;
-        	t_(1) = - n2 / std::sqrt(1.0 - std::pow(n0, 2));
-        	t_(2) =   n1 / std::sqrt(1.0 - std::pow(n0, 2));
-        }
-        if (std::abs(n1) <= rmin) {
-        	rmin = std::abs(n1);
-        	t_(0) =   n2 / std::sqrt(1.0 - std::pow(n1, 2));
-        	t_(1) =   0.0;
-        	t_(2) = - n0 / std::sqrt(1.0 - std::pow(n1, 2));
-        }
-        if (std::abs(n2) <= rmin) {
-        	rmin = std::abs(n2);
-        	t_(0) =  n1 / std::sqrt(1.0 - std::pow(n2, 2));
-        	t_(1) = -n0 / std::sqrt(1.0 - std::pow(n2, 2));
-        	t_(2) =  0.0; 
-        }
-        b_ = n_.cross(t_);
+    double rmin = 0.99;
+    double n0 = n_(0), n1 = n_(1), n2 = n_(2);
+    if (std::abs(n0) <= rmin) {
+        rmin = std::abs(n0);
+        t_(0) = 0.0;
+        t_(1) = - n2 / std::sqrt(1.0 - std::pow(n0, 2));
+        t_(2) =   n1 / std::sqrt(1.0 - std::pow(n0, 2));
+    }
+    if (std::abs(n1) <= rmin) {
+        rmin = std::abs(n1);
+        t_(0) =   n2 / std::sqrt(1.0 - std::pow(n1, 2));
+        t_(1) =   0.0;
+        t_(2) = - n0 / std::sqrt(1.0 - std::pow(n1, 2));
+    }
+    if (std::abs(n2) <= rmin) {
+        rmin = std::abs(n2);
+        t_(0) =  n1 / std::sqrt(1.0 - std::pow(n2, 2));
+        t_(1) = -n0 / std::sqrt(1.0 - std::pow(n2, 2));
+        t_(2) =  0.0;
+    }
+    b_ = n_.cross(t_);
 	// Check that the calculated Frenet-Serret frame is left-handed (levogiro)
 	// by checking that the determinant of the matrix whose columns are the normal,
 	// tangent and bitangent vectors has determinant 1 (the system is orthonormal!)
@@ -129,6 +130,6 @@ void tangent_and_bitangent(const Eigen::Vector3d & n_,
 	M.col(1) = t_;
 	M.col(2) = b_;
 	if (boost::math::sign(M.determinant()) != 1) {
-		throw std::runtime_error("Frenet-Serret local frame is not left-handed!");
+		PCMSOLVER_ERROR("Frenet-Serret local frame is not left-handed!");
 	}
 }

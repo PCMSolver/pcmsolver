@@ -8,6 +8,7 @@
 #include <string>
 
 #include "BuildInfo.hpp"
+#include "Exception.hpp"
 #include "LoggerImpl.hpp"
 
 namespace logging
@@ -18,7 +19,7 @@ namespace logging
     class logger
     {
     private:
-	printLevel globalPrintLevel_;
+        printLevel globalPrintLevel_;
         std::stringstream logStream_;
         logPolicy * policy_;
         std::mutex writeMutex_;
@@ -48,20 +49,19 @@ namespace logging
         /// @}
     public:
         /*! Constructor
-        *  \param[in] name name for the log file
-	*
-	*  The build parameters are logged first
+         *  \param[in] name name for the log file
+         *  The build parameters are logged first
          */
         logger(const std::string & name, printLevel print = coarse)
 		: globalPrintLevel_(print), policy_(new logPolicy)
-	{
+        {
             if(!policy_) {
-                throw std::runtime_error("LOGGER: Unable to create the logger instance");
+                PCMSOLVER_ERROR("LOGGER: Unable to create the logger instance");
             }
             policy_->open_ostream(name);
-	    // Write the logfile header
-	    logStream_ << "\t\tPCMSolver execution log\n"
-		       << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
+            // Write the logfile header
+            logStream_ << "\t\tPCMSolver execution log\n"
+                << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
         }
         /// Destructor
         ~logger() {
@@ -85,8 +85,7 @@ namespace logging
 
     };
 
-    /*! \brief Returns date and time
-     */
+    /*! \brief Returns date and time */
     inline std::string getTime() {
         std::string time_str;
         time_t raw_time;

@@ -314,7 +314,7 @@ def setup_keywords():
     green.add_kw('SPHEREPOSITION', 'DBL_ARRAY', [0.0, 0.0, 0.0])
     # Dielectric profile type
     # Valid for: SPHERICALDIFFUSE
-    # Valid values: TANH
+    # Valid values: TANH, ERF
     # Default: TANH
     green.add_kw('PROFILE', 'STR', 'TANH')
     # Static dielectric permittivity inside the interface
@@ -559,6 +559,7 @@ def verify_medium(section):
 def verify_green(section):
     allowed     = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'METALSPHERE', 'GREENSFUNCTIONSUM')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
+    allowed_profiles = ('TANH', 'ERF')
 
     green1 = section.fetch_sect('GREEN<ONE>')
     green2 = section.fetch_sect('GREEN<TWO>')
@@ -611,6 +612,11 @@ def verify_green(section):
         if not (green1.is_set() and green2.is_set()):
             print('One or both components not defined for GreensFunctionSum')
             sys.exit(1)
+
+    profile = section.get('PROFILE')
+    if (profile.get() not in allowed_profiles):
+        print('Allowed profiles are: {}'.format(allowed_profiles))
+        sys.exit(1)
 
 def verify_spheres(keyword):
     length=len(keyword.get())

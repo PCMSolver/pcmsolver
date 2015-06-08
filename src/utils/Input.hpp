@@ -228,6 +228,8 @@ private:
     double center_;
     /// Width of the diffuse interface
     double width_;
+    /// Profile chosen for the diffuse interface
+    int profileType_;
     /// Center of the dielectric sphere
     std::vector<double> origin_;
     /// Who performed the syntactic input parsing

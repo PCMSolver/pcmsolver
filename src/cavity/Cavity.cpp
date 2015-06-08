@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -36,6 +36,7 @@
 #include <Eigen/Dense>
 #include "cnpyPimpl.hpp"
 
+#include "Exception.hpp"
 #include "MathUtils.hpp"
 #include "Symmetry.hpp"
 
@@ -101,16 +102,16 @@ void Cavity::loadCavity(const std::string & fname)
     cnpy::NpyArray raw_weights = loaded_cavity["weights"];
     int dim = raw_weights.shape[0];
     if (dim != nElements_) {
-        throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of weights vector!");
+        PCMSOLVER_ERROR("A problem occurred while loading the cavity. Inconsistent dimension of weights vector!");
     } else {
         elementArea_ = getFromRawBuffer<double>(dim, 1, raw_weights.data);
     }
-    
+
     // 2. Get the element sphere center
     cnpy::NpyArray raw_elSphCenter = loaded_cavity["elSphCenter"];
     dim = raw_elSphCenter.shape[1];
     if (dim != nElements_) {
-        throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of element sphere radius matrix!");
+        PCMSOLVER_ERROR("A problem occurred while loading the cavity. Inconsistent dimension of element sphere radius matrix!");
     } else {
         elementSphereCenter_ = getFromRawBuffer<double>(3, dim, raw_elSphCenter.data);
     }
@@ -119,7 +120,7 @@ void Cavity::loadCavity(const std::string & fname)
     cnpy::NpyArray raw_elRadius = loaded_cavity["elRadius"];
     dim = raw_elRadius.shape[0];
     if (dim != nElements_) {
-        throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of element radius vector!");
+        PCMSOLVER_ERROR("A problem occurred while loading the cavity. Inconsistent dimension of element radius vector!");
     } else {
         elementRadius_ = getFromRawBuffer<double>(dim, 1, raw_elRadius.data);
     }
@@ -128,7 +129,7 @@ void Cavity::loadCavity(const std::string & fname)
     cnpy::NpyArray raw_centers = loaded_cavity["centers"];
     dim = raw_centers.shape[1];
     if (dim != nElements_) {
-        throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of centers matrix!");
+        PCMSOLVER_ERROR("A problem occurred while loading the cavity. Inconsistent dimension of centers matrix!");
     } else {
         elementCenter_ = getFromRawBuffer<double>(3, dim, raw_centers.data);
     }
@@ -137,7 +138,7 @@ void Cavity::loadCavity(const std::string & fname)
     cnpy::NpyArray raw_normals = loaded_cavity["normals"];
     dim = raw_normals.shape[1];
     if (dim != nElements_) {
-        throw std::runtime_error("A problem occurred while loading the cavity. Inconsistent dimension of normals matrix!");
+        PCMSOLVER_ERROR("A problem occurred while loading the cavity. Inconsistent dimension of normals matrix!");
     } else {
         elementNormal_ = getFromRawBuffer<double>(3, dim, raw_normals.data);
     }
@@ -153,7 +154,7 @@ void Cavity::loadCavity(const std::string & fname)
 	    vertices.resize(Eigen::NoChange, nv); // BOGUS!!!
 	    arcs.resize(Eigen::NoChange, nv); // BOGUS!!
 	    // Populate vertices and arcs
-	    elements_.push_back(Element(nv, 
+	    elements_.push_back(Element(nv,
 				        elementArea_(i),
 					elementCenter_.col(i),
 					elementNormal_.col(i),

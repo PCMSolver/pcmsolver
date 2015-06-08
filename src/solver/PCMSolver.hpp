@@ -60,7 +60,8 @@ public:
     /*! \brief Construct solver from two raw pointers to Green's functions
      *  \param[in] gf_i Green's function inside the cavity
      *  \param[in] gf_o Green's function outside the cavity
-     *  \warning Responsibility for the deallocation of the Green's functions rests on the client code
+     *  \warning gf_i and gf_o will be deallocated automatically when the solver object goes out of scope,
+     *  since they are wrapped in a std::shared_ptr
      */
     PCMSolver(IGreensFunction * gf_i, IGreensFunction * gf_o)
             : greenInside_(SharedIGreensFunction(gf_i)), greenOutside_(SharedIGreensFunction(gf_o)), built_(false) {}

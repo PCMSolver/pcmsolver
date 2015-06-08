@@ -377,6 +377,7 @@ struct InputDiffuseTest {
     double epsilonDynamic2;
     double center;
     double width;
+    int profile;
     Eigen::Vector3d origin;
     void SetUp() {
         filename = "@diffuse.inp";
@@ -412,6 +413,7 @@ struct InputDiffuseTest {
         epsilonDynamic2 = 4.0;
         center = 100.0 * angstromToBohr(CODATAyear);
         width  = 5.0 * angstromToBohr(CODATAyear);
+        profile = 1;
         origin << 70.0, 1.0, 23.0;
         origin *= angstromToBohr(CODATAyear);
     }
@@ -435,7 +437,7 @@ BOOST_FIXTURE_TEST_CASE(Diffuse, InputDiffuseTest)
     BOOST_REQUIRE_EQUAL(mode,                  parsedInput.mode());
     for (size_t i = 0; i < spheres.size(); ++i) {
 	    for (size_t j = 0; j < 3; ++j) {
-	    	BOOST_REQUIRE_CLOSE(spheres[i].center(j),      parsedInput.spheres(i).center(j), threshold);
+            BOOST_REQUIRE_CLOSE(spheres[i].center(j),      parsedInput.spheres(i).center(j), threshold);
 	    }
 	    BOOST_REQUIRE_CLOSE(spheres[i].radius(),      parsedInput.spheres(i).radius(), threshold);
     }
@@ -453,9 +455,10 @@ BOOST_FIXTURE_TEST_CASE(Diffuse, InputDiffuseTest)
     BOOST_REQUIRE_CLOSE(epsilonDynamic2, parsedInput.outsideDynamicGreenParams().epsilon2, threshold);
     BOOST_REQUIRE_CLOSE(center, parsedInput.outsideDynamicGreenParams().center, 1.0e-10);
     BOOST_REQUIRE_CLOSE(width, parsedInput.outsideDynamicGreenParams().width, 1.0e-10);
+    BOOST_REQUIRE_EQUAL(profile, parsedInput.outsideDynamicGreenParams().howProfile);
     for (size_t i = 0; i < 3; ++i) {
-	   	BOOST_REQUIRE_CLOSE(origin(i),      parsedInput.outsideStaticGreenParams().origin(i), 1.0e-09);
-	   	BOOST_REQUIRE_CLOSE(origin(i),      parsedInput.outsideDynamicGreenParams().origin(i), 1.0e-09);
+		BOOST_REQUIRE_CLOSE(origin(i),      parsedInput.outsideStaticGreenParams().origin(i), 1.0e-09);
+		BOOST_REQUIRE_CLOSE(origin(i),      parsedInput.outsideDynamicGreenParams().origin(i), 1.0e-09);
     }
 }
 

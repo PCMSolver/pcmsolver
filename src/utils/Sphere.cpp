@@ -33,6 +33,8 @@
 
 #include <Eigen/Dense>
 
+#include "Exception.hpp"
+
 std::ostream & Sphere::printObject(std::ostream & os)
 {
     os << "Sphere radius " << radius_ << std::endl;
@@ -60,7 +62,7 @@ inline void Sphere::swap(Sphere & other)
 Sphere & Sphere::operator=(Sphere other)
 {
     if (this == &other) // Check for self-assignment
-        throw std::runtime_error("Are you trying to self-assign?");
+        PCMSOLVER_ERROR("Are you trying to self-assign?");
 
     ::swap(*this, other);
     return *this;

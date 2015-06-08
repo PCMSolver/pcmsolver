@@ -35,17 +35,18 @@
 #include <boost/variant.hpp>
 
 #include "Anisotropic.hpp"
+#include "OneLayerErf.hpp"
 #include "OneLayerTanh.hpp"
 #include "MembraneTanh.hpp"
 #include "Uniform.hpp"
 #include "Yukawa.hpp"
 
 /*! All possible profile types */
-typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, OneLayerTanh, MembraneTanh>
+typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, OneLayerTanh, OneLayerErf, MembraneTanh>
 profile_types;
 
 /*! One-layer diffuse profile types */
-typedef boost::mpl::vector<OneLayerTanh> onelayer_diffuse_profile_types;
+typedef boost::mpl::vector<OneLayerTanh, OneLayerErf> onelayer_diffuse_profile_types;
 
 /*! Two-layer (aka membrane-like) diffuse profile types */
 typedef boost::mpl::vector<MembraneTanh> membrane_diffuse_profile_types;
@@ -61,6 +62,7 @@ namespace profiles {
         bool operator()(const Yukawa & /* arg */) const { return false; }
         bool operator()(const Anisotropic & /* arg */) const { return false; }
         bool operator()(const OneLayerTanh & /* arg */) const { return false; }
+        bool operator()(const OneLayerErf & /* arg */) const { return false; }
         bool operator()(const MembraneTanh & /* arg */) const { return false; }
     };
 
@@ -77,6 +79,7 @@ namespace profiles {
         }
         bool operator()(const Anisotropic & /* arg */) const { return false; }
         bool operator()(const OneLayerTanh & /* arg */) const { return false; }
+        bool operator()(const OneLayerErf & /* arg */) const { return false; }
         bool operator()(const MembraneTanh & /* arg */) const { return false; }
     };
 

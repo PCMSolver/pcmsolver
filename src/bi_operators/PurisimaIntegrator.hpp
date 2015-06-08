@@ -39,6 +39,7 @@
 
 #include "IntegratorHelperFunctions.hpp"
 #include "Element.hpp"
+#include "Exception.hpp"
 #include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"
@@ -60,7 +61,7 @@
  *  \f[
  *  	D_{ii} = -\left(2\pi + \sum_{j\neq i}D_{ij}a_j \right)\frac{1}{a_i}
  *  \f]
- *  Note that the diagonal elements of S are obtained as in CollocationIntegrator, only
+ *  Note that the diagonal elements of S are obtained as in PurisimaIntegrator, only
  *  the calculation of the diagonal elements of D is different.
  *  The original reference is \cite Purisima1995
  */
@@ -134,22 +135,22 @@ struct PurisimaIntegrator
     /**@{ Single and double layer potentials for a IonicLiquid Green's function by collocation */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const IonicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
-        throw std::runtime_error("Not implemented yet!");
+        PCMSOLVER_ERROR("PurisimaIntegrator::singleLayer not implemented yet for IonicLiquid");
     }
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const IonicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
-        throw std::runtime_error("Not implemented yet!");
+        PCMSOLVER_ERROR("PurisimaIntegrator::doubleLayer not implemented yet for IonicLiquid");
     }
     /**@}*/
 
     /**@{ Single and double layer potentials for an AnisotropicLiquid Green's function by collocation */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const AnisotropicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
-        throw std::runtime_error("Not implemented yet!");
+        PCMSOLVER_ERROR("PurisimaIntegrator::singleLayer not implemented yet for AnisotropicLiquid");
     }
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const AnisotropicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
-        throw std::runtime_error("Not implemented yet!");
+        PCMSOLVER_ERROR("PurisimaIntegrator::doubleLayer not implemented yet for AnisotropicLiquid");
     }
     /**@}*/
 

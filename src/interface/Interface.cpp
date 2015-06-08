@@ -237,7 +237,7 @@ extern "C" void load_surface_function(const char * name)
     cnpy::NpyArray raw_surfFunc = cnpy::npy_load(fname);
     int dim = raw_surfFunc.shape[0];
     if (dim != _cavity->size()) {
-        throw std::runtime_error("Inconsistent dimension of loaded surface function!");
+        PCMSOLVER_ERROR("Inconsistent dimension of loaded surface function!");
     } else {
 	Eigen::VectorXd values = getFromRawBuffer<double>(dim, 1, raw_surfFunc.data);
         SharedSurfaceFunction func( new SurfaceFunction(functionName, dim, values) );
@@ -263,7 +263,7 @@ extern "C" void dot_surface_functions(double * result, const char * potString,
     SharedSurfaceFunctionMap::const_iterator iter_chg = functions.find(chgFuncName);
 
     if ( iter_pot == functions.end()  ||  iter_chg == functions.end() ) {
-        throw std::runtime_error("One or both of the SurfaceFunction specified is non-existent.");
+        PCMSOLVER_ERROR("One or both of the SurfaceFunction specified is non-existent.");
     } else {
         // Calculate the dot product
         *result = (*iter_pot->second) * (*iter_chg->second);
@@ -325,7 +325,7 @@ extern "C" void set_surface_function(int * nts, double * values, char * name)
 {
     int nTess = _cavity->size();
     if ( nTess != *nts )
-        throw std::runtime_error("You are trying to allocate a SurfaceFunction bigger than the cavity!");
+        PCMSOLVER_ERROR("You are trying to allocate a SurfaceFunction bigger than the cavity!");
 
     std::string functionName(name);
     // Here we check whether the function exists already or not
@@ -349,13 +349,13 @@ extern "C" void get_surface_function(int * nts, double * values, char * name)
 {
     int nTess = _cavity->size();
     if ( nTess != *nts )
-        throw std::runtime_error("You are trying to access a SurfaceFunction bigger than the cavity!");
+        PCMSOLVER_ERROR("You are trying to access a SurfaceFunction bigger than the cavity!");
 
     std::string functionName(name);
 
     SharedSurfaceFunctionMap::const_iterator iter = functions.find(functionName);
     if ( iter == functions.end() )
-        throw std::runtime_error("You are trying to access a non-existing SurfaceFunction.");
+        PCMSOLVER_ERROR("You are trying to access a non-existing SurfaceFunction.");
 
     for ( int i = 0; i < nTess; ++i ) {
         values[i] = iter->second->value(i);

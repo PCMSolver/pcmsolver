@@ -39,6 +39,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "CavityData.hpp"
+#include "Exception.hpp"
 #include "GreenData.hpp"
 #include "SolverData.hpp"
 #include "InputManager.hpp"
@@ -138,12 +139,13 @@ void Input::reader(const char * pythonParsed)
         center_ = outside.getDbl("CENTER");
         width_ = outside.getDbl("WIDTH");
         origin_ = outside.getDblVec("INTERFACEORIGIN");
+        profileType_ = profilePolicy(outside.getStr("PROFILE"));
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
         std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
         if (solvents.find(name) == solvents.end()) {
-            throw std::runtime_error("Solvent " + name + " NOT found!");
+            PCMSOLVER_ERROR("Solvent " + name + " NOT found!");
         } else {
             solvent_ = solvents[name];
         }
@@ -262,7 +264,7 @@ greenData Input::outsideStaticGreenParams()
         outsideStaticGreenData_ = greenData(derivativeOutsideType_,
                                             integratorType_, profile,  epsilonStaticOutside_);
         if (not hasSolvent_) {
-           outsideStaticGreenData_.howProfile  = profilePolicy("ONELAYERTANH");
+           outsideStaticGreenData_.howProfile  = profileType_;
            outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
            outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
            outsideStaticGreenData_.center   = center_;
@@ -280,7 +282,7 @@ greenData Input::outsideDynamicGreenParams()
         outsideDynamicGreenData_ = greenData(derivativeOutsideType_,
                                              integratorType_, profile, epsilonDynamicOutside_);
         if (not hasSolvent_) {
-           outsideDynamicGreenData_.howProfile  = profilePolicy("ONELAYERTANH");
+           outsideDynamicGreenData_.howProfile  = profileType_;
            outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
            outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
            outsideDynamicGreenData_.center   = center_;
@@ -322,7 +324,8 @@ int integratorPolicy(const std::string & name)
 int profilePolicy(const std::string & name)
 {
     static std::map<std::string, int> mapStringToInt;
-    mapStringToInt.insert(std::map<std::string, int>::value_type("ONELAYERTANH", 0));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("TANH", 0));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("ERF", 1));
 
     return mapStringToInt.find(name)->second;
 }

@@ -221,7 +221,7 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3>
                                        E1, E2, E3, typename mpl::deref<B2>::type>::execute(f, data, id1, id2, id3));
             }
         } else if (1 == mpl::distance<B2, E2>::value) { // Desired type NOT found in S2
-            throw std::invalid_argument("Invalid derivative type (id2 = " +
+            throw std::invalid_argument("Invalid integrator policy (id2 = " +
                                         boost::lexical_cast<std::string>(id2) + ") in for_id metafunction.");
         } else { // Second type not resolved, but S2 type sequence not exhausted
             // Call for_id_impl first partial specialization with type of B2 moved to the next type in S2
@@ -271,7 +271,7 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3>
         if (position<S3, typename mpl::deref<B3>::type>::value == id3) { // Desired type in S3 found, we're done!
             return ApplyFunctor<D, T1, T2, typename mpl::deref<B3>::type>::apply(f, data);
         } else if (1 == mpl::distance<B3, E3>::value) { // Desired type NOT found in S3
-            throw std::invalid_argument("Invalid derivative type (id3 = " +
+            throw std::invalid_argument("Invalid permittivity profile (id3 = " +
                                         boost::lexical_cast<std::string>(id3) + ") in for_id metafunction.");
         } else { // Third type not resolved, but S3 type sequence not exhausted
             // Call for_id_impl second partial specialization with type of B3 moved to the next type in S3

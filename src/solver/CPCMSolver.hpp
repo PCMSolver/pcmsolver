@@ -67,7 +67,8 @@ public:
      *  \param[in] gf_o Green's function outside the cavity
      *  \param[in] symm whether the system matrix has to be symmetrized
      *  \param[in] corr factor to correct the conductor results
-     *  \warning Responsibility for the deallocation of the Green's functions rests on the client code
+     *  \warning gf_i and gf_o will be deallocated automatically when the solver object goes out of scope,
+     *  since they are wrapped in a std::shared_ptr
      */
     CPCMSolver(IGreensFunction * gf_i, IGreensFunction * gf_o, bool symm, double corr)
         : PCMSolver(gf_i, gf_o), hermitivitize_(symm), correction_(corr) {}

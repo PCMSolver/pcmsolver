@@ -32,6 +32,8 @@
 
 #include <Eigen/Dense>
 
+#include "Exception.hpp"
+
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
     using std::swap;
@@ -52,7 +54,7 @@ inline void SurfaceFunction::swap(SurfaceFunction & other)
 SurfaceFunction & SurfaceFunction::operator=(SurfaceFunction other)
 {
     if (this == &other) // Check for self-assignment
-        throw std::runtime_error("Are you trying to self-assign?");
+        PCMSOLVER_ERROR("Are you trying to self-assign?");
     // No check on dimensions! This is assignment not comparison!!
 
     ::swap(*this, other);
@@ -62,14 +64,14 @@ SurfaceFunction & SurfaceFunction::operator=(SurfaceFunction other)
 double SurfaceFunction::operator*(const SurfaceFunction & other) const
 {
     if (this->nPoints_ != other.nPoints_)
-        throw std::runtime_error("Incoherent dimensions of left and right operands!");
+        PCMSOLVER_ERROR("Incoherent dimensions of left and right operands!");
     return this->values_.dot(other.values_);
 }
 
 SurfaceFunction & SurfaceFunction::operator+=(const SurfaceFunction & other)
 {
     if (this->nPoints_ != other.nPoints_)
-        throw std::runtime_error("Incoherent dimensions of left and right operands!");
+        PCMSOLVER_ERROR("Incoherent dimensions of left and right operands!");
     this->values_ = this->values_ + other.values_;
     return *this;
 }
@@ -77,7 +79,7 @@ SurfaceFunction & SurfaceFunction::operator+=(const SurfaceFunction & other)
 SurfaceFunction & SurfaceFunction::operator-=(const SurfaceFunction & other)
 {
     if (this->nPoints_ != other.nPoints_)
-        throw std::runtime_error("Incoherent dimensions of left and right operands!");
+        PCMSOLVER_ERROR("Incoherent dimensions of left and right operands!");
     this->values_ = this->values_ - other.values_;
     return *this;
 }
@@ -91,7 +93,7 @@ SurfaceFunction & SurfaceFunction::operator*=(double scaling)
 SurfaceFunction & SurfaceFunction::operator/=(double scaling)
 {
     if (scaling == 0.0)
-        throw std::runtime_error("You are dividing by zero!");
+        PCMSOLVER_ERROR("You are dividing by zero!");
     this->values_ /= scaling;
     return *this;
 }
@@ -99,7 +101,7 @@ SurfaceFunction & SurfaceFunction::operator/=(double scaling)
 void SurfaceFunction::setValues(double * v)
 {
     if (!allocated_)
-        throw std::runtime_error("Surface function not allocated!");
+        PCMSOLVER_ERROR("Surface function not allocated!");
     // Zero out any previous value
     values_.setZero();
 
@@ -124,7 +126,7 @@ std::ostream & SurfaceFunction::printObject(std::ostream & os)
 {
     os << "Surface Function " << name_ << std::endl;
     if (!allocated_)
-        throw std::runtime_error("Surface function not allocated!");
+        PCMSOLVER_ERROR("Surface function not allocated!");
 
     os << values_.transpose();
 

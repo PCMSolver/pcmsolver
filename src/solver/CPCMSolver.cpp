@@ -72,7 +72,7 @@ void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity)
     // to test if SI is invertible before attempting to invert it.
     Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
     if (!(SI_LU.isInvertible()))
-        throw std::runtime_error("SI matrix is not invertible!");
+        PCMSOLVER_ERROR("SI matrix is not invertible!");
     fullPCMMatrix_ = fact * SI_LU.inverse();
     // 5. Symmetrize K := (K + K+)/2
     if (hermitivitize_) {

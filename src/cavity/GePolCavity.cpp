@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -36,6 +36,7 @@
 #include <Eigen/Dense>
 #include <boost/lexical_cast.hpp>
 
+#include "Exception.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 
@@ -107,7 +108,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     int    * nvert   = new int[maxts];
     double * vert    = new double[30 * maxts];
     double * centr   = new double[30 * maxts];
-    
+
     // Clean-up possible heap-crap
     std::fill_n(xtscor, maxts, 0.0);
     std::fill_n(ytscor, maxts, 0.0);
@@ -155,7 +156,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     double * ze = zv.data();
 
     double * rin = radii_scratch.data();
-    double * mass = new double[molecule_.nAtoms()]; 
+    double * mass = new double[molecule_.nAtoms()];
     for (int i = 0; i < molecule_.nAtoms(); ++i) {
 	    mass[i] = molecule_.masses(i);
     }
@@ -245,7 +246,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
         // Prepare the error message:
         std::string message = boost::lexical_cast<std::string>(equal_elements.size()) +
                               " cavity finite element centers overlap exactly!\n" + list_of_pairs;
-        throw std::runtime_error(message);
+        PCMSOLVER_ERROR(message);
     }
     // Calculate normal vectors
     elementNormal_ = elementCenter_ - elementSphereCenter_;
@@ -268,13 +269,13 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 	    for (int j = 0; j < nv; ++j) {
 		int j_off = (j + 1) * nElements_ - 1;
 	        for (int k = 0; k < 3; ++k) {
-			int k_off = (k + 1) * nElements_ * nv; 
+			int k_off = (k + 1) * nElements_ * nv;
 			int offset = i_off + j_off + k_off;
 	  		vertices(k, j) = vert[offset];
 			arcs(k, j) = centr[offset];
 		}
 	    }
-	    elements_.push_back(Element(nv, 
+	    elements_.push_back(Element(nv,
 				        elementArea_(i),
 					elementCenter_.col(i),
 					elementNormal_.col(i),

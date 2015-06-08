@@ -148,7 +148,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     //    to test if T is invertible before attempting to invert it.
     Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix_);
     if (!(T_LU.isInvertible()))
-        throw std::runtime_error("T matrix is not invertible!");
+        PCMSOLVER_ERROR("T matrix is not invertible!");
     fullPCMMatrix_ = T_LU.inverse();
     // 3. Multiply T^-1 and R
     fullPCMMatrix_ *= (2 * M_PI * aInv - DI);

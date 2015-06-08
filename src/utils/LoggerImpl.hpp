@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 
+#include "Exception.hpp"
+
 namespace logging
 {
     enum printLevel {
@@ -55,7 +57,7 @@ namespace logging
         virtual void open_ostream(const std::string & name) {
             outStream_->open(name.c_str(), std::ios_base::binary | std::ios_base::out );
             if(!outStream_->is_open()) {
-                throw(std::runtime_error("LOGGER: Unable to open an output stream"));
+                PCMSOLVER_ERROR("LOGGER: Unable to open an output stream");
             }
         }
         /*! \brief Closes an output stream with the given name

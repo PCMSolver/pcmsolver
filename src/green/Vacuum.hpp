@@ -59,20 +59,6 @@ public:
         this->profile_ = Uniform(1.0);
     }
     virtual ~Vacuum() {}
-    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator
-     *  for the pair of points p1, p2:
-     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
-     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
-     *  \param[in] direction the direction
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    virtual double kernelD(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
-    {
-        return this->derivativeProbe(direction, p1, p2);
-    }
 
     /*! Calculates the matrix representation of the S operator
      *  \param[in] e list of finite elements
@@ -104,6 +90,20 @@ private:
                        (sp[1]-pp[1])*(sp[1]-pp[1])+
                        (sp[2]-pp[2])*(sp[2]-pp[2]));
         return res;
+    }
+    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator
+     *  for the pair of points p1, p2:
+     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
+     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
+     *  \param[in] direction the direction
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    virtual double kernelD_impl(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
+    {
+        return this->derivativeProbe(direction, p1, p2);
     }
     virtual std::ostream & printObject(std::ostream & os) override
     {

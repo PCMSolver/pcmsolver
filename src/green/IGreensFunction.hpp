@@ -43,6 +43,10 @@ class Element;
  *  \brief Interface for Green's function classes
  *  \author Luca Frediani and Roberto Di Remigio
  *  \date 2012-2015
+ *
+ *  The Non-Virtual Interface (NVI) idiom is used. Notice also that some of the return
+ *  types are in some cases "auto", meaning that we will let the compiler deduce
+ *  them.
  */
 
 class IGreensFunction
@@ -54,8 +58,9 @@ public:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      */
-    virtual double kernelS(const Eigen::Vector3d & p1,
-                           const Eigen::Vector3d &p2) const = 0;
+    double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d &p2) const {
+        return kernelS_impl(p1, p2);
+    }
     /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the pair of points p1, p2:
      *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
@@ -64,8 +69,9 @@ public:
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
      */
-    virtual double kernelD(const Eigen::Vector3d & direction,
-                           const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const = 0;
+    double kernelD(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
+        return kernelD_impl(direction, p1, p2);
+    }
 
     /*! Whether the Green's function describes a uniform environment */
     virtual bool uniform() const = 0;
@@ -85,6 +91,22 @@ public:
         return gf.printObject(os);
     }
 protected:
+    /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
+     *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  \param[in] p1 first point
+     *  \param[in] p2 second point
+     */
+    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d &p2) const = 0;
+    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the pair of points p1, p2:
+     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
+     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
+     *  \param[in] direction the direction
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    virtual double kernelD_impl(const Eigen::Vector3d & direction,
+                           const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const = 0;
     virtual std::ostream & printObject(std::ostream & os) = 0;
 };
 

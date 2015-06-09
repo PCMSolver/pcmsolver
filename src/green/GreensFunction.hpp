@@ -59,21 +59,6 @@ class GreensFunction: public IGreensFunction
 public:
     GreensFunction() : delta_(1.0e-04), integrator_(IntegratorPolicy()) {}
     virtual ~GreensFunction() {}
-    /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
-     *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
-     *  \param[in] p1 first point
-     *  \param[in] p2 second point
-     *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
-     *  need to implement. Thus this method is marked final.
-     */
-    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
-    {
-        DerivativeTraits sp[3], pp[3], res;
-        sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
-        pp[0] = p2(0); pp[1] = p2(1); pp[2] = p2(2);
-        res = this->operator()(sp, pp);
-        return res[0];
-    }
     /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_1}\f$
@@ -161,6 +146,21 @@ protected:
      *  \param[in]  probe the probe point
      */
     virtual DerivativeTraits operator()(DerivativeTraits * source, DerivativeTraits * probe) const = 0;
+    /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
+     *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  \param[in] p1 first point
+     *  \param[in] p2 second point
+     *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
+     *  need to implement. Thus this method is marked final.
+     */
+    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
+    {
+        DerivativeTraits sp[3], pp[3], res;
+        sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
+        pp[0] = p2(0); pp[1] = p2(1); pp[2] = p2(2);
+        res = this->operator()(sp, pp);
+        return res[0];
+    }
     virtual std::ostream & printObject(std::ostream & os)
     {
         os << "Green's Function" << std::endl;
@@ -179,21 +179,6 @@ class GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>: publi
 public:
     GreensFunction() : delta_(1.0e-04), integrator_(IntegratorPolicy()) {}
     virtual ~GreensFunction() {}
-    /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
-     *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
-     *  \param[in] p1 first point
-     *  \param[in] p2 second point
-     *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
-     *  need to implement. Thus this method is marked final.
-     */
-    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
-    {
-        Numerical sp[3], pp[3], res;
-        sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
-        pp[0] = p2(0); pp[1] = p2(1); pp[2] = p2(2);
-        res = this->operator()(sp, pp);
-        return res;
-    }
     /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_1}\f$
@@ -277,6 +262,21 @@ protected:
      *  \param[in]  probe the probe point
      */
     virtual Numerical operator()(Numerical * source, Numerical * probe) const = 0;
+    /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e. the value of the
+     *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1, \mathbf{p}_2)\f$
+     *  \param[in] p1 first point
+     *  \param[in] p2 second point
+     *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
+     *  need to implement. Thus this method is marked final.
+     */
+    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
+    {
+        Numerical sp[3], pp[3], res;
+        sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
+        pp[0] = p2(0); pp[1] = p2(1); pp[2] = p2(2);
+        res = this->operator()(sp, pp);
+        return res;
+    }
     virtual std::ostream & printObject(std::ostream & os)
     {
         os << "Green's Function" << std::endl;

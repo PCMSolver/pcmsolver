@@ -61,23 +61,6 @@ public:
         GreensFunction<DerivativeTraits, IntegratorPolicy, Anisotropic,
                   AnisotropicLiquid<DerivativeTraits, IntegratorPolicy> >() { this->profile_ = Anisotropic(eigen_eps, euler_ang); }
     virtual ~AnisotropicLiquid() {}
-    /*! Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
-     *  for the pair of points p1, p2:
-     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
-     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
-     *  \param[in] direction the direction
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    virtual double kernelD(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
-    {
-        // Since the permittivity is a tensorial quantity,
-        // the full gradient is needed to get the kernel of D and D^\dagger
-        Eigen::Vector3d scratch = this->profile_.epsilon() * (this->gradientProbe(p1, p2));
-        return scratch.dot(direction);
-    }
 
     /*! Calculates the matrix representation of the S operator
      *  \param[in] e list of finite elements
@@ -118,6 +101,23 @@ private:
         DerivativeTraits distance = sqrt(scratch);
 
         return (1.0/(sqrt(detEps_) * distance));
+    }
+    /*! Returns value of the kernel for the calculation of the \f$\mathcal{D}\f$ integral operator
+     *  for the pair of points p1, p2:
+     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
+     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
+     *  \param[in] direction the direction
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    virtual double kernelD_impl(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
+    {
+        // Since the permittivity is a tensorial quantity,
+        // the full gradient is needed to get the kernel of D and D^\dagger
+        Eigen::Vector3d scratch = this->profile_.epsilon() * (this->gradientProbe(p1, p2));
+        return scratch.dot(direction);
     }
     virtual std::ostream & printObject(std::ostream & os) override
     {

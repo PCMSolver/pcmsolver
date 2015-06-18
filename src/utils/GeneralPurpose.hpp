@@ -26,6 +26,7 @@
 #include <numeric>
 #include <iostream>
 #include <string>
+#include <fstream>
 
 // INSERT_ELEMENTS (collection, first, last)
 // - fill values from first to last into the collection
@@ -67,6 +68,22 @@ inline void PRINT_MAPPED_ELEMENTS (const T& coll,
                   << ',' << elem.second << "] ";
     }
     std::cout << std::endl;
+}
+
+template <typename Derived>
+inline void print_eigen_matrix(const Eigen::MatrixBase<Derived> & matrix, const std::string & fname)
+{
+    std::ofstream fout;
+    fout.open(fname.c_str());
+    fout << " Row index " << '\t' << " Column index " << '\t' << " Matrix entry " << std::endl;
+    int rows = matrix.rows();
+    int cols = matrix.cols();
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            fout << i << '\t' << j << '\t' << matrix(i, j) << std::endl;
+        }
+    }
+    fout.close();
 }
 
 #endif /*GENERALPURPOSE_HPP*/

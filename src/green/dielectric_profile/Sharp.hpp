@@ -40,27 +40,29 @@
 class Sharp
 {
 private:
-    double epsilonLeft_;
-    double epsilonRight_;
+    double epsilonInside_;
+    double epsilonOutside_;
     double center_;
     double value(double point) const {
-        if (point  >= center_) {
-           return epsilonRight_;
+        if (point >= center_) {
+           return epsilonOutside_;
         } else {
-           return epsilonLeft_;
+           return epsilonInside_;
         }
     }
 public:
     Sharp(double eL, double eR, double c) :
-        epsilonLeft_(eL), epsilonRight_(eR), center_(c) {}
+        epsilonInside_(eL), epsilonOutside_(eR), center_(c) {}
     /*! The permittivity profile of the transition layer
-     *  \param[out]  e the value of the dielectric constant at point r
-     *  \param[in]   r evaluation point
+     *  \param[in] r evaluation point
      */
-    void operator()(double & e, const double r) const
+    double operator()(const double r) const
     {
-        e = value(r);
+        return value(r);
     }
+    double epsilonInside() { return epsilonInside_; }
+    double epsilonOutside() { return epsilonOutside_; }
+    double center() { return center_; }
 };
 
 #endif // SHARP_HPP

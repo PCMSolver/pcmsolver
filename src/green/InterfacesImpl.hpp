@@ -28,6 +28,7 @@
 
 #include <array>
 #include <cmath>
+#include <fstream>
 #include <functional>
 #include <tuple>
 #include <vector>
@@ -126,7 +127,7 @@ inline void observer(RadialFunction & f, const StateType & x, double r)
 }
 
 /*! \brief reverse contents of a RadialFunction
- *  \param[in] f RadialFunction whose contents have to be reversed
+ *  \param[in, out] f RadialFunction whose contents have to be reversed
  *  \author Roberto Di Remigio
  *  \date 2015
  */
@@ -135,6 +136,23 @@ inline void reverse(RadialFunction & f)
     std::reverse(f[0].begin(), f[0].end());
     std::reverse(f[1].begin(), f[1].end());
     std::reverse(f[2].begin(), f[2].end());
+}
+
+/*! \brief reverse contents of a RadialFunction
+ *  \param[in] f RadialFunction whose contents have to be printed
+ *  \author Roberto Di Remigio
+ *  \date 2015
+ */
+inline void writeRadialFunction(const RadialFunction & f, const std::string & fname)
+{
+    std::ofstream fout;
+    fout.open(fname.c_str());
+    fout << "#   r        f        df    "  << std::endl;
+    int size = f[0].size();
+    for (int i = 0; i < size; ++i) {
+        fout << f[0][i] << "    " << f[1][i] << "      " << f[2][i] << std::endl;
+    }
+    fout.close();
 }
 
 /*! \brief Calculates 1st radial solution, i.e. the one with r^l behavior

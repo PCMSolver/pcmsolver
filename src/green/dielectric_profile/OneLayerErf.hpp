@@ -65,7 +65,7 @@ private:
      *  \param[in] point where to evaluate the derivative
      */
     double derivative(double point) const {
-        double factor = (epsilon1_ - epsilon2_) / (width_ * std::sqrt(M_PI));
+        double factor = (epsilon2_ - epsilon1_) / (width_ * std::sqrt(M_PI));
         double t = (point - center_) / width_;
         double val = std::exp(-std::pow(t, 2));
         return (factor * val); //first derivative of epsilon(r)

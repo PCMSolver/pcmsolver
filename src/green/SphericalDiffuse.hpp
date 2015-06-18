@@ -101,8 +101,7 @@ public:
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
         double eps_r2 = 0.0;
-        // Shift p2 by origin_
-        std::tie(eps_r2, std::ignore) = this->profile_((p2 - this->origin_).norm());
+        std::tie(eps_r2, std::ignore) = this->epsilon(p2);
 
         return (eps_r2 * this->derivativeProbe(direction, p1, p2));
     }
@@ -130,40 +129,30 @@ public:
      *  \param[in] probe location of the probe charge
      */
     double coefficientCoulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
-        double r1  = (source - this->origin_).norm();
-        double r2  = (probe  - this->origin_).norm();
-
         // Obtain coefficient for the separation of the Coulomb singularity
-        return this->coefficient(r1, r2);
+        return this->coefficient_impl(source, probe);
     }
     /*! \brief Returns singular part of the Green's function
      *  \param[in] source location of the source charge
      *  \param[in] probe location of the probe charge
      */
     double Coulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
-        Eigen::Vector3d source_shifted = source - this->origin_;
-        Eigen::Vector3d probe_shifted  = probe  - this->origin_;
-        double r1  = source_shifted.norm();
-        double r2  = probe_shifted.norm();
-        double r12 = (source_shifted - probe_shifted).norm();
+        double r12 = (source - probe).norm();
 
         // Obtain coefficient for the separation of the Coulomb singularity
-        return (1.0 / (this->coefficient(r1, r2) * r12));
+        return (1.0 / (this->coefficient_impl(source, probe) * r12));
     }
     /*! \brief Returns non-singular part of the Green's function (image potential)
      *  \param[in] source location of the source charge
      *  \param[in] probe location of the probe charge
      */
     double imagePotential(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
-        Eigen::Vector3d source_shifted = source - this->origin_;
-        Eigen::Vector3d probe_shifted  = probe  - this->origin_;
-
         // Obtain coefficient for the separation of the Coulomb singularity
-        double Cr12 = this->coefficient(source_shifted.norm(), probe_shifted.norm());
+        double Cr12 = this->coefficient_impl(source, probe);
 
         double gr12 = 0.0;
-        for (int L = 0; L <= maxLGreen_; ++L) {
-            gr12 += this->functionSummation(L, source_shifted, probe_shifted, Cr12);
+        for (int L = 1; L <= maxLGreen_; ++L) {
+            gr12 += this->imagePotentialComponent_impl(L, source, probe, Cr12);
         }
 
         return gr12;
@@ -215,7 +204,7 @@ public:
     }
     /*! Handle to the dielectric profile evaluation */
     std::tuple<double, double> epsilon(const Eigen::Vector3d & point) const {
-        return this->profile_((point - this->origin_).norm());
+        return this->profile_((point + this->origin_).norm());
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
@@ -229,16 +218,14 @@ private:
     virtual Numerical operator()(Numerical * sp, Numerical * pp) const
     {
         // Transfer raw arrays to Eigen vectors using the Map type
-        Eigen::Map<Eigen::Matrix<double, 3, 1> > p1(sp), p2(pp);
-        Eigen::Vector3d source = p1 - this->origin_;
-        Eigen::Vector3d probe  = p2 - this->origin_;
+        Eigen::Map<Eigen::Matrix<double, 3, 1> > source(sp), probe(pp);
 
         // Obtain coefficient for the separation of the Coulomb singularity
-        double Cr12 = this->coefficient(source.norm(), probe.norm());
+        double Cr12 = this->coefficient_impl(source, probe);
 
         double gr12 = 0.0;
-        for (int L = 0; L <= maxLGreen_; ++L) {
-            gr12 += this->functionSummation(L, source, probe, Cr12);
+        for (int L = 1; L <= maxLGreen_; ++L) {
+            gr12 += this->imagePotentialComponent_impl(L, source, probe, Cr12);
         }
         double r12 = (source - probe).norm();
 
@@ -333,16 +320,18 @@ private:
     std::vector<RadialFunction> omega_;
     /*! \brief Returns L-th component of the radial part of the Green's function
      *  \param[in] L  angular momentum
-     *  \param[in] sp source point, shifted by origin_
-     *  \param[in] pp probe point, shifted by origin_
+     *  \param[in] sp source point
+     *  \param[in] pp probe point
      *  \param[in] Cr12 Coulomb singularity separation coefficient
-     *  \note This function expects that the source and probe points have been correctly shifted
-     *  to account for the position of the origin of the dielectric sphere.
+     *  \note This function shifts the given source and probe points by the location of the
+     *  dielectric sphere.
      */
-    double functionSummation(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp, double Cr12) const {
-        double r1 = sp.norm();
-        double r2 = pp.norm();
-        double cos_gamma = sp.dot(pp) / (r1 * r2);
+    double imagePotentialComponent_impl(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp, double Cr12) const {
+	Eigen::Vector3d sp_shift = sp + this->origin_;
+	Eigen::Vector3d pp_shift = pp + this->origin_;
+        double r1 = sp_shift.norm();
+        double r2 = pp_shift.norm();
+        double cos_gamma = sp_shift.dot(pp_shift) / (r1 * r2);
         // Evaluate Legendre polynomial of order L
         // First of all clean-up cos_gamma, Legendre polynomials
         // are only defined for -1 <= x <= 1
@@ -366,7 +355,7 @@ private:
         double d_omega2 = linearInterpolation(r2, omega_[L][0], omega_[L][2]);
 
         double eps_r2 = 0.0;
-        std::tie(eps_r2, std::ignore) = this->profile_(r2);
+        std::tie(eps_r2, std::ignore) = this->profile_(pp_shift.norm());
 
         double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 
@@ -395,10 +384,14 @@ private:
      */
     RadialFunction omegaC_;
     /*! \brief Returns coefficient for the separation of the Coulomb singularity
-     *  \param[in] r1 first point
-     *  \param[in] r2 second point
+     *  \param[in] sp first point
+     *  \param[in] pp second point
+     *  \note This function shifts the given source and probe points by the location of the
+     *  dielectric sphere.
      */
-    double coefficient(double r1, double r2) const {
+    double coefficient_impl(const Eigen::Vector3d & sp, const Eigen::Vector3d & pp) const {
+	double r1 = (sp + this->origin_).norm();
+	double r2 = (pp + this->origin_).norm();
         /* Value of zetaC_ at point with index 1 */
         double zeta1  = linearInterpolation(r1, zetaC_[0], zetaC_[1]);
         /* Value of zetaC_ at point with index 2 */

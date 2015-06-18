@@ -14,7 +14,6 @@
 #include "UniformDielectric.hpp"
 
 std::vector<double> generate_grid(double, double, size_t);
-std::string header();
 void case1();
 void case2();
 void case3();
@@ -40,34 +39,22 @@ std::vector<double> generate_grid(double min_val, double max_val, size_t nPoints
     return grid;
 }
 
-std::string header()
-{
-    std::stringstream tmp;
-    tmp << "#" << '\t' << "x_2" << '\t' << "z_2" << '\t';
-    tmp << "gf_value" << '\t' << "image" << '\t' << "Coulomb" << '\t';
-    tmp << "derivativeProbe" << '\t' << "der_image" << '\t' << "der_Coulomb" << std::endl;
-    return tmp.str();
-}
-
 void case1()
 {
-    size_t nPoints = 100;
+    size_t nPoints = 200;
     double epsInside = 80.0;
     double epsOutside = 2.0;
     Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
     double sphereRadius = 100.0;
-    double width = 10.0;
+    double width = 9.0;
 
-    Eigen::Vector3d source;
-    source << 4.0, 0.0, 85.0;
+    Eigen::Vector3d source = Eigen::Vector3d::Zero();
     Eigen::Vector3d probe = Eigen::Vector3d::Zero();
 
-    double x_min = 10.0;
-    double x_max = 300.0;
-    std::vector<double> x = generate_grid(x_min, x_max, nPoints);
-    double z_min = 10.0;
-    double z_max = 300.0;
+    double z_min = -20.0;
+    double z_max = 20.0;
     std::vector<double> z = generate_grid(z_min, z_max, nPoints);
+    double delta = 0.1;
 
     std::ofstream out;
 
@@ -75,24 +62,25 @@ void case1()
     LOG(gf);
 
     out.open("gf_spherical_CASE1.dat");
-    out << header();
     out.precision(16);
     for (size_t i = 0; i < nPoints; ++i) {
+	source << 0.0, 0.0, z[i];
         for (size_t j = 0; j < nPoints; ++j) {
-            probe << x[i], 0.0, z[j];
-            out << '\t' << x[i]
+            probe << 0.0, 0.0, (z[j] + delta);
+            out << '\t' << i
+		<< '\t' << j
+		<< '\t' << z[i]
                 << '\t' << z[j]
-                << '\t' << gf.kernelS(source, probe)
-                << '\t' << gf.imagePotential(source, probe)
                 << '\t' << gf.Coulomb(source, probe)
-                << '\t' << gf.derivativeProbe(Eigen::Vector3d::UnitZ(), source, probe)
-                << '\t' << gf.CoulombDerivative(Eigen::Vector3d::UnitZ(), source, probe)
-                << '\t' << gf.imagePotentialDerivative(Eigen::Vector3d::UnitZ(), source, probe) << std::endl;
+                << '\t' << gf.imagePotential(source, probe)
+                << '\t' << gf.kernelS(source, probe)
+		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) << std::endl;
         }
     }
     out.close();
     LOG_TIME;
 
+    /*
     UniformDielectric<AD_directional, CollocationIntegrator> gf_inside(epsInside);
     out.open("gf_uniform_inside_CASE1.dat");
     out << "#" << '\t' << "x_2" << '\t' << "z_2" << '\t';
@@ -124,4 +112,5 @@ void case1()
         }
     }
     out.close();
+    */
 }

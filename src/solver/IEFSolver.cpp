@@ -81,7 +81,7 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     Eigen::MatrixXd aInv = a.inverse();
 
     // 1. Form T
-    fullPCMMatrix_ = ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.transpose().eval()));
+    fullPCMMatrix_ = ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.adjoint().eval()));
     // 2. Invert T using LU decomposition with full pivoting
     //    This is a rank-revealing LU decomposition, this allows us
     //    to test if T is invertible before attempting to invert it.

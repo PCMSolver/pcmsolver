@@ -26,6 +26,8 @@
 #ifndef SPLINEFUNCTION_HPP
 #define SPLINEFUNCTION_HPP
 
+#include <algorithm>
+
 #include "Config.hpp"
 
 #include <Eigen/Core>
@@ -43,14 +45,19 @@
 class SplineFunction final
 {
 private:
-    typedef Eigen::Spline<double, 1, 3> SplineFit;
+    typedef Eigen::Spline<double, 1, 3> CubicSpline;
 public:
-    /*! \param[in] x vector with abscissa values 
+    /*! \brief Constructor from abscissa and function values
+     *  \param[in] x vector with abscissa values 
      *  \param[in] y vector with function values
+     *
+     *  Interpolation happens in the initialization of the spline_ data
+     *  member. We use std::min to set the degree in order to ensure that no 
+     *  more than a cubic spline is used, but short vectors are still accepted.
      */
     SplineFunction(const Eigen::VectorXd & x, const Eigen::VectorXd & y) 
 	    : xMin_(x.minCoeff()), xMax_(x.maxCoeff()),
-	    spline_(Eigen::SplineFitting<SplineFit>::Interpolate(y.transpose(), 
+	    spline_(Eigen::SplineFitting<CubicSpline>::Interpolate(y.transpose(), 
 		      std::min<int>(x.rows() - 1, 3), fitVector(x))
 	           )
 	{}
@@ -63,7 +70,7 @@ public:
 private:
     double xMin_;
     double xMax_;
-    SplineFit spline_;
+    CubicSpline spline_;
     /*! \brief Scale a scalar value to [0, 1] interval 
      *  \param[in] x value to be scaled
      *
@@ -74,7 +81,7 @@ private:
 	    return (x - xMin_) / (xMax_ - xMin_);
     }
     /*! \brief Scale a vector to [0, 1] interval 
-     *  \param[in] vec a vector
+     *  \param[in] x_vec a vector
      *
      *  Given column vector, returns a *row* vector with the values scaled
      *  to fit a preset interval. The interval is embedded in the callable object.

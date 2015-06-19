@@ -82,8 +82,8 @@ public:
      * \param[in] c center of the diffuse layer
      * \param[in] o center of the sphere
      */
-    SphericalDiffuse(double e1, double e2, double w, double c, const Eigen::Vector3d & o)
-        : GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, SphericalDiffuse<IntegratorPolicy, ProfilePolicy> >(), origin_(o)
+    SphericalDiffuse(double e1, double e2, double w, double c, const Eigen::Vector3d & o, int l)
+        : GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, SphericalDiffuse<IntegratorPolicy, ProfilePolicy> >(), origin_(o), maxLGreen_(l)
     {
         initProfilePolicy(e1, e2, w, c);
         initSphericalDiffuse();
@@ -309,7 +309,7 @@ private:
 
     /**@{ Parameters and functions for the calculation of the Green's function, including Coulomb singularity */
     /*! Maximum angular momentum in the final summation over Legendre polynomials to obtain G */
-    int maxLGreen_ = 30;
+    int maxLGreen_;
     /*! \brief First independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_ and has r^l behavior
      */

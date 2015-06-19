@@ -18,6 +18,7 @@
 #include "OneLayerTanh.hpp"
 
 struct TanhSphericalDiffuseTest {
+    int maxL;
     double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
     double der_probe_inside_reference, der_source_inside_reference;
@@ -27,6 +28,7 @@ struct TanhSphericalDiffuseTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     TanhSphericalDiffuseTest() { SetUp(); }
     void SetUp() {
+        maxL = 30;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside
@@ -44,7 +46,7 @@ struct TanhSphericalDiffuseTest {
         // Reference value
         // Checked by comparing the asymptotic behaviour
         inside_reference = 0.01237809396735725;
-        der_probe_inside_reference = -0.012524856460435427;        
+        der_probe_inside_reference = -0.012524856460435427;
 	der_source_inside_reference = 0.0125498847608398328;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
@@ -67,7 +69,7 @@ BOOST_FIXTURE_TEST_SUITE(TanhSphericalDiffuse, TanhSphericalDiffuseTest)
  */
 BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = inside_reference;
     double gf_value = gf.kernelS(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -91,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseTest)
  */
 BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = outside_reference;
     double gf_value = gf.kernelS(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -114,6 +116,7 @@ BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseTest)
 BOOST_AUTO_TEST_SUITE_END()
 
 struct TanhSphericalDiffuseShiftedTest {
+    int maxL;
     double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
     double der_probe_inside_reference, der_source_inside_reference;
@@ -123,6 +126,7 @@ struct TanhSphericalDiffuseShiftedTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     TanhSphericalDiffuseShiftedTest() { SetUp(); }
     void SetUp() {
+        maxL = 30;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside
@@ -140,7 +144,7 @@ struct TanhSphericalDiffuseShiftedTest {
         // Reference value
         // Checked by comparing the asymptotic behaviour
         inside_reference = 0.01237809396735725;
-        der_probe_inside_reference = -0.012524856457286904; 
+        der_probe_inside_reference = -0.012524856457286904;
         der_source_inside_reference = 0.0125498847577173306;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
@@ -151,8 +155,8 @@ struct TanhSphericalDiffuseShiftedTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.50006911963511325; 
-        der_probe_outside_reference = -0.2899541910583725; 
+        outside_reference = 0.50006911963511325;
+        der_probe_outside_reference = -0.2899541910583725;
         der_source_outside_reference = 0.28867505655949532;
     }
 };
@@ -164,7 +168,7 @@ BOOST_FIXTURE_TEST_SUITE(TanhSphericalDiffuseShifted1, TanhSphericalDiffuseShift
  */
 BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseShiftedTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = inside_reference;
     double gf_value = gf.kernelS(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -188,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE(inside, TanhSphericalDiffuseShiftedTest)
  */
 BOOST_FIXTURE_TEST_CASE(outside, TanhSphericalDiffuseShiftedTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = outside_reference;
     double gf_value = gf.kernelS(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);

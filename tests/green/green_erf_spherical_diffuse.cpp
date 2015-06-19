@@ -18,6 +18,7 @@
 #include "OneLayerErf.hpp"
 
 struct ErfSphericalDiffuseTest {
+    int maxL;
     double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
     double der_probe_inside_reference, der_source_inside_reference;
@@ -27,6 +28,7 @@ struct ErfSphericalDiffuseTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     ErfSphericalDiffuseTest() { SetUp(); }
     void SetUp() {
+        maxL = 30;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside
@@ -67,7 +69,7 @@ BOOST_FIXTURE_TEST_SUITE(ErfSphericalDiffuse, ErfSphericalDiffuseTest)
  */
 BOOST_FIXTURE_TEST_CASE(inside, ErfSphericalDiffuseTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = inside_reference;
     double gf_value = gf.kernelS(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -91,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE(inside, ErfSphericalDiffuseTest)
  */
 BOOST_FIXTURE_TEST_CASE(outside, ErfSphericalDiffuseTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = outside_reference;
     double gf_value = gf.kernelS(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -114,6 +116,7 @@ BOOST_FIXTURE_TEST_CASE(outside, ErfSphericalDiffuseTest)
 BOOST_AUTO_TEST_SUITE_END()
 
 struct ErfSphericalDiffuseShiftedTest {
+    int maxL;
     double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
     double der_probe_inside_reference, der_source_inside_reference;
@@ -123,6 +126,7 @@ struct ErfSphericalDiffuseShiftedTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     ErfSphericalDiffuseShiftedTest() { SetUp(); }
     void SetUp() {
+        maxL = 30;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside
@@ -164,7 +168,7 @@ BOOST_FIXTURE_TEST_SUITE(ErfSphericalDiffuseShifted1, ErfSphericalDiffuseShifted
  */
 BOOST_FIXTURE_TEST_CASE(inside, ErfSphericalDiffuseShiftedTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = inside_reference;
     double gf_value = gf.kernelS(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -188,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE(inside, ErfSphericalDiffuseShiftedTest)
  */
 BOOST_FIXTURE_TEST_CASE(outside, ErfSphericalDiffuseShiftedTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = outside_reference;
     double gf_value = gf.kernelS(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);

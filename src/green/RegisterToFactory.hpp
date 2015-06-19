@@ -134,7 +134,7 @@ namespace
     struct buildSphericalDiffuse {
         template <typename T, typename U>
         IGreensFunction * operator()(const greenData & data) {
-            return new SphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin);
+            return new SphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin, data.maxL);
         }
     };
 

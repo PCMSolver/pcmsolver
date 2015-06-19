@@ -139,7 +139,7 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
 {
     double width = 5.0;
     double sphereRadius = 100.0;
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero());
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 30);
 
     BOOST_TEST_MESSAGE("TanhSphericalDiffuse");
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());

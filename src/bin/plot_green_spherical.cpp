@@ -47,6 +47,7 @@ void case1()
     Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
     double sphereRadius = 100.0;
     double width = 9.0;
+    int maxL = 30;
 
     Eigen::Vector3d source = Eigen::Vector3d::Zero();
     Eigen::Vector3d probe = Eigen::Vector3d::Zero();
@@ -58,7 +59,7 @@ void case1()
 
     std::ofstream out;
 
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsInside, epsOutside, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsInside, epsOutside, width, sphereRadius, sphereCenter, maxL);
     LOG(gf);
 
     out.open("gf_spherical_CASE1.dat");

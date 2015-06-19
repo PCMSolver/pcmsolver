@@ -19,6 +19,7 @@ int main()
     sphereCenter << 0.0, 0.0, 0.0;
     double sphereRadius = 100.0;
     double width = 10.0;
+    int maxL = 30;
 
     Eigen::Vector3d source;
     source << 4.0, 0.0, 100.0;
@@ -29,7 +30,7 @@ int main()
     double zMax = 300.0;
     double step = (zMax - zMin) / nPoints;
 
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsInside, epsOutside, width, sphereRadius, sphereCenter);
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsInside, epsOutside, width, sphereRadius, sphereCenter, maxL);
     LOG(gf);
     std::ofstream out;
     out.open("gf_spherical_CASE1.dat");

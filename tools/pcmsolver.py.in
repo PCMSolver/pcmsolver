@@ -353,6 +353,10 @@ def setup_keywords():
     # Valid for: SPHERICALDIFFUSE
     # Valid values: array of doubles
     green.add_kw('INTERFACEORIGIN', 'DBL_ARRAY', [0.0, 0.0, 0.0])
+    # Maximum angular momentum value
+    # Valid for: SPHERICALDIFFUSE
+    # Valid values: integer
+    green.add_kw('MAXL', 'INT', 30)
     medium.add_sect(green)
 
     green_part = deepcopy(green)

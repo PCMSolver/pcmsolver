@@ -261,12 +261,13 @@ greenData Input::outsideStaticGreenParams()
         outsideStaticGreenData_ = greenData(derivativeOutsideType_,
                                             integratorType_, profile,  epsilonStaticOutside_);
         if (not hasSolvent_) {
-           outsideStaticGreenData_.howProfile  = profileType_;
+           outsideStaticGreenData_.howProfile = profileType_;
            outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
            outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
            outsideStaticGreenData_.center   = center_;
            outsideStaticGreenData_.width    = width_;
            outsideStaticGreenData_.origin   << origin_[0], origin_[1], origin_[2];
+           outsideStaticGreenData_.maxL = input_.getSect("MEDIUM").getSect("GREEN<OUTSIDE>").getInt("MAXL");
         }
     }
     return outsideStaticGreenData_;
@@ -285,6 +286,7 @@ greenData Input::outsideDynamicGreenParams()
            outsideDynamicGreenData_.center   = center_;
            outsideDynamicGreenData_.width    = width_;
            outsideDynamicGreenData_.origin   << origin_[0], origin_[1], origin_[2];
+           outsideDynamicGreenData_.maxL = input_.getSect("MEDIUM").getSect("GREEN<OUTSIDE>").getInt("MAXL");
         }
     }
     return outsideDynamicGreenData_;

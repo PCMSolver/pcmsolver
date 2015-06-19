@@ -28,7 +28,7 @@
 
 #include <string>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
 #include "ForIdGreen.hpp"

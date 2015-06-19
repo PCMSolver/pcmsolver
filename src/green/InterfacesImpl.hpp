@@ -35,7 +35,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 // Boost.Odeint includes
 #include <boost/numeric/odeint.hpp>

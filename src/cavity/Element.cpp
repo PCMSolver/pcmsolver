@@ -31,7 +31,9 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <Eigen/LU>
 
 #include <boost/math/special_functions/sign.hpp>
 
@@ -126,7 +128,7 @@ void tangent_and_bitangent(const Eigen::Vector3d & n_,
 	// by checking that the determinant of the matrix whose columns are the normal,
 	// tangent and bitangent vectors has determinant 1 (the system is orthonormal!)
 	Eigen::Matrix3d M;
-        M.col(0) = n_;
+    M.col(0) = n_;
 	M.col(1) = t_;
 	M.col(2) = b_;
 	if (boost::math::sign(M.determinant()) != 1) {

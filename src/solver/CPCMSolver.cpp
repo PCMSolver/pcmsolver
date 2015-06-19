@@ -32,7 +32,8 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/LU>
 
 #include "Cavity.hpp"
 #include "Element.hpp"

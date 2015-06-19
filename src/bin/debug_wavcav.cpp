@@ -27,7 +27,7 @@
 #include <fstream>
 #include <string>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "PWCSolver.hpp"
 #include "Vacuum.hpp"

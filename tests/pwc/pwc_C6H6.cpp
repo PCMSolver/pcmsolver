@@ -34,7 +34,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
 #include "PWCSolver.hpp"

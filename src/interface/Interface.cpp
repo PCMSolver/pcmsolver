@@ -42,7 +42,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 // Include Boost headers here
 #include <boost/algorithm/string.hpp>

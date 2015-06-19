@@ -33,7 +33,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "AnalyticEvaluate.hpp"
 #include "CollocationIntegrator.hpp"

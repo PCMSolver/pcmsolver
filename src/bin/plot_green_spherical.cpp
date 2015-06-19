@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "CollocationIntegrator.hpp"
 #include "GeneralPurpose.hpp"

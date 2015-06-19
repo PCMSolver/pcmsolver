@@ -35,7 +35,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "IntegratorHelperFunctions.hpp"
 #include "Element.hpp"

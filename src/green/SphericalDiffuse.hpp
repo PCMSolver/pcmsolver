@@ -35,7 +35,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 // Has to be included here
 #include "InterfacesImpl.hpp"

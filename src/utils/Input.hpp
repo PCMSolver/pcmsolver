@@ -120,9 +120,9 @@ public:
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
     /// @}
 private:
-    /*! Read Python-parsed input (API-side syntactic input parsing) into Input object
-     */
-    void reader(const char * pythonParsed);
+    /*! Contains all input information (API-side syntactic input parsing) */
+    Getkw input_;
+    void reader();
     /*! Read host data structures (host-side syntactic input parsing) into Input object.
      *  It provides access to a **limited** number of options only, basically the ones
      *  that can be filled into the cavityInput, solverInput and greenInput data structures.
@@ -138,8 +138,7 @@ private:
      */
     void reader(const cavityInput & cav, const solverInput & solv,
                 const greenInput & green);
-    /*! Perform semantic input parsing aka sanity check
-     */
+    /*! Perform semantic input parsing aka sanity check */
     void semanticCheck();
 
     /// Units of measure

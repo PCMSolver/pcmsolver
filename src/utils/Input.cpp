@@ -33,7 +33,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include "Getkw.h"
 
 #include <boost/algorithm/string.hpp>
@@ -49,28 +49,25 @@
 
 using boost::algorithm::to_upper_copy;
 
-Input::Input(const std::string & filename)
+Input::Input(const std::string & filename) : input_(Getkw(filename, false, true))
 {
-    reader(filename.c_str());
+    reader();
     semanticCheck();
 }
 
 Input::Input(const cavityInput & cav, const solverInput & solv,
-             const greenInput & green)
+             const greenInput & green) : input_(Getkw())
 {
     reader(cav, solv, green);
     semanticCheck();
 }
 
-void Input::reader(const char * pythonParsed)
+void Input::reader()
 {
-    // Create a Getkw object from input file.
-    Getkw input = Getkw(pythonParsed, false, true);
+    units_      = input_.getStr("UNITS");
+    CODATAyear_ = input_.getInt("CODATA");
 
-    units_      = input.getStr("UNITS");
-    CODATAyear_ = input.getInt("CODATA");
-
-    const Section & cavity = input.getSect("CAVITY");
+    const Section & cavity = input_.getSect("CAVITY");
 
     type_ = cavity.getStr("TYPE");
     area_ = cavity.getDbl("AREA");
@@ -105,7 +102,7 @@ void Input::reader(const char * pythonParsed)
     }
 
     // Get the contents of the Medium section
-    const Section & medium = input.getSect("MEDIUM");
+    const Section & medium = input_.getSect("MEDIUM");
     // Get the name of the solvent
     std::string name = medium.getStr("SOLVENT");
     if (name == "EXPLICIT" || name == "E") {

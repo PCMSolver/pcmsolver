@@ -30,7 +30,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 /*! @struct greenData
  *  @brief Contains all data defined from user input in the green section.

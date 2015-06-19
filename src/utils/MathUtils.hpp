@@ -37,6 +37,7 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 
 #include "SplineFunction.hpp"
 #include "Symmetry.hpp"
@@ -306,7 +307,7 @@ inline double splineInterpolation(const double point, const std::vector<double> 
     size_t index = std::distance(grid.begin(), std::lower_bound(grid.begin(), grid.end(), point)) - 1;
 
     // Parameters for the interpolating spline
-    Eigen::Vector3d x, y; 
+    Eigen::Vector3d x, y;
     x << grid[index-1], grid[index], grid[index+1];
     y << function[index-1], function[index], function[index+1];
     SplineFunction s(x, y);

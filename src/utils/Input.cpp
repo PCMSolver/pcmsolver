@@ -49,21 +49,22 @@
 
 using boost::algorithm::to_upper_copy;
 
-Input::Input(const std::string & filename) : input_(Getkw(filename, false, true))
+Input::Input(const std::string & filename)
 {
-    reader();
+    reader(filename);
     semanticCheck();
 }
 
 Input::Input(const cavityInput & cav, const solverInput & solv,
-             const greenInput & green) : input_(Getkw())
+             const greenInput & green)
 {
     reader(cav, solv, green);
     semanticCheck();
 }
 
-void Input::reader()
+void Input::reader(const std::string & filename)
 {
+    Getkw input_ = Getkw(filename, false, true);
     units_      = input_.getStr("UNITS");
     CODATAyear_ = input_.getInt("CODATA");
 
@@ -137,6 +138,7 @@ void Input::reader()
         width_ = outside.getDbl("WIDTH");
         origin_ = outside.getDblVec("INTERFACEORIGIN");
         profileType_ = profilePolicy(outside.getStr("PROFILE"));
+        maxL_ = outside.getInt("MAXL");
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -267,7 +269,7 @@ greenData Input::outsideStaticGreenParams()
            outsideStaticGreenData_.center   = center_;
            outsideStaticGreenData_.width    = width_;
            outsideStaticGreenData_.origin   << origin_[0], origin_[1], origin_[2];
-           outsideStaticGreenData_.maxL = input_.getSect("MEDIUM").getSect("GREEN<OUTSIDE>").getInt("MAXL");
+           outsideStaticGreenData_.maxL = maxL_;
         }
     }
     return outsideStaticGreenData_;
@@ -286,7 +288,7 @@ greenData Input::outsideDynamicGreenParams()
            outsideDynamicGreenData_.center   = center_;
            outsideDynamicGreenData_.width    = width_;
            outsideDynamicGreenData_.origin   << origin_[0], origin_[1], origin_[2];
-           outsideDynamicGreenData_.maxL = input_.getSect("MEDIUM").getSect("GREEN<OUTSIDE>").getInt("MAXL");
+           outsideDynamicGreenData_.maxL = maxL_;
         }
     }
     return outsideDynamicGreenData_;

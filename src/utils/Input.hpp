@@ -120,9 +120,7 @@ public:
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
     /// @}
 private:
-    /*! Contains all input information (API-side syntactic input parsing) */
-    Getkw input_;
-    void reader();
+    void reader(const std::string & filename);
     /*! Read host data structures (host-side syntactic input parsing) into Input object.
      *  It provides access to a **limited** number of options only, basically the ones
      *  that can be filled into the cavityInput, solverInput and greenInput data structures.
@@ -229,6 +227,8 @@ private:
     double width_;
     /// Profile chosen for the diffuse interface
     int profileType_;
+    /// Maximum angular momentum
+    int maxL_;
     /// Center of the dielectric sphere
     std::vector<double> origin_;
     /// Who performed the syntactic input parsing

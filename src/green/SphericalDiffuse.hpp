@@ -390,8 +390,8 @@ private:
      *  dielectric sphere.
      */
     double coefficient_impl(const Eigen::Vector3d & sp, const Eigen::Vector3d & pp) const {
-	double r1 = (sp + this->origin_).norm();
-	double r2 = (pp + this->origin_).norm();
+        double r1 = (sp + this->origin_).norm();
+        double r2 = (pp + this->origin_).norm();
         /* Value of zetaC_ at point with index 1 */
         double zeta1  = linearInterpolation(r1, zetaC_[0], zetaC_[1]);
         /* Value of zetaC_ at point with index 2 */

@@ -23,8 +23,8 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef SPHERICALDIFFUSE_HPP
-#define SPHERICALDIFFUSE_HPP
+#ifndef ALTERNATESPHERICALDIFFUSE_HPP
+#define ALTERNATESPHERICALDIFFUSE_HPP
 
 #include <array>
 #include <cmath>
@@ -47,9 +47,9 @@
 #include "MathUtils.hpp"
 #include "Timer.hpp"
 
-/*! \file SphericalDiffuse.hpp
- *  \class SphericalDiffuse
- *  \brief Green's function for a diffuse interface with spherical symmetry
+/*! \file AlternateSphericalDiffuse.hpp
+ *  \class AlternateSphericalDiffuse
+ *  \brief Green's function for a diffuse interface with spherical symmetry, with alternative separation of Coulomb singularity
  *  \author Hui Cao, Ville Weijo, Luca Frediani and Roberto Di Remigio
  *  \date 2010-2015
  *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation of S and D
@@ -71,8 +71,8 @@
 
 template <typename IntegratorPolicy,
           typename ProfilePolicy>
-class SphericalDiffuse : public GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy,
-                                               SphericalDiffuse<IntegratorPolicy, ProfilePolicy> >
+class AlternateSphericalDiffuse : public GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy,
+                                               AlternateSphericalDiffuse<IntegratorPolicy, ProfilePolicy> >
 {
 public:
     /*! Constructor for a one-layer interface
@@ -82,13 +82,13 @@ public:
      * \param[in] c center of the diffuse layer
      * \param[in] o center of the sphere
      */
-    SphericalDiffuse(double e1, double e2, double w, double c, const Eigen::Vector3d & o, int l)
-        : GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, SphericalDiffuse<IntegratorPolicy, ProfilePolicy> >(), origin_(o), maxLGreen_(l)
+    AlternateSphericalDiffuse(double e1, double e2, double w, double c, const Eigen::Vector3d & o, int l)
+        : GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, AlternateSphericalDiffuse<IntegratorPolicy, ProfilePolicy> >(), origin_(o), maxLGreen_(l)
     {
         initProfilePolicy(e1, e2, w, c);
         initSphericalDiffuse();
     }
-    virtual ~SphericalDiffuse() {}
+    virtual ~AlternateSphericalDiffuse() {}
     /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the pair of points p1, p2:
      *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
@@ -121,85 +121,33 @@ public:
         return this->integrator_.doubleLayer(*this, e);
     }
 
-    friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
+    friend std::ostream & operator<<(std::ostream & os, AlternateSphericalDiffuse & gf) {
         return gf.printObject(os);
     }
     /*! \brief Returns Coulomb singularity separation coefficient
      *  \param[in] source location of the source charge
      *  \param[in] probe location of the probe charge
      */
-    double coefficientCoulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
+    double inverseE(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
         // Obtain coefficient for the separation of the Coulomb singularity
-        return this->coefficient_impl(source, probe);
-    }
-    /*! \brief Returns singular part of the Green's function
-     *  \param[in] source location of the source charge
-     *  \param[in] probe location of the probe charge
-     */
-    double Coulomb(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
-        double r12 = (source - probe).norm();
-
-        // Obtain coefficient for the separation of the Coulomb singularity
-        return (1.0 / (this->coefficient_impl(source, probe) * r12));
-    }
-    /*! \brief Returns non-singular part of the Green's function (image potential)
-     *  \param[in] source location of the source charge
-     *  \param[in] probe location of the probe charge
-     */
-    double imagePotential(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
-        // Obtain coefficient for the separation of the Coulomb singularity
-        double Cr12 = this->coefficient_impl(source, probe);
-
-        double gr12 = 0.0;
-        for (int L = 1; L <= maxLGreen_; ++L) {
-            gr12 += this->imagePotentialComponent_impl(L, source, probe, Cr12);
-        }
-
-        return gr12;
+	double invE = 0.0;
+	for (int L = 0; L < maxLGreen_; ++L) {
+		invE += this->inverseE_impl(L, source, probe);
+	}
+        return invE;
     }
     /*! Returns value of the directional derivative of the
      *  Coulomb singularity separation coefficient for the pair of points p1, p2:
      *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
      *  Notice that this method returns the directional derivative with respect
      *  to the probe point, thus assuming that the direction is relative to that point.
-     *
      *  \param[in] direction the direction
      *  \param[in]        p1 first point
      *  \param[in]        p2 second point
      */
-    double coefficientCoulombDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
+    double inverseEDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
         using namespace std::placeholders;
-        return threePointStencil(std::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::coefficientCoulomb, this, _1, _2),
-                p2, p1, direction, this->delta_);
-    }
-    /*! Returns value of the directional derivative of the
-     *  singular part of the Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the probe point, thus assuming that the direction is relative to that point.
-     *
-     *  \param[in] direction the direction
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    double CoulombDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
-        using namespace std::placeholders;
-        return threePointStencil(std::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::Coulomb, this, _1, _2),
-                p2, p1, direction, this->delta_);
-    }
-    /*! Returns value of the directional derivative of the
-     *  non-singular part (image potential) of the Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the probe point, thus assuming that the direction is relative to that point.
-     *
-     *  \param[in] direction the direction
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    double imagePotentialDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
-        using namespace std::placeholders;
-        return threePointStencil(std::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::imagePotential, this, _1, _2),
+        return threePointStencil(std::bind(&AlternateSphericalDiffuse<IntegratorPolicy, ProfilePolicy>::inverseE, this, _1, _2),
                 p2, p1, direction, this->delta_);
     }
     /*! Handle to the dielectric profile evaluation */
@@ -220,16 +168,13 @@ private:
         // Transfer raw arrays to Eigen vectors using the Map type
         Eigen::Map<Eigen::Matrix<double, 3, 1> > source(sp), probe(pp);
 
-        // Obtain coefficient for the separation of the Coulomb singularity
-        double Cr12 = this->coefficient_impl(source, probe);
-
-        double gr12 = 0.0;
+        double invE= 0.0;
         for (int L = 1; L <= maxLGreen_; ++L) {
-            gr12 += this->imagePotentialComponent_impl(L, source, probe, Cr12);
+            invE += this->inverseE_impl(L, source, probe);
         }
         double r12 = (source - probe).norm();
 
-        return (1.0 / (Cr12 * r12) + gr12);
+        return (1.0 / (invE * r12));
     }
     virtual std::ostream & printObject(std::ostream & os)
     {
@@ -237,8 +182,7 @@ private:
         os << "Green's function type: spherical diffuse" << std::endl;
         os << this->profile_ << std::endl;
         os << "Sphere center        = " << this->origin_.transpose().format(CleanFmt) << std::endl;
-        os << "Angular momentum (Green's function)    = " << this->maxLGreen_ << std::endl;
-        os << "Angular momentum (Coulomb coefficient) = " << this->maxLC_;
+        os << "Angular momentum (Green's function)    = " << this->maxLGreen_;
         return os;
     }
     /*! Initializes a one-layer profile
@@ -255,34 +199,20 @@ private:
         using namespace std::placeholders;
         using namespace interfaces;
 
-        LOG("SphericalDiffuse::initSphericalDiffuse");
+        LOG("AlternateSphericalDiffuse::initSphericalDiffuse");
         // Parameters for the numerical solution of the radial differential equation
-        double eps_abs_     = 1.0e-10; /*! Absolute tolerance level */
-        double eps_rel_     = 1.0e-06; /*! Relative tolerance level */
-        double factor_x_    = 0.0;     /*! Weight of the state      */
-        double factor_dxdt_ = 0.0;     /*! Weight of the state derivative */
+	double eps_abs_     = 1.0e-10; /*! Absolute tolerance level */
+	double eps_rel_     = 1.0e-06; /*! Relative tolerance level */
+	double factor_x_    = 0.0;     /*! Weight of the state      */
+	double factor_dxdt_ = 0.0;     /*! Weight of the state derivative */
         double r_0_         = 0.5;     /*! Lower bound of the integration interval */
         double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         double observer_step_ = 1.0e-03; /*! Time step between observer calls */
         IntegratorParameters params_(eps_abs_, eps_rel_, factor_x_, factor_dxdt_, r_0_, r_infinity_, observer_step_);
         ProfileEvaluator eval_ = std::bind(&ProfilePolicy::operator(), this->profile_, _1);
 
-        LOG("Computing coefficient for the separation of the Coulomb singularity");
-        LOG("Computing first radial solution L = " + std::to_string(maxLC_));
-        timerON("computeZeta for coefficient");
-        computeZeta(maxLC_, zetaC_, eval_, params_);
-        timerOFF("computeZeta for coefficient");
-        LOG("DONE: Computing first radial solution L = " + std::to_string(maxLC_));
-
-        LOG("Computing second radial solution L = " + std::to_string(maxLC_));
-        timerON("computeOmega for coefficient");
-        computeOmega(maxLC_, omegaC_, eval_, params_);
-        timerOFF("computeOmega for coefficient");
-        LOG("Computing second radial solution L = " + std::to_string(maxLC_));
-        LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
-
         LOG("Computing radial solutions for Green's function");
-        timerON("SphericalDiffuse: Looping over angular momentum");
+        timerON("AlternateSphericalDiffuse: Looping over angular momentum");
         for (int L = 0; L <= maxLGreen_; ++L) {
             // First radial solution
             LOG("Computing first radial solution L = " + std::to_string(L));
@@ -304,7 +234,7 @@ private:
             timerOFF("computeOmega L = " + std::to_string(L));
             LOG("DONE: Computing second radial solution L = " + std::to_string(L));
         }
-        timerOFF("SphericalDiffuse: Looping over angular momentum");
+        timerOFF("AlternateSphericalDiffuse: Looping over angular momentum");
         LOG("DONE: Computing radial solutions for Green's function");
     }
 
@@ -322,15 +252,18 @@ private:
      *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
      */
     std::vector<RadialFunction> omega_;
-    /*! \brief Returns L-th component of the radial part of the Green's function
+    /*! \brief Returns L-th component of the coefficient of the Coulomb singularity
      *  \param[in] L  angular momentum
      *  \param[in] sp source point
      *  \param[in] pp probe point
-     *  \param[in] Cr12 Coulomb singularity separation coefficient
      *  \note This function shifts the given source and probe points by the location of the
      *  dielectric sphere.
+     *
+     *  No explicit separation of the Coulomb singularity from the image potential is made.
+     *  We rewrite G(r, r') = 1 / [E(r, r') * |r - r'|]
+     *  This function returns 1 / E(r, r')
      */
-    double imagePotentialComponent_impl(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp, double Cr12) const {
+    double inverseE_impl(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp) const {
         using namespace interfaces;
         double r_0_         = 0.5;     /*! Lower bound of the integration interval */
         double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
@@ -339,6 +272,7 @@ private:
         double r1 = sp_shift.norm();
         double r2 = pp_shift.norm();
         double cos_gamma = sp_shift.dot(pp_shift) / (r1 * r2);
+        double r12 = (sp_shift - pp_shift).norm();
         // Evaluate Legendre polynomial of order L
         // First of all clean-up cos_gamma, Legendre polynomials
         // are only defined for -1 <= x <= 1
@@ -366,74 +300,16 @@ private:
 
         double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 
-        double gr12 = 0.0;
+        double invE = 0.0;
         if (r1 < r2) {
-            gr12 = std::exp(zeta1 - zeta2) * (2*L +1) / denominator;
-            gr12 = (gr12 - std::pow(r1/r2, L) / (r2 * Cr12) ) * pl_x ;
+            invE = std::exp(zeta1 - zeta2) * (2*L +1) * r12 * pl_x / denominator;
         } else {
-            gr12 = std::exp(omega1 - omega2) * (2*L +1) / denominator;
-            gr12 = (gr12 - std::pow(r2/r1, L) / (r1 * Cr12) ) * pl_x ;
+            invE = std::exp(omega1 - omega2) * (2*L +1) * r12 * pl_x / denominator;
         }
 
-        return gr12;
-    }
-    /**@}*/
-
-    /**@{ Parameters and functions for the calculation of the Coulomb singularity separation coefficient */
-    /*! Maximum angular momentum to obtain C(r, r'), needed to separate the Coulomb singularity */
-    int maxLC_     = 2 * maxLGreen_;
-    /*! \brief First independent radial solution, used to build coefficient.
-     *  \note This is needed to separate the Coulomb singularity and has r^l behavior
-     */
-    RadialFunction zetaC_;
-    /*! \brief Second independent radial solution, used to build coefficient.
-     *  \note This is needed to separate the Coulomb singularity and has r^(-l-1) behavior
-     */
-    RadialFunction omegaC_;
-    /*! \brief Returns coefficient for the separation of the Coulomb singularity
-     *  \param[in] sp first point
-     *  \param[in] pp second point
-     *  \note This function shifts the given source and probe points by the location of the
-     *  dielectric sphere.
-     */
-    double coefficient_impl(const Eigen::Vector3d & sp, const Eigen::Vector3d & pp) const {
-        using namespace interfaces;
-        double r_0_         = 0.5;     /*! Lower bound of the integration interval */
-        double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
-        double r1 = (sp + this->origin_).norm();
-        double r2 = (pp + this->origin_).norm();
-        /* Value of zetaC_ at point with index 1 */
-        double zeta1 = zeta(zetaC_, maxLC_, r1, r_0_);
-        /* Value of zetaC_ at point with index 2 */
-        double zeta2 = zeta(zetaC_, maxLC_, r2, r_0_);
-        /* Value of omegaC_ at point with index 1 */
-        double omega1 = omega(omegaC_, maxLC_, r1, r_infinity_);
-        /* Value of omegaC_ at point with index 2 */
-        double omega2 = omega(omegaC_, maxLC_, r2, r_infinity_);
-
-        /* Components for the evaluation of the Wronskian */
-        /* Value of derivative of zetaC_ at point with index 2 */
-        double d_zeta2  = derivative_zeta(zetaC_, maxLC_, r2, r_0_);
-        /* Value of derivative of omegaC_ at point with index 2 */
-        double d_omega2  = derivative_omega(omegaC_, maxLC_, r2, r_infinity_);
-
-        double tmp = 0.0, coeff = 0.0;
-        double eps_r2 = 0.0;
-        std::tie(eps_r2, std::ignore) = this->profile_(r2);
-
-        double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
-
-        if (r1 < r2) {
-            tmp = std::exp(zeta1 - zeta2) * (2*maxLC_ +1) / denominator;
-            coeff = std::pow(r1/r2, maxLC_) / (tmp * r2);
-        } else {
-            tmp = std::exp(omega1 - omega2) * (2*maxLC_ +1) / denominator;
-            coeff = std::pow(r2/r1, maxLC_) / (tmp * r1);
-        }
-
-        return coeff;
+        return invE;
     }
     /**@}*/
 };
 
-#endif // SPHERICALDIFFUSE_HPP
+#endif // ALTERNATESPHERICALDIFFUSE_HPP

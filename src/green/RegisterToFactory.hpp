@@ -149,4 +149,24 @@ namespace
             SPHERICALDIFFUSE, createSphericalDiffuse);
 }
 
+namespace
+{
+    struct buildAlternateSphericalDiffuse {
+        template <typename T, typename U>
+        IGreensFunction * operator()(const greenData & data) {
+            return new AlternateSphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin, data.maxL);
+        }
+    };
+
+    IGreensFunction * createAlternateSphericalDiffuse(const greenData & data)
+    {
+        buildAlternateSphericalDiffuse build;
+        return for_id<integrator_types, onelayer_diffuse_profile_types>(build, data, data.howIntegrator, data.howProfile);
+    }
+    const std::string ALTERNATESPHERICALDIFFUSE("ALTERNATESPHERICALDIFFUSE");
+    const bool registeredSAlternatephericalDiffuse =
+        Factory<IGreensFunction, greenData>::TheFactory().registerObject(
+            ALTERNATESPHERICALDIFFUSE, createAlternateSphericalDiffuse);
+}
+
 #endif // REGISTERTOFACTORY_HPP

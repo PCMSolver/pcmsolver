@@ -130,10 +130,10 @@ public:
      */
     double inverseE(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
         // Obtain coefficient for the separation of the Coulomb singularity
-	double invE = 0.0;
-	for (int L = 0; L < maxLGreen_; ++L) {
-		invE += this->inverseE_impl(L, source, probe);
-	}
+        double invE = 0.0;
+        for (int L = 1; L < maxLGreen_; ++L) {
+            invE += this->inverseE_impl(L, source, probe);
+        }
         return invE;
     }
     /*! Returns value of the directional derivative of the
@@ -174,7 +174,7 @@ private:
         }
         double r12 = (source - probe).norm();
 
-        return (1.0 / (invE * r12));
+        return invE / r12;
     }
     virtual std::ostream & printObject(std::ostream & os)
     {
@@ -201,10 +201,10 @@ private:
 
         LOG("AlternateSphericalDiffuse::initSphericalDiffuse");
         // Parameters for the numerical solution of the radial differential equation
-	double eps_abs_     = 1.0e-10; /*! Absolute tolerance level */
-	double eps_rel_     = 1.0e-06; /*! Relative tolerance level */
-	double factor_x_    = 0.0;     /*! Weight of the state      */
-	double factor_dxdt_ = 0.0;     /*! Weight of the state derivative */
+        double eps_abs_     = 1.0e-10; /*! Absolute tolerance level */
+        double eps_rel_     = 1.0e-06; /*! Relative tolerance level */
+        double factor_x_    = 0.0;     /*! Weight of the state      */
+        double factor_dxdt_ = 0.0;     /*! Weight of the state derivative */
         double r_0_         = 0.5;     /*! Lower bound of the integration interval */
         double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         double observer_step_ = 1.0e-03; /*! Time step between observer calls */

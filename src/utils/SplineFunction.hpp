@@ -45,7 +45,7 @@
 class SplineFunction final
 {
 private:
-    typedef Eigen::Spline<double, 1, 3> CubicSpline;
+    typedef Eigen::Spline<double, 1> CubicSpline;
 public:
     /*! \brief Constructor from abscissa and function values
      *  \param[in] x vector with abscissa values 

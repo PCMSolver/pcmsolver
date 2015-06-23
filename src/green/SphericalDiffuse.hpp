@@ -257,10 +257,14 @@ private:
 
         LOG("SphericalDiffuse::initSphericalDiffuse");
         // Parameters for the numerical solution of the radial differential equation
+	double eps_abs_     = 1.0e-10; /*! Absolute tolerance level */
+	double eps_rel_     = 1.0e-06; /*! Relative tolerance level */
+	double factor_x_    = 0.0;     /*! Weight of the state      */
+	double factor_dxdt_ = 0.0;     /*! Weight of the state derivative */
         double r_0_         = 0.5;     /*! Lower bound of the integration interval */
         double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         double observer_step_ = 1.0e-03; /*! Time step between observer calls */
-        IntegratorParameters params_(r_0_, r_infinity_, observer_step_);
+        IntegratorParameters params_(eps_abs_, eps_rel_, factor_x_, factor_dxdt_, r_0_, r_infinity_, observer_step_);
         ProfileEvaluator eval_ = std::bind(&ProfilePolicy::operator(), this->profile_, _1);
 
         LOG("Computing coefficient for the separation of the Coulomb singularity");
@@ -340,19 +344,19 @@ private:
         double pl_x = boost::math::legendre_p(L, cos_gamma);
 
         /* Value of zeta_[L] at point with index 1 */
-        double zeta1  = linearInterpolation(r1, zeta_[L][0], zeta_[L][1]);
+        double zeta1  = splineInterpolation(r1, zeta_[L][0], zeta_[L][1]);
         /* Value of zeta_[L} at point with index 2 */
-        double zeta2  = linearInterpolation(r2, zeta_[L][0], zeta_[L][1]);
+        double zeta2  = splineInterpolation(r2, zeta_[L][0], zeta_[L][1]);
         /* Value of omega_[L] at point with index 1 */
-        double omega1 = linearInterpolation(r1, omega_[L][0], omega_[L][1]);
+        double omega1 = splineInterpolation(r1, omega_[L][0], omega_[L][1]);
         /* Value of omega_[L} at point with index 2 */
-        double omega2 = linearInterpolation(r2, omega_[L][0], omega_[L][1]);
+        double omega2 = splineInterpolation(r2, omega_[L][0], omega_[L][1]);
 
         /* Components for the evaluation of the Wronskian */
         /* Value of derivative of zeta_[L] at point with index 2 */
-        double d_zeta2  = linearInterpolation(r2, zeta_[L][0], zeta_[L][2]);
+        double d_zeta2  = splineInterpolation(r2, zeta_[L][0], zeta_[L][2]);
         /* Value of derivative of omega_[L] at point with index 2 */
-        double d_omega2 = linearInterpolation(r2, omega_[L][0], omega_[L][2]);
+        double d_omega2 = splineInterpolation(r2, omega_[L][0], omega_[L][2]);
 
         double eps_r2 = 0.0;
         std::tie(eps_r2, std::ignore) = this->profile_(pp_shift.norm());
@@ -393,19 +397,19 @@ private:
         double r1 = (sp + this->origin_).norm();
         double r2 = (pp + this->origin_).norm();
         /* Value of zetaC_ at point with index 1 */
-        double zeta1  = linearInterpolation(r1, zetaC_[0], zetaC_[1]);
+        double zeta1  = splineInterpolation(r1, zetaC_[0], zetaC_[1]);
         /* Value of zetaC_ at point with index 2 */
-        double zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[1]);
+        double zeta2  = splineInterpolation(r2, zetaC_[0], zetaC_[1]);
         /* Value of omegaC_ at point with index 1 */
-        double omega1 = linearInterpolation(r1, omegaC_[0], omegaC_[1]);
+        double omega1 = splineInterpolation(r1, omegaC_[0], omegaC_[1]);
         /* Value of omegaC_ at point with index 2 */
-        double omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[1]);
+        double omega2 = splineInterpolation(r2, omegaC_[0], omegaC_[1]);
 
         /* Components for the evaluation of the Wronskian */
         /* Value of derivative of zetaC_ at point with index 2 */
-        double d_zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[2]);
+        double d_zeta2  = splineInterpolation(r2, zetaC_[0], zetaC_[2]);
         /* Value of derivative of omegaC_ at point with index 2 */
-        double d_omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[2]);
+        double d_omega2 = splineInterpolation(r2, omegaC_[0], omegaC_[2]);
 
         double tmp = 0.0, coeff = 0.0;
         double eps_r2 = 0.0;

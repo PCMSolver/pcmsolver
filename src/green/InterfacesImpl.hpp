@@ -63,14 +63,23 @@ typedef std::function< std::tuple<double, double>(const double) > ProfileEvaluat
  */
 struct IntegratorParameters
 {
+    /*! Absolute tolerance level */
+    double eps_abs_     ;
+    /*! Relative tolerance level */
+    double eps_rel_     ;
+    /*! Weight of the state      */
+    double factor_x_    ;
+    /*! Weight of the state derivative */
+    double factor_dxdt_ ;
     /*! Lower bound of the integration interval */
     double r_0_         ;
     /*! Upper bound of the integration interval */
     double r_infinity_  ;
     /*! Time step between observer calls */
     double observer_step_;
-    IntegratorParameters(double r0, double rinf, double step)
-        : r_0_(r0), r_infinity_(rinf), observer_step_(step) {}
+    IntegratorParameters(double e_abs, double e_rel, double f_x, double f_dxdt, double r0, double rinf, double step)
+    	: eps_abs_(e_abs), eps_rel_(e_rel), factor_x_(f_x),
+    	factor_dxdt_(f_dxdt), r_0_(r0), r_infinity_(rinf), observer_step_(step) {}
 };
 
 /*! \class LnTransformedRadial
@@ -165,7 +174,7 @@ inline void computeZeta(int L, RadialFunction & f, const ProfileEvaluator & eval
 {
     using namespace std::placeholders;
     namespace odeint = boost::numeric::odeint;
-    odeint::runge_kutta_fehlberg78<StateType> stepper_;
+    odeint::bulirsch_stoer_dense_out<StateType> stepper_(params.eps_abs_, params.eps_rel_, params.factor_x_, params.factor_dxdt_);
     // The system of first-order ODEs
     LnTransformedRadial system_(eval, L);
     // Holds the initial conditions
@@ -173,7 +182,7 @@ inline void computeZeta(int L, RadialFunction & f, const ProfileEvaluator & eval
     // Set initial conditions
     init_zeta_[0] = L * std::log(params.r_0_);
     init_zeta_[1] = L / params.r_0_;
-    odeint::integrate_const(stepper_, system_, init_zeta_,
+    odeint::integrate_adaptive(stepper_, system_, init_zeta_,
             params.r_0_, params.r_infinity_, params.observer_step_,
             std::bind(observer, std::ref(f), _1, _2));
 }
@@ -188,7 +197,7 @@ inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eva
 {
     using namespace std::placeholders;
     namespace odeint = boost::numeric::odeint;
-    odeint::runge_kutta_fehlberg78<StateType> stepper_;
+    odeint::bulirsch_stoer_dense_out<StateType> stepper_(params.eps_abs_, params.eps_rel_, params.factor_x_, params.factor_dxdt_);
     // The system of first-order ODEs
     LnTransformedRadial system_(eval, L);
     // Holds the initial conditions
@@ -197,7 +206,7 @@ inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eva
     init_omega_[0] = -(L + 1) * std::log(params.r_infinity_);
     init_omega_[1] = -(L + 1) / params.r_infinity_;
     // Notice that we integrate BACKWARDS, so we pass -params.observer_step_ to integrate_adaptive
-    odeint::integrate_const(stepper_, system_, init_omega_,
+    odeint::integrate_adaptive(stepper_, system_, init_omega_,
             params.r_infinity_, params.r_0_, -params.observer_step_,
             std::bind(observer, std::ref(f), _1, _2));
     // Reverse order of StateType-s in RadialFunction

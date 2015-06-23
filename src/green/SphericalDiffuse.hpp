@@ -327,8 +327,11 @@ private:
      *  dielectric sphere.
      */
     double imagePotentialComponent_impl(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp, double Cr12) const {
-	Eigen::Vector3d sp_shift = sp + this->origin_;
-	Eigen::Vector3d pp_shift = pp + this->origin_;
+        using namespace interfaces;
+        double r_0_         = 0.5;     /*! Lower bound of the integration interval */
+        double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
+        Eigen::Vector3d sp_shift = sp + this->origin_;
+        Eigen::Vector3d pp_shift = pp + this->origin_;
         double r1 = sp_shift.norm();
         double r2 = pp_shift.norm();
         double cos_gamma = sp_shift.dot(pp_shift) / (r1 * r2);
@@ -340,19 +343,19 @@ private:
         double pl_x = boost::math::legendre_p(L, cos_gamma);
 
         /* Value of zeta_[L] at point with index 1 */
-        double zeta1  = linearInterpolation(r1, zeta_[L][0], zeta_[L][1]);
-        /* Value of zeta_[L} at point with index 2 */
-        double zeta2  = linearInterpolation(r2, zeta_[L][0], zeta_[L][1]);
+        double zeta1 = zeta(zeta_[L], maxLC_, r1, r_0_);
+        /* Value of zeta_[L] at point with index 2 */
+        double zeta2 = zeta(zeta_[L], maxLC_, r2, r_0_);
         /* Value of omega_[L] at point with index 1 */
-        double omega1 = linearInterpolation(r1, omega_[L][0], omega_[L][1]);
-        /* Value of omega_[L} at point with index 2 */
-        double omega2 = linearInterpolation(r2, omega_[L][0], omega_[L][1]);
+        double omega1 = omega(omega_[L], maxLC_, r1, r_infinity_);
+        /* Value of omega_[L] at point with index 2 */
+        double omega2 = omega(omega_[L], maxLC_, r2, r_infinity_);
 
         /* Components for the evaluation of the Wronskian */
         /* Value of derivative of zeta_[L] at point with index 2 */
-        double d_zeta2  = linearInterpolation(r2, zeta_[L][0], zeta_[L][2]);
+        double d_zeta2  = derivative_zeta(zeta_[L], maxLC_, r2, r_0_);
         /* Value of derivative of omega_[L] at point with index 2 */
-        double d_omega2 = linearInterpolation(r2, omega_[L][0], omega_[L][2]);
+        double d_omega2  = derivative_omega(omega_[L], maxLC_, r2, r_infinity_);
 
         double eps_r2 = 0.0;
         std::tie(eps_r2, std::ignore) = this->profile_(pp_shift.norm());
@@ -390,22 +393,25 @@ private:
      *  dielectric sphere.
      */
     double coefficient_impl(const Eigen::Vector3d & sp, const Eigen::Vector3d & pp) const {
+        using namespace interfaces;
+        double r_0_         = 0.5;     /*! Lower bound of the integration interval */
+        double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         double r1 = (sp + this->origin_).norm();
         double r2 = (pp + this->origin_).norm();
         /* Value of zetaC_ at point with index 1 */
-        double zeta1  = linearInterpolation(r1, zetaC_[0], zetaC_[1]);
+        double zeta1 = zeta(zetaC_, maxLC_, r1, r_0_);
         /* Value of zetaC_ at point with index 2 */
-        double zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[1]);
+        double zeta2 = zeta(zetaC_, maxLC_, r2, r_0_);
         /* Value of omegaC_ at point with index 1 */
-        double omega1 = linearInterpolation(r1, omegaC_[0], omegaC_[1]);
+        double omega1 = omega(omegaC_, maxLC_, r1, r_infinity_);
         /* Value of omegaC_ at point with index 2 */
-        double omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[1]);
+        double omega2 = omega(omegaC_, maxLC_, r2, r_infinity_);
 
         /* Components for the evaluation of the Wronskian */
         /* Value of derivative of zetaC_ at point with index 2 */
-        double d_zeta2  = linearInterpolation(r2, zetaC_[0], zetaC_[2]);
+        double d_zeta2  = derivative_zeta(zetaC_, maxLC_, r2, r_0_);
         /* Value of derivative of omegaC_ at point with index 2 */
-        double d_omega2 = linearInterpolation(r2, omegaC_[0], omegaC_[2]);
+        double d_omega2  = derivative_omega(omegaC_, maxLC_, r2, r_infinity_);
 
         double tmp = 0.0, coeff = 0.0;
         double eps_r2 = 0.0;

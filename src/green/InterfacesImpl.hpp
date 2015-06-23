@@ -204,6 +204,86 @@ inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eva
     // this ensures that they are in ascending order (as later expected by linearInterpolation)
     reverse(f);
 }
+
+/*! \brief Returns value of the L-th component of the 1st radial solution at given point
+ *  \param[in] zeta_array the RadialFunction with the known values of zeta
+ *  \param[in] L angular momentum value
+ *  \param[in] point the point where zeta has to be evaluated
+ *  \param[in] lower_bound lower bound of the integration interval
+ *
+ *  We first check if point is below lower_bound, if yes we use the asymptotic form L*log(r) in point.
+ */
+inline double zeta(const RadialFunction & zeta_array, int L, double point, double lower_bound)
+{
+    double zeta_ret = 0.0;
+
+    if (point <= lower_bound) {
+        zeta_ret = L * std::log(point);
+    } else {
+        zeta_ret = splineInterpolation(point, zeta_array[0], zeta_array[1]);
+    }
+
+    return zeta_ret;
+}
+
+/*! \brief Returns value of the L-th component of the derivative of the 1st radial solution at given point
+ *  \param[in] zeta_array the RadialFunction with the known values of the derivative of zeta
+ *  \param[in] L angular momentum value
+ *  \param[in] point the point where the derivative of zeta has to be evaluated
+ *  \param[in] lower_bound lower bound of the integration interval
+ *
+ *  We first check if point is below lower_bound, if yes we use the asymptotic form L / r in point.
+ */
+inline double derivative_zeta(const RadialFunction & zeta_array, int L, double point, double lower_bound)
+{
+    double zeta_ret = 0.0;
+    if (point <= lower_bound) {
+        zeta_ret = L / point;
+    } else {
+        zeta_ret = splineInterpolation(point, zeta_array[0], zeta_array[2]);
+    }
+    return zeta_ret;
+}
+
+/*! \brief Returns value of the L-th component of the 2nd radial solution at given point
+ *  \param[in] omega_array the RadialFunction with the known values of omega
+ *  \param[in] L angular momentum value
+ *  \param[in] point the point where omega has to be evaluated
+ *  \param[in] upper_bound upper bound of the integration interval
+ *
+ * We first check if point is above upper_bound, if yes we use the asymptotic form -(L+1)*log(r) in point.
+ */
+inline double omega(const RadialFunction & omega_array, int L, double point, double upper_bound)
+{
+    double omega_ret = 0.0;
+
+    if (point >= upper_bound) {
+        omega_ret = -(L + 1) * std::log(point);
+    } else {
+        omega_ret = splineInterpolation(point, omega_array[0], omega_array[1]);
+    }
+
+    return omega_ret;
+}
+
+/*! \brief Returns value of the L-th component of the derivative of the 1st radial solution at given point
+ *  \param[in] omega_array the RadialFunction with the known values of the derivative of omega
+ *  \param[in] L angular momentum value
+ *  \param[in] point the point where the derivative of omega has to be evaluated
+ *  \param[in] upper_bound upper bound of the integration interval
+ *
+ * We first check if point is above upper_bound, if yes we use the asymptotic form -(L+1)/r in point.
+ */
+inline double derivative_omega(const RadialFunction & omega_array, int L, double point, double upper_bound)
+{
+    double omega_ret = 0.0;
+    if (point >= upper_bound) {
+        omega_ret = -(L + 1) / point;
+    } else {
+        omega_ret = splineInterpolation(point, omega_array[0], omega_array[2]);
+    }
+    return omega_ret;
+}
 } // namespace interfaces
 
 #endif // INTERFACESIMPL_HPP

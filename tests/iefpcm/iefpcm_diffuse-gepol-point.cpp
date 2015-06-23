@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
     Vacuum<AD_directional, CollocationIntegrator> * gfInside =
         new Vacuum<AD_directional, CollocationIntegrator>();
     SphericalDiffuse<CollocationIntegrator, OneLayerTanh> * gfOutside =
-        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 30);
+        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 3);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);

@@ -28,7 +28,7 @@ struct ErfSphericalDiffuseTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     ErfSphericalDiffuseTest() { SetUp(); }
     void SetUp() {
-        maxL = 30;
+        maxL = 3;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside
@@ -126,7 +126,7 @@ struct ErfSphericalDiffuseShiftedTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     ErfSphericalDiffuseShiftedTest() { SetUp(); }
     void SetUp() {
-        maxL = 30;
+        maxL = 3;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside

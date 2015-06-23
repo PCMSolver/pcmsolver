@@ -28,7 +28,7 @@ struct TanhSphericalDiffuseTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     TanhSphericalDiffuseTest() { SetUp(); }
     void SetUp() {
-        maxL = 30;
+        maxL = 3;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside
@@ -126,7 +126,7 @@ struct TanhSphericalDiffuseShiftedTest {
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
     TanhSphericalDiffuseShiftedTest() { SetUp(); }
     void SetUp() {
-        maxL = 30;
+        maxL = 3;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside

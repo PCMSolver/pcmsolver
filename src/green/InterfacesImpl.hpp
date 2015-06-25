@@ -48,10 +48,10 @@ namespace interfaces {
  */
 typedef std::vector<double> StateType;
 
-/*! \typedef RadialFunction
+/*! \typedef RadialSolution
  *  \brief holds a solution to the radial equation: grid, function and first derivative
  */
-typedef std::array<StateType, 3> RadialFunction;
+typedef std::array<StateType, 3> RadialSolution;
 
 /*! \typedef ProfileEvaluator
  *  \brief sort of a function pointer to the dielectric profile evaluation function
@@ -125,7 +125,7 @@ class LnTransformedRadial
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-inline void observer(RadialFunction & f, const StateType & x, double r)
+inline void observer(RadialSolution & f, const StateType & x, double r)
 {
     /* Save grid points */
     f[0].push_back(r);
@@ -135,24 +135,24 @@ inline void observer(RadialFunction & f, const StateType & x, double r)
     f[2].push_back(x[1]);
 }
 
-/*! \brief reverse contents of a RadialFunction
- *  \param[in, out] f RadialFunction whose contents have to be reversed
+/*! \brief reverse contents of a RadialSolution
+ *  \param[in, out] f RadialSolution whose contents have to be reversed
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-inline void reverse(RadialFunction & f)
+inline void reverse(RadialSolution & f)
 {
     std::reverse(f[0].begin(), f[0].end());
     std::reverse(f[1].begin(), f[1].end());
     std::reverse(f[2].begin(), f[2].end());
 }
 
-/*! \brief reverse contents of a RadialFunction
- *  \param[in] f RadialFunction whose contents have to be printed
+/*! \brief reverse contents of a RadialSolution
+ *  \param[in] f RadialSolution whose contents have to be printed
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-inline void writeRadialFunction(const RadialFunction & f, const std::string & fname)
+inline void writeRadialSolution(const RadialSolution & f, const std::string & fname)
 {
     std::ofstream fout;
     fout.open(fname.c_str());
@@ -170,7 +170,7 @@ inline void writeRadialFunction(const RadialFunction & f, const std::string & fn
  *  \param[in]  eval   dielectric profile evaluator function object
  *  \param[in]  params parameters for the integrator
  */
-inline void computeZeta(int L, RadialFunction & f, const ProfileEvaluator & eval, const IntegratorParameters & params)
+inline void computeZeta(int L, RadialSolution & f, const ProfileEvaluator & eval, const IntegratorParameters & params)
 {
     using namespace std::placeholders;
     namespace odeint = boost::numeric::odeint;
@@ -193,7 +193,7 @@ inline void computeZeta(int L, RadialFunction & f, const ProfileEvaluator & eval
  *  \param[in]  eval   dielectric profile evaluator function object
  *  \param[in]  params parameters for the integrator
  */
-inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eval, const IntegratorParameters & params)
+inline void computeOmega(int L, RadialSolution & f, const ProfileEvaluator & eval, const IntegratorParameters & params)
 {
     using namespace std::placeholders;
     namespace odeint = boost::numeric::odeint;
@@ -209,20 +209,20 @@ inline void computeOmega(int L, RadialFunction & f, const ProfileEvaluator & eva
     odeint::integrate_adaptive(stepper_, system_, init_omega_,
             params.r_infinity_, params.r_0_, -params.observer_step_,
             std::bind(observer, std::ref(f), _1, _2));
-    // Reverse order of StateType-s in RadialFunction
+    // Reverse order of StateType-s in RadialSolution
     // this ensures that they are in ascending order (as later expected by linearInterpolation)
     reverse(f);
 }
 
 /*! \brief Returns value of the L-th component of the 1st radial solution at given point
- *  \param[in] zeta_array the RadialFunction with the known values of zeta
+ *  \param[in] zeta_array the RadialSolution with the known values of zeta
  *  \param[in] L angular momentum value
  *  \param[in] point the point where zeta has to be evaluated
  *  \param[in] lower_bound lower bound of the integration interval
  *
  *  We first check if point is below lower_bound, if yes we use the asymptotic form L*log(r) in point.
  */
-inline double zeta(const RadialFunction & zeta_array, int L, double point, double lower_bound)
+inline double zeta(const RadialSolution & zeta_array, int L, double point, double lower_bound)
 {
     double zeta_ret = 0.0;
 
@@ -236,14 +236,14 @@ inline double zeta(const RadialFunction & zeta_array, int L, double point, doubl
 }
 
 /*! \brief Returns value of the L-th component of the derivative of the 1st radial solution at given point
- *  \param[in] zeta_array the RadialFunction with the known values of the derivative of zeta
+ *  \param[in] zeta_array the RadialSolution with the known values of the derivative of zeta
  *  \param[in] L angular momentum value
  *  \param[in] point the point where the derivative of zeta has to be evaluated
  *  \param[in] lower_bound lower bound of the integration interval
  *
  *  We first check if point is below lower_bound, if yes we use the asymptotic form L / r in point.
  */
-inline double derivative_zeta(const RadialFunction & zeta_array, int L, double point, double lower_bound)
+inline double derivative_zeta(const RadialSolution & zeta_array, int L, double point, double lower_bound)
 {
     double zeta_ret = 0.0;
     if (point <= lower_bound) {
@@ -255,14 +255,14 @@ inline double derivative_zeta(const RadialFunction & zeta_array, int L, double p
 }
 
 /*! \brief Returns value of the L-th component of the 2nd radial solution at given point
- *  \param[in] omega_array the RadialFunction with the known values of omega
+ *  \param[in] omega_array the RadialSolution with the known values of omega
  *  \param[in] L angular momentum value
  *  \param[in] point the point where omega has to be evaluated
  *  \param[in] upper_bound upper bound of the integration interval
  *
  * We first check if point is above upper_bound, if yes we use the asymptotic form -(L+1)*log(r) in point.
  */
-inline double omega(const RadialFunction & omega_array, int L, double point, double upper_bound)
+inline double omega(const RadialSolution & omega_array, int L, double point, double upper_bound)
 {
     double omega_ret = 0.0;
 
@@ -276,14 +276,14 @@ inline double omega(const RadialFunction & omega_array, int L, double point, dou
 }
 
 /*! \brief Returns value of the L-th component of the derivative of the 1st radial solution at given point
- *  \param[in] omega_array the RadialFunction with the known values of the derivative of omega
+ *  \param[in] omega_array the RadialSolution with the known values of the derivative of omega
  *  \param[in] L angular momentum value
  *  \param[in] point the point where the derivative of omega has to be evaluated
  *  \param[in] upper_bound upper bound of the integration interval
  *
  * We first check if point is above upper_bound, if yes we use the asymptotic form -(L+1)/r in point.
  */
-inline double derivative_omega(const RadialFunction & omega_array, int L, double point, double upper_bound)
+inline double derivative_omega(const RadialSolution & omega_array, int L, double point, double upper_bound)
 {
     double omega_ret = 0.0;
     if (point >= upper_bound) {

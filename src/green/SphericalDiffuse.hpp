@@ -208,7 +208,7 @@ public:
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
-    using RadialFunction = interfaces::RadialFunction;
+    using RadialSolution = interfaces::RadialSolution;
     /*! Evaluates the Green's function given a pair of points
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
@@ -287,8 +287,8 @@ private:
             // First radial solution
             LOG("Computing first radial solution L = " + std::to_string(L));
             timerON("computeZeta L = " + std::to_string(L));
-            // Create an empty RadialFunction
-            RadialFunction tmp_zeta_;
+            // Create an empty RadialSolution
+            RadialSolution tmp_zeta_;
             computeZeta(L, tmp_zeta_, eval_, params_);
             zeta_.push_back(tmp_zeta_);
             timerOFF("computeZeta L = " + std::to_string(L));
@@ -297,8 +297,8 @@ private:
             // Second radial solution
             LOG("Computing second radial solution L = " + std::to_string(L));
             timerON("computeOmega L = " + std::to_string(L));
-            // Create an empty RadialFunction
-            RadialFunction tmp_omega_;
+            // Create an empty RadialSolution
+            RadialSolution tmp_omega_;
             computeOmega(L, tmp_omega_, eval_, params_);
             omega_.push_back(tmp_omega_);
             timerOFF("computeOmega L = " + std::to_string(L));
@@ -317,11 +317,11 @@ private:
     /*! \brief First independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_ and has r^l behavior
      */
-    std::vector<RadialFunction> zeta_;
+    std::vector<RadialSolution> zeta_;
     /*! \brief Second independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
      */
-    std::vector<RadialFunction> omega_;
+    std::vector<RadialSolution> omega_;
     /*! \brief Returns L-th component of the radial part of the Green's function
      *  \param[in] L  angular momentum
      *  \param[in] sp source point
@@ -385,11 +385,11 @@ private:
     /*! \brief First independent radial solution, used to build coefficient.
      *  \note This is needed to separate the Coulomb singularity and has r^l behavior
      */
-    RadialFunction zetaC_;
+    RadialSolution zetaC_;
     /*! \brief Second independent radial solution, used to build coefficient.
      *  \note This is needed to separate the Coulomb singularity and has r^(-l-1) behavior
      */
-    RadialFunction omegaC_;
+    RadialSolution omegaC_;
     /*! \brief Returns coefficient for the separation of the Coulomb singularity
      *  \param[in] sp first point
      *  \param[in] pp second point

@@ -39,6 +39,7 @@
 
 // Has to be included here
 #include "InterfacesImpl.hpp"
+#include "RadialFunction.hpp"
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
@@ -208,7 +209,8 @@ public:
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
-    using RadialSolution = interfaces::RadialSolution;
+    using StateType = interfaces::StateType;
+    using LnTransformedRadial = interfaces::LnTransformedRadial;
     /*! Evaluates the Green's function given a pair of points
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
@@ -270,13 +272,15 @@ private:
         LOG("Computing coefficient for the separation of the Coulomb singularity");
         LOG("Computing first radial solution L = " + std::to_string(maxLC_));
         timerON("computeZeta for coefficient");
-        computeZeta(maxLC_, zetaC_, eval_, params_);
+        zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(maxLC_, r_0_, r_infinity_, eval_, params_);
+        writeToFile(zetaC_, "zetaC.dat");
         timerOFF("computeZeta for coefficient");
         LOG("DONE: Computing first radial solution L = " + std::to_string(maxLC_));
 
         LOG("Computing second radial solution L = " + std::to_string(maxLC_));
         timerON("computeOmega for coefficient");
-        computeOmega(maxLC_, omegaC_, eval_, params_);
+        omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(maxLC_, r_0_, r_infinity_, eval_, params_);
+        writeToFile(omegaC_, "omegaC.dat");
         timerOFF("computeOmega for coefficient");
         LOG("Computing second radial solution L = " + std::to_string(maxLC_));
         LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
@@ -288,8 +292,7 @@ private:
             LOG("Computing first radial solution L = " + std::to_string(L));
             timerON("computeZeta L = " + std::to_string(L));
             // Create an empty RadialSolution
-            RadialSolution tmp_zeta_;
-            computeZeta(L, tmp_zeta_, eval_, params_);
+            RadialFunction<StateType, LnTransformedRadial, Zeta> tmp_zeta_(L, r_0_, r_infinity_, eval_, params_);
             zeta_.push_back(tmp_zeta_);
             timerOFF("computeZeta L = " + std::to_string(L));
             LOG("DONE: Computing first radial solution L = " + std::to_string(L));
@@ -298,8 +301,7 @@ private:
             LOG("Computing second radial solution L = " + std::to_string(L));
             timerON("computeOmega L = " + std::to_string(L));
             // Create an empty RadialSolution
-            RadialSolution tmp_omega_;
-            computeOmega(L, tmp_omega_, eval_, params_);
+            RadialFunction<StateType, LnTransformedRadial, Omega> tmp_omega_(L, r_0_, r_infinity_, eval_, params_);
             omega_.push_back(tmp_omega_);
             timerOFF("computeOmega L = " + std::to_string(L));
             LOG("DONE: Computing second radial solution L = " + std::to_string(L));
@@ -317,11 +319,11 @@ private:
     /*! \brief First independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_ and has r^l behavior
      */
-    std::vector<RadialSolution> zeta_;
+    std::vector<RadialFunction<StateType, LnTransformedRadial, Zeta>> zeta_;
     /*! \brief Second independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
      */
-    std::vector<RadialSolution> omega_;
+    std::vector<RadialFunction<StateType, LnTransformedRadial, Omega>> omega_;
     /*! \brief Returns L-th component of the radial part of the Green's function
      *  \param[in] L  angular momentum
      *  \param[in] sp source point
@@ -331,9 +333,6 @@ private:
      *  dielectric sphere.
      */
     double imagePotentialComponent_impl(int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp, double Cr12) const {
-        using namespace interfaces;
-        double r_0_         = 0.5;     /*! Lower bound of the integration interval */
-        double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         Eigen::Vector3d sp_shift = sp + this->origin_;
         Eigen::Vector3d pp_shift = pp + this->origin_;
         double r1 = sp_shift.norm();
@@ -346,24 +345,24 @@ private:
         if (numericalZero(cos_gamma + 1)) cos_gamma = -1.0;
         double pl_x = boost::math::legendre_p(L, cos_gamma);
 
+        /* Sample zeta_[L] */
+        double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
         /* Value of zeta_[L] at point with index 1 */
-        double zeta1 = zeta(zeta_[L], L, r1, r_0_);
-        /* Value of zeta_[L] at point with index 2 */
-        double zeta2 = zeta(zeta_[L], L, r2, r_0_);
-        /* Value of omega_[L] at point with index 1 */
-        double omega1 = omega(omega_[L], L, r1, r_infinity_);
-        /* Value of omega_[L] at point with index 2 */
-        double omega2 = omega(omega_[L], L, r2, r_infinity_);
+        std::tie(zeta1, std::ignore) = zeta_[L](r1);
+        /* Value of zeta_[L] and its first derivative at point with index 2 */
+        std::tie(zeta2, d_zeta2) = zeta_[L](r2);
 
-        /* Components for the evaluation of the Wronskian */
-        /* Value of derivative of zeta_[L] at point with index 2 */
-        double d_zeta2  = derivative_zeta(zeta_[L], L, r2, r_0_);
-        /* Value of derivative of omega_[L] at point with index 2 */
-        double d_omega2  = derivative_omega(omega_[L], L, r2, r_infinity_);
+        /* Sample omega_[L] */
+        double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
+        /* Value of omega_[L] at point with index 1 */
+        std::tie(omega1, std::ignore) = omega_[L](r1);
+        /* Value of omega_[L] and its first derivative at point with index 2 */
+        std::tie(omega2, d_omega2) = omega_[L](r2);
 
         double eps_r2 = 0.0;
         std::tie(eps_r2, std::ignore) = this->profile_(pp_shift.norm());
 
+        /* Evaluation of the Wronskian and the denominator */
         double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 
         double gr12 = 0.0;
@@ -385,11 +384,11 @@ private:
     /*! \brief First independent radial solution, used to build coefficient.
      *  \note This is needed to separate the Coulomb singularity and has r^l behavior
      */
-    RadialSolution zetaC_;
+    RadialFunction<StateType, LnTransformedRadial, Zeta> zetaC_;
     /*! \brief Second independent radial solution, used to build coefficient.
      *  \note This is needed to separate the Coulomb singularity and has r^(-l-1) behavior
      */
-    RadialSolution omegaC_;
+    RadialFunction<StateType, LnTransformedRadial, Omega> omegaC_;
     /*! \brief Returns coefficient for the separation of the Coulomb singularity
      *  \param[in] sp first point
      *  \param[in] pp second point
@@ -397,30 +396,28 @@ private:
      *  dielectric sphere.
      */
     double coefficient_impl(const Eigen::Vector3d & sp, const Eigen::Vector3d & pp) const {
-        using namespace interfaces;
-        double r_0_         = 0.5;     /*! Lower bound of the integration interval */
-        double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         double r1 = (sp + this->origin_).norm();
         double r2 = (pp + this->origin_).norm();
-        /* Value of zetaC_ at point with index 1 */
-        double zeta1 = zeta(zetaC_, maxLC_, r1, r_0_);
-        /* Value of zetaC_ at point with index 2 */
-        double zeta2 = zeta(zetaC_, maxLC_, r2, r_0_);
-        /* Value of omegaC_ at point with index 1 */
-        double omega1 = omega(omegaC_, maxLC_, r1, r_infinity_);
-        /* Value of omegaC_ at point with index 2 */
-        double omega2 = omega(omegaC_, maxLC_, r2, r_infinity_);
 
-        /* Components for the evaluation of the Wronskian */
-        /* Value of derivative of zetaC_ at point with index 2 */
-        double d_zeta2  = derivative_zeta(zetaC_, maxLC_, r2, r_0_);
-        /* Value of derivative of omegaC_ at point with index 2 */
-        double d_omega2  = derivative_omega(omegaC_, maxLC_, r2, r_infinity_);
+        /* Sample zetaC_ */
+        double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
+        /* Value of zetaC_ at point with index 1 */
+        std::tie(zeta1, std::ignore) = zetaC_(r1);
+        /* Value of zetaC_ and its first derivative at point with index 2 */
+        std::tie(zeta2, d_zeta2) = zetaC_(r2);
+
+        /* Sample omegaC_ */
+        double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
+        /* Value of omegaC_ at point with index 1 */
+        std::tie(omega1, std::ignore) = omegaC_(r1);
+        /* Value of omegaC_ and its first derivative at point with index 2 */
+        std::tie(omega2, d_omega2) = omegaC_(r2);
 
         double tmp = 0.0, coeff = 0.0;
         double eps_r2 = 0.0;
         std::tie(eps_r2, std::ignore) = this->profile_(r2);
 
+        /* Evaluation of the Wronskian and the denominator */
         double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 
         if (r1 < r2) {

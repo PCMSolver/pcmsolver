@@ -41,20 +41,20 @@ std::vector<double> generate_grid(double min_val, double max_val, size_t nPoints
 
 void case1()
 {
-    size_t nPoints = 200;
+    size_t nPoints = 100;
     double epsInside = 80.0;
     double epsOutside = 2.0;
     Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
-    double sphereRadius = 100.0;
-    double width = 9.0;
-    int maxL = 30;
+    double sphereRadius = 10.0;
+    double width = 5.0;
+    int maxL = 150;
 
     Eigen::Vector3d source = Eigen::Vector3d::Zero();
     Eigen::Vector3d probe = Eigen::Vector3d::Zero();
 
-    double z_min = -20.0;
-    double z_max = 20.0;
-    std::vector<double> z = generate_grid(z_min, z_max, nPoints);
+    double min = -50.0;
+    double max = 50.0;
+    std::vector<double> grid = generate_grid(min, max, nPoints);
     double delta = 0.1;
 
     std::ofstream out;
@@ -65,17 +65,17 @@ void case1()
     out.open("gf_spherical_CASE1.dat");
     out.precision(16);
     for (size_t i = 0; i < nPoints; ++i) {
-	source << 0.0, 0.0, z[i];
+	source << 1.0, 1.0, 0.0;
         for (size_t j = 0; j < nPoints; ++j) {
-            probe << 0.0, 0.0, (z[j] + delta);
+            probe << (grid[i] + delta), (grid[j] + delta), 0.0;
             out << '\t' << i
-		<< '\t' << j
-		<< '\t' << z[i]
-                << '\t' << z[j]
+		        << '\t' << j
+		        << '\t' << probe(0)
+                << '\t' << probe(1)
                 << '\t' << gf.Coulomb(source, probe)
                 << '\t' << gf.imagePotential(source, probe)
                 << '\t' << gf.kernelS(source, probe)
-		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) << std::endl;
+		        << '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) << std::endl;
         }
     }
     out.close();

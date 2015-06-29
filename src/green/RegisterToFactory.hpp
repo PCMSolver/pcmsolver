@@ -28,7 +28,7 @@
 
 #include <string>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
 #include "ForIdGreen.hpp"
@@ -134,7 +134,7 @@ namespace
     struct buildSphericalDiffuse {
         template <typename T, typename U>
         IGreensFunction * operator()(const greenData & data) {
-            return new SphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin);
+            return new SphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin, data.maxL);
         }
     };
 
@@ -147,6 +147,26 @@ namespace
     const bool registeredSphericalDiffuse =
         Factory<IGreensFunction, greenData>::TheFactory().registerObject(
             SPHERICALDIFFUSE, createSphericalDiffuse);
+}
+
+namespace
+{
+    struct buildAlternateSphericalDiffuse {
+        template <typename T, typename U>
+        IGreensFunction * operator()(const greenData & data) {
+            return new AlternateSphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin, data.maxL);
+        }
+    };
+
+    IGreensFunction * createAlternateSphericalDiffuse(const greenData & data)
+    {
+        buildAlternateSphericalDiffuse build;
+        return for_id<integrator_types, onelayer_diffuse_profile_types>(build, data, data.howIntegrator, data.howProfile);
+    }
+    const std::string ALTERNATESPHERICALDIFFUSE("ALTERNATESPHERICALDIFFUSE");
+    const bool registeredSAlternatephericalDiffuse =
+        Factory<IGreensFunction, greenData>::TheFactory().registerObject(
+            ALTERNATESPHERICALDIFFUSE, createAlternateSphericalDiffuse);
 }
 
 namespace

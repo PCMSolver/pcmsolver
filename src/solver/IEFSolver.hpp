@@ -33,6 +33,8 @@
 
 #include "Config.hpp"
 
+#include <Eigen/Core>
+
 class Cavity;
 
 #include "Factory.hpp"

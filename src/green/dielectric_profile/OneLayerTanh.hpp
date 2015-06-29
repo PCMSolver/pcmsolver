@@ -64,7 +64,7 @@ private:
      *  \param[in] point where to evaluate the derivative
      */
     double derivative(double point) const {
-        double factor = (epsilon1_ - epsilon2_) / (2.0 * width_);
+        double factor = (epsilon2_ - epsilon1_) / (2.0 * width_);
         double tanh_r = std::tanh((point - center_) / width_);
         return (factor * (1 - std::pow(tanh_r, 2))); //first derivative of epsilon(r)
     }

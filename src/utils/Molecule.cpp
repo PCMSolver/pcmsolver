@@ -33,7 +33,8 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues>
 
 #include "Atom.hpp"
 #include "MathUtils.hpp"

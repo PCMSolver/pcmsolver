@@ -32,7 +32,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 /*! \file Sphere.hpp
  *  \class Sphere

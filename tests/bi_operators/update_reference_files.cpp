@@ -31,7 +31,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "cnpyPimpl.hpp"
 #include "CollocationIntegrator.hpp"
@@ -113,7 +113,7 @@ void save_tanh_spherical_diffuse_collocation() {
     unsigned int dim = static_cast<unsigned int>(cavity.size());
     const unsigned int shape[] = {dim, dim};
 
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero());
+    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
     cnpy::npy_save("tanhsphericaldiffuse_S_collocation.npy", S_results.data(), shape, 2, "w", true);
@@ -208,7 +208,7 @@ void save_tanh_spherical_diffuse_numerical() {
     unsigned int dim = static_cast<unsigned int>(cavity.size());
     const unsigned int shape[] = {dim, dim};
 
-    SphericalDiffuse<NumericalIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero());
+    SphericalDiffuse<NumericalIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
     cnpy::npy_save("tanhsphericaldiffuse_S_numerical.npy", S_results.data(), shape, 2, "w", true);

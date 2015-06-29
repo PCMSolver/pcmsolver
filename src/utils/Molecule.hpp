@@ -32,7 +32,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "Atom.hpp"
 #include "Sphere.hpp"

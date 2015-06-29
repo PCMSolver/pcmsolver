@@ -37,7 +37,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "TanhDiffuse.hpp"
 

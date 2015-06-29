@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE GreensFunctionErfSphericalDiffuse
+#define BOOST_TEST_MODULE GreensFunctionTanhAlternateSphericalDiffuse
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -14,10 +14,10 @@
 
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
-#include "SphericalDiffuse.hpp"
-#include "OneLayerErf.hpp"
+#include "AlternateSphericalDiffuse.hpp"
+#include "OneLayerTanh.hpp"
 
-struct ErfSphericalDiffuseTest {
+struct TanhAlternateSphericalDiffuseTest {
     int maxL;
     double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
@@ -26,9 +26,9 @@ struct ErfSphericalDiffuseTest {
     Eigen::Vector3d sphereCenter;
     Eigen::Vector3d source1, probe1, sourceNormal1, probeNormal1;
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
-    ErfSphericalDiffuseTest() { SetUp(); }
+    TanhAlternateSphericalDiffuseTest() { SetUp(); }
     void SetUp() {
-        maxL = 3;
+        maxL = 30;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside
@@ -45,9 +45,9 @@ struct ErfSphericalDiffuseTest {
         probeNormal1.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        inside_reference = 0.012378096695970345;
-        der_probe_inside_reference = -0.01252485646420845;
-	    der_source_inside_reference = 0.012549884870656502;
+        inside_reference = 0.01237809396735725;
+        der_probe_inside_reference = -0.012524856460435427;
+	der_source_inside_reference = 0.0125498847608398328;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
         sourceNormal2 = source2; // + Eigen::Vector3d::Random();
@@ -57,19 +57,19 @@ struct ErfSphericalDiffuseTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.50006745832634913;
-        der_probe_outside_reference = -0.2899539276862706;
-        der_source_outside_reference = 0.28867419613498591;
+        outside_reference = 0.5000684359884966;
+        der_probe_outside_reference = -0.28995393666186864;
+        der_source_outside_reference = 0.28867418713829363;
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(ErfSphericalDiffuse, ErfSphericalDiffuseTest)
-/*! \class SphericalDiffuse
- *  \test \b ErfSphericalDiffuseTest_inside tests the evaluation of the ErfSphericalDiffuse Green's function against analytical result for uniform dielectric
+BOOST_FIXTURE_TEST_SUITE(TanhAlternateSphericalDiffuse, TanhAlternateSphericalDiffuseTest)
+/*! \class AlternateSphericalDiffuse
+ *  \test \b TanhAlternateSphericalDiffuseTest_inside tests the evaluation of the TanhAlternateSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
-BOOST_FIXTURE_TEST_CASE(inside, ErfSphericalDiffuseTest)
+BOOST_FIXTURE_TEST_CASE(inside, TanhAlternateSphericalDiffuseTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
+    AlternateSphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = inside_reference;
     double gf_value = gf.kernelS(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -88,12 +88,12 @@ BOOST_FIXTURE_TEST_CASE(inside, ErfSphericalDiffuseTest)
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
     BOOST_REQUIRE_CLOSE(gf_derSource, der_source, 1.0e-06);
 }
-/*! \class SphericalDiffuse
- *  \test \b ErfSphericalDiffuseTest_outside tests the evaluation of the ErfSphericalDiffuse Green's function against analytical result for uniform dielectric
+/*! \class AlternateSphericalDiffuse
+ *  \test \b TanhAlternateSphericalDiffuseTest_outside tests the evaluation of the TanhAlternateSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
-BOOST_FIXTURE_TEST_CASE(outside, ErfSphericalDiffuseTest)
+BOOST_FIXTURE_TEST_CASE(outside, TanhAlternateSphericalDiffuseTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
+    AlternateSphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = outside_reference;
     double gf_value = gf.kernelS(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -115,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE(outside, ErfSphericalDiffuseTest)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-struct ErfSphericalDiffuseShiftedTest {
+struct TanhAlternateSphericalDiffuseShiftedTest {
     int maxL;
     double eps1, eps2, sphereRadius, width;
     double inside_reference, outside_reference;
@@ -124,9 +124,9 @@ struct ErfSphericalDiffuseShiftedTest {
     Eigen::Vector3d sphereCenter;
     Eigen::Vector3d source1, probe1, sourceNormal1, probeNormal1;
     Eigen::Vector3d source2, probe2, sourceNormal2, probeNormal2;
-    ErfSphericalDiffuseShiftedTest() { SetUp(); }
+    TanhAlternateSphericalDiffuseShiftedTest() { SetUp(); }
     void SetUp() {
-        maxL = 3;
+        maxL = 30;
         // High dielectric constant inside
         eps1 = 80.0;
         // Low dielectric constant outside
@@ -143,9 +143,9 @@ struct ErfSphericalDiffuseShiftedTest {
         probeNormal1.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        inside_reference = 0.012378096695970345;
+        inside_reference = 0.01237809396735725;
         der_probe_inside_reference = -0.012524856457286904;
-        der_source_inside_reference = 0.012549884757717331;
+        der_source_inside_reference = 0.0125498847577173306;
 	    // Evaluation outside the sphere
         source2 << 150.0, 150.0, 150.0;
         sourceNormal2 = source2; // + Eigen::Vector3d::Random();
@@ -155,20 +155,20 @@ struct ErfSphericalDiffuseShiftedTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.50006813152602936;
-        der_probe_outside_reference = -0.28995418799693251;
-        der_source_outside_reference = 0.28867505957097528;
+        outside_reference = 0.50006911963511325;
+        der_probe_outside_reference = -0.2899541910583725;
+        der_source_outside_reference = 0.28867505655949532;
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(ErfSphericalDiffuseShifted1, ErfSphericalDiffuseShiftedTest)
+BOOST_FIXTURE_TEST_SUITE(TanhAlternateSphericalDiffuseShifted1, TanhAlternateSphericalDiffuseShiftedTest)
 
-/*! \class SphericalDiffuse
- *  \test \b ErfSphericalDiffuseTest_inside tests the evaluation of the ErfSphericalDiffuse Green's function against analytical result for uniform dielectric
+/*! \class AlternateSphericalDiffuse
+ *  \test \b TanhAlternateSphericalDiffuseTest_inside tests the evaluation of the TanhAlternateSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
-BOOST_FIXTURE_TEST_CASE(inside, ErfSphericalDiffuseShiftedTest)
+BOOST_FIXTURE_TEST_CASE(inside, TanhAlternateSphericalDiffuseShiftedTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
+    AlternateSphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = inside_reference;
     double gf_value = gf.kernelS(source1, probe1);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);
@@ -187,12 +187,12 @@ BOOST_FIXTURE_TEST_CASE(inside, ErfSphericalDiffuseShiftedTest)
     BOOST_TEST_MESSAGE("gf_derSource = " << std::setprecision(std::numeric_limits<long double>::digits10) << gf_derSource);
     BOOST_REQUIRE_CLOSE(gf_derSource, der_source, 1.0e-06);
 }
-/*! \class SphericalDiffuse
- *  \test \b ErfSphericalDiffuseTest_outside tests the evaluation of the ErfSphericalDiffuse Green's function against analytical result for uniform dielectric
+/*! \class AlternateSphericalDiffuse
+ *  \test \b TanhAlternateSphericalDiffuseTest_outside tests the evaluation of the TanhAlternateSphericalDiffuse Green's function against analytical result for uniform dielectric
  */
-BOOST_FIXTURE_TEST_CASE(outside, ErfSphericalDiffuseShiftedTest)
+BOOST_FIXTURE_TEST_CASE(outside, TanhAlternateSphericalDiffuseShiftedTest)
 {
-    SphericalDiffuse<CollocationIntegrator, OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
+    AlternateSphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
     double value = outside_reference;
     double gf_value = gf.kernelS(source2, probe2);
     BOOST_TEST_MESSAGE("value    = " << std::setprecision(std::numeric_limits<long double>::digits10) << value);

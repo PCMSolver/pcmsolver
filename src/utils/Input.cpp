@@ -33,7 +33,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 #include "Getkw.h"
 
 #include <boost/algorithm/string.hpp>
@@ -51,7 +51,7 @@ using boost::algorithm::to_upper_copy;
 
 Input::Input(const std::string & filename)
 {
-    reader(filename.c_str());
+    reader(filename);
     semanticCheck();
 }
 
@@ -62,15 +62,13 @@ Input::Input(const cavityInput & cav, const solverInput & solv,
     semanticCheck();
 }
 
-void Input::reader(const char * pythonParsed)
+void Input::reader(const std::string & filename)
 {
-    // Create a Getkw object from input file.
-    Getkw input = Getkw(pythonParsed, false, true);
+    Getkw input_ = Getkw(filename, false, true);
+    units_      = input_.getStr("UNITS");
+    CODATAyear_ = input_.getInt("CODATA");
 
-    units_      = input.getStr("UNITS");
-    CODATAyear_ = input.getInt("CODATA");
-
-    const Section & cavity = input.getSect("CAVITY");
+    const Section & cavity = input_.getSect("CAVITY");
 
     type_ = cavity.getStr("TYPE");
     area_ = cavity.getDbl("AREA");
@@ -105,7 +103,7 @@ void Input::reader(const char * pythonParsed)
     }
 
     // Get the contents of the Medium section
-    const Section & medium = input.getSect("MEDIUM");
+    const Section & medium = input_.getSect("MEDIUM");
     // Get the name of the solvent
     std::string name = medium.getStr("SOLVENT");
     if (name == "EXPLICIT" || name == "E") {
@@ -140,6 +138,7 @@ void Input::reader(const char * pythonParsed)
         width_ = outside.getDbl("WIDTH");
         origin_ = outside.getDblVec("INTERFACEORIGIN");
         profileType_ = profilePolicy(outside.getStr("PROFILE"));
+        maxL_ = outside.getInt("MAXL");
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -264,12 +263,13 @@ greenData Input::outsideStaticGreenParams()
         outsideStaticGreenData_ = greenData(derivativeOutsideType_,
                                             integratorType_, profile,  epsilonStaticOutside_);
         if (not hasSolvent_) {
-           outsideStaticGreenData_.howProfile  = profileType_;
+           outsideStaticGreenData_.howProfile = profileType_;
            outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
            outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
            outsideStaticGreenData_.center   = center_;
            outsideStaticGreenData_.width    = width_;
            outsideStaticGreenData_.origin   << origin_[0], origin_[1], origin_[2];
+           outsideStaticGreenData_.maxL = maxL_;
         }
     }
     return outsideStaticGreenData_;
@@ -288,6 +288,7 @@ greenData Input::outsideDynamicGreenParams()
            outsideDynamicGreenData_.center   = center_;
            outsideDynamicGreenData_.width    = width_;
            outsideDynamicGreenData_.origin   << origin_[0], origin_[1], origin_[2];
+           outsideDynamicGreenData_.maxL = maxL_;
         }
     }
     return outsideDynamicGreenData_;

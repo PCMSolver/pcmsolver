@@ -32,7 +32,11 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
+
+#include <boost/mpl/at.hpp>
+#include <boost/mpl/int.hpp>
+#include <boost/mpl/map.hpp>
 
 #include "Element.hpp"
 #include "QuadratureRules.hpp"

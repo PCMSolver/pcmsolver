@@ -32,7 +32,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
     Vacuum<AD_directional, CollocationIntegrator> * gfInside =
         new Vacuum<AD_directional, CollocationIntegrator>();
     SphericalDiffuse<CollocationIntegrator, OneLayerTanh> * gfOutside =
-        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero());
+        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 3);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
     origin << 68.0375, -21.1234, 56.6198;
     Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
     SphericalDiffuse<CollocationIntegrator, OneLayerTanh> * gfOutside =
-        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, origin);
+        new SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, origin, 3);
     bool symm = true;
     IEFSolver solver(gfInside, gfOutside, symm);
     solver.buildSystemMatrix(cavity);

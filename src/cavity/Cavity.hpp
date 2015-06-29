@@ -32,7 +32,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "Element.hpp"
 #include "Molecule.hpp"

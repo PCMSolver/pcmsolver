@@ -18,7 +18,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "MathUtils.hpp"
 

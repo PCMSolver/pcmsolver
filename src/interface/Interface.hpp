@@ -37,7 +37,7 @@
 
 #include "FCMangle.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "InputManager.hpp"
 #include "Molecule.hpp"

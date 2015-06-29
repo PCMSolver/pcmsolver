@@ -30,7 +30,7 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 /*! @struct greenData
  *  @brief Contains all data defined from user input in the green section.
@@ -69,6 +69,8 @@ struct greenData {
     double width;
     /*! Origin of the dielectric layer */
     Eigen::Vector3d origin;
+    /*! Maximum angular momentum */
+    int maxL;
     /*! Whether the structure was initialized with user input or not */
     bool empty;
 
@@ -86,12 +88,13 @@ struct greenData {
               double _e2 = 1.0,
               double _c = 100.0,
               double _w = 5.0,
-              const Eigen::Vector3d & _o = Eigen::Vector3d::Zero()) :
+              const Eigen::Vector3d & _o = Eigen::Vector3d::Zero(),
+              int l = 30) :
         howDerivative(how_d), howIntegrator(how_i), howProfile(how_p),
     epsilon(_epsilon), kappa(_kappa), epsilonTensor(epstens), eulerAngles(euler),
 	epsilonReal(_epsReal), epsilonImaginary(_epsImaginary),
     NPspheres(_sphere), NPradii(_sphRadius),
-    epsilon1(_e1), epsilon2(_e2), center(_c), width(_w), origin(_o) { empty = false; }
+    epsilon1(_e1), epsilon2(_e2), center(_c), width(_w), origin(_o), maxL(l) { empty = false; }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 };
 

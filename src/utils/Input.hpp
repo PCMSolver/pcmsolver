@@ -120,9 +120,7 @@ public:
     friend std::ostream & operator<<(std::ostream &os, const Input &input);
     /// @}
 private:
-    /*! Read Python-parsed input (API-side syntactic input parsing) into Input object
-     */
-    void reader(const char * pythonParsed);
+    void reader(const std::string & filename);
     /*! Read host data structures (host-side syntactic input parsing) into Input object.
      *  It provides access to a **limited** number of options only, basically the ones
      *  that can be filled into the cavityInput, solverInput and greenInput data structures.
@@ -138,8 +136,7 @@ private:
      */
     void reader(const cavityInput & cav, const solverInput & solv,
                 const greenInput & green);
-    /*! Perform semantic input parsing aka sanity check
-     */
+    /*! Perform semantic input parsing aka sanity check */
     void semanticCheck();
 
     /// Units of measure
@@ -230,6 +227,8 @@ private:
     double width_;
     /// Profile chosen for the diffuse interface
     int profileType_;
+    /// Maximum angular momentum
+    int maxL_;
     /// Center of the dielectric sphere
     std::vector<double> origin_;
     /// Who performed the syntactic input parsing

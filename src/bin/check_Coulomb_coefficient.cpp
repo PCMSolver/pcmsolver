@@ -2,7 +2,7 @@
 #include <ostream>
 #include <fstream>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
 #include "UniformDielectric.hpp"

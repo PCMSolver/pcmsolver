@@ -36,12 +36,10 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
-#include <boost/mpl/at.hpp>
-#include <boost/mpl/int.hpp>
-#include <boost/mpl/map.hpp>
-
+#include "SplineFunction.hpp"
 #include "Symmetry.hpp"
 
 /*! \fn inline int parity(std::bitset<nBits> bitrep)
@@ -283,14 +281,38 @@ inline double linearInterpolation(const double point, const std::vector<double> 
         const std::vector<double> & function)
 {
     // Find nearest points on grid to the arbitrary point given
-    size_t index = std::distance(grid.begin(), std::lower_bound(grid.begin(), grid.end(), point));
+    size_t index = std::distance(grid.begin(), std::lower_bound(grid.begin(), grid.end(), point)) - 1;
 
     // Parameters for the interpolating line
-    double f_idx1 = function[index+1], f_idx = function[index];
-    double g_idx1 = grid[index+1], g_idx = grid[index];
-    double m = (f_idx1 - f_idx) / (g_idx1 - g_idx);
+    double y_1 = function[index], y_0 = function[index-1];
+    double x_1 = grid[index], x_0 = grid[index-1];
+    double m = (y_1 - y_0) / (x_1 - x_0);
 
-    return (m * (point - g_idx) + f_idx);
+    return (m * (point - x_0) + y_0);
+}
+
+/*! \brief Return value of function defined on grid at an arbitrary point
+ *  \param[in] point     where the function has to be evaluated
+ *  \param[in] grid      holds points on grid where function is known
+ *  \param[in] function  holds known function values
+ *
+ *  This function finds the nearest values for the given point
+ *  and performs a cubic spline interpolation.
+ *  \warning This function assumes that grid has already been sorted!
+ */
+inline double splineInterpolation(const double point, const std::vector<double> & grid,
+        const std::vector<double> & function)
+{
+    // Find nearest points on grid to the arbitrary point given
+    size_t index = std::distance(grid.begin(), std::lower_bound(grid.begin(), grid.end(), point)) - 1;
+
+    // Parameters for the interpolating spline
+    Eigen::Vector3d x, y;
+    x << grid[index-1], grid[index], grid[index+1];
+    y << function[index-1], function[index], function[index+1];
+    SplineFunction s(x, y);
+
+    return s(point);
 }
 
 /*! \typedef DifferentiableFunction

@@ -353,6 +353,10 @@ def setup_keywords():
     # Valid for: SPHERICALDIFFUSE
     # Valid values: array of doubles
     green.add_kw('INTERFACEORIGIN', 'DBL_ARRAY', [0.0, 0.0, 0.0])
+    # Maximum angular momentum value
+    # Valid for: SPHERICALDIFFUSE
+    # Valid values: integer
+    green.add_kw('MAXL', 'INT', 30)
     medium.add_sect(green)
 
     green_part = deepcopy(green)
@@ -557,7 +561,7 @@ def verify_medium(section):
         sys.exit(1)
 
 def verify_green(section):
-    allowed     = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'METALSPHERE', 'GREENSFUNCTIONSUM')
+    allowed     = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'ALTERNATESPHERICALDIFFUSE', 'METALSPHERE', 'GREENSFUNCTIONSUM')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
     allowed_profiles = ('TANH', 'ERF')
 

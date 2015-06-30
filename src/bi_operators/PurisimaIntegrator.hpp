@@ -224,7 +224,7 @@ struct PurisimaIntegrator
         return D;
     }
     /**@}*/
-    
+
     /**@{ Single and double layer potentials for a SphericalDiffuse Green's function with alternative handling of Coulomb singularty by collocation */
     /*! \tparam ProfilePolicy the permittivity profile for the diffuse interface
      *  \param[in] gf Green's function
@@ -285,6 +285,17 @@ struct PurisimaIntegrator
             }
         }
         return D;
+    }
+    /**@}*/
+
+    /**@{ Single and double layer potentials for a sharp dielectric sphere Green's function by collocation */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd singleLayer(const SphericalSharp<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
+        PCMSOLVER_ERROR("PurisimaIntegrator::singleLayer not implemented yet for SphericalSharp");
+    }
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd doubleLayer(const SphericalSharp<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
+        PCMSOLVER_ERROR("PurisimaIntegrator::doubleLayer not implemented yet for AnisotropicLiquid");
     }
     /**@}*/
 

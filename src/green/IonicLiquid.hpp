@@ -37,6 +37,7 @@
 
 class Element;
 
+#include "DerivativeUtils.hpp"
 #include "GreensFunction.hpp"
 #include "Yukawa.hpp"
 
@@ -88,10 +89,7 @@ private:
     {
         double eps = this->profile_.epsilon;
 	    double k = this->profile_.kappa;
-        DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
-                          (sp[1] - pp[1]) * (sp[1] - pp[1]) +
-                          (sp[2] - pp[2]) * (sp[2] - pp[2]));
-        return (exp(-k * distance) / (eps * distance));
+        return (exp(-k * distance(sp, pp)) / (eps * distance(sp, pp)));
     }
     /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:

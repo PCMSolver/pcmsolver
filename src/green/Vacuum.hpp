@@ -36,6 +36,7 @@
 
 class Element;
 
+#include "DerivativeUtils.hpp"
 #include "GreensFunction.hpp"
 
 /*! \file Vacuum.hpp
@@ -85,11 +86,7 @@ private:
      */
     virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const override
     {
-        DerivativeTraits res;
-        res = 1.0/sqrt((sp[0]-pp[0])*(sp[0]-pp[0])+
-                       (sp[1]-pp[1])*(sp[1]-pp[1])+
-                       (sp[2]-pp[2])*(sp[2]-pp[2]));
-        return res;
+        return (1 / distance(sp, pp));
     }
     /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator
      *  for the pair of points p1, p2:

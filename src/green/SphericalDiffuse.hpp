@@ -230,7 +230,7 @@ private:
     {
         double eps_r2 = 0.0;
         // Shift p2 by origin_
-        std::tie(eps_r2, std::ignore) = this->profile_((p2 - this->origin_).norm());
+        std::tie(eps_r2, std::ignore) = this->epsilon(p2);
 
         return (eps_r2 * this->derivativeProbe(direction, p1, p2));
     }

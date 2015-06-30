@@ -151,6 +151,8 @@ set(TaylorCMakeArgs
    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
    )
+# This ensures that the operator<< overload for Taylor types is available
+add_definitions(-DTAYLOR_CXXIO)
 
 ExternalProject_Add(libtaylor
 	PREFIX ${CMAKE_SOURCE_DIR}/external

@@ -19,38 +19,31 @@
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
  *
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
-#ifndef SHARP_HPP
-#define SHARP_HPP
-
-#include <iosfwd>
+#ifndef DERIVATIVEUTILS_HPP
+#define DERIVATIVEUTILS_HPP
 
 #include "Config.hpp"
 
-/*! \file Sharp.hpp
- *  \struct Sharp
- *  \brief A sharp dielectric separation
- *  \author Roberto Di Remigio
- *  \date 2015
- */
-
-struct Sharp final
+template <typename DerivativeTraits>
+inline DerivativeTraits distance(DerivativeTraits u[3], DerivativeTraits v[3])
 {
-    double epsilon;
-    double epsilonSolvent;
-    double radius;
-    Sharp() : epsilon(1.0), epsilonSolvent(1.0), radius(1.0) {}
-    Sharp(double eL, double eR, double c) :
-        epsilon(eL), epsilonSolvent(eR), radius(c) {}
-    friend std::ostream & operator<<(std::ostream & os, Sharp & obj) {
-        os << "Sphere permittivity  = " << obj.epsilon << std::endl;
-        os << "Solvent permittivity = " << obj.epsilonSolvent << std::endl;
-        os << "Sphere radius        = " << obj.radius   << " AU";
-        return os;
-    }
-};
+    return sqrt(pow(u[0] - v[0], 2) + pow(u[1] - v[1], 2) + pow(u[2] - v[2], 2));
+}
 
-#endif // SHARP_HPP
+template <typename DerivativeTraits>
+inline DerivativeTraits norm(DerivativeTraits u[3])
+{
+    return sqrt(pow(u[0], 2) + pow(u[1], 2) + pow(u[2], 2));
+}
+
+template <typename DerivativeTraits>
+inline DerivativeTraits dot_product(DerivativeTraits u[3], DerivativeTraits v[3])
+{
+    return (u[0] * v[0] + u[1] * v[1] + u[2] * v[2]);
+}
+
+#endif // DERIVATIVEUTILS_HPP

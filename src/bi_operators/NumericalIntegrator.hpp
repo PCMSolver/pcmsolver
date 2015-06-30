@@ -231,6 +231,17 @@ struct NumericalIntegrator
     }
     /**@}*/
 
+    /**@{ Single and double layer potentials for a sharp dielectric sphere Green's function by collocation: numerical integration of diagonal */
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd singleLayer(const SphericalSharp<DerivativeTraits, NumericalIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
+        PCMSOLVER_ERROR("NumericalIntegrator::singleLayer not implemented yet for SphericalSharp");
+    }
+    template <typename DerivativeTraits>
+    Eigen::MatrixXd doubleLayer(const SphericalSharp<DerivativeTraits, NumericalIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {
+        PCMSOLVER_ERROR("NumericalIntegrator::doubleLayer not implemented yet for AnisotropicLiquid");
+    }
+    /**@}*/
+
     /**@{ Single and double layer potentials for a MetalNP Green's function by collocation */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const MetalNP<DerivativeTraits, NumericalIntegrator> & /* gf */, const std::vector<Element> & /* e */) const {

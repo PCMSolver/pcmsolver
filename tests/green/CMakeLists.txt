@@ -8,4 +8,5 @@ add_boosttest(green_anisotropic_liquid "${list_of_libraries}" "${external_librar
 add_boosttest(green_erf_spherical_diffuse "${list_of_libraries}" "${external_libraries}")
 add_boosttest(green_tanh_spherical_diffuse "${list_of_libraries}" "${external_libraries}")
 add_boosttest(green_tanh_alternate_spherical_diffuse "${list_of_libraries}" "${external_libraries}")
+add_boosttest(green_spherical_sharp "${list_of_libraries}" "${external_libraries}")
 add_boosttest(green_metalnp "${list_of_libraries}" "${external_libraries}")

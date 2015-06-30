@@ -39,11 +39,12 @@
 #include "OneLayerTanh.hpp"
 #include "MembraneTanh.hpp"
 #include "Metal.hpp"
+#include "Sharp.hpp"
 #include "Uniform.hpp"
 #include "Yukawa.hpp"
 
 /*! All possible profile types */
-typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, OneLayerTanh, OneLayerErf, MembraneTanh, Metal>
+typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, OneLayerTanh, OneLayerErf, MembraneTanh, Metal, Sharp>
 profile_types;
 
 /*! One-layer diffuse profile types */
@@ -66,6 +67,7 @@ namespace profiles {
         bool operator()(const OneLayerErf & /* arg */) const { return false; }
         bool operator()(const MembraneTanh & /* arg */) const { return false; }
         bool operator()(const Metal & /* arg */) const { return false; }
+        bool operator()(const Sharp & /* arg */) const { return false; }
     };
 
     inline bool uniform(const Permittivity & arg) {
@@ -84,6 +86,7 @@ namespace profiles {
         bool operator()(const OneLayerErf & /* arg */) const { return false; }
         bool operator()(const MembraneTanh & /* arg */) const { return false; }
         std::complex<double> operator()(const Metal & arg) const { return arg.epsilon; }
+        double operator()(const Sharp & arg) const { return arg.epsilon; }
     };
 
     inline double epsilon(const Permittivity & arg) {

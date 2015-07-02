@@ -230,79 +230,81 @@ inline double imagePotential(double eps, double epsSolv, double radius, const Ei
     double sp_origin_norm = sp_origin.norm();
     Eigen::Vector3d pp_origin = pp - origin;
     double pp_origin_norm = pp_origin.norm();
-    //double cos_gamma = sp.dot(pp) / (sp.norm() * pp.norm());
     double cos_gamma = sp_origin.dot(pp_origin) / (sp_origin.norm() * pp_origin.norm());
     // Clean-up cos_gamma, Legendre polynomials are only defined for -1 <= x <= 1
     if (numericalZero(cos_gamma - 1)) cos_gamma = 1.0;
     if (numericalZero(cos_gamma + 1)) cos_gamma = -1.0;
     // Image charge position
     Eigen::Vector3d r_img = origin + std::pow(radius / pp_origin_norm, 2) * pp_origin;
-    double sp_image = (sp - r_img).norm();
+    double sp_image_norm = (sp - r_img).norm();
     // Image charge
     double q_img = radius / pp_origin_norm;
     // Permittivity factor
     double factor = (eps - epsSolv) / (eps + epsSolv);
 
     // Image Green's function
-    double G_img = factor * (q_img / sp_image - q_img / sp_origin_norm);
+    double G_img = factor * (q_img / sp_image_norm - q_img / sp_origin_norm);
+    // Image Green's function
     // Accumulate Legendre polynomial expansion of image potential
     double f_0 = radius / (sp_origin_norm * pp_origin_norm);
     double f_l = f_0;
     for (int l = 1; l <= 200; ++l) {
         f_l = f_l * radius * f_0;
         double C_0_l = (eps - epsSolv) * l / ((eps + epsSolv) * l + epsSolv);
-        double C_l = C_0_l - factor;
         double pl_x = boost::math::legendre_p(l, cos_gamma);
-        G_img += f_l * C_l * pl_x;
+        G_img += f_l * (C_0_l - factor) * pl_x;
     }
+
     return G_img / epsSolv;
 }
 
-inline double derivativeProbeImagePotential(double eps, double epsSolv, double radius, const Eigen::Vector3d & origin,
-                        const Eigen::Vector3d & spNormal, const Eigen::Vector3d & sp,
+inline double derivativeImagePotential(double eps, double epsSolv, double radius, const Eigen::Vector3d & origin,
+                        const Eigen::Vector3d & sp,
                         const Eigen::Vector3d & ppNormal, const Eigen::Vector3d & pp) {
     Eigen::Vector3d sp_origin = sp - origin;
     double sp_origin_norm = sp_origin.norm();
     Eigen::Vector3d pp_origin = pp - origin;
     double pp_origin_norm = pp_origin.norm();
-    double cos_gamma = sp_origin.dot(pp_origin) / (sp_origin.norm() * pp_origin.norm());
+    double cos_gamma = sp_origin.dot(pp_origin) / (sp_origin_norm * pp_origin_norm);
     // Clean-up cos_gamma, Legendre polynomials are only defined for -1 <= x <= 1
     if (numericalZero(cos_gamma - 1)) cos_gamma = 1.0;
     if (numericalZero(cos_gamma + 1)) cos_gamma = -1.0;
-    // Image charge position
+    double pp_origin_norm_3 = std::pow(pp_origin_norm, 3);
+
     Eigen::Vector3d r_img = origin + std::pow(radius / pp_origin_norm, 2) * pp_origin;
-    // Permittivity factor
+    Eigen::Vector3d pp_image = pp - r_img;
+    double pp_image_norm_3 = std::pow(pp_image.norm(), 3);
     double factor = (eps - epsSolv) / (eps + epsSolv);
 
-    double pp_origin_3 = std::pow(pp_origin.norm(), 3);
-    double tmp_1 = (pp - r_img).dot(ppNormal);
-    double tmp_2 = std::pow((pp - r_img).norm(), 3);
-    double der_G_img = factor * (radius / sp_origin.norm()) * (pp_origin.dot(ppNormal) / pp_origin_3 - tmp_1 / tmp_2);
+    double der_G_img = factor * (radius / sp_origin_norm) * (pp_origin.dot(ppNormal) / pp_origin_norm_3 - pp_image.dot(ppNormal) / pp_image_norm_3);
+    /*
     // Accumulate Legendre polynomial expansion of image potential
-    double f_0 = radius / sp_origin_norm;
+    double f_0 = radius / (sp_origin_norm * pp_origin_norm);
     double f_l = f_0;
-    double g_0 = pp_origin.norm();
-    double g_l = g_0;
-    double h_0 = std::pow(g_0, 3);
-    double h_l = h_0;
-    double grad_pp = pp_origin.dot(ppNormal) / pp_origin_3;
+    double pp_origin_norm_l_3 = pp_origin_norm_3; // To accumulate (pp-origin).norm()^(l+3)
+    double pp_origin_norm_l_1 = pp_origin_norm;   // To accumulate (pp-origin).norm()^(l+1)
     for (int l = 1; l <= 200; ++l) {
-        h_l *= g_0;
-        double pl_x = boost::math::legendre_p(l, cos_gamma);
-        double tmp_a = -(l+1) * pp_origin.dot(ppNormal) * pl_x / h_l;
+        f_l = f_l * radius * f_0;
+        pp_origin_norm_l_3 *= pp_origin_norm;
+        pp_origin_norm_l_1 *= pp_origin_norm;
 
-        g_l *= g_0;
-        double pl1_x = boost::math::legendre_p(l+1, cos_gamma);
-        double tmp_b = (l+1) * (pl1_x - cos_gamma * pl_x) / (g_l * (std::pow(cos_gamma, 2) - 1));
+        double pl_x = boost::math::legendre_p(l, cos_gamma); // P_l(cos_gamma)
+        double pl_1_x = boost::math::legendre_p(l+1, cos_gamma); // P_(l+1)(cos_gamma)
+        double cos_denom = std::pow(cos_gamma, 2) - 1;
 
-        double tmp_c = sp_origin.dot(ppNormal) / (sp_origin.norm() * pp_origin.norm())
-                     - ((pp_origin.dot(sp_origin)) / sp_origin.norm()) * grad_pp;
+        double tmp_a = ((l+1) * pl_x * pp_origin.dot(ppNormal)) / pp_origin_norm_l_3;
+        double tmp_b = ((l+1) * (pl_1_x - cos_gamma * pl_x) ) / (pp_origin_norm_l_1 * cos_denom);
+        double tmp_c = sp_origin.dot(ppNormal) / (sp_origin_norm * pp_origin_norm);
+        double tmp_d = (pp_origin.dot(sp_origin) * pp_origin.dot(ppNormal)) / (sp_origin_norm * pp_origin_norm_3);
+        double tmp_e = tmp_b * (tmp_c - tmp_d);
 
-        f_l *= radius * f_0;
         double C_0_l = (eps - epsSolv) * l / ((eps + epsSolv) * l + epsSolv);
         double C_l = C_0_l - factor;
-        der_G_img += f_l * C_l * (tmp_a + tmp_b * tmp_c);
+
+        der_G_img += f_l * C_l * (-tmp_a + tmp_e);
     }
+    */
+
     return der_G_img / epsSolv;
 }
 
@@ -312,6 +314,7 @@ inline double derivativeProbeImagePotential(double eps, double epsSolv, double r
 inline Eigen::Array4d analyticSphericalSharp(double eps, double epsSolv, double radius, const Eigen::Vector3d & origin,
                         const Eigen::Vector3d & spNormal, const Eigen::Vector3d & sp,
                         const Eigen::Vector3d & ppNormal, const Eigen::Vector3d & pp) {
+    using namespace std::placeholders;
     Eigen::Array4d result = Eigen::Array4d::Zero();
     double distance = (sp - pp).norm();
     double distance_3 = std::pow(distance, 3);
@@ -320,8 +323,7 @@ inline Eigen::Array4d analyticSphericalSharp(double eps, double epsSolv, double 
     // Value of the function
     result(0) = 1.0 / (epsSolv * distance) - G_img;
 
-    double d_probe_G_img = derivativeProbeImagePotential(eps, epsSolv, radius, origin,
-                                                         spNormal, sp, ppNormal, pp);
+    double d_probe_G_img = derivativeImagePotential(eps, epsSolv, radius, origin, sp, ppNormal, pp);
     // Value of the directional derivative wrt probe
     result(1) = (sp - pp).dot(ppNormal) / (epsSolv * distance_3) - d_probe_G_img;
 

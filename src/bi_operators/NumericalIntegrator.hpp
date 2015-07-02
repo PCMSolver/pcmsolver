@@ -40,9 +40,10 @@
 #include "Element.hpp"
 #include "AlternateSphericalDiffuse.hpp"
 #include "AnisotropicLiquid.hpp"
-#include "SphericalDiffuse.hpp"
 #include "IonicLiquid.hpp"
 #include "MetalNP.hpp"
+#include "SphericalDiffuse.hpp"
+#include "SphericalSharp.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 

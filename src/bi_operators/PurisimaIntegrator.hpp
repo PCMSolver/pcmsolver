@@ -45,6 +45,7 @@
 #include "IonicLiquid.hpp"
 #include "MetalNP.hpp"
 #include "SphericalDiffuse.hpp"
+#include "SphericalSharp.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 

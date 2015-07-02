@@ -135,7 +135,6 @@ private:
         // Angle between source and probe point
         DerivativeTraits cos_gamma = dot_product(sp_origin, pp_origin) / (sp_origin_norm * pp_origin_norm);
 
-        /*
         DerivativeTraits r_img[3];
         for (int i = 0; i < 3; ++i) {
             r_img[i] = origin_(i) + pow(radius / pp_origin_norm, 2) * pp_origin[i];
@@ -143,17 +142,16 @@ private:
         // Distance between sp and r_img
         DerivativeTraits sp_image = distance(sp, r_img);
         DerivativeTraits q_img = radius / pp_origin_norm;
-        */
-        //double factor = (eps - epsSolv) / (eps + epsSolv);
-        DerivativeTraits G_img = DerivativeTraits(0.0); //factor * (q_img / sp_image - q_img / sp_origin_norm);
+        double factor = (eps - epsSolv) / (eps + epsSolv);
+        //DerivativeTraits G_img = DerivativeTraits(0.0);
+        DerivativeTraits G_img = factor * (q_img / sp_image - q_img / sp_origin_norm);
         DerivativeTraits f_0 = radius / (sp_origin_norm * pp_origin_norm);
         DerivativeTraits f_L = f_0;
         for (int L = 1; L <= 200; ++L) {
             f_L = f_L * radius * f_0;
             double C_0_L = (eps - epsSolv) * L / ((eps + epsSolv) * L + epsSolv);
-            //double C_L = C_0_L - factor;
             DerivativeTraits pl_x = Legendre::Pn<DerivativeTraits>(L, cos_gamma);
-            G_img += f_L * C_0_L * pl_x;
+            G_img += f_L * (C_0_L - factor) * pl_x;
         }
 
         return G_img / epsSolv;

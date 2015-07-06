@@ -20,7 +20,7 @@
  *  \param[in] max_val upper bound of interval
  *  \param[in] nPoints number of points in interval
  */
-std::vector<double> generate_grid(double, double, size_t);
+std::vector<double> generate_grid(double min_val, double max_val, size_t nPoints);
 
 /*! \brief Plot Green's function
  *  The dielectric sphere is centered in (25.0, 25.0, 0.0) with radius 10.0
@@ -116,9 +116,9 @@ void case1()
                 << '\t' << gf.Coulomb(source, probe)
                 << '\t' << gf.imagePotential(source, probe)
                 << '\t' << gf.kernelS(source, probe)
-		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) 
-		<< '\t' << gf_i.kernelS(source, probe) 
-		<< '\t' << gf_o.kernelS(source, probe) 
+		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe))
+		<< '\t' << gf_i.kernelS(source, probe)
+		<< '\t' << gf_o.kernelS(source, probe)
 		<< std::endl;
         }
 	out << std::endl;
@@ -172,9 +172,9 @@ void case2()
                 << '\t' << gf.Coulomb(source, probe)
                 << '\t' << gf.imagePotential(source, probe)
                 << '\t' << gf.kernelS(source, probe)
-		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) 
-		<< '\t' << gf_i.kernelS(source, probe) 
-		<< '\t' << gf_o.kernelS(source, probe) 
+		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe))
+		<< '\t' << gf_i.kernelS(source, probe)
+		<< '\t' << gf_o.kernelS(source, probe)
 		<< std::endl;
         }
 	out << std::endl;
@@ -228,9 +228,9 @@ void case3()
                 << '\t' << gf.Coulomb(source, probe)
                 << '\t' << gf.imagePotential(source, probe)
                 << '\t' << gf.kernelS(source, probe)
-		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) 
-		<< '\t' << gf_i.kernelS(source, probe) 
-		<< '\t' << gf_o.kernelS(source, probe) 
+		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe))
+		<< '\t' << gf_i.kernelS(source, probe)
+		<< '\t' << gf_o.kernelS(source, probe)
 		<< std::endl;
         }
 	out << std::endl;

@@ -59,7 +59,6 @@ struct NumericalIntegratorTest {
     Eigen::Vector3d euler;
     double eps;
     double kappa;
-    Eigen::Vector3d source, probe, sourceNormal, probeNormal;
     GePolCavity cavity;
     NumericalIntegratorTest() { SetUp(); }
     void SetUp() {
@@ -69,12 +68,6 @@ struct NumericalIntegratorTest {
         euler << 0.0, 0.0, 0.0;
         eps = 80.0;
         kappa = 1.5;
-        source = Eigen::Vector3d::Random();
-        sourceNormal = source + Eigen::Vector3d::Random();
-        sourceNormal.normalize();
-        probe = Eigen::Vector3d::Random();
-        probeNormal = probe + Eigen::Vector3d::Random();
-        probeNormal.normalize();
 
         Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
         double area = 10.0;

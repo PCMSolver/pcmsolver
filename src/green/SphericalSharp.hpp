@@ -87,6 +87,34 @@ public:
         return this->integrator_.doubleLayer(*this, e);
     }
 
+    /*! \brief Returns non-singular part of the Green's function (image potential)
+     *  \param[in] source location of the source charge
+     *  \param[in] probe location of the probe charge
+     */
+    double imagePotential(const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
+        DerivativeTraits sp[3], pp[3];
+        sp[0] = source(0); sp[1] = source(1); sp[2] = source(2);
+        pp[0] = probe(0); pp[1] = probe(1); pp[2] = probe(2);
+        return this->imagePotential_impl(sp, pp)[0];
+    }
+    /*! Returns value of the directional derivative of the
+     *  non-singular part (image potential) of the Greens's function for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  Notice that this method returns the directional derivative with respect
+     *  to the probe point, thus assuming that the direction is relative to that point.
+     *
+     *  \param[in] direction the direction
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    double imagePotentialDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
+        DerivativeTraits t1[3], t2[3];
+        t1[0] = p1(0); t1[1] = p1(1); t1[2] = p1(2);
+        t2[0] = p2(0); t2[1] = p2(1); t2[2] = p2(2);
+        t2[0][1] = direction(0); t2[1][1] = direction(1); t2[2][1] = direction(2);
+        return this->imagePotential_impl(t1, t2)[1];
+    }
+
     friend std::ostream & operator<<(std::ostream & os, SphericalSharp & gf) {
         return gf.printObject(os);
     }

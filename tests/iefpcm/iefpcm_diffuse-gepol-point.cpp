@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
     Eigen::Vector3d origin;
     origin << 68.0375, -21.1234, 56.6198;
     Molecule point = dummy<0>(2.929075493, origin);
-    double area = 0.4;
+    double area = 1.0;
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
 {
     // Set up cavity
     Molecule point = dummy<0>(2.929075493);
-    double area = 0.4;
+    double area = 1.0;
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);

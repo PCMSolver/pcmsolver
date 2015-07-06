@@ -191,6 +191,16 @@ public:
     std::tuple<double, double> epsilon(const Eigen::Vector3d & point) const {
         return this->profile_((point + this->origin_).norm());
     }
+    void toFile(const std::string & prefix = "") {
+	std::string tmp;
+	prefix.empty() ? tmp = prefix : tmp = prefix + "-";
+        writeToFile(zetaC_, tmp + "zetaC.dat");
+        writeToFile(omegaC_, tmp + "omegaC.dat");
+	for (int L = 1; L <= maxLGreen_; ++L) {
+	    writeToFile(zeta_[L], tmp + "zeta_" + std::to_string(L) + ".dat");
+	    writeToFile(omega_[L], tmp + "omega_" + std::to_string(L) + ".dat");
+	}
+    }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
     using StateType = interfaces::StateType;
@@ -274,14 +284,12 @@ private:
         LOG("Computing first radial solution L = " + std::to_string(maxLC_));
         timerON("computeZeta for coefficient");
         zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(maxLC_, r_0_, r_infinity_, eval_, params_);
-        writeToFile(zetaC_, "zetaC.dat");
         timerOFF("computeZeta for coefficient");
         LOG("DONE: Computing first radial solution L = " + std::to_string(maxLC_));
 
         LOG("Computing second radial solution L = " + std::to_string(maxLC_));
         timerON("computeOmega for coefficient");
         omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(maxLC_, r_0_, r_infinity_, eval_, params_);
-        writeToFile(omegaC_, "omegaC.dat");
         timerOFF("computeOmega for coefficient");
         LOG("Computing second radial solution L = " + std::to_string(maxLC_));
         LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
@@ -369,10 +377,14 @@ private:
         double gr12 = 0.0;
         if (r1 < r2) {
             gr12 = std::exp(zeta1 - zeta2) * (2*L +1) / denominator;
-            gr12 = (gr12 - std::pow(r1/r2, L) / (r2 * Cr12) ) * pl_x ;
+	    double f_L = r1 / r2;
+	    for (int i = 1; i < L; ++i) { f_L *= r1 / r2; }
+            gr12 = (gr12 - f_L / (r2 * Cr12) ) * pl_x ;
         } else {
             gr12 = std::exp(omega1 - omega2) * (2*L +1) / denominator;
-            gr12 = (gr12 - std::pow(r2/r1, L) / (r1 * Cr12) ) * pl_x ;
+	    double f_L = r2 / r1;
+	    for (int i = 1; i < L; ++i) { f_L *= r2 / r1; }
+            gr12 = (gr12 - f_L / (r1 * Cr12) ) * pl_x ;
         }
 
         return gr12;
@@ -422,11 +434,15 @@ private:
         double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
 
         if (r1 < r2) {
+	    double f_L = r1 / r2;
+	    for (int i = 1; i < maxLC_; ++i) { f_L *= r1 / r2; }
             tmp = std::exp(zeta1 - zeta2) * (2*maxLC_ +1) / denominator;
-            coeff = std::pow(r1/r2, maxLC_) / (tmp * r2);
+            coeff = f_L / (tmp * r2);
         } else {
+	    double f_L = r2 / r1;
+	    for (int i = 1; i < maxLC_; ++i) { f_L *= r2 / r1; }
             tmp = std::exp(omega1 - omega2) * (2*maxLC_ +1) / denominator;
-            coeff = std::pow(r2/r1, maxLC_) / (tmp * r1);
+            coeff = f_L / (tmp * r1);
         }
 
         return coeff;

@@ -52,17 +52,10 @@
 struct CollocationIntegratorTest {
     double radius;
     double epsilon;
-    Eigen::Vector3d source, probe, sourceNormal, probeNormal;
     GePolCavity cavity;
     CollocationIntegratorTest() { SetUp(); }
     void SetUp() {
 	    epsilon = 80.0;
-        source = Eigen::Vector3d::Random();
-        sourceNormal = source + Eigen::Vector3d::Random();
-        sourceNormal.normalize();
-        probe = Eigen::Vector3d::Random();
-        probeNormal = probe + Eigen::Vector3d::Random();
-        probeNormal.normalize();
 
 	    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
         double area = 10.0;

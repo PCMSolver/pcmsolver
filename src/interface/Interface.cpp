@@ -109,7 +109,7 @@ extern "C" void tear_down_pcm()
 extern "C" void write_timings()
 {
     // Print out timings to pcmsolver.timer.dat
-    timerDONE("pcmsolver.timer.dat");
+    TIMER_DONE("pcmsolver.timer.dat");
 }
 
 extern "C" void compute_asc(char * potString, char * chgString, int * irrep)

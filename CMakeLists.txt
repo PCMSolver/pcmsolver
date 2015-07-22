@@ -23,7 +23,8 @@ option(ENABLE_EIGEN_MKL        "Enable Eigen3 automatic fallback to some of Inte
 option(ENABLE_64BIT_INTEGERS   "Enable 64-bit integers"                                           OFF)
 option(ENABLE_CXX11_SUPPORT    "Enable C++11 compiler support"                                    ON)
 # Developers only options
-option(ENABLE_LOGGER           "Enables logger: needs C++11 support"                              ON)
+option(ENABLE_LOGGER           "Enable logger: needs C++11 support"                               ON)
+option(ENABLE_TIMER            "Enable timer"                                                     ON)
 #
 #  CMake modules
 #

@@ -1,8 +1,8 @@
 # Just change the Boost version number here
 # The version of the Boost archive we ship
-set(BOOSTVER 1.54.0) 
+set(BOOSTVER 1.54.0)
 # The minimum required version of Boost
-set(BOOSTVERMIN 1.54.0) 
+set(BOOSTVERMIN 1.54.0)
 if (NOT DEFINED BUILD_CUSTOM_BOOST)
     set(BUILD_CUSTOM_BOOST FALSE)
 endif()
@@ -34,10 +34,10 @@ if(NOT Boost_FOUND)
    set(Boost_LIBRARIES "")
    # Read documentation in FindBoost.cmake for the difference between the singular and plural forms
    set(Boost_INCLUDE_DIR  ${CUSTOM_BOOST_LOCATION}/include)
-   set(Boost_INCLUDE_DIRS ${CUSTOM_BOOST_LOCATION}/include) 
+   set(Boost_INCLUDE_DIRS ${CUSTOM_BOOST_LOCATION}/include)
    set(Boost_LIBRARY_DIR  ${CUSTOM_BOOST_LOCATION}/lib)
    set(Boost_LIBRARY_DIRS ${CUSTOM_BOOST_LOCATION}/lib)
-   # We will link statically, so just set the Boost_<C>_LIBRARY for the static library 
+   # We will link statically, so just set the Boost_<C>_LIBRARY for the static library
    foreach(_component ${needed_components})
       string(TOUPPER ${_component} _COMP)
       set(Boost_${_COMP}_FOUND TRUE)

@@ -36,6 +36,7 @@
 #include <boost/foreach.hpp>
 #include <boost/timer/timer.hpp>
 
+namespace timer {
 typedef std::map<std::string, boost::timer::cpu_timer> timersMap;
 typedef std::pair<std::string, boost::timer::cpu_timer> timersPair;
 
@@ -48,13 +49,6 @@ typedef std::pair<std::string, boost::timer::cpu_times> timingsPair;
  *  \author Roberto Di Remigio
  *  \date 2014
  *
- *  To time a code snippet:
- *  \code{.cpp}
- *  timerON("code-snippet");
- *  // code-snippet
- *  timerOFF("code-snippet");
- *  \endcode
- *  The timings are printed out by a call to the timerDONE function.
  */
 
 class Timer
@@ -163,5 +157,6 @@ inline void timerDONE(const std::string & fname)
     timing_report << Timer::TheTimer() << std::endl;
     timing_report.close();
 }
+} // namespace timer
 
 #endif // TIMER_HPP

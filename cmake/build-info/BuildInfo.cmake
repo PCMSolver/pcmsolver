@@ -1,7 +1,7 @@
 include(ConfigGitRevision)
 
 # Generate the BuildInfo.hpp header only if the logger was enabled
-if (ENABLE_LOGGER)
+if(ENABLE_LOGGER)
    execute_process(
        COMMAND ${PYTHON_EXECUTABLE} -c "import getpass; print getpass.getuser()"
        TIMEOUT 1
@@ -23,7 +23,7 @@ if (ENABLE_LOGGER)
 
    add_custom_target(
        generate_build_info
-       COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/build_info.py > ${CMAKE_SOURCE_DIR}/src/utils/BuildInfo.hpp
+       COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/build_info.py > ${CMAKE_BINARY_DIR}/include/BuildInfo.hpp
        COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/build_info.py
        )
 

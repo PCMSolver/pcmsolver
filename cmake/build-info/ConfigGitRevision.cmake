@@ -21,10 +21,16 @@ if(DEVELOPMENT_CODE)
         )
 
         if(GIT_LAST_COMMIT)
-            string(REGEX MATCH "Author:[ ]*(.+)<" temp "${GIT_LAST_COMMIT}")
-            set(GIT_LAST_COMMIT_AUTHOR ${CMAKE_MATCH_1})
-            string(REGEX MATCH "Date:[ ]*(.+(\\+|-)[0-9][0-9][0-9][0-9])" temp "${GIT_LAST_COMMIT}")
-            set(GIT_LAST_COMMIT_DATE ${CMAKE_MATCH_1})
+            execute_process(
+                COMMAND ${GIT_EXECUTABLE} --no-pager log -1 --pretty=format:"%an <%ae>" HEAD
+                OUTPUT_VARIABLE GIT_LAST_COMMIT_AUTHOR
+                ERROR_QUIET
+                )
+            execute_process(
+                COMMAND ${GIT_EXECUTABLE} --no-pager log -1 --pretty=format:"%ad" HEAD
+                OUTPUT_VARIABLE GIT_LAST_COMMIT_DATE
+                ERROR_QUIET
+                )
         endif()
 
         execute_process(

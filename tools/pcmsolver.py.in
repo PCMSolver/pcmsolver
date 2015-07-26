@@ -24,6 +24,7 @@ routine names my_perfect_routine
 keyword names MYPERFECTKEYWORD
 """
 
+executable="@PCMSOLVER_EXECUTABLE@"
 libdir="@GETKW_PYTHON_DIR@"
 isAngstrom = False
 CODATAyear = 2010
@@ -362,6 +363,14 @@ def setup_keywords():
     green_part = deepcopy(green)
     green.add_sect(green_part)
 
+    # Molecule section
+    molecule = getkw.Section('MOLECULE')
+    # List of geometry and classical point charges
+    # Valid values: array of doubles in format [x, y, z, Q]
+    # charges are in always in atomic units
+    molecule.add_kw('GEOMETRY',     'DBL_ARRAY', callback = verify_geometry)
+    top.add_sect(molecule)
+
     return top
 
 def verify_top(section):
@@ -621,6 +630,13 @@ def verify_green(section):
     if (profile.get() not in allowed_profiles):
         print('Allowed profiles are: {}'.format(allowed_profiles))
         sys.exit(1)
+
+def verify_geometry(keyword):
+    length=len(keyword.get())
+    if (length % 4 != 0):
+        print('Empty or incoherent geometry')
+        sys.exit(1)
+    convert_length_array(keyword)
 
 def verify_spheres(keyword):
     length=len(keyword.get())

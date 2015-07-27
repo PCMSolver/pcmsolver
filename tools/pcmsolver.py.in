@@ -31,8 +31,16 @@ CODATAyear = 2010
 # Dictionary with the au-to-Angstrom conversion factors for various CODATA sets of constants
 CODATAdict = dict([(2010, 0.52917721092), (2006, 0.52917720859), (2002, 0.5291772108), (1998, 0.5291772083)])
 
-import sys, re, optparse, os, string, subprocess, tempfile
+import sys
+import re
+import os
+import string
+import subprocess
+import tempfile
 from copy import deepcopy
+
+sys.path.append('tools')
+from argparse import ArgumentParser
 
 if 'LIBGETKW_LOCATION' in os.environ.keys():
     sys.path.append(os.environ['LIBGETKW_LOCATION'])
@@ -86,9 +94,13 @@ def main():
     global topsect
 
     # Get filename from command line.
-    inpfil = parse_cmdline()
+    args = parse_cmdline()
+    inpfil = args.input_file
     # Do the parsing
     parse_pcm_input(inpfil)
+    # Execute standalone
+    if args.x:
+        execute()
 
 def parse_pcm_input(inputFile = None):
     """
@@ -128,18 +140,29 @@ def parse_pcm_input(inputFile = None):
     fd.close()
 
 def parse_cmdline():
-    usage = "Usage: %prog inpfile"
-    cmdln = optparse.OptionParser(usage=usage)
-    (opts, args) = cmdln.parse_args()
+    parser = ArgumentParser(description="Parse input to PCMSolver")
+    parser.add_argument('input_file', nargs='?',
+            action='store',
+            default='pcmsolver.inp',
+            help='PCMSolver input file [default: %(default)s]',
+            metavar='input file')
+    parser.add_argument('-x',
+            action='store_true',
+            default=False,
+            help='Execute standalone program [default: %(default)s]')
 
-    if (len(args) == 0):
-        inpfil = None
-    elif (len(args) == 1):
-        inpfil = args[0]
+    return parser.parse_args()
+
+def execute():
+    if (executable):
+        print('Executing standalone')
+        p = subprocess.Popen(executable, shell=True,
+                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        s = p.communicate()[0]
+        print(s)
     else:
-        cmdln.error('Incorrect number of files provided.')
-        sys.exit(0)
-    return inpfil
+        print('No executable available for standalone run')
+        sys.exit(1)
 
 def setup_keywords():
     """

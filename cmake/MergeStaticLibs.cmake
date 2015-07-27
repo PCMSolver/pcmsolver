@@ -67,7 +67,7 @@ EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c  \"import os; print('\\\\n'.join
                 file(RELATIVE_PATH objlistfilerpath ${objdir} ${objlistfile})
                 add_custom_command(TARGET ${outlib} POST_BUILD
                         COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/cmake/MergeStaticLibs.py
-                                ${CMAKE_AR} ${outfile} ${objlistfilerpath}                        
+                                ${CMAKE_AR} ${outfile} ${objlistfilerpath}
                         WORKING_DIRECTORY ${objdir}
                         )
         endforeach()

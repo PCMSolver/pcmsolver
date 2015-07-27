@@ -63,8 +63,6 @@ public:
     /// Default constructor
     Input() {}
     /// Constructor from human-readable input file name
-    Input(const char * filename) { std::cout << "in constructor " << std::endl; Input((std::string)filename); }
-    /// Constructor from human-readable input file name
     Input(const std::string & filename);
     /// Constructor from host input structs
     Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
@@ -90,6 +88,7 @@ public:
     Molecule molecule() { return molecule_; }
     /// This method sets the molecule and the list of spheres
     void molecule(const Molecule & m) { molecule_ = m; spheres_ = molecule_.spheres(); }
+    void initMolecule();
     /// @}
 
     /// Medium section input
@@ -233,6 +232,8 @@ private:
     int maxL_;
     /// Center of the dielectric sphere
     std::vector<double> origin_;
+    /// Molecular geometry
+    std::vector<double> geometry_;
     /// Who performed the syntactic input parsing
     std::string providedBy_;
     /// Input wrapping struct for the cavity

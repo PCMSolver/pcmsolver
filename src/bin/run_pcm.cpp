@@ -40,14 +40,9 @@ int main(int argc, char * argv[])
     out << buildInfo() << std::endl;
 
     if (argc > 2) throw std::invalid_argument("Too many arguments supplied to run_pcm");
-    SharedInput parsedInput = std::make_shared<Input>(argv[1]);
-    /*
-    if (parsedInput.mode() != "EXPLICIT") {
-        Molecule molec;
-        initMolecule(molec);
-        parsedInput.molecule(molec);
-    }
-    */
+    Input parsed = Input(argv[1]);
+    parsed.initMolecule();
+    out << parsed.molecule() << std::endl;
 
     out.close();
     // Rename output file

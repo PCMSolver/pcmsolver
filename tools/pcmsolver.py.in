@@ -653,11 +653,18 @@ def verify_green(section):
         sys.exit(1)
 
 def verify_geometry(keyword):
-    length=len(keyword.get())
+    data = keyword.get()
+    length=len(data)
     if (length % 4 != 0):
         print('Empty or incoherent geometry')
         sys.exit(1)
-    convert_length_array(keyword)
+    # Convert only geometry to AU. Leave charges untouched
+    j = 0
+    for i in range(length/4):
+        data[j] /= CODATAdict[CODATAyear]
+        data[j+1] /= CODATAdict[CODATAyear]
+        data[j+2] /= CODATAdict[CODATAyear]
+        j += 4
 
 def verify_spheres(keyword):
     length=len(keyword.get())

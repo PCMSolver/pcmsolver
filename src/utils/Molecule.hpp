@@ -55,7 +55,7 @@ class Molecule
 {
 private:
     /// The number of atoms in the molecule
-    int nAtoms_;
+    size_t nAtoms_;
     /// A vector of dimension (# atoms) containing the charges
     Eigen::VectorXd charges_;
     /// A vector of dimension (# atoms) containing the masses
@@ -137,13 +137,13 @@ public:
     Molecule(const Molecule &other);
     ~Molecule() {}
 
-    int nAtoms() { return nAtoms_; }
-    Eigen::VectorXd charges() { return charges_; }
-    double charges(int i) { return charges_(i); }
-    Eigen::VectorXd masses() { return masses_; }
-    double masses(int i) { return masses_(i); }
-    Eigen::Matrix3Xd geometry() { return geometry_; }
-    std::vector<Atom> atoms() { return atoms_; }
+    size_t nAtoms() const { return nAtoms_; }
+    Eigen::VectorXd charges() const { return charges_; }
+    double charges(int i) const { return charges_(i); }
+    Eigen::VectorXd masses() const { return masses_; }
+    double masses(int i) const { return masses_(i); }
+    Eigen::Matrix3Xd geometry() const { return geometry_; }
+    std::vector<Atom> atoms() const { return atoms_; }
     Atom atoms(int i) const { return atoms_[i]; }
     std::vector<Sphere> spheres() const { return spheres_; }
     Sphere spheres(int i) const { return spheres_[i]; }

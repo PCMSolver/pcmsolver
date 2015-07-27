@@ -24,5 +24,5 @@ list(APPEND external_libraries ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRAR
 if(BUILD_STANDALONE)
     list(APPEND external_libraries ${ZLIB_LIBRARIES})
     add_executable(run_pcm.x run_pcm.cpp)
-    target_link_libraries(run_pcm.x pcm getkw "${external_libraries}" "${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES}")
+    target_link_libraries(run_pcm.x solver cavity pedra utils getkw "${external_libraries}" "${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES}")
 endif()

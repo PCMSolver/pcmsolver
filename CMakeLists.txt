@@ -172,11 +172,11 @@ include_directories(${CMAKE_SOURCE_DIR}
 		    ${CMAKE_BINARY_DIR}/include
                     ${CMAKE_Fortran_MODULE_DIRECTORY})
 
-add_subdirectory(src)
-include_directories(${header_dir_list})
-
 link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
+
+add_subdirectory(src)
+include_directories(${header_dir_list})
 
 set(PCMSOLVER_EXECUTABLE ${CMAKE_BINARY_DIR}/src/bin/run_pcm.x)
 configure_files()

@@ -22,12 +22,17 @@ if(DEVELOPMENT_CODE)
 
         if(GIT_LAST_COMMIT)
             execute_process(
-                COMMAND ${GIT_EXECUTABLE} --no-pager log -1 --pretty=format:"%an <%ae>" HEAD
+                COMMAND ${GIT_EXECUTABLE} --no-pager log -1 --pretty=format:%an HEAD
                 OUTPUT_VARIABLE GIT_LAST_COMMIT_AUTHOR
                 ERROR_QUIET
                 )
             execute_process(
-                COMMAND ${GIT_EXECUTABLE} --no-pager log -1 --pretty=format:"%ad" HEAD
+                COMMAND ${GIT_EXECUTABLE} --no-pager log -1 --pretty=format:%ae HEAD
+                OUTPUT_VARIABLE GIT_LAST_COMMIT_AUTHOR_EMAIL
+                ERROR_QUIET
+                )
+            execute_process(
+                COMMAND ${GIT_EXECUTABLE} --no-pager log -1 --pretty=format:%ad HEAD
                 OUTPUT_VARIABLE GIT_LAST_COMMIT_DATE
                 ERROR_QUIET
                 )

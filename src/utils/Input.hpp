@@ -63,6 +63,8 @@ public:
     /// Default constructor
     Input() {}
     /// Constructor from human-readable input file name
+    Input(const char * filename) { std::cout << "in constructor " << std::endl; Input((std::string)filename); }
+    /// Constructor from human-readable input file name
     Input(const std::string & filename);
     /// Constructor from host input structs
     Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);

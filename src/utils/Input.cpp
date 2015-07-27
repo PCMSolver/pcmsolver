@@ -51,7 +51,9 @@ using boost::algorithm::to_upper_copy;
 
 Input::Input(const std::string & filename)
 {
+    std::cout << "Call reader " << filename << std::endl;
     reader(filename);
+    std::cout << "reader done" << std::endl;
     semanticCheck();
 }
 
@@ -64,9 +66,13 @@ Input::Input(const cavityInput & cav, const solverInput & solv,
 
 void Input::reader(const std::string & filename)
 {
+    std::cout << "Creating Getkw object " << filename << std::endl;
     Getkw input_ = Getkw(filename, false, true);
+    std::cout << "Getkw done" << std::endl;
     units_      = input_.getStr("UNITS");
+    std::cout << units_ << std::endl;
     CODATAyear_ = input_.getInt("CODATA");
+    std::cout << CODATAyear_ << std::endl;
 
     const Section & cavity = input_.getSect("CAVITY");
 
@@ -85,6 +91,7 @@ void Input::reader(const std::string & filename)
     radiiSet_ = to_upper_copy(cavity.getStr("RADIISET"));
     minimalRadius_ = cavity.getDbl("MINRADIUS");
     mode_ = to_upper_copy(cavity.getStr("MODE"));
+    std::cout << mode_ << std::endl;
     if (mode_ == "EXPLICIT") {
         std::vector<double> spheresInput = cavity.getDblVec("SPHERES");
         int j = 0;

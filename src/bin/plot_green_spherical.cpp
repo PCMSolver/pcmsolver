@@ -20,7 +20,7 @@
  *  \param[in] max_val upper bound of interval
  *  \param[in] nPoints number of points in interval
  */
-std::vector<double> generate_grid(double, double, size_t);
+std::vector<double> generate_grid(double min_val, double max_val, size_t nPoints);
 
 /*! \brief Plot Green's function
  *  The source charge is at (0.5, 0.5, 0.0) i.e. inside the dielectric sphere
@@ -103,9 +103,9 @@ void case1(double epsInside, double epsOutside, double width, double sphereRadiu
                 << '\t' << gf.Coulomb(source, probe)
                 << '\t' << gf.imagePotential(source, probe)
                 << '\t' << gf.kernelS(source, probe)
-		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) 
-		<< '\t' << gf_i.kernelS(source, probe) 
-		<< '\t' << gf_o.kernelS(source, probe) 
+		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe))
+		<< '\t' << gf_i.kernelS(source, probe)
+		<< '\t' << gf_o.kernelS(source, probe)
 		<< std::endl;
         }
 	out << std::endl;
@@ -146,9 +146,9 @@ void case2(double epsInside, double epsOutside, double width, double sphereRadiu
                 << '\t' << gf.Coulomb(source, probe)
                 << '\t' << gf.imagePotential(source, probe)
                 << '\t' << gf.kernelS(source, probe)
-		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) 
-		<< '\t' << gf_i.kernelS(source, probe) 
-		<< '\t' << gf_o.kernelS(source, probe) 
+		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe))
+		<< '\t' << gf_i.kernelS(source, probe)
+		<< '\t' << gf_o.kernelS(source, probe)
 		<< std::endl;
         }
 	out << std::endl;
@@ -189,9 +189,9 @@ void case3(double epsInside, double epsOutside, double width, double sphereRadiu
                 << '\t' << gf.Coulomb(source, probe)
                 << '\t' << gf.imagePotential(source, probe)
                 << '\t' << gf.kernelS(source, probe)
-		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe)) 
-		<< '\t' << gf_i.kernelS(source, probe) 
-		<< '\t' << gf_o.kernelS(source, probe) 
+		<< '\t' << (1.0 / gf.coefficientCoulomb(source, probe))
+		<< '\t' << gf_i.kernelS(source, probe)
+		<< '\t' << gf_o.kernelS(source, probe)
 		<< std::endl;
         }
 	out << std::endl;

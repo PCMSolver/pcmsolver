@@ -46,7 +46,6 @@
  * classes (cavities, solvers) to avoid high coupling.
  */
 
-
 class SurfaceFunction
 {
 public:
@@ -92,7 +91,7 @@ public:
     /// Division-assignment operator. Defined only for the uniform scaling case.
     SurfaceFunction & operator/=(double scaling);
 
-    std::string & name() { return name_; }
+    const std::string & name() const { return name_; }
     int nPoints() const { return nPoints_; }
     void value(int index, double value) { values_(index) = value; }
     double value(int index) const { return values_(index); }
@@ -152,7 +151,5 @@ inline SurfaceFunction operator*(double scaling, SurfaceFunction & object)
     object *= scaling;
     return object;
 }
-
-typedef std::shared_ptr<SurfaceFunction> SharedSurfaceFunction;
 
 #endif // SURFACEFUNCTION_HPP

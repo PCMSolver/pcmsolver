@@ -37,7 +37,7 @@
 #include "Cavity.hpp"
 #include "CavityData.hpp"
 #include "Factory.hpp"
-#include "Timer.hpp"
+#include "TimerInterface.hpp"
 
 /*! \file GePolCavity.hpp
  *  \class GePolCavity
@@ -57,17 +57,17 @@ public:
         Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR)
 	{
 	  std::string checkpointName = "GePolCavity::build";
-	  timerON(checkpointName);
+	  TIMER_ON(checkpointName);
 	  build(10000, 200, 25000);
-	  timerOFF(checkpointName);
+	  TIMER_OFF(checkpointName);
 	}
     GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR) :
 	Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
 	{
 	  std::string checkpointName = "GePolCavity::build";
-	  timerON(checkpointName);
+	  TIMER_ON(checkpointName);
 	  build(10000, 200, 25000);
-	  timerOFF(checkpointName);
+	  TIMER_OFF(checkpointName);
 	}
     virtual ~GePolCavity() {}
     friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {

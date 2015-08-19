@@ -23,40 +23,41 @@
 std::vector<double> generate_grid(double, double, size_t);
 
 /*! \brief Plot Green's function
- *  The dielectric sphere is centered in (25.0, 25.0, 0.0) with radius 10.0
- *  and width 5.0 The dielectric profile is parametrized by a tanh sigmoid
- *  with epsInside = 78.39 (water) and epsOutside = 1.0 (vacuum)
- *  The maximum value of angular momentum is set to 150
- *  All distances in Angstrom.
- *  The source charge is at (26.0, 25.0, 0.0) i.e. inside the dielectric sphere
+ *  The source charge is at (0.5, 0.5, 0.0) i.e. inside the dielectric sphere
  */
-void case1();
+void case1(double, double, double, double, const Eigen::Vector3d &, int, const std::vector<double> &);
 
 /*! \brief Plot Green's function
- *  The dielectric sphere is centered in (25.0, 25.0, 0.0) with radius 10.0
- *  and width 5.0 The dielectric profile is parametrized by a tanh sigmoid
- *  with epsInside = 78.39 (water) and epsOutside = 1.0 (vacuum)
- *  The maximum value of angular momentum is set to 150
- *  All distances in Angstrom.
- *  The source charge is at (1.0, 1.0, 0.0) i.e. outside the dielectric sphere
+ *  The source charge is at (50.0, 50.0, 0.0) i.e. outside the dielectric sphere
  */
-void case2();
+void case2(double, double, double, double, const Eigen::Vector3d &, int, const std::vector<double> &);
 
 /*! \brief Plot Green's function
- *  The dielectric sphere is centered in (25.0, 25.0, 0.0) with radius 10.0
- *  and width 5.0 The dielectric profile is parametrized by a tanh sigmoid
- *  with epsInside = 78.39 (water) and epsOutside = 1.0 (vacuum)
- *  The maximum value of angular momentum is set to 150
- *  All distances in Angstrom.
- *  The source charge is at (15.0, 25.0, 0.0) i.e. in the transition layer
+ *  The source charge is at (12.0, 12.0, 0.0) i.e. in the transition layer
  */
-void case3();
+void case3(double, double, double, double, const Eigen::Vector3d &, int, const std::vector<double> &);
 
 int main()
 {
-    case1();
-    case2();
-    case3();
+    size_t nPoints = 200;
+    double epsInside = 78.39;
+    double epsOutside = 1.0;
+    double angToBohr = angstromToBohr(2010);
+    Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
+    sphereCenter << 0.0, 0.0, 0.0;
+    sphereCenter *= angToBohr;
+    double sphereRadius = 10.0 * angToBohr;
+    double width = 5.0 * angToBohr;
+    int maxL = 150;
+
+    // Conversion is done later, so that x, y values are printed in Angstrom
+    double min = 0.0;
+    double max = 100.0;
+    std::vector<double> grid = generate_grid(min, max, nPoints);
+
+    case1(epsInside, epsOutside, width, sphereRadius, sphereCenter, maxL, grid);
+    case2(epsInside, epsOutside, width, sphereRadius, sphereCenter, maxL, grid);
+    case3(epsInside, epsOutside, width, sphereRadius, sphereCenter, maxL, grid);
 
     return EXIT_SUCCESS;
 }
@@ -71,28 +72,14 @@ std::vector<double> generate_grid(double min_val, double max_val, size_t nPoints
     return grid;
 }
 
-void case1()
+void case1(double epsInside, double epsOutside, double width, double sphereRadius, const Eigen::Vector3d & sphereCenter, int maxL, const std::vector<double> & grid)
 {
-    size_t nPoints = 100;
-    double epsInside = 78.39;
-    double epsOutside = 1.0;
     double angToBohr = angstromToBohr(2010);
-    Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
-    sphereCenter << 25.0, 25.0, 0.0;
-    sphereCenter *= angToBohr;
-    double sphereRadius = 10.0 * angToBohr;
-    double width = 5.0 * angToBohr;
-    int maxL = 150;
-
     Eigen::Vector3d source = Eigen::Vector3d::Zero();
-    source << 26.0, 25.0, 0.0;
+    source << 0.5, 0.5, 0.0;
     source *= angToBohr;
     Eigen::Vector3d probe = Eigen::Vector3d::Zero();
 
-    // Conversion is done later, so that x, y values are printed in Angstrom
-    double min = 0.0;
-    double max = 40.0;
-    std::vector<double> grid = generate_grid(min, max, nPoints);
     double delta = 0.1;
 
     std::ofstream out;
@@ -105,8 +92,8 @@ void case1()
 
     out.open("gf_spherical_CASE1.dat");
     out.precision(16);
-    for (size_t i = 0; i < nPoints; ++i) {
-        for (size_t j = 0; j < nPoints; ++j) {
+    for (size_t i = 0; i < grid.size(); ++i) {
+        for (size_t j = 0; j < grid.size(); ++j) {
             probe << (grid[i] + delta), (grid[j] + delta), delta;
 	    probe *= angToBohr;
             out << '\t' << i
@@ -127,28 +114,15 @@ void case1()
     LOG_TIME;
 }
 
-void case2()
+void case2(double epsInside, double epsOutside, double width, double sphereRadius, const Eigen::Vector3d & sphereCenter, int maxL, const std::vector<double> & grid)
 {
-    size_t nPoints = 100;
-    double epsInside = 78.39;
-    double epsOutside = 1.0;
     double angToBohr = angstromToBohr(2010);
-    Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
-    sphereCenter << 25.0, 25.0, 0.0;
-    sphereCenter *= angToBohr;
-    double sphereRadius = 10.0 * angToBohr;
-    double width = 5.0 * angToBohr;
-    int maxL = 150;
 
     Eigen::Vector3d source = Eigen::Vector3d::Zero();
-    source << 1.0, 1.0, 0.0;
+    source << 50.0, 50.0, 0.0;
     source *= angToBohr;
     Eigen::Vector3d probe = Eigen::Vector3d::Zero();
 
-    // Conversion is done later, so that x, y values are printed in Angstrom
-    double min = 0.0;
-    double max = 40.0;
-    std::vector<double> grid = generate_grid(min, max, nPoints);
     double delta = 0.1;
 
     std::ofstream out;
@@ -161,8 +135,8 @@ void case2()
 
     out.open("gf_spherical_CASE2.dat");
     out.precision(16);
-    for (size_t i = 0; i < nPoints; ++i) {
-        for (size_t j = 0; j < nPoints; ++j) {
+    for (size_t i = 0; i < grid.size(); ++i) {
+        for (size_t j = 0; j < grid.size(); ++j) {
             probe << (grid[i] + delta), (grid[j] + delta), delta;
 	    probe *= angToBohr;
             out << '\t' << i
@@ -183,28 +157,15 @@ void case2()
     LOG_TIME;
 }
 
-void case3()
+void case3(double epsInside, double epsOutside, double width, double sphereRadius, const Eigen::Vector3d & sphereCenter, int maxL, const std::vector<double> & grid)
 {
-    size_t nPoints = 100;
-    double epsInside = 78.39;
-    double epsOutside = 1.0;
     double angToBohr = angstromToBohr(2010);
-    Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
-    sphereCenter << 25.0, 25.0, 0.0;
-    sphereCenter *= angToBohr;
-    double sphereRadius = 10.0 * angToBohr;
-    double width = 5.0 * angToBohr;
-    int maxL = 150;
 
     Eigen::Vector3d source = Eigen::Vector3d::Zero();
-    source << 15.0, 25.0, 0.0;
+    source << 12.0, 12.0, 0.0;
     source *= angToBohr;
     Eigen::Vector3d probe = Eigen::Vector3d::Zero();
 
-    // Conversion is done later, so that x, y values are printed in Angstrom
-    double min = 0.0;
-    double max = 40.0;
-    std::vector<double> grid = generate_grid(min, max, nPoints);
     double delta = 0.1;
 
     std::ofstream out;
@@ -217,8 +178,8 @@ void case3()
 
     out.open("gf_spherical_CASE3.dat");
     out.precision(16);
-    for (size_t i = 0; i < nPoints; ++i) {
-        for (size_t j = 0; j < nPoints; ++j) {
+    for (size_t i = 0; i < grid.size(); ++i) {
+        for (size_t j = 0; j < grid.size(); ++j) {
             probe << (grid[i] + delta), (grid[j] + delta), delta;
 	    probe *= angToBohr;
             out << '\t' << i

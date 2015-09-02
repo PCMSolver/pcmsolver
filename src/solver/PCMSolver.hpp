@@ -35,7 +35,7 @@
 
 class Cavity;
 
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 #include "IGreensFunction.hpp"
 
 /*! \file PCMSolver.hpp

@@ -39,7 +39,7 @@
 
 #include "IntegratorHelperFunctions.hpp"
 #include "Element.hpp"
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 #include "AlternateSphericalDiffuse.hpp"
 #include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"

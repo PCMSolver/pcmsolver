@@ -32,7 +32,7 @@
 
 #include <Eigen/Core>
 
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {

@@ -36,7 +36,7 @@
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 #include "TimerInterface.hpp"

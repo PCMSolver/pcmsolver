@@ -33,7 +33,7 @@
 
 #include <Eigen/Core>
 
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 
 std::ostream & Sphere::printObject(std::ostream & os)
 {

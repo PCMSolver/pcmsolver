@@ -36,14 +36,6 @@
  *  \brief Provide a simple exception class able to unwind the call stack
  *  \author Roberto Di Remigio
  *  \date 2015
- *
- *  The exceptions are thrown using the appropriate macro:
- *
- *  \verbatim
- *  PCMSOLVER_ERROR(<Error Message>)
- *  \endverbatim
- *
- *  The output contains the most recent 5 function calls.
  */
 
 class Exception : public std::exception
@@ -70,8 +62,5 @@ class Exception : public std::exception
  *  \param[in] stack_size how far back in the call stack we want to go
  */
 std::string unwind_call_stack(int size, const size_t stack_size = 5);
-
-/// Macro to be used to throw exceptions
-#define PCMSOLVER_ERROR(arg) throw Exception(arg, __FILE__, __LINE__)
 
 #endif // EXCEPTION_HPP

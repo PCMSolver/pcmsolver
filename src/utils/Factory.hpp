@@ -33,7 +33,7 @@
 
 #include "Config.hpp"
 
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 
 /*! \file Factory.hpp
  *	\class Factory

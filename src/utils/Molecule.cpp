@@ -75,7 +75,7 @@ Molecule::Molecule(const std::vector<Sphere> & sph)
     charges_ = Eigen::VectorXd::Ones(nAtoms_);
     masses_.resize(nAtoms_);
     geometry_.resize(Eigen::NoChange, nAtoms_);
-    for (int i = 0; i < nAtoms_; ++i) {
+    for (size_t i = 0; i < nAtoms_; ++i) {
         masses_(i) = spheres_[i].radius();
         geometry_.col(i) = spheres_[i].center();
         double charge = charges_(i);
@@ -95,7 +95,7 @@ Eigen::Vector3d Molecule::centerOfMass()
 {
     Eigen::Vector3d com;
     com << 0.0, 0.0, 0.0;
-    for (int i = 0; i < nAtoms_; ++i) {
+    for (size_t i = 0; i < nAtoms_; ++i) {
         com += masses_(i) * atoms_[i].atomCoord();
     }
     com *= 1.0/masses_.sum();
@@ -106,7 +106,7 @@ Eigen::Matrix3d Molecule::inertiaTensor()
 {
     Eigen::Matrix3d inertia = Eigen::Matrix3d::Zero();
 
-    for (int i = 0; i < nAtoms_; ++i) {
+    for (size_t i = 0; i < nAtoms_; ++i) {
         // Diagonal
         inertia(0,0) += masses_(i) * (geometry_(1,i) * geometry_(1,i) + geometry_(2,
                                       i) * geometry_(2,i));
@@ -181,7 +181,7 @@ rotorType Molecule::findRotorType()
 void Molecule::translate(const Eigen::Vector3d &translationVector)
 {
     // Translate the geometry_ matrix and update the geometric data in atoms_.
-    for (int i = 0; i < nAtoms_; ++i) {
+    for (size_t i = 0; i < nAtoms_; ++i) {
         geometry_.col(i) -= translationVector;
         Eigen::Vector3d tmp = geometry_.col(i);
         atoms_[i].atomCoord(tmp);
@@ -199,7 +199,7 @@ void Molecule::rotate(const Eigen::Matrix3d &rotationMatrix)
     // Rotate the geometry_ matrix and update the geometric data in atoms_.
     geometry_ *=
         rotationMatrix; // The power of Eigen: geometry_ = geometry_ * rotationMatrix;
-    for (int i = 0; i < nAtoms_; ++i) {
+    for (size_t i = 0; i < nAtoms_; ++i) {
         Eigen::Vector3d tmp = geometry_.col(i);
         atoms_[i].atomCoord(tmp);
     }
@@ -247,7 +247,7 @@ std::ostream & operator<<(std::ostream &os, const Molecule &m)
            std::endl;
         os << "    ------------   -----------------  -----------------  -----------------" <<
            std::endl;
-        for (int i = 0; i < m.nAtoms_; ++i) {
+        for (size_t i = 0; i < m.nAtoms_; ++i) {
             os << std::setw(10) << m.atoms_[i].atomSymbol() << std::setw(15) <<m.geometry_.col(
                    i).transpose().format(CleanFmt) << std::endl;
         }

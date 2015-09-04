@@ -36,7 +36,7 @@
 #include <Eigen/Core>
 #include "cnpyPimpl.hpp"
 
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 #include "MathUtils.hpp"
 #include "Symmetry.hpp"
 

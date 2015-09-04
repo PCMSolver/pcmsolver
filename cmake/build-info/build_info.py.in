@@ -16,7 +16,7 @@ s.append(['64-bit integers'    , r'@ENABLE_64BIT_INTEGERS@' ])
 s.append(['MPI'                , r'@ENABLE_MPI@'            ])
 s.append(['OpenMP'             , r'@ENABLE_OPENMP@'         ])
 s.append(['Boost version'      , r'@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@'         ])
-    
+
 s.append(['C++ compiler'        , r'@CMAKE_CXX_COMPILER@'  ])
 if '@CMAKE_BUILD_TYPE@' == 'debug':
     s.append(['C++ flags', r'@CMAKE_CXX_FLAGS@ @CMAKE_CXX_FLAGS_DEBUG@'])
@@ -40,12 +40,12 @@ elif '@CMAKE_BUILD_TYPE@' == 'release':
     s.append(['Fortran flags', r'@CMAKE_Fortran_FLAGS@ @CMAKE_Fortran_FLAGS_RELEASE@'])
 elif '@CMAKE_BUILD_TYPE@' == 'profile':
     s.append(['Fortran flags', r'@CMAKE_Fortran_FLAGS@ @CMAKE_Fortran_FLAGS_PROFILE@'])
-    
+
 s.append(['Definitions'        , r'@_list_of_definitions@'  ])
 
 s.append(['Git branch'         , r'@GIT_BRANCH@'            ])
 s.append(['Last Git revision'  , r'@GIT_REVISION@'          ])
-s.append(['Last commit author' , r'@GIT_LAST_COMMIT_AUTHOR@'])
+s.append(['Last commit author' , r'@GIT_LAST_COMMIT_AUTHOR@ <@GIT_LAST_COMMIT_AUTHOR_EMAIL@>'])
 s.append(['Last commit date'   , r'@GIT_LAST_COMMIT_DATE@'  ])
 
 output  = '#include <sstream>\n'

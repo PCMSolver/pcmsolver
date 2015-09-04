@@ -39,7 +39,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "CavityData.hpp"
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 #include "GreenData.hpp"
 #include "SolverData.hpp"
 #include "InputManager.hpp"
@@ -67,6 +67,9 @@ void Input::reader(const std::string & filename)
     Getkw input_ = Getkw(filename, false, true);
     units_      = input_.getStr("UNITS");
     CODATAyear_ = input_.getInt("CODATA");
+
+    const Section & mol = input_.getSect("MOLECULE");
+    if (mol.isDefined()) geometry_ = mol.getDblVec("GEOMETRY");
 
     const Section & cavity = input_.getSect("CAVITY");
 
@@ -96,7 +99,8 @@ void Input::reader(const std::string & filename)
             spheres_.push_back(sph);
             j += 4;
         }
-        molecule_ = Molecule(spheres_);
+        // Initialize molecule from spheres only when molecule section is absent
+        if (!mol.isDefined()) molecule_ = Molecule(spheres_);
     } else if (mode_ == "ATOMS") {
         atoms_ = cavity.getIntVec("ATOMS");
         radii_ = cavity.getDblVec("RADII");
@@ -236,6 +240,60 @@ void Input::reader(const cavityInput & cav, const solverInput & solv,
 
 void Input::semanticCheck()
 {
+}
+
+void Input::initMolecule()
+{
+    // Gather information necessary to build molecule_
+    // 1. number of atomic centers
+    int nuclei = int(geometry_.size() / 4);
+    // 2. position and charges of atomic centers
+    Eigen::Matrix3Xd centers = Eigen::Matrix3Xd::Zero(3, nuclei);
+    Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
+    int j = 0;
+    for (int i = 0; i < nuclei; ++i) {
+        centers.col(i) << geometry_[j], geometry_[j+1], geometry_[j+2];
+        charges(i) = geometry_[j+3];
+        j += 4;
+    }
+    // 3. list of atoms and list of spheres
+    double factor = angstromToBohr(CODATAyear_);
+    std::vector<Atom> radiiSet, atoms;
+    if ( radiiSet_ == "UFF" ) {
+        radiiSet = Atom::initUFF();
+    } else {
+        radiiSet = Atom::initBondi();
+    }
+    // Based on the creation mode (Implicit or Atoms)
+    // the spheres list might need postprocessing
+    if ( mode_ == "IMPLICIT" ) {
+        for (int i = 0; i < charges.size(); ++i) {
+            int index = int(charges(i)) - 1;
+            atoms.push_back(radiiSet[index]);
+            double radius = radiiSet[index].atomRadius() * factor;
+            if (scaling_) radius *= radiiSet[index].atomRadiusScaling();
+            spheres_.push_back(Sphere(centers.col(i), radius));
+        }
+        if (mode_ == "ATOMS") {
+            // Loop over the atomsInput array to get which atoms will have a user-given radius
+            for (size_t i = 0; i < atoms_.size(); ++i) {
+                int index = atoms_[i] - 1; // -1 to go from human readable to machine readable
+                // Put the new Sphere in place of the implicit-generated one
+                spheres_[index] = Sphere(centers.col(index), radii_[i]);
+            }
+        }
+    }
+
+    // 4. masses
+    Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
+    for (int i = 0; i < masses.size(); ++i) {
+	 masses(i) = atoms[i].atomMass();
+    }
+    // 5. molecular point group
+    // FIXME currently hardcoded to C1
+
+    // OK, now get molecule_
+    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres_);
 }
 
 cavityData Input::cavityParams()

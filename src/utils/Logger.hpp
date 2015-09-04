@@ -8,7 +8,7 @@
 #include <string>
 
 #include "BuildInfo.hpp"
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 #include "LoggerImpl.hpp"
 
 namespace logging

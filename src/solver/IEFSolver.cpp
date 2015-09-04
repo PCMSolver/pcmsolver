@@ -39,7 +39,7 @@
 
 #include "Cavity.hpp"
 #include "Element.hpp"
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 

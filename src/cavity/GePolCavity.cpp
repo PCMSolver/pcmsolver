@@ -36,7 +36,7 @@
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
-#include "Exception.hpp"
+#include "ErrorHandling.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 #include "TimerInterface.hpp"
@@ -158,7 +158,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 
     double * rin = radii_scratch.data();
     double * mass = new double[molecule_.nAtoms()];
-    for (int i = 0; i < molecule_.nAtoms(); ++i) {
+    for (size_t i = 0; i < molecule_.nAtoms(); ++i) {
 	    mass[i] = molecule_.masses(i);
     }
 

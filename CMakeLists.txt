@@ -25,6 +25,7 @@ option(ENABLE_CXX11_SUPPORT    "Enable C++11 compiler support"                  
 # Developers only options
 option(ENABLE_LOGGER           "Enable logger: needs C++11 support"                               ON)
 option(ENABLE_TIMER            "Enable timer"                                                     ON)
+option(BUILD_STANDALONE        "Enable build of standalone executable"                            ON)
 #
 #  CMake modules
 #
@@ -162,8 +163,6 @@ ExternalProject_Add(libtaylor
     INSTALL_DIR ${CMAKE_BINARY_DIR}/external
     CMAKE_ARGS ${TaylorCMakeArgs})
 
-configure_files()
-
 # To be included as system headers
 include_directories(SYSTEM
 		    ${CMAKE_SOURCE_DIR}/external
@@ -173,15 +172,14 @@ include_directories(${CMAKE_SOURCE_DIR}
 		    ${CMAKE_BINARY_DIR}/include
                     ${CMAKE_Fortran_MODULE_DIRECTORY})
 
-if(ENABLE_TESTS)
-  # Build also standalone executables in src/bin
-  set(BUILD_STANDALONE TRUE)
-endif()
+link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
+	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
+
 add_subdirectory(src)
 include_directories(${header_dir_list})
 
-link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
-	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
+set(PCMSOLVER_EXECUTABLE ${CMAKE_BINARY_DIR}/src/bin/run_pcm.x)
+configure_files()
 
 install(FILES
 	${CMAKE_BINARY_DIR}/bin/pcmsolver.py

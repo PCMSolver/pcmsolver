@@ -1,4 +1,4 @@
-SECT toplevel 2 False
+SECT toplevel 3 False
 TAG F KW 2
 STR UNITS 1 True
 ANGSTROM
@@ -227,4 +227,7 @@ STR TYPE 1 False
 VACUUM
 DBL EPS1 1 False
 1.0
+SECT MOLECULE 0 False
+TAG F KW 1
+DBL_ARRAY GEOMETRY 0 False
 

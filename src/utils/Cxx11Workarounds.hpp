@@ -46,28 +46,40 @@ namespace pcm {
 /* <functional> workarounds */
 #include <functional>
 namespace pcm {
-    using std::function;
-    using std::bind;
-    using std::placeholders;
+    using pcm::function;
+    using pcm::bind;
 } /* end namespace pcm */
+// This is because Boost declares placeholders
+// in an unnamed namespace
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+using std::placeholders::_4;
 /* <tuple> workarounds */
 #include <tuple>
 namespace pcm {
-    using std::tuple;
-    using std::make_tuple;
-    using std::tie;
-    using std::ignore;
+    using pcm::tuple;
+    using pcm::make_tuple;
+    using pcm::tie;
+    using pcm::ignore;
 } /* end namespace pcm */
 /* <cmath> workarounds */
 #include <cmath>
 namespace pcm {
     using std::erf;
 } /* end namespace pcm */
+/* <array> workarounds */
+#include <array>
+namespace pcm {
+    using std::array;
+} /* end namespace pcm */
 #else /* HAS_CXX11*/
 /* Smart pointers workarounds */
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 namespace pcm {
     using boost::shared_ptr;
+    using boost::make_shared;
 } /* end namespace pcm */
 /* <functional> workarounds */
 #include <boost/bind.hpp>
@@ -88,6 +100,11 @@ namespace pcm {
 #include <boost/math/special_functions/erf.hpp>
 namespace pcm {
     using boost::math::erf;
+} /* end namespace pcm */
+/* <array> workarounds */
+#include <boost/array.hpp>
+namespace pcm {
+    using boost::array;
 } /* end namespace pcm */
 #endif /* HAS_CXX11 */
 
@@ -119,5 +136,12 @@ namespace pcm {
 #else /* HAS_CXX11 */
 #define __deleted
 #endif /* HAS_CXX11 */
+
+/* Workaround for nullptr */
+#ifdef HAS_CXX11_NULLPTR
+#define __nullptr nullptr
+#else /* HAS_CXX11_NULLPTR */
+#define __nullptr NULL
+#endif /* HAS_CXX11_NULLPTR */
 
 #endif /* CXX11WORKAROUNDS_HPP */

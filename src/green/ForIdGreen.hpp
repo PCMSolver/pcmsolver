@@ -39,6 +39,7 @@
 #include <boost/mpl/next_prior.hpp>
 #include <boost/mpl/vector.hpp>
 
+#include "Cxx11Workarounds.hpp"
 #include "GreenData.hpp"
 #include "IGreensFunction.hpp"
 
@@ -311,7 +312,7 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3>
     template <typename T>
     static IGreensFunction * execute(T & /* f */, const greenData & /* data */,
                                      int /* id1 */, int /* id2 */ = 0, int /* id3 */ = 0) {
-        return nullptr;
+        return __nullptr;
     }
 };
 

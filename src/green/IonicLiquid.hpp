@@ -51,7 +51,7 @@ class Element;
 
 template <typename DerivativeTraits,
           typename IntegratorPolicy>
-class IonicLiquid final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
+class IonicLiquid __final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
                                      IonicLiquid<DerivativeTraits, IntegratorPolicy> >
 {
 public:

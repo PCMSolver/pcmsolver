@@ -50,7 +50,7 @@ class Element;
 
 template <typename DerivativeTraits,
           typename IntegratorPolicy>
-class AnisotropicLiquid final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Anisotropic,
+class AnisotropicLiquid __final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Anisotropic,
                                      AnisotropicLiquid<DerivativeTraits, IntegratorPolicy> >
 {
 public:

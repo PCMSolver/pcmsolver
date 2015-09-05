@@ -27,7 +27,6 @@
 #define INTEGRATORHELPERFUNCTIONS_HPP
 
 #include <cmath>
-#include <functional>
 #include <vector>
 
 #include "Config.hpp"
@@ -38,6 +37,7 @@
 #include <boost/mpl/int.hpp>
 #include <boost/mpl/map.hpp>
 
+#include "Cxx11Workarounds.hpp"
 #include "Element.hpp"
 #include "QuadratureRules.hpp"
 
@@ -45,17 +45,17 @@ namespace integrator {
 /*! \typedef Diagonal
  *  \brief functor handle to the calculation of the diagonal elements
  */
-typedef std::function<double(const Element &)> Diagonal;
+typedef pcm::function<double(const Element &)> Diagonal;
 
 /*! \typedef KernelS
  *  \brief functor handle to the kernelS method in IGreensFunction
  */
-typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelS;
+typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelS;
 
 /*! \typedef KernelD
  *  \brief functor handle to the kernelD method in IGreensFunction
  */
-typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelD;
+typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelD;
 
 /*! Approximate collocation diagonal for S
  *  \param[in] factor scaling factor for diagonal elements

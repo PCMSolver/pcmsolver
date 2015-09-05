@@ -26,10 +26,8 @@
 #ifndef INTERFACESIMPL_HPP
 #define INTERFACESIMPL_HPP
 
-#include <array>
 #include <cmath>
 #include <fstream>
-#include <functional>
 #include <vector>
 
 #include "Config.hpp"
@@ -48,7 +46,7 @@ typedef std::vector<double> StateType;
 /*! \typedef ProfileEvaluator
  *  \brief sort of a function pointer to the dielectric profile evaluation function
  */
-typedef std::function< pcm::tuple<double, double>(const double) > ProfileEvaluator;
+typedef pcm::function< pcm::tuple<double, double>(const double) > ProfileEvaluator;
 
 /*! \struct IntegratorParameters
  *  \brief holds parameters for the integrator
@@ -104,7 +102,7 @@ class LnTransformedRadial
         {
             // Evaluate the dielectric profile
             double eps = 0.0, epsPrime = 0.0;
-            std::tie(eps, epsPrime) = eval_(r);
+            pcm::tie(eps, epsPrime) = eval_(r);
             if (numericalZero(eps)) throw std::domain_error("Division by zero!");
             double gamma_epsilon = epsPrime / eps;
             // System of equations is defined here

@@ -26,9 +26,7 @@
 #ifndef RADIALFUNCTION_HPP
 #define RADIALFUNCTION_HPP
 
-#include <array>
 #include <fstream>
-#include <functional>
 #include <iosfwd>
 
 #include "Config.hpp"
@@ -38,10 +36,11 @@
 // Boost.Odeint includes
 #include <boost/numeric/odeint.hpp>
 
+#include "Cxx11Workarounds.hpp"
 #include "InterfacesImpl.hpp"
 
-using ProfileEvaluator = interfaces::ProfileEvaluator;
-using IntegratorParameters = interfaces::IntegratorParameters;
+using interfaces::ProfileEvaluator;
+using interfaces::IntegratorParameters;
 
 /*! \file RadialFunction.hpp
  *  \class RadialFunction
@@ -55,7 +54,7 @@ using IntegratorParameters = interfaces::IntegratorParameters;
 template <typename StateVariable,
           typename ODESystem,
           template <typename, typename> class IndependentSolution>
-class RadialFunction final
+class RadialFunction __final
 {
     public:
         RadialFunction() : solution_(IndependentSolution<StateVariable, ODESystem>()) {}
@@ -65,7 +64,7 @@ class RadialFunction final
         /*! \brief Returns value of function and its first derivative at given point
          *  \param[in] point evaluation point
          */
-        std::tuple<double, double> operator()(double point) const {
+        pcm::tuple<double, double> operator()(double point) const {
             return solution_(point);
         }
         friend std::ostream & operator<<(std::ostream &os, RadialFunction & obj) {
@@ -87,15 +86,15 @@ class RadialFunction final
  */
 template <typename StateVariable,
           typename ODESystem>
-class Zeta final
+class Zeta __final
 {
     public:
         Zeta() : L_(0), r_0_(0.0), r_infinity_(0.0) {}
         Zeta(int l, double r0, double rinf, const ProfileEvaluator & eval, const IntegratorParameters & parms)
             : L_(l), r_0_(r0), r_infinity_(rinf) { compute(eval, parms); }
         ~Zeta() {}
-        std::tuple<double, double> operator()(double point) const {
-            return std::make_tuple(function_impl(point), derivative_impl(point));
+        pcm::tuple<double, double> operator()(double point) const {
+            return pcm::make_tuple(function_impl(point), derivative_impl(point));
         }
         friend std::ostream & operator<<(std::ostream &os, Zeta & obj) {
             for (size_t i = 0; i < obj.function_[0].size(); ++i) {
@@ -106,7 +105,7 @@ class Zeta final
             return os;
         }
     private:
-        typedef std::array<StateVariable, 3> RadialSolution;
+        typedef pcm::array<StateVariable, 3> RadialSolution;
         /// Angular momentum of the solution
         int L_;
         /// Lower bound of the integration interval
@@ -126,7 +125,6 @@ class Zeta final
          *  \param[in] parms parameters for the integrator
          */
         void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
-            using namespace std::placeholders;
             namespace odeint = boost::numeric::odeint;
             odeint::bulirsch_stoer_dense_out<StateVariable> stepper(parms.eps_abs_, parms.eps_rel_, parms.factor_x_, parms.factor_dxdt_);
             ODESystem system(eval, L_);
@@ -137,7 +135,7 @@ class Zeta final
             init_zeta[1] = L_ / r_0_;
             odeint::integrate_adaptive(stepper, system, init_zeta,
                     r_0_, r_infinity_, parms.observer_step_,
-                    std::bind(&Zeta<StateVariable, ODESystem>::push_back, this, _1, _2));
+                    pcm::bind(&Zeta<StateVariable, ODESystem>::push_back, this, _1, _2));
         }
         /*! \brief Returns value of function at given point
          *  \param[in] point evaluation point
@@ -181,15 +179,15 @@ class Zeta final
  */
 template <typename StateVariable,
           typename ODESystem>
-class Omega final
+class Omega __final
 {
     public:
         Omega() : L_(0), r_0_(0.0), r_infinity_(0.0) {}
         Omega(int l, double r0, double rinf, const ProfileEvaluator & eval, const IntegratorParameters & parms)
             : L_(l), r_0_(r0), r_infinity_(rinf) { compute(eval, parms); }
         ~Omega() {}
-        std::tuple<double, double> operator()(double point) const {
-            return std::make_tuple(function_impl(point), derivative_impl(point));
+        pcm::tuple<double, double> operator()(double point) const {
+            return pcm::make_tuple(function_impl(point), derivative_impl(point));
         }
         friend std::ostream & operator<<(std::ostream &os, Omega & obj) {
             for (size_t i = 0; i < obj.function_[0].size(); ++i) {
@@ -200,7 +198,7 @@ class Omega final
             return os;
         }
     private:
-        typedef std::array<StateVariable, 3> RadialSolution;
+        typedef pcm::array<StateVariable, 3> RadialSolution;
         /// Angular momentum of the solution
         int L_;
         /// Lower bound of the integration interval
@@ -220,7 +218,6 @@ class Omega final
          *  \param[in] parms parameters for the integrator
          */
         void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
-            using namespace std::placeholders;
             namespace odeint = boost::numeric::odeint;
             odeint::bulirsch_stoer_dense_out<StateVariable> stepper(parms.eps_abs_, parms.eps_rel_, parms.factor_x_, parms.factor_dxdt_);
             ODESystem system(eval, L_);
@@ -232,7 +229,7 @@ class Omega final
             // Notice that we integrate BACKWARDS, so we pass -step to integrate_adaptive
             boost::numeric::odeint::integrate_adaptive(stepper, system, init_omega,
                     r_infinity_, r_0_, -parms.observer_step_,
-                    std::bind(&Omega<StateVariable, ODESystem>::push_back, this, _1, _2));
+                    pcm::bind(&Omega<StateVariable, ODESystem>::push_back, this, _1, _2));
             // Reverse order of StateVariable-s in RadialSolution
             // this ensures that they are in ascending order, as later expected by function_impl and derivative_impl
             for (auto & comp : function_) {

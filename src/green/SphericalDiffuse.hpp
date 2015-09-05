@@ -26,7 +26,6 @@
 #ifndef SPHERICALDIFFUSE_HPP
 #define SPHERICALDIFFUSE_HPP
 
-#include <array>
 #include <cmath>
 #include <iosfwd>
 #include <vector>
@@ -38,6 +37,7 @@
 // Has to be included here
 #include "InterfacesImpl.hpp"
 #include "RadialFunction.hpp"
+#include <boost/lexical_cast.hpp>
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
@@ -101,7 +101,7 @@ public:
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
         double eps_r2 = 0.0;
-        std::tie(eps_r2, std::ignore) = this->epsilon(p2);
+        pcm::tie(eps_r2, pcm::ignore) = this->epsilon(p2);
 
         return (eps_r2 * this->derivativeProbe(direction, p1, p2));
     }
@@ -168,8 +168,7 @@ public:
      *  \param[in]        p2 second point
      */
     double coefficientCoulombDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
-        using namespace std::placeholders;
-        return threePointStencil(std::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::coefficientCoulomb, this, _1, _2),
+        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::coefficientCoulomb, this, _1, _2),
                 p2, p1, direction, this->delta_);
     }
     /*! Returns value of the directional derivative of the
@@ -183,8 +182,7 @@ public:
      *  \param[in]        p2 second point
      */
     double CoulombDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
-        using namespace std::placeholders;
-        return threePointStencil(std::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::Coulomb, this, _1, _2),
+        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::Coulomb, this, _1, _2),
                 p2, p1, direction, this->delta_);
     }
     /*! Returns value of the directional derivative of the
@@ -198,8 +196,7 @@ public:
      *  \param[in]        p2 second point
      */
     double imagePotentialDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
-        using namespace std::placeholders;
-        return threePointStencil(std::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::imagePotential, this, _1, _2),
+        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::imagePotential, this, _1, _2),
                 p2, p1, direction, this->delta_);
     }
     /*! Handle to the dielectric profile evaluation */
@@ -212,8 +209,8 @@ public:
         writeToFile(zetaC_, tmp + "zetaC.dat");
         writeToFile(omegaC_, tmp + "omegaC.dat");
 	for (int L = 1; L <= maxLGreen_; ++L) {
-	    writeToFile(zeta_[L], tmp + "zeta_" + std::to_string(L) + ".dat");
-	    writeToFile(omega_[L], tmp + "omega_" + std::to_string(L) + ".dat");
+	    writeToFile(zeta_[L], tmp + "zeta_" + boost::lexical_cast<std::string>(L) + ".dat");
+	    writeToFile(omega_[L], tmp + "omega_" + boost::lexical_cast<std::string>(L) + ".dat");
 	}
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
@@ -263,7 +260,6 @@ private:
     }
     /*! This calculates all the components needed to evaluate the Green's function */
     void initSphericalDiffuse() {
-        using namespace std::placeholders;
         using namespace interfaces;
 
         LOG("SphericalDiffuse::initSphericalDiffuse");
@@ -276,7 +272,7 @@ private:
         double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         double observer_step_ = 1.0e-03; /*! Time step between observer calls */
         IntegratorParameters params_(eps_abs_, eps_rel_, factor_x_, factor_dxdt_, r_0_, r_infinity_, observer_step_);
-        ProfileEvaluator eval_ = std::bind(&ProfilePolicy::operator(), this->profile_, _1);
+        ProfileEvaluator eval_ = pcm::bind(&ProfilePolicy::operator(), this->profile_, _1);
 
         LOG("Computing coefficient for the separation of the Coulomb singularity");
         LOG("Computing first radial solution L = " + std::to_string(maxLC_));
@@ -323,16 +319,16 @@ private:
     Eigen::Vector3d origin_;
 
     /**@{ Parameters and functions for the calculation of the Green's function, including Coulomb singularity */
-    /*! Maximum angular momentum in the final summation over Legendre polynomials to obtain G */
+    /*! Maximum angular momentum in the __final summation over Legendre polynomials to obtain G */
     int maxLGreen_;
     /*! \brief First independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_ and has r^l behavior
      */
-    std::vector<RadialFunction<StateType, LnTransformedRadial, Zeta>> zeta_;
+    std::vector<RadialFunction<StateType, LnTransformedRadial, Zeta> > zeta_;
     /*! \brief Second independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
      */
-    std::vector<RadialFunction<StateType, LnTransformedRadial, Omega>> omega_;
+    std::vector<RadialFunction<StateType, LnTransformedRadial, Omega> > omega_;
     /*! \brief Returns L-th component of the radial part of the Green's function
      *  \param[in] L  angular momentum
      *  \param[in] sp source point
@@ -357,19 +353,19 @@ private:
         /* Sample zeta_[L] */
         double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
         /* Value of zeta_[L] at point with index 1 */
-        std::tie(zeta1, std::ignore) = zeta_[L](r1);
+        pcm::tie(zeta1, pcm::ignore) = zeta_[L](r1);
         /* Value of zeta_[L] and its first derivative at point with index 2 */
-        std::tie(zeta2, d_zeta2) = zeta_[L](r2);
+        pcm::tie(zeta2, d_zeta2) = zeta_[L](r2);
 
         /* Sample omega_[L] */
         double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
         /* Value of omega_[L] at point with index 1 */
-        std::tie(omega1, std::ignore) = omega_[L](r1);
+        pcm::tie(omega1, pcm::ignore) = omega_[L](r1);
         /* Value of omega_[L] and its first derivative at point with index 2 */
-        std::tie(omega2, d_omega2) = omega_[L](r2);
+        pcm::tie(omega2, d_omega2) = omega_[L](r2);
 
         double eps_r2 = 0.0;
-        std::tie(eps_r2, std::ignore) = this->profile_(pp_shift.norm());
+        pcm::tie(eps_r2, pcm::ignore) = this->profile_(pp_shift.norm());
 
         /* Evaluation of the Wronskian and the denominator */
         double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
@@ -415,20 +411,20 @@ private:
         /* Sample zetaC_ */
         double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
         /* Value of zetaC_ at point with index 1 */
-        std::tie(zeta1, std::ignore) = zetaC_(r1);
+        pcm::tie(zeta1, pcm::ignore) = zetaC_(r1);
         /* Value of zetaC_ and its first derivative at point with index 2 */
-        std::tie(zeta2, d_zeta2) = zetaC_(r2);
+        pcm::tie(zeta2, d_zeta2) = zetaC_(r2);
 
         /* Sample omegaC_ */
         double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
         /* Value of omegaC_ at point with index 1 */
-        std::tie(omega1, std::ignore) = omegaC_(r1);
+        pcm::tie(omega1, pcm::ignore) = omegaC_(r1);
         /* Value of omegaC_ and its first derivative at point with index 2 */
-        std::tie(omega2, d_omega2) = omegaC_(r2);
+        pcm::tie(omega2, d_omega2) = omegaC_(r2);
 
         double tmp = 0.0, coeff = 0.0;
         double eps_r2 = 0.0;
-        std::tie(eps_r2, std::ignore) = this->profile_(r2);
+        pcm::tie(eps_r2, pcm::ignore) = this->profile_(r2);
 
         /* Evaluation of the Wronskian and the denominator */
         double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;

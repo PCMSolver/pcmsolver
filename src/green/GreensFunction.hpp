@@ -28,7 +28,6 @@
 
 #include <cmath>
 #include <iosfwd>
-#include <stdexcept>
 
 #include "Config.hpp"
 
@@ -36,6 +35,7 @@
 
 class Element;
 
+#include "Cxx11Workarounds.hpp"
 #include "DerivativeTypes.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
@@ -64,9 +64,9 @@ public:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
-     *  need to implement. Thus this method is marked final.
+     *  need to implement. Thus this method is marked __final.
      */
-    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
+    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final
     {
         DerivativeTraits sp[3], pp[3], res;
         sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
@@ -148,9 +148,9 @@ public:
     }
 
     /*! Whether the Green's function describes a uniform environment */
-    virtual bool uniform() const final { return profiles::uniform(this->profile_); }
+    virtual bool uniform() const __final { return profiles::uniform(this->profile_); }
     /*! Returns a dielectric permittivity profile */
-    virtual Permittivity permittivity() const final { return this->profile_; }
+    virtual Permittivity permittivity() const __final { return this->profile_; }
 
     friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
         return gf.printObject(os);
@@ -184,9 +184,9 @@ public:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
-     *  need to implement. Thus this method is marked final.
+     *  need to implement. Thus this method is marked __final.
      */
-    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
+    virtual double kernelS(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final
     {
         Numerical sp[3], pp[3], res;
         sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
@@ -206,8 +206,7 @@ public:
     virtual double derivativeSource(const Eigen::Vector3d & normal_p1,
                             const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
-        using namespace std::placeholders;
-        return threePointStencil(std::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, _1, _2),
+        return threePointStencil(pcm::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, _1, _2),
                                 p1, p2, normal_p1, this->delta_);
     }
     /*! Returns value of the directional derivative of the
@@ -222,8 +221,7 @@ public:
     virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
                                    const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
-        using namespace std::placeholders;
-        return threePointStencil(std::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, _1, _2),
+        return threePointStencil(pcm::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, _1, _2),
                                 p2, p1, normal_p2, this->delta_);
     }
     /*! Returns full gradient of Greens's function for the pair of points p1, p2:
@@ -264,9 +262,9 @@ public:
     }
 
     /*! Whether the Green's function describes a uniform environment */
-    virtual bool uniform() const final { return profiles::uniform(this->profile_); }
+    virtual bool uniform() const __final { return profiles::uniform(this->profile_); }
     /*! Returns a dielectric permittivity profile */
-    virtual Permittivity permittivity() const final { return this->profile_; }
+    virtual Permittivity permittivity() const __final { return this->profile_; }
 
     friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
         return gf.printObject(os);

@@ -50,7 +50,7 @@ class Element;
 
 template <typename DerivativeTraits,
           typename IntegratorPolicy>
-class UniformDielectric final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Uniform,
+class UniformDielectric __final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Uniform,
                                      UniformDielectric<DerivativeTraits, IntegratorPolicy> >
 {
 public:

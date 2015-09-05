@@ -30,19 +30,19 @@ int main(int argc, char * argv[])
     out_stream.open("pcmsolver.out");
 
     if (argc > 2) PCMSOLVER_ERROR("Too many arguments supplied to run_pcm");
-    auto parsed = Input(argv[1]);
+    Input parsed(argv[1]);
     parsed.initMolecule();
 
     // Create cavity
-    auto cavity = Factory<Cavity, cavityData>::TheFactory().create(parsed.cavityType(), parsed.cavityParams());
+    SharedCavity cavity = Factory<Cavity, cavityData>::TheFactory().create(parsed.cavityType(), parsed.cavityParams());
     // Create Green's functions
     // INSIDE
-    auto gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenInsideType(),
+    SharedIGreensFunction gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenInsideType(),
 		                                              parsed.insideGreenParams());
     // OUTSIDE
-    auto gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenOutsideType(),
+    SharedIGreensFunction gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenOutsideType(),
 		                                              parsed.outsideStaticGreenParams());
-    auto solver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(parsed.solverType(), parsed.solverParams(), gf_i, gf_o);
+    SharedPCMSolver solver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(parsed.solverType(), parsed.solverParams(), gf_i, gf_o);
     solver->buildSystemMatrix(*cavity);
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of

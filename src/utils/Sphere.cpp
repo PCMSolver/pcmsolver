@@ -26,14 +26,11 @@
 #include "Sphere.hpp"
 
 #include <ostream>
-#include <stdexcept>
 #include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
-
-#include "ErrorHandling.hpp"
 
 std::ostream & Sphere::printObject(std::ostream & os)
 {

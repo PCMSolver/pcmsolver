@@ -36,7 +36,6 @@
 
 #include "IntegratorHelperFunctions.hpp"
 #include "Element.hpp"
-#include "ErrorHandling.hpp"
 #include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"

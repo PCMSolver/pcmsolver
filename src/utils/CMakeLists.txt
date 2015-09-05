@@ -10,7 +10,7 @@ list(SORT headers_list)
 set(to_includer "${headers_list}")
 # Write headers to Includer.hpp
 file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Helper classes\n")
-list(REMOVE_ITEM to_includer "BuildInfo.hpp" "Cxx11Workarounds.hpp" "cnpy.hpp" "Logger.hpp" "LoggerImpl.hpp" "LoggerInterface.hpp" "TestingMolecules.hpp" "Timer.hpp")
+list(REMOVE_ITEM to_includer "BuildInfo.hpp" "Cxx11Workarounds.hpp" "cnpy.hpp" "ErrorHandling.hpp" "Logger.hpp" "LoggerImpl.hpp" "LoggerInterface.hpp" "TestingMolecules.hpp" "Timer.hpp")
 write_to_Includer("${to_includer}")
 
 set(sources_list "")

@@ -27,7 +27,6 @@
 #define IGREENSFUNCTION_HPP
 
 #include <iosfwd>
-#include <memory>
 #include <vector>
 
 #include "Config.hpp"

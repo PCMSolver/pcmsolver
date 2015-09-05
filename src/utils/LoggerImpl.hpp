@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "ErrorHandling.hpp"
+#include "Config.hpp"
 
 namespace logging
 {

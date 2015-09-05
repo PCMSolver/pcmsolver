@@ -26,7 +26,6 @@
 #include "Element.hpp"
 
 #include <cmath>
-#include <stdexcept>
 #include <vector>
 
 #include "Config.hpp"
@@ -37,7 +36,6 @@
 
 #include <boost/math/special_functions/sign.hpp>
 
-#include "ErrorHandling.hpp"
 #include "Sphere.hpp"
 
 void Element::spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,

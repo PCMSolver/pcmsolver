@@ -29,7 +29,6 @@
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <cmath>
-#include <functional>
 #include <iomanip>
 #include <limits>
 

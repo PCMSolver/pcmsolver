@@ -27,7 +27,6 @@
 #define SURFACEFUNCTION_HPP
 
 #include <iosfwd>
-#include <memory>
 #include <string>
 
 #include "Config.hpp"

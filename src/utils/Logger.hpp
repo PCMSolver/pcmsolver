@@ -4,11 +4,11 @@
 #include <ctime>
 #include <mutex>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 
+#include "Config.hpp"
+
 #include "BuildInfo.hpp"
-#include "ErrorHandling.hpp"
 #include "LoggerImpl.hpp"
 
 namespace logging

@@ -27,7 +27,6 @@
 #define IONICLIQUID_HPP
 
 #include <cmath>
-#include <functional>
 #include <iosfwd>
 #include <vector>
 

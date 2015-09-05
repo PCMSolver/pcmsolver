@@ -36,7 +36,6 @@
 
 #include "Cavity.hpp"
 #include "Element.hpp"
-#include "ErrorHandling.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 

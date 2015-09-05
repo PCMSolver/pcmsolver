@@ -27,7 +27,6 @@
 #define CAVITY_HPP
 
 #include <iosfwd>
-#include <memory>
 #include <vector>
 
 #include "Config.hpp"

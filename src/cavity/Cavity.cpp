@@ -29,14 +29,12 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
-#include <stdexcept>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
 #include "cnpyPimpl.hpp"
 
-#include "ErrorHandling.hpp"
 #include "MathUtils.hpp"
 #include "Symmetry.hpp"
 

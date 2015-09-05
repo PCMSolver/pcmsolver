@@ -3,8 +3,6 @@
 #include <cstring>
 #include <iostream>
 #include <map>
-#include <memory>
-#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -31,7 +29,7 @@ int main(int argc, char * argv[])
     std::ofstream out_stream;
     out_stream.open("pcmsolver.out");
 
-    if (argc > 2) throw std::invalid_argument("Too many arguments supplied to run_pcm");
+    if (argc > 2) PCMSOLVER_ERROR("Too many arguments supplied to run_pcm");
     auto parsed = Input(argv[1]);
     parsed.initMolecule();
 

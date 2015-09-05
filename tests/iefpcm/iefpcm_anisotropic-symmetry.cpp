@@ -29,7 +29,6 @@
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <iostream>
-#include <memory>
 
 #include "Config.hpp"
 

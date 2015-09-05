@@ -27,7 +27,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -36,7 +35,6 @@
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
-#include "ErrorHandling.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 #include "TimerInterface.hpp"

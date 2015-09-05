@@ -31,7 +31,6 @@
 
 #include "Config.hpp"
 
-#include "ErrorHandling.hpp"
 
 /*! \file Factory.hpp
  *	\class Factory

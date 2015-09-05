@@ -28,7 +28,6 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <stdexcept>
 #include <string>
 
 #include "Config.hpp"
@@ -39,7 +38,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include "CavityData.hpp"
-#include "ErrorHandling.hpp"
 #include "GreenData.hpp"
 #include "SolverData.hpp"
 #include "InputManager.hpp"

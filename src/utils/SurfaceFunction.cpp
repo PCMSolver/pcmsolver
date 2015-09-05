@@ -26,13 +26,10 @@
 #include "SurfaceFunction.hpp"
 
 #include <string>
-#include <stdexcept>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
-
-#include "ErrorHandling.hpp"
 
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {

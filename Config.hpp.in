@@ -54,5 +54,6 @@
 @DEFINE_FC_FUNC_@
 
 #include "Cxx11Workarounds.hpp"
+#include "ErrorHandling.hpp"
 
 #endif // CONFIG_HPP

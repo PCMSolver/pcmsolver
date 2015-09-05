@@ -33,7 +33,6 @@
 #include <boost/variant.hpp>
 
 #include "Anisotropic.hpp"
-#include "Cxx11Workarounds.hpp"
 #include "OneLayerErf.hpp"
 #include "OneLayerTanh.hpp"
 #include "MembraneTanh.hpp"

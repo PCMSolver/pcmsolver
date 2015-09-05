@@ -33,7 +33,6 @@
 #include <Eigen/Core>
 #include <unsupported/Eigen/Splines>
 
-#include "Cxx11Workarounds.hpp"
 
 /*! \file SplineFunction.hpp
  *  \class SplineFunction

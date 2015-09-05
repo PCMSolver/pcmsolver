@@ -37,7 +37,6 @@
 
 class Cavity;
 
-#include "Cxx11Workarounds.hpp"
 #include "Factory.hpp"
 #include "IGreensFunction.hpp"
 #include "PCMSolver.hpp"

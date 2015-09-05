@@ -30,7 +30,6 @@
 
 #include "Config.hpp"
 
-#include "Cxx11Workarounds.hpp"
 
 /*! \file OneLayerTanh.hpp
  *  \class OneLayerTanh

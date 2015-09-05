@@ -41,7 +41,6 @@
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
-#include "Cxx11Workarounds.hpp"
 
 /*! \file Input.hpp
  *  \class Input

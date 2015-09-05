@@ -39,7 +39,6 @@
 #include <boost/mpl/next_prior.hpp>
 #include <boost/mpl/vector.hpp>
 
-#include "Cxx11Workarounds.hpp"
 #include "GreenData.hpp"
 #include "IGreensFunction.hpp"
 

@@ -34,7 +34,6 @@
 
 #include <Eigen/Core>
 
-#include "Cxx11Workarounds.hpp"
 #include "MathUtils.hpp"
 
 namespace interfaces {

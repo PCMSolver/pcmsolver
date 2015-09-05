@@ -57,9 +57,9 @@ struct ErfSphericalDiffuseTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.49991237811929884;
-        der_probe_outside_reference = -0.28997557480536784;
-        der_source_outside_reference = 0.28871294194543484;
+        outside_reference = 0.49991229576650942;
+        der_probe_outside_reference = -0.28997553534915177;
+        der_source_outside_reference = 0.28871292628573908;
     }
 };
 
@@ -155,9 +155,9 @@ struct ErfSphericalDiffuseShiftedTest {
         probeNormal2.normalize();
         // Reference value
         // Checked by comparing the asymptotic behaviour
-        outside_reference = 0.49989745061177987;
-        der_probe_outside_reference = -0.28995350679572596;
-        der_source_outside_reference = 0.28869407308729222;
+        outside_reference = 0.49989736527661349;
+        der_probe_outside_reference = -0.28995345687399254;
+        der_source_outside_reference = 0.28869402146192158;
     }
 };
 

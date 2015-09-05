@@ -34,7 +34,6 @@
 
 class Cavity;
 
-#include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
 #include "IGreensFunction.hpp"
 

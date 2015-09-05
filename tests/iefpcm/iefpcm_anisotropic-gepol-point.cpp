@@ -60,10 +60,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
     cavity.saveCavity("point.npz");
 
     double permittivity = 78.39;
-    std::shared_ptr<Vacuum<AD_directional, CollocationIntegrator> > gfInside = 
-	    std::make_shared<Vacuum<AD_directional, CollocationIntegrator> >(Vacuum<AD_directional, CollocationIntegrator>());
-    std::shared_ptr<UniformDielectric<AD_directional, CollocationIntegrator> > gfOutside 
-	    = std::make_shared<UniformDielectric<AD_directional, CollocationIntegrator> >(UniformDielectric<AD_directional, CollocationIntegrator>(permittivity));
+    pcm::shared_ptr<Vacuum<AD_directional, CollocationIntegrator> > gfInside = 
+	    pcm::make_shared<Vacuum<AD_directional, CollocationIntegrator> >(Vacuum<AD_directional, CollocationIntegrator>());
+    pcm::shared_ptr<UniformDielectric<AD_directional, CollocationIntegrator> > gfOutside 
+	    = pcm::make_shared<UniformDielectric<AD_directional, CollocationIntegrator> >(UniformDielectric<AD_directional, CollocationIntegrator>(permittivity));
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);
@@ -122,10 +122,10 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
     cavity.saveCavity("point.npz");
 
     double permittivity = 78.39;
-    std::shared_ptr<Vacuum<AD_directional, CollocationIntegrator> > gfInside = 
-	    std::make_shared<Vacuum<AD_directional, CollocationIntegrator> >(Vacuum<AD_directional, CollocationIntegrator>());
-    std::shared_ptr<UniformDielectric<AD_directional, CollocationIntegrator> > gfOutside 
-	    = std::make_shared<UniformDielectric<AD_directional, CollocationIntegrator> >(UniformDielectric<AD_directional, CollocationIntegrator>(permittivity));
+    pcm::shared_ptr<Vacuum<AD_directional, CollocationIntegrator> > gfInside = 
+	    pcm::make_shared<Vacuum<AD_directional, CollocationIntegrator> >(Vacuum<AD_directional, CollocationIntegrator>());
+    pcm::shared_ptr<UniformDielectric<AD_directional, CollocationIntegrator> > gfOutside 
+	    = pcm::make_shared<UniformDielectric<AD_directional, CollocationIntegrator> >(UniformDielectric<AD_directional, CollocationIntegrator>(permittivity));
     bool symm = true;
     IEFSolver aniso_solver(gfInside, gfOutside, symm);
     aniso_solver.buildAnisotropicMatrix(cavity);

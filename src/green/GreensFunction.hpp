@@ -35,7 +35,6 @@
 
 class Element;
 
-#include "Cxx11Workarounds.hpp"
 #include "DerivativeTypes.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"

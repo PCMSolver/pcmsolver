@@ -36,7 +36,6 @@
 
 class Element;
 
-#include "Cxx11Workarounds.hpp"
 #include "ProfileTypes.hpp"
 
 /*! \file IGreensFunction.hpp

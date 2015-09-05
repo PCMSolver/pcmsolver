@@ -39,7 +39,6 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include "Cxx11Workarounds.hpp"
 #include "SplineFunction.hpp"
 #include "Symmetry.hpp"
 

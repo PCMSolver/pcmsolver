@@ -31,7 +31,6 @@
 
 #include "Config.hpp"
 
-#include "Cxx11Workarounds.hpp"
 
 /*! \file Exception.hpp
  *  \class Exception

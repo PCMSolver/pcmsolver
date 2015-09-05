@@ -37,7 +37,6 @@
 #include <boost/mpl/int.hpp>
 #include <boost/mpl/map.hpp>
 
-#include "Cxx11Workarounds.hpp"
 #include "Element.hpp"
 #include "QuadratureRules.hpp"
 

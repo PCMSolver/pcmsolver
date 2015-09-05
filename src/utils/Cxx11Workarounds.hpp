@@ -63,11 +63,6 @@ namespace pcm {
     using pcm::tie;
     using pcm::ignore;
 } /* end namespace pcm */
-/* <cmath> workarounds */
-#include <cmath>
-namespace pcm {
-    using std::erf;
-} /* end namespace pcm */
 /* <array> workarounds */
 #include <array>
 namespace pcm {
@@ -95,11 +90,6 @@ namespace pcm {
     using boost::make_tuple;
     using boost::tie;
     using boost::tuples::ignore;
-} /* end namespace pcm */
-/* <cmath> workarounds */
-#include <boost/math/special_functions/erf.hpp>
-namespace pcm {
-    using boost::math::erf;
 } /* end namespace pcm */
 /* <array> workarounds */
 #include <boost/array.hpp>

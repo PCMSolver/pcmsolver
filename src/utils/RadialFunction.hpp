@@ -36,7 +36,6 @@
 // Boost.Odeint includes
 #include <boost/numeric/odeint.hpp>
 
-#include "Cxx11Workarounds.hpp"
 #include "InterfacesImpl.hpp"
 
 using interfaces::ProfileEvaluator;

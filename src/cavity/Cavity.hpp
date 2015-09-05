@@ -34,7 +34,6 @@
 
 #include <Eigen/Core>
 
-#include "Cxx11Workarounds.hpp"
 #include "Element.hpp"
 #include "Molecule.hpp"
 #include "Sphere.hpp"

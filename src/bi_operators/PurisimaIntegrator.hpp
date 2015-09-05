@@ -34,7 +34,6 @@
 
 #include <Eigen/Core>
 
-#include "Cxx11Workarounds.hpp"
 #include "IntegratorHelperFunctions.hpp"
 #include "Element.hpp"
 #include "ErrorHandling.hpp"

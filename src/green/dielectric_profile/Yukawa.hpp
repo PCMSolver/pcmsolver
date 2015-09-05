@@ -30,7 +30,6 @@
 
 #include "Config.hpp"
 
-#include "Cxx11Workarounds.hpp"
 
 /*! \file Yukawa.hpp
  *  \struct Yukawa

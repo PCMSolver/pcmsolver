@@ -31,7 +31,7 @@
 
 #include "Config.hpp"
 
-#include "Cxx11Workarounds.hpp"
+#include <boost/math/special_functions/erf.hpp>
 
 /*! \file OneLayerErf.hpp
  *  \class OneLayerErf
@@ -59,7 +59,7 @@ private:
     double value(double point) const {
         double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
         double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-        double val = pcm::erf((point - center_) / width_);
+        double val = boost::math::erf((point - center_) / width_);
         return (epsPlus + epsMinus * val); //epsilon(r)
     }
     /*! Returns value of derivative of dielectric profile at given point

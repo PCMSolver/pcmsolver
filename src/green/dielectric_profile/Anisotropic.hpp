@@ -32,7 +32,6 @@
 
 #include <Eigen/Core>
 
-#include "Cxx11Workarounds.hpp"
 #include "MathUtils.hpp"
 
 /*! \file Anisotropic.hpp

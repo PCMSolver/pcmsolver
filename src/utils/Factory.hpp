@@ -31,7 +31,6 @@
 
 #include "Config.hpp"
 
-#include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
 
 /*! \file Factory.hpp

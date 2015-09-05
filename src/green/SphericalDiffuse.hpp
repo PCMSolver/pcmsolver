@@ -41,7 +41,6 @@
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
-#include "Cxx11Workarounds.hpp"
 #include "GreensFunction.hpp"
 #include "LoggerInterface.hpp"
 #include "MathUtils.hpp"

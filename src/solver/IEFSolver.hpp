@@ -37,6 +37,7 @@
 
 class Cavity;
 
+#include "Cxx11Workarounds.hpp"
 #include "Factory.hpp"
 #include "IGreensFunction.hpp"
 #include "PCMSolver.hpp"
@@ -92,14 +93,14 @@ private:
     /*! \brief Calculation of the PCM matrix
      *  \param[in] cavity the cavity to be used
      */
-    virtual void buildSystemMatrix_impl(const Cavity & cavity) override;
+    virtual void buildSystemMatrix_impl(const Cavity & cavity) __override;
     /*! \brief Returns the ASC given the MEP and the desired irreducible representation
      *  \param[in] potential the vector containing the MEP at cavity points
      *  \param[in] irrep the irreducible representation of the MEP and ASC
      */
     virtual Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential,
-            int irrep = 0) const override;
-    virtual std::ostream & printSolver(std::ostream & os) override;
+            int irrep = 0) const __override;
+    virtual std::ostream & printSolver(std::ostream & os) __override;
 };
 
 namespace

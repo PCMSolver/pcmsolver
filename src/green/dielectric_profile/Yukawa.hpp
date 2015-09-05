@@ -37,7 +37,7 @@
  *  \date 2015
  */
 
-struct Yukawa final
+struct Yukawa __final
 {
     double epsilon;
     double kappa;

@@ -27,7 +27,6 @@
 #define PCMSOLVER_HPP
 
 #include <iosfwd>
-#include <memory>
 #include <sstream>
 #include <string>
 
@@ -35,6 +34,7 @@
 
 class Cavity;
 
+#include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
 #include "IGreensFunction.hpp"
 
@@ -111,6 +111,6 @@ protected:
     virtual std::ostream & printSolver(std::ostream & os) = 0;
 };
 
-typedef std::shared_ptr<PCMSolver> SharedPCMSolver;
+typedef pcm::shared_ptr<PCMSolver> SharedPCMSolver;
 
 #endif // PCMSOLVER_HPP

@@ -26,7 +26,6 @@
 #include "CPCMSolver.hpp"
 
 #include <fstream>
-#include <functional>
 #include <iostream>
 #include <string>
 
@@ -43,8 +42,6 @@
 
 void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity)
 {
-    using namespace std::placeholders;
-
     if (!(greenInside_->uniform() && greenOutside_->uniform())) {
         PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
     }

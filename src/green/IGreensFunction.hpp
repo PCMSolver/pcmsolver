@@ -36,6 +36,7 @@
 
 class Element;
 
+#include "Cxx11Workarounds.hpp"
 #include "ProfileTypes.hpp"
 
 /*! \file IGreensFunction.hpp
@@ -88,6 +89,6 @@ protected:
     virtual std::ostream & printObject(std::ostream & os) = 0;
 };
 
-typedef std::shared_ptr<IGreensFunction> SharedIGreensFunction;
+typedef pcm::shared_ptr<IGreensFunction> SharedIGreensFunction;
 
 #endif // IGREENSFUNCTION_HPP

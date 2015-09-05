@@ -37,7 +37,7 @@
  *  \date 2015
  */
 
-struct Uniform final
+struct Uniform __final
 {
     double epsilon;
     Uniform() : epsilon(1.0) {}

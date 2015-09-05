@@ -42,7 +42,7 @@
  *  \date 2014
  */
 
-class Anisotropic __final
+class Anisotropic ____final
 {
 private:
     /// Diagonal of the permittivity tensor in the lab-fixed frame
@@ -69,7 +69,7 @@ private:
 	    Eigen::Vector3d scratch;
 	    scratch << (1.0/epsilonLab_(0)), (1.0/epsilonLab_(1)), (1.0/epsilonLab_(2));
 	    epsilonInv_ = R_ * scratch.asDiagonal() * R_.transpose();
-	    // 4. As a final step, calculate the determinant
+	    // 4. As a __final step, calculate the determinant
 	    detEps_ = epsilonLab_(0) * epsilonLab_(1) * epsilonLab_(2);
     }
 public:

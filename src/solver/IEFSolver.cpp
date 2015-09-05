@@ -28,7 +28,6 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -54,7 +53,6 @@ void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity)
 
 void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 {
-    using namespace std::placeholders;
     // The total size of the cavity
     int cavitySize = cav.size();
     // The number of irreps in the group
@@ -113,7 +111,6 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
 
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
 {
-    using namespace std::placeholders;
     // The total size of the cavity
     int cavitySize = cav.size();
     // The number of irreps in the group

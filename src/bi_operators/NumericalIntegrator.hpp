@@ -67,9 +67,9 @@ struct NumericalIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
-        auto kernelS = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
-        auto diagonal = [kernelS] (const Element & el) -> double { return integrator::integrateS<32, 16>(kernelS, el); };
-        return integrator::singleLayer(e, diagonal, kernelS);
+        integrator::KernelS kernelS = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
+        return integrator::singleLayer(e, std::bind(integrator::integrateS<32, 16>, kernelS, _1),
+                                       kernelS);
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -77,9 +77,9 @@ struct NumericalIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
-        auto kernelD = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
-        auto diagonal = [kernelD] (const Element & el) -> double { return integrator::integrateD<32, 16>(kernelD, el); };
-        return integrator::doubleLayer(e, diagonal, kernelD);
+        integrator::KernelD kernelD = std::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
+        return integrator::doubleLayer(e, std::bind(integrator::integrateD<32, 16>, kernelD, _1),
+                kernelD);
     }
     /**@}*/
 
@@ -90,9 +90,9 @@ struct NumericalIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
-        auto kernelS = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
-        auto diagonal = [kernelS] (const Element & el) -> double { return integrator::integrateS<32, 16>(kernelS, el); };
-        return integrator::singleLayer(e, diagonal, kernelS);
+        integrator::KernelS kernelS = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
+        return integrator::singleLayer(e, std::bind(integrator::integrateS<32, 16>, kernelS, _1),
+                                       kernelS);
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -100,9 +100,9 @@ struct NumericalIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
-        auto kernelD = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
-        auto diagonal = [kernelD] (const Element & el) -> double { return integrator::integrateD<32, 16>(kernelD, el); };
-        return integrator::doubleLayer(e, diagonal, kernelD);
+        integrator::KernelD kernelD = std::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
+        return integrator::doubleLayer(e, std::bind(integrator::integrateD<32, 16>, kernelD, _1),
+                kernelD);
     }
     /**@}*/
 
@@ -113,9 +113,9 @@ struct NumericalIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
-        auto kernelS = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
-        auto diagonal = [kernelS] (const Element & el) -> double { return integrator::integrateS<32, 16>(kernelS, el); };
-        return integrator::singleLayer(e, diagonal, kernelS);
+        integrator::KernelS kernelS = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
+        return integrator::singleLayer(e, std::bind(integrator::integrateS<32, 16>, kernelS, _1),
+                                       kernelS);
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -123,9 +123,9 @@ struct NumericalIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
-        auto kernelD = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
-        auto diagonal = [kernelD] (const Element & el) -> double { return integrator::integrateD<32, 16>(kernelD, el); };
-        return integrator::doubleLayer(e, diagonal, kernelD);
+        integrator::KernelD kernelD = std::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
+        return integrator::doubleLayer(e, std::bind(integrator::integrateD<32, 16>, kernelD, _1),
+                kernelD);
     }
     /**@}*/
 
@@ -136,9 +136,9 @@ struct NumericalIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
-        auto kernelS = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
-        auto diagonal = [kernelS] (const Element & el) -> double { return integrator::integrateS<32, 16>(kernelS, el); };
-        return integrator::singleLayer(e, diagonal, kernelS);
+        integrator::KernelS kernelS = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, _1, _2);
+        return integrator::singleLayer(e, std::bind(integrator::integrateS<32, 16>, kernelS, _1),
+                                       kernelS);
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -146,9 +146,9 @@ struct NumericalIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
-        auto kernelD = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
-        auto diagonal = [kernelD] (const Element & el) -> double { return integrator::integrateD<32, 16>(kernelD, el); };
-        return integrator::doubleLayer(e, diagonal, kernelD);
+        integrator::KernelD kernelD = std::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, _1, _2, _3);
+        return integrator::doubleLayer(e, std::bind(integrator::integrateD<32, 16>, kernelD, _1),
+                kernelD);
     }
     /**@}*/
 

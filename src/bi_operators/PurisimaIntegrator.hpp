@@ -40,7 +40,6 @@
 #include "IntegratorHelperFunctions.hpp"
 #include "Element.hpp"
 #include "ErrorHandling.hpp"
-#include "AlternateSphericalDiffuse.hpp"
 #include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"
@@ -206,69 +205,6 @@ struct PurisimaIntegrator
             std::tie(eps_r2, std::ignore) = gf.epsilon(e[i].center());
 
             D(i, i) = eps_r2 * (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad);
-            Eigen::Vector3d source = e[i].center();
-            for (size_t j = 0; j < mat_size; ++j) {
-                // Fill off-diagonal
-                Eigen::Vector3d probe = e[j].center();
-                Eigen::Vector3d probeNormal = e[j].normal();
-                probeNormal.normalize();
-                if (i != j) D(i, j) = gf.kernelD(probeNormal, source, probe);
-            }
-        }
-        return D;
-    }
-    /**@}*/
-
-    /**@{ Single and double layer potentials for a SphericalDiffuse Green's function with alternative handling of Coulomb singularty by collocation */
-    /*! \tparam ProfilePolicy the permittivity profile for the diffuse interface
-     *  \param[in] gf Green's function
-     *  \param[in] e  list of finite elements
-     */
-    template <typename ProfilePolicy>
-    Eigen::MatrixXd singleLayer(const AlternateSphericalDiffuse<PurisimaIntegrator, ProfilePolicy> & gf, const std::vector<Element> & e) const {
-        // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
-        size_t mat_size = e.size();
-        Eigen::MatrixXd S = Eigen::MatrixXd::Zero(mat_size, mat_size);
-        for (size_t i = 0; i < mat_size; ++i) {
-            // Fill diagonal
-            // Diagonal of S inside the cavity
-            double Sii_I = factor_ * std::sqrt(4 * M_PI / e[i].area());
-            double eps_r2 = 0.0;
-            std::tie(eps_r2, std::ignore) = gf.epsilon(e[i].center());
-            S(i, i) = Sii_I / eps_r2;
-            Eigen::Vector3d source = e[i].center();
-            for (size_t j = 0; j < mat_size; ++j) {
-                // Fill off-diagonal
-                Eigen::Vector3d probe = e[j].center();
-                if (i != j) S(i, j) = gf.kernelS(source, probe);
-            }
-        }
-        return S;
-    }
-    /*! \tparam ProfilePolicy the permittivity profile for the diffuse interface
-     *  \param[in] gf Green's function
-     *  \param[in] e  list of finite elements
-     */
-    template <typename ProfilePolicy>
-    Eigen::MatrixXd doubleLayer(const AlternateSphericalDiffuse<PurisimaIntegrator, ProfilePolicy> & gf, const std::vector<Element> & e) const {
-        // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
-        size_t mat_size = e.size();
-        Eigen::MatrixXd D = Eigen::MatrixXd::Zero(mat_size, mat_size);
-        for (size_t i = 0; i < mat_size; ++i) {
-            // Fill diagonal
-            double area = e[i].area();
-            double radius = e[i].sphere().radius();
-            // Diagonal of S inside the cavity
-            double Sii_I = factor_ * std::sqrt(4 * M_PI / area);
-            // Diagonal of D inside the cavity
-            double Dii_I = -factor_ * std::sqrt(M_PI/ area) * (1.0 / radius);
-            // "Diagonal" of the directional derivative of the Coulomb singularity separation coefficient
-            double invE_grad = gf.inverseEDerivative(e[i].normal(), e[i].center(), e[i].center());
-
-            double eps_r2 = 0.0;
-            std::tie(eps_r2, std::ignore) = gf.epsilon(e[i].center());
-
-            D(i, i) = Dii_I + eps_r2 * Sii_I * invE_grad;
             Eigen::Vector3d source = e[i].center();
             for (size_t j = 0; j < mat_size; ++j) {
                 // Fill off-diagonal

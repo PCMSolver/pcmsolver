@@ -34,6 +34,7 @@
 
 #include <Eigen/Core>
 
+#include "Cxx11Workarounds.hpp"
 #include "Element.hpp"
 #include "Molecule.hpp"
 #include "Sphere.hpp"
@@ -167,6 +168,6 @@ public:
     }
 };
 
-typedef std::shared_ptr<Cavity> SharedCavity;
+typedef pcm::shared_ptr<Cavity> SharedCavity;
 
 #endif // CAVITY_HPP

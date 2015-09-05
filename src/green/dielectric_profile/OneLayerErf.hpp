@@ -28,9 +28,10 @@
 
 #include <cmath>
 #include <iosfwd>
-#include <tuple>
 
 #include "Config.hpp"
+
+#include "Cxx11Workarounds.hpp"
 
 /*! \file OneLayerErf.hpp
  *  \class OneLayerErf
@@ -58,7 +59,7 @@ private:
     double value(double point) const {
         double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
         double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-        double val = std::erf((point - center_) / width_);
+        double val = pcm::erf((point - center_) / width_);
         return (epsPlus + epsMinus * val); //epsilon(r)
     }
     /*! Returns value of derivative of dielectric profile at given point
@@ -86,9 +87,9 @@ public:
     /*! Returns a tuple holding the permittivity and its derivative
      *  \param[in]   r evaluation point
      */
-    std::tuple<double, double> operator()(const double r) const
+    pcm::tuple<double, double> operator()(const double r) const
     {
-        return std::make_tuple(value(r), derivative(r));
+        return pcm::make_tuple(value(r), derivative(r));
     }
     double epsilon1() const { return epsilon1_; }
     double epsilon2() const { return epsilon2_; }

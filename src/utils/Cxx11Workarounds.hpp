@@ -30,6 +30,8 @@
  *  \brief Provide hacks and workarounds for C++11
  *  \author Roberto Di Remigio
  *  \date 2015
+ *
+ *  As all hacks/workarounds this ain't a pretty piece of source code!
  */
 
 /* --- Workarounds for constructs implemented by Boost prior to the C++11 standard approval */
@@ -38,6 +40,7 @@
 #include <memory>
 namespace pcm {
     using std::shared_ptr;
+    using std::make_shared;
     using std::unique_ptr;
 } /* end namespace pcm */
 /* <functional> workarounds */
@@ -46,6 +49,19 @@ namespace pcm {
     using std::function;
     using std::bind;
     using std::placeholders;
+} /* end namespace pcm */
+/* <tuple> workarounds */
+#include <tuple>
+namespace pcm {
+    using std::tuple;
+    using std::make_tuple;
+    using std::tie;
+    using std::ignore;
+} /* end namespace pcm */
+/* <cmath> workarounds */
+#include <cmath>
+namespace pcm {
+    using std::erf;
 } /* end namespace pcm */
 #else /* HAS_CXX11*/
 /* Smart pointers workarounds */
@@ -60,6 +76,19 @@ namespace pcm {
     using boost::function;
     using boost::bind;
 } /* end namespace pcm */
+/* <tuple> workarounds */
+#include <boost/tuple/tuple.hpp>
+namespace pcm {
+    using boost::tuple;
+    using boost::make_tuple;
+    using boost::tie;
+    using boost::tuples::ignore;
+} /* end namespace pcm */
+/* <cmath> workarounds */
+#include <boost/math/special_functions/erf.hpp>
+namespace pcm {
+    using boost::math::erf;
+} /* end namespace pcm */
 #endif /* HAS_CXX11 */
 
 /* --- Workarounds for new keywords */
@@ -68,20 +97,27 @@ namespace pcm {
 #define __final final
 #else /* HAS_CXX11 */
 #define __final
-#endif
+#endif /* HAS_CXX11 */
 
 /* Workaroud for override */
 #ifdef HAS_CXX11
 #define __override override
 #else /* HAS_CXX11 */
 #define __override
-#endif
+#endif /* HAS_CXX11 */
 
 /* Workaroud for noexcept */
 #ifdef HAS_CXX11
 #define __noexcept noexcept
 #else /* HAS_CXX11 */
 #define __noexcept throw()
-#endif
+#endif /* HAS_CXX11 */
+
+/* Workaroud for = delete */
+#ifdef HAS_CXX11
+#define __deleted = delete
+#else /* HAS_CXX11 */
+#define __deleted
+#endif /* HAS_CXX11 */
 
 #endif /* CXX11WORKAROUNDS_HPP */

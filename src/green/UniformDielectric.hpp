@@ -67,7 +67,7 @@ public:
      *  \param[in]        p2 second point
      */
     virtual double kernelD(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __override
     {
         return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }
@@ -75,14 +75,14 @@ public:
     /*! Calculates the matrix representation of the S operator
      *  \param[in] e list of finite elements
      */
-    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const __override
     {
         return this->integrator_.singleLayer(*this, e);
     }
     /*! Calculates the matrix representation of the D operator
      *  \param[in] e list of finite elements
      */
-    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const __override
     {
         return this->integrator_.doubleLayer(*this, e);
     }
@@ -98,14 +98,14 @@ private:
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
      */
-    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const override
+    virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const __override
     {
         DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
                           (sp[1] - pp[1]) * (sp[1] - pp[1]) +
                           (sp[2] - pp[2]) * (sp[2] - pp[2]));
         return 1/(this->profile_.epsilon * distance);
     }
-    virtual std::ostream & printObject(std::ostream & os) override
+    virtual std::ostream & printObject(std::ostream & os) __override
     {
         os << "Green's function type: uniform dielectric" << std::endl;
         os << this->profile_;

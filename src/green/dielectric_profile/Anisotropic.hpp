@@ -32,6 +32,7 @@
 
 #include <Eigen/Core>
 
+#include "Cxx11Workarounds.hpp"
 #include "MathUtils.hpp"
 
 /*! \file Anisotropic.hpp
@@ -41,7 +42,7 @@
  *  \date 2014
  */
 
-class Anisotropic final
+class Anisotropic __final
 {
 private:
     /// Diagonal of the permittivity tensor in the lab-fixed frame

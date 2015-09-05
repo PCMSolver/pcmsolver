@@ -27,9 +27,10 @@
 #define ONELAYERTANH_HPP
 
 #include <iosfwd>
-#include <tuple>
 
 #include "Config.hpp"
+
+#include "Cxx11Workarounds.hpp"
 
 /*! \file OneLayerTanh.hpp
  *  \class OneLayerTanh
@@ -84,9 +85,9 @@ public:
     /*! Returns a tuple holding the permittivity and its derivative
      *  \param[in]   r evaluation point
      */
-    std::tuple<double, double> operator()(const double r) const
+    pcm::tuple<double, double> operator()(const double r) const
     {
-        return std::make_tuple(value(r), derivative(r));
+        return pcm::make_tuple(value(r), derivative(r));
     }
     double epsilon1() const { return epsilon1_; }
     double epsilon2() const { return epsilon2_; }

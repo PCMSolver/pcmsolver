@@ -26,13 +26,12 @@
 #ifndef FACTORY_HPP
 #define FACTORY_HPP
 
-#include <functional>
 #include <string>
 #include <map>
-#include <memory>
 
 #include "Config.hpp"
 
+#include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
 
 /*! \file Factory.hpp
@@ -51,14 +50,14 @@
 template <typename Object,
           typename ObjectInput,
           typename ... Args>
-class Factory final
+class Factory __final
 {
 public:
     /*! \brief Callback function for object creation
      *  Returns a raw pointer of type Object; accepts an ObjectInput type and a variadic
      *  parameter pack
      */
-    typedef std::function<Object * (const ObjectInput &, const Args & ...)> creationalFunctor;
+    typedef pcm::function<Object * (const ObjectInput &, const Args & ...)> creationalFunctor;
 private:
     /*! std::map from the object type identifier (a string) to its callback function */
     typedef std::map<std::string, creationalFunctor> CallbackMap;
@@ -79,15 +78,15 @@ public:
         return callbacks_.erase(objID) == 1;
     }
     /*! \brief Calls the appropriate creation functor, based on the passed objID
-     *  \note The pointer returned by the creationalFunctor is wrapped into a std::shared_ptr
+     *  \note The pointer returned by the creationalFunctor is wrapped into a pcm::shared_ptr
      *  \param[in] objID the object's identification string
      *  \param[in] data  input data for the creation of the object
      */
-    std::shared_ptr<Object> create(const std::string & objID, const ObjectInput & data, const Args & ... more_args) {
+    pcm::shared_ptr<Object> create(const std::string & objID, const ObjectInput & data, const Args & ... more_args) {
         if (objID.empty()) PCMSOLVER_ERROR("No object identification string provided to the Factory.");
         typename CallbackMap::const_iterator i = callbacks_.find(objID);
         if (i == callbacks_.end()) PCMSOLVER_ERROR("The unknown object ID " + objID + " occurred in the Factory.");
-        return std::shared_ptr<Object>((i->second)(data, more_args...));
+        return pcm::shared_ptr<Object>((i->second)(data, more_args...));
     }
     /*! Unique point of access to the unique instance of the Factory */
     static Factory & TheFactory() {

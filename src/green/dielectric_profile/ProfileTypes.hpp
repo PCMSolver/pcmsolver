@@ -26,8 +26,6 @@
 #ifndef PROFILETYPES_HPP
 #define PROFILETYPES_HPP
 
-#include <tuple>
-
 #include "Config.hpp"
 
 #include <boost/any.hpp>
@@ -35,6 +33,7 @@
 #include <boost/variant.hpp>
 
 #include "Anisotropic.hpp"
+#include "Cxx11Workarounds.hpp"
 #include "OneLayerErf.hpp"
 #include "OneLayerTanh.hpp"
 #include "MembraneTanh.hpp"
@@ -74,8 +73,8 @@ namespace profiles {
     {
     public:
         double operator()(const Uniform & arg) const { return arg.epsilon; }
-        std::tuple<double, double> operator()(const Yukawa & arg) const {
-            return std::make_tuple(arg.epsilon, arg.kappa);
+        pcm::tuple<double, double> operator()(const Yukawa & arg) const {
+            return pcm::make_tuple(arg.epsilon, arg.kappa);
         }
         bool operator()(const Anisotropic & /* arg */) const { return false; }
         bool operator()(const OneLayerTanh & /* arg */) const { return false; }

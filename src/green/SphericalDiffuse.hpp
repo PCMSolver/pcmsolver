@@ -28,9 +28,7 @@
 
 #include <array>
 #include <cmath>
-#include <functional>
 #include <iosfwd>
-#include <tuple>
 #include <vector>
 
 #include "Config.hpp"
@@ -43,6 +41,7 @@
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
+#include "Cxx11Workarounds.hpp"
 #include "GreensFunction.hpp"
 #include "LoggerInterface.hpp"
 #include "MathUtils.hpp"
@@ -110,14 +109,14 @@ public:
     /*! Calculates the matrix representation of the S operator
      *  \param[in] e list of finite elements
      */
-    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const __override
     {
         return this->integrator_.singleLayer(*this, e);
     }
     /*! Calculates the matrix representation of the D operator
      *  \param[in] e list of finite elements
      */
-    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const __override
     {
         return this->integrator_.doubleLayer(*this, e);
     }
@@ -204,7 +203,7 @@ public:
                 p2, p1, direction, this->delta_);
     }
     /*! Handle to the dielectric profile evaluation */
-    std::tuple<double, double> epsilon(const Eigen::Vector3d & point) const {
+    pcm::tuple<double, double> epsilon(const Eigen::Vector3d & point) const {
         return this->profile_((point + this->origin_).norm());
     }
     void toFile(const std::string & prefix = "") {

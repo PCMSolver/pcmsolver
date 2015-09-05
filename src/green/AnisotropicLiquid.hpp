@@ -71,7 +71,7 @@ public:
      *  \param[in]        p2 second point
      */
     virtual double kernelD(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __override
     {
         // Since the permittivity is a tensorial quantity,
         // the full gradient is needed to get the kernel of D and D^\dagger
@@ -82,14 +82,14 @@ public:
     /*! Calculates the matrix representation of the S operator
      *  \param[in] e list of finite elements
      */
-    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const __override
     {
         return this->integrator_.singleLayer(*this, e);
     }
     /*! Calculates the matrix representation of the D operator
      *  \param[in] e list of finite elements
      */
-    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const __override
     {
         return this->integrator_.doubleLayer(*this, e);
     }
@@ -104,7 +104,7 @@ private:
      *  \param[in] source the source point
      *  \param[in]  probe the probe point
      */
-    virtual DerivativeTraits operator()(DerivativeTraits * source, DerivativeTraits * probe) const override
+    virtual DerivativeTraits operator()(DerivativeTraits * source, DerivativeTraits * probe) const __override
     {
         // The distance has to be calculated using epsilonInv_ as metric:
         DerivativeTraits scratch = 0.0;
@@ -119,7 +119,7 @@ private:
 
         return (1.0/(sqrt(detEps_) * distance));
     }
-    virtual std::ostream & printObject(std::ostream & os) override
+    virtual std::ostream & printObject(std::ostream & os) __override
     {
         os << "Green's function type: anisotropic liquid" << std::endl;
         os << this->profile_;

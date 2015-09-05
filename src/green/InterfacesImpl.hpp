@@ -30,13 +30,13 @@
 #include <cmath>
 #include <fstream>
 #include <functional>
-#include <tuple>
 #include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
 
+#include "Cxx11Workarounds.hpp"
 #include "MathUtils.hpp"
 
 namespace interfaces {
@@ -48,7 +48,7 @@ typedef std::vector<double> StateType;
 /*! \typedef ProfileEvaluator
  *  \brief sort of a function pointer to the dielectric profile evaluation function
  */
-typedef std::function< std::tuple<double, double>(const double) > ProfileEvaluator;
+typedef std::function< pcm::tuple<double, double>(const double) > ProfileEvaluator;
 
 /*! \struct IntegratorParameters
  *  \brief holds parameters for the integrator

@@ -52,6 +52,7 @@
 #include "Includer.hpp"
 
 typedef std::map<std::string, SurfaceFunction> SurfaceFunctionMap;
+typedef std::pair<std::string, SurfaceFunction> SurfaceFunctionPair;
 
 // We need globals as they must be accessible across all the functions defined in this interface...
 // The final objective is to have only a pointer to Cavity and a pointer to PCMSolver (our abstractions)
@@ -124,8 +125,7 @@ void compute_asc(char * potString, char * chgString, int * irrep)
         if ( iter_chg != functions.begin() ) --iter_chg;
         // insert it
 	    SurfaceFunction func(chgFuncName, _cavity->size());
-        auto insertion = SurfaceFunctionMap::value_type(chgFuncName, func);
-        iter_chg = functions.insert(iter_chg, insertion);
+        iter_chg = functions.insert(iter_chg, SurfaceFunctionMap::value_type(chgFuncName, func));
     }
 
     // We clear the ASC surface function. Needed when using symmetry for response calculations
@@ -157,8 +157,7 @@ void compute_nonequilibrium_asc(char * potString, char * chgString, int * irrep)
         if ( iter_chg != functions.begin() ) --iter_chg;
         // insert it
 	    SurfaceFunction func(chgFuncName, _cavity->size());
-        auto insertion = SurfaceFunctionMap::value_type(chgFuncName, func);
-        iter_chg = functions.insert(iter_chg, insertion);
+        iter_chg = functions.insert(iter_chg, SurfaceFunctionMap::value_type(chgFuncName, func));
     }
 
     // If it already exists there's no problem, we will pass a reference to its values to
@@ -206,7 +205,7 @@ void compute_polarization_energy(double * energy)
 void save_surface_functions()
 {
     printer("\nDumping surface functions to .npy files");
-    for (auto pair : functions) {
+    BOOST_FOREACH(SurfaceFunctionPair pair, functions) {
         unsigned int dim = static_cast<unsigned int>(pair.second.nPoints());
         const unsigned int shape[] = {dim};
         std::string fname = pair.second.name() + ".npy";
@@ -242,8 +241,7 @@ void load_surface_function(const char * name)
         SurfaceFunctionMap::iterator iter = functions.lower_bound(functionName);
         if ( iter == functions.end()  ||  iter->first != functionName ) {
             if ( iter != functions.begin() ) --iter;
-            auto insertion = SurfaceFunctionMap::value_type(functionName, func);
-            iter = functions.insert(iter, insertion);
+            iter = functions.insert(iter, SurfaceFunctionMap::value_type(functionName, func));
         }
    }
 }
@@ -332,8 +330,7 @@ void set_surface_function(int * nts, double * values, char * name)
         if ( iter != functions.begin() ) --iter;
         // insert it
         SurfaceFunction func(functionName, *nts, values);
-        auto insertion = SurfaceFunctionMap::value_type(functionName, func);
-        iter = functions.insert(iter, insertion);
+        iter = functions.insert(iter, SurfaceFunctionMap::value_type(functionName, func));
     } else {
         iter->second.setValues(values);
     }
@@ -404,8 +401,7 @@ void append_surface_function(char * name)
         if ( iter != functions.begin() ) --iter;
         // insert it
         SurfaceFunction func(functionName, nTess);
-        auto insertion = SurfaceFunctionMap::value_type(functionName, func);
-        iter = functions.insert(iter, insertion);
+        iter = functions.insert(iter, SurfaceFunctionMap::value_type(functionName, func));
     } else {
         // What happens if it is already in the map? The values need to be updated.
         // Nothing, I assume that if one calls append_surface_function will then also call

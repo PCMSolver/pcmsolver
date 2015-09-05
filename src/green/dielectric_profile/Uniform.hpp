@@ -30,6 +30,8 @@
 
 #include "Config.hpp"
 
+#include "Cxx11Workarounds.hpp"
+
 /*! \file Uniform.hpp
  *  \struct Uniform
  *  \brief a uniform dielectric profile

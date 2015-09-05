@@ -42,7 +42,7 @@
  *  \date 2014
  */
 
-class Anisotropic ____final
+class Anisotropic __final
 {
 private:
     /// Diagonal of the permittivity tensor in the lab-fixed frame

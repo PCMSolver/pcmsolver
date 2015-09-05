@@ -30,6 +30,8 @@
 
 #include "Config.hpp"
 
+#include "Cxx11Workarounds.hpp"
+
 /*! \file Yukawa.hpp
  *  \struct Yukawa
  *  \brief describes a medium with damping, i.e. ionic liquid

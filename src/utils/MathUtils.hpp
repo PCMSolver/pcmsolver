@@ -39,6 +39,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+#include "Cxx11Workarounds.hpp"
 #include "SplineFunction.hpp"
 #include "Symmetry.hpp"
 
@@ -318,7 +319,7 @@ inline double splineInterpolation(const double point, const std::vector<double> 
 /*! \typedef DifferentiableFunction
  *  \brief sort of a function pointer to a function of a pair of vectors that can be numerically differentiated
  */
-typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> DifferentiableFunction;
+typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> DifferentiableFunction;
 
 /*! \brief Calculate directional derivative using a three-point stencil
  *  \param[in] func function to be differentiated

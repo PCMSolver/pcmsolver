@@ -25,6 +25,7 @@
 
 #include "Exception.hpp"
 
+#include <cstdlib>
 #include <sstream>
 #include <string>
 #include <vector>

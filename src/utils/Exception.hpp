@@ -31,6 +31,8 @@
 
 #include "Config.hpp"
 
+#include "Cxx11Workarounds.hpp"
+
 /*! \file Exception.hpp
  *  \class Exception
  *  \brief Provide a simple exception class able to unwind the call stack
@@ -49,12 +51,12 @@ class Exception : public std::exception
          */
         Exception(const std::string & m, const char * file,
                 const int line, const size_t stack_size = 5);
-        virtual ~Exception() noexcept {}
+        virtual ~Exception() __noexcept {}
     private:
         /// The error message that will be printed out
         std::string message_;
         /// Function called when exception is thrown
-        virtual const char *  what() const noexcept { return message_.c_str(); }
+        virtual const char *  what() const __noexcept { return message_.c_str(); }
 };
 
 /*! Returns call backtrace

@@ -26,7 +26,6 @@
 #ifndef INPUT_HPP
 #define INPUT_HPP
 
-#include <memory>
 #include <vector>
 #include <string>
 
@@ -41,6 +40,8 @@
 #include "Molecule.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
+
+#include "Cxx11Workarounds.hpp"
 
 /*! \file Input.hpp
  *  \class Input
@@ -262,6 +263,6 @@ int profilePolicy(const std::string & name);
 /*! A useful map to convert the EquationType string to an integer which will be passed to the Solver CTOR. */
 int integralEquation(const std::string & name);
 
-typedef std::shared_ptr<Input> SharedInput;
+typedef pcm::shared_ptr<Input> SharedInput;
 
 #endif // INPUT_HPP

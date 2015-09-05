@@ -57,6 +57,25 @@ typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> 
  */
 typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelD;
 
+/*! Approximate collocation diagonal for S
+ *  \param[in] factor scaling factor for diagonal elements
+ *  \param[in] eps    permittivity
+ *  \param[in] el     finite element
+ */
+inline double SI(double factor, double eps, const Element & el)
+{
+    return (factor * std::sqrt(4 * M_PI / el.area()) * 1.0 / eps);
+}
+
+/*! Approximate collocation diagonal for D
+ *  \param[in] factor scaling factor for diagonal elements
+ *  \param[in] el     finite element
+ */
+inline double DI(double factor, const Element & el)
+{
+    return (-factor * std::sqrt(M_PI / el.area()) * 1.0 / el.sphere().radius());
+}
+
 /*! Returns matrix representation of the single layer operator by collocation
  *  \param[in] elements list of finite elements
  *  \param[in] diagS    functor for the evaluation of the diagonal of S

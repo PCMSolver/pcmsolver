@@ -79,10 +79,9 @@ struct CollocationIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const Vacuum<DerivativeTraits, CollocationIntegrator> & gf, const std::vector<Element> & e) const {
-        auto f = this->factor_;
-        auto diagonal = [f] (const Element & el) -> double { return (f * std::sqrt(4 * M_PI / el.area())); };
-        auto kernelS = std::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelS, gf, _1, _2);
-        return integrator::singleLayer(e, diagonal, kernelS);
+        return integrator::singleLayer(e,
+                std::bind(integrator::SI, this->factor_, 1.0, _1),
+                std::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelS, gf, _1, _2));
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -90,10 +89,9 @@ struct CollocationIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const Vacuum<DerivativeTraits, CollocationIntegrator> & gf, const std::vector<Element> & e) const {
-        auto f = this->factor_;
-        auto diagonal = [f] (const Element & el) -> double { return (-f * std::sqrt(M_PI/ el.area()) * (1.0 / el.sphere().radius())); };
-        auto kernelD = std::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelD, gf, _1, _2, _3);
-        return integrator::doubleLayer(e, diagonal, kernelD);
+        return integrator::doubleLayer(e,
+                                       std::bind(integrator::DI, this->factor_, _1),
+                                       std::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelD, gf, _1, _2, _3));
     }
     /**@}*/
 
@@ -104,11 +102,9 @@ struct CollocationIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const UniformDielectric<DerivativeTraits, CollocationIntegrator> & gf, const std::vector<Element> & e) const {
-        auto f = this->factor_;
-        auto epsInv = 1.0 / gf.epsilon();
-        auto diagonal = [f, epsInv] (const Element & el) -> double { return (f * std::sqrt(4 * M_PI / el.area()) * epsInv); };
-        auto kernelS = std::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelS, gf, _1, _2);
-        return integrator::singleLayer(e, diagonal, kernelS);
+        return integrator::singleLayer(e,
+                std::bind(integrator::SI, this->factor_, gf.epsilon(), _1),
+                std::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelS, gf, _1, _2));
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -116,10 +112,9 @@ struct CollocationIntegrator
      */
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const UniformDielectric<DerivativeTraits, CollocationIntegrator> & gf, const std::vector<Element> & e) const {
-        auto f = this->factor_;
-        auto diagonal = [f] (const Element & el) -> double { return (-f * std::sqrt(M_PI/ el.area()) * (1.0 / el.sphere().radius())); };
-        auto kernelD = std::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelD, gf, _1, _2, _3);
-        return integrator::doubleLayer(e, diagonal, kernelD);
+        return integrator::doubleLayer(e,
+                                       std::bind(integrator::DI, this->factor_, _1),
+                                       std::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelD, gf, _1, _2, _3));
     }
     /**@}*/
 

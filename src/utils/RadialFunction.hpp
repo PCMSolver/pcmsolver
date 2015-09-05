@@ -32,6 +32,7 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
+#include <boost/foreach.hpp>
 
 // Boost.Odeint includes
 #include <boost/numeric/odeint.hpp>
@@ -231,7 +232,7 @@ class Omega __final
                     pcm::bind(&Omega<StateVariable, ODESystem>::push_back, this, _1, _2));
             // Reverse order of StateVariable-s in RadialSolution
             // this ensures that they are in ascending order, as later expected by function_impl and derivative_impl
-            for (auto & comp : function_) {
+            BOOST_FOREACH(StateVariable & comp, function_) {
                 std::reverse(comp.begin(), comp.end());
             }
         }

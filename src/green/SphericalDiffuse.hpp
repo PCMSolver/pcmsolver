@@ -82,7 +82,8 @@ public:
      * \param[in] o center of the sphere
      */
     SphericalDiffuse(double e1, double e2, double w, double c, const Eigen::Vector3d & o, int l)
-        : GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, SphericalDiffuse<IntegratorPolicy, ProfilePolicy> >(), origin_(o), maxLGreen_(l)
+        : GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, SphericalDiffuse<IntegratorPolicy, ProfilePolicy> >(),
+          origin_(o), maxLGreen_(l), maxLC_(2*l)
     {
         initProfilePolicy(e1, e2, w, c);
         initSphericalDiffuse();
@@ -214,8 +215,6 @@ public:
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 private:
-    using StateType = interfaces::StateType;
-    using LnTransformedRadial = interfaces::LnTransformedRadial;
     /*! Evaluates the Green's function given a pair of points
      *  \param[in] sp the source point
      *  \param[in] pp the probe point
@@ -323,11 +322,11 @@ private:
     /*! \brief First independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_ and has r^l behavior
      */
-    std::vector<RadialFunction<StateType, LnTransformedRadial, Zeta> > zeta_;
+    std::vector<RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial, Zeta> > zeta_;
     /*! \brief Second independent radial solution, used to build Green's function.
      *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
      */
-    std::vector<RadialFunction<StateType, LnTransformedRadial, Omega> > omega_;
+    std::vector<RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial, Omega> > omega_;
     /*! \brief Returns L-th component of the radial part of the Green's function
      *  \param[in] L  angular momentum
      *  \param[in] sp source point
@@ -388,15 +387,15 @@ private:
 
     /**@{ Parameters and functions for the calculation of the Coulomb singularity separation coefficient */
     /*! Maximum angular momentum to obtain C(r, r'), needed to separate the Coulomb singularity */
-    int maxLC_     = 2 * maxLGreen_;
+    int maxLC_; // = 2 * maxLGreen_;
     /*! \brief First independent radial solution, used to build coefficient.
      *  \note This is needed to separate the Coulomb singularity and has r^l behavior
      */
-    RadialFunction<StateType, LnTransformedRadial, Zeta> zetaC_;
+    RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial, Zeta> zetaC_;
     /*! \brief Second independent radial solution, used to build coefficient.
      *  \note This is needed to separate the Coulomb singularity and has r^(-l-1) behavior
      */
-    RadialFunction<StateType, LnTransformedRadial, Omega> omegaC_;
+    RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial, Omega> omegaC_;
     /*! \brief Returns coefficient for the separation of the Coulomb singularity
      *  \param[in] sp first point
      *  \param[in] pp second point

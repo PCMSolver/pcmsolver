@@ -38,7 +38,7 @@
  *  \date 2015
  */
 
-struct Metal final
+struct Metal __final
 {
     std::complex<double> epsilon;
     Metal() : epsilon(std::complex<double>(1.0, 1.0)) {}

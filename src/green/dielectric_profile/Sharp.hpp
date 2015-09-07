@@ -37,7 +37,7 @@
  *  \date 2015
  */
 
-struct Sharp final
+struct Sharp __final
 {
     double epsilon;
     double epsilonSolvent;

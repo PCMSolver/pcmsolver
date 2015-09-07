@@ -314,7 +314,6 @@ inline double derivativeImagePotential(double eps, double epsSolv, double radius
 inline Eigen::Array4d analyticSphericalSharp(double eps, double epsSolv, double radius, const Eigen::Vector3d & origin,
                         const Eigen::Vector3d & spNormal, const Eigen::Vector3d & sp,
                         const Eigen::Vector3d & ppNormal, const Eigen::Vector3d & pp) {
-    using namespace std::placeholders;
     Eigen::Array4d result = Eigen::Array4d::Zero();
     double distance = (sp - pp).norm();
     double distance_3 = std::pow(distance, 3);

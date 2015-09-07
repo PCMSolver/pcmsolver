@@ -26,11 +26,8 @@
 #ifndef SPHERICALSHARP_HPP
 #define SPHERICALSHARP_HPP
 
-#include <array>
 #include <cmath>
-#include <functional>
 #include <iosfwd>
-#include <tuple>
 #include <vector>
 
 #include "Config.hpp"
@@ -38,7 +35,6 @@
 #include <Eigen/Core>
 
 #include "DerivativeUtils.hpp"
-#include "Exception.hpp"
 #include "GreensFunction.hpp"
 #include "legendre.h"
 #include "MathUtils.hpp"
@@ -55,7 +51,7 @@
 
 template <typename DerivativeTraits,
           typename IntegratorPolicy>
-class SphericalSharp final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
+class SphericalSharp __final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
                                               SphericalSharp<DerivativeTraits, IntegratorPolicy> >
 {
 public:
@@ -66,7 +62,7 @@ public:
      * \param[in] o center of the sphere
      */
     SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o)
-        : GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp, SphericalSharp<DerivativeTraits, IntegratorPolicy>>(), origin_(o)
+        : GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp, SphericalSharp<DerivativeTraits, IntegratorPolicy> >(), origin_(o)
     {
         this->profile_ = Sharp(e, esolv, r);
     }
@@ -75,14 +71,14 @@ public:
     /*! Calculates the matrix representation of the S operator
      *  \param[in] e list of finite elements
      */
-    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const override
+    virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const __override
     {
         return this->integrator_.singleLayer(*this, e);
     }
     /*! Calculates the matrix representation of the D operator
      *  \param[in] e list of finite elements
      */
-    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const override
+    virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const __override
     {
         return this->integrator_.doubleLayer(*this, e);
     }

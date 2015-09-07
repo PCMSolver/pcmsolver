@@ -26,17 +26,12 @@
 #ifndef GREENUTILS_HPP
 #define GREENUTILS_HPP
 
-#include <functional>
-
 #include "Config.hpp"
 
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
 #include "Stencils.hpp"
-
-template <typename DerivativeTraits>
-using KernelSFunctor = std::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)>;
 
 namespace GreenUtils {
 /*! Returns value of the directional derivative of the function passed for the pair of points p1, p2:
@@ -50,7 +45,8 @@ namespace GreenUtils {
  *  \param[in]        p2 second point
  */
 template <typename DerivativeTraits>
-double derivativeProbe(const KernelSFunctor<DerivativeTraits> & functor, const Eigen::Vector3d & normal_p2, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
+double derivativeProbe(const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> & functor,
+                       const Eigen::Vector3d & normal_p2, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
 {
     DerivativeTraits t1[3], t2[3], der;
     t1[0] = p1(0); t1[1] = p1(1); t1[2] = p1(2);
@@ -71,7 +67,8 @@ double derivativeProbe(const KernelSFunctor<DerivativeTraits> & functor, const E
  *  \param[in]        p2 second point
  */
 template <typename DerivativeTraits>
-double derivativeSource(const KernelSFunctor<DerivativeTraits> & functor, const Eigen::Vector3d & normal_p1, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
+double derivativeSource(const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> & functor,
+                        const Eigen::Vector3d & normal_p1, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
 {
     DerivativeTraits t1[3], t2[3], der;
     t1[0] = p1(0); t1[1] = p1(1); t1[2] = p1(2);
@@ -92,8 +89,7 @@ double derivativeSource(const KernelSFunctor<DerivativeTraits> & functor, const 
  */
 double derivativeProbe(const DifferentiableFunction & functor, const Eigen::Vector3d & normal_p2, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
 {
-    using namespace std::placeholders;
-    return threePointStencil(std::bind(functor, _1, _2), p2, p1, normal_p2);
+    return threePointStencil(pcm::bind(functor, _1, _2), p2, p1, normal_p2);
 }
 
 /*! Returns value of the directional derivative of the function passed for the pair of points p1, p2:
@@ -107,8 +103,7 @@ double derivativeProbe(const DifferentiableFunction & functor, const Eigen::Vect
  */
 double derivativeSource(const DifferentiableFunction & functor, const Eigen::Vector3d & normal_p1, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
 {
-        using namespace std::placeholders;
-        return threePointStencil(std::bind(functor,_1, _2), p1, p2, normal_p1);
+        return threePointStencil(pcm::bind(functor,_1, _2), p1, p2, normal_p1);
 }
 
 /*! Returns full gradient of the function passed for the pair of points p1, p2:
@@ -120,7 +115,8 @@ double derivativeSource(const DifferentiableFunction & functor, const Eigen::Vec
  *  \param[in] p2 second point
  */
 template <typename DerivativeTraits>
-Eigen::Vector3d gradientSource(const KernelSFunctor<DerivativeTraits> & functor, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
+Eigen::Vector3d gradientSource(const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> & functor,
+                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
 {
     return (Eigen::Vector3d() << derivativeSource(functor, Eigen::Vector3d::UnitX(), p1, p2),
                                  derivativeSource(functor, Eigen::Vector3d::UnitY(), p1, p2),
@@ -136,7 +132,8 @@ Eigen::Vector3d gradientSource(const KernelSFunctor<DerivativeTraits> & functor,
  *  \param[in] p2 second point
  */
 template <typename DerivativeTraits>
-Eigen::Vector3d gradientProbe(const KernelSFunctor<DerivativeTraits> & functor, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
+Eigen::Vector3d gradientProbe(const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> & functor,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2)
 {
     return (Eigen::Vector3d() << derivativeProbe(functor, Eigen::Vector3d::UnitX(), p1, p2),
                                  derivativeProbe(functor, Eigen::Vector3d::UnitY(), p1, p2),

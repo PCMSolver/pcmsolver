@@ -137,9 +137,9 @@ protected:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
-     *  need to implement. Thus this method is marked final.
+     *  need to implement. Thus this method is marked __final.
      */
-    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
+    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final
     {
         DerivativeTraits sp[3], pp[3];
         sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
@@ -240,9 +240,9 @@ protected:
      *  \param[in] p1 first point
      *  \param[in] p2 second point
      *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
-     *  need to implement. Thus this method is marked final.
+     *  need to implement. Thus this method is marked __final.
      */
-    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const final
+    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final
     {
         return this->operator()(const_cast<Numerical *>(p1.data()), const_cast<Numerical *>(p2.data()));
     }

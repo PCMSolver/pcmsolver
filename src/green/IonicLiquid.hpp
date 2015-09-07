@@ -100,7 +100,7 @@ private:
      *  \param[in]        p2 second point
      */
     virtual double kernelD_impl(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __override
     {
         return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }

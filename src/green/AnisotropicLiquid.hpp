@@ -119,7 +119,7 @@ private:
         Eigen::Vector3d scratch = this->profile_.epsilon() * (this->gradientProbe(p1, p2));
         return scratch.dot(direction);
     }
-    virtual std::ostream & printObject(std::ostream & os) override
+    virtual std::ostream & printObject(std::ostream & os) __override
     {
         os << "Green's function type: anisotropic liquid" << std::endl;
         os << this->profile_;

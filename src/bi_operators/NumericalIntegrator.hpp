@@ -37,8 +37,8 @@
 #include "IntegratorHelperFunctions.hpp"
 #include "Element.hpp"
 #include "AnisotropicLiquid.hpp"
-#include "SphericalDiffuse.hpp"
 #include "IonicLiquid.hpp"
+#include "SphericalDiffuse.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 

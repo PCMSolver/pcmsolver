@@ -23,34 +23,31 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef SHARP_HPP
-#define SHARP_HPP
+#ifndef METAL_HPP
+#define METAL_HPP
 
+#include <complex>
 #include <iosfwd>
 
 #include "Config.hpp"
 
-/*! \file Sharp.hpp
- *  \struct Sharp
- *  \brief A sharp dielectric separation
+/*! \file Metal.hpp
+ *  \struct Metal
+ *  \brief An object with complex permittivity
  *  \author Roberto Di Remigio
  *  \date 2015
  */
 
-struct Sharp final
+struct Metal final
 {
-    double epsilon;
-    double epsilonSolvent;
-    double radius;
-    Sharp() : epsilon(1.0), epsilonSolvent(1.0), radius(1.0) {}
-    Sharp(double eL, double eR, double c) :
-        epsilon(eL), epsilonSolvent(eR), radius(c) {}
-    friend std::ostream & operator<<(std::ostream & os, Sharp & obj) {
-        os << "Sphere permittivity  = " << obj.epsilon << std::endl;
-        os << "Solvent permittivity = " << obj.epsilonSolvent << std::endl;
-        os << "Sphere radius        = " << obj.radius   << " AU";
+    std::complex<double> epsilon;
+    Metal() : epsilon(std::complex<double>(1.0, 1.0)) {}
+    Metal(double eRe, double eIm) : epsilon(std::complex<double>(eRe, eIm)) {}
+    Metal(const std::complex<double> & e) : epsilon(e) {}
+    friend std::ostream & operator<<(std::ostream & os, Metal & arg) {
+        os << "Permittivity = " << arg.epsilon;
         return os;
     }
 };
 
-#endif // SHARP_HPP
+#endif // METAL_HPP

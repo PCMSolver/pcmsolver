@@ -36,6 +36,7 @@
 
 class Element;
 
+#include "DerivativeUtils.hpp"
 #include "GreensFunction.hpp"
 #include "Yukawa.hpp"
 
@@ -57,20 +58,6 @@ public:
     IonicLiquid(double eps, double k) : GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
                                                   IonicLiquid<DerivativeTraits, IntegratorPolicy> >() { this->profile_ = Yukawa(eps, k); }
     virtual ~IonicLiquid() {}
-    /*! Returns value of the directional derivative of the
-     *  Greens's function for the pair of points p1, p2:
-     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  Notice that this method returns the directional derivative with respect
-     *  to the probe point, thus assuming that the direction is relative to that point.
-     *  \param[in] direction the direction
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    virtual double kernelD(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __override
-    {
-        return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
-    }
 
     /*! Calculates the matrix representation of the S operator
      *  \param[in] e list of finite elements
@@ -101,10 +88,21 @@ private:
     {
         double eps = this->profile_.epsilon;
 	    double k = this->profile_.kappa;
-        DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
-                          (sp[1] - pp[1]) * (sp[1] - pp[1]) +
-                          (sp[2] - pp[2]) * (sp[2] - pp[2]));
-        return (exp(-k * distance) / (eps * distance));
+        return (exp(-k * distance(sp, pp)) / (eps * distance(sp, pp)));
+    }
+    /*! Returns value of the directional derivative of the
+     *  Greens's function for the pair of points p1, p2:
+     *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  Notice that this method returns the directional derivative with respect
+     *  to the probe point, thus assuming that the direction is relative to that point.
+     *  \param[in] direction the direction
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    virtual double kernelD_impl(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
+    {
+        return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }
     virtual std::ostream & printObject(std::ostream & os) __override
     {

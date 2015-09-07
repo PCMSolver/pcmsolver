@@ -36,6 +36,7 @@
 
 class Element;
 
+#include "DerivativeUtils.hpp"
 #include "GreensFunction.hpp"
 #include "Uniform.hpp"
 
@@ -57,20 +58,6 @@ public:
     UniformDielectric(double eps) : GreensFunction<DerivativeTraits, IntegratorPolicy, Uniform,
                               UniformDielectric<DerivativeTraits, IntegratorPolicy> >() { this->profile_ = Uniform(eps); }
     virtual ~UniformDielectric() {}
-    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator
-     *  for the pair of points p1, p2:
-     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
-     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
-     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
-     *  \param[in] direction the direction
-     *  \param[in]        p1 first point
-     *  \param[in]        p2 second point
-     */
-    virtual double kernelD(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __override
-    {
-        return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
-    }
 
     /*! Calculates the matrix representation of the S operator
      *  \param[in] e list of finite elements
@@ -100,10 +87,21 @@ private:
      */
     virtual DerivativeTraits operator()(DerivativeTraits * sp, DerivativeTraits * pp) const __override
     {
-        DerivativeTraits distance = sqrt((sp[0] - pp[0]) * (sp[0] - pp[0]) +
-                          (sp[1] - pp[1]) * (sp[1] - pp[1]) +
-                          (sp[2] - pp[2]) * (sp[2] - pp[2]));
-        return 1/(this->profile_.epsilon * distance);
+        return 1/(this->profile_.epsilon * distance(sp, pp));
+    }
+    /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator
+     *  for the pair of points p1, p2:
+     *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
+     *  To obtain the kernel of the \f$\mathcal{D}^\dagger\f$ operator call this methods with \f$\mathbf{p}_1\f$
+     *  and \f$\mathbf{p}_2\f$ exchanged and with \f$\mathbf{n}_{\mathbf{p}_2} = \mathbf{n}_{\mathbf{p}_1}\f$
+     *  \param[in] direction the direction
+     *  \param[in]        p1 first point
+     *  \param[in]        p2 second point
+     */
+    virtual double kernelD_impl(const Eigen::Vector3d & direction,
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const override
+    {
+        return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
     }
     virtual std::ostream & printObject(std::ostream & os) __override
     {

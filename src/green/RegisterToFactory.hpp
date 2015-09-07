@@ -31,7 +31,7 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "ForIdGreen.hpp"
+#include "ForId.hpp"
 #include "GreenData.hpp"
 #include "Factory.hpp"
 #include "IntegratorForward.hpp"
@@ -61,7 +61,7 @@ namespace
     IGreensFunction * createVacuum(const greenData & data)
     {
         buildVacuum build;
-        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
+        return for_id<derivative_types, integrator_types, IGreensFunction>(build, data, data.howDerivative, data.howIntegrator);
     }
     const std::string VACUUM("VACUUM");
     const bool registeredVacuum =
@@ -81,7 +81,7 @@ namespace
     IGreensFunction * createUniformDielectric(const greenData & data)
     {
         buildUniformDielectric build;
-        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
+        return for_id<derivative_types, integrator_types, IGreensFunction>(build, data, data.howDerivative, data.howIntegrator);
     }
     const std::string UNIFORMDIELECTRIC("UNIFORMDIELECTRIC");
     const bool registeredUniformDielectric =
@@ -101,7 +101,7 @@ namespace
     IGreensFunction * createIonicLiquid(const greenData & data)
     {
         buildIonicLiquid build;
-        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
+        return for_id<derivative_types, integrator_types, IGreensFunction>(build, data, data.howDerivative, data.howIntegrator);
     }
     const std::string IONICLIQUID("IONICLIQUID");
     const bool registeredIonicLiquid =
@@ -121,7 +121,7 @@ namespace
     IGreensFunction * createAnisotropicLiquid(const greenData & data)
     {
         buildAnisotropicLiquid build;
-        return for_id<derivative_types, integrator_types>(build, data, data.howDerivative, data.howIntegrator);
+        return for_id<derivative_types, integrator_types, IGreensFunction>(build, data, data.howDerivative, data.howIntegrator);
     }
     const std::string ANISOTROPICLIQUID("ANISOTROPICLIQUID");
     const bool registeredAnisotropicLiquid =
@@ -141,7 +141,7 @@ namespace
     IGreensFunction * createSphericalDiffuse(const greenData & data)
     {
         buildSphericalDiffuse build;
-        return for_id<integrator_types, onelayer_diffuse_profile_types>(build, data, data.howIntegrator, data.howProfile);
+        return for_id<integrator_types, onelayer_diffuse_profile_types, IGreensFunction>(build, data, data.howIntegrator, data.howProfile);
     }
     const std::string SPHERICALDIFFUSE("SPHERICALDIFFUSE");
     const bool registeredSphericalDiffuse =

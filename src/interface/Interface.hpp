@@ -31,7 +31,6 @@
 
 */
 
-#include <map>
 #include <vector>
 
 #include "Config.hpp"
@@ -40,6 +39,7 @@
 
 #include <Eigen/Core>
 
+#include "Cxx11Workarounds.hpp"
 #include "InputManager.hpp"
 #include "Molecule.hpp"
 #include "Sphere.hpp"
@@ -363,15 +363,15 @@ void initSpheresAtoms(const Eigen::Matrix3Xd & sphereCenter_,
  *
  *  Checks if SurfaceFunction exists
  */
-bool surfaceFunctionExists(const std::map<std::string, SurfaceFunction> & sf_map, const std::string & name);
+bool surfaceFunctionExists(const pcm::unordered_map<std::string, SurfaceFunction> & sf_map, const std::string & name);
 
-/*! \fn void insertSurfaceFunction(std::map<std::string, SurfaceFunction> & sf_map, const SurfaceFunction & sf)
+/*! \fn void insertSurfaceFunction(pcm::unordered_map<std::string, SurfaceFunction> & sf_map, const SurfaceFunction & sf)
  *  \param[in] sf_map the map to be searched
  *  \param[in] sf the SurfaceFunction
  *
  *  No checks on existence are performed by this function
  */
-void insertSurfaceFunction(std::map<std::string, SurfaceFunction> & sf_map, const SurfaceFunction & sf);
+void insertSurfaceFunction(pcm::unordered_map<std::string, SurfaceFunction> & sf_map, const SurfaceFunction & sf);
 
 /*! \fn inline void printer(const std::string & message)
  *  \param[in] message the message to be printed

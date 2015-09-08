@@ -68,6 +68,11 @@ namespace pcm {
 namespace pcm {
     using std::array;
 } /* end namespace pcm */
+/* <unordered_map> workarounds */
+#include <unordered_map>
+namespace pcm {
+    using std::unordered_map;
+} /* end namespace pcm */
 #else /* HAS_CXX11*/
 /* Smart pointers workarounds */
 #include <boost/shared_ptr.hpp>
@@ -95,6 +100,11 @@ namespace pcm {
 #include <boost/array.hpp>
 namespace pcm {
     using boost::array;
+} /* end namespace pcm */
+/* <unordered_map> workarounds */
+#include <boost/unordered_map.hpp>
+namespace pcm {
+    using boost::unordered_map;
 } /* end namespace pcm */
 #endif /* HAS_CXX11 */
 

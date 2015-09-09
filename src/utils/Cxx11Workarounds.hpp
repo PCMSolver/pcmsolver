@@ -130,13 +130,6 @@ namespace pcm {
 #define __noexcept throw()
 #endif /* HAS_CXX11 */
 
-/* Workaroud for = delete */
-#ifdef HAS_CXX11
-#define __deleted = delete
-#else /* HAS_CXX11 */
-#define __deleted
-#endif /* HAS_CXX11 */
-
 /* Workaround for nullptr */
 #ifdef HAS_CXX11_NULLPTR
 #define __nullptr nullptr

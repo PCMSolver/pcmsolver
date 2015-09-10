@@ -49,7 +49,7 @@ namespace pcm {
     typedef function<int(void)> NrNucleiGetter;
     typedef function<void(double[], double[])> CoordinatesGetter;
     typedef function<void(const char *, size_t)> HostWriter;
-    typedef function<void(int, int, int, int)> PointGroupSetter;
+    typedef function<void(int *, int *, int *, int *)> PointGroupSetter;
     typedef function<void(cavityInput &, solverInput &, greenInput &)> HostInput;
     typedef unordered_map<std::string, SurfaceFunction> SurfaceFunctionMap;
     typedef std::pair<std::string, SurfaceFunction> SurfaceFunctionPair;
@@ -58,7 +58,7 @@ namespace pcm {
         DELETE_DEFAULT_CONSTRUCTOR(Meddle)
         public:
             Meddle(const NrNucleiGetter & f_1, const CoordinatesGetter & f_2, const HostWriter & f_3,
-                   const PointGroupSetter & f_4, const HostInput & f_5);
+                   const PointGroupSetter & f_4); //, const HostInput & f_5);
             ~Meddle();
             void getCavitySize(int & size, int & irr_size) const;
             void getCenters(double centers[]) const;
@@ -94,11 +94,17 @@ namespace pcm {
             bool hasDynamic_;
             /*! SurfaceFunction map */
             mutable SurfaceFunctionMap functions_;
-            /*! Initialize cavity */
+            /*! Initialize input_ */
+            /*! Initialize cavity_ */
             void initCavity();
-            /*! Initialize solver */
+            /*! Initialize solvers K_0_ and K_d_ */
             void initSolver();
     };
+
+    namespace detail {
+        void initMolecule(Molecule &);
+        void initSpheresAtoms(const Eigen::Matrix3Xd &, std::vector<Sphere> &);
+    } /* end namespace detail */
 } /* end namespace pcm */
 
 #endif /* MEDDLE_HPP */

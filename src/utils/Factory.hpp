@@ -31,7 +31,6 @@
 
 #include "Config.hpp"
 
-
 /*! \file Factory.hpp
  *	\class Factory
  *	\brief Implementation of the Factory Method
@@ -76,15 +75,14 @@ public:
         return callbacks_.erase(objID) == 1;
     }
     /*! \brief Calls the appropriate creation functor, based on the passed objID
-     *  \note The pointer returned by the creationalFunctor is wrapped into a pcm::shared_ptr
      *  \param[in] objID the object's identification string
      *  \param[in] data  input data for the creation of the object
      */
-    pcm::shared_ptr<Object> create(const std::string & objID, const ObjectInput & data, const Args & ... more_args) {
+    Object * create(const std::string & objID, const ObjectInput & data, const Args & ... more_args) {
         if (objID.empty()) PCMSOLVER_ERROR("No object identification string provided to the Factory.");
         typename CallbackMap::const_iterator i = callbacks_.find(objID);
         if (i == callbacks_.end()) PCMSOLVER_ERROR("The unknown object ID " + objID + " occurred in the Factory.");
-        return pcm::shared_ptr<Object>((i->second)(data, more_args...));
+        return (i->second)(data, more_args...);
     }
     /*! Unique point of access to the unique instance of the Factory */
     static Factory & TheFactory() {

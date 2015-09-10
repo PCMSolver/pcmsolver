@@ -29,8 +29,8 @@ typedef struct pcmsolver_context_s pcmsolver_context_t;
 typedef int(*collect_nctot)(void);
 typedef void(*collect_atoms)(double[], double[]);
 typedef void(*host_writer)(const char *, size_t);
-typedef void(*set_point_group)(int, int, int, int);
-typedef void(*host_input)(cavityInput &, solverInput &, greenInput &);
+typedef void(*set_point_group)(int *, int *, int *, int *);
+//typedef void(*host_input)(cavityInput &, solverInput &, greenInput &);
 
 typedef enum
 {
@@ -38,12 +38,9 @@ typedef enum
     PCMSOLVER_READER_HOST
 } pcmsolver_reader_t;
 
-PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(const pcmsolver_reader_t reader_type);
+PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(collect_nctot, collect_atoms, host_writer, set_point_group) //, host_input)
 
 PCMSOLVER_API void pcmsolver_free(pcmsolver_context_t * context);
-
-PCMSOLVER_API int pcmsolver_input(pcmsolver_context_t * context,
-                                  const pcmsolver_reader_t reader_type);
 
 PCMSOLVER_API void pcmsolver_compute_asc(pcmsolver_context_t * context
                                         const char * mep_name,

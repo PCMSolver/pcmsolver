@@ -109,6 +109,4 @@ protected:
     virtual std::ostream & printObject(std::ostream & os) = 0;
 };
 
-typedef pcm::shared_ptr<IGreensFunction> SharedIGreensFunction;
-
 #endif // IGREENSFUNCTION_HPP

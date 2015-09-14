@@ -57,12 +57,12 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     cavity.saveCavity("point.npz");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
     UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
-    IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    IEFSolver solver(symm);
+    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
     int size = cavity.size();
@@ -107,12 +107,12 @@ BOOST_AUTO_TEST_CASE(pointChargeShiftedGePol)
     cavity.saveCavity("point.npz");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
     UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
-    IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    IEFSolver solver(symm);
+    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
     int size = cavity.size();

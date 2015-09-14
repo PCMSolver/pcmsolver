@@ -65,13 +65,13 @@ BOOST_AUTO_TEST_CASE(NH3TsLess)
 
     CollocationIntegrator * diag = new CollocationIntegrator();
     double permittivity = 78.39;
-    Vacuum<AD_directional> * gfInside = new Vacuum<AD_directional>(diag);
-    UniformDielectric<AD_directional> * gfOutside = new
+    Vacuum<AD_directional> gfInside = Vacuum<AD_directional>(diag);
+    UniformDielectric<AD_directional> gfOutside =
     UniformDielectric<AD_directional>(permittivity, diag);
     bool symm = true;
     double correction = 0.0;
-    CPCMSolver solver(gfInside, gfOutside, symm, correction);
-    solver.buildSystemMatrix(cavity);
+    CPCMSolver solver(symm, correction);
+    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;

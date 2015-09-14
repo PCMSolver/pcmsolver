@@ -27,14 +27,11 @@
 #define PCMSOLVER_HPP
 
 #include <iosfwd>
-#include <sstream>
-#include <string>
 
 #include "Config.hpp"
 
 class Cavity;
-
-#include "IGreensFunction.hpp"
+class IGreensFunction;
 
 /*! \file PCMSolver.hpp
  *  \class PCMSolver
@@ -42,33 +39,23 @@ class Cavity;
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2011, 2015
  *
- *  We use the Non-Virtual Interface idiom and shared pointers.
+ *  We use the Non-Virtual Interface idiom.
  */
 
 class PCMSolver
 {
 public:
-    PCMSolver() {}
-    /*! \brief Construct solver from two Green's functions
-     *  \param[in] gf_i Green's function inside the cavity
-     *  \param[in] gf_o Green's function outside the cavity
-     */
-    PCMSolver(const SharedIGreensFunction & gf_i, const SharedIGreensFunction & gf_o)
-            : greenInside_(gf_i), greenOutside_(gf_o), built_(false) {}
-    /*! \brief Construct solver from two raw pointers to Green's functions
-     *  \param[in] gf_i Green's function inside the cavity
-     *  \param[in] gf_o Green's function outside the cavity
-     *  \warning gf_i and gf_o will be deallocated automatically when the solver object goes out of scope,
-     *  since they are wrapped in a std::shared_ptr
-     */
-    PCMSolver(IGreensFunction * gf_i, IGreensFunction * gf_o)
-            : greenInside_(SharedIGreensFunction(gf_i)), greenOutside_(SharedIGreensFunction(gf_o)), built_(false) {}
+    PCMSolver() : built_(false), isotropic_(true) {}
     virtual ~PCMSolver() {}
 
     /*! \brief Calculation of the PCM matrix
      *  \param[in] cavity the cavity to be used
+     *  \param[in] gf_i Green's function inside the cavity
+     *  \param[in] gf_o Green's function outside the cavity
      */
-    void buildSystemMatrix(const Cavity & cavity) { buildSystemMatrix_impl(cavity); }
+    void buildSystemMatrix(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o) {
+        buildSystemMatrix_impl(cavity, gf_i, gf_o);
+    }
     /*! \brief Returns the ASC given the MEP and the desired irreducible representation
      *  \param[in] potential the vector containing the MEP at cavity points
      *  \param[in] irrep the irreducible representation of the MEP and ASC
@@ -77,30 +64,22 @@ public:
         if (!built_) PCMSOLVER_ERROR("PCM matrix not calculated yet");
         return computeCharge_impl(potential, irrep);
     }
-    std::string printGreensFunctions() {
-        std::stringstream tmp;
-        tmp << ".... Inside " << std::endl;
-        tmp << *greenInside_ << std::endl;
-        tmp << ".... Outside " << std::endl;
-        tmp << *greenOutside_;
-        return tmp.str();
-    }
 
     friend std::ostream & operator<<(std::ostream & os, PCMSolver & solver) {
         return solver.printSolver(os);
     }
 protected:
-    /*! Green's funciton inside the cavity */
-    SharedIGreensFunction greenInside_;
-    /*! Green's function outside the cavity */
-    SharedIGreensFunction greenOutside_;
     /*! Whether the system matrix has been built */
     bool built_;
+    /*! Whether the solver is isotropic */
+    bool isotropic_;
 
     /*! \brief Calculation of the PCM matrix
      *  \param[in] cavity the cavity to be used
+     *  \param[in] gf_i Green's function inside the cavity
+     *  \param[in] gf_o Green's function outside the cavity
      */
-    virtual void buildSystemMatrix_impl(const Cavity & cavity) = 0;
+    virtual void buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o) = 0;
     /*! \brief Returns the ASC given the MEP and the desired irreducible representation
      *  \param[in] potential the vector containing the MEP at cavity points
      *  \param[in] irrep the irreducible representation of the MEP and ASC
@@ -108,7 +87,5 @@ protected:
     virtual Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential, int irrep = 0) const = 0;
     virtual std::ostream & printSolver(std::ostream & os) = 0;
 };
-
-typedef pcm::shared_ptr<PCMSolver> SharedPCMSolver;
 
 #endif // PCMSOLVER_HPP

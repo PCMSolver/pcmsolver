@@ -38,23 +38,20 @@
  *	\date 2015
  *  \tparam Object type of the object the factory will create
  *  \tparam ObjectInput type of the input wrapper struct
- *  \tparam Args any additional argument for object creation not wrapped in the input struct
  *
  * 	Factory method implementation shamelessly copied from here \cite Alexandrescu2001
  * 	It is implemented as a Singleton.
  */
 
 template <typename Object,
-          typename ObjectInput,
-          typename ... Args>
+          typename ObjectInput>
 class Factory __final
 {
 public:
     /*! \brief Callback function for object creation
-     *  Returns a raw pointer of type Object; accepts an ObjectInput type and a variadic
-     *  parameter pack
+     *  Returns a raw pointer of type Object; accepts an ObjectInput type
      */
-    typedef pcm::function<Object * (const ObjectInput &, const Args & ...)> creationalFunctor;
+    typedef pcm::function<Object * (const ObjectInput &)> creationalFunctor;
 private:
     /*! std::map from the object type identifier (a string) to its callback function */
     typedef std::map<std::string, creationalFunctor> CallbackMap;
@@ -78,11 +75,11 @@ public:
      *  \param[in] objID the object's identification string
      *  \param[in] data  input data for the creation of the object
      */
-    Object * create(const std::string & objID, const ObjectInput & data, const Args & ... more_args) {
+    Object * create(const std::string & objID, const ObjectInput & data) {
         if (objID.empty()) PCMSOLVER_ERROR("No object identification string provided to the Factory.");
         typename CallbackMap::const_iterator i = callbacks_.find(objID);
         if (i == callbacks_.end()) PCMSOLVER_ERROR("The unknown object ID " + objID + " occurred in the Factory.");
-        return (i->second)(data, more_args...);
+        return (i->second)(data);
     }
     /*! Unique point of access to the unique instance of the Factory */
     static Factory & TheFactory() {

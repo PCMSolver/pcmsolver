@@ -59,16 +59,14 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
     cavity.saveCavity("point.npz");
 
     double permittivity = 78.39;
-    pcm::shared_ptr<Vacuum<AD_directional, CollocationIntegrator> > gfInside = 
-	    pcm::make_shared<Vacuum<AD_directional, CollocationIntegrator> >(Vacuum<AD_directional, CollocationIntegrator>());
-    pcm::shared_ptr<UniformDielectric<AD_directional, CollocationIntegrator> > gfOutside 
-	    = pcm::make_shared<UniformDielectric<AD_directional, CollocationIntegrator> >(UniformDielectric<AD_directional, CollocationIntegrator>(permittivity));
+    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside = UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
-    IEFSolver aniso_solver(gfInside, gfOutside, symm);
-    aniso_solver.buildAnisotropicMatrix(cavity);
+    IEFSolver aniso_solver(symm);
+    aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
 
-    IEFSolver iso_solver(gfInside, gfOutside, symm);
-    iso_solver.buildIsotropicMatrix(cavity);
+    IEFSolver iso_solver(symm);
+    iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
     int size = cavity.size();
@@ -121,16 +119,14 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
     cavity.saveCavity("point.npz");
 
     double permittivity = 78.39;
-    pcm::shared_ptr<Vacuum<AD_directional, CollocationIntegrator> > gfInside = 
-	    pcm::make_shared<Vacuum<AD_directional, CollocationIntegrator> >(Vacuum<AD_directional, CollocationIntegrator>());
-    pcm::shared_ptr<UniformDielectric<AD_directional, CollocationIntegrator> > gfOutside 
-	    = pcm::make_shared<UniformDielectric<AD_directional, CollocationIntegrator> >(UniformDielectric<AD_directional, CollocationIntegrator>(permittivity));
+    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside = UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
-    IEFSolver aniso_solver(gfInside, gfOutside, symm);
-    aniso_solver.buildAnisotropicMatrix(cavity);
+    IEFSolver aniso_solver(symm);
+    aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
 
-    IEFSolver iso_solver(gfInside, gfOutside, symm);
-    iso_solver.buildIsotropicMatrix(cavity);
+    IEFSolver iso_solver(symm);
+    iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
     int size = cavity.size();

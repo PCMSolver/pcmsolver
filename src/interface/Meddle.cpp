@@ -82,6 +82,12 @@ void pcmsolver_get_centers(pcmsolver_context_t * context, double centers[])
 }
 
 PCMSOLVER_API
+void pcmsolver_get_center(pcmsolver_context_t * context, int its, double center[])
+{
+    AS_TYPE(pcm::Meddle, context)->getCenter(its, center);
+}
+
+PCMSOLVER_API
 void pcmsolver_compute_asc(pcmsolver_context_t * context,
                            const char * mep_name,
                            const char * asc_name,
@@ -171,7 +177,12 @@ namespace pcm {
 
     void Meddle::getCenters(double centers[]) const
     {
-        centers = cavity_->elementCenter().data();
+        Eigen::Map<Eigen::Matrix3Xd>(centers, 3, cavity_->size()) = cavity_->elementCenter();
+    }
+
+    void Meddle::getCenter(int its, double center[]) const
+    {
+        Eigen::Map<Eigen::Vector3d>(center, 3, 1) = cavity_->elementCenter(its-1);
     }
 
     double Meddle::computePolarizationEnergy(const char * mep_name, const char * asc_name) const
@@ -230,9 +241,7 @@ namespace pcm {
         if (iter == functions_.end())
             PCMSOLVER_ERROR("You are trying to access a non-existing SurfaceFunction.");
 
-        for (size_t i = 0; i < size; ++i) {
-            values[i] = iter->second.value(i);
-        }
+        Eigen::Map<Eigen::VectorXd>(values, size, 1) = iter->second.vector();
     }
 
     void Meddle::setSurfaceFunction(unsigned int size, double values[], const char * name) const
@@ -242,7 +251,7 @@ namespace pcm {
 
         std::string functionName(name);
         if (functions_.count(functionName) == 1) { // Key in map already
-            functions_[functionName].setValues(values);
+            functions_[functionName].vector() = Eigen::Map<Eigen::VectorXd>(values, size, 1);
         } else {
             SurfaceFunction func(functionName, size, values);
             functions_.insert(std::make_pair(functionName, func));
@@ -333,13 +342,20 @@ namespace pcm {
             initMolecule(input_, pointGroup_, nuclei, charges, centers, molec);
             input_.molecule(molec);
         }
+
+        infoStream_ << std::endl;
+        infoStream_ << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
+        infoStream_ << "Using CODATA " << input_.CODATAyear() << " set of constants." << std::endl;
+        infoStream_ << "Input parsing done " << input_.providedBy() << std::endl;
     }
 
     void Meddle::initCavity()
     {
-        cavity_ = Factory<Cavity, cavityData>::TheFactory().create(input_.cavityType(),
-                                                                   input_.cavityParams());
+        cavity_ = Factory<Cavity, cavityData>::TheFactory().create(input_.cavityType(), input_.cavityParams());
         cavity_->saveCavity();
+
+        infoStream_ << "========== Cavity " << std::endl;
+        infoStream_ << *cavity_ << std::endl;
     }
 
     void Meddle::initSolver()
@@ -349,41 +365,43 @@ namespace pcm {
         IGreensFunction * gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(input_.greenOutsideType(),
                 input_.outsideStaticGreenParams());
         std::string modelType = input_.solverType();
-        K_0_ = Factory<PCMSolver, solverData, IGreensFunction *, IGreensFunction *>::TheFactory().create(modelType, input_.solverParams(), gf_i, gf_o);
-        K_0_->buildSystemMatrix(*cavity_);
+        K_0_ = Factory<PCMSolver, solverData>::TheFactory().create(modelType, input_.solverParams());
+        K_0_->buildSystemMatrix(*cavity_, *gf_i, *gf_o);
+        std::stringstream tmp;
+        tmp << ".... Inside " << std::endl;
+        tmp << *gf_i << std::endl;
+        tmp << ".... Outside " << std::endl;
+        tmp << *gf_o;
+        delete gf_o;
         if (input_.isDynamic()) {
             IGreensFunction * gf_o_dyn = Factory<IGreensFunction, greenData>::TheFactory().create(input_.greenOutsideType(),
                     input_.outsideDynamicGreenParams());
-            K_d_ = Factory<PCMSolver, solverData, IGreensFunction *, IGreensFunction *>::TheFactory().create(modelType, input_.solverParams(), gf_i, gf_o_dyn);
-            K_d_->buildSystemMatrix(*cavity_);
+            K_d_ = Factory<PCMSolver, solverData>::TheFactory().create(modelType, input_.solverParams());
+            K_d_->buildSystemMatrix(*cavity_, *gf_i, *gf_o_dyn);
             hasDynamic_ = true;
+            delete gf_o_dyn;
         }
+        delete gf_i;
+
+        infoStream_ << "========== Solver " << std::endl;
+        infoStream_ << "============= Static " << std::endl;
+        infoStream_ << *K_0_ << std::endl;
+        if (hasDynamic_) {
+            infoStream_ << "============= Dynamic " << std::endl;
+            infoStream_ << *K_d_ << std::endl;
+        }
+        infoStream_ << "============ Medium " << std::endl;
+        if (input_.fromSolvent()) {
+            infoStream_ << "Medium initialized from solvent built-in data." << std::endl;
+            Solvent solvent = input_.solvent();
+            infoStream_ << solvent << std::endl;
+        }
+        infoStream_ << tmp.str() << std::endl;
     }
 
     void Meddle::printInfo() const
     {
-        std::ostringstream out_stream;
-        out_stream << "\n" << std::endl;
-        out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
-        out_stream << "Using CODATA " << input_.CODATAyear() << " set of constants." << std::endl;
-        out_stream << "Input parsing done " << input_.providedBy() << std::endl;
-        out_stream << "========== Cavity " << std::endl;
-        out_stream << *cavity_ << std::endl;
-        out_stream << "========== Solver " << std::endl;
-        out_stream << "============= Static " << std::endl;
-        out_stream << *K_0_ << std::endl;
-        if (hasDynamic_) {
-            out_stream << "============= Static " << std::endl;
-            out_stream << *K_d_ << std::endl;
-        }
-        out_stream << "============ Medium " << std::endl;
-        if (input_.fromSolvent()) {
-            out_stream << "Medium initialized from solvent built-in data." << std::endl;
-            Solvent solvent = input_.solvent();
-            out_stream << solvent << std::endl;
-        }
-        out_stream << K_0_->printGreensFunctions() << std::endl;
-        printer(out_stream);
+        printer(infoStream_);
     }
 
     void initMolecule(const Input & inp, const PointGroupSetter & set_group,

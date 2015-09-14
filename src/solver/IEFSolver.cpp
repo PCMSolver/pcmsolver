@@ -41,16 +41,13 @@
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
-void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity)
+void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-    if (greenInside_->uniform() && greenOutside_->uniform()) {
-        buildIsotropicMatrix(cavity);
-    } else {
-        buildAnisotropicMatrix(cavity);
-    }
+    isotropic_ = (gf_i.uniform() && gf_o.uniform());
+    isotropic_ ? buildIsotropicMatrix(cavity, gf_i, gf_o) : buildAnisotropicMatrix(cavity, gf_i, gf_o);
 }
 
-void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
+void IEFSolver::buildAnisotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
     // The total size of the cavity
     int cavitySize = cav.size();
@@ -60,10 +57,10 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     int dimBlock = cav.irreducible_size();
 
     // Compute SI, DI and SE, DE on the whole cavity, regardless of symmetry
-    Eigen::MatrixXd SI = greenInside_->singleLayer(cav.elements());
-    Eigen::MatrixXd DI = greenInside_->doubleLayer(cav.elements());
-    Eigen::MatrixXd SE = greenOutside_->singleLayer(cav.elements());
-    Eigen::MatrixXd DE = greenOutside_->doubleLayer(cav.elements());
+    Eigen::MatrixXd SI = gf_i.singleLayer(cav.elements());
+    Eigen::MatrixXd DI = gf_i.doubleLayer(cav.elements());
+    Eigen::MatrixXd SE = gf_o.singleLayer(cav.elements());
+    Eigen::MatrixXd DE = gf_o.doubleLayer(cav.elements());
 
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
@@ -108,7 +105,7 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav)
     built_ = true;
 }
 
-void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
+void IEFSolver::buildIsotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
     // The total size of the cavity
     int cavitySize = cav.size();
@@ -118,8 +115,8 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     int dimBlock = cav.irreducible_size();
 
     // Compute SI and DI on the whole cavity, regardless of symmetry
-    Eigen::MatrixXd SI = greenInside_->singleLayer(cav.elements());
-    Eigen::MatrixXd DI = greenInside_->doubleLayer(cav.elements());
+    Eigen::MatrixXd SI = gf_i.singleLayer(cav.elements());
+    Eigen::MatrixXd DI = gf_i.doubleLayer(cav.elements());
 
     // Perform symmetry blocking
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
@@ -137,7 +134,7 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav)
     // T = (2 * M_PI * fact * aInv - DI) * a * SI; R = (2 * M_PI * aInv - DI)
     // fullPCMMatrix_ = K = T^-1 * R * a
     // 1. Form T
-    double epsilon = profiles::epsilon(greenOutside_->permittivity());
+    double epsilon = profiles::epsilon(gf_o.permittivity());
     double fact = (epsilon + 1.0)/(epsilon - 1.0);
     fullPCMMatrix_ = (2 * M_PI * fact * aInv - DI) * a * SI;
     // 2. Invert T using LU decomposition with full pivoting
@@ -186,7 +183,7 @@ Eigen::VectorXd IEFSolver::computeCharge_impl(const Eigen::VectorXd & potential,
 std::ostream & IEFSolver::printSolver(std::ostream & os)
 {
     std::string type;
-    if (greenInside_->uniform() && greenOutside_->uniform()) {
+    if (isotropic_) {
         type = "IEFPCM, isotropic";
     } else {
         type = "IEFPCM, anisotropic";
@@ -197,6 +194,7 @@ std::ostream & IEFSolver::printSolver(std::ostream & os)
     } else {
         os << "PCM matrix NOT hermitivitized (matches old DALTON)";
     }
+
     return os;
 }
 

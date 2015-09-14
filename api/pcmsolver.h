@@ -50,6 +50,8 @@ PCMSOLVER_API unsigned int pcmsolver_get_irreducible_cavity_size(pcmsolver_conte
 
 PCMSOLVER_API void pcmsolver_get_centers(pcmsolver_context_t * context, double centers[]);
 
+PCMSOLVER_API void pcmsolver_get_center(pcmsolver_context_t * context, int its, double center[]);
+
 PCMSOLVER_API void pcmsolver_compute_asc(pcmsolver_context_t * context,
                                         const char * mep_name,
                                         const char * asc_name,

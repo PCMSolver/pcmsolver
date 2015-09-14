@@ -39,11 +39,9 @@
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
 
-void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity)
+void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-    if (!(greenInside_->uniform() && greenOutside_->uniform())) {
-        PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
-    }
+    if (!isotropic_) PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
 
     // The total size of the cavity
     int cavitySize = cavity.size();
@@ -53,7 +51,7 @@ void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity)
     int dimBlock = cavity.irreducible_size();
 
     // Compute SI on the whole cavity, regardless of symmetry
-    Eigen::MatrixXd SI = greenInside_->singleLayer(cavity.elements());
+    Eigen::MatrixXd SI = gf_i.singleLayer(cavity.elements());
 
     // Perform symmetry blocking only for the SI matrix as the DI matrix is not used.
     // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
@@ -62,7 +60,7 @@ void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity)
         symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
     }
 
-    double epsilon = profiles::epsilon(greenOutside_->permittivity());
+    double epsilon = profiles::epsilon(gf_o.permittivity());
     double fact = (epsilon - 1.0)/(epsilon + correction_);
     // Invert SI  using LU decomposition with full pivoting
     // This is a rank-revealing LU decomposition, this allows us
@@ -102,6 +100,7 @@ std::ostream & CPCMSolver::printSolver(std::ostream & os)
     } else {
         os << "PCM matrix NOT hermitivitized (matches old DALTON)";
     }
+
     return os;
 }
 

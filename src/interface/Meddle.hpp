@@ -103,6 +103,8 @@ namespace pcm {
             PCMSolver * K_0_;
             /*! Solver with dynamic permittivity */
             PCMSolver * K_d_;
+            /*! PCMSolver set up information */
+            mutable std::ostringstream infoStream_;
             /*! Whether K_d_ was initialized */
             bool hasDynamic_;
             /*! SurfaceFunction map */

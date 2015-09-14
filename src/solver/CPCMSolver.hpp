@@ -35,9 +35,9 @@
 #include <Eigen/Core>
 
 class Cavity;
+class IGreensFunction;
 
 #include "Factory.hpp"
-#include "IGreensFunction.hpp"
 #include "PCMSolver.hpp"
 #include "SolverData.hpp"
 
@@ -53,24 +53,11 @@ class CPCMSolver : public PCMSolver
 public:
     CPCMSolver() {}
     /*! \brief Construct solver from two shared_ptr to Green's functions
-     *  \param[in] gf_i Green's function inside the cavity
-     *  \param[in] gf_o Green's function outside the cavity
      *  \param[in] symm whether the system matrix has to be symmetrized
      *  \param[in] corr factor to correct the conductor results
      */
-    CPCMSolver(const SharedIGreensFunction & gf_i, const SharedIGreensFunction & gf_o,
-            bool symm, double corr)
-        : PCMSolver(gf_i, gf_o), hermitivitize_(symm), correction_(corr) {}
-    /*! \brief Construct solver from two raw pointers to Green's functions
-     *  \param[in] gf_i Green's function inside the cavity
-     *  \param[in] gf_o Green's function outside the cavity
-     *  \param[in] symm whether the system matrix has to be symmetrized
-     *  \param[in] corr factor to correct the conductor results
-     *  \warning gf_i and gf_o will be deallocated automatically when the solver object goes out of scope,
-     *  since they are wrapped in a std::shared_ptr
-     */
-    CPCMSolver(IGreensFunction * gf_i, IGreensFunction * gf_o, bool symm, double corr)
-        : PCMSolver(gf_i, gf_o), hermitivitize_(symm), correction_(corr) {}
+    CPCMSolver(bool symm, double corr)
+        : PCMSolver(), hermitivitize_(symm), correction_(corr) {}
     virtual ~CPCMSolver() {}
     friend std::ostream & operator<<(std::ostream & os, CPCMSolver & solver) {
         return solver.printSolver(os);
@@ -87,8 +74,10 @@ private:
 
     /*! \brief Calculation of the PCM matrix
      *  \param[in] cavity the cavity to be used
+     *  \param[in] gf_i Green's function inside the cavity
+     *  \param[in] gf_o Green's function outside the cavity
      */
-    virtual void buildSystemMatrix_impl(const Cavity & cavity) __override;
+    virtual void buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o) __override;
     /*! \brief Returns the ASC given the MEP and the desired irreducible representation
      *  \param[in] potential the vector containing the MEP at cavity points
      *  \param[in] irrep the irreducible representation of the MEP and ASC
@@ -100,15 +89,13 @@ private:
 
 namespace
 {
-    PCMSolver * createCPCMSolver(const solverData & data, const SharedIGreensFunction & gf_i,
-            const SharedIGreensFunction & gf_o)
+    PCMSolver * createCPCMSolver(const solverData & data)
     {
-        return new CPCMSolver(gf_i, gf_o, data.hermitivitize, data.correction);
+        return new CPCMSolver(data.hermitivitize, data.correction);
     }
     const std::string CPCMSOLVER("CPCM");
     const bool registeredCPCMSolver =
-        Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().registerObject(
-                                         CPCMSOLVER, createCPCMSolver);
+        Factory<PCMSolver, solverData>::TheFactory().registerObject(CPCMSOLVER, createCPCMSolver);
 }
 
 #endif // CPCMSOLVER_HPP

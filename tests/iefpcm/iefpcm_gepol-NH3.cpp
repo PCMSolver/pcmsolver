@@ -64,12 +64,12 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     cavity.saveCavity("nh3.npz");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
     UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
-    IEFSolver solver(gfInside, gfOutside, symm);
-    solver.buildSystemMatrix(cavity);
+    IEFSolver solver(symm);
+    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;

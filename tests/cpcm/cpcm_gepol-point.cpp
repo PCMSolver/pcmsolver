@@ -58,13 +58,13 @@ BOOST_AUTO_TEST_CASE(pointChargeGePol)
     // The potential at cavity point s_I is Q/|s_I|
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> * gfInside = new Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> * gfOutside = new
+    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
+    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
     UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
     bool symm = true;
     double correction = 0.5;
-    CPCMSolver solver(gfInside, gfOutside, symm, correction);
-    solver.buildSystemMatrix(cavity);
+    CPCMSolver solver(symm, correction);
+    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
     int size = cavity.size();

@@ -54,7 +54,7 @@ struct solverInput;
 namespace pcm {
     typedef function<int(void)> NrNucleiGetter;
     typedef function<void(double[], double[])> CoordinatesGetter;
-    typedef function<void(const char *, unsigned int)> HostWriter;
+    typedef function<void(const char *, size_t)> HostWriter;
     typedef function<void(int *, int *, int *, int *)> PointGroupSetter;
     typedef function<void(cavityInput &, solverInput &, greenInput &)> HostInput;
     typedef unordered_map<std::string, SurfaceFunction> SurfaceFunctionMap;
@@ -71,15 +71,15 @@ namespace pcm {
             Meddle(const NrNucleiGetter &, const CoordinatesGetter &, const HostWriter &,
                    const PointGroupSetter &);
             ~Meddle();
-            unsigned int getCavitySize() const;
-            unsigned int getIrreducibleCavitySize() const;
+            size_t getCavitySize() const;
+            size_t getIrreducibleCavitySize() const;
             void getCenters(double centers[]) const;
             void getCenter(int its, double center[]) const;
             void computeASC(const char * mep_name, const char * asc_name, int irrep) const;
             void computeResponseASC(const char * mep_name, const char * asc_name, int irrep) const;
             double computePolarizationEnergy(const char * mep_name, const char * asc_name) const;
-            void getSurfaceFunction(unsigned int size, double values[], const char * name) const;
-            void setSurfaceFunction(unsigned int size, double values[], const char * name) const;
+            void getSurfaceFunction(size_t size, double values[], const char * name) const;
+            void setSurfaceFunction(size_t size, double values[], const char * name) const;
             void saveSurfaceFunctions() const;
             void saveSurfaceFunction(const char * name) const;
             void loadSurfaceFunction(const char * name) const;

@@ -1,6 +1,8 @@
 #ifndef PCMSOLVER_H_INCLUDED
 #define PCMSOLVER_H_INCLUDED
 
+#include <stddef.h>
+
 #ifndef PCMSOLVER_API
 #  ifdef _WIN32
 #     if defined(PCMSOLVER_BUILD_SHARED) /* build dll */
@@ -28,7 +30,7 @@ typedef struct pcmsolver_context_s pcmsolver_context_t;
 
 typedef int(*collect_nctot)(void);
 typedef void(*collect_atoms)(double[], double[]);
-typedef void(*host_writer)(const char *, unsigned int);
+typedef void(*host_writer)(const char *, size_t);
 typedef void(*set_point_group)(int *, int *, int *, int *);
 //typedef void(*host_input)(cavityInput &, solverInput &, greenInput &);
 
@@ -44,9 +46,9 @@ PCMSOLVER_API void pcmsolver_delete(pcmsolver_context_t * context);
 
 PCMSOLVER_API void pcmsolver_print(pcmsolver_context_t * context);
 
-PCMSOLVER_API unsigned int pcmsolver_get_cavity_size(pcmsolver_context_t * context);
+PCMSOLVER_API size_t pcmsolver_get_cavity_size(pcmsolver_context_t * context);
 
-PCMSOLVER_API unsigned int pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context);
+PCMSOLVER_API size_t pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context);
 
 PCMSOLVER_API void pcmsolver_get_centers(pcmsolver_context_t * context, double centers[]);
 
@@ -67,12 +69,12 @@ PCMSOLVER_API double pcmsolver_compute_polarization_energy(pcmsolver_context_t *
                                              const char * asc_name);
 
 PCMSOLVER_API void pcmsolver_get_surface_function(pcmsolver_context_t * context,
-                                                 unsigned int size,
+                                                 size_t size,
                                                  double values[],
                                                  const char * name);
 
 PCMSOLVER_API void pcmsolver_set_surface_function(pcmsolver_context_t * context,
-                                                 unsigned int size,
+                                                 size_t size,
                                                  double values[],
                                                  const char * name);
 

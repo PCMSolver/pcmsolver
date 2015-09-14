@@ -64,13 +64,13 @@ void pcmsolver_print(pcmsolver_context_t * context)
 }
 
 PCMSOLVER_API
-unsigned int pcmsolver_get_cavity_size(pcmsolver_context_t * context)
+size_t pcmsolver_get_cavity_size(pcmsolver_context_t * context)
 {
     return (AS_TYPE(pcm::Meddle, context)->getCavitySize());
 }
 
 PCMSOLVER_API
-unsigned int pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context)
+size_t pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context)
 {
     return (AS_TYPE(pcm::Meddle, context)->getIrreducibleCavitySize());
 }
@@ -115,14 +115,14 @@ double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
 
 PCMSOLVER_API
 void pcmsolver_get_surface_function(pcmsolver_context_t * context,
-                                    unsigned int size, double values[], const char * name)
+                                    size_t size, double values[], const char * name)
 {
     AS_TYPE(pcm::Meddle, context)->getSurfaceFunction(size, values, name);
 }
 
 PCMSOLVER_API
 void pcmsolver_set_surface_function(pcmsolver_context_t * context,
-                                    unsigned int size, double values[], const char * name)
+                                    size_t size, double values[], const char * name)
 {
     AS_TYPE(pcm::Meddle, context)->setSurfaceFunction(size, values, name);
 }
@@ -171,12 +171,12 @@ namespace pcm {
         if (hasDynamic_) delete K_d_;
     }
 
-    unsigned int Meddle::getCavitySize() const
+    size_t Meddle::getCavitySize() const
     {
         return cavity_->size();
     }
 
-    unsigned int Meddle::getIrreducibleCavitySize() const
+    size_t Meddle::getIrreducibleCavitySize() const
     {
         return cavity_->irreducible_size();
     }
@@ -236,7 +236,7 @@ namespace pcm {
         }
     }
 
-    void Meddle::getSurfaceFunction(unsigned int size, double values[], const char * name) const
+    void Meddle::getSurfaceFunction(size_t size, double values[], const char * name) const
     {
         if (cavity_->size() != size)
             PCMSOLVER_ERROR("You are trying to access a SurfaceFunction bigger than the cavity!");
@@ -250,7 +250,7 @@ namespace pcm {
         Eigen::Map<Eigen::VectorXd>(values, size, 1) = iter->second.vector();
     }
 
-    void Meddle::setSurfaceFunction(unsigned int size, double values[], const char * name) const
+    void Meddle::setSurfaceFunction(size_t size, double values[], const char * name) const
     {
         if (cavity_->size() != size)
             PCMSOLVER_ERROR("You are trying to allocate a SurfaceFunction bigger than the cavity!");

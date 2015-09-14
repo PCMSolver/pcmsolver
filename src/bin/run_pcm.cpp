@@ -34,16 +34,16 @@ int main(int argc, char * argv[])
     parsed.initMolecule();
 
     // Create cavity
-    SharedCavity cavity = Factory<Cavity, cavityData>::TheFactory().create(parsed.cavityType(), parsed.cavityParams());
+    Cavity * cavity = Factory<Cavity, cavityData>::TheFactory().create(parsed.cavityType(), parsed.cavityParams());
     // Create Green's functions
     // INSIDE
-    SharedIGreensFunction gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenInsideType(),
+    IGreensFunction * gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenInsideType(),
 		                                              parsed.insideGreenParams());
     // OUTSIDE
-    SharedIGreensFunction gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenOutsideType(),
+    IGreensFunction * gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenOutsideType(),
 		                                              parsed.outsideStaticGreenParams());
-    SharedPCMSolver solver = Factory<PCMSolver, solverData, SharedIGreensFunction, SharedIGreensFunction>::TheFactory().create(parsed.solverType(), parsed.solverParams(), gf_i, gf_o);
-    solver->buildSystemMatrix(*cavity);
+    PCMSolver * solver = Factory<PCMSolver, solverData>::TheFactory().create(parsed.solverType(), parsed.solverParams());
+    solver->buildSystemMatrix(*cavity, *gf_i, *gf_o);
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of
     // the WaveletCavity on the wavelet solvers it has to be done here...
@@ -66,7 +66,10 @@ int main(int argc, char * argv[])
         Solvent solvent = parsed.solvent();
         out_stream << solvent << std::endl;
     }
-    out_stream << solver->printGreensFunctions() << std::endl;
+    out_stream << ".... Inside " << std::endl;
+    out_stream << *gf_i << std::endl;
+    out_stream << ".... Outside " << std::endl;
+    out_stream << *gf_o;
     out_stream << parsed.molecule() << std::endl;
 
     // Form vector with electrostatic potential
@@ -79,6 +82,12 @@ int main(int argc, char * argv[])
 
     out_stream.close();
     // Rename output file
+
+    // Clean-up
+    delete cavity;
+    delete gf_i;
+    delete gf_o;
+    delete solver;
 
     return EXIT_SUCCESS;
 }

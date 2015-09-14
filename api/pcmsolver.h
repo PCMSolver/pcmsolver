@@ -84,6 +84,8 @@ PCMSOLVER_API void pcmsolver_save_surface_function(pcmsolver_context_t * context
 PCMSOLVER_API void pcmsolver_load_surface_function(pcmsolver_context_t * context,
                                                    const char * name);
 
+PCMSOLVER_API void pcmsolver_write_timings(pcmsolver_context_t * context);
+
 #ifdef __cplusplus
 }
 #endif

@@ -70,9 +70,9 @@ struct cavityInput {
     /*! Cleans up the char arrays in this struct
      */
     void cleaner() {
-	std::fill(cavity_type, cavity_type + 8, 0);
-	std::fill(radii_set, radii_set + 8, 0);
-	std::fill(restart_name, restart_name + 20, 0);
+        std::fill(cavity_type, cavity_type + 8, 0);
+        std::fill(radii_set, radii_set + 8, 0);
+        std::fill(restart_name, restart_name + 20, 0);
     }
     friend std::ostream & operator<<(std::ostream & os, cavityInput & o) {
         os << "cavity type " << std::string(o.cavity_type) << std::endl;
@@ -84,7 +84,7 @@ struct cavityInput {
         os << "scaling " << o.scaling << std::endl;
         os << "radii set " << std::string(o.radii_set) << std::endl;
         os << "restart name " << std::string(o.restart_name) << std::endl;
-	os << "min radius " << o.min_radius;
+        os << "min radius " << o.min_radius;
         return os;
     }
 };
@@ -112,16 +112,16 @@ struct solverInput {
     /*! Cleans up the char arrays in this struct
      */
     void cleaner() {
-	std::fill(solver_type, solver_type + 7, 0);
-	std::fill(solvent, solvent + 16, 0);
-	std::fill(equation_type, equation_type + 11, 0);
+        std::fill(solver_type, solver_type + 7, 0);
+        std::fill(solvent, solvent + 16, 0);
+        std::fill(equation_type, equation_type + 11, 0);
     }
     friend std::ostream & operator<<(std::ostream & os, solverInput & o) {
         os << "solver type " << std::string(o.solver_type) << std::endl;
         os << "solvent " << std::string(o.solvent) << std::endl;
-	os << "equation type " << std::string(o.equation_type) << std::endl;
-	os << "correction " << o.correction << std::endl;
-	os << "probe_radius " << o.probe_radius;
+        os << "equation type " << std::string(o.equation_type) << std::endl;
+        os << "correction " << o.correction << std::endl;
+        os << "probe_radius " << o.probe_radius;
         return os;
     }
 };
@@ -142,13 +142,13 @@ struct greenInput {
     /*! Cleans up the char arrays in this struct
      */
     void cleaner() {
-	std::fill(inside_type, inside_type + 7, 0);
-	std::fill(outside_type, outside_type + 22, 0);
+        std::fill(inside_type, inside_type + 7, 0);
+        std::fill(outside_type, outside_type + 22, 0);
     }
     friend std::ostream & operator<<(std::ostream & os, greenInput & o) {
         os << "inside type " << std::string(o.inside_type) << std::endl;
         os << "outside type " << std::string(o.outside_type) << std::endl;
-	os << "epsilon outside " << o.outside_epsilon;
+        os << "epsilon outside " << o.outside_epsilon;
         return os;
     }
 };

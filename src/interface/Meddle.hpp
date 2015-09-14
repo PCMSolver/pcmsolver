@@ -84,6 +84,7 @@ namespace pcm {
             void saveSurfaceFunction(const char * name) const;
             void loadSurfaceFunction(const char * name) const;
             void printInfo() const;
+            void writeTimings() const;
         private:
             /*! Function to collect number of atoms in molecule */
             NrNucleiGetter nrNuclei_;

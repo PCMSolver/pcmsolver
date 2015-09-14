@@ -145,6 +145,12 @@ void pcmsolver_load_surface_function(pcmsolver_context_t * context, const char *
     AS_TYPE(pcm::Meddle, context)->loadSurfaceFunction(name);
 }
 
+PCMSOLVER_API
+void pcmsolver_write_timings(pcmsolver_context_t * context)
+{
+    AS_TYPE(pcm::Meddle, context)->writeTimings();
+}
+
 namespace pcm {
     Meddle::Meddle(const NrNucleiGetter & f_1, const CoordinatesGetter & f_2, const HostWriter & f_3,
             const PointGroupSetter & f_4) //, const HostInput & f_5)
@@ -323,6 +329,11 @@ namespace pcm {
         hostWriter_(message_C, message_length);
     }
 
+    void Meddle::writeTimings() const
+    {
+        TIMER_DONE("pcmsolver.timer.dat");
+    }
+
     void Meddle::initInput()
     {
         input_ = Input("@pcmsolver.inp");
@@ -401,6 +412,7 @@ namespace pcm {
 
     void Meddle::printInfo() const
     {
+        printer(citation_message());
         printer(infoStream_);
     }
 

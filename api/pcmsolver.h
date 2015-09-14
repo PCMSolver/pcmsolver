@@ -28,7 +28,7 @@ typedef struct pcmsolver_context_s pcmsolver_context_t;
 
 typedef int(*collect_nctot)(void);
 typedef void(*collect_atoms)(double[], double[]);
-typedef void(*host_writer)(const char *, size_t);
+typedef void(*host_writer)(const char *, unsigned int);
 typedef void(*set_point_group)(int *, int *, int *, int *);
 //typedef void(*host_input)(cavityInput &, solverInput &, greenInput &);
 
@@ -38,11 +38,19 @@ typedef enum
     PCMSOLVER_READER_HOST
 } pcmsolver_reader_t;
 
-PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(collect_nctot, collect_atoms, host_writer, set_point_group) //, host_input)
+PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(collect_nctot, collect_atoms, host_writer, set_point_group);
 
-PCMSOLVER_API void pcmsolver_free(pcmsolver_context_t * context);
+PCMSOLVER_API void pcmsolver_delete(pcmsolver_context_t * context);
 
-PCMSOLVER_API void pcmsolver_compute_asc(pcmsolver_context_t * context
+PCMSOLVER_API void pcmsolver_print(pcmsolver_context_t * context);
+
+PCMSOLVER_API unsigned int pcmsolver_get_cavity_size(pcmsolver_context_t * context);
+
+PCMSOLVER_API unsigned int pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context);
+
+PCMSOLVER_API void pcmsolver_get_centers(pcmsolver_context_t * context, double centers[]);
+
+PCMSOLVER_API void pcmsolver_compute_asc(pcmsolver_context_t * context,
                                         const char * mep_name,
                                         const char * asc_name,
                                         int irrep);
@@ -52,17 +60,17 @@ PCMSOLVER_API void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
                                                  const char * asc_name,
                                                  int irrep);
 
-double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context
+PCMSOLVER_API double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
                                              const char * mep_name,
                                              const char * asc_name);
 
 PCMSOLVER_API void pcmsolver_get_surface_function(pcmsolver_context_t * context,
-                                                 int size,
+                                                 unsigned int size,
                                                  double values[],
                                                  const char * name);
 
 PCMSOLVER_API void pcmsolver_set_surface_function(pcmsolver_context_t * context,
-                                                 int size,
+                                                 unsigned int size,
                                                  double values[],
                                                  const char * name);
 

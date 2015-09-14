@@ -122,10 +122,10 @@ public:
     const Eigen::VectorXd & elementArea() const { return elementArea_; }
     double elementArea(int i) { return elementArea_(i); }
     double elementArea(int i) const { return elementArea_(i); }
-    int size() { return nElements_; }
-    int size() const { return nElements_; }
-    int irreducible_size() { return nIrrElements_; }
-    int irreducible_size() const { return nIrrElements_; }
+    size_t size() { return nElements_; }
+    size_t size() const { return nElements_; }
+    size_t irreducible_size() { return nIrrElements_; }
+    size_t irreducible_size() const { return nIrrElements_; }
     Symmetry pointGroup() const { return molecule_.pointGroup(); }
     std::vector<Sphere> & spheres() { return spheres_; }
     const std::vector<Sphere> & spheres() const { return spheres_; }

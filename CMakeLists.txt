@@ -177,6 +177,9 @@ include_directories(${CMAKE_SOURCE_DIR}
 link_directories(${EXTERNAL_PROJECT_INSTALL_PREFIX}/external/lib
 	         ${EXTERNAL_PROJECT_INSTALL_PREFIX}/lib)
 
+include_directories(${PROJECT_SOURCE_DIR}/api)
+install(FILES ${PROJECT_SOURCE_DIR}/api/pcmsolver.h DESTINATION include)
+
 add_subdirectory(src)
 include_directories(${header_dir_list})
 

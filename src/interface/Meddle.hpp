@@ -33,7 +33,13 @@
 class Cavity;
 class Input;
 class PCMSolver;
-class SurfaceFunction;
+
+struct cavityInput;
+struct greenInput;
+struct solverInput;
+
+#include "Input.hpp"
+#include "SurfaceFunction.hpp"
 
 #ifdef HAS_CXX11
 #define DELETE_DEFAULT_CONSTRUCTOR(class_name) \
@@ -48,29 +54,36 @@ class SurfaceFunction;
 namespace pcm {
     typedef function<int(void)> NrNucleiGetter;
     typedef function<void(double[], double[])> CoordinatesGetter;
-    typedef function<void(const char *, size_t)> HostWriter;
+    typedef function<void(const char *, unsigned int)> HostWriter;
     typedef function<void(int *, int *, int *, int *)> PointGroupSetter;
     typedef function<void(cavityInput &, solverInput &, greenInput &)> HostInput;
     typedef unordered_map<std::string, SurfaceFunction> SurfaceFunctionMap;
-    typedef std::pair<std::string, SurfaceFunction> SurfaceFunctionPair;
+
+    void initMolecule(const Input & inp, const PointGroupSetter & set_group,
+            int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
+            Molecule & molecule);
+    void initSpheresAtoms(const Input &, const Eigen::Matrix3Xd &, std::vector<Sphere> &);
+
     class Meddle __final
     {
         DELETE_DEFAULT_CONSTRUCTOR(Meddle)
         public:
-            Meddle(const NrNucleiGetter & f_1, const CoordinatesGetter & f_2, const HostWriter & f_3,
-                   const PointGroupSetter & f_4); //, const HostInput & f_5);
+            Meddle(const NrNucleiGetter &, const CoordinatesGetter &, const HostWriter &,
+                   const PointGroupSetter &);
             ~Meddle();
-            void getCavitySize(int & size, int & irr_size) const;
+            unsigned int getCavitySize() const;
+            unsigned int getIrreducibleCavitySize() const;
             void getCenters(double centers[]) const;
             void getCenter(int its, double center[]) const;
             void computeASC(const char * mep_name, const char * asc_name, int irrep) const;
             void computeResponseASC(const char * mep_name, const char * asc_name, int irrep) const;
             double computePolarizationEnergy(const char * mep_name, const char * asc_name) const;
-            void getSurfaceFunction(int size, double values[], const char * name) const;
-            void setSurfaceFunction(int size, double values[], const char * name) const;
+            void getSurfaceFunction(unsigned int size, double values[], const char * name) const;
+            void setSurfaceFunction(unsigned int size, double values[], const char * name) const;
             void saveSurfaceFunctions() const;
             void saveSurfaceFunction(const char * name) const;
             void loadSurfaceFunction(const char * name) const;
+            void printInfo() const;
         private:
             /*! Function to collect number of atoms in molecule */
             NrNucleiGetter nrNuclei_;
@@ -95,16 +108,14 @@ namespace pcm {
             /*! SurfaceFunction map */
             mutable SurfaceFunctionMap functions_;
             /*! Initialize input_ */
+            void initInput();
             /*! Initialize cavity_ */
             void initCavity();
             /*! Initialize solvers K_0_ and K_d_ */
             void initSolver();
+            void printer(const std::string & message) const;
+            void printer(const std::ostringstream & stream) const;
     };
-
-    namespace detail {
-        void initMolecule(Molecule &);
-        void initSpheresAtoms(const Eigen::Matrix3Xd &, std::vector<Sphere> &);
-    } /* end namespace detail */
 } /* end namespace pcm */
 
 #endif /* MEDDLE_HPP */

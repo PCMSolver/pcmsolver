@@ -70,43 +70,44 @@ public:
     /// Accessor methods
 
     /// Top-level section input
-    std::string units() { return units_; }
-    int CODATAyear() { return CODATAyear_; }
+    std::string units() const { return units_; }
+    int CODATAyear() const { return CODATAyear_; }
     /// @}
 
     /// Cavity section input
-    std::string cavityType() { return type_; }
-    bool scaling() { return scaling_; }
-    std::string radiiSet() { return radiiSet_; }
-    std::string mode() { return mode_; }
-    std::vector<int> atoms() { return atoms_; }
-    int atoms(int i) { return atoms_[i]; }
-    std::vector<double> radii() { return radii_; }
-    double radii(int i) { return radii_[i]; }
-    std::vector<Sphere> spheres() { return spheres_; }
-    Sphere spheres(int i) { return spheres_[i]; }
-    Molecule molecule() { return molecule_; }
+    std::string cavityType() const { return type_; }
+    bool scaling() const { return scaling_; }
+    std::string radiiSet() const { return radiiSet_; }
+    std::string mode() const { return mode_; }
+    std::vector<int> atoms() const { return atoms_; }
+    int atoms(size_t i) const { return atoms_[i]; }
+    std::vector<double> radii() const { return radii_; }
+    double radii(size_t i) const { return radii_[i]; }
+    std::vector<Sphere> spheres()  const { return spheres_; }
+    Sphere spheres(int i) const { return spheres_[i]; }
+    Molecule molecule() const { return molecule_; }
     /// This method sets the molecule and the list of spheres
     void molecule(const Molecule & m) { molecule_ = m; spheres_ = molecule_.spheres(); }
     void initMolecule();
     /// @}
 
     /// Medium section input
-    Solvent solvent() { return solvent_; }
-    bool fromSolvent() { return hasSolvent_; }
-    std::string solverType() { return solverType_; }
-    int equationType() { return equationType_; }
-    double correction() { return correction_; }
-    bool hermitivitize() { return hermitivitize_; }
+    Solvent solvent() const { return solvent_; }
+    bool fromSolvent() const { return hasSolvent_; }
+    std::string solverType() const { return solverType_; }
+    int equationType() const { return equationType_; }
+    double correction() const { return correction_; }
+    bool hermitivitize() const { return hermitivitize_; }
+    bool isDynamic() const { return isDynamic_; }
     /// @}
 
     /// Green's function section input
-    std::string greenInsideType() { return greenInsideType_; }
-    std::string greenOutsideType() { return greenOutsideType_; }
+    std::string greenInsideType() const { return greenInsideType_; }
+    std::string greenOutsideType() const { return greenOutsideType_; }
     /// @}
 
     /// Keeps track of who did the parsing: the API or the host program
-    std::string providedBy() { return providedBy_; }
+    std::string providedBy() const { return providedBy_; }
 
     /// Get-ters for input wrapping structs
     cavityData cavityParams();
@@ -188,6 +189,8 @@ private:
     double correction_;
     /// Whether the PCM matrix should be hermitivitized (collocation solvers)
     bool hermitivitize_;
+    /// Whether the dynamic PCM matrix should be used
+    bool isDynamic_;
     /// Solvent probe radius
     double probeRadius_;
     /// Type of integrator for the diagonal of the boundary integral operators

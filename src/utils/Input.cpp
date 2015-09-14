@@ -168,6 +168,7 @@ void Input::reader(const std::string & filename)
     equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
     correction_ = medium.getDbl("CORRECTION");
     hermitivitize_ = medium.getBool("MATRIXSYMM");
+    isDynamic_ = medium.getBool("NONEQUILIBRIUM");
 
     providedBy_ = std::string("API-side");
 }

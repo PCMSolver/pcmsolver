@@ -255,6 +255,11 @@ def setup_keywords():
     # Type of solver
     # Valid values: IEFPCM, CPCM, WAVELET or LINEAR
     medium.add_kw('SOLVERTYPE',   'STR', 'IEFPCM')
+    # Whether nonequilibrium response is to be used
+    # Valid for: IEFPCM, CPCM, WAVELET or LINEAR
+    # Valid values: boolean
+    # Default: False
+    medium.add_kw('NONEQUILIBRIUM',   'BOOL', False)
     # Solvent
     # Valid for: IEFPCM, CPCM, Wavelet and PWL solvers
     # Valid values: string

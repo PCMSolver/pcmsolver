@@ -50,7 +50,7 @@ void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunct
 void IEFSolver::buildAnisotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
     // The total size of the cavity
-    int cavitySize = cav.size();
+    size_t cavitySize = cav.size();
     // The number of irreps in the group
     int nrBlocks = cav.pointGroup().nrIrrep();
     // The size of the irreducible portion of the cavity
@@ -108,7 +108,7 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav, const IGreensFunction
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
     // The total size of the cavity
-    int cavitySize = cav.size();
+    size_t cavitySize = cav.size();
     // The number of irreps in the group
     int nrBlocks = cav.pointGroup().nrIrrep();
     // The size of the irreducible portion of the cavity

@@ -127,9 +127,9 @@ BOOST_AUTO_TEST_CASE(C6H6)
 
     double Hcharge = 1.0;
     double Ccharge = 6.0;
-    int size = cavity.size();
+    size_t size = cavity.size();
     Eigen::VectorXd fake_En = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         Eigen::Vector3d normal = cavity.elementNormal(i);
 

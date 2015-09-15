@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(sphere)
 
     KernelS F = f();
 
-    for (int i = 0; i < cavity.size(); ++i) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
 	results(i) = integrateS<32, 16>(F, cavity.elements(i));
 	double diff = results(i) - cavity.elementArea(i);
 	if (std::abs(diff) > 1.0e-12) {
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(sphere)
 	}
     }
 
-    for (int i = 0; i < cavity.size(); ++i) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(results(i), cavity.elementArea(i), 1.0e-12);
     }
 }
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(sphere_1r)
 
     KernelS F = f();
 
-    for (int i = 0; i < cavity.size(); ++i) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
 	results(i) = integrateS<32, 16>(F, cavity.elements(i));
 	double diff = results(i) - (cavity.elementArea(i)/radius);
 	if (std::abs(diff) > 1.0e-11) {
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(sphere_1r)
 	}
     }
 
-    for (int i = 0; i < cavity.size(); ++i) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(results(i), (cavity.elementArea(i)/radius), 1.0e-11);
     }
 }
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(molecule)
 
     KernelS F = f();
 
-    for (int i = 0; i < cavity.size(); ++i) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
 	results(i) = integrateS<64, 16>(F, cavity.elements(i));
 	double diff = results(i) - cavity.elementArea(i);
 	if (std::abs(diff) > 1.0e-11) {
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(molecule)
     Eigen::VectorXd reference = Eigen::VectorXd::Zero(dim);
     reference = getFromRawBuffer<double>(dim, 1, raw_ref.data);
 
-    for (int i = 0; i < cavity.size(); ++i) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(results(i), reference(i), 1.0e-11);
     }
 }
@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE(molecule_1r)
 
     KernelS F = f();
 
-    for (int i = 0; i < cavity.size(); ++i) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
 	results(i) = integrateS<64, 16>(F, cavity.elements(i));
 	double diff = results(i) - (cavity.elementArea(i)/sph1.radius());
 	if (std::abs(diff) > 1.0e-11) {
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE(molecule_1r)
     Eigen::VectorXd reference = Eigen::VectorXd::Zero(dim);
     reference = getFromRawBuffer<double>(dim, 1, raw_ref.data);
 
-    for (int i = 0; i < cavity.size(); ++i) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
     	BOOST_REQUIRE_CLOSE(results(i), reference(i), 1.0e-11);
     }
 }

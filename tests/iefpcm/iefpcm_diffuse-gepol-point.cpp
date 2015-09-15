@@ -71,9 +71,9 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
     solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
-    int size = cavity.size();
+    size_t size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double distance = (origin - center).norm();
         fake_mep(i) = charge / distance;
@@ -82,10 +82,10 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
     fake_asc = solver.computeCharge(fake_mep);
 
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
     }
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_asc(" << i << ") = " << fake_asc(i));
     }
 
@@ -125,9 +125,9 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
     solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
-    int size = cavity.size();
+    size_t size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double distance = center.norm();
         fake_mep(i) = charge / distance;
@@ -136,10 +136,10 @@ BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
     fake_asc = solver.computeCharge(fake_mep);
 
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
     }
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_asc(" << i << ") = " << fake_asc(i));
     }
 

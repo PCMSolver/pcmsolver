@@ -65,9 +65,9 @@ BOOST_AUTO_TEST_CASE(pointChargeTsLess)
     solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
-    int size = cavity.size();
+    size_t size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double distance = center.norm();
         fake_mep(i) = charge / distance;

@@ -65,7 +65,7 @@ BOOST_FIXTURE_TEST_SUITE(GePolCavityC1, GePolCavityC1Test)
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityC1Test)
 {
     int size = 32;
-    int actualSize = cavity.size();
+    size_t actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
@@ -98,7 +98,7 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC1Test)
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
-    for ( int i = 0; i < cavity.size(); ++i ) {
+    for ( size_t i = 0; i < cavity.size(); ++i ) {
         actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                             i));
     }
@@ -130,7 +130,7 @@ BOOST_FIXTURE_TEST_SUITE(GePolCavityC2, GePolCavityC2Test)
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityC2Test)
 {
     int size = 32;
-    int actualSize = cavity.size();
+    size_t actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
@@ -163,7 +163,7 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC2Test)
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
-    for ( int i = 0; i < cavity.size(); ++i ) {
+    for ( size_t i = 0; i < cavity.size(); ++i ) {
         actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                             i));
     }
@@ -195,7 +195,7 @@ BOOST_FIXTURE_TEST_SUITE(GePolCavityCs, GePolCavityCsTest)
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCsTest)
 {
     int size = 32;
-    int actualSize = cavity.size();
+    size_t actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
@@ -228,7 +228,7 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCsTest)
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
-    for ( int i = 0; i < cavity.size(); ++i ) {
+    for ( size_t i = 0; i < cavity.size(); ++i ) {
         actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                             i));
     }
@@ -260,7 +260,7 @@ BOOST_FIXTURE_TEST_SUITE(GePolCavityCi, GePolCavityCiTest)
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityCiTest)
 {
     int size = 32;
-    int actualSize = cavity.size();
+    size_t actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
@@ -293,7 +293,7 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCiTest)
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
-    for ( int i = 0; i < cavity.size(); ++i ) {
+    for ( size_t i = 0; i < cavity.size(); ++i ) {
         actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                             i));
     }
@@ -325,7 +325,7 @@ BOOST_FIXTURE_TEST_SUITE(GePolCavityD2, GePolCavityD2Test)
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityD2Test)
 {
     int size = 32;
-    int actualSize = cavity.size();
+    size_t actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
@@ -358,7 +358,7 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityD2Test)
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
-    for ( int i = 0; i < cavity.size(); ++i ) {
+    for ( size_t i = 0; i < cavity.size(); ++i ) {
         actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                             i));
     }
@@ -390,7 +390,7 @@ BOOST_FIXTURE_TEST_SUITE(GePolCavityC2v, GePolCavityC2vTest)
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityC2vTest)
 {
     int size = 32;
-    int actualSize = cavity.size();
+    size_t actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
@@ -423,7 +423,7 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC2vTest)
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
-    for ( int i = 0; i < cavity.size(); ++i ) {
+    for ( size_t i = 0; i < cavity.size(); ++i ) {
         actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                             i));
     }
@@ -455,7 +455,7 @@ BOOST_FIXTURE_TEST_SUITE(GePolCavityC2h, GePolCavityC2hTest)
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityC2hTest)
 {
     int size = 32;
-    int actualSize = cavity.size();
+    size_t actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
@@ -488,7 +488,7 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC2hTest)
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
-    for ( int i = 0; i < cavity.size(); ++i ) {
+    for ( size_t i = 0; i < cavity.size(); ++i ) {
         actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                             i));
     }
@@ -520,7 +520,7 @@ BOOST_FIXTURE_TEST_SUITE(GePolCavityD2h, GePolCavityD2hTest)
 BOOST_FIXTURE_TEST_CASE(size, GePolCavityD2hTest)
 {
     int size = 32;
-    int actualSize = cavity.size();
+    size_t actualSize = cavity.size();
     BOOST_REQUIRE_EQUAL(size, actualSize);
 }
 
@@ -553,7 +553,7 @@ BOOST_FIXTURE_TEST_CASE(volume, GePolCavityD2hTest)
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
-    for ( int i = 0; i < cavity.size(); ++i ) {
+    for ( size_t i = 0; i < cavity.size(); ++i ) {
         actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                             i));
     }

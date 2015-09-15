@@ -69,9 +69,9 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
     iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
-    int size = cavity.size();
+    size_t size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double distance = center.norm();
         fake_mep(i) = charge / distance;
@@ -80,13 +80,13 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeGePol)
 
     Eigen::VectorXd iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
     }
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("aniso_fake_asc(" << i << ") = " << aniso_fake_asc(i));
     }
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("iso_fake_asc(" << i << ") = " << iso_fake_asc(i));
     }
 
@@ -129,9 +129,9 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
     iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
 
     double charge = 8.0;
-    int size = cavity.size();
+    size_t size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double distance = (center - origin).norm();
         fake_mep(i) = charge / distance;
@@ -142,13 +142,13 @@ BOOST_AUTO_TEST_CASE(anisotropicPointChargeShiftedGePol)
     Eigen::VectorXd iso_fake_asc = Eigen::VectorXd::Zero(size);
     iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
     }
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("aniso_fake_asc(" << i << ") = " << aniso_fake_asc(i));
     }
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         BOOST_TEST_MESSAGE("iso_fake_asc(" << i << ") = " << iso_fake_asc(i));
     }
 

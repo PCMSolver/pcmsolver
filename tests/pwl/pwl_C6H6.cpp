@@ -115,9 +115,9 @@ BOOST_AUTO_TEST_CASE(C6H6)
     solver.buildSystemMatrix(cavity);
     cavity.uploadPoints(solver.getQuadratureLevel(), solver.getT_());
 
-    int size = cavity.size();
+    size_t size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double C1mep = Ccharge/(center - C1/convertBohrToAngstrom).norm();
         double C2mep = Ccharge/(center - C2/convertBohrToAngstrom).norm();

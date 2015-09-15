@@ -76,8 +76,8 @@ BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
     int dim_read = raw_S_ref.shape[0];
     Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
     S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-        for (int j = 0; j < cavity.size(); ++j) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
+        for (size_t j = 0; j < cavity.size(); ++j) {
             BOOST_REQUIRE_CLOSE(S_reference(i, j), S_results(i, j), 1.0e-12);
         }
     }
@@ -87,8 +87,8 @@ BOOST_FIXTURE_TEST_CASE(vacuum, CollocationIntegratorTest)
     dim_read = raw_D_ref.shape[0];
     Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
     D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-        for (int j = 0; j < cavity.size(); ++j) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
+        for (size_t j = 0; j < cavity.size(); ++j) {
             BOOST_REQUIRE_CLOSE(D_reference(i, j), D_results(i, j), 1.0e-12);
         }
     }
@@ -107,8 +107,8 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, CollocationIntegratorTest)
     int dim_read = raw_S_ref.shape[0];
     Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
     S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-        for (int j = 0; j < cavity.size(); ++j) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
+        for (size_t j = 0; j < cavity.size(); ++j) {
             BOOST_REQUIRE_CLOSE(S_reference(i, j), S_results(i, j), 1.0e-12);
         }
     }
@@ -118,8 +118,8 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, CollocationIntegratorTest)
     dim_read = raw_D_ref.shape[0];
     Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
     D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-        for (int j = 0; j < cavity.size(); ++j) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
+        for (size_t j = 0; j < cavity.size(); ++j) {
             BOOST_REQUIRE_CLOSE(D_reference(i, j), D_results(i, j), 1.0e-12);
         }
     }
@@ -140,8 +140,8 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
     int dim_read = raw_S_ref.shape[0];
     Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
     S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-        for (int j = 0; j < cavity.size(); ++j) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
+        for (size_t j = 0; j < cavity.size(); ++j) {
             BOOST_REQUIRE_CLOSE(S_reference(i, j), S_results(i, j), 1.0e-12);
         }
     }
@@ -151,8 +151,8 @@ BOOST_FIXTURE_TEST_CASE(tanhsphericaldiffuse, CollocationIntegratorTest)
     dim_read = raw_D_ref.shape[0];
     Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
     D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
-    for (int i = 0; i < cavity.size(); ++i) {
-        for (int j = 0; j < cavity.size(); ++j) {
+    for (size_t i = 0; i < cavity.size(); ++i) {
+        for (size_t j = 0; j < cavity.size(); ++j) {
             BOOST_REQUIRE_CLOSE(D_reference(i, j), D_results(i, j), 1.0e-12);
         }
     }

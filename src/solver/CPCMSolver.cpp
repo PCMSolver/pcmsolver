@@ -44,7 +44,7 @@ void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunc
     if (!isotropic_) PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
 
     // The total size of the cavity
-    int cavitySize = cavity.size();
+    size_t cavitySize = cavity.size();
     // The number of irreps in the group
     int nrBlocks = cavity.pointGroup().nrIrrep();
     // The size of the irreducible portion of the cavity

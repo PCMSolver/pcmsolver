@@ -83,9 +83,9 @@ BOOST_AUTO_TEST_CASE(NH3)
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;
-    int size = cavity.size();
+    size_t size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double Ndistance = (center - N).norm();
         double H1distance = (center - H1).norm();

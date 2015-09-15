@@ -113,7 +113,7 @@ inline bool numericalZero(double value)
  *  \param[in]  ntsirr     the size of the irreducible portion of the cavity (size of the blocks)
  *  \param[in]  nr_irrep   the number of irreducible representations (number of blocks)
  */
-inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int ntsirr,
+inline void symmetryBlocking(Eigen::MatrixXd & matrix, size_t cavitySize, int ntsirr,
                              int nr_irrep)
 {
     // This function implements the simmetry-blocking of the PCM
@@ -174,8 +174,8 @@ inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int ntsir
         }
     }
     // Traverse the matrix and discard numerical zeros
-    for (int a = 0; a < cavitySize; ++a) {
-        for (int b = 0; b < cavitySize; ++b) {
+    for (size_t a = 0; a < cavitySize; ++a) {
+        for (size_t b = 0; b < cavitySize; ++b) {
             if (numericalZero(matrix(a, b))) {
                 matrix(a, b) = 0.0;
             }

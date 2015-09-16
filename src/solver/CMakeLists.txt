@@ -1,5 +1,5 @@
 # List of headers
-list(APPEND headers_list CPCMSolver.hpp IEFSolver.hpp PCMSolver.hpp)
+list(APPEND headers_list CPCMSolver.hpp IEFSolver.hpp PCMSolver.hpp RegisterSolverToFactory.hpp)
 
 # List of sources
 list(APPEND sources_list CPCMSolver.cpp IEFSolver.cpp)
@@ -19,7 +19,7 @@ if(BUILD_CUSTOM_BOOST)
 endif()
 install(TARGETS solver ARCHIVE DESTINATION lib)
 
-set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${PROJECT_SOURCE_DIR}/src/solver)
+set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/solver)

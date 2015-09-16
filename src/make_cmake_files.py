@@ -104,7 +104,7 @@ if (not (lang == 'C' or lang == 'F')):
 f.write('install(TARGETS ' + libname + ' ARCHIVE DESTINATION lib)\n\n')
 
 if (not lang == 'F'):
-    f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${{PROJECT_SOURCE_DIR}}/src/{0})\n'.format(libname))
+    f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${{CMAKE_CURRENT_LIST_DIR}})\n')
     f.write('# Sets install directory for all the headers in the list\n')
     f.write('foreach(_header ${headers_list})\n')
     f.write('   install(FILES ${_header} DESTINATION include/' + libname + ')\n')

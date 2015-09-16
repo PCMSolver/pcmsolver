@@ -1,5 +1,5 @@
 # List of headers
-list(APPEND headers_list AnisotropicLiquid.hpp DerivativeTypes.hpp DerivativeUtils.hpp GreenUtils.hpp GreensFunction.hpp IGreensFunction.hpp InterfacesImpl.hpp IonicLiquid.hpp RegisterToFactory.hpp SphericalDiffuse.hpp SphericalSharp.hpp UniformDielectric.hpp Vacuum.hpp)
+list(APPEND headers_list AnisotropicLiquid.hpp DerivativeTypes.hpp DerivativeUtils.hpp GreenUtils.hpp GreensFunction.hpp IGreensFunction.hpp InterfacesImpl.hpp IonicLiquid.hpp RegisterGreensFunctionToFactory.hpp SphericalDiffuse.hpp SphericalSharp.hpp UniformDielectric.hpp Vacuum.hpp)
 
 # List of sources
 list(APPEND sources_list )
@@ -9,7 +9,7 @@ list(APPEND sources_list )
 set(to_count "${sources_list}" "${headers_list}")
 write_to_cloc_list("${to_count}")
 
-set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${PROJECT_SOURCE_DIR}/src/green)
+set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/green)

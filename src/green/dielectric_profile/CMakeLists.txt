@@ -9,7 +9,7 @@ list(APPEND sources_list )
 set(to_count "${sources_list}" "${headers_list}")
 write_to_cloc_list("${to_count}")
 
-set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${PROJECT_SOURCE_DIR}/src/green/dielectric_profile)
+set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/green/dielectric_profile)

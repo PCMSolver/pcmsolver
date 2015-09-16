@@ -1,5 +1,5 @@
 # List of headers
-list(APPEND headers_list Cavity.hpp Element.hpp GePolCavity.hpp RestartCavity.hpp)
+list(APPEND headers_list Cavity.hpp Element.hpp GePolCavity.hpp RegisterCavityToFactory.hpp RestartCavity.hpp)
 
 # List of sources
 list(APPEND sources_list Cavity.cpp Element.cpp GePolCavity.cpp RestartCavity.cpp)
@@ -19,7 +19,7 @@ if(BUILD_CUSTOM_BOOST)
 endif()
 install(TARGETS cavity ARCHIVE DESTINATION lib)
 
-set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${PROJECT_SOURCE_DIR}/src/cavity)
+set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/cavity)

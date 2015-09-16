@@ -32,8 +32,6 @@
 #include "Config.hpp"
 
 #include "Cavity.hpp"
-#include "CavityData.hpp"
-#include "Factory.hpp"
 
 /*! \file RestartCavity.hpp
  *  \class RestartCavity
@@ -59,16 +57,5 @@ private:
     std::string file;
     virtual std::ostream & printCavity(std::ostream & os);
 };
-
-namespace
-{
-    Cavity * createRestartCavity(const cavityData & data)
-    {
-        return new RestartCavity(data.filename);
-    }
-    const std::string RESTART("RESTART");
-    const bool registeredRestart = Factory<Cavity, cavityData>::TheFactory().registerObject(
-                                       RESTART, createRestartCavity);
-}
 
 #endif // RESTARTCAVITY_HPP

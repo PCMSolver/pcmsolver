@@ -43,6 +43,25 @@
  */
 Molecule NH3();
 
+/*! Returns a single dummy atom, centered at the origin and with the given radius
+ */
+template <int group>
+Molecule dummy(double radius = 1.0, const Eigen::Vector3d & center = Eigen::Vector3d::Zero());
+
+/*! Returns the H3+ molecule
+ */
+template <int group>
+Molecule H3();
+
+/*! Returns the H2 molecule
+ */
+Molecule H2();
+
+/*! Returns the CO2 molecule
+ */
+template <int group>
+Molecule CO2();
+
 /*! Returns the CH3+ molecule
  */
 Molecule CH3();
@@ -55,10 +74,8 @@ Molecule C2H4();
  */
 Molecule C6H6();
 
-/*! Returns a single dummy atom, centered at the origin and with the given radius
- */
 template <int group>
-Molecule dummy(double radius = 1.0, const Eigen::Vector3d & center = Eigen::Vector3d::Zero())
+Molecule dummy(double radius, const Eigen::Vector3d & center)
 {
     std::vector<Sphere> spheres;
     Sphere sph1(center,  radius);
@@ -152,8 +169,6 @@ Molecule NH3()
     return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
 
-/*! Returns the H3+ molecule
- */
 template <int group>
 Molecule H3()
 {
@@ -203,9 +218,8 @@ Molecule H3()
     return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
 
-/*! Returns the H2 molecule
- */
-Molecule H2() {
+Molecule H2()
+{
     int nAtoms = 2;
 
     Eigen::Vector3d H1( 0.735000, 0.000000, 0.000000);
@@ -234,8 +248,6 @@ Molecule H2() {
     return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
 
-/*! Returns the CO2 molecule
- */
 template <int group>
 Molecule CO2()
 {

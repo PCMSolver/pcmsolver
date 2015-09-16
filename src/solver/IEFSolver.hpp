@@ -37,9 +37,7 @@
 class Cavity;
 class IGreensFunction;
 
-#include "Factory.hpp"
 #include "PCMSolver.hpp"
-#include "SolverData.hpp"
 
 /*! \file IEFSolver.hpp
  *  \class IEFSolver
@@ -94,16 +92,5 @@ private:
             int irrep = 0) const __override;
     virtual std::ostream & printSolver(std::ostream & os) __override;
 };
-
-namespace
-{
-    PCMSolver * createIEFSolver(const solverData & data)
-    {
-        return new IEFSolver(data.hermitivitize);
-    }
-    const std::string IEFSOLVER("IEFPCM");
-    const bool registeredIEFSolver =
-        Factory<PCMSolver, solverData>::TheFactory().registerObject(IEFSOLVER, createIEFSolver);
-}
 
 #endif // IEFSOLVER_HPP

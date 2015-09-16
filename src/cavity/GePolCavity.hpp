@@ -35,8 +35,6 @@
 #include <boost/current_function.hpp>
 
 #include "Cavity.hpp"
-#include "CavityData.hpp"
-#include "Factory.hpp"
 #include "TimerInterface.hpp"
 
 /*! \file GePolCavity.hpp
@@ -87,17 +85,5 @@ private:
      */
     void build(int maxts, int maxsp, int maxvert);
 };
-
-namespace
-{
-    Cavity * createGePolCavity(const cavityData & data)
-    {
-        return new GePolCavity(data.molecule, data.area, data.probeRadius,
-                               data.minimalRadius);
-    }
-    const std::string GEPOL("GEPOL");
-    const bool registeredGePol = Factory<Cavity, cavityData>::TheFactory().registerObject(GEPOL,
-                                 createGePolCavity);
-}
 
 #endif // GEPOLCAVITY_HPP

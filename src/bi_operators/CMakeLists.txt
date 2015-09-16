@@ -1,22 +1,16 @@
-set(headers_list "")
-# Get headers with .hpp extension
-get_hpp_headers(headers_list)
-# If you want to remove some headers specify them explictly here
-list(REMOVE_ITEM headers_list "")
-# Sort alphabetically
-list(SORT headers_list)
-set(to_includer "${headers_list}")
-# Write headers to Includer.hpp
-file(APPEND "${PROJECT_BINARY_DIR}/include/Includer.hpp" "// Construction of boundary integral operators\n")
-list(REMOVE_ITEM to_includer "")
-write_to_Includer("${to_includer}")
+# List of headers
+list(APPEND headers_list CollocationIntegrator.hpp IntegratorForward.hpp IntegratorHelperFunctions.hpp IntegratorTypes.hpp NumericalIntegrator.hpp PurisimaIntegrator.hpp)
 
-set(sources_list "")
+# List of sources
+list(APPEND sources_list )
 
 # Write list of files to be passed to cloc for counting lines of code.
 # Only files that are actually compiled are counted.
 set(to_count "${sources_list}" "${headers_list}")
 write_to_cloc_list("${to_count}")
 
+set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${PROJECT_SOURCE_DIR}/src/bi_operators)
 # Sets install directory for all the headers in the list
-install_list_FILES("${headers_list}" include)
+foreach(_header ${headers_list})
+   install(FILES ${_header} DESTINATION include/bi_operators)
+endforeach()

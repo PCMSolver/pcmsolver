@@ -37,9 +37,7 @@
 class Cavity;
 class IGreensFunction;
 
-#include "Factory.hpp"
 #include "PCMSolver.hpp"
-#include "SolverData.hpp"
 
 /*! \file CPCMSolver.hpp
  *  \class CPCMSolver
@@ -86,16 +84,5 @@ private:
             int irrep = 0) const __override;
     virtual std::ostream & printSolver(std::ostream & os);
 };
-
-namespace
-{
-    PCMSolver * createCPCMSolver(const solverData & data)
-    {
-        return new CPCMSolver(data.hermitivitize, data.correction);
-    }
-    const std::string CPCMSOLVER("CPCM");
-    const bool registeredCPCMSolver =
-        Factory<PCMSolver, solverData>::TheFactory().registerObject(CPCMSOLVER, createCPCMSolver);
-}
 
 #endif // CPCMSOLVER_HPP

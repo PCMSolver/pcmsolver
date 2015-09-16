@@ -41,16 +41,6 @@ struct solverInput;
 #include "Input.hpp"
 #include "SurfaceFunction.hpp"
 
-#ifdef HAS_CXX11
-#define DELETE_DEFAULT_CONSTRUCTOR(class_name) \
-    public: \
-        class_name() = delete;
-#else /* HAS_CXX11 */
-#define DELETE_DEFAULT_CONTRUCTOR(class_name) \
-    private: \
-        class_name() {}
-#endif /* HAS_CXX11 */
-
 namespace pcm {
     typedef function<int(void)> NrNucleiGetter;
     typedef function<void(double[], double[])> CoordinatesGetter;
@@ -66,7 +56,6 @@ namespace pcm {
 
     class Meddle __final
     {
-        DELETE_DEFAULT_CONSTRUCTOR(Meddle)
         public:
             Meddle(const NrNucleiGetter &, const CoordinatesGetter &, const HostWriter &,
                    const PointGroupSetter &);

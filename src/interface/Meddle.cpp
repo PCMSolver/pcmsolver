@@ -66,7 +66,7 @@ void pcmsolver_delete(pcmsolver_context_t * context)
 }
 
 PCMSOLVER_API
-int pcmsolver_is_compatible_library(void)
+bool pcmsolver_is_compatible_library(void)
 {
     unsigned int major = (pcm::pcmsolver_get_version() >> 16);
     return (major == PROJECT_VERSION_MAJOR);

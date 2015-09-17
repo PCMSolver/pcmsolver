@@ -6,6 +6,7 @@ module pcmsolver
 
     public pcmsolver_new
     public pcmsolver_delete
+    public pcmsolver_is_compatible_library
     public pcmsolver_get_cavity_size
     public pcmsolver_get_irreducible_cavity_size
     public pcmsolver_get_centers
@@ -37,6 +38,13 @@ module pcmsolver
             type(c_ptr), value :: context
         end subroutine
     end interface
+
+    interface pcmsolver_is_compatible_library
+        function pcmsolver_is_compatible_library() result(compatible) bind(C)
+            use, intrinsic :: iso_c_binding, only: c_bool
+            logical(c_bool) :: compatible
+        end function pcmsolver_is_compatible_library
+    end interface pcmsolver_is_compatible_library
 
     interface pcmsolver_get_cavity_size
         function pcmsolver_get_cavity_size(context) result(nr_points) bind (C)

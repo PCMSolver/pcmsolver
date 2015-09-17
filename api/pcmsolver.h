@@ -44,7 +44,7 @@ PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(collect_nctot, collect_atoms, 
 
 PCMSOLVER_API void pcmsolver_delete(pcmsolver_context_t * context);
 
-PCMSOLVER_API int pcmsolver_is_compatible_library(void);
+PCMSOLVER_API bool pcmsolver_is_compatible_library(void);
 
 PCMSOLVER_API void pcmsolver_print(pcmsolver_context_t * context);
 

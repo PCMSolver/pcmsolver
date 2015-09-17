@@ -34,7 +34,6 @@ macro(add_reference reference_file where)
 endmacro()
 
 if(ENABLE_TESTS)
-   message(STATUS "Setting up Boost Test Unit Testing Framework")
-   enable_testing()
-   add_subdirectory(tests) # This must come last!!
+    enable_testing()
+    add_subdirectory(tests) # This must come last!!
 endif()

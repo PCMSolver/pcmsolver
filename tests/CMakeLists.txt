@@ -1,3 +1,7 @@
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+add_executable(catch.x catch.cpp)
+unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+
 # Math utilities and helper classes
 add_subdirectory(surface_function)
 add_subdirectory(input)

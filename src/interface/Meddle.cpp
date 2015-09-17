@@ -66,6 +66,13 @@ void pcmsolver_delete(pcmsolver_context_t * context)
 }
 
 PCMSOLVER_API
+int pcmsolver_is_compatible_library(void)
+{
+    unsigned int major = (pcm::pcmsolver_get_version() >> 16);
+    return (major == PROJECT_VERSION_MAJOR);
+}
+
+PCMSOLVER_API
 void pcmsolver_print(pcmsolver_context_t * context)
 {
     AS_TYPE(pcm::Meddle, context)->printInfo();
@@ -479,4 +486,8 @@ namespace pcm {
         }
     }
 
+    unsigned int pcmsolver_get_version(void)
+    {
+        return PCMSOLVER_VERSION;
+    }
 } /* end namespace pcm */

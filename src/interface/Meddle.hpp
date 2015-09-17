@@ -53,6 +53,7 @@ namespace pcm {
             int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
             Molecule & molecule);
     void initSpheresAtoms(const Input &, const Eigen::Matrix3Xd &, std::vector<Sphere> &);
+    unsigned int pcmsolver_get_version(void);
 
     class Meddle __final
     {

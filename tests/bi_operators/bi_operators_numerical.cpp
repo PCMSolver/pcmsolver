@@ -28,6 +28,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
+#include <cstdio>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -37,7 +38,6 @@
 
 #include <Eigen/Core>
 
-#include <boost/filesystem.hpp>
 
 #include "cnpyPimpl.hpp"
 #include "DerivativeTypes.hpp"
@@ -51,7 +51,6 @@
 #include "TestingMolecules.hpp"
 #include "Vacuum.hpp"
 
-namespace fs = boost::filesystem;
 
 struct NumericalIntegratorTest {
     double radius;
@@ -80,7 +79,7 @@ struct NumericalIntegratorTest {
  */
 BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
 {
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.vacuum");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.vacuum");
     Vacuum<AD_directional, NumericalIntegrator> gf;
 
     BOOST_TEST_MESSAGE("Vacuum");
@@ -118,7 +117,7 @@ BOOST_FIXTURE_TEST_CASE(vacuum, NumericalIntegratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
 {
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.uniform");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.uniform");
     UniformDielectric<AD_directional, NumericalIntegrator> gf(eps);
 
     BOOST_TEST_MESSAGE("UniformDielectric");
@@ -154,7 +153,7 @@ BOOST_FIXTURE_TEST_CASE(uniformdielectric, NumericalIntegratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
 {
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.ionic");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.ionic");
     IonicLiquid<AD_directional, NumericalIntegrator> gf(eps, kappa);
 
     BOOST_TEST_MESSAGE("IonicLiquid");
@@ -190,7 +189,7 @@ BOOST_FIXTURE_TEST_CASE(ionic, NumericalIntegratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(anisotropic, NumericalIntegratorTest)
 {
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.anisotropic");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.anisotropic");
     AnisotropicLiquid<AD_directional, NumericalIntegrator> gf(epsilon, euler);
 
     BOOST_TEST_MESSAGE("AnisotropicLiquid");

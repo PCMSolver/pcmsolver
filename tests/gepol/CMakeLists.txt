@@ -1,10 +1,10 @@
 set(list_of_libraries cavity pedra utils)
-# Order is important here, as the former two tests will produce the .npz files 
+# Order is important here, as the former two tests will produce the .npz files
 # to be read by the latter two tests!
 
-list(APPEND external_libraries ${ZLIB_LIBRARIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+list(APPEND external_libraries ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 add_boosttest(gepol_point "${list_of_libraries}" "${external_libraries}")
-add_boosttest(gepol_NH3 "${list_of_libraries}" "${external_libraries}") 
+add_boosttest(gepol_NH3 "${list_of_libraries}" "${external_libraries}")
 add_boosttest(gepol_point_from-file "${list_of_libraries}" "${external_libraries}")
 add_boosttest(gepol_NH3_from-file "${list_of_libraries}" "${external_libraries}")
 add_boosttest(gepol_H3+ "${list_of_libraries}" "${external_libraries}")

@@ -28,12 +28,12 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
+#include <cstdio>
 #include <iostream>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
-#include <boost/filesystem.hpp>
 
 #include "CPCMSolver.hpp"
 #include "CollocationIntegrator.hpp"
@@ -43,7 +43,6 @@
 #include "Vacuum.hpp"
 #include "TestingMolecules.hpp"
 
-namespace fs = boost::filesystem;
 
 /*! \class CPCMSolver
  *  \test \b pointChargeGePolC1 tests CPCMSolver using a point charge with a GePol cavity in C1 symmetry
@@ -56,7 +55,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity(point, area, probeRadius, minRadius);
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.c1");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
 
 
     double permittivity = 78.39;
@@ -97,7 +96,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity(point, area, probeRadius, minRadius);
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.c2");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
 
 
     double permittivity = 78.39;
@@ -141,7 +140,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity(point, area, probeRadius, minRadius);
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.cs");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
 
 
     double permittivity = 78.39;
@@ -185,7 +184,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity(point, area, probeRadius, minRadius);
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.ci");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
 
 
     double permittivity = 78.39;
@@ -229,7 +228,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity(point, area, probeRadius, minRadius);
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.d2");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
 
 
     double permittivity = 78.39;
@@ -273,7 +272,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity(point, area, probeRadius, minRadius);
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
 
 
     double permittivity = 78.39;
@@ -317,7 +316,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
     double probeRadius = 0.0;
     double minRadius = 100.0;
         GePolCavity cavity(point, area, probeRadius, minRadius);
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
 
 
     double permittivity = 78.39;
@@ -361,7 +360,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
     double probeRadius = 0.0;
     double minRadius = 100.0;
     GePolCavity cavity(point, area, probeRadius, minRadius);
-    fs::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
 
 
     double permittivity = 78.39;

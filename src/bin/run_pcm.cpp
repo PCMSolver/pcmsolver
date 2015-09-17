@@ -29,6 +29,7 @@
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
+#include "TimerInterface.hpp"
 
 //#include "BuildInfo.hpp"
 
@@ -99,6 +100,9 @@ int main(int argc, char * argv[])
     delete gf_i;
     delete gf_o;
     delete solver;
+
+    // Write timings out
+    TIMER_DONE();
 
     return EXIT_SUCCESS;
 }

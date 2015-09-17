@@ -12,7 +12,6 @@ add_reference(uniformdielectric_D_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
 add_reference(tanhsphericaldiffuse_S_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
 add_reference(tanhsphericaldiffuse_D_collocation.npy ${CMAKE_CURRENT_BINARY_DIR})
 
-list(APPEND external_libraries ${Boost_FILESYSTEM_LIBRARY})
 add_boosttest(bi_operators_numerical "${list_of_libraries}" "${external_libraries}")
 #add_reference(vacuum_S_numerical.npy ${CMAKE_CURRENT_BINARY_DIR})
 #add_reference(vacuum_D_numerical.npy ${CMAKE_CURRENT_BINARY_DIR})

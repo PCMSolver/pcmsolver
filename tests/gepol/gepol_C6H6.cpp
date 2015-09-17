@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -29,12 +29,12 @@
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <cmath>
+#include <cstdio>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
 
-#include <boost/filesystem.hpp>
 
 #include "GePolCavity.hpp"
 #include "Molecule.hpp"
@@ -42,7 +42,6 @@
 #include "Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
-namespace fs = boost::filesystem;
 
 struct GePolCavityC6H6AddTest {
     GePolCavity cavity;
@@ -55,8 +54,8 @@ struct GePolCavityC6H6AddTest {
 	Molecule molec = C6H6();
         cavity = GePolCavity(molec, area, probeRadius, minRadius);
         cavity.saveCavity("c6h6.npz");
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.c6h6");
-        fs::rename("cavity.off", "cavity.off.c6h6");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.c6h6");
+        std::rename("cavity.off", "cavity.off.c6h6");
     }
 };
 

@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify       
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -28,20 +28,19 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
-#include <vector>
 #include <cmath>
+#include <cstdio>
+#include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
 
-#include <boost/filesystem.hpp>
 
 #include "GePolCavity.hpp"
 #include "PhysicalConstants.hpp"
 #include "TestingMolecules.hpp"
 
-namespace fs = boost::filesystem;
 
 struct GePolCavityC1Test {
     GePolCavity cavity;
@@ -52,8 +51,8 @@ struct GePolCavityC1Test {
         double probeRadius = 0.0;
         double minRadius = 100.0;
         cavity = GePolCavity(point, area, probeRadius, minRadius);
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.c1");
-        fs::rename("cavity.off", "cavity.off.c1");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
+        std::rename("cavity.off", "cavity.off.c1");
     }
 };
 
@@ -117,8 +116,8 @@ struct GePolCavityC2Test {
         double probeRadius = 0.0;
         double minRadius = 100.0;
         cavity = GePolCavity(point, area, probeRadius, minRadius);
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.c2");
-        fs::rename("cavity.off", "cavity.off.c2");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
+        std::rename("cavity.off", "cavity.off.c2");
     }
 };
 
@@ -182,8 +181,8 @@ struct GePolCavityCsTest {
         double probeRadius = 0.0;
         double minRadius = 100.0;
         cavity = GePolCavity(point, area, probeRadius, minRadius);
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.cs");
-        fs::rename("cavity.off", "cavity.off.cs");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
+        std::rename("cavity.off", "cavity.off.cs");
     }
 };
 
@@ -247,8 +246,8 @@ struct GePolCavityCiTest {
         double probeRadius = 0.0;
         double minRadius = 100.0;
         cavity = GePolCavity(point, area, probeRadius, minRadius);
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.ci");
-        fs::rename("cavity.off", "cavity.off.ci");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
+        std::rename("cavity.off", "cavity.off.ci");
     }
 };
 
@@ -312,8 +311,8 @@ struct GePolCavityD2Test {
         double probeRadius = 0.0;
         double minRadius = 100.0;
         cavity = GePolCavity(point, area, probeRadius, minRadius);
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.d2");
-        fs::rename("cavity.off", "cavity.off.d2");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
+        std::rename("cavity.off", "cavity.off.d2");
     }
 };
 
@@ -377,8 +376,8 @@ struct GePolCavityC2vTest {
         double probeRadius = 0.0;
         double minRadius = 100.0;
         cavity = GePolCavity(point, area, probeRadius, minRadius);
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
-        fs::rename("cavity.off", "cavity.off.c2v");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
+        std::rename("cavity.off", "cavity.off.c2v");
     }
 };
 
@@ -442,8 +441,8 @@ struct GePolCavityC2hTest {
         double probeRadius = 0.0;
         double minRadius = 100.0;
         cavity = GePolCavity(point, area, probeRadius, minRadius);
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
-        fs::rename("cavity.off", "cavity.off.c2h");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
+        std::rename("cavity.off", "cavity.off.c2h");
     }
 };
 
@@ -507,8 +506,8 @@ struct GePolCavityD2hTest {
         double probeRadius = 0.0;
         double minRadius = 100.0;
         cavity = GePolCavity(point, area, probeRadius, minRadius);
-        fs::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
-        fs::rename("cavity.off", "cavity.off.d2h");
+        std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
+        std::rename("cavity.off", "cavity.off.d2h");
     }
 };
 

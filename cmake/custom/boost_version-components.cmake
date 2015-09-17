@@ -1,2 +1,5 @@
 set(BOOST_MINIMUM_REQUIRED 1.54.0)
-list(APPEND BOOST_COMPONENTS_REQUIRED chrono timer filesystem system unit_test_framework)
+list(APPEND BOOST_COMPONENTS_REQUIRED unit_test_framework)
+if(ENABLE_TIMER OR ENABLE_STANDALONE)
+    list(APPEND BOOST_COMPONENTS_REQUIRED chrono timer system)
+endif()

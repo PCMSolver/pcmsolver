@@ -48,32 +48,15 @@
 class SurfaceFunction
 {
 public:
-    SurfaceFunction() : name_(""), nPoints_(0), allocated_(false) {}
-    SurfaceFunction(const std::string & n)
-        : name_(n), nPoints_(0), allocated_(false) {}
-    SurfaceFunction(const std::string & n, int np)
-        : name_(n), nPoints_(np) {
-        values_ = Eigen::VectorXd::Zero(nPoints_);
-        allocated_ = true;
-    }
-    SurfaceFunction(const std::string & n, int np, double * v)
-        : name_(n), nPoints_(np) {
-        values_ = Eigen::VectorXd::Zero(nPoints_);
-        allocated_ = true;
-        Eigen::Map<Eigen::VectorXd> mapped_data(v, nPoints_);
-        values_ = mapped_data;
-    }
-    SurfaceFunction(const std::string & n, int np, const Eigen::VectorXd & v)
-        : name_(n), nPoints_(np), values_(v), allocated_(true) {}
-    ~SurfaceFunction() {
-        allocated_ = false;
-    }
+    SurfaceFunction() : nPoints_(0) {}
+    SurfaceFunction(size_t np) : nPoints_(np), values_(Eigen::VectorXd::Zero(nPoints_)) {}
+    SurfaceFunction(size_t np, double * v) : nPoints_(np), values_(Eigen::Map<Eigen::VectorXd>(v, nPoints_)) {}
+    SurfaceFunction(size_t np, const Eigen::VectorXd & v) : nPoints_(np), values_(v) {}
+    ~SurfaceFunction() {}
 
     /// Copy constructor
     SurfaceFunction(const SurfaceFunction & other)
-        : name_(other.name_), nPoints_(other.nPoints_), values_(other.values_) {
-        allocated_ = true;
-    }
+        : nPoints_(other.nPoints_), values_(other.values_) {}
 
     friend inline void swap(SurfaceFunction & left, SurfaceFunction & right);
     inline void swap(SurfaceFunction & other);
@@ -90,29 +73,21 @@ public:
     /// Division-assignment operator. Defined only for the uniform scaling case.
     SurfaceFunction & operator/=(double scaling);
 
-    const std::string & name() const { return name_; }
-    int nPoints() const { return nPoints_; }
+    size_t nPoints() const { return nPoints_; }
     void value(int index, double value) { values_(index) = value; }
     double value(int index) const { return values_(index); }
     Eigen::VectorXd & vector() { return values_; }
     const Eigen::VectorXd & vector() const { return values_; }
-    void allocate(int np) { values_.resize(np); }
-    bool allocated() const { return allocated_; }
     void clear();
-
-    void setValues(double * v);
-    void getValues(double * v);
 
     friend std::ostream & operator<<(std::ostream & os, SurfaceFunction & sf) {
         return sf.printObject(os);
     }
 
 private:
-    std::ostream & printObject(std::ostream & os);
-    std::string name_;
-    int nPoints_;
+    size_t nPoints_;
     Eigen::VectorXd values_;
-    bool allocated_;
+    std::ostream & printObject(std::ostream & os);
 };
 
 /*!

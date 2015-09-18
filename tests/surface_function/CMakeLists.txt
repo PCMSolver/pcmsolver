@@ -1,2 +1,2 @@
-set(list_of_libraries utils)
-add_boosttest(surface_function "${list_of_libraries}" "${LIBS}")
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/surface_function.cpp)
+add_test(NAME surface_function COMMAND unit_tests.x surface_function)

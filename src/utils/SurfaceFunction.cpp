@@ -34,7 +34,6 @@
 inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 {
     using std::swap;
-    swap(left.name_, right.name_);
     swap(left.nPoints_,
          right.nPoints_); // This is maybe redundant as nPoints must be the same...
     swap(left.values_, right.values_);
@@ -43,7 +42,6 @@ inline void swap(SurfaceFunction & left, SurfaceFunction & right)
 inline void SurfaceFunction::swap(SurfaceFunction & other)
 {
     using std::swap;
-    swap(this->name_, other.name_);
     swap(this->nPoints_, other.nPoints_); // This is maybe redundant
     swap(this->values_, other.values_);
 }
@@ -95,25 +93,6 @@ SurfaceFunction & SurfaceFunction::operator/=(double scaling)
     return *this;
 }
 
-void SurfaceFunction::setValues(double * v)
-{
-    if (!allocated_)
-        PCMSOLVER_ERROR("Surface function not allocated!");
-    // Zero out any previous value
-    values_.setZero();
-
-    for (int i = 0; i < nPoints_; ++i) {
-        values_(i) = v[i];
-    }
-}
-
-void SurfaceFunction::getValues(double * v)
-{
-    for (int i = 0; i < nPoints_; ++i) {
-        v[i] = values_(i);
-    }
-}
-
 void SurfaceFunction::clear()
 {
     values_.setZero();
@@ -121,11 +100,6 @@ void SurfaceFunction::clear()
 
 std::ostream & SurfaceFunction::printObject(std::ostream & os)
 {
-    os << "Surface Function " << name_ << std::endl;
-    if (!allocated_)
-        PCMSOLVER_ERROR("Surface function not allocated!");
-
     os << values_.transpose();
-
     return os;
 }

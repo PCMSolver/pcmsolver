@@ -219,7 +219,7 @@ namespace pcm {
 
         // Get the proper iterators
         SurfaceFunctionMap::const_iterator iter_pot = functions_.find(MEP);
-        SurfaceFunction asc(ASC, cavity_->size());
+        SurfaceFunction asc(cavity_->size());
         asc.vector() = K_0_->computeCharge(iter_pot->second.vector(), irrep);
         asc /= double(cavity_->pointGroup().nrIrrep());
         // Insert it into the map
@@ -237,7 +237,7 @@ namespace pcm {
 
         // Get the proper iterators
         SurfaceFunctionMap::const_iterator iter_pot = functions_.find(MEP);
-        SurfaceFunction asc(ASC, cavity_->size());
+        SurfaceFunction asc(cavity_->size());
         if (hasDynamic_) {
             asc.vector() = K_d_->computeCharge(iter_pot->second.vector(), irrep);
         } else {
@@ -274,7 +274,7 @@ namespace pcm {
         if (functions_.count(functionName) == 1) { // Key in map already
             functions_[functionName].vector() = Eigen::Map<Eigen::VectorXd>(values, size, 1);
         } else {
-            SurfaceFunction func(functionName, size, values);
+            SurfaceFunction func(size, values);
             functions_.insert(std::make_pair(functionName, func));
         }
     }
@@ -286,7 +286,7 @@ namespace pcm {
         BOOST_FOREACH(SurfaceFunctionPair pair, functions_) {
             unsigned int dim = static_cast<unsigned int>(pair.second.nPoints());
             const unsigned int shape[] = {dim};
-            std::string fname = pair.second.name() + ".npy";
+            std::string fname = pair.first + ".npy";
             cnpy::npy_save(fname, pair.second.vector().data(), shape, 1, "w", true);
         }
     }
@@ -314,7 +314,7 @@ namespace pcm {
             PCMSOLVER_ERROR("Inconsistent dimension of loaded surface function!");
         } else {
             Eigen::VectorXd values = getFromRawBuffer<double>(dim, 1, raw_surfFunc.data);
-            SurfaceFunction func(functionName, dim, values);
+            SurfaceFunction func(dim, values);
             // Append to global map
             if (functions_.count(functionName) == 1) { // Key in map already
                 functions_[functionName] = func;

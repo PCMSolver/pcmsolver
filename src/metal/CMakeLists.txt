@@ -6,9 +6,6 @@ list(APPEND sources_list metal_sphere.F90)
 set(to_count "${sources_list}")
 write_to_cloc_list("${to_count}")
 
-# Build static library
-add_library(metal STATIC ${sources_list})
-# Specify dependencies for the library (if any)
-set_property(GLOBAL APPEND PROPERTY PCMSolver_LIBRARIES metal)
-install(TARGETS metal ARCHIVE DESTINATION lib)
-
+foreach(_source ${sources_list})
+    set_property(GLOBAL APPEND PROPERTY PCMSolver_Fortran_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})
+endforeach()

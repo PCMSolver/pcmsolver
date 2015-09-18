@@ -9,17 +9,10 @@ list(APPEND sources_list Atom.cpp Exception.cpp Input.cpp Interpolation.cpp Mole
 set(to_count "${sources_list}" "${headers_list}")
 write_to_cloc_list("${to_count}")
 
-# Build static library
-add_library(utils STATIC ${sources_list})
-# Specify dependencies for the library (if any)
-add_dependencies(utils libgetkw)
-set_property(GLOBAL APPEND PROPERTY PCMSolver_LIBRARIES utils)
-if(BUILD_CUSTOM_BOOST)
-   add_dependencies(utils custom_boost)
-endif()
-install(TARGETS utils ARCHIVE DESTINATION lib)
-
 set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
+foreach(_source ${sources_list})
+    set_property(GLOBAL APPEND PROPERTY PCMSolver_CXX_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})
+endforeach()
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/utils)

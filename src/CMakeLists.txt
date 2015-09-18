@@ -15,6 +15,12 @@ add_subdirectory(bi_operators)
 add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)
+
+get_property(_pcmsolver_cxx_sources GLOBAL PROPERTY PCMSolver_CXX_SOURCES)
+get_property(_pcmsolver_c_sources GLOBAL PROPERTY PCMSolver_C_SOURCES)
+get_property(_pcmsolver_fortran_sources GLOBAL PROPERTY PCMSolver_Fortran_SOURCES)
+add_library(pcm ${_pcmsolver_cxx_sources} ${_pcmsolver_c_sources} ${_pcmsolver_fortran_sources})
+
 # This directory contains source file for executables
 if(BUILD_STANDALONE)
    add_subdirectory(bin)

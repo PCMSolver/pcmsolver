@@ -92,22 +92,27 @@ f.write('# Only files that are actually compiled are counted.\n')
 f.write('set(to_count "${sources_list}" "${headers_list}")\n')
 f.write('write_to_cloc_list("${to_count}")\n\n')
 
-f.write('# Build static library\n')
-f.write('add_library('+ libname + ' STATIC ${sources_list})\n')
-f.write('# Specify dependencies for the library (if any)\n')
-f.write('#add_dependencies('+ libname + ' )\n')
-f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_LIBRARIES {0})\n'.format(libname))
-if (not (lang == 'C' or lang == 'F')):
-    f.write('if(BUILD_CUSTOM_BOOST)\n')
-    f.write('   add_dependencies('+ libname + ' custom_boost)\n')
-    f.write('endif()\n')
-f.write('install(TARGETS ' + libname + ' ARCHIVE DESTINATION lib)\n\n')
-
-if (not lang == 'F'):
+if (lang == 'CXX'):
     f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${{CMAKE_CURRENT_LIST_DIR}})\n')
+    f.write('foreach(_source ${sources_list})\n')
+    f.write('    set_property(GLOBAL APPEND PROPERTY PCMSolver_CXX_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})\n')
+    f.write('endforeach()\n')
     f.write('# Sets install directory for all the headers in the list\n')
     f.write('foreach(_header ${headers_list})\n')
-    f.write('   install(FILES ${_header} DESTINATION include/' + libname + ')\n')
+    f.write('    install(FILES ${_header} DESTINATION include/' + libname + ')\n')
+    f.write('endforeach()\n')
+elif (lang == 'C'):
+    f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${{CMAKE_CURRENT_LIST_DIR}})\n')
+    f.write('foreach(_source ${sources_list})\n')
+    f.write('    set_property(GLOBAL APPEND PROPERTY PCMSolver_C_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})\n')
+    f.write('endforeach()\n')
+    f.write('# Sets install directory for all the headers in the list\n')
+    f.write('foreach(_header ${headers_list})\n')
+    f.write('    install(FILES ${_header} DESTINATION include/' + libname + ')\n')
+    f.write('endforeach()\n')
+else:
+    f.write('foreach(_source ${sources_list})\n')
+    f.write('    set_property(GLOBAL APPEND PROPERTY PCMSolver_Fortran_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})\n')
     f.write('endforeach()\n')
 
 print('Template for {} created'.format(libname))

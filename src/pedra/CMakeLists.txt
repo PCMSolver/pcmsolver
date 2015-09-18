@@ -6,9 +6,7 @@ list(APPEND sources_list pedra_cavity.F90 pedra_cavity_interface.F90 pedra_dblas
 set(to_count "${sources_list}")
 write_to_cloc_list("${to_count}")
 
-# Build static library
-add_library(pedra STATIC ${sources_list})
-# Specify dependencies for the library (if any)
-set_property(GLOBAL APPEND PROPERTY PCMSolver_LIBRARIES pedra)
-install(TARGETS pedra ARCHIVE DESTINATION lib)
+foreach(_source ${sources_list})
+    set_property(GLOBAL APPEND PROPERTY PCMSolver_Fortran_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})
+endforeach()
 

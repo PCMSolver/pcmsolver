@@ -1,0 +1,313 @@
+/* pcmsolver_copyright_start */
+/*
+ *     PCMSolver, an API for the Polarizable Continuum Model
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+ *
+ *     This file is part of PCMSolver.
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Lesser General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     PCMSolver is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Lesser General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     For information on the complete list of contributors to the
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+ */
+/* pcmsolver_copyright_end */
+
+#include "catch.hpp"
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include "Config.hpp"
+
+#include <Eigen/Core>
+
+#include "Input.hpp"
+#include "PhysicalConstants.hpp"
+#include "Sphere.hpp"
+
+SCENARIO("Input reading using GetKw", "[input]")
+{
+    GIVEN("An input file")
+    {
+        /*! \class Input
+         *  \test \b Input_TsLess tests input reading on an input file parsed by pcmsolver.py
+         */
+        WHEN("The input file is for a TsLess cavity")
+        {
+            std::string filename = "@CMAKE_CURRENT_LIST_DIR@/@tsless.inp";
+            Input parsedInput = Input(filename);
+            std::string units = "ANGSTROM";
+            int CODATAyear = 2002;
+            std::string type = "TSLESS";
+            double area = 0.6 * angstrom2ToBohr2(CODATAyear);
+            double minDistance = 5.0 * angstromToBohr(CODATAyear);
+            int derOrder = 25;
+            bool scaling = false;
+            std::string radiiSet = "UFF";
+            double minimalRadius = 0.1 * angstromToBohr(CODATAyear);
+            std::string mode = "ATOMS";
+            std::vector<int> atoms;
+            std::vector<double> radii;
+            atoms.push_back(1); atoms.push_back(2); atoms.push_back(4);
+            radii.push_back(1.4 * angstromToBohr(CODATAyear));
+            radii.push_back(4.3 * angstromToBohr(CODATAyear));
+            radii.push_back(1.2 * angstromToBohr(CODATAyear));
+            std::string solvent = "Cyclohexane"; // Name in the Solvent object
+            std::string solverType = "CPCM";
+            double correction = 0.5;
+            bool hermitivitize = false;
+            double probeRadius = 2.815 * angstromToBohr(CODATAyear); // The value for water
+            std::string greenInsideType = "VACUUM";
+            std::string greenOutsideType = "UNIFORMDIELECTRIC";
+            int derivativeInsideType = 1;
+            int derivativeOutsideType = 1;
+
+            THEN("the input reading returns...")
+            {
+                REQUIRE(units         == parsedInput.units());
+                REQUIRE(CODATAyear    == parsedInput.CODATAyear());
+                REQUIRE(type          == parsedInput.cavityType());
+                REQUIRE(area          == Approx(parsedInput.cavityParams().area));
+                REQUIRE(minDistance   == Approx(parsedInput.cavityParams().minDistance));
+                REQUIRE(derOrder      == parsedInput.cavityParams().derOrder);
+                REQUIRE(scaling       == parsedInput.scaling());
+                REQUIRE(radiiSet      == parsedInput.radiiSet());
+                REQUIRE(minimalRadius == Approx(parsedInput.cavityParams().minimalRadius));
+                REQUIRE(mode          == parsedInput.mode());
+                for (size_t i = 0; i < atoms.size(); ++i) {
+                    REQUIRE(atoms[i]  == parsedInput.atoms(i));
+                    REQUIRE(radii[i]  == Approx(parsedInput.radii(i)));
+                }
+                REQUIRE(solvent               == parsedInput.solvent().name());
+                REQUIRE(solverType            == parsedInput.solverType());
+                REQUIRE(correction            == Approx(parsedInput.correction()));
+                REQUIRE(hermitivitize         == parsedInput.hermitivitize());
+                REQUIRE(probeRadius           == Approx(parsedInput.cavityParams().probeRadius));
+                REQUIRE(greenInsideType       == parsedInput.greenInsideType());
+                REQUIRE(greenOutsideType      == parsedInput.greenOutsideType());
+                REQUIRE(derivativeInsideType  == parsedInput.insideGreenParams().howDerivative);
+                REQUIRE(derivativeOutsideType == parsedInput.outsideStaticGreenParams().howDerivative);
+            }
+        }
+
+        /*! \class Input
+         *  \test \b InputRestartTest_Restart tests input reading on an input file parsed by pcmsolver.py
+         */
+        WHEN("The input file is for a restart cavity")
+        {
+            std::string filename = "@CMAKE_CURRENT_LIST_DIR@/@restart.inp";
+            Input parsedInput = Input(filename);
+            std::string units = "AU";
+            int CODATAyear = 2010;
+            std::string type = "RESTART";
+            std::string cavFilename = "cavity.npz";
+            int patchLevel = 2;
+            double coarsity = 0.5;
+            double area = 0.3;
+            double minDistance = 0.1;
+            int derOrder = 4;
+            bool scaling = true;
+            std::string radiiSet = "BONDI";
+            double minimalRadius = 100.0;
+            std::string mode = "IMPLICIT";
+            std::string solvent = "Water"; // Name in the Solvent object
+            std::string solverType = "IEFPCM";
+            int equationType = 1;
+            double correction = 0.0;
+            bool hermitivitize = true;
+            double probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+            std::string greenInsideType = "VACUUM";
+            std::string greenOutsideType = "UNIFORMDIELECTRIC";
+            int derivativeInsideType = 1;
+            int derivativeOutsideType = 1;
+            THEN("the input reading returns...")
+            {
+                REQUIRE(units                 == parsedInput.units());
+                REQUIRE(CODATAyear            == parsedInput.CODATAyear());
+                REQUIRE(type                  == parsedInput.cavityType());
+                REQUIRE(cavFilename           == parsedInput.cavityParams().filename);
+                REQUIRE(patchLevel            == parsedInput.cavityParams().patchLevel);
+                REQUIRE(coarsity              == Approx(parsedInput.cavityParams().coarsity));
+                REQUIRE(area                  == Approx(parsedInput.cavityParams().area));
+                REQUIRE(minDistance           == Approx(parsedInput.cavityParams().minDistance));
+                REQUIRE(derOrder              == parsedInput.cavityParams().derOrder);
+                REQUIRE(scaling               == parsedInput.scaling());
+                REQUIRE(radiiSet              == parsedInput.radiiSet());
+                REQUIRE(minimalRadius         == Approx(parsedInput.cavityParams().minimalRadius));
+                REQUIRE(mode                  == parsedInput.mode());
+                REQUIRE(solvent               == parsedInput.solvent().name());
+                REQUIRE(solverType            == parsedInput.solverType());
+                REQUIRE(equationType          == parsedInput.equationType());
+                REQUIRE(correction            == Approx(parsedInput.correction()));
+                REQUIRE(hermitivitize         == parsedInput.hermitivitize());
+                REQUIRE(probeRadius           == Approx(parsedInput.cavityParams().probeRadius));
+                REQUIRE(greenInsideType       == parsedInput.greenInsideType());
+                REQUIRE(greenOutsideType      == parsedInput.greenOutsideType());
+                REQUIRE(derivativeInsideType  == parsedInput.insideGreenParams().howDerivative);
+                REQUIRE(derivativeOutsideType == parsedInput.outsideStaticGreenParams().howDerivative);
+            }
+        }
+
+        /*! \class Input
+         *  \test \b InputWaveletTest_Wavelet tests input reading on an input file parsed by pcmsolver.py
+         */
+        WHEN("The input file is for a wavelet cavity")
+        {
+            std::string filename = "@CMAKE_CURRENT_LIST_DIR@/@wavelet.inp";
+            Input parsedInput = Input(filename);
+            std::string units = "ANGSTROM";
+            int CODATAyear = 1998;
+            std::string type = "WAVELET";
+            int patchLevel = 1;
+            double coarsity = 0.3;
+            bool scaling = true;
+            std::string radiiSet = "BONDI";
+            std::string mode = "EXPLICIT";
+            Eigen::Vector3d c1, c2, c3;
+            c1 <<  0.00,  0.00, 0.00;
+            c2 <<  0.00, -0.96, 0.00;
+            c3 << -0.905, 0.32, 0.00;
+            c2 *= angstromToBohr(CODATAyear);
+            c3 *= angstromToBohr(CODATAyear);
+            Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
+            Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
+            Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
+            std::vector<Sphere> spheres;
+            spheres.push_back(sph1);
+            spheres.push_back(sph2);
+            spheres.push_back(sph3);
+            std::string solverType = "WAVELET";
+            int equationType = 0;
+            double probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+            std::string greenInsideType = "VACUUM";
+            std::string greenOutsideType = "UNIFORMDIELECTRIC";
+            int derivativeInsideType = 0;
+            int derivativeOutsideType = 2;
+            double epsilonInside = 1.0;
+            double epsilonStaticOutside = 78.39;
+            double epsilonDynamicOutside = 10.423;
+            THEN("the input reading returns...")
+            {
+                REQUIRE(units                 == parsedInput.units());
+                REQUIRE(CODATAyear            == parsedInput.CODATAyear());
+                REQUIRE(type                  == parsedInput.cavityType());
+                REQUIRE(patchLevel            == parsedInput.cavityParams().patchLevel);
+                REQUIRE(coarsity              == Approx(parsedInput.cavityParams().coarsity));
+                REQUIRE(scaling               == parsedInput.scaling());
+                REQUIRE(radiiSet              == parsedInput.radiiSet());
+                REQUIRE(mode                  == parsedInput.mode());
+                for (size_t i = 0; i < spheres.size(); ++i) {
+                    for (size_t j = 0; j < 3; ++j) {
+                        REQUIRE(spheres[i].center(j) == Approx(parsedInput.spheres(i).center(j)));
+                    }
+                    REQUIRE(spheres[i].radius() == Approx(parsedInput.spheres(i).radius()));
+                }
+                REQUIRE(solverType            == parsedInput.solverType());
+                REQUIRE(equationType          == parsedInput.equationType());
+                REQUIRE(probeRadius           == Approx(parsedInput.cavityParams().probeRadius));
+                REQUIRE(greenInsideType       == parsedInput.greenInsideType());
+                REQUIRE(greenOutsideType      == parsedInput.greenOutsideType());
+                REQUIRE(derivativeInsideType  == parsedInput.insideGreenParams().howDerivative);
+                REQUIRE(derivativeOutsideType == parsedInput.outsideStaticGreenParams().howDerivative);
+                REQUIRE(epsilonInside         == Approx(parsedInput.insideGreenParams().epsilon));
+                REQUIRE(epsilonStaticOutside  == Approx(parsedInput.outsideStaticGreenParams().epsilon));
+                REQUIRE(epsilonDynamicOutside == Approx(parsedInput.outsideDynamicGreenParams().epsilon));
+            }
+        }
+
+        /*! \class Input
+         *  \test \b InputDiffuseTest_Diffuse tests input reading on an input file parsed by pcmsolver.py
+         */
+        WHEN("The input file is for a diffuse environment")
+        {
+            std::string filename = "@CMAKE_CURRENT_LIST_DIR@/@diffuse.inp";
+            Input parsedInput = Input(filename);
+            std::string units = "ANGSTROM";
+            int CODATAyear = 1998;
+            std::string type = "WAVELET";
+            int patchLevel = 1;
+            double coarsity = 0.3;
+            bool scaling = true;
+            std::string radiiSet = "BONDI";
+            std::string mode = "EXPLICIT";
+            Eigen::Vector3d c1, c2, c3;
+            c1 <<  0.00,  0.00, 0.00;
+            c2 <<  0.00, -0.96, 0.00;
+            c3 << -0.905, 0.32, 0.00;
+            c2 *= angstromToBohr(CODATAyear);
+            c3 *= angstromToBohr(CODATAyear);
+            Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
+            Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
+            Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
+            std::vector<Sphere> spheres;
+            spheres.push_back(sph1);
+            spheres.push_back(sph2);
+            spheres.push_back(sph3);
+            std::string solverType = "WAVELET";
+            int equationType = 0;
+            double probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+            std::string greenInsideType = "VACUUM";
+            std::string greenOutsideType = "SPHERICALDIFFUSE";
+            int derivativeInsideType = 0;
+            int derivativeOutsideType = 0;
+            double epsilonInside = 1.0;
+            double epsilonStatic1 = 78.39;
+            double epsilonDynamic1 = 10.423;
+            double epsilonStatic2 = 20.0;
+            double epsilonDynamic2 = 4.0;
+            double center = 100.0 * angstromToBohr(CODATAyear);
+            double width  = 5.0 * angstromToBohr(CODATAyear);
+            int profile = 1;
+            Eigen::Vector3d origin = (Eigen::Vector3d() << 70.0, 1.0, 23.0).finished();
+            origin *= angstromToBohr(CODATAyear);
+            THEN("the input reading returns...")
+            {
+                REQUIRE(units                 == parsedInput.units());
+                REQUIRE(CODATAyear            == parsedInput.CODATAyear());
+                REQUIRE(type                  == parsedInput.cavityType());
+                REQUIRE(patchLevel            == parsedInput.cavityParams().patchLevel);
+                REQUIRE(coarsity              == Approx(parsedInput.cavityParams().coarsity));
+                REQUIRE(scaling               == parsedInput.scaling());
+                REQUIRE(radiiSet              == parsedInput.radiiSet());
+                REQUIRE(mode                  == parsedInput.mode());
+                for (size_t i = 0; i < spheres.size(); ++i) {
+                    for (size_t j = 0; j < 3; ++j) {
+                        REQUIRE(spheres[i].center(j) == Approx(parsedInput.spheres(i).center(j)));
+                    }
+                    REQUIRE(spheres[i].radius() == Approx(parsedInput.spheres(i).radius()));
+                }
+                REQUIRE(solverType            == parsedInput.solverType());
+                REQUIRE(equationType          == parsedInput.equationType());
+                REQUIRE(probeRadius           == Approx(parsedInput.cavityParams().probeRadius));
+                REQUIRE(greenInsideType       == parsedInput.greenInsideType());
+                REQUIRE(greenOutsideType      == parsedInput.greenOutsideType());
+                REQUIRE(derivativeInsideType  == parsedInput.insideGreenParams().howDerivative);
+                REQUIRE(derivativeOutsideType == parsedInput.outsideStaticGreenParams().howDerivative);
+                REQUIRE(epsilonInside         == Approx(parsedInput.insideGreenParams().epsilon));
+                REQUIRE(epsilonStatic1        == Approx(parsedInput.outsideStaticGreenParams().epsilon1));
+                REQUIRE(epsilonStatic2        == Approx(parsedInput.outsideStaticGreenParams().epsilon2));
+                REQUIRE(epsilonDynamic1       == Approx(parsedInput.outsideDynamicGreenParams().epsilon1));
+                REQUIRE(epsilonDynamic2       == Approx(parsedInput.outsideDynamicGreenParams().epsilon2));
+                REQUIRE(center                == Approx(parsedInput.outsideDynamicGreenParams().center));
+                REQUIRE(width                 == Approx(parsedInput.outsideDynamicGreenParams().width));
+                REQUIRE(profile               == parsedInput.outsideDynamicGreenParams().howProfile);
+                for (size_t i = 0; i < 3; ++i) {
+                    REQUIRE(origin(i) == Approx(parsedInput.outsideStaticGreenParams().origin(i)));
+                    REQUIRE(origin(i) == Approx(parsedInput.outsideDynamicGreenParams().origin(i)));
+                }
+            }
+        }
+    }
+}

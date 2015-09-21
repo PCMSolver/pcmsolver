@@ -1,4 +1,2 @@
-set(list_of_libraries)
-
-list(APPEND external_libraries "")
-add_boosttest(tanh_one_layer "${list_of_libraries}" "${external_libraries}")
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/one_layer.cpp)
+add_test(NAME one_layer COMMAND unit_tests.x [one_layer])

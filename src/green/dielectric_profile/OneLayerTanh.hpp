@@ -30,7 +30,6 @@
 
 #include "Config.hpp"
 
-
 /*! \file OneLayerTanh.hpp
  *  \class OneLayerTanh
  *  \brief A tanh dielectric profile as in \cite Frediani2004a

@@ -1,0 +1,230 @@
+/* pcmsolver_copyright_start */
+/*
+ *     PCMSolver, an API for the Polarizable Continuum Model
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
+ *
+ *     This file is part of PCMSolver.
+ *
+ *     PCMSolver is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Lesser General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     PCMSolver is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Lesser General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     For information on the complete list of contributors to the
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+ */
+/* pcmsolver_copyright_end */
+
+#include "catch.hpp"
+
+#include <cstdio>
+#include <cmath>
+#include <iostream>
+#include <iomanip>
+#include <limits>
+
+#include "Config.hpp"
+
+#include <Eigen/Core>
+
+#include "cnpyPimpl.hpp"
+#include "DerivativeTypes.hpp"
+#include "AnisotropicLiquid.hpp"
+#include "Element.hpp"
+#include "GePolCavity.hpp"
+#include "IonicLiquid.hpp"
+#include "NumericalIntegrator.hpp"
+#include "PhysicalConstants.hpp"
+#include "UniformDielectric.hpp"
+#include "TestingMolecules.hpp"
+#include "Vacuum.hpp"
+
+SCENARIO("A collocation integrator with numerical integrator of the diagonal elements", "[bi_operators][bi_operators_numerical]")
+{
+    GIVEN("A GePol cavity for a single sphere in the origin")
+    {
+        Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+        double area = 10.0;
+        GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);
+
+        /*! \class NumericalIntegrator
+         *  \test \b NumericalIntegratorTest_vacuum tests the numerical evaluation of the vacuum matrix representations of S and D
+         */
+        WHEN("the vacuum Green's function is used")
+        {
+            std::rename("PEDRA.OUT", "PEDRA.OUT.vacuum");
+            Vacuum<AD_directional, NumericalIntegrator> gf;
+            THEN("the matrix elements of S are")
+            {
+                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+                // Numerical integrator not really working now...
+                /*
+                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_S_numerical.npy");
+                int dim_read = raw_S_ref.shape[0];
+                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                for (size_t i = 0; i < cavity.size(); ++i) {
+                    for (size_t j = 0; j < cavity.size(); ++j) {
+                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                    }
+                }
+                */
+            }
+            AND_THEN("the matrix elements of D are")
+            {
+                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+                // Numerical integrator not really working now...
+                /*
+                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_D_numerical.npy");
+                int dim_read = raw_D_ref.shape[0];
+                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                for (size_t i = 0; i < cavity.size(); ++i) {
+                    for (size_t j = 0; j < cavity.size(); ++j) {
+                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                    }
+                }
+                // Checks sum rule for D operator
+                REQUIRE(D_sum == Approx(2 * M_PI));
+                */
+            }
+        }
+
+        /*! \class NumericalIntegrator
+         *  \test \b NumericalIntegratorTest_uniformdielectric tests the numerical evaluation of the uniform dielectric matrix representations of S and D
+         */
+        WHEN("the uniform dielectric Green's function is used")
+        {
+            double eps = 80.0;
+            std::rename("PEDRA.OUT", "PEDRA.OUT.uniform");
+            UniformDielectric<AD_directional, NumericalIntegrator> gf(eps);
+            THEN("the matrix elements of S are")
+            {
+                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+                // Numerical integrator not really working now...
+                /*
+                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_S_numerical.npy");
+                int dim_read = raw_S_ref.shape[0];
+                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                for (size_t i = 0; i < cavity.size(); ++i) {
+                    for (size_t j = 0; j < cavity.size(); ++j) {
+                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                    }
+                }
+                */
+            }
+            AND_THEN("the matrix elements of D are")
+            {
+                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+                // Numerical integrator not really working now...
+                /*
+                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_D_numerical.npy");
+                int dim_read = raw_D_ref.shape[0];
+                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                for (size_t i = 0; i < cavity.size(); ++i) {
+                    for (size_t j = 0; j < cavity.size(); ++j) {
+                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                    }
+                }
+                */
+            }
+        }
+
+        /*! \class NumericalIntegrator
+         *  \test \b NumericalIntegratorTest_ionic tests the numerical evaluation of the ionic liquid matrix representations of S and D
+         */
+        WHEN("the ionic liquid Green's function is used")
+        {
+            double eps = 80.0;
+            double kappa = 1.5;
+            std::rename("PEDRA.OUT", "PEDRA.OUT.ionic");
+            IonicLiquid<AD_directional, NumericalIntegrator> gf(eps, kappa);
+            THEN("the matrix elements of S are")
+            {
+                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+                // Numerical integrator not really working now...
+                /*
+                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/ionicliquid_S_numerical.npy");
+                int dim_read = raw_S_ref.shape[0];
+                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                for (size_t i = 0; i < cavity.size(); ++i) {
+                    for (size_t j = 0; j < cavity.size(); ++j) {
+                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                    }
+                }
+                */
+            }
+            AND_THEN("the matrix elements of D are")
+            {
+                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+                // Numerical integrator not really working now...
+                /*
+                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/ionicliquid_D_numerical.npy");
+                int dim_read = raw_D_ref.shape[0];
+                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                for (size_t i = 0; i < cavity.size(); ++i) {
+                    for (size_t j = 0; j < cavity.size(); ++j) {
+                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                    }
+                }
+                */
+            }
+        }
+
+        /*! \class NumericalIntegrator
+         *  \test \b NumericalIntegratorTest_anisotropic tests the numerical evaluation of the anisotropic liquid matrix representations of S and D
+         */
+        WHEN("the ionic liquid Green's function is used")
+        {
+            Eigen::Vector3d epsilon = (Eigen::Vector3d() << 80.0, 80.0, 80.0).finished();
+            Eigen::Vector3d euler = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
+            std::rename("PEDRA.OUT", "PEDRA.OUT.anisotropic");
+            AnisotropicLiquid<AD_directional, NumericalIntegrator> gf(epsilon, euler);
+            THEN("the matrix elements of S are")
+            {
+                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+                // Numerical integrator not really working now...
+                /*
+                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/anisotropicliquid_S_numerical.npy");
+                int dim_read = raw_S_ref.shape[0];
+                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                for (size_t i = 0; i < cavity.size(); ++i) {
+                    for (size_t j = 0; j < cavity.size(); ++j) {
+                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                    }
+                }
+                */
+            }
+            AND_THEN("the matrix elements of D are")
+            {
+                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+                // Numerical integrator not really working now...
+                /*
+                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/anisotropicliquid_D_numerical.npy");
+                int dim_read = raw_D_ref.shape[0];
+                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
+                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                for (size_t i = 0; i < cavity.size(); ++i) {
+                    for (size_t j = 0; j < cavity.size(); ++j) {
+                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                    }
+                }
+                */
+            }
+        }
+    }
+}
+

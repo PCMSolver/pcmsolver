@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE GreensFunctionUniformDielectric
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include "catch.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -40,102 +37,97 @@
 #include "DerivativeTypes.hpp"
 #include "UniformDielectric.hpp"
 
-struct UniformDielectricTest {
-    double epsilon;
-    Eigen::Vector3d source, probe, sourceNormal, probeNormal;
-    Eigen::Array4d result;
-    UniformDielectricTest() { SetUp(); }
-    void SetUp() {
-        epsilon = 60.0;
-        source = Eigen::Vector3d::Random();
-        sourceNormal = source + Eigen::Vector3d::Random();
-        sourceNormal.normalize();
-        probe = Eigen::Vector3d::Random();
-        probeNormal = probe + Eigen::Vector3d::Random();
-        probeNormal.normalize();
-        result = analyticUniformDielectric(epsilon, sourceNormal, source, probeNormal, probe);
+TEST_CASE("Evaluation of the uniform dielectric Green's function and its derivatives", "[green][green_uniform_dielectric]")
+{
+    double epsilon = 60.0;
+    Eigen::Vector3d source = Eigen::Vector3d::Random();
+    Eigen::Vector3d sourceNormal = source + Eigen::Vector3d::Random();
+    sourceNormal.normalize();
+    Eigen::Vector3d probe = Eigen::Vector3d::Random();
+    Eigen::Vector3d probeNormal = probe + Eigen::Vector3d::Random();
+    probeNormal.normalize();
+    Eigen::Array4d result = analyticUniformDielectric(epsilon, sourceNormal, source, probeNormal, probe);
+    /*! \class UniformDielectric
+     *  \test \b UniformDielectricTest_numerical tests the numerical evaluation of the UniformDielectric Green's function against analytical result
+     */
+    SECTION("Numerical derivative")
+    {
+        UniformDielectric<Numerical, CollocationIntegrator> gf(epsilon);
+        double value = result(0);
+        double gf_value = gf.kernelS(source, probe);
+        REQUIRE(value == Approx(gf_value));
+
+        double derProbe = result(1);
+        double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
+        REQUIRE(derProbe == Approx(gf_derProbe));
+
+        double derSource = result(2);
+        double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
+        REQUIRE(derSource == Approx(gf_derSource));
     }
-};
 
-/*! \class UniformDielectric
- *  \test \b UniformDielectricTest_numerical tests the numerical evaluation of the UniformDielectric Green's function against analytical result
- */
-BOOST_FIXTURE_TEST_CASE(numerical, UniformDielectricTest)
-{
-    UniformDielectric<Numerical, CollocationIntegrator> gf(epsilon);
-    double value = result(0);
-    double gf_value = gf.kernelS(source, probe);
-    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
+    /*! \class UniformDielectric
+     *  \test \b UniformDielectricTest_directional_AD tests the automatic evaluation (directional derivative only)
+     *  of the UniformDielectric Green's function against analytical result
+     */
+    SECTION("Directional derivative via AD")
+    {
+        UniformDielectric<AD_directional, CollocationIntegrator> gf(epsilon);
+        double value = result(0);
+        double gf_value = gf.kernelS(source, probe);
+        REQUIRE(value == Approx(gf_value));
 
-    double derProbe = result(1);
-    double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-05);
+        double derProbe = result(1);
+        double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
+        REQUIRE(derProbe == Approx(gf_derProbe));
 
-    double derSource = result(2);
-    double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-05);
-}
+        double derSource = result(2);
+        double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
+        REQUIRE(derSource == Approx(gf_derSource));
+    }
 
-/*! \class UniformDielectric
- *  \test \b UniformDielectricTest_directional_AD tests the automatic evaluation (directional derivative only)
- *  of the UniformDielectric Green's function against analytical result
- */
-BOOST_FIXTURE_TEST_CASE(directional_AD, UniformDielectricTest)
-{
-    UniformDielectric<AD_directional, CollocationIntegrator> gf(epsilon);
-    double value = result(0);
-    double gf_value = gf.kernelS(source, probe);
-    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
+    /*! \class UniformDielectric
+     *  \test \b UniformDielectricTest_gradient_AD tests the automatic evaluation (full gradient)
+     *  of the UniformDielectric Green's function against analytical result
+     */
+    SECTION("Gradient via AD")
+    {
+        UniformDielectric<AD_gradient, CollocationIntegrator> gf(epsilon);
+        double value = result(0);
+        double gf_value = gf.kernelS(source, probe);
+        REQUIRE(value == Approx(gf_value));
 
-    double derProbe = result(1);
-    double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
+        double derProbe = result(1);
+        double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
+        REQUIRE(derProbe == Approx(gf_derProbe));
 
-    double derSource = result(2);
-    double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
-}
+        double derSource = result(2);
+        double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
+        REQUIRE(derSource == Approx(gf_derSource));
+    }
 
-/*! \class UniformDielectric
- *  \test \b UniformDielectricTest_gradient_AD tests the automatic evaluation (full gradient)
- *  of the UniformDielectric Green's function against analytical result
- */
-BOOST_FIXTURE_TEST_CASE(gradient_AD, UniformDielectricTest)
-{
-    UniformDielectric<AD_gradient, CollocationIntegrator> gf(epsilon);
-    double value = result(0);
-    double gf_value = gf.kernelS(source, probe);
-    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
+    /*! \class UniformDielectric
+     *  \test \b UniformDielectricTest_hessian_AD tests the automatic evaluation (full hessian)
+     *  of the UniformDielectric Green's function against analytical result
+     */
+    SECTION("Hessian via AD")
+    {
+        UniformDielectric<AD_hessian, CollocationIntegrator> gf(epsilon);
+        double value = result(0);
+        double gf_value = gf.kernelS(source, probe);
+        REQUIRE(value == Approx(gf_value));
 
-    double derProbe = result(1);
-    double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
+        double derProbe = result(1);
+        double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
+        REQUIRE(derProbe == Approx(gf_derProbe));
 
-    double derSource = result(2);
-    double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
-}
+        double derSource = result(2);
+        double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
+        REQUIRE(derSource == Approx(gf_derSource));
 
-/*! \class UniformDielectric
- *  \test \b UniformDielectricTest_hessian_AD tests the automatic evaluation (full hessian)
- *  of the UniformDielectric Green's function against analytical result
- */
-BOOST_FIXTURE_TEST_CASE(hessian_AD, UniformDielectricTest)
-{
-    UniformDielectric<AD_hessian, CollocationIntegrator> gf(epsilon);
-    double value = result(0);
-    double gf_value = gf.kernelS(source, probe);
-    BOOST_REQUIRE_CLOSE(value, gf_value, 1.0e-12);
-
-    double derProbe = result(1);
-    double gf_derProbe = gf.derivativeProbe(probeNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derProbe, gf_derProbe, 1.0e-12);
-
-    double derSource = result(2);
-    double gf_derSource = gf.derivativeSource(sourceNormal, source, probe);
-    BOOST_REQUIRE_CLOSE(derSource, gf_derSource, 1.0e-12);
-
-    /*	double hessian = result(4);
-    	double gf_hessian = gf.hessian(sourceNormal, source, probeNormal, probe);
-    	BOOST_REQUIRE_CLOSE(hessian, gf_hessian, 1.0e-12);*/
+        /*	double hessian = result(4);
+            double gf_hessian = gf.hessian(sourceNormal, source, probeNormal, probe);
+            REQUIRE(hessian == Approx(gf_hessian));
+            */
+    }
 }

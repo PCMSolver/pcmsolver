@@ -41,7 +41,7 @@
 
 /*! Returns the ammonia molecule
  */
-Molecule NH3();
+inline Molecule NH3();
 
 /*! Returns a single dummy atom, centered at the origin and with the given radius
  */
@@ -55,7 +55,7 @@ Molecule H3();
 
 /*! Returns the H2 molecule
  */
-Molecule H2();
+inline Molecule H2();
 
 /*! Returns the CO2 molecule
  */
@@ -64,15 +64,15 @@ Molecule CO2();
 
 /*! Returns the CH3+ molecule
  */
-Molecule CH3();
+inline Molecule CH3();
 
 /*! Returns the C2H4 molecule
  */
-Molecule C2H4();
+inline Molecule C2H4();
 
 /*! Returns the benzene molecule
  */
-Molecule C6H6();
+inline Molecule C6H6();
 
 template <int group>
 Molecule dummy(double radius, const Eigen::Vector3d & center)

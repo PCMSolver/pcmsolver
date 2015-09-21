@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE GePolCavityCO2
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <catch.hpp>
 
 #include <cmath>
 #include <cstdio>
@@ -35,530 +32,475 @@
 
 #include <Eigen/Core>
 
-
 #include "GePolCavity.hpp"
 #include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
-
-struct GePolCavityCO2C1Test {
-    GePolCavity cavity;
-    GePolCavityCO2C1Test() { SetUp(); }
-    void SetUp() {
+SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point groups", "[gepol][gepol_CO2_symmetry]")
+{
+    GIVEN("The linear CO2 molecule")
+    {
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CO2<0>();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.co2.c1");
-        std::rename("cavity.off", "cavity.co2.c1");
+        WHEN("the point group is C1")
+        {
+	        Molecule molec = CO2<0>();
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.co2.c1");
+            std::rename("cavity.off", "cavity.co2.c1");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C1 symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 448;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C1Test_irreducible_size tests GePol cavity irreducible size for CO2 in C1 symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 448;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C1Test_area tests GePol cavity surface area for CO2 in C1 symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 250.68176442433020;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C1Test_volume tests GePol cavity volume for CO2 in C1 symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 352.55869984340751;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
 
-BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C1, GePolCavityCO2C1Test)
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C1 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C1Test)
-{
-    int size = 448;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C1Test_irreducible_size tests GePol cavity irreducible size for CO2 in C1 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C1Test)
-{
-    int size = 448;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C1Test_area tests GePol cavity surface area for CO2 in C1 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C1Test)
-{
-    double area = 250.68176442433020;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C1Test_volume tests GePol cavity volume for CO2 in C1 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C1Test)
-{
-    double volume = 352.55869984340751;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-struct GePolCavityCO2C2Test {
-    GePolCavity cavity;
-    GePolCavityCO2C2Test() { SetUp(); }
-    void SetUp() {
+    GIVEN("The linear CO2 molecule")
+    {
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CO2<1>();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.co2.c2");
-        std::rename("cavity.off", "cavity.co2.c2");
+        WHEN("the point group is C2")
+        {
+            Molecule molec = CO2<1>();
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.co2.c2");
+            std::rename("cavity.off", "cavity.co2.c2");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C2 symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 448;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C1Test_irreducible_size tests GePol cavity irreducible size for CO2 in C2 symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 224;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C1Test_area tests GePol cavity surface area for CO2 in C2 symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 250.68176442433020;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C1Test_volume tests GePol cavity volume for CO2 in C2 symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 352.55869984340751;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
 
-BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2, GePolCavityCO2C2Test)
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2Test_size tests GePol cavity size for CO2 in C2 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2Test)
-{
-    int size = 448;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2Test_irreducible_size tests GePol cavity irreducible size for CO2 in C2 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2Test)
-{
-    int size = 224;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2Test_area tests GePol cavity surface area for CO2 in C2 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2Test)
-{
-    double area = 250.68176442433020;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2Test_volume tests GePol cavity volume for CO2 in C2 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2Test)
-{
-    double volume = 352.55869984340751;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-struct GePolCavityCO2CsTest {
-    GePolCavity cavity;
-    GePolCavityCO2CsTest() { SetUp(); }
-    void SetUp() {
+    GIVEN("The linear CO2 molecule")
+    {
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CO2<2>();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.co2.cs");
-        std::rename("cavity.off", "cavity.co2.cs");
+        WHEN("the point group is Cs")
+        {
+            Molecule molec = CO2<2>();
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.co2.cs");
+            std::rename("cavity.off", "cavity.co2.cs");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2CsTest_size tests GePol cavity size for CO2 in Cs symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 448;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2CsTest_irreducible_size tests GePol cavity irreducible size for CO2 in Cs symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 224;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2CsTest_area tests GePol cavity surface area for CO2 in Cs symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 250.68176442433020;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2CsTest_volume tests GePol cavity volume for CO2 in Cs symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 352.55869984340751;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
 
-BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2Cs, GePolCavityCO2CsTest)
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2CsTest_size tests GePol cavity size for CO2 in Cs symmetry
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2CsTest)
-{
-    int size = 448;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2CsTest_irreducible_size tests GePol cavity irreducible size for CO2 in Cs symmetry
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2CsTest)
-{
-    int size = 224;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2CsTest_area tests GePol cavity surface area for CO2 in Cs symmetry
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2CsTest)
-{
-    double area = 250.68176442433020;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2CsTest_volume tests GePol cavity volume for CO2 in Cs symmetry
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2CsTest)
-{
-    double volume = 352.55869984340751;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-struct GePolCavityCO2CiTest {
-    GePolCavity cavity;
-    GePolCavityCO2CiTest() { SetUp(); }
-    void SetUp() {
+    GIVEN("The linear CO2 molecule")
+    {
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CO2<3>();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.co2.ci");
-        std::rename("cavity.off", "cavity.co2.ci");
+        WHEN("the point group is Ci")
+        {
+            Molecule molec = CO2<3>();
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.co2.ci");
+            std::rename("cavity.off", "cavity.co2.ci");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2CiTest_size tests GePol cavity size for CO2 in Ci symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 448;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2CiTest_irreducible_size tests GePol cavity irreducible size for CO2 in Ci symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 224;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2CiTest_area tests GePol cavity surface area for CO2 in Ci symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 250.68176442433020;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2CiTest_volume tests GePol cavity volume for CO2 in Ci symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 352.55869984340751;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
 
-BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2Ci, GePolCavityCO2CiTest)
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2CiTest_size tests GePol cavity size for CO2 in Ci symmetry
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2CiTest)
-{
-    int size = 448;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2CiTest_irreducible_size tests GePol cavity irreducible size for CO2 in Ci symmetry
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2CiTest)
-{
-    int size = 224;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2CiTest_area tests GePol cavity surface area for CO2 in Ci symmetry
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2CiTest)
-{
-    double area = 250.68176442433020;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2CiTest_volume tests GePol cavity volume for CO2 in Ci symmetry
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2CiTest)
-{
-    double volume = 352.55869984340751;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-struct GePolCavityCO2D2Test {
-    GePolCavity cavity;
-    GePolCavityCO2D2Test() { SetUp(); }
-    void SetUp() {
+    GIVEN("The linear CO2 molecule")
+    {
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CO2<4>();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.co2.d2");
-        std::rename("cavity.off", "cavity.co2.d2");
+        WHEN("the point group is D2")
+        {
+            Molecule molec = CO2<4>();
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.co2.d2");
+            std::rename("cavity.off", "cavity.co2.d2");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2D2Test_size tests GePol cavity size for CO2 in D2 symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 448;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2D2Test_irreducible_size tests GePol cavity irreducible size for CO2 in D2 symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 112;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2D2Test_area tests GePol cavity surface area for CO2 in D2 symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 250.68176442433020;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2D2Test_volume tests GePol cavity volume for CO2 in D2 symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 352.55869984340751;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
 
-BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2D2, GePolCavityCO2D2Test)
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2D2Test_size tests GePol cavity size for CO2 in D2 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2D2Test)
-{
-    int size = 448;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2D2Test_irreducible_size tests GePol cavity irreducible size for CO2 in D2 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2D2Test)
-{
-    int size = 112;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2D2Test_area tests GePol cavity surface area for CO2 in D2 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2D2Test)
-{
-    double area = 250.68176442433020;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2D2Test_volume tests GePol cavity volume for CO2 in D2 symmetry
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2D2Test)
-{
-    double volume = 352.55869984340751;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-struct GePolCavityCO2C2vTest {
-    GePolCavity cavity;
-    GePolCavityCO2C2vTest() { SetUp(); }
-    void SetUp() {
+    GIVEN("The linear CO2 molecule")
+    {
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CO2<5>();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.co2.c2v");
-        std::rename("cavity.off", "cavity.co2.c2v");
+        WHEN("the point group is C2v")
+        {
+            Molecule molec = CO2<5>();
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.co2.c2v");
+            std::rename("cavity.off", "cavity.co2.c2v");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C2vTest_size tests GePol cavity size for CO2 in C2v symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 448;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C2vTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2v symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 112;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C2vTest_area tests GePol cavity surface area for CO2 in C2v symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 250.68176442433020;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C2vTest_volume tests GePol cavity volume for CO2 in C2v symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 352.55869984340751;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
 
-BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2v, GePolCavityCO2C2vTest)
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2vTest_size tests GePol cavity size for CO2 in C2v symmetry
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2vTest)
-{
-    int size = 448;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2vTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2v symmetry
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2vTest)
-{
-    int size = 112;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2vTest_area tests GePol cavity surface area for CO2 in C2v symmetry
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2vTest)
-{
-    double area = 250.68176442433020;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2vTest_volume tests GePol cavity volume for CO2 in C2v symmetry
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2vTest)
-{
-    double volume = 352.55869984340751;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-struct GePolCavityCO2C2hTest {
-    GePolCavity cavity;
-    GePolCavityCO2C2hTest() { SetUp(); }
-    void SetUp() {
+    GIVEN("The linear CO2 molecule")
+    {
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CO2<6>();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.co2.c2h");
-        std::rename("cavity.off", "cavity.co2.c2h");
+        WHEN("the point group is C2h")
+        {
+            Molecule molec = CO2<6>();
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.co2.c2h");
+            std::rename("cavity.off", "cavity.co2.c2h");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C2hTest_size tests GePol cavity size for CO2 in C2h symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 448;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2h symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 112;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C2hTest_area tests GePol cavity surface area for CO2 in C2h symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 250.68176442433020;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2C2hTest_volume tests GePol cavity volume for CO2 in C2h symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 352.55869984340751;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
 
-BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2C2h, GePolCavityCO2C2hTest)
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2hTest_size tests GePol cavity size for CO2 in C2h symmetry
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2C2hTest)
-{
-    int size = 448;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in C2h symmetry
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2C2hTest)
-{
-    int size = 112;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2hTest_area tests GePol cavity surface area for CO2 in C2h symmetry
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2C2hTest)
-{
-    double area = 250.68176442433020;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2C2hTest_volume tests GePol cavity volume for CO2 in C2h symmetry
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2C2hTest)
-{
-    double volume = 352.55869984340751;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-struct GePolCavityCO2D2hTest {
-    GePolCavity cavity;
-    GePolCavityCO2D2hTest() { SetUp(); }
-    void SetUp() {
+    GIVEN("The linear CO2 molecule")
+    {
         double area = 0.2 / convertBohr2ToAngstrom2;
         double probeRadius = 1.385 / convertBohrToAngstrom;
         double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CO2<7>();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.co2.d2h");
-        std::rename("cavity.off", "cavity.co2.d2h");
+        WHEN("the point group is D2h")
+        {
+            Molecule molec = CO2<7>();
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.co2.d2h");
+            std::rename("cavity.off", "cavity.co2.d2h");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2D2hTest_size tests GePol cavity size for CO2 in D2h symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 448;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2D2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in D2h symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 56;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2D2hTest_area tests GePol cavity surface area for CO2 in D2h symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 250.68176442433020;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityCO2D2hTest_volume tests GePol cavity volume for CO2 in D2h symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 352.55869984340751;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
-
-BOOST_FIXTURE_TEST_SUITE(GePolCavityCO2D2h, GePolCavityCO2D2hTest)
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2D2hTest_size tests GePol cavity size for CO2 in D2h symmetry
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCO2D2hTest)
-{
-    int size = 448;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
 }
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2D2hTest_irreducible_size tests GePol cavity irreducible size for CO2 in D2h symmetry
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCO2D2hTest)
-{
-    int size = 56;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2D2hTest_area tests GePol cavity surface area for CO2 in D2h symmetry
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCO2D2hTest)
-{
-    double area = 250.68176442433020;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCO2D2hTest_volume tests GePol cavity volume for CO2 in D2h symmetry
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCO2D2hTest)
-{
-    double volume = 352.55869984340751;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
-
-BOOST_AUTO_TEST_SUITE_END()

@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE GePolCavityD2hAddTest
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <catch.hpp>
 
 #include <cmath>
 #include <cstdio>
@@ -36,73 +33,126 @@
 
 #include <Eigen/Core>
 
-
 #include "GePolCavity.hpp"
 #include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
+SCENARIO("GePol cavity for the C2H4 molecule in D2h symmetry", "[gepol][gepol_C2H4_D2h]")
+{
+    GIVEN("The C2H4 molecule in D2h symmetry")
+    {
+        Molecule molec = C2H4();
 
-struct GePolCavityD2hAddTest {
-    GePolCavity cavity;
-    GePolCavityD2hAddTest() { SetUp(); }
-    void SetUp() {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        // Addition of spheres is enabled, but will not happen in this particular case
-        double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = C2H4();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        cavity.saveCavity("c2h4_d2h.npz");
-        std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
-        std::rename("cavity.off", "cavity.off.d2h");
+        WHEN("the addition of spheres is enabled")
+        {
+            double area = 0.2 / convertBohr2ToAngstrom2;
+            double probeRadius = 1.385 / convertBohrToAngstrom;
+            double minRadius = 0.2 / convertBohrToAngstrom;
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            cavity.saveCavity("c2h4_d2h.npz");
+            std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
+            std::rename("cavity.off", "cavity.off.d2h");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityD2hAddTest_size tests GePol cavity size for C2H4 in D2h symmetry with added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 576;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityD2hAddTest_irreducible_size tests GePol cavity irreducible size for C2H4 in D2h symmetry with added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 72;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityD2hAddTest_area tests GePol cavity surface area for C2H4 in D2h symmetry with added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 281.81993683500656;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityD2hAddTest_volume tests GePol cavity volume for C2H4 in D2h symmetry with added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 406.54737252764619;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
+
+        WHEN("the addition of spheres is disabled")
+        {
+            double area = 0.2 / convertBohr2ToAngstrom2;
+            double probeRadius = 1.385 / convertBohrToAngstrom;
+            double minRadius = 100.0 / convertBohrToAngstrom;
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            cavity.saveCavity("c2h4_d2h_noadd.npz");
+            std::rename("PEDRA.OUT", "PEDRA.OUT.d2h_noadd");
+            std::rename("cavity.off", "cavity.off.d2h_noadd");
+
+            /*! \class GePolCavity
+             *  \test \b GePolCavityD2hTest_size tests GePol cavity size for C2H4 in D2h symmetry without added spheres
+             */
+            THEN("the size of the cavity is")
+            {
+                int size = 576;
+                size_t actualSize = cavity.size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityD2hTest_irreducible_size tests GePol cavity irreducible size for C2H4 in D2h symmetry without added spheres
+             */
+            AND_THEN("the irreducible size of the cavity is")
+            {
+                int size = 72;
+                int actualSize = cavity.irreducible_size();
+                REQUIRE(size == actualSize);
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityD2hTest_area tests GePol cavity surface area for C2H4 in D2h symmetry without added spheres
+             */
+            AND_THEN("the surface area of the cavity is")
+            {
+                double area = 281.81993683500656;
+                double actualArea = cavity.elementArea().sum();
+                REQUIRE(area == Approx(actualArea));
+            }
+            /*! \class GePolCavity
+             *  \test \b GePolCavityD2hTest_volume tests GePol cavity volume for C2H4 in D2h symmetry without added spheres
+             */
+            AND_THEN("the volume of the cavity is")
+            {
+                double volume = 406.54737252764619;
+                Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+                Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+                double actualVolume = 0;
+                for ( size_t i = 0; i < cavity.size(); ++i ) {
+                    actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                                i));
+                }
+                actualVolume /= 3;
+                REQUIRE(volume == Approx(actualVolume));
+            }
+        }
     }
-};
-
-/*! \class GePolCavity
- *  \test \b GePolCavityD2hAddTest_size tests GePol cavity size for C2H4 in D2h symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityD2hAddTest)
-{
-    int size = 576;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityD2hAddTest_irreducible_size tests GePol cavity irreducible size for C2H4 in D2h symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityD2hAddTest)
-{
-    int size = 72;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityD2hAddTest_area tests GePol cavity surface area for C2H4 in D2h symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityD2hAddTest)
-{
-    double area = 281.81993683500656;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityD2hAddTest_volume tests GePol cavity volume for C2H4 in D2h symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityD2hAddTest)
-{
-    double volume = 406.54737252764619;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
-    }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
 }

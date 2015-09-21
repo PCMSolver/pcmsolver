@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE GePolCavityCsAddTest
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <catch.hpp>
 
 #include <cmath>
 #include <cstdio>
@@ -35,72 +32,67 @@
 
 #include <Eigen/Core>
 
-
 #include "GePolCavity.hpp"
 #include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
+TEST_CASE("GePol cavity for the CH3+ molecule in Cs symmetry", "[gepol][gepol_CH3+_Cs]")
+{
+    double area = 0.2 / convertBohr2ToAngstrom2;
+    double probeRadius = 1.385 / convertBohrToAngstrom;
+    // Addition of spheres is enabled, but will not happen in this particular case
+    double minRadius = 0.2 / convertBohrToAngstrom;
+    Molecule molec = CH3();
+    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+    std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
+    std::rename("cavity.off", "cavity.off.cs");
 
-struct GePolCavityCsAddTest {
-    GePolCavity cavity;
-    GePolCavityCsAddTest() { SetUp(); }
-    void SetUp() {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        // Addition of spheres is enabled, but will not happen in this particular case
-        double minRadius = 0.2 / convertBohrToAngstrom;
-	Molecule molec = CH3();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
-        std::rename("cavity.off", "cavity.off.cs");
+    /*! \class GePolCavity
+     *  \test \b GePolCavityCsAddTest_size tests GePol cavity size for CH3+ in Cs symmetry with added spheres
+     */
+    SECTION("Test size")
+    {
+        int size = 384;
+        size_t actualSize = cavity.size();
+        REQUIRE(size == actualSize);
     }
-};
 
-/*! \class GePolCavity
- *  \test \b GePolCavityCsAddTest_size tests GePol cavity size for CH3+ in Cs symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityCsAddTest)
-{
-    int size = 384;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCsAddTest_irreducible_size tests GePol cavity irreducible size for CH3+ in Cs symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(irreducible_size, GePolCavityCsAddTest)
-{
-    int size = 192;
-    int actualSize = cavity.irreducible_size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCsAddTest_area tests GePol cavity surface area for CH3+ in Cs symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityCsAddTest)
-{
-    double area = 211.86178059383573;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityCsAddTest_volume tests GePol cavity volume for CH3+ in Cs symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityCsAddTest)
-{
-    double volume = 278.95706420724309;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
+    /*! \class GePolCavity
+     *  \test \b GePolCavityCsAddTest_irreducible_size tests GePol cavity irreducible size for CH3+ in Cs symmetry with added spheres
+     */
+    SECTION("Test irreducible size")
+    {
+        int size = 192;
+        int actualSize = cavity.irreducible_size();
+        REQUIRE(size == actualSize);
     }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
+
+    /*! \class GePolCavity
+     *  \test \b GePolCavityCsAddTest_area tests GePol cavity surface area for CH3+ in Cs symmetry with added spheres
+     */
+    SECTION("Test surface area")
+    {
+        double area = 211.86178059383573;
+        double actualArea = cavity.elementArea().sum();
+        REQUIRE(area == Approx(actualArea));
+    }
+
+    /*! \class GePolCavity
+     *  \test \b GePolCavityCsAddTest_volume tests GePol cavity volume for CH3+ in Cs symmetry with added spheres
+     */
+    SECTION("Test volume")
+    {
+        double volume = 278.95706420724309;
+        Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+        Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+        double actualVolume = 0;
+        for ( size_t i = 0; i < cavity.size(); ++i ) {
+            actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                        i));
+        }
+        actualVolume /= 3;
+        REQUIRE(volume == Approx(actualVolume));
+    }
 }

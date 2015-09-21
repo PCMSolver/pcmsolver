@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE GePolCavityC6H6AddTest
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <catch.hpp>
 
 #include <cmath>
 #include <cstdio>
@@ -35,63 +32,58 @@
 
 #include <Eigen/Core>
 
-
 #include "GePolCavity.hpp"
 #include "Molecule.hpp"
 #include "PhysicalConstants.hpp"
 #include "Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
+TEST_CASE("GePol cavity for the benzene molecule", "[gepol][gepol_C6H6]")
+{
+    double area = 0.3 / convertBohr2ToAngstrom2;
+    double probeRadius = 1.385 / convertBohrToAngstrom;
+    // Addition of spheres is enabled, but will not happen in this particular case
+    double minRadius = 10.0 / convertBohrToAngstrom;
+    Molecule molec = C6H6();
+    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+    cavity.saveCavity("c6h6.npz");
+    std::rename("PEDRA.OUT", "PEDRA.OUT.c6h6");
+    std::rename("cavity.off", "cavity.off.c6h6");
 
-struct GePolCavityC6H6AddTest {
-    GePolCavity cavity;
-    GePolCavityC6H6AddTest() { SetUp(); }
-    void SetUp() {
-        double area = 0.3 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        // Addition of spheres is enabled, but will not happen in this particular case
-        double minRadius = 10.0 / convertBohrToAngstrom;
-	Molecule molec = C6H6();
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        cavity.saveCavity("c6h6.npz");
-        std::rename("PEDRA.OUT", "PEDRA.OUT.c6h6");
-        std::rename("cavity.off", "cavity.off.c6h6");
+    /*! \class GePolCavity
+     *  \test \b GePolCavityC6H6AddTest_size tests GePol cavity size for C6H6 in C1 symmetry with added spheres
+     */
+    SECTION("Test size")
+    {
+        int size = 644;
+        size_t actualSize = cavity.size();
+        REQUIRE(size == actualSize);
     }
-};
 
-/*! \class GePolCavity
- *  \test \b GePolCavityC6H6AddTest_size tests GePol cavity size for C6H6 in C1 symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityC6H6AddTest)
-{
-    int size = 644;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityC6H6AddTest_area tests GePol cavity surface area for C6H6 in C1 symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityC6H6AddTest)
-{
-    double area = 391.06094362589062;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityC6H6AddTest_volume tests GePol cavity volume for C6H6 in C1 symmetry with added spheres
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityC6H6AddTest)
-{
-    double volume = 567.67444339622284;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
+    /*! \class GePolCavity
+     *  \test \b GePolCavityC6H6AddTest_area tests GePol cavity surface area for C6H6 in C1 symmetry with added spheres
+     */
+    SECTION("Test surface area")
+    {
+        double area = 391.06094362589062;
+        double actualArea = cavity.elementArea().sum();
+        REQUIRE(area == Approx(actualArea));
     }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
+
+    /*! \class GePolCavity
+     *  \test \b GePolCavityC6H6AddTest_volume tests GePol cavity volume for C6H6 in C1 symmetry with added spheres
+     */
+    SECTION("Test volume")
+    {
+        double volume = 567.67444339622284;
+        Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+        Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+        double actualVolume = 0;
+        for ( size_t i = 0; i < cavity.size(); ++i ) {
+            actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                        i));
+        }
+        actualVolume /= 3;
+        REQUIRE(volume == Approx(actualVolume));
+    }
 }

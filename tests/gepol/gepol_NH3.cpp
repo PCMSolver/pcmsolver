@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE GePolCavityNH3
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include "catch.hpp"
 
 #include <vector>
 #include <cmath>
@@ -42,54 +39,49 @@
 #include "TestingMolecules.hpp"
 #include "Symmetry.hpp"
 
-struct GePolCavityNH3Test {
-    GePolCavity cavity;
-    GePolCavityNH3Test() { SetUp(); }
-    void SetUp() {
-	Molecule molec = NH3();
+TEST_CASE("GePol cavity for an ammonia molecule", "[gepol][gepol_NH3]")
+{
+    Molecule molec = NH3();
+    double area = 0.3 / convertBohr2ToAngstrom2;
+    double probeRadius = 1.385 / convertBohrToAngstrom;
+    double minRadius = 0.2 / convertBohrToAngstrom;
+    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+    cavity.saveCavity("nh3.npz");
 
-        double area = 0.3 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
-        cavity = GePolCavity(molec, area, probeRadius, minRadius);
-        cavity.saveCavity("nh3.npz");
+    /*! \class GePolCavity
+     *  \test \b GePolCavityNH3Test_size tests GePol cavity size for ammonia
+     */
+    SECTION("Test size")
+    {
+        int size = 230;
+        size_t actualSize = cavity.size();
+        REQUIRE(size == actualSize);
     }
-};
 
-/*! \class GePolCavity
- *  \test \b GePolCavityNH3Test_size tests GePol cavity size for ammonia
- */
-BOOST_FIXTURE_TEST_CASE(size, GePolCavityNH3Test)
-{
-    int size = 230;
-    size_t actualSize = cavity.size();
-    BOOST_REQUIRE_EQUAL(size, actualSize);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityNH3Test_area tests GePol cavity surface area for ammonia
- */
-BOOST_FIXTURE_TEST_CASE(area, GePolCavityNH3Test)
-{
-    double area = 147.13247859942391;
-    double actualArea = cavity.elementArea().sum();
-    BOOST_REQUIRE_CLOSE(area, actualArea, 1.0e-10);
-}
-
-/*! \class GePolCavity
- *  \test \b GePolCavityNH3Test_volume tests GePol cavity volume for ammonia
- */
-BOOST_FIXTURE_TEST_CASE(volume, GePolCavityNH3Test)
-{
-    double volume = 153.12929788519045;
-    Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
-    Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
-    double actualVolume = 0;
-    for ( size_t i = 0; i < cavity.size(); ++i ) {
-        actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                            i));
+    /*! \class GePolCavity
+     *  \test \b GePolCavityNH3Test_area tests GePol cavity surface area for ammonia
+     */
+    SECTION("Test surface area")
+    {
+        double area = 147.13247859942391;
+        double actualArea = cavity.elementArea().sum();
+        REQUIRE(area == Approx(actualArea));
     }
-    actualVolume /= 3;
-    BOOST_REQUIRE_CLOSE(volume, actualVolume, 1.0e-10);
-}
 
+    /*! \class GePolCavity
+     *  \test \b GePolCavityNH3Test_volume tests GePol cavity volume for ammonia
+     */
+    SECTION("Test volume")
+    {
+        double volume = 153.12929788519045;
+        Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+        Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+        double actualVolume = 0;
+        for ( size_t i = 0; i < cavity.size(); ++i ) {
+            actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                        i));
+        }
+        actualVolume /= 3;
+        REQUIRE(volume == Approx(actualVolume));
+    }
+}

@@ -35,6 +35,7 @@
 
 #include "cnpyPimpl.hpp"
 #include "CollocationIntegrator.hpp"
+#include "PurisimaIntegrator.hpp"
 #include "NumericalIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "Element.hpp"
@@ -52,6 +53,9 @@ void save_vacuum_collocation();
 void save_uniform_dielectric_collocation();
 void save_tanh_spherical_diffuse_collocation();
 
+void save_vacuum_purisima();
+void save_uniform_dielectric_purisima();
+
 void save_vacuum_numerical();
 void save_uniform_dielectric_numerical();
 void save_ionic_liquid_numerical();
@@ -63,6 +67,9 @@ int main()
     save_vacuum_collocation();
     save_uniform_dielectric_collocation();
     save_tanh_spherical_diffuse_collocation();
+
+    save_vacuum_purisima();
+    save_uniform_dielectric_purisima();
 
     return EXIT_SUCCESS;
 }
@@ -120,6 +127,35 @@ void save_tanh_spherical_diffuse_collocation() {
 
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
     cnpy::npy_save("tanhsphericaldiffuse_D_collocation.npy", D_results.data(), shape, 2, "w", true);
+}
+
+void save_vacuum_purisima() {
+    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    double area = 10.0;
+    GePolCavity cavity(molec, area, 0.0, 100.0);
+
+    unsigned int dim = static_cast<unsigned int>(cavity.size());
+    const unsigned int shape[] = {dim, dim};
+
+    Vacuum<AD_directional, PurisimaIntegrator> gf;
+
+    Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+    cnpy::npy_save("vacuum_D_purisima.npy", D_results.data(), shape, 2, "w", true);
+}
+
+void save_uniform_dielectric_purisima() {
+    double epsilon = 80.0;
+    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    double area = 10.0;
+    GePolCavity cavity(molec, area, 0.0, 100.0);
+
+    unsigned int dim = static_cast<unsigned int>(cavity.size());
+    const unsigned int shape[] = {dim, dim};
+
+    UniformDielectric<AD_directional, PurisimaIntegrator> gf(epsilon);
+
+    Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+    cnpy::npy_save("uniformdielectric_D_purisima.npy", D_results.data(), shape, 2, "w", true);
 }
 
 void save_vacuum_numerical() {

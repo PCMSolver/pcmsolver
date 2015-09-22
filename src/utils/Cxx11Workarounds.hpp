@@ -110,18 +110,18 @@ namespace pcm {
 
 /* --- Workarounds for new keywords */
 /* Workaroud for final */
-#ifdef HAS_CXX11
+#ifdef HAS_CXX11_CLASS_OVERRIDE
 #define __final final
-#else /* HAS_CXX11 */
+#else /* HAS_CXX11_CLASS_OVERRIDE */
 #define __final
-#endif /* HAS_CXX11 */
+#endif /* HAS_CXX11_CLASS_OVERRIDE */
 
 /* Workaroud for override */
-#ifdef HAS_CXX11
+#ifdef HAS_CXX11_CLASS_OVERRIDE
 #define __override override
-#else /* HAS_CXX11 */
+#else /* HAS_CXX11_CLASS_OVERRIDE */
 #define __override
-#endif /* HAS_CXX11 */
+#endif /* HAS_CXX11_CLASS_OVERRIDE */
 
 /* Workaroud for noexcept */
 #ifdef HAS_CXX11

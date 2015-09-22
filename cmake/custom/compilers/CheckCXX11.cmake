@@ -101,11 +101,12 @@ function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
 
         if(${RESULT_VAR})
             message(STATUS "C++11 ${_LOG_NAME} feature works")
-            add_definitions(-D${RESULT_VAR})
+            list(APPEND CXX11_DEFINITIONS ${RESULT_VAR})
         else(${RESULT_VAR})
             message(STATUS "C++11 ${_LOG_NAME} feature not supported")
         endif(${RESULT_VAR})
         set(${RESULT_VAR} ${${RESULT_VAR}} CACHE INTERNAL "C++11 support for ${_LOG_NAME}")
+        set(CXX11_DEFINITIONS "${CXX11_DEFINITIONS}" CACHE INTERNAL "")
     endif(NOT DEFINED ${RESULT_VAR})
 endfunction(cxx11_check_feature)
 
@@ -151,4 +152,9 @@ if(ENABLE_CXX11_SUPPORT)
     cxx11_check_feature("sizeof_member"        HAS_CXX11_SIZEOF_MEMBER)
     cxx11_check_feature("static_assert"        HAS_CXX11_STATIC_ASSERT)
     cxx11_check_feature("variadic_templates"   HAS_CXX11_VARIADIC_TEMPLATES)
+
+    # Add feature definitions
+    foreach(_feature_def ${CXX11_DEFINITIONS})
+        add_definitions(-D${_feature_def})
+    endforeach()
 endif()

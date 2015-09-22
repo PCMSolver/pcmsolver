@@ -69,12 +69,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-            for (size_t i = 0; i < size; ++i) {
-                Eigen::Vector3d center = cavity.elementCenter(i);
-                double distance = center.norm();
-                fake_mep(i) = charge / distance;
-            }
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             CPCMSolver solver(symm, correction);
             solver.buildSystemMatrix(cavity, gfInside, gfOutside);
@@ -85,7 +80,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -103,12 +98,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-            for (size_t i = 0; i < size; ++i) {
-                Eigen::Vector3d center = cavity.elementCenter(i);
-                double distance = center.norm();
-                fake_mep(i) = charge / distance;
-            }
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             CPCMSolver solver(symm, correction);
             solver.buildSystemMatrix(cavity, gfInside, gfOutside);
@@ -119,7 +109,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -137,7 +127,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             for (size_t i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
@@ -153,7 +143,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -171,7 +161,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             for (size_t i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
@@ -187,7 +177,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -205,7 +195,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             for (size_t i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
@@ -221,7 +211,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -239,7 +229,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             for (size_t i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
@@ -255,7 +245,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -273,7 +263,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             for (size_t i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
@@ -289,7 +279,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -307,7 +297,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             for (size_t i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
@@ -323,7 +313,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }

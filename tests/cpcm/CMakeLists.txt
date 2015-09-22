@@ -4,5 +4,7 @@ set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_g
 add_test(NAME cpcm_gepol-NH3 COMMAND unit_tests.x [cpcm_gepol-NH3])
 set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_gepol-point_from-file.cpp)
 add_test(NAME cpcm_gepol-point_from-file COMMAND unit_tests.x [cpcm_gepol-point_from-file])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_gepol-NH3_from-file.cpp)
+add_test(NAME cpcm_gepol-NH3_from-file COMMAND unit_tests.x [cpcm_gepol-NH3_from-file])
 set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_symmetry.cpp)
 add_test(NAME cpcm_symmetry COMMAND unit_tests.x [cpcm_symmetry])

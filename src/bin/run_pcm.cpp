@@ -33,8 +33,6 @@
 
 //#include "BuildInfo.hpp"
 
-Eigen::VectorXd computeMEP(const Molecule & mol, const std::vector<Element> & el);
-
 int main(int argc, char * argv[])
 {
     // Open output file pcmsolver.out
@@ -105,18 +103,4 @@ int main(int argc, char * argv[])
     TIMER_DONE();
 
     return EXIT_SUCCESS;
-}
-
-Eigen::VectorXd computeMEP(const Molecule & mol, const std::vector<Element> & el)
-{
-    Eigen::VectorXd mep = Eigen::VectorXd::Zero(el.size());
-
-    for (size_t i = 0; i < mol.nAtoms(); ++i) {
-        for (size_t j = 0; j < el.size(); ++j) {
-            double dist = (mol.geometry().col(i) - el[j].center()).norm();
-            mep(i) += mol.charges(i) / dist;
-        }
-    }
-
-    return mep;
 }

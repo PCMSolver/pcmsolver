@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE IEFSolverpointChargeGePol
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include "catch.hpp"
 
 #include <iostream>
 
@@ -42,111 +39,101 @@
 #include "SphericalDiffuse.hpp"
 #include "TestingMolecules.hpp"
 
-/*! \class IEFSolver
- *  \test \b pointChargeDiffuseGePol tests IEFSolver using a point charge with a GePol cavity and a spherical diffuse interface
- *  The spherical diffuse interface is centered at the origin, while the point charge is away from the origin.
- */
-BOOST_AUTO_TEST_CASE(pointChargeDiffuseGePol)
+SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse environment and a GePol cavity", "[solver][iefpcm][iefpcm_diffuse-gepol-point][anisotropic]")
 {
-    // Set up cavity
-    Eigen::Vector3d origin;
-    origin << 68.0375, -21.1234, 56.6198;
-    Molecule point = dummy<0>(2.929075493, origin);
-    double area = 1.0;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-    cavity.saveCavity("point.npz");
+    GIVEN("An isotropic environment modelled as a spherical diffuse permittivity")
+    {
+        Eigen::Vector3d origin = (Eigen::Vector3d() << 68.0375, -21.1234, 56.6198).finished();
+        double eps1 = 78.39;
+        double eps2 = 78.39;
+        double center = 100.0;
+        double width = 5.0;
+        Vacuum<AD_directional, CollocationIntegrator> gfInside =
+            Vacuum<AD_directional, CollocationIntegrator>();
+        bool symm = true;
 
-    double eps1 = 78.39;
-    double eps2 = 78.39;
-    double center = 100.0;
-    double width = 5.0;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside =
-        Vacuum<AD_directional, CollocationIntegrator>();
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gfOutside =
-        SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 3);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+        double charge = 8.0;
+        double totalASC = - charge * (eps1 - 1) / eps1;
+        /*! \class IEFSolver
+         *  \test \b pointChargeDiffuseGePol tests IEFSolver using a point charge with a GePol cavity and a spherical diffuse interface
+         *  The spherical diffuse interface is centered at the origin, while the point charge is away from the origin.
+         */
+        WHEN("the spherical diffuse layer is centered at the origin and the charge is away from the origin")
+        {
+            Molecule point = dummy<0>(2.929075493, origin);
+            double area = 1.0;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
 
-    double charge = 8.0;
-    size_t size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (size_t i = 0; i < size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = (origin - center).norm();
-        fake_mep(i) = charge / distance;
+            SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gfOutside =
+                SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 3);
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = (origin - center).norm();
+                fake_mep(i) = charge / distance;
+            }
+            for (size_t i = 0; i < size; ++i) {
+                INFO("fake_mep(" << i << ") = " << fake_mep(i));
+            }
+            THEN("the apparent surface charge is")
+            {
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+                fake_asc = solver.computeCharge(fake_mep);
+                double totalFakeASC = fake_asc.sum();
+                for (size_t i = 0; i < size; ++i) {
+                    INFO("fake_asc(" << i << ") = " << fake_asc(i));
+                }
+
+                INFO("totalASC = " << totalASC);
+                INFO("totalFakeASC = " << totalFakeASC);
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        AND_WHEN("the spherical diffuse layers is centered away from the origin and the charge is at the origin")
+        {
+            Molecule point = dummy<0>(2.929075493);
+            double area = 1.0;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
+
+            SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gfOutside =
+                SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, origin, 3);
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+            for (size_t i = 0; i < size; ++i) {
+                INFO("fake_mep(" << i << ") = " << fake_mep(i));
+            }
+            THEN("the apparent surface charge is")
+            {
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+                fake_asc = solver.computeCharge(fake_mep);
+                double totalFakeASC = fake_asc.sum();
+                for (size_t i = 0; i < size; ++i) {
+                    INFO("fake_asc(" << i << ") = " << fake_asc(i));
+                }
+
+                INFO("totalASC = " << totalASC);
+                INFO("totalFakeASC = " << totalFakeASC);
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
     }
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    fake_asc = solver.computeCharge(fake_mep);
-
-    for (size_t i = 0; i < size; ++i) {
-        BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
-    }
-    for (size_t i = 0; i < size; ++i) {
-        BOOST_TEST_MESSAGE("fake_asc(" << i << ") = " << fake_asc(i));
-    }
-
-    double totalASC = - charge * (eps1 - 1) / eps1;
-    double totalFakeASC = fake_asc.sum();
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class IEFSolver
- *  \test \b pointChargeDiffuseShiftedGePol tests IEFSolver using a point charge with a GePol cavity and a spherical diffuse interface
- *  The spherical diffuse interface is centered away from the origin, while the point charge is at the origin.
- */
-BOOST_AUTO_TEST_CASE(pointChargeDiffuseShiftedGePol)
-{
-    // Set up cavity
-    Molecule point = dummy<0>(2.929075493);
-    double area = 1.0;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-    cavity.saveCavity("point.npz");
-
-    double eps1 = 78.39;
-    double eps2 = 78.39;
-    double center = 100.0;
-    double width = 5.0;
-    Eigen::Vector3d origin;
-    origin << 68.0375, -21.1234, 56.6198;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gfOutside =
-        SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, origin, 3);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    size_t size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (size_t i = 0; i < size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    fake_asc = solver.computeCharge(fake_mep);
-
-    for (size_t i = 0; i < size; ++i) {
-        BOOST_TEST_MESSAGE("fake_mep(" << i << ") = " << fake_mep(i));
-    }
-    for (size_t i = 0; i < size; ++i) {
-        BOOST_TEST_MESSAGE("fake_asc(" << i << ") = " << fake_asc(i));
-    }
-
-    double totalASC = - charge * (eps1 - 1) / eps1;
-    double totalFakeASC = fake_asc.sum();
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-    BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-    BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

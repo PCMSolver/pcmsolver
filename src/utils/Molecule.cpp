@@ -37,6 +37,7 @@
 #include <Eigen/Eigenvalues>
 
 #include "Atom.hpp"
+#include "Element.hpp"
 #include "MathUtils.hpp"
 #include "Symmetry.hpp"
 
@@ -256,4 +257,27 @@ std::ostream & operator<<(std::ostream &os, const Molecule &m)
     }
 
     return os;
+
+}
+
+Eigen::VectorXd computeMEP(const Molecule & mol, const std::vector<Element> & el)
+{
+    Eigen::VectorXd mep = Eigen::VectorXd::Zero(el.size());
+    for (size_t i = 0; i < mol.nAtoms(); ++i) {
+        for (size_t j = 0; j < el.size(); ++j) {
+            double dist = (mol.geometry().col(i) - el[j].center()).norm();
+            mep(j) += mol.charges(i) / dist;
+        }
+    }
+    return mep;
+}
+
+Eigen::VectorXd computeMEP(const std::vector<Element> & el, double charge, const Eigen::Vector3d & origin)
+{
+    Eigen::VectorXd mep = Eigen::VectorXd::Zero(el.size());
+    for (size_t i = 0; i < el.size(); ++i) {
+        double dist = (origin - el[i].center()).norm();
+        mep(i) += charge / dist;
+    }
+    return mep;
 }

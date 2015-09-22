@@ -3,18 +3,18 @@ set(TESTS_ROOT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 # Math utilities and helper classes
 add_subdirectory(surface_function)
 add_subdirectory(input)
-#add_subdirectory(numerical_quadrature)
+add_subdirectory(numerical_quadrature)
 # Cavity generators
-#add_subdirectory(gepol)
+add_subdirectory(gepol)
 # Green's functions
-#add_subdirectory(dielectric_profile)
-#add_subdirectory(green)
-#add_subdirectory(bi_operators)
+add_subdirectory(dielectric_profile)
+add_subdirectory(green)
+add_subdirectory(bi_operators)
 # Solvers
-#add_subdirectory(cpcm)
-#add_subdirectory(iefpcm)
+add_subdirectory(cpcm)
+add_subdirectory(iefpcm)
 
 get_property(test_sources GLOBAL PROPERTY TestSources)
 
 add_executable(unit_tests.x unit_tests.cpp ${test_sources})
-target_link_libraries(unit_tests.x pcm getkw)
+target_link_libraries(unit_tests.x pcm getkw ${ZLIB_LIBRARIES})

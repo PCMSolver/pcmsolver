@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(NH3TsLess)
     double Ncharge = 7.0;
     double Hcharge = 1.0;
     size_t size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+    Eigen::VectorXd fake_mep = computeMEP(molecule, cavity.elements());
     for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double Ndistance = (center - N).norm();

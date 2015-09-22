@@ -78,7 +78,7 @@ template <int group>
 Molecule dummy(double radius, const Eigen::Vector3d & center)
 {
     std::vector<Sphere> spheres;
-    Sphere sph1(center,  radius);
+    Sphere sph1(center, radius);
     spheres.push_back(sph1);
 
     enum pointGroup { pgC1, pgC2, pgCs, pgCi, pgD2, pgC2v, pgC2h, pgD2h };

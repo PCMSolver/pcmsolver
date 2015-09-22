@@ -34,6 +34,8 @@
 
 #include <Eigen/Core>
 
+class Element;
+
 #include "Atom.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
@@ -181,5 +183,9 @@ public:
     /// @}
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
 };
+
+Eigen::VectorXd computeMEP(const Molecule & mol, const std::vector<Element> & el);
+/*! \brief Compute MEP for a single point charge */
+Eigen::VectorXd computeMEP(const std::vector<Element> & el, double charge = 1.0, const Eigen::Vector3d & origin = Eigen::Vector3d::Zero());
 
 #endif // MOLECULE_HPP

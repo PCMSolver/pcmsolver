@@ -46,18 +46,12 @@
  */
 TEST_CASE("Test solver for the C-PCM with NH3 molecule and a GePol cavity", "[solver][cpcm][cpcm_gepol-NH3]")
 {
-    // Set up cavity
-    Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
-    Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
-    Eigen::Vector3d H2(-0.901584415,    0.481847022,    1.561590016);
-    Eigen::Vector3d H3( 1.803168833,    0.481847022,    0.000000000);
-
-    Molecule molec = NH3();
+    Molecule molecule = NH3();
 
     double area = 0.4;
     double probeRadius = 0.0;
     double minRadius = 100.0;
-    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+    GePolCavity cavity = GePolCavity(molecule, area, probeRadius, minRadius);
     cavity.saveCavity("nh3.npz");
 
     double permittivity = 78.39;
@@ -72,16 +66,7 @@ TEST_CASE("Test solver for the C-PCM with NH3 molecule and a GePol cavity", "[so
     double Ncharge = 7.0;
     double Hcharge = 1.0;
     size_t size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (size_t i = 0; i < size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double Ndistance = (center - N).norm();
-        double H1distance = (center - H1).norm();
-        double H2distance = (center - H2).norm();
-        double H3distance = (center - H3).norm();
-        fake_mep(i) = Ncharge / Ndistance + Hcharge / H1distance + Hcharge / H2distance +
-                      Hcharge / H3distance;
-    }
+    Eigen::VectorXd fake_mep = computeMEP(molecule, cavity.elements());
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*[(epsilon-1)/epsilon + correction]
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
@@ -89,6 +74,6 @@ TEST_CASE("Test solver for the C-PCM with NH3 molecule and a GePol cavity", "[so
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) /
                       (permittivity + correction);
     double totalFakeASC = fake_asc.sum();
-    INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    CAPTURE(totalASC - totalFakeASC);
     REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
 }

@@ -72,6 +72,6 @@ TEST_CASE("Test solver for the C-PCM for a point charge and a restarted GePol ca
     fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
-    INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    CAPTURE(totalASC - totalFakeASC);
     REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
 }

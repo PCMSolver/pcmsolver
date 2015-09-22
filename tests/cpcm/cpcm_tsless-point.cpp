@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(pointChargeTsLess)
 
     double charge = 8.0;
     size_t size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+    Eigen::VectorXd fake_mep = computeMEP(molecule, cavity.elements());
     for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double distance = center.norm();

@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE CPCMSolverpointChargeGePolSymmetry
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include "catch.hpp"
 
 #include <cstdio>
 #include <iostream>
@@ -43,352 +40,292 @@
 #include "Vacuum.hpp"
 #include "TestingMolecules.hpp"
 
-
-/*! \class CPCMSolver
- *  \test \b pointChargeGePolC1 tests CPCMSolver using a point charge with a GePol cavity in C1 symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
+SCENARIO("Test solver for the C-PCM for a point charge in different Abelian point groups", "[solver][cpcm][cpcm_symmetry]")
 {
-    // Set up cavity
-    Molecule point = dummy<0>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
+    GIVEN("An isotropic environment modelled as a perfect conductor and a point charge")
+    {
+        double permittivity = 78.39;
+        Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
+        UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
+            UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+        bool symm = true;
+        double correction = 0.0;
 
+        double charge = 8.0;
+        // The total ASC for a conductor is -Q
+        // for CPCM it will be -Q*[(epsilon-1)/epsilon]
+        double totalASC = - charge * (permittivity - 1) / permittivity;
 
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    double correction = 0.0;
-    CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+        /*! \class CPCMSolver
+         *  \test \b pointChargeGePolC1 tests CPCMSolver using a point charge with a GePol cavity in C1 symmetry
+         */
+        WHEN("the point group is C1")
+        {
+            Molecule point = dummy<0>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
 
-    double charge = 8.0;
-    size_t size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (size_t i = 0; i < size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            CPCMSolver solver(symm, correction);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class CPCMSolver
+         *  \test \b pointChargeGePolC2 tests CPCMSolver using a point charge with a GePol cavity in C2 symmetry
+         */
+        WHEN("the point group is C2")
+        {
+            Molecule point = dummy<1>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            CPCMSolver solver(symm, correction);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class CPCMSolver
+         *  \test \b pointChargeGePolCs tests CPCMSolver using a point charge with a GePol cavity in Cs symmetry
+         */
+        WHEN("the point group is Cs")
+        {
+            Molecule point = dummy<2>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            CPCMSolver solver(symm, correction);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class CPCMSolver
+         *  \test \b pointChargeGePolCi tests CPCMSolver using a point charge with a GePol cavity in Ci symmetry
+         */
+        WHEN("the point group is Ci")
+        {
+            Molecule point = dummy<3>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            CPCMSolver solver(symm, correction);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class CPCMSolver
+         *  \test \b pointChargeGePolD2 tests CPCMSolver using a point charge with a GePol cavity in D2 symmetry
+         */
+        WHEN("the point group is D2")
+        {
+            Molecule point = dummy<4>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            CPCMSolver solver(symm, correction);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class CPCMSolver
+         *  \test \b pointChargeGePolC2v tests CPCMSolver using a point charge with a GePol cavity in C2v symmetry
+         */
+        WHEN("the point group is C2v")
+        {
+            Molecule point = dummy<5>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            CPCMSolver solver(symm, correction);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class CPCMSolver
+         *  \test \b pointChargeGePolC2h tests CPCMSolver using a point charge with a GePol cavity in C2h symmetry
+         */
+        WHEN("the point group is C2h")
+        {
+            Molecule point = dummy<6>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            CPCMSolver solver(symm, correction);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class CPCMSolver
+         *  \test \b pointChargeGePolD2h tests CPCMSolver using a point charge with a GePol cavity in D2h symmetry
+         */
+        WHEN("the point group is D2h")
+        {
+            Molecule point = dummy<7>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            CPCMSolver solver(symm, correction);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
     }
-    // The total ASC for a conductor is -Q
-    // for CPCM it will be -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class CPCMSolver
- *  \test \b pointChargeGePolC2 tests CPCMSolver using a point charge with a GePol cavity in C2 symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
-{
-    // Set up cavity
-    Molecule point = dummy<1>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
-
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    double correction = 0.0;
-    CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a conductor is -Q
-    // for CPCM it will be -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class CPCMSolver
- *  \test \b pointChargeGePolCs tests CPCMSolver using a point charge with a GePol cavity in Cs symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
-{
-    // Set up cavity
-    Molecule point = dummy<2>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
-
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    double correction = 0.0;
-    CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a conductor is -Q
-    // for CPCM it will be -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class CPCMSolver
- *  \test \b pointChargeGePolCi tests CPCMSolver using a point charge with a GePol cavity in Ci symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
-{
-    // Set up cavity
-    Molecule point = dummy<3>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
-
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    double correction = 0.0;
-    CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a conductor is -Q
-    // for CPCM it will be -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class CPCMSolver
- *  \test \b pointChargeGePolD2 tests CPCMSolver using a point charge with a GePol cavity in D2 symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
-{
-    // Set up cavity
-    Molecule point = dummy<4>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
-
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    double correction = 0.0;
-    CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a conductor is -Q
-    // for CPCM it will be -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class CPCMSolver
- *  \test \b pointChargeGePolC2v tests CPCMSolver using a point charge with a GePol cavity in C2v symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
-{
-    // Set up cavity
-    Molecule point = dummy<5>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
-
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    double correction = 0.0;
-    CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a conductor is -Q
-    // for CPCM it will be -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class CPCMSolver
- *  \test \b pointChargeGePolC2h tests CPCMSolver using a point charge with a GePol cavity in C2h symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
-{
-    // Set up cavity
-    Molecule point = dummy<6>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-        GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
-
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    double correction = 0.0;
-    CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a conductor is -Q
-    // for CPCM it will be -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class CPCMSolver
- *  \test \b pointChargeGePolD2h tests CPCMSolver using a point charge with a GePol cavity in D2h symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
-{
-    // Set up cavity
-    Molecule point = dummy<7>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
-
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    double correction = 0.0;
-    CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a conductor is -Q
-    // for CPCM it will be -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

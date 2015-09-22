@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE CPCMSolverNH3GePol
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include "catch.hpp"
 
 #include <iostream>
 
@@ -47,7 +44,7 @@
 /*! \class CPCMSolver
  *  \test \b NH3GePol tests CPCMSolver using ammonia and a GePol cavity
  */
-BOOST_AUTO_TEST_CASE(NH3GePol)
+TEST_CASE("Test solver for the C-PCM with NH3 molecule and a GePol cavity", "[solver][cpcm][cpcm_gepol-NH3]")
 {
     // Set up cavity
     Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
@@ -92,6 +89,6 @@ BOOST_AUTO_TEST_CASE(NH3GePol)
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) /
                       (permittivity + correction);
     double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
+    INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+    REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
 }

@@ -1,9 +1,8 @@
-set(list_of_libraries solver cavity pedra utils)
-
-list(APPEND external_libraries ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
-add_boosttest(cpcm_gepol-point "${list_of_libraries}" "${external_libraries}")
-add_boosttest(cpcm_gepol-NH3 "${list_of_libraries}" "${external_libraries}")
-add_boosttest(cpcm_gepol-point_from-file "${list_of_libraries}" "${external_libraries}")
-add_boosttest(cpcm_gepol-NH3_from-file "${list_of_libraries}" "${external_libraries}")
-add_boosttest(cpcm_symmetry "${list_of_libraries}" "${external_libraries}")
-
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_gepol-point.cpp)
+add_test(NAME cpcm_gepol-point COMMAND unit_tests.x [cpcm_gepol-point])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_gepol-NH3.cpp)
+add_test(NAME cpcm_gepol-NH3 COMMAND unit_tests.x [cpcm_gepol-NH3])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_gepol-point_from-file.cpp)
+add_test(NAME cpcm_gepol-point_from-file COMMAND unit_tests.x [cpcm_gepol-point_from-file])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_symmetry.cpp)
+add_test(NAME cpcm_symmetry COMMAND unit_tests.x [cpcm_symmetry])

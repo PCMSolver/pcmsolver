@@ -159,7 +159,7 @@ You will first need to find the library, using the macro [find_library](http://w
 the `target_link_libraries` command.
 
 ### Configuring files
-If the need arises to configure files when executing `setup` or CMake, you should use the appropriate `configure_file` macro.
+If the need arises to configure files when executing `setup.py` or CMake, you should use the appropriate `configure_file` macro.
 A macro called `configure_files` is provided in `cmake/GenericMacros.cmake` to encapsulate all the calls to the predefined `configure_file` macro.
 Add your configuration command to this macro.
 

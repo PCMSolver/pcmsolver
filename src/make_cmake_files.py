@@ -15,8 +15,8 @@ import docopt
 
 options = """
 Usage:
-  ./setup.py [options] [<builddir>]
-  ./setup.py (-h | --help)
+  ./make_cmake_files.py [options]
+  ./make_cmake_files.py (-h | --help)
 
 Options:
   --libname=<LIBNAME>                    Name of the library to be created [default: ''].

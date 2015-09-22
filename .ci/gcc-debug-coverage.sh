@@ -2,7 +2,7 @@
 
 pip install cpp-coveralls --user `whoami`
 
-python setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage
+python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests --coverage
 cd build
 make
 ctest

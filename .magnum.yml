@@ -7,7 +7,7 @@ before_install:
 before_script:
   - FC=gfortran
 script:
-  - python setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests
+  - python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests
   - cd build
   - make
   - ctest

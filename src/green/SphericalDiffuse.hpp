@@ -152,7 +152,7 @@ public:
      *  \param[in]        p2 second point
      */
     double coefficientCoulombDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
-        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::coefficientCoulomb, this, _1, _2),
+        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::coefficientCoulomb, this, pcm::_1, pcm::_2),
                 p2, p1, direction, this->delta_);
     }
     /*! Returns value of the directional derivative of the
@@ -166,7 +166,7 @@ public:
      *  \param[in]        p2 second point
      */
     double CoulombDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
-        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::Coulomb, this, _1, _2),
+        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::Coulomb, this, pcm::_1, pcm::_2),
                 p2, p1, direction, this->delta_);
     }
     /*! Returns value of the directional derivative of the
@@ -180,7 +180,7 @@ public:
      *  \param[in]        p2 second point
      */
     double imagePotentialDerivative(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const {
-        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::imagePotential, this, _1, _2),
+        return threePointStencil(pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::imagePotential, this, pcm::_1, pcm::_2),
                 p2, p1, direction, this->delta_);
     }
     /*! Handle to the dielectric profile evaluation */
@@ -271,7 +271,7 @@ private:
         double r_infinity_  = this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
         double observer_step_ = 1.0e-03; /*! Time step between observer calls */
         IntegratorParameters params_(eps_abs_, eps_rel_, factor_x_, factor_dxdt_, r_0_, r_infinity_, observer_step_);
-        ProfileEvaluator eval_ = pcm::bind(&ProfilePolicy::operator(), this->profile_, _1);
+        ProfileEvaluator eval_ = pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
         LOG("Computing coefficient for the separation of the Coulomb singularity");
         LOG("Computing first radial solution L = " + std::to_string(maxLC_));

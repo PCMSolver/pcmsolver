@@ -176,7 +176,7 @@ public:
     virtual double derivativeSource(const Eigen::Vector3d & normal_p1,
                             const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
-        return threePointStencil(pcm::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, _1, _2),
+        return threePointStencil(pcm::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, pcm::_1, pcm::_2),
                                 p1, p2, normal_p1, this->delta_);
     }
     /*! Returns value of the directional derivative of the
@@ -191,7 +191,7 @@ public:
     virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
                                    const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
-        return threePointStencil(pcm::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, _1, _2),
+        return threePointStencil(pcm::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, pcm::_1, pcm::_2),
                                 p2, p1, normal_p2, this->delta_);
     }
     /*! Returns full gradient of Greens's function for the pair of points p1, p2:

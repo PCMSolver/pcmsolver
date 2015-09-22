@@ -71,8 +71,8 @@ struct CollocationIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const Vacuum<DerivativeTraits, CollocationIntegrator> & gf, const std::vector<Element> & e) const {
         return integrator::singleLayer(e,
-                pcm::bind(integrator::SI, this->factor_, 1.0, _1),
-                pcm::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelS, gf, _1, _2));
+                pcm::bind(integrator::SI, this->factor_, 1.0, pcm::_1),
+                pcm::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelS, gf, pcm::_1, pcm::_2));
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -81,8 +81,8 @@ struct CollocationIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const Vacuum<DerivativeTraits, CollocationIntegrator> & gf, const std::vector<Element> & e) const {
         return integrator::doubleLayer(e,
-                                       pcm::bind(integrator::DI, this->factor_, _1),
-                                       pcm::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelD, gf, _1, _2, _3));
+                                       pcm::bind(integrator::DI, this->factor_, pcm::_1),
+                                       pcm::bind(&Vacuum<DerivativeTraits, CollocationIntegrator>::kernelD, gf, pcm::_1, pcm::_2, pcm::_3));
     }
     /**@}*/
 
@@ -94,8 +94,8 @@ struct CollocationIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const UniformDielectric<DerivativeTraits, CollocationIntegrator> & gf, const std::vector<Element> & e) const {
         return integrator::singleLayer(e,
-                pcm::bind(integrator::SI, this->factor_, gf.epsilon(), _1),
-                pcm::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelS, gf, _1, _2));
+                pcm::bind(integrator::SI, this->factor_, gf.epsilon(), pcm::_1),
+                pcm::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelS, gf, pcm::_1, pcm::_2));
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -104,8 +104,8 @@ struct CollocationIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const UniformDielectric<DerivativeTraits, CollocationIntegrator> & gf, const std::vector<Element> & e) const {
         return integrator::doubleLayer(e,
-                                       pcm::bind(integrator::DI, this->factor_, _1),
-                                       pcm::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelD, gf, _1, _2, _3));
+                                       pcm::bind(integrator::DI, this->factor_, pcm::_1),
+                                       pcm::bind(&UniformDielectric<DerivativeTraits, CollocationIntegrator>::kernelD, gf, pcm::_1, pcm::_2, pcm::_3));
     }
     /**@}*/
 

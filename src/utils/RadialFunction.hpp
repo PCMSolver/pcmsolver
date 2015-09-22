@@ -135,7 +135,7 @@ class Zeta __final
             init_zeta[1] = L_ / r_0_;
             odeint::integrate_adaptive(stepper, system, init_zeta,
                     r_0_, r_infinity_, parms.observer_step_,
-                    pcm::bind(&Zeta<StateVariable, ODESystem>::push_back, this, _1, _2));
+                    pcm::bind(&Zeta<StateVariable, ODESystem>::push_back, this, pcm::_1, pcm::_2));
         }
         /*! \brief Returns value of function at given point
          *  \param[in] point evaluation point
@@ -229,7 +229,7 @@ class Omega __final
             // Notice that we integrate BACKWARDS, so we pass -step to integrate_adaptive
             boost::numeric::odeint::integrate_adaptive(stepper, system, init_omega,
                     r_infinity_, r_0_, -parms.observer_step_,
-                    pcm::bind(&Omega<StateVariable, ODESystem>::push_back, this, _1, _2));
+                    pcm::bind(&Omega<StateVariable, ODESystem>::push_back, this, pcm::_1, pcm::_2));
             // Reverse order of StateVariable-s in RadialSolution
             // this ensures that they are in ascending order, as later expected by function_impl and derivative_impl
             BOOST_FOREACH(StateVariable & comp, function_) {

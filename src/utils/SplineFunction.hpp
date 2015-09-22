@@ -93,7 +93,7 @@ private:
     }
 #else /* HAS_CXX11_LAMBDA */
     Eigen::RowVectorXd fitVector(const Eigen::VectorXd & x_vec) const {
-        pcm::function<double(double)> fit = pcm::bind(&SplineFunction::fitScalar, this, _1);
+        pcm::function<double(double)> fit = pcm::bind(&SplineFunction::fitScalar, this, pcm::_1);
 	    return x_vec.unaryExpr(fit).transpose();
     }
 #endif /*HAS_CXX11_LAMBDA */

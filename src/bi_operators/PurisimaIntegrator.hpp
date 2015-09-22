@@ -75,8 +75,8 @@ struct PurisimaIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const Vacuum<DerivativeTraits, PurisimaIntegrator> & gf, const std::vector<Element> & e) const {
         return integrator::singleLayer(e,
-                pcm::bind(integrator::SI, this->factor_, 1.0, _1),
-                pcm::bind(&Vacuum<DerivativeTraits, PurisimaIntegrator>::kernelS, gf, _1, _2));
+                pcm::bind(integrator::SI, this->factor_, 1.0, pcm::_1),
+                pcm::bind(&Vacuum<DerivativeTraits, PurisimaIntegrator>::kernelS, gf, pcm::_1, pcm::_2));
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -85,7 +85,7 @@ struct PurisimaIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const Vacuum<DerivativeTraits, PurisimaIntegrator> & gf, const std::vector<Element> & e) const {
         // Obtain off-diagonal first
-        Eigen::MatrixXd D = offDiagonalD(e, pcm::bind(&Vacuum<DerivativeTraits, PurisimaIntegrator>::kernelD, gf, _1, _2, _3));
+        Eigen::MatrixXd D = offDiagonalD(e, pcm::bind(&Vacuum<DerivativeTraits, PurisimaIntegrator>::kernelD, gf, pcm::_1, pcm::_2, pcm::_3));
         // Fill diagonal based on Purisima's formula
         Eigen::VectorXd D_diag = diagonalD(e, D);
         D.diagonal() = D_diag;
@@ -101,8 +101,8 @@ struct PurisimaIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const UniformDielectric<DerivativeTraits, PurisimaIntegrator> & gf, const std::vector<Element> & e) const {
         return integrator::singleLayer(e,
-                pcm::bind(integrator::SI, this->factor_, gf.epsilon(), _1),
-                pcm::bind(&UniformDielectric<DerivativeTraits, PurisimaIntegrator>::kernelS, gf, _1, _2));
+                pcm::bind(integrator::SI, this->factor_, gf.epsilon(), pcm::_1),
+                pcm::bind(&UniformDielectric<DerivativeTraits, PurisimaIntegrator>::kernelS, gf, pcm::_1, pcm::_2));
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -111,7 +111,7 @@ struct PurisimaIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const UniformDielectric<DerivativeTraits, PurisimaIntegrator> & gf, const std::vector<Element> & e) const {
         // Obtain off-diagonal first
-        Eigen::MatrixXd D = offDiagonalD(e, pcm::bind(&UniformDielectric<DerivativeTraits, PurisimaIntegrator>::kernelD, gf, _1, _2, _3));
+        Eigen::MatrixXd D = offDiagonalD(e, pcm::bind(&UniformDielectric<DerivativeTraits, PurisimaIntegrator>::kernelD, gf, pcm::_1, pcm::_2, pcm::_3));
         // Fill diagonal based on Purisima's formula
         Eigen::VectorXd D_diag = diagonalD(e, D);
         D.diagonal() = D_diag;

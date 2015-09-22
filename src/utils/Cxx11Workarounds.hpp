@@ -48,13 +48,11 @@ namespace pcm {
 namespace pcm {
     using std::function;
     using std::bind;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
+    using std::placeholders::_4;
 } /* end namespace pcm */
-// This is because Boost declares placeholders
-// in an unnamed namespace
-using std::placeholders::_1;
-using std::placeholders::_2;
-using std::placeholders::_3;
-using std::placeholders::_4;
 /* <tuple> workarounds */
 #include <tuple>
 namespace pcm {
@@ -87,6 +85,10 @@ namespace pcm {
 namespace pcm {
     using boost::function;
     using boost::bind;
+    using ::_1;
+    using ::_2;
+    using ::_3;
+    using ::_4;
 } /* end namespace pcm */
 /* <tuple> workarounds */
 #include <boost/tuple/tuple.hpp>

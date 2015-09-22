@@ -34,6 +34,7 @@
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
+#include "Molecule.hpp"
 #include "Vacuum.hpp"
 #include "IEFSolver.hpp"
 #include "SphericalDiffuse.hpp"
@@ -71,12 +72,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse e
             IEFSolver solver(symm);
             solver.buildSystemMatrix(cavity, gfInside, gfOutside);
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-            for (size_t i = 0; i < size; ++i) {
-                Eigen::Vector3d center = cavity.elementCenter(i);
-                double distance = (origin - center).norm();
-                fake_mep(i) = charge / distance;
-            }
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge, origin);
             for (size_t i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
@@ -89,9 +85,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse e
                     INFO("fake_asc(" << i << ") = " << fake_asc(i));
                 }
 
-                INFO("totalASC = " << totalASC);
-                INFO("totalFakeASC = " << totalFakeASC);
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC);
+                CAPTURE(totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -111,12 +107,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse e
             solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-            for (size_t i = 0; i < size; ++i) {
-                Eigen::Vector3d center = cavity.elementCenter(i);
-                double distance = center.norm();
-                fake_mep(i) = charge / distance;
-            }
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             for (size_t i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
@@ -129,9 +120,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse e
                     INFO("fake_asc(" << i << ") = " << fake_asc(i));
                 }
 
-                INFO("totalASC = " << totalASC);
-                INFO("totalFakeASC = " << totalFakeASC);
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC);
+                CAPTURE(totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }

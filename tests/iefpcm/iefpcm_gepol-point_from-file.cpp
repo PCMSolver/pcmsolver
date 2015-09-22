@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE IEFSolverpointChargeGePolRestart
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include "catch.hpp"
 
 #include <iostream>
 
@@ -37,6 +34,7 @@
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
+#include "Molecule.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
@@ -44,7 +42,7 @@
 /*! \class IEFSolver
  *  \test \b pointChargeGePolRestart tests IEFSolver using a point charge with a GePol cavity read from .npz file
  */
-BOOST_AUTO_TEST_CASE(pointChargeGePolRestart)
+TEST_CASE("Test solver for the IEFPCM for a point charge and a restarted GePol cavity", "[solver][iefpcm][iefpcm_gepol-point_from-file]")
 {
     // Load cavity
     GePolCavity cavity;
@@ -60,7 +58,7 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolRestart)
 
     double charge = 8.0;
     size_t size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
+    Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
     for (size_t i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double distance = center.norm();
@@ -72,6 +70,6 @@ BOOST_AUTO_TEST_CASE(pointChargeGePolRestart)
 
     double totalASC = - charge * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
+    CAPTURE(totalASC - totalFakeASC);
+    REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
 }

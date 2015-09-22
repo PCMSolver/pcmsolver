@@ -69,12 +69,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge and a GePol cavity", "[s
             solver.buildSystemMatrix(cavity, gfInside, gfOutside);
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-            for (size_t i = 0; i < size; ++i) {
-                Eigen::Vector3d center = cavity.elementCenter(i);
-                double distance = center.norm();
-                fake_mep(i) = charge / distance;
-            }
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
             Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
             fake_asc = solver.computeCharge(fake_mep);
@@ -89,9 +84,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge and a GePol cavity", "[s
             double totalFakeASC = fake_asc.sum();
             THEN("the apparent surface charge is")
             {
-                INFO("totalASC = " << totalASC);
-                INFO("totalFakeASC = " << totalFakeASC);
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC);
+                CAPTURE(totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }
@@ -114,12 +109,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge and a GePol cavity", "[s
 
             double charge = 8.0;
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-            for (size_t i = 0; i < size; ++i) {
-                Eigen::Vector3d center = cavity.elementCenter(i);
-                double distance = (center - origin).norm();
-                fake_mep(i) = charge / distance;
-            }
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge, origin);
             // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
             Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
             fake_asc = solver.computeCharge(fake_mep);
@@ -134,9 +124,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge and a GePol cavity", "[s
             double totalFakeASC = fake_asc.sum();
             THEN("the surface charge is")
             {
-                INFO("totalASC = " << totalASC);
-                INFO("totalFakeASC = " << totalFakeASC);
-                INFO("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
+                CAPTURE(totalASC);
+                CAPTURE(totalFakeASC);
+                CAPTURE(totalASC - totalFakeASC);
                 REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
             }
         }

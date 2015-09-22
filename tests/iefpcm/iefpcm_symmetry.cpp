@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE IEFSolverpointChargeGePolSymmetry
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include "catch.hpp"
 
 #include <cstdio>
 #include <iostream>
@@ -35,353 +32,288 @@
 
 #include <Eigen/Core>
 
-
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
+#include "Molecule.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
 #include "TestingMolecules.hpp"
 
-
-/*! \class IEFSolver
- *  \test \b pointChargeGePolC1 tests IEFSolver using a point charge with a GePol cavity in C1 symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC1)
+SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian point groups", "[solver][iefpcm][iefpcm_symmetry]")
 {
-    // Set up cavity
-    Molecule point = dummy<0>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
+    GIVEN("An isotropic environment and a point charge")
+    {
+        double permittivity = 78.39;
+        Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
+        UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
+            UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+        bool symm = true;
 
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+        double charge = 8.0;
+        double totalASC = - charge * (permittivity - 1) / permittivity;
 
-    double charge = 8.0;
-    size_t size = cavity.size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (size_t i = 0; i < size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePolC1 tests IEFSolver using a point charge with a GePol cavity in C1 symmetry
+         */
+        WHEN("the point group is C1")
+        {
+            Molecule point = dummy<0>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                CAPTURE(totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePolC2 tests IEFSolver using a point charge with a GePol cavity in C2 symmetry
+         */
+        WHEN("the point group is C2")
+        {
+            Molecule point = dummy<1>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                CAPTURE(totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePolCs tests IEFSolver using a point charge with a GePol cavity in Cs symmetry
+         */
+        WHEN("the point group is Cs")
+        {
+            Molecule point = dummy<2>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                CAPTURE(totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePolCi tests IEFSolver using a point charge with a GePol cavity in Ci symmetry
+         */
+        WHEN("the point group is Ci")
+        {
+            Molecule point = dummy<3>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                CAPTURE(totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePolD2 tests IEFSolver using a point charge with a GePol cavity in D2 symmetry
+         */
+        WHEN("the point group is D2")
+        {
+            Molecule point = dummy<4>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                CAPTURE(totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePolC2v tests IEFSolver using a point charge with a GePol cavity in C2v symmetry
+         */
+        WHEN("the point group is C2v")
+        {
+            Molecule point = dummy<5>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                CAPTURE(totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePolC2h tests IEFSolver using a point charge with a GePol cavity in C2h symmetry
+         */
+        WHEN("the point group is C2h")
+        {
+            Molecule point = dummy<6>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                CAPTURE(totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
+
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePolD2h tests IEFSolver using a point charge with a GePol cavity in D2h symmetry
+         */
+        WHEN("the point group is D2h")
+        {
+            Molecule point = dummy<7>(2.929075493);
+            double area = 0.4;
+            double probeRadius = 0.0;
+            double minRadius = 100.0;
+            GePolCavity cavity(point, area, probeRadius, minRadius);
+            std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
+
+            size_t size = cavity.size();
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
+            for (size_t i = 0; i < size; ++i) {
+                Eigen::Vector3d center = cavity.elementCenter(i);
+                double distance = center.norm();
+                fake_mep(i) = charge / distance;
+            }
+
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            THEN("the total apparent surface charge is")
+            {
+                size_t irr_size = cavity.irreducible_size();
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                fake_asc = solver.computeCharge(fake_mep);
+                int nr_irrep = cavity.pointGroup().nrIrrep();
+                double totalFakeASC = fake_asc.sum() * nr_irrep;
+                CAPTURE(totalASC - totalFakeASC);
+                REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+            }
+        }
     }
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum();
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class IEFSolver
- *  \test \b pointChargeGePolC2 tests IEFSolver using a point charge with a GePol cavity in C2 symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2)
-{
-    // Set up cavity
-    Molecule point = dummy<1>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class IEFSolver
- *  \test \b pointChargeGePolCs tests IEFSolver using a point charge with a GePol cavity in Cs symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolCs)
-{
-    // Set up cavity
-    Molecule point = dummy<2>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class IEFSolver
- *  \test \b pointChargeGePolCi tests IEFSolver using a point charge with a GePol cavity in Ci symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolCi)
-{
-    // Set up cavity
-    Molecule point = dummy<3>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class IEFSolver
- *  \test \b pointChargeGePolD2 tests IEFSolver using a point charge with a GePol cavity in D2 symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolD2)
-{
-    // Set up cavity
-    Molecule point = dummy<4>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class IEFSolver
- *  \test \b pointChargeGePolC2v tests IEFSolver using a point charge with a GePol cavity in C2v symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2v)
-{
-    // Set up cavity
-    Molecule point = dummy<5>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class IEFSolver
- *  \test \b pointChargeGePolC2h tests IEFSolver using a point charge with a GePol cavity in C2h symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolC2h)
-{
-    // Set up cavity
-    Molecule point = dummy<6>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
-}
-
-/*! \class IEFSolver
- *  \test \b pointChargeGePolD2h tests IEFSolver using a point charge with a GePol cavity in D2h symmetry
- */
-BOOST_AUTO_TEST_CASE(pointChargeGePolD2h)
-{
-    // Set up cavity
-    Molecule point = dummy<7>(2.929075493);
-    double area = 0.4;
-    double probeRadius = 0.0;
-    double minRadius = 100.0;
-    GePolCavity cavity(point, area, probeRadius, minRadius);
-    std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
-
-    double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
-    bool symm = true;
-    IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
-
-    double charge = 8.0;
-    int irr_size = cavity.irreducible_size();
-    Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(irr_size);
-    // Calculate it only on the irreducible portion of the cavity
-    // then replicate it according to the point group
-    for (int i = 0; i < irr_size; ++i) {
-        Eigen::Vector3d center = cavity.elementCenter(i);
-        double distance = center.norm();
-        fake_mep(i) = charge / distance;
-    }
-    int nr_irrep = cavity.pointGroup().nrIrrep();
-    // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
-    Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
-    fake_asc = solver.computeCharge(fake_mep);
-    double totalASC = - charge * (permittivity - 1) / permittivity;
-    double totalFakeASC = fake_asc.sum() * nr_irrep;
-    BOOST_TEST_MESSAGE("totalASC = " << totalASC);
-BOOST_TEST_MESSAGE("totalFakeASC = " << totalFakeASC);
-BOOST_TEST_MESSAGE("totalASC - totalFakeASC = " << totalASC - totalFakeASC);
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
 }

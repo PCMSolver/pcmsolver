@@ -23,10 +23,7 @@
  */
 /* pcmsolver_copyright_end */
 
-#define BOOST_TEST_MODULE IEFSolverNH3GePolRestart
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include "catch.hpp"
 
 #include <iostream>
 
@@ -44,7 +41,7 @@
 /*! \class IEFSolver
  *  \test \b NH3GePolRestart tests IEFSolver using ammonia with a GePol cavity read from .npz file
  */
-BOOST_AUTO_TEST_CASE(NH3GePolRestart)
+TEST_CASE("Test solver for the IEFPCM for NH3 and a restarted GePol cavity", "[solver][iefpcm][iefpcm_gepol-NH3_from-file]")
 {
     Eigen::Vector3d N( -0.000000000,   -0.104038047,    0.000000000);
     Eigen::Vector3d H1(-0.901584415,    0.481847022,   -1.561590016);
@@ -80,6 +77,6 @@ BOOST_AUTO_TEST_CASE(NH3GePolRestart)
     fake_asc = solver.computeCharge(fake_mep);
     double totalASC = - (Ncharge + 3.0 * Hcharge) * (permittivity - 1) / permittivity;
     double totalFakeASC = fake_asc.sum();
-    std::cout << "totalASC - totalFakeASC = " << totalASC - totalFakeASC << std::endl;
-    BOOST_REQUIRE_CLOSE(totalASC, totalFakeASC, 4e-02);
+    CAPTURE(totalASC - totalFakeASC);
+    REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
 }

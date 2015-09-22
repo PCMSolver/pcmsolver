@@ -34,6 +34,7 @@
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "GePolCavity.hpp"
+#include "Molecule.hpp"
 #include "Vacuum.hpp"
 #include "UniformDielectric.hpp"
 #include "IEFSolver.hpp"
@@ -72,12 +73,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge and a GePol 
             iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-            for (size_t i = 0; i < size; ++i) {
-                Eigen::Vector3d center = cavity.elementCenter(i);
-                double distance = center.norm();
-                fake_mep(i) = charge / distance;
-            }
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             for (size_t i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
@@ -96,9 +92,9 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge and a GePol 
                     INFO("iso_fake_asc(" << i << ") = " << iso_fake_asc(i));
                 }
 
-                INFO("totalASC = " << totalASC);
-                INFO("totalAnisoASC = " << totalAnisoASC);
-                INFO("totalASC - totalAnisoASC = " << totalASC - totalAnisoASC);
+                CAPTURE(totalASC);
+                CAPTURE(totalAnisoASC);
+                CAPTURE(totalASC - totalAnisoASC);
                 REQUIRE(totalASC == Approx(totalAnisoASC).epsilon(1.0e-03));
                 REQUIRE(totalIsoASC == Approx(totalAnisoASC));
             }
@@ -126,12 +122,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge and a GePol 
             iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
 
             size_t size = cavity.size();
-            Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-            for (size_t i = 0; i < size; ++i) {
-                Eigen::Vector3d center = cavity.elementCenter(i);
-                double distance = (center - origin).norm();
-                fake_mep(i) = charge / distance;
-            }
+            Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge, origin);
             for (size_t i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
@@ -150,9 +141,9 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge and a GePol 
                 // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
                 double totalAnisoASC = aniso_fake_asc.sum();
                 double totalIsoASC = iso_fake_asc.sum();
-                INFO("totalASC = " << totalASC);
-                INFO("totalAnisoASC = " << totalAnisoASC);
-                INFO("totalASC - totalAnisoASC = " << totalASC - totalAnisoASC);
+                CAPTURE(totalASC);
+                CAPTURE(totalAnisoASC);
+                CAPTURE(totalASC - totalAnisoASC);
                 REQUIRE(totalASC == Approx(totalAnisoASC).epsilon(1.0e-03));
                 REQUIRE(totalIsoASC == Approx(totalAnisoASC));
             }

@@ -1,0 +1,37 @@
+sudo: false
+language: cpp
+git:
+  submodules: false
+branches:
+  only:
+    - release
+addons:
+    apt:
+        packages:
+            - cmake
+            - gfortran
+            - gfortran-multilib
+install: true
+before_script:
+  - FC=gfortran
+env:
+  global:
+    - PROJECT_ROOT="$(pwd)"
+    - CI_SCRIPTS="$PROJECT_ROOT/.ci"
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "E1Jc17Tev6/JHyAhyv7pyVoaMhZwoQ5w8H1RoKE2Mty1upjDzoUrUy9dCyl9zFpkaaUq7lOZ527o5DbEn5FZfh1u6hYqmlsDEvCeRFJ/KFF7E4L4Pph3w1T2+LfGkZUgAV84MIBZKY3gI1SccXrsvOCcb7w0MWhEnHw66WVQPjQ="
+  matrix:
+    - CI_TARGET=gcc-debug-coverage
+    - CI_TARGET=gcc-debug-i8
+    - CI_TARGET=clang-debug
+    - CI_TARGET=coverity
+script:
+  - bash "${CI_SCRIPTS}/${CI_TARGET}.sh"
+notifications:
+  recipients:
+    - roberto.d.remigio@uit.no
+    - luca.frediani@uit.no
+  email:
+    on_success: change
+    on_failure: always

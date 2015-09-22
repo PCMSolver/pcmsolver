@@ -6,18 +6,11 @@ before_install:
     - sudo apt-get install cmake gcc gfortran python clang -y
 before_script:
   - FC=gfortran
-env:
-  global:
-    - PROJECT_ROOT="$(pwd)"
-    - CI_SCRIPTS="$PROJECT_ROOT/.ci"
-  matrix:
-    - CI_TARGET=gcc-debug-coverage
-    - CI_TARGET=gcc-release
-    - CI_TARGET=gcc-debug-i8
-    - CI_TARGET=clang-debug
-    - CI_TARGET=clang-release
 script:
-  - bash "${CI_SCRIPTS}/${CI_TARGET}.sh"
+  - python setup --cxx=g++ --cc=gcc --fc=gfortran --type=debug --tests
+  - cd build
+  - make
+  - ctest
 notifications:
   recipients:
     - roberto.d.remigio@uit.no

@@ -4,11 +4,15 @@ before_script:
     - ls -la
     - sudo apt-get update -y
     - sudo apt-get install gcc g++ gfortran make cmake zlib1g-dev python-dateutil python-pyparsing python-numpy python-matplotlib python-pip python-setuptools python-dev -y
-script:
-    - "python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug"
-    - cd build
-    - make
-    - ctest
-tags:
-except:
-    - tags
+gcc_debug:
+    script:
+        - "python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug"
+        - cd build
+        - make
+        - ctest
+gcc_debug_nocxx11:
+    script:
+        - "python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug --cmake-options='-DENABLE_CXX11_SUPPORT=OFF'"
+        - cd build
+        - make
+        - ctest

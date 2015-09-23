@@ -1,6 +1,4 @@
 before_script:
-    - git clone git@gitlab.com:PCMSolver/pcmsolver.git /pcmsolver-ci/tmp
-    - cd /pcmsolver-ci/tmp
     - ls -la
     - sudo apt-get update -y
     - sudo apt-get install gcc g++ gfortran make cmake zlib1g-dev python-dateutil python-pyparsing python-numpy python-matplotlib python-pip python-setuptools python-dev -y

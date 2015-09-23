@@ -17,4 +17,4 @@ add_subdirectory(iefpcm)
 get_property(test_sources GLOBAL PROPERTY TestSources)
 
 add_executable(unit_tests.x unit_tests.cpp ${test_sources})
-target_link_libraries(unit_tests.x pcm getkw ${ZLIB_LIBRARIES})
+target_link_libraries(unit_tests.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})

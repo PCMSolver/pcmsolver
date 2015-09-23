@@ -7,7 +7,7 @@ before_install:
 script:
   - python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug
   - cd build
-  - make
+  - VERBOSE=1 make
   - ctest
 notifications:
   recipients:

@@ -3,9 +3,7 @@ git:
   submodules: false
 before_install:
     - sudo apt-get update -y
-    - sudo apt-get install cmake gcc gfortran python clang -y
-before_script:
-  - FC=gfortran
+    - sudo apt-get install gcc g++ gfortran make cmake zlib1g-dev python-dateutil python-pyparsing python-numpy python-matplotlib python-pip python-setuptools python-dev -y
 script:
   - python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug
   - cd build

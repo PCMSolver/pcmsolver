@@ -1,5 +1,6 @@
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.11910.png)](http://dx.doi.org/10.5281/zenodo.11910)
 [![Build Status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=release)](https://travis-ci.org/PCMSolver/pcmsolver)
+[![Magnum CI build status](https://magnum-ci.com/status/9207aa29405095b0b7aef0cd809ed6c2.png?branch=master)](https://magnum-ci.com/builds)
 [![Coverage Status](https://coveralls.io/repos/PCMSolver/pcmsolver/badge.svg?branch=release)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
 [![Coverity Scan Build](https://scan.coverity.com/projects/3046/badge.svg)](https://scan.coverity.com/projects/3046)
 

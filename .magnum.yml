@@ -4,10 +4,15 @@ git:
 before_install:
     - sudo apt-get update -y
     - sudo apt-get install gcc g++ gfortran make cmake zlib1g-dev python-dateutil python-pyparsing python-numpy python-matplotlib python-pip python-setuptools python-dev -y
+    - cmake --version
+    - gcc --version
+    - g++ --version
+    - gfortran --version
+    - python --version
 script:
   - python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug
   - cd build
-  - VERBOSE=1 make
+  - make
   - ctest
 notifications:
   recipients:

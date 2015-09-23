@@ -14,8 +14,19 @@ import re
 import sys
 from extract_notice import extractor
 
-sys.path.append('@PROJECT_SOURCE_DIR@/tools')
-import argparse
+sys.path.append('cmake/lib/docopt')
+import docopt
+
+options = """
+Usage:
+    ./pcmsolver.py [options] [<filenames>]
+    ./pcmsolver.py (-h | --help)
+
+Options:
+  --lang=<LANGUAGE> Programming language of the file <CXX/C/F> [default: CXX].
+  <filenames>       List of files.
+  -h --help         Show this screen.
+"""
 
 def from_file(file):
     f = open(file, 'r')
@@ -73,20 +84,15 @@ def update_notice_hpp(file_list):
             s = re.sub(p, pcmsolver_copyright_c, s)
             to_file(s, file)
 
-parser = argparse.ArgumentParser(description='Update copyright notice')
-parser.add_argument('filenames',
-                     metavar='Filenames',
-                     nargs='*',
-                     help='Filenames to be updated')
-parser.add_argument('--lang',
-        nargs='?',
-        action='store',
-        choices=('CXX', 'C', 'F'),
-        default='CXX',
-        const='CXX',
-        help='Source file language')
+try:
+    arguments = docopt.docopt(options, argv=None)
+except docopt.DocoptExit:
+    sys.stderr.write('ERROR: bad input to %s\n' % sys.argv[0])
+    sys.stderr.write(options)
+    sys.exit(-1)
 
-args = parser.parse_args()
+filenames = arguments['<filenames>']
+language  = arguments['--lang']
 
 pcmsolver_copyright_fortran, pcmsolver_copyright_c = extractor()
 
@@ -103,15 +109,15 @@ cpp_file_l     = []
 hpp_file_l     = []
 scratch        = []
 # If a list of files was given, populate lists with that
-if args.filenames:
-    for f in args.filenames:
+if filenames:
+    for f in filenames:
         path = os.getcwd()
         scratch.append(path + '/' + f)
-    if (args.lang  == 'CXX'):
+    if (language  == 'CXX'):
         cpp_file_l     = scratch
-    if (args.lang  == 'C'):
+    if (language  == 'C'):
         c_file_l       = scratch
-    if (args.lang  == 'F'):
+    if (language  == 'F'):
         fortran_file_l = scratch
 # else glob in the invocation directory
 else:

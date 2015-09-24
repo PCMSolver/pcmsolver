@@ -13,7 +13,7 @@ ind = np.arange(N)
 width = 1.0
 my_colors = 'gcy'
 
-fig, ax = plt.subplots()    
+fig, ax = plt.subplots()
 # Remove frame and adjust x-ticks and respective labels
 fig.set_facecolor('white')
 ax.set_frame_on(False)
@@ -47,10 +47,10 @@ box_font = font.copy()
 box_font.set_size('large')
 box_font.set_weight('bold')
 props = dict(boxstyle = 'round', facecolor = 'wheat', edgecolor = 'black', alpha = 0.5, linewidth = 1.5)
-fig.text(0.15, 0.75, annotation, 
-        style = 'normal', 
+fig.text(0.15, 0.75, annotation,
+        style = 'normal',
         fontsize = 12,
         bbox = props, fontproperties = box_font)
 
 # Save to file
-savefig(lib_name + '.png', format = 'png', dpi = 100, bbox_inches = 'tight')
+savefig(save_root + '/' + tag + '.png', format = 'png', dpi = 100, bbox_inches = 'tight')

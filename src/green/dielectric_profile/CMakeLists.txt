@@ -4,10 +4,10 @@ list(APPEND _headers_list Anisotropic.hpp MembraneTanh.hpp Metal.hpp OneLayerErf
 # List of sources
 list(APPEND _sources_list )
 
-# Write list of files to be passed to cloc for counting lines of code.
-# Only files that are actually compiled are counted.
-set(_to_count "${_sources_list}" "${_headers_list}")
-write_to_cloc_list("${_to_count}")
+# Update bar chart
+if(BUILD_DOCUMENTATION)
+    update_bar_chart(${CMAKE_CURRENT_LIST_DIR})
+endif()
 
 set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
 # Sets install directory for all the headers in the list

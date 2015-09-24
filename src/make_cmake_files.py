@@ -87,10 +87,10 @@ elif (lang == 'C'):
 else:
     f.write(glob_sources_fortran(dname))
 
-f.write('# Write list of files to be passed to cloc for counting lines of code.\n')
-f.write('# Only files that are actually compiled are counted.\n')
-f.write('set(to_count "${sources_list}" "${headers_list}")\n')
-f.write('write_to_cloc_list("${to_count}")\n\n')
+f.write('# Update bar chart\n')
+f.write('if(BUILD_DOCUMENTATION)\n')
+f.write('    update_bar_chart(${CMAKE_CURRENT_LIST_DIR})\n')
+f.write('endif()\n')
 
 if (lang == 'CXX'):
     f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${{CMAKE_CURRENT_LIST_DIR}})\n')

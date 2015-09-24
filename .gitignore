@@ -1,41 +1,37 @@
-*~
-*#
-*.out
-output*
-release*
-Release*
-Makefile
-Debug*
-.DS_Store
-build*
-debug
-TAGS
-*/TAGS
-*/*/TAGS
-prof
-Config.hpp
-doc/Doxyfile
-doc/_doxygen
-doc/conf.py
-*.pyc
-weights.txt
-element_radius.txt
-centers.txt
-normals.txt
-cavity.npz
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
 *.mod
-html/
-compile_commands.json
-doc/gfx/matplotlib/
-BuildInfo.hpp
 
-# QtCreator project files
-*.config
-*.creator*
-*.files
-*.includes
-CMakeLists.txt.user
-/.project
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
 
-# CLion project files
-.idea/
+# Executables
+*.exe
+*.out
+*.app
+
+# Build directories
+*build*
+
+# Python stuff
+*.pyc
+
+# Autocmake stuff
+cmake/lib/*.pyc

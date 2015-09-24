@@ -13,7 +13,7 @@ ind = np.arange(N)
 width = 1.0
 my_colors = 'mgcyb'
 
-fig, ax = plt.subplots()    
+fig, ax = plt.subplots()
 # Remove frame and adjust x-ticks and respective labels
 fig.set_facecolor('white')
 ax.set_frame_on(False)

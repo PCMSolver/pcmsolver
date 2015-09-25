@@ -205,7 +205,7 @@ private:
      *
      *  \note This takes care of the origin shift
      */
-    virtual Numerical operator()(Numerical * sp, Numerical * pp) const
+    virtual Numerical operator()(Numerical * sp, Numerical * pp) const __override
     {
         // Transfer raw arrays to Eigen vectors using the Map type
         Eigen::Map<Eigen::Matrix<double, 3, 1> > source(sp), probe(pp);
@@ -230,7 +230,7 @@ private:
      *  \param[in]        p2 second point
      */
     virtual double kernelD_impl(const Eigen::Vector3d & direction,
-                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+                              const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __override
     {
         double eps_r2 = 0.0;
         // Shift p2 by origin_
@@ -238,7 +238,7 @@ private:
 
         return (eps_r2 * this->derivativeProbe(direction, p1, p2));
     }
-    virtual std::ostream & printObject(std::ostream & os)
+    virtual std::ostream & printObject(std::ostream & os) __override
     {
         Eigen::IOFormat CleanFmt(Eigen::StreamPrecision, 0, ", ", "\n", "(", ")");
         os << "Green's function type: spherical diffuse" << std::endl;

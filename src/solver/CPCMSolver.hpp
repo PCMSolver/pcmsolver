@@ -82,7 +82,7 @@ private:
      */
     virtual Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential,
             int irrep = 0) const __override;
-    virtual std::ostream & printSolver(std::ostream & os);
+    virtual std::ostream & printSolver(std::ostream & os) __override;
 };
 
 #endif // CPCMSOLVER_HPP

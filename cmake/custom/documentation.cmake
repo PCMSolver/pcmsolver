@@ -7,7 +7,7 @@
 # external script generate_docs.py available in the pcmsolvermeta
 # repository.
 # The online documentation can be updated by calling the
-# update_gh-pages.py script in the pcmsolvermeta repository.
+# upload_gh-pages.py script in the pcmsolvermeta repository.
 
 set(BUILD_DOCUMENTATION OFF)
 find_package(Doxygen)

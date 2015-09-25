@@ -40,11 +40,7 @@ macro(update_bar_chart _src_dir _lang)
     set(_working_dir ${PROJECT_BINARY_DIR}/doc/gfx/matplotlib)
     file(MAKE_DIRECTORY ${_working_dir})
     # Generate bar chart script
-    set(_counter "import sys; \
-                  sys.path.append('${PROJECT_BINARY_DIR}/bin'); \
-                  from cloc_tools import bar_chart; \
-                  bar_chart('${_src_dir}', '${_lang}')"
-                  )
+    set(_counter "import sys; sys.path.append('${PROJECT_BINARY_DIR}/bin'); from cloc_tools import bar_chart; bar_chart('${_src_dir}', '${_lang}')")
     execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "${_counter}"
                     WORKING_DIRECTORY ${_working_dir}
                     RESULT_VARIABLE _script_generated

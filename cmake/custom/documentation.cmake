@@ -1,16 +1,14 @@
-option(BUILD_DOCUMENTATION "Build API documentation using Doxygen" ON)
-
-set(_build_docs OFF)
-if(BUILD_DOCUMENTATION)
-    find_package(Doxygen QUIET)
-    find_package(Perl QUIET)
-    if(DOXYGEN_FOUND AND PERL_FOUND)
-        set(_build_docs ON)
-    endif()
+set(BUILD_DOCUMENTATION OFF)
+include(find_python_module)
+find_python_module(yaml)
+find_package(Doxygen)
+find_package(Perl)
+if(DOXYGEN_FOUND AND PERL_FOUND AND PY_YAML)
+    set(BUILD_DOCUMENTATION ON)
 endif()
 
-if(_build_docs)
-    message(STATUS "Doxygen and Perl available to build docs")
+if(BUILD_DOCUMENTATION)
+    message(STATUS "Doxygen, Perl and PyYAML available to build docs")
     # Configure the cloc_tools module
     configure_file(${PROJECT_SOURCE_DIR}/tools/cloc_tools.py.in ${PROJECT_BINARY_DIR}/bin/cloc_tools.py @ONLY)
 
@@ -30,7 +28,7 @@ if(_build_docs)
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         )
     add_dependencies(update_gh-pages doc)
-endif(_build_docs)
+endif(BUILD_DOCUMENTATION)
 
 # Updates bar charts for given directory of source files
 # _src_dir is the source directory
@@ -41,7 +39,7 @@ macro(update_bar_chart _src_dir _lang)
     file(MAKE_DIRECTORY ${_working_dir})
     # Generate bar chart script
     set(_counter "import sys; sys.path.append('${PROJECT_BINARY_DIR}/bin'); from cloc_tools import bar_chart; bar_chart('${_src_dir}', '${_lang}')")
-    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "${_counter}"
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} "-c" "${_counter}"
                     WORKING_DIRECTORY ${_working_dir}
                     RESULT_VARIABLE _script_generated
                     )

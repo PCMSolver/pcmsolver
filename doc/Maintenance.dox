@@ -1,11 +1,13 @@
 /** \page Maintenance Maintenance
 
-Description and how-to for maintenance operations
+Description and how-to for maintenance operations.
+Some of the maintenance scripts have been moved to the `pcmsolvermeta`
+[repository](https://gitlab.com/PCMSolver/pcmsolvermeta)
 
 ## Bump version
 
 Version numbering follows the guidelines of [semantic versioning](http://semver.org/)
-To update, change the relevant field in `cmake/ConfigVersio.cmake`.
+To update, change the relevant field in the `README.md` file.
 
 ## Updating Eigen distribution
 
@@ -21,73 +23,42 @@ Remember to commit and push your modifications.
 
 ## Updating the copyright notice
 
+You need to have access to the `pcmsolvermeta` repository to update the copyright notice.
 The copyright notice text is in the file `copyright_notice.txt` in the `tools` directory.
-The scritp `update_copyright.py`, which is configured by CMake from `tools/update_copyright.py.in`, will extract the
+The script `update_copyright.py` will extract the
 text from the file, create the appropriate header and perform the update on the files in the subdirectory where it is invoked.
 \warning The copyright notice on top of the Config.hpp.in file needs to be **manually** updated!
 
 ## Release process
 
-The release process is currently a bit cumbersome. We have two repositories one public for the release, hosted by GitHub
-[here](https://github.com/PCMSolver/pcmsolver) and one private for the development, hosted by CTCC [here](https://repo.ctcc.no/).
-Development code, i.e. code not be compiled in a release, is marked by the preprocessor definition `DEVELOPMENT_CODE`. Such a
-macro is also known to CMake.
-\warning It is to be preferred to exclude code from compilation at the CMake level, not directly inside the code with preprocessor
-`ifdef` blocks. In fact, if the code is loosely coupled, there would be no need at all to use the preprocessor definition
-inside the code! It is currently only used in `interface/Inteface.cpp`.
+We have two repositories one public for the release, hosted on GitHub
+[here](https://github.com/PCMSolver/pcmsolver) and one private for the development,
+hosted on GitLab [here](https://gitlab.com/PCMSolver/pcmsolver).
+At release time the master branch on the private repository is synced to that of the public
+repository.
+\warning This means that **WHATEVER** is on master at release time is considered ready for release.
+Protection of functionality happens **EXCLUSIVELY** by making use of branches/forks on the private
+repository.
 
-The process differs in case you want to release previously unreleased functionality or you want to keep some functionality
-still unreleased.
-
-### Add previously unreleased functionality
-
-Once you have your code properly marked, compiling and thoroughly tested **on your branch**, you will first need to merge it with
-the `master` branch. If it compiles and all the unit tests pass, remove the marking from all the `CMakeLists.txt` and within the
-code. You can now merge the `master` branch with the `release` branch.
-\warning **NEVER** merge `release` into `master`!!!
-
-You then need to compile the to-be-released code and run the unit test suite.
+You need to compile the to-be-released code and run the unit test suite.
 If compilation works and all unit tests are passing then the code is ready to be released:
 
 	git push Origin release
 
 Notice that `Origin` has been spelled with a capital `O` the reason being that the release branch gets pushed both to the private
 and the public repositories (trick explained [here](http://stackoverflow.com/questions/849308/pull-push-from-multiple-remote-locations))
-
-
-### Remove functionality not to be released
-
-Switch to the `release` branch and merge it with `master`.
-\warning **NEVER** merge `release` into `master`!!!
-
-You will have to **remove** (`git rm`) the directories/files that should not be in the release.
-
-You then need to compile the to-be-released code and run the unit test suite.
-If compilation works and all unit tests are passing then the code is ready to be released:
-
-	git push Origin release
-
-Notice that `Origin` has been spelled with a capital `O` the reason being that the release branch gets pushed both to the private
-and the public repositories.
-The trick is explained [here](http://stackoverflow.com/questions/849308/pull-push-from-multiple-remote-locations)
-in some detail.
 In brief, you need to have a `.git/config` file that resembles the following:
 
 \code
 [remote "origin"]
-	url = git@repo.ctcc.no:pcmsolver.git
-	fetch = +refs/heads/*:refs/remotes/origin/*
-[branch "master"]
-	remote = origin
-	merge = refs/heads/master
-[submodule "external/libgetkw"]
-	url = git://repo.ctcc.no/libgetkw.git
+    url = git@gitlab.com:PCMSolver/pcmsolver.git
+    fetch = +refs/heads/*:refs/remotes/origin/*
 [remote "GitHub"]
-	url = git@github.com:PCMSolver/pcmsolver.git
-	fetch = +refs/heads/*:refs/remotes/GitHub/*
+    url = git@github.com:PCMSolver/pcmsolver.git
+    fetch = +refs/heads/*:refs/remotes/GitHub/*
 [remote "Origin"]
-	url = git@repo.ctcc.no:pcmsolver.git
-	url = git@github.com:PCMSolver/pcmsolver.git
+    url = git@gitlab.com:PCMSolver/pcmsolver.git
+    url = git@github.com:PCMSolver/pcmsolver.git
 \endcode
 
 */

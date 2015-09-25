@@ -5,7 +5,7 @@ list(APPEND headers_list BoundingBox.hpp Compression.hpp ConAnsatzFunction.hpp C
 list(APPEND sources_list ConAnsatzFunction.cpp Energy.cpp GenericAnsatzFunction.cpp LinAnsatzFunction.cpp Mask.cpp SparseMatrix.cpp Topology.cpp Transformations.cpp Volume.cpp Wavelet.cpp readPoints.cpp)
 
 # Update bar chart
-if(BUILD_DOCUMENTATION)
+if(BUILD_CHARTS)
     update_bar_chart(${CMAKE_CURRENT_LIST_DIR} CXX)
 endif()
 

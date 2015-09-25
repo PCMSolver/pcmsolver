@@ -5,7 +5,7 @@ list(APPEND headers_list Atom.hpp CavityData.hpp Citation.hpp Cxx11Workarounds.h
 list(APPEND sources_list Atom.cpp Exception.cpp Input.cpp Interpolation.cpp Molecule.cpp Solvent.cpp Sphere.cpp SurfaceFunction.cpp Symmetry.cpp cnpy.cpp)
 
 # Update bar chart
-if(BUILD_DOCUMENTATION)
+if(BUILD_CHARTS)
     update_bar_chart(${CMAKE_CURRENT_LIST_DIR} CXX)
 endif()
 

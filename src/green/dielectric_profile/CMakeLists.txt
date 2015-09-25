@@ -5,7 +5,7 @@ list(APPEND _headers_list Anisotropic.hpp MembraneTanh.hpp Metal.hpp OneLayerErf
 list(APPEND _sources_list )
 
 # Update bar chart
-if(BUILD_DOCUMENTATION)
+if(BUILD_CHARTS)
     update_bar_chart(${CMAKE_CURRENT_LIST_DIR} CXX)
 endif()
 

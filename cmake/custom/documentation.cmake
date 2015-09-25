@@ -9,21 +9,27 @@
 # The online documentation can be updated by calling the
 # upload_gh-pages.py script in the pcmsolvermeta repository.
 
-set(BUILD_DOCUMENTATION OFF)
+set(BUILD_CHARTS OFF)
 find_package(Doxygen)
-find_package(Perl)
-include(find_python_module)
-find_python_module(yaml)
-if(DOXYGEN_FOUND AND PERL_FOUND AND PY_YAML)
-    set(BUILD_DOCUMENTATION ON)
-    message(STATUS "Doxygen, Perl and PyYAML available to build docs")
-    # Configure the cloc_tools module
-    configure_file(${PROJECT_SOURCE_DIR}/tools/cloc_tools.py.in ${PROJECT_BINARY_DIR}/bin/cloc_tools.py @ONLY)
+if(DOXYGEN_FOUND)
     # Configure Doxyfile
     configure_file(doc/Doxyfile.in Doxyfile @ONLY)
-else()
-    message(STATUS "Doxygen and/or Perl and/or PyYAML missing. Cannot build docs")
-endif()
+    # Look for Perl and PyYAML
+    find_package(Perl)
+    include(find_python_module)
+    find_python_module(yaml)
+    if(PERL_FOUND AND PY_YAML)
+        set(BUILD_CHARTS ON)
+        message(STATUS "Doxygen, Perl and PyYAML available. Local doc target added")
+        # Configure the cloc_tools module
+        configure_file(${PROJECT_SOURCE_DIR}/tools/cloc_tools.py.in ${PROJECT_BINARY_DIR}/bin/cloc_tools.py @ONLY)
+    else()
+        message(STATUS "Only Doxygen available. Local doc target added")
+    endif()
+    add_custom_target(doc COMMAND ${DOXYGEN_EXECUTABLE} WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+else(DOXYGEN_FOUND)
+    message(STATUS "Doxygen missing. Cannot build docs")
+endif(DOXYGEN_FOUND)
 
 # Updates bar charts for given directory of source files
 # _src_dir is the source directory

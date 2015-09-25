@@ -5,7 +5,7 @@ list(APPEND headers_list Cubature.hpp GaussLegendre.hpp GaussSquare.hpp Quadratu
 list(APPEND sources_list GaussLegendre.cpp GaussSquare.cpp WEMPCG.cpp WEMPGMRES.cpp WEMRHS.cpp)
 
 # Update bar chart
-if(BUILD_DOCUMENTATION)
+if(BUILD_CHARTS)
     update_bar_chart(${CMAKE_CURRENT_LIST_DIR} CXX)
 endif()
 

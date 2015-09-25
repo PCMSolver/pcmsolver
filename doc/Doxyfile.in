@@ -692,13 +692,12 @@ RECURSIVE              = YES
 # run.
 
 EXCLUDE                = "Python/pyparsing.py" \
-                         "@CMAKE_SOURCE_DIR@/src/attic" \
+                         "@CMAKE_SOURCE_DIR@/src/bin" \
                          "@CMAKE_SOURCE_DIR@/src/wavcav" \
                          "@CMAKE_SOURCE_DIR@/src/wem" \
                          "@CMAKE_SOURCE_DIR@/src/pwl" \
                          "@CMAKE_SOURCE_DIR@/src/metal" \
-                         "@CMAKE_SOURCE_DIR@/src/tsless" \
-			 "@CMAKE_SOURCE_DIR@/doc/gfx/matplotlib"
+                         "@CMAKE_SOURCE_DIR@/src/tsless"
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

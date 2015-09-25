@@ -92,7 +92,7 @@ else:
     language = 'Fortran'
 
 f.write('# Update bar chart\n')
-f.write('if(BUILD_DOCUMENTATION)\n')
+f.write('if(BUILD_CHARTS)\n')
 f.write('    update_bar_chart(${CMAKE_CURRENT_LIST_DIR} ' + language + ')\n')
 f.write('endif()\n\n')
 

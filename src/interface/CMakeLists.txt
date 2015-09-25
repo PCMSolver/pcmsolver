@@ -5,7 +5,7 @@ list(APPEND headers_list InputManager.hpp Meddle.hpp)
 list(APPEND sources_list Meddle.cpp)
 
 # Update bar chart
-if(BUILD_DOCUMENTATION)
+if(BUILD_CHARTS)
     update_bar_chart(${CMAKE_CURRENT_LIST_DIR} CXX)
 endif()
 

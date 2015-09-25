@@ -5,7 +5,7 @@ list(APPEND headers_list Cavity.hpp Element.hpp GePolCavity.hpp RegisterCavityTo
 list(APPEND sources_list Cavity.cpp Element.cpp GePolCavity.cpp RestartCavity.cpp)
 
 # Update bar chart
-if(BUILD_DOCUMENTATION)
+if(BUILD_CHARTS)
     update_bar_chart(${CMAKE_CURRENT_LIST_DIR} CXX)
 endif()
 

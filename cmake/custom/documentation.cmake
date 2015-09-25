@@ -5,9 +5,6 @@ find_package(Doxygen)
 find_package(Perl)
 if(DOXYGEN_FOUND AND PERL_FOUND AND PY_YAML)
     set(BUILD_DOCUMENTATION ON)
-endif()
-
-if(BUILD_DOCUMENTATION)
     message(STATUS "Doxygen, Perl and PyYAML available to build docs")
     # Configure the cloc_tools module
     configure_file(${PROJECT_SOURCE_DIR}/tools/cloc_tools.py.in ${PROJECT_BINARY_DIR}/bin/cloc_tools.py @ONLY)
@@ -28,7 +25,9 @@ if(BUILD_DOCUMENTATION)
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         )
     add_dependencies(update_gh-pages doc)
-endif(BUILD_DOCUMENTATION)
+else()
+    message(STATUS "Doxygen and/or Perl and/or PyYAML missing. Cannot build docs")
+endif()
 
 # Updates bar charts for given directory of source files
 # _src_dir is the source directory

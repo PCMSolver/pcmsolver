@@ -80,17 +80,21 @@ root_directory = os.getcwd()
 dname = os.path.join(root_directory, libname)
 fname = os.path.join(dname, 'CMakeLists.txt.try')
 f = open(fname, 'w')
+language = ''
 if (lang == 'CXX'):
     f.write(glob_sources_cxx(dname))
+    language = 'CXX'
 elif (lang == 'C'):
     f.write(glob_sources_c(dname))
+    language = 'C'
 else:
     f.write(glob_sources_fortran(dname))
+    language = 'Fortran'
 
 f.write('# Update bar chart\n')
 f.write('if(BUILD_DOCUMENTATION)\n')
-f.write('    update_bar_chart(${CMAKE_CURRENT_LIST_DIR})\n')
-f.write('endif()\n')
+f.write('    update_bar_chart(${CMAKE_CURRENT_LIST_DIR} ' + language + ')\n')
+f.write('endif()\n\n')
 
 if (lang == 'CXX'):
     f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${{CMAKE_CURRENT_LIST_DIR}})\n')

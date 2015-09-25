@@ -1,12 +1,16 @@
-find_package(Doxygen QUIET)
-find_package(Perl QUIET)
+option(BUILD_DOCUMENTATION "Build API documentation using Doxygen" ON)
 
-set(BUILD_DOCUMENTATION FALSE)
-if(DOXYGEN_FOUND AND PERL_FOUND)
-    set(BUILD_DOCUMENTATION TRUE)
+set(_build_docs OFF)
+if(BUILD_DOCUMENTATION)
+    find_package(Doxygen QUIET)
+    find_package(Perl QUIET)
+    if(DOXYGEN_FOUND AND PERL_FOUND)
+        set(_build_docs ON)
+    endif()
 endif()
 
-if(BUILD_DOCUMENTATION)
+if(_build_docs)
+    message(STATUS "Doxygen and Perl available to build docs")
     # Configure the cloc_tools module
     configure_file(${PROJECT_SOURCE_DIR}/tools/cloc_tools.py.in ${PROJECT_BINARY_DIR}/bin/cloc_tools.py @ONLY)
 
@@ -26,19 +30,20 @@ if(BUILD_DOCUMENTATION)
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         )
     add_dependencies(update_gh-pages doc)
-else()
-    message(STATUS "Doxygen and/or Perl missing: cannot create docs.")
-endif()
+endif(_build_docs)
 
-macro(update_bar_chart _src_dir)
+# Updates bar charts for given directory of source files
+# _src_dir is the source directory
+# _lang is the language: CXX, C or Fortran
+macro(update_bar_chart _src_dir _lang)
     get_filename_component(_script_name ${_src_dir} NAME)
     set(_working_dir ${PROJECT_BINARY_DIR}/doc/gfx/matplotlib)
     file(MAKE_DIRECTORY ${_working_dir})
     # Generate bar chart script
     set(_counter "import sys; \
                   sys.path.append('${PROJECT_BINARY_DIR}/bin'); \
-                  from cloc_tools import CXX_bar_chart; \
-                  CXX_bar_chart('${_src_dir}')"
+                  from cloc_tools import bar_chart; \
+                  bar_chart('${_src_dir}', '${_lang}')"
                   )
     execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "${_counter}"
                     WORKING_DIRECTORY ${_working_dir}

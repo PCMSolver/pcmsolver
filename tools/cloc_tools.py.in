@@ -22,24 +22,38 @@ def cloc_command(perl, cloc_script, files, *args):
     return subprocess.check_output([perl, cloc_script] + [str(f).strip() for f in files] + list(args), shell=False)
 
 
-def CXX_bar_chart(dirname):
+def bar_chart(dirname, language):
     """Generates matplotlib script for lines of code bar chart.
 
     Keyword arguments:
     dirname -- directory where the lines of code counting has to take place
+    language -- the programming language of the source files: CXX, C or Fortran
     """
     import glob
     import os
     tag = os.path.basename(dirname)
-    data = count_CXX(sorted(glob.glob(dirname + '/*.hpp')),
-                     sorted(glob.glob(dirname + '/*.cpp')))
     root_dir = '@PROJECT_BINARY_DIR@/doc/gfx/matplotlib'
     if not os.path.exists(root_dir):
         os.makedirs(root_dir)
     plot_script = root_dir + '/' + tag + '.py'
     bar_plot = open(plot_script, 'w+')
     print_header(bar_plot)
-    print_data_CXX(data, tag, bar_plot)
+    # Language specific part: counting and printing data to the script
+    if (language == 'CXX'):
+        data = count_CXX(sorted(glob.glob(dirname + '/*.hpp')),
+                         sorted(glob.glob(dirname + '/*.cpp')))
+        print_data_CXX(data, tag, bar_plot)
+    elif (language == 'C'):
+        data = count_C(sorted(glob.glob(dirname + '/*.h')),
+                       sorted(glob.glob(dirname + '/*.c')))
+        print_data_C(data, tag, bar_plot)
+    else:
+        data = count_Fortran(sorted(glob.glob(dirname + '/*.F90')) +
+                             sorted(glob.glob(dirname + '/*.f90')) +
+                             sorted(glob.glob(dirname + '/*.F77')) +
+                             sorted(glob.glob(dirname + '/*.f77')))
+        print_data_Fortran(data, tag, bar_plot)
+    # Print body of the script
     print_script(bar_plot)
     bar_plot.close()
 
@@ -51,9 +65,35 @@ def count_CXX(headers, sources):
     headers -- list of header files
     sources -- list of source files
     """
-    cloc_wrapper(headers, 'scratch_hpp.yml')
-    cloc_wrapper(sources, 'scratch_cpp.yml')
+    if headers:
+        cloc_wrapper(headers, 'scratch_hpp.yml')
+    if sources:
+        cloc_wrapper(sources, 'scratch_cpp.yml')
     return process_YAML_CXX('scratch_hpp.yml', 'scratch_cpp.yml')
+
+
+def count_C(headers, sources):
+    """Counts lines of C source code.
+
+    Keyword arguments:
+    headers -- list of header files
+    sources -- list of source files
+    """
+    if headers:
+        cloc_wrapper(headers, 'scratch_h.yml')
+    if sources:
+        cloc_wrapper(sources, 'scratch_c.yml')
+    return process_YAML_C('scratch_h.yml', 'scratch_c.yml')
+
+
+def count_Fortran(sources):
+    """Counts lines of Fortran source code.
+
+    Keyword arguments:
+    source -- list of source files
+    """
+    cloc_wrapper(sources, 'scratch_fortran.yml')
+    return process_YAML_Fortran('scratch_fortran.yml')
 
 
 def cloc_wrapper(files, ofile):
@@ -105,33 +145,62 @@ def process_YAML_CXX(cloc_hpp, cloc_cpp):
             cpp_files, cpp_blank, cpp_comment, cpp_code]
 
 
-def post_process(tag, raw_output):
-    """Postprocess raw cloc.pl output.
+def process_YAML_C(cloc_h, cloc_c):
+    """Counts lines of code in files listed.
 
     Keyword arguments:
-    tag -- a tag for postprocessed output file, i.e. cloc_output-tag
-    raw_output -- name of the raw_output file
+    cloc_h -- YAML output file from cloc.pl for header files
+    cloc_c -- YAML output file from cloc.pl for source files
     """
     from yaml import load, dump
     try:
         from yaml import CLoader as Loader, CDumper as Dumper
     except ImportError:
         from yaml import Loader, Dumper
+    # Import YAML file and get relevant data
+    data = load(open(cloc_h, 'r'), Loader=Loader)
+    h_files   = data['C/C++ Header']['nFiles']
+    h_blank   = data['C/C++ Header']['blank']
+    h_comment = data['C/C++ Header']['comment']
+    h_code    = data['C/C++ Header']['code']
+    # Import YAML file and get relevant data
+    data = load(open(cloc_c, 'r'), Loader=Loader)
+    c_files   = data['C']['nFiles']
+    c_blank   = data['C']['blank']
+    c_comment = data['C']['comment']
+    c_code    = data['C']['code']
+    return [h_files, h_blank, h_comment, h_code,
+            c_files, c_blank, c_comment, c_code]
 
-    stream = open(raw_output, 'r')
-    data = load(stream, Loader=Loader)
-    output = dump(data, Dumper=Dumper)
-    print(output)
-    print(data['C/C++ Header']['blank'])
 
-    #lines = open(raw_output).readlines()
-    #lines = [l.replace('Fortran 90', 'Fortran90') for l in lines]
-    #lines = [l.replace('Fortran 77', 'Fortran77') for l in lines]
-    #lines = [l.replace('C/C++ Header', 'Header') for l in lines]
-    #outfile = open('cloc_output-'+tag, 'w')
-    #outfile.writelines(lines[5:])
-    #outfile.close()
-    #os.remove(raw_output)
+def process_YAML_Fortran(cloc_f):
+    """Counts lines of code in files listed.
+
+    Keyword arguments:
+    cloc_f -- YAML output file from cloc.pl for header files
+    """
+    from yaml import load, dump
+    try:
+        from yaml import CLoader as Loader, CDumper as Dumper
+    except ImportError:
+        from yaml import Loader, Dumper
+    # Import YAML file and get relevant data
+    data = load(open(cloc_f, 'r'), Loader=Loader)
+    f77_files = 0
+    f77_blank = 0
+    f77_comment = 0
+    f77_code = 0
+    if 'Fortran 77' in data:
+        f77_files   = data['Fortran 77']['nFiles']
+        f77_blank   = data['Fortran 77']['blank']
+        f77_comment = data['Fortran 77']['comment']
+        f77_code    = data['Fortran 77']['code']
+    f90_files   = data['Fortran 90']['nFiles']
+    f90_blank   = data['Fortran 90']['blank']
+    f90_comment = data['Fortran 90']['comment']
+    f90_code    = data['Fortran 90']['code']
+    return [f77_files + f90_files, f77_blank + f90_blank,
+            f77_comment + f90_comment, f77_code + f90_code]
 
 
 def print_header(plot_script):
@@ -175,7 +244,7 @@ def print_data_CXX(data, tag, plot_script):
     """
     print('save_root = \'@PROJECT_SOURCE_DIR@/doc/gfx\'\n', file = plot_script)
     print('tag = \'' + tag + '\'\n', file = plot_script)
-    print('language         = \'C++\'', file = plot_script)
+    print('language        = \'C++\'', file = plot_script)
     print('nr_files_hpp    = '   + str(data[0]),        file = plot_script)
     print('nr_blanks_hpp   = '   + str(data[1]),        file = plot_script)
     print('nr_comments_hpp = '   + str(data[2]),        file = plot_script)
@@ -190,3 +259,49 @@ def print_data_CXX(data, tag, plot_script):
     print('nr_comments = nr_comments_hpp + nr_comments_cpp', file = plot_script)
     print('nr_code     = nr_code_hpp + nr_code_cpp',         file = plot_script)
     print('annotation  = \'Library: \' + tag + \'\\nLanguage: \' + language + \'\\nFiles: \' + str(nr_files)',        file = plot_script)
+
+
+def print_data_C(data, tag, plot_script):
+    """ Print data gathered from cloc.pl for C sources.
+
+    Keyword arguments:
+    data -- lines of code count
+    tag  --  tag for the lines of code count data
+    plot_script -- the plotting script file
+    """
+    print('save_root = \'@PROJECT_SOURCE_DIR@/doc/gfx\'\n', file = plot_script)
+    print('tag = \'' + tag + '\'\n', file = plot_script)
+    print('language      = \'C\'', file = plot_script)
+    print('nr_files_h    = '   + str(data[0]),        file = plot_script)
+    print('nr_blanks_h   = '   + str(data[1]),        file = plot_script)
+    print('nr_comments_h = '   + str(data[2]),        file = plot_script)
+    print('nr_code_h     = '   + str(data[3]) + '\n', file = plot_script)
+    print('nr_files_c    = '   + str(data[4]),        file = plot_script)
+    print('nr_blanks_c   = '   + str(data[5]),        file = plot_script)
+    print('nr_comments_c = '   + str(data[6]),        file = plot_script)
+    print('nr_code_c     = '   + str(data[7]) + '\n', file = plot_script)
+    # Sum stuff
+    print('nr_files    = nr_files_h + nr_files_c',       file = plot_script)
+    print('nr_blanks   = nr_blanks_h + nr_blanks_c',     file = plot_script)
+    print('nr_comments = nr_comments_h + nr_comments_c', file = plot_script)
+    print('nr_code     = nr_code_h + nr_code_c',         file = plot_script)
+    print('annotation  = \'Library: \' + tag + \'\\nLanguage: \' + language + \'\\nFiles: \' + str(nr_files)',        file = plot_script)
+
+
+def print_data_Fortran(data, tag, plot_script):
+    """ Print data gathered from cloc.pl for Fortran sources.
+
+    Keyword arguments:
+    data -- lines of code count
+    tag  --  tag for the lines of code count data
+    plot_script -- the plotting script file
+    """
+    print('save_root = \'@PROJECT_SOURCE_DIR@/doc/gfx\'\n', file = plot_script)
+    print('tag = \'' + tag + '\'\n', file = plot_script)
+    print('language    = \'Fortran\'', file = plot_script)
+    print('nr_files    = '   + str(data[0]),        file = plot_script)
+    print('nr_blanks   = '   + str(data[1]),        file = plot_script)
+    print('nr_comments = '   + str(data[2]),        file = plot_script)
+    print('nr_code     = '   + str(data[3]) + '\n', file = plot_script)
+    print('annotation  = \'Library: \' + tag + \'\\nLanguage: \' + language + \'\\nFiles: \' + str(nr_files)',        file = plot_script)
+

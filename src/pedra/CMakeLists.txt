@@ -3,7 +3,7 @@ list(APPEND sources_list pedra_cavity.F90 pedra_cavity_interface.F90 pedra_dblas
 
 # Update bar chart
 if(BUILD_DOCUMENTATION)
-    update_bar_chart(${CMAKE_CURRENT_LIST_DIR})
+    update_bar_chart(${CMAKE_CURRENT_LIST_DIR} Fortran)
 endif()
 
 foreach(_source ${sources_list})

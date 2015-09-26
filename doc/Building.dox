@@ -9,25 +9,25 @@ It will be here assumed that you want to perform a "full" build, i.e. you want t
 QM program, the unit test suite and an offline copy of this documentation.
 
 ### Compilers
- 
- + a C++ compiler, compliant with the 1998 ISO C++ standard plus the 2003 technical corrigendum and some additional defect reports. 
+
+ + a C++ compiler, compliant with the 1998 ISO C++ standard plus the 2003 technical corrigendum and some additional defect reports.
    The following compilers are known to work:
 
    1. g++ versions from 4.4.7 to 4.8.2
    2. icpc version 13.0.1 (compilation with later versions has not been attempted)
    3. clang++ versions 3.2 and 3.4
 
- + a C compiler, compliant with the ISO C99 standard. 
+ + a C compiler, compliant with the ISO C99 standard.
    The following compilers are known to work:
 
    1. gcc versions from 4.4.7 to 4.8.2
    2. icc version 13.0.1 (compilation with later versions has not been attempted)
    3. clang versions 3.2 and 3.4
 
- + a Fortran compiler, compliant with the Fortran 2003 standard. 
+ + a Fortran compiler, compliant with the Fortran 2003 standard.
    The following compilers are known to work:
    1. gfortran versions from 4.4.7 to 4.8.2
-   2. ifort version 13.0.1 (compilation with later versions has not been attempted) 
+   2. ifort version 13.0.1 (compilation with later versions has not been attempted)
 
 It is entirely possible that using other compiler versions you might be able to build the module. In order to ensure
 that you have a sane build, you will have to run the unit test suite.
@@ -36,16 +36,17 @@ that you have a sane build, you will have to run the unit test suite.
 
  + CMake version 2.8.3 and higher;
  + Git version 1.7.1 and higher;
- + Subversion version 1.6 and higher; 
  + Python interpreter 2.4 and higher;
  + Boost libraries version 1.54.0 and higher;
-\note Version 1.54.0 of Boost libraries is shipped with the module and resides in the `external` subdirectory.
+\note Version 1.54.0 of Boost libraries is shipped with the module and resides in the `cmake/downloaded` subdirectory.
 Unless you want to use another version of Boost, you should not worry about satisfying this dependency.
- + Eigen libraries version 3.0.0 and higher;
-\note Version 3.2.0 of Eigen libraries is shipped with the module and resides in the `external` subdirectory.
-Unless you want to use another version of Eigen, you should not worry about satisfying this dependency.
  + [zlib](http://www.zlib.net/) version 1.2 and higher (unit test suite only);
  + Doxygen version 1.7.6 and higher (documentation only)
+ + Perl (documentation only)
+ + PyYAML Python module (documentation only)
+
+%PCMSolver relies on the Eigen template libraries version 3.0.0 and higher.
+Version 3.2.0 of Eigen libraries is shipped with the module and resides in the `external` subdirectory.
 
 ## Configuration
 
@@ -56,31 +57,31 @@ Issuing:
 
 will create the build directory in build path and run CMake with the given options. By default, files are configured in
 the `build` directory.
-
-\warning The script, written by Radovan Bast and Jonas Juselius, is a quite general CMake bootstrap front-end.
- some options are currently unused, here is a list: `--int64`, `--mpi`, `--sgi-mpt`, `--omp`, `--mkl`, `--blas`, `--lapack`, 
- `--explicit-libs`, `--cray`, `--csr`, `--scalapack`, `--scalasca`, `--check`, `--coverage`, `--static`, `--host`, `--generator`,
- `--timings`.
-Specifying them does not hurt, but they won't have any effect. This might, at some point, change: either the options will be
-used or completely removed.
-
 The `-h` or `--help` option will list the available options and their effect.
+Options can be forwarded directly to CMake by using the `--cmake-options` flag and listing the `-D...` options.
 Usually the following command is sufficient to get the configuration done for a debug build, including
 compilation of the unit test suite:
 
-	./setup --type=debug --tests
+	./setup --type=debug
+
+The unit tests suite is **always** compiled in standalone mode, unless the `-DENABLE_TESTS=OFF` option is
+forwarded to CMake.
 
 ### Getting Boost
 
 You can get Boost libraries in two ways:
 
- + already packaged by your Linux distribution or through MacPorts;
+ + already packaged by your Linux distribution or through MacPorts/Brew;
  + by downloading the archive from http://www.boost.org/ and building it yourself.
 
-In case your distribution packages a version older than 1.54.0 you might chose to either build Boost on your own or to 
-rely on the automated build of the necessary Boost libraries when compiling the module (recommended).
-Full documentation on how to build Boost on Unix variants is available [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html).
-It is here assumed that the user **does not** have root access to the machine and will install the libraries to a local prefix, a subdirectory of `/home/user-name` tipically.
+In case your distribution packages a version older than 1.54.0 you might chose
+to either build Boost on your own or to rely on the automated build of the
+necessary Boost libraries when compiling the module (recommended).  Full
+documentation on how to build Boost on Unix variants is available
+[here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/unix-variants.html).
+It is here assumed that the user **does not** have root access to the machine
+and will install the libraries to a local prefix, a subdirectory of
+`/home/user-name` tipically.
 Once you've downloaded and unpacked the archive, run the bootstrap script to configure:
 
 	cd path/to/boost
@@ -90,31 +91,31 @@ Running `./bootstrap.sh --help` will list the available options for the script. 
 
 	./b2 install
 
-This might take a while. After a successful build you will find the headers in `/home/user-name/boost/include` and libraries in `/home/user-name/boost/lib`
-Now, you will have Boost in a nonstandard location. Without hints CMake will not be able to find it and configuration of `%PCMSolver` will fail.
-To avoid this, you will have to pass the location of the headers and libraries to the setup script, either with:
+This might take a while. After a successful build you will find the headers in
+`/home/user-name/boost/include` and libraries in `/home/user-name/boost/lib`
+Now, you will have Boost in a nonstandard location. Without hints CMake will
+not be able to find it and configuration of `%PCMSolver` will fail.  To avoid
+this, you will have to pass the location of the headers and libraries to the
+setup script, either with:
 
 	./setup --boost-headers=/home/user-name/boost/include --boost-libs=/home/user-name/boost/lib
 
 or with:
-	
+
 	./setup -DBOOST_INCLUDEDIR=/home/user-name/boost/include -DBOOST_LIBRARYDIR=/home/user-name/boost/lib
 
 ### Advanced configuration options
- 
-In order to use another version of the Eigen libraries you need to pass the option `--eigenown=on` so that 
-CMake will ignore the default version of Eigen shipped with the module.
-At this point, CMake will try to find the package by itself. As this might fail, it suggested to run the following
-setup command:
 
-	./setup --eigenown -DEIGEN3_ROOT=/path/to/eigen
-	
-As of version 3.1.0 Eigen can fall back to certain BLAS/LAPACK routines as implemented in Intel's Math Kernel Library (MKL).
-You can enable this feature passing the option `--eigenmkl=on` to the setup script. You need at least version 10.3 of Intel MKL.
-Be sure to have read [here](http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html)
+As of version 3.1.0 Eigen can fall back to certain BLAS/LAPACK routines as
+implemented in Intel's Math Kernel Library (MKL).  You can enable this feature
+passing the option `-DENABLE_EIGEN_MKL=ON` to the setup script. You need at least
+version 10.3 of Intel MKL.  Be sure to have read
+[here](http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html)
 
-\warning By itself, the module **does not** need to link to any mathematical library. This option makes sense only when linking the module to a QM program
-that links to Intel MKL. **Use at your own risk!** There is no proof that enabling this option leads to significant speedups!
+\warning By itself, the module **does not** need to link to any mathematical
+library. This option makes sense only when linking the module to a QM program
+that links to Intel MKL. **Use at your own risk!** There is no proof that
+enabling this option leads to significant speedups!
 
 ## Build and test
 
@@ -125,9 +126,9 @@ To compile and link, just go to the build directory and run:
 where `N` is the number of cores you want to use when building.
 \note Building on more than one core can sometimes result in a "race condition" and a crash. If that happens just run `make` on a single core.
 
-If you configured with the `--tests` option then the unit test suite will be also built. To run the whole test suite:
+To run the whole test suite:
 
-	make test
+	ctest
 
 You can also use CTest to run a specific test or a set of tests. For example:
 

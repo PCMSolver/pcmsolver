@@ -34,7 +34,6 @@
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
 #include "GeneralPurpose.hpp"
-#include "LoggerInterface.hpp"
 #include "OneLayerTanh.hpp"
 #include "PhysicalConstants.hpp"
 #include "SphericalDiffuse.hpp"

@@ -54,7 +54,6 @@
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
-#include "TimerInterface.hpp"
 
 //#include "BuildInfo.hpp"
 

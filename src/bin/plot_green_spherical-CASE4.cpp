@@ -33,7 +33,6 @@
 #include "DerivativeTypes.hpp"
 #include "UniformDielectric.hpp"
 #include "SphericalDiffuse.hpp"
-#include "LoggerInterface.hpp"
 
 int main()
 {

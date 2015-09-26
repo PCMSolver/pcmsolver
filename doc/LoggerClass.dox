@@ -7,13 +7,15 @@ and makes use of three features from the C++11 standard:
         - std::mutex, to guarantee thread safety of the implementation;
         - variadic templates, to simplify usage.
 
-A fairly recent compiler, with decent support for the new standard has to be used 
-in order to have access to the logger. The code compiles anyway: simply the 
-The rationale behind this choice is that
+A fairly recent compiler, with decent support for the new standard has to be used
+in order to have access to the logger. The code compiles anyway: simply the
+logging macros will expand to empty macros.
 
 ### Usage
 
-To gain access to the logger you will need to `#include "LoggerInterface.hpp"`. 
+The `LoggerInterface.hpp` header, where the logging macros are defined, is
+included by the `Config.hpp` header. This header has to be included by all
+header and source files in the library.
 
 The filename for the log is `pcmsolver.execution.log`. The logger has two logging levels and
 three types of log severity: debug, warning and error.
@@ -21,7 +23,7 @@ The logging level can be changed by defining the `LOGGING_LEVEL_n` preprocessor 
 Within our project, `LOGGING_LEVEL_1` is always defined. **This might change in the future**
 
 At `LOGGING_LEVEL_1`, the logging macros available are:
-        - `LOG` for debug information. This is most likely the one you will be using most; 
+        - `LOG` for debug information. This is most likely the one you will be using most;
         - `LOG_WARN` for warning information;
         - `LOG_ERR` for errors.
 
@@ -30,11 +32,11 @@ The three macros can be called like variadic functions. Here is a small example:
 \code{.cpp}
     #define LOGGING_LEVEL_1
     #include <iostream>
-    
+
     #include <Eigen/Dense>
-    
+
     #include "LoggerInterface.hpp"
-    
+
     int main()
     {
         LOG("Starting the application..");
@@ -52,10 +54,10 @@ The three macros can be called like variadic functions. Here is a small example:
 this prints out the following:
 
     0000000 < Wed Jan 21 09:28:29 2015 - 0003258 > ~ <DEBUG> : Starting the application..
-    0000001 < Wed Jan 21 09:28:29 2015 - 0003351 > ~ <DEBUG> : The value of 'i' is 0. 2 more iterations left 
-    0000002 < Wed Jan 21 09:28:29 2015 - 0003375 > ~ <DEBUG> : The value of 'i' is 1. 1 more iterations left 
-    0000003 < Wed Jan 21 09:28:29 2015 - 0003393 > ~ <DEBUG> : The value of 'i' is 2. 0 more iterations left 
-    0000004 < Wed Jan 21 09:28:29 2015 - 0003520 > ~ <DEBUG> : Log an Eigen matrix: 
+    0000001 < Wed Jan 21 09:28:29 2015 - 0003351 > ~ <DEBUG> : The value of 'i' is 0. 2 more iterations left
+    0000002 < Wed Jan 21 09:28:29 2015 - 0003375 > ~ <DEBUG> : The value of 'i' is 1. 1 more iterations left
+    0000003 < Wed Jan 21 09:28:29 2015 - 0003393 > ~ <DEBUG> : The value of 'i' is 2. 0 more iterations left
+    0000004 < Wed Jan 21 09:28:29 2015 - 0003520 > ~ <DEBUG> : Log an Eigen matrix:
     1 1 1
     1 1 1
     1 1 1
@@ -63,7 +65,7 @@ this prints out the following:
     0000006 < Wed Jan 21 09:28:29 2015 - 0003557 > ~ <ERROR> : All good things come to an end.. :(
 
 The information printed is:
-        - log line number;                  
+        - log line number;
         - date and time;
         - CPU time elapsed;
         - severity level of the invocation;

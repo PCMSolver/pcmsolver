@@ -17,12 +17,12 @@
 #define TIMER_OFF timer::timerOFF
 #define TIMER_DONE timer::timerDONE
 
-#else // ENABLE_TIMER
+#else /* ENABLE_TIMER */
 
 #define TIMER_ON(...)
 #define TIMER_OFF(...)
 #define TIMER_DONE(...)
 
-#endif // ENABLE_TIMER
+#endif /* ENABLE_TIMER */
 
-#endif // TIMERINTERFACE_HPP
+#endif /* TIMERINTERFACE_HPP */

@@ -56,5 +56,7 @@
 
 #include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
+#include "LoggerInterface.hpp"
+#include "TimerInterface.hpp"
 
 #endif // CONFIG_HPP

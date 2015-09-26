@@ -6,9 +6,6 @@
 #include <sstream>
 #include <string>
 
-#include "Config.hpp"
-
-#include "BuildInfo.hpp"
 #include "LoggerImpl.hpp"
 
 namespace logging

@@ -31,7 +31,6 @@
 
 #include "CollocationIntegrator.hpp"
 #include "DerivativeTypes.hpp"
-#include "LoggerInterface.hpp"
 #include "SphericalDiffuse.hpp"
 #include "UniformDielectric.hpp"
 

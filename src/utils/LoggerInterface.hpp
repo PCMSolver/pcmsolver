@@ -13,13 +13,13 @@ static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.executi
 #define LOG_ALL loggerInstance.print<logging::printLevel::everything>
 #define LOG_TIME loggerInstance.print<logging::printLevel::timings>(timer::Timer::TheTimer());
 
-#else // ENABLE_LOGGER
+#else /* ENABLE_LOGGER */
 
 #define LOG(...)
 #define LOG_FINE(...)
 #define LOG_ALL(...)
 #define LOG_TIME
 
-#endif // ENABLE_LOGGER
+#endif /* ENABLE_LOGGER */
 
-#endif // LOGGERINTERFACE_HPP
+#endif /* LOGGERINTERFACE_HPP */

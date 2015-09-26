@@ -5,12 +5,10 @@
 #include <memory>
 #include <string>
 
-#include "Config.hpp"
-
 namespace logging
 {
     enum printLevel {
-	timings,
+        timings,
         coarse,
         fine,
         everything

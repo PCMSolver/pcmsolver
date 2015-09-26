@@ -1,9 +1,9 @@
 /** \mainpage notitle
 
-This is the documentation for the `%PCMSolver` application programming interface. 
+This is the documentation for the `%PCMSolver` application programming interface.
 `%PCMSolver` is an API for solving the Polarizable Continuum Model electrostatic problem \cite Tomasi2005
 
-\image html pcmsolver-scheme.png 
+\image html pcmsolver-scheme.png
 
 With `%PCMSolver` we aim to:
 
@@ -33,6 +33,8 @@ Ville Weijo    (initial structure)\n
 \page ProgrammersManual Programmers' Manual
 - \subpage GeneralStructure
 - \subpage CodingStandards
+- \subpage LoggerClass
+- \subpage TimerClass
 - \subpage Documentation
 - \subpage CMakeUsage
 - \subpage Maintenance
@@ -40,7 +42,6 @@ Ville Weijo    (initial structure)\n
 - \subpage GreensFunctions
 - \subpage Solvers
 - \subpage HelperClasses
-- \subpage LoggerClass
 - \subpage Testing
 */
 

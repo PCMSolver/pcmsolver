@@ -16,3 +16,33 @@ An API for the Polarizable Continuum Model.
 - Version 1.0.3 available
 - Licensed under [LGPLv3](../release/COPYING.LESSER)
 - CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.org/)
+
+Primary test environments
+=========================
+
+All builds force custom build of the needed Boost libraries, except when
+stated otherwise.
+
+Continuous integration builds
+-----------------------------
+
+The Magnum CI builds are run on push events to any branch, while those
+on Travis CI only when pushing to the master/release branch.
+
+- Ubuntu 12.04 LTS 64-bit. GCC 4.6.3, Python 2.7.3, CMake 2.8.7
+  This is the environment offered by [Magnum CI](https://magnum-ci.com)
+- Ubuntu 12.04 LTS 64-bit. GCC 4.6.3, Python 2.7.3, CMake 2.8.7
+  This is the environment offered by [Travis CI](https://travis-ci.org)
+- Ubuntu 12.04 LTS 64-bit. Clang 3.4, GFortran 4.6.3, Python 2.7.3, CMake 2.8.7
+  This is the environment offered by [Travis CI](https://travis-ci.org)
+
+Nightly builds
+--------------
+
+- CentOS 6.6. Intel 12.1.2, Python 2.7.3, CMake 3.1.0
+- CentOS 6.6. Intel 13.0, Python 2.7.3, CMake 3.1.0
+- CentOS 6.6. Intel 13.4, Python 2.7.3, CMake 3.1.0
+- CentOS 6.6. Intel 14.0, Python 2.7.3, CMake 3.1.0
+- CentOS 6.6. GCC 4.7.2, Python 2.7.3, CMake 3.1.0
+- OS X 10.10.5 Yosemite. LLVM 7.0.0 , GFortan 5.2.0, Python 2.7.10, CMake 3.3.2
+  Uses Boost 1.59.0 from the Homebrew repositories.

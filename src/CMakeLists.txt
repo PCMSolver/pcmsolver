@@ -20,6 +20,9 @@ get_property(_pcmsolver_cxx_sources GLOBAL PROPERTY PCMSolver_CXX_SOURCES)
 get_property(_pcmsolver_c_sources GLOBAL PROPERTY PCMSolver_C_SOURCES)
 get_property(_pcmsolver_fortran_sources GLOBAL PROPERTY PCMSolver_Fortran_SOURCES)
 add_library(pcm ${_pcmsolver_cxx_sources} ${_pcmsolver_c_sources} ${_pcmsolver_fortran_sources})
+if(BUILD_CUSTOM_BOOST)
+   add_dependencies(pcm custom_boost)
+endif()
 
 # This directory contains source file for executables
 if(BUILD_STANDALONE)

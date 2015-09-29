@@ -45,4 +45,4 @@ Nightly builds
 - CentOS 6.6. Intel 14.0, Python 2.7.3, CMake 3.1.0
 - CentOS 6.6. GCC 4.7.2, Python 2.7.3, CMake 3.1.0
 - OS X 10.10.5 Yosemite. LLVM 7.0.0 , GFortan 5.2.0, Python 2.7.10, CMake 3.3.2
-  Uses Boost 1.59.0 from the Homebrew repositories.
+  Uses Boost 1.58.0 from the Homebrew repositories.

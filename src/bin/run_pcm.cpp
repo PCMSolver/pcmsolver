@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
     // Compute apparent surface charge
     Eigen::VectorXd asc = solver->computeCharge(mep);
     // Compute energy and print it out
-    out_stream << "Solvation energy = " << 0.5 * (asc * mep) << std::endl;
+    out_stream << "Solvation energy = " << std::setprecision(14) << 0.5 * asc.dot(mep) << std::endl;
     out_stream << "DONE!" << std::endl;
 
     out_stream.close();

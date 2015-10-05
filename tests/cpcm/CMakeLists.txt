@@ -10,3 +10,7 @@ add_test(NAME cpcm_gepol-NH3_from-file COMMAND unit_tests.x [cpcm_gepol-NH3_from
 set_tests_properties(cpcm_gepol-NH3_from-file PROPERTIES DEPENDS cpcm_gepol-NH3)
 set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_symmetry.cpp)
 add_test(NAME cpcm_symmetry COMMAND unit_tests.x [cpcm_symmetry])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_tsless-point.cpp)
+add_test(NAME cpcm_tsless-point COMMAND unit_tests.x [cpcm_tsless-point])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/cpcm_tsless-NH3.cpp)
+add_test(NAME cpcm_tsless-NH3 COMMAND unit_tests.x [cpcm_tsless-NH3])

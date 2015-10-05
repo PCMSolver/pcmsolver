@@ -1,7 +1,7 @@
 /* pcmsolver_copyright_start */
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
  *
  *     This file is part of PCMSolver.
  *
@@ -19,11 +19,11 @@
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
  *
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+ *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
  */
 /* pcmsolver_copyright_end */
 
-#include "GePolCavity.hpp"
+#include "TsLessCavity.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -34,15 +34,20 @@
 #include "FCMangle.hpp"
 
 #include <Eigen/Core>
-#include <boost/lexical_cast.hpp>
 
+#include "Exception.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
+#include "TimerInterface.hpp"
 
-/*! \brief Interface to the Fortran PEDRA code
+/*! \brief Fortran interface function to TsLess cavity generation
  *  \param[in] maxts maximum number of tesserae allowed
  *  \param[in] maxsph maximum number of spheres allowed
  *  \param[in] maxvert maximum number of vertices allowed
+ *  \param[out] nesfp number of spheres (original + added)
+ *  \param[out] nts number of generated tesserae
+ *  \param[out] ntsirr number of generated irreducible tesserae
+ *  \param[out] addsph number of added spheres
  *  \param[out] xtscor x-coordinate of tesserae centers (dimension maxts)
  *  \param[out] ytscor y-coordinate of tesserae centers (dimension maxts)
  *  \param[out] ztscor z-coordinate of tesserae centers (dimension maxts)
@@ -51,46 +56,41 @@
  *  \param[out] ysphcor y-coordinate of the sphere center the tessera belongs to (dimension maxts)
  *  \param[out] zsphcor z-coordinate of the sphere center the tessera belongs to (dimension maxts)
  *  \param[out] rsph radii of the sphere the tessera belongs to, i.e. its curvature (dimension maxts)
- *  \param[out] nts number of generated tesserae
- *  \param[out] ntsirr number of generated irreducible tesserae
- *  \param[out] nesfp number of spheres (original + added)
- *  \param[out] addsph number of added spheres
  *  \param[out] xe x-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
  *  \param[out] ye y-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
  *  \param[out] ze z-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
  *  \param[out] rin radius of the spheres (dimension nSpheres_ + maxAddedSpheres)
- *  \param[in] masses atomic masses (for inertia tensor formation in PEDRA)
- *  \param[in] avgArea average tesserae area
- *  \param[in] rsolv solvent probe radius
- *  \param[in] ret minimal radius for an added sphere
+ *  \param[in] masses atomic masses (for inertia tensor formation in TSLESS)
  *  \param[in] nr_gen number of symmetry generators
  *  \param[in] gen1 first generator
  *  \param[in] gen2 second generator
  *  \param[in] gen3 third generator
- *  \param[out] nvert number of vertices per tessera
- *  \param[out] vert coordinates of tesserae vertices
- *  \param[out] centr centers of arcs defining the edges of the tesserae
+ *  \param[in] avgArea average tesserae area
+ *  \param[in] dmin mininal distance between sampling points
+ *  \param[in] nord maximum order of continuous derivative of weight function
+ *  \param[in] ifun whether to use the normalized or unnormalized form of the weight function
+ *  \param[in] rsolv solvent probe radius
+ *  \param[in] work scratch space
  */
-#define pedra_driver\
-    FortranCInterface_GLOBAL_(pedra_driver, PEDRA_DRIVER)
-extern "C" void pedra_driver(size_t * maxts, size_t * maxsph, size_t * maxvert,
+#define tsless_driver \
+    FortranCInterface_MODULE_(tsless_cavity, tsless_driver, TSLESS_CAVITY, TSLESS_DRIVER)
+extern "C" void tsless_driver(size_t * maxts, size_t * maxsph, size_t * maxvert,
+        int * nesfp, int * nts, int * ntsirr, int * addsph,
         double * xtscor, double * ytscor, double * ztscor, double * ar,
         double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
-        int * nts, int * ntsirr, int * nesfp, int * addsph,
         double * xe, double * ye, double * ze, double * rin, double * masses,
-        double * avgArea, double * rsolv, double * ret,
         int * nr_gen, int * gen1, int * gen2, int * gen3,
-        int * nvert, double * vert, double * centr);
+        double * avgArea, double * dmin, int * nord, int * ifun, double * rsolv,
+        double * work);
 
-
-void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
+void TsLessCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
 {
-
-    // This is a wrapper for the pedra_driver function defined in the Fortran code PEDRA.
-    // Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow
+    // This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code TsLess.
+    // Here we allocate the necessary arrays to be passed to TsLess, in particular we allow
     // for the insertion of additional spheres as in the most general formulation of the
     // GePol algorithm.
 
+    int lwork = maxts*maxsph;
     double * xtscor  = new double[maxts];
     double * ytscor  = new double[maxts];
     double * ztscor  = new double[maxts];
@@ -99,9 +99,7 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
     double * ysphcor = new double[maxts];
     double * zsphcor = new double[maxts];
     double * rsph    = new double[maxts];
-    int    * nvert   = new int[maxts];
-    double * vert    = new double[30 * maxts];
-    double * centr   = new double[30 * maxts];
+    double * work    = new double[lwork];
 
     // Clean-up possible heap-crap
     std::fill_n(xtscor, maxts, 0.0);
@@ -112,19 +110,17 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
     std::fill_n(ysphcor, maxts, 0.0);
     std::fill_n(zsphcor, maxts, 0.0);
     std::fill_n(rsph, maxts, 0.0);
-    std::fill_n(nvert, maxts, 0);
-    std::fill_n(vert, 30*maxts, 0.0);
-    std::fill_n(centr, 30*maxts, 0.0);
+    std::fill_n(work, lwork, 0.0);
 
     int nts = 0;
     int ntsirr = 0;
 
-    // If there's an overflow in the number of spheres PEDRA will die.
+    // If there's an overflow in the number of spheres TsLess will die.
     // The maximum number of spheres in PEDRA is set to 200 (primitive+additional)
     // so the integer here declared is just to have enough space C++ side to pass everything back.
     int maxAddedSpheres = 200;
 
-    // Allocate vectors of size equal to nSpheres + maxAddedSpheres where maxAddedSpheres is the
+    // Allocate vectors of size equal to nSpheres_ + maxAddedSpheres where maxAddedSpheres is the
     // maximum number of spheres we allow the algorithm to add to our original set.
     // If this number is exceeded, then the algorithm crashes (should look into this...)
     // After the cavity is generated we will update ALL the class data members, both related
@@ -149,7 +145,7 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
     double * ye = yv.data();
     double * ze = zv.data();
 
-    double * rin = radii_scratch.data();
+    double *rin = radii_scratch.data();
     double * mass = new double[molecule_.nAtoms()];
     for (size_t i = 0; i < molecule_.nAtoms(); ++i) {
 	    mass[i] = molecule_.masses(i);
@@ -162,16 +158,16 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
     int gen2 = molecule_.pointGroup().generators(1);
     int gen3 = molecule_.pointGroup().generators(2);
 
-    // Go PEDRA, Go!
-    TIMER_ON("GePolCavity::generatecavity_cpp");
-    pedra_driver(&maxts, &maxsph, &maxvert,
-                       xtscor, ytscor, ztscor, ar, xsphcor, ysphcor, zsphcor, rsph,
-                       &nts, &ntsirr, &nSpheres_, &addedSpheres,
-                       xe, ye, ze, rin, mass,
-		       &averageArea, &probeRadius, &minimalRadius,
-                       &nr_gen, &gen1, &gen2, &gen3,
-                nvert, vert, centr);
-    TIMER_OFF("GePolCavity::generatecavity_cpp");
+    int weightFunction = 1;
+    // Go TsLess, Go!
+    TIMER_ON("TsLessCavity::tsless_driver");
+    tsless_driver(&maxts, &maxsph, &maxvert, &nSpheres_, &nts, &ntsirr, &addedSpheres,
+                  xtscor, ytscor, ztscor, ar,
+                  xsphcor, ysphcor, zsphcor, rsph,
+                  xe, ye, ze, rin, mass,
+                  &nr_gen, &gen1, &gen2, &gen3,
+                  &averageArea_, &minDistance_, &derOrder_, &weightFunction, &probeRadius_, work);
+    TIMER_OFF("TsLessCavity::tsless_driver");
 
     // The "intensive" part of updating the spheres related class data members will be of course
     // executed iff addedSpheres != 0
@@ -197,7 +193,6 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
         }
     }
 
-    // Now take care of updating the rest of the cavity info.
     nElements_ = static_cast<int>(nts);
     nIrrElements_ = static_cast<int>(ntsirr);
     elementCenter_.resize(Eigen::NoChange, nElements_);
@@ -215,34 +210,7 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
         elementSphereCenter_(2,i) = zsphcor[i];
         elementRadius_(i) = rsph[i];
     }
-    // Check that no points are overlapping exactly
-    // Do not perform float comparisons column by column.
-    // Instead form differences between columns and evaluate if they differ
-    // from zero by more than a fixed threshold.
-    // The indices of the equal elements are gathered in a std::pair and saved into a std::vector
-    double threshold = 1.0e-12;
-    std::vector< std::pair<int, int> > equal_elements;
-    for(int i = 0; i < nElements_; ++i) {
-        for (int j = i + 1; j < nElements_; ++j) {
-            Eigen::Vector3d difference = elementCenter_.col(i) - elementCenter_.col(j);
-            if ( difference.isZero(threshold) ) {
-                equal_elements.push_back(std::make_pair(i, j));
-            }
-        }
-    }
-    if (equal_elements.size() != 0) {
-        // Not sure that printing the list of pairs is actually of any help...
-        std::string list_of_pairs;
-        for ( size_t i = 0; i < equal_elements.size(); ++i) {
-            list_of_pairs += "(" + boost::lexical_cast<std::string>(equal_elements[i].first)
-                             + ", " + boost::lexical_cast<std::string>(equal_elements[i].second) + ")\n";
-        }
-        // Prepare the error message:
-        std::string message = boost::lexical_cast<std::string>(equal_elements.size()) +
-                              " cavity finite element centers overlap exactly!\n" + list_of_pairs;
-        PCMSOLVER_ERROR(message);
-    }
-    // Calculate normal vectors
+
     elementNormal_ = elementCenter_ - elementSphereCenter_;
     for( int i = 0; i < nElements_; ++i) {
         elementNormal_.col(i) /= elementNormal_.col(i).norm();
@@ -250,25 +218,14 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
 
     // Fill elements_ vector
     for (int i = 0; i < nElements_; ++i) {
-        int i_off = i + 1;
         bool irr = false;
-        // PEDRA puts the irreducible tesserae first
+        int nv = 1; // TsLess does not generate spherical polygons!!
+        // TsLess puts the irreducible tesserae first (? Check with Cris!)
         if (i < nIrrElements_) irr = true;
         Sphere sph(elementSphereCenter_.col(i), elementRadius_(i));
-        int nv = nvert[i];
         Eigen::Matrix3Xd vertices, arcs;
         vertices.resize(Eigen::NoChange, nv);
         arcs.resize(Eigen::NoChange, nv);
-        // Populate vertices and arcs
-        for (int j = 0; j < nv; ++j) {
-            int j_off = (j + 1) * nElements_ - 1;
-            for (int k = 0; k < 3; ++k) {
-                int k_off = (k + 1) * nElements_ * nv;
-                int offset = i_off + j_off + k_off;
-                vertices(k, j) = vert[offset];
-                arcs(k, j) = centr[offset];
-            }
-        }
         elements_.push_back(Element(nv,
                     elementArea_(i),
                     elementCenter_.col(i),
@@ -277,7 +234,6 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
                     vertices, arcs));
     }
 
-    // Clean-up
     delete[] xtscor;
     delete[] ytscor;
     delete[] ztscor;
@@ -286,28 +242,24 @@ void GePolCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
     delete[] ysphcor;
     delete[] zsphcor;
     delete[] rsph;
-    delete[] nvert;
-    delete[] vert;
-    delete[] centr;
+    delete[] work;
     delete[] mass;
 
     built = true;
+
 }
 
-std::ostream & GePolCavity::printCavity(std::ostream & os)
+std::ostream & TsLessCavity::printCavity(std::ostream & os)
 {
-    os << "Cavity type: GePol" << std::endl;
-    os << "Average area = " << averageArea << " AU^2" << std::endl;
-    os << "Probe radius = " << probeRadius << " AU"   << std::endl;
-    if (addedSpheres != 0) {
-        os << "Addition of extra spheres enabled" << std::endl;
-    }
+    os << "Cavity type: TsLess" << std::endl;
+    os << "Average point weight = " << averageArea_ << " AU^2" << std::endl;
+    os << "Minimal distance between sampling points = " << minDistance_ << " AU" << std::endl;
+    os << "Switch function is of class C^" << derOrder_ << std::endl;
+    os << "Addition of extra spheres enabled" << std::endl;
+    os << "Probe radius = " << probeRadius_ << " AU" << std::endl;
     os << "Number of spheres = " << nSpheres_ << " [initial = " << nSpheres_ -
        addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
     os << "Number of finite elements = " << nElements_;
-    if (molecule_.pointGroup().nrGenerators() != 0) {
-        os << "\nNumber of irreducible finite elements = " << nIrrElements_;
-    }
     /*
     for (int i = 0; i < nElements_; i++)
     {

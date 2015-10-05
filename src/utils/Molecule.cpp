@@ -36,6 +36,8 @@
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 
+#include <boost/format.hpp>
+
 #include "Atom.hpp"
 #include "Element.hpp"
 #include "MathUtils.hpp"
@@ -237,20 +239,16 @@ Molecule& Molecule::operator=(const Molecule& other)
 
 std::ostream & operator<<(std::ostream &os, const Molecule &m)
 {
-    // Declare formatting of Eigen output.
-    std::string sep = "                  ";
-    Eigen::IOFormat CleanFmt(Eigen::FullPrecision, Eigen::DontAlignCols, sep, "\n", "",
-                             "");
-
     os << "Rotor type: " << rotorTypeList[m.rotor_] << std::endl;
     if (m.nAtoms_ != 0) {
-        os << "       Center              X                  Y                   Z       " <<
-           std::endl;
-        os << "    ------------   -----------------  -----------------  -----------------" <<
-           std::endl;
+        os << "       Center              X                  Y                   Z       " << std::endl;
+        os << "    ------------   -----------------  -----------------  -----------------" << std::endl;
         for (size_t i = 0; i < m.nAtoms_; ++i) {
-            os << std::setw(10) << m.atoms_[i].atomSymbol() << std::setw(15) <<m.geometry_.col(
-                   i).transpose().format(CleanFmt) << std::endl;
+            os << boost::format("    %8s ") % m.atoms_[i].atomSymbol();
+            for (int j = 0; j < 3; ++j) {
+                os  <<  boost::format("    %17.12f") % m.geometry_.col(i)(j);
+            }
+            os << std::endl;
         }
     } else {
         os << "  No atoms in this molecule!" << std::endl;

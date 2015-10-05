@@ -1,7 +1,7 @@
 /* pcmsolver_copyright_start */
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
+ *     Copyright (C) 2013 Roberto Di Remigio, Luca Frediani and contributors
  *
  *     This file is part of PCMSolver.
  *
@@ -19,12 +19,12 @@
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
  *
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+ *     PCMSolver API, see: <https://repo.ctcc.no/projects/pcmsolver>
  */
 /* pcmsolver_copyright_end */
 
-#ifndef GEPOLCAVITY_HPP
-#define GEPOLCAVITY_HPP
+#ifndef TSLESSCAVITY_HPP
+#define TSLESSCAVITY_HPP
 
 #include <iosfwd>
 #include <string>
@@ -34,48 +34,51 @@
 
 #include "Cavity.hpp"
 
-/*! \file GePolCavity.hpp
- *  \class GePolCavity
- *  \brief A class for GePol cavity.
- *  \author Krzysztof Mozgawa
- *  \date 2011
+/*! \file TsLessCavity.hpp
+ *  \class TsLessCavity
+ *  \brief A class for TsLess cavity.
+ *  \author Roberto Di Remigio
+ *  \date 2013
  *
- *  This class is an interface to the Fortran code PEDRA for the generation
- *  of cavities according to the GePol algorithm.
+ *  This class is a wrapper for the Fortran routines generating
+ *  a tessellationless grid on the cavity surface. The original
+ *  algoritm is described in \cite Pomelli2004
  */
 
-class GePolCavity : public Cavity
+class TsLessCavity : public Cavity
 {
 public:
-    GePolCavity() {}
-    GePolCavity(const Molecule & molec, double a, double pr, double minR) :
-        Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR)
+    TsLessCavity() {}
+    TsLessCavity(const Molecule & molec, double a, double pr, double minR, double minD, int der) :
+        Cavity(molec), averageArea_(a), probeRadius_(pr), minimalRadius_(minR), minDistance_(minD), derOrder_(der)
+    {
+	    std::string checkpointName = "TsLessCavity::build";
+	    TIMER_ON(checkpointName);
+        build(10000, 200, 25000);
+        TIMER_OFF(checkpointName);
+    }
+    TsLessCavity(const std::vector<Sphere> & sph, double a, double pr, double minR, double minD, int der) :
+        Cavity(sph), averageArea_(a), probeRadius_(pr), minimalRadius_(minR), minDistance_(minD), derOrder_(der)
 	{
-	  std::string checkpointName = "GePolCavity::build";
+	  std::string checkpointName = "TsLessCavity::build";
 	  TIMER_ON(checkpointName);
 	  build(10000, 200, 25000);
 	  TIMER_OFF(checkpointName);
 	}
-    GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR) :
-	Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
-	{
-	  std::string checkpointName = "GePolCavity::build";
-	  TIMER_ON(checkpointName);
-	  build(10000, 200, 25000);
-	  TIMER_OFF(checkpointName);
-	}
-    virtual ~GePolCavity() {}
-    friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
+    virtual ~TsLessCavity() {}
+    friend std::ostream & operator<<(std::ostream & os, TsLessCavity & cavity) {
         return cavity.printCavity(os);
     }
 private:
-    double averageArea;
-    double probeRadius;
-    double minimalRadius;
+    double averageArea_;
+    double probeRadius_;
+    double minimalRadius_;
+    double minDistance_;
+    int derOrder_;
     int addedSpheres;
     virtual std::ostream & printCavity(std::ostream & os);
     virtual void makeCavity() { build(10000, 200, 25000); }
-    /*! \brief Driver for PEDRA Fortran module.
+    /*! \brief Driver for TsLess Fortran module.
      *  \param[in]   maxts maximum number of tesserae
      *  \param[in]   maxsp maximum number of spheres (original + added)
      *  \param[in] maxvert maximum number of vertices
@@ -83,4 +86,4 @@ private:
     void build(size_t maxts, size_t maxsp, size_t maxvert);
 };
 
-#endif // GEPOLCAVITY_HPP
+#endif // TSLESSCAVITY_HPP

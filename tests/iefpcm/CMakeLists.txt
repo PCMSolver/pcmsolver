@@ -16,3 +16,7 @@ set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/iefpcm
 add_test(NAME iefpcm_symmetry COMMAND unit_tests.x [iefpcm_symmetry])
 set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/iefpcm_anisotropic-symmetry.cpp)
 add_test(NAME iefpcm_anisotropic-symmetry COMMAND unit_tests.x [iefpcm_anisotropic-symmetry])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/iefpcm_tsless-point.cpp)
+add_test(NAME iefpcm_tsless-point COMMAND unit_tests.x [iefpcm_tsless-point])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/iefpcm_tsless-NH3.cpp)
+add_test(NAME iefpcm_tsless-NH3 COMMAND unit_tests.x [iefpcm_tsless-NH3])

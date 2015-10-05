@@ -1,0 +1,6 @@
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/tsless_point.cpp)
+add_test(NAME tsless_point COMMAND unit_tests.x [tsless_point])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/tsless_NH3.cpp)
+add_test(NAME tsless_NH3 COMMAND unit_tests.x [tsless_NH3])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/tsless_HF.cpp)
+add_test(NAME tsless_HF COMMAND unit_tests.x [tsless_HF])

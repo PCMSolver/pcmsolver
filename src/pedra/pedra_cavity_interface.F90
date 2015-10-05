@@ -24,30 +24,29 @@
 !
 !     simple input reader for cavity generator
 !     written by Krzysztof Mozgawa, 2010
-!      
+!
 !     RDR, 280114. Put things in makecav.F inside here directly.
 !
-subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
+subroutine pedra_driver(maxts_, maxsph_, maxvert_,         &
     xtscor_, ytscor_, ztscor_, ar_,                              &
     xsphcor_, ysphcor_, zsphcor_, rsph_,                         &
     nts_, ntsirr_, nesfp_, addsph_,                              &
     xe_, ye_, ze_, rin_, masses_, avgArea_, rsolv_, ret_,        &
     nr_gen_, gen1_, gen2_, gen3_,                                &
-    nvert_, vert_, centr_)                                       &
-    bind(c, name='generatecavity_cpp')
+    nvert_, vert_, centr_)
 
-use, intrinsic :: iso_c_binding    
+use, intrinsic :: iso_c_binding
 use pedra_precision
 use pedra_symmetry, only: get_point_group, point_group
 use pedra_cavity, only: polyhedra_driver
 
 implicit none
-    
+
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
 #include "pcm_pcm.h"
 
-integer(c_int)  :: maxts_, maxsph_, maxvert_
+integer(c_size_t) :: maxts_, maxsph_, maxvert_
 real(c_double)  :: xtscor_(maxts_), ytscor_(maxts_), ztscor_(maxts_)
 real(c_double)  :: xsphcor_(maxts_), ysphcor_(maxts_), zsphcor_(maxts_), rsph_(maxts_)
 real(c_double)  :: ar_(maxts_), xe_(maxts_), ye_(maxts_), ze_(maxts_), rin_(maxts_)
@@ -56,9 +55,9 @@ real(c_double)  :: avgArea_, rsolv_, ret_
 integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
 integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_
 integer(c_int)  :: nvert_(maxts_)
-real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)   
+real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)
 
-integer(c_int)    :: i, j, k, offset                 
+integer(c_int)    :: i, j, k, offset
 integer(c_int)    :: error_code
 integer(kind=regint_k) :: lvpri
 logical           :: pedra_file_exists
@@ -69,10 +68,10 @@ lvpri = 121201_regint_k
 pedra_file_exists = .false.
 inquire(file = 'PEDRA.OUT', exist = pedra_file_exists)
 if (pedra_file_exists) then
-   open(lvpri,                   & 
-       file = 'PEDRA.OUT',       &  
-       status = 'unknown',       &   
-       form = 'formatted',       & 
+   open(lvpri,                   &
+       file = 'PEDRA.OUT',       &
+       status = 'unknown',       &
+       form = 'formatted',       &
        access = 'sequential')
    close(lvpri, status = 'delete')
 end if
@@ -87,11 +86,11 @@ icesph = 1
 iprpcm = 3
 call get_point_group(lvpri, pgroup, nr_gen_, gen1_, gen2_, gen3_)
 rsolv = rsolv_
-! These parameters are fixed see one of the original GePol papers      
+! These parameters are fixed see one of the original GePol papers
 omega = 40.0d+00
 fro = 0.7d+00
 ! ret is the minimum radius of added spheres
-ret = ret_ 
+ret = ret_
 ! nesfp is the number of initial spheres.
 ! nesf is the total number of spheres: initial + added
 nesfp = nesfp_
@@ -149,4 +148,4 @@ write(lvpri, *) "Error code is ", error_code
 
 close(lvpri)
 
-end subroutine generatecavity_cpp
+end subroutine pedra_driver

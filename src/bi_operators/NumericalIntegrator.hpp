@@ -61,7 +61,7 @@ struct NumericalIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
         integrator::KernelS kernelS = pcm::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelS, gf, pcm::_1, pcm::_2);
-        return integrator::singleLayer(e, pcm::bind(integrator::integrateS<32, 16>, kernelS, pcm::_1),
+        return integrator::singleLayer(e, pcm::bind(integrator::integrateS<32, 16>(), kernelS, pcm::_1),
                                        kernelS);
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
@@ -71,7 +71,7 @@ struct NumericalIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const Vacuum<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
         integrator::KernelD kernelD = pcm::bind(&Vacuum<DerivativeTraits, NumericalIntegrator>::kernelD, gf, pcm::_1, pcm::_2, pcm::_3);
-        return integrator::doubleLayer(e, pcm::bind(integrator::integrateD<32, 16>, kernelD, pcm::_1),
+        return integrator::doubleLayer(e, pcm::bind(integrator::integrateD<32, 16>(), kernelD, pcm::_1),
                 kernelD);
     }
     /**@}*/
@@ -84,7 +84,7 @@ struct NumericalIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
         integrator::KernelS kernelS = pcm::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelS, gf, pcm::_1, pcm::_2);
-        return integrator::singleLayer(e, pcm::bind(integrator::integrateS<32, 16>, kernelS, pcm::_1),
+        return integrator::singleLayer(e, pcm::bind(integrator::integrateS<32, 16>(), kernelS, pcm::_1),
                                        kernelS);
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
@@ -94,7 +94,7 @@ struct NumericalIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const UniformDielectric<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
         integrator::KernelD kernelD = pcm::bind(&UniformDielectric<DerivativeTraits, NumericalIntegrator>::kernelD, gf, pcm::_1, pcm::_2, pcm::_3);
-        return integrator::doubleLayer(e, pcm::bind(integrator::integrateD<32, 16>, kernelD, pcm::_1),
+        return integrator::doubleLayer(e, pcm::bind(integrator::integrateD<32, 16>(), kernelD, pcm::_1),
                 kernelD);
     }
     /**@}*/
@@ -107,7 +107,7 @@ struct NumericalIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
         integrator::KernelS kernelS = pcm::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, pcm::_1, pcm::_2);
-        return integrator::singleLayer(e, pcm::bind(integrator::integrateS<32, 16>, kernelS, pcm::_1),
+        return integrator::singleLayer(e, pcm::bind(integrator::integrateS<32, 16>(), kernelS, pcm::_1),
                                        kernelS);
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
@@ -117,7 +117,7 @@ struct NumericalIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const IonicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
         integrator::KernelD kernelD = pcm::bind(&IonicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, pcm::_1, pcm::_2, pcm::_3);
-        return integrator::doubleLayer(e, pcm::bind(integrator::integrateD<32, 16>, kernelD, pcm::_1),
+        return integrator::doubleLayer(e, pcm::bind(integrator::integrateD<32, 16>(), kernelD, pcm::_1),
                 kernelD);
     }
     /**@}*/
@@ -130,7 +130,7 @@ struct NumericalIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
         integrator::KernelS kernelS = pcm::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelS, gf, pcm::_1, pcm::_2);
-        return integrator::singleLayer(e, pcm::bind(integrator::integrateS<32, 16>, kernelS, pcm::_1),
+        return integrator::singleLayer(e, pcm::bind(integrator::integrateS<32, 16>(), kernelS, pcm::_1),
                                        kernelS);
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
@@ -140,7 +140,7 @@ struct NumericalIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const AnisotropicLiquid<DerivativeTraits, NumericalIntegrator> & gf, const std::vector<Element> & e) const {
         integrator::KernelD kernelD = pcm::bind(&AnisotropicLiquid<DerivativeTraits, NumericalIntegrator>::kernelD, gf, pcm::_1, pcm::_2, pcm::_3);
-        return integrator::doubleLayer(e, pcm::bind(integrator::integrateD<32, 16>, kernelD, pcm::_1),
+        return integrator::doubleLayer(e, pcm::bind(integrator::integrateD<32, 16>(), kernelD, pcm::_1),
                 kernelD);
     }
     /**@}*/

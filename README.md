@@ -10,11 +10,12 @@ PCMSolver
 An API for the Polarizable Continuum Model.
 
 - [Project website](https://gitlab.com/PCMSolver/pcmsolver)
+- [Changelog](../master/CHANGELOG.md)
 - [Documentation](http://pcmsolver.github.io/pcmsolver-doc)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
 - [Nightly build dashboard](https://testboard.org/cdash/index.php?project=PCMSolver)
-- Version 1.0.3 available
-- Licensed under [LGPLv3](../release/COPYING.LESSER)
+- Version 1.0.4 available
+- Licensed under [LGPLv3](../master/COPYING.LESSER)
 - CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.org/)
 
 Primary test environments
@@ -43,6 +44,8 @@ Nightly builds
 - CentOS 6.6. Intel 13.0, Python 2.7.3, CMake 3.1.0
 - CentOS 6.6. Intel 13.4, Python 2.7.3, CMake 3.1.0
 - CentOS 6.6. Intel 14.0, Python 2.7.3, CMake 3.1.0
+- CentOS 6.6. Intel 15.0, Python 2.7.9, CMake 3.2.2.
+  Uses Boost 1.58.0
 - CentOS 6.6. GCC 4.7.2, Python 2.7.3, CMake 3.1.0
 - OS X 10.10.5 Yosemite. LLVM 7.0.0 , GFortan 5.2.0, Python 2.7.10, CMake 3.3.2
   Uses Boost 1.58.0 from the Homebrew repositories.

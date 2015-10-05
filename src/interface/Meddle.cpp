@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -174,7 +174,8 @@ namespace pcm {
     {
         initInput();
         initCavity();
-        initSolver();
+        initStaticSolver();
+        if (input_.isDynamic()) initDynamicSolver();
         // Reserve space for Tot-MEP/ASC, Nuc-MEP/ASC and Ele-MEP/ASC
         functions_.reserve(6);
     }
@@ -384,7 +385,7 @@ namespace pcm {
         infoStream_ << *cavity_ << std::endl;
     }
 
-    void Meddle::initSolver()
+    void Meddle::initStaticSolver()
     {
         IGreensFunction * gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(input_.greenInsideType(),
           input_.insideGreenParams());
@@ -393,35 +394,45 @@ namespace pcm {
         std::string modelType = input_.solverType();
         K_0_ = Factory<PCMSolver, solverData>::TheFactory().create(modelType, input_.solverParams());
         K_0_->buildSystemMatrix(*cavity_, *gf_i, *gf_o);
-        std::stringstream tmp;
-        tmp << ".... Inside " << std::endl;
-        tmp << *gf_i << std::endl;
-        tmp << ".... Outside " << std::endl;
-        tmp << *gf_o;
-        delete gf_o;
-        if (input_.isDynamic()) {
-            IGreensFunction * gf_o_dyn = Factory<IGreensFunction, greenData>::TheFactory().create(input_.greenOutsideType(),
-                    input_.outsideDynamicGreenParams());
-            K_d_ = Factory<PCMSolver, solverData>::TheFactory().create(modelType, input_.solverParams());
-            K_d_->buildSystemMatrix(*cavity_, *gf_i, *gf_o_dyn);
-            hasDynamic_ = true;
-            delete gf_o_dyn;
-        }
-        delete gf_i;
 
-        infoStream_ << "========== Solver " << std::endl;
-        infoStream_ << "============= Static " << std::endl;
+        infoStream_ << "========== Static solver " << std::endl;
         infoStream_ << *K_0_ << std::endl;
-        if (hasDynamic_) {
-            infoStream_ << "============= Dynamic " << std::endl;
-            infoStream_ << *K_d_ << std::endl;
-        }
+        mediumInfo(gf_i, gf_o);
+        delete gf_o;
+        delete gf_i;
+    }
+
+    void Meddle::initDynamicSolver()
+    {
+        IGreensFunction * gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(input_.greenInsideType(),
+                input_.insideGreenParams());
+        IGreensFunction * gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(input_.greenOutsideType(),
+                input_.outsideDynamicGreenParams());
+        std::string modelType = input_.solverType();
+        K_d_ = Factory<PCMSolver, solverData>::TheFactory().create(modelType, input_.solverParams());
+        K_d_->buildSystemMatrix(*cavity_, *gf_i, *gf_o);
+        hasDynamic_ = true;
+
+        infoStream_ << "========== Dynamic solver " << std::endl;
+        infoStream_ << *K_d_ << std::endl;
+        mediumInfo(gf_i, gf_o);
+        delete gf_o;
+        delete gf_i;
+    }
+
+    void Meddle::mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const
+    {
         infoStream_ << "============ Medium " << std::endl;
         if (input_.fromSolvent()) {
             infoStream_ << "Medium initialized from solvent built-in data." << std::endl;
             Solvent solvent = input_.solvent();
             infoStream_ << solvent << std::endl;
         }
+        std::stringstream tmp;
+        tmp << ".... Inside " << std::endl;
+        tmp << *gf_i << std::endl;
+        tmp << ".... Outside " << std::endl;
+        tmp << *gf_o;
         infoStream_ << tmp.str() << std::endl;
     }
 

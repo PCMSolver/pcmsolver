@@ -1,7 +1,5 @@
-set(EIGEN3_ROOT ${PROJECT_SOURCE_DIR}/external/eigen3)
-set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include/eigen3)
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/eigen3 DESTINATION ${PROJECT_BINARY_DIR}/external/include)
-message(STATUS "Eigen 3.2.0 is located here: " ${PROJECT_BINARY_DIR}/external/include/eigen3)
+set(EIGEN3_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/eigen3/include/eigen3)
+message(STATUS "Eigen 3.2.0 is located here: " ${EIGEN3_INCLUDE_DIR})
 include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
 if(ENABLE_EIGEN_MKL)

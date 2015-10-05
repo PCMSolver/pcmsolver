@@ -1,30 +1,6 @@
-sudo: false
 language: cpp
-git:
-  submodules: false
-addons:
-    apt:
-        packages:
-            - cmake
-            - gfortran
-            - gfortran-multilib
-install: true
-before_script:
-  - FC=gfortran
-env:
-  global:
-    - PROJECT_ROOT="$(pwd)"
-    - CI_SCRIPTS="$PROJECT_ROOT/.ci"
-    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-    #   via the "travis encrypt" command using the project repo's public key
-    - secure: "E1Jc17Tev6/JHyAhyv7pyVoaMhZwoQ5w8H1RoKE2Mty1upjDzoUrUy9dCyl9zFpkaaUq7lOZ527o5DbEn5FZfh1u6hYqmlsDEvCeRFJ/KFF7E4L4Pph3w1T2+LfGkZUgAV84MIBZKY3gI1SccXrsvOCcb7w0MWhEnHw66WVQPjQ="
-  matrix:
-    - CI_TARGET=gcc-debug-coverage
-    - CI_TARGET=gcc-debug-i8
-    - CI_TARGET=clang-debug
-    - CI_TARGET=coverity
-script:
-  - bash "${CI_SCRIPTS}/${CI_TARGET}.sh"
+sudo: false
+
 notifications:
   recipients:
     - roberto.d.remigio@uit.no
@@ -32,3 +8,23 @@ notifications:
   email:
     on_success: change
     on_failure: always
+
+env:
+  global:
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "cxaDDZPFc1DJMa78/Sla/5TA5KUQ8e/Ig1zeXO9RbnEQUL3z7pmwgSEvg4l90x7AocdMQI2kzBYb7vbUM2fdH2+GtdCtttWIlPMPAxPJuwKvnhYXFJyXLpLWfxf2BmUovi54GN7lJ8pX/RTGkqqeAmaxIWzsPq5iiLSSOaan6sY="
+
+addons: &gcc5
+  apt:
+    sources: ['ubuntu-toolchain-r-test', 'boost-latest']
+    packages: ['g++-5', 'gcc-5', 'libboost1.55-all-dev', 'gfortran-5']
+  coverity_scan:
+    project:
+      name: "PCMSolver/pcmsolver"
+      version: 1.0.4
+      description: "An API for the Polarizable Continuum Model "
+    notification_email: roberto.d.remigio@uit.no
+    build_command_prepend: "python setup.py --cxx=g++-5 --cc=gcc-5 --fc=gfortran-5 --type=debug; cd build"
+    build_command: "make -j 2"
+    branch_pattern: coverity_scan

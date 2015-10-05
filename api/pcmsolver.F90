@@ -98,11 +98,12 @@ module pcmsolver
     end interface pcmsolver_compute_response_asc
 
     interface pcmsolver_compute_polarization_energy
-        subroutine pcmsolver_compute_polarization_energy(context, mep_name, asc_name) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char
+        function pcmsolver_compute_polarization_energy(context, mep_name, asc_name) result(energy) bind(C)
+            use, intrinsic :: iso_c_binding, only: c_ptr, c_char, c_double
             type(c_ptr), value :: context
             character(c_char), intent(in) :: mep_name, asc_name
-        end subroutine pcmsolver_compute_polarization_energy
+            real(c_double) :: energy
+        end function pcmsolver_compute_polarization_energy
     end interface pcmsolver_compute_polarization_energy
 
     interface pcmsolver_get_surface_function

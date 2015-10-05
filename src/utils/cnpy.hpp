@@ -268,4 +268,6 @@ namespace cnpy
 
 } // closes namespace
 
+cnpy::NpyArray load_the_npy_file(FILE * fp);
+
 #endif // LIBCNPY_H_

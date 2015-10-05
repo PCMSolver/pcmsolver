@@ -25,6 +25,7 @@ Options:
   --extra-cc-flags=<EXTRA_CFLAGS>        Extra C compiler flags [default: ''].
   --fc=<FC>                              Fortran compiler [default: gfortran].
   --extra-fc-flags=<EXTRA_FCFLAGS>       Extra Fortran compiler flags [default: ''].
+  --ccache=<USE_CCACHE>                  Toggle use of ccache <ON/OFF> [default: ON].
   --coverage                             Enable code coverage [default: False].
   --int64                                Enable 64bit integers [default: False].
   --omp                                  Enable OpenMP parallelization [default: False].
@@ -47,20 +48,23 @@ def gen_cmake_command(options, arguments):
     Generate CMake command based on options and arguments.
     """
     command = []
-    command.append('CXX=%s' % arguments['--cxx'])
-    command.append('CC=%s' % arguments['--cc'])
-    command.append('FC=%s' % arguments['--fc'])
+    command.append('CXX="{0}"'.format(arguments['--cxx']))
+    command.append('CC="{0}"'.format(arguments['--cc']))
+    command.append('FC="{0}"'.format(arguments['--fc']))
     command.append('%s' % arguments['--cmake-executable'])
-    command.append('-DEXTRA_CXXFLAGS="%s"' % arguments['--extra-cxx-flags'])
-    command.append('-DEXTRA_CFLAGS="%s"' % arguments['--extra-cc-flags'])
-    command.append('-DEXTRA_FCFLAGS="%s"' % arguments['--extra-fc-flags'])
+    command.append('-DEXTRA_CXXFLAGS="{0}"'.format(arguments['--extra-cxx-flags']))
+    command.append('-DEXTRA_CFLAGS="{0}"'.format(arguments['--extra-cc-flags']))
+    command.append('-DEXTRA_FCFLAGS="{0}"'.format(arguments['--extra-fc-flags']))
+    command.append('-DUSE_CCACHE="{0}"'.format(arguments['--ccache']))
     command.append('-DENABLE_CODE_COVERAGE=%s' % arguments['--coverage'])
     command.append('-DENABLE_64BIT_INTEGERS=%s' % arguments['--int64'])
     command.append('-DENABLE_OPENMP=%s' % arguments['--omp'])
     command.append('-DPYTHON_INTERPRETER="%s"' % arguments['--python'])
-    command.append('-DBOOST_INCLUDEDIR="%s"' % arguments['--boost-headers'])
-    command.append('-DBOOST_LIBRARYDIR="%s"' % arguments['--boost-libraries'])
-    command.append('-DFORCE_CUSTOM_BOOST="%s"' % arguments['--build-boost'])
+    command.append('-DBOOST_INCLUDEDIR="{0}"'.format(arguments['--boost-headers']))
+    command.append('-DBOOST_LIBRARYDIR="{0}"'.format(arguments['--boost-libraries']))
+    command.append('-DFORCE_CUSTOM_BOOST="{0}"'.format(arguments['--build-boost']))
+    command.append('-DBOOST_MINIMUM_REQUIRED="1.54.0"')
+    command.append('-DBOOST_COMPONENTS_REQUIRED="chrono;timer;system"')
     command.append('-DCMAKE_BUILD_TYPE=%s' % arguments['--type'])
     command.append('-G "%s"' % arguments['--generator'])
     if arguments['--cmake-options'] != "''":

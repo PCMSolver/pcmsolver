@@ -23,6 +23,7 @@ add_library(pcm ${_pcmsolver_cxx_sources} ${_pcmsolver_c_sources} ${_pcmsolver_f
 if(BUILD_CUSTOM_BOOST)
    add_dependencies(pcm custom_boost)
 endif()
+install(TARGETS pcm ARCHIVE DESTINATION lib)
 
 # This directory contains source file for executables
 if(BUILD_STANDALONE)

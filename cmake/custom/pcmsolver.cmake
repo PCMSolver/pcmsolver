@@ -3,6 +3,12 @@ option(ENABLE_TIMER "Enable timer" ON)
 option(BUILD_STANDALONE "Enable build of standalone executables" ON)
 option(ENABLE_FORTRAN_API "Builds optional Fortran90 API" OFF)
 
+# This can be set by the host project
+# and tweaks the location of the submodules install location
+if(NOT DEFINED SUBMODULES_INSTALL_PREFIX)
+    set(SUBMODULES_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
+endif()
+
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
@@ -15,5 +21,5 @@ set_property(GLOBAL PROPERTY PCMSolver_Fortran_SOURCES)
 # PCMSolver headers
 set_property(GLOBAL PROPERTY PCMSolver_HEADER_DIRS)
 
-include_directories(SYSTEM ${PROJECT_BINARY_DIR}/external/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
+include_directories(SYSTEM ${SUBMODULES_INSTALL_PREFIX}/include)

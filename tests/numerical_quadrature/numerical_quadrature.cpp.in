@@ -43,8 +43,8 @@
 using integrator::integrateS;
 using integrator::integrateD;
 
-double constant(const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */) { return 1.0; }
-double one_over_r(double r, const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */) { return 1.0 / r; }
+double constant(const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */);
+double one_over_r(double r, const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */);
 
 SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
 {
@@ -63,8 +63,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
             THEN("the integrals are the finite element areas")
             {
                 for (size_t i = 0; i < cavity.size(); ++i) {
-		    integrateS<32, 16> rule;
-                    results(i) = rule(pcm::bind(constant, pcm::_1, pcm::_2), cavity.elements(i));
+                    results(i) = integrateS<32, 16>(pcm::bind(constant, pcm::_1, pcm::_2), cavity.elements(i));
                     double diff = results(i) - cavity.elementArea(i);
                     if (std::abs(diff) > 1.0e-12) {
                         WARN("Test versus area for single sphere");
@@ -86,8 +85,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
             THEN("the integrals are the finite element areas divided by the sphere radius")
             {
                 for (size_t i = 0; i < cavity.size(); ++i) {
-		    integrateS<32, 16> rule;
-                    results(i) = rule(pcm::bind(one_over_r, 1.55, pcm::_1, pcm::_2), cavity.elements(i));
+                    results(i) = integrateS<32, 16>(pcm::bind(one_over_r, 1.55, pcm::_1, pcm::_2), cavity.elements(i));
                     double diff = results(i) - (cavity.elementArea(i)/radius);
                     if (std::abs(diff) > 1.0e-11) {
                         WARN("Test versus area divided by radius for single sphere");
@@ -119,8 +117,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
             THEN("the integrals are the finite element areas")
             {
                 for (size_t i = 0; i < cavity.size(); ++i) {
-		    integrateS<64, 16> rule;
-                    results(i) = rule(pcm::bind(constant, pcm::_1, pcm::_2), cavity.elements(i));
+                    results(i) = integrateS<64, 16>(pcm::bind(constant, pcm::_1, pcm::_2), cavity.elements(i));
                     double diff = results(i) - cavity.elementArea(i);
                     if (std::abs(diff) > 1.0e-11) {
                         WARN("Test versus area for H2 molecule");
@@ -153,8 +150,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
             THEN("the integrals are the finite element areas divided by the sphere radius")
             {
                 for (size_t i = 0; i < cavity.size(); ++i) {
-		    integrateS<64, 16> rule;
-                    results(i) = rule(pcm::bind(one_over_r, 1.20, pcm::_1, pcm::_2), cavity.elements(i));
+                    results(i) = integrateS<64, 16>(pcm::bind(one_over_r, 1.20, pcm::_1, pcm::_2), cavity.elements(i));
                     double diff = results(i) - (cavity.elementArea(i)/molecule.spheres(0).radius());
                     if (std::abs(diff) > 1.0e-11) {
                         WARN("Test versus area divided by radius for H2 molecule");
@@ -180,3 +176,6 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
         }
     }
 }
+
+double constant(const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */) { return 1.0; }
+double one_over_r(double r, const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */) { return 1.0 / r; }

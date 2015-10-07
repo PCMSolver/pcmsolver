@@ -2,7 +2,7 @@
 //Released under MIT License
 //license available in LICENSE file, or at http://www.opensource.org/licenses/mit-license.php
 
-#include "cnpyPimpl.hpp"
+#include "cnpy.hpp"
 
 #include <iomanip>
 #include <algorithm>

@@ -33,7 +33,7 @@
 
 #include <Eigen/Core>
 
-#include "cnpyPimpl.hpp"
+#include "cnpy.hpp"
 #include "CollocationIntegrator.hpp"
 #include "PurisimaIntegrator.hpp"
 #include "NumericalIntegrator.hpp"

@@ -52,10 +52,9 @@
 #define AS_CTYPE(Type, Obj) reinterpret_cast<const Type *>(Obj)
 
 PCMSOLVER_API
-pcmsolver_context_t * pcmsolver_new(collect_nctot f_1, collect_atoms f_2, host_writer f_3,
-                                    set_point_group f_4)
+pcmsolver_context_t * pcmsolver_new(int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
 {
-    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(f_1, f_2, f_3, f_4));
+    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(nr_nuclei, charges, coordinates, symmetry_info));
 }
 
 PCMSOLVER_API
@@ -167,12 +166,9 @@ void pcmsolver_write_timings(pcmsolver_context_t * context)
 }
 
 namespace pcm {
-    Meddle::Meddle(const NrNucleiGetter & f_1, const CoordinatesGetter & f_2, const HostWriter & f_3,
-            const PointGroupSetter & f_4) //, const HostInput & f_5)
-        : nrNuclei_(f_1), chargesAndCoordinates_(f_2), hostWriter_(f_3),
-          pointGroup_(f_4) //, hostInputReader_(f_5)
+    Meddle::Meddle(int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
     {
-        initInput();
+        initInput(nr_nuclei, charges, coordinates, symmetry_info);
         initCavity();
         initStaticSolver();
         if (input_.isDynamic()) initDynamicSolver();
@@ -329,9 +325,8 @@ namespace pcm {
     {
         // Extract C-style string from C++-style string and get its length
         const char * message_C = message.c_str();
-        size_t message_length = strlen(message_C);
         // Call the host_writer
-        hostWriter_(message_C, message_length);
+        host_writer(message_C);
     }
 
     void Meddle::printer(const std::ostringstream & stream) const
@@ -340,9 +335,8 @@ namespace pcm {
         std::string message = stream.str();
         // Extract C-style string from C++-style string and get its length
         const char * message_C = message.c_str();
-        size_t message_length = strlen(message_C);
         // Call the host_writer
-        hostWriter_(message_C, message_length);
+        host_writer(message_C);
     }
 
     void Meddle::writeTimings() const
@@ -350,23 +344,18 @@ namespace pcm {
         TIMER_DONE("pcmsolver.timer.dat");
     }
 
-    void Meddle::initInput()
+    void Meddle::initInput(int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
     {
         input_ = Input("@pcmsolver.inp");
 
-        // 1. number of atomic centers
-        int nuclei = nrNuclei_();
         // 2. position and charges of atomic centers
-        Eigen::Matrix3Xd centers;
-        centers.resize(Eigen::NoChange, nuclei);
-        Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
-        double * chg = charges.data();
-        double * pos = centers.data();
-        chargesAndCoordinates_(chg, pos);
+        Eigen::VectorXd chg  = Eigen::Map<Eigen::VectorXd>(charges, nr_nuclei, 1);
+        Eigen::Matrix3Xd centers = Eigen::Map<Eigen::Matrix3Xd>(coordinates, 3, nr_nuclei);
 
         if (input_.mode() != "EXPLICIT") {
             Molecule molec;
-            initMolecule(input_, pointGroup_, nuclei, charges, centers, molec);
+            Symmetry pg = buildGroup(symmetry_info[0], symmetry_info[1], symmetry_info[2], symmetry_info[3]);
+            initMolecule(input_, pg, nr_nuclei, chg, centers, molec);
             input_.molecule(molec);
         }
 
@@ -442,11 +431,10 @@ namespace pcm {
         printer(infoStream_);
     }
 
-    void initMolecule(const Input & inp, const PointGroupSetter & set_group,
+    void initMolecule(const Input & inp, const Symmetry & pg,
             int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
             Molecule & molecule)
     {
-        // 3. list of atoms and list of spheres
         bool scaling = inp.scaling();
         std::string set = inp.radiiSet();
         double factor = angstromToBohr(inp.CODATAyear());
@@ -466,7 +454,6 @@ namespace pcm {
             }
             spheres.push_back(Sphere(centers.col(i), radius));
         }
-        // 4. masses
         Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
         for (int i = 0; i < masses.size(); ++i) {
             masses(i) = atoms[i].atomMass();
@@ -476,11 +463,6 @@ namespace pcm {
         if (inp.mode() == "ATOMS") {
             initSpheresAtoms(inp, centers, spheres);
         }
-        // 5. molecular point group
-        int nr_gen;
-        int gen1, gen2, gen3;
-        set_group(&nr_gen, &gen1, &gen2, &gen3);
-        Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
 
         // OK, now get molecule
         molecule = Molecule(nuclei, charges, masses, centers, atoms, spheres, pg);

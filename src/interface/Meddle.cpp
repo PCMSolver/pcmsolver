@@ -173,6 +173,7 @@ void pcmsolver_write_timings(pcmsolver_context_t * context)
 
 namespace pcm {
     Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
+        : hasDynamic_(false)
     {
         initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info);
         initCavity();

@@ -64,7 +64,7 @@ def gen_cmake_command(options, arguments):
     command.append('-DBOOST_LIBRARYDIR="{0}"'.format(arguments['--boost-libraries']))
     command.append('-DFORCE_CUSTOM_BOOST="{0}"'.format(arguments['--build-boost']))
     command.append('-DBOOST_MINIMUM_REQUIRED="1.54.0"')
-    command.append('-DBOOST_COMPONENTS_REQUIRED="chrono;timer;system"')
+    command.append('-DBOOST_COMPONENTS_REQUIRED="''"')
     command.append('-DCMAKE_BUILD_TYPE=%s' % arguments['--type'])
     command.append('-G "%s"' % arguments['--generator'])
     if arguments['--cmake-options'] != "''":

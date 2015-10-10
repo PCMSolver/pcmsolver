@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -31,6 +31,30 @@
 #include <string>
 
 #include "Config.hpp"
+
+#include <boost/algorithm/string.hpp>
+
+inline bool invalidChar(char c);
+
+struct cavityInput;
+inline void print(const cavityInput &);
+inline void init(cavityInput &);
+inline void trim(cavityInput &);
+
+struct solverInput;
+inline void print(const solverInput &);
+inline void init(solverInput &);
+inline void trim(solverInput &);
+
+struct greenInput;
+inline void print(const greenInput &);
+inline void init(greenInput &);
+inline void trim(greenInput &);
+
+bool invalidChar(char c)
+{
+    return !std::isprint( static_cast<unsigned char>( c ) );
+}
 
 /*! @struct cavityInput
  *  @brief Data structure for host-API cavity input communication.
@@ -55,39 +79,68 @@
  *  @var cavityInput::min_radius
  *  Minimal radius for the added spheres.
  */
-struct cavityInput {
-    char cavity_type[8];
+struct cavityInput
+{
     int patch_level;
     double coarsity;
     double area;
     double min_distance;
     int der_order;
+    char cavity_type[8];
     bool scaling;
-    char radii_set[8];
-    int pad; // Without padding the two strings are lumped together...
     char restart_name[20];
     double min_radius;
-    /*! Cleans up the char arrays in this struct
-     */
-    void cleaner() {
-        std::fill(cavity_type, cavity_type + 8, 0);
-        std::fill(radii_set, radii_set + 8, 0);
-        std::fill(restart_name, restart_name + 20, 0);
-    }
-    friend std::ostream & operator<<(std::ostream & os, cavityInput & o) {
-        os << "cavity type " << std::string(o.cavity_type) << std::endl;
-        os << "patch level " << o.patch_level << std::endl;
-        os << "coarsity " << o.coarsity << std::endl;
-        os << "area " << o.area << std::endl;
-        os << "min distance " << o.min_distance << std::endl;
-        os << "der order " << o.der_order << std::endl;
-        os << "scaling " << o.scaling << std::endl;
-        os << "radii set " << std::string(o.radii_set) << std::endl;
-        os << "restart name " << std::string(o.restart_name) << std::endl;
-        os << "min radius " << o.min_radius;
-        return os;
-    }
+    char radii_set[8];
 };
+
+void print(const cavityInput & inp)
+{
+    std::cout << "cavity type " << std::string(inp.cavity_type) << std::endl;
+    std::cout << "patch level " << inp.patch_level << std::endl;
+    std::cout << "coarsity " << inp.coarsity << std::endl;
+    std::cout << "area " << inp.area << std::endl;
+    std::cout << "min distance " << inp.min_distance << std::endl;
+    std::cout << "der order " << inp.der_order << std::endl;
+    std::cout << "scaling " << inp.scaling << std::endl;
+    std::cout << "radii set " << std::string(inp.radii_set) << std::endl;
+    std::cout << "restart name " << std::string(inp.restart_name) << std::endl;
+    std::cout << "min radius " << inp.min_radius << std::endl;
+}
+void init(cavityInput & inp)
+{
+    inp.patch_level = 0;
+    std::fill((inp.cavity_type), (inp.cavity_type) + 8, 0);
+    inp.coarsity = 0.0;
+    inp.area = 0.0;
+    inp.min_distance = 0.0;
+    inp.der_order = 0;
+    inp.scaling = false;
+    std::fill((inp.radii_set), (inp.radii_set) + 8, 0);
+    std::fill((inp.restart_name), (inp.restart_name) + 20, 0);
+    inp.min_radius = 0.0;
+}
+void trim(cavityInput & inp)
+{
+    std::string s1(inp.cavity_type);
+    s1.erase(std::remove_if(s1.begin(), s1.end(), invalidChar), s1.end());
+    boost::algorithm::trim(s1);
+    std::fill((inp.cavity_type), (inp.cavity_type) + 8, 0);
+    strncpy(inp.cavity_type, s1.c_str(), s1.length());
+
+    /*
+    std::string s2(inp.restart_name);
+    s2.erase(std::remove_if(s2.begin(), s2.end(), invalidChar), s2.end());
+    boost::algorithm::trim(s2);
+    std::fill((inp.restart_name), (inp.restart_name) + 20, 0);
+    strncpy(inp.cavity_type, s2.c_str(), s2.length());
+
+    std::string s3(inp.radii_set);
+    s3.erase(std::remove_if(s3.begin(), s3.end(), invalidChar), s3.end());
+    boost::algorithm::trim(s3);
+    std::fill((inp.radii_set), (inp.radii_set) + 8, 0);
+    strncpy(inp.cavity_type, s3.c_str(), s3.length());
+    */
+}
 
 /*! @struct solverInput
  *  @brief Data structure for host-API solver input communication.
@@ -102,29 +155,51 @@ struct cavityInput {
  *  @var solverInput::probe_radius
  *  Radius of the spherical probe mimicking the solvent.
  */
-struct solverInput {
+struct solverInput
+{
     char solver_type[7];
-    int pad1; // Without padding the two strings are lumped together...
-    char solvent[16];
-    char equation_type[11];
     double correction;
+    char solvent[16];
     double probe_radius;
-    /*! Cleans up the char arrays in this struct
-     */
-    void cleaner() {
-        std::fill(solver_type, solver_type + 7, 0);
-        std::fill(solvent, solvent + 16, 0);
-        std::fill(equation_type, equation_type + 11, 0);
-    }
-    friend std::ostream & operator<<(std::ostream & os, solverInput & o) {
-        os << "solver type " << std::string(o.solver_type) << std::endl;
-        os << "solvent " << std::string(o.solvent) << std::endl;
-        os << "equation type " << std::string(o.equation_type) << std::endl;
-        os << "correction " << o.correction << std::endl;
-        os << "probe_radius " << o.probe_radius;
-        return os;
-    }
+    char equation_type[11];
 };
+
+void print(const solverInput & inp)
+{
+    std::cout << "solver type " << std::string(inp.solver_type) << std::endl;
+    std::cout << "solvent " << std::string(inp.solvent) << std::endl;
+    std::cout << "equation type " << std::string(inp.equation_type) << std::endl;
+    std::cout << "correction " << inp.correction << std::endl;
+    std::cout << "probe_radius " << inp.probe_radius << std::endl;
+}
+void init(solverInput & inp)
+{
+    std::fill((inp.solver_type), (inp.solver_type) + 7, 0);
+    inp.correction = 0.0;
+    std::fill((inp.solvent), (inp.solvent) + 16, 0);
+    inp.probe_radius = 0.0;
+    std::fill((inp.equation_type), (inp.equation_type) + 11, 0);
+}
+void trim(solverInput & inp)
+{
+    std::string s1(inp.solver_type);
+    s1.erase(std::remove_if(s1.begin(), s1.end(), invalidChar), s1.end());
+    boost::algorithm::trim(s1);
+    std::fill((inp.solver_type), (inp.solver_type) + 7, 0);
+    strncpy(inp.solver_type, s1.c_str(), s1.length());
+
+    std::string s2(inp.solvent);
+    s2.erase(std::remove_if(s2.begin(), s2.end(), invalidChar), s2.end());
+    boost::algorithm::trim(s2);
+    std::fill((inp.solvent), (inp.solvent) + 16, 0);
+    strncpy(inp.solvent, s2.c_str(), s2.length());
+
+    std::string s3(inp.equation_type);
+    s3.erase(std::remove_if(s3.begin(), s3.end(), invalidChar), s3.end());
+    boost::algorithm::trim(s3);
+    std::fill((inp.equation_type), (inp.equation_type) + 11, 0);
+    strncpy(inp.equation_type, s3.c_str(), s3.length());
+}
 
 /*! @struct greenInput
  *  @brief Data structure for host-API Green's function input communication.
@@ -135,22 +210,38 @@ struct solverInput {
  *  @var greenInput::outside_type
  *  Type of Green's function requested outside the cavity.
  */
-struct greenInput {
+struct greenInput
+{
     char inside_type[7];
     double outside_epsilon;
     char outside_type[22];
-    /*! Cleans up the char arrays in this struct
-     */
-    void cleaner() {
-        std::fill(inside_type, inside_type + 7, 0);
-        std::fill(outside_type, outside_type + 22, 0);
-    }
-    friend std::ostream & operator<<(std::ostream & os, greenInput & o) {
-        os << "inside type " << std::string(o.inside_type) << std::endl;
-        os << "outside type " << std::string(o.outside_type) << std::endl;
-        os << "epsilon outside " << o.outside_epsilon;
-        return os;
-    }
 };
+
+void print(const greenInput & inp)
+{
+    std::cout << "inside type " << std::string(inp.inside_type) << std::endl;
+    std::cout << "outside type " << std::string(inp.outside_type) << std::endl;
+    std::cout << "epsilon outside " << inp.outside_epsilon << std::endl;
+}
+void init(greenInput & inp)
+{
+    std::fill((inp.inside_type), (inp.inside_type) + 7, 0);
+    inp.outside_epsilon = 0.0;
+    std::fill((inp.outside_type), (inp.outside_type) + 22, 0);
+}
+void trim(greenInput & inp)
+{
+    std::string s1(inp.inside_type);
+    s1.erase(std::remove_if(s1.begin(), s1.end(), invalidChar), s1.end());
+    boost::algorithm::trim(s1);
+    std::fill((inp.inside_type), (inp.inside_type) + 7, 0);
+    strncpy(inp.inside_type, s1.c_str(), s1.length());
+
+    std::string s2(inp.outside_type);
+    s2.erase(std::remove_if(s2.begin(), s2.end(), invalidChar), s2.end());
+    boost::algorithm::trim(s2);
+    std::fill((inp.outside_type), (inp.outside_type) + 22, 0);
+    strncpy(inp.outside_type, s2.c_str(), s2.length());
+}
 
 #endif // INPUTMANAGER_HPP

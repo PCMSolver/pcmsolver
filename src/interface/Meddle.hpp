@@ -35,10 +35,6 @@ class IGreensFunction;
 class Input;
 class PCMSolver;
 
-struct cavityInput;
-struct greenInput;
-struct solverInput;
-
 #include "Input.hpp"
 #include "SurfaceFunction.hpp"
 #include "Symmetry.hpp"
@@ -55,7 +51,7 @@ namespace pcm {
     class Meddle __final
     {
         public:
-            Meddle(int nr_nuclei, double charges[], double coordinates[], int symmetry_info[]);
+            Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[]);
             ~Meddle();
             size_t getCavitySize() const;
             size_t getIrreducibleCavitySize() const;
@@ -87,7 +83,7 @@ namespace pcm {
             /*! SurfaceFunction map */
             mutable SurfaceFunctionMap functions_;
             /*! Initialize input_ */
-            void initInput(int nr_nuclei, double charges[], double coordinates[], int symmetry_info[]);
+            void initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[]);
             /*! Initialize cavity_ */
             void initCavity();
             /*! Initialize static solver K_0_ */

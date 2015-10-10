@@ -6,10 +6,6 @@ module pcmsolver
 
     private
 
-    public cavityInput
-    public solverInput
-    public greenInput
-
     public pcmsolver_new
     public pcmsolver_delete
     public pcmsolver_is_compatible_library
@@ -28,36 +24,44 @@ module pcmsolver
     public pcmsolver_load_surface_function
     public pcmsolver_write_timings
 
-    type, bind(c) :: cavityInput
-        character(kind=c_char) :: cavity_type(8)
-        integer(c_int) :: patch_level
-        real(c_double) :: coarsity
-        real(c_double) :: area
-        real(c_double) :: min_distance
-        integer(c_int) :: der_order
-        logical(c_bool) :: scaling
-        character(kind=c_char) :: restart_name(20)
-        character(kind=c_char) :: radii_set(8)
-        real(c_double) :: min_radius
+    type, public, bind(C) :: cavityInput
+        integer(c_int)                :: patch_level
+        real(c_double)                :: coarsity
+        real(c_double)                :: area
+        real(c_double)                :: min_distance
+        integer(c_int)                :: der_order
+        character(kind=c_char, len=1) :: cavity_type(8)
+        logical(c_bool)               :: scaling
+        character(kind=c_char, len=1) :: restart_name(20)
+        real(c_double)                :: min_radius
+        character(kind=c_char, len=1) :: radii_set(8)
     end type
 
-    type, bind(c) :: solverInput
-        character(kind=c_char) :: solver_type(7)
-        character(kind=c_char) :: solvent(16)
-        character(kind=c_char) :: equation_type(11)
-        real(c_double)         :: correction
-        real(c_double)         :: probe_radius
+    type, public, bind(C) :: solverInput
+        character(kind=c_char, len=1) :: solver_type(7)
+        real(c_double)                :: correction
+        character(kind=c_char, len=1) :: solvent(16)
+        real(c_double)                :: probe_radius
+        character(kind=c_char, len=1) :: equation_type(11)
     end type
 
-    type, bind(c) :: greenInput
-        character(kind=c_char) :: inside_type(7)
-        real(c_double)         :: outside_epsilon
-        character(kind=c_char) :: outside_type(22)
+    type, public, bind(C) :: greenInput
+        character(kind=c_char, len=1) :: inside_type(7)
+        real(c_double)                :: outside_epsilon
+        character(kind=c_char, len=1) :: outside_type(22)
     end type
+
+    public PCMSOLVER_READER_OWN
+    public PCMSOLVER_READER_HOST
+
+    enum, bind(C)
+        enumerator :: PCMSOLVER_READER_OWN = 0, PCMSOLVER_READER_HOST = 1
+    end enum
 
     interface pcmsolver_new
-        function pcmsolver_new(nr_nuclei, charges, coordinates, symmetry_info) result(context) bind (C)
+        function pcmsolver_new(input_reading, nr_nuclei, charges, coordinates, symmetry_info) result(context) bind(C)
             use, intrinsic :: iso_c_binding, only: c_int, c_double, c_ptr
+            integer(c_int), value :: input_reading
             integer(c_int), value :: nr_nuclei
             real(c_double), intent(out) :: charges(*)
             real(c_double), intent(out) :: coordinates(*)
@@ -67,7 +71,7 @@ module pcmsolver
     end interface pcmsolver_new
 
     interface pcmsolver_delete
-        subroutine pcmsolver_delete(context) bind (C)
+        subroutine pcmsolver_delete(context) bind(C)
             use, intrinsic :: iso_c_binding, only: c_ptr
             type(c_ptr), value :: context
         end subroutine pcmsolver_delete
@@ -81,14 +85,14 @@ module pcmsolver
     end interface pcmsolver_is_compatible_library
 
     interface pcmsolver_print
-        subroutine pcmsolver_print(context) bind (C)
+        subroutine pcmsolver_print(context) bind(C)
             use, intrinsic :: iso_c_binding, only: c_ptr
             type(c_ptr), value :: context
         end subroutine pcmsolver_print
     end interface pcmsolver_print
 
     interface pcmsolver_get_cavity_size
-        function pcmsolver_get_cavity_size(context) result(nr_points) bind (C)
+        function pcmsolver_get_cavity_size(context) result(nr_points) bind(C)
             use, intrinsic :: iso_c_binding, only: c_ptr, c_size_t
             type(c_ptr), value :: context
             integer(c_size_t)  :: nr_points
@@ -96,7 +100,7 @@ module pcmsolver
     end interface pcmsolver_get_cavity_size
 
     interface pcmsolver_get_irreducible_cavity_size
-        function pcmsolver_get_irreducible_cavity_size(context) result(nr_points_irr) bind (C)
+        function pcmsolver_get_irreducible_cavity_size(context) result(nr_points_irr) bind(C)
             use, intrinsic :: iso_c_binding, only: c_ptr, c_size_t
             type(c_ptr), value :: context
             integer(c_size_t)  :: nr_points_irr

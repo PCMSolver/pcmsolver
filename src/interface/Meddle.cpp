@@ -38,6 +38,7 @@
 #include "Cavity.hpp"
 #include "RegisterCavityToFactory.hpp"
 #include "IGreensFunction.hpp"
+#include "InputManager.hpp"
 #include "RegisterGreensFunctionToFactory.hpp"
 #include "PCMSolver.hpp"
 #include "RegisterSolverToFactory.hpp"
@@ -48,13 +49,18 @@
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
+#ifndef AS_TYPE
 #define AS_TYPE(Type, Obj) reinterpret_cast<Type *>(Obj)
+#endif
+
+#ifndef AS_CTYPE
 #define AS_CTYPE(Type, Obj) reinterpret_cast<const Type *>(Obj)
+#endif
 
 PCMSOLVER_API
-pcmsolver_context_t * pcmsolver_new(int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
+pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
 {
-    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(nr_nuclei, charges, coordinates, symmetry_info));
+    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates, symmetry_info));
 }
 
 PCMSOLVER_API
@@ -166,9 +172,9 @@ void pcmsolver_write_timings(pcmsolver_context_t * context)
 }
 
 namespace pcm {
-    Meddle::Meddle(int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
+    Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
     {
-        initInput(nr_nuclei, charges, coordinates, symmetry_info);
+        initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info);
         initCavity();
         initStaticSolver();
         if (input_.isDynamic()) initDynamicSolver();
@@ -344,9 +350,25 @@ namespace pcm {
         TIMER_DONE("pcmsolver.timer.dat");
     }
 
-    void Meddle::initInput(int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
+    void Meddle::initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
     {
-        input_ = Input("@pcmsolver.inp");
+        if (input_reading) {
+            cavityInput cav;
+            init(cav);
+            solverInput solv;
+            init(solv);
+            greenInput green;
+            init(green);
+
+            host_input(&cav, &solv, &green);
+
+            trim(cav);
+            trim(solv);
+            trim(green);
+            input_ = Input(cav, solv, green);
+        } else {
+            input_ = Input("@pcmsolver.inp");
+        }
 
         // 2. position and charges of atomic centers
         Eigen::VectorXd chg  = Eigen::Map<Eigen::VectorXd>(charges, nr_nuclei, 1);

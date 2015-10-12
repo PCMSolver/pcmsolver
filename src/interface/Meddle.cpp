@@ -38,13 +38,13 @@
 #include "Cavity.hpp"
 #include "RegisterCavityToFactory.hpp"
 #include "IGreensFunction.hpp"
-#include "InputManager.hpp"
 #include "RegisterGreensFunctionToFactory.hpp"
 #include "PCMSolver.hpp"
 #include "RegisterSolverToFactory.hpp"
 #include "Atom.hpp"
 #include "Citation.hpp"
 #include "cnpy.hpp"
+#include "PCMInput.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
@@ -58,9 +58,9 @@
 #endif
 
 PCMSOLVER_API
-pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
+pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], PCMInput * host_input)
 {
-    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates, symmetry_info));
+    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates, symmetry_info, *host_input));
 }
 
 PCMSOLVER_API
@@ -172,10 +172,10 @@ void pcmsolver_write_timings(pcmsolver_context_t * context)
 }
 
 namespace pcm {
-    Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
+    Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input)
         : hasDynamic_(false)
     {
-        initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info);
+        initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input);
         initCavity();
         initStaticSolver();
         if (input_.isDynamic()) initDynamicSolver();
@@ -351,22 +351,11 @@ namespace pcm {
         TIMER_DONE("pcmsolver.timer.dat");
     }
 
-    void Meddle::initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[])
+    void Meddle::initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input)
     {
         if (input_reading) {
-            cavityInput cav;
-            init(cav);
-            solverInput solv;
-            init(solv);
-            greenInput green;
-            init(green);
-
-            host_input(&cav, &solv, &green);
-
-            trim(cav);
-            trim(solv);
-            trim(green);
-            input_ = Input(cav, solv, green);
+	    //trim(host_input);
+            input_ = Input(host_input);
         } else {
             input_ = Input("@pcmsolver.inp");
         }

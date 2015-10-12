@@ -51,7 +51,7 @@ namespace pcm {
     class Meddle __final
     {
         public:
-            Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[]);
+            Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input);
             ~Meddle();
             size_t getCavitySize() const;
             size_t getIrreducibleCavitySize() const;
@@ -83,7 +83,7 @@ namespace pcm {
             /*! SurfaceFunction map */
             mutable SurfaceFunctionMap functions_;
             /*! Initialize input_ */
-            void initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[]);
+            void initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input);
             /*! Initialize cavity_ */
             void initCavity();
             /*! Initialize static solver K_0_ */

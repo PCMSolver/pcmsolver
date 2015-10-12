@@ -40,7 +40,7 @@
 #include "CavityData.hpp"
 #include "GreenData.hpp"
 #include "SolverData.hpp"
-#include "InputManager.hpp"
+#include "PCMInput.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
@@ -53,10 +53,9 @@ Input::Input(const std::string & filename)
     semanticCheck();
 }
 
-Input::Input(const cavityInput & cav, const solverInput & solv,
-             const greenInput & green)
+Input::Input(const PCMInput & host_input)
 {
-    reader(cav, solv, green);
+    reader(host_input);
     semanticCheck();
 }
 
@@ -173,42 +172,41 @@ void Input::reader(const std::string & filename)
     providedBy_ = std::string("API-side");
 }
 
-void Input::reader(const cavityInput & cav, const solverInput & solv,
-                   const greenInput & green)
+void Input::reader(const PCMInput & host_input)
 {
     CODATAyear_ = 2010;
 
-    type_ = to_upper_copy(std::string(cav.cavity_type));
-    area_ = cav.area * angstrom2ToBohr2(CODATAyear_);
-    patchLevel_ = cav.patch_level;
-    coarsity_ = cav.coarsity * angstromToBohr(CODATAyear_);
-    minDistance_ = cav.min_distance * angstromToBohr(CODATAyear_);
-    derOrder_ = cav.der_order;
+    type_ = to_upper_copy(std::string(host_input.cavity_type));
+    area_ = host_input.area * angstrom2ToBohr2(CODATAyear_);
+    patchLevel_ = host_input.patch_level;
+    coarsity_ = host_input.coarsity * angstromToBohr(CODATAyear_);
+    minDistance_ = host_input.min_distance * angstromToBohr(CODATAyear_);
+    derOrder_ = host_input.der_order;
     if (type_ == "RESTART") {
-        cavFilename_ = std::string(cav.restart_name); // No case conversion here!
+        cavFilename_ = std::string(host_input.restart_name); // No case conversion here!
     }
 
-    scaling_ = cav.scaling;
-    radiiSet_ = cav.radii_set;
-    minimalRadius_ = cav.min_radius * angstromToBohr(CODATAyear_);
+    scaling_ = host_input.scaling;
+    radiiSet_ = host_input.radii_set;
+    minimalRadius_ = host_input.min_radius * angstromToBohr(CODATAyear_);
     mode_ = std::string("IMPLICIT");
 
-    std::string name = to_upper_copy(std::string(solv.solvent));
+    std::string name = to_upper_copy(std::string(host_input.solvent));
     if (name.empty()) {
         hasSolvent_ = false;
         // Get the probe radius
-        probeRadius_ = solv.probe_radius * angstromToBohr(CODATAyear_);
+        probeRadius_ = host_input.probe_radius * angstromToBohr(CODATAyear_);
         // Get the contents of the Green<inside> section...
         // ...and initialize the data members
-        greenInsideType_ = to_upper_copy(std::string(green.inside_type));
+        greenInsideType_ = to_upper_copy(std::string(host_input.inside_type));
         derivativeInsideType_ = derivativeTraits("DERIVATIVE");
         epsilonInside_ = 1.0;
         // Get the contents of the Green<outside> section...
         // ...and initialize the data members
-        greenOutsideType_ = to_upper_copy(std::string(green.outside_type));
+        greenOutsideType_ = to_upper_copy(std::string(host_input.outside_type));
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
-        epsilonStaticOutside_ = green.outside_epsilon;
-        epsilonDynamicOutside_ = green.outside_epsilon;
+        epsilonStaticOutside_ = host_input.outside_epsilon;
+        epsilonDynamicOutside_ = host_input.outside_epsilon;
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -228,10 +226,10 @@ void Input::reader(const cavityInput & cav, const solverInput & solv,
     }
     integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
 
-    solverType_ = to_upper_copy(std::string(solv.solver_type));
-    std::string inteq = to_upper_copy(std::string(solv.equation_type));
+    solverType_ = to_upper_copy(std::string(host_input.solver_type));
+    std::string inteq = to_upper_copy(std::string(host_input.equation_type));
     equationType_ = integralEquation(inteq);
-    correction_ = solv.correction;
+    correction_ = host_input.correction;
     hermitivitize_ = true;
     isDynamic_ = false;
 

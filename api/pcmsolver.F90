@@ -1,6 +1,6 @@
 module pcmsolver
-
-    use, intrinsic :: iso_c_binding, only: c_bool, c_char, c_double, c_int
+ 
+    use, intrinsic :: iso_c_binding
 
     implicit none
 
@@ -24,32 +24,26 @@ module pcmsolver
     public pcmsolver_load_surface_function
     public pcmsolver_write_timings
 
-    type, public, bind(C) :: cavityInput
+    type, public, bind(C) :: PCMInput
+        character(kind=c_char, len=1) :: cavity_type(8)
         integer(c_int)                :: patch_level
         real(c_double)                :: coarsity
         real(c_double)                :: area
         real(c_double)                :: min_distance
         integer(c_int)                :: der_order
-        character(kind=c_char, len=1) :: cavity_type(8)
         logical(c_bool)               :: scaling
+        character(kind=c_char, len=1) :: radii_set(8)
         character(kind=c_char, len=1) :: restart_name(20)
         real(c_double)                :: min_radius
-        character(kind=c_char, len=1) :: radii_set(8)
-    end type
-
-    type, public, bind(C) :: solverInput
         character(kind=c_char, len=1) :: solver_type(7)
-        real(c_double)                :: correction
         character(kind=c_char, len=1) :: solvent(16)
-        real(c_double)                :: probe_radius
         character(kind=c_char, len=1) :: equation_type(11)
-    end type
-
-    type, public, bind(C) :: greenInput
+        real(c_double)                :: correction
+        real(c_double)                :: probe_radius
         character(kind=c_char, len=1) :: inside_type(7)
         real(c_double)                :: outside_epsilon
         character(kind=c_char, len=1) :: outside_type(22)
-    end type
+    end type PCMInput
 
     public PCMSOLVER_READER_OWN
     public PCMSOLVER_READER_HOST
@@ -59,41 +53,42 @@ module pcmsolver
     end enum
 
     interface pcmsolver_new
-        function pcmsolver_new(input_reading, nr_nuclei, charges, coordinates, symmetry_info) result(context) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_int, c_double, c_ptr
+        function pcmsolver_new(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input) result(context) bind(C)
+            import
             integer(c_int), value :: input_reading
             integer(c_int), value :: nr_nuclei
-            real(c_double), intent(out) :: charges(*)
-            real(c_double), intent(out) :: coordinates(*)
-            integer(c_int), intent(out) :: symmetry_info(*)
+            real(c_double), intent(in) :: charges(*)
+            real(c_double), intent(in) :: coordinates(*)
+            integer(c_int), intent(in) :: symmetry_info(*)
+            type(PCMInput), intent(in) :: host_input 
             type(c_ptr) :: context
         end function pcmsolver_new
     end interface pcmsolver_new
 
     interface pcmsolver_delete
         subroutine pcmsolver_delete(context) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr
+            import
             type(c_ptr), value :: context
         end subroutine pcmsolver_delete
     end interface pcmsolver_delete
 
     interface pcmsolver_is_compatible_library
         function pcmsolver_is_compatible_library() result(compatible) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_bool
+            import
             logical(c_bool) :: compatible
         end function pcmsolver_is_compatible_library
     end interface pcmsolver_is_compatible_library
 
     interface pcmsolver_print
         subroutine pcmsolver_print(context) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr
+            import
             type(c_ptr), value :: context
         end subroutine pcmsolver_print
     end interface pcmsolver_print
 
     interface pcmsolver_get_cavity_size
         function pcmsolver_get_cavity_size(context) result(nr_points) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_size_t
+            import
             type(c_ptr), value :: context
             integer(c_size_t)  :: nr_points
         end function pcmsolver_get_cavity_size
@@ -101,7 +96,7 @@ module pcmsolver
 
     interface pcmsolver_get_irreducible_cavity_size
         function pcmsolver_get_irreducible_cavity_size(context) result(nr_points_irr) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_size_t
+            import
             type(c_ptr), value :: context
             integer(c_size_t)  :: nr_points_irr
         end function pcmsolver_get_irreducible_cavity_size
@@ -109,7 +104,7 @@ module pcmsolver
 
     interface pcmsolver_get_centers
         subroutine pcmsolver_get_centers(context, centers) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_double
+            import
             type(c_ptr), value :: context
             real(c_double), intent(inout) :: centers(*)
         end subroutine pcmsolver_get_centers
@@ -117,7 +112,7 @@ module pcmsolver
 
     interface pcmsolver_get_center
         subroutine pcmsolver_get_center(context, its, center) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_int, c_double
+            import
             type(c_ptr), value :: context
             integer(c_int), value, intent(in) :: its
             real(c_double), intent(inout) :: center(*)
@@ -126,7 +121,7 @@ module pcmsolver
 
     interface pcmsolver_compute_asc
         subroutine pcmsolver_compute_asc(context, mep_name, asc_name, irrep) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char, c_int
+            import
             type(c_ptr), value :: context
             character(c_char), intent(in) :: mep_name, asc_name
             integer(c_int), value, intent(in) :: irrep
@@ -135,7 +130,7 @@ module pcmsolver
 
     interface pcmsolver_compute_response_asc
         subroutine pcmsolver_compute_response_asc(context, mep_name, asc_name, irrep) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char, c_int
+            import
             type(c_ptr), value :: context
             character(c_char), intent(in) :: mep_name, asc_name
             integer(c_int), value, intent(in) :: irrep
@@ -144,16 +139,16 @@ module pcmsolver
 
     interface pcmsolver_compute_polarization_energy
         function pcmsolver_compute_polarization_energy(context, mep_name, asc_name) result(energy) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char, c_double
+            import
             type(c_ptr), value :: context
             character(c_char), intent(in) :: mep_name, asc_name
             real(c_double) :: energy
         end function pcmsolver_compute_polarization_energy
     end interface pcmsolver_compute_polarization_energy
-
+    
     interface pcmsolver_get_surface_function
         subroutine pcmsolver_get_surface_function(context, f_size, values, name) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char, c_size_t, c_double
+            import
             type(c_ptr), value :: context
             integer(c_size_t), value, intent(in) :: f_size
             real(c_double), intent(inout) :: values(*)
@@ -163,7 +158,7 @@ module pcmsolver
 
     interface pcmsolver_set_surface_function
         subroutine pcmsolver_set_surface_function(context, f_size, values, name) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char, c_size_t, c_double
+            import
             type(c_ptr), value :: context
             integer(c_size_t), value, intent(in) :: f_size
             real(c_double), intent(in) :: values(*)
@@ -173,14 +168,14 @@ module pcmsolver
 
     interface pcmsolver_save_surface_functions
         subroutine pcmsolver_save_surface_functions(context) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr
+            import
             type(c_ptr), value :: context
         end subroutine pcmsolver_save_surface_functions
     end interface pcmsolver_save_surface_functions
 
     interface pcmsolver_save_surface_function
         subroutine pcmsolver_save_surface_function(context, name) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char
+            import
             type(c_ptr), value :: context
             character(c_char), intent(in) :: name
         end subroutine pcmsolver_save_surface_function
@@ -188,7 +183,7 @@ module pcmsolver
 
     interface pcmsolver_load_surface_function
         subroutine pcmsolver_load_surface_function(context, name) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr, c_char
+            import
             type(c_ptr), value :: context
             character(c_char), intent(in) :: name
         end subroutine pcmsolver_load_surface_function
@@ -196,7 +191,7 @@ module pcmsolver
 
     interface pcmsolver_write_timings
         subroutine pcmsolver_write_timings(context) bind(C)
-            use, intrinsic :: iso_c_binding, only: c_ptr
+            import
             type(c_ptr), value :: context
         end subroutine pcmsolver_write_timings
     end interface pcmsolver_write_timings

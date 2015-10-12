@@ -33,9 +33,7 @@
 
 #include "Getkw.h"
 
-struct cavityInput;
-struct solverInput;
-struct greenInput;
+struct PCMInput;
 
 #include "CavityData.hpp"
 #include "GreenData.hpp"
@@ -67,7 +65,7 @@ public:
     /// Constructor from human-readable input file name
     Input(const std::string & filename);
     /// Constructor from host input structs
-    Input(const cavityInput & cav, const solverInput & solv, const greenInput & green);
+    Input(const PCMInput & host_input);
 
     /// Accessor methods
 
@@ -138,8 +136,7 @@ private:
      *  The "Atoms" and "Explicit" methods are only available using the explicit parsing
      *  by our Python script of a separate input file.
      */
-    void reader(const cavityInput & cav, const solverInput & solv,
-                const greenInput & green);
+    void reader(const PCMInput & host_input); 
     /*! Perform semantic input parsing aka sanity check */
     void semanticCheck();
 

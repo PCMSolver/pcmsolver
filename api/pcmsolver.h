@@ -25,9 +25,7 @@
 extern "C" {
 #endif
 
-struct cavityInput;
-struct solverInput;
-struct greenInput;
+struct PCMInput;
 
 struct pcmsolver_context_s;
 typedef struct pcmsolver_context_s pcmsolver_context_t;
@@ -39,13 +37,13 @@ typedef enum
 } pcmsolver_reader_t;
 
 void host_writer(const char *);
-void host_input(cavityInput *, solverInput *, greenInput *);
 
 PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading,
                                         int nr_nuclei,
                                         double charges[],
                                         double coordinates[],
-                                        int symmetry_info[]);
+                                        int symmetry_info[],
+					PCMInput * host_input);
 
 PCMSOLVER_API void pcmsolver_delete(pcmsolver_context_t * context);
 

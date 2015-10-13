@@ -57,50 +57,29 @@ integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
 integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_
 integer(c_int)  :: nvert_(maxts_)
 real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)
-character(kind=c_char, len=1), intent(in) :: pedra_(*)
-character(kind=c_char, len=1), intent(in) :: off_(*)
+character(kind=c_char) :: pedra_
+character(kind=c_char) :: off_
 
 integer(c_int)    :: i, j, k, offset
 integer(c_int)    :: error_code
 integer(kind=regint_k) :: lvpri
 logical           :: pedra_file_exists
 real(c_double), allocatable :: vert(:, :, :), centr(:, :, :)
-character(kind=c_char, len=:), allocatable :: pedra
-character(kind=c_char, len=:), allocatable :: off
-integer :: l, nchars
 type(point_group) :: pgroup
-
-l = 1
-do
-    if (pedra_(l) == c_null_char) exit
-    l = l + 1
-end do
-nchars = l - 1  ! Exclude null character from Fortran string
-allocate(character(len=nchars) :: pedra)
-pedra = transfer(pedra_(1:nchars), pedra)
-
-l = 1
-do
-    if (off_(l) == c_null_char) exit
-    l = l + 1
-end do
-nchars = l - 1  ! Exclude null character from Fortran string
-allocate(character(len=nchars) :: off)
-off = transfer(off_(1:nchars), off)
 
 lvpri = 121201_regint_k
 pedra_file_exists = .false.
-inquire(file = pedra, exist = pedra_file_exists)
+inquire(file = pedra_, exist = pedra_file_exists)
 if (pedra_file_exists) then
    open(lvpri,                   &
-       file = pedra,       &
+       file = pedra_,       &
        status = 'unknown',       &
        form = 'formatted',       &
        access = 'sequential')
    close(lvpri, status = 'delete')
 end if
 open(lvpri,                      &
-    file = pedra,          &
+    file = pedra_,          &
     status = 'new',              &
     form = 'formatted',          &
     access = 'sequential')
@@ -135,7 +114,7 @@ centr = 0.0d0
 
 nesf = nesfp
 
-call polyhedra_driver(pgroup, vert, centr, masses_, lvpri, off, error_code)
+call polyhedra_driver(pgroup, vert, centr, masses_, lvpri, off_, error_code)
 
 ! Common block dark magic, it will disappear one day...
 nts_ = nts

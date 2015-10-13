@@ -85,8 +85,21 @@ extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
                                    double * xe, double * ye, double * ze, double * rin, double * masses,
                                    double * avgArea, double * rsolv, double * ret,
                                    int * nr_gen, int * gen1, int * gen2, int * gen3,
-				   int * nvert, double * vert, double * centr, const char * pedra, const char * off);
+				   int * nvert, double * vert, double * centr, char * pedra, char * off);
 
+void convertToFortran(char * fstring, size_t fstring_len, const char * cstring)
+{
+    size_t inlen = std::strlen(cstring);
+    size_t cpylen = std::min(inlen, fstring_len);
+
+    if (inlen > fstring_len)
+    {
+        // TODO: truncation error or warning
+    }
+
+    std::copy(cstring, cstring + cpylen, fstring);
+    std::fill(fstring + cpylen, fstring + fstring_len, ' ');
+}
 
 void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int maxvert)
 {
@@ -169,8 +182,12 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
 
     std::stringstream pedra;
     pedra << "PEDRA.OUT_" << suffix << "_" << ::getpid();
+    char f_pedra[std::strlen(pedra.str().c_str()) -1];
+    convertToFortran(f_pedra, std::strlen(pedra.str().c_str()) -1, pedra.str().c_str());
     std::stringstream off;
     off << "cavity.off_" << suffix << "_" << ::getpid();
+    char f_off[std::strlen(off.str().c_str()) -1];
+    convertToFortran(f_off, std::strlen(off.str().c_str()) -1, off.str().c_str());
     // Go PEDRA, Go!
     TIMER_ON("GePolCavity::generatecavity_cpp");
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
@@ -179,7 +196,7 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
                        xe, ye, ze, rin, mass,
 		       &averageArea, &probeRadius, &minimalRadius,
                        &nr_gen, &gen1, &gen2, &gen3,
-                nvert, vert, centr, pedra.str().c_str(), off.str().c_str());
+                nvert, vert, centr, f_pedra, f_off);
     TIMER_OFF("GePolCavity::generatecavity_cpp");
 
     // The "intensive" part of updating the spheres related class data members will be of course

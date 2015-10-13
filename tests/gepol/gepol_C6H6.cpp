@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -26,7 +26,6 @@
 #include <catch.hpp>
 
 #include <cmath>
-#include <cstdio>
 
 #include "Config.hpp"
 
@@ -45,10 +44,8 @@ TEST_CASE("GePol cavity for the benzene molecule", "[gepol][gepol_C6H6]")
     // Addition of spheres is enabled, but will not happen in this particular case
     double minRadius = 10.0 / convertBohrToAngstrom;
     Molecule molec = C6H6();
-    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+    GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "c6h6");
     cavity.saveCavity("c6h6.npz");
-    std::rename("PEDRA.OUT", "PEDRA.OUT.c6h6");
-    std::rename("cavity.off", "cavity.off.c6h6");
 
     /*! \class GePolCavity
      *  \test \b GePolCavityC6H6AddTest_size tests GePol cavity size for C6H6 in C1 symmetry with added spheres

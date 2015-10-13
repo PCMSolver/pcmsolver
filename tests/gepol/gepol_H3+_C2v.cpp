@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -26,7 +26,6 @@
 #include <catch.hpp>
 
 #include <cmath>
-#include <cstdio>
 
 #include "Config.hpp"
 
@@ -49,10 +48,8 @@ SCENARIO("GePol cavity for the H3+ molecule in C2v symmetry", "[gepol][gepol_H3+
             double area = 0.2 / convertBohr2ToAngstrom2;
             double probeRadius = 1.385 / convertBohrToAngstrom;
             double minRadius = 0.2 / convertBohrToAngstrom;
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "c2v");
             cavity.saveCavity("h3+_c2v.npz");
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
-            std::rename("cavity.off", "cavity.off.c2v");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityC2vAddTest_size tests GePol cavity size for H3+ in C2v symmetry with added spheres
@@ -104,10 +101,8 @@ SCENARIO("GePol cavity for the H3+ molecule in C2v symmetry", "[gepol][gepol_H3+
             double area = 0.2 / convertBohr2ToAngstrom2;
             double probeRadius = 1.385 / convertBohrToAngstrom;
             double minRadius = 100.0 / convertBohrToAngstrom;
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "c2v_noadd");
             cavity.saveCavity("h3+_c2v_noadd.npz");
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c2v_noadd");
-            std::rename("cavity.off", "cavity.off.c2v_noadd");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityC2vTest_size tests GePol cavity size for H3+ in C2v symmetry without added spheres

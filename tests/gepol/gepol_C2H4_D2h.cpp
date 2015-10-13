@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -26,7 +26,6 @@
 #include <catch.hpp>
 
 #include <cmath>
-#include <cstdio>
 #include <vector>
 
 #include "Config.hpp"
@@ -50,10 +49,8 @@ SCENARIO("GePol cavity for the C2H4 molecule in D2h symmetry", "[gepol][gepol_C2
             double area = 0.2 / convertBohr2ToAngstrom2;
             double probeRadius = 1.385 / convertBohrToAngstrom;
             double minRadius = 0.2 / convertBohrToAngstrom;
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "d2h");
             cavity.saveCavity("c2h4_d2h.npz");
-            std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
-            std::rename("cavity.off", "cavity.off.d2h");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityD2hAddTest_size tests GePol cavity size for C2H4 in D2h symmetry with added spheres
@@ -105,10 +102,8 @@ SCENARIO("GePol cavity for the C2H4 molecule in D2h symmetry", "[gepol][gepol_C2
             double area = 0.2 / convertBohr2ToAngstrom2;
             double probeRadius = 1.385 / convertBohrToAngstrom;
             double minRadius = 100.0 / convertBohrToAngstrom;
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "d2h_noadd");
             cavity.saveCavity("c2h4_d2h_noadd.npz");
-            std::rename("PEDRA.OUT", "PEDRA.OUT.d2h_noadd");
-            std::rename("cavity.off", "cavity.off.d2h_noadd");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityD2hTest_size tests GePol cavity size for C2H4 in D2h symmetry without added spheres

@@ -1,22 +1,22 @@
 !pcmsolver_copyright_start
 !       PCMSolver, an API for the Polarizable Continuum Model
 !       Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
-! 
+!
 !       This file is part of PCMSolver.
-! 
+!
 !       PCMSolver is free software: you can redistribute it and/or modify
 !       it under the terms of the GNU Lesser General Public License as published by
 !       the Free Software Foundation, either version 3 of the License, or
 !       (at your option) any later version.
-! 
+!
 !       PCMSolver is distributed in the hope that it will be useful,
 !       but WITHOUT ANY WARRANTY; without even the implied warranty of
 !       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 !       GNU Lesser General Public License for more details.
-! 
+!
 !       You should have received a copy of the GNU Lesser General Public License
 !       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
+!
 !       For information on the complete list of contributors to the
 !       PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
 !pcmsolver_copyright_end
@@ -79,7 +79,8 @@
 
     contains
 
-    subroutine polyhedra_driver(pgroup, vert, centr, masses, global_print_unit, error_code)
+    subroutine polyhedra_driver(pgroup, vert, centr, masses, global_print_unit, &
+        off, error_code)
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
@@ -88,6 +89,7 @@
     type(point_group) :: pgroup
     real(kind=dp)     :: masses(mxts)
     integer(kind=regint_k)           :: global_print_unit
+    character(len=*) :: off
     integer(kind=regint_k)           :: error_code
 
     logical :: some
@@ -138,7 +140,7 @@
     cv = 0.0d0
 
     call polyhedra(intsph, vert, centr, newsph, icav1, icav2, xval, yval, zval, &
-    jtr, cv, numts, numsph, numver, natm, some, masses)
+    jtr, cv, numts, numsph, numver, natm, some, masses, off)
 
 ! Bring the error code back home
     error_code = pedra_error_code
@@ -146,7 +148,7 @@
     end subroutine polyhedra_driver
 
     subroutine polyhedra(intsph,vert,centr,newsph,icav1,icav2,xval,yval, &
-    zval,jtr,cv,numts,numsph,numver,natm,some,masses)
+    zval,jtr,cv,numts,numsph,numver,natm,some,masses, off)
 !
 ! We list variables of interest, that might be declared inside a common block.
 ! nesf: total number of spheres
@@ -171,6 +173,7 @@
     real(kind=dp) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
     logical :: some
     integer(kind=regint_k) :: jtr(numts, 3)
+    character(len=*) :: off
 
     real(kind=dp), parameter :: d0 = 0.0d0
     real(kind=dp) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
@@ -533,7 +536,7 @@
 ! Prepare data for geomview
     call ordpcm(nts, xtscor, ytscor, ztscor, as)
 
-    call plotcav(vert, numts)
+    call plotcav(off, vert, numts)
 
 ! Calculate cavity volume using Gauss Theorem:
 !       V = sum_i {area(i) * center(i) * normal(i)} / 3
@@ -2083,7 +2086,7 @@
 
     end subroutine cavspl
 
-    subroutine plotcav(vert, numts)
+    subroutine plotcav(off, vert, numts)
 !
 ! Prepare the input file for GeomView
 ! Contrary to the DALTON version of PEDRA we are in this context completely
@@ -2095,6 +2098,7 @@
 ! Passed variables
     integer(kind=regint_k) :: numts
     real(kind=dp) :: vert(numts, 10, 3)
+    character(len=*) :: off
 ! Local variables
     integer(kind=regint_k) :: ivts(mxts, 10)
     integer(kind=regint_k) :: off_unit
@@ -2108,11 +2112,11 @@
 ! The following INQUIRE statement returns whether the file named cavity.off is
 ! connected in logical variable off_open, whether the file exists in logical
 ! variable off_exist, and the unit number in integer(kind=regint_k) variable off_unit
-    inquire(file = 'cavity.off', opened = off_open, &
+    inquire(file = off, opened = off_open, &
             exist = off_exist, number = off_unit)
     if (off_exist) then
         open(unit = lucav,       &
-        file = 'cavity.off',     &
+        file = off,     &
         status = 'unknown',      &
         form = 'formatted',      &
         access = 'sequential')
@@ -2120,7 +2124,7 @@
     end if
 
     open(unit = lucav,    &
-    file = 'cavity.off',  &
+    file = off,  &
     status = 'new',       &
     form = 'formatted',   &
     access = 'sequential')

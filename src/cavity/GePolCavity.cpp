@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -84,10 +85,10 @@ extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
                                    double * xe, double * ye, double * ze, double * rin, double * masses,
                                    double * avgArea, double * rsolv, double * ret,
                                    int * nr_gen, int * gen1, int * gen2, int * gen3,
-				   int * nvert, double * vert, double * centr);
+				   int * nvert, double * vert, double * centr, const char * pedra, const char * off);
 
 
-void GePolCavity::build(int maxts, int maxsph, int maxvert)
+void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int maxvert)
 {
 
     // This is a wrapper for the generatecavity_cpp function defined in the Fortran code PEDRA.
@@ -166,6 +167,10 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     int gen2 = molecule_.pointGroup().generators(1);
     int gen3 = molecule_.pointGroup().generators(2);
 
+    std::stringstream pedra;
+    pedra << "PEDRA.OUT_" << suffix << "_" << ::getpid();
+    std::stringstream off;
+    off << "cavity.off_" << suffix << "_" << ::getpid();
     // Go PEDRA, Go!
     TIMER_ON("GePolCavity::generatecavity_cpp");
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
@@ -174,7 +179,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
                        xe, ye, ze, rin, mass,
 		       &averageArea, &probeRadius, &minimalRadius,
                        &nr_gen, &gen1, &gen2, &gen3,
-                nvert, vert, centr);
+                nvert, vert, centr, pedra.str().c_str(), off.str().c_str());
     TIMER_OFF("GePolCavity::generatecavity_cpp");
 
     // The "intensive" part of updating the spheres related class data members will be of course

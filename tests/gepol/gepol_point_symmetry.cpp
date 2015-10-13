@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -26,7 +26,6 @@
 #include <catch.hpp>
 
 #include <cmath>
-#include <cstdio>
 #include <vector>
 
 #include "Config.hpp"
@@ -47,9 +46,7 @@ SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "
         WHEN("the point group is C1")
         {
             Molecule point = dummy<0>();
-            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
-            std::rename("cavity.off", "cavity.off.c1");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "c1");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityC1Test_size tests GePol cavity size for a point charge in C1 symmetry with added spheres
@@ -105,9 +102,7 @@ SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "
         WHEN("the point group is C2")
         {
             Molecule point = dummy<1>();
-            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
-            std::rename("cavity.off", "cavity.off.c2");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "c2");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityC1Test_size tests GePol cavity size for a point charge in C2 symmetry with added spheres
@@ -163,9 +158,7 @@ SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "
         WHEN("the point group is Cs")
         {
             Molecule point = dummy<2>();
-            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
-            std::rename("cavity.off", "cavity.off.cs");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "cs");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCsTest_size tests GePol cavity size for a point charge in Cs symmetry with added spheres
@@ -221,9 +214,7 @@ SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "
         WHEN("the point group is Ci")
         {
             Molecule point = dummy<3>();
-            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
-            std::rename("cavity.off", "cavity.off.ci");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "ci");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCiTest_size tests GePol cavity size for a point charge in Ci symmetry with added spheres
@@ -279,9 +270,7 @@ SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "
         WHEN("the point group is D2")
         {
             Molecule point = dummy<4>();
-            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
-            std::rename("cavity.off", "cavity.off.d2");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "d2");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityD2Test_size tests GePol cavity size for a point charge in D2 symmetry with added spheres
@@ -337,9 +326,7 @@ SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "
         WHEN("the point group is C2v")
         {
             Molecule point = dummy<5>();
-            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
-            std::rename("cavity.off", "cavity.off.c2v");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "c2v");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityC2vTest_size tests GePol cavity size for a point charge in C2v symmetry with added spheres
@@ -395,9 +382,7 @@ SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "
         WHEN("the point group is C2h")
         {
             Molecule point = dummy<6>();
-            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
-            std::rename("cavity.off", "cavity.off.c2h");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "c2h");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityC2hTest_size tests GePol cavity size for a point charge in C2h symmetry with added spheres
@@ -453,9 +438,7 @@ SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "
         WHEN("the point group is D2h")
         {
             Molecule point = dummy<7>();
-            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
-            std::rename("cavity.off", "cavity.off.d2h");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "d2h");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityD2hTest_size tests GePol cavity size for a point charge in D2h symmetry with added spheres

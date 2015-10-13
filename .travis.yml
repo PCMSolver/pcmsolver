@@ -213,10 +213,11 @@ install:
       CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
       mkdir cmake && travis_retry wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+      pip install --upgrade ${PYTHON_PACKAGES} --user `whoami`
     elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       brew install cmake boost python gcc
+      pip install --upgrade ${PYTHON_PACKAGES}
     fi
-    pip install --upgrade ${PYTHON_PACKAGES} --user `whoami`
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}

@@ -58,9 +58,9 @@
 #endif
 
 PCMSOLVER_API
-pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], PCMInput * host_input)
+pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], PCMInput host_input)
 {
-    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates, symmetry_info, *host_input));
+    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input));
 }
 
 PCMSOLVER_API
@@ -354,7 +354,6 @@ namespace pcm {
     void Meddle::initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input)
     {
         if (input_reading) {
-	    //trim(host_input);
             input_ = Input(host_input);
         } else {
             input_ = Input("@pcmsolver.inp");

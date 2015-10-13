@@ -39,11 +39,11 @@ typedef enum
 void host_writer(const char *);
 
 PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading,
-                                        int nr_nuclei,
-                                        double charges[],
-                                        double coordinates[],
-                                        int symmetry_info[],
-					PCMInput * host_input);
+                                                  int nr_nuclei,
+                                                  double charges[],
+                                                  double coordinates[],
+                                                  int symmetry_info[],
+                                                  PCMInput host_input);
 
 PCMSOLVER_API void pcmsolver_delete(pcmsolver_context_t * context);
 

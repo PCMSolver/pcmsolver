@@ -1,5 +1,5 @@
 module pcmsolver
- 
+
     use, intrinsic :: iso_c_binding
 
     implicit none
@@ -55,12 +55,12 @@ module pcmsolver
     interface pcmsolver_new
         function pcmsolver_new(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input) result(context) bind(C)
             import
-            integer(c_int), value :: input_reading
-            integer(c_int), value :: nr_nuclei
-            real(c_double), intent(in) :: charges(*)
-            real(c_double), intent(in) :: coordinates(*)
-            integer(c_int), intent(in) :: symmetry_info(*)
-            type(PCMInput), intent(in) :: host_input 
+            integer(c_int), intent(in), value :: input_reading
+            integer(c_int), intent(in), value :: nr_nuclei
+            real(c_double), intent(in)        :: charges(*)
+            real(c_double), intent(in)        :: coordinates(*)
+            integer(c_int), intent(in)        :: symmetry_info(*)
+            type(PCMInput), intent(in), value :: host_input
             type(c_ptr) :: context
         end function pcmsolver_new
     end interface pcmsolver_new
@@ -145,7 +145,7 @@ module pcmsolver
             real(c_double) :: energy
         end function pcmsolver_compute_polarization_energy
     end interface pcmsolver_compute_polarization_energy
-    
+
     interface pcmsolver_get_surface_function
         subroutine pcmsolver_get_surface_function(context, f_size, values, name) bind(C)
             import

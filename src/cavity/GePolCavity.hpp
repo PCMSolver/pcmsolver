@@ -84,6 +84,11 @@ private:
      *  \param[in] maxvert maximum number of vertices
      */
     void build(const std::string & suffix, int maxts, int maxsp, int maxvert);
+    /*! \brief Writes the cavity.off file for visualizing the cavity
+     *  \param[in]  suffix for the cavity.off
+     *  The full name of the visualization file will be cavity.off_suffix_PID
+     */
+    void writeOFF(const std::string & suffix);
 };
 
 #endif // GEPOLCAVITY_HPP

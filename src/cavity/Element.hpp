@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -46,13 +46,14 @@
 class Element
 {
 public:
-    Element(int nv, double w, const Eigen::Vector3d & c, const Eigen::Vector3d & n,
+    Element(int nv, int isphe, double w, const Eigen::Vector3d & c, const Eigen::Vector3d & n,
             bool i, const Sphere & s, const Eigen::Matrix3Xd & v, const Eigen::Matrix3Xd & a) :
-	    nVertices_(nv), area_(w), center_(c), normal_(n), irreducible_(i),
+	    nVertices_(nv), iSphere_(isphe), area_(w), center_(c), normal_(n), irreducible_(i),
 	    sphere_(s), vertices_(v), arcs_(a) {}
     virtual ~Element() {}
 
     int nVertices() const { return nVertices_; }
+    int iSphere() const { return iSphere_; }
     double area() const { return area_; }
     Eigen::Vector3d center() const { return center_; }
     Eigen::Vector3d normal() const { return normal_; }
@@ -79,6 +80,8 @@ public:
 private:
     /// Number of vertices of the finite element
     int nVertices_;
+    /// Index of the sphere the finite element belongs to
+    int iSphere_;
     /// Area of the finite element
     double area_;
     /// Center of the finite element

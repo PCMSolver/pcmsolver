@@ -33,7 +33,7 @@ subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
     nts_, ntsirr_, nesfp_, addsph_,                              &
     xe_, ye_, ze_, rin_, masses_, avgArea_, rsolv_, ret_,        &
     nr_gen_, gen1_, gen2_, gen3_,                                &
-    nvert_, vert_, centr_, pedra_, off_)                         &
+    nvert_, vert_, centr_, isphe_, pedra_, len_pedra_)           &
     bind(c, name='generatecavity_cpp')
 
 use, intrinsic :: iso_c_binding
@@ -57,37 +57,44 @@ integer(c_int)  :: nts_, ntsirr_, nesfp_, addsph_
 integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_
 integer(c_int)  :: nvert_(maxts_)
 real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)
+integer(c_int)  :: isphe_(maxts_)
 character(kind=c_char) :: pedra_
-character(kind=c_char) :: off_
+integer(c_int) :: len_pedra_
 
 integer(c_int)    :: i, j, k, offset
 integer(c_int)    :: error_code
-integer(kind=regint_k) :: lvpri
-logical           :: pedra_file_exists
+integer(kind=regint_k) :: pedra_unit
+logical           :: pedra_open, pedra_exist
 real(c_double), allocatable :: vert(:, :, :), centr(:, :, :)
+character(len=len_pedra_) :: pedra
 type(point_group) :: pgroup
 
-lvpri = 121201_regint_k
-pedra_file_exists = .false.
-inquire(file = pedra_, exist = pedra_file_exists)
-if (pedra_file_exists) then
-   open(lvpri,                   &
-       file = pedra_,       &
+call pcmsolver_c2f_string(pedra_, pedra, len_pedra_)
+!lvpri = 121201_regint_k
+! The following INQUIRE statement returns whether the file named cavity.off is
+! connected in logical variable off_open, whether the file exists in logical
+! variable off_exist, and the unit number in integer(kind=regint_k) variable off_unit
+pedra_unit = 121201_regint_k
+inquire(file = pedra, opened = pedra_open, &
+        exist = pedra_exist)
+if (pedra_exist) then
+   open(unit = pedra_unit,                   &
+       file = pedra,       &
        status = 'unknown',       &
        form = 'formatted',       &
        access = 'sequential')
-   close(lvpri, status = 'delete')
+   close(unit = pedra_unit, status = 'delete')
 end if
-open(lvpri,                      &
-    file = pedra_,          &
+open(unit = pedra_unit,                      &
+    file = pedra,          &
     status = 'new',              &
     form = 'formatted',          &
     access = 'sequential')
-rewind(lvpri)
+rewind(pedra_unit)
 areats = avgArea_
 icesph = 1
 iprpcm = 3
-call get_point_group(lvpri, pgroup, nr_gen_, gen1_, gen2_, gen3_)
+call get_point_group(pedra_unit, pgroup, nr_gen_, gen1_, gen2_, gen3_)
 rsolv = rsolv_
 ! These parameters are fixed see one of the original GePol papers
 omega = 40.0d+00
@@ -114,7 +121,7 @@ centr = 0.0d0
 
 nesf = nesfp
 
-call polyhedra_driver(pgroup, vert, centr, masses_, lvpri, off_, error_code)
+call polyhedra_driver(pgroup, vert, centr, masses_, pedra_unit, error_code)
 
 ! Common block dark magic, it will disappear one day...
 nts_ = nts
@@ -143,12 +150,16 @@ do i = 1, nts
    end do
 end do
 
+do i = 1, nesf
+    isphe_(i) = isphe(i)
+end do
+
 ! Clean-up
 deallocate(vert)
 deallocate(centr)
 
-write(lvpri, *) "Error code is ", error_code
+write(pedra_unit, *) "Error code is ", error_code
 
-close(lvpri)
+close(pedra_unit)
 
 end subroutine generatecavity_cpp

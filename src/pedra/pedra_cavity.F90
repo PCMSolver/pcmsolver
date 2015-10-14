@@ -79,8 +79,7 @@
 
     contains
 
-    subroutine polyhedra_driver(pgroup, vert, centr, masses, global_print_unit, &
-        off, error_code)
+    subroutine polyhedra_driver(pgroup, vert, centr, masses, global_print_unit, error_code)
 
 #include "pcm_pcmdef.h"
 #include "pcm_mxcent.h"
@@ -89,7 +88,6 @@
     type(point_group) :: pgroup
     real(kind=dp)     :: masses(mxts)
     integer(kind=regint_k)           :: global_print_unit
-    character(len=*) :: off
     integer(kind=regint_k)           :: error_code
 
     logical :: some
@@ -140,7 +138,7 @@
     cv = 0.0d0
 
     call polyhedra(intsph, vert, centr, newsph, icav1, icav2, xval, yval, zval, &
-    jtr, cv, numts, numsph, numver, natm, some, masses, off)
+    jtr, cv, numts, numsph, numver, natm, some, masses)
 
 ! Bring the error code back home
     error_code = pedra_error_code
@@ -148,7 +146,7 @@
     end subroutine polyhedra_driver
 
     subroutine polyhedra(intsph,vert,centr,newsph,icav1,icav2,xval,yval, &
-    zval,jtr,cv,numts,numsph,numver,natm,some,masses, off)
+    zval,jtr,cv,numts,numsph,numver,natm,some,masses)
 !
 ! We list variables of interest, that might be declared inside a common block.
 ! nesf: total number of spheres
@@ -173,7 +171,6 @@
     real(kind=dp) :: pp(3), pp1(3), pts(3, 10), ccc(3, 10)
     logical :: some
     integer(kind=regint_k) :: jtr(numts, 3)
-    character(len=*) :: off
 
     real(kind=dp), parameter :: d0 = 0.0d0
     real(kind=dp) :: area, cosom2, fc, fc1, hh, omg, prod, r2gn
@@ -535,8 +532,6 @@
 
 ! Prepare data for geomview
     call ordpcm(nts, xtscor, ytscor, ztscor, as)
-
-    call plotcav(off, vert, numts)
 
 ! Calculate cavity volume using Gauss Theorem:
 !       V = sum_i {area(i) * center(i) * normal(i)} / 3
@@ -2085,86 +2080,6 @@
     500 FORMAT(/10X,'THE SECOND CAVITY IS FORMED BY SPHERE(S) :'/)
 
     end subroutine cavspl
-
-    subroutine plotcav(off, vert, numts)
-!
-! Prepare the input file for GeomView
-! Contrary to the DALTON version of PEDRA we are in this context completely
-! agnostic of the atom type, so no coloring of polyhedra is possible.
-!
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
-#include "pcm_pcm.h"
-! Passed variables
-    integer(kind=regint_k) :: numts
-    real(kind=dp) :: vert(numts, 10, 3)
-    character(len=*) :: off
-! Local variables
-    integer(kind=regint_k) :: ivts(mxts, 10)
-    integer(kind=regint_k) :: off_unit
-    logical :: off_open, off_exist
-    real(kind=dp) :: c1, c2, c3
-    integer(kind=regint_k) :: n, numv, i, j, k, last, lucav
-    integer(kind=regint_k) :: jcord
-
-    lucav = 12121201
-
-! The following INQUIRE statement returns whether the file named cavity.off is
-! connected in logical variable off_open, whether the file exists in logical
-! variable off_exist, and the unit number in integer(kind=regint_k) variable off_unit
-    inquire(file = off, opened = off_open, &
-            exist = off_exist, number = off_unit)
-    if (off_exist) then
-        open(unit = lucav,       &
-        file = off,     &
-        status = 'unknown',      &
-        form = 'formatted',      &
-        access = 'sequential')
-        close(unit = lucav, status = 'delete')
-    end if
-
-    open(unit = lucav,    &
-    file = off,  &
-    status = 'new',       &
-    form = 'formatted',   &
-    access = 'sequential')
-    rewind(lucav)
-
-    numv = 0
-
-    do i = 1, nts
-        numv = numv + nvert(i)
-    end do
-
-    write(lucav, '(1x, a)') 'COFF'
-    write(lucav, '(3i10)') numv, nts, numv
-    k = 0
-    last = 0
-    do i = 1, nts
-        n = isphe(i)
-        if (n /= last) then
-                write(lucav, '(a, i4)') "# Sphere number ", n
-        end if
-        last = n
-        ! All spheres are gray
-        c1 = 1.0d0
-        c2 = 1.0d0
-        c3 = 1.0d0
-        do j = 1, nvert(i)
-            ivts(i, j) = k
-            k = k + 1
-            write(lucav, 2001) (vert(i, j, jcord), jcord = 1, 3), c1, c2, c3, 0.75, i
-        end do
-    end do
-    do i = 1, nts
-        write(lucav, '(a, 14i10)') "  ", nvert(i), (ivts(i, j), j = 1, nvert(i))
-    end do
-
-    2001 format('  ',3f16.9,4f5.2,' # Tess. ',i4)
-
-    close(unit = lucav, status = 'keep')
-
-    end subroutine plotcav
 
     subroutine prerep(nv, nt, its, cv, jtr, nvert, numts)
 !

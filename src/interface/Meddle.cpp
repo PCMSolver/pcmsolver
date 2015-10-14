@@ -330,20 +330,15 @@ namespace pcm {
 
     void Meddle::printer(const std::string & message) const
     {
-        // Extract C-style string from C++-style string and get its length
         const char * message_C = message.c_str();
-        // Call the host_writer
-        host_writer(message_C);
+        host_writer(message_C, std::strlen(message_C));
     }
 
     void Meddle::printer(const std::ostringstream & stream) const
     {
-        // Extract C++-style string from stream
         std::string message = stream.str();
-        // Extract C-style string from C++-style string and get its length
         const char * message_C = message.c_str();
-        // Call the host_writer
-        host_writer(message_C);
+        host_writer(message_C, std::strlen(message_C));
     }
 
     void Meddle::writeTimings() const

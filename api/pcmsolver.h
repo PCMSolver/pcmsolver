@@ -36,7 +36,7 @@ typedef enum
     PCMSOLVER_READER_HOST
 } pcmsolver_reader_t;
 
-void host_writer(const char *);
+void host_writer(const char * message, size_t message_length);
 
 PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading,
                                                   int nr_nuclei,

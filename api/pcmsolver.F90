@@ -25,24 +25,24 @@ module pcmsolver
     public pcmsolver_write_timings
 
     type, public, bind(C) :: PCMInput
-        character(kind=c_char, len=1) :: cavity_type(8) = 'abcdefg'//c_null_char
+        character(kind=c_char, len=1) :: cavity_type(8)
         integer(c_int)                :: patch_level = 0
         real(c_double)                :: coarsity = 0.0
         real(c_double)                :: area = 0.0
-        character(kind=c_char, len=1) :: radii_set(8) = 'abcdefg'//c_null_char
+        character(kind=c_char, len=1) :: radii_set(8)
         real(c_double)                :: min_distance = 0.0
         integer(c_int)                :: der_order = 0
         logical(c_bool)               :: scaling = .false.
-        character(kind=c_char, len=1) :: restart_name(20) = 'abcdefghijklmnopqrs'//c_null_char
+        character(kind=c_char, len=1) :: restart_name(20)
         real(c_double)                :: min_radius = 0.0
-        character(kind=c_char, len=1) :: solver_type(7) = 'abcdef'//c_null_char
+        character(kind=c_char, len=1) :: solver_type(7)
         real(c_double)                :: correction = 0.0
-        character(kind=c_char, len=1) :: solvent(16) = 'abcdefghijklmno'//c_null_char
+        character(kind=c_char, len=1) :: solvent(16)
         real(c_double)                :: probe_radius = 0.0
-        character(kind=c_char, len=1) :: equation_type(11) = 'abcdefghij'//c_null_char
-        character(kind=c_char, len=1) :: inside_type(7) = 'abcde'//c_null_char
+        character(kind=c_char, len=1) :: equation_type(11)
+        character(kind=c_char, len=1) :: inside_type(7)
         real(c_double)                :: outside_epsilon = 0.0
-        character(kind=c_char, len=1) :: outside_type(22) = 'abcdefghijklmnopqrstu'//c_null_char
+        character(kind=c_char, len=1) :: outside_type(22)
     end type PCMInput
 
     public PCMSOLVER_READER_OWN

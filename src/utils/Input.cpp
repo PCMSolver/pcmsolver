@@ -46,6 +46,7 @@
 #include "Sphere.hpp"
 
 using boost::algorithm::to_upper_copy;
+using boost::algorithm::trim;
 
 Input::Input(const std::string & filename)
 {
@@ -172,38 +173,50 @@ void Input::reader(const std::string & filename)
     providedBy_ = std::string("API-side");
 }
 
+std::string trim(const char * src)
+{
+    std::string tmp(src);
+    trim(tmp);
+    return tmp;
+}
+
+std::string trim_and_upper(const char * src)
+{
+    return to_upper_copy(trim(src));
+}
+
 void Input::reader(const PCMInput & host_input)
 {
     CODATAyear_ = 2010;
 
-    type_ = to_upper_copy(std::string(host_input.cavity_type));
+    type_ = trim_and_upper(host_input.cavity_type);
     area_ = host_input.area * angstrom2ToBohr2(CODATAyear_);
     patchLevel_ = host_input.patch_level;
     coarsity_ = host_input.coarsity * angstromToBohr(CODATAyear_);
     minDistance_ = host_input.min_distance * angstromToBohr(CODATAyear_);
     derOrder_ = host_input.der_order;
     if (type_ == "RESTART") {
-        cavFilename_ = std::string(host_input.restart_name); // No case conversion here!
+        cavFilename_ = trim(host_input.restart_name); // No case conversion here!
     }
 
     scaling_ = host_input.scaling;
-    radiiSet_ = host_input.radii_set;
+    radiiSet_ = trim_and_upper(host_input.radii_set);
     minimalRadius_ = host_input.min_radius * angstromToBohr(CODATAyear_);
     mode_ = std::string("IMPLICIT");
 
-    std::string name = to_upper_copy(std::string(host_input.solvent));
+    std::string name = trim_and_upper(host_input.solvent);
     if (name.empty()) {
         hasSolvent_ = false;
         // Get the probe radius
         probeRadius_ = host_input.probe_radius * angstromToBohr(CODATAyear_);
         // Get the contents of the Green<inside> section...
         // ...and initialize the data members
-        greenInsideType_ = to_upper_copy(std::string(host_input.inside_type));
+        greenInsideType_ = trim_and_upper(host_input.inside_type);
         derivativeInsideType_ = derivativeTraits("DERIVATIVE");
         epsilonInside_ = 1.0;
         // Get the contents of the Green<outside> section...
         // ...and initialize the data members
-        greenOutsideType_ = to_upper_copy(std::string(host_input.outside_type));
+        greenOutsideType_ = trim_and_upper(host_input.outside_type);
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
         epsilonStaticOutside_ = host_input.outside_epsilon;
         epsilonDynamicOutside_ = host_input.outside_epsilon;
@@ -226,8 +239,8 @@ void Input::reader(const PCMInput & host_input)
     }
     integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
 
-    solverType_ = to_upper_copy(std::string(host_input.solver_type));
-    std::string inteq = to_upper_copy(std::string(host_input.equation_type));
+    solverType_ = trim_and_upper(host_input.solver_type);
+    std::string inteq = trim_and_upper(host_input.equation_type);
     equationType_ = integralEquation(inteq);
     correction_ = host_input.correction;
     hermitivitize_ = true;

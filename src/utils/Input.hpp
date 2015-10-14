@@ -136,7 +136,7 @@ private:
      *  The "Atoms" and "Explicit" methods are only available using the explicit parsing
      *  by our Python script of a separate input file.
      */
-    void reader(const PCMInput & host_input); 
+    void reader(const PCMInput & host_input);
     /*! Perform semantic input parsing aka sanity check */
     void semanticCheck();
 
@@ -263,5 +263,9 @@ int profilePolicy(const std::string & name);
 
 /*! A useful map to convert the EquationType string to an integer which will be passed to the Solver CTOR. */
 int integralEquation(const std::string & name);
+
+std::string trim(const char * src);
+
+std::string trim_and_upper(const char * src);
 
 #endif // INPUT_HPP

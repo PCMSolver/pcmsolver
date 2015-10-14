@@ -25,6 +25,15 @@
 
 #include "FortranCUtils.hpp"
 
+#include "Config.hpp"
+
+#include <cctype>
+#include <cstring>
+
+#ifndef _fcdtocp
+#define _fcdtocp(desc) (desc)
+#endif
+
 void pcmsolver_c2f_string(char * src, char * dest, int * len)
 {
     int sofar;
@@ -32,4 +41,21 @@ void pcmsolver_c2f_string(char * src, char * dest, int * len)
         *dest++ = *src++;
     while (sofar++ < *len)
         *dest++ = ' ';
+}
+
+void pcmsolver_f2c_string(char * src, char * dest, int * len)
+{
+    char * str; /* Pointer to FORTRAN string */
+    int i;      /* Local index variable */
+
+    /* Search for the end of the string */
+    str = _fcdtocp(src);
+    for(i = (int)*len - 1; i >= 0 && !std::isgraph((int)str[i]); i--)
+        /*EMPTY*/;
+
+    /* Copy text from FORTRAN to C string */
+    std::memcpy(dest, str, (size_t)(i + 1));
+
+    /* Terminate C string */
+    dest[i + 1] = '\0';
 }

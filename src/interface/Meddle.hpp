@@ -35,22 +35,14 @@ class IGreensFunction;
 class Input;
 class PCMSolver;
 
-struct cavityInput;
-struct greenInput;
-struct solverInput;
-
 #include "Input.hpp"
 #include "SurfaceFunction.hpp"
+#include "Symmetry.hpp"
 
 namespace pcm {
-    typedef function<int(void)> NrNucleiGetter;
-    typedef function<void(double[], double[])> CoordinatesGetter;
-    typedef function<void(const char *, size_t)> HostWriter;
-    typedef function<void(int *, int *, int *, int *)> PointGroupSetter;
-    typedef function<void(cavityInput &, solverInput &, greenInput &)> HostInput;
     typedef unordered_map<std::string, SurfaceFunction> SurfaceFunctionMap;
 
-    void initMolecule(const Input & inp, const PointGroupSetter & set_group,
+    void initMolecule(const Input & inp, const Symmetry & group,
             int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
             Molecule & molecule);
     void initSpheresAtoms(const Input &, const Eigen::Matrix3Xd &, std::vector<Sphere> &);
@@ -59,8 +51,7 @@ namespace pcm {
     class Meddle __final
     {
         public:
-            Meddle(const NrNucleiGetter &, const CoordinatesGetter &, const HostWriter &,
-                   const PointGroupSetter &);
+            Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input);
             ~Meddle();
             size_t getCavitySize() const;
             size_t getIrreducibleCavitySize() const;
@@ -77,16 +68,6 @@ namespace pcm {
             void printInfo() const;
             void writeTimings() const;
         private:
-            /*! Function to collect number of atoms in molecule */
-            NrNucleiGetter nrNuclei_;
-            /*! Function to collect atomic charges and coordinates */
-            CoordinatesGetter chargesAndCoordinates_;
-            /*! Function redirecting the output to the host */
-            HostWriter hostWriter_;
-            /*! Function setting the (Abelian) point group */
-            PointGroupSetter pointGroup_;
-            /*! Function reading input host-side */
-            HostInput hostInputReader_;
             /*! Input object */
             Input input_;
             /*! Cavity */
@@ -102,7 +83,7 @@ namespace pcm {
             /*! SurfaceFunction map */
             mutable SurfaceFunctionMap functions_;
             /*! Initialize input_ */
-            void initInput();
+            void initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input);
             /*! Initialize cavity_ */
             void initCavity();
             /*! Initialize static solver K_0_ */

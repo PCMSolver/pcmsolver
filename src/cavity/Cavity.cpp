@@ -152,7 +152,7 @@ void Cavity::loadCavity(const std::string & fname)
 	    vertices.resize(Eigen::NoChange, nv); // BOGUS!!!
 	    arcs.resize(Eigen::NoChange, nv); // BOGUS!!
 	    // Populate vertices and arcs
-	    elements_.push_back(Element(nv,
+	    elements_.push_back(Element(nv, 0,
 				        elementArea_(i),
 					elementCenter_.col(i),
 					elementNormal_.col(i),

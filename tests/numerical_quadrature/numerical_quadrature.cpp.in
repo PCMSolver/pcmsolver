@@ -28,6 +28,7 @@
 #include <cmath>
 #include <iomanip>
 #include <limits>
+#include <sstream>
 
 #include "Config.hpp"
 
@@ -53,7 +54,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
         double radius = 1.55;
         double area = 0.4;
         Molecule point = dummy<0>(radius);
-        GePolCavity cavity(point, area, 0.0, 100.0);
+        GePolCavity cavity(point, area, 0.0, 100.0, "");
         Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
         /*! \class NumericalQuadrature
          *  \test \b NumericalQuadrature_sphere tests numerical quadrature on a sphere for integrand = 1.0
@@ -106,7 +107,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
         double probeRadius = 1.385;
         double minRadius = 0.2;
         Molecule molecule = H2();
-        GePolCavity cavity(molecule, area, probeRadius, minRadius);
+        GePolCavity cavity(molecule, area, probeRadius, minRadius, "");
         Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
 
         /*! \class NumericalQuadrature

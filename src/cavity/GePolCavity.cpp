@@ -26,13 +26,18 @@
 #include "GePolCavity.hpp"
 
 #include <algorithm>
+#include <cctype>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
+#include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "Sphere.hpp"
@@ -84,10 +89,9 @@ extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
                                    double * xe, double * ye, double * ze, double * rin, double * masses,
                                    double * avgArea, double * rsolv, double * ret,
                                    int * nr_gen, int * gen1, int * gen2, int * gen3,
-				   int * nvert, double * vert, double * centr);
+				   int * nvert, double * vert, double * centr, int * isphe, char * pedra, int * len_f_pedra);
 
-
-void GePolCavity::build(int maxts, int maxsph, int maxvert)
+void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int maxvert)
 {
 
     // This is a wrapper for the generatecavity_cpp function defined in the Fortran code PEDRA.
@@ -106,6 +110,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     int    * nvert   = new int[maxts];
     double * vert    = new double[30 * maxts];
     double * centr   = new double[30 * maxts];
+    int    * isphe   = new int[maxts];
 
     // Clean-up possible heap-crap
     std::fill_n(xtscor, maxts, 0.0);
@@ -119,6 +124,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     std::fill_n(nvert, maxts, 0);
     std::fill_n(vert, 30*maxts, 0.0);
     std::fill_n(centr, 30*maxts, 0.0);
+    std::fill_n(isphe, maxts, 0);
 
     int nts = 0;
     int ntsirr = 0;
@@ -166,6 +172,10 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     int gen2 = molecule_.pointGroup().generators(1);
     int gen3 = molecule_.pointGroup().generators(2);
 
+    std::stringstream pedra;
+    pedra << "PEDRA.OUT_" << suffix << "_" << ::getpid();
+    char * f_pedra = const_cast<char *>(pedra.str().c_str());
+    int len_f_pedra = std::strlen(f_pedra);
     // Go PEDRA, Go!
     TIMER_ON("GePolCavity::generatecavity_cpp");
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
@@ -174,7 +184,7 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
                        xe, ye, ze, rin, mass,
 		       &averageArea, &probeRadius, &minimalRadius,
                        &nr_gen, &gen1, &gen2, &gen3,
-                nvert, vert, centr);
+                nvert, vert, centr, isphe, f_pedra, &len_f_pedra);
     TIMER_OFF("GePolCavity::generatecavity_cpp");
 
     // The "intensive" part of updating the spheres related class data members will be of course
@@ -254,31 +264,32 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
 
     // Fill elements_ vector
     for (int i = 0; i < nElements_; ++i) {
-	    int i_off = i + 1;
-	    bool irr = false;
-	    // PEDRA puts the irreducible tesserae first
-	    if (i < nIrrElements_) irr = true;
-	    Sphere sph(elementSphereCenter_.col(i), elementRadius_(i));
-	    int nv = nvert[i];
-	    Eigen::Matrix3Xd vertices, arcs;
-	    vertices.resize(Eigen::NoChange, nv);
-	    arcs.resize(Eigen::NoChange, nv);
-	    // Populate vertices and arcs
-	    for (int j = 0; j < nv; ++j) {
-		int j_off = (j + 1) * nElements_ - 1;
-	        for (int k = 0; k < 3; ++k) {
-			int k_off = (k + 1) * nElements_ * nv;
-			int offset = i_off + j_off + k_off;
-	  		vertices(k, j) = vert[offset];
-			arcs(k, j) = centr[offset];
-		}
-	    }
-	    elements_.push_back(Element(nv,
-				        elementArea_(i),
-					elementCenter_.col(i),
-					elementNormal_.col(i),
-					irr, sph,
-					vertices, arcs));
+        int i_off = i + 1;
+        bool irr = false;
+        // PEDRA puts the irreducible tesserae first
+        if (i < nIrrElements_) irr = true;
+        Sphere sph(elementSphereCenter_.col(i), elementRadius_(i));
+        int nv = nvert[i];
+        int isph = isphe[i]; // Back to C++ indexing starting from 0
+        Eigen::Matrix3Xd vertices, arcs;
+        vertices.resize(Eigen::NoChange, nv);
+        arcs.resize(Eigen::NoChange, nv);
+        // Populate vertices and arcs
+        for (int j = 0; j < nv; ++j) {
+            int j_off = (j + 1) * nElements_ - 1;
+            for (int k = 0; k < 3; ++k) {
+                int k_off = (k + 1) * nElements_ * nv;
+                int offset = i_off + j_off + k_off;
+                vertices(k, j) = vert[offset];
+                arcs(k, j) = centr[offset];
+            }
+        }
+        elements_.push_back(Element(nv, isph,
+                    elementArea_(i),
+                    elementCenter_.col(i),
+                    elementNormal_.col(i),
+                    irr, sph,
+                    vertices, arcs));
     }
 
     // Clean-up
@@ -294,8 +305,59 @@ void GePolCavity::build(int maxts, int maxsph, int maxvert)
     delete[] vert;
     delete[] centr;
     delete[] mass;
+    delete[] isphe;
 
     built = true;
+
+    writeOFF(suffix);
+}
+
+void GePolCavity::writeOFF(const std::string & suffix)
+{
+    std::stringstream off;
+    off << "cavity.off_" << suffix << "_" << ::getpid();
+
+    std::ofstream fout;
+    fout.open(off.str().c_str());
+
+    int numv = 0;
+    for (int i = 0; i < nElements_; ++i) {
+        numv += elements_[i].nVertices();
+    }
+    fout << "COFF" << std::endl;
+    fout << numv << " " << nElements_ << " " << numv << std::endl;
+
+    int k = 0;
+    double c1, c2, c3;
+    Eigen::MatrixXi ivts = Eigen::MatrixXi::Zero(nElements_, 10);
+    for (int i = 0; i < nElements_; ++i) {
+        if (i == 0) fout << boost::format("# Sphere number %i\n") % elements_[i].iSphere();
+        c1 = 1.0;
+        c2 = 1.0;
+        c3 = 1.0;
+        for (int j = 0; j < elements_[i].nVertices(); ++j) {
+            ivts(i, j) = k;
+            k = k + 1;
+            fout << boost::format("%20.14f\t%20.14f\t%20.14f\t%1.3f\t%1.3f\t%1.3f\t%1.3f   # Tess %i\n")
+            % elements_[i].vertices()(0, j)
+            % elements_[i].vertices()(1, j)
+            % elements_[i].vertices()(2, j)
+            % c1
+            % c2
+            % c3
+            % 0.75
+            % (i+1);
+        }
+    }
+    for (int i = 0; i < nElements_; ++i) {
+        fout << boost::format("%i ") % elements_[i].nVertices();
+            for (int j = 0; j < elements_[i].nVertices(); ++j) {
+                fout << boost::format("%i ") % ivts(i, j);
+            }
+        fout << std::endl;
+    }
+
+    fout.close();
 }
 
 std::ostream & GePolCavity::printCavity(std::ostream & os)

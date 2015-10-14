@@ -50,20 +50,20 @@ class GePolCavity : public Cavity
 {
 public:
     GePolCavity() {}
-    GePolCavity(const Molecule & molec, double a, double pr, double minR) :
+    GePolCavity(const Molecule & molec, double a, double pr, double minR, const std::string & suffix = "") :
         Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR)
 	{
 	  std::string checkpointName = "GePolCavity::build";
 	  TIMER_ON(checkpointName);
-	  build(10000, 200, 25000);
+	  build(suffix, 10000, 200, 25000);
 	  TIMER_OFF(checkpointName);
 	}
-    GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR) :
+    GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR, const std::string & suffix = "") :
 	Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
 	{
 	  std::string checkpointName = "GePolCavity::build";
 	  TIMER_ON(checkpointName);
-	  build(10000, 200, 25000);
+	  build(suffix, 10000, 200, 25000);
 	  TIMER_OFF(checkpointName);
 	}
     virtual ~GePolCavity() {}
@@ -76,13 +76,19 @@ private:
     double minimalRadius;
     int addedSpheres;
     virtual std::ostream & printCavity(std::ostream & os);
-    virtual void makeCavity() { build(10000, 200, 25000); }
+    virtual void makeCavity() { build(std::string("PEDRA.OUT"), 10000, 200, 25000); }
     /*! \brief Driver for PEDRA Fortran module.
+     *  \param[in]  suffix for the cavity.off and PEDRA.OUT files, the PID will also be added
      *  \param[in]   maxts maximum number of tesserae
      *  \param[in]   maxsp maximum number of spheres (original + added)
      *  \param[in] maxvert maximum number of vertices
      */
-    void build(int maxts, int maxsp, int maxvert);
+    void build(const std::string & suffix, int maxts, int maxsp, int maxvert);
+    /*! \brief Writes the cavity.off file for visualizing the cavity
+     *  \param[in]  suffix for the cavity.off
+     *  The full name of the visualization file will be cavity.off_suffix_PID
+     */
+    void writeOFF(const std::string & suffix);
 };
 
 #endif // GEPOLCAVITY_HPP

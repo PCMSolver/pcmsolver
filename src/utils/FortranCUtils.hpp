@@ -23,19 +23,29 @@
  */
 /* pcmsolver_copyright_end */
 
-#include "Sphere.hpp"
+#ifndef FORTRANCUTILS_HPP
+#define FORTRANCUTILS_HPP
 
-#include <ostream>
-#include <vector>
+#include "FCMangle.hpp"
 
-#include "Config.hpp"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <Eigen/Core>
+/*! \brief Convert C string to Fortran string
+ *  \param[in] src the string to convert
+ *  \param[out] src the string to convert
+ *  \param[in]      len length of Fortran string
+ *  Change a C string (NULL terminated) into a Fortran string.
+ *  Basically, all that is done is that the NULL is ripped out
+ *  and the string is padded with spaces
+ */
+#define pcmsolver_c2f_string \
+    FortranCInterface_GLOBAL_(pcmsolver_c2f_string, PCMSOLVER_C2F_STRING)
+    void pcmsolver_c2f_string(char * src, char * dest, int * len);
 
-std::ostream & Sphere::printObject(std::ostream & os)
-{
-    os << "Sphere radius " << radius_ << std::endl;
-    os << "Sphere center\n" << center_;
-
-    return os;
+#ifdef __cplusplus
 }
+#endif
+
+#endif // FORTRANCUTILS_HPP

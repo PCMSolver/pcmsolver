@@ -23,19 +23,13 @@
  */
 /* pcmsolver_copyright_end */
 
-#include "Sphere.hpp"
+#include "FortranCUtils.hpp"
 
-#include <ostream>
-#include <vector>
-
-#include "Config.hpp"
-
-#include <Eigen/Core>
-
-std::ostream & Sphere::printObject(std::ostream & os)
+void pcmsolver_c2f_string(char * src, char * dest, int * len)
 {
-    os << "Sphere radius " << radius_ << std::endl;
-    os << "Sphere center\n" << center_;
-
-    return os;
+    int sofar;
+    for (sofar = 0; (sofar < *len) && (*src != '\0'); sofar++)
+        *dest++ = *src++;
+    while (sofar++ < *len)
+        *dest++ = ' ';
 }

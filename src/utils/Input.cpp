@@ -40,7 +40,7 @@
 #include "CavityData.hpp"
 #include "GreenData.hpp"
 #include "SolverData.hpp"
-#include "PCMInput.hpp"
+#include "PCMInput.h"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"

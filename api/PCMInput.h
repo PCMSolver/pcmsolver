@@ -23,16 +23,8 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef PCMINPUT_HPP
-#define PCMINPUT_HPP
-
-#include <iostream>
-#include <string>
-
-#include "Config.hpp"
-
-struct PCMInput;
-inline void print(const PCMInput &);
+#ifndef PCMINPUT_H
+#define PCMINPUT_H
 
 /*! @struct PCMInput
  *  @brief Data structure for host-API input communication.
@@ -77,26 +69,4 @@ struct PCMInput
 	char outside_type[22];
 };
 
-void print(const PCMInput & inp)
-{
-    std::cout << "cavity type " << std::string(inp.cavity_type) << std::endl;
-    std::cout << "patch level " << inp.patch_level << std::endl;
-    std::cout << "coarsity " << inp.coarsity << std::endl;
-    std::cout << "area " << inp.area << std::endl;
-    std::cout << "min distance " << inp.min_distance << std::endl;
-    std::cout << "der order " << inp.der_order << std::endl;
-    std::cout << "scaling " << inp.scaling << std::endl;
-    std::cout << "radii set " << std::string(inp.radii_set) << std::endl;
-    std::cout << "restart name " << std::string(inp.restart_name) << std::endl;
-    std::cout << "min radius " << inp.min_radius << std::endl;
-    std::cout << "solver type " << std::string(inp.solver_type) << std::endl;
-    std::cout << "solvent " << std::string(inp.solvent) << std::endl;
-    std::cout << "equation type " << std::string(inp.equation_type) << std::endl;
-    std::cout << "correction " << inp.correction << std::endl;
-    std::cout << "probe_radius " << inp.probe_radius << std::endl;
-    std::cout << "inside type " << std::string(inp.inside_type) << std::endl;
-    std::cout << "outside type " << std::string(inp.outside_type) << std::endl;
-    std::cout << "epsilon outside " << inp.outside_epsilon << std::endl;
-}
-
-#endif // PCMINPUT_HPP
+#endif // PCMINPUT_H

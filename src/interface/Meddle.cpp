@@ -44,7 +44,6 @@
 #include "Atom.hpp"
 #include "Citation.hpp"
 #include "cnpy.hpp"
-#include "PCMInput.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
@@ -488,5 +487,27 @@ namespace pcm {
     unsigned int pcmsolver_get_version(void)
     {
         return PCMSOLVER_VERSION;
+    }
+
+    void print(const PCMInput & inp)
+    {
+        std::cout << "cavity type " << std::string(inp.cavity_type) << std::endl;
+        std::cout << "patch level " << inp.patch_level << std::endl;
+        std::cout << "coarsity " << inp.coarsity << std::endl;
+        std::cout << "area " << inp.area << std::endl;
+        std::cout << "min distance " << inp.min_distance << std::endl;
+        std::cout << "der order " << inp.der_order << std::endl;
+        std::cout << "scaling " << inp.scaling << std::endl;
+        std::cout << "radii set " << std::string(inp.radii_set) << std::endl;
+        std::cout << "restart name " << std::string(inp.restart_name) << std::endl;
+        std::cout << "min radius " << inp.min_radius << std::endl;
+        std::cout << "solver type " << std::string(inp.solver_type) << std::endl;
+        std::cout << "solvent " << std::string(inp.solvent) << std::endl;
+        std::cout << "equation type " << std::string(inp.equation_type) << std::endl;
+        std::cout << "correction " << inp.correction << std::endl;
+        std::cout << "probe_radius " << inp.probe_radius << std::endl;
+        std::cout << "inside type " << std::string(inp.inside_type) << std::endl;
+        std::cout << "outside type " << std::string(inp.outside_type) << std::endl;
+        std::cout << "epsilon outside " << inp.outside_epsilon << std::endl;
     }
 } /* end namespace pcm */

@@ -33,6 +33,7 @@
 class Cavity;
 class IGreensFunction;
 class Input;
+struct PCMInput;
 class PCMSolver;
 
 #include "Input.hpp"
@@ -47,6 +48,7 @@ namespace pcm {
             Molecule & molecule);
     void initSpheresAtoms(const Input &, const Eigen::Matrix3Xd &, std::vector<Sphere> &);
     unsigned int pcmsolver_get_version(void);
+    void print(const PCMInput &);
 
     class Meddle __final
     {

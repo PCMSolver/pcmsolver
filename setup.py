@@ -6,10 +6,10 @@
 import os
 import sys
 
-sys.path.append('cmake/lib/docopt')
-
-sys.path.append('cmake/lib')
-from config import configure
+sys.path.insert(0, 'cmake')
+sys.path.insert(0, 'cmake/lib')
+sys.path.insert(0, 'cmake/lib/docopt')
+import config
 import docopt
 
 
@@ -48,9 +48,9 @@ def gen_cmake_command(options, arguments):
     Generate CMake command based on options and arguments.
     """
     command = []
-    command.append('CXX="{0}"'.format(arguments['--cxx']))
-    command.append('CC="{0}"'.format(arguments['--cc']))
-    command.append('FC="{0}"'.format(arguments['--fc']))
+    command.append('CXX={0}'.format(arguments['--cxx']))
+    command.append('CC={0}'.format(arguments['--cc']))
+    command.append('FC={0}'.format(arguments['--fc']))
     command.append('%s' % arguments['--cmake-executable'])
     command.append('-DEXTRA_CXXFLAGS="{0}"'.format(arguments['--extra-cxx-flags']))
     command.append('-DEXTRA_CFLAGS="{0}"'.format(arguments['--extra-cc-flags']))
@@ -73,6 +73,7 @@ def gen_cmake_command(options, arguments):
     return ' '.join(command)
 
 
+# parse command line args
 try:
     arguments = docopt.docopt(options, argv=None)
 except docopt.DocoptExit:
@@ -80,7 +81,22 @@ except docopt.DocoptExit:
     sys.stderr.write(options)
     sys.exit(-1)
 
+
+# use extensions to validate/post-process args
+if config.module_exists('extensions'):
+    import extensions
+    arguments = extensions.postprocess_args(sys.argv, arguments)
+
+
 root_directory = os.path.dirname(os.path.realpath(__file__))
+
+
 build_path = arguments['<builddir>']
+
+
+# create cmake command
 cmake_command = '%s %s' % (gen_cmake_command(options, arguments), root_directory)
-configure(root_directory, build_path, cmake_command, arguments['--show'])
+
+
+# run cmake
+config.configure(root_directory, build_path, cmake_command, arguments['--show'])

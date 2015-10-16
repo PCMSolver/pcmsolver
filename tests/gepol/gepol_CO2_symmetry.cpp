@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -26,7 +26,6 @@
 #include <catch.hpp>
 
 #include <cmath>
-#include <cstdio>
 
 #include "Config.hpp"
 
@@ -48,9 +47,7 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
         WHEN("the point group is C1")
         {
 	        Molecule molec = CO2<0>();
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.co2.c1");
-            std::rename("cavity.off", "cavity.co2.c1");
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "co2.c1");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C1 symmetry with added spheres
@@ -106,9 +103,7 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
         WHEN("the point group is C2")
         {
             Molecule molec = CO2<1>();
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.co2.c2");
-            std::rename("cavity.off", "cavity.co2.c2");
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "co2.c2");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C2 symmetry with added spheres
@@ -164,9 +159,7 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
         WHEN("the point group is Cs")
         {
             Molecule molec = CO2<2>();
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.co2.cs");
-            std::rename("cavity.off", "cavity.co2.cs");
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "co2.cs");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCO2CsTest_size tests GePol cavity size for CO2 in Cs symmetry with added spheres
@@ -222,9 +215,7 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
         WHEN("the point group is Ci")
         {
             Molecule molec = CO2<3>();
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.co2.ci");
-            std::rename("cavity.off", "cavity.co2.ci");
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "co2.ci");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCO2CiTest_size tests GePol cavity size for CO2 in Ci symmetry with added spheres
@@ -280,9 +271,7 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
         WHEN("the point group is D2")
         {
             Molecule molec = CO2<4>();
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.co2.d2");
-            std::rename("cavity.off", "cavity.co2.d2");
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "co2.d2");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCO2D2Test_size tests GePol cavity size for CO2 in D2 symmetry with added spheres
@@ -338,9 +327,7 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
         WHEN("the point group is C2v")
         {
             Molecule molec = CO2<5>();
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.co2.c2v");
-            std::rename("cavity.off", "cavity.co2.c2v");
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "co2.c2v");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCO2C2vTest_size tests GePol cavity size for CO2 in C2v symmetry with added spheres
@@ -396,9 +383,7 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
         WHEN("the point group is C2h")
         {
             Molecule molec = CO2<6>();
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.co2.c2h");
-            std::rename("cavity.off", "cavity.co2.c2h");
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "co2.c2h");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCO2C2hTest_size tests GePol cavity size for CO2 in C2h symmetry with added spheres
@@ -454,9 +439,7 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
         WHEN("the point group is D2h")
         {
             Molecule molec = CO2<7>();
-            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.co2.d2h");
-            std::rename("cavity.off", "cavity.co2.d2h");
+            GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "co2.d2h");
 
             /*! \class GePolCavity
              *  \test \b GePolCavityCO2D2hTest_size tests GePol cavity size for CO2 in D2h symmetry with added spheres

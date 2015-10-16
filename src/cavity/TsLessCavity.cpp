@@ -226,7 +226,8 @@ void TsLessCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
         Eigen::Matrix3Xd vertices, arcs;
         vertices.resize(Eigen::NoChange, nv);
         arcs.resize(Eigen::NoChange, nv);
-        elements_.push_back(Element(nv,
+        // FIXME index of the sphere the element belongs to
+        elements_.push_back(Element(nv, 0,
                     elementArea_(i),
                     elementCenter_.col(i),
                     elementNormal_.col(i),

@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 # project name
-project(pcmsolver)
+project(PCMSolver)
 
 # do not rebuild if rules (compiler flags) change
 set(CMAKE_SKIP_RULE_DEPENDENCY TRUE)
@@ -34,6 +34,7 @@ include(Clang.C)
 include(Intel.C)
 include(GNU.Fortran)
 include(Intel.Fortran)
+include(autocmake_ccache)
 include(rpath)
 include(autocmake_code_coverage)
 include(autocmake_int64)
@@ -41,7 +42,6 @@ include(autocmake_omp)
 include(autocmake_safeguards)
 include(autocmake_python_interpreter)
 include(pcmsolver)
-include(boost_version-components)
 include(autocmake_boost)
 include(version)
 include(catch)

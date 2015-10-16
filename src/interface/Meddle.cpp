@@ -43,19 +43,23 @@
 #include "RegisterSolverToFactory.hpp"
 #include "Atom.hpp"
 #include "Citation.hpp"
-#include "cnpyPimpl.hpp"
+#include "cnpy.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
+#ifndef AS_TYPE
 #define AS_TYPE(Type, Obj) reinterpret_cast<Type *>(Obj)
+#endif
+
+#ifndef AS_CTYPE
 #define AS_CTYPE(Type, Obj) reinterpret_cast<const Type *>(Obj)
+#endif
 
 PCMSOLVER_API
-pcmsolver_context_t * pcmsolver_new(collect_nctot f_1, collect_atoms f_2, host_writer f_3,
-                                    set_point_group f_4)
+pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], PCMInput host_input)
 {
-    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(f_1, f_2, f_3, f_4));
+    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input));
 }
 
 PCMSOLVER_API
@@ -167,12 +171,10 @@ void pcmsolver_write_timings(pcmsolver_context_t * context)
 }
 
 namespace pcm {
-    Meddle::Meddle(const NrNucleiGetter & f_1, const CoordinatesGetter & f_2, const HostWriter & f_3,
-            const PointGroupSetter & f_4) //, const HostInput & f_5)
-        : nrNuclei_(f_1), chargesAndCoordinates_(f_2), hostWriter_(f_3),
-          pointGroup_(f_4) //, hostInputReader_(f_5)
+    Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input)
+        : hasDynamic_(false)
     {
-        initInput();
+        initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input);
         initCavity();
         initStaticSolver();
         if (input_.isDynamic()) initDynamicSolver();
@@ -327,22 +329,15 @@ namespace pcm {
 
     void Meddle::printer(const std::string & message) const
     {
-        // Extract C-style string from C++-style string and get its length
         const char * message_C = message.c_str();
-        size_t message_length = strlen(message_C);
-        // Call the host_writer
-        hostWriter_(message_C, message_length);
+        host_writer(message_C, std::strlen(message_C));
     }
 
     void Meddle::printer(const std::ostringstream & stream) const
     {
-        // Extract C++-style string from stream
         std::string message = stream.str();
-        // Extract C-style string from C++-style string and get its length
         const char * message_C = message.c_str();
-        size_t message_length = strlen(message_C);
-        // Call the host_writer
-        hostWriter_(message_C, message_length);
+        host_writer(message_C, std::strlen(message_C));
     }
 
     void Meddle::writeTimings() const
@@ -350,23 +345,22 @@ namespace pcm {
         TIMER_DONE("pcmsolver.timer.dat");
     }
 
-    void Meddle::initInput()
+    void Meddle::initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input)
     {
-        input_ = Input("@pcmsolver.inp");
+        if (input_reading) {
+            input_ = Input(host_input);
+        } else {
+            input_ = Input("@pcmsolver.inp");
+        }
 
-        // 1. number of atomic centers
-        int nuclei = nrNuclei_();
         // 2. position and charges of atomic centers
-        Eigen::Matrix3Xd centers;
-        centers.resize(Eigen::NoChange, nuclei);
-        Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
-        double * chg = charges.data();
-        double * pos = centers.data();
-        chargesAndCoordinates_(chg, pos);
+        Eigen::VectorXd chg  = Eigen::Map<Eigen::VectorXd>(charges, nr_nuclei, 1);
+        Eigen::Matrix3Xd centers = Eigen::Map<Eigen::Matrix3Xd>(coordinates, 3, nr_nuclei);
 
         if (input_.mode() != "EXPLICIT") {
             Molecule molec;
-            initMolecule(input_, pointGroup_, nuclei, charges, centers, molec);
+            Symmetry pg = buildGroup(symmetry_info[0], symmetry_info[1], symmetry_info[2], symmetry_info[3]);
+            initMolecule(input_, pg, nr_nuclei, chg, centers, molec);
             input_.molecule(molec);
         }
 
@@ -442,11 +436,10 @@ namespace pcm {
         printer(infoStream_);
     }
 
-    void initMolecule(const Input & inp, const PointGroupSetter & set_group,
+    void initMolecule(const Input & inp, const Symmetry & pg,
             int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
             Molecule & molecule)
     {
-        // 3. list of atoms and list of spheres
         bool scaling = inp.scaling();
         std::string set = inp.radiiSet();
         double factor = angstromToBohr(inp.CODATAyear());
@@ -466,7 +459,6 @@ namespace pcm {
             }
             spheres.push_back(Sphere(centers.col(i), radius));
         }
-        // 4. masses
         Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
         for (int i = 0; i < masses.size(); ++i) {
             masses(i) = atoms[i].atomMass();
@@ -476,11 +468,6 @@ namespace pcm {
         if (inp.mode() == "ATOMS") {
             initSpheresAtoms(inp, centers, spheres);
         }
-        // 5. molecular point group
-        int nr_gen;
-        int gen1, gen2, gen3;
-        set_group(&nr_gen, &gen1, &gen2, &gen3);
-        Symmetry pg = buildGroup(nr_gen, gen1, gen2, gen3);
 
         // OK, now get molecule
         molecule = Molecule(nuclei, charges, masses, centers, atoms, spheres, pg);
@@ -500,5 +487,27 @@ namespace pcm {
     unsigned int pcmsolver_get_version(void)
     {
         return PCMSOLVER_VERSION;
+    }
+
+    void print(const PCMInput & inp)
+    {
+        std::cout << "cavity type " << std::string(inp.cavity_type) << std::endl;
+        std::cout << "patch level " << inp.patch_level << std::endl;
+        std::cout << "coarsity " << inp.coarsity << std::endl;
+        std::cout << "area " << inp.area << std::endl;
+        std::cout << "min distance " << inp.min_distance << std::endl;
+        std::cout << "der order " << inp.der_order << std::endl;
+        std::cout << "scaling " << inp.scaling << std::endl;
+        std::cout << "radii set " << std::string(inp.radii_set) << std::endl;
+        std::cout << "restart name " << std::string(inp.restart_name) << std::endl;
+        std::cout << "min radius " << inp.min_radius << std::endl;
+        std::cout << "solver type " << std::string(inp.solver_type) << std::endl;
+        std::cout << "solvent " << std::string(inp.solvent) << std::endl;
+        std::cout << "equation type " << std::string(inp.equation_type) << std::endl;
+        std::cout << "correction " << inp.correction << std::endl;
+        std::cout << "probe_radius " << inp.probe_radius << std::endl;
+        std::cout << "inside type " << std::string(inp.inside_type) << std::endl;
+        std::cout << "outside type " << std::string(inp.outside_type) << std::endl;
+        std::cout << "epsilon outside " << inp.outside_epsilon << std::endl;
     }
 } /* end namespace pcm */

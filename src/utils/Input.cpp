@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -40,12 +40,13 @@
 #include "CavityData.hpp"
 #include "GreenData.hpp"
 #include "SolverData.hpp"
-#include "InputManager.hpp"
+#include "PCMInput.h"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
 
 using boost::algorithm::to_upper_copy;
+using boost::algorithm::trim;
 
 Input::Input(const std::string & filename)
 {
@@ -53,10 +54,9 @@ Input::Input(const std::string & filename)
     semanticCheck();
 }
 
-Input::Input(const cavityInput & cav, const solverInput & solv,
-             const greenInput & green)
+Input::Input(const PCMInput & host_input)
 {
-    reader(cav, solv, green);
+    reader(host_input);
     semanticCheck();
 }
 
@@ -173,42 +173,53 @@ void Input::reader(const std::string & filename)
     providedBy_ = std::string("API-side");
 }
 
-void Input::reader(const cavityInput & cav, const solverInput & solv,
-                   const greenInput & green)
+std::string trim(const char * src)
+{
+    std::string tmp(src);
+    trim(tmp);
+    return tmp;
+}
+
+std::string trim_and_upper(const char * src)
+{
+    return to_upper_copy(trim(src));
+}
+
+void Input::reader(const PCMInput & host_input)
 {
     CODATAyear_ = 2010;
 
-    type_ = to_upper_copy(std::string(cav.cavity_type));
-    area_ = cav.area * angstrom2ToBohr2(CODATAyear_);
-    patchLevel_ = cav.patch_level;
-    coarsity_ = cav.coarsity * angstromToBohr(CODATAyear_);
-    minDistance_ = cav.min_distance * angstromToBohr(CODATAyear_);
-    derOrder_ = cav.der_order;
+    type_ = trim_and_upper(host_input.cavity_type);
+    area_ = host_input.area * angstrom2ToBohr2(CODATAyear_);
+    patchLevel_ = host_input.patch_level;
+    coarsity_ = host_input.coarsity * angstromToBohr(CODATAyear_);
+    minDistance_ = host_input.min_distance * angstromToBohr(CODATAyear_);
+    derOrder_ = host_input.der_order;
     if (type_ == "RESTART") {
-        cavFilename_ = std::string(cav.restart_name); // No case conversion here!
+        cavFilename_ = trim(host_input.restart_name); // No case conversion here!
     }
 
-    scaling_ = cav.scaling;
-    radiiSet_ = cav.radii_set;
-    minimalRadius_ = cav.min_radius * angstromToBohr(CODATAyear_);
+    scaling_ = host_input.scaling;
+    radiiSet_ = trim_and_upper(host_input.radii_set);
+    minimalRadius_ = host_input.min_radius * angstromToBohr(CODATAyear_);
     mode_ = std::string("IMPLICIT");
 
-    std::string name = to_upper_copy(std::string(solv.solvent));
+    std::string name = trim_and_upper(host_input.solvent);
     if (name.empty()) {
         hasSolvent_ = false;
         // Get the probe radius
-        probeRadius_ = solv.probe_radius * angstromToBohr(CODATAyear_);
+        probeRadius_ = host_input.probe_radius * angstromToBohr(CODATAyear_);
         // Get the contents of the Green<inside> section...
         // ...and initialize the data members
-        greenInsideType_ = to_upper_copy(std::string(green.inside_type));
+        greenInsideType_ = trim_and_upper(host_input.inside_type);
         derivativeInsideType_ = derivativeTraits("DERIVATIVE");
         epsilonInside_ = 1.0;
         // Get the contents of the Green<outside> section...
         // ...and initialize the data members
-        greenOutsideType_ = to_upper_copy(std::string(green.outside_type));
+        greenOutsideType_ = trim_and_upper(host_input.outside_type);
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
-        epsilonStaticOutside_ = green.outside_epsilon;
-        epsilonDynamicOutside_ = green.outside_epsilon;
+        epsilonStaticOutside_ = host_input.outside_epsilon;
+        epsilonDynamicOutside_ = host_input.outside_epsilon;
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
@@ -228,11 +239,12 @@ void Input::reader(const cavityInput & cav, const solverInput & solv,
     }
     integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
 
-    solverType_ = to_upper_copy(std::string(solv.solver_type));
-    std::string inteq = to_upper_copy(std::string(solv.equation_type));
+    solverType_ = trim_and_upper(host_input.solver_type);
+    std::string inteq = trim_and_upper(host_input.equation_type);
     equationType_ = integralEquation(inteq);
-    correction_ = solv.correction;
+    correction_ = host_input.correction;
     hermitivitize_ = true;
+    isDynamic_ = false;
 
     providedBy_ = std::string("host-side");
 }

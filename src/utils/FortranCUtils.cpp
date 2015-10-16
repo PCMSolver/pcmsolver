@@ -2,55 +2,60 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
 /* pcmsolver_copyright_end */
 
-#ifndef CNPYPIMPL_HPP
-#define CNPYPIMPL_HPP
+#include "FortranCUtils.hpp"
 
-// Disable obnoxious warnings from cnpy header
-#if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall"
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic ignored "-Wextra"
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-#pragma warning(push, 0)
-#elif defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wall"
-#pragma clang diagnostic ignored "-Weffc++"
-#pragma clang diagnostic ignored "-Wextra"
-#pragma clang diagnostic ignored "-Wdocumentation"
-#pragma clang diagnostic ignored "-Wdeprecated-register"
+#include "Config.hpp"
+
+#include <cctype>
+#include <cstring>
+
+#ifndef _fcdtocp
+#define _fcdtocp(desc) (desc)
 #endif
 
-#include "cnpy.hpp"
+void pcmsolver_c2f_string(char * src, char * dest, int * len)
+{
+    int sofar;
+    for (sofar = 0; (sofar < *len) && (*src != '\0'); sofar++)
+        *dest++ = *src++;
+    while (sofar++ < *len)
+        *dest++ = ' ';
+}
 
-#if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-#pragma GCC diagnostic pop
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-#pragma warning(pop)
-#elif defined(__clang__)
-#pragma clang diagnostic pop
-#endif
+void pcmsolver_f2c_string(char * src, char * dest, int * len)
+{
+    char * str; /* Pointer to FORTRAN string */
+    int i;      /* Local index variable */
 
-#endif // CNPYPIMPL_HPP
+    /* Search for the end of the string */
+    str = _fcdtocp(src);
+    for(i = (int)*len - 1; i >= 0 && !std::isgraph((int)str[i]); i--)
+        /*EMPTY*/;
+
+    /* Copy text from FORTRAN to C string */
+    std::memcpy(dest, str, (size_t)(i + 1));
+
+    /* Terminate C string */
+    dest[i + 1] = '\0';
+}

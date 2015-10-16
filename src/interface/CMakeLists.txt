@@ -1,5 +1,5 @@
 # List of headers
-list(APPEND headers_list InputManager.hpp Meddle.hpp)
+list(APPEND headers_list Meddle.hpp)
 
 # List of sources
 list(APPEND sources_list Meddle.cpp)

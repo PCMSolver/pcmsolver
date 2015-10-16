@@ -1,22 +1,22 @@
 !pcmsolver_copyright_start
 !       PCMSolver, an API for the Polarizable Continuum Model
 !       Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
-! 
+!
 !       This file is part of PCMSolver.
-! 
+!
 !       PCMSolver is free software: you can redistribute it and/or modify
 !       it under the terms of the GNU Lesser General Public License as published by
 !       the Free Software Foundation, either version 3 of the License, or
 !       (at your option) any later version.
-! 
+!
 !       PCMSolver is distributed in the hope that it will be useful,
 !       but WITHOUT ANY WARRANTY; without even the implied warranty of
 !       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 !       GNU Lesser General Public License for more details.
-! 
+!
 !       You should have received a copy of the GNU Lesser General Public License
 !       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
+!
 !       For information on the complete list of contributors to the
 !       PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
 !pcmsolver_copyright_end
@@ -532,8 +532,6 @@
 
 ! Prepare data for geomview
     call ordpcm(nts, xtscor, ytscor, ztscor, as)
-
-    call plotcav(vert, numts)
 
 ! Calculate cavity volume using Gauss Theorem:
 !       V = sum_i {area(i) * center(i) * normal(i)} / 3
@@ -2082,85 +2080,6 @@
     500 FORMAT(/10X,'THE SECOND CAVITY IS FORMED BY SPHERE(S) :'/)
 
     end subroutine cavspl
-
-    subroutine plotcav(vert, numts)
-!
-! Prepare the input file for GeomView
-! Contrary to the DALTON version of PEDRA we are in this context completely
-! agnostic of the atom type, so no coloring of polyhedra is possible.
-!
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
-#include "pcm_pcm.h"
-! Passed variables
-    integer(kind=regint_k) :: numts
-    real(kind=dp) :: vert(numts, 10, 3)
-! Local variables
-    integer(kind=regint_k) :: ivts(mxts, 10)
-    integer(kind=regint_k) :: off_unit
-    logical :: off_open, off_exist
-    real(kind=dp) :: c1, c2, c3
-    integer(kind=regint_k) :: n, numv, i, j, k, last, lucav
-    integer(kind=regint_k) :: jcord
-
-    lucav = 12121201
-
-! The following INQUIRE statement returns whether the file named cavity.off is
-! connected in logical variable off_open, whether the file exists in logical
-! variable off_exist, and the unit number in integer(kind=regint_k) variable off_unit
-    inquire(file = 'cavity.off', opened = off_open, &
-            exist = off_exist, number = off_unit)
-    if (off_exist) then
-        open(unit = lucav,       &
-        file = 'cavity.off',     &
-        status = 'unknown',      &
-        form = 'formatted',      &
-        access = 'sequential')
-        close(unit = lucav, status = 'delete')
-    end if
-
-    open(unit = lucav,    &
-    file = 'cavity.off',  &
-    status = 'new',       &
-    form = 'formatted',   &
-    access = 'sequential')
-    rewind(lucav)
-
-    numv = 0
-
-    do i = 1, nts
-        numv = numv + nvert(i)
-    end do
-
-    write(lucav, '(1x, a)') 'COFF'
-    write(lucav, '(3i10)') numv, nts, numv
-    k = 0
-    last = 0
-    do i = 1, nts
-        n = isphe(i)
-        if (n /= last) then
-                write(lucav, '(a, i4)') "# Sphere number ", n
-        end if
-        last = n
-        ! All spheres are gray
-        c1 = 1.0d0
-        c2 = 1.0d0
-        c3 = 1.0d0
-        do j = 1, nvert(i)
-            ivts(i, j) = k
-            k = k + 1
-            write(lucav, 2001) (vert(i, j, jcord), jcord = 1, 3), c1, c2, c3, 0.75, i
-        end do
-    end do
-    do i = 1, nts
-        write(lucav, '(a, 14i10)') "  ", nvert(i), (ivts(i, j), j = 1, nvert(i))
-    end do
-
-    2001 format('  ',3f16.9,4f5.2,' # Tess. ',i4)
-
-    close(unit = lucav, status = 'keep')
-
-    end subroutine plotcav
 
     subroutine prerep(nv, nt, its, cv, jtr, nvert, numts)
 !

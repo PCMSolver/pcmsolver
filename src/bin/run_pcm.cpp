@@ -50,7 +50,7 @@
 #include "RegisterSolverToFactory.hpp"
 #include "Atom.hpp"
 #include "Citation.hpp"
-#include "cnpyPimpl.hpp"
+#include "cnpy.hpp"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"

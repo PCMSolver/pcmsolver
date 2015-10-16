@@ -1,1 +1,14 @@
 html
+Doxyfile
+doctrees
+xml
+doxygen_sqlite3.db
+mock_pcmsolver.h
+cloc_tools.py
+gfx/*.png
+gfx/matplotlib
+scratch_cpp.yml
+scratch_hpp.yml
+scratch_c.yml
+scratch_h.yml
+scratch_fortran.yml

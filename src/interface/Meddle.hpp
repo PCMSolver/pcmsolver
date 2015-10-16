@@ -42,6 +42,11 @@ class PCMSolver;
 #include "SurfaceFunction.hpp"
 #include "Symmetry.hpp"
 
+/*! \file Meddle.hpp
+ *  \author Roberto Di Remigio
+ *  \year 2015
+ */
+
 namespace pcm {
     typedef boost::container::flat_map<std::string, SurfaceFunction> SurfaceFunctionMap;
 
@@ -52,6 +57,9 @@ namespace pcm {
     unsigned int pcmsolver_get_version(void);
     void print(const PCMInput &);
 
+    /*! \class Meddle
+     *  \brief Contains functions exposing an interface to the module internals
+     */
     class Meddle __final
     {
         public:

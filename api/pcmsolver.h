@@ -2,9 +2,7 @@
 #define PCMSOLVER_H_INCLUDED
 
 #include <stddef.h>
-#ifndef ENABLE_FORTRAN_API
 #include "PCMInput.h"
-#endif
 
 #ifndef PCMSOLVER_API
 #  ifdef _WIN32
@@ -26,10 +24,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#ifdef ENABLE_FORTRAN_API
-struct PCMInput;
 #endif
 
 struct pcmsolver_context_s;

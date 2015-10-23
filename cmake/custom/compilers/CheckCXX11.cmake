@@ -20,6 +20,7 @@
 #  HAS_CXX11_SIZEOF_MEMBER      - sizeof() non-static members
 #  HAS_CXX11_STATIC_ASSERT      - static_assert()
 #  HAS_CXX11_VARIADIC_TEMPLATES - variadic templates
+#  HAS_CXX11_NOEXCEPT           - noexcept keyword
 
 #=============================================================================
 # Copyright 2011,2012 Rolf Eike Beer <eike@sf-mail.de>
@@ -36,7 +37,7 @@
 #  License text for the above reference.)
 
 #
-# Each feature may have up to 3 checks, every one of them in it's own file
+# Each feature may have up to 3 checks, every one of them in its own file
 # FEATURE.cpp              - example that must build and return 0 when run
 # FEATURE_fail.cpp         - example that must build, but may not return 0 when run
 # FEATURE_fail_compile.cpp - example that must fail compilation
@@ -152,6 +153,7 @@ if(ENABLE_CXX11_SUPPORT)
     cxx11_check_feature("sizeof_member"        HAS_CXX11_SIZEOF_MEMBER)
     cxx11_check_feature("static_assert"        HAS_CXX11_STATIC_ASSERT)
     cxx11_check_feature("variadic_templates"   HAS_CXX11_VARIADIC_TEMPLATES)
+    cxx11_check_feature("noexcept"             HAS_CXX11_NOEXCEPT)
 
     # Add feature definitions
     foreach(_feature_def ${CXX11_DEFINITIONS})

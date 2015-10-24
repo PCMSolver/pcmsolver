@@ -30,6 +30,8 @@
 
 #include "Config.hpp"
 
+#include <boost/container/flat_map.hpp>
+
 class Cavity;
 class IGreensFunction;
 class Input;
@@ -41,7 +43,7 @@ class PCMSolver;
 #include "Symmetry.hpp"
 
 namespace pcm {
-    typedef unordered_map<std::string, SurfaceFunction> SurfaceFunctionMap;
+    typedef boost::container::flat_map<std::string, SurfaceFunction> SurfaceFunctionMap;
 
     void initMolecule(const Input & inp, const Symmetry & group,
             int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,

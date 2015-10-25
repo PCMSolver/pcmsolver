@@ -113,9 +113,14 @@ endfunction(cxx11_check_feature)
 
 # Compilation of Boost uncovers some bugs with Intel's support for C++11
 # For Intel compilers older that 14.0.0 continue using -std=gnu++98
+execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE CXX_COMPILER_VERSION)
 if(CMAKE_CXX_COMPILER_ID MATCHES Intel)
-    execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE ICPC_VERSION)
-    if(ICPC_VERSION VERSION_LESS 14.0.0)
+    if(CXX_COMPILER_VERSION VERSION_LESS 14.0.0)
+        message(STATUS "Buggy compiler support for C++11. Using older standard.")
+        set(ENABLE_CXX11_SUPPORT OFF)
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    if(CXX_COMPILER_VERSION VERSION_LESS 4.5.0)
         message(STATUS "Buggy compiler support for C++11. Using older standard.")
         set(ENABLE_CXX11_SUPPORT OFF)
     endif()

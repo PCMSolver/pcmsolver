@@ -12,7 +12,7 @@
 ##
 
 # build version format: 1, 2, ...
-version: {build}
+version: '{build}'
 
 # prepare environment
 environment:

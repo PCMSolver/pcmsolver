@@ -36,7 +36,6 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
-#
 # Each feature may have up to 3 checks, every one of them in its own file
 # FEATURE.cpp              - example that must build and return 0 when run
 # FEATURE_fail.cpp         - example that must build, but may not return 0 when run
@@ -44,13 +43,47 @@
 #
 # The first one is mandatory, the latter 2 are optional and do not depend on
 # each other (i.e. only one may be present).
-#
 
-option(ENABLE_CXX11_SUPPORT "Enable C++11 compiler support" ON)
+macro(discover_cxx11_support _CXX_STANDARD_FLAG)
+    # Check which compiler flag is valid for the C++11 standard
+    include(CheckCXXCompilerFlag)
+    check_cxx_compiler_flag("-std=c++11" _HAS_CXX11_FLAG)
+    set(_discovered_flag "-std=c++11")
+    if(NOT _HAS_CXX11_FLAG)
+        check_cxx_compiler_flag("-std=c++0x" _HAS_CXX0X_FLAG)
+        set(_discovered_flag "-std=c++0x")
+    endif()
+    set(${_CXX_STANDARD_FLAG} ${_discovered_flag})
 
-if(NOT CMAKE_CXX_COMPILER_LOADED)
-    message(FATAL_ERROR "CheckCXX11Features modules only works if language CXX is enabled")
-endif()
+    set(HAS_CXX11_SUPPORT FALSE)
+    if(_HAS_CXX11_FLAG OR _HAS_CXX0X_FLAG)
+	   set(HAS_CXX11_SUPPORT TRUE)
+	   add_definitions(-DHAS_CXX11)
+    endif()
+
+    cxx11_check_feature("__func__"             HAS_CXX11_FUNC)
+    cxx11_check_feature("auto"                 HAS_CXX11_AUTO)
+    cxx11_check_feature("auto_ret_type"        HAS_CXX11_AUTO_RET_TYPE)
+    cxx11_check_feature("class_override_final" HAS_CXX11_CLASS_OVERRIDE)
+    cxx11_check_feature("constexpr"            HAS_CXX11_CONSTEXPR)
+    cxx11_check_feature("cstdint"              HAS_CXX11_CSTDINT_H)
+    cxx11_check_feature("decltype"             HAS_CXX11_DECLTYPE)
+    cxx11_check_feature("initializer_list"     HAS_CXX11_INITIALIZER_LIST)
+    cxx11_check_feature("lambda"               HAS_CXX11_LAMBDA)
+    cxx11_check_feature("long_long"            HAS_CXX11_LONG_LONG)
+    cxx11_check_feature("nullptr"              HAS_CXX11_NULLPTR)
+    cxx11_check_feature("regex"                HAS_CXX11_LIB_REGEX)
+    cxx11_check_feature("rvalue-references"    HAS_CXX11_RVALUE_REFERENCES)
+    cxx11_check_feature("sizeof_member"        HAS_CXX11_SIZEOF_MEMBER)
+    cxx11_check_feature("static_assert"        HAS_CXX11_STATIC_ASSERT)
+    cxx11_check_feature("variadic_templates"   HAS_CXX11_VARIADIC_TEMPLATES)
+    cxx11_check_feature("noexcept"             HAS_CXX11_NOEXCEPT)
+
+    # Add feature definitions
+    foreach(_feature_def ${CXX11_DEFINITIONS})
+        add_definitions(-D${_feature_def})
+    endforeach()
+endmacro(discover_cxx11_support)
 
 function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
     if(NOT DEFINED ${RESULT_VAR})
@@ -110,58 +143,3 @@ function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
         set(CXX11_DEFINITIONS "${CXX11_DEFINITIONS}" CACHE INTERNAL "")
     endif(NOT DEFINED ${RESULT_VAR})
 endfunction(cxx11_check_feature)
-
-# Compilation of Boost uncovers some bugs with Intel's support for C++11
-# For Intel compilers older that 14.0.0 continue using -std=gnu++98
-execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE CXX_COMPILER_VERSION)
-if(CMAKE_CXX_COMPILER_ID MATCHES Intel)
-    if(CXX_COMPILER_VERSION VERSION_LESS 14.0.0)
-        message(STATUS "Buggy compiler support for C++11. Using older standard.")
-        set(ENABLE_CXX11_SUPPORT OFF)
-    endif()
-elseif(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-    if(CXX_COMPILER_VERSION VERSION_LESS 4.5.0)
-        message(STATUS "Buggy compiler support for C++11. Using older standard.")
-        set(ENABLE_CXX11_SUPPORT OFF)
-    endif()
-endif()
-
-if(ENABLE_CXX11_SUPPORT)
-    # Check which compiler flag is valid for the C++11 standard
-    include(CheckCXXCompilerFlag)
-    check_cxx_compiler_flag("-std=c++11" _HAS_CXX11_FLAG)
-    set(CXX11_COMPILER_FLAGS "-std=c++11")
-    if(NOT _HAS_CXX11_FLAG)
-        check_cxx_compiler_flag("-std=c++0x" _HAS_CXX0X_FLAG)
-        set(CXX11_COMPILER_FLAGS "-std=c++0x")
-    endif()
-
-    set(HAS_CXX11_SUPPORT FALSE)
-    if(_HAS_CXX11_FLAG OR _HAS_CXX0X_FLAG)
-	   set(HAS_CXX11_SUPPORT TRUE)
-	   add_definitions(-DHAS_CXX11)
-    endif()
-
-    cxx11_check_feature("__func__"             HAS_CXX11_FUNC)
-    cxx11_check_feature("auto"                 HAS_CXX11_AUTO)
-    cxx11_check_feature("auto_ret_type"        HAS_CXX11_AUTO_RET_TYPE)
-    cxx11_check_feature("class_override_final" HAS_CXX11_CLASS_OVERRIDE)
-    cxx11_check_feature("constexpr"            HAS_CXX11_CONSTEXPR)
-    cxx11_check_feature("cstdint"              HAS_CXX11_CSTDINT_H)
-    cxx11_check_feature("decltype"             HAS_CXX11_DECLTYPE)
-    cxx11_check_feature("initializer_list"     HAS_CXX11_INITIALIZER_LIST)
-    cxx11_check_feature("lambda"               HAS_CXX11_LAMBDA)
-    cxx11_check_feature("long_long"            HAS_CXX11_LONG_LONG)
-    cxx11_check_feature("nullptr"              HAS_CXX11_NULLPTR)
-    cxx11_check_feature("regex"                HAS_CXX11_LIB_REGEX)
-    cxx11_check_feature("rvalue-references"    HAS_CXX11_RVALUE_REFERENCES)
-    cxx11_check_feature("sizeof_member"        HAS_CXX11_SIZEOF_MEMBER)
-    cxx11_check_feature("static_assert"        HAS_CXX11_STATIC_ASSERT)
-    cxx11_check_feature("variadic_templates"   HAS_CXX11_VARIADIC_TEMPLATES)
-    cxx11_check_feature("noexcept"             HAS_CXX11_NOEXCEPT)
-
-    # Add feature definitions
-    foreach(_feature_def ${CXX11_DEFINITIONS})
-        add_definitions(-D${_feature_def})
-    endforeach()
-endif()

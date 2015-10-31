@@ -25,7 +25,7 @@
 /*! \file pcmsolver.h
  *  \brief C API to PCMSolver
  *  \author Roberto Di Remigio
- *  \year 2015
+ *  \date 2015
  */
 
 #ifdef __cplusplus

@@ -44,9 +44,10 @@ class PCMSolver;
 
 /*! \file Meddle.hpp
  *  \author Roberto Di Remigio
- *  \year 2015
+ *  \date 2015
  */
 
+/*! \namespace pcm */
 namespace pcm {
     typedef boost::container::flat_map<std::string, SurfaceFunction> SurfaceFunctionMap;
 
@@ -63,21 +64,104 @@ namespace pcm {
     class Meddle __final
     {
         public:
+            /*! \brief Constructor
+             *  \param[in] input_reading input processing strategy
+             *  \param[in] nr_nuclei     number of atoms in the molecule
+             *  \param[in] charges       atomic charges
+             *  \param[in] coordinates   atomic coordinates
+             *  \param[in] symmetry_info molecular point group information
+             *  \param[in] host_input    input to the module, as read by the host
+             *
+             *  The molecular point group information is passed as an array
+             *  of 4 integers: number of generators, first, second and third generator
+             *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
+             */
             Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input);
             ~Meddle();
+            /*! \brief Getter for the number of finite elements composing the molecular cavity
+             *  \param[in, out] context the PCM context object
+             *  \return the size of the cavity
+             */
             size_t getCavitySize() const;
+            /*! \brief Getter for the number of irreducible finite elements composing the molecular cavity
+             *  \param[in, out] context the PCM context object
+             *  \return the number of irreducible finite elements
+             */
             size_t getIrreducibleCavitySize() const;
+            /*! \brief Getter for the centers of the finite elements composing the molecular cavity
+             *  \param[in, out] context the PCM context object
+             *  \param[out] centers array holding the coordinates of the finite elements centers
+             */
             void getCenters(double centers[]) const;
+            /*! \brief Getter for the center of the i-th finite element
+             *  \param[in, out] context the PCM context object
+             *  \param[in] its index of the finite element
+             *  \param[out] center array holding the coordinates of the finite element center
+             */
             void getCenter(int its, double center[]) const;
+            /*! \brief Computes ASC given a MEP and the desired irreducible representation
+             *  \param[in, out] context the PCM context object
+             *  \param[in] mep_name label of the MEP surface function
+             *  \param[in] asc_name label of the ASC surface function
+             *  \param[in] irrep index of the desired irreducible representation
+             *  The module uses the surface function concept to handle potentials
+             *  and charges. Given labels for each, this function retrieves the MEP
+             *  and computes the corresponding ASC.
+             */
             void computeASC(const char * mep_name, const char * asc_name, int irrep) const;
+            /*! \brief Computes response ASC given a MEP and the desired irreducible representation
+             *  \param[in, out] context the PCM context object
+             *  \param[in] mep_name label of the MEP surface function
+             *  \param[in] asc_name label of the ASC surface function
+             *  \param[in] irrep index of the desired irreducible representation
+             *  If `Nonequilibrium = True` in the input, calculates a response
+             *  ASC using the dynamic permittivity. Falls back to the solver with static permittivity
+             *  otherwise.
+             */
             void computeResponseASC(const char * mep_name, const char * asc_name, int irrep) const;
+            /*! \brief Computes the polarization energy
+             *  \param[in, out] context the PCM context object
+             *  \param[in] mep_name label of the MEP surface function
+             *  \param[in] asc_name label of the ASC surface function
+             *  \return the polarization energy
+             *  This function calculates the dot product of the given MEP and ASC vectors.
+             */
             double computePolarizationEnergy(const char * mep_name, const char * asc_name) const;
+            /*! \brief Retrieves data wrapped in a given surface function
+             *  \param[in, out] context the PCM context object
+             *  \param[in] size the size of the surface function
+             *  \param[in] values the values wrapped in the surface function
+             *  \param[in] name label of the surface function
+             */
             void getSurfaceFunction(size_t size, double values[], const char * name) const;
+            /*! \brief Sets a surface function given data and label
+             *  \param[in, out] context the PCM context object
+             *  \param[in] size the size of the surface function
+             *  \param[in] values the values to be wrapped in the surface function
+             *  \param[in] name label of the surface function
+             */
             void setSurfaceFunction(size_t size, double values[], const char * name) const;
+            /*! \brief Dumps all currently saved surface functions to NumPy arrays in .npy files
+             *  \param[in, out] context the PCM context object
+             */
             void saveSurfaceFunctions() const;
+            /*! \brief Dumps a surface function to NumPy array in .npy file
+             *  \param[in, out] context the PCM context object
+             *  \param[in] name label of the surface function
+             */
             void saveSurfaceFunction(const char * name) const;
+            /*! \brief Loads a surface function from a .npy file
+             *  \param[in, out] context the PCM context object
+             *  \param[in] name label of the surface function
+             */
             void loadSurfaceFunction(const char * name) const;
+            /*! \brief Prints citation and set up information
+             *  \param[in, out] context the PCM context object
+             */
             void printInfo() const;
+            /*! \brief Writes timing results for the API
+             *  \param[in, out] context the PCM context object
+             */
             void writeTimings() const;
         private:
             /*! Input object */

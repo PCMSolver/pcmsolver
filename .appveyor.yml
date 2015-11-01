@@ -1,0 +1,106 @@
+##
+# The mathlibs-tester CI configuration for Windows OS at AppVeyor
+#
+# Current software used:
+# OS: 64-bit Windows Server 2012 R2
+# Compilers: 64-bit MinGw-w64 5.1.0 (downloaded during script execution)
+# Python: 2.7, both 32-bit and 64-bit versions
+# Python: 3.4, both 32-bit and 64-bit versions
+#
+# Notes:
+# Where "ps:" is used commands are executed in PowerShell
+##
+
+# build version format: 1, 2, ...
+version: '{build}'
+
+# prepare environment
+environment:
+# set custom path (will be more extended later in build_script section)
+  path: C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Git\cmd;C:\Program Files\7-Zip;C:\Program Files (x86)\CMake\bin
+# set MinGw-w64 (64-bit) version 5.1.0 download URL
+  url: http://kent.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/5.1.0/threads-posix/seh/x86_64-5.1.0-release-posix-seh-rt_v4-rev0.7z
+# user can possibly use different Python versions, we try to test multiple cases
+# 64-bit version on 64-bit system allows easier installation of Python packages using .exe installers
+# and better CMake automatic detection of some Python tools
+  matrix:
+# Python 2.7; 32-bit version
+    - python: C:\Python27;C:\Python27\Scripts
+# Python 2.7; 64-bit version
+    - python: C:\Python27-x64;C:\Python27-x64\Scripts
+# Python 3.4; 32-bit version
+    - python: C:\Python34;C:\Python34\Scripts
+# Python 3.4; 64-bit version
+    - python: C:\Python34-x64;C:\Python34-x64\Scripts
+
+build_script:
+# add location of used Python to path
+- set path=%path%;%python%
+
+# create dir for custom software and move there
+- mkdir C:\software && cd C:\software
+
+# download and unpack MinGW-w64 compilers
+- ps: wget $env:url -OutFile MinGW.7z
+- 7z x MinGW.7z > NUL
+
+# add compilers binary dir to the path
+- set path=%path%;C:\software\mingw64\bin
+
+# ######################################
+#  download and unpack the ZLIB library
+# ######################################
+#- ps: wget http://downloads.sourceforge.net/project/mingw-w64/External%20binary%20packages%20%28Win64%20hosted%29/Binaries%20%2864-bit%29/zlib-1.2.5-bin-x64.zip -OutFile zlib-1.2.5-bin-x64.zip
+- ps: wget http://web-docs.gsi.de/~milias/zlib/zlib-1.2.5-bin-x64.zip -OutFile zlib-1.2.5-bin-x64.zip
+- dir
+- 7z x zlib-1.2.5-bin-x64.zip
+- dir
+- dir zlib
+#- 7z x zlib-1.2.5-bin-x64.zip  > NUL
+# add library to the path
+- set path=%path%;C:\software\zlib
+
+# ######################################
+# download and unpack the Boost library
+# ######################################
+#- ps: wget http://downloads.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.zip -OutFile boost_1_59_0.zip
+- ps: wget http://web-docs.gsi.de/~milias/boost/boost_1_59_0.zip -OutFile boost_1_59_0.zip
+- dir
+- 7z x boost_1_59_0.zip > NUL
+- cd boost_1_59_0
+- dir
+- bootstrap.bat mingw > NUL
+- b2 --prefix="C:\software\Boost" --with-chrono --with-timer --with-system toolset=gcc install > NUL
+- dir
+- cd ..
+- dir
+- dir Boost
+- dir Boost\include
+- dir Boost\lib
+- set path=%path%;C:\software\Boost
+
+
+# download and unpack OpenBLAS library
+- ps: wget http://skylink.dl.sourceforge.net/project/openblas/v0.2.14/OpenBLAS-v0.2.14-Win64-int32.zip -OutFile OpenBLAS-v0.2.14-Win64-int32.zip
+- 7z x OpenBLAS-v0.2.14-Win64-int32.zip > NUL
+- dir
+- dir C:\software\OpenBLAS-v0.2.14-Win64-int32
+- dir C:\software\OpenBLAS-v0.2.14-Win64-int32\bin
+
+# add OpenBLAS .dll dir to path
+- set path=%path%;C:\software\OpenBLAS-v0.2.14-Win64-int32\bin
+
+# download and upgrade pip
+- ps: wget https://bootstrap.pypa.io/get-pip.py -OutFile get-pip.py
+- python get-pip.py
+
+# go back to project source dir
+- cd %APPVEYOR_BUILD_FOLDER%
+
+test_script:
+# show environment
+- echo %path%
+# miro: pcmsolver does not detect Boost through %path%, setup must be told explicitly
+- python setup.py --generator="MinGW Makefiles"  --boost-headers="C:\software\Boost\include"  --boost-libraries="C:\software\Boost\lib"
+- cd build
+- mingw32-make VERBOSE=1

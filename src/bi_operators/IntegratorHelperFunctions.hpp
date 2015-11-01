@@ -124,7 +124,7 @@ inline Eigen::MatrixXd doubleLayer(const std::vector<Element> & elements,
 }
 
 /*! \brief Integrates a single layer type operator on a single spherical polygon
- *  \year 2014
+ *  \date 2014
  *  \tparam PhiPoints Gaussian rule to be used in the angular phi integration
  *  \tparam ThetaPoints Gaussian rule to be used in the angular theta integration
  *
@@ -237,7 +237,7 @@ double integrateS(const KernelS & F, const Element & e)
 }
 
 /*! \brief Integrates a double layer type operator on a single spherical polygon
- *  \year 2014
+ *  \date 2014
  *  \tparam PhiPoints Gaussian rule to be used in the angular phi integration
  *  \tparam ThetaPoints Gaussian rule to be used in the angular theta integration
  *

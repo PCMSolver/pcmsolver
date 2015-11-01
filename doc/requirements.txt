@@ -1,0 +1,7 @@
+sphinx-rtd-theme
+sphinx
+recommonmark
+breathe
+sphinxcontrib-bibtex
+pyyaml
+Pygments

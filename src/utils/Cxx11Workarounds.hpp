@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -66,11 +66,6 @@ namespace pcm {
 namespace pcm {
     using std::array;
 } /* end namespace pcm */
-/* <unordered_map> workarounds */
-#include <unordered_map>
-namespace pcm {
-    using std::unordered_map;
-} /* end namespace pcm */
 #else /* HAS_CXX11*/
 /* Smart pointers workarounds */
 #include <boost/shared_ptr.hpp>
@@ -103,11 +98,6 @@ namespace pcm {
 namespace pcm {
     using boost::array;
 } /* end namespace pcm */
-/* <unordered_map> workarounds */
-#include <boost/unordered_map.hpp>
-namespace pcm {
-    using boost::unordered_map;
-} /* end namespace pcm */
 #endif /* HAS_CXX11 */
 
 /* --- Workarounds for new keywords */
@@ -126,11 +116,11 @@ namespace pcm {
 #endif /* HAS_CXX11_CLASS_OVERRIDE */
 
 /* Workaroud for noexcept */
-#ifdef HAS_CXX11
+#ifdef HAS_CXX11_NOEXCEPT
 #define __noexcept noexcept
-#else /* HAS_CXX11 */
+#else /* HAS_CXX11_NOEXCEPT */
 #define __noexcept throw()
-#endif /* HAS_CXX11 */
+#endif /* HAS_CXX11_NOEXCEPT */
 
 /* Workaround for nullptr */
 #ifdef HAS_CXX11_NULLPTR

@@ -179,7 +179,7 @@ namespace pcm {
         initStaticSolver();
         if (input_.isDynamic()) initDynamicSolver();
         // Reserve space for Tot-MEP/ASC, Nuc-MEP/ASC and Ele-MEP/ASC
-        functions_.reserve(6);
+        functions_.reserve(12);
     }
 
     Meddle::~Meddle()

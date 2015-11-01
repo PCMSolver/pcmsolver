@@ -1,6 +1,7 @@
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.11910.png)](http://dx.doi.org/10.5281/zenodo.11910)
-[![Build Status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=release)](https://travis-ci.org/PCMSolver/pcmsolver)
+[![Build Status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=master)](https://travis-ci.org/PCMSolver/pcmsolver)
 [![Magnum CI build status](https://magnum-ci.com/status/9207aa29405095b0b7aef0cd809ed6c2.png?branch=master)](https://magnum-ci.com/builds)
+[![Documentation Status](https://readthedocs.org/projects/pcmsolver/badge/?version=latest)](http://pcmsolver.readthedocs.org/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/PCMSolver/pcmsolver/badge.svg?branch=release)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
 [![Coverity Scan Build](https://scan.coverity.com/projects/3046/badge.svg)](https://scan.coverity.com/projects/3046)
 
@@ -11,7 +12,7 @@ An API for the Polarizable Continuum Model.
 
 - [Project website](https://gitlab.com/PCMSolver/pcmsolver)
 - [Changelog](../master/CHANGELOG.md)
-- [Documentation](http://pcmsolver.github.io/pcmsolver-doc)
+- [Documentation](http://pcmsolver.readthedocs.org)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
 - [Nightly build dashboard](https://testboard.org/cdash/index.php?project=PCMSolver)
 - Version 1.0.4 available
@@ -71,6 +72,8 @@ Nightly builds
 - CentOS 6.6. Intel 14.0, Python 2.7.3, CMake 3.1.0
 - CentOS 6.6. Intel 15.0, Python 2.7.9, CMake 3.2.2.
   Uses Boost 1.58.0
+- CentOS 6.6. GCC 4.4.7, Python 2.7.3, CMake 3.1.0
 - CentOS 6.6. GCC 4.7.2, Python 2.7.3, CMake 3.1.0
-- OS X 10.10.5 Yosemite. LLVM 7.0.0 , GFortan 5.2.0, Python 2.7.10, CMake 3.3.2
+- CentOS 6.6. GCC 4.9.1, Python 2.7.3, CMake 3.1.0
+- OS X 10.10.5 Yosemite. LLVM 7.0.0 , GFortran 5.2.0, Python 2.7.10, CMake 3.3.2
   Uses Boost 1.58.0 from the Homebrew repositories.

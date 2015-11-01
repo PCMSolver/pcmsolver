@@ -46,7 +46,6 @@ namespace timer {
      *  \brief A wrapper around Boost.Timer
      *  \author Roberto Di Remigio
      *  \date 2014
-     *
      */
 
     class Timer

@@ -91,11 +91,6 @@ else:
     f.write(glob_sources_fortran(dname))
     language = 'Fortran'
 
-f.write('# Update bar chart\n')
-f.write('if(BUILD_CHARTS)\n')
-f.write('    update_bar_chart(${CMAKE_CURRENT_LIST_DIR} ' + language + ')\n')
-f.write('endif()\n\n')
-
 if (lang == 'CXX'):
     f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${{CMAKE_CURRENT_LIST_DIR}})\n')
     f.write('foreach(_source ${sources_list})\n')

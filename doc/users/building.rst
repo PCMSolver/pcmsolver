@@ -18,10 +18,11 @@ Compilers
 + a C compiler, compliant with the ISO C99 standard.
 + a Fortran compiler, compliant with the Fortran 2003 standard.
 
-The list of primary test environments can be found in the ``README.md`` file.
-It is entirely possible that using other compiler versions you might be able to
-build the module. In order to ensure that you have a sane build, you will have
-to run the unit test suite.
+The list of primary test environments can be found in the `README.md
+<https://github.com/PCMSolver/pcmsolver/blob/master/README.md>`_ file. It is
+entirely possible that using other compiler versions you might be able to build
+the module. In order to ensure that you have a sane build, you will have to run
+the unit test suite.
 
 Libraries and toolchain programs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

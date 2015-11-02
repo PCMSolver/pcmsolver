@@ -15,7 +15,6 @@
 
 import sys
 import os
-import shlex
 import re
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -446,11 +445,14 @@ def setup(app):
     print('Clean up leftovers from previous build')
     [remove(os.path.join(project_doc_dir, x.strip())) for x in open(os.path.join(project_doc_dir, '.gitignore'))]
     # Configure Doxyfile.in
+    dot = which('dot')
+    if dot is not None:
+        dot_path = os.path.split(which('dot'))[0]
     rep = { '@PROJECT_VERSION_MAJOR@' : major,
             '@PROJECT_VERSION_MINOR@' : minor,
             '@PROJECT_VERSION_PATCH@' : patch,
             '@PROJECT_SOURCE_DIR@'    : project_root_dir,
-            '@DOXYGEN_DOT_PATH@'      : os.path.split(which('dot'))[0]
+            '@DOXYGEN_DOT_PATH@'      : dot_path
           }
     configure_file(rep, 'Doxyfile', in_path=project_doc_dir, suffix='.in')
     # Make a copy of api/pcmsolver.h and strip it of all

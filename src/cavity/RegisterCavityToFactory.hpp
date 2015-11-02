@@ -49,7 +49,7 @@ namespace
     Cavity * createGePolCavity(const cavityData & data)
     {
         return new GePolCavity(data.molecule, data.area, data.probeRadius,
-                               data.minimalRadius, std::string("PEDRA.OUT"));
+                               data.minimalRadius);
     }
     const std::string GEPOL("GEPOL");
     const bool registeredGePol = Factory<Cavity, cavityData>::TheFactory().registerObject(GEPOL,

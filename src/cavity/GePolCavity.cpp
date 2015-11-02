@@ -89,7 +89,7 @@ extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
                                    double * xe, double * ye, double * ze, double * rin, double * masses,
                                    double * avgArea, double * rsolv, double * ret,
                                    int * nr_gen, int * gen1, int * gen2, int * gen3,
-				   int * nvert, double * vert, double * centr, int * isphe, char * pedra, int * len_f_pedra);
+				   int * nvert, double * vert, double * centr, int * isphe, const char * pedra, int * len_f_pedra);
 
 void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int maxvert)
 {
@@ -174,8 +174,7 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
 
     std::stringstream pedra;
     pedra << "PEDRA.OUT_" << suffix << "_" << ::getpid();
-    char * f_pedra = const_cast<char *>(pedra.str().c_str());
-    int len_f_pedra = std::strlen(f_pedra);
+    int len_f_pedra = std::strlen(pedra.str().c_str());
     // Go PEDRA, Go!
     TIMER_ON("GePolCavity::generatecavity_cpp");
     generatecavity_cpp(&maxts, &maxsph, &maxvert,
@@ -184,7 +183,7 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
                        xe, ye, ze, rin, mass,
 		       &averageArea, &probeRadius, &minimalRadius,
                        &nr_gen, &gen1, &gen2, &gen3,
-                nvert, vert, centr, isphe, f_pedra, &len_f_pedra);
+                nvert, vert, centr, isphe, pedra.str().c_str(), &len_f_pedra);
     TIMER_OFF("GePolCavity::generatecavity_cpp");
 
     // The "intensive" part of updating the spheres related class data members will be of course

@@ -2,7 +2,7 @@
 #
 # When found it will set the following variables
 #
-#  CXX11_COMPILER_FLAGS         - the compiler flags needed to get C++11 features
+#  CXX_STANDARD_FLAG         - the compiler flags needed to get C++11 features
 #
 #  HAS_CXX11_AUTO               - auto keyword
 #  HAS_CXX11_AUTO_RET_TYPE      - function declaration with deduced return types
@@ -61,23 +61,23 @@ macro(discover_cxx11_support _CXX_STANDARD_FLAG)
 	   add_definitions(-DHAS_CXX11)
     endif()
 
-    cxx11_check_feature("__func__"             HAS_CXX11_FUNC)
-    cxx11_check_feature("auto"                 HAS_CXX11_AUTO)
-    cxx11_check_feature("auto_ret_type"        HAS_CXX11_AUTO_RET_TYPE)
-    cxx11_check_feature("class_override_final" HAS_CXX11_CLASS_OVERRIDE)
-    cxx11_check_feature("constexpr"            HAS_CXX11_CONSTEXPR)
-    cxx11_check_feature("cstdint"              HAS_CXX11_CSTDINT_H)
-    cxx11_check_feature("decltype"             HAS_CXX11_DECLTYPE)
-    cxx11_check_feature("initializer_list"     HAS_CXX11_INITIALIZER_LIST)
-    cxx11_check_feature("lambda"               HAS_CXX11_LAMBDA)
-    cxx11_check_feature("long_long"            HAS_CXX11_LONG_LONG)
-    cxx11_check_feature("nullptr"              HAS_CXX11_NULLPTR)
-    cxx11_check_feature("regex"                HAS_CXX11_LIB_REGEX)
-    cxx11_check_feature("rvalue-references"    HAS_CXX11_RVALUE_REFERENCES)
-    cxx11_check_feature("sizeof_member"        HAS_CXX11_SIZEOF_MEMBER)
-    cxx11_check_feature("static_assert"        HAS_CXX11_STATIC_ASSERT)
-    cxx11_check_feature("variadic_templates"   HAS_CXX11_VARIADIC_TEMPLATES)
-    cxx11_check_feature("noexcept"             HAS_CXX11_NOEXCEPT)
+    cxx11_check_feature("${_discovered_flag}" "__func__"             HAS_CXX11_FUNC)
+    cxx11_check_feature("${_discovered_flag}" "auto"                 HAS_CXX11_AUTO)
+    cxx11_check_feature("${_discovered_flag}" "auto_ret_type"        HAS_CXX11_AUTO_RET_TYPE)
+    cxx11_check_feature("${_discovered_flag}" "class_override_final" HAS_CXX11_CLASS_OVERRIDE)
+    cxx11_check_feature("${_discovered_flag}" "constexpr"            HAS_CXX11_CONSTEXPR)
+    cxx11_check_feature("${_discovered_flag}" "cstdint"              HAS_CXX11_CSTDINT_H)
+    cxx11_check_feature("${_discovered_flag}" "decltype"             HAS_CXX11_DECLTYPE)
+    cxx11_check_feature("${_discovered_flag}" "initializer_list"     HAS_CXX11_INITIALIZER_LIST)
+    cxx11_check_feature("${_discovered_flag}" "lambda"               HAS_CXX11_LAMBDA)
+    cxx11_check_feature("${_discovered_flag}" "long_long"            HAS_CXX11_LONG_LONG)
+    cxx11_check_feature("${_discovered_flag}" "nullptr"              HAS_CXX11_NULLPTR)
+    cxx11_check_feature("${_discovered_flag}" "regex"                HAS_CXX11_LIB_REGEX)
+    cxx11_check_feature("${_discovered_flag}" "rvalue-references"    HAS_CXX11_RVALUE_REFERENCES)
+    cxx11_check_feature("${_discovered_flag}" "sizeof_member"        HAS_CXX11_SIZEOF_MEMBER)
+    cxx11_check_feature("${_discovered_flag}" "static_assert"        HAS_CXX11_STATIC_ASSERT)
+    cxx11_check_feature("${_discovered_flag}" "variadic_templates"   HAS_CXX11_VARIADIC_TEMPLATES)
+    cxx11_check_feature("${_discovered_flag}" "noexcept"             HAS_CXX11_NOEXCEPT)
 
     # Add feature definitions
     foreach(_feature_def ${CXX11_DEFINITIONS})
@@ -85,7 +85,7 @@ macro(discover_cxx11_support _CXX_STANDARD_FLAG)
     endforeach()
 endmacro(discover_cxx11_support)
 
-function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
+function(cxx11_check_feature CXX_STANDARD_FLAG FEATURE_NAME RESULT_VAR)
     if(NOT DEFINED ${RESULT_VAR})
         set(_bindir "${CMAKE_CURRENT_BINARY_DIR}/CheckCXX11/cxx11_${FEATURE_NAME}")
 
@@ -98,15 +98,15 @@ function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
 
         if(CROSS_COMPILING)
             try_compile(${RESULT_VAR} "${_bindir}" "${_SRCFILE}"
-                        COMPILE_DEFINITIONS "${CXX11_COMPILER_FLAGS}")
+                        COMPILE_DEFINITIONS "${CXX_STANDARD_FLAG}")
             if (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
                 try_compile(${RESULT_VAR} "${_bindir}_fail" "${_SRCFILE_FAIL}"
-                            COMPILE_DEFINITIONS "${CXX11_COMPILER_FLAGS}")
+                            COMPILE_DEFINITIONS "${CXX_STANDARD_FLAG}")
             endif (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
         else(CROSS_COMPILING)
             try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
                     "${_bindir}" "${_SRCFILE}"
-                    COMPILE_DEFINITIONS "${CXX11_COMPILER_FLAGS}")
+                    COMPILE_DEFINITIONS "${CXX_STANDARD_FLAG}")
             if(_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
                 set(${RESULT_VAR} TRUE)
             else(_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
@@ -115,7 +115,7 @@ function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
             if(${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
                 try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
                         "${_bindir}_fail" "${_SRCFILE_FAIL}"
-                         COMPILE_DEFINITIONS "${CXX11_COMPILER_FLAGS}")
+                         COMPILE_DEFINITIONS "${CXX_STANDARD_FLAG}")
                 if(_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
                     set(${RESULT_VAR} TRUE)
                 else(_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
@@ -125,7 +125,7 @@ function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
         endif(CROSS_COMPILING)
         if(${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL_COMPILE})
             try_compile(_TMP_RESULT "${_bindir}_fail_compile" "${_SRCFILE_FAIL_COMPILE}"
-                        COMPILE_DEFINITIONS "${CXX11_COMPILER_FLAGS}")
+                        COMPILE_DEFINITIONS "${CXX_STANDARD_FLAG}")
             if(_TMP_RESULT)
                 set(${RESULT_VAR} FALSE)
             else(_TMP_RESULT)

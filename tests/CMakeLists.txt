@@ -14,3 +14,8 @@ get_property(test_sources GLOBAL PROPERTY TestSources)
 
 add_executable(unit_tests.x unit_tests.cpp ${test_sources})
 target_link_libraries(unit_tests.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+
+if(ENABLE_FORTRAN_API)
+    add_executable(fortran_host.x fortran_host.F90)
+    target_link_libraries(fortran_host.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+endif()

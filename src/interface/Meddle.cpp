@@ -224,6 +224,7 @@ namespace pcm {
         SurfaceFunctionMap::const_iterator iter_pot = functions_.find(MEP);
         SurfaceFunction asc(cavity_->size());
         asc.vector() = K_0_->computeCharge(iter_pot->second.vector(), irrep);
+        // Renormalize
         asc /= double(cavity_->pointGroup().nrIrrep());
         // Insert it into the map
         if (functions_.count(ASC) == 1) { // Key in map already
@@ -246,6 +247,7 @@ namespace pcm {
         } else {
             asc.vector() = K_0_->computeCharge(iter_pot->second.vector(), irrep);
         }
+        // Renormalize
         asc /= double(cavity_->pointGroup().nrIrrep());
         if (functions_.count(ASC) == 1) { // Key in map already
             functions_[ASC] = asc;

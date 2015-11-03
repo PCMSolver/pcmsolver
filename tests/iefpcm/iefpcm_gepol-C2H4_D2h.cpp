@@ -77,6 +77,7 @@ TEST_CASE("Test solver for the IEFPCM and the C2H4 molecule in D2h symmetry", "[
   }
 
   double totalASC = - (2.0 * Ccharge + 4.0 * Hcharge) * (permittivity - 1) / permittivity;
+  // Renormalize
   int nr_irrep = cavity.pointGroup().nrIrrep();
   double totalFakeASC = fake_asc.sum() * nr_irrep;
   CAPTURE(totalASC);

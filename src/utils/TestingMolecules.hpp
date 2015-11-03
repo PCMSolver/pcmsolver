@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
  */
@@ -377,9 +377,9 @@ Molecule C2H4()
 
     Eigen::MatrixXd geom(3, nAtoms);
     geom.col(0) = C1.transpose();
-    geom.col(2) = H1.transpose();
-    geom.col(3) = H2.transpose();
-    geom.col(1) = C2.transpose();
+    geom.col(1) = H1.transpose();
+    geom.col(2) = H2.transpose();
+    geom.col(3) = C2.transpose();
     geom.col(4) = H3.transpose();
     geom.col(5) = H4.transpose();
     Eigen::VectorXd charges(6), masses(6);
@@ -390,9 +390,9 @@ Molecule C2H4()
     double radiusH = (1.20 * 1.20) / convertBohrToAngstrom;
     std::vector<Atom> atoms;
     atoms.push_back( Atom("Carbon",   "C", charges(0), masses(0), radiusC, C1, 1.0) );
-    atoms.push_back( Atom("Hydrogen", "H", charges(2), masses(2), radiusH, H1, 1.0) );
-    atoms.push_back( Atom("Hydrogen", "H", charges(3), masses(3), radiusH, H2, 1.0) );
-    atoms.push_back( Atom("Carbon",   "C", charges(1), masses(1), radiusC, C2, 1.0) );
+    atoms.push_back( Atom("Hydrogen", "H", charges(1), masses(1), radiusH, H1, 1.0) );
+    atoms.push_back( Atom("Hydrogen", "H", charges(2), masses(2), radiusH, H2, 1.0) );
+    atoms.push_back( Atom("Carbon",   "C", charges(3), masses(3), radiusC, C2, 1.0) );
     atoms.push_back( Atom("Hydrogen", "H", charges(4), masses(4), radiusH, H3, 1.0) );
     atoms.push_back( Atom("Hydrogen", "H", charges(5), masses(5), radiusH, H4, 1.0) );
 

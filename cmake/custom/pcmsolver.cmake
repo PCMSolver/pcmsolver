@@ -1,7 +1,15 @@
-option(ENABLE_LOGGER "Enable logger" ON)
+option(ENABLE_LOGGER "Enable logger" OFF)
 option(ENABLE_TIMER "Enable timer" ON)
 option(BUILD_STANDALONE "Enable build of standalone executables" ON)
 option(ENABLE_FORTRAN_API "Builds optional Fortran90 API" OFF)
+
+# Add definitions
+if(ENABLE_TIMER)
+  add_definitions(-DENABLE_TIMER)
+endif()
+if(ENABLE_LOGGER)
+  add_definitions(-DENABLE_LOGGER)
+endif()
 
 # This can be set by the host project
 # and tweaks the location of the submodules install location

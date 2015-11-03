@@ -14,5 +14,7 @@ add_test(NAME iefpcm_gepol-NH3_from-file COMMAND unit_tests.x [iefpcm_gepol-NH3_
 set_tests_properties(iefpcm_gepol-NH3_from-file PROPERTIES DEPENDS iefpcm_gepol-NH3)
 set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/iefpcm_symmetry.cpp)
 add_test(NAME iefpcm_symmetry COMMAND unit_tests.x [iefpcm_symmetry])
+set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/iefpcm_gepol-C2H4_D2h.cpp)
+add_test(NAME iefpcm_gepol-C2H4_D2h COMMAND unit_tests.x [iefpcm_gepol-C2H4_D2h])
 set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/iefpcm_anisotropic-symmetry.cpp)
 add_test(NAME iefpcm_anisotropic-symmetry COMMAND unit_tests.x [iefpcm_anisotropic-symmetry])

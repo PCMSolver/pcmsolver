@@ -124,7 +124,7 @@ int main(int argc, char * argv[])
     delete solver;
 
     // Write timings out
-    TIMER_DONE();
+    TIMER_DONE("pcmsolver.timer.dat");
 
     return EXIT_SUCCESS;
 }

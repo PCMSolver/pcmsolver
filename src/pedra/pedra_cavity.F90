@@ -614,7 +614,7 @@
 ! Check if the cavity is made up of disjoint spheres
     call cavspl(icav1, icav2, ncav1, ncav2, some)
 ! The dispersion calculation is allowed only in the case of single cavity.
-
+    idisp = 0
     if(ncav2 /= 0) idisp=0
 
     idisrep = 0

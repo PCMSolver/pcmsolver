@@ -18,4 +18,5 @@ target_link_libraries(unit_tests.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LI
 if(ENABLE_FORTRAN_API)
     add_executable(fortran_host.x fortran_host.F90)
     target_link_libraries(fortran_host.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+    add_test(NAME fortran_host COMMAND fortran_host.x)
 endif()

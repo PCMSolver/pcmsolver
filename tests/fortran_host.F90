@@ -160,12 +160,10 @@ program pcm_fortran_host
       character(kind=c_char, len=7) :: mep_lbl, asc_lbl, asc_B3g_lbl, asc_neq_B3g_lbl
       real(c_double), allocatable :: grid(:), mep(:), asc_Ag(:), asc_B3g(:), asc_neq_B3g(:)
       integer(c_int) :: irrep
-      integer(c_size_t) :: grid_size, irr_grid_size, ipoint
+      integer(c_size_t) :: grid_size, irr_grid_size
       real(c_double) :: energy
-      character(8)  :: for_title  = '(60X, A)'
-      character(36) :: for_header = '(A, T27, A, T62, A, T97, A, T132, A)'
-      character(20) :: for_data   = '(I6, 4(20X, F15.12))'
-      real(c_double) :: tot_asc
+      ! Reference values for scalar quantities
+      integer(c_size_t), parameter :: ref_size = 576, ref_irr_size = 72
       real(c_double), parameter :: ref_energy = -0.437960027982
 
       if (.not. pcmsolver_is_compatible_library()) then
@@ -261,11 +259,25 @@ program pcm_fortran_host
       call pcmsolver_get_surface_function(pcm_context, grid_size, asc_B3g, asc_B3g_lbl)
 
       ! Check that everything calculated is OK
+      ! Cavity size
+      if (grid_size .ne. ref_size) then
+        stop 'Error in the cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+      else 
+        write(output_unit, *) 'Test on cavity size: PASSED'
+      end if
+      ! Irreducible cavity size
+      if (irr_grid_size .ne. ref_irr_size) then
+        stop 'Error in the irreducible cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+      else 
+        write(output_unit, *) 'Test on irreducible cavity size: PASSED'
+      end if
+      ! Polarization energy
       if (.not. check_unsigned_error(energy, ref_energy, 1.0e-7_c_double)) then
         stop 'Error in the polarization energy, please file an issue on: https://github.com/PCMSolver/pcmsolver'
       else 
         write(output_unit, *) 'Test on polarization energy: PASSED'
       end if
+      ! Surface functions
       call test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g)
 
       call pcmsolver_write_timings(pcm_context)

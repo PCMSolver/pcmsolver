@@ -38,7 +38,7 @@ import subprocess
 import tempfile
 from copy import deepcopy
 
-sys.path.append('cmake/lib/docopt')
+sys.path.append('@PROJECT_SOURCE_DIR@/cmake/lib/docopt')
 import docopt
 
 options = """

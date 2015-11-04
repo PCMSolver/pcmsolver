@@ -26,6 +26,13 @@
 #ifndef PCMINPUT_H
 #define PCMINPUT_H
 
+// To cope with the fact that C doesn't have bool as primitive type
+#if (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus)
+typedef enum { false, true } bool;
+#else /* (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus) */
+#include <stdbool.h>
+#endif /* (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus) */
+
 /*! @struct PCMInput
  *  @brief Data structure for host-API input communication.
  */

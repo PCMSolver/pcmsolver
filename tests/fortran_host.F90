@@ -243,7 +243,7 @@ program pcm_fortran_host
       asc_neq_B3g = 0.0_c_double
       asc_neq_B3g_lbl = 'OITASC'//c_null_char
       ! This is the B3g irreducible representation
-      irrep = 3_c_size_t
+      irrep = 3_c_int
       call pcmsolver_compute_response_asc(pcm_context, mep_lbl, asc_neq_B3g_lbl, irrep)
       call pcmsolver_get_surface_function(pcm_context, grid_size, asc_neq_B3g, asc_neq_B3g_lbl)
 

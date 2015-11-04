@@ -32,11 +32,19 @@
 extern "C" {
 #endif
 
-struct pcmsolver_context_s;
-/*! \typedef pcmsolver_context_t
+/*! \typedef pcmsolver_context_s
  *  Opaque handle to a PCM context
  */
+struct pcmsolver_context_s;
+/*! \typedef pcmsolver_context_t
+ *  Workaround to have pcmsolver_context_s available to C
+ */
 typedef struct pcmsolver_context_s pcmsolver_context_t;
+
+/*! \typedef PCMInput_t
+ *  Workaround to have PCMInput available to C
+ */
+typedef struct PCMInput PCMInput_t;
 
 /*! \enum pcmsolver_reader_t
  *  \brief Input processing strategies
@@ -71,7 +79,7 @@ PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_readi
                                                   double charges[],
                                                   double coordinates[],
                                                   int symmetry_info[],
-                                                  PCMInput host_input);
+                                                  PCMInput_t host_input);
 
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted

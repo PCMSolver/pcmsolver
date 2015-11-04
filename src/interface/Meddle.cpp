@@ -57,7 +57,9 @@
 #endif
 
 PCMSOLVER_API
-pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], PCMInput host_input)
+pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int
+    nr_nuclei, double charges[], double coordinates[], int symmetry_info[],
+    PCMInput_t host_input)
 {
     return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input));
 }
@@ -171,7 +173,8 @@ void pcmsolver_write_timings(pcmsolver_context_t * context)
 }
 
 namespace pcm {
-    Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input)
+    Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double
+        charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input)
         : hasDynamic_(false)
     {
         initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input);

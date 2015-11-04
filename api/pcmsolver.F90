@@ -60,7 +60,7 @@ module pcmsolver
             real(c_double), intent(in)        :: charges(*)
             real(c_double), intent(in)        :: coordinates(*)
             integer(c_int), intent(in)        :: symmetry_info(*)
-            type(PCMInput), intent(in), value :: host_input
+            type(PCMInput), intent(in)        :: host_input
             type(c_ptr) :: context
         end function pcmsolver_new
     end interface pcmsolver_new

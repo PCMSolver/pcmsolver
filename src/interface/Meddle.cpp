@@ -44,6 +44,7 @@
 #include "Atom.hpp"
 #include "Citation.hpp"
 #include "cnpy.hpp"
+#include "PCMInput.h"
 #include "PhysicalConstants.hpp"
 #include "Solvent.hpp"
 #include "Sphere.hpp"
@@ -59,9 +60,10 @@
 PCMSOLVER_API
 pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int
     nr_nuclei, double charges[], double coordinates[], int symmetry_info[],
-    PCMInput_t host_input)
+    PCMInput_t * host_input)
 {
-    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input));
+    return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input_reading,
+          nr_nuclei, charges, coordinates, symmetry_info, *host_input));
 }
 
 PCMSOLVER_API

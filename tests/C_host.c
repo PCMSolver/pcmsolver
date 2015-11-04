@@ -5,8 +5,13 @@
 #include <string.h>
 
 #include "pcmsolver.h"
+#include "PCMInput.h"
 
-#define NR_NUCLEI 6
+#if (defined(__STDC__) && (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus)
+typedef enum { false, true } bool;
+#else /* (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus) */
+#include <stdbool.h>
+#endif /* (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus) */
 
 #ifdef __GNUC__
 #  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
@@ -19,6 +24,8 @@
 #else
 #  define UNUSED_FUNCTION(x) UNUSED_ ## x
 #endif
+
+#define NR_NUCLEI 6
 
 FILE * output;
 
@@ -84,7 +91,7 @@ int main()
   PCMInput_t host_input = pcmsolver_input();
 
   pcmsolver_context_t * pcm_context = pcmsolver_new(PCMSOLVER_READER_HOST,
-      NR_NUCLEI, charges, coordinates, symmetry_info, host_input);
+      NR_NUCLEI, charges, coordinates, symmetry_info, &host_input);
 
   pcmsolver_print(pcm_context);
 

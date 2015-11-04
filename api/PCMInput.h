@@ -27,11 +27,15 @@
 #define PCMINPUT_H
 
 // To cope with the fact that C doesn't have bool as primitive type
-#if (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus)
-typedef enum { false, true } bool;
+#ifndef pcmsolver_bool_t_DEFINED
+#define pcmsolver_bool_t_DEFINED
+#if (defined(__STDC__) && (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus)
+typedef enum { pcmsolver_false, pcmsolver_true } pcmsolver_bool_t;
 #else /* (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus) */
 #include <stdbool.h>
+typedef bool pcmsolver_bool_t;
 #endif /* (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus) */
+#endif /* pcmsolver_bool_t_DEFINED */
 
 /*! @struct PCMInput
  *  @brief Data structure for host-API input communication.
@@ -53,7 +57,7 @@ struct PCMInput
 	/// Derivative order for the switching function.
 	int der_order;
 	/// Whether to scale or not the atomic radii.
-	bool scaling;
+	pcmsolver_bool_t scaling;
 	/// Name of the .npz file for GePol cavity restart.
 	char restart_name[20];
 	/// Minimal radius for the added spheres.

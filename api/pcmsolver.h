@@ -2,7 +2,6 @@
 #define PCMSOLVER_H_INCLUDED
 
 #include <stddef.h>
-#include "PCMInput.h"
 
 #ifndef PCMSOLVER_API
 #  ifdef _WIN32
@@ -22,6 +21,17 @@
 #  endif
 #endif
 
+// To cope with the fact that C doesn't have bool as primitive type
+#ifndef pcmsolver_bool_t_DEFINED
+#define pcmsolver_bool_t_DEFINED
+#if (defined(__STDC__) && (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus)
+typedef enum { pcmsolver_false, pcmsolver_true } pcmsolver_bool_t;
+#else /* (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus) */
+#include <stdbool.h>
+typedef bool pcmsolver_bool_t;
+#endif /* (defined(__STDC__) || (__STDC_VERSION__ < 199901L)) && !defined(__cplusplus) */
+#endif /* pcmsolver_bool_t_DEFINED */
+
 /*! \file pcmsolver.h
  *  \brief C API to PCMSolver
  *  \author Roberto Di Remigio
@@ -32,8 +42,8 @@
 extern "C" {
 #endif
 
-/*! \typedef pcmsolver_context_s
- *  Opaque handle to a PCM context
+/*! \struct pcmsolver_context_s
+ *  Forward-declare opaque handle to a PCM context
  */
 struct pcmsolver_context_s;
 /*! \typedef pcmsolver_context_t
@@ -41,6 +51,10 @@ struct pcmsolver_context_s;
  */
 typedef struct pcmsolver_context_s pcmsolver_context_t;
 
+/*! \struct PCMInput
+ *  Forward-declare PCMInput input wrapping struct
+ */
+struct PCMInput;
 /*! \typedef PCMInput_t
  *  Workaround to have PCMInput available to C
  */
@@ -79,7 +93,7 @@ PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_readi
                                                   double charges[],
                                                   double coordinates[],
                                                   int symmetry_info[],
-                                                  PCMInput_t host_input);
+                                                  PCMInput_t * host_input);
 
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted
@@ -92,7 +106,7 @@ PCMSOLVER_API void pcmsolver_delete(pcmsolver_context_t * context);
  *  \warning This function should be called **before** instantiating
  *  any PCM context objects.
  */
-PCMSOLVER_API bool pcmsolver_is_compatible_library(void);
+PCMSOLVER_API pcmsolver_bool_t pcmsolver_is_compatible_library(void);
 
 /*! \brief Prints citation and set up information
  *  \param[in, out] context the PCM context object

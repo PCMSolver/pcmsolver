@@ -144,7 +144,7 @@ end module utilities
 program pcm_fortran_host
 
       use, intrinsic :: iso_c_binding
-      use, intrinsic :: iso_fortran_env, only: output_unit
+      use, intrinsic :: iso_fortran_env, only: output_unit, error_unit
       use pcmsolver
       use utilities
       
@@ -167,7 +167,8 @@ program pcm_fortran_host
       real(c_double), parameter :: ref_energy = -0.437960027982
 
       if (.not. pcmsolver_is_compatible_library()) then
-        stop 'PCMSolver library not compatible!'
+        write(error_unit, *) 'PCMSolver library not compatible!'
+        stop -1
       end if
 
       ! Open a file for the output...
@@ -261,19 +262,22 @@ program pcm_fortran_host
       ! Check that everything calculated is OK
       ! Cavity size
       if (grid_size .ne. ref_size) then
-        stop 'Error in the cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+        write(error_unit, *) 'Error in the cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+        stop -1
       else 
         write(output_unit, *) 'Test on cavity size: PASSED'
       end if
       ! Irreducible cavity size
       if (irr_grid_size .ne. ref_irr_size) then
-        stop 'Error in the irreducible cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+        write(error_unit, *) 'Error in the irreducible cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+        stop -1
       else 
         write(output_unit, *) 'Test on irreducible cavity size: PASSED'
       end if
       ! Polarization energy
       if (.not. check_unsigned_error(energy, ref_energy, 1.0e-7_c_double)) then
-        stop 'Error in the polarization energy, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+        write(error_unit, *) 'Error in the polarization energy, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+        stop -1
       else 
         write(output_unit, *) 'Test on polarization energy: PASSED'
       end if
@@ -314,7 +318,7 @@ end subroutine host_writer
 subroutine test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g)
 
   use, intrinsic :: iso_c_binding, only: c_bool, c_double, c_size_t
-  use, intrinsic :: iso_fortran_env, only: output_unit
+  use, intrinsic :: iso_fortran_env, only: output_unit, error_unit
   use utilities, only: check_unsigned_error
 
   interface mep_reference
@@ -354,7 +358,8 @@ subroutine test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g)
   check = check_unsigned_error(mep, mep_reference(), 1.0e-07_c_double)
   do ipoint = 1, grid_size
     if (.not. check(ipoint)) then
-      stop 'Error in MEP, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+      write(error_unit, *) 'Error in MEP, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+      stop -1
     end if
   end do
   write(output_unit, *) 'Test on MEP: PASSED'
@@ -362,7 +367,8 @@ subroutine test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g)
   check = check_unsigned_error(asc_Ag, asc_Ag_reference(), 1.0e-07_c_double)
   do ipoint = 1, grid_size
     if (.not. check(ipoint)) then
-      stop 'Error in ASC Ag, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+      write(error_unit, *) 'Error in ASC Ag, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+      stop -1
     end if
   end do
   write(output_unit, *) 'Test on ASC in Ag symmetry: PASSED'
@@ -370,7 +376,8 @@ subroutine test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g)
   check = check_unsigned_error(asc_B3g, asc_B3g_reference(), 1.0e-07_c_double)
   do ipoint = 1, grid_size
     if (.not. check(ipoint)) then
-      stop 'Error in ASC B3g, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+       write(error_unit, *) 'Error in ASC B3g, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+       stop -1
     end if
   end do
   write(output_unit, *) 'Test on ASC in B3g symmetry: PASSED'
@@ -378,7 +385,8 @@ subroutine test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g)
   check = check_unsigned_error(asc_neq_B3g, asc_neq_B3g_reference(), 1.0e-07_c_double)
   do ipoint = 1, grid_size
     if (.not. check(ipoint)) then
-      stop 'Error in nonequilibrium ASC B3g, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+      write(error_unit, *) 'Error in nonequilibrium ASC B3g, please file an issue on: https://github.com/PCMSolver/pcmsolver'
+      stop -1
     end if
   end do
   write(output_unit, *) 'Test on nonequilibrium ASC in B3g symmetry: PASSED'

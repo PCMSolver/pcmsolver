@@ -20,7 +20,7 @@ target_link_libraries(C_host.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRAR
 add_test(NAME C_host COMMAND C_host.x)
 
 if(ENABLE_FORTRAN_API)
-    add_executable(fortran_host.x fortran_host.F90)
-    target_link_libraries(fortran_host.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
-    add_test(NAME fortran_host COMMAND fortran_host.x)
+    add_executable(Fortran_host.x Fortran_host.F90 Fortran_host-modules.F90)
+    target_link_libraries(Fortran_host.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+    add_test(NAME Fortran_host COMMAND Fortran_host.x)
 endif()

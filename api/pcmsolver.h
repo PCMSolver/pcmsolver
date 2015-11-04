@@ -55,10 +55,6 @@ typedef struct pcmsolver_context_s pcmsolver_context_t;
  *  Forward-declare PCMInput input wrapping struct
  */
 struct PCMInput;
-/*! \typedef PCMInput_t
- *  Workaround to have PCMInput available to C
- */
-typedef struct PCMInput PCMInput_t;
 
 /*! \enum pcmsolver_reader_t
  *  \brief Input processing strategies
@@ -93,7 +89,7 @@ PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_readi
                                                   double charges[],
                                                   double coordinates[],
                                                   int symmetry_info[],
-                                                  PCMInput_t * host_input);
+                                                  struct PCMInput * host_input);
 
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted

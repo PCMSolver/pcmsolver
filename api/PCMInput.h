@@ -40,7 +40,7 @@ typedef bool pcmsolver_bool_t;
 /*! @struct PCMInput
  *  @brief Data structure for host-API input communication.
  */
-struct PCMInput
+typedef struct PCMInput
 {
 	/// Type of cavity requested.
 	char cavity_type[8];
@@ -78,6 +78,6 @@ struct PCMInput
 	double outside_epsilon;
 	/// Type of Green's function requested outside the cavity.
 	char outside_type[22];
-};
+} PCMInput;
 
 #endif // PCMINPUT_H

@@ -27,133 +27,166 @@
 #define TIMER_HPP
 
 #include <fstream>
-#include <map>
 #include <string>
 #include <utility>
 
+#include "Cxx11Workarounds.hpp"
+
+#include <boost/container/flat_map.hpp>
 #include <boost/foreach.hpp>
-#include <boost/timer/timer.hpp>
 
 namespace timer {
-    typedef std::map<std::string, boost::timer::cpu_timer> timersMap;
-    typedef std::pair<std::string, boost::timer::cpu_timer> timersPair;
+  typedef pcm::tuple<double, double> timing;
+  typedef boost::container::flat_map<std::string, timing> TimingsMap;
+  typedef std::pair<std::string, timing> TimingsPair;
 
-    typedef std::map<std::string, boost::timer::cpu_times> timingsMap;
-    typedef std::pair<std::string, boost::timer::cpu_times> timingsPair;
+  timing get_timing();
+  double get_wall_time();
+  double get_cpu_time();
 
-    /*! \file Timer.hpp
-     *  \class Timer
-     *  \brief A wrapper around Boost.Timer
-     *  \author Roberto Di Remigio
-     *  \date 2014
-     */
+  /*! \file Timer.hpp
+   *  \class Timer
+   *  \brief A wrapper around the basic C standard library timing facilities
+   *  \author Roberto Di Remigio
+   *  \date 2015
+   */
 
-    class Timer
-    {
-        private:
-            /// Checkpoint-timer map
-            timersMap timers_;
-            /// Checkpoint-timing map
-            timingsMap timings_;
-            /// Number of active timers
-            size_t active_;
+  class Timer
+  {
+    private:
+      /// Checkpoint-timing map
+      TimingsMap timings_;
 
-            std::ostream & printObject(std::ostream & os) const {
-                os << "            PCMSolver API timing results            " << std::endl;
-                os << "----------------------------------------------------" << std::endl;
-                timingsPair t_pair;
-                BOOST_FOREACH(t_pair, timings_) {
-                    os << t_pair.first << " : " << boost::timer::format(t_pair.second);
-                }
-                if (active_ != 0) {
-                    os << " These timers were not shut down:" << std::endl;
-                    timersPair t_pair;
-                    BOOST_FOREACH(t_pair, timers_) {
-                        os << " - " << t_pair.first << std::endl;
-                    }
-                    os << " Reported timings might be unreliable!" << std::endl;
-                }
-                os << "----------------------------------------------------" << std::endl;
-                return os;
-            }
-        public:
-            static Timer& TheTimer() {
-                static Timer obj;
-                return obj;
-            }
-            friend std::ostream & operator<<(std::ostream & os, const Timer & timer) {
-                return timer.printObject(os);
-            }
+      std::ostream & printObject(std::ostream & os) const {
+        os << "            PCMSolver API timing results            " << std::endl;
+        os << "----------------------------------------------------" << std::endl;
+        BOOST_FOREACH(TimingsPair t_pair, timings_) {
+          os << "Function:  " <<t_pair.first << std::endl;
+          os << "   Wall time: " << pcm::get<0>(t_pair.second) << " ms" << std::endl;
+          os << "   CPU time:  " << pcm::get<1>(t_pair.second) << " ms" << std::endl;
+        }
+        os << "----------------------------------------------------" << std::endl;
+        return os;
+      }
+    public:
+      static Timer& TheTimer() {
+        static Timer obj;
+        return obj;
+      }
+      friend std::ostream & operator<<(std::ostream & os, const Timer & timer) {
+        return timer.printObject(os);
+      }
 
-            /*! \brief Inserts a checkpoint-timer pair in the timers_ map
-             *  \param[in] checkpoint timer to be stored
-             */
-            void insertTimer(const timersPair & checkpoint) {
-                timers_.insert(checkpoint);
-                ++active_;
-            }
+      /*! \brief Inserts a checkpoint-timing pair in the timings_ map
+       *  \param[in] p checkpoint-timing to be stored
+       */
+      void insertTiming(const TimingsPair & p) {
+        timings_.insert(p);
+      }
 
-            /*! \brief Erases a checkpoint-timer pair in the timers_ map
-             *  \param[in] checkpoint_name timer to be erased
-             */
-            void eraseTimer(const std::string & checkpoint_name) {
-                timers_.erase(checkpoint_name);
-                --active_;
-            }
+      /*! \brief Calculates and registers elapsed time
+       *  \param[in] chkpt_name timing checkpoint
+       *  \param[in] t_stop stopping time
+       */
+      void registerElapsed(const std::string & chkpt_name, timing t_stop) {
+        double wall_elapsed = pcm::get<0>(t_stop) - pcm::get<0>(timings_[chkpt_name]);
+        double cpu_elapsed = pcm::get<1>(t_stop) - pcm::get<1>(timings_[chkpt_name]);
+        timings_[chkpt_name] = pcm::make_tuple(wall_elapsed, cpu_elapsed);
+      }
+  };
 
-            /*! \brief Inserts a checkpoint-timing pair in the timings_ map
-             *  \param[in] checkpoint_name timing to be stored
-             */
-            void insertTiming(const std::string & checkpoint_name) {
-                // Find timer associated with given checkpoint_name
-                timersMap::iterator checkpoint_timer = timers_.find(checkpoint_name);
-                // Get elapsed time, create a timingsPair and insert it into timings_ map
-                boost::timer::cpu_times const checkpoint_times((checkpoint_timer->second).elapsed());
-                timingsPair checkpoint = timingsMap::value_type(checkpoint_name, checkpoint_times);
-                timings_.insert(checkpoint);
-            }
+  /*! \fn inline void timerON(const std::string & chkpt_name)
+   *  \param[in] chkpt_name name of the checkpoint to be timed
+   *  \brief Starts a timer with the given name
+   *
+   *  A timer is added to the timers_ map of the Timer object.
+   */
+  inline void timerON(const std::string & chkpt_name)
+  {
+    Timer::TheTimer().insertTiming(std::make_pair(chkpt_name, get_timing()));
+  }
 
-            /*! Returns number of active timers */
-            int active() const { return active_; }
-    };
+  /*! \fn inline void timerOFF(const std::string & chkpt_name)
+   *  \param[in] chkpt_name name of the checkpoint to be timed
+   *  \brief Stops a timer with the given name
+   *
+   *  The timing results associated with the given timer
+   *  are added to the timings_ map of the Timer object,
+   *  the timer is then removed from the timers_ map.
+   */
+  inline void timerOFF(const std::string & chkpt_name)
+  {
+    Timer::TheTimer().registerElapsed(chkpt_name, get_timing());
+  }
 
-    /*! \fn inline void timerON(const std::string & checkpoint_name)
-     *  \param[in] checkpoint_name name of the checkpoint to be timed
-     *  \brief Starts a timer with the given name
-     *
-     *  A timer is added to the timers_ map of the Timer object.
-     */
-    inline void timerON(const std::string & checkpoint_name)
-    {
-        boost::timer::cpu_timer checkpoint_timer;
-        timersPair checkpoint = timersMap::value_type(checkpoint_name, checkpoint_timer);
-        Timer::TheTimer().insertTimer(checkpoint);
+  /*! \fn inline void timerDONE(const std::string & fname)
+   *  \param[in] fname name for the timing report file
+   */
+  inline void timerDONE(const std::string & fname)
+  {
+    std::ofstream timing_report;
+    timing_report.open(fname.c_str(), std::ios::out);
+    timing_report << Timer::TheTimer() << std::endl;
+    timing_report.close();
+  }
+
+  /*! Returns wall and CPU times in milliseconds */
+  inline timing get_timing()
+  {
+    return pcm::make_tuple(get_wall_time() / 1000.0, get_cpu_time() / 1000.0);
+  }
+
+// This code was taken from:
+// http://stackoverflow.com/a/17440673/2528668
+// It is most likely not going to work properly with OpenMP
+#ifdef _WIN32
+#include <Windows.h>
+  inline double get_wall_time()
+  {
+    LARGE_INTEGER time,freq;
+    if (!QueryPerformanceFrequency(&freq)) {
+      //  Handle error
+      return 0;
     }
-
-    /*! \fn inline void timerOFF(const std::string & checkpoint_name)
-     *  \param[in] checkpoint_name name of the checkpoint to be timed
-     *  \brief Stops a timer with the given name
-     *
-     *  The timing results associated with the given timer
-     *  are added to the timings_ map of the Timer object,
-     *  the timer is then removed from the timers_ map.
-     */
-    inline void timerOFF(const std::string & checkpoint_name)
-    {
-        Timer::TheTimer().insertTiming(checkpoint_name);
-        Timer::TheTimer().eraseTimer(checkpoint_name);
+    if (!QueryPerformanceCounter(&time)) {
+      //  Handle error
+      return 0;
     }
-
-    /*! \fn inline void timerDONE(const std::string & fname)
-     *  \param[in] fname name for the timing report file
-     */
-    inline void timerDONE(const std::string & fname)
-    {
-        std::ofstream timing_report;
-        timing_report.open(fname.c_str(), std::ios::out);
-        timing_report << Timer::TheTimer() << std::endl;
-        timing_report.close();
+    return (double)time.QuadPart / freq.QuadPart;
+  }
+  inline double get_cpu_time()
+  {
+    FILETIME a,b,c,d;
+    if (GetProcessTimes(GetCurrentProcess(),&a,&b,&c,&d) != 0) {
+      //  Returns total user time.
+      //  Can be tweaked to include kernel times as well.
+      return
+        (double)(d.dwLowDateTime |
+            ((unsigned long long)d.dwHighDateTime << 32)) * 0.0000001;
+    } else {
+      //  Handle error
+      return 0;
     }
+  }
+#else /* _WIN32 */
+#include <time.h>
+#include <sys/time.h>
+
+  inline double get_wall_time()
+  {
+    struct timeval time;
+    if (gettimeofday(&time,NULL)) {
+      //  Handle error
+      return 0;
+    }
+    return (double)time.tv_sec + (double)time.tv_usec * .000001;
+  }
+
+  inline double get_cpu_time()
+  {
+    return (double)clock() / CLOCKS_PER_SEC;
+  }
+#endif /* _WIN32 */
 } // namespace timer
 
 #endif // TIMER_HPP

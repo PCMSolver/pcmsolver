@@ -13,7 +13,7 @@ add_test(NAME bi_operators_purisima COMMAND unit_tests.x [bi_operators_purisima]
 # This executable updates the .npy files containing the reference values
 # The reference are to be copied into the source directory for the tests
 if(BUILD_STANDALONE)
-    list(APPEND external_libraries ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
+    list(APPEND external_libraries ${ZLIB_LIBRARIES})
     add_executable(update_reference_files.x update_reference_files.cpp)
     target_link_libraries(update_reference_files.x pcm ${external_libraries})
 endif()

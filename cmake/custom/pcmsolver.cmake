@@ -19,14 +19,6 @@ endif()
 
 set(BOOST_MINIMUM_REQUIRED 1.54.0)
 set(BOOST_COMPONENTS_REQUIRED "")
-if(BUILD_STANDALONE OR ENABLE_TIMER)
-  set(BOOST_COMPONENTS_REQUIRED "chrono;timer;system")
-endif()
-
-# librt : needed for the timers (Linux only)
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-  find_package(RT REQUIRED)
-endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)

@@ -60,6 +60,7 @@ namespace pcm {
     using std::make_tuple;
     using std::tie;
     using std::ignore;
+    using std::get;
 } /* end namespace pcm */
 /* <array> workarounds */
 #include <array>
@@ -92,6 +93,7 @@ namespace pcm {
     using boost::make_tuple;
     using boost::tie;
     using boost::tuples::ignore;
+    using boost::get;
 } /* end namespace pcm */
 /* <array> workarounds */
 #include <boost/array.hpp>

@@ -1,3 +1,5 @@
+.. _C-example:
+
 Interfacing with a C host
 =========================
 

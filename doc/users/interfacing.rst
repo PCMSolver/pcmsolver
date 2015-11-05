@@ -1,9 +1,18 @@
 Interfacing a QM program and PCMSolver
 ======================================
 
-.. warning::
+For the impatients: tl;dr
+-------------------------
 
-   **Work in Progress!!**
+In these examples, we want to show how *every function* in the API works.
+If your program is written in Fortran, head over to :ref:`fortran-example`
+If your program is written in C/C++, head over to :ref:`C-example`
+
+.. warning::
+   Also the usage of :cpp:func:`pcmsolver_write_timings` is shown.
+   You will **have to** link your program against Boost and ``librt``
+   in case you wish to use this function.
+
 
 How PCMSolver handles potentials and charges: surface functions
 ---------------------------------------------------------------

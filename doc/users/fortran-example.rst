@@ -1,3 +1,5 @@
+.. _fortran-example:
+
 Interfacing with a Fortran host
 ===============================
 

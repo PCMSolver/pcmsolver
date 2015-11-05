@@ -16,7 +16,7 @@ add_executable(unit_tests.x unit_tests.cpp ${test_sources})
 target_link_libraries(unit_tests.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 
 add_executable(C_host.x C_host.c)
-target_link_libraries(C_host.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY} rt)
+target_link_libraries(C_host.x pcm getkw ${ZLIB_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${Boost_CHRONO_LIBRARY})
 set_target_properties(C_host.x PROPERTIES INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/tests
                                           INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/api
                                           LINKER_LANGUAGE C)

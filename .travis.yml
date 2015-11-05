@@ -226,9 +226,9 @@ before_script:
   - export FC=${Fortran_COMPILER}
   - |
     if [[ "${COVERAGE}" = true ]]; then
-      python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' --coverage
+      python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake -DENABLE_FORTRAN_API=ON' --coverage
     else
-      python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake'
+      python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake -DENABLE_FORTRAN_API=ON'
     fi
   - cd build
 

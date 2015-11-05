@@ -233,7 +233,7 @@ before_script:
   - cd build
 
 script:
-  - make -j 2
+  - VERBOSE=1 make -j 2
   - ctest -V -j 2
 
 after_success:

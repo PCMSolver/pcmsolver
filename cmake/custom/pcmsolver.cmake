@@ -26,8 +26,6 @@ endif()
 # librt : needed for the timers (Linux only)
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
   find_package(RT REQUIRED)
-  include_directories(SYSTEM "${LIBRT_INCLUDE_DIR}")
-  link_libraries("${LIBRT_LIBRARIES}")
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)

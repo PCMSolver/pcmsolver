@@ -23,6 +23,7 @@ list(APPEND external_libraries ${Boost_SYSTEM_LIBRARY} ${Boost_TIMER_LIBRARY} ${
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 list(APPEND external_libraries ${ZLIB_LIBRARIES})
+list(APPEND external_libraries ${LIBRT_LIBRARIES})
 add_executable(run_pcm.x run_pcm.cpp)
 if(BUILD_CUSTOM_BOOST)
     add_dependencies(run_pcm.x custom_boost)

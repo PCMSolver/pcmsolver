@@ -18,7 +18,7 @@
 !       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
 ! 
 !       For information on the complete list of contributors to the
-!       PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+!       PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
 !pcmsolver_copyright_end
 
     module pedra_symmetry

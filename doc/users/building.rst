@@ -6,9 +6,10 @@ PCMSolver configuration and build process is managed through CMake.
 Prerequisites and dependencies
 ------------------------------
 
-A number of prerequisites and dependencies are to be satisfied to successfully build the module.
-It will be here assumed that you want to perform a "full" build, i.e. you want to build the static libraries to be linked to your
-QM program, the unit test suite and an offline copy of this documentation.
+A number of prerequisites and dependencies are to be satisfied to successfully
+build the module. It will be here assumed that you want to perform a "full"
+build, i.e. you want to build the static libraries to be linked to your QM
+program, the unit test suite and an offline copy of this documentation.
 
 Compilers
 ~~~~~~~~~
@@ -49,26 +50,27 @@ Version 3.2.0 of Eigen libraries is shipped with the module and resides in the `
 Configuration
 -------------
 
-Configuration is managed through the front-end script `setup` residing in the repository main directory.
-Issuing:
+Configuration is managed through the front-end script `setup` residing in the
+repository main directory. Issuing:
 
 .. code-block:: bash
 
    ./setup [options] [build path]
 
-will create the build directory in build path and run CMake with the given options. By default, files are configured in
-the `build` directory.
-The `-h` or `--help` option will list the available options and their effect.
-Options can be forwarded directly to CMake by using the `--cmake-options` flag and listing the `-D...` options.
-Usually the following command is sufficient to get the configuration done for a debug build, including
-compilation of the unit test suite:
+will create the build directory in build path and run CMake with the given
+options. By default, files are configured in the `build` directory. The `-h` or
+`--help` option will list the available options and their effect. Options can
+be forwarded directly to CMake by using the `--cmake-options` flag and listing
+the `-D...` options. Usually the following command is sufficient to get the
+configuration done for a debug build, including compilation of the unit test
+suite:
 
 .. code-block:: bash
 
    ./setup --type=debug
 
-The unit tests suite is **always** compiled in standalone mode, unless the `-DENABLE_TESTS=OFF` option is
-forwarded to CMake.
+The unit tests suite is **always** compiled in standalone mode, unless the
+`-DENABLE_TESTS=OFF` option is forwarded to CMake.
 
 Getting Boost
 ~~~~~~~~~~~~~

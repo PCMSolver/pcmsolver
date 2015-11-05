@@ -6,3 +6,5 @@ PCMSolver Users' Manual
    building
    input
    interfacing
+   fortran-example
+   C-example

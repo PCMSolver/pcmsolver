@@ -28,6 +28,7 @@ int main()
   }
 
   fprintf(output, "%s\n", "Starting a PCMSolver calculation");
+  // Use C2H4 in D2h symmetry
   double charges[NR_NUCLEI] = {6.0, 1.0, 1.0, 6.0, 1.0, 1.0};
   double coordinates[3 * NR_NUCLEI] = { 0.0,  0.000000,  1.257892,
                     0.0,  1.745462,  2.342716,

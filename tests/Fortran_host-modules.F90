@@ -2,28 +2,12 @@ module utilities
 
   implicit none
 
-  public host_writer
   public pcmsolver_input
   public nuclear_mep
 
   private
 
 contains
-
-  subroutine host_writer(message, message_length) bind(c, name='host_writer')
-
-    use, intrinsic :: iso_c_binding, only: c_char, c_size_t
-    use, intrinsic :: iso_fortran_env, only: output_unit
-
-    character(kind=c_char) :: message(*)
-    integer(c_size_t), intent(in), value :: message_length
-
-    character(len=message_length) :: f_message
-
-    call pcmsolver_c2f_string(message, f_message, message_length)
-    write(output_unit, '(1000A)') f_message
-
-  end subroutine host_writer
 
   ! Performs syntactic checks on PCMSolver input
   ! and fills the data structure holding input data

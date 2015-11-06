@@ -40,6 +40,7 @@
 #include "Element.hpp"
 #include "IGreensFunction.hpp"
 #include "MathUtils.hpp"
+#include "SolverImpl.hpp"
 
 void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
@@ -49,119 +50,36 @@ void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunct
 
 void IEFSolver::buildAnisotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-    // The total size of the cavity
-    size_t cavitySize = cav.size();
-    // The number of irreps in the group
-    int nrBlocks = cav.pointGroup().nrIrrep();
-    // The size of the irreducible portion of the cavity
-    int dimBlock = cav.irreducible_size();
-
-    // Compute SI, DI and SE, DE on the whole cavity, regardless of symmetry
-    Eigen::MatrixXd SI = gf_i.singleLayer(cav.elements());
-    Eigen::MatrixXd DI = gf_i.doubleLayer(cav.elements());
-    Eigen::MatrixXd SE = gf_o.singleLayer(cav.elements());
-    Eigen::MatrixXd DE = gf_o.doubleLayer(cav.elements());
-
-    // Perform symmetry blocking
-    // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
-    // into "block diagonal" when all other manipulations are done.
-    if (cav.pointGroup().nrGenerators() != 0) {
-        symmetryBlocking(DI, cavitySize, dimBlock, nrBlocks);
-        symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
-        symmetryBlocking(DE, cavitySize, dimBlock, nrBlocks);
-        symmetryBlocking(SE, cavitySize, dimBlock, nrBlocks);
-    }
-
-    Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-    Eigen::MatrixXd aInv = a.inverse();
-
-    // 1. Form T
-    fullPCMMatrix_ = ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.adjoint().eval()));
-    // 2. Invert T using LU decomposition with full pivoting
-    //    This is a rank-revealing LU decomposition, this allows us
-    //    to test if T is invertible before attempting to invert it.
-    Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix_);
-    if (!(T_LU.isInvertible())) PCMSOLVER_ERROR("T matrix is not invertible!");
-    fullPCMMatrix_ = T_LU.inverse();
-    Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
-    if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!");
-    fullPCMMatrix_ *= ((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI));
-    fullPCMMatrix_ *= a;
-    // 5. Symmetrize K := (K + K+)/2
+    fullPCMMatrix_ = anisotropicIEFMatrix(cav, gf_i, gf_o);
+    // Symmetrize K := (K + K+)/2
     if (hermitivitize_) {
         hermitivitize(fullPCMMatrix_);
     }
     // Pack into a block diagonal matrix
+    // The number of irreps in the group
+    int nrBlocks = cav.pointGroup().nrIrrep();
+    // The size of the irreducible portion of the cavity
+    int dimBlock = cav.irreducible_size();
     // For the moment just packs into a std::vector<Eigen::MatrixXd>
     symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
-    std::ofstream matrixOut("PCM_matrix");
-    matrixOut << "fullPCMMatrix" << std::endl;
-    matrixOut << fullPCMMatrix_ << std::endl;
-    for (int i = 0; i < nrBlocks; ++i) {
-        matrixOut << "Block number " << i << std::endl;
-        matrixOut << blockPCMMatrix_[i] << std::endl;
-    }
 
     built_ = true;
 }
 
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-    // The total size of the cavity
-    size_t cavitySize = cav.size();
-    // The number of irreps in the group
-    int nrBlocks = cav.pointGroup().nrIrrep();
-    // The size of the irreducible portion of the cavity
-    int dimBlock = cav.irreducible_size();
-
-    // Compute SI and DI on the whole cavity, regardless of symmetry
-    Eigen::MatrixXd SI = gf_i.singleLayer(cav.elements());
-    Eigen::MatrixXd DI = gf_i.doubleLayer(cav.elements());
-
-    // Perform symmetry blocking
-    // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
-    // into "block diagonal" when all other manipulations are done.
-    if (cav.pointGroup().nrGenerators() != 0) {
-        symmetryBlocking(DI, cavitySize, dimBlock, nrBlocks);
-        symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
-    }
-
-    Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-    Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-    aInv = a.inverse();
-
-    // Tq = -Rv -> q = -(T^-1 * R)v = -Kv
-    // T = (2 * M_PI * fact * aInv - DI) * a * SI; R = (2 * M_PI * aInv - DI)
-    // fullPCMMatrix_ = K = T^-1 * R * a
-    // 1. Form T
-    double epsilon = profiles::epsilon(gf_o.permittivity());
-    double fact = (epsilon + 1.0)/(epsilon - 1.0);
-    fullPCMMatrix_ = (2 * M_PI * fact * aInv - DI) * a * SI;
-    // 2. Invert T using LU decomposition with full pivoting
-    //    This is a rank-revealing LU decomposition, this allows us
-    //    to test if T is invertible before attempting to invert it.
-    Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix_);
-    if (!(T_LU.isInvertible()))
-        PCMSOLVER_ERROR("T matrix is not invertible!");
-    fullPCMMatrix_ = T_LU.inverse();
-    // 3. Multiply T^-1 and R
-    fullPCMMatrix_ *= (2 * M_PI * aInv - DI);
-    // 4. Multiply by a
-    fullPCMMatrix_ *= a;
-    // 5. Symmetrize K := (K + K+)/2
+    fullPCMMatrix_ = isotropicIEFMatrix(cav, gf_i, profiles::epsilon(gf_o.permittivity()));
+    // Symmetrize K := (K + K+)/2
     if (hermitivitize_) {
         hermitivitize(fullPCMMatrix_);
     }
     // Pack into a block diagonal matrix
+    // The number of irreps in the group
+    int nrBlocks = cav.pointGroup().nrIrrep();
+    // The size of the irreducible portion of the cavity
+    int dimBlock = cav.irreducible_size();
     // For the moment just packs into a std::vector<Eigen::MatrixXd>
     symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
-    std::ofstream matrixOut("PCM_matrix");
-    matrixOut << "fullPCMMatrix" << std::endl;
-    matrixOut << fullPCMMatrix_ << std::endl;
-    for (int i = 0; i < nrBlocks; ++i) {
-        matrixOut << "Block number " << i << std::endl;
-        matrixOut << blockPCMMatrix_[i] << std::endl;
-    }
 
     built_ = true;
 }

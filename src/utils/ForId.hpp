@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -31,7 +31,6 @@
 
 #include "Config.hpp"
 
-#include <boost/lexical_cast.hpp>
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/deref.hpp>
 #include <boost/mpl/distance.hpp>
@@ -162,7 +161,7 @@ struct for_id_impl
             }
         } else if (1 == mpl::distance<B1, E1>::value) { // Desired type NOT found in S1
             throw std::invalid_argument("Invalid derivative type (id1 = " +
-                    boost::lexical_cast<std::string>(id1) + ") in for_id metafunction.");
+                    pcm::to_string(id1) + ") in for_id metafunction.");
         } else { // First type not resolved, but S1 type sequence not exhausted
             // Call for_id_impl primary template with type of B1 moved to the next type in S1
             return (for_id_impl<D, S1, S2, S3,
@@ -223,7 +222,7 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3>
             }
         } else if (1 == mpl::distance<B2, E2>::value) { // Desired type NOT found in S2
             throw std::invalid_argument("Invalid integrator policy (id2 = " +
-                                        boost::lexical_cast<std::string>(id2) + ") in for_id metafunction.");
+                                        pcm::to_string(id2) + ") in for_id metafunction.");
         } else { // Second type not resolved, but S2 type sequence not exhausted
             // Call for_id_impl first partial specialization with type of B2 moved to the next type in S2
             return (for_id_impl<D, S1, S2, S3,
@@ -275,7 +274,7 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3>
             return ApplyFunctor<D, T1, T2, typename mpl::deref<B3>::type>::template apply<ReturnType>(f, data);
         } else if (1 == mpl::distance<B3, E3>::value) { // Desired type NOT found in S3
             throw std::invalid_argument("Invalid permittivity profile (id3 = " +
-                                        boost::lexical_cast<std::string>(id3) + ") in for_id metafunction.");
+                                        pcm::to_string(id3) + ") in for_id metafunction.");
         } else { // Third type not resolved, but S3 type sequence not exhausted
             // Call for_id_impl second partial specialization with type of B3 moved to the next type in S3
             return (for_id_impl<D, S1, S2, S3,

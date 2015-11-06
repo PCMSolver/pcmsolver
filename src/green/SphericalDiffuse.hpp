@@ -37,7 +37,6 @@
 // Has to be included here
 #include "InterfacesImpl.hpp"
 #include "RadialFunction.hpp"
-#include <boost/lexical_cast.hpp>
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
@@ -191,8 +190,8 @@ public:
         writeToFile(zetaC_, tmp + "zetaC.dat");
         writeToFile(omegaC_, tmp + "omegaC.dat");
 	for (int L = 1; L <= maxLGreen_; ++L) {
-	    writeToFile(zeta_[L], tmp + "zeta_" + boost::lexical_cast<std::string>(L) + ".dat");
-	    writeToFile(omega_[L], tmp + "omega_" + boost::lexical_cast<std::string>(L) + ".dat");
+	    writeToFile(zeta_[L], tmp + "zeta_" + pcm::to_string(L) + ".dat");
+	    writeToFile(omega_[L], tmp + "omega_" + pcm::to_string(L) + ".dat");
 	}
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
@@ -272,17 +271,17 @@ private:
         ProfileEvaluator eval_ = pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
         LOG("Computing coefficient for the separation of the Coulomb singularity");
-        LOG("Computing first radial solution L = " + std::to_string(maxLC_));
+        LOG("Computing first radial solution L = " + pcm::to_string(maxLC_));
         TIMER_ON("computeZeta for coefficient");
         zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(maxLC_, r_0_, r_infinity_, eval_, params_);
         TIMER_OFF("computeZeta for coefficient");
-        LOG("DONE: Computing first radial solution L = " + std::to_string(maxLC_));
+        LOG("DONE: Computing first radial solution L = " + pcm::to_string(maxLC_));
 
-        LOG("Computing second radial solution L = " + std::to_string(maxLC_));
+        LOG("Computing second radial solution L = " + pcm::to_string(maxLC_));
         TIMER_ON("computeOmega for coefficient");
         omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(maxLC_, r_0_, r_infinity_, eval_, params_);
         TIMER_OFF("computeOmega for coefficient");
-        LOG("Computing second radial solution L = " + std::to_string(maxLC_));
+        LOG("Computing second radial solution L = " + pcm::to_string(maxLC_));
         LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
 
         LOG("Computing radial solutions for Green's function");
@@ -291,22 +290,22 @@ private:
         omega_.reserve(maxLGreen_+1);
         for (int L = 0; L <= maxLGreen_; ++L) {
             // First radial solution
-            LOG("Computing first radial solution L = " + std::to_string(L));
-            TIMER_ON("computeZeta L = " + std::to_string(L));
+            LOG("Computing first radial solution L = " + pcm::to_string(L));
+            TIMER_ON("computeZeta L = " + pcm::to_string(L));
             // Create an empty RadialSolution
             RadialFunction<StateType, LnTransformedRadial, Zeta> tmp_zeta_(L, r_0_, r_infinity_, eval_, params_);
             zeta_.push_back(tmp_zeta_);
-            TIMER_OFF("computeZeta L = " + std::to_string(L));
-            LOG("DONE: Computing first radial solution L = " + std::to_string(L));
+            TIMER_OFF("computeZeta L = " + pcm::to_string(L));
+            LOG("DONE: Computing first radial solution L = " + pcm::to_string(L));
 
             // Second radial solution
-            LOG("Computing second radial solution L = " + std::to_string(L));
-            TIMER_ON("computeOmega L = " + std::to_string(L));
+            LOG("Computing second radial solution L = " + pcm::to_string(L));
+            TIMER_ON("computeOmega L = " + pcm::to_string(L));
             // Create an empty RadialSolution
             RadialFunction<StateType, LnTransformedRadial, Omega> tmp_omega_(L, r_0_, r_infinity_, eval_, params_);
             omega_.push_back(tmp_omega_);
-            TIMER_OFF("computeOmega L = " + std::to_string(L));
-            LOG("DONE: Computing second radial solution L = " + std::to_string(L));
+            TIMER_OFF("computeOmega L = " + pcm::to_string(L));
+            LOG("DONE: Computing second radial solution L = " + pcm::to_string(L));
         }
         TIMER_OFF("SphericalDiffuse: Looping over angular momentum");
         LOG("DONE: Computing radial solutions for Green's function");

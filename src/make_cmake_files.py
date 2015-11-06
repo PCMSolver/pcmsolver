@@ -92,7 +92,7 @@ else:
     language = 'Fortran'
 
 if (lang == 'CXX'):
-    f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${{CMAKE_CURRENT_LIST_DIR}})\n')
+    f.write('set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})\n')
     f.write('foreach(_source ${sources_list})\n')
     f.write('    set_property(GLOBAL APPEND PROPERTY PCMSolver_CXX_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})\n')
     f.write('endforeach()\n')

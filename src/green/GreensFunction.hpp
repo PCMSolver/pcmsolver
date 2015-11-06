@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -83,7 +83,7 @@ public:
      *  \param[in]        p2 second point
      */
     virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final
     {
         DerivativeTraits t1[3], t2[3];
         t1[0] = p1(0); t1[1] = p1(1); t1[2] = p1(2);
@@ -119,9 +119,9 @@ public:
     }
 
     /*! Whether the Green's function describes a uniform environment */
-    virtual bool uniform() const __final { return profiles::uniform(this->profile_); }
+    virtual bool uniform() const __final __override { return profiles::uniform(this->profile_); }
     /*! Returns a dielectric permittivity profile */
-    virtual Permittivity permittivity() const __final { return this->profile_; }
+    virtual Permittivity permittivity() const __final __override { return this->profile_; }
 
     friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
         return gf.printObject(os);
@@ -139,14 +139,14 @@ protected:
      *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
      *  need to implement. Thus this method is marked __final.
      */
-    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final
+    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final __override
     {
         DerivativeTraits sp[3], pp[3];
         sp[0] = p1(0); sp[1] = p1(1); sp[2] = p1(2);
         pp[0] = p2(0); pp[1] = p2(1); pp[2] = p2(2);
         return this->operator()(sp, pp)[0];
     }
-    virtual std::ostream & printObject(std::ostream & os)
+    virtual std::ostream & printObject(std::ostream & os) __override
     {
         os << "Green's Function" << std::endl;
         return os;
@@ -189,7 +189,7 @@ public:
      *  \param[in]        p2 second point
      */
     virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
+                                   const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final
     {
         return threePointStencil(pcm::bind(&GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>::kernelS, this, pcm::_1, pcm::_2),
                                 p2, p1, normal_p2, this->delta_);
@@ -222,9 +222,9 @@ public:
     }
 
     /*! Whether the Green's function describes a uniform environment */
-    virtual bool uniform() const __final { return profiles::uniform(this->profile_); }
+    virtual bool uniform() const __final __override { return profiles::uniform(this->profile_); }
     /*! Returns a dielectric permittivity profile */
-    virtual Permittivity permittivity() const __final { return this->profile_; }
+    virtual Permittivity permittivity() const __final __override { return this->profile_; }
 
     friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
         return gf.printObject(os);
@@ -242,11 +242,11 @@ protected:
      *  \note Relies on the implementation of operator() in the subclasses and that is all subclasses
      *  need to implement. Thus this method is marked __final.
      */
-    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final
+    virtual double kernelS_impl(const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __final __override
     {
         return this->operator()(const_cast<Numerical *>(p1.data()), const_cast<Numerical *>(p2.data()));
     }
-    virtual std::ostream & printObject(std::ostream & os)
+    virtual std::ostream & printObject(std::ostream & os) __override
     {
         os << "Green's Function" << std::endl;
         return os;

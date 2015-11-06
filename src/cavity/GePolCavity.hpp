@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -46,7 +46,7 @@
  *  of cavities according to the GePol algorithm.
  */
 
-class GePolCavity : public Cavity
+class GePolCavity __final : public Cavity
 {
 public:
     GePolCavity() {}
@@ -75,8 +75,8 @@ private:
     double probeRadius;
     double minimalRadius;
     int addedSpheres;
-    virtual std::ostream & printCavity(std::ostream & os);
-    virtual void makeCavity() { build(std::string("PEDRA.OUT"), 10000, 200, 25000); }
+    virtual std::ostream & printCavity(std::ostream & os) __override;
+    virtual void makeCavity() __override { build(std::string("PEDRA.OUT"), 10000, 200, 25000); }
     /*! \brief Driver for PEDRA Fortran module.
      *  \param[in]  suffix for the cavity.off and PEDRA.OUT files, the PID will also be added
      *  \param[in]   maxts maximum number of tesserae

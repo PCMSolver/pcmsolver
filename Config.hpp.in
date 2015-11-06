@@ -54,6 +54,16 @@
 @DEFINE_FC_FUNC@
 @DEFINE_FC_FUNC_@
 
+#ifdef __GNUC__
+#  define PURE __attribute__((pure))
+#  define CONST __attribute__((const))
+#  define NORETURN __attribute__((noreturn))
+#else
+#  define PURE
+#  define CONST
+#  define NORETURN
+#endif
+
 #include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
 #include "LoggerInterface.hpp"

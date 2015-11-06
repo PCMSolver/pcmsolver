@@ -25,6 +25,7 @@ Options:
   --extra-cc-flags=<EXTRA_CFLAGS>        Extra C compiler flags [default: ''].
   --fc=<FC>                              Fortran compiler [default: gfortran].
   --extra-fc-flags=<EXTRA_FCFLAGS>       Extra Fortran compiler flags [default: ''].
+  --exdiag                               Enable C++ extended diagnostics flags [default: False].
   --ccache=<USE_CCACHE>                  Toggle use of ccache <ON/OFF> [default: ON].
   --coverage                             Enable code coverage [default: False].
   --int64                                Enable 64bit integers [default: False].
@@ -55,6 +56,7 @@ def gen_cmake_command(options, arguments):
     command.append('-DEXTRA_CXXFLAGS="{0}"'.format(arguments['--extra-cxx-flags']))
     command.append('-DEXTRA_CFLAGS="{0}"'.format(arguments['--extra-cc-flags']))
     command.append('-DEXTRA_FCFLAGS="{0}"'.format(arguments['--extra-fc-flags']))
+    command.append('-DENABLE_EXTENDED_DIAGNOSTICS=%s' % arguments['--exdiag'])
     command.append('-DUSE_CCACHE="{0}"'.format(arguments['--ccache']))
     command.append('-DENABLE_CODE_COVERAGE=%s' % arguments['--coverage'])
     command.append('-DENABLE_64BIT_INTEGERS=%s' % arguments['--int64'])

@@ -35,7 +35,7 @@ src_lbl = dict(zip([os.path.basename(src) for src in sources], labels))
 
 for src, lbl in src_lbl.iteritems():
     f.write('# %s test\n' % src)
-    f.write('set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/%s)\n' % src)
+    f.write('set_property(GLOBAL APPEND PROPERTY UnitTestsSources ${CMAKE_CURRENT_LIST_DIR}/%s)\n' % src)
     f.write('add_Catch_test(%s "%s")\n\n' % (os.path.splitext(src)[0], ';'.join(lbl)))
 
 print('Template created')

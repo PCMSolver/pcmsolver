@@ -52,7 +52,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
 
         double charge = 8.0;
         // The total ASC for a conductor is -Q
-        // for CPCM it will be -Q*[(epsilon-1)/epsilon]
+        // for CPCM it will be -Q*(epsilon-1)/epsilon
         double totalASC = - charge * (permittivity - 1) / permittivity;
 
         /*! \class CPCMSolver

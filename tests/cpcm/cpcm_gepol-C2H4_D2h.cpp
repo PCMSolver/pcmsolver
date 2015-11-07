@@ -66,7 +66,7 @@ TEST_CASE("Test solver for the CPCM and the C2H4 molecule in D2h symmetry", "[cp
   double Hcharge = 1.0;
   size_t size = cavity.size();
   Eigen::VectorXd fake_mep = computeMEP(molec, cavity.elements());
-  // The total ASC for a dielectric is -Q*[(epsilon-1)/epsilon]
+  // The total ASC for a dielectric is -Q*(epsilon-1)/epsilon
   size_t irr_size = cavity.irreducible_size();
   Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
   fake_asc = solver.computeCharge(fake_mep);
@@ -79,7 +79,7 @@ TEST_CASE("Test solver for the CPCM and the C2H4 molecule in D2h symmetry", "[cp
   }
 
   // The total ASC for a conductor is -Q
-  // for CPCM it will be -Q*[(epsilon-1)/epsilon]
+  // for CPCM it will be -Q*(epsilon-1)/epsilon
   double totalASC = - (2.0 * Ccharge + 4.0 * Hcharge) * (permittivity - 1) / permittivity;
   // Renormalize
   int nr_irrep = cavity.pointGroup().nrIrrep();

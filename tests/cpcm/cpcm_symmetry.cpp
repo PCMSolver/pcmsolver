@@ -76,7 +76,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
@@ -105,7 +105,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
@@ -139,7 +139,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
@@ -173,7 +173,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
@@ -207,7 +207,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
@@ -241,7 +241,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
@@ -275,7 +275,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;
@@ -309,7 +309,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(irr_size);
+                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
                 double totalFakeASC = fake_asc.sum() * nr_irrep;

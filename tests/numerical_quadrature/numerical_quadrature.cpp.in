@@ -38,6 +38,7 @@
 #include "Element.hpp"
 #include "GePolCavity.hpp"
 #include "IntegratorHelperFunctions.hpp"
+#include "MathUtils.hpp"
 #include "PhysicalConstants.hpp"
 #include "TestingMolecules.hpp"
 

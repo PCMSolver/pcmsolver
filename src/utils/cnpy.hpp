@@ -16,12 +16,6 @@
 #include <vector>
 #include <zlib.h>
 
-#include "Config.hpp"
-
-#include <Eigen/Core>
-
-#include "MathUtils.hpp"
-
 namespace cnpy
 {
     struct NpyArray

@@ -25,7 +25,6 @@
 
 #include "catch.hpp"
 
-#include <cstdio>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -60,7 +59,6 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
          */
         WHEN("the vacuum Green's function is used")
         {
-            std::rename("PEDRA.OUT", "PEDRA.OUT.vacuum");
             Vacuum<AD_directional, NumericalIntegrator> gf;
             THEN("the matrix elements of S are")
             {
@@ -104,7 +102,6 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
         WHEN("the uniform dielectric Green's function is used")
         {
             double eps = 80.0;
-            std::rename("PEDRA.OUT", "PEDRA.OUT.uniform");
             UniformDielectric<AD_directional, NumericalIntegrator> gf(eps);
             THEN("the matrix elements of S are")
             {
@@ -147,7 +144,6 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
         {
             double eps = 80.0;
             double kappa = 1.5;
-            std::rename("PEDRA.OUT", "PEDRA.OUT.ionic");
             IonicLiquid<AD_directional, NumericalIntegrator> gf(eps, kappa);
             THEN("the matrix elements of S are")
             {
@@ -190,7 +186,6 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
         {
             Eigen::Vector3d epsilon = (Eigen::Vector3d() << 80.0, 80.0, 80.0).finished();
             Eigen::Vector3d euler = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
-            std::rename("PEDRA.OUT", "PEDRA.OUT.anisotropic");
             AnisotropicLiquid<AD_directional, NumericalIntegrator> gf(epsilon, euler);
             THEN("the matrix elements of S are")
             {

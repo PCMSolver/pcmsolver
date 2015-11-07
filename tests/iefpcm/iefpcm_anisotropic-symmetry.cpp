@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -25,7 +25,6 @@
 
 #include "catch.hpp"
 
-#include <cstdio>
 #include <iostream>
 
 #include "Config.hpp"
@@ -65,8 +64,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            GePolCavity cavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c1");
+            GePolCavity cavity(point, area, probeRadius, minRadius, "C1");
 
             IEFSolver aniso_solver(symm);
             aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
@@ -106,8 +104,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            GePolCavity cavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c2");
+            GePolCavity cavity(point, area, probeRadius, minRadius, "C2");
 
             IEFSolver aniso_solver(symm);
             aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
@@ -147,8 +144,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            GePolCavity cavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.cs");
+            GePolCavity cavity(point, area, probeRadius, minRadius, "Cs");
 
             IEFSolver aniso_solver(symm);
             aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
@@ -188,8 +184,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            GePolCavity cavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.ci");
+            GePolCavity cavity(point, area, probeRadius, minRadius, "Ci");
 
             IEFSolver aniso_solver(symm);
             aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
@@ -226,8 +221,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            GePolCavity cavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.d2");
+            GePolCavity cavity(point, area, probeRadius, minRadius, "D2");
 
             IEFSolver aniso_solver(symm);
             aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
@@ -267,8 +261,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            GePolCavity cavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c2v");
+            GePolCavity cavity(point, area, probeRadius, minRadius, "C2v");
 
             IEFSolver aniso_solver(symm);
             aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
@@ -308,8 +301,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            GePolCavity cavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.c2h");
+            GePolCavity cavity(point, area, probeRadius, minRadius, "C2h");
 
             IEFSolver aniso_solver(symm);
             aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
@@ -349,8 +341,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            GePolCavity cavity(point, area, probeRadius, minRadius);
-            std::rename("PEDRA.OUT", "PEDRA.OUT.d2h");
+            GePolCavity cavity(point, area, probeRadius, minRadius, "D2h");
 
             IEFSolver aniso_solver(symm);
             aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);

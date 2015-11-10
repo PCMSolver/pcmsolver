@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -57,7 +57,6 @@
 #define AS_CTYPE(Type, Obj) reinterpret_cast<const Type *>(Obj)
 #endif
 
-PCMSOLVER_API
 pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int
     nr_nuclei, double charges[], double coordinates[], int symmetry_info[],
     PCMInput * host_input)
@@ -66,51 +65,43 @@ pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int
           nr_nuclei, charges, coordinates, symmetry_info, *host_input));
 }
 
-PCMSOLVER_API
 void pcmsolver_delete(pcmsolver_context_t * context)
 {
     if (!context) return;
     delete AS_TYPE(pcm::Meddle, context);
 }
 
-PCMSOLVER_API
 bool pcmsolver_is_compatible_library(void)
 {
     unsigned int major = (pcm::pcmsolver_get_version() >> 16);
     return (major == PROJECT_VERSION_MAJOR);
 }
 
-PCMSOLVER_API
 void pcmsolver_print(pcmsolver_context_t * context)
 {
     AS_TYPE(pcm::Meddle, context)->printInfo();
 }
 
-PCMSOLVER_API
 size_t pcmsolver_get_cavity_size(pcmsolver_context_t * context)
 {
     return (AS_TYPE(pcm::Meddle, context)->getCavitySize());
 }
 
-PCMSOLVER_API
 size_t pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context)
 {
     return (AS_TYPE(pcm::Meddle, context)->getIrreducibleCavitySize());
 }
 
-PCMSOLVER_API
 void pcmsolver_get_centers(pcmsolver_context_t * context, double centers[])
 {
     AS_TYPE(pcm::Meddle, context)->getCenters(centers);
 }
 
-PCMSOLVER_API
 void pcmsolver_get_center(pcmsolver_context_t * context, int its, double center[])
 {
     AS_TYPE(pcm::Meddle, context)->getCenter(its, center);
 }
 
-PCMSOLVER_API
 void pcmsolver_compute_asc(pcmsolver_context_t * context,
                            const char * mep_name,
                            const char * asc_name,
@@ -119,7 +110,6 @@ void pcmsolver_compute_asc(pcmsolver_context_t * context,
     AS_TYPE(pcm::Meddle, context)->computeASC(mep_name, asc_name, irrep);
 }
 
-PCMSOLVER_API
 void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
                            const char * mep_name,
                            const char * asc_name,
@@ -128,7 +118,6 @@ void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
     AS_TYPE(pcm::Meddle, context)->computeResponseASC(mep_name, asc_name, irrep);
 }
 
-PCMSOLVER_API
 double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
                                              const char * mep_name,
                                              const char * asc_name)
@@ -136,39 +125,33 @@ double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
     return (AS_TYPE(pcm::Meddle, context)->computePolarizationEnergy(mep_name, asc_name));
 }
 
-PCMSOLVER_API
 void pcmsolver_get_surface_function(pcmsolver_context_t * context,
                                     size_t size, double values[], const char * name)
 {
     AS_TYPE(pcm::Meddle, context)->getSurfaceFunction(size, values, name);
 }
 
-PCMSOLVER_API
 void pcmsolver_set_surface_function(pcmsolver_context_t * context,
                                     size_t size, double values[], const char * name)
 {
     AS_TYPE(pcm::Meddle, context)->setSurfaceFunction(size, values, name);
 }
 
-PCMSOLVER_API
 void pcmsolver_save_surface_functions(pcmsolver_context_t * context)
 {
     AS_TYPE(pcm::Meddle, context)->saveSurfaceFunctions();
 }
 
-PCMSOLVER_API
 void pcmsolver_save_surface_function(pcmsolver_context_t * context, const char * name)
 {
     AS_TYPE(pcm::Meddle, context)->saveSurfaceFunction(name);
 }
 
-PCMSOLVER_API
 void pcmsolver_load_surface_function(pcmsolver_context_t * context, const char * name)
 {
     AS_TYPE(pcm::Meddle, context)->loadSurfaceFunction(name);
 }
 
-PCMSOLVER_API
 void pcmsolver_write_timings(pcmsolver_context_t * context)
 {
     AS_TYPE(pcm::Meddle, context)->writeTimings();

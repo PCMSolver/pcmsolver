@@ -55,13 +55,9 @@
 @DEFINE_FC_FUNC_@
 
 #ifdef __GNUC__
-#  define PURE __attribute__((pure))
-#  define CONST __attribute__((const))
-#  define NORETURN __attribute__((noreturn))
+#define attribute(x) __attribute__((x))
 #else
-#  define PURE
-#  define CONST
-#  define NORETURN
+#define attribute(x)
 #endif
 
 #include "Cxx11Workarounds.hpp"

@@ -16,6 +16,6 @@ add_Catch_test(bi_operators_collocation "bi_operators;bi_operators_collocation")
 # This executable updates the .npy files containing the reference values
 if(BUILD_STANDALONE)
   list(APPEND external_libraries ${ZLIB_LIBRARIES})
-  add_executable(update_reference_files.x update_reference_files.cpp)
-  target_link_libraries(update_reference_files.x pcm ${external_libraries})
+  add_executable(update_reference_files update_reference_files.cpp)
+  target_link_libraries(update_reference_files pcm ${external_libraries})
 endif()

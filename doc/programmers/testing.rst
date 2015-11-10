@@ -21,18 +21,17 @@ To add new tests for your class you have to:
       add_subdirectory(new_subdir)
 
 #. create a CMakeLists.txt inside your new subdirectory.
-   This CMakeLists.txt adds the source for a given unit test to the global ``TestSources``
+   This CMakeLists.txt adds the source for a given unit test to the global ``UnitTestsSources``
    property and notifies CTest that a test with given name is part of the test suite.
-
-   .. code-block:: cmake
-
-      set_property(GLOBAL APPEND PROPERTY TestSources ${CMAKE_CURRENT_LIST_DIR}/testname.cpp)
-      add_test(NAME testname COMMAND unit_tests.x [testname])
+   The generation of the CMakeLists.txt can be managed by ``make_cmake_files.py`` Python script.
+   This will take care of also setting up CTest labels. This helps in further grouping
+   the tests for our convenience.
+   Catch uses tags to index tests and tags are surrounded by square brackets. The Python script
+   inspects the sources and extracts labels from Catch tags.
+   The ``add_Catch_test`` CMake macro takes care of the rest.
 
    We require that each source file containing tests follows the naming convention
    new_subdir_testname and that testname gives some clue to what is being tested.
-   Notice the use of square brackets in the ``add_test`` macro in the ``COMMAND`` argument.
-   Catch uses tags to index tests and tags are surrounded by square brackets.
    Depending on the execution of tests in a different subdirectory is bad practice.
    A possible workaround is to add some kind of input file and create a text fixture
    that sets up the test environment. Have a look in the ``tests/input`` directory

@@ -55,7 +55,7 @@ namespace pcm {
             int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
             Molecule & molecule);
     void initSpheresAtoms(const Input &, const Eigen::Matrix3Xd &, std::vector<Sphere> &);
-    unsigned int pcmsolver_get_version(void) CONST;
+    unsigned int pcmsolver_get_version(void) attribute(const);
     void print(const PCMInput &);
 
     /*! \class Meddle
@@ -81,11 +81,11 @@ namespace pcm {
             /*! \brief Getter for the number of finite elements composing the molecular cavity
              *  \return the size of the cavity
              */
-            size_t getCavitySize() const PURE;
+            size_t getCavitySize() const attribute(pure);
             /*! \brief Getter for the number of irreducible finite elements composing the molecular cavity
              *  \return the number of irreducible finite elements
              */
-            size_t getIrreducibleCavitySize() const PURE;
+            size_t getIrreducibleCavitySize() const attribute(pure);
             /*! \brief Getter for the centers of the finite elements composing the molecular cavity
              *  \param[out] centers array holding the coordinates of the finite elements centers
              */

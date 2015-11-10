@@ -23,7 +23,7 @@ routine names my_perfect_routine
 keyword names MYPERFECTKEYWORD
 """
 
-executable="@PCMSOLVER_EXECUTABLE@"
+executable="@PCMSolver_EXECUTABLE@"
 libdir="@GETKW_PYTHON_DIR@"
 isAngstrom = False
 CODATAyear = 2010

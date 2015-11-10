@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -27,8 +27,8 @@
 #define ERRORHANDLING_HPP
 
 #include <cassert>
+#include <stdexcept>
 
-#include "Exception.hpp"
 
 /*! \file ErrorHandling.hpp
  *  \brief Provide macros for error handling
@@ -41,7 +41,6 @@
  *  PCMSOLVER_ERROR(<Error Message>)
  *  \endverbatim
  *
- *  The output contains the most recent 5 function calls.
  *  Use this to catch errors that might occur because of faulty
  *  data, i.e. other people's errors. Mainly in the API to the
  *  external world.
@@ -70,7 +69,7 @@
  */
 
 /// Macro to be used to throw exceptions
-#define PCMSOLVER_ERROR(arg) throw Exception(arg, __FILE__, __LINE__)
+#define PCMSOLVER_ERROR(arg) throw std::runtime_error(arg)
 
 /// Macro to be used for assertions
 #define PCMSOLVER_ASSERT(arg) assert(arg)

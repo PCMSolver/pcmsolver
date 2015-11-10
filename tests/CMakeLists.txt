@@ -11,8 +11,8 @@ add_subdirectory(iefpcm)
 
 get_property(test_sources GLOBAL PROPERTY UnitTestsSources)
 
-add_executable(unit_tests.x unit_tests.cpp ${test_sources})
-target_link_libraries(unit_tests.x pcm getkw ${ZLIB_LIBRARIES})
+add_executable(unit_tests unit_tests.cpp ${test_sources})
+target_link_libraries(unit_tests pcm getkw ${ZLIB_LIBRARIES})
 
 add_subdirectory(C_host)
 if(ENABLE_FORTRAN_API)

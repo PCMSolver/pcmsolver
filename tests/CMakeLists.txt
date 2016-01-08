@@ -11,8 +11,16 @@ add_subdirectory(iefpcm)
 
 get_property(test_sources GLOBAL PROPERTY UnitTestsSources)
 
+link_directories(${PROJECT_BINARY_DIR}/lib)
 add_executable(unit_tests unit_tests.cpp ${test_sources})
-target_link_libraries(unit_tests pcm getkw ${ZLIB_LIBRARIES})
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(unit_tests custom_boost)
+endif()
+if(STATIC_LIBRARY_ONLY)
+  target_link_libraries(unit_tests pcm-static getkw ${ZLIB_LIBRARIES})
+else()
+  target_link_libraries(unit_tests pcm-shared)
+endif()
 
 add_subdirectory(C_host)
 if(ENABLE_FORTRAN_API)

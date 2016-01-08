@@ -4,3 +4,7 @@ configure_file(${PROJECT_SOURCE_DIR}/Config.hpp.in ${PROJECT_BINARY_DIR}/include
 # Configure the input parsing script
 configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in ${PROJECT_BINARY_DIR}/bin/pcmsolver.py @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/bin/pcmsolver.py DESTINATION bin)
+
+# Install docopt.py in the bin subdirectory
+file(COPY ${PROJECT_SOURCE_DIR}/cmake/lib/docopt/docopt.py DESTINATION ${PROJECT_BINARY_DIR}/bin)
+install(FILES ${PROJECT_SOURCE_DIR}/cmake/lib/docopt/docopt.py DESTINATION bin)

@@ -23,23 +23,20 @@ routine names my_perfect_routine
 keyword names MYPERFECTKEYWORD
 """
 
-executable="@PCMSolver_EXECUTABLE@"
-libdir="@GETKW_PYTHON_DIR@"
 isAngstrom = False
 CODATAyear = 2010
 # Dictionary with the au-to-Angstrom conversion factors for various CODATA sets of constants
 CODATAdict = dict([(2010, 0.52917721092), (2006, 0.52917720859), (2002, 0.5291772108), (1998, 0.5291772083)])
 
 import sys
-import re
 import os
-import string
-import subprocess
-import tempfile
-from copy import deepcopy
+sys.path.append(os.path.dirname(__file__))
 
-sys.path.append('@PROJECT_SOURCE_DIR@/cmake/lib/docopt')
 import docopt
+from copy import deepcopy
+import getkw
+import re
+import subprocess
 
 options = """
 Usage:
@@ -51,13 +48,6 @@ Options:
   <input_file>                           PCMSolver input file.
   -h --help                              Show this screen.
 """
-
-if 'LIBGETKW_LOCATION' in os.environ.keys():
-    sys.path.append(os.environ['LIBGETKW_LOCATION'])
-else:
-    sys.path.append(libdir)
-
-import getkw
 
 def iequal(a, b):
     """
@@ -153,6 +143,8 @@ def parse_pcm_input(inputFile):
     return parsedFile
 
 def execute(parsedFile):
+    exename = "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@"
+    executable = os.path.join(os.path.dirname(__file__), exename)
     if (executable):
         command = executable + ' ' + parsedFile
         p = subprocess.Popen(command, shell=True,

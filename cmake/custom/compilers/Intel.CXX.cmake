@@ -14,7 +14,7 @@ if(NOT DEFINED ENV{CXXFLAGS})
             discover_cxx11_support(CXX_STANDARD_FLAG)
         endif()
 
-        set(CMAKE_CXX_FLAGS "-fPIC ${CXX_STANDARD_FLAG}")
+        set(CMAKE_CXX_FLAGS "${CXX_STANDARD_FLAG}")
         set(CMAKE_CXX_FLAGS_DEBUG   "-O0 -debug -DDEBUG -Wall -Wuninitialized -Wno-unknown-pragmas")
         set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
         # FIXME not sure this is actually needed...

@@ -3,7 +3,12 @@ git:
   submodules: false
 before_install:
     - sudo apt-get update -y
-    - sudo apt-get install gcc g++ gfortran make cmake zlib1g-dev python-dateutil python-pyparsing python-numpy python-matplotlib python-pip python-setuptools python-dev -y
+    - sudo apt-get install gcc g++ gfortran make cmake cmake-data zlib1g-dev python-dateutil python-pyparsing python-numpy python-matplotlib python-pip python-setuptools python-dev -y
+    - mkdir -p ${HOME}/deps && cd ${HOME}/deps
+    - mkdir cmake
+    - wget --verbose --no-check-certificate -O - http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz
+    - tar --strip-components=1 -xz -C cmake
+    - export PATH=${HOME}/deps/cmake/bin:${PATH}
     - cmake --version
     - gcc --version
     - g++ --version
@@ -14,10 +19,3 @@ script:
   - cd build
   - VERBOSE=1 make
   - ctest -V
-notifications:
-  recipients:
-    - roberto.d.remigio@uit.no
-    - luca.frediani@uit.no
-  email:
-    on_success: change
-    on_failure: always

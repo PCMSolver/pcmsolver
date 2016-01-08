@@ -1,5 +1,7 @@
 # Change Log
 
+- CMake minimum required version is 2.8.8 (2016-01-08)
+
 ## [v1.0.4](https://github.com/PCMSolver/pcmsolver/tree/v1.0.4) (2015-07-22)
 [Full Changelog](https://github.com/PCMSolver/pcmsolver/compare/v1.0.3...v1.0.4)
 

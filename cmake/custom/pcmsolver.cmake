@@ -31,8 +31,6 @@ set_property(GLOBAL PROPERTY PCMSolver_C_SOURCES)
 set_property(GLOBAL PROPERTY PCMSolver_Fortran_SOURCES)
 # PCMSolver headers
 set_property(GLOBAL PROPERTY PCMSolver_HEADER_DIRS)
-# PCMSolver standalone executable
-set(PCMSolver_EXECUTABLE ${PROJECT_BINARY_DIR}/bin/run_pcm${EXE})
 
 include_directories(${PROJECT_BINARY_DIR}/include)
 include_directories(SYSTEM ${SUBMODULES_INSTALL_PREFIX}/include)

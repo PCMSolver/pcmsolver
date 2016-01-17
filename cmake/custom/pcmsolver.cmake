@@ -33,4 +33,4 @@ set_property(GLOBAL PROPERTY PCMSolver_Fortran_SOURCES)
 set_property(GLOBAL PROPERTY PCMSolver_HEADER_DIRS)
 
 include_directories(${PROJECT_BINARY_DIR}/include)
-include_directories(SYSTEM ${SUBMODULES_INSTALL_PREFIX}/include)
+include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/src/utils/getkw)

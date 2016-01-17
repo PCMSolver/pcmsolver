@@ -193,7 +193,7 @@ const T &Section::get(const string &path) const {
 	return key.get();
 }
 
-Section *Section::readSect(ifstream &fis) {
+Section *Section::readSect(ifstream & /* fis */) {
 	return 0;
 }
 

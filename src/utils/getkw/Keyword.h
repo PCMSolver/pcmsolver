@@ -69,12 +69,12 @@ public:
 	}
 
 	void setName(const std::string &_name) {
-		name = name;
+		name = _name;
 	}
 
 
 	template <typename X>
-	std::ostream &repr(std::ostream &o, X v) const {
+	std::ostream &repr(std::ostream &o, X /* v */) const {
 		if (kind == KeyType::Str) {
 			o << "  " + name << " = " << "\"" << val << "\"";
 		} else {
@@ -152,43 +152,43 @@ protected:
 	bool isArray;
 	int kind;
 
-	bool setKind(int t) {
+	bool setKind(int /* t */) {
 		isArray = false;
 		kind = KeyType::Int;
 		return true;
 	}
-	bool setKind(double t) {
+	bool setKind(double /* t */) {
 		isArray = false;
 		kind = KeyType::Dbl;
 		return true;
 	}
-	bool setKind(bool t) {
+	bool setKind(bool /* t */) {
 		isArray = false;
 		kind = KeyType::Bool;
 		return true;
 	}
-	bool setKind(const std::string &t) {
+	bool setKind(const std::string & /* t */) {
 		isArray = false;
 		kind = KeyType::Str;
 		return true;
 	}
 
-	bool setKind(const std::vector<int> &t) {
+	bool setKind(const std::vector<int> & /* t */) {
 		isArray = true;
 		kind = KeyType::IntArray;
 		return true;
 	}
-	bool setKind(const std::vector<double> &t) {
+	bool setKind(const std::vector<double> & /* t */) {
 		isArray = true;
 		kind = KeyType::DblArray;
 		return true;
 	}
-	bool setKind(const std::vector<bool> &t) {
+	bool setKind(const std::vector<bool> & /* t */) {
 		isArray = true;
 		kind = KeyType::BoolArray;
 		return true;
 	}
-	bool setKind(const std::vector<std::string> &t) {
+	bool setKind(const std::vector<std::string> & /* t */) {
 		isArray = true;
 		kind = KeyType::StrArray;
 		return true;

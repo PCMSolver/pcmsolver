@@ -1,7 +1,7 @@
 link_directories(${PROJECT_BINARY_DIR}/lib)
 add_executable(C_host C_host.c)
 if(STATIC_LIBRARY_ONLY)
-  target_link_libraries(C_host pcm-static getkw ${ZLIB_LIBRARIES})
+  target_link_libraries(C_host pcm-static ${ZLIB_LIBRARIES})
 else()
   target_link_libraries(C_host pcm-shared)
 endif()

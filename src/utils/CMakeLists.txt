@@ -14,3 +14,5 @@ endforeach()
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/utils)
 endforeach()
+
+add_subdirectory(getkw)

@@ -9,14 +9,16 @@
 
 option(ENABLE_DOCS "Enable building of documentation" ON)
 
-find_package(Doxygen)
-find_package(Sphinx)
-find_package(Perl)
+if(ENABLE_DOCS)
+   find_package(Doxygen)
+   find_package(Sphinx)
+   find_package(Perl)
 
-include(find_python_module)
-find_python_module(yaml)
-find_python_module(breathe)
-find_python_module(matplotlib)
+   include(find_python_module)
+   find_python_module(yaml)
+   find_python_module(breathe)
+   find_python_module(matplotlib)
+endif()
 
 set(BUILD_DOCS ON)
 if(NOT ENABLE_DOCS OR NOT DOXYGEN_FOUND OR NOT SPHINX_FOUND OR NOT PERL_FOUND OR NOT PY_YAML_FOUND OR NOT PY_BREATHE_FOUND OR NOT PY_MATPLOTLIB_FOUND)

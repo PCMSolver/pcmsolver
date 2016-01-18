@@ -1,22 +1,22 @@
 !pcmsolver_copyright_start
 !       PCMSolver, an API for the Polarizable Continuum Model
 !       Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
-! 
+!
 !       This file is part of PCMSolver.
-! 
+!
 !       PCMSolver is free software: you can redistribute it and/or modify
 !       it under the terms of the GNU Lesser General Public License as published by
 !       the Free Software Foundation, either version 3 of the License, or
 !       (at your option) any later version.
-! 
+!
 !       PCMSolver is distributed in the hope that it will be useful,
 !       but WITHOUT ANY WARRANTY; without even the implied warranty of
 !       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 !       GNU Lesser General Public License for more details.
-! 
+!
 !       You should have received a copy of the GNU Lesser General Public License
 !       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
+!
 !       For information on the complete list of contributors to the
 !       PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
 !pcmsolver_copyright_end
@@ -184,7 +184,7 @@
     integer(kind=regint_k) :: k, kg, idisrep
     integer(kind=regint_k) :: kp, n, n1, n2, n3
     integer(kind=regint_k) :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
-    integer(kind=regint_k) :: nsfe, nsfer, nv
+    integer(kind=regint_k) :: nsfe, nv
     real(kind=dp) :: rotcav(3, 3)
     real(kind=dp), allocatable :: mass(:), geom(:, :)
     integer(kind=regint_k), allocatable :: permutation_table(:, :)
@@ -1064,7 +1064,6 @@
     real(kind=dp) :: vert(numts, 10, 3), centr(numts, 10, 3)
     integer(kind=regint_k) :: permutation_table(nesf, *)
 
-    real(kind=dp), parameter :: d0 = 0.0d0
     integer(kind=regint_k) :: i, ii, ii2, isymop, k, l
 
     ntsirr = nts
@@ -1804,7 +1803,6 @@
     real(kind=dp) :: p1(3),p2(3),p3(3),u1(3),u2(3),phin(10),weight(0:10)
 
     real(kind=dp), parameter :: d0 = 0.0d0
-    real(kind=dp), parameter :: dp5 = 0.5d0
     real(kind=dp), parameter :: d1 = 1.0d0
     real(kind=dp), parameter :: pi = acos(-1.0d0)
 
@@ -2376,386 +2374,5 @@
     end if
 
     end function typlab
-
-    subroutine diagan(vert, centr, euphi, euthe, eupsi, eps1, eps2, eps3)
-#include "pcm_mxcent.h"
-#include "pcm_pcmdef.h"
-#include "pcm_pcm.h"
-
-    real(8) :: vert(mxts, 10, 3), centr(mxts, 10, 3)
-    real(8) :: theta(10), phi(10), phinumb(10)
-    integer :: numb(10)
-    real(8) :: xgp16pts(8), wgp16pts(8), xgp64pts(32), wgp64pts(32)
-    real(8) :: rot(3, 3)
-    real(8) :: euphi, euthe, eupsi
-    real(8) :: eps1, eps2, eps3, epsm
-    real(8) :: epsxx, epsxy, epsxz, epsyy, epsyz, epszz
-    real(8) :: epsm1xx, epsm1xy, epsm1xz, epsm1yy, epsm1yz, epsm1zz
-    ! Parameters
-    real(8), parameter :: pi   = acos(-1.0d0)
-    real(8), parameter :: tpi  = 2.0d0 * pi
-    real(8), parameter :: fpi  = 4.0d0 * pi
-    real(8), parameter :: to_radians = acos(-1.0d0) / 180.0d0
-    integer, parameter :: ng16pts = 8, ng64pts = 32
-    ! Local variables
-    real(8) :: csphi, snphi, csthe, snthe, cspsi, snpsi
-    real(8) :: aph, bph, ath, pha, phb
-    real(8) :: bb, cc, cosph, costh, cs, cotgthmax, dc
-    real(8) :: ds, dcs, ocx, ocy, ocz, ph, rcc, rmin
-    real(8) :: aa, rth, rtheps, sinph, sinth, th, tha, thb
-    real(8) :: thmax, vecx, vecy, vecz, vx, vy, vz
-    real(8) :: xcc, xx, xy, xz, ycc, yx, yy, yz, zcc, zx, zy, zz
-    real(8) :: sse, dde, ssep, ddep, ssepp, ddepp, deteps
-    real(8) :: rth_test, test_D, test_Dp, test_Dpp ! Same nomenclature
-    real(8) :: test_A, test_Ap, test_App ! Same nomenclature
-    real(8) :: accum, azimuth
-    real(8) :: vvx, vvy, vvz
-    integer :: i, j, k, l, m, li, nedge, nph, nphsgn, nth, nthsgn, nv
-    real(8), allocatable :: s(:), d(:), my_d(:)
-
-    ! 16-points Gaussian rule: abscissas
-    xgp16pts = [0.9894009349916499325961542d0, &
-                0.9445750230732325760779884d0, &
-                0.8656312023878317438804679d0, &
-                0.7554044083550030338951012d0, &
-                0.6178762444026437484466718d0, &
-                0.4580167776572273863424194d0, &
-                0.2816035507792589132304605d0, &
-                0.0950125098376374401853193d0]
-    ! 16-points Gaussian rule: weights
-    wgp16pts = [0.0271524594117540948517806d0, &
-                0.0622535239386478928628438d0, &
-                0.0951585116824927848099251d0, &
-                0.1246289712555338720524763d0, &
-                0.1495959888165767320815017d0, &
-                0.1691565193950025381893121d0, &
-                0.1826034150449235888667637d0, &
-                0.1894506104550684962853967d0]
-    ! 64-points Gaussian rule: abscissas
-    xgp64pts = [0.9993050417357721394569056d0, &
-                0.9963401167719552793469245d0, &
-                0.9910133714767443207393824d0, &
-                0.9833362538846259569312993d0, &
-                0.9733268277899109637418535d0, &
-                0.9610087996520537189186141d0, &
-                0.9464113748584028160624815d0, &
-                0.9295691721319395758214902d0, &
-                0.9105221370785028057563807d0, &
-                0.8893154459951141058534040d0, &
-                0.8659993981540928197607834d0, &
-                0.8406292962525803627516915d0, &
-                0.8132653151227975597419233d0, &
-                0.7839723589433414076102205d0, &
-                0.7528199072605318966118638d0, &
-                0.7198818501716108268489402d0, &
-                0.6852363130542332425635584d0, &
-                0.6489654712546573398577612d0, &
-                0.6111553551723932502488530d0, &
-                0.5718956462026340342838781d0, &
-                0.5312794640198945456580139d0, &
-                0.4894031457070529574785263d0, &
-                0.4463660172534640879849477d0, &
-                0.4022701579639916036957668d0, &
-                0.3572201583376681159504426d0, &
-                0.3113228719902109561575127d0, &
-                0.2646871622087674163739642d0, &
-                0.2174236437400070841496487d0, &
-                0.1696444204239928180373136d0, &
-                0.1214628192961205544703765d0, &
-                0.0729931217877990394495429d0, &
-                0.0243502926634244325089558d0]
-    ! 64-points Gaussian rule: weights
-    wgp64pts = [0.0017832807216964329472961d0, &
-                0.0041470332605624676352875d0, &
-                0.0065044579689783628561174d0, &
-                0.0088467598263639477230309d0, &
-                0.0111681394601311288185905d0, &
-                0.0134630478967186425980608d0, &
-                0.0157260304760247193219660d0, &
-                0.0179517157756973430850453d0, &
-                0.0201348231535302093723403d0, &
-                0.0222701738083832541592983d0, &
-                0.0243527025687108733381776d0, &
-                0.0263774697150546586716918d0, &
-                0.0283396726142594832275113d0, &
-                0.0302346570724024788679741d0, &
-                0.0320579283548515535854675d0, &
-                0.0338051618371416093915655d0, &
-                0.0354722132568823838106931d0, &
-                0.0370551285402400460404151d0, &
-                0.0385501531786156291289625d0, &
-                0.0399537411327203413866569d0, &
-                0.0412625632426235286101563d0, &
-                0.0424735151236535890073398d0, &
-                0.0435837245293234533768279d0, &
-                0.0445905581637565630601347d0, &
-                0.0454916279274181444797710d0, &
-                0.0462847965813144172959532d0, &
-                0.0469681828162100173253263d0, &
-                0.0475401657148303086622822d0, &
-                0.0479993885964583077281262d0, &
-                0.0483447622348029571697695d0, &
-                0.0485754674415034269347991d0, &
-                0.0486909570091397203833654d0]
-
-    accum = 0.0d0
-    write(lvpri, *) "BOBERTO, entering DIAGAN"
-    euphi = euphi * to_radians
-    euthe = euthe * to_radians
-    eupsi = eupsi * to_radians
-    csphi=cos(euphi)
-    snphi=sin(euphi)
-    csthe=cos(euthe)
-    snthe=sin(euthe)
-    cspsi=cos(eupsi)
-    snpsi=sin(eupsi)
-
-    rot(1,1)=csphi*cspsi-snphi*csthe*snpsi
-    rot(1,2)=-snphi*cspsi-csphi*csthe*snpsi
-    rot(1,3)=snthe*snpsi
-    rot(2,1)=csphi*snpsi+snphi*csthe*cspsi
-    rot(2,2)=-snphi*snpsi+csphi*csthe*cspsi
-    rot(2,3)=-snthe*cspsi
-    rot(3,1)=snphi*snthe
-    rot(3,2)=csphi*snthe
-    rot(3,3)=csthe
-
-    deteps = eps1 * eps2 * eps3
-    ! Cube root of the determinant
-    epsm=(eps1*eps2*eps3)**(1.0d+00/3.0d+00)
-    ! Build permittivity tensor in molecule-fixed frame
-    epsxx=(eps1*rot(1,1)*rot(1,1)+eps2*rot(2,1)*rot(2,1)+eps3*rot(3,1)*rot(3,1))
-    epsxy=(eps1*rot(1,1)*rot(1,2)+eps2*rot(2,1)*rot(2,2)+eps3*rot(3,1)*rot(3,2))
-    epsxz=(eps1*rot(1,1)*rot(1,3)+eps2*rot(2,1)*rot(2,3)+eps3*rot(3,1)*rot(3,3))
-    epsyy=(eps1*rot(1,2)*rot(1,2)+eps2*rot(2,2)*rot(2,2)+eps3*rot(3,2)*rot(3,2))
-    epsyz=(eps1*rot(1,2)*rot(1,3)+eps2*rot(2,2)*rot(2,3)+eps3*rot(3,2)*rot(3,3))
-    epszz=(eps1*rot(1,3)*rot(1,3)+eps2*rot(2,3)*rot(2,3)+eps3*rot(3,3)*rot(3,3))
-    ! Build inverse of permittivity tensor
-    epsm1xx=(eps1**(-1)*rot(1,1)*rot(1,1)+eps2**(-1)*rot(2,1)*rot(2,1)+eps3**(-1)*rot(3,1)*rot(3,1))
-    epsm1xy=(eps1**(-1)*rot(1,1)*rot(1,2)+eps2**(-1)*rot(2,1)*rot(2,2)+eps3**(-1)*rot(3,1)*rot(3,2))
-    epsm1xz=(eps1**(-1)*rot(1,1)*rot(1,3)+eps2**(-1)*rot(2,1)*rot(2,3)+eps3**(-1)*rot(3,1)*rot(3,3))
-    epsm1yy=(eps1**(-1)*rot(1,2)*rot(1,2)+eps2**(-1)*rot(2,2)*rot(2,2)+eps3**(-1)*rot(3,2)*rot(3,2))
-    epsm1yz=(eps1**(-1)*rot(1,2)*rot(1,3)+eps2**(-1)*rot(2,2)*rot(2,3)+eps3**(-1)*rot(3,2)*rot(3,3))
-    epsm1zz=(eps1**(-1)*rot(1,3)*rot(1,3)+eps2**(-1)*rot(2,3)*rot(2,3)+eps3**(-1)*rot(3,3)*rot(3,3))
-
-    eps=epsm
-
-    sse = 0.0d0
-    dde = 0.0d0
-    test_D = 0.0d0
-    test_A = 0.0d0
-    allocate(s(nts))
-    s = 0.0d0
-    allocate(d(nts))
-    d = 0.0d0
-    allocate(my_d(nts))
-    my_d = 0.0d0
-
-    do i = 1, nts
-    li=isphe(i)
-    nv=30*(i-1)
-!
-! -- LOOP ON INTEGRATION POINTS
-!
-        ssep=0.0d+00
-        ddep=0.0d+00
-        test_Dp = 0.0d0
-        test_Ap = 0.0d0
-
-        xz=(xtscor(i)-xe(li))/re(li)
-        yz=(ytscor(i)-ye(li))/re(li)
-        zz=(ztscor(i)-ze(li))/re(li)
-        rmin=0.99d+00
-        if (abs(xz).le.rmin) then
-          rmin=abs(xz)
-          xx=0.0d+00
-          yx=-zz/sqrt(1.0d+00-xz*xz)
-          zx=yz/sqrt(1.0d+00-xz*xz)
-        end if
-        if (abs(yz).le.rmin) then
-          rmin=abs(yz)
-          xx=zz/sqrt(1.0d+00-yz*yz)
-          yx=0.0d+00
-          zx=-xz/sqrt(1.0d+00-yz*yz)
-        end if
-        if (abs(zz).le.rmin) then
-          xx=yz/sqrt(1.0d+00-zz*zz)
-          yx=-xz/sqrt(1.0d+00-zz*zz)
-          zx=0.0d+00
-        end if
-        xy=yz*zx-yx*zz
-        yy=zz*xx-zx*xz
-        zy=xz*yx-xx*yz
-
-        ! Clean-up heap-crap
-        theta = 0.0d0
-        phi   = 0.0d0
-        numb  = 0
-        phinumb = 0.0d0
-
-        do k=1,nvert(i)
-          vecx=vert(i,k,1)-xe(li)
-          vecy=vert(i,k,2)-ye(li)
-          vecz=vert(i,k,3)-ze(li)
-          dc=(vecx*xz+vecy*yz+vecz*zz)/re(li)
-          if(dc.ge.1.0d+00)dc=1.0d+00
-          if(dc.le.-1.0d+00)dc=-1.0d+00
-          theta(k)=acos(dc)
-          dcs=(vecx*xx+vecy*yx+vecz*zx)/(re(li)*sin(theta(k)))
-          if(dcs.ge.1.0d+00)dcs=1.0d+00
-          if(dcs.le.-1.0d+00)dcs=-1.0d+00
-          phi(k)=acos(dcs)
-          snphi=(vecx*xy+vecy*yy+vecz*zy)/(re(li)*sin(theta(k)))
-          if (snphi.le.0.0d+00) phi(k)=tpi-phi(k)
-        enddo
-
-        do k=2,nvert(i)
-          phi(k)=phi(k)-phi(1)
-          if (phi(k).lt.0.0d+00) phi(k)=tpi+phi(k)
-        enddo
-
-        xx=xx*cos(phi(1))+xy*sin(phi(1))
-        yx=yx*cos(phi(1))+yy*sin(phi(1))
-        zx=zx*cos(phi(1))+zy*sin(phi(1))
-        xy=yz*zx-yx*zz
-        yy=zz*xx-zx*xz
-        zy=xz*yx-xx*yz
-
-        phi(1)=0.0d+00
-        numb(1)=1
-        numb(2)=2
-        phinumb(1)=phi(1)
-        phinumb(2)=phi(2)
-        do 210 k=3,nvert(i)
-          do l=2,k-1
-            if (phi(k).lt.phinumb(l)) then
-              do m=1,k-l
-                numb(k-m+1)=numb(k-m)
-                phinumb(k-m+1)=phinumb(k-m)
-              enddo
-              numb(l)=k
-              phinumb(l)=phi(k)
-              go to 210
-            end if
-          enddo
-          numb(k)=k
-          phinumb(k)=phi(k)
-  210   continue
-        numb(nvert(i)+1)=numb(1)
-        phinumb(nvert(i)+1)=tpi
-
-!
-! -- LOOP ON GAUSS POINTS
-!
-        do nedge=1,nvert(i)
-          aph=(phinumb(nedge+1)-phinumb(nedge))/2.0d+00
-          bph=(phinumb(nedge+1)+phinumb(nedge))/2.0d+00
-          tha=theta(numb(nedge))
-          thb=theta(numb(nedge+1))
-          pha=phinumb(nedge)
-          phb=phinumb(nedge+1)
-          ocx=(centr(I,NEDGE,1)-xe(li))/re(li)
-          ocy=(centr(I,NEDGE,2)-ye(li))/re(li)
-          ocz=(centr(I,NEDGE,3)-ze(li))/re(li)
-          rcc=ocx**2+ocy**2+ocz**2
-
-          do nph=1,ng64pts
-          do nphsgn=0,1
-           ph=(2*nphsgn-1)*aph*xgp64pts(nph)+bph
-           cosph=cos(ph)
-           sinph=sin(ph)
-          if (rcc.lt.1.0d-07) then
-           cotgthmax=(sin(ph-pha)/tan(thb)+sin(phb-ph)/tan(tha))/sin(phb-pha)
-           thmax=atan(1.0d+00/cotgthmax)
-          else
-           xcc=xx*ocx+yx*ocy+zx*ocz
-           ycc=xy*ocx+yy*ocy+zy*ocz
-           zcc=xz*ocx+yz*ocy+zz*ocz
-           aa=(xcc*cosph+ycc*sinph)**2+zcc**2
-           bb=-zcc*rcc
-           cc=rcc**2-(xcc*cosph+ycc*sinph)**2
-           ds=bb**2-aa*cc
-           if(ds.lt.0.0d0)ds=0.0d0
-           cs=(-bb+sqrt(ds))/aa
-           if(cs.gt.1.0d+00)cs=1.0d+00
-           if(cs.lt.-1.0d+00)cs=1.0d+00
-           thmax=acos(cs)
-          end if
-           if(thmax.lt.1.0d-08) go to 33
-           ath=thmax/2.0d0
-          ! write(lvpri,*), "thetaMax = ",thmax,", thetaA = ", ath
-           ssepp=0.0d+00
-           ddepp=0.0d+00
-           test_Dpp=0.0d0
-           test_App=0.0d0
-
-           do nth=1,ng16pts ! Inner 16-points rule
-           do nthsgn=0,1
-            th=(2*nthsgn-1)*ath*xgp16pts(nth)+ath
-            costh=cos(th)
-            sinth=sin(th)
-            vx=xx*sinth*cosph+xy*sinth*sinph+xz*(costh-1.0d+00)
-            vy=yx*sinth*cosph+yy*sinth*sinph+yz*(costh-1.0d+00)
-            vz=zx*sinth*cosph+zy*sinth*sinph+zz*(costh-1.0d+00)
-            rth=sqrt(2*(1-costh))
-            rtheps=sqrt(epsm1xx*vx*vx+2*epsm1xy*vx*vy+2*epsm1xz*vx*vz &
-                                     +  epsm1yy*vy*vy+2*epsm1yz*vy*vz &
-                                                     +  epsm1zz*vz*vz)
-            ssepp=ssepp+(re(li)**2/(rtheps))*sinth*ath*wgp16pts(nth)
-            ddepp=ddepp-(rth**2/(2*rtheps**3))*sinth*ath*wgp16pts(nth)
-            !vvx=epsm1xx*vx+epsm1xy*vy+epsm1xz*vz
-            !vvy=epsm1xy*vx+epsm1yy*vy+epsm1yz*vz
-            !vvz=epsm1xz*vx+epsm1yz*vy+epsm1zz*vz
-            vvx=vx*xz
-            vvy=vy*yz
-            vvz=vz*zz
-            test_Dpp=test_Dpp+re(li)**2 *((vvx+vvy+vvz)/(rtheps**3))*sinth*ath*wgp16pts(nth)
-            !test_App = test_App+re(li)**2 * sinth * ath * wgp16pts(nth)
-            test_App = test_App+re(li) * sinth * ath * wgp16pts(nth)
-
-           enddo ! Close loop on nthsgn (n-theta-sign)
-           enddo ! Close loop on nth (n-theta)
-           ssep=ssep+ssepp*aph*wgp64pts(nph)
-           ddep=ddep+ddepp*aph*wgp64pts(nph)
-           test_Dp=test_Dp+test_Dpp*aph*wgp64pts(nph)
-           test_Ap=test_Ap+test_App*aph*wgp64pts(nph)
-
-  33       continue
-          enddo ! Close loop on nphsgn (n-phi-sign)
-          enddo ! Close loop on nph (n-phi)
-        enddo ! Close loop on nedge
-        sse=ssep!*as(i)
-        dde=ddep!*as(i)
-        test_D = test_Dp
-        test_A=test_Ap
-
-        ! Divide by determinant
-        sse = sse / sqrt(deteps)
-        dde = dde / sqrt(deteps)
-        s(i) = sse
-        d(i) = dde
-        test_D = test_D/sqrt(deteps)
-        my_d(i) = test_D
-        accum = accum + test_A
-      if ((test_A-as(i) > 1.0d-12)) then
-      write(lvpri, *) "Tessera n. ", i
-!      write(lvpri, *) "test_A = ", test_A
-      !write(lvpri, *) "diff = ", test_A - as(i)
-      write(lvpri, *) "diff = ", test_A - (as(i)/re(li))
-      end if
-      end do
-
-     do i = 1, nts
-     write(lvpri, *) "in diagan: S_{",i,", ",i,"} = ", s(i)
-     end do
-     write(lvpri,*) " "
-     do i = 1, nts
-     write(lvpri, *) "in diagan: D_{",i,", ",i,"} = ", d(i)
-     end do
-     write(lvpri,*) " "
-     do i = 1, nts
-     write(lvpri, *) "in diagan: myD_{",i,", ",i,"} = ", my_d(i)
-     end do
-      end subroutine diagan
 
     end module pedra_cavity

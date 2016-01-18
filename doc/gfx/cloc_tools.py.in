@@ -90,9 +90,9 @@ def count_C(headers, sources, savedir):
     h_yml = os.path.join(savedir, 'scratch_h.yml')
     c_yml = os.path.join(savedir, 'scratch_c.yml')
     if headers:
-        cloc_wraer(headers, h_yml)
+        cloc_wrapper(headers, h_yml)
     if sources:
-        cloc_wraer(sources, c_yml)
+        cloc_wrapper(sources, c_yml)
     return process_YAML_C(h_yml, c_yml)
 
 

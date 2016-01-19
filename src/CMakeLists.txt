@@ -28,7 +28,7 @@ if(NOT STATIC_LIBRARY_ONLY)
   set_target_properties(pcm-base PROPERTIES POSITION_INDEPENDENT_CODE 1
                                             INTERPROCEDURAL_OPTIMIZATION 1)
   add_library(pcm-shared SHARED $<TARGET_OBJECTS:pcm-base> $<TARGET_OBJECTS:getkw>)
-  target_link_libraries(pcm-shared ${ZLIB_LIBRARIES})
+  target_link_libraries(pcm-shared ${ZLIB_LIBRARIES} ${LIBC_INTERJECT})
   set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} CLEAN_DIRECT_OUTPUT 1 OUTPUT_NAME "pcm")
   install(TARGETS pcm-shared DESTINATION lib)
 endif()

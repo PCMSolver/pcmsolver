@@ -34,6 +34,7 @@ Options:
   --boost-headers=<BOOST_INCLUDEDIR>     Include directories for Boost [default: ''].
   --boost-libraries=<BOOST_LIBRARYDIR>   Library directories for Boost [default: ''].
   --build-boost=<FORCE_CUSTOM_BOOST>     Deactivate Boost detection and build on-the-fly <ON/OFF> [default: OFF].
+  --eigen=<EIGEN3_ROOT>                  Root directory for Eigen3 [default: ''].
   --static                               Create only the static library [default: False].
   --type=<TYPE>                          Set the CMake build type (debug, release, or relwithdeb) [default: release].
   --generator=<STRING>                   Set the CMake build system generator [default: Unix Makefiles].
@@ -69,6 +70,7 @@ def gen_cmake_command(options, arguments):
     command.append('-DFORCE_CUSTOM_BOOST="{0}"'.format(arguments['--build-boost']))
     command.append('-DBOOST_MINIMUM_REQUIRED="1.54.0"')
     command.append('-DBOOST_COMPONENTS_REQUIRED="''"')
+    command.append('-DEIGEN3_ROOT="{0}"'.format(arguments['--eigen']))
     command.append('-DSTATIC_LIBRARY_ONLY=%s' % arguments['--static'])
     command.append('-DCMAKE_BUILD_TYPE=%s' % arguments['--type'])
     command.append('-G "%s"' % arguments['--generator'])

@@ -1,9 +1,25 @@
-set(EIGEN3_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/eigen3/include/eigen3)
-message(STATUS "Eigen 3.2.0 is located here: " ${EIGEN3_INCLUDE_DIR})
-include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
+#.rst:
+#
+# Detect Eigen3.
+# By default, use Eigen 3.2.0 as bundled with PCMSolver.
+# Look in a specific search directory, if given. If nothing is found
+# there, falls back to Eigen 3.2.0 bundled with PCMSolver.
+#
+# autocmake.cfg configuration::
+#
+#   docopt: --eigen=<EIGEN3_ROOT> Root directory for Eigen3 [default: ''].
+#   define: '-DEIGEN3_ROOT="{0}"'.format(arguments['--eigen'])
 
-if(ENABLE_EIGEN_MKL)
-   message(STATUS "ENABLE_EIGEN_MKL option requires Intel MKL 10.3")
-   message(STATUS "   Be sure you have read http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html")
-   set(EIGEN_USE_MKL_ALL ON)
+if(EIGEN3_ROOT)
+  set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include/eigen3)
+  find_package(Eigen3 3.1.0)
+  message(STATUS "Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
+  if(NOT EIGEN3_FOUND)
+    set(EIGEN3_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/eigen3/include/eigen3)
+    message(STATUS "Eigen 3.2.0 is located here: " ${EIGEN3_INCLUDE_DIR})
+  endif()
+else()
+  set(EIGEN3_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/eigen3/include/eigen3)
+  message(STATUS "Eigen 3.2.0 is located here: " ${EIGEN3_INCLUDE_DIR})
 endif()
+include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})

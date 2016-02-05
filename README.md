@@ -33,7 +33,7 @@ The Magnum CI builds are run on push events to any branch, while those
 on Travis CI only when pushing to the `master` branch.
 All Travis CI builds on master use ccache to speed up execution.
 
-- Ubuntu 12.04 LTS 64-bit. GCC 4.6, Python 2.7.3, CMake 2.8.7
+- Ubuntu 12.04 LTS 64-bit. GCC 4.6, Python 2.7.3, CMake 3.4.2
   This is the environment offered by [Magnum CI](https://magnum-ci.com)
 - Ubuntu 12.04 LTS 64-bit with Python 2.7.3, CMake 3.3.2 and Boost 1.55.0
   this is the environment offered by [Travis CI](https://travis-ci.org) pulling

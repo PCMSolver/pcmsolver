@@ -11,7 +11,7 @@
 #   define: '-DEIGEN3_ROOT="{0}"'.format(arguments['--eigen'])
 
 if(EIGEN3_ROOT)
-  set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include/eigen3)
+  set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include)
   find_package(Eigen3 3.1.0)
   message(STATUS "Eigen " ${EIGEN3_VERSION} " is located here: " ${EIGEN3_INCLUDE_DIR})
   if(NOT EIGEN3_FOUND)

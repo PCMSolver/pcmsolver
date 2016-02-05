@@ -1,6 +1,5 @@
 # List of sources
 list(APPEND sources_list metal_sphere.F90)
 
-foreach(_source ${sources_list})
-    set_property(GLOBAL APPEND PROPERTY PCMSolver_Fortran_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})
-endforeach()
+add_library(metal OBJECT ${sources_list})
+set_target_properties(metal PROPERTIES POSITION_INDEPENDENT_CODE 1 INTERPROCEDURAL_OPTIMIZATION 1)

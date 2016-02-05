@@ -5,5 +5,5 @@ install(FILES ${PROJECT_SOURCE_DIR}/api/PCMInput.h DESTINATION include)
 
 if(ENABLE_FORTRAN_API)
     add_definitions(-DENABLE_FORTRAN_API)
-    set_property(GLOBAL APPEND PROPERTY PCMSolver_Fortran_SOURCES ${PROJECT_SOURCE_DIR}/api/pcmsolver.F90)
+    add_library(fortran_bindings OBJECT ${PROJECT_SOURCE_DIR}/api/pcmsolver.F90)
 endif()

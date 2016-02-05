@@ -28,7 +28,7 @@ the unit test suite.
 Libraries and toolchain programs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-+ CMake version 2.8.3 and higher;
++ CMake version 2.8.8 and higher;
 + Git version 1.7.1 and higher;
 + Python interpreter 2.4 and higher;
 + Boost libraries version 1.54.0 and higher;
@@ -121,18 +121,40 @@ or with:
 Advanced configuration options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As of version 3.1.0 Eigen can fall back to certain BLAS/LAPACK routines as
-implemented in Intel's Math Kernel Library (MKL).  You can enable this feature
-passing the option `-DENABLE_EIGEN_MKL=ON` to the setup script. You need at least
-version 10.3 of Intel MKL.  Be sure to have read
-the relevant `guide <http://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html>`_
+These options are marked as advanced as it is highly unlikely they will
+be useful when not programming the library:
 
-.. warning::
+* `--exdiag` Enable C++ extended diagnostics flags. Disabled by default.
+* `--ccache` Enable use of ccache for C/C++ compilation caching.
+  Enabled by default, unless ccache is not available.
+* `--build-boost` Deactivate Boost detection and build on-the-fly. Disabled by default.
+* `--eigen` Root directory for Eigen3. Search for Eigen3 in the location provided by the
+  user. If search fails, fall back to the version bundled with the library.
+* `--static` Create only static library. Disabled by default.
 
-   By itself, the module **does not** need to link to any mathematical
-   library. This option makes sense only when linking the module to a QM program
-   that links to Intel MKL. **Use at your own risk!** There is no proof that
-   enabling this option leads to significant speedups!
+Some options can only be tweaked `via` `--cmake-options` to the setup script:
+
+* `ENABLE_CXX11_SUPPORT` Enable C++11 support. Tries to detect which C++11 features
+  are supported by the compiler and enables use of the new standard. Enabled by default.
+
+  .. warning::
+
+     This option is **always** overridden for some compilers that have
+     buggy C++11 support.
+
+* `ENABLE_DOCS` Enable build of documentation. This requires a number of additional dependencies.
+  If any of these are not met, documentation is not built. Enabled by default.
+* `ENABLE_LOGGER` Enable compilation of logger sources. Disabled by default.
+
+  .. warning::
+
+     The logger is not currently in use in any part of the code.
+
+* `ENABLE_TIMER` Enable compilation of timer sources. Enabled by default.
+* `BUILD_STANDALONE` Enable compilation of standalone `run_pcm` executable. Enabled by default.
+* `ENABLE_FORTRAN_API` Enable compilation of the Fortran90 bindings for the API. Disabled by default.
+* `ENABLE_GENERIC` Enable mostly static linking in shared library. Disabled by default.
+* `ENABLE_TESTS` Enable compilation of unit tests suite. Enabled by default.
 
 Build and test
 --------------

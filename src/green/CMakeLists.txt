@@ -4,10 +4,9 @@ list(APPEND headers_list AnisotropicLiquid.hpp DerivativeTypes.hpp DerivativeUti
 # List of sources
 list(APPEND sources_list )
 
+add_library(green OBJECT ${sources_list} ${headers_list})
+set_target_properties(green PROPERTIES POSITION_INDEPENDENT_CODE 1 INTERPROCEDURAL_OPTIMIZATION 1)
 set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
-foreach(_source ${sources_list})
-    set_property(GLOBAL APPEND PROPERTY PCMSolver_CXX_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})
-endforeach()
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/green)

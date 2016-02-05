@@ -28,14 +28,15 @@ f = open(fname, 'w')
 sources = glob_sources(dname)
 labels  = extract_labels(dname, sources)
 src_lbl = dict(zip([os.path.basename(src) for src in sources], labels))
-#message = 'list(APPEND tests_sources '
-#message += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sources)
-#message += ')\n\n'
-#f.write(message)
+
+dirname = os.path.basename(os.path.normpath(dname))
+message = 'add_library(' + dirname + '-tests OBJECT '
+message += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sources)
+message += ')\n\n'
+f.write(message)
 
 for src, lbl in src_lbl.iteritems():
     f.write('# %s test\n' % src)
-    f.write('set_property(GLOBAL APPEND PROPERTY UnitTestsSources ${CMAKE_CURRENT_LIST_DIR}/%s)\n' % src)
     f.write('add_Catch_test(%s "%s")\n\n' % (os.path.splitext(src)[0], ';'.join(lbl)))
 
 print('Template created')

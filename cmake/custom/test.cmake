@@ -10,7 +10,7 @@ macro(add_Catch_test _name _labels)
   unset(_labels)
 
   # This is the unit tests runner
-  set(RUNNER ${PROJECT_BINARY_DIR}/tests/unit_tests${EXE})
+  set(RUNNER ${PROJECT_BINARY_DIR}/tests/unit_tests)
 
   add_test(NAME ${_name} COMMAND ${RUNNER} [${_name}])
 

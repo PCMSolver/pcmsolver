@@ -6,7 +6,7 @@ This is a brief guide to our CMake infrastructure which is managed
 
 .. warning::
 
-   The minimum required CMake version is 2.8.3
+   The minimum required CMake version is 2.8.8
 
 Adding new source subdirectories and/or files
 ---------------------------------------------
@@ -66,10 +66,9 @@ to generate a template ``CMakeLists.txt.try`` file:
    # List of sources
    list(APPEND sources_list Cavity.cpp Element.cpp GePolCavity.cpp RestartCavity.cpp)
 
+   add_library(cavity OBJECT ${sources_list} ${headers_list})
+   set_target_properties(cavity PROPERTIES POSITION_INDEPENDENT_CODE 1 INTERPROCEDURAL_OPTIMIZATION 1)
    set_property(GLOBAL APPEND PROPERTY PCMSolver_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR})
-   foreach(_source ${sources_list})
-       set_property(GLOBAL APPEND PROPERTY PCMSolver_CXX_SOURCES ${CMAKE_CURRENT_LIST_DIR}/${_source})
-   endforeach()
    # Sets install directory for all the headers in the list
    foreach(_header ${headers_list})
       install(FILES ${_header} DESTINATION include/cavity)
@@ -83,7 +82,8 @@ hierarchy and it contains set of instructions for:
    hierarchy, possibly excluding some of them
 #. define install targets for the files in this subdirectory.
 
-All the source files are compiled into a unique static library ``libpcm.a``.
+All the source files are compiled into the unique static library ``libpcm.a`` and unique
+dynamic library ``libpcm.so``.
 This library is the one the host QM program need to link.
 
 Searching for libraries

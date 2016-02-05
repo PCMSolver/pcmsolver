@@ -1,4 +1,3 @@
-set_property(GLOBAL PROPERTY UnitTestsSources)
 add_subdirectory(surface_function)
 add_subdirectory(input)
 add_subdirectory(numerical_quadrature)
@@ -9,10 +8,18 @@ add_subdirectory(bi_operators)
 add_subdirectory(cpcm)
 add_subdirectory(iefpcm)
 
-get_property(test_sources GLOBAL PROPERTY UnitTestsSources)
-
 link_directories(${PROJECT_BINARY_DIR}/lib)
-add_executable(unit_tests unit_tests.cpp ${test_sources})
+add_executable(unit_tests unit_tests.cpp
+                          $<TARGET_OBJECTS:bi_operators-tests>
+                          $<TARGET_OBJECTS:cpcm-tests>
+                          $<TARGET_OBJECTS:dielectric_profile-tests>
+                          $<TARGET_OBJECTS:gepol-tests>
+                          $<TARGET_OBJECTS:green-tests>
+                          $<TARGET_OBJECTS:iefpcm-tests>
+                          $<TARGET_OBJECTS:input-tests>
+                          $<TARGET_OBJECTS:numerical_quadrature-tests>
+                          $<TARGET_OBJECTS:surface_function-tests>
+                          )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(unit_tests custom_boost)
 endif()

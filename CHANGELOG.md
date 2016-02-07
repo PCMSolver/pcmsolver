@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/PCMSolver/pcmsolver/tree/HEAD)
-
-[Full Changelog](https://github.com/PCMSolver/pcmsolver/compare/v1.0.4...HEAD)
+## [v1.1.0](https://github.com/PCMSolver/pcmsolver/tree/v1.1.0) (2016-02-07)
+[Full Changelog](https://github.com/PCMSolver/pcmsolver/compare/v1.0.4...v1.1.0)
 
 **Added:**
 
@@ -13,31 +12,8 @@
 - CMake minimum required version is 2.8.8 (2016-01-08)
 - Documentation is now served [here](http://pcmsolver.readthedocs.org/)
 
-**Implemented enhancements:**
-
-- Platform independent commands in buildup/linking [\#10](https://github.com/PCMSolver/pcmsolver/issues/10)
-
-**Closed issues:**
-
-- pcm fails with intel 2013 suite... [\#18](https://github.com/PCMSolver/pcmsolver/issues/18)
-- PCMSolver on MS Windows - compilation fails... [\#11](https://github.com/PCMSolver/pcmsolver/issues/11)
-- Directory for buildup scripts ? [\#9](https://github.com/PCMSolver/pcmsolver/issues/9)
-- fresh buildup error ... [\#8](https://github.com/PCMSolver/pcmsolver/issues/8)
-- PCMSolver's support for MS Windows - appveyor CI  [\#7](https://github.com/PCMSolver/pcmsolver/issues/7)
-
-**Merged pull requests:**
-
-- Only look in the include dir of EIGEN\_ROOT [\#20](https://github.com/PCMSolver/pcmsolver/pull/20) ([wpoely86](https://github.com/wpoely86))
-- changes to enable more staticness and older glibc [\#17](https://github.com/PCMSolver/pcmsolver/pull/17) ([loriab](https://github.com/loriab))
-- Simplify .travis.yml for submission to Coverity scan [\#6](https://github.com/PCMSolver/pcmsolver/pull/6) ([robertodr](https://github.com/robertodr))
-- Ameliorate .travis.yml for a larger selection of compilers. Inspired by @daniel-j-h [\#5](https://github.com/PCMSolver/pcmsolver/pull/5) ([robertodr](https://github.com/robertodr))
-
 ## [v1.0.4](https://github.com/PCMSolver/pcmsolver/tree/v1.0.4) (2015-07-22)
 [Full Changelog](https://github.com/PCMSolver/pcmsolver/compare/v1.0.3...v1.0.4)
-
-**Merged pull requests:**
-
-- ihrasko: add architecture definition for Cygwin [\#3](https://github.com/PCMSolver/pcmsolver/pull/3) ([ihrasko](https://github.com/ihrasko))
 
 ## [v1.0.3](https://github.com/PCMSolver/pcmsolver/tree/v1.0.3) (2015-03-29)
 [Full Changelog](https://github.com/PCMSolver/pcmsolver/compare/v1.0.2...v1.0.3)
@@ -47,10 +23,6 @@
 
 ## [v1.0.1](https://github.com/PCMSolver/pcmsolver/tree/v1.0.1) (2015-01-06)
 [Full Changelog](https://github.com/PCMSolver/pcmsolver/compare/1.0.0...v1.0.1)
-
-**Merged pull requests:**
-
-- Adaptation of merging static libs both for Windows and Linux [\#1](https://github.com/PCMSolver/pcmsolver/pull/1) ([ihrasko](https://github.com/ihrasko))
 
 ## [1.0.0](https://github.com/PCMSolver/pcmsolver/tree/1.0.0) (2014-09-30)
 

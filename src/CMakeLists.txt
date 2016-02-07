@@ -26,7 +26,6 @@ list(APPEND _objects $<TARGET_OBJECTS:cavity>
                      $<TARGET_OBJECTS:solver>
                      $<TARGET_OBJECTS:utils>
                      $<TARGET_OBJECTS:getkw>
-                     $<TARGET_OBJECTS:fortran_bindings>
     )
 if(NOT STATIC_LIBRARY_ONLY)
   add_library(pcm-shared SHARED "${_objects}")

@@ -26,5 +26,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 # PCMSolver header directories
 set_property(GLOBAL PROPERTY PCMSolver_HEADER_DIRS)
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
 include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/src/utils/getkw)

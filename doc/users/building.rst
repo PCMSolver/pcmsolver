@@ -28,7 +28,7 @@ the unit test suite.
 Libraries and toolchain programs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-+ CMake version 2.8.8 and higher;
++ CMake version 2.8.9 and higher;
 + Git version 1.7.1 and higher;
 + Python interpreter 2.4 and higher;
 + Boost libraries version 1.54.0 and higher;

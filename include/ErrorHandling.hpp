@@ -27,8 +27,8 @@
 #define ERRORHANDLING_HPP
 
 #include <cassert>
-#include <stdexcept>
-
+#include <cstdio>
+#include <cstdlib>
 
 /*! \file ErrorHandling.hpp
  *  \brief Provide macros for error handling
@@ -62,14 +62,41 @@
  *  PCMSOLVER_STATIC_ASSERT(<Condition>, <Error Message>)
  *  \endverbatim
  *
- *  Uses static_assert. If not availabel, falls back to BOOST_STATIC_ASSERT_MSG
+ *  Uses static_assert. If not available, falls back to BOOST_STATIC_ASSERT_MSG
  *  Same usage pattern as for normal assertions. Static assertions are
  *  checked at compile-time.
  *  See also here: http://www.boost.org/doc/libs/1_59_0/doc/html/boost_staticassert.html
  */
 
-/// Macro to be used to throw exceptions
-#define PCMSOLVER_ERROR(arg) throw std::runtime_error(arg)
+/*! \brief Kills execution and prints out error message */
+inline void pcmsolver_die(const std::string & message)
+{
+  pcmsolver_die(message.c_str());
+}
+
+/*! \brief Kills execution and prints out error code and error message */
+inline void pcmsolver_die(const std::string & message, int code)
+{
+  pcmsolver_die(message.c_str(), code);
+}
+
+
+/*! \brief Kills execution and prints out error message */
+inline void pcmsolver_die(const char * message)
+{
+  std::fprintf(stderr, "PCMSolver fatal error: %s\n", message);
+  std::exit(EXIT_FAILURE);
+}
+
+/*! \brief Kills execution and prints out error code and error message */
+inline void pcmsolver_die(const char * message, int code)
+{
+  std::fprintf(stderr, "PCMSolver fatal error %i: %s\n", code, message);
+  std::exit(EXIT_FAILURE);
+}
+
+/// Macro to be used to signal error conditions
+#define PCMSOLVER_ERROR(arg) pcmsolver_die(arg)
 
 /// Macro to be used for assertions
 #define PCMSOLVER_ASSERT(arg) assert(arg)

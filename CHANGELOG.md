@@ -1,14 +1,23 @@
 # Change Log
 
+## [Unreleased]
+### Added
+- A runtime check to ensure that all atoms have a nonzero radius.
+API kills program execution if this is the case.
+
+### Changed
+- CMake minimum required version is 2.8.10
+- Atom is now a POD
+- `PCMSOLVER_ERROR ` kills program execution when an error arises but does
+not use C++ exceptions.
+
 ## [v1.1.0](https://github.com/PCMSolver/pcmsolver/tree/v1.1.0) (2016-02-07)
 [Full Changelog](https://github.com/PCMSolver/pcmsolver/compare/v1.0.4...v1.1.0)
 
-**Added:**
-
+### Added
 - Green's function for diffuse interfaces in spherical symmetry
 
-**Changes:**
-
+### Changed
 - CMake minimum required version is 2.8.8 (2016-01-08)
 - Documentation is now served [here](http://pcmsolver.readthedocs.org/)
 

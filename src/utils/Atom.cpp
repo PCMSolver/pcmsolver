@@ -33,8 +33,7 @@
 
 bool invalid(const Atom & atom)
 {
-  bool isInvalid = (std::abs(atom.radius) <= 1.0e-14) ? false : true;
-  return isInvalid;
+  return  ((std::abs(atom.radius) <= 1.0e-14) ? true : false);
 }
 
 std::vector<Atom> & initBondi()

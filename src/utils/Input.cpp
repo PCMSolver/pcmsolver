@@ -298,13 +298,20 @@ void Input::initMolecule()
     // 4. masses
     Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
     for (int i = 0; i < masses.size(); ++i) {
-	 masses(i) = atoms[i].mass;
+    masses(i) = atoms[i].mass;
     }
     // 5. molecular point group
     // FIXME currently hardcoded to C1
 
     // OK, now get molecule_
     molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres_);
+    // Check that all atoms have a radius attached
+    std::vector<Atom>::const_iterator res =
+      std::find_if(std::begin(atoms), std::end(atoms), invalid);
+    if (res != std::end(atoms)) {
+      std::cout << molecule_ << std::endl;
+      PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms!");
+    }
 }
 
 cavityData Input::cavityParams()

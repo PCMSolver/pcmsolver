@@ -317,19 +317,6 @@ namespace pcm {
         }
     }
 
-    void Meddle::printer(const std::string & message) const
-    {
-        const char * message_C = message.c_str();
-        host_writer(message_C, std::strlen(message_C));
-    }
-
-    void Meddle::printer(const std::ostringstream & stream) const
-    {
-        std::string message = stream.str();
-        const char * message_C = message.c_str();
-        host_writer(message_C, std::strlen(message_C));
-    }
-
     void Meddle::writeTimings() const
     {
         TIMER_DONE("pcmsolver.timer.dat");
@@ -426,6 +413,19 @@ namespace pcm {
         printer(infoStream_);
     }
 
+    void printer(const std::string & message)
+    {
+        const char * message_C = message.c_str();
+        host_writer(message_C, std::strlen(message_C));
+    }
+
+    void printer(const std::ostringstream & stream)
+    {
+        std::string message = stream.str();
+        const char * message_C = message.c_str();
+        host_writer(message_C, std::strlen(message_C));
+    }
+
     void initMolecule(const Input & inp, const Symmetry & pg,
             int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
             Molecule & molecule)
@@ -461,6 +461,15 @@ namespace pcm {
 
         // OK, now get molecule
         molecule = Molecule(nuclei, charges, masses, centers, atoms, spheres, pg);
+        // Check that all atoms have a radius attached
+        std::vector<Atom>::const_iterator res =
+          std::find_if(std::begin(atoms), std::end(atoms), invalid);
+        if (res != std::end(atoms)) {
+          std::ostringstream print_mol;
+          print_mol << molecule << std::endl;
+          printer(print_mol);
+          PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms!");
+        }
     }
 
     void initSpheresAtoms(const Input & inp, const Eigen::Matrix3Xd & sphereCenter_,

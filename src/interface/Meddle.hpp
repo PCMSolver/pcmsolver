@@ -51,6 +51,8 @@ class PCMSolver;
 namespace pcm {
     typedef boost::container::flat_map<std::string, SurfaceFunction> SurfaceFunctionMap;
 
+    void printer(const std::string & message);
+    void printer(const std::ostringstream & stream);
     void initMolecule(const Input & inp, const Symmetry & group,
             int nuclei, const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
             Molecule & molecule);
@@ -174,8 +176,6 @@ namespace pcm {
             void initDynamicSolver();
             /*! Collect info on medium */
             void mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const;
-            void printer(const std::string & message) const;
-            void printer(const std::ostringstream & stream) const;
     };
 } /* end namespace pcm */
 

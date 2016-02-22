@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -97,7 +97,7 @@ Eigen::Vector3d Molecule::centerOfMass()
     Eigen::Vector3d com;
     com << 0.0, 0.0, 0.0;
     for (size_t i = 0; i < nAtoms_; ++i) {
-        com += masses_(i) * atoms_[i].atomCoord();
+        com += masses_(i) * atoms_[i].position;
     }
     com *= 1.0/masses_.sum();
     return com;
@@ -185,7 +185,7 @@ void Molecule::translate(const Eigen::Vector3d &translationVector)
     for (size_t i = 0; i < nAtoms_; ++i) {
         geometry_.col(i) -= translationVector;
         Eigen::Vector3d tmp = geometry_.col(i);
-        atoms_[i].atomCoord(tmp);
+        atoms_[i].position = tmp;
     }
 }
 
@@ -202,7 +202,7 @@ void Molecule::rotate(const Eigen::Matrix3d &rotationMatrix)
         rotationMatrix; // The power of Eigen: geometry_ = geometry_ * rotationMatrix;
     for (size_t i = 0; i < nAtoms_; ++i) {
         Eigen::Vector3d tmp = geometry_.col(i);
-        atoms_[i].atomCoord(tmp);
+        atoms_[i].position = tmp;
     }
 }
 
@@ -249,7 +249,7 @@ std::ostream & operator<<(std::ostream &os, const Molecule &m)
         os << "    ------------   -----------------  -----------------  -----------------" <<
            std::endl;
         for (size_t i = 0; i < m.nAtoms_; ++i) {
-            os << std::setw(10) << m.atoms_[i].atomSymbol() << std::setw(15) <<m.geometry_.col(
+            os << std::setw(10) << m.atoms_[i].symbol << std::setw(15) <<m.geometry_.col(
                    i).transpose().format(CleanFmt) << std::endl;
         }
     } else {

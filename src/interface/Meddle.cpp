@@ -435,23 +435,23 @@ namespace pcm {
         double factor = angstromToBohr(inp.CODATAyear());
         std::vector<Atom> radiiSet, atoms;
         if ( set == "UFF" ) {
-            radiiSet = Atom::initUFF();
+            radiiSet = initUFF();
         } else {
-            radiiSet = Atom::initBondi();
+            radiiSet = initBondi();
         }
         std::vector<Sphere> spheres;
         for (int i = 0; i < charges.size(); ++i) {
             int index = int(charges(i)) - 1;
             atoms.push_back(radiiSet[index]);
-            double radius = radiiSet[index].atomRadius() * factor;
+            double radius = radiiSet[index].radius * factor;
             if (scaling) {
-                radius *= radiiSet[index].atomRadiusScaling();
+                radius *= radiiSet[index].radiusScaling;
             }
             spheres.push_back(Sphere(centers.col(i), radius));
         }
         Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
         for (int i = 0; i < masses.size(); ++i) {
-            masses(i) = atoms[i].atomMass();
+            masses(i) = atoms[i].mass;
         }
         // Based on the creation mode (Implicit or Atoms)
         // the spheres list might need postprocessing

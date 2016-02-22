@@ -35,9 +35,6 @@
 
 #cmakedefine HAVE_OPENMP
 
-@DEFINE_FC_FUNC@
-@DEFINE_FC_FUNC_@
-
 #ifdef __GNUC__
 #define attribute(x) __attribute__((x))
 #else

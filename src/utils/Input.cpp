@@ -271,9 +271,9 @@ void Input::initMolecule()
     double factor = angstromToBohr(CODATAyear_);
     std::vector<Atom> radiiSet, atoms;
     if ( radiiSet_ == "UFF" ) {
-        radiiSet = Atom::initUFF();
+        radiiSet = initUFF();
     } else {
-        radiiSet = Atom::initBondi();
+        radiiSet = initBondi();
     }
     // Based on the creation mode (Implicit or Atoms)
     // the spheres list might need postprocessing
@@ -281,8 +281,8 @@ void Input::initMolecule()
         for (int i = 0; i < charges.size(); ++i) {
             int index = int(charges(i)) - 1;
             atoms.push_back(radiiSet[index]);
-            double radius = radiiSet[index].atomRadius() * factor;
-            if (scaling_) radius *= radiiSet[index].atomRadiusScaling();
+            double radius = radiiSet[index].radius * factor;
+            if (scaling_) radius *= radiiSet[index].radiusScaling;
             spheres_.push_back(Sphere(centers.col(i), radius));
         }
         if (mode_ == "ATOMS") {
@@ -298,7 +298,7 @@ void Input::initMolecule()
     // 4. masses
     Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
     for (int i = 0; i < masses.size(); ++i) {
-	 masses(i) = atoms[i].atomMass();
+	 masses(i) = atoms[i].mass;
     }
     // 5. molecular point group
     // FIXME currently hardcoded to C1

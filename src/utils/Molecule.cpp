@@ -38,7 +38,7 @@
 #include <Eigen/Eigenvalues>
 
 #include "Atom.hpp"
-#include "Element.hpp"
+#include "cavity/Element.hpp"
 #include "MathUtils.hpp"
 #include "Symmetry.hpp"
 

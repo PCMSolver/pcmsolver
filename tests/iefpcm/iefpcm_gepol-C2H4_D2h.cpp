@@ -32,14 +32,14 @@
 
 #include <Eigen/Core>
 
-#include "CollocationIntegrator.hpp"
-#include "DerivativeTypes.hpp"
-#include "GePolCavity.hpp"
-#include "Molecule.hpp"
-#include "Vacuum.hpp"
-#include "UniformDielectric.hpp"
-#include "IEFSolver.hpp"
-#include "TestingMolecules.hpp"
+#include "bi_operators/CollocationIntegrator.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "utils/Molecule.hpp"
+#include "green/Vacuum.hpp"
+#include "green/UniformDielectric.hpp"
+#include "solver/IEFSolver.hpp"
+#include "utils/TestingMolecules.hpp"
 
 /*! \class IEFSolver
  *  \test \b C2H4GePolD2h tests IEFSolver using C2H4 with a GePol cavity in D2h symmetry

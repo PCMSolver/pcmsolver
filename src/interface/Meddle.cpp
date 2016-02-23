@@ -24,6 +24,7 @@
 /* pcmsolver_copyright_end */
 
 #include "pcmsolver.h"
+#include "PCMInput.h"
 #include "Meddle.hpp"
 
 #include <string>
@@ -35,19 +36,18 @@
 
 #include <boost/foreach.hpp>
 
-#include "Cavity.hpp"
-#include "RegisterCavityToFactory.hpp"
-#include "IGreensFunction.hpp"
-#include "RegisterGreensFunctionToFactory.hpp"
-#include "PCMSolver.hpp"
-#include "RegisterSolverToFactory.hpp"
-#include "Atom.hpp"
+#include "cavity/Cavity.hpp"
+#include "cavity/RegisterCavityToFactory.hpp"
+#include "green/IGreensFunction.hpp"
+#include "green/RegisterGreensFunctionToFactory.hpp"
+#include "solver/PCMSolver.hpp"
+#include "solver/RegisterSolverToFactory.hpp"
+#include "utils/Atom.hpp"
 #include "Citation.hpp"
-#include "cnpy.hpp"
-#include "PCMInput.h"
-#include "PhysicalConstants.hpp"
-#include "Solvent.hpp"
-#include "Sphere.hpp"
+#include "utils/cnpy.hpp"
+#include "utils/PhysicalConstants.hpp"
+#include "utils/Solvent.hpp"
+#include "utils/Sphere.hpp"
 
 #ifndef AS_TYPE
 #define AS_TYPE(Type, Obj) reinterpret_cast<Type *>(Obj)

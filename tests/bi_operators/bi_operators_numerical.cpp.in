@@ -34,17 +34,17 @@
 
 #include <Eigen/Core>
 
-#include "cnpy.hpp"
-#include "DerivativeTypes.hpp"
-#include "AnisotropicLiquid.hpp"
-#include "Element.hpp"
-#include "GePolCavity.hpp"
-#include "IonicLiquid.hpp"
-#include "NumericalIntegrator.hpp"
-#include "PhysicalConstants.hpp"
-#include "UniformDielectric.hpp"
-#include "TestingMolecules.hpp"
-#include "Vacuum.hpp"
+#include "utils/cnpy.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "green/AnisotropicLiquid.hpp"
+#include "cavity/Element.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "green/IonicLiquid.hpp"
+#include "bi_operators/NumericalIntegrator.hpp"
+#include "utils/PhysicalConstants.hpp"
+#include "green/UniformDielectric.hpp"
+#include "utils/TestingMolecules.hpp"
+#include "green/Vacuum.hpp"
 
 SCENARIO("A collocation integrator with numerical integrator of the diagonal elements", "[bi_operators][bi_operators_numerical]")
 {

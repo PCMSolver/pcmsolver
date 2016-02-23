@@ -31,16 +31,16 @@
 
 #include "Config.hpp"
 
-#include "Getkw.h"
+#include "utils/getkw/Getkw.h"
 
 struct PCMInput;
 
-#include "CavityData.hpp"
-#include "GreenData.hpp"
-#include "SolverData.hpp"
-#include "Molecule.hpp"
-#include "Solvent.hpp"
-#include "Sphere.hpp"
+#include "cavity/CavityData.hpp"
+#include "green/GreenData.hpp"
+#include "solver/SolverData.hpp"
+#include "utils/Molecule.hpp"
+#include "utils/Solvent.hpp"
+#include "utils/Sphere.hpp"
 
 /*! \file Input.hpp
  *  \class Input

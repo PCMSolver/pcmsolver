@@ -31,15 +31,15 @@
 
 #include <Eigen/Core>
 
-#include "CollocationIntegrator.hpp"
-#include "DerivativeTypes.hpp"
-#include "GePolCavity.hpp"
-#include "Molecule.hpp"
-#include "Vacuum.hpp"
-#include "TestingMolecules.hpp"
-#include "UniformDielectric.hpp"
-#include "IEFSolver.hpp"
-#include "Symmetry.hpp"
+#include "bi_operators/CollocationIntegrator.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "utils/Molecule.hpp"
+#include "green/Vacuum.hpp"
+#include "utils/TestingMolecules.hpp"
+#include "green/UniformDielectric.hpp"
+#include "solver/IEFSolver.hpp"
+#include "utils/Symmetry.hpp"
 
 /*! \class IEFSolver
  *  \test \b NH3GePol tests IEFSolver using ammonia and a GePol cavity

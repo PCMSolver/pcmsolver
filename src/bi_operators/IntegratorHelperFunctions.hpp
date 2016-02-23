@@ -37,8 +37,8 @@
 #include <boost/mpl/int.hpp>
 #include <boost/mpl/map.hpp>
 
-#include "Element.hpp"
-#include "QuadratureRules.hpp"
+#include "cavity/Element.hpp"
+#include "utils/QuadratureRules.hpp"
 
 namespace integrator {
 /*! \typedef Diagonal

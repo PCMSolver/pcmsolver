@@ -39,8 +39,8 @@ struct PCMInput;
 class PCMSolver;
 
 #include "Input.hpp"
-#include "SurfaceFunction.hpp"
-#include "Symmetry.hpp"
+#include "utils/SurfaceFunction.hpp"
+#include "utils/Symmetry.hpp"
 
 /*! \file Meddle.hpp
  *  \author Roberto Di Remigio

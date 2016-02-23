@@ -39,8 +39,8 @@
 #include <Eigen/Core>
 #include <boost/format.hpp>
 
-#include "Sphere.hpp"
-#include "Symmetry.hpp"
+#include "utils/Sphere.hpp"
+#include "utils/Symmetry.hpp"
 
 /*! \fn extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
  *                                 double * xtscor, double * ytscor, double * ztscor, double * ar,
@@ -82,13 +82,13 @@
  *  \param[out] centr centers of arcs defining the edges of the tesserae
  */
 extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
-                                   double * xtscor, double * ytscor, double * ztscor, double * ar,
-                                   double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
-                                   int * nts, int * ntsirr, int * nesfp, int * addsph,
-                                   double * xe, double * ye, double * ze, double * rin, double * masses,
-                                   double * avgArea, double * rsolv, double * ret,
-                                   int * nr_gen, int * gen1, int * gen2, int * gen3,
-				   int * nvert, double * vert, double * centr, int * isphe, const char * pedra, int * len_f_pedra);
+    double * xtscor, double * ytscor, double * ztscor, double * ar,
+    double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
+    int * nts, int * ntsirr, int * nesfp, int * addsph,
+    double * xe, double * ye, double * ze, double * rin, double * masses,
+    double * avgArea, double * rsolv, double * ret,
+    int * nr_gen, int * gen1, int * gen2, int * gen3,
+    int * nvert, double * vert, double * centr, int * isphe, const char * pedra, int * len_f_pedra);
 
 void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int maxvert)
 {

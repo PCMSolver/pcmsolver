@@ -33,10 +33,10 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
-#include "cnpy.hpp"
+#include "utils/cnpy.hpp"
 
-#include "MathUtils.hpp"
-#include "Symmetry.hpp"
+#include "utils/MathUtils.hpp"
+#include "utils/Symmetry.hpp"
 
 void Cavity::saveCavity(const std::string & fname)
 {

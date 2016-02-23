@@ -31,12 +31,12 @@
 
 #include <Eigen/Core>
 
-#include "CollocationIntegrator.hpp"
-#include "DerivativeTypes.hpp"
-#include "GePolCavity.hpp"
-#include "Vacuum.hpp"
-#include "UniformDielectric.hpp"
-#include "IEFSolver.hpp"
+#include "bi_operators/CollocationIntegrator.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "green/Vacuum.hpp"
+#include "green/UniformDielectric.hpp"
+#include "solver/IEFSolver.hpp"
 
 /*! \class IEFSolver
  *  \test \b NH3GePolRestart tests IEFSolver using ammonia with a GePol cavity read from .npz file

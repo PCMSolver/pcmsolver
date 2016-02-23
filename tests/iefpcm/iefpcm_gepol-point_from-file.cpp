@@ -31,13 +31,13 @@
 
 #include <Eigen/Core>
 
-#include "CollocationIntegrator.hpp"
-#include "DerivativeTypes.hpp"
-#include "GePolCavity.hpp"
-#include "Molecule.hpp"
-#include "Vacuum.hpp"
-#include "UniformDielectric.hpp"
-#include "IEFSolver.hpp"
+#include "bi_operators/CollocationIntegrator.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "utils/Molecule.hpp"
+#include "green/Vacuum.hpp"
+#include "green/UniformDielectric.hpp"
+#include "solver/IEFSolver.hpp"
 
 /*! \class IEFSolver
  *  \test \b pointChargeGePolRestart tests IEFSolver using a point charge with a GePol cavity read from .npz file

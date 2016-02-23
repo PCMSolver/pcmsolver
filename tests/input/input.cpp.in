@@ -33,9 +33,9 @@
 
 #include <Eigen/Core>
 
-#include "Input.hpp"
-#include "PhysicalConstants.hpp"
-#include "Sphere.hpp"
+#include "interface/Input.hpp"
+#include "utils/PhysicalConstants.hpp"
+#include "utils/Sphere.hpp"
 
 SCENARIO("Input reading using GetKw", "[input]")
 {

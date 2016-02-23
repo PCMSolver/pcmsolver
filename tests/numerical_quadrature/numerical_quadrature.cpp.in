@@ -34,13 +34,13 @@
 
 #include <Eigen/Core>
 
-#include "cnpy.hpp"
-#include "Element.hpp"
-#include "GePolCavity.hpp"
-#include "IntegratorHelperFunctions.hpp"
-#include "MathUtils.hpp"
-#include "PhysicalConstants.hpp"
-#include "TestingMolecules.hpp"
+#include "utils/cnpy.hpp"
+#include "cavity/Element.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "bi_operators/IntegratorHelperFunctions.hpp"
+#include "utils/MathUtils.hpp"
+#include "utils/PhysicalConstants.hpp"
+#include "utils/TestingMolecules.hpp"
 
 using integrator::integrateS;
 using integrator::integrateD;

@@ -11,7 +11,7 @@
  */
 #ifdef ENABLE_TIMER
 
-#include "Timer.hpp"
+#include "utils/Timer.hpp"
 
 #define TIMER_ON timer::timerON
 #define TIMER_OFF timer::timerOFF

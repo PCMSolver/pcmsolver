@@ -48,29 +48,29 @@
 
 class GePolCavity __final : public Cavity
 {
-public:
+  public:
     GePolCavity() {}
     GePolCavity(const Molecule & molec, double a, double pr, double minR, const std::string & suffix = "") :
-        Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR)
-	{
-	  std::string checkpointName = "GePolCavity::build";
-	  TIMER_ON(checkpointName);
-	  build(suffix, 10000, 200, 25000);
-	  TIMER_OFF(checkpointName);
-	}
+      Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR)
+      {
+        std::string checkpointName = "GePolCavity::build";
+        TIMER_ON(checkpointName);
+        build(suffix, 10000, 200, 25000);
+        TIMER_OFF(checkpointName);
+      }
     GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR, const std::string & suffix = "") :
-	Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
-	{
-	  std::string checkpointName = "GePolCavity::build";
-	  TIMER_ON(checkpointName);
-	  build(suffix, 10000, 200, 25000);
-	  TIMER_OFF(checkpointName);
-	}
+      Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
+      {
+        std::string checkpointName = "GePolCavity::build";
+        TIMER_ON(checkpointName);
+        build(suffix, 10000, 200, 25000);
+        TIMER_OFF(checkpointName);
+      }
     virtual ~GePolCavity() {}
     friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
-        return cavity.printCavity(os);
+      return cavity.printCavity(os);
     }
-private:
+  private:
     double averageArea;
     double probeRadius;
     double minimalRadius;

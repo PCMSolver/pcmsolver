@@ -36,12 +36,11 @@
 
 // Has to be included here
 #include "InterfacesImpl.hpp"
-#include "RadialFunction.hpp"
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
 #include "GreensFunction.hpp"
-#include "MathUtils.hpp"
+#include "utils/MathUtils.hpp"
 
 /*! \file SphericalDiffuse.hpp
  *  \class SphericalDiffuse

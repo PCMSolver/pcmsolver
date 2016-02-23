@@ -33,17 +33,17 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
-#include "Getkw.h"
+#include "utils/getkw/Getkw.h"
 
 #include <boost/algorithm/string.hpp>
 
-#include "CavityData.hpp"
-#include "GreenData.hpp"
-#include "SolverData.hpp"
+#include "cavity/CavityData.hpp"
+#include "green/GreenData.hpp"
+#include "solver/SolverData.hpp"
 #include "PCMInput.h"
-#include "PhysicalConstants.hpp"
-#include "Solvent.hpp"
-#include "Sphere.hpp"
+#include "utils/PhysicalConstants.hpp"
+#include "utils/Solvent.hpp"
+#include "utils/Sphere.hpp"
 
 using boost::algorithm::to_upper_copy;
 using boost::algorithm::trim;

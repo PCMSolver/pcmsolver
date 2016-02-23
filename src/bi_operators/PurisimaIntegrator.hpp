@@ -35,12 +35,12 @@
 #include <Eigen/Core>
 
 #include "IntegratorHelperFunctions.hpp"
-#include "Element.hpp"
-#include "AnisotropicLiquid.hpp"
-#include "IonicLiquid.hpp"
-#include "SphericalDiffuse.hpp"
-#include "UniformDielectric.hpp"
-#include "Vacuum.hpp"
+#include "cavity/Element.hpp"
+#include "green/AnisotropicLiquid.hpp"
+#include "green/IonicLiquid.hpp"
+#include "green/SphericalDiffuse.hpp"
+#include "green/UniformDielectric.hpp"
+#include "green/Vacuum.hpp"
 
 /*! \file PurisimaIntegrator.hpp
  *  \struct PurisimaIntegrator

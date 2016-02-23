@@ -3,8 +3,8 @@
 
 #ifdef ENABLE_LOGGER
 
-#include "Logger.hpp"
-#include "Timer.hpp"
+#include "utils/Logger.hpp"
+#include "utils/Timer.hpp"
 
 static logging::logger<logging::FileLogPolicy> loggerInstance("pcmsolver.execution.log");
 

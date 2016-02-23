@@ -1,3 +1,5 @@
+include_directories(${PROJECT_SOURCE_DIR}/src)
+
 add_subdirectory(surface_function)
 add_subdirectory(input)
 add_subdirectory(numerical_quadrature)

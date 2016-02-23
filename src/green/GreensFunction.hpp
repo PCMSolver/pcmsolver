@@ -34,7 +34,7 @@
 
 #include "DerivativeTypes.hpp"
 #include "IGreensFunction.hpp"
-#include "Stencils.hpp"
+#include "utils/Stencils.hpp"
 
 /*! \file GreensFunction.hpp
  *  \class GreensFunction

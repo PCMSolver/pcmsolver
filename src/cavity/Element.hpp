@@ -31,7 +31,7 @@
 
 #include "Config.hpp"
 
-#include "Sphere.hpp"
+#include "utils/Sphere.hpp"
 
 /*! \file Element.hpp
  *  \class Element
@@ -45,11 +45,11 @@
 
 class Element __final
 {
-public:
+  public:
     Element(int nv, int isphe, double w, const Eigen::Vector3d & c, const Eigen::Vector3d & n,
-            bool i, const Sphere & s, const Eigen::Matrix3Xd & v, const Eigen::Matrix3Xd & a) :
-	    nVertices_(nv), iSphere_(isphe), area_(w), center_(c), normal_(n), irreducible_(i),
-	    sphere_(s), vertices_(v), arcs_(a) {}
+        bool i, const Sphere & s, const Eigen::Matrix3Xd & v, const Eigen::Matrix3Xd & a) :
+      nVertices_(nv), iSphere_(isphe), area_(w), center_(c), normal_(n), irreducible_(i),
+      sphere_(s), vertices_(v), arcs_(a) {}
     ~Element() {}
 
     int nVertices() const { return nVertices_; }
@@ -70,38 +70,38 @@ public:
      *  \param[out] numb    contains index of polar angle for vertices of subtriangles
      */
     void spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
-		           std::vector<double> & theta, std::vector<double> & phi,
-			   std::vector<double> & phinumb, std::vector<int> & numb) const;
+        std::vector<double> & theta, std::vector<double> & phi,
+        std::vector<double> & phinumb, std::vector<int> & numb) const;
 
     friend std::ostream & operator<<(std::ostream & os, Element & element) {
-        return element.printElement(os);
+      return element.printElement(os);
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-private:
-    /// Number of vertices of the finite element
-    int nVertices_;
-    /// Index of the sphere the finite element belongs to
-    int iSphere_;
-    /// Area of the finite element
-    double area_;
-    /// Center of the finite element
-    Eigen::Vector3d center_;
-    /// Outward-pointing normal to the center of the finite element
-    Eigen::Vector3d normal_;
-    /// Whether the finite element is irreducible
-    bool irreducible_;
-    /// The sphere the finite element belongs to
-    Sphere sphere_;
-    /// Coordinates of the finite element vertices (dimension 3*nVertices_)
-    Eigen::Matrix3Xd vertices_;
-    /// Coordinates of the centers of the arcs defining the edges of the finite element (dimension 3*nVertices_)
-    Eigen::Matrix3Xd arcs_;
-    virtual std::ostream & printElement(std::ostream & os) {
-	    os << "Finite element" << std::endl;
-	    os << "Number of vertices = " << nVertices_ << std::endl;
-	    os << "Area = " << area_;
-	    return os;
-    }
+  private:
+      /// Number of vertices of the finite element
+      int nVertices_;
+      /// Index of the sphere the finite element belongs to
+      int iSphere_;
+      /// Area of the finite element
+      double area_;
+      /// Center of the finite element
+      Eigen::Vector3d center_;
+      /// Outward-pointing normal to the center of the finite element
+      Eigen::Vector3d normal_;
+      /// Whether the finite element is irreducible
+      bool irreducible_;
+      /// The sphere the finite element belongs to
+      Sphere sphere_;
+      /// Coordinates of the finite element vertices (dimension 3*nVertices_)
+      Eigen::Matrix3Xd vertices_;
+      /// Coordinates of the centers of the arcs defining the edges of the finite element (dimension 3*nVertices_)
+      Eigen::Matrix3Xd arcs_;
+      virtual std::ostream & printElement(std::ostream & os) {
+        os << "Finite element" << std::endl;
+        os << "Number of vertices = " << nVertices_ << std::endl;
+        os << "Area = " << area_;
+        return os;
+      }
 };
 
 /*! \brief Calculate tangent and bitangent vector for the representative point
@@ -110,7 +110,7 @@ private:
  *  \param[out] b_ bitangent vector
  */
 void tangent_and_bitangent(const Eigen::Vector3d & n_,
-		           Eigen::Vector3d & t_, Eigen::Vector3d & b_);
+    Eigen::Vector3d & t_, Eigen::Vector3d & b_);
 
 
 #endif // ELEMENT_HPP

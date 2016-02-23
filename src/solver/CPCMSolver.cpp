@@ -34,10 +34,10 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 
-#include "Cavity.hpp"
-#include "Element.hpp"
-#include "IGreensFunction.hpp"
-#include "MathUtils.hpp"
+#include "cavity/Cavity.hpp"
+#include "cavity/Element.hpp"
+#include "green/IGreensFunction.hpp"
+#include "utils/MathUtils.hpp"
 #include "SolverImpl.hpp"
 
 void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o)

@@ -31,12 +31,12 @@
 
 #include <Eigen/Core>
 
-#include "CollocationIntegrator.hpp"
-#include "DerivativeTypes.hpp"
-#include "GePolCavity.hpp"
-#include "Vacuum.hpp"
-#include "UniformDielectric.hpp"
-#include "CPCMSolver.hpp"
+#include "bi_operators/CollocationIntegrator.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "green/Vacuum.hpp"
+#include "green/UniformDielectric.hpp"
+#include "solver/CPCMSolver.hpp"
 
 /*! \class CPCMSolver
  *  \test \b pointChargeGePolRestart tests CPCMSolver using a point charge with a GePol cavity read from .npz file

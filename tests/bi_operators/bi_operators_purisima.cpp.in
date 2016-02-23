@@ -34,17 +34,17 @@
 
 #include <Eigen/Core>
 
-#include "cnpy.hpp"
-#include "DerivativeTypes.hpp"
-#include "IntegratorTypes.hpp"
-#include "Element.hpp"
-#include "GePolCavity.hpp"
-#include "PurisimaIntegrator.hpp"
-#include "PhysicalConstants.hpp"
-#include "SphericalDiffuse.hpp"
-#include "TestingMolecules.hpp"
-#include "UniformDielectric.hpp"
-#include "Vacuum.hpp"
+#include "utils/cnpy.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "bi_operators/IntegratorTypes.hpp"
+#include "cavity/Element.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "bi_operators/PurisimaIntegrator.hpp"
+#include "utils/PhysicalConstants.hpp"
+#include "green/SphericalDiffuse.hpp"
+#include "utils/TestingMolecules.hpp"
+#include "green/UniformDielectric.hpp"
+#include "green/Vacuum.hpp"
 
 SCENARIO("A collocation integrator with diagonal elements according to Purisima for D", "[bi_operators][bi_operators_purisima]")
 {

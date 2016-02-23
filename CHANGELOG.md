@@ -10,6 +10,8 @@ API kills program execution if this is the case.
 - Atom is now a POD
 - `PCMSOLVER_ERROR ` kills program execution when an error arises but does
 not use C++ exceptions.
+- `include`-s are now specified on a per-directory basis (see programmers' manual
+for a more detailed explanation)
 
 ## [v1.1.0](https://github.com/PCMSolver/pcmsolver/tree/v1.1.0) (2016-02-07)
 [Full Changelog](https://github.com/PCMSolver/pcmsolver/compare/v1.0.4...v1.1.0)

@@ -1,11 +1,4 @@
-include_directories(${CMAKE_CURRENT_LIST_DIR}/cavity
-                    ${CMAKE_CURRENT_LIST_DIR}/green
-                    ${CMAKE_CURRENT_LIST_DIR}/green/dielectric_profile
-                    ${CMAKE_CURRENT_LIST_DIR}/interface
-                    ${CMAKE_CURRENT_LIST_DIR}/bi_operators
-                    ${CMAKE_CURRENT_LIST_DIR}/solver
-                    ${CMAKE_CURRENT_LIST_DIR}/utils
-                   )
+include_directories(${CMAKE_CURRENT_LIST_DIR})
 include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/utils/getkw)
 
 add_subdirectory(cavity)

@@ -32,15 +32,7 @@
 
 #include <Eigen/Core>
 
-#include "GePolCavity.hpp"
-
-struct GePolCavityRestartTest {
-    GePolCavity cavity;
-    GePolCavityRestartTest() { SetUp(); }
-    void SetUp() {
-        cavity.loadCavity("point.npz");
-    }
-};
+#include "cavity/GePolCavity.hpp"
 
 TEST_CASE("Restart GePol cavity for a single sphere", "[gepol][gepol_point_from-file]")
 {

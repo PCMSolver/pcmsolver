@@ -31,13 +31,13 @@
 
 #include <Eigen/Core>
 
-#include "CPCMSolver.hpp"
-#include "CollocationIntegrator.hpp"
-#include "DerivativeTypes.hpp"
-#include "GePolCavity.hpp"
-#include "UniformDielectric.hpp"
-#include "Vacuum.hpp"
-#include "TestingMolecules.hpp"
+#include "bi_operators/CollocationIntegrator.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "green/Vacuum.hpp"
+#include "green/UniformDielectric.hpp"
+#include "solver/CPCMSolver.hpp"
+#include "utils/TestingMolecules.hpp"
 
 SCENARIO("Test solver for the C-PCM for a point charge in different Abelian point groups", "[solver][cpcm][cpcm_symmetry]")
 {

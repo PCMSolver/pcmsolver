@@ -179,11 +179,11 @@
     real(kind=dp) :: rjd, rjk, rjk2, rtdd, rtdd2, senom, sp
     real(kind=dp) :: test, test1, test2, test3, test7, test8
     real(kind=dp) :: xen, xi, xj, xn, yen, yi, yj, yn, zen, zi, zj, zn
-    integer(kind=regint_k) :: i, icoord, idisp, ii, ipflag, iprcav, iptype
+    integer(kind=regint_k) :: i, idisp, ii, ipflag, iprcav, iptype
     integer(kind=regint_k) :: its, itseff, itsnum, itypc, iv, iver, j, jj, jcor
     integer(kind=regint_k) :: k, kg, idisrep
     integer(kind=regint_k) :: kp, n, n1, n2, n3
-    integer(kind=regint_k) :: natsph, ncav1, ncav2, ne, nes, net, nev, nn
+    integer(kind=regint_k) :: ncav1, ncav2, ne, nes, net, nev, nn
     integer(kind=regint_k) :: nsfe, nv
     real(kind=dp) :: rotcav(3, 3)
     real(kind=dp), allocatable :: mass(:), geom(:, :)

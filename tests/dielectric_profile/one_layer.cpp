@@ -30,7 +30,6 @@
 #include <ctime>
 #include <iostream>
 
-#include "Config.hpp"
 
 #include <Eigen/Core>
 #include <boost/math/special_functions/erf.hpp>

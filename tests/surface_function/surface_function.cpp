@@ -25,7 +25,6 @@
 
 #include "catch.hpp"
 
-#include "Config.hpp"
 
 #include <Eigen/Core>
 

@@ -463,8 +463,8 @@ namespace pcm {
         molecule = Molecule(nuclei, charges, masses, centers, atoms, spheres, pg);
         // Check that all atoms have a radius attached
         std::vector<Atom>::const_iterator res =
-          std::find_if(std::begin(atoms), std::end(atoms), invalid);
-        if (res != std::end(atoms)) {
+          std::find_if(atoms.begin(), atoms.end(), invalid);
+        if (res != atoms.end()) {
           std::ostringstream print_mol;
           print_mol << molecule << std::endl;
           printer(print_mol);

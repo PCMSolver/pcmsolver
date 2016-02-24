@@ -1,4 +1,7 @@
 add_library(bi_operators-tests OBJECT bi_operators_collocation.cpp bi_operators_numerical.cpp bi_operators_purisima.cpp)
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(bi_operators-tests custom_boost)
+endif()
 
 # bi_operators_purisima.cpp test
 configure_file(bi_operators_purisima.cpp.in ${CMAKE_CURRENT_LIST_DIR}/bi_operators_purisima.cpp @ONLY)

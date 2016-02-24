@@ -30,7 +30,6 @@
 #include <iostream>
 #include <limits>
 
-#include "Config.hpp"
 
 #include <Eigen/Core>
 

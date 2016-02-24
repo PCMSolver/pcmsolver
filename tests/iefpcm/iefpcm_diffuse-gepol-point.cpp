@@ -27,7 +27,6 @@
 
 #include <iostream>
 
-#include "Config.hpp"
 
 #include <Eigen/Core>
 

@@ -32,7 +32,10 @@ src_lbl = dict(zip([os.path.basename(src) for src in sources], labels))
 dirname = os.path.basename(os.path.normpath(dname))
 message = 'add_library(' + dirname + '-tests OBJECT '
 message += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sources)
-message += ')\n\n'
+message += ')\n'
+message += 'if(BUILD_CUSTOM_BOOST)\n'
+message += '  add_dependencies(' + dirname + '-tests custom_boost)\n'
+message += 'endif()\n\n'
 f.write(message)
 
 for src, lbl in src_lbl.iteritems():

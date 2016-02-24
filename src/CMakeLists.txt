@@ -25,18 +25,13 @@ if(NOT STATIC_LIBRARY_ONLY)
   target_link_libraries(pcm-shared ${ZLIB_LIBRARIES} ${LIBC_INTERJECT})
   set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} CLEAN_DIRECT_OUTPUT 1 OUTPUT_NAME "pcm")
   install(TARGETS pcm-shared DESTINATION lib)
-  if(BUILD_CUSTOM_BOOST)
-    add_dependencies(pcm-shared custom_boost)
-  endif()
+  add_dependencies(pcm-shared generate-config-hpp)
 endif()
 
 add_library(pcm-static STATIC ${_objects})
 set_target_properties(pcm-static PROPERTIES CLEAN_DIRECT_OUTPUT 1 OUTPUT_NAME "pcm")
 install(TARGETS pcm-static ARCHIVE DESTINATION lib)
-
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(pcm-static custom_boost)
-endif()
+add_dependencies(pcm-static generate-config-hpp)
 
 # This directory contains source file for executables
 if(BUILD_STANDALONE)

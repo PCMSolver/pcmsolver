@@ -28,7 +28,6 @@
 #include <cmath>
 #include <vector>
 
-#include "Config.hpp"
 
 #include <Eigen/Core>
 

@@ -21,9 +21,7 @@
 
 link_directories(${PROJECT_BINARY_DIR}/lib)
 add_executable(run_pcm run_pcm.cpp)
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(run_pcm custom_boost)
-endif()
+add_dependencies(run_pcm generate-config-hpp)
 if(STATIC_LIBRARY_ONLY)
   target_link_libraries(run_pcm pcm-static ${ZLIB_LIBRARIES})
 else()

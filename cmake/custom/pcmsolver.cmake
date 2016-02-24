@@ -11,12 +11,6 @@ if(ENABLE_LOGGER)
   add_definitions(-DENABLE_LOGGER)
 endif()
 
-# This can be set by the host project
-# and tweaks the location of the submodules install location
-if(NOT DEFINED SUBMODULES_INSTALL_PREFIX)
-    set(SUBMODULES_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/external)
-endif()
-
 set(BOOST_MINIMUM_REQUIRED 1.54.0)
 set(BOOST_COMPONENTS_REQUIRED "")
 

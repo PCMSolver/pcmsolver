@@ -29,7 +29,6 @@
 #include <iomanip>
 #include <limits>
 
-#include "Config.hpp"
 
 #include <Eigen/Core>
 

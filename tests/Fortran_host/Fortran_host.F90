@@ -5,9 +5,9 @@ program pcm_fortran_host
       use pcmsolver
       use utilities
       use testing
-      
+
       implicit none
-      
+
       type(c_ptr) :: pcm_context
       integer(c_int) :: nr_nuclei
       real(c_double), allocatable :: charges(:)
@@ -15,7 +15,9 @@ program pcm_fortran_host
       integer(c_int) :: symmetry_info(4)
       type(PCMInput) :: host_input
       logical :: log_open, log_exist
-      character(kind=c_char, len=7) :: mep_lbl, asc_lbl, asc_B3g_lbl, asc_neq_B3g_lbl
+      ! Shows two different, but equivalent ways of defining labels for surface functions
+      character(kind=c_char, len=7) :: mep_lbl, asc_lbl
+      character(7) :: asc_B3g_lbl, asc_neq_B3g_lbl
       real(c_double), allocatable :: grid(:), mep(:), asc_Ag(:), asc_B3g(:), asc_neq_B3g(:)
       integer(c_int) :: irrep
       integer(c_size_t) :: grid_size, irr_grid_size
@@ -122,21 +124,21 @@ program pcm_fortran_host
       if (grid_size .ne. ref_size) then
         write(error_unit, *) 'Error in the cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
         stop -1
-      else 
+      else
         write(output_unit, *) 'Test on cavity size: PASSED'
       end if
       ! Irreducible cavity size
       if (irr_grid_size .ne. ref_irr_size) then
         write(error_unit, *) 'Error in the irreducible cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
         stop -1
-      else 
+      else
         write(output_unit, *) 'Test on irreducible cavity size: PASSED'
       end if
       ! Polarization energy
       if (.not. check_unsigned_error(energy, ref_energy, 1.0e-7_c_double)) then
         write(error_unit, *) 'Error in the polarization energy, please file an issue on: https://github.com/PCMSolver/pcmsolver'
         stop -1
-      else 
+      else
         write(output_unit, *) 'Test on polarization energy: PASSED'
       end if
       ! Surface functions

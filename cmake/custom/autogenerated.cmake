@@ -21,6 +21,9 @@ install(FILES ${PROJECT_BINARY_DIR}/include/Config.hpp DESTINATION include)
 configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in ${PROJECT_BINARY_DIR}/bin/pcmsolver.py @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/bin/pcmsolver.py DESTINATION bin)
 # Install GetKw Python bindings
+file(COPY ${PROJECT_SOURCE_DIR}/tools/getkw.py
+          ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
+     DESTINATION bin)
 install(FILES ${PROJECT_SOURCE_DIR}/tools/getkw.py
               ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
         DESTINATION bin)

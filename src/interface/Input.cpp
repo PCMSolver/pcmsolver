@@ -144,13 +144,12 @@ void Input::reader(const std::string & filename)
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
-        std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
-        if (solvents.find(name) == solvents.end()) {
+        if (solvents().find(name) == solvents().end()) {
             PCMSOLVER_ERROR("Solvent " + name + " NOT found!");
         } else {
-            solvent_ = solvents[name];
+            solvent_ = solvents()[name];
         }
-        probeRadius_ = solvent_.probeRadius() * angstromToBohr(CODATAyear_);
+        probeRadius_ = solvent_.probeRadius * angstromToBohr(CODATAyear_);
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class
         // is an helper class and should not be used in the core classes.
@@ -159,8 +158,8 @@ void Input::reader(const std::string & filename)
         epsilonInside_ = 1.0;
         greenOutsideType_ = "UNIFORMDIELECTRIC";
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
-        epsilonStaticOutside_ = solvent_.epsStatic();
-        epsilonDynamicOutside_ = solvent_.epsDynamic();
+        epsilonStaticOutside_ = solvent_.epsStatic;
+        epsilonDynamicOutside_ = solvent_.epsDynamic;
     }
     integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
 
@@ -223,9 +222,8 @@ void Input::reader(const PCMInput & host_input)
     } else { // This part must be reviewed!! Some data members are not initialized...
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
-        std::map<std::string, Solvent> solvents = Solvent::initSolventMap();
-        solvent_ = solvents[name];
-        probeRadius_ = solvent_.probeRadius() * angstromToBohr(CODATAyear_);
+        solvent_ = solvents()[name];
+        probeRadius_ = solvent_.probeRadius* angstromToBohr(CODATAyear_);
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class
         // is an helper class and should not be used in the core classes.
@@ -234,8 +232,8 @@ void Input::reader(const PCMInput & host_input)
         epsilonInside_ = 1.0;
         greenOutsideType_ = std::string("UNIFORMDIELECTRIC");
         derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
-        epsilonStaticOutside_ = solvent_.epsStatic();
-        epsilonDynamicOutside_ = solvent_.epsDynamic();
+        epsilonStaticOutside_ = solvent_.epsStatic;
+        epsilonDynamicOutside_ = solvent_.epsDynamic;
     }
     integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
 

@@ -89,7 +89,7 @@ SCENARIO("Input reading using GetKw", "[input]")
                     REQUIRE(atoms[i]  == parsedInput.atoms(i));
                     REQUIRE(radii[i]  == Approx(parsedInput.radii(i)));
                 }
-                REQUIRE(solvent               == parsedInput.solvent().name());
+                REQUIRE(solvent               == parsedInput.solvent().name);
                 REQUIRE(solverType            == parsedInput.solverType());
                 REQUIRE(correction            == Approx(parsedInput.correction()));
                 REQUIRE(hermitivitize         == parsedInput.hermitivitize());
@@ -146,7 +146,7 @@ SCENARIO("Input reading using GetKw", "[input]")
                 REQUIRE(radiiSet              == parsedInput.radiiSet());
                 REQUIRE(minimalRadius         == Approx(parsedInput.cavityParams().minimalRadius));
                 REQUIRE(mode                  == parsedInput.mode());
-                REQUIRE(solvent               == parsedInput.solvent().name());
+                REQUIRE(solvent               == parsedInput.solvent().name);
                 REQUIRE(solverType            == parsedInput.solverType());
                 REQUIRE(equationType          == parsedInput.equationType());
                 REQUIRE(correction            == Approx(parsedInput.correction()));

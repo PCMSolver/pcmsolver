@@ -1,11 +1,11 @@
 # List of headers
 list(APPEND headers_list Atom.hpp Factory.hpp ForId.hpp FortranCUtils.hpp Logger.hpp LoggerImpl.hpp MathUtils.hpp Molecule.hpp
                          PhysicalConstants.hpp QuadratureRules.hpp Solvent.hpp Sphere.hpp SplineFunction.hpp
-                         Stencils.hpp SurfaceFunction.hpp Symmetry.hpp TestingMolecules.hpp Timer.hpp cnpy.hpp)
+                         Stencils.hpp Symmetry.hpp TestingMolecules.hpp Timer.hpp cnpy.hpp)
 set_source_files_properties(cnpy.hpp PROPERTIES COMPILE_FLAGS -w)
 
 # List of sources
-list(APPEND sources_list Atom.cpp FortranCUtils.cpp Molecule.cpp Solvent.cpp Sphere.cpp SurfaceFunction.cpp Symmetry.cpp cnpy.cpp)
+list(APPEND sources_list Atom.cpp FortranCUtils.cpp Molecule.cpp Solvent.cpp Sphere.cpp Symmetry.cpp cnpy.cpp)
 set_source_files_properties(cnpy.cpp PROPERTIES COMPILE_FLAGS -w)
 
 add_library(utils OBJECT ${sources_list} ${headers_list})

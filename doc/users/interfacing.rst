@@ -11,7 +11,12 @@ If your program is written in C/C++, head over to :ref:`C-example`
 How PCMSolver handles potentials and charges: surface functions
 ---------------------------------------------------------------
 
-:cpp:class:`SurfaceFunction`
+Electrostatic potential vectors and the corresponding apparent surface
+charge vectors are handled internally as `surface functions`.
+The actual values are stored into Eigen vectors and saved into a
+map. The mapping is between the name of the surface function, given by
+the programmer writing the interface to the library, and the vector holding
+the values.
 
 What you should care about: API functions
 -----------------------------------------

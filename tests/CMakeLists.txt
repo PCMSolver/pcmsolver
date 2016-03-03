@@ -1,6 +1,5 @@
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-add_subdirectory(surface_function)
 add_subdirectory(input)
 add_subdirectory(numerical_quadrature)
 add_subdirectory(gepol)
@@ -20,7 +19,6 @@ add_executable(unit_tests unit_tests.cpp
                           $<TARGET_OBJECTS:iefpcm-tests>
                           $<TARGET_OBJECTS:input-tests>
                           $<TARGET_OBJECTS:numerical_quadrature-tests>
-                          $<TARGET_OBJECTS:surface_function-tests>
                           )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(unit_tests custom_boost)

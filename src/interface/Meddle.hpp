@@ -30,6 +30,8 @@
 
 #include "Config.hpp"
 
+#include <Eigen/Core>
+
 #include <boost/container/flat_map.hpp>
 
 class Cavity;
@@ -39,7 +41,6 @@ struct PCMInput;
 class PCMSolver;
 
 #include "Input.hpp"
-#include "utils/SurfaceFunction.hpp"
 #include "utils/Symmetry.hpp"
 
 /*! \file Meddle.hpp
@@ -49,7 +50,9 @@ class PCMSolver;
 
 /*! \namespace pcm */
 namespace pcm {
-    typedef boost::container::flat_map<std::string, SurfaceFunction> SurfaceFunctionMap;
+    typedef boost::container::flat_map<std::string, Eigen::VectorXd> SurfaceFunctionMap;
+    typedef SurfaceFunctionMap::value_type SurfaceFunctionPair;
+    typedef SurfaceFunctionMap::const_iterator SurfaceFunctionMapConstIter;
 
     void printer(const std::string & message);
     void printer(const std::ostringstream & stream);

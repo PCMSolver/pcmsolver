@@ -45,14 +45,6 @@ Solvent
    :protected-members:
    :private-members:
 
-SurfaceFunction
----------------
-.. doxygenclass:: SurfaceFunction
-   :project: PCMSolver
-   :members:
-   :protected-members:
-   :private-members:
-
 Symmetry
 --------
 .. doxygenclass:: Symmetry

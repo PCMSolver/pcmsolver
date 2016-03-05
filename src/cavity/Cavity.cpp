@@ -111,7 +111,7 @@ void Cavity::loadCavity(const std::string & fname)
   elementNormal_ = cnpy::custom::npy_to_eigen(raw_normals);
 
   // Reconstruct the elements_ vector
-  for (int i = 0; i < nElements_; ++i) {
+  for (size_t i = 0; i < nElements_; ++i) {
     bool irr = false;
     // PEDRA puts the irreducible tesserae first
     if (i < nIrrElements_) irr = true;

@@ -57,9 +57,9 @@ class Cavity
     /// The molecule to be wrapped by the cavity
     Molecule molecule_;
     /// Number of finite elements generated
-    int nElements_;
+    size_t nElements_;
     /// Number of irreducible finite elements
-    int nIrrElements_;
+    size_t nIrrElements_;
     /// Whether the cavity has been built
     bool built;
     /// Coordinates of elements centers

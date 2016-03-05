@@ -217,7 +217,7 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
     elementNormal_.resize(Eigen::NoChange, nElements_);
     elementArea_.resize(nElements_);
     elementRadius_.resize(nElements_);
-    for( int i = 0; i < nElements_; ++i ) {
+    for( size_t i = 0; i < nElements_; ++i ) {
         elementCenter_(0,i) = xtscor[i];
         elementCenter_(1,i) = ytscor[i];
         elementCenter_(2,i) = ztscor[i];
@@ -233,9 +233,9 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
     // from zero by more than a fixed threshold.
     // The indices of the equal elements are gathered in a std::pair and saved into a std::vector
     double threshold = 1.0e-12;
-    std::vector< std::pair<int, int> > equal_elements;
-    for(int i = 0; i < nElements_; ++i) {
-        for (int j = i + 1; j < nElements_; ++j) {
+    std::vector< std::pair<size_t, size_t> > equal_elements;
+    for(size_t i = 0; i < nElements_; ++i) {
+        for (size_t j = i + 1; j < nElements_; ++j) {
             Eigen::Vector3d difference = elementCenter_.col(i) - elementCenter_.col(j);
             if ( difference.isZero(threshold) ) {
                 equal_elements.push_back(std::make_pair(i, j));
@@ -256,13 +256,13 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
     }
     // Calculate normal vectors
     elementNormal_ = elementCenter_ - elementSphereCenter_;
-    for( int i = 0; i < nElements_; ++i) {
+    for( size_t i = 0; i < nElements_; ++i) {
         elementNormal_.col(i) /= elementNormal_.col(i).norm();
     }
 
     // Fill elements_ vector
-    for (int i = 0; i < nElements_; ++i) {
-        int i_off = i + 1;
+    for (size_t i = 0; i < nElements_; ++i) {
+        size_t i_off = i + 1;
         bool irr = false;
         // PEDRA puts the irreducible tesserae first
         if (i < nIrrElements_) irr = true;
@@ -274,10 +274,10 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
         arcs.resize(Eigen::NoChange, nv);
         // Populate vertices and arcs
         for (int j = 0; j < nv; ++j) {
-            int j_off = (j + 1) * nElements_ - 1;
-            for (int k = 0; k < 3; ++k) {
-                int k_off = (k + 1) * nElements_ * nv;
-                int offset = i_off + j_off + k_off;
+            size_t j_off = (j + 1) * nElements_ - 1;
+            for (size_t k = 0; k < 3; ++k) {
+                size_t k_off = (k + 1) * nElements_ * nv;
+                size_t offset = i_off + j_off + k_off;
                 vertices(k, j) = vert[offset];
                 arcs(k, j) = centr[offset];
             }
@@ -319,7 +319,7 @@ void GePolCavity::writeOFF(const std::string & suffix)
     fout.open(off.str().c_str());
 
     int numv = 0;
-    for (int i = 0; i < nElements_; ++i) {
+    for (size_t i = 0; i < nElements_; ++i) {
         numv += elements_[i].nVertices();
     }
     fout << "COFF" << std::endl;
@@ -328,7 +328,7 @@ void GePolCavity::writeOFF(const std::string & suffix)
     int k = 0;
     double c1, c2, c3;
     Eigen::MatrixXi ivts = Eigen::MatrixXi::Zero(nElements_, 10);
-    for (int i = 0; i < nElements_; ++i) {
+    for (size_t i = 0; i < nElements_; ++i) {
         if (i == 0) fout << boost::format("# Sphere number %i\n") % elements_[i].iSphere();
         c1 = 1.0;
         c2 = 1.0;
@@ -347,7 +347,7 @@ void GePolCavity::writeOFF(const std::string & suffix)
             % (i+1);
         }
     }
-    for (int i = 0; i < nElements_; ++i) {
+    for (size_t i = 0; i < nElements_; ++i) {
         fout << boost::format("%i ") % elements_[i].nVertices();
             for (int j = 0; j < elements_[i].nVertices(); ++j) {
                 fout << boost::format("%i ") % ivts(i, j);

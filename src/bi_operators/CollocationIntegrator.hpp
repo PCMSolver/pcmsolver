@@ -112,12 +112,12 @@ struct CollocationIntegrator
     /**@{ Single and double layer potentials for a IonicLiquid Green's function by collocation */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const IonicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const std::vector<Element> & e) const {
-        PCMSOLVER_ERROR("CollocationIntegrator::singleLayer not implemented yet for IonicLiquid");
+        PCMSOLVER_ERROR("CollocationIntegrator::singleLayer not implemented yet for IonicLiquid", BOOST_CURRENT_FUNCTION);
         return Eigen::MatrixXd::Zero(e.size(), e.size());
     }
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const IonicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const std::vector<Element> & e) const {
-        PCMSOLVER_ERROR("CollocationIntegrator::doubleLayer not implemented yet for IonicLiquid");
+        PCMSOLVER_ERROR("CollocationIntegrator::doubleLayer not implemented yet for IonicLiquid", BOOST_CURRENT_FUNCTION);
         return Eigen::MatrixXd::Zero(e.size(), e.size());
     }
     /**@}*/
@@ -125,12 +125,12 @@ struct CollocationIntegrator
     /**@{ Single and double layer potentials for an AnisotropicLiquid Green's function by collocation */
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const AnisotropicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const std::vector<Element> & e) const {
-        PCMSOLVER_ERROR("CollocationIntegrator::singleLayer not implemented yet for AnisotropicLiquid");
+        PCMSOLVER_ERROR("CollocationIntegrator::singleLayer not implemented yet for AnisotropicLiquid", BOOST_CURRENT_FUNCTION);
         return Eigen::MatrixXd::Zero(e.size(), e.size());
     }
     template <typename DerivativeTraits>
     Eigen::MatrixXd doubleLayer(const AnisotropicLiquid<DerivativeTraits, CollocationIntegrator> & /* gf */, const std::vector<Element> & e) const {
-        PCMSOLVER_ERROR("CollocationIntegrator::doubleLayer not implemented yet for AnisotropicLiquid");
+        PCMSOLVER_ERROR("CollocationIntegrator::doubleLayer not implemented yet for AnisotropicLiquid", BOOST_CURRENT_FUNCTION);
         return Eigen::MatrixXd::Zero(e.size(), e.size());
     }
     /**@}*/

@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
     std::ofstream out_stream;
     out_stream.open("pcmsolver.out");
 
-    if (argc > 2) PCMSOLVER_ERROR("Too many arguments supplied to run_pcm");
+    if (argc > 2) PCMSOLVER_ERROR("Too many arguments supplied", "run_pcm");
     Input parsed(argv[1]);
     parsed.initMolecule();
 

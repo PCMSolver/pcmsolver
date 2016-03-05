@@ -55,7 +55,7 @@ namespace logging
         virtual void open_ostream(const std::string & name) {
             outStream_->open(name.c_str(), std::ios_base::binary | std::ios_base::out );
             if(!outStream_->is_open()) {
-                PCMSOLVER_ERROR("LOGGER: Unable to open an output stream");
+                PCMSOLVER_ERROR("LOGGER: Unable to open an output stream", BOOST_CURRENT_FUNCTION);
             }
         }
         /*! \brief Closes an output stream with the given name

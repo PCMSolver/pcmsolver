@@ -252,7 +252,7 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int m
         // Prepare the error message:
         std::string message = pcm::to_string(equal_elements.size()) +
                               " cavity finite element centers overlap exactly!\n" + list_of_pairs;
-        PCMSOLVER_ERROR(message);
+        PCMSOLVER_ERROR(message, BOOST_CURRENT_FUNCTION);
     }
     // Calculate normal vectors
     elementNormal_ = elementCenter_ - elementSphereCenter_;

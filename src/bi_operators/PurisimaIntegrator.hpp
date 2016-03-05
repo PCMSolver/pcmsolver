@@ -121,29 +121,29 @@ struct PurisimaIntegrator
 
     /**@{ Single and double layer potentials for a IonicLiquid Green's function by collocation */
     template <typename DerivativeTraits>
-    Eigen::MatrixXd singleLayer(const IonicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & e) const {
-        PCMSOLVER_ERROR("PurisimaIntegrator::singleLayer not implemented yet for IonicLiquid");
+      Eigen::MatrixXd singleLayer(const IonicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & e) const {
+        PCMSOLVER_ERROR("PurisimaIntegrator::singleLayer not implemented yet for IonicLiquid", BOOST_CURRENT_FUNCTION);
         return Eigen::MatrixXd::Zero(e.size(), e.size());
-    }
+      }
     template <typename DerivativeTraits>
-    Eigen::MatrixXd doubleLayer(const IonicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & e) const {
-        PCMSOLVER_ERROR("PurisimaIntegrator::doubleLayer not implemented yet for IonicLiquid");
+      Eigen::MatrixXd doubleLayer(const IonicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & e) const {
+        PCMSOLVER_ERROR("PurisimaIntegrator::doubleLayer not implemented yet for IonicLiquid", BOOST_CURRENT_FUNCTION);
         return Eigen::MatrixXd::Zero(e.size(), e.size());
-    }
+      }
     /**@}*/
 
     /**@{ Single and double layer potentials for an AnisotropicLiquid Green's function by collocation */
     template <typename DerivativeTraits>
-    Eigen::MatrixXd singleLayer(const AnisotropicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & e) const {
-        PCMSOLVER_ERROR("PurisimaIntegrator::singleLayer not implemented yet for AnisotropicLiquid");
+      Eigen::MatrixXd singleLayer(const AnisotropicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & e) const {
+        PCMSOLVER_ERROR("PurisimaIntegrator::singleLayer not implemented yet for AnisotropicLiquid", BOOST_CURRENT_FUNCTION);
         return Eigen::MatrixXd::Zero(e.size(), e.size());
 
-    }
+      }
     template <typename DerivativeTraits>
-    Eigen::MatrixXd doubleLayer(const AnisotropicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & e) const {
-        PCMSOLVER_ERROR("PurisimaIntegrator::doubleLayer not implemented yet for AnisotropicLiquid");
+      Eigen::MatrixXd doubleLayer(const AnisotropicLiquid<DerivativeTraits, PurisimaIntegrator> & /* gf */, const std::vector<Element> & e) const {
+        PCMSOLVER_ERROR("PurisimaIntegrator::doubleLayer not implemented yet for AnisotropicLiquid", BOOST_CURRENT_FUNCTION);
         return Eigen::MatrixXd::Zero(e.size(), e.size());
-    }
+      }
     /**@}*/
 
     /**@{ Single and double layer potentials for a SphericalDiffuse Green's function by collocation */

@@ -42,7 +42,7 @@
 
 void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-  if (!isotropic_) PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
+  if (!isotropic_) PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!", BOOST_CURRENT_FUNCTION);
   fullPCMMatrix_ = CPCMMatrix(cavity, gf_i, profiles::epsilon(gf_o.permittivity()), correction_);
   // Symmetrize K := (K + K+)/2
   if (hermitivitize_) {

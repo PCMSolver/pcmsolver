@@ -33,7 +33,6 @@
 
 #include <Eigen/Core>
 
-#include "utils/cnpy.hpp"
 #include "green/DerivativeTypes.hpp"
 #include "green/AnisotropicLiquid.hpp"
 #include "cavity/Element.hpp"
@@ -44,6 +43,7 @@
 #include "green/UniformDielectric.hpp"
 #include "utils/TestingMolecules.hpp"
 #include "green/Vacuum.hpp"
+#include "utils/MathUtils.hpp"
 
 SCENARIO("A collocation integrator with numerical integrator of the diagonal elements", "[bi_operators][bi_operators_numerical]")
 {
@@ -52,6 +52,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
         Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
         double area = 10.0;
         GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);
+        Eigen::MatrixXd results = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());
+        Eigen::MatrixXd reference = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());
 
         /*! \class NumericalIntegrator
          *  \test \b NumericalIntegratorTest_vacuum tests the numerical evaluation of the vacuum matrix representations of S and D
@@ -61,32 +63,26 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
             Vacuum<AD_directional, NumericalIntegrator> gf;
             THEN("the matrix elements of S are")
             {
-                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+                results = gf.singleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_S_numerical.npy");
-                int dim_read = raw_S_ref.shape[0];
-                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_S_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
                 */
             }
             AND_THEN("the matrix elements of D are")
             {
-                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+                Eigen::MatrixXd results = gf.doubleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_D_numerical.npy");
-                int dim_read = raw_D_ref.shape[0];
-                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_D_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
                 // Checks sum rule for D operator
@@ -104,32 +100,26 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
             UniformDielectric<AD_directional, NumericalIntegrator> gf(eps);
             THEN("the matrix elements of S are")
             {
-                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+                results = gf.singleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_S_numerical.npy");
-                int dim_read = raw_S_ref.shape[0];
-                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_S_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
                 */
             }
             AND_THEN("the matrix elements of D are")
             {
-                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+                Eigen::MatrixXd results = gf.doubleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_D_numerical.npy");
-                int dim_read = raw_D_ref.shape[0];
-                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_D_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
                 */
@@ -146,32 +136,26 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
             IonicLiquid<AD_directional, NumericalIntegrator> gf(eps, kappa);
             THEN("the matrix elements of S are")
             {
-                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+                results = gf.singleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/ionicliquid_S_numerical.npy");
-                int dim_read = raw_S_ref.shape[0];
-                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/ionicliquid_S_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
                 */
             }
             AND_THEN("the matrix elements of D are")
             {
-                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+                results = gf.doubleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/ionicliquid_D_numerical.npy");
-                int dim_read = raw_D_ref.shape[0];
-                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/ionicliquid_D_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
                 */
@@ -188,32 +172,26 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
             AnisotropicLiquid<AD_directional, NumericalIntegrator> gf(epsilon, euler);
             THEN("the matrix elements of S are")
             {
-                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
+                results = gf.singleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/anisotropicliquid_S_numerical.npy");
-                int dim_read = raw_S_ref.shape[0];
-                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/anisotropicliquid_S_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
                 */
             }
             AND_THEN("the matrix elements of D are")
             {
-                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
+                results = gf.doubleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/anisotropicliquid_D_numerical.npy");
-                int dim_read = raw_D_ref.shape[0];
-                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/anisotropicliquid_D_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
                 */

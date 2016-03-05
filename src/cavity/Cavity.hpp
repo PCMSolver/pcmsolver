@@ -51,7 +51,7 @@
 
 class Cavity
 {
-protected:
+  protected:
     /// List of spheres
     std::vector<Sphere> spheres_;
     /// The molecule to be wrapped by the cavity
@@ -82,14 +82,14 @@ protected:
     std::vector<Element> elements_;
     /// Molecular point group
     Symmetry pointGroup_;
-private:
+  private:
     /*! \brief Creates the cavity and discretizes its surface.
      *
      *  Has to be implemented by classes lower down in the inheritance hierarchy
      */
     virtual void makeCavity() = 0;
     virtual std::ostream & printCavity(std::ostream & os) = 0;
-public:
+  public:
     //! Default constructor
     Cavity() : nElements_(0), built(false) {}
     /*! \brief Constructor from list of spheres
@@ -98,16 +98,16 @@ public:
      *  Only used when we have to deal with a single sphere, i.e. in the unit tests
      */
     Cavity(const std::vector<Sphere> & sph) : spheres_(sph), built(false) {
-	molecule_ = Molecule(spheres_);
-        nSpheres_ = spheres_.size();
-	transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
+      molecule_ = Molecule(spheres_);
+      nSpheres_ = spheres_.size();
+      transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
     }
     /*! \brief Constructor from Molecule
      *  \param[in] molec the molecular aggregate
      */
     Cavity(const Molecule & molec) : spheres_(molec.spheres()), molecule_(molec), built(false) {
-        nSpheres_ = spheres_.size();
-	transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
+      nSpheres_ = spheres_.size();
+      transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
     }
     virtual ~Cavity() {}
     Eigen::Matrix3Xd & elementCenter() { return elementCenter_; }
@@ -159,10 +159,10 @@ public:
      */
     virtual void saveCavity(const std::string & fname = "cavity.npz");
     /*! \brief Load cavity specification from file.
-     */
+    */
     virtual void loadCavity(const std::string & fname = "cavity.npz");
     friend std::ostream & operator<<(std::ostream & os, Cavity & cavity) {
-        return cavity.printCavity(os);
+      return cavity.printCavity(os);
     }
 };
 

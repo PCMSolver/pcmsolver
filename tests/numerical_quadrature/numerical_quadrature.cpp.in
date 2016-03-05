@@ -109,6 +109,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
         Molecule molecule = H2();
         GePolCavity cavity(molecule, area, probeRadius, minRadius, "");
         Eigen::VectorXd results = Eigen::VectorXd::Zero(cavity.size());
+        Eigen::VectorXd reference = Eigen::VectorXd::Zero(cavity.size());
 
         /*! \class NumericalQuadrature
          *  \test \b NumericalQuadrature_molecule tests numerical quadrature function on H2 cavity
@@ -128,14 +129,9 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
                 }
                 /*
                 // In case you need to update the reference files...
-                unsigned int dim = static_cast<unsigned int>(cavity.size());
-                const unsigned int shape[] = {dim};
-                cnpy::npy_save("molecule.npy", results.data(), shape, 1, "w", false);
+                cnpy::custom::npy_save("molecule.npy", results);
                 */
-                cnpy::NpyArray raw_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/molecule.npy");
-                int dim = raw_ref.shape[0];
-                Eigen::VectorXd reference = Eigen::VectorXd::Zero(dim);
-                reference = getFromRawBuffer<double>(dim, 1, raw_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/molecule.npy");
 
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     REQUIRE(results(i) == Approx(reference(i)));
@@ -161,14 +157,9 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
                 }
                 /*
                 // In case you need to update the reference files...
-                unsigned int dim = static_cast<unsigned int>(cavity.size());
-                const unsigned int shape[] = {dim};
-                cnpy::npy_save("molecule_1r.npy", results.data(), shape, 1, "w", false);
+                cnpy::custom::npy_save("molecule_1r.npy", results);
                 */
-                cnpy::NpyArray raw_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/molecule_1r.npy");
-                int dim = raw_ref.shape[0];
-                Eigen::VectorXd reference = Eigen::VectorXd::Zero(dim);
-                reference = getFromRawBuffer<double>(dim, 1, raw_ref.data);
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/molecule_1r.npy");
 
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     REQUIRE(results(i) == Approx(reference(i)));

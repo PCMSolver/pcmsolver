@@ -247,13 +247,13 @@ namespace pcm {
   void Meddle::getSurfaceFunction(size_t size, double values[], const char * name) const
   {
     if (cavity_->size() != size)
-      PCMSOLVER_ERROR("You are trying to access a SurfaceFunction bigger than the cavity!");
+      PCMSOLVER_ERROR("You are trying to access a SurfaceFunction bigger than the cavity!", BOOST_CURRENT_FUNCTION);
 
     std::string functionName(name);
 
     SurfaceFunctionMapConstIter iter = functions_.find(functionName);
     if (iter == functions_.end())
-      PCMSOLVER_ERROR("You are trying to access a non-existing SurfaceFunction.");
+      PCMSOLVER_ERROR("You are trying to access a non-existing SurfaceFunction.", BOOST_CURRENT_FUNCTION);
 
     Eigen::Map<Eigen::VectorXd>(values, size, 1) = iter->second;
   }
@@ -261,7 +261,7 @@ namespace pcm {
   void Meddle::setSurfaceFunction(size_t size, double values[], const char * name) const
   {
     if (cavity_->size() != size)
-      PCMSOLVER_ERROR("You are trying to allocate a SurfaceFunction bigger than the cavity!");
+      PCMSOLVER_ERROR("You are trying to allocate a SurfaceFunction bigger than the cavity!", BOOST_CURRENT_FUNCTION);
 
     std::string functionName(name);
     Eigen::VectorXd func = Eigen::Map<Eigen::VectorXd>(values, size, 1);
@@ -299,18 +299,13 @@ namespace pcm {
     std::string functionName(name);
     printer("\nLoading surface function " + functionName + " from .npy file");
     std::string fname = functionName + ".npy";
-    cnpy::NpyArray raw_surfFunc = cnpy::npy_load(fname);
-    unsigned int dim = raw_surfFunc.shape[0];
-    if (dim != cavity_->size()) {
-      PCMSOLVER_ERROR("Inconsistent dimension of loaded surface function!");
+    Eigen::VectorXd values = cnpy::custom::npy_load(fname);
+    if (values.size() != cavity_->size()) PCMSOLVER_ERROR("Inconsistent dimension of loaded surface function!", BOOST_CURRENT_FUNCTION);
+    // Append to global map
+    if (functions_.count(functionName) == 1) { // Key in map already
+      functions_[functionName] = values;
     } else {
-      Eigen::VectorXd values = getFromRawBuffer<double>(dim, 1, raw_surfFunc.data);
-      // Append to global map
-      if (functions_.count(functionName) == 1) { // Key in map already
-        functions_[functionName] = values;
-      } else {
-        functions_.insert(std::make_pair(functionName, values));
-      }
+      functions_.insert(std::make_pair(functionName, values));
     }
   }
 
@@ -465,7 +460,7 @@ namespace pcm {
       std::ostringstream print_mol;
       print_mol << molecule << std::endl;
       printer(print_mol);
-      PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms!");
+      PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms!", BOOST_CURRENT_FUNCTION);
     }
   }
 

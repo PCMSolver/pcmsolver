@@ -68,35 +68,30 @@
  *  See also here: http://www.boost.org/doc/libs/1_59_0/doc/html/boost_staticassert.html
  */
 
-/*! \brief Kills execution and prints out error message */
-inline void pcmsolver_die(const std::string & message)
+/*! \brief Kills execution and prints out error message to stderr
+ *  \param message Error message
+ *  \param function Name of the function killing execution
+ *  \param code Error code. Defaults to EXIT_FAILURE
+ */
+inline void pcmsolver_die(const std::string & message, const std::string & function, int code = EXIT_FAILURE)
 {
-  pcmsolver_die(message.c_str());
+  pcmsolver_die(message.c_str(), function.c_str(), code);
 }
 
-/*! \brief Kills execution and prints out error code and error message */
-inline void pcmsolver_die(const std::string & message, int code)
+/*! \brief Kills execution and prints out error message to stderr
+ *  \param message Error message
+ *  \param function Name of the function killing execution
+ *  \param code Error code. Defaults to EXIT_FAILURE
+ */
+inline void pcmsolver_die(const char * message, const char * function, int code = EXIT_FAILURE)
 {
-  pcmsolver_die(message.c_str(), code);
-}
-
-
-/*! \brief Kills execution and prints out error message */
-inline void pcmsolver_die(const char * message)
-{
-  std::fprintf(stderr, "PCMSolver fatal error: %s\n", message);
-  std::exit(EXIT_FAILURE);
-}
-
-/*! \brief Kills execution and prints out error code and error message */
-inline void pcmsolver_die(const char * message, int code)
-{
+  std::fprintf(stderr, "In function: %s\n", function);
   std::fprintf(stderr, "PCMSolver fatal error %i: %s\n", code, message);
   std::exit(EXIT_FAILURE);
 }
 
 /// Macro to be used to signal error conditions
-#define PCMSOLVER_ERROR(arg) pcmsolver_die(arg)
+#define PCMSOLVER_ERROR(arg, func) pcmsolver_die(arg, func)
 
 /// Macro to be used for assertions
 #define PCMSOLVER_ASSERT(arg) assert(arg)

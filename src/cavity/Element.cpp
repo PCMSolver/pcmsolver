@@ -130,6 +130,6 @@ void tangent_and_bitangent(const Eigen::Vector3d & n_,
   M.col(1) = t_;
   M.col(2) = b_;
   if (boost::math::sign(M.determinant()) != 1) {
-    PCMSOLVER_ERROR("Frenet-Serret local frame is not left-handed!");
+    PCMSOLVER_ERROR("Frenet-Serret local frame is not left-handed!", BOOST_CURRENT_FUNCTION);
   }
 }

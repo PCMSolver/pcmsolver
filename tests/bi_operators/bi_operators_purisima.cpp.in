@@ -33,7 +33,6 @@
 
 #include <Eigen/Core>
 
-#include "utils/cnpy.hpp"
 #include "green/DerivativeTypes.hpp"
 #include "bi_operators/IntegratorTypes.hpp"
 #include "cavity/Element.hpp"
@@ -44,6 +43,7 @@
 #include "utils/TestingMolecules.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
+#include "utils/MathUtils.hpp"
 
 SCENARIO("A collocation integrator with diagonal elements according to Purisima for D", "[bi_operators][bi_operators_purisima]")
 {
@@ -53,6 +53,8 @@ SCENARIO("A collocation integrator with diagonal elements according to Purisima 
         Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
         double area = 10.0;
         GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);
+        Eigen::MatrixXd results = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());
+        Eigen::MatrixXd reference = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());
 
         /*! \class PurisimaIntegrator
          *  \test \b PurisimaIntegratorTest_vacuum tests the evaluation by collocation of the vacuum matrix representations of S and D
@@ -62,27 +64,21 @@ SCENARIO("A collocation integrator with diagonal elements according to Purisima 
             Vacuum<AD_directional, PurisimaIntegrator> gf;
             THEN("the matrix elements of S are")
             {
-                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_S_collocation.npy");
-                int dim_read = raw_S_ref.shape[0];
-                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                results = gf.singleLayer(cavity.elements());
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_S_collocation.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
             }
             AND_THEN("the matrix elements of D are")
             {
-                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_D_purisima.npy");
-                int dim_read = raw_D_ref.shape[0];
-                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                results = gf.doubleLayer(cavity.elements());
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/vacuum_D_purisima.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
             }
@@ -97,27 +93,21 @@ SCENARIO("A collocation integrator with diagonal elements according to Purisima 
             UniformDielectric<AD_directional, PurisimaIntegrator> gf(epsilon);
             THEN("the matrix elements of S are")
             {
-                Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-                cnpy::NpyArray raw_S_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_S_collocation.npy");
-                int dim_read = raw_S_ref.shape[0];
-                Eigen::MatrixXd S_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                S_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_S_ref.data);
+                results = gf.singleLayer(cavity.elements());
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_S_collocation.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(S_reference(i, j) == Approx(S_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
             }
             AND_THEN("the matrix elements of D are")
             {
-                Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-                cnpy::NpyArray raw_D_ref = cnpy::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_D_purisima.npy");
-                int dim_read = raw_D_ref.shape[0];
-                Eigen::MatrixXd D_reference = Eigen::MatrixXd::Zero(dim_read, dim_read);
-                D_reference = getFromRawBuffer<double>(dim_read, dim_read, raw_D_ref.data);
+                results = gf.doubleLayer(cavity.elements());
+                reference = cnpy::custom::npy_load("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_D_purisima.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
-                        REQUIRE(D_reference(i, j) == Approx(D_results(i, j)));
+                        REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
             }

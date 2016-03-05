@@ -32,14 +32,12 @@
 
 #include <Eigen/Core>
 
-#include "utils/cnpy.hpp"
 #include "bi_operators/CollocationIntegrator.hpp"
 #include "bi_operators/PurisimaIntegrator.hpp"
 #include "bi_operators/NumericalIntegrator.hpp"
 #include "green/DerivativeTypes.hpp"
 #include "cavity/Element.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "green/SphericalDiffuse.hpp"
 #include "utils/TestingMolecules.hpp"
 #include "green/AnisotropicLiquid.hpp"
@@ -47,6 +45,8 @@
 #include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
+#include "utils/PhysicalConstants.hpp"
+#include "utils/MathUtils.hpp"
 
 extern "C"
 void host_writer(const char * message, size_t message_length);
@@ -81,16 +81,12 @@ void save_vacuum_collocation() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     Vacuum<AD_directional, CollocationIntegrator> gf;
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-    cnpy::npy_save("vacuum_S_collocation.npy", S_results.data(), shape, 2, "w", true);
-
+    cnpy::custom::npy_save("vacuum_S_collocation.npy", S_results);
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("vacuum_D_collocation.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("vacuum_D_collocation.npy", D_results);
 }
 
 void save_uniform_dielectric_collocation() {
@@ -99,16 +95,12 @@ void save_uniform_dielectric_collocation() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     UniformDielectric<AD_directional, CollocationIntegrator> gf(epsilon);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-    cnpy::npy_save("uniformdielectric_S_collocation.npy", S_results.data(), shape, 2, "w", true);
-
+    cnpy::custom::npy_save("uniformdielectric_S_collocation.npy", S_results);
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("uniformdielectric_D_collocation.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("uniformdielectric_D_collocation.npy", D_results);
 }
 
 void save_tanh_spherical_diffuse_collocation() {
@@ -119,16 +111,12 @@ void save_tanh_spherical_diffuse_collocation() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-    cnpy::npy_save("tanhsphericaldiffuse_S_collocation.npy", S_results.data(), shape, 2, "w", true);
-
+    cnpy::custom::npy_save("tanhsphericaldiffuse_S_collocation.npy", S_results);
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("tanhsphericaldiffuse_D_collocation.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("tanhsphericaldiffuse_D_collocation.npy", D_results);
 }
 
 void save_vacuum_purisima() {
@@ -136,13 +124,10 @@ void save_vacuum_purisima() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     Vacuum<AD_directional, PurisimaIntegrator> gf;
 
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("vacuum_D_purisima.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("vacuum_D_purisima.npy", D_results);
 }
 
 void save_uniform_dielectric_purisima() {
@@ -151,13 +136,10 @@ void save_uniform_dielectric_purisima() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     UniformDielectric<AD_directional, PurisimaIntegrator> gf(epsilon);
 
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("uniformdielectric_D_purisima.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("uniformdielectric_D_purisima.npy", D_results);
 }
 
 void save_vacuum_numerical() {
@@ -165,16 +147,12 @@ void save_vacuum_numerical() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     Vacuum<AD_directional, NumericalIntegrator> gf;
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-    cnpy::npy_save("vacuum_S_numerical.npy", S_results.data(), shape, 2, "w", true);
-
+    cnpy::custom::npy_save("vacuum_S_numerical.npy", S_results);
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("vacuum_D_numerical.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("vacuum_D_numerical.npy", D_results);
 }
 
 void save_uniform_dielectric_numerical() {
@@ -183,16 +161,12 @@ void save_uniform_dielectric_numerical() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     UniformDielectric<AD_directional, NumericalIntegrator> gf(epsilon);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-    cnpy::npy_save("uniformdielectric_S_numerical.npy", S_results.data(), shape, 2, "w", true);
-
+    cnpy::custom::npy_save("uniformdielectric_S_numerical.npy", S_results);
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("uniformdielectric_D_numerical.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("uniformdielectric_D_numerical.npy", D_results);
 }
 
 void save_ionic_liquid_numerical() {
@@ -202,16 +176,12 @@ void save_ionic_liquid_numerical() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     IonicLiquid<AD_directional, NumericalIntegrator> gf(eps, kappa);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-    cnpy::npy_save("ionicliquid_S_numerical.npy", S_results.data(), shape, 2, "w", true);
-
+    cnpy::custom::npy_save("ionicliquid_S_numerical.npy", S_results);
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("ionicliquid_D_numerical.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("ionicliquid_D_numerical.npy", D_results);
 }
 
 void save_anisotropic_liquid_numerical() {
@@ -223,16 +193,12 @@ void save_anisotropic_liquid_numerical() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     AnisotropicLiquid<AD_directional, NumericalIntegrator> gf(epsilon, euler);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-    cnpy::npy_save("anisotropicliquid_S_numerical.npy", S_results.data(), shape, 2, "w", true);
-
+    cnpy::custom::npy_save("anisotropicliquid_S_numerical.npy", S_results);
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("anisotropicliquid_D_numerical.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("anisotropicliquid_D_numerical.npy", D_results);
 }
 
 void save_tanh_spherical_diffuse_numerical() {
@@ -243,16 +209,12 @@ void save_tanh_spherical_diffuse_numerical() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    unsigned int dim = static_cast<unsigned int>(cavity.size());
-    const unsigned int shape[] = {dim, dim};
-
     SphericalDiffuse<NumericalIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
-    cnpy::npy_save("tanhsphericaldiffuse_S_numerical.npy", S_results.data(), shape, 2, "w", true);
-
+    cnpy::custom::npy_save("tanhsphericaldiffuse_S_numerical.npy", S_results);
     Eigen::MatrixXd D_results = gf.doubleLayer(cavity.elements());
-    cnpy::npy_save("tanhsphericaldiffuse_D_numerical.npy", D_results.data(), shape, 2, "w", true);
+    cnpy::custom::npy_save("tanhsphericaldiffuse_D_numerical.npy", D_results);
 }
 
 extern "C"

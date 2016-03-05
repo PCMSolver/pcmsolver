@@ -95,10 +95,10 @@ inline Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav, const IGreensFun
   //    This is a rank-revealing LU decomposition, this allows us
   //    to test if T is invertible before attempting to invert it.
   Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
-  if (!(T_LU.isInvertible())) PCMSOLVER_ERROR("T matrix is not invertible!");
+  if (!(T_LU.isInvertible())) PCMSOLVER_ERROR("T matrix is not invertible!", BOOST_CURRENT_FUNCTION);
   fullPCMMatrix = T_LU.inverse();
   Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
-  if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!");
+  if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!", BOOST_CURRENT_FUNCTION);
   fullPCMMatrix *= ((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI));
   fullPCMMatrix *= a;
 
@@ -158,7 +158,7 @@ inline Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunct
   //    to test if T is invertible before attempting to invert it.
   Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
   if (!(T_LU.isInvertible()))
-    PCMSOLVER_ERROR("T matrix is not invertible!");
+    PCMSOLVER_ERROR("T matrix is not invertible!", BOOST_CURRENT_FUNCTION);
   fullPCMMatrix = T_LU.inverse();
   // 3. Multiply T^-1 and R
   fullPCMMatrix *= (2 * M_PI * aInv - DI);
@@ -203,7 +203,7 @@ inline Eigen::MatrixXd CPCMMatrix(const Cavity & cav, const IGreensFunction & gf
   // to test if SI is invertible before attempting to invert it.
   Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
   if (!(SI_LU.isInvertible()))
-    PCMSOLVER_ERROR("SI matrix is not invertible!");
+    PCMSOLVER_ERROR("SI matrix is not invertible!", BOOST_CURRENT_FUNCTION);
   return fact * SI_LU.inverse();
 }
 
@@ -339,7 +339,7 @@ inline Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav, const IGreensFun
 
   // Form T
   Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
-  if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!");
+  if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!", BOOST_CURRENT_FUNCTION);
   return (((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI)) * a);
 }
 

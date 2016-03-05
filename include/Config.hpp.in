@@ -41,6 +41,8 @@
 #define attribute(x)
 #endif
 
+#include <boost/current_function.hpp>
+
 #include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
 #include "LoggerInterface.hpp"

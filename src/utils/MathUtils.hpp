@@ -39,6 +39,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+#include "cnpy.hpp"
 #include "SplineFunction.hpp"
 #include "Symmetry.hpp"
 
@@ -216,28 +217,6 @@ inline void hermitivitize(Eigen::MatrixBase<Derived> & matrix_)
     matrix_ = 0.5 * (matrix_ + matrix_.adjoint().eval());
 }
 
-/*! \brief Returns an Eigen matrix of type T, with dimensions _rows*_columns.
- *  \param _rows the number of rows.
- *  \param _columns the number of columns.
- *  \param _inData the raw data buffer.
- *  \tparam T the data type of the matrix to be returned.
- *
- *  Warning! This function assumes that the raw buffer is in column-major order
- *  as in Fortran.
- */
-template <typename T>
-inline Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> getFromRawBuffer(
-    size_t _rows, size_t _columns, void * _inData)
-{
-    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> _outData;
-    _outData.resize(_rows, _columns);
-    T * data = reinterpret_cast<T*>(_inData);
-    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> > mapped_data(data,
-            _rows, _columns);
-    _outData = mapped_data;
-    return _outData;
-}
-
 /*! \fn inline void eulerRotation(Eigen::Matrix3d & R_, const Eigen::Vector3d & eulerAngles_)
  *  \brief Build rotation matrix between two reference frames given the Euler angles.
  *  \param[out] R_ the rotation matrix
@@ -314,5 +293,83 @@ inline double splineInterpolation(const double point, const std::vector<double> 
 
     return s(point);
 }
+
+namespace cnpy
+{
+  /*!
+   *  \addtogroup custom
+   *  @{
+   */
+  /*! Custom overloads for cnpy load and save functions */
+  namespace custom
+  {
+    /*! \brief Save Eigen object to NumPy array file
+     *  \param fname name of the NumPy array file
+     *  \param obj Eigen object to be saved, either a matrix or a vector
+     *  \tparam Scalar the data type of the matrix to be returned. Default is double
+     *  \tparam Rows number of rows in the Eigen object. Default is dynamic
+     e  \tparam Cols number of columns in the Eigen object. Default is dynamic
+     */
+    template <typename Scalar = double, int Rows = Eigen::Dynamic, int Cols = Eigen::Dynamic>
+    inline void npy_save(const std::string & fname, const Eigen::Matrix<Scalar, Rows, Cols> & obj)
+    {
+      unsigned int rows = static_cast<unsigned int>(obj.rows());
+      unsigned int cols = static_cast<unsigned int>(obj.cols());
+      const unsigned int shape[] = {rows, cols};
+      cnpy::npy_save(fname, obj.data(), shape, 2, "w", obj.IsRowMajor);
+    }
+
+    /*! \brief Save Eigen object to a compressed NumPy file
+     *  \param fname name of the compressed NumPy file
+     *  \param name tag for the given object in the compressed NumPy file
+     *  \param obj  Eigen object to be saved, either a matrix or a vector
+     *  \param overwrite if file exists, overwrite. Appends by default.
+     *  \tparam Scalar the data type of the matrix to be returned. Default is double
+     *  \tparam Rows number of rows in the Eigen object. Default is dynamic
+     *  \tparam Cols number of columns in the Eigen object. Default is dynamic
+     */
+    template <typename Scalar = double, int Rows = Eigen::Dynamic, int Cols = Eigen::Dynamic>
+    inline void npz_save(const std::string & fname, const std::string & name,
+        const Eigen::Matrix<Scalar, Rows, Cols> & obj,
+        bool overwrite = false)
+    {
+      unsigned int rows = static_cast<unsigned int>(obj.rows());
+      unsigned int cols = static_cast<unsigned int>(obj.cols());
+      const unsigned int shape[] = {rows, cols};
+      std::string mode = overwrite ? "w" : "a";
+      cnpy::npz_save(fname, name, obj.data(), shape, 2, mode, obj.IsRowMajor);
+    }
+
+    /*! \brief Load NpyArray object into Eigen object
+     *  \param npy_array the NpyArray object
+     *  \tparam Scalar the data type of the matrix to be returned. Default is double
+     *  \return An Eigen object (matrix or vector) with the data
+     *
+     *  \todo Extend to read in also data in row-major (C) storage order
+     *  \warning We check that the rank of the object read is not more than 2
+     *  Eigen cannot handle general tensors.
+     */
+    template <typename Scalar = double>
+    inline Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> npy_to_eigen(const NpyArray & npy_array)
+    {
+      if (npy_array.shape.size() > 2) PCMSOLVER_ERROR("Only vectors and matrices can be read into Eigen objects.", BOOST_CURRENT_FUNCTION);
+      return Eigen::Map<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> >(reinterpret_cast<Scalar *>(npy_array.data), npy_array.shape[0], npy_array.shape[1]);
+    }
+
+    /*! \brief Load NumPy array file into Eigen object
+     *  \param fname name of the NumPy array file
+     *  \tparam Scalar the data type of the matrix to be returned. Default is double
+     *  \return An Eigen object (matrix or vector) with the data
+     *
+     *  \todo Extend to read in also data in row-major (C) storage order
+     */
+    template <typename Scalar = double>
+    inline Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> npy_load(const std::string & fname)
+    {
+      return npy_to_eigen(cnpy::npy_load(fname));
+    }
+  } // namespace custom
+  /*! @} */
+} // namespace cnpy
 
 #endif // MATHUTILS_HPP

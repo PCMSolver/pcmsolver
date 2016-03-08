@@ -32,16 +32,15 @@
 
 #include "cavity/GePolCavity.hpp"
 #include "utils/Molecule.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/Symmetry.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 TEST_CASE("GePol cavity for the CH3+ molecule in Cs symmetry", "[gepol][gepol_CH3+_Cs]")
 {
-    double area = 0.2 / convertBohr2ToAngstrom2;
-    double probeRadius = 1.385 / convertBohrToAngstrom;
+    double area = 0.2 / bohr2ToAngstrom2();
+    double probeRadius = 1.385 / bohrToAngstrom();
     // Addition of spheres is enabled, but will not happen in this particular case
-    double minRadius = 0.2 / convertBohrToAngstrom;
+    double minRadius = 0.2 / bohrToAngstrom();
     Molecule molec = CH3();
     GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "cs");
 

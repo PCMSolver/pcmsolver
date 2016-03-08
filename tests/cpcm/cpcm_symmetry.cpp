@@ -36,7 +36,7 @@
 #include "green/Vacuum.hpp"
 #include "green/UniformDielectric.hpp"
 #include "solver/CPCMSolver.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 SCENARIO("Test solver for the C-PCM for a point charge in different Abelian point groups", "[solver][cpcm][cpcm_symmetry]")
 {

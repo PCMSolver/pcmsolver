@@ -36,7 +36,7 @@
 #include "green/Vacuum.hpp"
 #include "green/UniformDielectric.hpp"
 #include "solver/IEFSolver.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different Abelian point groups", "[solver][iefpcm][iefpcm_anisotropic-symmetry][anisotropic]")
 {

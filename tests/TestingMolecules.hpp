@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -33,11 +33,10 @@
 
 #include <Eigen/Core>
 
-#include "Atom.hpp"
-#include "Molecule.hpp"
-#include "PhysicalConstants.hpp"
-#include "Sphere.hpp"
-#include "Symmetry.hpp"
+#include "utils/Atom.hpp"
+#include "utils/Molecule.hpp"
+#include "utils/Sphere.hpp"
+#include "utils/Symmetry.hpp"
 
 /*! Returns the ammonia molecule
  */
@@ -187,7 +186,7 @@ Molecule H3()
     masses  << 1.0078250, 1.0078250, 1.0078250;
 
     std::vector<Atom> atoms;
-    double radiusH = (1.20 * 1.20) / convertBohrToAngstrom;
+    double radiusH = (1.20 * 1.20) / bohrToAngstrom();
     atoms.push_back( Atom("Hydrogen", "H", charges(0), masses(0), radiusH, H1, 1.0) );
     atoms.push_back( Atom("Hydrogen", "H", charges(1), masses(1), radiusH, H2, 1.0) );
     atoms.push_back( Atom("Hydrogen", "H", charges(2), masses(2), radiusH, H3, 1.0) );
@@ -266,8 +265,8 @@ Molecule CO2()
     masses  << 12.00, 15.9949150, 15.9949150;
 
     std::vector<Atom> atoms;
-    double radiusC = (1.70 * 1.20) / convertBohrToAngstrom;
-    double radiusO = (1.52 * 1.20) / convertBohrToAngstrom;
+    double radiusC = (1.70 * 1.20) / bohrToAngstrom();
+    double radiusO = (1.52 * 1.20) / bohrToAngstrom();
     atoms.push_back( Atom("Carbon", "C", charges(0), masses(0), radiusC, C1, 1.0) );
     atoms.push_back( Atom("Oxygen", "O", charges(1), masses(1), radiusO, O1, 1.0) );
     atoms.push_back( Atom("Oxygen", "O", charges(2), masses(2), radiusO, O2, 1.0) );
@@ -340,8 +339,8 @@ Molecule CH3()
     charges << 6.0, 1.0, 1.0, 1.0;
     masses  << 12.00, 1.0078250, 1.0078250, 1.0078250;
 
-    double radiusC = (1.70 * 1.20) / convertBohrToAngstrom;
-    double radiusH = (1.20 * 1.20) / convertBohrToAngstrom;
+    double radiusC = (1.70 * 1.20) / bohrToAngstrom();
+    double radiusH = (1.20 * 1.20) / bohrToAngstrom();
     std::vector<Atom> atoms;
     atoms.push_back( Atom("Carbon",   "C", charges(0), masses(0), radiusC, C1, 1.0) );
     atoms.push_back( Atom("Hydrogen", "H", charges(1), masses(1), radiusH, H1, 1.0) );
@@ -386,8 +385,8 @@ Molecule C2H4()
     charges << 6.0, 1.0, 1.0, 6.0, 1.0, 1.0;
     masses  << 12.00, 1.0078250, 1.0078250, 12.0, 1.0078250, 1.0078250;
 
-    double radiusC = (1.70 * 1.20) / convertBohrToAngstrom;
-    double radiusH = (1.20 * 1.20) / convertBohrToAngstrom;
+    double radiusC = (1.70 * 1.20) / bohrToAngstrom();
+    double radiusH = (1.20 * 1.20) / bohrToAngstrom();
     std::vector<Atom> atoms;
     atoms.push_back( Atom("Carbon",   "C", charges(0), masses(0), radiusC, C1, 1.0) );
     atoms.push_back( Atom("Hydrogen", "H", charges(1), masses(1), radiusH, H1, 1.0) );
@@ -434,18 +433,18 @@ Molecule C6H6()
     Eigen::Vector3d H5(4.925, -1.330, -9.183);
     Eigen::Vector3d H6(3.616,  0.776, -9.196);
     // Scale
-    C1 /= convertBohrToAngstrom;
-    C2 /= convertBohrToAngstrom;
-    C3 /= convertBohrToAngstrom;
-    C4 /= convertBohrToAngstrom;
-    C5 /= convertBohrToAngstrom;
-    C6 /= convertBohrToAngstrom;
-    H1 /= convertBohrToAngstrom;
-    H2 /= convertBohrToAngstrom;
-    H3 /= convertBohrToAngstrom;
-    H4 /= convertBohrToAngstrom;
-    H5 /= convertBohrToAngstrom;
-    H6 /= convertBohrToAngstrom;
+    C1 /= bohrToAngstrom();
+    C2 /= bohrToAngstrom();
+    C3 /= bohrToAngstrom();
+    C4 /= bohrToAngstrom();
+    C5 /= bohrToAngstrom();
+    C6 /= bohrToAngstrom();
+    H1 /= bohrToAngstrom();
+    H2 /= bohrToAngstrom();
+    H3 /= bohrToAngstrom();
+    H4 /= bohrToAngstrom();
+    H5 /= bohrToAngstrom();
+    H6 /= bohrToAngstrom();
 
     Eigen::MatrixXd geom(3, nAtoms);
     geom.col(0) = C1.transpose();
@@ -465,8 +464,8 @@ Molecule C6H6()
     masses  << 12.00, 12.0, 12.0, 12.0, 12.0, 12.0, 1.0078250, 1.0078250, 1.0078250,
             1.0078250, 1.0078250, 1.0078250;
 
-    double radiusC = 1.70 / convertBohrToAngstrom;
-    double radiusH = 1.20 / convertBohrToAngstrom;
+    double radiusC = 1.70 / bohrToAngstrom();
+    double radiusH = 1.20 / bohrToAngstrom();
     std::vector<Atom> atoms;
     atoms.push_back( Atom("Carbon",   "C",  charges(0), masses(0), radiusC, C1, 1.0) );
     atoms.push_back( Atom("Carbon",   "C",  charges(1), masses(1), radiusC, C2, 1.0) );

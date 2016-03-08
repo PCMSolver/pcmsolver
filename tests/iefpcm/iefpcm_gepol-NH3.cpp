@@ -35,7 +35,7 @@
 #include "cavity/GePolCavity.hpp"
 #include "utils/Molecule.hpp"
 #include "green/Vacuum.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 #include "green/UniformDielectric.hpp"
 #include "solver/IEFSolver.hpp"
 #include "utils/Symmetry.hpp"

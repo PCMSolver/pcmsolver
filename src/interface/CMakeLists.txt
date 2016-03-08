@@ -2,7 +2,7 @@
 list(APPEND headers_list Meddle.hpp Input.hpp)
 
 # List of sources
-list(APPEND sources_list Meddle.cpp Input.cpp)
+list(APPEND sources_list Meddle.cpp Input.cpp PhysicalConstants.cpp)
 
 add_library(interface OBJECT ${sources_list} ${headers_list})
 set_target_properties(interface PROPERTIES POSITION_INDEPENDENT_CODE 1 INTERPROCEDURAL_OPTIMIZATION 1)

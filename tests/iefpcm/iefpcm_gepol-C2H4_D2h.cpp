@@ -38,7 +38,7 @@
 #include "green/Vacuum.hpp"
 #include "green/UniformDielectric.hpp"
 #include "solver/IEFSolver.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 /*! \class IEFSolver
  *  \test \b C2H4GePolD2h tests IEFSolver using C2H4 with a GePol cavity in D2h symmetry
@@ -46,9 +46,9 @@
 TEST_CASE("Test solver for the IEFPCM and the C2H4 molecule in D2h symmetry", "[iefpcm][iefpcm_symmetry][iefpcm_gepol-C2H4_D2h]")
 {
   Molecule molec = C2H4();
-  double area = 0.2 / convertBohr2ToAngstrom2;
-  double probeRadius = 1.385 / convertBohrToAngstrom;
-  double minRadius = 100.0 / convertBohrToAngstrom;
+  double area = 0.2 / bohr2ToAngstrom2();
+  double probeRadius = 1.385 / bohrToAngstrom();
+  double minRadius = 100.0 / bohrToAngstrom();
   GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "ief_d2h_noadd");
 
   double permittivity = 78.39;

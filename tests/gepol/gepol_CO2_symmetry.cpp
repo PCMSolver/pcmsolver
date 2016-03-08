@@ -32,17 +32,16 @@
 
 #include "cavity/GePolCavity.hpp"
 #include "utils/Molecule.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/Symmetry.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point groups", "[gepol][gepol_CO2_symmetry]")
 {
     GIVEN("The linear CO2 molecule")
     {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
+        double area = 0.2 / bohr2ToAngstrom2();
+        double probeRadius = 1.385 / bohrToAngstrom();
+        double minRadius = 0.2 / bohrToAngstrom();
         WHEN("the point group is C1")
         {
 	        Molecule molec = CO2<0>();
@@ -96,9 +95,9 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
 
     GIVEN("The linear CO2 molecule")
     {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
+        double area = 0.2 / bohr2ToAngstrom2();
+        double probeRadius = 1.385 / bohrToAngstrom();
+        double minRadius = 0.2 / bohrToAngstrom();
         WHEN("the point group is C2")
         {
             Molecule molec = CO2<1>();
@@ -152,9 +151,9 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
 
     GIVEN("The linear CO2 molecule")
     {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
+        double area = 0.2 / bohr2ToAngstrom2();
+        double probeRadius = 1.385 / bohrToAngstrom();
+        double minRadius = 0.2 / bohrToAngstrom();
         WHEN("the point group is Cs")
         {
             Molecule molec = CO2<2>();
@@ -208,9 +207,9 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
 
     GIVEN("The linear CO2 molecule")
     {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
+        double area = 0.2 / bohr2ToAngstrom2();
+        double probeRadius = 1.385 / bohrToAngstrom();
+        double minRadius = 0.2 / bohrToAngstrom();
         WHEN("the point group is Ci")
         {
             Molecule molec = CO2<3>();
@@ -264,9 +263,9 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
 
     GIVEN("The linear CO2 molecule")
     {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
+        double area = 0.2 / bohr2ToAngstrom2();
+        double probeRadius = 1.385 / bohrToAngstrom();
+        double minRadius = 0.2 / bohrToAngstrom();
         WHEN("the point group is D2")
         {
             Molecule molec = CO2<4>();
@@ -320,9 +319,9 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
 
     GIVEN("The linear CO2 molecule")
     {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
+        double area = 0.2 / bohr2ToAngstrom2();
+        double probeRadius = 1.385 / bohrToAngstrom();
+        double minRadius = 0.2 / bohrToAngstrom();
         WHEN("the point group is C2v")
         {
             Molecule molec = CO2<5>();
@@ -376,9 +375,9 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
 
     GIVEN("The linear CO2 molecule")
     {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
+        double area = 0.2 / bohr2ToAngstrom2();
+        double probeRadius = 1.385 / bohrToAngstrom();
+        double minRadius = 0.2 / bohrToAngstrom();
         WHEN("the point group is C2h")
         {
             Molecule molec = CO2<6>();
@@ -432,9 +431,9 @@ SCENARIO("GePol cavity for the linear CO2 molecule in different Abelian point gr
 
     GIVEN("The linear CO2 molecule")
     {
-        double area = 0.2 / convertBohr2ToAngstrom2;
-        double probeRadius = 1.385 / convertBohrToAngstrom;
-        double minRadius = 0.2 / convertBohrToAngstrom;
+        double area = 0.2 / bohr2ToAngstrom2();
+        double probeRadius = 1.385 / bohrToAngstrom();
+        double minRadius = 0.2 / bohrToAngstrom();
         WHEN("the point group is D2h")
         {
             Molecule molec = CO2<7>();

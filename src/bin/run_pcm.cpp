@@ -51,7 +51,6 @@
 #include "utils/Atom.hpp"
 #include "Citation.hpp"
 #include "utils/cnpy.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
 

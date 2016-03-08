@@ -32,9 +32,8 @@
 
 #include "cavity/GePolCavity.hpp"
 #include "utils/Molecule.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/Symmetry.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 SCENARIO("GePol cavity for the H3+ molecule in C2v symmetry", "[gepol][gepol_H3+_C2v]")
 {
@@ -44,9 +43,9 @@ SCENARIO("GePol cavity for the H3+ molecule in C2v symmetry", "[gepol][gepol_H3+
 
         WHEN("the addition of spheres is enabled")
         {
-            double area = 0.2 / convertBohr2ToAngstrom2;
-            double probeRadius = 1.385 / convertBohrToAngstrom;
-            double minRadius = 0.2 / convertBohrToAngstrom;
+            double area = 0.2 / bohr2ToAngstrom2();
+            double probeRadius = 1.385 / bohrToAngstrom();
+            double minRadius = 0.2 / bohrToAngstrom();
             GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "c2v");
             cavity.saveCavity("h3+_c2v.npz");
 
@@ -97,9 +96,9 @@ SCENARIO("GePol cavity for the H3+ molecule in C2v symmetry", "[gepol][gepol_H3+
 
         WHEN("the addition of spheres is disabled")
         {
-            double area = 0.2 / convertBohr2ToAngstrom2;
-            double probeRadius = 1.385 / convertBohrToAngstrom;
-            double minRadius = 100.0 / convertBohrToAngstrom;
+            double area = 0.2 / bohr2ToAngstrom2();
+            double probeRadius = 1.385 / bohrToAngstrom();
+            double minRadius = 100.0 / bohrToAngstrom();
             GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "c2v_noadd");
             cavity.saveCavity("h3+_c2v_noadd.npz");
 

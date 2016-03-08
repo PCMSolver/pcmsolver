@@ -29,11 +29,9 @@
 #include <string>
 #include <vector>
 
-
 #include <Eigen/Core>
 
 #include "interface/Input.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/Sphere.hpp"
 
 SCENARIO("Input reading using GetKw", "[input]")
@@ -50,24 +48,25 @@ SCENARIO("Input reading using GetKw", "[input]")
             std::string units = "ANGSTROM";
             int CODATAyear = 2002;
             std::string type = "TSLESS";
-            double area = 0.6 * angstrom2ToBohr2(CODATAyear);
-            double minDistance = 5.0 * angstromToBohr(CODATAyear);
+            double area = 0.6 * angstrom2ToBohr2();
+
+            double minDistance = 5.0 * angstromToBohr();
             int derOrder = 25;
             bool scaling = false;
             std::string radiiSet = "UFF";
-            double minimalRadius = 0.1 * angstromToBohr(CODATAyear);
+            double minimalRadius = 0.1 * angstromToBohr();
             std::string mode = "ATOMS";
             std::vector<int> atoms;
             std::vector<double> radii;
             atoms.push_back(1); atoms.push_back(2); atoms.push_back(4);
-            radii.push_back(1.4 * angstromToBohr(CODATAyear));
-            radii.push_back(4.3 * angstromToBohr(CODATAyear));
-            radii.push_back(1.2 * angstromToBohr(CODATAyear));
+            radii.push_back(1.4 * angstromToBohr());
+            radii.push_back(4.3 * angstromToBohr());
+            radii.push_back(1.2 * angstromToBohr());
             std::string solvent = "Cyclohexane"; // Name in the Solvent object
             std::string solverType = "CPCM";
             double correction = 0.5;
             bool hermitivitize = false;
-            double probeRadius = 2.815 * angstromToBohr(CODATAyear); // The value for water
+            double probeRadius = 2.815 * angstromToBohr(); // The value for water
             std::string greenInsideType = "VACUUM";
             std::string greenOutsideType = "UNIFORMDIELECTRIC";
             int derivativeInsideType = 1;
@@ -126,7 +125,7 @@ SCENARIO("Input reading using GetKw", "[input]")
             int equationType = 1;
             double correction = 0.0;
             bool hermitivitize = true;
-            double probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+            double probeRadius = 1.385 * angstromToBohr(); // The value for water
             std::string greenInsideType = "VACUUM";
             std::string greenOutsideType = "UNIFORMDIELECTRIC";
             int derivativeInsideType = 1;
@@ -178,18 +177,18 @@ SCENARIO("Input reading using GetKw", "[input]")
             c1 <<  0.00,  0.00, 0.00;
             c2 <<  0.00, -0.96, 0.00;
             c3 << -0.905, 0.32, 0.00;
-            c2 *= angstromToBohr(CODATAyear);
-            c3 *= angstromToBohr(CODATAyear);
-            Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
-            Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
-            Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
+            c2 *= angstromToBohr();
+            c3 *= angstromToBohr();
+            Sphere sph1(c1, 1.80 * angstromToBohr());
+            Sphere sph2(c2, 1.44 * angstromToBohr());
+            Sphere sph3(c3, 1.44 * angstromToBohr());
             std::vector<Sphere> spheres;
             spheres.push_back(sph1);
             spheres.push_back(sph2);
             spheres.push_back(sph3);
             std::string solverType = "WAVELET";
             int equationType = 0;
-            double probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+            double probeRadius = 1.385 * angstromToBohr(); // The value for water
             std::string greenInsideType = "VACUUM";
             std::string greenOutsideType = "UNIFORMDIELECTRIC";
             int derivativeInsideType = 0;
@@ -245,18 +244,18 @@ SCENARIO("Input reading using GetKw", "[input]")
             c1 <<  0.00,  0.00, 0.00;
             c2 <<  0.00, -0.96, 0.00;
             c3 << -0.905, 0.32, 0.00;
-            c2 *= angstromToBohr(CODATAyear);
-            c3 *= angstromToBohr(CODATAyear);
-            Sphere sph1(c1, 1.80 * angstromToBohr(CODATAyear));
-            Sphere sph2(c2, 1.44 * angstromToBohr(CODATAyear));
-            Sphere sph3(c3, 1.44 * angstromToBohr(CODATAyear));
+            c2 *= angstromToBohr();
+            c3 *= angstromToBohr();
+            Sphere sph1(c1, 1.80 * angstromToBohr());
+            Sphere sph2(c2, 1.44 * angstromToBohr());
+            Sphere sph3(c3, 1.44 * angstromToBohr());
             std::vector<Sphere> spheres;
             spheres.push_back(sph1);
             spheres.push_back(sph2);
             spheres.push_back(sph3);
             std::string solverType = "WAVELET";
             int equationType = 0;
-            double probeRadius = 1.385 * angstromToBohr(CODATAyear); // The value for water
+            double probeRadius = 1.385 * angstromToBohr(); // The value for water
             std::string greenInsideType = "VACUUM";
             std::string greenOutsideType = "SPHERICALDIFFUSE";
             int derivativeInsideType = 0;
@@ -266,11 +265,11 @@ SCENARIO("Input reading using GetKw", "[input]")
             double epsilonDynamic1 = 10.423;
             double epsilonStatic2 = 20.0;
             double epsilonDynamic2 = 4.0;
-            double center = 100.0 * angstromToBohr(CODATAyear);
-            double width  = 5.0 * angstromToBohr(CODATAyear);
+            double center = 100.0 * angstromToBohr();
+            double width  = 5.0 * angstromToBohr();
             int profile = 1;
             Eigen::Vector3d origin = (Eigen::Vector3d() << 70.0, 1.0, 23.0).finished();
-            origin *= angstromToBohr(CODATAyear);
+            origin *= angstromToBohr();
             THEN("the input reading returns...")
             {
                 REQUIRE(units                 == parsedInput.units());

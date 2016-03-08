@@ -1,7 +1,7 @@
 # List of headers
 list(APPEND headers_list Atom.hpp Factory.hpp ForId.hpp FortranCUtils.hpp Logger.hpp LoggerImpl.hpp MathUtils.hpp Molecule.hpp
-                         PhysicalConstants.hpp QuadratureRules.hpp Solvent.hpp Sphere.hpp SplineFunction.hpp
-                         Stencils.hpp Symmetry.hpp TestingMolecules.hpp Timer.hpp cnpy.hpp)
+                         QuadratureRules.hpp Solvent.hpp Sphere.hpp SplineFunction.hpp
+                         Stencils.hpp Symmetry.hpp Timer.hpp cnpy.hpp)
 set_source_files_properties(cnpy.hpp PROPERTIES COMPILE_FLAGS -w)
 
 # List of sources

@@ -41,7 +41,6 @@
 #include "green/GreenData.hpp"
 #include "solver/SolverData.hpp"
 #include "PCMInput.h"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
 
@@ -65,6 +64,7 @@ void Input::reader(const std::string & filename)
     Getkw input_ = Getkw(filename, false, true);
     units_      = input_.getStr("UNITS");
     CODATAyear_ = input_.getInt("CODATA");
+    initBohrToAngstrom(bohrToAngstrom, CODATAyear_);
 
     const Section & mol = input_.getSect("MOLECULE");
     if (mol.isDefined()) geometry_ = mol.getDblVec("GEOMETRY");
@@ -149,7 +149,7 @@ void Input::reader(const std::string & filename)
         } else {
             solvent_ = solvents()[name];
         }
-        probeRadius_ = solvent_.probeRadius * angstromToBohr(CODATAyear_);
+        probeRadius_ = solvent_.probeRadius * angstromToBohr();
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class
         // is an helper class and should not be used in the core classes.
@@ -187,12 +187,14 @@ std::string trim_and_upper(const char * src)
 void Input::reader(const PCMInput & host_input)
 {
     CODATAyear_ = 2010;
+    std::cout << "Calling initBohrToAngstrom" << std::endl;
+    initBohrToAngstrom(bohrToAngstrom, CODATAyear_);
 
     type_ = trim_and_upper(host_input.cavity_type);
-    area_ = host_input.area * angstrom2ToBohr2(CODATAyear_);
+    area_ = host_input.area * angstrom2ToBohr2();
     patchLevel_ = host_input.patch_level;
-    coarsity_ = host_input.coarsity * angstromToBohr(CODATAyear_);
-    minDistance_ = host_input.min_distance * angstromToBohr(CODATAyear_);
+    coarsity_ = host_input.coarsity * angstromToBohr();
+    minDistance_ = host_input.min_distance * angstromToBohr();
     derOrder_ = host_input.der_order;
     if (type_ == "RESTART") {
         cavFilename_ = trim(host_input.restart_name); // No case conversion here!
@@ -200,14 +202,14 @@ void Input::reader(const PCMInput & host_input)
 
     scaling_ = host_input.scaling;
     radiiSet_ = trim_and_upper(host_input.radii_set);
-    minimalRadius_ = host_input.min_radius * angstromToBohr(CODATAyear_);
+    minimalRadius_ = host_input.min_radius * angstromToBohr();
     mode_ = std::string("IMPLICIT");
 
     std::string name = trim_and_upper(host_input.solvent);
     if (name.empty()) {
         hasSolvent_ = false;
         // Get the probe radius
-        probeRadius_ = host_input.probe_radius * angstromToBohr(CODATAyear_);
+        probeRadius_ = host_input.probe_radius * angstromToBohr();
         // Get the contents of the Green<inside> section...
         // ...and initialize the data members
         greenInsideType_ = trim_and_upper(host_input.inside_type);
@@ -223,7 +225,7 @@ void Input::reader(const PCMInput & host_input)
         // Just initialize the solvent object in this class
         hasSolvent_ = true;
         solvent_ = solvents()[name];
-        probeRadius_ = solvent_.probeRadius* angstromToBohr(CODATAyear_);
+        probeRadius_ = solvent_.probeRadius* angstromToBohr();
         // Specification of the solvent by name means isotropic PCM
         // We have to initialize the Green's functions data here, Solvent class
         // is an helper class and should not be used in the core classes.
@@ -266,7 +268,7 @@ void Input::initMolecule()
         j += 4;
     }
     // 3. list of atoms and list of spheres
-    double factor = angstromToBohr(CODATAyear_);
+    double factor = angstromToBohr();
     std::vector<Atom> radiiSet, atoms;
     if ( radiiSet_ == "UFF" ) {
         radiiSet = initUFF();

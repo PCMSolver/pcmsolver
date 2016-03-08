@@ -37,7 +37,7 @@
 #include "green/Vacuum.hpp"
 #include "solver/IEFSolver.hpp"
 #include "green/SphericalDiffuse.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse environment and a GePol cavity", "[solver][iefpcm][iefpcm_diffuse-gepol-point][anisotropic]")
 {

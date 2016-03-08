@@ -34,16 +34,15 @@
 #include "cavity/GePolCavity.hpp"
 #include "LoggerInterface.hpp"
 #include "utils/Molecule.hpp"
-#include "utils/PhysicalConstants.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 #include "utils/Symmetry.hpp"
 
 TEST_CASE("GePol cavity for an ammonia molecule", "[gepol][gepol_NH3]")
 {
     Molecule molec = NH3();
-    double area = 0.3 / convertBohr2ToAngstrom2;
-    double probeRadius = 1.385 / convertBohrToAngstrom;
-    double minRadius = 0.2 / convertBohrToAngstrom;
+    double area = 0.3 / bohr2ToAngstrom2();
+    double probeRadius = 1.385 / bohrToAngstrom();
+    double minRadius = 0.2 / bohrToAngstrom();
     GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "nh3");
     cavity.saveCavity("nh3.npz");
 

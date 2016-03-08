@@ -35,7 +35,6 @@
 #include "DerivativeTypes.hpp"
 #include "GeneralPurpose.hpp"
 #include "OneLayerTanh.hpp"
-#include "PhysicalConstants.hpp"
 #include "SphericalDiffuse.hpp"
 #include "UniformDielectric.hpp"
 

@@ -39,13 +39,12 @@
 #include "cavity/Element.hpp"
 #include "cavity/GePolCavity.hpp"
 #include "green/SphericalDiffuse.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 #include "green/AnisotropicLiquid.hpp"
 #include "green/IonicLiquid.hpp"
 #include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/MathUtils.hpp"
 
 extern "C"
@@ -66,6 +65,7 @@ void save_tanh_spherical_diffuse_numerical();
 
 int main()
 {
+    initBohrToAngstrom(bohrToAngstrom);
     save_vacuum_collocation();
     save_uniform_dielectric_collocation();
     save_tanh_spherical_diffuse_collocation();
@@ -77,7 +77,7 @@ int main()
 }
 
 void save_vacuum_collocation() {
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -91,7 +91,7 @@ void save_vacuum_collocation() {
 
 void save_uniform_dielectric_collocation() {
     double epsilon = 80.0;
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -107,7 +107,7 @@ void save_tanh_spherical_diffuse_collocation() {
     double epsilon = 80.0;
     double width = 5.0;
     double sphereRadius = 100.0;
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -120,7 +120,7 @@ void save_tanh_spherical_diffuse_collocation() {
 }
 
 void save_vacuum_purisima() {
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -132,7 +132,7 @@ void save_vacuum_purisima() {
 
 void save_uniform_dielectric_purisima() {
     double epsilon = 80.0;
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -143,7 +143,7 @@ void save_uniform_dielectric_purisima() {
 }
 
 void save_vacuum_numerical() {
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -157,7 +157,7 @@ void save_vacuum_numerical() {
 
 void save_uniform_dielectric_numerical() {
     double epsilon = 80.0;
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -172,7 +172,7 @@ void save_uniform_dielectric_numerical() {
 void save_ionic_liquid_numerical() {
     double eps = 80.0;
     double kappa = 1.5;
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -189,7 +189,7 @@ void save_anisotropic_liquid_numerical() {
     epsilon << 80.0, 80.0, 80.0;
     Eigen::Vector3d euler = Eigen::Vector3d::Zero();
     euler << 0.0, 0.0, 0.0;
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
@@ -205,7 +205,7 @@ void save_tanh_spherical_diffuse_numerical() {
     double epsilon = 80.0;
     double width = 5.0;
     double sphereRadius = 100.0;
-    Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 

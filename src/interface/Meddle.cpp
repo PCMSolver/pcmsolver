@@ -45,7 +45,6 @@
 #include "utils/Atom.hpp"
 #include "Citation.hpp"
 #include "utils/cnpy.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
 
@@ -426,7 +425,7 @@ namespace pcm {
   {
     bool scaling = inp.scaling();
     std::string set = inp.radiiSet();
-    double factor = angstromToBohr(inp.CODATAyear());
+    double factor = angstromToBohr();
     std::vector<Atom> radiiSet, atoms;
     if ( set == "UFF" ) {
       radiiSet = initUFF();

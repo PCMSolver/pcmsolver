@@ -38,7 +38,7 @@
 #include "green/UniformDielectric.hpp"
 #include "solver/CPCMSolver.hpp"
 #include "utils/Symmetry.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 /*! \class CPCMSolver
  *  \test \b NH3GePol tests CPCMSolver using ammonia and a GePol cavity

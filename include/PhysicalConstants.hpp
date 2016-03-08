@@ -23,25 +23,35 @@
  */
 /* pcmsolver_copyright_end */
 
-#define CATCH_CONFIG_RUNNER
-#include "catch.hpp"
+#ifndef PHYSICALCONSTANTS_HPP
+#define PHYSICALCONSTANTS_HPP
 
-#include "PhysicalConstants.hpp"
+#include <cmath>
 
-extern "C"
-void host_writer(const char * /* message */, size_t /* message_length */);
+/*! \file PhysicalConstants.hpp
+ *  \brief This header file contains physical constants to be used throughout the module.
+ *  \author Roberto Di Remigio
+ *  \date 2013
+ */
 
-int main( int argc, char* const argv[] )
+struct LengthConversion
 {
-  // global setup...
-  initBohrToAngstrom(bohrToAngstrom);
+  double operator()() { return BOHR_TO_ANGSTROM; }
+  double BOHR_TO_ANGSTROM;
+};
 
-  int result = Catch::Session().run( argc, argv );
+extern LengthConversion bohrToAngstrom;
 
-  // global clean-up...
+void initBohrToAngstrom(LengthConversion & conversion, int year = 2010);
 
-  return result;
-}
+double angstromToBohr();
 
-extern "C"
-void host_writer(const char * /* message */, size_t /* message_length */) {}
+double bohr2ToAngstrom2();
+
+double angstrom2ToBohr2();
+
+double bohr3ToAngstrom3();
+
+double angstrom3ToBohr3();
+
+#endif // PHYSICALCONSTANTS_HPP

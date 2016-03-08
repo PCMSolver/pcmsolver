@@ -32,7 +32,7 @@
 #include <Eigen/Core>
 
 #include "cavity/GePolCavity.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 TEST_CASE("GePol cavity for a single sphere", "[gepol][gepol_point]")
 {

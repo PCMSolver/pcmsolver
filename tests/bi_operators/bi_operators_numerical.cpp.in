@@ -39,9 +39,8 @@
 #include "cavity/GePolCavity.hpp"
 #include "green/IonicLiquid.hpp"
 #include "bi_operators/NumericalIntegrator.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "green/UniformDielectric.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"
 
@@ -49,7 +48,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
 {
     GIVEN("A GePol cavity for a single sphere in the origin")
     {
-        Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+        Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
         double area = 10.0;
         GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);
         Eigen::MatrixXd results = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());

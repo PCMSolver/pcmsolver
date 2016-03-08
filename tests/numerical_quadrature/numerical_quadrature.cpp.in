@@ -38,8 +38,7 @@
 #include "cavity/GePolCavity.hpp"
 #include "bi_operators/IntegratorHelperFunctions.hpp"
 #include "utils/MathUtils.hpp"
-#include "utils/PhysicalConstants.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 using integrator::integrateS;
 using integrator::integrateD;

@@ -1,7 +1,6 @@
 # Configure the header with library-wide preprocessor definitions
 configure_file(${PROJECT_SOURCE_DIR}/include/Config.hpp.in
                ${PROJECT_BINARY_DIR}/include/tmp-config-hpp @ONLY)
-             #file(STRINGS ${PROJECT_BINARY_DIR}/include/tmp-config-hpp _contents NEWLINE_CONSUME)
 add_custom_command(
   OUTPUT
     ${PROJECT_BINARY_DIR}/include/Config.hpp
@@ -10,7 +9,7 @@ add_custom_command(
   VERBATIM
   )
 set_source_files_properties(${PROJECT_BINARY_DIR}/include/Config.hpp PROPERTIES GENERATED TRUE)
-add_custom_target(generate-config-hpp DEPENDS ${PROJECT_BINARY_DIR}/include/Config.hpp)
+add_custom_target(generate-config-hpp ALL DEPENDS ${PROJECT_BINARY_DIR}/include/Config.hpp)
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(generate-config-hpp custom_boost)
 endif()

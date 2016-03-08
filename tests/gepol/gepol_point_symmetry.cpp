@@ -32,8 +32,7 @@
 #include <Eigen/Core>
 
 #include "cavity/GePolCavity.hpp"
-#include "utils/PhysicalConstants.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 SCENARIO("GePol cavity for a single sphere in different Abelian point groups", "[gepol][gepol_point_symmetry]")
 {

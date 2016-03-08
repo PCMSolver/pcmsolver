@@ -39,10 +39,9 @@
 #include "cavity/GePolCavity.hpp"
 #include "bi_operators/CollocationIntegrator.hpp"
 #include "green/SphericalDiffuse.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
-#include "utils/PhysicalConstants.hpp"
 #include "utils/MathUtils.hpp"
 
 SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_operators][bi_operators_collocation]")
@@ -50,7 +49,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
     GIVEN("A GePol cavity for a single sphere in the origin")
     {
         double radius = 1.44;
-        Molecule molec = dummy<0>(1.44 / convertBohrToAngstrom);
+        Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
         double area = 10.0;
         GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);
         Eigen::MatrixXd results = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());

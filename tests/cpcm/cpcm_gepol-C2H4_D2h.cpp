@@ -38,7 +38,7 @@
 #include "green/Vacuum.hpp"
 #include "green/UniformDielectric.hpp"
 #include "solver/CPCMSolver.hpp"
-#include "utils/TestingMolecules.hpp"
+#include "TestingMolecules.hpp"
 
 /*! \class CPCMSolver
  *  \test \b C2H4GePolD2h tests CPCMSolver using C2H4 with a GePol cavity in D2h symmetry
@@ -46,9 +46,9 @@
 TEST_CASE("Test solver for the CPCM and the C2H4 molecule in D2h symmetry", "[cpcm][cpcm_symmetry][cpcm_gepol-C2H4_D2h]")
 {
   Molecule molec = C2H4();
-  double area = 0.2 / convertBohr2ToAngstrom2;
-  double probeRadius = 1.385 / convertBohrToAngstrom;
-  double minRadius = 100.0 / convertBohrToAngstrom;
+  double area = 0.2 / bohr2ToAngstrom2();
+  double probeRadius = 1.385 / bohrToAngstrom();
+  double minRadius = 100.0 / bohrToAngstrom();
   GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "cpcm_d2h_noadd");
 
   double permittivity = 78.39;

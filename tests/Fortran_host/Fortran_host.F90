@@ -18,7 +18,7 @@ program pcm_fortran_host
       ! Shows two different, but equivalent ways of defining labels for surface functions
       character(kind=c_char, len=7) :: mep_lbl, asc_lbl
       character(7) :: asc_B3g_lbl, asc_neq_B3g_lbl
-      real(c_double), allocatable :: grid(:), mep(:), asc_Ag(:), asc_B3g(:), asc_neq_B3g(:)
+      real(c_double), allocatable :: grid(:), mep(:), asc_Ag(:), asc_B3g(:), asc_neq_B3g(:), areas(:)
       integer(c_int) :: irrep
       integer(c_size_t) :: grid_size, irr_grid_size
       real(c_double) :: energy
@@ -81,6 +81,8 @@ program pcm_fortran_host
       allocate(grid(3*grid_size))
       grid = 0.0_c_double
       call pcmsolver_get_centers(pcm_context, grid)
+      allocate(areas(grid_size))
+      call pcmsolver_get_areas(pcm_context, areas)
 
       allocate(mep(grid_size))
       mep = 0.0_c_double
@@ -142,7 +144,7 @@ program pcm_fortran_host
         write(output_unit, *) 'Test on polarization energy: PASSED'
       end if
       ! Surface functions
-      call test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g)
+      call test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g, areas)
 
       call pcmsolver_write_timings(pcm_context)
 
@@ -155,6 +157,7 @@ program pcm_fortran_host
       deallocate(asc_Ag)
       deallocate(asc_B3g)
       deallocate(asc_neq_B3g)
+      deallocate(areas)
 
       close(output_unit)
 

@@ -145,6 +145,7 @@ public:
     Eigen::VectorXd masses() const { return masses_; }
     double masses(int i) const { return masses_(i); }
     Eigen::Matrix3Xd geometry() const { return geometry_; }
+    double geometry(int i, int j) const { return geometry_(i, j); }
     std::vector<Atom> atoms() const { return atoms_; }
     Atom atoms(int i) const { return atoms_[i]; }
     std::vector<Sphere> spheres() const { return spheres_; }

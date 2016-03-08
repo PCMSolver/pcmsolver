@@ -100,6 +100,11 @@ namespace pcm {
              *  \param[out] center array holding the coordinates of the finite element center
              */
             void getCenter(int its, double center[]) const;
+            /*! \brief Getter for the areas/weights of the finite elements
+             *  \param[in, out] context the PCM context object
+             *  \param[out] areas array holding the weights/areas of the finite elements
+             */
+            void getAreas(double areas[]) const;
             /*! \brief Computes ASC given a MEP and the desired irreducible representation
              *  \param[in] mep_name label of the MEP surface function
              *  \param[in] asc_name label of the ASC surface function

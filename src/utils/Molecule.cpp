@@ -34,6 +34,8 @@
 
 #include "Config.hpp"
 
+#include <boost/format.hpp>
+
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 
@@ -238,23 +240,20 @@ Molecule& Molecule::operator=(const Molecule& other)
 
 std::ostream & operator<<(std::ostream &os, const Molecule &m)
 {
-    // Declare formatting of Eigen output.
-    std::string sep = "                  ";
-    Eigen::IOFormat CleanFmt(Eigen::FullPrecision, Eigen::DontAlignCols, sep, "\n", "",
-                             "");
-
-    os << "Rotor type: " << rotorTypeList[m.rotor_] << std::endl;
     if (m.nAtoms_ != 0) {
-        os << "       Center              X                  Y                   Z       " <<
-           std::endl;
-        os << "    ------------   -----------------  -----------------  -----------------" <<
-           std::endl;
-        for (size_t i = 0; i < m.nAtoms_; ++i) {
-            os << std::setw(10) << m.atoms_[i].symbol << std::setw(15) <<m.geometry_.col(
-                   i).transpose().format(CleanFmt) << std::endl;
-        }
+      os << "                 Geometry (in Angstrom)" << std::endl;
+      os << "   Center            X             Y             Z     \n";
+      os << "------------   ------------  ------------  ------------\n";
+      for (size_t i = 0; i < m.nAtoms_; ++i) {
+        os << boost::format("%|=12s|") % m.atoms_[i].symbol;
+        os << boost::format("   %10.6f  ") % (m.geometry_(0, i) * bohrToAngstrom());
+        os << boost::format("  %10.6f  ")  % (m.geometry_(1, i) * bohrToAngstrom());
+        os << boost::format("  %10.6f  ")  % (m.geometry_(2, i) * bohrToAngstrom());
+        os << std::endl;
+      }
+      os << "Rotor type: " << rotorTypeList[m.rotor_];
     } else {
-        os << "  No atoms in this molecule!" << std::endl;
+      os << "  No atoms in this molecule!" << std::endl;
     }
 
     return os;

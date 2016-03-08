@@ -1,22 +1,22 @@
 !pcmsolver_copyright_start
 !       PCMSolver, an API for the Polarizable Continuum Model
 !       Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
-! 
+!
 !       This file is part of PCMSolver.
-! 
+!
 !       PCMSolver is free software: you can redistribute it and/or modify
 !       it under the terms of the GNU Lesser General Public License as published by
 !       the Free Software Foundation, either version 3 of the License, or
 !       (at your option) any later version.
-! 
+!
 !       PCMSolver is distributed in the hope that it will be useful,
 !       but WITHOUT ANY WARRANTY; without even the implied warranty of
 !       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 !       GNU Lesser General Public License for more details.
-! 
+!
 !       You should have received a copy of the GNU Lesser General Public License
 !       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
+!
 !       For information on the complete list of contributors to the
 !       PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
 !pcmsolver_copyright_end
@@ -37,6 +37,7 @@ module pcmsolver
     public pcmsolver_get_irreducible_cavity_size
     public pcmsolver_get_centers
     public pcmsolver_get_center
+    public pcmsolver_get_areas
     public pcmsolver_compute_asc
     public pcmsolver_compute_response_asc
     public pcmsolver_compute_polarization_energy
@@ -141,6 +142,14 @@ module pcmsolver
             real(c_double), intent(inout) :: center(*)
         end subroutine pcmsolver_get_center
     end interface pcmsolver_get_center
+
+    interface pcmsolver_get_areas
+        subroutine pcmsolver_get_areas(context, areas) bind(C)
+            import
+            type(c_ptr), value :: context
+            real(c_double), intent(inout) :: areas(*)
+        end subroutine pcmsolver_get_areas
+    end interface pcmsolver_get_areas
 
     interface pcmsolver_compute_asc
         subroutine pcmsolver_compute_asc(context, mep_name, asc_name, irrep) bind(C)

@@ -154,7 +154,11 @@ do i = 1, nts
 end do
 
 do i = 1, nesf
-    isphe_(i) = isphe(i)
+  isphe_(i) = isphe(i)
+  xe_(i)  = xe(i)
+  ye_(i)  = ye(i)
+  ze_(i)  = ze(i)
+  rin_(i) = re(i)
 end do
 
 ! Clean-up

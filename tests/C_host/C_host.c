@@ -51,6 +51,8 @@ int main()
   size_t irr_grid_size = pcmsolver_get_irreducible_cavity_size(pcm_context);
   double * grid = (double *) calloc(3*grid_size, sizeof(double));
   pcmsolver_get_centers(pcm_context, grid);
+  double * areas = (double *) calloc(grid_size, sizeof(double));
+  pcmsolver_get_areas(pcm_context, areas);
 
   double * mep = nuclear_mep(NR_NUCLEI, charges, coordinates, grid_size, grid);
   const char * mep_lbl = {"NucMEP"};
@@ -107,7 +109,7 @@ int main()
     fprintf(output, "%s\n", "Test on polarization energy: PASSED");
   }
   // Surface functions
-  test_surface_functions(output, grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g);
+  test_surface_functions(output, grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g, areas);
 
   pcmsolver_write_timings(pcm_context);
 
@@ -118,6 +120,7 @@ int main()
   free(asc_Ag);
   free(asc_B3g);
   free(asc_neq_B3g);
+  free(areas);
 
   fclose(output);
 

@@ -187,7 +187,6 @@ std::string trim_and_upper(const char * src)
 void Input::reader(const PCMInput & host_input)
 {
     CODATAyear_ = 2010;
-    std::cout << "Calling initBohrToAngstrom" << std::endl;
     initBohrToAngstrom(bohrToAngstrom, CODATAyear_);
 
     type_ = trim_and_upper(host_input.cavity_type);

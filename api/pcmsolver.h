@@ -159,6 +159,12 @@ PCMSOLVER_API void pcmsolver_get_centers(pcmsolver_context_t * context, double c
  */
 PCMSOLVER_API void pcmsolver_get_center(pcmsolver_context_t * context, int its, double center[]);
 
+/*! \brief Getter for the areas/weights of the finite elements
+ *  \param[in, out] context the PCM context object
+ *  \param[out] areas array holding the weights/areas of the finite elements
+ */
+PCMSOLVER_API void pcmsolver_get_areas(pcmsolver_context_t * context, double areas[]);
+
 /*! \brief Computes ASC given a MEP and the desired irreducible representation
  *  \param[in, out] context the PCM context object
  *  \param[in] mep_name label of the MEP surface function

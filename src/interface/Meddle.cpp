@@ -101,6 +101,11 @@ void pcmsolver_get_center(pcmsolver_context_t * context, int its, double center[
   AS_TYPE(pcm::Meddle, context)->getCenter(its, center);
 }
 
+void pcmsolver_get_areas(pcmsolver_context_t * context, double areas[])
+{
+  AS_TYPE(pcm::Meddle, context)->getAreas(areas);
+}
+
 void pcmsolver_compute_asc(pcmsolver_context_t * context,
     const char * mep_name,
     const char * asc_name,
@@ -194,6 +199,11 @@ namespace pcm {
   void Meddle::getCenter(int its, double center[]) const
   {
     Eigen::Map<Eigen::Vector3d>(center, 3, 1) = cavity_->elementCenter(its-1);
+  }
+
+  void Meddle::getAreas(double areas[]) const
+  {
+    Eigen::Map<Eigen::VectorXd>(areas, cavity_->size(), 1) = cavity_->elementArea();
   }
 
   double Meddle::computePolarizationEnergy(const char * mep_name, const char * asc_name) const
@@ -346,7 +356,7 @@ namespace pcm {
     cavity_->saveCavity();
 
     infoStream_ << "========== Cavity " << std::endl;
-    infoStream_ << *cavity_ << std::endl;
+    infoStream_ << *cavity_;
   }
 
   void Meddle::initStaticSolver()

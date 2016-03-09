@@ -294,6 +294,31 @@ inline double splineInterpolation(const double point, const std::vector<double> 
     return s(point);
 }
 
+/*! \brief Prints Eigen object (matrix or vector) to file
+ *  \param[in] matrix Eigen object
+ *  \param[in] fname  name of the file
+ *  \tparam Derived template parameters of the MatrixBase object
+ *
+ *  \note This is for debugging only, the format is in fact rather ugly.
+ *      Row index     Column index      Matrix entry
+ *         0               0              0.0000
+ */
+template <typename Derived>
+inline void print_eigen_matrix(const Eigen::MatrixBase<Derived> & matrix, const std::string & fname)
+{
+  std::ofstream fout;
+  fout.open(fname.c_str());
+  fout << " Row index " << '\t' << " Column index " << '\t' << " Matrix entry " << std::endl;
+  int rows = matrix.rows();
+  int cols = matrix.cols();
+  for (int i = 0; i < rows; ++i) {
+    for (int j = 0; j < cols; ++j) {
+      fout << i << '\t' << j << '\t' << matrix(i, j) << std::endl;
+    }
+  }
+  fout.close();
+}
+
 namespace cnpy
 {
   /*!

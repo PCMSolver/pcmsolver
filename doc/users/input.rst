@@ -241,9 +241,27 @@ Medium section keywords
      k}`
 
      * **Type**: double
-     * **Valide values**: :math:`k > 0.0`
+     * **Valid values**: :math:`k > 0.0`
      * **Valid for**: CPCM solver
      * **Default**: 0.0
+
+   DiagonalIntegrator
+     Type of integrator for the diagonal of the boundary integral operators
+
+     * **Type**: string
+     * **Valid values**: COLLOCATION
+     * **Valid for**: IEFPCM, CPCM
+     * **Default**: COLLOCATION
+     * **Notes**: in future releases we will add PURISIMA and NUMERICAL as options
+
+   DiagonalScaling
+     Scaling factor for diagonal of collocation matrices
+
+     * **Type**: double
+     * **Valid values**: :math:`f > 0.0`
+     * **Valid for**: IEFPCM, CPCM
+     * **Default**: 1.07
+     * **Notes**: values commonly used in the literature are 1.07 and 1.0694
 
    ProbeRadius
      Radius of the spherical probe approximating a solvent molecule. Used for

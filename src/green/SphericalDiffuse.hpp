@@ -84,6 +84,20 @@ public:
         initProfilePolicy(e1, e2, w, c);
         initSphericalDiffuse();
     }
+    /*! Constructor for a one-layer interface
+     * \param[in] e1 left-side dielectric constant
+     * \param[in] e2 right-side dielectric constant
+     * \param[in] w width of the interface layer
+     * \param[in] c center of the diffuse layer
+     * \param[in] o center of the sphere
+     */
+    SphericalDiffuse(double e1, double e2, double w, double c, const Eigen::Vector3d & o, int l, double f)
+        : GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, SphericalDiffuse<IntegratorPolicy, ProfilePolicy> >(f),
+          origin_(o), maxLGreen_(l), maxLC_(2*l)
+    {
+        initProfilePolicy(e1, e2, w, c);
+        initSphericalDiffuse();
+    }
     virtual ~SphericalDiffuse() {}
 
     /*! Calculates the matrix representation of the S operator

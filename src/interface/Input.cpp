@@ -161,7 +161,8 @@ void Input::reader(const std::string & filename)
         epsilonStaticOutside_ = solvent_.epsStatic;
         epsilonDynamicOutside_ = solvent_.epsDynamic;
     }
-    integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
+    integratorType_ = integratorPolicy(medium.getStr("DIAGONALINTEGRATOR"));
+    integratorScaling_ = medium.getDbl("DIAGONALSCALING");
 
     solverType_ = medium.getStr("SOLVERTYPE");
     equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
@@ -236,7 +237,8 @@ void Input::reader(const PCMInput & host_input)
         epsilonStaticOutside_ = solvent_.epsStatic;
         epsilonDynamicOutside_ = solvent_.epsDynamic;
     }
-    integratorType_ = integratorPolicy("COLLOCATION"); // Currently hardcoded!!!
+    integratorType_ = integratorPolicy("COLLOCATION");
+    integratorScaling_ = 1.07;
 
     solverType_ = trim_and_upper(host_input.solver_type);
     std::string inteq = trim_and_upper(host_input.equation_type);
@@ -326,7 +328,7 @@ greenData Input::insideGreenParams()
 {
     if (insideGreenData_.empty) {
         int profile = profilePolicy("UNIFORM");
-        insideGreenData_ = greenData(derivativeInsideType_, integratorType_, profile, epsilonInside_);
+        insideGreenData_ = greenData(derivativeInsideType_, integratorType_, profile, epsilonInside_, integratorScaling_);
     }
     return insideGreenData_;
 }
@@ -336,7 +338,7 @@ greenData Input::outsideStaticGreenParams()
     if (outsideStaticGreenData_.empty) {
         int profile = profilePolicy("UNIFORM");
         outsideStaticGreenData_ = greenData(derivativeOutsideType_,
-                                            integratorType_, profile,  epsilonStaticOutside_);
+                                            integratorType_, profile,  epsilonStaticOutside_, integratorScaling_);
         if (not hasSolvent_) {
            outsideStaticGreenData_.howProfile = profileType_;
            outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
@@ -355,7 +357,7 @@ greenData Input::outsideDynamicGreenParams()
     if (outsideDynamicGreenData_.empty) {
         int profile = profilePolicy("UNIFORM");
         outsideDynamicGreenData_ = greenData(derivativeOutsideType_,
-                                             integratorType_, profile, epsilonDynamicOutside_);
+                                             integratorType_, profile, epsilonDynamicOutside_, integratorScaling_);
         if (not hasSolvent_) {
            outsideDynamicGreenData_.howProfile  = profileType_;
            outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
@@ -393,6 +395,7 @@ int integratorPolicy(const std::string & name)
     static std::map<std::string, int> mapStringToInt;
     mapStringToInt.insert(std::map<std::string, int>::value_type("COLLOCATION", 0));
     mapStringToInt.insert(std::map<std::string, int>::value_type("NUMERICAL", 1));
+    mapStringToInt.insert(std::map<std::string, int>::value_type("PURISIMA", 2));
 
     return mapStringToInt.find(name)->second;
 }

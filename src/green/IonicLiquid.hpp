@@ -57,6 +57,8 @@ class IonicLiquid __final : public GreensFunction<DerivativeTraits, IntegratorPo
 public:
     IonicLiquid(double eps, double k) : GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
                                                   IonicLiquid<DerivativeTraits, IntegratorPolicy> >() { this->profile_ = Yukawa(eps, k); }
+    IonicLiquid(double eps, double k, double f) : GreensFunction<DerivativeTraits, IntegratorPolicy, Yukawa,
+                                                  IonicLiquid<DerivativeTraits, IntegratorPolicy> >(f) { this->profile_ = Yukawa(eps, k); }
     virtual ~IonicLiquid() {}
 
     /*! Calculates the matrix representation of the S operator

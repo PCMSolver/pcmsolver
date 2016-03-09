@@ -51,7 +51,7 @@
  *
  *  Calculates the diagonal elements of S as:
  *  \f[
- *  	S_{ii} = factor_ * \sqrt{\frac{4\pi}{a_i}}
+ *  	S_{ii} = factor * \sqrt{\frac{4\pi}{a_i}}
  *  \f]
  *  while the diagonal elements of D are:
  *  \f[
@@ -64,7 +64,8 @@
 
 struct PurisimaIntegrator
 {
-    PurisimaIntegrator() : factor_(1.07) {}
+    PurisimaIntegrator() : factor(1.07) {}
+    PurisimaIntegrator(double f) : factor(f) {}
     ~PurisimaIntegrator() {}
 
     /**@{ Single and double layer potentials for a Vacuum Green's function by collocation */
@@ -75,7 +76,7 @@ struct PurisimaIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const Vacuum<DerivativeTraits, PurisimaIntegrator> & gf, const std::vector<Element> & e) const {
         return integrator::singleLayer(e,
-                pcm::bind(integrator::SI, this->factor_, 1.0, pcm::_1),
+                pcm::bind(integrator::SI, this->factor, 1.0, pcm::_1),
                 pcm::bind(&Vacuum<DerivativeTraits, PurisimaIntegrator>::kernelS, gf, pcm::_1, pcm::_2));
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
@@ -101,7 +102,7 @@ struct PurisimaIntegrator
     template <typename DerivativeTraits>
     Eigen::MatrixXd singleLayer(const UniformDielectric<DerivativeTraits, PurisimaIntegrator> & gf, const std::vector<Element> & e) const {
         return integrator::singleLayer(e,
-                pcm::bind(integrator::SI, this->factor_, gf.epsilon(), pcm::_1),
+                pcm::bind(integrator::SI, this->factor, gf.epsilon(), pcm::_1),
                 pcm::bind(&UniformDielectric<DerivativeTraits, PurisimaIntegrator>::kernelS, gf, pcm::_1, pcm::_2));
     }
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
@@ -159,7 +160,7 @@ struct PurisimaIntegrator
         for (size_t i = 0; i < mat_size; ++i) {
             // Fill diagonal
             // Diagonal of S inside the cavity
-            double Sii_I = factor_ * std::sqrt(4 * M_PI / e[i].area());
+            double Sii_I = factor * std::sqrt(4 * M_PI / e[i].area());
             // "Diagonal" of Coulomb singularity separation coefficient
             double coulomb_coeff = gf.coefficientCoulomb(e[i].center(), e[i].center());
             // "Diagonal" of the image Green's function
@@ -188,9 +189,9 @@ struct PurisimaIntegrator
             double area = e[i].area();
             double radius = e[i].sphere().radius;
             // Diagonal of S inside the cavity
-            double Sii_I = factor_ * std::sqrt(4 * M_PI / area);
+            double Sii_I = factor * std::sqrt(4 * M_PI / area);
             // Diagonal of D inside the cavity
-            double Dii_I = -factor_ * std::sqrt(M_PI/ area) * (1.0 / radius);
+            double Dii_I = -factor * std::sqrt(M_PI/ area) * (1.0 / radius);
             // "Diagonal" of Coulomb singularity separation coefficient
             double coulomb_coeff = gf.coefficientCoulomb(e[i].center(), e[i].center());
             // "Diagonal" of the directional derivative of the Coulomb singularity separation coefficient
@@ -216,7 +217,7 @@ struct PurisimaIntegrator
     /**@}*/
 
     /// Scaling factor for the collocation formulas
-    double factor_;
+    double factor;
     /*! Returns off-diagonal elements of the matrix representation of the double layer operator by collocation
      *  \param[in] elements list of finite elements
      *  \param[in] kernD    function for the evaluation of the off-diagonal of D

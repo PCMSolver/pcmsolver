@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -45,6 +45,8 @@ struct greenData {
     int howProfile;
     /*! The permittivity */
     double epsilon;
+    /*! Scaling for the diagonal of the approximate collocation matrices */
+    double scaling;
     /*! Inverse of the Debye length */
     double kappa;
     /*! Diagonal values of the permittivity tensor with respect to the lab frame */
@@ -77,6 +79,7 @@ struct greenData {
     greenData() { empty = true;}
     greenData(int how_d, int how_i, int how_p,
               double _epsilon = 1.0,
+              double s = 1.07,
               double _kappa = 0.0,
               const Eigen::Vector3d & epstens = Eigen::Vector3d::Zero(),
               const Eigen::Vector3d & euler = Eigen::Vector3d::Zero(),
@@ -91,7 +94,7 @@ struct greenData {
               const Eigen::Vector3d & _o = Eigen::Vector3d::Zero(),
               int l = 30) :
         howDerivative(how_d), howIntegrator(how_i), howProfile(how_p),
-    epsilon(_epsilon), kappa(_kappa), epsilonTensor(epstens), eulerAngles(euler),
+    epsilon(_epsilon), scaling(s), kappa(_kappa), epsilonTensor(epstens), eulerAngles(euler),
 	epsilonReal(_epsReal), epsilonImaginary(_epsImaginary),
     NPspheres(_sphere), NPradii(_sphRadius),
     epsilon1(_e1), epsilon2(_e2), center(_c), width(_w), origin(_o), maxL(l) { empty = false; }

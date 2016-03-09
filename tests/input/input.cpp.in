@@ -49,10 +49,10 @@ SCENARIO("Input reading using GetKw", "[input]")
             int CODATAyear = 2002;
             std::string type = "TSLESS";
             double area = 0.6 * angstrom2ToBohr2();
-
             double minDistance = 5.0 * angstromToBohr();
             int derOrder = 25;
             bool scaling = false;
+            double diagonalScaling = 1.0694;
             std::string radiiSet = "UFF";
             double minimalRadius = 0.1 * angstromToBohr();
             std::string mode = "ATOMS";
@@ -81,6 +81,7 @@ SCENARIO("Input reading using GetKw", "[input]")
                 REQUIRE(minDistance   == Approx(parsedInput.cavityParams().minDistance));
                 REQUIRE(derOrder      == parsedInput.cavityParams().derOrder);
                 REQUIRE(scaling       == parsedInput.scaling());
+                REQUIRE(diagonalScaling == Approx(parsedInput.integratorScaling()));
                 REQUIRE(radiiSet      == parsedInput.radiiSet());
                 REQUIRE(minimalRadius == Approx(parsedInput.cavityParams().minimalRadius));
                 REQUIRE(mode          == parsedInput.mode());
@@ -119,6 +120,7 @@ SCENARIO("Input reading using GetKw", "[input]")
             bool scaling = true;
             std::string radiiSet = "BONDI";
             double minimalRadius = 100.0;
+            double diagonalScaling = 1.07;
             std::string mode = "IMPLICIT";
             std::string solvent = "Water"; // Name in the Solvent object
             std::string solverType = "IEFPCM";
@@ -140,6 +142,7 @@ SCENARIO("Input reading using GetKw", "[input]")
                 REQUIRE(coarsity              == Approx(parsedInput.cavityParams().coarsity));
                 REQUIRE(area                  == Approx(parsedInput.cavityParams().area));
                 REQUIRE(minDistance           == Approx(parsedInput.cavityParams().minDistance));
+                REQUIRE(diagonalScaling       == Approx(parsedInput.integratorScaling()));
                 REQUIRE(derOrder              == parsedInput.cavityParams().derOrder);
                 REQUIRE(scaling               == parsedInput.scaling());
                 REQUIRE(radiiSet              == parsedInput.radiiSet());
@@ -171,6 +174,7 @@ SCENARIO("Input reading using GetKw", "[input]")
             int patchLevel = 1;
             double coarsity = 0.3;
             bool scaling = true;
+            double diagonalScaling = 1.07;
             std::string radiiSet = "BONDI";
             std::string mode = "EXPLICIT";
             Eigen::Vector3d c1, c2, c3;
@@ -206,6 +210,7 @@ SCENARIO("Input reading using GetKw", "[input]")
                 REQUIRE(scaling               == parsedInput.scaling());
                 REQUIRE(radiiSet              == parsedInput.radiiSet());
                 REQUIRE(mode                  == parsedInput.mode());
+                REQUIRE(diagonalScaling == Approx(parsedInput.integratorScaling()));
                 for (size_t i = 0; i < spheres.size(); ++i) {
                     for (size_t j = 0; j < 3; ++j) {
                         REQUIRE(spheres[i].center(j) == Approx(parsedInput.spheres(i).center(j)));
@@ -238,6 +243,7 @@ SCENARIO("Input reading using GetKw", "[input]")
             int patchLevel = 1;
             double coarsity = 0.3;
             bool scaling = true;
+            double diagonalScaling = 1.07;
             std::string radiiSet = "BONDI";
             std::string mode = "EXPLICIT";
             Eigen::Vector3d c1, c2, c3;
@@ -280,6 +286,7 @@ SCENARIO("Input reading using GetKw", "[input]")
                 REQUIRE(scaling               == parsedInput.scaling());
                 REQUIRE(radiiSet              == parsedInput.radiiSet());
                 REQUIRE(mode                  == parsedInput.mode());
+                REQUIRE(diagonalScaling == Approx(parsedInput.integratorScaling()));
                 for (size_t i = 0; i < spheres.size(); ++i) {
                     for (size_t j = 0; j < 3; ++j) {
                         REQUIRE(spheres[i].center(j) == Approx(parsedInput.spheres(i).center(j)));

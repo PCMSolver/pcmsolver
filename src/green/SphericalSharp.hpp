@@ -66,6 +66,17 @@ public:
     {
         this->profile_ = Sharp(e, esolv, r);
     }
+    /*! Constructor for a one-layer interface
+     * \param[in] e permittivity of the sphere
+     * \param[in] esolv permittivity of the solvent
+     * \param[in] r radius of the dielectric sphere
+     * \param[in] o center of the sphere
+     */
+    SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o, double f)
+        : GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp, SphericalSharp<DerivativeTraits, IntegratorPolicy> >(f), origin_(o)
+    {
+        this->profile_ = Sharp(e, esolv, r);
+    }
     virtual ~SphericalSharp() {}
 
     /*! Calculates the matrix representation of the S operator

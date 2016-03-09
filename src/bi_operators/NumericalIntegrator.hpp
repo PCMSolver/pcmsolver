@@ -53,6 +53,9 @@
 
 struct NumericalIntegrator
 {
+    NumericalIntegrator() : factor(1.07) {}
+    NumericalIntegrator(double f) : factor(f) {}
+    ~NumericalIntegrator() {}
     /**@{ Single and double layer potentials for a Vacuum Green's function by collocation: numerical integration of diagonal */
     /*! \tparam DerivativeTraits how the derivatives of the Greens's function are calculated
      *  \param[in] gf Green's function
@@ -183,6 +186,8 @@ struct NumericalIntegrator
         return Eigen::MatrixXd::Zero(e.size(), e.size());
     }
     /**@}*/
+    /// Scaling factor for the collocation formulas (unused here)
+    double factor;
 };
 
 #endif // NUMERICALINTEGRATOR_HPP

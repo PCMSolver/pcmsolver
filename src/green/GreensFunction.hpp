@@ -54,6 +54,7 @@ class GreensFunction: public IGreensFunction
 {
 public:
     GreensFunction() : delta_(1.0e-04), integrator_(IntegratorPolicy()) {}
+    GreensFunction(double f) : delta_(1.0e-04), integrator_(IntegratorPolicy(f)) {}
     virtual ~GreensFunction() {}
     /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:
@@ -163,6 +164,7 @@ class GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy, Derived>: publi
 {
 public:
     GreensFunction() : delta_(1.0e-04), integrator_(IntegratorPolicy()) {}
+    GreensFunction(double f) : delta_(1.0e-04), integrator_(IntegratorPolicy(f)) {}
     virtual ~GreensFunction() {}
     /*! Returns value of the directional derivative of the
      *  Greens's function for the pair of points p1, p2:

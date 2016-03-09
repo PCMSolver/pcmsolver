@@ -5,9 +5,12 @@
 - A runtime check to ensure that all atoms have a nonzero radius.
 API kills program execution if this is the case.
 - An API function to retrieve the areas/weights of the cavity finite elements.
-The values in the returned array are in Bohr^2. Addresses feature request from @shofener (Issue #13)
+The values in the returned array are in Bohr^2. Addresses a feature request from @shofener (Issue #13)
 
 ### Changed
+- Boundary integral operators classes learnt to accept a scaling factor for the diagonal
+elements of the approximate collocation matrices. The change is reflected in the
+Green's funtion classes and in the input parsing. Addresses a feature request from @shofener (Issue #16)
 - GePolCavity learnt to print also the list of spheres used to generate
 the cavity.
 - Different internal handling of conversion factors from Bohr to Angstrom.

@@ -57,6 +57,8 @@ class UniformDielectric __final : public GreensFunction<DerivativeTraits, Integr
 public:
     UniformDielectric(double eps) : GreensFunction<DerivativeTraits, IntegratorPolicy, Uniform,
                               UniformDielectric<DerivativeTraits, IntegratorPolicy> >() { this->profile_ = Uniform(eps); }
+    UniformDielectric(double eps, double f) : GreensFunction<DerivativeTraits, IntegratorPolicy, Uniform,
+                              UniformDielectric<DerivativeTraits, IntegratorPolicy> >(f) { this->profile_ = Uniform(eps); }
     virtual ~UniformDielectric() {}
 
     /*! Calculates the matrix representation of the S operator

@@ -60,6 +60,12 @@ public:
     AnisotropicLiquid(const Eigen::Vector3d & eigen_eps, const Eigen::Vector3d & euler_ang) :
         GreensFunction<DerivativeTraits, IntegratorPolicy, Anisotropic,
                   AnisotropicLiquid<DerivativeTraits, IntegratorPolicy> >() { this->profile_ = Anisotropic(eigen_eps, euler_ang); }
+    /*! \param[in] eigen_eps eigenvalues of the permittivity tensors
+     *  \param[in] euler_ang Euler angles in degrees
+     */
+    AnisotropicLiquid(const Eigen::Vector3d & eigen_eps, const Eigen::Vector3d & euler_ang, double f) :
+        GreensFunction<DerivativeTraits, IntegratorPolicy, Anisotropic,
+                  AnisotropicLiquid<DerivativeTraits, IntegratorPolicy> >(f) { this->profile_ = Anisotropic(eigen_eps, euler_ang); }
     virtual ~AnisotropicLiquid() {}
 
     /*! Calculates the matrix representation of the S operator

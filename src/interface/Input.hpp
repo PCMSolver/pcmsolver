@@ -99,6 +99,7 @@ public:
     double correction() const { return correction_; }
     bool hermitivitize() const { return hermitivitize_; }
     bool isDynamic() const { return isDynamic_; }
+    double integratorScaling() const { return integratorScaling_; }
     /// @}
 
     /// Green's function section input
@@ -194,6 +195,8 @@ private:
     double probeRadius_;
     /// Type of integrator for the diagonal of the boundary integral operators
     int integratorType_;
+    /// Scaling factor for the diagonal of the approximate collocation boundary integral operators
+    double integratorScaling_;
     /// The Green's function type inside the cavity
     std::string greenInsideType_;
     /// The Green's function type outside the cavity

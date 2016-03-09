@@ -270,6 +270,18 @@ def setup_keywords():
     # Valid for: CPCM
     # Valid values: positive double greater than 0.0
     medium.add_kw('CORRECTION',   'DBL', 0.0)
+    # Type of integrator for the diagonal of the boundary integral operators
+    # Valid for: IEFPCM, CPCM
+    # Valid values: COLLOCATION
+    # Default: COLLOCATION
+    # Notes: In future releases we will add PURISIMA and NUMERICAL as additional options
+    medium.add_kw('DIAGONALINTEGRATOR', 'STR', 'COLLOCATION')
+    # Scaling factor for diagonal of collocation matrix
+    # Valid for: IEFPCM, CPCM
+    # Valid values: positive double greater than 0.0
+    # Default: 1.07
+    # Notes: values commonly used in the literature are 1.07 and 1.0694
+    medium.add_kw('DIAGONALSCALING', 'DBL', 1.07)
     # Radius of the solvent probe (in au)
     # Valid for: IEFPCM, CPCM, Wavelet and PWL
     # Valid values: double in [0.1, 100.0] au
@@ -550,6 +562,16 @@ def verify_medium(section):
     correction = section.get('CORRECTION')
     if (correction.get() < 0.0):
         print('Correction for CPCM solver must be greater than 0.0')
+        sys.exit(1)
+
+    integrator = section.get('DIAGONALINTEGRATOR')
+    if integrator.get() not 'COLLOCATION':
+        print('Only the collocation integrator is available')
+        sys.exit(1)
+
+    scaling = section.get('DIAGONALSCALING')
+    if scaling.get() == 0.0:
+        print('Scaling of diagonal for collocation matrices cannot be zero')
         sys.exit(1)
 
     convert_length_scalar(section.get('PROBERADIUS'))

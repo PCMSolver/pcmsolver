@@ -53,8 +53,8 @@ namespace
     struct buildVacuum
     {
         template <typename T, typename U>
-        IGreensFunction * operator()(const greenData & /* data */) {
-            return new Vacuum<T, U>();
+        IGreensFunction * operator()(const greenData & data) {
+            return new Vacuum<T, U>(data.scaling);
         }
     };
 
@@ -74,7 +74,7 @@ namespace
     struct buildUniformDielectric {
         template <typename T, typename U>
         IGreensFunction * operator()(const greenData & data) {
-            return new UniformDielectric<T, U>(data.epsilon);
+            return new UniformDielectric<T, U>(data.epsilon, data.scaling);
         }
     };
 
@@ -94,7 +94,7 @@ namespace
     struct buildIonicLiquid {
         template <typename T, typename U>
         IGreensFunction * operator()(const greenData & data) {
-            return new IonicLiquid<T, U>(data.epsilon, data.kappa);
+            return new IonicLiquid<T, U>(data.epsilon, data.kappa, data.scaling);
         }
     };
 
@@ -114,7 +114,7 @@ namespace
     struct buildAnisotropicLiquid {
         template <typename T, typename U>
         IGreensFunction * operator()(const greenData & data) {
-            return new AnisotropicLiquid<T, U>(data.epsilonTensor, data.eulerAngles);
+            return new AnisotropicLiquid<T, U>(data.epsilonTensor, data.eulerAngles, data.scaling);
         }
     };
 
@@ -134,7 +134,7 @@ namespace
     struct buildSphericalDiffuse {
         template <typename T, typename U>
         IGreensFunction * operator()(const greenData & data) {
-            return new SphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin, data.maxL);
+            return new SphericalDiffuse<T, U>(data.epsilon1, data.epsilon2, data.width, data.center, data.origin, data.maxL, data.scaling);
         }
     };
 

@@ -210,7 +210,7 @@ SCENARIO("Input reading using GetKw", "[input]")
                     for (size_t j = 0; j < 3; ++j) {
                         REQUIRE(spheres[i].center(j) == Approx(parsedInput.spheres(i).center(j)));
                     }
-                    REQUIRE(spheres[i].radius() == Approx(parsedInput.spheres(i).radius()));
+                    REQUIRE(spheres[i].radius == Approx(parsedInput.spheres(i).radius));
                 }
                 REQUIRE(solverType            == parsedInput.solverType());
                 REQUIRE(equationType          == parsedInput.equationType());
@@ -284,7 +284,7 @@ SCENARIO("Input reading using GetKw", "[input]")
                     for (size_t j = 0; j < 3; ++j) {
                         REQUIRE(spheres[i].center(j) == Approx(parsedInput.spheres(i).center(j)));
                     }
-                    REQUIRE(spheres[i].radius() == Approx(parsedInput.spheres(i).radius()));
+                    REQUIRE(spheres[i].radius == Approx(parsedInput.spheres(i).radius));
                 }
                 REQUIRE(solverType            == parsedInput.solverType());
                 REQUIRE(equationType          == parsedInput.equationType());

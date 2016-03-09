@@ -56,9 +56,9 @@ struct Solvent
   double epsDynamic;
   /*! Radius of the spherical probe mimicking the solvent, in Angstrom */
   double probeRadius;
-  friend std::ostream & operator<<(std::ostream & os, Solvent & solvent);
 };
 
+std::ostream & operator<<(std::ostream & os, Solvent & solvent);
 
 /*! \brief typedef for the map between solvent name and Solvent object. */
 typedef std::map<std::string, Solvent> SolventMap;

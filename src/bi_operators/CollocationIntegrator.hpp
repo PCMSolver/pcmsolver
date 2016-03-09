@@ -175,7 +175,7 @@ struct CollocationIntegrator
         for (size_t i = 0; i < mat_size; ++i) {
             // Fill diagonal
             double area = e[i].area();
-            double radius = e[i].sphere().radius();
+            double radius = e[i].sphere().radius;
             // Diagonal of S inside the cavity
             double Sii_I = factor_ * std::sqrt(4 * M_PI / area);
             // Diagonal of D inside the cavity

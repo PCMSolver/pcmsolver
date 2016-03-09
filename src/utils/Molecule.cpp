@@ -80,8 +80,8 @@ Molecule::Molecule(const std::vector<Sphere> & sph)
     masses_.resize(nAtoms_);
     geometry_.resize(Eigen::NoChange, nAtoms_);
     for (size_t i = 0; i < nAtoms_; ++i) {
-        masses_(i) = spheres_[i].radius();
-        geometry_.col(i) = spheres_[i].center();
+        masses_(i) = spheres_[i].radius;
+        geometry_.col(i) = spheres_[i].center;
         double charge = charges_(i);
         double mass = masses_(i);
         atoms_.push_back( Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i)) );

@@ -5,15 +5,14 @@
 - A runtime check to ensure that all atoms have a nonzero radius.
 API kills program execution if this is the case.
 - An API function to retrieve the areas/weights of the cavity finite elements.
-The values in the returned array are in Bohr^2.
-Addresses feature request from @shofener (Issue #13)
+The values in the returned array are in Bohr^2. Addresses feature request from @shofener (Issue #13)
 
 ### Changed
 - GePolCavity learnt to print also the list of spheres used to generate
 the cavity.
 - Different internal handling of conversion factors from Bohr to Angstrom.
 - CMake minimum required version is 2.8.10
-- Atom and Solvent are now PODs. The radii and solvent lists are free functions.
+- Atom, Solvent and Sphere are now PODs. The radii and solvent lists are free functions.
 - `PCMSOLVER_ERROR ` kills program execution when an error arises but does
 not use C++ exceptions.
 - `include`-s are now specified on a per-directory basis (see programmers' manual

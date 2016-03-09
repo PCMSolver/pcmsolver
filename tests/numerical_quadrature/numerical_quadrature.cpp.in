@@ -147,11 +147,11 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
             {
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     results(i) = integrateS<64, 16>(pcm::bind(one_over_r, 1.20, pcm::_1, pcm::_2), cavity.elements(i));
-                    double diff = results(i) - (cavity.elementArea(i)/molecule.spheres(0).radius());
+                    double diff = results(i) - (cavity.elementArea(i)/molecule.spheres(0).radius);
                     if (std::abs(diff) > 1.0e-11) {
                         WARN("Test versus area divided by radius for H2 molecule");
                         WARN("Tessera n. " << i+1);
-                        WARN("diff = " << results(i) - (cavity.elementArea(i)/molecule.spheres(0).radius()) );
+                        WARN("diff = " << results(i) - (cavity.elementArea(i)/molecule.spheres(0).radius) );
                     }
                 }
                 /*

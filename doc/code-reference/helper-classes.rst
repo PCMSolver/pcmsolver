@@ -15,7 +15,7 @@ Input
 
 Sphere
 ------
-.. doxygenclass:: Sphere
+.. doxygenstruct:: Sphere
    :project: PCMSolver
    :members:
    :protected-members:
@@ -23,7 +23,7 @@ Sphere
 
 Atom
 ----
-.. doxygenclass:: Atom
+.. doxygenstruct:: Atom
    :project: PCMSolver
    :members:
    :protected-members:
@@ -39,7 +39,7 @@ Molecule
 
 Solvent
 -------
-.. doxygenclass:: Solvent
+.. doxygenstruct:: Solvent
    :project: PCMSolver
    :members:
    :protected-members:

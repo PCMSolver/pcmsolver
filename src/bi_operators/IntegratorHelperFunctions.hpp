@@ -72,7 +72,7 @@ inline double SI(double factor, double eps, const Element & el)
  */
 inline double DI(double factor, const Element & el)
 {
-    return (-factor * std::sqrt(M_PI / el.area()) * 1.0 / el.sphere().radius());
+    return (-factor * std::sqrt(M_PI / el.area()) * 1.0 / el.sphere().radius);
 }
 
 /*! Returns matrix representation of the single layer operator by collocation
@@ -177,7 +177,7 @@ double integrateS(const KernelS & F, const Element & e)
         double thetaLower = theta[numb[i]];
         double thetaUpper = theta[numb[i+1]];
         double thetaMax = 0.0;
-        Eigen::Vector3d oc = (arcs.col(i) - sph.center()) / sph.radius();
+        Eigen::Vector3d oc = (arcs.col(i) - sph.center) / sph.radius;
         double oc_norm = oc.norm();
         double oc_norm2 = std::pow(oc_norm, 2);
         for (int j = 0; j < upper_phi; ++j) { // Loop on Gaussian points: phi integration
@@ -225,7 +225,7 @@ double integrateS(const KernelS & F, const Element & e)
                                 + normal(2) * (cos_th - 1.0);
                             double value = F(point,
                                     Eigen::Vector3d::Zero()); // Evaluate integrand at Gaussian point
-                            scratch += std::pow(sph.radius(), 2) * value * sin_th * thetaA * thetaRule.weight(l);
+                            scratch += std::pow(sph.radius, 2) * value * sin_th * thetaA * thetaRule.weight(l);
                         }
                     }
                     result += scratch * phiA * phiRule.weight(j);
@@ -290,7 +290,7 @@ double integrateD(const KernelD & F, const Element & e)
         double thetaLower = theta[numb[i]];
         double thetaUpper = theta[numb[i+1]];
         double thetaMax = 0.0;
-        Eigen::Vector3d oc = (arcs.col(i) - sph.center()) / sph.radius();
+        Eigen::Vector3d oc = (arcs.col(i) - sph.center) / sph.radius;
         double oc_norm = oc.norm();
         double oc_norm2 = std::pow(oc_norm, 2);
         for (int j = 0; j < upper_phi; ++j) { // Loop on Gaussian points: phi integration
@@ -338,7 +338,7 @@ double integrateD(const KernelD & F, const Element & e)
                             double value = F(e.normal(),
                                     Eigen::Vector3d::Zero(),
                                     point); // Evaluate integrand at Gaussian point
-                            scratch += std::pow(sph.radius(), 2) * value * sin_theta * thetaA * thetaRule.weight(l);
+                            scratch += std::pow(sph.radius, 2) * value * sin_theta * thetaA * thetaRule.weight(l);
                         }
                     }
                     result += scratch * phiA * phiRule.weight(j);

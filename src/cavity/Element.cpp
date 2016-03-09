@@ -42,8 +42,8 @@ void Element::spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
     std::vector<double> & theta, std::vector<double> & phi,
     std::vector<double> & phinumb, std::vector<int> & numb) const
 {
-  Eigen::Vector3d sph_center = sphere_.center();
-  double radius = sphere_.radius();
+  Eigen::Vector3d sph_center = sphere_.center;
+  double radius = sphere_.radius;
   // Calculate the azimuthal and polar angles for the tessera vertices:
   // we use the normal, tangent and bitangent as a local reference frame
   for (int i = 0; i < nVertices_; ++i) {

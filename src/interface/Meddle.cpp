@@ -93,7 +93,9 @@ size_t pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context)
 
 void pcmsolver_get_centers(pcmsolver_context_t * context, double centers[])
 {
+  TIMER_ON("pcmsolver_get_centers");
   AS_TYPE(pcm::Meddle, context)->getCenters(centers);
+  TIMER_OFF("pcmsolver_get_centers");
 }
 
 void pcmsolver_get_center(pcmsolver_context_t * context, int its, double center[])
@@ -111,7 +113,9 @@ void pcmsolver_compute_asc(pcmsolver_context_t * context,
     const char * asc_name,
     int irrep)
 {
+  TIMER_ON("pcmsolver_compute_asc");
   AS_TYPE(pcm::Meddle, context)->computeASC(mep_name, asc_name, irrep);
+  TIMER_OFF("pcmsolver_compute_asc");
 }
 
 void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
@@ -119,7 +123,9 @@ void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
     const char * asc_name,
     int irrep)
 {
+  TIMER_ON("pcmsolver_compute_response_asc");
   AS_TYPE(pcm::Meddle, context)->computeResponseASC(mep_name, asc_name, irrep);
+  TIMER_OFF("pcmsolver_compute_response_asc");
 }
 
 double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
@@ -132,13 +138,17 @@ double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
 void pcmsolver_get_surface_function(pcmsolver_context_t * context,
     size_t size, double values[], const char * name)
 {
+  TIMER_ON("pcmsolver_get_surface_function");
   AS_TYPE(pcm::Meddle, context)->getSurfaceFunction(size, values, name);
+  TIMER_OFF("pcmsolver_get_surface_function");
 }
 
 void pcmsolver_set_surface_function(pcmsolver_context_t * context,
     size_t size, double values[], const char * name)
 {
+  TIMER_ON("pcmsolver_set_surface_function");
   AS_TYPE(pcm::Meddle, context)->setSurfaceFunction(size, values, name);
+  TIMER_OFF("pcmsolver_set_surface_function");
 }
 
 void pcmsolver_save_surface_functions(pcmsolver_context_t * context)
@@ -166,10 +176,23 @@ namespace pcm {
       charges[], double coordinates[], int symmetry_info[], const PCMInput & host_input)
     : hasDynamic_(false)
   {
+    TIMER_ON("Meddle::initInput");
     initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input);
+    TIMER_OFF("Meddle::initInput");
+
+    TIMER_ON("Meddle::initCavity");
     initCavity();
+    TIMER_OFF("Meddle::initCavity");
+
+    TIMER_ON("Meddle::initStaticSolver");
     initStaticSolver();
-    if (input_.isDynamic()) initDynamicSolver();
+    TIMER_OFF("Meddle::initStaticSolver");
+
+    if (input_.isDynamic()) {
+      TIMER_ON("Meddle::initDynamicSolver");
+      initDynamicSolver();
+      TIMER_OFF("Meddle::initDynamicSolver");
+    }
     // Reserve space for Tot-MEP/ASC, Nuc-MEP/ASC and Ele-MEP/ASC
     functions_.reserve(12);
   }
@@ -193,7 +216,9 @@ namespace pcm {
 
   void Meddle::getCenters(double centers[]) const
   {
+    TIMER_ON("Meddle::getCenters");
     Eigen::Map<Eigen::Matrix3Xd>(centers, 3, cavity_->size()) = cavity_->elementCenter();
+    TIMER_OFF("Meddle::getCenters");
   }
 
   void Meddle::getCenter(int its, double center[]) const

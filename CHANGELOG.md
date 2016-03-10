@@ -24,6 +24,8 @@ for a more detailed explanation)
 ### Known Issues
 - The new printer in GePolCavity might not work properly when an explicit list
 of spheres is provided in the input.
+- On Ubuntu 12.10, 32 bit the Intel compiler version 2013.1 produces a faulty library.
+It is possibly a bug in the implementation of `iso_c_binding`, see Issue #25
 
 ### Removed
 - SurfaceFunction as a class is no longer available. We keep track of surface functions

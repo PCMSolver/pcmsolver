@@ -308,7 +308,7 @@ namespace pcm {
     std::string functionName(name);
     printer("\nLoading surface function " + functionName + " from .npy file");
     std::string fname = functionName + ".npy";
-    Eigen::VectorXd values = cnpy::custom::npy_load(fname);
+    Eigen::VectorXd values = cnpy::custom::npy_load<double>(fname);
     // This is to avoid a -Wsign-compare warning
     typedef EIGEN_DEFAULT_DENSE_INDEX_TYPE Index;
     if (values.size() != Index(cavity_->size())) PCMSOLVER_ERROR("Inconsistent dimension of loaded surface function!", BOOST_CURRENT_FUNCTION);

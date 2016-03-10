@@ -335,7 +335,7 @@ namespace cnpy
      *  \tparam Rows number of rows in the Eigen object. Default is dynamic
      e  \tparam Cols number of columns in the Eigen object. Default is dynamic
      */
-    template <typename Scalar = double, int Rows = Eigen::Dynamic, int Cols = Eigen::Dynamic>
+    template <typename Scalar, int Rows, int Cols>
     inline void npy_save(const std::string & fname, const Eigen::Matrix<Scalar, Rows, Cols> & obj)
     {
       unsigned int rows = static_cast<unsigned int>(obj.rows());
@@ -353,7 +353,7 @@ namespace cnpy
      *  \tparam Rows number of rows in the Eigen object. Default is dynamic
      *  \tparam Cols number of columns in the Eigen object. Default is dynamic
      */
-    template <typename Scalar = double, int Rows = Eigen::Dynamic, int Cols = Eigen::Dynamic>
+    template <typename Scalar, int Rows, int Cols>
     inline void npz_save(const std::string & fname, const std::string & name,
         const Eigen::Matrix<Scalar, Rows, Cols> & obj,
         bool overwrite = false)
@@ -374,7 +374,7 @@ namespace cnpy
      *  \warning We check that the rank of the object read is not more than 2
      *  Eigen cannot handle general tensors.
      */
-    template <typename Scalar = double>
+    template <typename Scalar>
     inline Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> npy_to_eigen(const NpyArray & npy_array)
     {
       if (npy_array.shape.size() > 2) PCMSOLVER_ERROR("Only vectors and matrices can be read into Eigen objects.", BOOST_CURRENT_FUNCTION);
@@ -388,10 +388,10 @@ namespace cnpy
      *
      *  \todo Extend to read in also data in row-major (C) storage order
      */
-    template <typename Scalar = double>
+    template <typename Scalar>
     inline Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> npy_load(const std::string & fname)
     {
-      return npy_to_eigen(cnpy::npy_load(fname));
+      return npy_to_eigen<Scalar>(cnpy::npy_load(fname));
     }
   } // namespace custom
   /*! @} */

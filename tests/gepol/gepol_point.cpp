@@ -34,47 +34,100 @@
 #include "cavity/GePolCavity.hpp"
 #include "TestingMolecules.hpp"
 
-TEST_CASE("GePol cavity for a single sphere", "[gepol][gepol_point]")
+SCENARIO("GePol cavity for a single sphere", "[gepol][gepol_point]")
 {
+  GIVEN("A single sphere")
+  {
     double area = 0.4;
-    Molecule point = dummy<0>();
-    GePolCavity cavity = GePolCavity(point, area, 0.0, 100.0, "point");
-    cavity.saveCavity("point.npz");
-
-    /*! \class GePolCavity
-     *  \test \b GePolCavityTest_size tests GePol cavity size for a point charge
-     */
-    SECTION("Test size")
+    double probeRadius = 0.0;
+    double minRadius = 100.0;
+    WHEN("the sphere is obtained from a Molecule object")
     {
+      Molecule point = dummy<0>();
+      GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "point");
+      cavity.saveCavity("point.npz");
+
+      /*! \class GePolCavity
+       *  \test \b GePolCavityTest_size tests GePol cavity size for a point charge in C1 symmetry without added spheres
+       */
+      THEN("the size of the cavity is")
+      {
         int size = 32;
         size_t actualSize = cavity.size();
         REQUIRE(size == actualSize);
-    }
-
-    /*! \class GePolCavity
-     *  \test \b GePolCavityTest_area tests GePol cavity surface area for a point charge
-     */
-    SECTION("Test surface area")
-    {
+      }
+      /*! \class GePolCavity
+       *  \test \b GePolCavityTest_area tests GePol cavity surface area for a point charge in C1 symmetry without added spheres
+       */
+      AND_THEN("the surface area of the cavity is")
+      {
         double area = 4.0 * M_PI * pow(1.0, 2);
         double actualArea = cavity.elementArea().sum();
         REQUIRE(area == Approx(actualArea));
-    }
-
-    /*! \class GePolCavity
-     *  \test \b GePolCavityTest_volume tests GePol cavity volume for a point charge
-     */
-    SECTION("Test volume")
-    {
+      }
+      /*! \class GePolCavity
+       *  \test \b GePolCavityTest_volume tests GePol cavity volume for a point charge in C1 symmetry without added spheres
+       */
+      AND_THEN("the volume of the cavity is")
+      {
         double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
         Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
         Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
         double actualVolume = 0;
         for ( size_t i = 0; i < cavity.size(); ++i ) {
-            actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
-                        i));
+          actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                i));
         }
         actualVolume /= 3;
         REQUIRE(volume == Approx(actualVolume));
+      }
     }
+  }
+
+  GIVEN("A single sphere")
+  {
+    double area = 0.4;
+    double probeRadius = 0.0;
+    double minRadius = 100.0;
+    WHEN("the sphere is obtained from a Sphere object")
+    {
+      Sphere sph(Eigen::Vector3d::Zero(), 1.0);
+      GePolCavity cavity = GePolCavity(sph, area, probeRadius, minRadius, "point");
+
+      /*! \class GePolCavity
+       *  \test \b GePolCavitySphereCTORTest_size tests GePol cavity size for a point charge in C1 symmetry without added spheres
+       */
+      THEN("the size of the cavity is")
+      {
+        int size = 32;
+        size_t actualSize = cavity.size();
+        REQUIRE(size == actualSize);
+      }
+      /*! \class GePolCavity
+       *  \test \b GePolCavitySphereCTORTest_area tests GePol cavity surface area for a point charge in C1 symmetry without added spheres
+       */
+      AND_THEN("the surface area of the cavity is")
+      {
+        double area = 4.0 * M_PI * pow(1.0, 2);
+        double actualArea = cavity.elementArea().sum();
+        REQUIRE(area == Approx(actualArea));
+      }
+      /*! \class GePolCavity
+       *  \test \b GePolCavitySphereCTORTest_volume tests GePol cavity volume for a point charge in C1 symmetry without added spheres
+       */
+      AND_THEN("the volume of the cavity is")
+      {
+        double volume = 4.0 * M_PI * pow(1.0, 3) / 3.0;
+        Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
+        Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
+        double actualVolume = 0;
+        for ( size_t i = 0; i < cavity.size(); ++i ) {
+          actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
+                i));
+        }
+        actualVolume /= 3;
+        REQUIRE(volume == Approx(actualVolume));
+      }
+    }
+  }
 }

@@ -25,35 +25,39 @@
 
 #include "Cavity.hpp"
 
-#include <iomanip>
 #include <iostream>
-#include <fstream>
-#include <limits>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
-#include "utils/cnpy.hpp"
 
+#include "utils/cnpy.hpp"
 #include "utils/MathUtils.hpp"
+#include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
+
+Cavity::Cavity() : nElements_(0), built(false) {}
+
+Cavity::Cavity(const Sphere & sph) : built(false) {
+  spheres_.push_back(sph);
+  molecule_ = Molecule(spheres_);
+  nSpheres_ = spheres_.size();
+  transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
+}
+
+Cavity::Cavity(const std::vector<Sphere> & sph) : spheres_(sph), built(false) {
+  molecule_ = Molecule(spheres_);
+  nSpheres_ = spheres_.size();
+  transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
+}
+
+Cavity::Cavity(const Molecule & molec) : spheres_(molec.spheres()), molecule_(molec), built(false) {
+  nSpheres_ = spheres_.size();
+  transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
+}
 
 void Cavity::saveCavity(const std::string & fname)
 {
-  /*
-     std::ofstream weights("weights.txt", std::ios_base::out);
-  // First line in the weights file is the number of elements.
-  // This is for a sanity-check on the save/load operations.
-  weights << std::setprecision(std::numeric_limits<double>::digits10) << nElements_ << std::endl;
-  weights << std::setprecision(std::numeric_limits<double>::digits10) << elementArea_ << std::endl;
-  std::ofstream elRadius("element_radius.txt", std::ios_base::out);
-  elRadius << std::setprecision(std::numeric_limits<double>::digits10) << elementRadius_ << std::endl;
-  std::ofstream centers("centers.txt", std::ios_base::out);
-  centers << std::setprecision(std::numeric_limits<double>::digits10) << elementCenter_ << std::endl;
-  std::ofstream normals("normals.txt", std::ios_base::out);
-  normals << std::setprecision(std::numeric_limits<double>::digits10) << elementNormal_ << std::endl;
-  */
-
   // Write everything in a single .npz binary file
   unsigned int dim = static_cast<unsigned int>(nElements_);
   // Write the number of elements, it will be used to check sanity of the save/load operations.

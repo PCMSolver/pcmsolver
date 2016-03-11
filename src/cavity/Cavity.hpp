@@ -35,7 +35,6 @@
 
 #include "cavity/Element.hpp"
 #include "utils/Molecule.hpp"
-#include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
 
 /*!
@@ -91,24 +90,23 @@ class Cavity
     virtual std::ostream & printCavity(std::ostream & os) = 0;
   public:
     //! Default constructor
-    Cavity() : nElements_(0), built(false) {}
+    Cavity();
+    /*! \brief Constructor from a single sphere
+     *  \param[in] sph the sphere
+     *
+     *  Only used when we have to deal with a single sphere, i.e. in the unit tests
+     */
+    Cavity(const Sphere & sph);
     /*! \brief Constructor from list of spheres
      *  \param[in] sph the list of spheres
      *
      *  Only used when we have to deal with a single sphere, i.e. in the unit tests
      */
-    Cavity(const std::vector<Sphere> & sph) : spheres_(sph), built(false) {
-      molecule_ = Molecule(spheres_);
-      nSpheres_ = spheres_.size();
-      transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
-    }
+    Cavity(const std::vector<Sphere> & sph);
     /*! \brief Constructor from Molecule
      *  \param[in] molec the molecular aggregate
      */
-    Cavity(const Molecule & molec) : spheres_(molec.spheres()), molecule_(molec), built(false) {
-      nSpheres_ = spheres_.size();
-      transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
-    }
+    Cavity(const Molecule & molec);
     virtual ~Cavity() {}
     Eigen::Matrix3Xd & elementCenter() { return elementCenter_; }
     const Eigen::Matrix3Xd & elementCenter() const { return elementCenter_; }

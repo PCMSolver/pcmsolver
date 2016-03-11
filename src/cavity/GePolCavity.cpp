@@ -28,7 +28,6 @@
 #include <algorithm>
 #include <cctype>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -43,53 +42,29 @@
 #include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
 
-/*! \fn extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
- *                                 double * xtscor, double * ytscor, double * ztscor, double * ar,
- *                                 double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
- *                                 int * nts, int * ntsirr, int * nesfp, int * addsph,
- *                                 double * xe, double * ye, double * ze, double * rin,
- *                                 double * avgArea, double * rsolv, double * ret,
- *                                 int * nr_gen, int * gen1, int * gen2, int * gen3,
- *                                 int * nvert, double * vert, double * centr)
- *  \param[in] maxts maximum number of tesserae allowed
- *  \param[in] maxsph maximum number of spheres allowed
- *  \param[in] maxvert maximum number of vertices allowed
- *  \param[out] xtscor x-coordinate of tesserae centers (dimension maxts)
- *  \param[out] ytscor y-coordinate of tesserae centers (dimension maxts)
- *  \param[out] ztscor z-coordinate of tesserae centers (dimension maxts)
- *  \param[out] ar area of the tessera (dimension maxts)
- *  \param[out] xsphcor x-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] ysphcor y-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] zsphcor z-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] rsph radii of the sphere the tessera belongs to, i.e. its curvature (dimension maxts)
- *  \param[out] nts number of generated tesserae
- *  \param[out] ntsirr number of generated irreducible tesserae
- *  \param[out] nesfp number of spheres (original + added)
- *  \param[out] addsph number of added spheres
- *  \param[out] xe x-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
- *  \param[out] ye y-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
- *  \param[out] ze z-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
- *  \param[out] rin radius of the spheres (dimension nSpheres_ + maxAddedSpheres)
- *  \param[in] masses atomic masses (for inertia tensor formation in PEDRA)
- *  \param[in] avgArea average tesserae area
- *  \param[in] rsolv solvent probe radius
- *  \param[in] ret minimal radius for an added sphere
- *  \param[in] nr_gen number of symmetry generators
- *  \param[in] gen1 first generator
- *  \param[in] gen2 second generator
- *  \param[in] gen3 third generator
- *  \param[out] nvert number of vertices per tessera
- *  \param[out] vert coordinates of tesserae vertices
- *  \param[out] centr centers of arcs defining the edges of the tesserae
- */
-extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
-    double * xtscor, double * ytscor, double * ztscor, double * ar,
-    double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
-    int * nts, int * ntsirr, int * nesfp, int * addsph,
-    double * xe, double * ye, double * ze, double * rin, double * masses,
-    double * avgArea, double * rsolv, double * ret,
-    int * nr_gen, int * gen1, int * gen2, int * gen3,
-    int * nvert, double * vert, double * centr, int * isphe, const char * pedra, int * len_f_pedra);
+GePolCavity::GePolCavity(const Molecule & molec, double a, double pr, double minR, const std::string & suffix) :
+  Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR)
+{
+  TIMER_ON("GePolCavity::build from Molecule object");
+  build(suffix, 10000, 200, 25000);
+  TIMER_OFF("GePolCavity::build from Molecule object");
+}
+
+GePolCavity::GePolCavity(const Sphere & sph, double a, double pr, double minR, const std::string & suffix) :
+  Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
+{
+  TIMER_ON("GePolCavity::build from single sphere");
+  build(suffix, 10000, 200, 25000);
+  TIMER_OFF("GePolCavity::build from single sphere");
+}
+
+GePolCavity::GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR, const std::string & suffix) :
+  Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
+{
+  TIMER_ON("GePolCavity::build from list of spheres");
+  build(suffix, 10000, 200, 25000);
+  TIMER_OFF("GePolCavity::build from list of spheres");
+}
 
 void GePolCavity::build(const std::string & suffix, int maxts, int maxsph, int maxvert)
 {

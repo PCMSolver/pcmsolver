@@ -5,6 +5,7 @@ CAVITY
   MODE = EXPLICIT
   SPHERES = [0.0, 0.0, 0.0, 1.0]
 }
+
 MEDIUM
 {
   SOLVENT = WATER

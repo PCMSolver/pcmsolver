@@ -530,7 +530,7 @@ def verify_medium(section):
                        'Tetrahydrofurane'     : ('TETRAHYDROFURANE',     'THF'),
                        'Dimethylsulfoxide'    : ('DIMETHYLSULFOXIDE',    'DMSO'),
                        'Acetonitrile'         : ('ACETONITRILE',         'CH3CN'),
-                       'Explicit'             : ('EXPLICIT')}
+                       'Explicit'             : ('EXPLICIT',             'DUMMY')}
     solvent = section.get('SOLVENT')
     explicitSolvent = solvent.get() in allowedSolvents['Explicit']
     if (explicitSolvent):

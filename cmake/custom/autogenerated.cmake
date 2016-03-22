@@ -17,8 +17,17 @@ install(FILES ${PROJECT_BINARY_DIR}/include/Config.hpp DESTINATION include)
 
 
 # Configure the input parsing script
-configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in ${PROJECT_BINARY_DIR}/bin/pcmsolver.py @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in ${PROJECT_BINARY_DIR}/bin/tmp-pcmsolver-py @ONLY)
+add_custom_command(
+  OUTPUT
+    ${PROJECT_BINARY_DIR}/bin/pcmsolver.py
+  COMMAND
+    cmake -E copy ${PROJECT_BINARY_DIR}/bin/tmp-pcmsolver-py ${PROJECT_BINARY_DIR}/bin/pcmsolver.py
+  VERBATIM
+  )
+add_custom_target(generate-pcmsolver-py ALL DEPENDS ${PROJECT_BINARY_DIR}/bin/pcmsolver.py)
 install(FILES ${PROJECT_BINARY_DIR}/bin/pcmsolver.py DESTINATION bin)
+
 # Install GetKw Python bindings
 file(COPY ${PROJECT_SOURCE_DIR}/tools/getkw.py
           ${PROJECT_SOURCE_DIR}/tools/pyparsing.py

@@ -65,7 +65,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 results = gf.singleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/vacuum_S_numerical.npy");
+                reference = cnpy::custom::npy_load<double>("vacuum_S_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -78,7 +78,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 Eigen::MatrixXd results = gf.doubleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/vacuum_D_numerical.npy");
+                reference = cnpy::custom::npy_load<double>("vacuum_D_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -102,7 +102,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 results = gf.singleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_S_numerical.npy");
+                reference = cnpy::custom::npy_load<double>("uniformdielectric_S_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -115,7 +115,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 Eigen::MatrixXd results = gf.doubleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_D_numerical.npy");
+                reference = cnpy::custom::npy_load<double>("uniformdielectric_D_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -138,7 +138,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 results = gf.singleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/ionicliquid_S_numerical.npy");
+                reference = cnpy::custom::npy_load<double>("ionicliquid_S_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -151,7 +151,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 results = gf.doubleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/ionicliquid_D_numerical.npy");
+                reference = cnpy::custom::npy_load<double>("ionicliquid_D_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -174,7 +174,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 results = gf.singleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/anisotropicliquid_S_numerical.npy");
+                reference = cnpy::custom::npy_load<double>("anisotropicliquid_S_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -187,7 +187,7 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 results = gf.doubleLayer(cavity.elements());
                 // Numerical integrator not really working now...
                 /*
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/anisotropicliquid_D_numerical.npy");
+                reference = cnpy::custom::npy_load<double>("anisotropicliquid_D_numerical.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));

@@ -271,6 +271,7 @@ void Input::initMolecule()
     // 3. list of atoms and list of spheres
     double factor = angstromToBohr();
     std::vector<Atom> radiiSet, atoms;
+    atoms.reserve(nuclei);
     if ( radiiSet_ == "UFF" ) {
         radiiSet = initUFF();
     } else {
@@ -299,7 +300,7 @@ void Input::initMolecule()
     // 4. masses
     Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
     for (int i = 0; i < masses.size(); ++i) {
-    masses(i) = atoms[i].mass;
+      masses(i) = atoms[i].mass;
     }
     // 5. molecular point group
     // FIXME currently hardcoded to C1

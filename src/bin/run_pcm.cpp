@@ -65,24 +65,40 @@ int main(int argc, char * argv[])
     out_stream.open("pcmsolver.out");
 
     if (argc > 2) PCMSOLVER_ERROR("Too many arguments supplied", "run_pcm");
+    TIMER_ON("Input parsing");
     Input parsed(argv[1]);
+    TIMER_OFF("Input parsing");
+    TIMER_ON("Initializing molecule");
     parsed.initMolecule();
+    TIMER_OFF("Initializing molecule");
 
     // Create cavity
+    TIMER_ON("Generating cavity");
     Cavity * cavity = Factory<Cavity, cavityData>::TheFactory().create(parsed.cavityType(), parsed.cavityParams());
+    TIMER_OFF("Generating cavity");
     // Create Green's functions
     // INSIDE
+    TIMER_ON("Generating Green's function inside");
     IGreensFunction * gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenInsideType(),
 		                                              parsed.insideGreenParams());
+    TIMER_OFF("Generating Green's function inside");
     // OUTSIDE
+    TIMER_ON("Generating Green's function outside");
     IGreensFunction * gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(parsed.greenOutsideType(),
 		                                              parsed.outsideStaticGreenParams());
+    TIMER_OFF("Generating Green's function outside");
+    TIMER_ON("Generating solver");
     PCMSolver * solver = Factory<PCMSolver, solverData>::TheFactory().create(parsed.solverType(), parsed.solverParams());
+    TIMER_OFF("Generating solver");
+    TIMER_ON("Building system matrix");
     solver->buildSystemMatrix(*cavity, *gf_i, *gf_o);
+    TIMER_OFF("Building system matrix");
     // Always save the cavity in a cavity.npz binary file
     // Cavity should be saved to file in initCavity(), due to the dependencies of
     // the WaveletCavity on the wavelet solvers it has to be done here...
+    TIMER_ON("Save cavity to .npz file");
     cavity->saveCavity();
+    TIMER_OFF("Save cavity to .npz file");
 
     // Printout relevant info
     out_stream << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
@@ -104,25 +120,30 @@ int main(int argc, char * argv[])
     out_stream << ".... Inside " << std::endl;
     out_stream << *gf_i << std::endl;
     out_stream << ".... Outside " << std::endl;
-    out_stream << *gf_o;
+    out_stream << *gf_o << std::endl;
     out_stream << parsed.molecule() << std::endl;
 
     // Form vector with electrostatic potential
+    TIMER_ON("Computing MEP");
     Eigen::VectorXd mep = computeMEP(parsed.molecule(), cavity->elements());
+    TIMER_OFF("Computing MEP");
     // Compute apparent surface charge
+    TIMER_ON("Computing ASC");
     Eigen::VectorXd asc = solver->computeCharge(mep);
+    TIMER_OFF("Computing ASC");
     // Compute energy and print it out
-    out_stream << "Solvation energy = " << 0.5 * (asc * mep) << std::endl;
+    out_stream << "Solvation energy = " << 0.5 * (asc.dot(mep)) << std::endl;
     out_stream << "DONE!" << std::endl;
 
     out_stream.close();
-    // Rename output file
 
     // Clean-up
+    TIMER_ON("Clean-up");
     delete cavity;
     delete gf_i;
     delete gf_o;
     delete solver;
+    TIMER_OFF("Clean-up");
 
     // Write timings out
     TIMER_DONE("pcmsolver.timer.dat");

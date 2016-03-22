@@ -1,0 +1,19 @@
+UNITS = AU
+CAVITY
+{
+  TYPE = GEPOL
+  MODE = EXPLICIT
+  SPHERES = [0.0, 0.0, 0.0, 1.0]
+}
+
+MEDIUM
+{
+  SOLVENT = WATER
+}
+
+MOLECULE
+{
+  # X, Y, Z, Q
+  GEOMETRY = [0.0, 0.0, 0.0, 1.0]
+}
+

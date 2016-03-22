@@ -71,36 +71,51 @@ inline Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav, const IGreensFun
   int dimBlock = cav.irreducible_size();
 
   // Compute SI, DI and SE, DE on the whole cavity, regardless of symmetry
+  TIMER_ON("Computing SI");
   Eigen::MatrixXd SI = gf_i.singleLayer(cav.elements());
+  TIMER_OFF("Computing SI");
+  TIMER_ON("Computing DI");
   Eigen::MatrixXd DI = gf_i.doubleLayer(cav.elements());
+  TIMER_OFF("Computing DI");
+  TIMER_ON("Computing SE");
   Eigen::MatrixXd SE = gf_o.singleLayer(cav.elements());
+  TIMER_OFF("Computing SE");
+  TIMER_ON("Computing DE");
   Eigen::MatrixXd DE = gf_o.doubleLayer(cav.elements());
+  TIMER_OFF("Computing DE");
 
   // Perform symmetry blocking
   // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
   // into "block diagonal" when all other manipulations are done.
   if (cav.pointGroup().nrGenerators() != 0) {
+    TIMER_ON("Symmetry blocking");
     symmetryBlocking(DI, cavitySize, dimBlock, nrBlocks);
     symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
     symmetryBlocking(DE, cavitySize, dimBlock, nrBlocks);
     symmetryBlocking(SE, cavitySize, dimBlock, nrBlocks);
+    TIMER_OFF("Symmetry blocking");
   }
 
   Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-  Eigen::MatrixXd aInv = a.inverse();
+  Eigen::MatrixXd Id = Eigen::MatrixXd::Identity(cavitySize, cavitySize);
 
   // 1. Form T
-  Eigen::MatrixXd fullPCMMatrix = ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.adjoint().eval()));
+  TIMER_ON("Assemble T matrix");
+  Eigen::MatrixXd fullPCMMatrix = ((2 * M_PI * Id - DE * a) * SI + SE * (2 * M_PI * Id + a * DI.adjoint().eval()));
+  TIMER_OFF("Assemble T matrix");
   // 2. Invert T using LU decomposition with full pivoting
   //    This is a rank-revealing LU decomposition, this allows us
   //    to test if T is invertible before attempting to invert it.
+  TIMER_ON("Invert T matrix");
   Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
   if (!(T_LU.isInvertible())) PCMSOLVER_ERROR("T matrix is not invertible!", BOOST_CURRENT_FUNCTION);
   fullPCMMatrix = T_LU.inverse();
+  TIMER_OFF("Invert T matrix");
   Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
   if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!", BOOST_CURRENT_FUNCTION);
-  fullPCMMatrix *= ((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI));
-  fullPCMMatrix *= a;
+  TIMER_ON("Assemble T^-1R matrix");
+  fullPCMMatrix *= ((2 * M_PI * Id - DE * a) - SE * SI_LU.inverse() * (2 * M_PI * Id - DI * a));
+  TIMER_OFF("Assemble T^-1R matrix");
 
   return fullPCMMatrix;
 }
@@ -132,38 +147,47 @@ inline Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunct
   int dimBlock = cav.irreducible_size();
 
   // Compute SI and DI on the whole cavity, regardless of symmetry
+  TIMER_ON("Computing SI");
   Eigen::MatrixXd SI = gf_i.singleLayer(cav.elements());
+  TIMER_OFF("Computing SI");
+  TIMER_ON("Computing DI");
   Eigen::MatrixXd DI = gf_i.doubleLayer(cav.elements());
+  TIMER_OFF("Computing DI");
 
   // Perform symmetry blocking
   // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
   // into "block diagonal" when all other manipulations are done.
   if (cav.pointGroup().nrGenerators() != 0) {
+    TIMER_ON("Symmetry blocking");
     symmetryBlocking(DI, cavitySize, dimBlock, nrBlocks);
     symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
+    TIMER_OFF("Symmetry blocking");
   }
 
   Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-  Eigen::MatrixXd aInv = Eigen::MatrixXd::Zero(cavitySize, cavitySize);
-  aInv = a.inverse();
+  Eigen::MatrixXd Id = Eigen::MatrixXd::Identity(cavitySize, cavitySize);
 
   // Tq = -Rv -> q = -(T^-1 * R)v = -Kv
   // T = (2 * M_PI * fact * aInv - DI) * a * SI; R = (2 * M_PI * aInv - DI)
   // fullPCMMatrix_ = K = T^-1 * R * a
   // 1. Form T
   double fact = (epsilon + 1.0)/(epsilon - 1.0);
-  Eigen::MatrixXd fullPCMMatrix = (2 * M_PI * fact * aInv - DI) * a * SI;
+  TIMER_ON("Assemble T matrix");
+  Eigen::MatrixXd fullPCMMatrix = (2 * M_PI * fact * Id - DI * a) * SI;
+  TIMER_OFF("Assemble T matrix");
   // 2. Invert T using LU decomposition with full pivoting
   //    This is a rank-revealing LU decomposition, this allows us
   //    to test if T is invertible before attempting to invert it.
+  TIMER_ON("Invert T matrix");
   Eigen::FullPivLU<Eigen::MatrixXd> T_LU(fullPCMMatrix);
   if (!(T_LU.isInvertible()))
     PCMSOLVER_ERROR("T matrix is not invertible!", BOOST_CURRENT_FUNCTION);
   fullPCMMatrix = T_LU.inverse();
+  TIMER_OFF("Invert T matrix");
   // 3. Multiply T^-1 and R
-  fullPCMMatrix *= (2 * M_PI * aInv - DI);
-  // 4. Multiply by a
-  fullPCMMatrix *= a;
+  TIMER_ON("Assemble T^-1R matrix");
+  fullPCMMatrix *= (2 * M_PI * Id - DI * a);
+  TIMER_OFF("Assemble T^-1R matrix");
 
   return fullPCMMatrix;
 }
@@ -188,13 +212,17 @@ inline Eigen::MatrixXd CPCMMatrix(const Cavity & cav, const IGreensFunction & gf
   int dimBlock = cav.irreducible_size();
 
   // Compute SI and DI on the whole cavity, regardless of symmetry
+  TIMER_ON("Computing SI");
   Eigen::MatrixXd SI = gf_i.singleLayer(cav.elements());
+  TIMER_OFF("Computing SI");
 
   // Perform symmetry blocking
   // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
   // into "block diagonal" when all other manipulations are done.
   if (cav.pointGroup().nrGenerators() != 0) {
+    TIMER_ON("Symmetry blocking");
     symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
+    TIMER_OFF("Symmetry blocking");
   }
 
   double fact = (epsilon - 1.0)/(epsilon + correction);
@@ -248,10 +276,10 @@ inline Eigen::MatrixXd anisotropicTEpsilon(const Cavity & cav, const IGreensFunc
   }
 
   Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-  Eigen::MatrixXd aInv = a.inverse();
+  Eigen::MatrixXd Id = Eigen::MatrixXd::Identity(cavitySize, cavitySize);
 
   // Form T
-  return ((2 * M_PI * aInv - DE) * a * SI + SE * a * (2 * M_PI * aInv + DI.adjoint().eval()));
+  return ((2 * M_PI * Id - DE * a) * SI + SE * (2 * M_PI * Id + a * DI.adjoint().eval()));
 }
 
 /*! \brief Builds the **isotropic** \f$ \mathbf{T}_\varepsilon \f$ matrix
@@ -289,10 +317,10 @@ inline Eigen::MatrixXd isotropicTEpsilon(const Cavity & cav, const IGreensFuncti
   }
 
   Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-  Eigen::MatrixXd aInv = a.inverse();
+  Eigen::MatrixXd Id = Eigen::MatrixXd::Identity(cavitySize, cavitySize);
 
   double fact = (epsilon + 1.0)/(epsilon - 1.0);
-  return (2 * M_PI * fact * aInv - DI) * a * SI;
+  return (2 * M_PI * fact * Id - DI * a) * SI;
 }
 
 /*! \brief Builds the **anisotropic** \f$ \mathbf{R}_\infty \f$ matrix
@@ -335,12 +363,12 @@ inline Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav, const IGreensFun
   }
 
   Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-  Eigen::MatrixXd aInv = a.inverse();
+  Eigen::MatrixXd Id = Eigen::MatrixXd::Identity(cavitySize, cavitySize);
 
   // Form T
   Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
   if (!(SI_LU.isInvertible())) PCMSOLVER_ERROR("SI matrix is not invertible!", BOOST_CURRENT_FUNCTION);
-  return (((2 * M_PI * aInv - DE) - SE * SI_LU.inverse() * (2 * M_PI * aInv - DI)) * a);
+  return ((2 * M_PI * Id - DE * a) - SE * SI_LU.inverse() * (2 * M_PI * Id - DI * a));
 }
 
 /*! \brief Builds the **isotropic** \f$ \mathbf{R}_\infty \f$ matrix
@@ -375,7 +403,7 @@ inline Eigen::MatrixXd isotropicRinfinity(const Cavity & cav, const IGreensFunct
   }
 
   Eigen::MatrixXd a = cav.elementArea().asDiagonal();
-  Eigen::MatrixXd aInv = a.inverse();
+  Eigen::MatrixXd Id = Eigen::MatrixXd::Identity(cavitySize, cavitySize);
 
-  return ((2 * M_PI * aInv - DI) * a);
+  return (2 * M_PI * Id - DI * a);
 }

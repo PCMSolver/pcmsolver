@@ -44,75 +44,74 @@
 
 void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-    isotropic_ = (gf_i.uniform() && gf_o.uniform());
-    isotropic_ ? buildIsotropicMatrix(cavity, gf_i, gf_o) : buildAnisotropicMatrix(cavity, gf_i, gf_o);
+  isotropic_ = (gf_i.uniform() && gf_o.uniform());
+  isotropic_ ? buildIsotropicMatrix(cavity, gf_i, gf_o) : buildAnisotropicMatrix(cavity, gf_i, gf_o);
 }
 
 void IEFSolver::buildAnisotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-    fullPCMMatrix_ = anisotropicIEFMatrix(cav, gf_i, gf_o);
-    // Symmetrize K := (K + K+)/2
-    if (hermitivitize_) {
-        hermitivitize(fullPCMMatrix_);
-    }
-    // Pack into a block diagonal matrix
-    // The number of irreps in the group
-    int nrBlocks = cav.pointGroup().nrIrrep();
-    // The size of the irreducible portion of the cavity
-    int dimBlock = cav.irreducible_size();
-    // For the moment just packs into a std::vector<Eigen::MatrixXd>
-    symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
+  fullPCMMatrix_ = anisotropicIEFMatrix(cav, gf_i, gf_o);
+  // Symmetrize K := (K + K+)/2
+  if (hermitivitize_) {
+    hermitivitize(fullPCMMatrix_);
+  }
+  // Pack into a block diagonal matrix
+  // The number of irreps in the group
+  int nrBlocks = cav.pointGroup().nrIrrep();
+  // The size of the irreducible portion of the cavity
+  int dimBlock = cav.irreducible_size();
+  // For the moment just packs into a std::vector<Eigen::MatrixXd>
+  symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
 
-    built_ = true;
+  built_ = true;
 }
 
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-    fullPCMMatrix_ = isotropicIEFMatrix(cav, gf_i, profiles::epsilon(gf_o.permittivity()));
-    // Symmetrize K := (K + K+)/2
-    if (hermitivitize_) {
-        hermitivitize(fullPCMMatrix_);
-    }
-    // Pack into a block diagonal matrix
-    // The number of irreps in the group
-    int nrBlocks = cav.pointGroup().nrIrrep();
-    // The size of the irreducible portion of the cavity
-    int dimBlock = cav.irreducible_size();
-    // For the moment just packs into a std::vector<Eigen::MatrixXd>
-    symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
+  fullPCMMatrix_ = isotropicIEFMatrix(cav, gf_i, profiles::epsilon(gf_o.permittivity()));
+  // Symmetrize K := (K + K+)/2
+  if (hermitivitize_) {
+    hermitivitize(fullPCMMatrix_);
+  }
+  // Pack into a block diagonal matrix
+  // The number of irreps in the group
+  int nrBlocks = cav.pointGroup().nrIrrep();
+  // The size of the irreducible portion of the cavity
+  int dimBlock = cav.irreducible_size();
+  // For the moment just packs into a std::vector<Eigen::MatrixXd>
+  symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
 
-    built_ = true;
+  built_ = true;
 }
 
 Eigen::VectorXd IEFSolver::computeCharge_impl(const Eigen::VectorXd & potential, int irrep) const
 {
-    // The potential and charge vector are of dimension equal to the
-    // full dimension of the cavity. We have to select just the part
-    // relative to the irrep needed.
-    int fullDim = fullPCMMatrix_.rows();
-    Eigen::VectorXd charge = Eigen::VectorXd::Zero(fullDim);
-    int nrBlocks = blockPCMMatrix_.size();
-    int irrDim = fullDim/nrBlocks;
-    charge.segment(irrep*irrDim, irrDim) =
-        - blockPCMMatrix_[irrep] * potential.segment(irrep*irrDim, irrDim);
-    return charge;
+  // The potential and charge vector are of dimension equal to the
+  // full dimension of the cavity. We have to select just the part
+  // relative to the irrep needed.
+  int fullDim = fullPCMMatrix_.rows();
+  Eigen::VectorXd charge = Eigen::VectorXd::Zero(fullDim);
+  int nrBlocks = blockPCMMatrix_.size();
+  int irrDim = fullDim/nrBlocks;
+  charge.segment(irrep*irrDim, irrDim) =
+    - blockPCMMatrix_[irrep] * potential.segment(irrep*irrDim, irrDim);
+  return charge;
 }
 
 std::ostream & IEFSolver::printSolver(std::ostream & os)
 {
-    std::string type;
-    if (isotropic_) {
-        type = "IEFPCM, isotropic";
-    } else {
-        type = "IEFPCM, anisotropic";
-    }
-    os << "Solver Type: " << type << std::endl;
-    if (hermitivitize_) {
-        os << "PCM matrix hermitivitized";
-    } else {
-        os << "PCM matrix NOT hermitivitized (matches old DALTON)";
-    }
+  std::string type;
+  if (isotropic_) {
+    type = "IEFPCM, isotropic";
+  } else {
+    type = "IEFPCM, anisotropic";
+  }
+  os << "Solver Type: " << type << std::endl;
+  if (hermitivitize_) {
+    os << "PCM matrix hermitivitized";
+  } else {
+    os << "PCM matrix NOT hermitivitized (matches old DALTON)";
+  }
 
-    return os;
+  return os;
 }
-

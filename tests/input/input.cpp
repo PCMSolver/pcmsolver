@@ -43,7 +43,7 @@ SCENARIO("Input reading using GetKw", "[input]")
          */
         WHEN("The input file is for a TsLess cavity")
         {
-            std::string filename = "@CMAKE_CURRENT_LIST_DIR@/@tsless.inp";
+            std::string filename = "@tsless.inp";
             Input parsedInput = Input(filename);
             std::string units = "ANGSTROM";
             int CODATAyear = 2002;
@@ -106,7 +106,7 @@ SCENARIO("Input reading using GetKw", "[input]")
          */
         WHEN("The input file is for a restart cavity")
         {
-            std::string filename = "@CMAKE_CURRENT_LIST_DIR@/@restart.inp";
+            std::string filename = "@restart.inp";
             Input parsedInput = Input(filename);
             std::string units = "AU";
             int CODATAyear = 2010;
@@ -166,7 +166,7 @@ SCENARIO("Input reading using GetKw", "[input]")
          */
         WHEN("The input file is for a wavelet cavity")
         {
-            std::string filename = "@CMAKE_CURRENT_LIST_DIR@/@wavelet.inp";
+            std::string filename = "@wavelet.inp";
             Input parsedInput = Input(filename);
             std::string units = "ANGSTROM";
             int CODATAyear = 1998;
@@ -235,7 +235,7 @@ SCENARIO("Input reading using GetKw", "[input]")
          */
         WHEN("The input file is for a diffuse environment")
         {
-            std::string filename = "@CMAKE_CURRENT_LIST_DIR@/@diffuse.inp";
+            std::string filename = "@diffuse.inp";
             Input parsedInput = Input(filename);
             std::string units = "ANGSTROM";
             int CODATAyear = 1998;

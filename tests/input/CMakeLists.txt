@@ -1,4 +1,4 @@
-add_library(input-tests OBJECT input.cpp)
+add_library(input-tests OBJECT input_diffuse.cpp input_restart.cpp input_tsless.cpp input_wavelet.cpp)
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(input-tests custom_boost)
 endif()

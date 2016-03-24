@@ -82,7 +82,7 @@ SCENARIO("Evaluation of the anisotropic liquid Green's function and its derivati
          */
         WHEN("the derivatives are evaluated via AD")
         {
-            AnisotropicLiquid<AD_directional, CollocationIntegrator> gf(epsilon, euler);
+            AnisotropicLiquid<> gf(epsilon, euler);
             THEN("the value of the Green's function is")
             {
                 double value = result(0);

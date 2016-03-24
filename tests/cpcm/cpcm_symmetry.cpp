@@ -43,9 +43,8 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
     GIVEN("An isotropic environment modelled as a perfect conductor and a point charge")
     {
         double permittivity = 78.39;
-        Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-        UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-            UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+        Vacuum<> gf_i;
+        UniformDielectric<> gf_o(permittivity);
         bool symm = true;
         double correction = 0.0;
 
@@ -69,7 +68,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -97,7 +96,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -130,7 +129,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             }
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -163,7 +162,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             }
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -196,7 +195,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             }
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -229,7 +228,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             }
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -262,7 +261,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             }
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -295,7 +294,7 @@ SCENARIO("Test solver for the C-PCM for a point charge in different Abelian poin
             }
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();

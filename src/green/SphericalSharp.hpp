@@ -34,7 +34,9 @@
 
 #include <Eigen/Core>
 
+#include "DerivativeTypes.hpp"
 #include "DerivativeUtils.hpp"
+#include "bi_operators/IntegratorForward.hpp"
 #include "GreensFunction.hpp"
 #include "utils/legendre.h"
 #include "utils/MathUtils.hpp"
@@ -49,8 +51,8 @@
  *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation of S and D
  */
 
-template <typename DerivativeTraits,
-          typename IntegratorPolicy>
+template <typename DerivativeTraits = AD_directional,
+          typename IntegratorPolicy = CollocationIntegrator>
 class SphericalSharp __final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
                                               SphericalSharp<DerivativeTraits, IntegratorPolicy> >
 {
@@ -153,6 +155,12 @@ private:
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const
     {
         return (this->profile_.epsilonSolvent * this->derivativeProbe(direction, p1, p2));
+    }
+    virtual KernelS exportKernelS_impl() const __override {
+      return pcm::bind(&SphericalSharp<DerivativeTraits, IntegratorPolicy>::kernelS, *this, pcm::_1, pcm::_2);
+    }
+    virtual KernelD exportKernelD_impl() const __override {
+      return pcm::bind(&SphericalSharp<DerivativeTraits, IntegratorPolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
     }
     DerivativeTraits imagePotential_impl(DerivativeTraits * sp, DerivativeTraits * pp) const
     {

@@ -48,8 +48,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse e
         double eps2 = 78.39;
         double center = 100.0;
         double width = 5.0;
-        Vacuum<AD_directional, CollocationIntegrator> gfInside =
-            Vacuum<AD_directional, CollocationIntegrator>();
+        Vacuum<> gf_i;
         bool symm = true;
 
         double charge = 8.0;
@@ -66,10 +65,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse e
             double minRadius = 100.0;
             GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
 
-            SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gfOutside =
-                SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 3);
+            SphericalDiffuse<> gf_o(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 3);
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge, origin);
             for (size_t i = 0; i < size; ++i) {
@@ -99,11 +97,10 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse e
             double minRadius = 100.0;
             GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
 
-            SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gfOutside =
-                SphericalDiffuse<CollocationIntegrator, OneLayerTanh>(eps1, eps2, width, center, origin, 3);
+            SphericalDiffuse<> gf_o(eps1, eps2, width, center, origin, 3);
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);

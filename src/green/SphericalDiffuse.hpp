@@ -39,6 +39,9 @@
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
+#include "DerivativeUtils.hpp"
+#include "bi_operators/IntegratorForward.hpp"
+#include "dielectric_profile/ProfileForward.hpp"
 #include "GreensFunction.hpp"
 #include "utils/MathUtils.hpp"
 
@@ -64,8 +67,8 @@
  *  at a pair of points, a translation of the sampling points is performed first.
  */
 
-template <typename IntegratorPolicy,
-          typename ProfilePolicy>
+template <typename IntegratorPolicy = CollocationIntegrator,
+          typename ProfilePolicy = OneLayerTanh>
 class SphericalDiffuse __final : public GreensFunction<Numerical, IntegratorPolicy, ProfilePolicy,
                                                SphericalDiffuse<IntegratorPolicy, ProfilePolicy> >
 {
@@ -247,6 +250,12 @@ private:
         pcm::tie(eps_r2, pcm::ignore) = this->epsilon(p2);
 
         return (eps_r2 * this->derivativeProbe(direction, p1, p2));
+    }
+    virtual KernelS exportKernelS_impl() const __override {
+      return pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::kernelS, *this, pcm::_1, pcm::_2);
+    }
+    virtual KernelD exportKernelD_impl() const __override {
+      return pcm::bind(&SphericalDiffuse<IntegratorPolicy, ProfilePolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
     }
     virtual std::ostream & printObject(std::ostream & os) __override
     {

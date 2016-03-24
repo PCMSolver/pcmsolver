@@ -54,12 +54,11 @@ TEST_CASE("Test solver for the IEFPCM with NH3 molecule and a GePol cavity", "[s
     cavity.saveCavity("nh3.npz");
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+    Vacuum<> gf_i;
+    UniformDielectric<> gf_o(permittivity);
     bool symm = true;
     IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+    solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;

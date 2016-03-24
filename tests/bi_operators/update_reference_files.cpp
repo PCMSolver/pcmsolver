@@ -81,7 +81,7 @@ void save_vacuum_collocation() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    Vacuum<AD_directional, CollocationIntegrator> gf;
+    Vacuum<> gf;
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
     cnpy::custom::npy_save("vacuum_S_collocation.npy", S_results);
@@ -95,7 +95,7 @@ void save_uniform_dielectric_collocation() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    UniformDielectric<AD_directional, CollocationIntegrator> gf(epsilon);
+    UniformDielectric<> gf(epsilon);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
     cnpy::custom::npy_save("uniformdielectric_S_collocation.npy", S_results);
@@ -111,7 +111,7 @@ void save_tanh_spherical_diffuse_collocation() {
     double area = 10.0;
     GePolCavity cavity(molec, area, 0.0, 100.0);
 
-    SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
+    SphericalDiffuse<> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
     Eigen::MatrixXd S_results = gf.singleLayer(cavity.elements());
     cnpy::custom::npy_save("tanhsphericaldiffuse_S_collocation.npy", S_results);

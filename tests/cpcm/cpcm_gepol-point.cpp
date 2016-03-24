@@ -43,9 +43,8 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity", "[so
     GIVEN("An isotropic environment modelled as a perfect conductor and a point charge")
     {
         double permittivity = 78.39;
-        Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-        UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-            UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+        Vacuum<> gf_i;
+        UniformDielectric<> gf_o(permittivity);
         bool symm = true;
         double correction = 0.5;
 
@@ -66,7 +65,7 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity", "[so
             cavity.saveCavity("point.npz");
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
@@ -105,7 +104,7 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity", "[so
             GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
 
             CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
             double charge = 8.0;
             size_t size = cavity.size();

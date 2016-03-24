@@ -49,13 +49,12 @@ TEST_CASE("Test solver for the C-PCM for a point charge and a restarted GePol ca
     // The potential at cavity point s_I is Q/|s_I|
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+    Vacuum<> gf_i;
+    UniformDielectric<> gf_o(permittivity);
     bool symm = true;
     double correction = 0.0;
     CPCMSolver solver(symm, correction);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+    solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
     double charge = 8.0;
     size_t size = cavity.size();

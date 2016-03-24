@@ -60,7 +60,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
          */
         WHEN("the vacuum Green's function is used")
         {
-            Vacuum<AD_directional, CollocationIntegrator> gf;
+            Vacuum<> gf;
             THEN("the matrix elements of S are")
             {
                 results = gf.singleLayer(cavity.elements());
@@ -89,7 +89,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
         AND_WHEN("the uniform dielectric Green's function is used")
         {
             double epsilon = 80.0;
-            UniformDielectric<AD_directional, CollocationIntegrator> gf(epsilon);
+            UniformDielectric<> gf(epsilon);
             THEN("the matrix elements of S are")
             {
                 results = gf.singleLayer(cavity.elements());
@@ -120,7 +120,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
             double epsilon = 80.0;
             double width = 5.0;
             double sphereRadius = 100.0;
-            SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
+            SphericalDiffuse<> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
             THEN("the matrix elements of S are")
             {
                 results = gf.singleLayer(cavity.elements());

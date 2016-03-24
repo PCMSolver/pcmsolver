@@ -43,9 +43,8 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
     GIVEN("An isotropic environment modelled and a point charge forcing the use of an anisotropic solver")
     {
         double permittivity = 78.39;
-        Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-        UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-            UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+        Vacuum<> gf_i;
+        UniformDielectric<> gf_o(permittivity);
         bool symm = true;
 
         double charge = 8.0;
@@ -66,10 +65,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             GePolCavity cavity(point, area, probeRadius, minRadius, "C1");
 
             IEFSolver aniso_solver(symm);
-            aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
+            aniso_solver.buildAnisotropicMatrix(cavity, gf_i, gf_o);
 
             IEFSolver iso_solver(symm);
-            iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
+            iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
@@ -106,10 +105,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             GePolCavity cavity(point, area, probeRadius, minRadius, "C2");
 
             IEFSolver aniso_solver(symm);
-            aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
+            aniso_solver.buildAnisotropicMatrix(cavity, gf_i, gf_o);
 
             IEFSolver iso_solver(symm);
-            iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
+            iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
@@ -146,10 +145,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             GePolCavity cavity(point, area, probeRadius, minRadius, "Cs");
 
             IEFSolver aniso_solver(symm);
-            aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
+            aniso_solver.buildAnisotropicMatrix(cavity, gf_i, gf_o);
 
             IEFSolver iso_solver(symm);
-            iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
+            iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
@@ -186,10 +185,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             GePolCavity cavity(point, area, probeRadius, minRadius, "Ci");
 
             IEFSolver aniso_solver(symm);
-            aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
+            aniso_solver.buildAnisotropicMatrix(cavity, gf_i, gf_o);
 
             IEFSolver iso_solver(symm);
-            iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
+            iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
@@ -223,10 +222,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             GePolCavity cavity(point, area, probeRadius, minRadius, "D2");
 
             IEFSolver aniso_solver(symm);
-            aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
+            aniso_solver.buildAnisotropicMatrix(cavity, gf_i, gf_o);
 
             IEFSolver iso_solver(symm);
-            iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
+            iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
@@ -263,10 +262,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             GePolCavity cavity(point, area, probeRadius, minRadius, "C2v");
 
             IEFSolver aniso_solver(symm);
-            aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
+            aniso_solver.buildAnisotropicMatrix(cavity, gf_i, gf_o);
 
             IEFSolver iso_solver(symm);
-            iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
+            iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
@@ -303,10 +302,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             GePolCavity cavity(point, area, probeRadius, minRadius, "C2h");
 
             IEFSolver aniso_solver(symm);
-            aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
+            aniso_solver.buildAnisotropicMatrix(cavity, gf_i, gf_o);
 
             IEFSolver iso_solver(symm);
-            iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
+            iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
@@ -343,10 +342,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             GePolCavity cavity(point, area, probeRadius, minRadius, "D2h");
 
             IEFSolver aniso_solver(symm);
-            aniso_solver.buildAnisotropicMatrix(cavity, gfInside, gfOutside);
+            aniso_solver.buildAnisotropicMatrix(cavity, gf_i, gf_o);
 
             IEFSolver iso_solver(symm);
-            iso_solver.buildIsotropicMatrix(cavity, gfInside, gfOutside);
+            iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
             size_t size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);

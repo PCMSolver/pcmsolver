@@ -44,9 +44,8 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
     GIVEN("An isotropic environment and a point charge")
     {
         double permittivity = 78.39;
-        Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-        UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-            UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+        Vacuum<> gf_i;
+        UniformDielectric<> gf_o(permittivity);
         bool symm = true;
 
         double charge = 8.0;
@@ -67,7 +66,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -95,7 +94,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -128,7 +127,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             }
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -161,7 +160,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             }
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -194,7 +193,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             }
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -227,7 +226,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             }
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -260,7 +259,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             }
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();
@@ -293,7 +292,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             }
 
             IEFSolver solver(symm);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
                 size_t irr_size = cavity.irreducible_size();

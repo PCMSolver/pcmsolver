@@ -530,7 +530,7 @@ def verify_medium(section):
                        'Tetrahydrofurane'     : ('TETRAHYDROFURANE',     'THF'),
                        'Dimethylsulfoxide'    : ('DIMETHYLSULFOXIDE',    'DMSO'),
                        'Acetonitrile'         : ('ACETONITRILE',         'CH3CN'),
-                       'Explicit'             : ('EXPLICIT')}
+                       'Explicit'             : ('EXPLICIT',             'DUMMY')}
     solvent = section.get('SOLVENT')
     explicitSolvent = solvent.get() in allowedSolvents['Explicit']
     if (explicitSolvent):
@@ -565,7 +565,7 @@ def verify_medium(section):
         sys.exit(1)
 
     integrator = section.get('DIAGONALINTEGRATOR')
-    if integrator.get() not 'COLLOCATION':
+    if (integrator.get() is not 'COLLOCATION'):
         print('Only the collocation integrator is available')
         sys.exit(1)
 

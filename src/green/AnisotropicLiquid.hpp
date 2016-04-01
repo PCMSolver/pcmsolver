@@ -36,6 +36,9 @@
 
 class Element;
 
+#include "DerivativeTypes.hpp"
+#include "DerivativeUtils.hpp"
+#include "bi_operators/IntegratorForward.hpp"
 #include "dielectric_profile/Anisotropic.hpp"
 #include "GreensFunction.hpp"
 
@@ -48,8 +51,8 @@ class Element;
  *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation of S and D
  */
 
-template <typename DerivativeTraits,
-          typename IntegratorPolicy>
+template <typename DerivativeTraits = AD_directional,
+          typename IntegratorPolicy = CollocationIntegrator>
 class AnisotropicLiquid __final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Anisotropic,
                                      AnisotropicLiquid<DerivativeTraits, IntegratorPolicy> >
 {
@@ -124,6 +127,12 @@ private:
         // the full gradient is needed to get the kernel of D and D^\dagger
         Eigen::Vector3d scratch = this->profile_.epsilon() * (this->gradientProbe(p1, p2));
         return scratch.dot(direction);
+    }
+    virtual KernelS exportKernelS_impl() const __override {
+      return pcm::bind(&AnisotropicLiquid<DerivativeTraits, IntegratorPolicy>::kernelS, *this, pcm::_1, pcm::_2);
+    }
+    virtual KernelD exportKernelD_impl() const __override {
+      return pcm::bind(&AnisotropicLiquid<DerivativeTraits, IntegratorPolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
     }
     virtual std::ostream & printObject(std::ostream & os) __override
     {

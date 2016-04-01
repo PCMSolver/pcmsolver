@@ -52,14 +52,13 @@ TEST_CASE("Test solver for the CPCM and the C2H4 molecule in D2h symmetry", "[cp
   GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "cpcm_d2h_noadd");
 
   double permittivity = 78.39;
-  Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-  UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+  Vacuum<> gf_i;
+  UniformDielectric<> gf_o(permittivity);
   bool symm = true;
   double correction = 0.0;
 
   CPCMSolver solver(symm, correction);
-  solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+  solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
   double Ccharge = 6.0;
   double Hcharge = 1.0;

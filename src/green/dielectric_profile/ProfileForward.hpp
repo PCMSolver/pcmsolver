@@ -23,17 +23,16 @@
  */
 /* pcmsolver_copyright_end */
 
-#ifndef INTEGRATORTYPES_HPP
-#define INTEGRATORTYPES_HPP
+#ifndef PROFILEFORWARD_HPP
+#define PROFILEFORWARD_HPP
 
-#include "Config.hpp"
+class Anisotropic;
+class OneLayerErf;
+class OneLayerTanh;
+class MembraneTanh;
+struct Metal;
+struct Sharp;
+struct Uniform;
+struct Yukawa;
 
-#include <boost/mpl/vector.hpp>
-
-#include "CollocationIntegrator.hpp"
-#include "PurisimaIntegrator.hpp"
-#include "NumericalIntegrator.hpp"
-
-typedef boost::mpl::vector<CollocationIntegrator, PurisimaIntegrator, NumericalIntegrator> integrator_types;
-
-#endif // INTEGRATORTYPES_HPP
+#endif // PROFILEFORWARD_HPP

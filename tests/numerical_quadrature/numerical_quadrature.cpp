@@ -130,7 +130,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
                 // In case you need to update the reference files...
                 cnpy::custom::npy_save("molecule.npy", results);
                 */
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/molecule.npy");
+                reference = cnpy::custom::npy_load<double>("molecule.npy");
 
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     REQUIRE(results(i) == Approx(reference(i)));
@@ -158,7 +158,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
                 // In case you need to update the reference files...
                 cnpy::custom::npy_save("molecule_1r.npy", results);
                 */
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/molecule_1r.npy");
+                reference = cnpy::custom::npy_load<double>("molecule_1r.npy");
 
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     REQUIRE(results(i) == Approx(reference(i)));

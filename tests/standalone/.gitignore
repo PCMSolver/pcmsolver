@@ -1,0 +1,6 @@
+@*.pcm
+cavity.off__*
+PEDRA.OUT__*
+cavity.npz
+pcmsolver.out
+pcmsolver.timer.dat

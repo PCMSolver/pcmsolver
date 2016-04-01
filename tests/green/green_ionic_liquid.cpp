@@ -73,7 +73,7 @@ TEST_CASE("Evaluation of the ionic liquid Green's function and its derivatives",
      */
     SECTION("Directional derivative via AD")
     {
-        IonicLiquid<AD_directional, CollocationIntegrator> gf(epsilon, kappa);
+        IonicLiquid<> gf(epsilon, kappa);
         double value = result(0);
         double gf_value = gf.kernelS(source, probe);
         REQUIRE(value == Approx(gf_value));

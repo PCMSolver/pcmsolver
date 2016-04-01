@@ -60,11 +60,11 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
          */
         WHEN("the vacuum Green's function is used")
         {
-            Vacuum<AD_directional, CollocationIntegrator> gf;
+            Vacuum<> gf;
             THEN("the matrix elements of S are")
             {
                 results = gf.singleLayer(cavity.elements());
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/vacuum_S_collocation.npy");
+                reference = cnpy::custom::npy_load<double>("vacuum_S_collocation.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -74,7 +74,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
             AND_THEN("the matrix elements of D are")
             {
                 results = gf.doubleLayer(cavity.elements());
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/vacuum_D_collocation.npy");
+                reference = cnpy::custom::npy_load<double>("vacuum_D_collocation.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -89,11 +89,11 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
         AND_WHEN("the uniform dielectric Green's function is used")
         {
             double epsilon = 80.0;
-            UniformDielectric<AD_directional, CollocationIntegrator> gf(epsilon);
+            UniformDielectric<> gf(epsilon);
             THEN("the matrix elements of S are")
             {
                 results = gf.singleLayer(cavity.elements());
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_S_collocation.npy");
+                reference = cnpy::custom::npy_load<double>("uniformdielectric_S_collocation.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -103,7 +103,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
             AND_THEN("the matrix elements of D are")
             {
                 results = gf.doubleLayer(cavity.elements());
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/uniformdielectric_D_collocation.npy");
+                reference = cnpy::custom::npy_load<double>("uniformdielectric_D_collocation.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -120,11 +120,11 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
             double epsilon = 80.0;
             double width = 5.0;
             double sphereRadius = 100.0;
-            SphericalDiffuse<CollocationIntegrator, OneLayerTanh> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
+            SphericalDiffuse<> gf(epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
             THEN("the matrix elements of S are")
             {
                 results = gf.singleLayer(cavity.elements());
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/tanhsphericaldiffuse_S_collocation.npy");
+                reference = cnpy::custom::npy_load<double>("tanhsphericaldiffuse_S_collocation.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
@@ -134,7 +134,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements", "[bi_ope
             AND_THEN("the matrix elements of D are")
             {
                 results = gf.doubleLayer(cavity.elements());
-                reference = cnpy::custom::npy_load<double>("@CMAKE_CURRENT_LIST_DIR@/tanhsphericaldiffuse_D_collocation.npy");
+                reference = cnpy::custom::npy_load<double>("tanhsphericaldiffuse_D_collocation.npy");
                 for (size_t i = 0; i < cavity.size(); ++i) {
                     for (size_t j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));

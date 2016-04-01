@@ -108,7 +108,7 @@ void Input::reader(const std::string & filename)
     const Section & medium = input_.getSect("MEDIUM");
     // Get the name of the solvent
     std::string name = medium.getStr("SOLVENT");
-    if (name == "EXPLICIT" || name == "E") {
+    if (name == "EXPLICIT") {
         hasSolvent_ = false;
         // Get the probe radius
         probeRadius_ = medium.getDbl("PROBERADIUS");
@@ -256,63 +256,66 @@ void Input::semanticCheck()
 
 void Input::initMolecule()
 {
-    // Gather information necessary to build molecule_
-    // 1. number of atomic centers
-    int nuclei = int(geometry_.size() / 4);
-    // 2. position and charges of atomic centers
-    Eigen::Matrix3Xd centers = Eigen::Matrix3Xd::Zero(3, nuclei);
-    Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
-    int j = 0;
-    for (int i = 0; i < nuclei; ++i) {
-        centers.col(i) << geometry_[j], geometry_[j+1], geometry_[j+2];
-        charges(i) = geometry_[j+3];
-        j += 4;
+  // Gather information necessary to build molecule_
+  // 1. number of atomic centers
+  int nuclei = int(geometry_.size() / 4);
+  // 2. position and charges of atomic centers
+  Eigen::Matrix3Xd centers = Eigen::Matrix3Xd::Zero(3, nuclei);
+  Eigen::VectorXd charges  = Eigen::VectorXd::Zero(nuclei);
+  int j = 0;
+  for (int i = 0; i < nuclei; ++i) {
+    centers.col(i) << geometry_[j], geometry_[j+1], geometry_[j+2];
+    charges(i) = geometry_[j+3];
+    j += 4;
+  }
+  // 3. list of atoms and list of spheres
+  double factor = angstromToBohr();
+  std::vector<Atom> radiiSet, atoms;
+  if ( radiiSet_ == "UFF" ) {
+    radiiSet = initUFF();
+  } else {
+    radiiSet = initBondi();
+  }
+  for (int i = 0; i < charges.size(); ++i) {
+    int index = int(charges(i)) - 1;
+    atoms.push_back(radiiSet[index]);
+  }
+  // Based on the creation mode (Implicit or Atoms)
+  // the spheres list might need postprocessing
+  if ( mode_ == "IMPLICIT" || mode_ == "ATOMS") {
+    for (int i = 0; i < charges.size(); ++i) {
+      int index = int(charges(i)) - 1;
+      double radius = radiiSet[index].radius * factor;
+      if (scaling_) radius *= radiiSet[index].radiusScaling;
+      spheres_.push_back(Sphere(centers.col(i), radius));
     }
-    // 3. list of atoms and list of spheres
-    double factor = angstromToBohr();
-    std::vector<Atom> radiiSet, atoms;
-    if ( radiiSet_ == "UFF" ) {
-        radiiSet = initUFF();
-    } else {
-        radiiSet = initBondi();
+    if (mode_ == "ATOMS") {
+      // Loop over the atomsInput array to get which atoms will have a user-given radius
+      for (size_t i = 0; i < atoms_.size(); ++i) {
+        int index = atoms_[i] - 1; // -1 to go from human readable to machine readable
+        // Put the new Sphere in place of the implicit-generated one
+        spheres_[index] = Sphere(centers.col(index), radii_[i]);
+      }
     }
-    // Based on the creation mode (Implicit or Atoms)
-    // the spheres list might need postprocessing
-    if ( mode_ == "IMPLICIT" ) {
-        for (int i = 0; i < charges.size(); ++i) {
-            int index = int(charges(i)) - 1;
-            atoms.push_back(radiiSet[index]);
-            double radius = radiiSet[index].radius * factor;
-            if (scaling_) radius *= radiiSet[index].radiusScaling;
-            spheres_.push_back(Sphere(centers.col(i), radius));
-        }
-        if (mode_ == "ATOMS") {
-            // Loop over the atomsInput array to get which atoms will have a user-given radius
-            for (size_t i = 0; i < atoms_.size(); ++i) {
-                int index = atoms_[i] - 1; // -1 to go from human readable to machine readable
-                // Put the new Sphere in place of the implicit-generated one
-                spheres_[index] = Sphere(centers.col(index), radii_[i]);
-            }
-        }
-    }
+  }
 
-    // 4. masses
-    Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
-    for (int i = 0; i < masses.size(); ++i) {
+  // 4. masses
+  Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);
+  for (int i = 0; i < masses.size(); ++i) {
     masses(i) = atoms[i].mass;
-    }
-    // 5. molecular point group
-    // FIXME currently hardcoded to C1
+  }
+  // 5. molecular point group
+  // FIXME currently hardcoded to C1
 
-    // OK, now get molecule_
-    molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres_);
-    // Check that all atoms have a radius attached
-    std::vector<Atom>::const_iterator res =
-      std::find_if(atoms.begin(), atoms.end(), invalid);
-    if (res != atoms.end()) {
-      std::cout << molecule_ << std::endl;
-      PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms!", BOOST_CURRENT_FUNCTION);
-    }
+  // OK, now get molecule_
+  molecule_ = Molecule(nuclei, charges, masses, centers, atoms, spheres_);
+  // Check that all atoms have a radius attached
+  std::vector<Atom>::const_iterator res =
+    std::find_if(atoms.begin(), atoms.end(), invalid);
+  if (res != atoms.end()) {
+    std::cout << molecule_ << std::endl;
+    PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms!", BOOST_CURRENT_FUNCTION);
+  }
 }
 
 cavityData Input::cavityParams()

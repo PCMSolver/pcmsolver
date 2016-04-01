@@ -71,7 +71,7 @@ TEST_CASE("Evaluation of the uniform dielectric Green's function and its derivat
      */
     SECTION("Directional derivative via AD")
     {
-        UniformDielectric<AD_directional, CollocationIntegrator> gf(epsilon);
+        UniformDielectric<> gf(epsilon);
         double value = result(0);
         double gf_value = gf.kernelS(source, probe);
         REQUIRE(value == Approx(gf_value));

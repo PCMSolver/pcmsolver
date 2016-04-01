@@ -71,7 +71,7 @@ TEST_CASE("Evaluation of the vacuum Green's function and its derivatives", "[gre
      */
     SECTION("Directional derivative via AD")
     {
-        Vacuum<AD_directional, CollocationIntegrator> gf;
+        Vacuum<> gf;
         double value = result(0);
         double gf_value = gf.kernelS(source, probe);
         REQUIRE(value == Approx(gf_value));

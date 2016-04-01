@@ -36,7 +36,9 @@
 
 class Element;
 
+#include "DerivativeTypes.hpp"
 #include "DerivativeUtils.hpp"
+#include "bi_operators/IntegratorForward.hpp"
 #include "GreensFunction.hpp"
 
 /*! \file Vacuum.hpp
@@ -48,8 +50,8 @@ class Element;
  *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation of S and D
  */
 
-template <typename DerivativeTraits,
-          typename IntegratorPolicy>
+template <typename DerivativeTraits = AD_directional,
+          typename IntegratorPolicy = CollocationIntegrator>
 class Vacuum __final : public GreensFunction<DerivativeTraits, IntegratorPolicy, Uniform,
                                      Vacuum<DerivativeTraits, IntegratorPolicy> >
 {
@@ -106,6 +108,12 @@ private:
                               const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) const __override
     {
         return this->derivativeProbe(direction, p1, p2);
+    }
+    virtual KernelS exportKernelS_impl() const __override {
+      return pcm::bind(&Vacuum<DerivativeTraits, IntegratorPolicy>::kernelS, *this, pcm::_1, pcm::_2);
+    }
+    virtual KernelD exportKernelD_impl() const __override {
+      return pcm::bind(&Vacuum<DerivativeTraits, IntegratorPolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
     }
     virtual std::ostream & printObject(std::ostream & os) __override
     {

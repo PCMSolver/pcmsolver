@@ -86,7 +86,7 @@ std::vector<Atom> & initBondi()
     Bondi[39] = Atom("Zirconium",    "Zr", 40.0,  89.9047080, 0.00, Origin, 1.2);
     Bondi[40] = Atom("Niobium",      "Nb", 41.0,  92.9063780, 0.00, Origin, 1.2);
     Bondi[41] = Atom("Molybdenum",   "Mo", 42.0,  97.9054050, 0.00, Origin, 1.2);
-    Bondi[42] = Atom("Technetium",   "Tc", 43.0,   0.0000000, 0.00, Origin, 1.2);
+    Bondi[42] = Atom("Technetium",   "Tc", 43.0,  96.0000000, 0.00, Origin, 1.2);
     Bondi[43] = Atom("Ruthenium",    "Ru", 44.0, 101.9043480, 0.00, Origin, 1.2);
     Bondi[44] = Atom("Rhodium",      "Rh", 45.0, 102.9055030, 0.00, Origin, 1.2);
     Bondi[45] = Atom("Palladium",    "Pd", 46.0, 105.9034750, 1.63, Origin, 1.2);
@@ -98,7 +98,7 @@ std::vector<Atom> & initBondi()
     Bondi[51] = Atom("Tellurium",    "Te", 52.0, 129.9062290, 2.06, Origin, 1.2);
     Bondi[52] = Atom("Iodine",       "I",  53.0, 126.9044770, 1.98, Origin, 1.2);
     Bondi[53] = Atom("Xenon",        "Xe", 54.0, 131.9041480, 2.16, Origin, 1.2);
-    Bondi[54] = Atom("Cesium",       "Cs", 55.0, 132.9054290, 3.43, Origin, 1.2);
+    Bondi[54] = Atom("Caesium",      "Cs", 55.0, 132.9054290, 3.43, Origin, 1.2);
     Bondi[55] = Atom("Barium",       "Ba", 56.0, 137.9052320, 2.68, Origin, 1.2);
     Bondi[56] = Atom("Lanthanum",    "La", 57.0, 138.9063470, 0.00, Origin, 1.2);
     Bondi[57] = Atom("Cerium",       "Ce", 58.0, 139.9054330, 0.00, Origin, 1.2);
@@ -124,7 +124,7 @@ std::vector<Atom> & initBondi()
     Bondi[77] = Atom("Platinum",     "Pt", 78.0, 194.9647660, 1.75, Origin, 1.2);
     Bondi[78] = Atom("Gold",         "Au", 79.0, 196.9665430, 1.66, Origin, 1.2);
     Bondi[79] = Atom("Mercury",      "Hg", 80.0, 201.9706170, 1.55, Origin, 1.2);
-    Bondi[80] = Atom("Tallium",      "Tl", 81.0, 204.9744010, 1.96, Origin, 1.2);
+    Bondi[80] = Atom("Thallium",     "Tl", 81.0, 204.9744010, 1.96, Origin, 1.2);
     Bondi[81] = Atom("Lead",         "Pb", 82.0, 207.9766270, 2.02, Origin, 1.2);
     Bondi[82] = Atom("Bismuth",      "Bi", 83.0, 208.9803740, 2.07, Origin, 1.2);
     Bondi[83] = Atom("Polonium",     "Po", 84.0, 208.9824040, 1.97, Origin, 1.2);
@@ -192,7 +192,7 @@ std::vector<Atom> & initUFF()
     UFF[39] = Atom("Zirconium",    "Zr", 40.0,  89.9047080, 1.5620, Origin, 1.2);
     UFF[40] = Atom("Niobium",      "Nb", 41.0,  92.9063780, 1.5825, Origin, 1.2);
     UFF[41] = Atom("Molybdenum",   "Mo", 42.0,  97.9054050, 1.5260, Origin, 1.2);
-    UFF[42] = Atom("Technetium",   "Tc", 43.0,   0.0000000, 1.4990, Origin, 1.2);
+    UFF[42] = Atom("Technetium",   "Tc", 43.0,  96.0000000, 1.4990, Origin, 1.2);
     UFF[43] = Atom("Ruthenium",    "Ru", 44.0, 101.9043480, 0.0000, Origin, 1.2);
     UFF[44] = Atom("Rhodium",      "Rh", 45.0, 102.9055030, 0.0000, Origin, 1.2);
     UFF[45] = Atom("Palladium",    "Pd", 46.0, 105.9034750, 0.0000, Origin, 1.2);
@@ -204,7 +204,7 @@ std::vector<Atom> & initUFF()
     UFF[51] = Atom("Tellurium",    "Te", 52.0, 129.9062290, 0.0000, Origin, 1.2);
     UFF[52] = Atom("Iodine",       "I",  53.0, 126.9044770, 2.2500, Origin, 1.2);
     UFF[53] = Atom("Xenon",        "Xe", 54.0, 131.9041480, 0.0000, Origin, 1.2);
-    UFF[54] = Atom("Cesium",       "Cs", 55.0, 132.9054290, 0.0000, Origin, 1.2);
+    UFF[54] = Atom("Caesium",      "Cs", 55.0, 132.9054290, 0.0000, Origin, 1.2);
     UFF[55] = Atom("Barium",       "Ba", 56.0, 137.9052320, 0.0000, Origin, 1.2);
     UFF[56] = Atom("Lanthanum",    "La", 57.0, 138.9063470, 0.0000, Origin, 1.2);
     UFF[57] = Atom("Cerium",       "Ce", 58.0, 139.9054330, 0.0000, Origin, 1.2);
@@ -230,7 +230,7 @@ std::vector<Atom> & initUFF()
     UFF[77] = Atom("Platinum",     "Pt", 78.0, 194.9647660, 0.0000, Origin, 1.2);
     UFF[78] = Atom("Gold",         "Au", 79.0, 196.9665430, 0.0000, Origin, 1.2);
     UFF[79] = Atom("Mercury",      "Hg", 80.0, 201.9706170, 0.0000, Origin, 1.2);
-    UFF[80] = Atom("Tallium",      "Tl", 81.0, 204.9744010, 0.0000, Origin, 1.2);
+    UFF[80] = Atom("Thallium",     "Tl", 81.0, 204.9744010, 0.0000, Origin, 1.2);
     UFF[81] = Atom("Lead",         "Pb", 82.0, 207.9766270, 0.0000, Origin, 1.2);
     UFF[82] = Atom("Bismuth",      "Bi", 83.0, 208.9803740, 0.0000, Origin, 1.2);
     UFF[83] = Atom("Polonium",     "Po", 84.0, 208.9824040, 0.0000, Origin, 1.2);

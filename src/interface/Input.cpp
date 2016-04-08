@@ -314,7 +314,7 @@ void Input::initMolecule()
     std::find_if(atoms.begin(), atoms.end(), invalid);
   if (res != atoms.end()) {
     std::cout << molecule_ << std::endl;
-    PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms!", BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms (see http://pcmsolver.readthedocs.org/en/latest/users/input.html)!", BOOST_CURRENT_FUNCTION);
   }
 }
 

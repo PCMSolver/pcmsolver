@@ -47,10 +47,6 @@ Available sections:
 + Green, subsection of medium. Sets up the Green's function inside and
   outside the cavity.
 
-.. warning::
-
-   **Work in Progress!!**
-
 Top section keywords
 --------------------
 
@@ -113,7 +109,8 @@ Cavity section keywords
 
    RadiiSet
      Select set of atomic radii to be used. Currently Bondi-Mantina
-     :cite:`Bondi1964,Mantina2009` and UFF :cite:`Rappe1992` sets available.
+     :cite:`Bondi1964,Mantina2009` and UFF :cite:`Rappe1992` sets available,
+     see :ref:`available-radii`.
 
      * **Type**: string
      * **Valid values**: Bondi | UFF
@@ -416,10 +413,23 @@ where the ``molecule.inp`` input file looks like:
 
      * **Type**: array of doubles
 
+.. _available-radii:
+
+Available radii
+---------------
+
+.. image::  ../gfx/bondi_mantina.png
+   :scale: 70 %
+   :align: center
+
+.. image::  ../gfx/uff.png
+   :scale: 70 %
+   :align: center
+
 .. _available-solvents:
 
 Available solvents
-..................
+------------------
 
 The macroscopic properties for the built-in list of solvents are:
 
@@ -452,4 +462,3 @@ Solvents are ordered by decreasing static permittivity.
  Cyclohexane          C6H12             2.023                2.028                     2.815
  N-heptane            C7H16             1.92                 1.918                     3.125
  ==================== ======== ===================== ========================== ========================
-

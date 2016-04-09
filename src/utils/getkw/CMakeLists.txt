@@ -9,7 +9,7 @@ if(BUILD_CUSTOM_BOOST)
   add_dependencies(getkw custom_boost)
 endif()
 set_target_properties(getkw PROPERTIES POSITION_INDEPENDENT_CODE 1
-                                       INTERPROCEDURAL_OPTIMIZATION 1)
+                                       )
 
 # Sets install directory for all the headers in the list
 foreach(_header ${_headers_list})

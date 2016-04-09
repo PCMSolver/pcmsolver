@@ -166,7 +166,7 @@ contains
     do ipoint = 1, grid_size
       if (.not. check(ipoint)) then
         write(error_unit, *) 'Error in MEP, please file an issue on: https://github.com/PCMSolver/pcmsolver'
-        stop -1
+        stop
       end if
     end do
     write(output_unit, *) 'Test on MEP: PASSED'
@@ -175,7 +175,7 @@ contains
     do ipoint = 1, grid_size
       if (.not. check(ipoint)) then
         write(error_unit, *) 'Error in ASC Ag, please file an issue on: https://github.com/PCMSolver/pcmsolver'
-        stop -1
+        stop
       end if
     end do
     write(output_unit, *) 'Test on ASC in Ag symmetry: PASSED'
@@ -184,7 +184,7 @@ contains
     do ipoint = 1, grid_size
       if (.not. check(ipoint)) then
         write(error_unit, *) 'Error in ASC B3g, please file an issue on: https://github.com/PCMSolver/pcmsolver'
-        stop -1
+        stop
       end if
     end do
     write(output_unit, *) 'Test on ASC in B3g symmetry: PASSED'
@@ -193,7 +193,7 @@ contains
     do ipoint = 1, grid_size
       if (.not. check(ipoint)) then
         write(error_unit, *) 'Error in nonequilibrium ASC B3g, please file an issue on: https://github.com/PCMSolver/pcmsolver'
-        stop -1
+        stop
       end if
     end do
     write(output_unit, *) 'Test on nonequilibrium ASC in B3g symmetry: PASSED'
@@ -202,7 +202,7 @@ contains
     do ipoint = 1, grid_size
       if (.not. check(ipoint)) then
         write(error_unit, *) 'Error in finite elements areas, please file an issue on: https://github.com/PCMSolver/pcmsolver'
-        stop -1
+        stop
       end if
     end do
     write(output_unit, *) 'Test on finite elements areas: PASSED'

@@ -28,7 +28,7 @@ program pcm_fortran_host
 
       if (.not. pcmsolver_is_compatible_library()) then
         write(error_unit, *) 'PCMSolver library not compatible!'
-        stop -1
+        stop
       end if
 
       ! Open a file for the output...
@@ -125,21 +125,21 @@ program pcm_fortran_host
       ! Cavity size
       if (grid_size .ne. ref_size) then
         write(error_unit, *) 'Error in the cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
-        stop -1
+        stop
       else
         write(output_unit, *) 'Test on cavity size: PASSED'
       end if
       ! Irreducible cavity size
       if (irr_grid_size .ne. ref_irr_size) then
         write(error_unit, *) 'Error in the irreducible cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver'
-        stop -1
+        stop
       else
         write(output_unit, *) 'Test on irreducible cavity size: PASSED'
       end if
       ! Polarization energy
       if (.not. check_unsigned_error(energy, ref_energy, 1.0e-7_c_double)) then
         write(error_unit, *) 'Error in the polarization energy, please file an issue on: https://github.com/PCMSolver/pcmsolver'
-        stop -1
+        stop
       else
         write(output_unit, *) 'Test on polarization energy: PASSED'
       end if

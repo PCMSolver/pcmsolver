@@ -496,7 +496,7 @@ namespace pcm {
       std::ostringstream print_mol;
       print_mol << molecule << std::endl;
       printer(print_mol);
-      PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms!", BOOST_CURRENT_FUNCTION);
+      PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a radius for all atoms (see http://pcmsolver.readthedocs.org/en/latest/users/input.html)!", BOOST_CURRENT_FUNCTION);
     }
   }
 

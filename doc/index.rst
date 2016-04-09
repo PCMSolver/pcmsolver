@@ -35,7 +35,7 @@ Contents:
    publications
    programmers/programmers-manual
    code-reference/classes-and-functions
-   references
+   zreferences
 
 Indices and tables
 ==================

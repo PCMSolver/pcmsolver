@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cmath>
+#include <fstream>
 #include <iterator>
 #include <iomanip>
 #include <limits>

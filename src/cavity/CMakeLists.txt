@@ -5,7 +5,7 @@ list(APPEND headers_list Cavity.hpp CavityData.hpp Element.hpp GePolCavity.hpp R
 list(APPEND sources_list Cavity.cpp Element.cpp GePolCavity.cpp RestartCavity.cpp)
 
 add_library(cavity OBJECT ${sources_list} ${headers_list})
-set_target_properties(cavity PROPERTIES POSITION_INDEPENDENT_CODE 1 INTERPROCEDURAL_OPTIMIZATION 1)
+set_target_properties(cavity PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(cavity generate-config-hpp)
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})

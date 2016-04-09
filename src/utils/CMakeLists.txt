@@ -9,7 +9,7 @@ list(APPEND sources_list Atom.cpp FortranCUtils.cpp Molecule.cpp Solvent.cpp Sph
 set_source_files_properties(cnpy.cpp PROPERTIES COMPILE_FLAGS -w)
 
 add_library(utils OBJECT ${sources_list} ${headers_list})
-set_target_properties(utils PROPERTIES POSITION_INDEPENDENT_CODE 1 INTERPROCEDURAL_OPTIMIZATION 1)
+set_target_properties(utils PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(utils generate-config-hpp)
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})

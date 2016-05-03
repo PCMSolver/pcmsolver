@@ -98,13 +98,13 @@ contains
     integer(c_int), intent(in) :: nr_nuclei
     real(c_double), intent(in) :: charges(nr_nuclei)
     real(c_double), intent(in) :: coordinates(3, nr_nuclei)
-    integer(c_size_t), intent(in) :: grid_size
+    integer(c_int), intent(in) :: grid_size
     real(c_double), intent(in) :: grid(3, grid_size)
     real(c_double) :: n_mep(grid_size)
 
     real(c_double) :: dist
     integer(c_int) :: i
-    integer(c_size_t) :: ipoint
+    integer(c_int) :: ipoint
 
     n_mep = 0.0_c_double
     LoopOnAtoms: do i = 1, nr_nuclei
@@ -152,15 +152,15 @@ contains
 
   subroutine test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g, areas)
 
-    use, intrinsic :: iso_c_binding, only: c_bool, c_double, c_size_t
+    use, intrinsic :: iso_c_binding, only: c_bool, c_double, c_int
     use, intrinsic :: iso_fortran_env, only: output_unit, error_unit
 
-    integer(c_size_t), intent(in) :: grid_size
+    integer(c_int), intent(in) :: grid_size
     real(c_double), intent(in) :: mep(grid_size), asc_Ag(grid_size)
     real(c_double), intent(in) :: asc_B3g(grid_size), asc_neq_B3g(grid_size)
     real(c_double), intent(in) :: areas(grid_size)
     logical(c_bool) :: check(grid_size)
-    integer(c_size_t) :: ipoint
+    integer(c_int) :: ipoint
 
     check = check_unsigned_error(mep, mep_reference(), 1.0e-07_c_double)
     do ipoint = 1, grid_size
@@ -211,7 +211,7 @@ contains
 
   pure function mep_reference() result(mep)
 
-    use, intrinsic :: iso_c_binding, only: c_double, c_size_t
+    use, intrinsic :: iso_c_binding, only: c_double, c_int
     real(c_double) :: mep(576)
 
     mep = (/ 3.372240447717, &
@@ -795,7 +795,7 @@ contains
 
   pure function asc_Ag_reference() result(asc_Ag)
 
-    use, intrinsic :: iso_c_binding, only: c_double, c_size_t
+    use, intrinsic :: iso_c_binding, only: c_double, c_int
     real(c_double) :: asc_Ag(576)
 
     asc_Ag = (/ -0.002085687695, &
@@ -1379,7 +1379,7 @@ contains
 
   pure function asc_B3g_reference() result(asc_B3g)
 
-    use, intrinsic :: iso_c_binding, only: c_double, c_size_t
+    use, intrinsic :: iso_c_binding, only: c_double, c_int
     real(c_double) :: asc_B3g(576)
 
     asc_B3g = (/ 0.000000000000, &
@@ -1963,7 +1963,7 @@ contains
 
   pure function asc_neq_B3g_reference() result(asc_neq_B3g)
 
-    use, intrinsic :: iso_c_binding, only: c_double, c_size_t
+    use, intrinsic :: iso_c_binding, only: c_double, c_int
     real(c_double) :: asc_neq_B3g(576)
 
     asc_neq_B3g = (/ 0.000000000000, &
@@ -2547,7 +2547,7 @@ contains
 
   pure function areas_reference() result(areas)
 
-    use, intrinsic :: iso_c_binding, only: c_double, c_size_t
+    use, intrinsic :: iso_c_binding, only: c_double, c_int
     real(c_double) :: areas(576)
 
     areas = (/ 0.29141756525608, &

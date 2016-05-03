@@ -65,8 +65,8 @@ SCENARIO("A collocation integrator with diagonal elements according to Purisima 
             {
                 results = gf.singleLayer(cavity.elements());
                 reference = cnpy::custom::npy_load<double>("vacuum_S_collocation.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -75,8 +75,8 @@ SCENARIO("A collocation integrator with diagonal elements according to Purisima 
             {
                 results = gf.doubleLayer(cavity.elements());
                 reference = cnpy::custom::npy_load<double>("vacuum_D_purisima.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -94,8 +94,8 @@ SCENARIO("A collocation integrator with diagonal elements according to Purisima 
             {
                 results = gf.singleLayer(cavity.elements());
                 reference = cnpy::custom::npy_load<double>("uniformdielectric_S_collocation.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -104,8 +104,8 @@ SCENARIO("A collocation integrator with diagonal elements according to Purisima 
             {
                 results = gf.doubleLayer(cavity.elements());
                 reference = cnpy::custom::npy_load<double>("uniformdielectric_D_purisima.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }

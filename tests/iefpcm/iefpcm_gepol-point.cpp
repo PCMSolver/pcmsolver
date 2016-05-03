@@ -66,15 +66,15 @@ SCENARIO("Test solver for the IEFPCM for a point charge and a GePol cavity", "[s
             IEFSolver solver(symm);
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
             Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
             fake_asc = solver.computeCharge(fake_mep);
 
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_asc(" << i << ") = " << fake_asc(i));
             }
 
@@ -105,15 +105,15 @@ SCENARIO("Test solver for the IEFPCM for a point charge and a GePol cavity", "[s
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
             double charge = 8.0;
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge, origin);
             Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
             fake_asc = solver.computeCharge(fake_mep);
 
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_asc(" << i << ") = " << fake_asc(i));
             }
 

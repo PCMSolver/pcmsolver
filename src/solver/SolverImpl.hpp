@@ -64,7 +64,7 @@
 inline Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
   // The total size of the cavity
-  size_t cavitySize = cav.size();
+  PCMSolverIndex cavitySize = cav.size();
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
@@ -140,7 +140,7 @@ inline Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav, const IGreensFun
 inline Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunction & gf_i, double epsilon)
 {
   // The total size of the cavity
-  size_t cavitySize = cav.size();
+  PCMSolverIndex cavitySize = cav.size();
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
@@ -205,7 +205,7 @@ inline Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunct
 inline Eigen::MatrixXd CPCMMatrix(const Cavity & cav, const IGreensFunction & gf_i, double epsilon, double correction)
 {
   // The total size of the cavity
-  size_t cavitySize = cav.size();
+  PCMSolverIndex cavitySize = cav.size();
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
@@ -253,7 +253,7 @@ inline Eigen::MatrixXd CPCMMatrix(const Cavity & cav, const IGreensFunction & gf
 inline Eigen::MatrixXd anisotropicTEpsilon(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
   // The total size of the cavity
-  size_t cavitySize = cav.size();
+  PCMSolverIndex cavitySize = cav.size();
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
@@ -298,7 +298,7 @@ inline Eigen::MatrixXd anisotropicTEpsilon(const Cavity & cav, const IGreensFunc
 inline Eigen::MatrixXd isotropicTEpsilon(const Cavity & cav, const IGreensFunction & gf_i, double epsilon)
 {
   // The total size of the cavity
-  size_t cavitySize = cav.size();
+  PCMSolverIndex cavitySize = cav.size();
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
@@ -340,7 +340,7 @@ inline Eigen::MatrixXd isotropicTEpsilon(const Cavity & cav, const IGreensFuncti
 inline Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
   // The total size of the cavity
-  size_t cavitySize = cav.size();
+  PCMSolverIndex cavitySize = cav.size();
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
@@ -386,7 +386,7 @@ inline Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav, const IGreensFun
 inline Eigen::MatrixXd isotropicRinfinity(const Cavity & cav, const IGreensFunction & gf_i)
 {
   // The total size of the cavity
-  size_t cavitySize = cav.size();
+  PCMSolverIndex cavitySize = cav.size();
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity

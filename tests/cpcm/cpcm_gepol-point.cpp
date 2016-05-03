@@ -67,9 +67,9 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity", "[so
             CPCMSolver solver(symm, correction);
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
 
@@ -79,7 +79,7 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity", "[so
                 fake_asc = solver.computeCharge(fake_mep);
                 double totalFakeASC = fake_asc.sum();
 
-                for (size_t i = 0; i < size; ++i) {
+                for (int i = 0; i < size; ++i) {
                     INFO("fake_asc(" << i << ") = " << fake_asc(i));
                 }
 
@@ -107,9 +107,9 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity", "[so
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
             double charge = 8.0;
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge, origin);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
 
@@ -119,7 +119,7 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity", "[so
                 fake_asc = solver.computeCharge(fake_mep);
                 double totalFakeASC = fake_asc.sum();
 
-                for (size_t i = 0; i < size; ++i) {
+                for (int i = 0; i < size; ++i) {
                     INFO("fake_asc(" << i << ") = " << fake_asc(i));
                 }
 

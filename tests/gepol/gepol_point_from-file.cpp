@@ -44,7 +44,7 @@ TEST_CASE("Restart GePol cavity for a single sphere", "[gepol][gepol_point_from-
     SECTION("Test size")
     {
         int size = 32;
-        size_t actualSize = cavity.size();
+        int actualSize = cavity.size();
         REQUIRE(size == actualSize);
     }
 
@@ -67,7 +67,7 @@ TEST_CASE("Restart GePol cavity for a single sphere", "[gepol][gepol_point_from-
         Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
         Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
         double actualVolume = 0;
-        for ( size_t i = 0; i < cavity.size(); ++i ) {
+        for ( int i = 0; i < cavity.size(); ++i ) {
             actualVolume += cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(
                         i));
         }

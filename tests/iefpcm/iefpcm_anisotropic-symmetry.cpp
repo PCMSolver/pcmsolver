@@ -70,7 +70,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             THEN("the total apparent surface charge is")
@@ -110,7 +110,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             THEN("the total apparent surface charge is")
@@ -150,7 +150,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             THEN("the total apparent surface charge is")
@@ -190,7 +190,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             THEN("the total apparent surface charge is")
@@ -227,7 +227,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             THEN("the total apparent surface charge is")
@@ -267,7 +267,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             THEN("the total apparent surface charge is")
@@ -307,7 +307,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             THEN("the total apparent surface charge is")
@@ -347,7 +347,7 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge in different
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             THEN("the total apparent surface charge is")

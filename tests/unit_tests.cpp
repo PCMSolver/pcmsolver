@@ -29,7 +29,7 @@
 #include "PhysicalConstants.hpp"
 
 extern "C"
-void host_writer(const char * /* message */, size_t /* message_length */);
+void host_writer(const char * /* message */, int /* message_length */);
 
 int main( int argc, char* const argv[] )
 {
@@ -44,4 +44,4 @@ int main( int argc, char* const argv[] )
 }
 
 extern "C"
-void host_writer(const char * /* message */, size_t /* message_length */) {}
+void host_writer(const char * /* message */, int /* message_length */) {}

@@ -59,9 +59,9 @@ TEST_CASE("Test solver for the IEFPCM for NH3 and a restarted GePol cavity", "[s
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;
-    size_t size = cavity.size();
+    int size = cavity.size();
     Eigen::VectorXd fake_mep = Eigen::VectorXd::Zero(size);
-    for (size_t i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double Ndistance = (center - N).norm();
         double H1distance = (center - H1).norm();

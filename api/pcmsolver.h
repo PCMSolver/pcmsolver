@@ -95,7 +95,7 @@ typedef enum
  *  \param[in] message_length length of the passed message
  *  This function **must** be defined by the host program
  */
-void host_writer(const char * message, size_t message_length);
+void host_writer(const char * message, int message_length);
 
 /*! \brief Creates a new PCM context object
  *  \param[in] input_reading input processing strategy
@@ -138,13 +138,13 @@ PCMSOLVER_API void pcmsolver_print(pcmsolver_context_t * context);
  *  \param[in, out] context the PCM context object
  *  \return the size of the cavity
  */
-PCMSOLVER_API size_t pcmsolver_get_cavity_size(pcmsolver_context_t * context);
+PCMSOLVER_API int pcmsolver_get_cavity_size(pcmsolver_context_t * context);
 
 /*! \brief Getter for the number of irreducible finite elements composing the molecular cavity
  *  \param[in, out] context the PCM context object
  *  \return the number of irreducible finite elements
  */
-PCMSOLVER_API size_t pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context);
+PCMSOLVER_API int pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context);
 
 /*! \brief Getter for the centers of the finite elements composing the molecular cavity
  *  \param[in, out] context the PCM context object
@@ -211,7 +211,7 @@ PCMSOLVER_API double pcmsolver_compute_polarization_energy(pcmsolver_context_t *
  *  \param[in] name label of the surface function
  */
 PCMSOLVER_API void pcmsolver_get_surface_function(pcmsolver_context_t * context,
-                                                 size_t size,
+                                                 int size,
                                                  double values[],
                                                  const char * name);
 
@@ -222,7 +222,7 @@ PCMSOLVER_API void pcmsolver_get_surface_function(pcmsolver_context_t * context,
  *  \param[in] name label of the surface function
  */
 PCMSOLVER_API void pcmsolver_set_surface_function(pcmsolver_context_t * context,
-                                                 size_t size,
+                                                 int size,
                                                  double values[],
                                                  const char * name);
 

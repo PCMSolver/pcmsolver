@@ -62,7 +62,7 @@ TEST_CASE("Test solver for the IEFPCM with NH3 molecule and a GePol cavity", "[s
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;
-    size_t size = cavity.size();
+    int size = cavity.size();
     Eigen::VectorXd fake_mep = computeMEP(molec, cavity.elements());
     // The total ASC for a dielectric is -Q*(epsilon-1)/epsilon
     Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);

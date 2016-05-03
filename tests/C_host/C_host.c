@@ -12,7 +12,7 @@
 
 FILE * output;
 
-void host_writer(const char * message, size_t UNUSED(message_length))
+void host_writer(const char * message, int UNUSED(message_length))
 {
   fprintf(output, "%s\n", message);
 }
@@ -47,8 +47,8 @@ int main()
 
   pcmsolver_print(pcm_context);
 
-  size_t grid_size = pcmsolver_get_cavity_size(pcm_context);
-  size_t irr_grid_size = pcmsolver_get_irreducible_cavity_size(pcm_context);
+  int grid_size = pcmsolver_get_cavity_size(pcm_context);
+  int irr_grid_size = pcmsolver_get_irreducible_cavity_size(pcm_context);
   double * grid = (double *) calloc(3*grid_size, sizeof(double));
   pcmsolver_get_centers(pcm_context, grid);
   double * areas = (double *) calloc(grid_size, sizeof(double));
@@ -85,7 +85,7 @@ int main()
 
   // Check that everything calculated is OK
   // Cavity size
-  const size_t ref_size = 576;
+  const int ref_size = 576;
   if (grid_size != ref_size) {
     fprintf(stderr, "%s\n", "Error in the cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver");
     exit(EXIT_FAILURE);
@@ -93,7 +93,7 @@ int main()
     fprintf(output, "%s\n", "Test on cavity size: PASSED");
   }
   // Irreducible cavity size
-  const size_t ref_irr_size = 72;
+  const int ref_irr_size = 72;
   if (irr_grid_size != ref_irr_size) {
     fprintf(stderr, "%s\n", "Error in the irreducible cavity size, please file an issue on: https://github.com/PCMSolver/pcmsolver");
     exit(EXIT_FAILURE);

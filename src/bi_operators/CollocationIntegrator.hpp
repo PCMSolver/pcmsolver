@@ -144,9 +144,9 @@ struct CollocationIntegrator
     template <typename ProfilePolicy>
     Eigen::MatrixXd singleLayer(const SphericalDiffuse<CollocationIntegrator, ProfilePolicy> & gf, const std::vector<Element> & e) const {
         // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
-        size_t mat_size = e.size();
+        PCMSolverIndex mat_size = e.size();
         Eigen::MatrixXd S = Eigen::MatrixXd::Zero(mat_size, mat_size);
-        for (size_t i = 0; i < mat_size; ++i) {
+        for (PCMSolverIndex i = 0; i < mat_size; ++i) {
             // Fill diagonal
             // Diagonal of S inside the cavity
             double Sii_I = factor * std::sqrt(4 * M_PI / e[i].area());
@@ -156,7 +156,7 @@ struct CollocationIntegrator
             double image = gf.imagePotential(e[i].center(), e[i].center());
             S(i, i) = Sii_I / coulomb_coeff + image;
             Eigen::Vector3d source = e[i].center();
-            for (size_t j = 0; j < mat_size; ++j) {
+            for (PCMSolverIndex j = 0; j < mat_size; ++j) {
                 // Fill off-diagonal
                 Eigen::Vector3d probe = e[j].center();
                 if (i != j) S(i, j) = gf.kernelS(source, probe);
@@ -171,9 +171,9 @@ struct CollocationIntegrator
     template <typename ProfilePolicy>
     Eigen::MatrixXd doubleLayer(const SphericalDiffuse<CollocationIntegrator, ProfilePolicy> & gf, const std::vector<Element> & e) const {
         // The singular part is "integrated" as usual, while the nonsingular part is evaluated in full
-        size_t mat_size = e.size();
+        PCMSolverIndex mat_size = e.size();
         Eigen::MatrixXd D = Eigen::MatrixXd::Zero(mat_size, mat_size);
-        for (size_t i = 0; i < mat_size; ++i) {
+        for (PCMSolverIndex i = 0; i < mat_size; ++i) {
             // Fill diagonal
             double area = e[i].area();
             double radius = e[i].sphere().radius;
@@ -193,7 +193,7 @@ struct CollocationIntegrator
 
             D(i, i) = eps_r2 * (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad);
             Eigen::Vector3d source = e[i].center();
-            for (size_t j = 0; j < mat_size; ++j) {
+            for (PCMSolverIndex j = 0; j < mat_size; ++j) {
                 // Fill off-diagonal
                 Eigen::Vector3d probe = e[j].center();
                 Eigen::Vector3d probeNormal = e[j].normal();

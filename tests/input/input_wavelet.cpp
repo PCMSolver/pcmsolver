@@ -84,7 +84,7 @@ TEST_CASE("Input reading using GetKw for an input file for a wavelet cavity", "[
   REQUIRE(mode                  == parsedInput.mode());
   REQUIRE(diagonalScaling == Approx(parsedInput.integratorScaling()));
   for (size_t i = 0; i < spheres.size(); ++i) {
-    for (size_t j = 0; j < 3; ++j) {
+    for (int j = 0; j < 3; ++j) {
       REQUIRE(spheres[i].center(j) == Approx(parsedInput.spheres(i).center(j)));
     }
     REQUIRE(spheres[i].radius == Approx(parsedInput.spheres(i).radius));

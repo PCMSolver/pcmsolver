@@ -83,13 +83,13 @@ inline double DI(double factor, const Element & el)
 inline Eigen::MatrixXd singleLayer(const std::vector<Element> & elements,
                                    const Diagonal & diagS, const KernelS & kernS)
 {
-    size_t mat_size = elements.size();
+    PCMSolverIndex mat_size = elements.size();
     Eigen::MatrixXd S = Eigen::MatrixXd::Zero(mat_size, mat_size);
-    for (size_t i = 0; i < mat_size; ++i) {
+    for (PCMSolverIndex i = 0; i < mat_size; ++i) {
         // Fill diagonal
         S(i, i) = diagS(elements[i]);
         Eigen::Vector3d source = elements[i].center();
-        for (size_t j = 0; j < mat_size; ++j) {
+        for (PCMSolverIndex j = 0; j < mat_size; ++j) {
             // Fill off-diagonal
             Eigen::Vector3d probe = elements[j].center();
             if (i != j) S(i, j) = kernS(source, probe);
@@ -106,13 +106,13 @@ inline Eigen::MatrixXd singleLayer(const std::vector<Element> & elements,
 inline Eigen::MatrixXd doubleLayer(const std::vector<Element> & elements,
                                    const Diagonal & diagD, const KernelD & kernD)
 {
-    size_t mat_size = elements.size();
+    PCMSolverIndex mat_size = elements.size();
     Eigen::MatrixXd D = Eigen::MatrixXd::Zero(mat_size, mat_size);
-    for (size_t i = 0; i < mat_size; ++i) {
+    for (PCMSolverIndex i = 0; i < mat_size; ++i) {
         // Fill diagonal
         D(i, i) = diagD(elements[i]);
         Eigen::Vector3d source = elements[i].center();
-        for (size_t j = 0; j < mat_size; ++j) {
+        for (PCMSolverIndex j = 0; j < mat_size; ++j) {
             // Fill off-diagonal
             Eigen::Vector3d probe = elements[j].center();
             Eigen::Vector3d probeNormal = elements[j].normal();

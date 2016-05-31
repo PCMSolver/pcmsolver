@@ -71,9 +71,9 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge and a GePol 
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
 
@@ -84,10 +84,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge and a GePol 
                 double totalAnisoASC = aniso_fake_asc.sum();
                 double totalIsoASC = iso_fake_asc.sum();
 
-                for (size_t i = 0; i < size; ++i) {
+                for (int i = 0; i < size; ++i) {
                     INFO("aniso_fake_asc(" << i << ") = " << aniso_fake_asc(i));
                 }
-                for (size_t i = 0; i < size; ++i) {
+                for (int i = 0; i < size; ++i) {
                     INFO("iso_fake_asc(" << i << ") = " << iso_fake_asc(i));
                 }
 
@@ -120,9 +120,9 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge and a GePol 
             IEFSolver iso_solver(symm);
             iso_solver.buildIsotropicMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge, origin);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
             THEN("the apparent surface charge is")
@@ -130,10 +130,10 @@ SCENARIO("Test solver for the anisotropic IEFPCM for a point charge and a GePol 
                 Eigen::VectorXd aniso_fake_asc = aniso_solver.computeCharge(fake_mep);
                 Eigen::VectorXd iso_fake_asc = iso_solver.computeCharge(fake_mep);
 
-                for (size_t i = 0; i < size; ++i) {
+                for (int i = 0; i < size; ++i) {
                     INFO("aniso_fake_asc(" << i << ") = " << aniso_fake_asc(i));
                 }
-                for (size_t i = 0; i < size; ++i) {
+                for (int i = 0; i < size; ++i) {
                     INFO("iso_fake_asc(" << i << ") = " << iso_fake_asc(i));
                 }
 

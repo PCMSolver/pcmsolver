@@ -66,8 +66,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 // Numerical integrator not really working now...
                 /*
                 reference = cnpy::custom::npy_load<double>("vacuum_S_numerical.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -79,8 +79,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 // Numerical integrator not really working now...
                 /*
                 reference = cnpy::custom::npy_load<double>("vacuum_D_numerical.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -103,8 +103,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 // Numerical integrator not really working now...
                 /*
                 reference = cnpy::custom::npy_load<double>("uniformdielectric_S_numerical.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -116,8 +116,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 // Numerical integrator not really working now...
                 /*
                 reference = cnpy::custom::npy_load<double>("uniformdielectric_D_numerical.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -139,8 +139,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 // Numerical integrator not really working now...
                 /*
                 reference = cnpy::custom::npy_load<double>("ionicliquid_S_numerical.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -152,8 +152,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 // Numerical integrator not really working now...
                 /*
                 reference = cnpy::custom::npy_load<double>("ionicliquid_D_numerical.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -175,8 +175,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 // Numerical integrator not really working now...
                 /*
                 reference = cnpy::custom::npy_load<double>("anisotropicliquid_S_numerical.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }
@@ -188,8 +188,8 @@ SCENARIO("A collocation integrator with numerical integrator of the diagonal ele
                 // Numerical integrator not really working now...
                 /*
                 reference = cnpy::custom::npy_load<double>("anisotropicliquid_D_numerical.npy");
-                for (size_t i = 0; i < cavity.size(); ++i) {
-                    for (size_t j = 0; j < cavity.size(); ++j) {
+                for (int i = 0; i < cavity.size(); ++i) {
+                    for (int j = 0; j < cavity.size(); ++j) {
                         REQUIRE(reference(i, j) == Approx(results(i, j)));
                     }
                 }

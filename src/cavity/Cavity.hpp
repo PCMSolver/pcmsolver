@@ -56,9 +56,9 @@ class Cavity
     /// The molecule to be wrapped by the cavity
     Molecule molecule_;
     /// Number of finite elements generated
-    size_t nElements_;
+    PCMSolverIndex nElements_;
     /// Number of irreducible finite elements
-    size_t nIrrElements_;
+    PCMSolverIndex nIrrElements_;
     /// Whether the cavity has been built
     bool built;
     /// Coordinates of elements centers
@@ -120,10 +120,10 @@ class Cavity
     const Eigen::VectorXd & elementArea() const { return elementArea_; }
     double elementArea(int i) { return elementArea_(i); }
     double elementArea(int i) const { return elementArea_(i); }
-    size_t size() { return nElements_; }
-    size_t size() const { return nElements_; }
-    size_t irreducible_size() { return nIrrElements_; }
-    size_t irreducible_size() const { return nIrrElements_; }
+    PCMSolverIndex size() { return nElements_; }
+    PCMSolverIndex size() const { return nElements_; }
+    PCMSolverIndex irreducible_size() { return nIrrElements_; }
+    PCMSolverIndex irreducible_size() const { return nIrrElements_; }
     Symmetry pointGroup() const { return molecule_.pointGroup(); }
     std::vector<Sphere> & spheres() { return spheres_; }
     const std::vector<Sphere> & spheres() const { return spheres_; }

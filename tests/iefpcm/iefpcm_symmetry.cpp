@@ -62,14 +62,14 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             double minRadius = 100.0;
             GePolCavity cavity(point, area, probeRadius, minRadius, "C1");
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             IEFSolver solver(symm);
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
-                size_t irr_size = cavity.irreducible_size();
+                int irr_size = cavity.irreducible_size();
                 Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -90,14 +90,14 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             double minRadius = 100.0;
             GePolCavity cavity(point, area, probeRadius, minRadius, "C2");
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
 
             IEFSolver solver(symm);
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
-                size_t irr_size = cavity.irreducible_size();
+                int irr_size = cavity.irreducible_size();
                 Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -118,9 +118,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             double minRadius = 100.0;
             GePolCavity cavity(point, area, probeRadius, minRadius, "Cs");
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
                 fake_mep(i) = charge / distance;
@@ -130,7 +130,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
-                size_t irr_size = cavity.irreducible_size();
+                int irr_size = cavity.irreducible_size();
                 Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -151,9 +151,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             double minRadius = 100.0;
             GePolCavity cavity(point, area, probeRadius, minRadius, "Ci");
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
                 fake_mep(i) = charge / distance;
@@ -163,7 +163,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
-                size_t irr_size = cavity.irreducible_size();
+                int irr_size = cavity.irreducible_size();
                 Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -184,9 +184,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             double minRadius = 100.0;
             GePolCavity cavity(point, area, probeRadius, minRadius, "D2");
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
                 fake_mep(i) = charge / distance;
@@ -196,7 +196,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
-                size_t irr_size = cavity.irreducible_size();
+                int irr_size = cavity.irreducible_size();
                 Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -217,9 +217,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             double minRadius = 100.0;
             GePolCavity cavity(point, area, probeRadius, minRadius, "C2v");
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
                 fake_mep(i) = charge / distance;
@@ -229,7 +229,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
-                size_t irr_size = cavity.irreducible_size();
+                int irr_size = cavity.irreducible_size();
                 Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -250,9 +250,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             double minRadius = 100.0;
             GePolCavity cavity(point, area, probeRadius, minRadius, "C2h");
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
                 fake_mep(i) = charge / distance;
@@ -262,7 +262,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
-                size_t irr_size = cavity.irreducible_size();
+                int irr_size = cavity.irreducible_size();
                 Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -283,9 +283,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             double minRadius = 100.0;
             GePolCavity cavity(point, area, probeRadius, minRadius, "D2h");
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) {
                 Eigen::Vector3d center = cavity.elementCenter(i);
                 double distance = center.norm();
                 fake_mep(i) = charge / distance;
@@ -295,7 +295,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
             solver.buildSystemMatrix(cavity, gf_i, gf_o);
             THEN("the total apparent surface charge is")
             {
-                size_t irr_size = cavity.irreducible_size();
+                int irr_size = cavity.irreducible_size();
                 Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
                 fake_asc = solver.computeCharge(fake_mep);
                 int nr_irrep = cavity.pointGroup().nrIrrep();

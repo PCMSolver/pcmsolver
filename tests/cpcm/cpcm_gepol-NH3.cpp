@@ -63,7 +63,7 @@ TEST_CASE("Test solver for the C-PCM with NH3 molecule and a GePol cavity", "[so
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;
-    size_t size = cavity.size();
+    int size = cavity.size();
     Eigen::VectorXd fake_mep = computeMEP(molecule, cavity.elements());
     // The total ASC for a conductor is -Q
     // for CPCM it will be -Q*(epsilon-1)/(epsilon + correction)

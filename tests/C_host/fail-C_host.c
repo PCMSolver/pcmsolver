@@ -12,7 +12,7 @@
 
 FILE * output;
 
-void host_writer(const char * message, size_t UNUSED(message_length))
+void host_writer(const char * message, int UNUSED(message_length))
 {
   fprintf(output, "%s\n", message);
 }

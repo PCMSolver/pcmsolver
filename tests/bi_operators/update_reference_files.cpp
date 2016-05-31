@@ -48,7 +48,7 @@
 #include "utils/MathUtils.hpp"
 
 extern "C"
-void host_writer(const char * message, size_t message_length);
+void host_writer(const char * message, int message_length);
 
 void save_vacuum_collocation();
 void save_uniform_dielectric_collocation();
@@ -218,4 +218,4 @@ void save_tanh_spherical_diffuse_numerical() {
 }
 
 extern "C"
-void host_writer(const char * /* message */, size_t /* message_length */) {}
+void host_writer(const char * /* message */, int /* message_length */) {}

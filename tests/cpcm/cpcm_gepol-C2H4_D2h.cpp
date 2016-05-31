@@ -62,17 +62,17 @@ TEST_CASE("Test solver for the CPCM and the C2H4 molecule in D2h symmetry", "[cp
 
   double Ccharge = 6.0;
   double Hcharge = 1.0;
-  size_t size = cavity.size();
+  int size = cavity.size();
   Eigen::VectorXd fake_mep = computeMEP(molec, cavity.elements());
   // The total ASC for a dielectric is -Q*(epsilon-1)/epsilon
-  size_t irr_size = cavity.irreducible_size();
+  int irr_size = cavity.irreducible_size();
   Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
   fake_asc = solver.computeCharge(fake_mep);
 
-  for (size_t i = 0; i < size; ++i) {
+  for (int i = 0; i < size; ++i) {
     INFO("fake_mep(" << i << ") = " << fake_mep(i));
   }
-  for (size_t i = 0; i < size; ++i) {
+  for (int i = 0; i < size; ++i) {
     INFO("fake_asc(" << i << ") = " << fake_asc(i));
   }
 

@@ -55,9 +55,9 @@ TEST_CASE("Test solver for the IEFPCM for a point charge and a restarted GePol c
     solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
     double charge = 8.0;
-    size_t size = cavity.size();
+    int size = cavity.size();
     Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-    for (size_t i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
         Eigen::Vector3d center = cavity.elementCenter(i);
         double distance = center.norm();
         fake_mep(i) = charge / distance;

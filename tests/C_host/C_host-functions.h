@@ -40,7 +40,7 @@ struct PCMInput pcmsolver_input();
  *  \warning Caller deallocats returned array
  */
 double * nuclear_mep(int nr_nuclei, double charges[nr_nuclei],
-    double coordinates[3*nr_nuclei], size_t grid_size, double grid[3*grid_size]);
+    double coordinates[3*nr_nuclei], int grid_size, double grid[3*grid_size]);
 
 /*! \brief Compares calculated and reference values within a threshold
  *  \author Roberto Di Remigio
@@ -52,7 +52,7 @@ double * nuclear_mep(int nr_nuclei, double charges[nr_nuclei],
  */
 bool check_unsigned_error(double calculated, double reference, double threshold);
 
-int test_surface_functions(FILE * fp, size_t grid_size, double mep[grid_size], double asc_Ag[grid_size],
+int test_surface_functions(FILE * fp, int grid_size, double mep[grid_size], double asc_Ag[grid_size],
                             double asc_B3g[grid_size], double asc_neq_B3g[grid_size], double areas[grid_size]);
 
 double mep_reference(int i);
@@ -93,11 +93,11 @@ struct PCMInput pcmsolver_input()
 }
 
 double * nuclear_mep(int nr_nuclei, double charges[nr_nuclei],
-    double coordinates[3*nr_nuclei], size_t grid_size, double grid[3*grid_size])
+    double coordinates[3*nr_nuclei], int grid_size, double grid[3*grid_size])
 {
   double * mep = (double *) calloc(grid_size, sizeof(double));
   for (int i = 0; i < nr_nuclei; i++) {
-    for (size_t j = 0; j < grid_size; j++) {
+    for (int j = 0; j < grid_size; j++) {
       // Column-major ordering. Offsets: col_idx * nr_rows + row_idx
       double dist = pow((coordinates[i*3]     - grid[j*3]), 2)
                   + pow((coordinates[i*3 + 1] - grid[j*3 + 1]), 2)
@@ -114,7 +114,7 @@ bool check_unsigned_error(double calculated, double reference, double threshold)
   return (fabs(err) <= fabs(calculated) * threshold);
 }
 
-int test_surface_functions(FILE * fp, size_t grid_size, double mep[grid_size], double asc_Ag[grid_size],
+int test_surface_functions(FILE * fp, int grid_size, double mep[grid_size], double asc_Ag[grid_size],
                             double asc_B3g[grid_size], double asc_neq_B3g[grid_size],
                             double areas[grid_size])
 {
@@ -123,7 +123,7 @@ int test_surface_functions(FILE * fp, size_t grid_size, double mep[grid_size], d
   const int ASC_B3g_ERROR = 3;
   const int ASC_NEQ_B3g_ERROR = 4;
   const int AREAS_ERROR = 5;
-  for (size_t i = 0; i < grid_size; i++) {
+  for (int i = 0; i < grid_size; i++) {
     if (!check_unsigned_error(mep[i], mep_reference(i), 1.0e-07)) {
       fprintf(stderr, "%s\n", "Error in MEP, please file an issue on: https://github.com/PCMSolver/pcmsolver");
       return MEP_ERROR;

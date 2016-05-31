@@ -56,7 +56,7 @@
 
 //#include "BuildInfo.hpp"
 extern "C"
-void host_writer(const char * message, size_t message_length);
+void host_writer(const char * message, PCMSolverIndex message_length);
 
 int main(int argc, char * argv[])
 {
@@ -151,5 +151,5 @@ int main(int argc, char * argv[])
     return EXIT_SUCCESS;
 }
 
-void host_writer(const char * /* message */, size_t /* message_length */) {}
+void host_writer(const char * /* message */, PCMSolverIndex /* message_length */) {}
 

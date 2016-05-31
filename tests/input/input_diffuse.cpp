@@ -91,7 +91,7 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
   REQUIRE(mode                  == parsedInput.mode());
   REQUIRE(diagonalScaling == Approx(parsedInput.integratorScaling()));
   for (size_t i = 0; i < spheres.size(); ++i) {
-    for (size_t j = 0; j < 3; ++j) {
+    for (int j = 0; j < 3; ++j) {
       REQUIRE(spheres[i].center(j) == Approx(parsedInput.spheres(i).center(j)));
     }
     REQUIRE(spheres[i].radius == Approx(parsedInput.spheres(i).radius));
@@ -111,7 +111,7 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
   REQUIRE(center                == Approx(parsedInput.outsideDynamicGreenParams().center));
   REQUIRE(width                 == Approx(parsedInput.outsideDynamicGreenParams().width));
   REQUIRE(profile               == parsedInput.outsideDynamicGreenParams().howProfile);
-  for (size_t i = 0; i < 3; ++i) {
+  for (int i = 0; i < 3; ++i) {
     REQUIRE(origin(i) == Approx(parsedInput.outsideStaticGreenParams().origin(i)));
     REQUIRE(origin(i) == Approx(parsedInput.outsideDynamicGreenParams().origin(i)));
   }

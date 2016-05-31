@@ -62,7 +62,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
         {
             THEN("the integrals are the finite element areas")
             {
-                for (size_t i = 0; i < cavity.size(); ++i) {
+                for (int i = 0; i < cavity.size(); ++i) {
                     results(i) = integrateS<32, 16>(pcm::bind(constant, pcm::_1, pcm::_2), cavity.elements(i));
                     double diff = results(i) - cavity.elementArea(i);
                     if (std::abs(diff) > 1.0e-12) {
@@ -71,7 +71,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
                         WARN("diff = " << results(i) - cavity.elementArea(i));
                     }
                 }
-                for (size_t i = 0; i < cavity.size(); ++i) {
+                for (int i = 0; i < cavity.size(); ++i) {
                     REQUIRE(results(i) == Approx(cavity.elementArea(i)));
                 }
             }
@@ -84,7 +84,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
         {
             THEN("the integrals are the finite element areas divided by the sphere radius")
             {
-                for (size_t i = 0; i < cavity.size(); ++i) {
+                for (int i = 0; i < cavity.size(); ++i) {
                     results(i) = integrateS<32, 16>(pcm::bind(one_over_r, 1.55, pcm::_1, pcm::_2), cavity.elements(i));
                     double diff = results(i) - (cavity.elementArea(i)/radius);
                     if (std::abs(diff) > 1.0e-11) {
@@ -93,7 +93,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
                         WARN("diff = " << results(i) - (cavity.elementArea(i)/radius) );
                     }
                 }
-                for (size_t i = 0; i < cavity.size(); ++i) {
+                for (int i = 0; i < cavity.size(); ++i) {
                     REQUIRE(results(i) == Approx(cavity.elementArea(i)/radius));
                 }
             }
@@ -117,7 +117,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
         {
             THEN("the integrals are the finite element areas")
             {
-                for (size_t i = 0; i < cavity.size(); ++i) {
+                for (int i = 0; i < cavity.size(); ++i) {
                     results(i) = integrateS<64, 16>(pcm::bind(constant, pcm::_1, pcm::_2), cavity.elements(i));
                     double diff = results(i) - cavity.elementArea(i);
                     if (std::abs(diff) > 1.0e-11) {
@@ -132,7 +132,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
                 */
                 reference = cnpy::custom::npy_load<double>("molecule.npy");
 
-                for (size_t i = 0; i < cavity.size(); ++i) {
+                for (int i = 0; i < cavity.size(); ++i) {
                     REQUIRE(results(i) == Approx(reference(i)));
                 }
             }
@@ -145,7 +145,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
         {
             THEN("the integrals are the finite element areas divided by the sphere radius")
             {
-                for (size_t i = 0; i < cavity.size(); ++i) {
+                for (int i = 0; i < cavity.size(); ++i) {
                     results(i) = integrateS<64, 16>(pcm::bind(one_over_r, 1.20, pcm::_1, pcm::_2), cavity.elements(i));
                     double diff = results(i) - (cavity.elementArea(i)/molecule.spheres(0).radius);
                     if (std::abs(diff) > 1.0e-11) {
@@ -160,7 +160,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]")
                 */
                 reference = cnpy::custom::npy_load<double>("molecule_1r.npy");
 
-                for (size_t i = 0; i < cavity.size(); ++i) {
+                for (int i = 0; i < cavity.size(); ++i) {
                     REQUIRE(results(i) == Approx(reference(i)));
                 }
             }

@@ -143,6 +143,16 @@
 ! Bring the error code back home
     error_code = pedra_error_code
 
+    deallocate(intsph)
+    deallocate(newsph)
+    deallocate(icav1)
+    deallocate(icav2)
+    deallocate(jtr)
+    deallocate(xval)
+    deallocate(yval)
+    deallocate(zval)
+    deallocate(cv)
+
     end subroutine polyhedra_driver
 
     subroutine polyhedra(intsph,vert,centr,newsph,icav1,icav2,xval,yval, &
@@ -186,9 +196,9 @@
     integer(kind=regint_k) :: ncav1, ncav2, ne, nes, net, nev, nn
     integer(kind=regint_k) :: nsfe, nv
     real(kind=dp) :: rotcav(3, 3)
-    real(kind=dp), allocatable :: mass(:), geom(:, :)
+    real(kind=dp), allocatable :: mass(:), geom(:, :), ssfe(:)
     integer(kind=regint_k), allocatable :: permutation_table(:, :)
-
+    integer(kind=regint_k) :: untesselated
 
 !     Se stiamo costruendo una nuova cavita' per il calcolo del
 !     contributo dispersivo e repulsivo:
@@ -375,6 +385,8 @@
     if (nesfp > 1) then
         call pcmtns(rotcav, geom, mass, nesfp)
     end if
+    deallocate(geom)
+    deallocate(mass)
 
 ! Division of the surface into tesserae
 ! For every tessera, check if there's other tesserae covering it
@@ -465,7 +477,7 @@
                 write(lvpri,*) 'Vertices'' Coordinates'
                 call output(pts, 1_regint_k, 3_regint_k, 1_regint_k, nv, 3_regint_k, nv, 1_regint_k, lvpri)
             end if
-            if(area == d0) then
+            if(abs(area) <= 1.0d-14) then
                 write(lvpri, '(a, i4)') "Zero area in tessera", nn + 1
                 go to 310
             end if
@@ -506,26 +518,26 @@
     ! Check if two tesserae are too close
     test = 0.02d0
     test2 = test * test
-    do 400 i = 1, nts-1
-        if(as(i) == d0) go to 400
+    do i = 1, nts-1
+        if(abs(as(i)) <= 1.0d-14) cycle
         xi = xtscor(i)
         yi = ytscor(i)
         zi = ztscor(i)
         ii = i + 1
-        do 410 j = ii , nts
-            if(isphe(i) == isphe(j)) go to 410
-            if(as(j) == d0) go to 410
+        do j = ii , nts
+            if(isphe(i) == isphe(j)) cycle
+            if(abs(as(j)) <=  1.0d-14) cycle
             xj = xtscor(j)
             yj = ytscor(j)
             zj = ztscor(j)
             rij = (xi-xj)**2 + (yi-yj)**2 + (zi-zj)**2
-            if(rij > test2) go to 410
-            write(lvpri, '(a, i4, a, i4, a, f8.6, a, f8.6, a)') " WARNING: The distance between center of tessera",  &
-                            i, "and", j, " is ", rij, ", less than ", test2, " AU"
+            if(rij > test2) cycle
+            write(lvpri, '(a, i8, a, i8, a, f8.6, a, f8.6, a)') " WARNING: The distance between center of tessera",  &
+                            i, " and ", j, " is ", rij, ", less than ", test2, " AU"
         ! Check  if(as(i).lt.as(j)) as(i) = d0
         ! Check  if(as(i).ge.as(j)) as(j) = d0
-        410 end do
-    400 end do
+        end do
+    end do
 
 ! Replication of geometrical parameters according to simmetry
     call repcav(vert, centr, permutation_table, numts)
@@ -549,25 +561,36 @@
         vol = vol + as(its) * prod / 3.d0
     end do
 ! Print out some cavity data
-    call dzero(ssfe, nesf)
+    allocate(ssfe(mxsp))
+    ssfe = 0.0_dp
     do i = 1, nts
         k = isphe(i)
         ssfe(k) = ssfe(k) + as(i)
     end do
 
+     untesselated = 0
     if (some) then
-        write(lvpri, '(a, i5)') "Total number of spheres = ", nesf
-        write(lvpri, '(a)') "Sphere             Center  (X,Y,Z) (AU)              Radius (AU)      Area (AU^2)"
-        stot = 0.0d0
+        write(lvpri, '(/a)') "Final list of spheres"
+        write(lvpri, '(a)') "Sphere             Center  (X,Y,Z) (AU)              Radius (AU)      Exposed surface (AU^2)"
+        stot = 0.0_dp
         do i = 1, nesf
+          if (abs(ssfe(i)) <= 1.0d-14) then
+            untesselated = untesselated + 1
+          else
             write(lvpri, '(i4, 4f15.9, f15.9)') i, xe(i), ye(i), ze(i), re(i), ssfe(i)
-            stot = stot + ssfe(i)
+          end if
+          stot = stot + ssfe(i)
         end do
-        write(lvpri, '(/a, i8)') " Total number of tesserae = ", nts
+        write(lvpri, '(/a, i8)') "Initial number of spheres = ", nesfp
+        write(lvpri, '(a, i8)')  "Total number of spheres   = ", nesf
+        write(lvpri, '(a, i8, a)') 'GePol added ', nesf-nesfp, ' spheres'
+        write(lvpri, '(a, i8)')  ' Untesselated (internally buried) spheres = ', untesselated
+        write(lvpri, '(a, i8)') " Total number of tesserae = ", nts
         write(lvpri, '(a, i8)') " Number of irreducible tesserae = ", ntsirr
         write(lvpri, '(a, f20.14, a)') " Cavity surface = ", stot, " AU^2"
         write(lvpri, '(a, f20.14, a/)') " Cavity volume  = ", vol, " AU^3"
     end if
+    deallocate(ssfe)
 
 !     ----- set up for possible gradient calculation -----
 !           DONE ONLY IF WE HAVE SPHERES ON ATOMS
@@ -621,10 +644,7 @@
     iretcav = 0
     if (idisp == 2) idisp = 1
 
-! Time to clean up all the dinamically allocated arrays
     deallocate(permutation_table)
-    deallocate(mass)
-    deallocate(geom)
 
     end subroutine polyhedra
 
@@ -1145,7 +1165,6 @@
 !     sfera) e sfera alla cui intersezione con NS appartiene l'arco (se
 !     appartiene alla sfera originaria INTSPH(numts,N)=NS)
 
-
     iprcav = 0
     lan = .false.
     area = 0.0d+00
@@ -1665,7 +1684,6 @@
     integer(kind=regint_k) :: j, jj, m
     integer(kind=regint_k) :: iprcav = 0
 
-
 !     Trova il punto P4, sull`arco P1-P2 sotteso dal centro P3, che
 !     si trova sulla superficie della sfera NS
 !     P4 e' definito come combinazione lineare di P1 e P2, con
@@ -1811,7 +1829,6 @@
     real(kind=dp) :: x1, x2, y1, y2, z1, z2
     integer(kind=regint_k) :: i, jj, n, n0, n1, n2, nsfe1
 
-
 !     Sfrutta il teorema di Gauss-Bonnet per calcolare l'area
 !     della tessera con vertici PTS(3,NV). Consideriamo sempre
 !     che il lato N della tessera e' quello compreso tra i vertici
@@ -1859,7 +1876,7 @@
         Y1 = YE(NSFE1) - YE(NS)
         Z1 = ZE(NSFE1) - ZE(NS)
         DNORM1 = SQRT(X1*X1 + Y1*Y1 + Z1*Z1)
-        IF(DNORM1 == D0) DNORM1 = 1.0D+00
+        IF(abs(DNORM1) <= 1.0d-14) DNORM1 = 1.0D+00
         X2 = PTS(1,N) - XE(NS)
         Y2 = PTS(2,N) - YE(NS)
         Z2 = PTS(3,N) - ZE(NS)

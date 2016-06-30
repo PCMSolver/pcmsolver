@@ -68,9 +68,6 @@ int main(int argc, char * argv[])
     TIMER_ON("Input parsing");
     Input parsed(argv[1]);
     TIMER_OFF("Input parsing");
-    TIMER_ON("Initializing molecule");
-    parsed.initMolecule();
-    TIMER_OFF("Initializing molecule");
 
     // Create cavity
     TIMER_ON("Generating cavity");

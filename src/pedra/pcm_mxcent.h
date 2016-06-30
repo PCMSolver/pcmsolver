@@ -35,4 +35,4 @@
 !     qm3.h!!!
 !
       integer(kind=regint_k) MXNEW, MXCENT, MXCOOR
-      PARAMETER (MXNEW =120, MXCENT = 120, MXCOOR = 3*MXCENT)
+      PARAMETER (MXNEW =1000, MXCENT = 1000, MXCOOR = 3*MXCENT)

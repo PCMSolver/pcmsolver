@@ -46,7 +46,7 @@ GePolCavity::GePolCavity(const Molecule & molec, double a, double pr, double min
   Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR)
 {
   TIMER_ON("GePolCavity::build from Molecule object");
-  build(suffix, 10000, 200, 25000);
+  build(suffix, 50000, 1000, 100000);
   TIMER_OFF("GePolCavity::build from Molecule object");
 }
 
@@ -54,7 +54,7 @@ GePolCavity::GePolCavity(const Sphere & sph, double a, double pr, double minR, c
   Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
 {
   TIMER_ON("GePolCavity::build from single sphere");
-  build(suffix, 10000, 200, 25000);
+  build(suffix, 50000, 1000, 100000);
   TIMER_OFF("GePolCavity::build from single sphere");
 }
 
@@ -62,7 +62,7 @@ GePolCavity::GePolCavity(const std::vector<Sphere> & sph, double a, double pr, d
   Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR)
 {
   TIMER_ON("GePolCavity::build from list of spheres");
-  build(suffix, 10000, 200, 25000);
+  build(suffix, 50000, 1000, 100000);
   TIMER_OFF("GePolCavity::build from list of spheres");
 }
 

@@ -32,7 +32,7 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
-#include <Eigen/LU>
+#include <Eigen/Cholesky>
 
 #include "cavity/Cavity.hpp"
 #include "cavity/Element.hpp"
@@ -43,17 +43,26 @@
 void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
   if (!isotropic_) PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!", BOOST_CURRENT_FUNCTION);
-  fullPCMMatrix_ = CPCMMatrix(cavity, gf_i, profiles::epsilon(gf_o.permittivity()), correction_);
-  // Symmetrize K := (K + K+)/2
-  if (hermitivitize_) {
-    hermitivitize(fullPCMMatrix_);
-  }
+  TIMER_ON("Computing SI");
+  double epsilon = profiles::epsilon(gf_o.permittivity());
+  SI_ = gf_i.singleLayer(cavity.elements());
+  SI_ /= (epsilon - 1.0)/(epsilon + correction_);
+  TIMER_OFF("Computing SI");
+
   // Symmetry-pack
   // The number of irreps in the group
   int nrBlocks = cavity.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
   int dimBlock = cavity.irreducible_size();
-  symmetryPacking(blockPCMMatrix_, fullPCMMatrix_, dimBlock, nrBlocks);
+  // Perform symmetry blocking
+  // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
+  // into "block diagonal" when all other manipulations are done.
+  if (cavity.pointGroup().nrGenerators() != 0) {
+    TIMER_ON("Symmetry blocking");
+    symmetryBlocking(SI_, cavity.size(), dimBlock, nrBlocks);
+    TIMER_OFF("Symmetry blocking");
+  }
+  symmetryPacking(blockSI_, SI_, dimBlock, nrBlocks);
 
   built_ = true;
 }
@@ -63,12 +72,15 @@ Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential
   // The potential and charge vector are of dimension equal to the
   // full dimension of the cavity. We have to select just the part
   // relative to the irrep needed.
-  int fullDim = fullPCMMatrix_.rows();
+  int fullDim = SI_.rows();
   Eigen::VectorXd charge = Eigen::VectorXd::Zero(fullDim);
-  int nrBlocks = blockPCMMatrix_.size();
+  int nrBlocks = blockSI_.size();
   int irrDim = fullDim/nrBlocks;
   charge.segment(irrep*irrDim, irrDim) =
-    - blockPCMMatrix_[irrep] * potential.segment(irrep*irrDim, irrDim);
+    - blockSI_[irrep].ldlt().solve(potential.segment(irrep*irrDim, irrDim));
+  // Symmetrize ASC charge := (charge + charge*)/2
+  if (hermitivitize_) hermitivitize(charge);
+
   return charge;
 }
 

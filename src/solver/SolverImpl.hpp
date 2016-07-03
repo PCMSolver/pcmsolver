@@ -192,49 +192,6 @@ inline Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunct
   return fullPCMMatrix;
 }
 
-/*! \brief Builds the CPCM matrix
- *  \param[in] cav the discretized cavity
- *  \param[in] gf_i Green's function inside the cavity
- *  \param[in] epsilon permittivity outside the cavity
- *  \param[in] correction CPCM correction factor
- *  \return the \f$ \mathbf{K} = f(\varepsilon)\mathbf{S}^{-1} \f$ matrix
- *
- *  This function calculates the PCM matrix.
- *  The matrix is not symmetrized and is not symmetry packed.
- */
-inline Eigen::MatrixXd CPCMMatrix(const Cavity & cav, const IGreensFunction & gf_i, double epsilon, double correction)
-{
-  // The total size of the cavity
-  PCMSolverIndex cavitySize = cav.size();
-  // The number of irreps in the group
-  int nrBlocks = cav.pointGroup().nrIrrep();
-  // The size of the irreducible portion of the cavity
-  int dimBlock = cav.irreducible_size();
-
-  // Compute SI and DI on the whole cavity, regardless of symmetry
-  TIMER_ON("Computing SI");
-  Eigen::MatrixXd SI = gf_i.singleLayer(cav.elements());
-  TIMER_OFF("Computing SI");
-
-  // Perform symmetry blocking
-  // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
-  // into "block diagonal" when all other manipulations are done.
-  if (cav.pointGroup().nrGenerators() != 0) {
-    TIMER_ON("Symmetry blocking");
-    symmetryBlocking(SI, cavitySize, dimBlock, nrBlocks);
-    TIMER_OFF("Symmetry blocking");
-  }
-
-  double fact = (epsilon - 1.0)/(epsilon + correction);
-  // Invert SI  using LU decomposition with full pivoting
-  // This is a rank-revealing LU decomposition, this allows us
-  // to test if SI is invertible before attempting to invert it.
-  Eigen::FullPivLU<Eigen::MatrixXd> SI_LU(SI);
-  if (!(SI_LU.isInvertible()))
-    PCMSOLVER_ERROR("SI matrix is not invertible!", BOOST_CURRENT_FUNCTION);
-  return fact * SI_LU.inverse();
-}
-
 /*! \brief Builds the **anisotropic** \f$ \mathbf{T}_\varepsilon \f$ matrix
  *  \param[in] cav the discretized cavity
  *  \param[in] gf_i Green's function inside the cavity

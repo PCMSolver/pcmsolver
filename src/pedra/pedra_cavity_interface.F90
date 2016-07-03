@@ -166,6 +166,7 @@ deallocate(vert)
 deallocate(centr)
 
 write(pedra_unit, *) "Error code is ", error_code
+write(pedra_unit, *) '<<< Done with PEDRA Fortran code >>>'
 
 close(pedra_unit)
 

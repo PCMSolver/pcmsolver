@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -43,7 +43,13 @@ class IGreensFunction;
  *  \class CPCMSolver
  *  \brief Solver for conductor-like approximation: C-PCM (COSMO)
  *  \author Roberto Di Remigio
- *  \date 2013
+ *  \date 2013, 2016
+ *
+ *  \note We store the unsymmetrized SI matrix and use a robust
+ *  Cholesky decomposition to solve for the ASC. The ASC is then
+ *  symmetrized. This avoids computing and storing the inverse explicitly.
+ *  The SI matrix is already scaled by the dielectric factor entering the
+ *  definition of the conductor model!
  */
 
 class CPCMSolver : public PCMSolver
@@ -65,10 +71,10 @@ private:
     bool hermitivitize_;
     /*! Correction for the conductor results */
     double correction_;
-    /*! PCM matrix, not symmetry blocked */
-    Eigen::MatrixXd fullPCMMatrix_;
-    /*! PCM matrix, symmetry blocked form */
-    std::vector<Eigen::MatrixXd> blockPCMMatrix_;
+    /*! SI matrix, not symmetry blocked */
+    Eigen::MatrixXd SI_;
+    /*! SI matrix, symmetry blocked form */
+    std::vector<Eigen::MatrixXd> blockSI_;
 
     /*! \brief Calculation of the PCM matrix
      *  \param[in] cavity the cavity to be used

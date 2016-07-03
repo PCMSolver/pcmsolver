@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+### Changed
+
+- The `PEDRA.OUT` cavity generator log now reports the initial _and_ final
+  lists of spheres. The final list only contains those spheres that were
+  actually tesselated and, possibly, the added spheres.
+- The `CPCMSolver` object now stores the scaled, unsymmetrized S matrix. The
+  explicit calculation and storage of its inverse is thus avoided. A robust
+  Cholesky decomposition is used to solve the linear equation system. The
+  symmetrization needed to obtain the polarization weights happens directly on
+  the computed charges.
+- The `hermitivitize` function can now correctly symmetrize vectors.
+
+### Fixed
+
+- A fix for the initialization of the explicit list of spheres when running the
+  standalone executable. The bug prevented the generation of the correct
+  `Molecule` object, with subsequent failure in the cavity generator.
+- A memory leak occuring in the cavity generator PEDRA was fixed. This was uncovered by @shoefener
+  and manifested only with considerably large cavities (> 200 input spheres)
+
+### Removed
+
+- The function `CPCMMatrix` in the `SolverImpl.hpp` header file is no longer available.
+
 ## [v1.1.2] (2016-05-31)
 
 ### Fixed
@@ -26,7 +50,7 @@
   program execution if this is the case.
 - An API function to retrieve the areas/weights of the cavity finite elements.
   The values in the returned array are in Bohr^2. Addresses a feature request
-  from @shofener (Issue #13)
+  from @shoefener (Issue #13)
 - The standalone executable `run_pcm` is now tested within the unit tests
   suite. The tests cover the cases where the cavity is given implicitly,
   explicitly or by substitution of radii on chosen atoms.
@@ -36,12 +60,12 @@
 - Boundary integral operators classes learnt to accept a scaling factor for the
   diagonal elements of the approximate collocation matrices. The change is
   reflected in the Green's funtion classes and in the input parsing. Addresses
-  a feature request from @shofener (Issue #16)
-- GePolCavity learnt to print also the list of spheres used to generate the
+  a feature request from @shoefener (Issue #16)
+- `GePolCavity` learnt to print also the list of spheres used to generate the
   cavity.
 - Different internal handling of conversion factors from Bohr to Angstrom.
 - CMake minimum required version is 2.8.10
-- Atom, Solvent and Sphere are now PODs. The radii and solvent lists are free
+- `Atom`, `Solvent` and `Sphere` are now PODs. The radii and solvent lists are free
   functions.
 - `PCMSOLVER_ERROR` kills program execution when an error arises but does not
   use C++ exceptions.
@@ -53,7 +77,7 @@
 
 ### Known Issues
 
-- The new printer in GePolCavity might not work properly when an explicit list
+- The new printer in `GePolCavity` might not work properly when an explicit list
   of spheres is provided in the input.
 - On Ubuntu 12.10, 32 bit the Intel compiler version 2013.1 produces a faulty
   library. It is possibly a bug in the implementation of `iso_c_binding`, see
@@ -61,7 +85,7 @@
 
 ### Removed
 
-- SurfaceFunction as a class is no longer available. We keep track of surface
+- `SurfaceFunction` as a class is no longer available. We keep track of surface
   functions at the interface level _via_ a label-vector map.
 
 ## [v1.1.0] (2016-02-07)

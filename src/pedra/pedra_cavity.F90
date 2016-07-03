@@ -478,7 +478,7 @@
                 call output(pts, 1_regint_k, 3_regint_k, 1_regint_k, nv, 3_regint_k, nv, 1_regint_k, lvpri)
             end if
             if(abs(area) <= 1.0d-14) then
-                write(lvpri, '(a, i4)') "Zero area in tessera", nn + 1
+                if (iprpcm >= 10) write(lvpri, '(a, i8)') "Zero area in tessera ", nn + 1
                 go to 310
             end if
             if (nn >= mxts) then
@@ -1313,7 +1313,7 @@
         end do
         ICUT = ICUT / 2
         IF(ICUT > 1) THEN
-            WRITE(LVPRI,*) 'Tessera cut in pieces and removed.'
+            IF(IPRPCM >= 10) WRITE(LVPRI,*) 'Tessera cut in pieces and removed.'
             RETURN
         end if
 

@@ -45,11 +45,7 @@ class IGreensFunction;
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2011, 2015, 2016
  *
- *  \note We store the unsymmetrized T(epsilon) and Rinfinity matrices.
- *  The ASC is obtained by multiplying the MEP by Rinfinity and then using a partially
- *  pivoted LU decomposition of T(epsilon) on the resulting vector.
- *  The ASC is then symmetrized. This avoids computing and storing the inverse
- *  explicitly.
+ *  \note We store the unsymmetrized T^-1R matrix.
  */
 
 class IEFSolver : public PCMSolver
@@ -79,14 +75,10 @@ public:
 private:
     /*! Whether the system matrix has to be symmetrized */
     bool hermitivitize_;
-    /*! T(epsilon) matrix, not symmetry blocked */
-    Eigen::MatrixXd Tepsilon_;
-    /*! T(epsilon) matrix, symmetry blocked form */
-    std::vector<Eigen::MatrixXd> blockTepsilon_;
-    /*! R_infinity matrix, not symmetry blocked */
-    Eigen::MatrixXd Rinfinity_;
-    /*! R_infinity matrix, symmetry blocked form */
-    std::vector<Eigen::MatrixXd> blockRinfinity_;
+    /*! T^-1R matrix, not symmetry blocked */
+    Eigen::MatrixXd TinvR_;
+    /*! T^-1R matrix, symmetry blocked form */
+    std::vector<Eigen::MatrixXd> blockTinvR_;
 
     /*! \brief Calculation of the PCM matrix
      *  \param[in] cavity the cavity to be used

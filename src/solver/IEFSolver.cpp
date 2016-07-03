@@ -50,34 +50,28 @@ void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunct
 
 void IEFSolver::buildAnisotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-  Tepsilon_  = anisotropicTEpsilon(cav, gf_i, gf_o);
+  TinvR_  = anisotropicIEFMatrix(cav, gf_i, gf_o);
   // Pack into a block diagonal matrix
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
   int dimBlock = cav.irreducible_size();
   // For the moment just packs into a std::vector<Eigen::MatrixXd>
-  symmetryPacking(blockTepsilon_, Tepsilon_, dimBlock, nrBlocks);
-
-  Rinfinity_ = anisotropicRinfinity(cav, gf_i, gf_o);
-  symmetryPacking(blockRinfinity_, Rinfinity_, dimBlock, nrBlocks);
+  symmetryPacking(blockTinvR_, TinvR_, dimBlock, nrBlocks);
 
   built_ = true;
 }
 
 void IEFSolver::buildIsotropicMatrix(const Cavity & cav, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
 {
-  Tepsilon_  = isotropicTEpsilon(cav, gf_i, profiles::epsilon(gf_o.permittivity()));
+  TinvR_  = isotropicIEFMatrix(cav, gf_i, profiles::epsilon(gf_o.permittivity()));
   // Pack into a block diagonal matrix
   // The number of irreps in the group
   int nrBlocks = cav.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
   int dimBlock = cav.irreducible_size();
   // For the moment just packs into a std::vector<Eigen::MatrixXd>
-  symmetryPacking(blockTepsilon_, Tepsilon_, dimBlock, nrBlocks);
-
-  Rinfinity_ = isotropicRinfinity(cav, gf_i);
-  symmetryPacking(blockRinfinity_, Rinfinity_, dimBlock, nrBlocks);
+  symmetryPacking(blockTinvR_, TinvR_, dimBlock, nrBlocks);
 
   built_ = true;
 }
@@ -87,12 +81,12 @@ Eigen::VectorXd IEFSolver::computeCharge_impl(const Eigen::VectorXd & potential,
   // The potential and charge vector are of dimension equal to the
   // full dimension of the cavity. We have to select just the part
   // relative to the irrep needed.
-  int fullDim = Rinfinity_.rows();
+  int fullDim = TinvR_.rows();
   Eigen::VectorXd charge = Eigen::VectorXd::Zero(fullDim);
-  int nrBlocks = blockRinfinity_.size();
+  int nrBlocks = blockTinvR_.size();
   int irrDim = fullDim/nrBlocks;
   charge.segment(irrep*irrDim, irrDim) =
-    - blockTepsilon_[irrep].partialPivLu().solve(blockRinfinity_[irrep] * potential.segment(irrep*irrDim, irrDim));
+    - blockTinvR_[irrep] * potential.segment(irrep*irrDim, irrDim);
   // Symmetrize ASC charge := (charge + charge*)/2
   if (hermitivitize_) hermitivitize(charge);
 

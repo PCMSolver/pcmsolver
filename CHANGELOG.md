@@ -34,8 +34,6 @@
 ### Removed
 
 - The function `CPCMMatrix` in the `SolverImpl.hpp` header file is no longer available.
-- The functions `anisotropicIEFMatrix` and `isotropicIEFMatrix` in the
-  `SolverImpl.hpp` header file are no longer available.
 
 ## [v1.1.2] (2016-05-31)
 

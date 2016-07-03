@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.1.3] (2016-07-03)
+
 ### Changed
 
 - The `PEDRA.OUT` cavity generator log now reports the initial _and_ final

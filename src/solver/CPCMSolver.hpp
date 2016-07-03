@@ -45,10 +45,10 @@ class IGreensFunction;
  *  \author Roberto Di Remigio
  *  \date 2013, 2016
  *
- *  \note We store the unsymmetrized SI matrix and use a robust
+ *  \note We store the unsymmetrized S matrix and use a robust
  *  Cholesky decomposition to solve for the ASC. The ASC is then
  *  symmetrized. This avoids computing and storing the inverse explicitly.
- *  The SI matrix is already scaled by the dielectric factor entering the
+ *  The S matrix is already scaled by the dielectric factor entering the
  *  definition of the conductor model!
  */
 
@@ -71,10 +71,10 @@ private:
     bool hermitivitize_;
     /*! Correction for the conductor results */
     double correction_;
-    /*! SI matrix, not symmetry blocked */
-    Eigen::MatrixXd SI_;
-    /*! SI matrix, symmetry blocked form */
-    std::vector<Eigen::MatrixXd> blockSI_;
+    /*! S matrix, not symmetry blocked */
+    Eigen::MatrixXd S_;
+    /*! S matrix, symmetry blocked form */
+    std::vector<Eigen::MatrixXd> blockS_;
 
     /*! \brief Calculation of the PCM matrix
      *  \param[in] cavity the cavity to be used

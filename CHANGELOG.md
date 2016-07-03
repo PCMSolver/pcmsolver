@@ -7,11 +7,23 @@
 - The `PEDRA.OUT` cavity generator log now reports the initial _and_ final
   lists of spheres. The final list only contains those spheres that were
   actually tesselated and, possibly, the added spheres.
+- For all solvers, the symmetrization needed to obtain the polarization weights
+  happens directly on the computed charges, instead of symmetrizing the system
+  matrices.
+- The `IEFSolver` object now stores the unsymmetrized T and R matrices.
+  The explicit calculation of the inverse of T is thus avoided, the drawback is
+  that two square matrices of size equal to the cavity size are stored instead
+  of just one. A [partially pivoted LU decomposition](http://eigen.tuxfamily.org/dox/classEigen_1_1PartialPivLU.html)
+  is used to solve the linear system.
+  In the isotropic case no inverses are ever explicitly calculated. In the
+  anisotropic case, the inverse of the internal S matrix is still needed to
+  form R.
 - The `CPCMSolver` object now stores the scaled, unsymmetrized S matrix. The
-  explicit calculation and storage of its inverse is thus avoided. A robust
-  Cholesky decomposition is used to solve the linear equation system. The
-  symmetrization needed to obtain the polarization weights happens directly on
-  the computed charges.
+  explicit calculation and storage of its inverse is thus avoided.
+  A [robust Cholesky decomposition](http://eigen.tuxfamily.org/dox/classEigen_1_1LDLT.html) is
+  used to solve the linear equation system.
+  The symmetrization needed to obtain the polarization weights happens directly
+  on the computed charges.
 - The `hermitivitize` function can now correctly symmetrize vectors.
 
 ### Fixed
@@ -25,6 +37,8 @@
 ### Removed
 
 - The function `CPCMMatrix` in the `SolverImpl.hpp` header file is no longer available.
+- The functions `anisotropicIEFMatrix` and `isotropicIEFMatrix` in the
+  `SolverImpl.hpp` header file are no longer available.
 
 ## [v1.1.2] (2016-05-31)
 

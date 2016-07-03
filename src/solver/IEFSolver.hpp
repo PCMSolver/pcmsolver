@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
  */
@@ -43,7 +43,13 @@ class IGreensFunction;
  *  \class IEFSolver
  *  \brief IEFPCM, collocation-based solver
  *  \author Luca Frediani, Roberto Di Remigio
- *  \date 2011, 2015
+ *  \date 2011, 2015, 2016
+ *
+ *  \note We store the unsymmetrized T(epsilon) and Rinfinity matrices.
+ *  The ASC is obtained by multiplying the MEP by Rinfinity and then using a partially
+ *  pivoted LU decomposition of T(epsilon) on the resulting vector.
+ *  The ASC is then symmetrized. This avoids computing and storing the inverse
+ *  explicitly.
  */
 
 class IEFSolver : public PCMSolver
@@ -73,10 +79,14 @@ public:
 private:
     /*! Whether the system matrix has to be symmetrized */
     bool hermitivitize_;
-    /*! PCM matrix, not symmetry blocked */
-    Eigen::MatrixXd fullPCMMatrix_;
-    /*! PCM matrix, symmetry blocked form */
-    std::vector<Eigen::MatrixXd> blockPCMMatrix_;
+    /*! T(epsilon) matrix, not symmetry blocked */
+    Eigen::MatrixXd Tepsilon_;
+    /*! T(epsilon) matrix, symmetry blocked form */
+    std::vector<Eigen::MatrixXd> blockTepsilon_;
+    /*! R_infinity matrix, not symmetry blocked */
+    Eigen::MatrixXd Rinfinity_;
+    /*! R_infinity matrix, symmetry blocked form */
+    std::vector<Eigen::MatrixXd> blockRinfinity_;
 
     /*! \brief Calculation of the PCM matrix
      *  \param[in] cavity the cavity to be used

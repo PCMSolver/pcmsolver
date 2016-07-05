@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.1.4] (2016-07-05)
+
 ### Changed
 
 - The `CPCMSolver` object now stores the scaled, Hermitian, symmetry-adapted S matrix.

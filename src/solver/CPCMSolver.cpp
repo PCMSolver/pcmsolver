@@ -47,6 +47,8 @@ void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunc
   double epsilon = profiles::epsilon(gf_o.permittivity());
   S_ = gf_i.singleLayer(cavity.elements());
   S_ /= (epsilon - 1.0)/(epsilon + correction_);
+  // Get in Hermitian form
+  if (hermitivitize_) hermitivitize(S_);
   TIMER_OFF("Computing S");
 
   // Symmetry-pack
@@ -78,8 +80,6 @@ Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential
   int irrDim = fullDim/nrBlocks;
   charge.segment(irrep*irrDim, irrDim) =
     - blockS_[irrep].ldlt().solve(potential.segment(irrep*irrDim, irrDim));
-  // Symmetrize ASC charge := (charge + charge*)/2
-  if (hermitivitize_) hermitivitize(charge);
 
   return charge;
 }

@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- The `CPCMSolver` object now stores the scaled, Hermitian, symmetry-adapted S matrix.
+  Polarization weights are then directly computed from the incoming MEP.
+
 ## [v1.1.3] (2016-07-03)
 
 ### Changed

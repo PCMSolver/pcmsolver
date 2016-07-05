@@ -48,7 +48,20 @@ class IGreensFunction;
  *  \note We store the non-Hermitian, symmetry-blocked T(epsilon) and Rinfinity matrices.
  *  The ASC is obtained by multiplying the MEP by Rinfinity and then using a partially
  *  pivoted LU decomposition of T(epsilon) on the resulting vector.
- *  This avoids computing and storing the inverse explicitly.
+ *  In case the polarization weights are requested, we use the approach suggested in
+ *  \cite Barone2004-ae.
+ *  First, the adjoint problem is solved:
+ *  \f[
+ *      \mathbf{T}_\varepsilon^\dagger \tilde{v} = v
+ *  \f]
+ *  Also in this case a partially pivoted LU decomposition is used.
+ *  The "transposed" ASC is obtained by the matrix-vector multiplication:
+ *  \f[
+ *      q^* = \mathbf{R}_\infty^\dagger \tilde{v}
+ *  \f]
+ *  Eventually, the two sets of charges are summed and divided by 2
+ *  This avoids computing and storing the inverse explicitly, at the expense of storing
+ *  both T(epsilon) and Rinfinity.
  */
 
 class IEFSolver : public PCMSolver

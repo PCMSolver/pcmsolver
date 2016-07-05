@@ -6,6 +6,19 @@
 
 - The `CPCMSolver` object now stores the scaled, Hermitian, symmetry-adapted S matrix.
   Polarization weights are then directly computed from the incoming MEP.
+- The `IEFSolver` object now stores the non-Hermitian, symmetry-adapted T and R matrices.
+  The explicit calculation of the inverse of T is thus avoided.
+  However, two square matrices of size equal to the cavity size are stored instead
+  of just one. To obtain the polarization weights _two_ linear systems of equations are solved.
+  A [partially pivoted LU decomposition](http://eigen.tuxfamily.org/dox/classEigen_1_1PartialPivLU.html)
+  is used to solve the linear system(s).
+  The strategy used in v1.1.3 suffered from a reduced numerical accuracy, due to the fact that
+  the polarization weights were not correctly defined.
+
+### Removed
+
+- The `hermitivitize` function will only work correctly on matrices. This
+  reverts modifications in the previous release.
 
 ## [v1.1.3] (2016-07-03)
 

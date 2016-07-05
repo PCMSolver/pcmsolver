@@ -93,8 +93,17 @@ Eigen::VectorXd IEFSolver::computeCharge_impl(const Eigen::VectorXd & potential,
   int irrDim = fullDim/nrBlocks;
   charge.segment(irrep*irrDim, irrDim) =
     - blockTepsilon_[irrep].partialPivLu().solve(blockRinfinity_[irrep] * potential.segment(irrep*irrDim, irrDim));
-  // Symmetrize ASC charge := (charge + charge*)/2
-  if (hermitivitize_) hermitivitize(charge);
+
+  // Obtain polarization weights
+  if (hermitivitize_) {
+    Eigen::VectorXd adj_asc = Eigen::VectorXd::Zero(fullDim);
+    // Form T^\dagger * v = c
+    adj_asc.segment(irrep*irrDim, irrDim) = blockTepsilon_[irrep].adjoint().partialPivLu().solve(potential.segment(irrep*irrDim, irrDim));
+    // Form R^\dagger * c = q^* ("transposed" polarization charges)
+    adj_asc.segment(irrep*irrDim, irrDim) = - blockRinfinity_[irrep].adjoint() * (adj_asc.segment(irrep*irrDim, irrDim).eval());
+    // Get polarization weights
+    charge = 0.5 * (adj_asc + charge.eval());
+  }
 
   return charge;
 }

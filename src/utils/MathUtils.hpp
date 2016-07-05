@@ -211,17 +211,13 @@ inline void symmetryPacking(std::vector<Eigen::MatrixXd> & blockedMatrix,
  *  \note We check if a matrix or vector was given, since in the latter
  *  case we only want the complex conjugation operation to happen.
  */
-  template <typename Derived>
+template <typename Derived>
 inline void hermitivitize(Eigen::MatrixBase<Derived> & obj_)
 {
   // We need to use adjoint().eval() to avoid aliasing issues, see:
   // http://eigen.tuxfamily.org/dox/group__TopicAliasing.html
   // The adjoint is evaluated explicitly into an intermediate.
-  if ((obj_.rows() != 1) && (obj_.cols() != 1)) {
-    obj_ = 0.5 * (obj_ + obj_.adjoint().eval());
-  } else {
-    obj_ = 0.5 * (obj_ + obj_.conjugate().eval());
-  }
+  obj_ = 0.5 * (obj_ + obj_.adjoint().eval());
 }
 
 /*! \fn inline void eulerRotation(Eigen::Matrix3d & R_, const Eigen::Vector3d & eulerAngles_)

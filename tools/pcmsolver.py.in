@@ -216,7 +216,7 @@ def setup_keywords():
     cavity.add_kw('SCALING',     'BOOL', True)
     # Built-in radii set
     # Valid for: GePol, Wavelet and TsLess
-    # Valid values: BONDI or UFF
+    # Valid values: BONDI, UFF or ALLINGER
     # Default: BONDI
     cavity.add_kw('RADIISET',    'STR', 'BONDI')
     # Minimal radius of added spheres (in au)
@@ -485,7 +485,7 @@ def verify_cavity(section):
             sys.exit(1)
 
     radiiSet = section.get('RADIISET')
-    allowed_sets = ('BONDI', 'UFF')
+    allowed_sets = ('BONDI', 'UFF', 'ALLINGER')
     if (radiiSet.get() not in allowed_sets):
         print('Radii set requested {} is not among the allowed sets: {}'.format(radiiSet.get(), allowed_sets))
         sys.exit(1)

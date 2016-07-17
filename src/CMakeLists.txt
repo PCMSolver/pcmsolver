@@ -8,6 +8,7 @@ add_subdirectory(metal)
 add_subdirectory(bi_operators)
 add_subdirectory(pedra)
 add_subdirectory(solver)
+add_subdirectory(tsless)
 add_subdirectory(utils)
 
 list(APPEND _objects $<TARGET_OBJECTS:cavity>
@@ -17,6 +18,7 @@ list(APPEND _objects $<TARGET_OBJECTS:cavity>
                      $<TARGET_OBJECTS:bi_operators>
                      $<TARGET_OBJECTS:pedra>
                      $<TARGET_OBJECTS:solver>
+                     $<TARGET_OBJECTS:tsless>
                      $<TARGET_OBJECTS:utils>
                      $<TARGET_OBJECTS:getkw>
     )

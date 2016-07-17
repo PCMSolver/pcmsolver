@@ -68,7 +68,7 @@ class GePolCavity __final : public Cavity
      *  \param[in]   maxsp maximum number of spheres (original + added)
      *  \param[in] maxvert maximum number of vertices
      */
-    void build(const std::string & suffix, int maxts, int maxsp, int maxvert);
+    void build(const std::string & suffix, size_t maxts, size_t maxsp, size_t maxvert);
     /*! \brief Writes the cavity.off file for visualizing the cavity
      *  \param[in]  suffix for the cavity.off
      *  The full name of the visualization file will be cavity.off_suffix_PID

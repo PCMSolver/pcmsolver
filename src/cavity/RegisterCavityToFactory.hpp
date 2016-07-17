@@ -32,6 +32,7 @@
 #include "utils/Factory.hpp"
 #include "GePolCavity.hpp"
 #include "RestartCavity.hpp"
+#include "TsLessCavity.hpp"
 
 /*! \file RegisterCavityToFactory.hpp
  *  \brief Register each cavity to the factory.
@@ -65,6 +66,18 @@ namespace
     const std::string RESTART("RESTART");
     const bool registeredRestart = Factory<Cavity, cavityData>::TheFactory().registerObject(
                                        RESTART, createRestartCavity);
+}
+
+namespace
+{
+    Cavity * createTsLessCavity(const cavityData & data)
+    {
+        return new TsLessCavity(data.molecule, data.area, data.probeRadius, data.minimalRadius,
+                                data.minDistance, data.derOrder);
+    }
+    const std::string TSLESS("TSLESS");
+    const bool registeredTsLess = Factory<Cavity, cavityData>::TheFactory().registerObject(TSLESS,
+                                 createTsLessCavity);
 }
 
 #endif // REGISTERCAVITYTOFACTORY_HPP

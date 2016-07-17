@@ -679,12 +679,13 @@ def verify_geometry(keyword):
         print('Empty or incoherent geometry')
         sys.exit(1)
     # Convert only geometry to AU. Leave charges untouched
-    j = 0
-    for i in range(length/4):
-        data[j] /= CODATAdict[CODATAyear]
-        data[j+1] /= CODATAdict[CODATAyear]
-        data[j+2] /= CODATAdict[CODATAyear]
-        j += 4
+    if (isAngstrom):
+        j = 0
+        for i in range(length/4):
+            data[j] /= CODATAdict[CODATAyear]
+            data[j+1] /= CODATAdict[CODATAyear]
+            data[j+2] /= CODATAdict[CODATAyear]
+            j += 4
 
 def verify_spheres(keyword):
     length=len(keyword.get())

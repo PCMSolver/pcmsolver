@@ -4,6 +4,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR})
 add_subdirectory(input)
 add_subdirectory(numerical_quadrature)
 add_subdirectory(gepol)
+add_subdirectory(tsless)
 add_subdirectory(dielectric_profile)
 add_subdirectory(green)
 add_subdirectory(bi_operators)
@@ -20,6 +21,7 @@ add_executable(unit_tests unit_tests.cpp
                           $<TARGET_OBJECTS:iefpcm-tests>
                           $<TARGET_OBJECTS:input-tests>
                           $<TARGET_OBJECTS:numerical_quadrature-tests>
+                          $<TARGET_OBJECTS:tsless-tests>
                           )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(unit_tests custom_boost)

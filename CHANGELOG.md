@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Added
+
+- A new cavity generator using the C. S. Pomelli's [TsLess algorithm](http://dx.doi.org/10.1002/jcc.20076)
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
 ## [v1.1.4] (2016-07-05)
 
 ### Changed

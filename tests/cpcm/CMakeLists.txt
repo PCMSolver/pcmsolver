@@ -23,3 +23,8 @@ add_Catch_test(cpcm_gepol-point "solver;cpcm;cpcm_gepol-point")
 # cpcm_gepol-C2H4_D2h.cpp test
 add_Catch_test(cpcm_gepol-C2H4_D2h "cpcm;cpcm_symmetry;cpcm_gepol-C2H4_D2h")
 
+# cpcm_tsless-point.cpp test
+add_Catch_test(cpcm_tsless-point "solver;cpcm;cpcm_tsless-point")
+
+# cpcm_tsless-NH3.cpp test
+add_Catch_test(cpcm_tsless-NH3 "solver;cpcm;cpcm_tsless-NH3")

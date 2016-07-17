@@ -41,3 +41,6 @@ add_Catch_test(gepol_H3+ "gepol;gepol_H3+")
 # gepol_NH3_from-file.cpp test
 add_Catch_test(gepol_NH3_from-file "gepol;gepol_NH3_from-file")
 set_tests_properties(gepol_NH3_from-file PROPERTIES DEPENDS gepol_NH3)
+
+# gepol_HF.cpp test
+add_Catch_test(gepol_HF "gepol;gepol_HF")

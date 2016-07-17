@@ -32,3 +32,8 @@ add_Catch_test(iefpcm_anisotropic-gepol-point "solver;iefpcm;iefpcm_anisotropic-
 add_Catch_test(iefpcm_gepol-point_from-file "solver;iefpcm;iefpcm_gepol-point_from-file")
 set_tests_properties(iefpcm_gepol-point_from-file PROPERTIES DEPENDS iefpcm_gepol-point)
 
+# iefpcm_gepol-point.cpp test
+add_Catch_test(iefpcm_tsless-point "solver;iefpcm;iefpcm_tsless-point")
+
+# iefpcm_gepol-NH3.cpp test
+add_Catch_test(iefpcm_tsless-NH3 "solver;iefpcm;iefpcm_tsless-NH3")

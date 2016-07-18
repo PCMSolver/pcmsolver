@@ -4,13 +4,6 @@
 
 ### Added
 
-- A radii set derived from [Allinger's MM3 model](http://dx.doi.org/10.1016/S0166-1280(09)80008-0)
-  can now be chosen to build the van der Waals cavity surface.
-  Notice that the values reported in the original paper are **divided by** 1.2, to match the
-  default radii set used in [ADF](https://www.scm.com/doc/ADF/Input/COSMO.html)
-  The closest match to ADF can be obtained by using CPCM as solver, Allinger's radii and setting
-  the scaling of radii to false.
-
 ### Changed
 
 ### Deprecated
@@ -20,6 +13,17 @@
 ### Fixed
 
 ### Security
+
+## [v1.1.5] (2016-07-18)
+
+### Added
+
+- A radii set derived from [Allinger's MM3 model](http://dx.doi.org/10.1016/S0166-1280(09)80008-0)
+  can now be chosen to build the van der Waals cavity surface.
+  Notice that the values reported in the original paper are **divided by** 1.2, to match the
+  default radii set used in [ADF](https://www.scm.com/doc/ADF/Input/COSMO.html)
+  The closest match to ADF can be obtained by using CPCM as solver, Allinger's radii and setting
+  the scaling of radii to false.
 
 ## [v1.1.4] (2016-07-05)
 

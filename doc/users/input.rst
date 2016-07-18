@@ -109,13 +109,19 @@ Cavity section keywords
 
    RadiiSet
      Select set of atomic radii to be used. Currently Bondi-Mantina
-     :cite:`Bondi1964,Mantina2009` and UFF :cite:`Rappe1992` sets available,
-     see :ref:`available-radii`.
+     :cite:`Bondi1964,Mantina2009`, UFF :cite:`Rappe1992` and Allinger's MM3
+     :cite`Allinger1994-tx` sets available, see :ref:`available-radii`.
 
      * **Type**: string
-     * **Valid values**: Bondi | UFF
+     * **Valid values**: Bondi | UFF | Allinger
      * **Valid for**: all cavities except Restart
      * **Default value**: Bondi
+
+     .. note::
+
+        Radii in Allinger's MM3 set are obtained by **dividing** the value in the original
+        paper by 1.2, as done in the [ADF COSMO implementation](https://www.scm.com/doc/ADF/Input/COSMO.html)
+        We advise to turn off scaling of the radii by 1.2 when using this set.
 
    MinRadius
      Minimal radius for additional spheres not centered on atoms. An

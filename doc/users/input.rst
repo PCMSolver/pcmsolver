@@ -432,6 +432,10 @@ Available radii
    :scale: 70 %
    :align: center
 
+.. image::  ../gfx/allingerMM3.png
+   :scale: 70 %
+   :align: center
+
 .. _available-solvents:
 
 Available solvents

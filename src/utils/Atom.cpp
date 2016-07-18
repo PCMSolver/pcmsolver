@@ -102,7 +102,7 @@ std::vector<Atom> & initBondi()
   Bondi[ 55] = Atom("Barium",        "Ba",   56.0, 137.9052320, 2.68, Origin, 1.2);
   Bondi[ 56] = Atom("Lanthanum",     "La",   57.0, 138.9063470, 0.00, Origin, 1.2);
   Bondi[ 57] = Atom("Cerium",        "Ce",   58.0, 139.9054330, 0.00, Origin, 1.2);
-  Bondi[ 58] = Atom("Praseodimium",  "Pr",   59.0, 140.9076470, 0.00, Origin, 1.2);
+  Bondi[ 58] = Atom("Praseodymium",  "Pr",   59.0, 140.9076470, 0.00, Origin, 1.2);
   Bondi[ 59] = Atom("Neodymium",     "Nd",   60.0, 141.9077190, 0.00, Origin, 1.2);
   Bondi[ 60] = Atom("Promethium",    "Pm",   61.0, 144.9127430, 0.00, Origin, 1.2);
   Bondi[ 61] = Atom("Samarium",      "Sm",   62.0, 151.9197280, 0.00, Origin, 1.2);
@@ -234,7 +234,7 @@ std::vector<Atom> & initUFF()
   UFF[ 55] = Atom("Barium",        "Ba",   56.0, 137.9052320, 1.8515, Origin, 1.2);
   UFF[ 56] = Atom("Lanthanum",     "La",   57.0, 138.9063470, 1.7610, Origin, 1.2);
   UFF[ 57] = Atom("Cerium",        "Ce",   58.0, 139.9054330, 1.7780, Origin, 1.2);
-  UFF[ 58] = Atom("Praseodimium",  "Pr",   59.0, 140.9076470, 1.8030, Origin, 1.2);
+  UFF[ 58] = Atom("Praseodymium",  "Pr",   59.0, 140.9076470, 1.8030, Origin, 1.2);
   UFF[ 59] = Atom("Neodymium",     "Nd",   60.0, 141.9077190, 1.7875, Origin, 1.2);
   UFF[ 60] = Atom("Promethium",    "Pm",   61.0, 144.9127430, 1.7735, Origin, 1.2);
   UFF[ 61] = Atom("Samarium",      "Sm",   62.0, 151.9197280, 1.7600, Origin, 1.2);
@@ -365,7 +365,7 @@ std::vector<Atom> & initAllinger()
   Allinger[ 55] = Atom("Barium",        "Ba",   56.0, 137.9052320, 3.07/1.2, Origin, 1.0);
   Allinger[ 56] = Atom("Lanthanum",     "La",   57.0, 138.9063470, 2.78/1.2, Origin, 1.0);
   Allinger[ 57] = Atom("Cerium",        "Ce",   58.0, 139.9054330, 2.74/1.2, Origin, 1.0);
-  Allinger[ 58] = Atom("Praseodimium",  "Pr",   59.0, 140.9076470, 2.73/1.2, Origin, 1.0);
+  Allinger[ 58] = Atom("Praseodymium",  "Pr",   59.0, 140.9076470, 2.73/1.2, Origin, 1.0);
   Allinger[ 59] = Atom("Neodymium",     "Nd",   60.0, 141.9077190, 2.73/1.2, Origin, 1.0);
   Allinger[ 60] = Atom("Promethium",    "Pm",   61.0, 144.9127430, 2.72/1.2, Origin, 1.0);
   Allinger[ 61] = Atom("Samarium",      "Sm",   62.0, 151.9197280, 2.71/1.2, Origin, 1.0);

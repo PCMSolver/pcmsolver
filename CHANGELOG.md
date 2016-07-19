@@ -14,7 +14,7 @@
 
 ### Security
 
-## [v1.1.5] (2016-07-19)
+## [Version 1.1.5] - 2016-07-19
 
 ### Added
 
@@ -25,7 +25,7 @@
   The closest match to ADF can be obtained by using CPCM as solver, Allinger's radii and setting
   the scaling of radii to false.
 
-## [v1.1.4] (2016-07-05)
+## [Version 1.1.4] - 2016-07-05
 
 ### Changed
 
@@ -45,7 +45,7 @@
 - The `hermitivitize` function will only work correctly on matrices. This
   reverts modifications in the previous release.
 
-## [v1.1.3] (2016-07-03)
+## [Version 1.1.3] - 2016-07-03
 
 ### Changed
 
@@ -78,7 +78,7 @@
 
 - The function `CPCMMatrix` in the `SolverImpl.hpp` header file is no longer available.
 
-## [v1.1.2] (2016-05-31)
+## [Version 1.1.2] - 2016-05-31
 
 ### Fixed
 
@@ -94,7 +94,7 @@
 - The signatures for the interface functions now accept and/or return `int` (`c_int`)
   instead of `size_t` (`c_size_t`). This simplifies interfacing with Fortran hosts.
 
-## [v1.1.1] (2016-03-10)
+## [Version 1.1.1] - 2016-03-10
 
 ### Added
 
@@ -140,7 +140,7 @@
 - `SurfaceFunction` as a class is no longer available. We keep track of surface
   functions at the interface level _via_ a label-vector map.
 
-## [v1.1.0] (2016-02-07)
+## [Version 1.1.0] - 2016-02-07
 
 ### Added
 
@@ -151,20 +151,20 @@
 - CMake minimum required version is 2.8.8 (2016-01-08)
 - Documentation is now served [here](http://pcmsolver.readthedocs.org/)
 
-## v1.0.4 (2015-07-22) [YANKED]
+## v1.0.4 - 2015-07-22 [YANKED]
 
-## v1.0.3 (2015-03-29) [YANKED]
+## v1.0.3 - 2015-03-29 [YANKED]
 
-## v1.0.2 (2015-03-28) [YANKED]
+## v1.0.2 - 2015-03-28 [YANKED]
 
-## v1.0.1 (2015-01-06) [YANKED]
+## v1.0.1 - 2015-01-06 [YANKED]
 
-## v1.0.0 (2014-09-30) [YANKED]
+## v1.0.0 - 2014-09-30 [YANKED]
 
 [Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.5...HEAD
-[v1.1.5]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.4...v1.1.5
-[v1.1.4]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.3...v1.1.4
-[v1.1.3]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.2...v1.1.3
-[v1.1.2]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.1...v1.1.3
-[v1.1.1]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.0...v1.1.1
-[v1.1.0]: https://github.com/PCMSolver/pcmsolver/releases/tag/v1.1.0
+[Version 1.1.5]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.4...v1.1.5
+[Version 1.1.4]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.3...v1.1.4
+[Version 1.1.3]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.2...v1.1.3
+[Version 1.1.2]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.1...v1.1.3
+[Version 1.1.1]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.0...v1.1.1
+[Version 1.1.0]: https://github.com/PCMSolver/pcmsolver/releases/tag/v1.1.0

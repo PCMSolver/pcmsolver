@@ -1,7 +1,7 @@
 /* pcmsolver_copyright_start */
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
+ *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
  *     
  *     This file is part of PCMSolver.
  *     
@@ -19,15 +19,13 @@
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
  *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+ *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 /* pcmsolver_copyright_end */
 
 #include "catch.hpp"
 
 #include <iostream>
-
-#include "Config.hpp"
 
 #include <Eigen/Core>
 

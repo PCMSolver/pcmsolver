@@ -1,7 +1,11 @@
 /* pcmsolver_copyright_start */
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
+<<<<<<< HEAD
+ *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
+=======
  *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
+>>>>>>> master
  *     
  *     This file is part of PCMSolver.
  *     
@@ -19,40 +23,44 @@
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
  *     
  *     For information on the complete list of contributors to the
+<<<<<<< HEAD
+ *     PCMSolver API, see: <http://pcmsolver.github.io/pcmsolver-doc>
+=======
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+>>>>>>> master
  */
 /* pcmsolver_copyright_end */
 
 #include "catch.hpp"
 
+#include <iostream>
+
 #include "Config.hpp"
 
 #include <Eigen/Core>
 
-#include "CollocationIntegrator.hpp"
-#include "CPCMSolver.hpp"
-#include "DerivativeTypes.hpp"
-#include "UniformDielectric.hpp"
-#include "Vacuum.hpp"
+#include "bi_operators/CollocationIntegrator.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "green/Vacuum.hpp"
+#include "green/UniformDielectric.hpp"
+#include "solver/IEFSolver.hpp"
 #include "TestingMolecules.hpp"
-#include "TsLessCavity.hpp"
 
-SCENARIO("Test solver for the C-PCM for a point charge and a TsLess cavity", "[solver][cpcm][cpcm_tsless-point]")
+SCENARIO("Test solver for the IEFPCM for a point charge and a GePol cavity", "[solver][iefpcm][iefpcm_gepol-point]")
 {
-    GIVEN("An isotropic environment modelled as a perfect conductor and a point charge")
+    GIVEN("An isotropic environment and a point charge")
     {
         double permittivity = 78.39;
-        Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-        UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-            UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+        Vacuum<> gf_i;
+        UniformDielectric<> gf_o(permittivity);
         bool symm = true;
-        double correction = 0.0;
 
         double charge = 8.0;
-        double totalASC = - charge * (permittivity - 1) / (permittivity + correction);
+        double totalASC = - charge * (permittivity - 1) / permittivity;
 
-        /*! \class CPCMSolver
-         *  \test \b pointChargeTsLess tests CPCMSolver using a point charge with a TsLess cavity
+        /*! \class IEFSolver
+         *  \test \b pointChargeGePol tests IEFSolver using a point charge with a GePol cavity
          *  The point charge is at the origin.
          */
         WHEN("the point charge is located at the origin")
@@ -61,30 +69,27 @@ SCENARIO("Test solver for the C-PCM for a point charge and a TsLess cavity", "[s
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            double minDistance = 0.1;
-            int derOrder = 4;
-            TsLessCavity cavity = TsLessCavity(point, area, probeRadius, minRadius, minDistance, derOrder);
-            cavity.saveCavity("tsless_point.npz");
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
+            cavity.saveCavity("point.npz");
 
-            CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge);
-            for (size_t i = 0; i < size; ++i) {
+            Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+            fake_asc = solver.computeCharge(fake_mep);
+
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
+            for (int i = 0; i < size; ++i) {
+                INFO("fake_asc(" << i << ") = " << fake_asc(i));
+            }
 
+            double totalFakeASC = fake_asc.sum();
             THEN("the apparent surface charge is")
             {
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-                fake_asc = solver.computeCharge(fake_mep);
-                double totalFakeASC = fake_asc.sum();
-
-                for (size_t i = 0; i < size; ++i) {
-                    INFO("fake_asc(" << i << ") = " << fake_asc(i));
-                }
-
                 CAPTURE(totalASC);
                 CAPTURE(totalFakeASC);
                 CAPTURE(totalASC - totalFakeASC);
@@ -92,8 +97,8 @@ SCENARIO("Test solver for the C-PCM for a point charge and a TsLess cavity", "[s
             }
         }
 
-        /*! \class CPCMSolver
-         *  \test \b pointChargeShiftedTsLess tests CPCMSolver using a point charge with a TsLess cavity
+        /*! \class IEFSolver
+         *  \test \b pointChargeShiftedGePol tests IEFSolver using a point charge with a GePol cavity
          *  The point charge is away from the origin.
          */
         AND_WHEN("the point charge is located away from the origin")
@@ -103,29 +108,27 @@ SCENARIO("Test solver for the C-PCM for a point charge and a TsLess cavity", "[s
             double area = 0.4;
             double probeRadius = 0.0;
             double minRadius = 100.0;
-            double minDistance = 0.1;
-            int derOrder = 4;
-            TsLessCavity cavity = TsLessCavity(point, area, probeRadius, minRadius, minDistance, derOrder);
+            GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
 
-            CPCMSolver solver(symm, correction);
-            solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+            IEFSolver solver(symm);
+            solver.buildSystemMatrix(cavity, gf_i, gf_o);
 
-            size_t size = cavity.size();
+            double charge = 8.0;
+            int size = cavity.size();
             Eigen::VectorXd fake_mep = computeMEP(cavity.elements(), charge, origin);
-            for (size_t i = 0; i < size; ++i) {
+            Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
+            fake_asc = solver.computeCharge(fake_mep);
+
+            for (int i = 0; i < size; ++i) {
                 INFO("fake_mep(" << i << ") = " << fake_mep(i));
             }
+            for (int i = 0; i < size; ++i) {
+                INFO("fake_asc(" << i << ") = " << fake_asc(i));
+            }
 
+            double totalFakeASC = fake_asc.sum();
             THEN("the surface charge is")
             {
-                Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
-                fake_asc = solver.computeCharge(fake_mep);
-                double totalFakeASC = fake_asc.sum();
-
-                for (size_t i = 0; i < size; ++i) {
-                    INFO("fake_asc(" << i << ") = " << fake_asc(i));
-                }
-
                 CAPTURE(totalASC);
                 CAPTURE(totalFakeASC);
                 CAPTURE(totalASC - totalFakeASC);

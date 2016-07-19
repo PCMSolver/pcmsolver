@@ -1,25 +1,25 @@
 /* pcmsolver_copyright_start */
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *
+ *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
+ *     
  *     This file is part of PCMSolver.
- *
+ *     
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
+ *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 /* pcmsolver_copyright_end */
 
@@ -87,5 +87,17 @@ std::vector<Atom> & initBondi();
  * We are here using Angstrom as in the paper.
  */
 std::vector<Atom> & initUFF();
+
+/*! \brief Returns a reference to a vector<Atom> containing Allinger's MM3 radii.
+ *
+ * The MM3 set of radii is taken from:
+ * --- N. L. Allinger, X. Zhou, J. Bergsma,
+ *     J. Mol. Struct. (THEOCHEM), 312, 69-83 (1994)
+ * We are here using Angstrom as in the paper.
+ *
+ * \note We *divide* the values reported in the paper by 1.2, as done in
+ * the ADF program package.
+ */
+std::vector<Atom> & initAllinger();
 
 #endif // ATOM_HPP

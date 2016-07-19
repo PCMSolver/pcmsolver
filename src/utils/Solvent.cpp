@@ -1,25 +1,25 @@
 /* pcmsolver_copyright_start */
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2015 Roberto Di Remigio, Luca Frediani and contributors
- *
+ *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
+ *     
  *     This file is part of PCMSolver.
- *
+ *     
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *
+ *     
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *
+ *     
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *     
  *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.readthedocs.org/>
+ *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 /* pcmsolver_copyright_end */
 
@@ -41,6 +41,8 @@ SolventMap & solvents()
     availableSolvents["CYCLOHEXANE"]          = Solvent("Cyclohexane",          2.023, 2.028, 2.815);
     availableSolvents["CARBON TETRACHLORIDE"] = Solvent("Carbon tetrachloride", 2.228, 2.129, 2.685);
     availableSolvents["BENZENE"]              = Solvent("Benzene",              2.247, 2.244, 2.630);
+    // No data available for the probe radius of 1,4-dioxane: use that of benzene
+    availableSolvents["1,4-DIOXANE"]          = Solvent("1,4-Dioxane",          2.250, 2.023, 2.630);
     availableSolvents["TOLUENE"]              = Solvent("Toluene",              2.379, 2.232, 2.820);
     availableSolvents["CHLOROFORM"]           = Solvent("Chloroform",           4.900, 2.085, 2.480);
     availableSolvents["CHLOROBENZENE"]        = Solvent("Chlorobenzene",        5.621, 2.320, 2.805);
@@ -54,8 +56,10 @@ SolventMap & solvents()
     availableSolvents["ACETONITRILE"]         = Solvent("Acetonitrile",        36.640, 1.806, 2.155);
     availableSolvents["NITROMETHANE"]         = Solvent("Nitromethane",        38.200, 1.904, 2.155);
     availableSolvents["DIMETHYLSULFOXIDE"]    = Solvent("Dimethylsulfoxide",   46.700, 2.179, 2.455);
+    // No data available for the probe radius of propylene carbonate: use that of water
+    availableSolvents["PROPYLENECARBONATE"]   = Solvent("Propylene Carbonate", 64.960, 2.019, 1.385);
     availableSolvents["WATER"]                = Solvent("Water",               78.390, 1.776, 1.385);
-    availableSolvents["EXPLICIT"]             = Solvent("Explicit", 0.0, 0.0, 0.0);
+    availableSolvents["EXPLICIT"]             = Solvent("Explicit",             0.000, 0.000, 0.000);
     // ------------------------------------------------------------
     return availableSolvents;
 }

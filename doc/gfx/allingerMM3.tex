@@ -130,138 +130,143 @@
   \tikzstyle{TitleLabel} = [font={\sffamily\Huge\bfseries}]
 
 %% Group 1 - IA
-  \node[name=H, HasRadius] {\NaturalElementTextFormat{1}{1.20}{H}{Hydrogen}};
-  \node[name=Li, below of=H, HasRadius] {\NaturalElementTextFormat{3}{1.82}{Li}{Lithium}};
-  \node[name=Na, below of=Li, HasRadius] {\NaturalElementTextFormat{11}{2.27}{Na}{Sodium}};
-  \node[name=K, below of=Na, HasRadius] {\NaturalElementTextFormat{19}{2.75}{K}{Potassium}};
-  \node[name=Rb, below of=K, HasRadius] {\NaturalElementTextFormat{37}{3.03}{Rb}{Rubidium}};
+  \node[name=H, HasRadius] {\NaturalElementTextFormat{1}{1.35}{H}{Hydrogen}};
+  \node[name=Li, below of=H, HasRadius]
+  {\NaturalElementTextFormat{3}{2.125}{Li}{Lithium}};
+  \node[name=Na, below of=Li, HasRadius]
+  {\NaturalElementTextFormat{11}{2.25}{Na}{Sodium}};
+  \node[name=K, below of=Na, HasRadius]
+  {\NaturalElementTextFormat{19}{2.575}{K}{Potassium}};
+  \node[name=Rb, below of=K, HasRadius]
+  {\NaturalElementTextFormat{37}{2.70833}{Rb}{Rubidium}};
   \node[name=Cs, below of=Rb, HasRadius]
-  {\NaturalElementTextFormat{55}{3.43}{Cs}{Caesium}};
-  \node[name=Fr, below of=Cs, HasRadius] {\NaturalElementTextFormat{87}{3.48}{Fr}{Francium}};
+  {\NaturalElementTextFormat{55}{2.86667}{Cs}{Caesium}};
+  \node[name=Fr, below of=Cs, HasRadius]
+  {\NaturalElementTextFormat{87}{3.03333}{Fr}{Francium}};
 
 %% Group 2 - IIA
   \node[name=Be, right of=Li, HasRadius]
-  {\NaturalElementTextFormat{4}{1.53}{Be}{Beryllium}};
+  {\NaturalElementTextFormat{4}{1.85833}{Be}{Beryllium}};
   \node[name=Mg, below of=Be, HasRadius]
-  {\NaturalElementTextFormat{12}{1.73}{Mg}{Magnesium}};
+  {\NaturalElementTextFormat{12}{2.025}{Mg}{Magnesium}};
   \node[name=Ca, below of=Mg, HasRadius]
-  {\NaturalElementTextFormat{20}{2.31}{Ca}{Calcium}};
+  {\NaturalElementTextFormat{20}{2.34167}{Ca}{Calcium}};
   \node[name=Sr, below of=Ca, HasRadius]
-  {\NaturalElementTextFormat{38}{2.49}{Sr}{Strontium}};
+  {\NaturalElementTextFormat{38}{2.5}{Sr}{Strontium}};
   \node[name=Ba, below of=Sr, HasRadius]
-  {\NaturalElementTextFormat{56}{2.68}{Ba}{Barium}};
+  {\NaturalElementTextFormat{56}{2.55833}{Ba}{Barium}};
   \node[name=Ra, below of=Ba, HasRadius]
-  {\NaturalElementTextFormat{88}{2.83}{Ra}{Radium}};
+  {\NaturalElementTextFormat{88}{2.725}{Ra}{Radium}};
 
 %% Group 3 - IIIB
-  \node[name=Sc, right of=Ca, NoRadius]
-  {\NaturalElementTextFormat{21}{0.0}{Sc}{Scandium}};
-  \node[name=Y, below of=Sc, NoRadius]
-  {\NaturalElementTextFormat{39}{0.0}{Y}{Yttrium}};
+  \node[name=Sc, right of=Ca, HasRadius]
+  {\NaturalElementTextFormat{21}{2.175}{Sc}{Scandium}};
+  \node[name=Y, below of=Sc, HasRadius]
+  {\NaturalElementTextFormat{39}{2.25833}{Y}{Yttrium}};
   \node[name=LaLu, below of=Y, LanthanideActinide] {\NaturalElementTextFormat{57-71}{}{La-Lu}{Lanthanide}};
   \node[name=AcLr, below of=LaLu, LanthanideActinide] {\NaturalElementTextFormat{89-103}{}{Ac-Lr}{Actinide}};
 
 %% Group 4 - IVB
-  \node[name=Ti, right of=Sc, NoRadius]
-  {\NaturalElementTextFormat{22}{0.0}{Ti}{Titanium}};
-  \node[name=Zr, below of=Ti, NoRadius]
-  {\NaturalElementTextFormat{40}{0.0}{Zr}{Zirconium}};
-  \node[name=Hf, below of=Zr, NoRadius]
-  {\NaturalElementTextFormat{72}{0.0}{Hf}{Hafnium}};
-  \node[name=Rf, below of=Hf, NoRadius]
-  {\SyntheticElementTextFormat{104}{0.0}{Rf}{Rutherfordium}};
+  \node[name=Ti, right of=Sc, HasRadius]
+  {\NaturalElementTextFormat{22}{1.99167}{Ti}{Titanium}};
+  \node[name=Zr, below of=Ti, HasRadius]
+  {\NaturalElementTextFormat{40}{2.11667}{Zr}{Zirconium}};
+  \node[name=Hf, below of=Zr, HasRadius]
+  {\NaturalElementTextFormat{72}{2.10833}{Hf}{Hafnium}};
+  \node[name=Rf, below of=Hf, HasRadius]
+  {\SyntheticElementTextFormat{104}{2.275}{Rf}{Rutherfordium}};
 
 %% Group 5 - VB
-  \node[name=V, right of=Ti, NoRadius]
-  {\NaturalElementTextFormat{23}{0.0}{V}{Vanadium}};
-  \node[name=Nb, below of=V, NoRadius]
-  {\NaturalElementTextFormat{41}{0.0}{Nb}{Niobium}};
-  \node[name=Ta, below of=Nb, NoRadius]
-  {\NaturalElementTextFormat{73}{0.0}{Ta}{Tantalum}};
-  \node[name=Db, below of=Ta, NoRadius]
-  {\SyntheticElementTextFormat{105}{0.0}{Db}{Dubnium}};
+  \node[name=V, right of=Ti, HasRadius]
+  {\NaturalElementTextFormat{23}{1.90833}{V}{Vanadium}};
+  \node[name=Nb, below of=V, HasRadius]
+  {\NaturalElementTextFormat{41}{2.025}{Nb}{Niobium}};
+  \node[name=Ta, below of=Nb, HasRadius]
+  {\NaturalElementTextFormat{73}{2.025}{Ta}{Tantalum}};
+  \node[name=Db, below of=Ta, HasRadius]
+  {\SyntheticElementTextFormat{105}{2.19167}{Db}{Dubnium}};
 
 %% Group 6 - VIB
-  \node[name=Cr, right of=V, NoRadius]
-  {\NaturalElementTextFormat{24}{0.0}{Cr}{Chromium}};
-  \node[name=Mo, below of=Cr, NoRadius]
-  {\NaturalElementTextFormat{42}{0.0}{Mo}{Molybdenum}};
-  \node[name=W, below of=Mo, NoRadius]
-  {\NaturalElementTextFormat{74}{0.0}{W}{Tungsten}};
+  \node[name=Cr, right of=V, HasRadius]
+  {\NaturalElementTextFormat{24}{1.875}{Cr}{Chromium}};
+  \node[name=Mo, below of=Cr, HasRadius]
+  {\NaturalElementTextFormat{42}{1.99167}{Mo}{Molybdenum}};
+  \node[name=W, below of=Mo, HasRadius]
+  {\NaturalElementTextFormat{74}{1.99167}{W}{Tungsten}};
   \node[name=Sg, below of=W, NoRadius]
   {\SyntheticElementTextFormat{106}{0.0}{Sg}{Seaborgium}};
 
 %% Group 7 - VIIB
-  \node[name=Mn, right of=Cr, NoRadius]
-  {\NaturalElementTextFormat{25}{0.0}{Mn}{Manganese}};
-  \node[name=Tc, below of=Mn, NoRadius]
-  {\NaturalElementTextFormat{43}{0.0}{Tc}{Technetium}};
-  \node[name=Re, below of=Tc, NoRadius]
-  {\NaturalElementTextFormat{75}{0.0}{Re}{Rhenium}};
-  \node[name=Bh, below of=Re, NoRadius]
-  {\SyntheticElementTextFormat{107}{0.0}{Bh}{Bohrium}};
+  \node[name=Mn, right of=Cr, HasRadius]
+  {\NaturalElementTextFormat{25}{1.86667}{Mn}{Manganese}};
+  \node[name=Tc, below of=Mn, HasRadius]
+  {\NaturalElementTextFormat{43}{1.96667}{Tc}{Technetium}};
+  \node[name=Re, below of=Tc, HasRadius]
+  {\NaturalElementTextFormat{75}{1.975}{Re}{Rhenium}};
+  \node[name=Bh, below of=Re, HasRadius]
+  {\SyntheticElementTextFormat{107}{1.35}{Bh}{Bohrium}};
 
 %% Group 8 - VIIIB
-  \node[name=Fe, right of=Mn, NoRadius]
-  {\NaturalElementTextFormat{26}{0.0}{Fe}{Iron}};
-  \node[name=Ru, below of=Fe, NoRadius]
-  {\NaturalElementTextFormat{44}{0.0}{Ru}{Ruthenium}};
-  \node[name=Os, below of=Ru, NoRadius]
-  {\NaturalElementTextFormat{76}{0.0}{Os}{Osmium}};
+  \node[name=Fe, right of=Mn, HasRadius]
+  {\NaturalElementTextFormat{26}{1.85833}{Fe}{Iron}};
+  \node[name=Ru, below of=Fe, HasRadius]
+  {\NaturalElementTextFormat{44}{1.95}{Ru}{Ruthenium}};
+  \node[name=Os, below of=Ru, HasRadius]
+  {\NaturalElementTextFormat{76}{1.95833}{Os}{Osmium}};
   \node[name=Hs, below of=Os, NoRadius]
   {\SyntheticElementTextFormat{108}{0.0}{Hs}{Hassium}};
 
 %% Group 9 - VIIIB
-  \node[name=Co, right of=Fe, NoRadius]
-  {\NaturalElementTextFormat{27}{0.0}{Co}{Cobalt}};
-  \node[name=Rh, below of=Co, NoRadius]
-  {\NaturalElementTextFormat{45}{0.0}{Rh}{Rhodium}};
-  \node[name=Ir, below of=Rh, NoRadius]
-  {\NaturalElementTextFormat{77}{0.0}{Ir}{Iridium}};
+  \node[name=Co, right of=Fe, HasRadius]
+  {\NaturalElementTextFormat{27}{1.85833}{Co}{Cobalt}};
+  \node[name=Rh, below of=Co, HasRadius]
+  {\NaturalElementTextFormat{45}{1.95}{Rh}{Rhodium}};
+  \node[name=Ir, below of=Rh, HasRadius]
+  {\NaturalElementTextFormat{77}{1.96667}{Ir}{Iridium}};
   \node[name=Mt, below of=Ir, NoRadius]
   {\SyntheticElementTextFormat{109}{0.0}{Mt}{Meitnerium}};
 
 %% Group 10 - VIIIB
   \node[name=Ni, right of=Co, HasRadius]
-  {\NaturalElementTextFormat{28}{1.63}{Ni}{Nickel}};
+  {\NaturalElementTextFormat{28}{1.85}{Ni}{Nickel}};
   \node[name=Pd, below of=Ni, HasRadius]
-  {\NaturalElementTextFormat{46}{1.63}{Pd}{Palladium}};
+  {\NaturalElementTextFormat{46}{1.975}{Pd}{Palladium}};
   \node[name=Pt, below of=Pd, HasRadius]
-  {\NaturalElementTextFormat{78}{1.75}{Pt}{Platinum}};
+  {\NaturalElementTextFormat{78}{1.99167}{Pt}{Platinum}};
   \node[name=Ds, below of=Pt, NoRadius]
   {\SyntheticElementTextFormat{110}{0.0}{Ds}{Darmstadtium}};
 
 %% Group 11 - IB
   \node[name=Cu, right of=Ni, HasRadius]
-  {\NaturalElementTextFormat{29}{1.40}{Cu}{Copper}};
+  {\NaturalElementTextFormat{29}{1.88333}{Cu}{Copper}};
   \node[name=Ag, below of=Cu, HasRadius]
-  {\NaturalElementTextFormat{47}{1.72}{Ag}{Silver}};
+  {\NaturalElementTextFormat{47}{2.025}{Ag}{Silver}};
   \node[name=Au, below of=Ag, HasRadius]
-  {\NaturalElementTextFormat{79}{1.66}{Au}{Gold}};
+  {\NaturalElementTextFormat{79}{2.025}{Au}{Gold}};
   \node[name=Rg, below of=Au, NoRadius]
   {\SyntheticElementTextFormat{111}{0.0}{Rg}{Roentgenium}};
 
 %% Group 12 - IIB
   \node[name=Zn, right of=Cu, HasRadius]
-  {\NaturalElementTextFormat{30}{1.39}{Zn}{Zinc}};
+  {\NaturalElementTextFormat{30}{1.90833}{Zn}{Zinc}};
   \node[name=Cd, below of=Zn, HasRadius]
-  {\NaturalElementTextFormat{48}{1.58}{Cd}{Cadmium}};
+  {\NaturalElementTextFormat{48}{2.08333}{Cd}{Cadmium}};
   \node[name=Hg, below of=Cd, HasRadius]
-  {\NaturalElementTextFormat{80}{1.55}{Hg}{Mercury}};
+  {\NaturalElementTextFormat{80}{2.10833}{Hg}{Mercury}};
   \node[name=Uub, below of=Hg, NoRadius]
   {\SyntheticElementTextFormat{112}{0.0}{Uub}{Ununbium}};
 
 %% Group 13 - IIIA
   \node[name=Ga, right of=Zn, HasRadius]
-  {\NaturalElementTextFormat{31}{1.87}{Ga}{Gallium}};
+  {\NaturalElementTextFormat{31}{2.05}{Ga}{Gallium}};
   \node[name=Al, above of=Ga, HasRadius]
-  {\NaturalElementTextFormat{13}{1.84}{Al}{Aluminium}};
+  {\NaturalElementTextFormat{13}{1.96667}{Al}{Aluminium}};
   \node[name=B, above of=Al, HasRadius]
-  {\NaturalElementTextFormat{5}{1.92}{B}{Boron}};
+  {\NaturalElementTextFormat{5}{1.79167}{B}{Boron}};
   \node[name=In, below of=Ga, HasRadius]
-  {\NaturalElementTextFormat{49}{1.93}{In}{Indium}};
+  {\NaturalElementTextFormat{49}{2.2}{In}{Indium}};
   \node[name=Tl, below of=In, HasRadius]
-  {\NaturalElementTextFormat{81}{1.96}{Tl}{Thallium}};
+  {\NaturalElementTextFormat{81}{2.15833}{Tl}{Thallium}};
   \node[name=Uut, below of=Tl, NoRadius]
   {\SyntheticElementTextFormat{113}{0.0}{Uut}{Ununtrium}};
 
@@ -269,71 +274,71 @@
   \node[name=C, right of=B, HasRadius]
   {\NaturalElementTextFormat{6}{1.70}{C}{Carbon}};
   \node[name=Si, below of=C, HasRadius]
-  {\NaturalElementTextFormat{14}{2.10}{Si}{Silicon}};
+  {\NaturalElementTextFormat{14}{1.90833}{Si}{Silicon}};
   \node[name=Ge, below of=Si, HasRadius]
-  {\NaturalElementTextFormat{32}{2.11}{Ge}{Germanium}};
+  {\NaturalElementTextFormat{32}{2.03333}{Ge}{Germanium}};
   \node[name=Sn, below of=Ge, HasRadius]
-  {\NaturalElementTextFormat{50}{2.17}{Sn}{Tin}};
+  {\NaturalElementTextFormat{50}{2.15833}{Sn}{Tin}};
   \node[name=Pb, below of=Sn, HasRadius]
-  {\NaturalElementTextFormat{82}{2.02}{Pb}{Lead}};
+  {\NaturalElementTextFormat{82}{2.28333}{Pb}{Lead}};
   \node[name=Uuq, below of=Pb, NoRadius]
   {\SyntheticElementTextFormat{114}{0.0}{Uuq}{Ununquadium}};
 
 %% Group 15 - VA
   \node[name=N, right of=C, HasRadius]
-  {\NaturalElementTextFormat{7}{1.55}{N}{Nitrogen}};
+  {\NaturalElementTextFormat{7}{1.60833}{N}{Nitrogen}};
   \node[name=P, below of=N, HasRadius]
-  {\NaturalElementTextFormat{15}{1.80}{P}{Phosphorus}};
+  {\NaturalElementTextFormat{15}{1.85}{P}{Phosphorus}};
   \node[name=As, below of=P, HasRadius]
-  {\NaturalElementTextFormat{33}{1.85}{As}{Arsenic}};
+  {\NaturalElementTextFormat{33}{1.96667}{As}{Arsenic}};
   \node[name=Sb, below of=As, HasRadius]
-  {\NaturalElementTextFormat{51}{2.06}{Sb}{Antimony}};
+  {\NaturalElementTextFormat{51}{2.1}{Sb}{Antimony}};
   \node[name=Bi, below of=Sb, HasRadius]
-  {\NaturalElementTextFormat{83}{2.07}{Bi}{Bismuth}};
+  {\NaturalElementTextFormat{83}{2.21667}{Bi}{Bismuth}};
   \node[name=Uup, below of=Bi, NoRadius]
   {\SyntheticElementTextFormat{115}{0.0}{Uup}{Ununpentium}};
 
 %% Group 16 - VIA
   \node[name=O, right of=N, HasRadius]
-  {\NaturalElementTextFormat{8}{1.52}{O}{Oxygen}};
+  {\NaturalElementTextFormat{8}{1.51667}{O}{Oxygen}};
   \node[name=S, below of=O, HasRadius]
-  {\NaturalElementTextFormat{16}{1.80}{S}{Sulphur}};
+  {\NaturalElementTextFormat{16}{1.79167}{S}{Sulphur}};
   \node[name=Se, below of=S, HasRadius]
-  {\NaturalElementTextFormat{34}{1.90}{Se}{Selenium}};
+  {\NaturalElementTextFormat{34}{1.90833}{Se}{Selenium}};
   \node[name=Te, below of=Se, HasRadius]
-  {\NaturalElementTextFormat{52}{2.06}{Te}{Tellurium}};
+  {\NaturalElementTextFormat{52}{2.03333}{Te}{Tellurium}};
   \node[name=Po, below of=Te, HasRadius]
-  {\NaturalElementTextFormat{84}{1.97}{Po}{Polonium}};
+  {\NaturalElementTextFormat{84}{2.15833}{Po}{Polonium}};
   \node[name=Uuh, below of=Po, NoRadius]
   {\SyntheticElementTextFormat{116}{0.0}{Uuh}{Ununhexium}};
 
 %% Group 17 - VIIA
   \node[name=F, right of=O, HasRadius]
-  {\NaturalElementTextFormat{9}{1.47}{F}{Fluorine}};
+  {\NaturalElementTextFormat{9}{1.425}{F}{Fluorine}};
   \node[name=Cl, below of=F, HasRadius]
-  {\NaturalElementTextFormat{17}{1.75}{Cl}{Chlorine}};
+  {\NaturalElementTextFormat{17}{1.725}{Cl}{Chlorine}};
   \node[name=Br, below of=Cl, HasRadius]
   {\NaturalElementTextFormat{35}{1.85}{Br}{Bromine}};
   \node[name=I, below of=Br, HasRadius]
-  {\NaturalElementTextFormat{53}{1.98}{I}{Iodine}};
+  {\NaturalElementTextFormat{53}{1.96667}{I}{Iodine}};
   \node[name=At, below of=I, HasRadius]
-  {\NaturalElementTextFormat{85}{2.02}{At}{Astatine}};
+  {\NaturalElementTextFormat{85}{2.09167}{At}{Astatine}};
   \node[name=Uus, below of=At, NoRadius]
   {\SyntheticElementTextFormat{117}{0.0}{Uus}{Ununseptium}};
 
 %% Group 18 - VIIIA
   \node[name=Ne, right of=F, HasRadius]
-  {\NaturalElementTextFormat{10}{1.54}{Ne}{Neon}};
+  {\NaturalElementTextFormat{10}{1.33333}{Ne}{Neon}};
   \node[name=He, above of=Ne, HasRadius]
-  {\NaturalElementTextFormat{2}{1.40}{He}{Helium}};
+  {\NaturalElementTextFormat{2}{1.275}{He}{Helium}};
   \node[name=Ar, below of=Ne, HasRadius]
-  {\NaturalElementTextFormat{18}{1.88}{Ar}{Argon}};
+  {\NaturalElementTextFormat{18}{1.65833}{Ar}{Argon}};
   \node[name=Kr, below of=Ar, HasRadius]
-  {\NaturalElementTextFormat{36}{2.02}{Kr}{Krypton}};
+  {\NaturalElementTextFormat{36}{1.79167}{Kr}{Krypton}};
   \node[name=Xe, below of=Kr, HasRadius]
-  {\NaturalElementTextFormat{54}{2.16}{Xe}{Xenon}};
+  {\NaturalElementTextFormat{54}{1.9}{Xe}{Xenon}};
   \node[name=Rn, below of=Xe, HasRadius]
-  {\NaturalElementTextFormat{86}{2.20}{Rn}{Radon}};
+  {\NaturalElementTextFormat{86}{2.025}{Rn}{Radon}};
   \node[name=Uuo, below of=Rn, NoRadius]
   {\SyntheticElementTextFormat{118}{0.0}{Uuo}{Ununoctium}};
 
@@ -367,50 +372,50 @@
   \node[name=Group18, above of=He, GroupLabel] {18 \hfill VIIIA};
 
 %% Lanthanide
-  \node[name=La, below of=Rf, NoRadius, yshift=-1cm]
-  {\NaturalElementTextFormat{57}{0.0}{La}{Lanthanum}};
-  \node[name=Ce, right of=La, NoRadius]
-  {\NaturalElementTextFormat{58}{0.0}{Ce}{Cerium}};
-  \node[name=Pr, right of=Ce, NoRadius]
-  {\NaturalElementTextFormat{59}{0.0}{Pr}{Praseodymium}};
-  \node[name=Nd, right of=Pr, NoRadius]
-  {\NaturalElementTextFormat{60}{0.0}{Nd}{Neodymium}};
-  \node[name=Pm, right of=Nd, NoRadius]
-  {\NaturalElementTextFormat{61}{0.0}{Pm}{Promethium}};
-  \node[name=Sm, right of=Pm, NoRadius]
-  {\NaturalElementTextFormat{62}{0.0}{Sm}{Samarium}};
-  \node[name=Eu, right of=Sm, NoRadius]
-  {\NaturalElementTextFormat{63}{0.0}{Eu}{Europium}};
-  \node[name=Gd, right of=Eu, NoRadius]
-  {\NaturalElementTextFormat{64}{0.0}{Gd}{Gadolinium}};
-  \node[name=Tb, right of=Gd, NoRadius]
-  {\NaturalElementTextFormat{65}{0.0}{Tb}{Terbium}};
-  \node[name=Dy, right of=Tb, NoRadius]
-  {\NaturalElementTextFormat{66}{0.0}{Dy}{Dysprosium}};
-  \node[name=Ho, right of=Dy, NoRadius]
-  {\NaturalElementTextFormat{67}{0.0}{Ho}{Holmium}};
-  \node[name=Er, right of=Ho, NoRadius]
-  {\NaturalElementTextFormat{68}{0.0}{Er}{Erbium}};
-  \node[name=Tm, right of=Er, NoRadius]
-  {\NaturalElementTextFormat{69}{0.0}{Tm}{Thulium}};
-  \node[name=Yb, right of=Tm, NoRadius]
-  {\NaturalElementTextFormat{70}{0.0}{Yb}{Ytterbium}};
-  \node[name=Lu, right of=Yb, NoRadius]
-  {\NaturalElementTextFormat{71}{0.0}{Lu}{Lutetium}};
+  \node[name=La, below of=Rf, HasRadius, yshift=-1cm]
+  {\NaturalElementTextFormat{57}{2.31667}{La}{Lanthanum}};
+  \node[name=Ce, right of=La, HasRadius]
+  {\NaturalElementTextFormat{58}{2.28333}{Ce}{Cerium}};
+  \node[name=Pr, right of=Ce, HasRadius]
+  {\NaturalElementTextFormat{59}{2.275}{Pr}{Praseodymium}};
+  \node[name=Nd, right of=Pr, HasRadius]
+  {\NaturalElementTextFormat{60}{2.275}{Nd}{Neodymium}};
+  \node[name=Pm, right of=Nd, HasRadius]
+  {\NaturalElementTextFormat{61}{2.26667}{Pm}{Promethium}};
+  \node[name=Sm, right of=Pm, HasRadius]
+  {\NaturalElementTextFormat{62}{2.25833}{Sm}{Samarium}};
+  \node[name=Eu, right of=Sm, HasRadius]
+  {\NaturalElementTextFormat{63}{2.45}{Eu}{Europium}};
+  \node[name=Gd, right of=Eu, HasRadius]
+  {\NaturalElementTextFormat{64}{2.25833}{Gd}{Gadolinium}};
+  \node[name=Tb, right of=Gd, HasRadius]
+  {\NaturalElementTextFormat{65}{2.25}{Tb}{Terbium}};
+  \node[name=Dy, right of=Tb, HasRadius]
+  {\NaturalElementTextFormat{66}{2.24167}{Dy}{Dysprosium}};
+  \node[name=Ho, right of=Dy, HasRadius]
+  {\NaturalElementTextFormat{67}{2.225}{Ho}{Holmium}};
+  \node[name=Er, right of=Ho, HasRadius]
+  {\NaturalElementTextFormat{68}{2.225}{Er}{Erbium}};
+  \node[name=Tm, right of=Er, HasRadius]
+  {\NaturalElementTextFormat{69}{2.225}{Tm}{Thulium}};
+  \node[name=Yb, right of=Tm, HasRadius]
+  {\NaturalElementTextFormat{70}{2.325}{Yb}{Ytterbium}};
+  \node[name=Lu, right of=Yb, HasRadius]
+  {\NaturalElementTextFormat{71}{2.20833}{Lu}{Lutetium}};
 
 %% Actinide
-  \node[name=Ac, below of=La, NoRadius, yshift=-1cm]
-  {\NaturalElementTextFormat{89}{0.0}{Ac}{Actinium}};
-  \node[name=Th, right of=Ac, NoRadius]
-  {\NaturalElementTextFormat{90}{0.0}{Th}{Thorium}};
-  \node[name=Pa, right of=Th, NoRadius]
-  {\NaturalElementTextFormat{91}{0.0}{Pa}{Protactinium}};
-  \node[name=U, right of=Pa, NoRadius]
-  {\NaturalElementTextFormat{92}{0.0}{U}{Uranium}};
-  \node[name=Np, right of=U, NoRadius]
-  {\SyntheticElementTextFormat{93}{0.0}{Np}{Neptunium}};
-  \node[name=Pu, right of=Np, NoRadius]
-  {\SyntheticElementTextFormat{94}{0.0}{Pu}{Plutonium}};
+  \node[name=Ac, below of=La, HasRadius, yshift=-1cm]
+  {\NaturalElementTextFormat{89}{2.56667}{Ac}{Actinium}};
+  \node[name=Th, right of=Ac, HasRadius]
+  {\NaturalElementTextFormat{90}{2.28333}{Th}{Thorium}};
+  \node[name=Pa, right of=Th, HasRadius]
+  {\NaturalElementTextFormat{91}{2.2}{Pa}{Protactinium}};
+  \node[name=U, right of=Pa, HasRadius]
+  {\NaturalElementTextFormat{92}{2.1}{U}{Uranium}};
+  \node[name=Np, right of=U, HasRadius]
+  {\SyntheticElementTextFormat{93}{2.1}{Np}{Neptunium}};
+  \node[name=Pu, right of=Np, HasRadius]
+  {\SyntheticElementTextFormat{94}{2.1}{Pu}{Plutonium}};
   \node[name=Am, right of=Pu, NoRadius]
   {\SyntheticElementTextFormat{95}{0.0}{Am}{Americium}};
   \node[name=Cm, right of=Am, NoRadius]
@@ -447,7 +452,7 @@
 
 %% Diagram Title
   \node at (H.west -| Fe.north) [name=diagramTitle, TitleLabel]
-    {Bondi--Mantina Radii Set};
+    {Allinger's MM3 Radii Set};
 
 \end{tikzpicture}
 \end{preview}

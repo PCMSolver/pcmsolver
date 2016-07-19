@@ -47,6 +47,21 @@ Available sections:
 + Green, subsection of medium. Sets up the Green's function inside and
   outside the cavity.
 
+.. warning::
+
+   Exactly matching results obtained from implementations of IEFPCM and/or
+   CPCM (COSMO) given in other program packages requires careful selection of
+   all the parameters involved.
+   A partial checklist of parameters you should always keep in mind:
+
+   * solvent permittivities (static and optical)
+   * atomic radii set
+   * scaling of the atomic radii
+   * cavity surface
+   * cavity partition (tesselation)
+   * PCM matrix formation algorithm
+   * strategy used to solve the PCM linear equations system.
+
 Top section keywords
 --------------------
 
@@ -110,7 +125,7 @@ Cavity section keywords
    RadiiSet
      Select set of atomic radii to be used. Currently Bondi-Mantina
      :cite:`Bondi1964,Mantina2009`, UFF :cite:`Rappe1992` and Allinger's MM3
-     :cite`Allinger1994-tx` sets available, see :ref:`available-radii`.
+     :cite:`Allinger1994-tx` sets available, see :ref:`available-radii`.
 
      * **Type**: string
      * **Valid values**: Bondi | UFF | Allinger
@@ -120,7 +135,7 @@ Cavity section keywords
      .. note::
 
         Radii in Allinger's MM3 set are obtained by **dividing** the value in the original
-        paper by 1.2, as done in the [ADF COSMO implementation](https://www.scm.com/doc/ADF/Input/COSMO.html)
+        paper by 1.2, as done in the `ADF COSMO implementation <https://www.scm.com/doc/ADF/Input/COSMO.html>`_
         We advise to turn off scaling of the radii by 1.2 when using this set.
 
    MinRadius
@@ -210,24 +225,26 @@ Medium section keywords
      * **Type**: string
      * **Valid values**:
 
-        + Water               , H2O;
-        + Methanol            , CH3OH;
-        + Ethanol             , CH3CH2OH;
-        + Chloroform          , CHCL3;
-        + Methylenechloride   , CH2CL2;
-        + 1,2-Dichloroethane  , C2H4CL2;
-        + Carbon Tetrachloride, CCL4;
-        + Benzene             , C6H6;
-        + Toluene             , C6H5CH3;
-        + Chlorobenzene       , C6H5CL;
-        + Nitromethane        , CH3NO2;
-        + N-heptane           , C7H16;
-        + Cyclohexane         , C6H12;
-        + Aniline             , C6H5NH2;
-        + Acetone             , C2H6CO;
-        + Tetrahydrofurane    , THF;
-        + Dimethylsulfoxide   , DMSO;
-        + Acetonitrile        , CH3CN;
+        + Water                , H2O;
+        + Propylene Carbonate  , C4H6O3;
+        + Dimethylsulfoxide    , DMSO;
+        + Nitromethane         , CH3NO2;
+        + Acetonitrile         , CH3CN;
+        + Methanol             , CH3OH;
+        + Ethanol              , CH3CH2OH;
+        + Acetone              , C2H6CO;
+        + 1,2-Dichloroethane   , C2H4CL2;
+        + Methylenechloride    , CH2CL2;
+        + Tetrahydrofurane     , THF;
+        + Aniline              , C6H5NH2;
+        + Chlorobenzene        , C6H5CL;
+        + Chloroform           , CHCL3;
+        + Toluene              , C6H5CH3;
+        + 1,4-Dioxane          , C4H8O2;
+        + Benzene              , C6H6;
+        + Carbon Tetrachloride , CCL4;
+        + Cyclohexane          , C6H12;
+        + N-heptane            , C7H16;
         + Explicit.
 
    MatrixSymm
@@ -454,6 +471,7 @@ Solvents are ordered by decreasing static permittivity.
  Name                 Formula  :math:`\varepsilon_s` :math:`\varepsilon_\infty` :math:`r_\mathrm{probe}`
  ==================== ======== ===================== ========================== ========================
  Water                H2O              78.39                 1.776                     1.385
+ Propylene Carbonate  C4H6O3           64.96                 2.019                     1.385
  Dimethylsulfoxide    DMSO             46.7                  2.179                     2.455
  Nitromethane         CH3NO2           38.20                 1.904                     2.155
  Acetonitrile         CH3CN            36.64                 1.806                     2.155
@@ -467,6 +485,7 @@ Solvents are ordered by decreasing static permittivity.
  Chlorobenzene        C6H5Cl            5.621                2.320                     2.805
  Chloroform           CHCl3             4.90                 2.085                     2.48
  Toluene              C6H5CH3           2.379                2.232                     2.82
+ 1,4-Dioxane          C4H8O2            2.250                2.023                     2.630
  Benzene              C6H6              2.247                2.244                     2.630
  Carbon tetrachloride CCl4              2.228                2.129                     2.685
  Cyclohexane          C6H12             2.023                2.028                     2.815

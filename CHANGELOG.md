@@ -161,6 +161,10 @@
 
 ## v1.0.0 (2014-09-30) [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.5...HEAD
+[v1.1.5]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.4...v1.1.5
+[v1.1.4]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.3...v1.1.4
+[v1.1.3]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.2...v1.1.3
+[v1.1.2]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.1...v1.1.3
 [v1.1.1]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.0...v1.1.1
 [v1.1.0]: https://github.com/PCMSolver/pcmsolver/releases/tag/v1.1.0

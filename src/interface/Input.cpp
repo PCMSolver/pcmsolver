@@ -206,6 +206,13 @@ void Input::reader(const PCMInput & host_input)
 
     scaling_ = host_input.scaling;
     radiiSet_ = trim_and_upper(host_input.radii_set);
+    if ( radiiSet_ == "UFF" ) {
+      radiiSetName_ = "UFF";
+    } else if ( radiiSet_ == "BONDI" ) {
+      radiiSetName_ = "Bondi-Mantina";
+    } else {
+      radiiSetName_ = "Allinger's MM3";
+    }
     minimalRadius_ = host_input.min_radius * angstromToBohr();
     mode_ = std::string("IMPLICIT");
 

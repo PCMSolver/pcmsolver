@@ -6,6 +6,11 @@
 
 ### Changed
 
+- [Cholesky decomposition](http://eigen.tuxfamily.org/dox/classEigen_1_1LLT.html) is used
+  whenever the inverse of the S matrix has to be calculated.
+  The S matrix is self-adjoint, positive-definite and the LLT decomposition is
+  faster than LDLT.
+
 ### Deprecated
 
 ### Removed

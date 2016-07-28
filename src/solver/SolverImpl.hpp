@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
@@ -27,6 +27,7 @@
 
 #include "Config.hpp"
 
+#include <Eigen/Cholesky>
 #include <Eigen/Core>
 #include <Eigen/LU>
 
@@ -104,7 +105,7 @@ inline Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav, const IGreensFun
   TIMER_OFF("Assemble T matrix");
 
   TIMER_ON("Assemble R matrix");
-  Eigen::MatrixXd R = ((2 * M_PI * Id - DE * a) - SE * SI.ldlt().solve((2 * M_PI * Id - DI * a)));
+  Eigen::MatrixXd R = ((2 * M_PI * Id - DE * a) - SE * SI.llt().solve((2 * M_PI * Id - DI * a)));
   TIMER_OFF("Assemble R matrix");
 
   TIMER_ON("Assemble T^-1R matrix");
@@ -312,7 +313,7 @@ inline Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav, const IGreensFun
   Eigen::MatrixXd Id = Eigen::MatrixXd::Identity(cavitySize, cavitySize);
 
   // Form R
-  return ((2 * M_PI * Id - DE * a) - SE * SI.ldlt().solve((2 * M_PI * Id - DI * a)));
+  return ((2 * M_PI * Id - DE * a) - SE * SI.llt().solve((2 * M_PI * Id - DI * a)));
 }
 
 /*! \brief Builds the **isotropic** \f$ \mathbf{R}_\infty \f$ matrix

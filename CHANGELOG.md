@@ -17,6 +17,9 @@
 
 ### Fixed
 
+- Some inconsistencies in input reading from host and a related memory leak in the radii
+  initialization.
+
 ### Security
 
 ## [Version 1.1.5] - 2016-07-19

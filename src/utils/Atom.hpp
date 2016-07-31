@@ -2,22 +2,22 @@
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
  *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
- *     
+ *
  *     This file is part of PCMSolver.
- *     
+ *
  *     PCMSolver is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
- *     
+ *
  *     PCMSolver is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU Lesser General Public License for more details.
- *     
+ *
  *     You should have received a copy of the GNU Lesser General Public License
  *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     For information on the complete list of contributors to the
  *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
@@ -57,10 +57,11 @@ struct Atom
   /*! Atomic symbol */
   std::string symbol;
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
-  Atom() {}
+  Atom() : charge(0.0), mass(0.0), radius(0.0), radiusScaling(0.0),
+      position(Eigen::Vector3d::Zero()), element("Dummy"), symbol("Du") {}
   Atom(const std::string & elem, const std::string & sym,
       double c, double m, double r,
-      const Eigen::Vector3d & coord, double scal = 1.2)
+      const Eigen::Vector3d & coord, double scal = 1.0)
     : charge(c), mass(m), radius(r), radiusScaling(scal),
       position(coord), element(elem), symbol(sym) {}
 };

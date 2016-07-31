@@ -217,7 +217,7 @@ void Input::reader(const PCMInput & host_input)
     mode_ = std::string("IMPLICIT");
 
     std::string name = trim_and_upper(host_input.solvent);
-    if (name.empty()) {
+    if (name.empty() || name == "EXPLICIT") {
         hasSolvent_ = false;
         // Get the probe radius
         probeRadius_ = host_input.probe_radius * angstromToBohr();
@@ -259,6 +259,13 @@ void Input::reader(const PCMInput & host_input)
     isDynamic_ = false;
 
     providedBy_ = std::string("host-side");
+
+    // Fill the input wrapping structs
+    insideGreenData_ = greenData(derivativeInsideType_, integratorType_, profileType_, epsilonInside_, integratorScaling_);
+    outsideStaticGreenData_ = greenData(derivativeOutsideType_,
+        integratorType_, profileType_,  epsilonStaticOutside_, integratorScaling_);
+    outsideDynamicGreenData_ = greenData(derivativeOutsideType_,
+        integratorType_, profileType_, epsilonDynamicOutside_, integratorScaling_);
 }
 
 void Input::semanticCheck()
@@ -280,9 +287,9 @@ void Input::initMolecule()
     j += 4;
   }
   // 3. list of atoms and list of spheres
-  double factor = angstromToBohr();
   std::vector<Atom> radiiSet;
   std::vector<Atom> atoms;
+  atoms.reserve(nuclei);
   if ( radiiSet_ == "UFF" ) {
     radiiSet = initUFF();
     radiiSetName_ = "UFF";
@@ -296,15 +303,15 @@ void Input::initMolecule()
   for (int i = 0; i < charges.size(); ++i) {
     int index = int(charges(i)) - 1;
     atoms.push_back(radiiSet[index]);
-    if (scaling_) atoms[index].radiusScaling = 1.2;
+    if (scaling_) atoms[i].radiusScaling = 1.2;
   }
   // Based on the creation mode (Implicit or Atoms)
   // the spheres list might need postprocessing
   if ( mode_ == "IMPLICIT" || mode_ == "ATOMS") {
     for (int i = 0; i < charges.size(); ++i) {
-      int index = int(charges(i)) - 1;
-      double radius = radiiSet[index].radius * factor;
-      if (scaling_) radius *= 1.2;
+      // Convert to Bohr and multiply by scaling factor (alpha)
+      double radius = atoms[i].radius * angstromToBohr()
+        * atoms[i].radiusScaling;
       spheres_.push_back(Sphere(centers.col(i), radius));
     }
     if (mode_ == "ATOMS") {
@@ -348,48 +355,45 @@ cavityData Input::cavityParams()
 greenData Input::insideGreenParams()
 {
     if (insideGreenData_.empty) {
-        int profile = profilePolicy("UNIFORM");
-        insideGreenData_ = greenData(derivativeInsideType_, integratorType_, profile, epsilonInside_, integratorScaling_);
+      insideGreenData_ = greenData(derivativeInsideType_, integratorType_, profileType_, epsilonInside_, integratorScaling_);
     }
     return insideGreenData_;
 }
 
 greenData Input::outsideStaticGreenParams()
 {
-    if (outsideStaticGreenData_.empty) {
-        int profile = profilePolicy("UNIFORM");
-        outsideStaticGreenData_ = greenData(derivativeOutsideType_,
-                                            integratorType_, profile,  epsilonStaticOutside_, integratorScaling_);
-        if (not hasSolvent_) {
-           outsideStaticGreenData_.howProfile = profileType_;
-           outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
-           outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
-           outsideStaticGreenData_.center   = center_;
-           outsideStaticGreenData_.width    = width_;
-           outsideStaticGreenData_.origin   << origin_[0], origin_[1], origin_[2];
-           outsideStaticGreenData_.maxL = maxL_;
-        }
+  if (outsideStaticGreenData_.empty) {
+    outsideStaticGreenData_ = greenData(derivativeOutsideType_,
+        integratorType_, profileType_,  epsilonStaticOutside_, integratorScaling_);
+    if (not hasSolvent_) {
+      outsideStaticGreenData_.howProfile = profileType_;
+      outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
+      outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
+      outsideStaticGreenData_.center   = center_;
+      outsideStaticGreenData_.width    = width_;
+      outsideStaticGreenData_.origin   << origin_[0], origin_[1], origin_[2];
+      outsideStaticGreenData_.maxL = maxL_;
     }
-    return outsideStaticGreenData_;
+  }
+  return outsideStaticGreenData_;
 }
 
 greenData Input::outsideDynamicGreenParams()
 {
-    if (outsideDynamicGreenData_.empty) {
-        int profile = profilePolicy("UNIFORM");
-        outsideDynamicGreenData_ = greenData(derivativeOutsideType_,
-                                             integratorType_, profile, epsilonDynamicOutside_, integratorScaling_);
-        if (not hasSolvent_) {
-           outsideDynamicGreenData_.howProfile  = profileType_;
-           outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
-           outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
-           outsideDynamicGreenData_.center   = center_;
-           outsideDynamicGreenData_.width    = width_;
-           outsideDynamicGreenData_.origin   << origin_[0], origin_[1], origin_[2];
-           outsideDynamicGreenData_.maxL = maxL_;
-        }
+  if (outsideDynamicGreenData_.empty) {
+    outsideDynamicGreenData_ = greenData(derivativeOutsideType_,
+        integratorType_, profileType_, epsilonDynamicOutside_, integratorScaling_);
+    if (not hasSolvent_) {
+      outsideDynamicGreenData_.howProfile  = profileType_;
+      outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
+      outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
+      outsideDynamicGreenData_.center   = center_;
+      outsideDynamicGreenData_.width    = width_;
+      outsideDynamicGreenData_.origin   << origin_[0], origin_[1], origin_[2];
+      outsideDynamicGreenData_.maxL = maxL_;
     }
-    return outsideDynamicGreenData_;
+  }
+  return outsideDynamicGreenData_;
 }
 
 solverData Input::solverParams()

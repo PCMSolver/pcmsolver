@@ -459,7 +459,6 @@ namespace pcm {
   {
     bool scaling = inp.scaling();
     std::string set = inp.radiiSet();
-    double factor = angstromToBohr();
     std::vector<Atom> radiiSet;
     std::vector<Atom> atoms;
     if ( set == "UFF" ) {
@@ -470,12 +469,15 @@ namespace pcm {
       radiiSet = initAllinger();
     }
     std::vector<Sphere> spheres;
+    atoms.reserve(nuclei);
+    spheres.reserve(nuclei);
     for (int i = 0; i < charges.size(); ++i) {
       int index = int(charges(i)) - 1;
       atoms.push_back(radiiSet[index]);
-      if (scaling) atoms[index].radiusScaling = 1.2;
-      double radius = radiiSet[index].radius * factor;
-      if (scaling) radius *= 1.2;
+      if (scaling) atoms[i].radiusScaling = 1.2;
+      // Convert to Bohr and multiply by scaling factor (alpha)
+      double radius = atoms[i].radius * angstromToBohr()
+        * atoms[i].radiusScaling;
       spheres.push_back(Sphere(centers.col(i), radius));
     }
     Eigen::VectorXd masses = Eigen::VectorXd::Zero(nuclei);

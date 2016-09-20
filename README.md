@@ -16,8 +16,8 @@ An API for the Polarizable Continuum Model.
 - [Documentation](http://pcmsolver.readthedocs.org)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
 - [Nightly build dashboard](https://testboard.org/cdash/index.php?project=PCMSolver)
-- Version 1.1.5 available
-- Licensed under [LGPLv3](../master/COPYING.LESSER)
+- Version 1.1.6 available
+- Licensed under [LGPLv3](../master/LICENSE)
 - CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.org/)
 
 Primary test environments

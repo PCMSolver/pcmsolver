@@ -4,6 +4,8 @@
 
 ### Added
 
+- A function returning a molecule object for the water molecule.
+
 ### Changed
 
 - [Cholesky decomposition](http://eigen.tuxfamily.org/dox/classEigen_1_1LLT.html) is used

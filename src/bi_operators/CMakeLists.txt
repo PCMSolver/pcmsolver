@@ -9,5 +9,5 @@ set_target_properties(bi_operators PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(bi_operators generate-config-hpp)
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
-   install(FILES ${_header} DESTINATION include/bi_operators)
+   install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PN}/bi_operators)
 endforeach()

@@ -13,7 +13,7 @@ set_target_properties(utils PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(utils generate-config-hpp)
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
-   install(FILES ${_header} DESTINATION include/utils)
+   install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PN}/utils)
 endforeach()
 
 add_subdirectory(getkw)

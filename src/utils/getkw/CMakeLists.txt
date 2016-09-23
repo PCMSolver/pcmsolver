@@ -13,5 +13,5 @@ set_target_properties(getkw PROPERTIES POSITION_INDEPENDENT_CODE 1
 
 # Sets install directory for all the headers in the list
 foreach(_header ${_headers_list})
-   install(FILES ${_header} DESTINATION include/utils/getkw)
+   install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PN}/utils/getkw)
 endforeach()

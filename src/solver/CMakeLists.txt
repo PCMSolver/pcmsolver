@@ -9,5 +9,5 @@ set_target_properties(solver PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(solver generate-config-hpp)
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
-   install(FILES ${_header} DESTINATION include/solver)
+   install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PN}/solver)
 endforeach()

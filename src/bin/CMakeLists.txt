@@ -15,4 +15,6 @@ endif()
 set_target_properties(run_pcm PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set_target_properties(run_pcm PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
 set_target_properties(run_pcm PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;${PROJECT_BINARY_DIR}/lib")
-install(PROGRAMS ${PROJECT_BINARY_DIR}/bin/run_pcm DESTINATION bin)
+#install(PROGRAMS ${PROJECT_BINARY_DIR}/bin/run_pcm DESTINATION bin)
+install(TARGETS run_pcm
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -9,5 +9,5 @@ set_target_properties(interface PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(interface generate-config-hpp)
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
-    install(FILES ${_header} DESTINATION include/interface)
+    install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PN}/interface)
 endforeach()

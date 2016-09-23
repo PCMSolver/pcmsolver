@@ -9,5 +9,5 @@ list(APPEND headers_list Citation.hpp
 
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
-   install(FILES ${_header} DESTINATION include)
+   install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PN})
 endforeach()

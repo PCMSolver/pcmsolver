@@ -4,6 +4,39 @@
 
 ### Added
 
+- A pre-commit hook in `.githooks/pre-commit-clang-format` checking that the
+  format of C++ header and source files conforms to the project style.
+  **BREAKING CHANGE** `clang-format` is needed to work on the code.
+  The hook uses `clang-format` and the style mandated by the `.clang-format`
+  file to check files in the tree. Commit is rejected if one or more files are
+  non compliant. The hook generates a patch and shows the command needed to
+  apply it.
+  _NOT recommended_ The hook can be skipped by passing the `--no-verify` option to `git commit`
+- A pre-commit hook in `.githooks/pre-commit-license-maintainer` checking the license headers.
+  **BREAKING CHANGE** Perl5 is needed to work on the code.
+  The hook is based on this [project](https://github.com/NitorCreations/license-maintainer)
+  and is configured based on the `.gitattributes` file.
+  The list of authors is automatically extracted from the `license.author`
+  field in `.git/config`. This can either be modified by hand or by invoking
+  `git config license.author="list-of-authors"`.
+  The hook will check the license headers, amend them where possible and abort
+  where not possible, showing the commands needed to update the license.
+  _NOT recommended_ The hook can be skipped by passing the `--no-verify` option to `git commit`
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [Version 1.1.6] - 2016-09-20
+
+### Added
+
 - A function returning a molecule object for the water molecule.
 
 ### Changed
@@ -13,16 +46,10 @@
   The S matrix is self-adjoint, positive-definite and the LLT decomposition is
   faster than LDLT.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Some inconsistencies in input reading from host and a related memory leak in the radii
   initialization.
-
-### Security
 
 ## [Version 1.1.5] - 2016-07-19
 

@@ -1,5 +1,5 @@
 # List of headers
-list(APPEND headers_list Cavity.hpp CavityData.hpp Element.hpp GePolCavity.hpp RegisterCavityToFactory.hpp RestartCavity.hpp)
+list(APPEND headers_list Cavity.hpp CavityData.hpp Element.hpp GePolCavity.hpp RestartCavity.hpp)
 
 # List of sources
 list(APPEND sources_list Cavity.cpp Element.cpp GePolCavity.cpp RestartCavity.cpp)

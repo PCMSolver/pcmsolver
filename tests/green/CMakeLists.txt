@@ -17,4 +17,3 @@ add_Catch_test(green_uniform_dielectric "green;green_uniform_dielectric")
 
 # green_anisotropic_liquid.cpp test
 add_Catch_test(green_anisotropic_liquid "green;green_anisotropic_liquid")
-

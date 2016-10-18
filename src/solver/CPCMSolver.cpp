@@ -31,23 +31,30 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Cholesky>
 #include <Eigen/Core>
 
+#include "bi_operators/BoundaryIntegralOperator.hpp"
 #include "cavity/Cavity.hpp"
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
 #include "utils/MathUtils.hpp"
+#include "SolverData.hpp"
+#include "utils/Factory.hpp"
 
-void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunction & gf_i, const IGreensFunction & gf_o)
-{
-  if (!isotropic_) PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!", BOOST_CURRENT_FUNCTION);
+void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity,
+                                        const IGreensFunction & gf_i,
+                                        const IGreensFunction & gf_o,
+                                        const BoundaryIntegralOperator & op) {
+  if (!isotropic_)
+    PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!",
+                    BOOST_CURRENT_FUNCTION);
   TIMER_ON("Computing S");
   double epsilon = profiles::epsilon(gf_o.permittivity());
-  S_ = gf_i.singleLayer(cavity.elements());
-  S_ /= (epsilon - 1.0)/(epsilon + correction_);
+  S_ = op.computeS(cavity, gf_i);
+  S_ /= (epsilon - 1.0) / (epsilon + correction_);
   // Get in Hermitian form
-  if (hermitivitize_) hermitivitize(S_);
+  if (hermitivitize_)
+    hermitivitize(S_);
   TIMER_OFF("Computing S");
 
   // Symmetry-pack
@@ -55,36 +62,27 @@ void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity, const IGreensFunc
   int nrBlocks = cavity.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
   int dimBlock = cavity.irreducible_size();
-  // Perform symmetry blocking
-  // If the group is C1 avoid symmetry blocking, we will just pack the fullPCMMatrix
-  // into "block diagonal" when all other manipulations are done.
-  if (cavity.pointGroup().nrGenerators() != 0) {
-    TIMER_ON("Symmetry blocking");
-    symmetryBlocking(S_, cavity.size(), dimBlock, nrBlocks);
-    TIMER_OFF("Symmetry blocking");
-  }
   symmetryPacking(blockS_, S_, dimBlock, nrBlocks);
 
   built_ = true;
 }
 
-Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential, int irrep) const
-{
+Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential,
+                                               int irrep) const {
   // The potential and charge vector are of dimension equal to the
   // full dimension of the cavity. We have to select just the part
   // relative to the irrep needed.
   int fullDim = S_.rows();
   Eigen::VectorXd charge = Eigen::VectorXd::Zero(fullDim);
   int nrBlocks = blockS_.size();
-  int irrDim = fullDim/nrBlocks;
-  charge.segment(irrep*irrDim, irrDim) =
-    - blockS_[irrep].llt().solve(potential.segment(irrep*irrDim, irrDim));
+  int irrDim = fullDim / nrBlocks;
+  charge.segment(irrep * irrDim, irrDim) =
+      -blockS_[irrep].llt().solve(potential.segment(irrep * irrDim, irrDim));
 
   return charge;
 }
 
-std::ostream & CPCMSolver::printSolver(std::ostream & os)
-{
+std::ostream & CPCMSolver::printSolver(std::ostream & os) {
   os << "Solver Type: C-PCM" << std::endl;
   if (hermitivitize_) {
     os << "PCM matrix hermitivitized";
@@ -93,4 +91,14 @@ std::ostream & CPCMSolver::printSolver(std::ostream & os)
   }
 
   return os;
+}
+
+namespace {
+PCMSolver * createCPCMSolver(const solverData & data) {
+  return new CPCMSolver(data.hermitivitize, data.correction);
+}
+const std::string CPCMSOLVER("CPCM");
+const bool registeredCPCMSolver =
+    Factory<PCMSolver, solverData>::TheFactory().registerObject(CPCMSOLVER,
+                                                                createCPCMSolver);
 }

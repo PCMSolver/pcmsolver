@@ -25,6 +25,15 @@ as extensive as for reStructuredText, see `these comments
 <https://blog.readthedocs.com/adding-markdown-support/>`_ Follow the guidelines
 in :cite:`Wilson2014` regarding what to document.
 
+Documeting methods in derived classes
+-------------------------------------
+
+Virtual methods should only be documented in the base classes.
+This avoids unnecessary verbosity and conforms to the principle: "Document
+_what_, not _how_" :cite:`Wilson2014`
+If you feel the _how_ needs to be explicitly documented, add some notes in the
+appropriate ``.rst`` file.
+
 How does this work?
 -------------------
 

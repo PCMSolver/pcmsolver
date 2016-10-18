@@ -12,20 +12,17 @@
   non compliant. The hook generates a patch and shows the command needed to
   apply it.
   _NOT recommended_ The hook can be skipped by passing the `--no-verify` option to `git commit`
-- A pre-commit hook in `.githooks/pre-commit-license-maintainer` checking the license headers.
-  **BREAKING CHANGE** Perl5 is needed to work on the code.
-  The hook is based on this [project](https://github.com/NitorCreations/license-maintainer)
-  and is configured based on the `.gitattributes` file.
-  The list of authors is automatically extracted from the `license.author`
-  field in `.git/config`. This can either be modified by hand or by invoking
-  `git config license.author="list-of-authors"`.
-  The hook will check the license headers, amend them where possible and abort
-  where not possible, showing the commands needed to update the license.
-  _NOT recommended_ The hook can be skipped by passing the `--no-verify` option to `git commit`
 - An `UNUSED` preprocessor macro to mark arguments as unused.
 - An `UNUSED_FUNCTION` preprocessor macro to mark functions as unused.
 
 ### Changed
+
+- The Green's function, solver and boundary integral operator classes have been
+  radically redesigned. This avoids coupling between integrators and Green's
+  function that existed in the previous design.
+  See the [Green's function code
+  reference](http://pcmsolver.readthedocs.io/en/latest/code-reference/greens-functions.html)
+  for a more detailed explanation.
 
 ### Deprecated
 

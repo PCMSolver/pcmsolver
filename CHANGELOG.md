@@ -22,6 +22,8 @@
   The hook will check the license headers, amend them where possible and abort
   where not possible, showing the commands needed to update the license.
   _NOT recommended_ The hook can be skipped by passing the `--no-verify` option to `git commit`
+- An `UNUSED` preprocessor macro to mark arguments as unused.
+- An `UNUSED_FUNCTION` preprocessor macro to mark functions as unused.
 
 ### Changed
 

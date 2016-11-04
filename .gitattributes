@@ -1,68 +1,70 @@
 # API files
-/api/*.h   licensefile=.githooks/license-maintainer/LICENSE-C
-/api/*.F90 licensefile=.githooks/license-maintainer/LICENSE-Fortran
+api/*.h   licensefile=.githooks/license-maintainer/LICENSE-C
+api/*.F90 licensefile=.githooks/license-maintainer/LICENSE-Fortran
 
 # include directory
-/include/*.hpp         licensefile=.githooks/license-maintainer/LICENSE-C++
-/include/Config.hpp.in licensefile=.githooks/license-maintainer/LICENSE-C++
+include/*.hpp         licensefile=.githooks/license-maintainer/LICENSE-C++
+include/STLUtils.hpp  !licensefile
+include/Config.hpp.in licensefile=.githooks/license-maintainer/LICENSE-C++
 
 # bin
-/src/bin/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/bin/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
 
 # bi_operators
-/src/bi_operators/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/bi_operators/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/bi_operators/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
 
 # cavity
-/src/cavity/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
-/src/cavity/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/cavity/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/cavity/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
 
 # green
-/src/green/*.hpp                    licensefile=.githooks/license-maintainer/LICENSE-C++
-/src/green/dielectric_profile/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/green/*.hpp                    licensefile=.githooks/license-maintainer/LICENSE-C++
+src/green/*.cpp                    licensefile=.githooks/license-maintainer/LICENSE-C++
+src/green/dielectric_profile/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
 
 # interface
-/src/interface/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
-/src/interface/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/interface/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/interface/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
 
 # metal
-/src/metal/*.F90 licensefile=.githooks/license-maintainer/LICENSE-Fortran
+src/metal/*.F90 licensefile=.githooks/license-maintainer/LICENSE-Fortran
 
 # pedra
-/src/pedra/*.inc                   licensefile=.githooks/license-maintainer/LICENSE-Fortran
-pedra/pedra_cavity.F90             licensefile=.githooks/license-maintainer/LICENSE-Fortran
-pedra/pedra_cavity_derivatives.F90 licensefile=.githooks/license-maintainer/LICENSE-Fortran
-pedra/pedra_cavity_interface.F90   licensefile=.githooks/license-maintainer/LICENSE-Fortran
-pedra/pedra_dblas.F90              licensefile=.githooks/license-maintainer/LICENSE-Fortran
-pedra/pedra_precision.F90          licensefile=.githooks/license-maintainer/LICENSE-Fortran
-pedra/pedra_print.F90              licensefile=.githooks/license-maintainer/LICENSE-Fortran
-pedra/pedra_symmetry.F90           licensefile=.githooks/license-maintainer/LICENSE-Fortran
-pedra/pedra_utils.F90              licensefile=.githooks/license-maintainer/LICENSE-Fortran
+src/pedra/*.inc             licensefile=.githooks/license-maintainer/LICENSE-Fortran
+src/pedra/*.F90             licensefile=.githooks/license-maintainer/LICENSE-Fortran
+src/pedra/pedra_dlapack.F90 !licensefile
 
 # solver
-/src/solver/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
-/src/solver/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/solver/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/solver/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
 
 # utils
-/src/utils/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
-/src/utils/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/utils/*.hpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/utils/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
+src/utils/cnpy.hpp !licensefile
+src/utils/cnpy.cpp !licensefile
+src/utils/legendre.h !licensefile
+src/utils/Interpolation.* !licensefile
+src/utils/Vector*         !licensefile
 
 # tests
-/tests/unit_tests.cpp             licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/TestingMolecules.hpp       licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/Fortran_host/*.F90         licensefile=.githooks/license-maintainer/LICENSE-Fortran
+tests/unit_tests.cpp             licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/TestingMolecules.hpp       licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/Fortran_host/*.f90         licensefile=.githooks/license-maintainer/LICENSE-Fortran
 /tests/C_host/*.h                 licensefile=.githooks/license-maintainer/LICENSE-C
 /tests/C_host/*.c                 licensefile=.githooks/license-maintainer/LICENSE-C
-/tests/bi_operators/*.cpp         licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/cpcm/*.cpp                 licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/dielectric_profile/*.cpp   licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/gepol/*.cpp                licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/green/*.hpp                licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/green/*.cpp                licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/iefpcm/*.cpp               licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/input/*.cpp                licensefile=.githooks/license-maintainer/LICENSE-C++
-/tests/numerical_quadrature/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/bi_operators/*.cpp         licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/cpcm/*.cpp                 licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/dielectric_profile/*.cpp   licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/gepol/*.cpp                licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/green/*.hpp                licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/green/*.cpp                licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/iefpcm/*.cpp               licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/input/*.cpp                licensefile=.githooks/license-maintainer/LICENSE-C++
+tests/numerical_quadrature/*.cpp licensefile=.githooks/license-maintainer/LICENSE-C++
 
 # tools
-/src/make_cmake_files.py   licensefile=.githooks/license-maintainer/LICENSE-Python
-/tools/pcmsolver.py.in     licensefile=.githooks/license-maintainer/LICENSE-Python
-/tests/make_cmake_files.py licensefile=.githooks/license-maintainer/LICENSE-Python
+src/make_cmake_files.py   licensefile=.githooks/license-maintainer/LICENSE-Python
+tools/pcmsolver.py.in     licensefile=.githooks/license-maintainer/LICENSE-Python
+tests/make_cmake_files.py licensefile=.githooks/license-maintainer/LICENSE-Python

@@ -21,22 +21,7 @@
 ! PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
 !
 
-module pedra_precision
-! Read this: http://stackoverflow.com/a/3170438/2528668
-! and this:  http://stackoverflow.com/a/3204981/2528668
-
-implicit none
-
-! Integer types
-! 32-bit integers
-integer, parameter :: regint_k   = selected_int_kind(8)
-! 64-bit integers
-integer, parameter :: largeint_k = selected_int_kind(18)
-
-! Real types
-! Single-precision real
-integer, parameter :: sp = kind(1.0)
-! Double-precision real
-integer, parameter :: dp = selected_real_kind(2*precision(1.0_sp))
-
-end module pedra_precision
+!
+      INTEGER MXTS, MXSP, MXTSPT, MXVER
+      PARAMETER (MXTS=50000, MXSP=1000, MXTSPT = 2*MXTS)
+      PARAMETER (MXVER = 100000)

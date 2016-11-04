@@ -1,25 +1,25 @@
-!pcmsolver_copyright_start
-!       PCMSolver, an API for the Polarizable Continuum Model
-!       Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
-! 
-!       This file is part of PCMSolver.
-! 
-!       PCMSolver is free software: you can redistribute it and/or modify
-!       it under the terms of the GNU Lesser General Public License as published by
-!       the Free Software Foundation, either version 3 of the License, or
-!       (at your option) any later version.
-! 
-!       PCMSolver is distributed in the hope that it will be useful,
-!       but WITHOUT ANY WARRANTY; without even the implied warranty of
-!       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-!       GNU Lesser General Public License for more details.
-! 
-!       You should have received a copy of the GNU Lesser General Public License
-!       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
-!       For information on the complete list of contributors to the
-!       PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
-!pcmsolver_copyright_end
+!
+! PCMSolver, an API for the Polarizable Continuum Model
+! Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+!
+! This file is part of PCMSolver.
+!
+! PCMSolver is free software: you can redistribute it and/or modify
+! it under the terms of the GNU Lesser General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! PCMSolver is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU Lesser General Public License for more details.
+!
+! You should have received a copy of the GNU Lesser General Public License
+! along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+!
+! For information on the complete list of contributors to the
+! PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+!
 
 ! Originally written for DALTON by Luca Frediani (ca. 2003-2004)
 ! Extracted from DALTON by Krzysztof Mozgawa and Ville Weijo (ca. 2010-2012)
@@ -81,9 +81,9 @@
 
     subroutine polyhedra_driver(pgroup, vert, centr, masses, global_print_unit, error_code)
 
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
-#include "pcm_pcm.h"
+#include "pcm_pcmdef.inc"
+#include "pcm_mxcent.inc"
+#include "pcm_pcm.inc"
 
     type(point_group) :: pgroup
     real(kind=dp)     :: masses(mxts)
@@ -167,11 +167,11 @@
     use pedra_print, only: output
 !    use pedra_cavity_derivatives, only: cavder
 
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
-#include "pcm_pcm.h"
-! Import nucdep from pcm_nuclei.h: to set up gradient calculation...
-#include "pcm_nuclei.h"
+#include "pcm_pcmdef.inc"
+#include "pcm_mxcent.inc"
+#include "pcm_pcm.inc"
+! Import nucdep from pcm_nuclei.inc: to set up gradient calculation...
+#include "pcm_nuclei.inc"
 
     integer(kind=regint_k) :: numts, natm, numsph, numver
     integer(kind=regint_k) :: intsph(numts, 10), newsph(numsph, 2), icav1(natm), icav2(natm)
@@ -671,7 +671,7 @@
 !
     use pedra_symmetry, only: get_pt
 
-#include "pcm_mxcent.h"
+#include "pcm_mxcent.inc"
 
     integer(kind=regint_k) :: nesf, nesf0, numsph
     real(kind=dp) :: xe(*), ye(*), ze(*), re(*), v1(3), v2(3)
@@ -784,8 +784,8 @@
 !
     use pedra_symmetry, only: get_pt
 
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
+#include "pcm_pcmdef.inc"
+#include "pcm_mxcent.inc"
 
     integer(kind=regint_k) :: ipflag, itsnum, itseff, nsfe, numts, numver
     integer(kind=regint_k), intent(in) :: nesf
@@ -1076,9 +1076,9 @@
 
     use pedra_symmetry, only: get_pt
 
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
-#include "pcm_pcm.h"
+#include "pcm_pcmdef.inc"
+#include "pcm_mxcent.inc"
+#include "pcm_pcm.inc"
 
     integer(kind=regint_k) :: numts
     real(kind=dp) :: vert(numts, 10, 3), centr(numts, 10, 3)
@@ -1140,9 +1140,9 @@
     use pedra_utils, only: around
     use pedra_print, only: output
 
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
-#include "pcm_pcm.h"
+#include "pcm_pcmdef.inc"
+#include "pcm_mxcent.inc"
+#include "pcm_pcm.inc"
 
     integer(kind=regint_k) :: ns, nv, numts
     real(kind=dp) :: area
@@ -1671,9 +1671,9 @@
 
     SUBROUTINE INTER(P1,P2,P3,P4,NS,I)
 
-#include "pcm_mxcent.h"
-#include "pcm_pcmdef.h"
-#include "pcm_pcm.h"
+#include "pcm_mxcent.inc"
+#include "pcm_pcmdef.inc"
+#include "pcm_pcm.inc"
 
     real(kind=dp) :: p1(3), p2(3), p3(3), p4(3)
     integer(kind=regint_k) :: ns, i
@@ -1810,9 +1810,9 @@
 
     use pedra_dblas, only: vector_product
 
-#include "pcm_pcmdef.h"
-#include "pcm_mxcent.h"
-#include "pcm_pcm.h"
+#include "pcm_pcmdef.inc"
+#include "pcm_mxcent.inc"
+#include "pcm_pcm.inc"
 
     integer(kind=regint_k) :: nv, ns, numts
     real(kind=dp) :: area
@@ -2022,9 +2022,9 @@
 ! more disjoint cavities. If yes, the order numbers of the spheres
 ! for the first and second cavity are stored into icav1 and icav2 respectively.
 !
-#include "pcm_mxcent.h"
-#include "pcm_pcmdef.h"
-#include "pcm_pcm.h"
+#include "pcm_mxcent.inc"
+#include "pcm_pcmdef.inc"
+#include "pcm_pcm.inc"
 
     integer(kind=regint_k) :: icav1(mxcent), icav2(mxcent)
     integer(kind=regint_k) :: ncav1, ncav2
@@ -2200,9 +2200,9 @@
 
     use pedra_utils, only: wlkdin
 
-#include "pcm_mxcent.h"
-#include "pcm_pcmdef.h"
-#include "pcm_pcm.h"
+#include "pcm_mxcent.inc"
+#include "pcm_pcmdef.inc"
+#include "pcm_pcm.inc"
 
     integer(kind=regint_k), intent(in) :: katom
     real(kind=dp), intent(inout) :: geom(katom, 3)

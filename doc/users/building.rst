@@ -44,8 +44,8 @@ Libraries and toolchain programs
 + PyYAML Python module (documentation only)
 + Sphinx (documentation only)
 
-PCMSolver relies on the Eigen template libraries version 3.0.0 and higher.
-Version 3.2.0 of Eigen libraries is shipped with the module and resides in the `external` subdirectory.
+PCMSolver relies on the Eigen template libraries version 3.3.0 and higher.
+Version 3.3.0 of Eigen libraries is shipped with the module and resides in the `external` subdirectory.
 
 Configuration
 -------------

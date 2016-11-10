@@ -23,6 +23,8 @@
   See the [Green's function code
   reference](http://pcmsolver.readthedocs.io/en/latest/code-reference/greens-functions.html)
   for a more detailed explanation.
+- **BREAKING CHANGE** The minimum required version of Eigen is now 3.3.0
+  The version bundled with the code has been accordingly updated.
 
 ### Deprecated
 

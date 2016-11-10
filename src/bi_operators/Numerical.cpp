@@ -81,8 +81,8 @@ double integrateS(const KernelS & F, const Element & e) {
 
   // Get the quadrature rules for azimuthal and polar integrations
   namespace mpl = boost::mpl;
-  typedef typename mpl::at<rules_map, mpl::int_<PhiPoints>>::type PhiPolicy;
-  typedef typename mpl::at<rules_map, mpl::int_<ThetaPoints>>::type ThetaPolicy;
+  typedef typename mpl::at<rules_map, mpl::int_<PhiPoints> >::type PhiPolicy;
+  typedef typename mpl::at<rules_map, mpl::int_<ThetaPoints> >::type ThetaPolicy;
   QuadratureRule<PhiPolicy> phiRule;
   QuadratureRule<ThetaPolicy> thetaRule;
   int upper_phi = PhiPoints / 2;     // Upper limit for loop on phi points
@@ -193,8 +193,8 @@ double integrateD(const KernelD & F, const Element & e) {
 
   // Get the quadrature rules for azimuthal and polar integrations
   namespace mpl = boost::mpl;
-  typedef typename mpl::at<rules_map, mpl::int_<PhiPoints>>::type PhiPolicy;
-  typedef typename mpl::at<rules_map, mpl::int_<ThetaPoints>>::type ThetaPolicy;
+  typedef typename mpl::at<rules_map, mpl::int_<PhiPoints> >::type PhiPolicy;
+  typedef typename mpl::at<rules_map, mpl::int_<ThetaPoints> >::type ThetaPolicy;
   QuadratureRule<PhiPolicy> phiRule;
   QuadratureRule<ThetaPolicy> thetaRule;
   int upper_phi = PhiPoints / 2;     // Upper limit for loop on phi points

@@ -54,7 +54,7 @@ template <typename DerivativeTraits = AD_directional,
           typename IntegratorPolicy = CollocationIntegrator>
 class SphericalSharp __final
     : public GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
-                            SphericalSharp<DerivativeTraits, IntegratorPolicy>> {
+                            SphericalSharp<DerivativeTraits, IntegratorPolicy> > {
 public:
   /*! Constructor for a one-layer interface
    * \param[in] e permittivity of the sphere
@@ -64,7 +64,7 @@ public:
    */
   SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o)
       : GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
-                       SphericalSharp<DerivativeTraits, IntegratorPolicy>>(),
+                       SphericalSharp<DerivativeTraits, IntegratorPolicy> >(),
         origin_(o) {
     this->profile_ = Sharp(e, esolv, r);
   }
@@ -77,7 +77,7 @@ public:
   SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o,
                  double f)
       : GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
-                       SphericalSharp<DerivativeTraits, IntegratorPolicy>>(f),
+                       SphericalSharp<DerivativeTraits, IntegratorPolicy> >(f),
         origin_(o) {
     this->profile_ = Sharp(e, esolv, r);
   }

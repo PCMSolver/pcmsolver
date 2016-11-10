@@ -209,6 +209,6 @@ namespace mpl = boost::mpl;
 
 typedef mpl::map<mpl::pair<mpl::int_<16>, gauss16>,
                  mpl::pair<mpl::int_<32>, gauss32>,
-                 mpl::pair<mpl::int_<64>, gauss64>> rules_map;
+                 mpl::pair<mpl::int_<64>, gauss64> > rules_map;
 
 #endif // QUADRATURERULES_HPP

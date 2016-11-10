@@ -138,7 +138,7 @@ template <typename ProfilePolicy>
 Numerical SphericalDiffuse<ProfilePolicy>::operator()(Numerical * sp,
                                                       Numerical * pp) const {
   // Transfer raw arrays to Eigen vectors using the Map type
-  Eigen::Map<Eigen::Matrix<double, 3, 1>> source(sp), probe(pp);
+  Eigen::Map<Eigen::Matrix<double, 3, 1> > source(sp), probe(pp);
 
   // Obtain coefficient for the separation of the Coulomb singularity
   double Cr12 = this->coefficient_impl(source, probe);

@@ -196,12 +196,12 @@ private:
    *  \note The vector has dimension maxLGreen_ and has r^l behavior
    */
   std::vector<RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial,
-                             Zeta>> zeta_;
+                             Zeta> > zeta_;
   /*! \brief Second independent radial solution, used to build Green's function.
    *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
    */
   std::vector<RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial,
-                             Omega>> omega_;
+                             Omega> > omega_;
   /*! \brief Returns L-th component of the radial part of the Green's function
    *  \param[in] L  angular momentum
    *  \param[in] sp source point

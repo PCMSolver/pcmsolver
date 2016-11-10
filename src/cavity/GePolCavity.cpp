@@ -218,7 +218,7 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph,
   // The indices of the equal elements are gathered in a std::pair and saved into a
   // std::vector
   double threshold = 1.0e-12;
-  std::vector<std::pair<PCMSolverIndex, PCMSolverIndex>> equal_elements;
+  std::vector<std::pair<PCMSolverIndex, PCMSolverIndex> > equal_elements;
   for (PCMSolverIndex i = 0; i < nElements_; ++i) {
     for (PCMSolverIndex j = i + 1; j < nElements_; ++j) {
       Eigen::Vector3d difference = elementCenter_.col(i) - elementCenter_.col(j);

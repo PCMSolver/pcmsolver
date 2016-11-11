@@ -61,7 +61,7 @@ int main(int argc, char * argv[]) {
   out_stream.open("pcmsolver.out");
 
   if (argc > 2)
-    PCMSOLVER_ERROR("Too many arguments supplied", "run_pcm");
+    PCMSOLVER_ERROR("Too many arguments supplied");
   TIMER_ON("Input parsing");
   Input parsed(argv[1]);
   TIMER_OFF("Input parsing");

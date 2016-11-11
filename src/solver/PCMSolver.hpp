@@ -64,7 +64,7 @@ public:
   Eigen::VectorXd computeCharge(const Eigen::VectorXd & potential,
                                 int irrep = 0) const {
     if (!built_)
-      PCMSOLVER_ERROR("PCM matrix not calculated yet", BOOST_CURRENT_FUNCTION);
+      PCMSOLVER_ERROR("PCM matrix not calculated yet");
     return computeCharge_impl(potential, irrep);
   }
 

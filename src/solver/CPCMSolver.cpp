@@ -44,8 +44,7 @@ void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity,
                                         const IGreensFunction & gf_o,
                                         const BoundaryIntegralOperator & op) {
   if (!isotropic_)
-    PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!",
-                    BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
   TIMER_ON("Computing S");
   double epsilon = profiles::epsilon(gf_o.permittivity());
   S_ = op.computeS(cavity, gf_i);

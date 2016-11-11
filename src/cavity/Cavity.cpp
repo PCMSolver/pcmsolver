@@ -95,32 +95,27 @@ void Cavity::loadCavity(const std::string & fname) {
   // 1. Get the weights
   cnpy::NpyArray raw_weights = loaded_cavity["weights"];
   if (raw_weights.shape[0] != nElements_)
-    PCMSOLVER_ERROR("elementArea_: incoherent dimensions read in",
-                    BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("elementArea_: incoherent dimensions read in");
   elementArea_ = cnpy::custom::npy_to_eigen<double>(raw_weights);
   // 2. Get the element sphere center
   cnpy::NpyArray raw_elSphCenter = loaded_cavity["elSphCenter"];
   if (raw_elSphCenter.shape[1] != nElements_)
-    PCMSOLVER_ERROR("elementSphereCenter_: incoherent dimensions read in",
-                    BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("elementSphereCenter_: incoherent dimensions read in");
   elementSphereCenter_ = cnpy::custom::npy_to_eigen<double>(raw_elSphCenter);
   // 3. Get the element radius
   cnpy::NpyArray raw_elRadius = loaded_cavity["elRadius"];
   if (raw_elRadius.shape[0] != nElements_)
-    PCMSOLVER_ERROR("elementRadius_: incoherent dimensions read in",
-                    BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("elementRadius_: incoherent dimensions read in");
   elementRadius_ = cnpy::custom::npy_to_eigen<double>(raw_elRadius);
   // 4. Get the centers
   cnpy::NpyArray raw_centers = loaded_cavity["centers"];
   if (raw_centers.shape[1] != nElements_)
-    PCMSOLVER_ERROR("elementCenter_: incoherent dimensions read in",
-                    BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("elementCenter_: incoherent dimensions read in");
   elementCenter_ = cnpy::custom::npy_to_eigen<double>(raw_centers);
   // 5. Get the normal vectors
   cnpy::NpyArray raw_normals = loaded_cavity["normals"];
   if (raw_normals.shape[1] != nElements_)
-    PCMSOLVER_ERROR("elementNormal_: incoherent dimensions read in",
-                    BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("elementNormal_: incoherent dimensions read in");
   elementNormal_ = cnpy::custom::npy_to_eigen<double>(raw_normals);
 
   // Reconstruct the elements_ vector

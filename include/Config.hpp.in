@@ -51,9 +51,6 @@
 #  define UNUSED_FUNCTION(x) UNUSED_ ## x
 #endif
 
-
-#include <boost/current_function.hpp>
-
 // Inspired from Eigen EIGEN_DEFAULT_DENSE_INDEX_TYPE
 #ifndef PCMSOLVER_DEFAULT_INDEX_TYPE
 #define PCMSOLVER_DEFAULT_INDEX_TYPE int

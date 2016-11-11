@@ -88,16 +88,14 @@ KernelD AnisotropicLiquid<DerivativeTraits>::exportKernelD_impl() const {
 template <typename DerivativeTraits>
 double AnisotropicLiquid<DerivativeTraits>::singleLayer_impl(
     const Element & /* e */, double /* factor */) const {
-  PCMSOLVER_ERROR("Not implemented yet for AnisotropicLiquid",
-                  BOOST_CURRENT_FUNCTION);
+  PCMSOLVER_ERROR("Not implemented yet for AnisotropicLiquid");
   return 0.0;
 }
 
 template <typename DerivativeTraits>
 double AnisotropicLiquid<DerivativeTraits>::doubleLayer_impl(
     const Element & /* e */, double /* factor */) const {
-  PCMSOLVER_ERROR("Not implemented yet for AnisotropicLiquid",
-                  BOOST_CURRENT_FUNCTION);
+  PCMSOLVER_ERROR("Not implemented yet for AnisotropicLiquid");
   return 0.0;
 }
 

@@ -35,6 +35,8 @@
   for a more detailed explanation.
 - **BREAKING CHANGE** The minimum required version of Eigen is now 3.3.0
   The version bundled with the code has been accordingly updated.
+- The `PCMSOLVER_ERROR` macro now takes only one argument and prints out a more
+  informative error message.
 
 ### Deprecated
 

@@ -264,13 +264,11 @@ void Meddle::getSurfaceFunction(PCMSolverIndex size, double values[],
   std::string functionName(name);
   if (cavity_->size() != size)
     PCMSOLVER_ERROR("The " + functionName +
-                        " SurfaceFunction is bigger than the cavity!",
-                    BOOST_CURRENT_FUNCTION);
+                    " SurfaceFunction is bigger than the cavity!");
 
   SurfaceFunctionMapConstIter iter = functions_.find(functionName);
   if (iter == functions_.end())
-    PCMSOLVER_ERROR("The " + functionName + " SurfaceFunction does not exist.",
-                    BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("The " + functionName + " SurfaceFunction does not exist.");
 
   Eigen::Map<Eigen::VectorXd>(values, size, 1) = iter->second;
 }
@@ -280,8 +278,7 @@ void Meddle::setSurfaceFunction(PCMSolverIndex size, double values[],
   std::string functionName(name);
   if (cavity_->size() != size)
     PCMSOLVER_ERROR("The " + functionName +
-                        " SurfaceFunction is bigger than the cavity!",
-                    BOOST_CURRENT_FUNCTION);
+                    " SurfaceFunction is bigger than the cavity!");
 
   Eigen::VectorXd func = Eigen::Map<Eigen::VectorXd>(values, size, 1);
   if (functions_.count(functionName) == 1) { // Key in map already
@@ -318,8 +315,7 @@ void Meddle::loadSurfaceFunction(const char * name) const {
   Eigen::VectorXd values = cnpy::custom::npy_load<double>(fname);
   if (values.size() != cavity_->size())
     PCMSOLVER_ERROR("The loaded " + functionName +
-                        " surface function is bigger than the cavity!",
-                    BOOST_CURRENT_FUNCTION);
+                    " surface function is bigger than the cavity!");
   // Append to global map
   if (functions_.count(functionName) == 1) { // Key in map already
     functions_[functionName] = values;
@@ -490,8 +486,7 @@ void initMolecule(const Input & inp, const Symmetry & pg, int nuclei,
     printer(print_mol);
     PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a "
                     "radius for all atoms (see "
-                    "http://pcmsolver.readthedocs.org/en/latest/users/input.html)!",
-                    BOOST_CURRENT_FUNCTION);
+                    "http://pcmsolver.readthedocs.org/en/latest/users/input.html)!");
   }
 }
 

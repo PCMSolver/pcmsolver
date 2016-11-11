@@ -72,8 +72,7 @@ public:
   logger(const std::string & name, printLevel print = coarse)
       : globalPrintLevel_(print), policy_(new logPolicy) {
     if (!policy_) {
-      PCMSOLVER_ERROR("LOGGER: Unable to create the logger instance",
-                      BOOST_CURRENT_FUNCTION);
+      PCMSOLVER_ERROR("LOGGER: Unable to create the logger instance");
     }
     policy_->open_ostream(name);
     // Write the logfile header

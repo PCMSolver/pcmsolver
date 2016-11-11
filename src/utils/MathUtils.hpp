@@ -383,8 +383,7 @@ template <typename Scalar>
 inline Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> npy_to_eigen(
     const NpyArray & npy_array) {
   if (npy_array.shape.size() > 2)
-    PCMSOLVER_ERROR("Only vectors and matrices can be read into Eigen objects.",
-                    BOOST_CURRENT_FUNCTION);
+    PCMSOLVER_ERROR("Only vectors and matrices can be read into Eigen objects.");
   return Eigen::Map<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> >(
       reinterpret_cast<Scalar *>(npy_array.data), npy_array.shape[0],
       npy_array.shape[1]);

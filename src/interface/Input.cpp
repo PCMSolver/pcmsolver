@@ -139,7 +139,7 @@ void Input::reader(const std::string & filename) {
     // Just initialize the solvent object in this class
     hasSolvent_ = true;
     if (solvents().find(name) == solvents().end()) {
-      PCMSOLVER_ERROR("Solvent " + name + " NOT found!", BOOST_CURRENT_FUNCTION);
+      PCMSOLVER_ERROR("Solvent " + name + " NOT found!");
     } else {
       solvent_ = solvents()[name];
     }
@@ -332,8 +332,7 @@ void Input::initMolecule() {
     std::cout << molecule_ << std::endl;
     PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a "
                     "radius for all atoms (see "
-                    "http://pcmsolver.readthedocs.org/en/latest/users/input.html)!",
-                    BOOST_CURRENT_FUNCTION);
+                    "http://pcmsolver.readthedocs.org/en/latest/users/input.html)!");
   }
 }
 

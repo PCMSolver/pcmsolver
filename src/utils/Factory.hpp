@@ -76,12 +76,11 @@ public:
    */
   Object * create(const std::string & objID, const ObjectInput & data) {
     if (objID.empty())
-      PCMSOLVER_ERROR("No object identification string provided to the Factory.",
-                      BOOST_CURRENT_FUNCTION);
+      PCMSOLVER_ERROR("No object identification string provided to the Factory.");
     typename CallbackMap::const_iterator i = callbacks_.find(objID);
     if (i == callbacks_.end())
-      PCMSOLVER_ERROR("The unknown object ID " + objID + " occurred in the Factory.",
-                      BOOST_CURRENT_FUNCTION);
+      PCMSOLVER_ERROR("The unknown object ID " + objID +
+                      " occurred in the Factory.");
     return (i->second)(data);
   }
   /*! Unique point of access to the unique instance of the Factory */

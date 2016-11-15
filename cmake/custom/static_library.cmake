@@ -9,10 +9,10 @@
 #   CMAKE_C_FLAGS
 #   CMAKE_CXX_FLAGS
 #
-# autocmake.cfg configuration::
+# autocmake.yml configuration::
 #
-#   docopt: --static Create only the static library [default: False].
-#   define: '-DSTATIC_LIBRARY_ONLY=%s' % arguments['--static']
+#   docopt: "--static Create only the static library [default: False]."
+#   define: "'-DSTATIC_LIBRARY_ONLY={0}'.format(arguments['--static'])"
 
 option(STATIC_LIBRARY_ONLY "Create the static library only" OFF)
 option(ENABLE_GENERIC "Enable mostly static linking in shared library" OFF)

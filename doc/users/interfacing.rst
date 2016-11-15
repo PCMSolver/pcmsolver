@@ -23,7 +23,7 @@ What you should care about: API functions
 
 These are the contents of the ``pcmsolver.h`` file defining
 the public API of the PCMSolver library. The Fortran bindings
-for the API are in the ``pcmsolver.F90`` file.
+for the API are in the ``pcmsolver.f90`` file.
 The indexing of symmetry operations and their mapping to a bitstring
 is explained in the following Table. This is important when passing
 symmetry information to the :cpp:func:`pcmsolver_new` function.

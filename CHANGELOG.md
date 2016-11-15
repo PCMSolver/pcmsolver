@@ -24,9 +24,17 @@
   _NOT recommended_ The hook can be skipped by passing the `--no-verify` option to `git commit`
 - An `UNUSED` preprocessor macro to mark arguments as unused.
 - An `UNUSED_FUNCTION` preprocessor macro to mark functions as unused.
+- A set of preprocessor macros with Git information (`GIT_COMMIT_HASH`,
+  `GIT_COMMIT_AUTHOR`, `GIT_COMMIT_DATE` and `GIT_BRANCH`) is automatically
+  generated and saved in the `git_info.h` header file.
+- An API function to print the contents of a surface function to the host
+  program output.
+- An API function to get the dipole moment, relative to the origin, due to the ASC
+  on the cavity. Both the norm and the components can be obtained.
 
 ### Changed
 
+- The Fortran bindings file has been renamed `pcmsolver.f90`.
 - The Green's function, solver and boundary integral operator classes have been
   radically redesigned. This avoids coupling between integrators and Green's
   function that existed in the previous design.
@@ -37,6 +45,11 @@
   The version bundled with the code has been accordingly updated.
 - The `PCMSOLVER_ERROR` macro now takes only one argument and prints out a more
   informative error message.
+- Switched to the latest version of
+  [Autocmake](http://autocmake.readthedocs.io/) The configuration file is now YAML-based.
+  The PyYAML module is thus required.
+- The standalone `run_pcm` executable now uses the API functions instead of the
+  internal headers.
 
 ### Deprecated
 

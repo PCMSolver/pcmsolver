@@ -41,8 +41,10 @@ module pcmsolver
     public pcmsolver_compute_asc
     public pcmsolver_compute_response_asc
     public pcmsolver_compute_polarization_energy
+    public pcmsolver_get_asc_dipole
     public pcmsolver_get_surface_function
     public pcmsolver_set_surface_function
+    public pcmsolver_print_surface_function
     public pcmsolver_save_surface_functions
     public pcmsolver_save_surface_function
     public pcmsolver_load_surface_function
@@ -178,6 +180,16 @@ module pcmsolver
         end function pcmsolver_compute_polarization_energy
     end interface pcmsolver_compute_polarization_energy
 
+    interface pcmsolver_get_asc_dipole
+        function pcmsolver_get_asc_dipole(context, asc_name, dipole) result(mu) bind(C)
+            import
+            type(c_ptr), value :: context
+            character(kind=c_char, len=1), intent(in) :: asc_name(*)
+            real(c_double), intent(inout) :: dipole(*)
+            real(c_double) :: mu
+        end function pcmsolver_get_asc_dipole
+    end interface pcmsolver_get_asc_dipole
+
     interface pcmsolver_get_surface_function
         subroutine pcmsolver_get_surface_function(context, f_size, values, name) bind(C)
             import
@@ -197,6 +209,14 @@ module pcmsolver
             character(kind=c_char, len=1), intent(in) :: name(*)
         end subroutine pcmsolver_set_surface_function
     end interface pcmsolver_set_surface_function
+
+    interface pcmsolver_print_surface_function
+        subroutine pcmsolver_print_surface_function(context, name) bind(C)
+            import
+            type(c_ptr), value :: context
+            character(c_char), intent(in) :: name
+        end subroutine pcmsolver_print_surface_function
+    end interface pcmsolver_print_surface_function
 
     interface pcmsolver_save_surface_functions
         subroutine pcmsolver_save_surface_functions(context) bind(C)

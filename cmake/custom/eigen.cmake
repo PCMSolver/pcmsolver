@@ -5,10 +5,10 @@
 # Look in a specific search directory, if given. If nothing is found
 # there, falls back to Eigen 3.3.0 bundled with PCMSolver.
 #
-# autocmake.cfg configuration::
+# autocmake.yml configuration::
 #
-#   docopt: --eigen=<EIGEN3_ROOT> Root directory for Eigen3 [default: ''].
-#   define: '-DEIGEN3_ROOT="{0}"'.format(arguments['--eigen'])
+#   docopt: "--eigen=<EIGEN3_ROOT> Root directory for Eigen3 [default: '']."
+#   define: "'-DEIGEN3_ROOT=\"{0}\"'.format(arguments['--eigen'])"
 
 if(EIGEN3_ROOT)
   set(EIGEN3_INCLUDE_DIR ${EIGEN3_ROOT}/include)

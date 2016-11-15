@@ -25,6 +25,7 @@
 #define PCMSOLVER_H_INCLUDED
 
 #include <stddef.h>
+#include "PCMInput.h"
 
 #ifndef PCMSOLVER_API
 #ifdef _WIN32
@@ -207,6 +208,16 @@ PCMSOLVER_API void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
 PCMSOLVER_API double pcmsolver_compute_polarization_energy(
     pcmsolver_context_t * context, const char * mep_name, const char * asc_name);
 
+/*! \brief Getter for the ASC dipole
+ *  \param[in, out] context the PCM context object
+ *  \param[in] asc_name label of the ASC surface function
+ *  \param[out] dipole  the Cartesian components of the ASC dipole moment
+ *  \return the ASC dipole, i.e. \sqrt{\sum_i \mu_i^2}
+ */
+PCMSOLVER_API double pcmsolver_get_asc_dipole(pcmsolver_context_t * context,
+                                              const char * asc_name,
+                                              double dipole[]);
+
 /*! \brief Retrieves data wrapped in a given surface function
  *  \param[in, out] context the PCM context object
  *  \param[in] size the size of the surface function
@@ -226,6 +237,13 @@ PCMSOLVER_API void pcmsolver_get_surface_function(pcmsolver_context_t * context,
 PCMSOLVER_API void pcmsolver_set_surface_function(pcmsolver_context_t * context,
                                                   int size, double values[],
                                                   const char * name);
+
+/*! \brief Prints surface function contents to host output
+ *  \param[in, out] context the PCM context object
+ *  \param[in] name label of the surface function
+ */
+PCMSOLVER_API void pcmsolver_print_surface_function(pcmsolver_context_t * context,
+                                                    const char * name);
 
 /*! \brief Dumps all currently saved surface functions to NumPy arrays in .npy files
  *  \param[in, out] context the PCM context object

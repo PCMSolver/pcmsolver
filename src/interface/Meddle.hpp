@@ -24,6 +24,7 @@
 #ifndef MEDDLE_HPP
 #define MEDDLE_HPP
 
+#include "pcmsolver.h"
 #include <string>
 
 #include "Config.hpp"
@@ -39,6 +40,7 @@ struct PCMInput;
 class PCMSolver;
 
 #include "Input.hpp"
+#include "utils/Molecule.hpp"
 #include "utils/Symmetry.hpp"
 
 /*! \file Meddle.hpp
@@ -50,6 +52,7 @@ class PCMSolver;
 namespace pcm {
 typedef boost::container::flat_map<std::string, Eigen::VectorXd> SurfaceFunctionMap;
 typedef SurfaceFunctionMap::value_type SurfaceFunctionPair;
+typedef SurfaceFunctionMap::iterator SurfaceFunctionMapIter;
 typedef SurfaceFunctionMap::const_iterator SurfaceFunctionMapConstIter;
 
 void printer(const std::string & message);
@@ -67,6 +70,12 @@ void print(const PCMInput &);
  */
 class Meddle __final {
 public:
+  /*! \brief CTOR from own input reader
+      *  \param[in] parsed parsed input object
+      *  \warning This CTOR is meant to be used with the standalone
+      *  executable only
+      */
+  Meddle(const Input & parsed);
   /*! \brief Constructor
    *  \param[in] input_reading input processing strategy
    *  \param[in] nr_nuclei     number of atoms in the molecule
@@ -82,6 +91,8 @@ public:
   Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
          double coordinates[], int symmetry_info[], const PCMInput & host_input);
   ~Meddle();
+  /*! \brief Getter for the molecule object */
+  Molecule molecule() const attribute(pure);
   /*! \brief Getter for the number of finite elements composing the molecular cavity
    *  \return the size of the cavity
    */
@@ -102,6 +113,12 @@ public:
    *  \param[out] center array holding the coordinates of the finite element center
    */
   void getCenter(int its, double center[]) const;
+  /*! \brief Getter for the centers of the finite elements composing the molecular
+   * cavity
+   *  \return a matrix with the finite elements centers (dimensions 3 x number of
+   * finite elements)
+   */
+  Eigen::Matrix3Xd getCenters() const attribute(pure);
   /*! \brief Getter for the areas/weights of the finite elements
    *  \param[out] areas array holding the weights/areas of the finite elements
    */
@@ -135,6 +152,12 @@ public:
    */
   double computePolarizationEnergy(const char * mep_name,
                                    const char * asc_name) const;
+  /*! \brief Getter for the ASC dipole
+         *  \param[in] asc_name label of the ASC surface function
+         *  \param[out] dipole  the Cartesian components of the ASC dipole moment
+         *  \return the ASC dipole, i.e. \sqrt{\sum_i \mu_i^2}
+         */
+  double getASCDipole(const char * asc_name, double dipole[]) const;
   /*! \brief Retrieves data wrapped in a given surface function
    *  \param[in] size the size of the surface function
    *  \param[in] values the values wrapped in the surface function
@@ -149,6 +172,10 @@ public:
    */
   void setSurfaceFunction(PCMSolverIndex size, double values[],
                           const char * name) const;
+  /*! \brief Prints surface function contents to host output
+   *  \param[in] name label of the surface function
+   */
+  void printSurfaceFunction(const char * name) const;
   /*! \brief Dumps all currently saved surface functions to NumPy arrays in .npy
    * files
    */
@@ -185,7 +212,14 @@ private:
   mutable SurfaceFunctionMap functions_;
   /*! Collects info on atomic radii set */
   std::string radiiSetName_;
-  /*! Initialize input_ */
+  /*! \brief Initialize input_
+        *  \param[in] input_reading input processing strategy
+        *  \param[in] nr_nuclei     number of atoms in the molecule
+        *  \param[in] charges       atomic charges
+        *  \param[in] coordinates   atomic coordinates
+        *  \param[in] symmetry_info molecular point group information
+        *  \param[in] host_input    input to the module, as read by the host
+        */
   void initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
                  double coordinates[], int symmetry_info[],
                  const PCMInput & host_input);

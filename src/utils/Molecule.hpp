@@ -193,8 +193,26 @@ public:
                                      */
 };
 
+/*! \brief Compute MEP from molecule object and list of finite elements
+ *  \param[in] mol molecule object
+ *  \param[in] el  list of finite elements
+ *  \return MEP at finite elements center
+ */
 Eigen::VectorXd computeMEP(const Molecule & mol, const std::vector<Element> & el);
-/*! \brief Compute MEP for a single point charge */
+
+/*! \brief Compute MEP from molecule object and a grid of points
+ *  \param[in] mol  molecule object
+ *  \param[in] grid grid points coordinates
+ *  \return MEP at grid points
+ */
+Eigen::VectorXd computeMEP(const Molecule & mol, const Eigen::Matrix3Xd & grid);
+
+/*! \brief Compute MEP for a single point charge
+ *  \param[in] el  list of finite elements
+ *  \param[in] charge value of the charge
+ *  \param[in] origin location of the point charge
+ *  \return MEP at finite elements center
+ */
 Eigen::VectorXd computeMEP(const std::vector<Element> & el, double charge = 1.0,
                            const Eigen::Vector3d & origin = Eigen::Vector3d::Zero());
 

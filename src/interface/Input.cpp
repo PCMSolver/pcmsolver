@@ -62,6 +62,13 @@ void Input::reader(const std::string & filename) {
   CODATAyear_ = input_.getInt("CODATA");
   initBohrToAngstrom(bohrToAngstrom, CODATAyear_);
 
+  const Section & mol = input_.getSect("MOLECULE");
+  MEPfromMolecule_ = true;
+  if (mol.isDefined()) {
+    geometry_ = mol.getDblVec("GEOMETRY");
+    MEPfromMolecule_ = mol.getBool("MEP");
+  }
+
   const Section & cavity = input_.getSect("CAVITY");
 
   type_ = cavity.getStr("TYPE");
@@ -91,7 +98,7 @@ void Input::reader(const std::string & filename) {
       j += 4;
     }
     // Initialize molecule from spheres only when molecule section is absent
-    if (!input_.getSect("MOLECULE").isDefined())
+    if (!mol.isDefined())
       molecule_ = Molecule(spheres_);
   } else if (mode_ == "ATOMS") {
     atoms_ = cavity.getIntVec("ATOMS");
@@ -163,13 +170,6 @@ void Input::reader(const std::string & filename) {
   correction_ = medium.getDbl("CORRECTION");
   hermitivitize_ = medium.getBool("MATRIXSYMM");
   isDynamic_ = medium.getBool("NONEQUILIBRIUM");
-
-  if (input_.getSect("MOLECULE").isDefined()) {
-    TIMER_ON("Initializing molecule");
-    geometry_ = input_.getSect("MOLECULE").getDblVec("GEOMETRY");
-    initMolecule();
-    TIMER_OFF("Initializing molecule");
-  }
 
   providedBy_ = std::string("API-side");
 }

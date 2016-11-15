@@ -268,6 +268,17 @@ Eigen::VectorXd computeMEP(const Molecule & mol, const std::vector<Element> & el
   return mep;
 }
 
+Eigen::VectorXd computeMEP(const Molecule & mol, const Eigen::Matrix3Xd & grid) {
+  Eigen::VectorXd mep = Eigen::VectorXd::Zero(grid.cols());
+  for (size_t i = 0; i < mol.nAtoms(); ++i) {
+    for (int j = 0; j < grid.cols(); ++j) {
+      double dist = (mol.geometry().col(i) - grid.col(j)).norm();
+      mep(j) += mol.charges(i) / dist;
+    }
+  }
+  return mep;
+}
+
 Eigen::VectorXd computeMEP(const std::vector<Element> & el, double charge,
                            const Eigen::Vector3d & origin) {
   Eigen::VectorXd mep = Eigen::VectorXd::Zero(el.size());

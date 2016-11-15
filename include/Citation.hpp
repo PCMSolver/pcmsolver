@@ -24,10 +24,12 @@
 #ifndef CITATION_HPP
 #define CITATION_HPP
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 
 #include "Config.hpp"
+#include "git_info.h"
 
 // This is to stringify the PROJECT_VERSION preprocessor constant
 #define STRINGIFY(x) #x
@@ -57,4 +59,13 @@ inline std::string citation_message() {
           "Public License." << std::endl;
   return rest.str();
 }
+
+inline std::string version_info() {
+  std::ostringstream retval;
+  retval << " * Git last commit hash   : " << GIT_COMMIT_HASH << std::endl;
+  retval << " * Git last commit date   : " << GIT_COMMIT_DATE << std::endl;
+  retval << " * Git last commit author : " << GIT_COMMIT_AUTHOR << std::endl;
+  return retval.str();
+}
+
 #endif // CITATION_HPP

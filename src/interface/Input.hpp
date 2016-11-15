@@ -127,6 +127,8 @@ public:
   biOperatorData integratorParams();
   /// @}
 
+  bool MEPfromMolecule() { return MEPfromMolecule_; }
+
   /// Operators
   /// operator<<
   friend std::ostream & operator<<(std::ostream & os, const Input & input);
@@ -257,6 +259,8 @@ private:
   std::vector<double> origin_;
   /// Molecular geometry
   std::vector<double> geometry_;
+  /// Whether to calculate the MEP from the molecular geometry
+  bool MEPfromMolecule_;
   /// Who performed the syntactic input parsing
   std::string providedBy_;
   /// Input wrapping struct for the cavity

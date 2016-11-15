@@ -49,14 +49,16 @@ keyword names MYPERFECTKEYWORD
 
 isAngstrom = False
 CODATAyear = 2010
-# Dictionary with the au-to-Angstrom conversion factors for various CODATA sets of constants
-CODATAdict = dict([(2010, 0.52917721092), (2006, 0.52917720859), (2002, 0.5291772108), (1998, 0.5291772083)])
 
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
 
-import docopt
+try:
+    import docopt
+except:
+    sys.path.append('cmake/lib/docopt')
+    import docopt
 from copy import deepcopy
 import getkw
 import re
@@ -72,6 +74,31 @@ Options:
   <input_file>                           PCMSolver input file.
   -h --help                              Show this screen.
 """
+
+import getkw
+from codata import CODATA, CODATAdict
+
+allowedSolvents = {'Water'                : ('WATER',                'H2O'),
+                   'Propylene Carbonate'  : ('PROPYLENE CARBONATE',  'C4H6O3'),
+                   'Dimethylsulfoxide'    : ('DIMETHYLSULFOXIDE',    'DMSO'),
+                   'Nitromethane'         : ('NITROMETHANE',         'CH3NO2'),
+                   'Acetonitrile'         : ('ACETONITRILE',         'CH3CN'),
+                   'Methanol'             : ('METHANOL',             'CH3OH'),
+                   'Ethanol'              : ('ETHANOL',              'CH3CH2OH'),
+                   'Acetone'              : ('ACETONE',              'C2H6CO'),
+                   '1,2-Dichloroethane'   : ('1,2-DICHLOROETHANE',   'C2H4CL2'),
+                   'Methylenechloride'    : ('METHYLENECHLORIDE',    'CH2CL2'),
+                   'Tetrahydrofurane'     : ('TETRAHYDROFURANE',     'THF'),
+                   'Aniline'              : ('ANILINE',              'C6H5NH2'),
+                   'Chlorobenzene'        : ('CHLOROBENZENE',        'C6H5CL'),
+                   'Chloroform'           : ('CHLOROFORM',           'CHCL3'),
+                   'Toluene'              : ('TOLUENE',              'C6H5CH3'),
+                   '1,4-Dioxane'          : ('1,4-DIOXANE',          'C4H8O2'),
+                   'Benzene'              : ('BENZENE',              'C6H6'),
+                   'Carbon Tetrachloride' : ('CARBON TETRACHLORIDE', 'CCL4'),
+                   'Cyclohexane'          : ('CYCLOHEXANE',          'C6H12'),
+                   'N-heptane'            : ('N-HEPTANE',            'C7H16'),
+                   'Explicit'             : ('EXPLICIT',             'DUMMY')}
 
 def iequal(a, b):
     """
@@ -155,7 +182,7 @@ def parse_pcm_input(inputFile):
     inkw.run_callbacks(valid_keywords)
 
     # The parsed, machine-readable file is now saved.
-    parsedFile = '@' + inputFile
+    parsedFile = os.path.join(os.path.dirname(inputFile), '@' + os.path.basename(inputFile))
     # If parsedFile already exists, it might be a leftover.
     # Remove it
     if (os.path.isfile(parsedFile)):
@@ -167,14 +194,13 @@ def parse_pcm_input(inputFile):
     return parsedFile
 
 def execute(parsedFile):
-    exename = "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@"
-    executable = os.path.join(os.path.dirname(__file__), exename)
+    executable = os.path.join(os.path.dirname(__file__), "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@")
     if (executable):
-        command = executable + ' ' + parsedFile
-        p = subprocess.Popen(command, shell=True,
-                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        s = p.communicate()[0]
-        print(s)
+        try:
+            subprocess.check_output([executable, parsedFile])
+        except subprocess.CalledProcessError as e:
+            print(e.output)
+            sys.exit(1)
     else:
         print('No executable available for standalone run')
         sys.exit(1)
@@ -280,7 +306,8 @@ def setup_keywords():
     # Solvent
     # Valid for: IEFPCM, CPCM, Wavelet and PWL solvers
     # Valid values: string
-    medium.add_kw('SOLVENT',      'STR')
+    # Default: Explicit
+    medium.add_kw('SOLVENT',      'STR', 'EXPLICIT')
     # Type of integral equation
     # Valid for: Wavelet and PWL
     # Valid values: FIRSTKIND, SECONDKIND or FULL
@@ -422,8 +449,12 @@ def setup_keywords():
     molecule = getkw.Section('MOLECULE')
     # List of geometry and classical point charges
     # Valid values: array of doubles in format [x, y, z, Q]
-    # charges are in always in atomic units
+    # Notes: charges are always in atomic units
     molecule.add_kw('GEOMETRY',     'DBL_ARRAY', callback = verify_geometry)
+    # Calculate the molecular electrostatic potential (MEP) at the cavity for the given molecule
+    # Valid values: boolean
+    # Default: True
+    molecule.add_kw('MEP', 'BOOL', True)
     top.add_sect(molecule)
 
     return top
@@ -536,27 +567,6 @@ def verify_cavity(section):
                     sys.exit(1)
 
 def verify_medium(section):
-    allowedSolvents = {'Water'                : ('WATER',                'H2O'),
-                       'Propylene Carbonate'  : ('PROPYLENE CARBONATE',  'C4H6O3'),
-                       'Dimethylsulfoxide'    : ('DIMETHYLSULFOXIDE',    'DMSO'),
-                       'Nitromethane'         : ('NITROMETHANE',         'CH3NO2'),
-                       'Acetonitrile'         : ('ACETONITRILE',         'CH3CN'),
-                       'Methanol'             : ('METHANOL',             'CH3OH'),
-                       'Ethanol'              : ('ETHANOL',              'CH3CH2OH'),
-                       'Acetone'              : ('ACETONE',              'C2H6CO'),
-                       '1,2-Dichloroethane'   : ('1,2-DICHLOROETHANE',   'C2H4CL2'),
-                       'Methylenechloride'    : ('METHYLENECHLORIDE',    'CH2CL2'),
-                       'Tetrahydrofurane'     : ('TETRAHYDROFURANE',     'THF'),
-                       'Aniline'              : ('ANILINE',              'C6H5NH2'),
-                       'Chlorobenzene'        : ('CHLOROBENZENE',        'C6H5CL'),
-                       'Chloroform'           : ('CHLOROFORM',           'CHCL3'),
-                       'Toluene'              : ('TOLUENE',              'C6H5CH3'),
-                       '1,4-Dioxane'          : ('1,4-DIOXANE',          'C4H8O2'),
-                       'Benzene'              : ('BENZENE',              'C6H6'),
-                       'Carbon Tetrachloride' : ('CARBON TETRACHLORIDE', 'CCL4'),
-                       'Cyclohexane'          : ('CYCLOHEXANE',          'C6H12'),
-                       'N-heptane'            : ('N-HEPTANE',            'C7H16'),
-                       'Explicit'             : ('EXPLICIT',             'DUMMY')}
     solvent = section.get('SOLVENT')
     explicitSolvent = solvent.get() in allowedSolvents['Explicit']
     if (explicitSolvent):
@@ -698,19 +708,23 @@ def verify_green(section):
         print('Allowed profiles are: {}'.format(allowed_profiles))
         sys.exit(1)
 
+def check_array(name, array, offset):
+    dim = len(array)
+    if (dim % offset != 0):
+        print('Empty or incoherent {0} array'.format(name))
+        sys.exit(1)
+    # Convert only geometry to AU. Leave the rest untouched
+    if (isAngstrom):
+        j = 0
+        for i in range(dim/offset):
+            array[j] /= CODATAdict[CODATAyear].ToAngstrom
+            array[j+1] /= CODATAdict[CODATAyear].ToAngstrom
+            array[j+2] /= CODATAdict[CODATAyear].ToAngstrom
+            j += offset
+
 def verify_geometry(keyword):
     data = keyword.get()
-    length=len(data)
-    if (length % 4 != 0):
-        print('Empty or incoherent geometry')
-        sys.exit(1)
-    # Convert only geometry to AU. Leave charges untouched
-    j = 0
-    for i in range(length/4):
-        data[j] /= CODATAdict[CODATAyear]
-        data[j+1] /= CODATAdict[CODATAyear]
-        data[j+2] /= CODATAdict[CODATAyear]
-        j += 4
+    check_array('GEOMETRY', data, 4)
 
 def verify_spheres(keyword):
     length=len(keyword.get())
@@ -723,15 +737,15 @@ def convert_length_array(keyword):
     length=len(keyword.get())
     if (isAngstrom):
         for i in range(length):
-            keyword[i] /= CODATAdict[CODATAyear]
+            keyword[i] /= CODATAdict[CODATAyear].ToAngstrom
 
 def convert_length_scalar(keyword):
     if (isAngstrom):
-        keyword[0] /= CODATAdict[CODATAyear]
+        keyword[0] /= CODATAdict[CODATAyear].ToAngstrom
 
 def convert_area_scalar(keyword):
     if (isAngstrom):
-        keyword[0] /= (CODATAdict[CODATAyear] * CODATAdict[CODATAyear])
+        keyword[0] /= (CODATAdict[CODATAyear].ToAngstrom * CODATAdict[CODATAyear].ToAngstrom)
 
 if __name__ == '__main__':
     main()

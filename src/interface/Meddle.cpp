@@ -121,6 +121,11 @@ double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
       AS_TYPE(pcm::Meddle, context)->computePolarizationEnergy(mep_name, asc_name));
 }
 
+double pcmsolver_get_asc_dipole(pcmsolver_context_t * context, const char * asc_name,
+                                double dipole[]) {
+  return (AS_TYPE(pcm::Meddle, context)->getASCDipole(asc_name, dipole));
+}
+
 void pcmsolver_get_surface_function(pcmsolver_context_t * context,
                                     PCMSolverIndex size, double values[],
                                     const char * name) {
@@ -135,6 +140,11 @@ void pcmsolver_set_surface_function(pcmsolver_context_t * context,
   TIMER_ON("pcmsolver_set_surface_function");
   AS_TYPE(pcm::Meddle, context)->setSurfaceFunction(size, values, name);
   TIMER_OFF("pcmsolver_set_surface_function");
+}
+
+void pcmsolver_print_surface_function(pcmsolver_context_t * context,
+                                      const char * name) {
+  AS_TYPE(pcm::Meddle, context)->printSurfaceFunction(name);
 }
 
 void pcmsolver_save_surface_functions(pcmsolver_context_t * context) {
@@ -156,6 +166,31 @@ void pcmsolver_write_timings(pcmsolver_context_t * context) {
 }
 
 namespace pcm {
+Meddle::Meddle(const Input & parsed) : input_(parsed), hasDynamic_(false) {
+  infoStream_ << std::endl;
+  infoStream_ << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
+  infoStream_ << "Using CODATA " << input_.CODATAyear() << " set of constants."
+              << std::endl;
+  infoStream_ << "Input parsing done " << input_.providedBy() << std::endl;
+
+  TIMER_ON("Meddle::initCavity");
+  initCavity();
+  TIMER_OFF("Meddle::initCavity");
+
+  TIMER_ON("Meddle::initStaticSolver");
+  initStaticSolver();
+  TIMER_OFF("Meddle::initStaticSolver");
+
+  if (input_.isDynamic()) {
+    TIMER_ON("Meddle::initDynamicSolver");
+    initDynamicSolver();
+    TIMER_OFF("Meddle::initDynamicSolver");
+  }
+
+  // Reserve space for Tot-MEP/ASC, Nuc-MEP/ASC and Ele-MEP/ASC
+  functions_.reserve(12);
+}
+
 Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
                double coordinates[], int symmetry_info[],
                const PCMInput & host_input)
@@ -190,6 +225,8 @@ Meddle::~Meddle() {
     delete K_d_;
 }
 
+Molecule Meddle::molecule() const { return input_.molecule(); }
+
 PCMSolverIndex Meddle::getCavitySize() const { return cavity_->size(); }
 
 PCMSolverIndex Meddle::getIrreducibleCavitySize() const {
@@ -202,6 +239,8 @@ void Meddle::getCenters(double centers[]) const {
       cavity_->elementCenter();
   TIMER_OFF("Meddle::getCenters");
 }
+
+Eigen::Matrix3Xd Meddle::getCenters() const { return cavity_->elementCenter(); }
 
 void Meddle::getCenter(int its, double center[]) const {
   Eigen::Map<Eigen::Vector3d>(center, 3, 1) = cavity_->elementCenter(its - 1);
@@ -217,6 +256,14 @@ double Meddle::computePolarizationEnergy(const char * mep_name,
   double energy =
       functions_[std::string(mep_name)].dot(functions_[std::string(asc_name)]);
   return (energy / 2.0);
+}
+
+double Meddle::getASCDipole(const char * asc_name, double dipole[]) const {
+  Eigen::Vector3d asc_dipole =
+      cavity_->elementCenter() * functions_[std::string(asc_name)];
+  // Bind to host-allocated array
+  Eigen::Map<Eigen::Vector3d>(dipole, 3, 1) = asc_dipole;
+  return asc_dipole.norm();
 }
 
 void Meddle::computeASC(const char * mep_name, const char * asc_name,
@@ -285,6 +332,18 @@ void Meddle::setSurfaceFunction(PCMSolverIndex size, double values[],
     functions_[functionName] = func;
   } else {
     functions_.insert(std::make_pair(functionName, func));
+  }
+}
+
+void Meddle::printSurfaceFunction(const char * name) const {
+  std::string functionName(name);
+  if (functions_.count(functionName) == 1) { // Key in map already
+    std::ostringstream print_sf;
+    Eigen::IOFormat fmt(Eigen::FullPrecision);
+    print_sf << functions_[functionName].format(fmt) << std::endl;
+    printer(print_sf);
+  } else {
+    PCMSOLVER_ERROR("You are trying to print a nonexistent SurfaceFunction!");
   }
 }
 
@@ -425,6 +484,7 @@ void Meddle::mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const {
 
 void Meddle::printInfo() const {
   printer(citation_message());
+  printer(version_info());
   printer(infoStream_);
 }
 

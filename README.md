@@ -53,10 +53,8 @@ All Travis CI builds on master use ccache to speed up execution.
   this is the environment offered by [Travis CI](https://travis-ci.org)
   The following compilers are used, both in release and debug:
 
-  1. XCode 6.4 with Clang and GFortran 5.2
-  2. XCode 6.4 with GCC 5.2
-  3. XCode 7.0 with Clang and GFortran 5.2
-  4. XCode 7.0 with GCC 5.2
+  1. XCode 7.0 with Clang and GFortran 5.2
+  2. XCode 7.0 with GCC 5.2
 
 The build needed for submission to [Coverity scan](https://scan.coverity.com/)
 is triggered by pushes to the `coverity_scan` branch. It is run on

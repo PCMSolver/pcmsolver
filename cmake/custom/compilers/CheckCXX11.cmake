@@ -78,6 +78,7 @@ macro(discover_cxx11_support _CXX_STANDARD_FLAG)
     cxx11_check_feature("${_discovered_flag}" "static_assert"        HAS_CXX11_STATIC_ASSERT)
     cxx11_check_feature("${_discovered_flag}" "variadic_templates"   HAS_CXX11_VARIADIC_TEMPLATES)
     cxx11_check_feature("${_discovered_flag}" "noexcept"             HAS_CXX11_NOEXCEPT)
+    cxx11_check_feature("${_discovered_flag}" "noreturn"             HAS_CXX11_NORETURN)
 
     # Add feature definitions
     foreach(_feature_def ${CXX11_DEFINITIONS})

@@ -143,4 +143,15 @@ template <typename Source> std::string to_string(const Source & arg) {
 #define __nullptr NULL
 #endif /* HAS_CXX11_NULLPTR */
 
+/* Workaround for [[noreturn]] */
+#ifdef HAS_CXX11_NORETURN
+#define __noreturn [[noreturn]]
+#elif defined(__GNUC__)
+#define __noreturn __attribute__((noreturn))
+#elif defined(_MSC_VER)
+#define __declspec(noreturn)
+#else /* HAS_CXX11_NORETURN */
+#define __noreturn
+#endif /* HAS_CXX11_NORETURN */
+
 #endif /* CXX11WORKAROUNDS_HPP */

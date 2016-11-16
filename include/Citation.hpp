@@ -29,7 +29,7 @@
 #include <string>
 
 #include "Config.hpp"
-#include "git_info.h"
+#include "GitInfo.hpp"
 
 // This is to stringify the PROJECT_VERSION preprocessor constant
 #define STRINGIFY(x) #x

@@ -119,6 +119,7 @@ if (lang == 'CXX'):
     f.write('add_library(' + libname + ' OBJECT ${sources_list} ${headers_list})\n')
     f.write('set_target_properties(' + libname + ' PROPERTIES POSITION_INDEPENDENT_CODE 1 )\n')
     f.write('add_dependencies(' + libname + ' generate-config-hpp)\n')
+    f.write('target_compile_options(' + libname + ' PRIVATE "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>")\n')
     f.write('# Sets install directory for all the headers in the list\n')
     f.write('foreach(_header ${headers_list})\n')
     f.write('    install(FILES ${_header} DESTINATION include/' + libname + ')\n')

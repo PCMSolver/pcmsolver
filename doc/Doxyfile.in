@@ -838,6 +838,7 @@ EXCLUDE_SYMBOLS        = EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
                          __final \
                          __override \
                          __noexcept \
+                         __noreturn \
                          __nullptr
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories

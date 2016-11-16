@@ -10,6 +10,7 @@ list(APPEND sources_list Vacuum.cpp UniformDielectric.cpp IonicLiquid.cpp Anisot
 add_library(green OBJECT ${sources_list} ${headers_list})
 set_target_properties(green PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(green generate-config-hpp)
+target_compile_options(green PRIVATE "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>")
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/green)

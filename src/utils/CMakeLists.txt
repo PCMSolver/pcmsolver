@@ -11,6 +11,7 @@ set_source_files_properties(cnpy.cpp PROPERTIES COMPILE_FLAGS -w)
 add_library(utils OBJECT ${sources_list} ${headers_list})
 set_target_properties(utils PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(utils generate-config-hpp)
+target_compile_options(utils PRIVATE "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>")
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
    install(FILES ${_header} DESTINATION include/utils)

@@ -44,7 +44,7 @@ void pcmsolver_f2c_string(char * src, char * dest, int * len) {
 
   /* Search for the end of the string */
   str = _fcdtocp(src);
-  for (i = (int)*len - 1; i >= 0 && !std::isgraph((int)str[i]); i--)
+  for (i = *len - 1; i >= 0 && !std::isgraph((int)str[i]); i--)
     /*EMPTY*/;
 
   /* Copy text from FORTRAN to C string */

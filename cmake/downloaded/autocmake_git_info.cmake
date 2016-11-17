@@ -11,18 +11,11 @@
 #   fetch:
 #     - "%(url_root)modules/git_info/git_info.h.in"
 
-function(generate_git_info_header)
+get_filename_component(_current_dir ${CMAKE_CURRENT_LIST_FILE} PATH)
+
+function(generate_git_info_header _header_location _header_name)
   # _header_location: where the Git info header file should be generated
   # _header_name: the Git info header name, complete with extension (.h, .hpp, .hxx or whatever)
-  if(${ARGC} EQUAL 2)
-    set(_header_location ${ARGV0})
-    set(_header_name     ${ARGV1})
-  elseif(${ARGC} EQUAL 0)
-    set(_header_location ${PROJECT_BINARY_DIR})
-    set(_header_name git_info.h)
-  else()
-    message(FATAL_ERROR "generate_git_info_header function accepts either two or no arguments")
-  endif()
   find_package(Git)
 
   set(_git_last_commit_hash "unknown")
@@ -61,7 +54,7 @@ function(generate_git_info_header)
   endif()
 
   configure_file(
-    ${PROJECT_SOURCE_DIR}/cmake/downloaded/git_info.h.in
+    ${_current_dir}/git_info.h.in
     ${_header_location}/${_header_name}
     @ONLY
     )

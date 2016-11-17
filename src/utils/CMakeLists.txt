@@ -14,7 +14,7 @@ add_dependencies(utils generate-config-hpp)
 target_compile_options(utils PRIVATE "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>")
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
-   install(FILES ${_header} DESTINATION include/utils)
+   install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/utils)
 endforeach()
 
 add_subdirectory(getkw)

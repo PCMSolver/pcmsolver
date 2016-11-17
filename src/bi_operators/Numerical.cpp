@@ -298,6 +298,9 @@ double integrateD(const KernelD & F, const Element & e) {
   return result;
 }
 
+template double integrateS<32, 16>(const KernelS & F, const Element & e);
+template double integrateD<32, 16>(const KernelD & F, const Element & e);
+
 template double integrateS<64, 16>(const KernelS & F, const Element & e);
 template double integrateD<64, 16>(const KernelD & F, const Element & e);
 } // namespace integrator

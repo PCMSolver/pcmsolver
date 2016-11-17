@@ -13,7 +13,6 @@ env:
   - CCACHE_COMPRESS=1
   - CCACHE_MAXSIZE=200M
   - CCACHE_CPP2=1
-  - PYTHON_PACKAGES="pip pep8 cpp-coveralls"
 matrix:
   include:
   - os: linux
@@ -31,13 +30,9 @@ matrix:
         - clang-3.5
         - libboost1.55-all-dev
         - gfortran
+        - python-virtualenv
     env: CXX_COMPILER='clang++-3.5' C_COMPILER='clang-3.5' Fortran_COMPILER='gfortran'
       BUILD_TYPE='release'
-  - os: linux
-    compiler: clang
-    addons: *1
-    env: CXX_COMPILER='clang++-3.5' C_COMPILER='clang-3.5' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='debug'
   - os: linux
     compiler: clang
     addons: &2
@@ -53,13 +48,9 @@ matrix:
         - clang-3.6
         - libboost1.55-all-dev
         - gfortran
+        - python-virtualenv
     env: CXX_COMPILER='clang++-3.6' C_COMPILER='clang-3.6' Fortran_COMPILER='gfortran'
       BUILD_TYPE='release'
-  - os: linux
-    compiler: clang
-    addons: *2
-    env: CXX_COMPILER='clang++-3.6' C_COMPILER='clang-3.6' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='debug'
   - os: linux
     compiler: clang
     addons: &3
@@ -75,13 +66,9 @@ matrix:
         - clang-3.7
         - libboost1.55-all-dev
         - gfortran
+        - python-virtualenv
     env: CXX_COMPILER='clang++-3.7' C_COMPILER='clang-3.7' Fortran_COMPILER='gfortran'
       BUILD_TYPE='release'
-  - os: linux
-    compiler: clang
-    addons: *3
-    env: CXX_COMPILER='clang++-3.7' C_COMPILER='clang-3.7' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='debug'
   - os: linux
     compiler: clang
     addons: &4
@@ -97,13 +84,9 @@ matrix:
         - clang-3.8
         - libboost1.55-all-dev
         - gfortran
+        - python-virtualenv
     env: CXX_COMPILER='clang++-3.8' C_COMPILER='clang-3.8' Fortran_COMPILER='gfortran'
       BUILD_TYPE='release'
-  - os: linux
-    compiler: clang
-    addons: *4
-    env: CXX_COMPILER='clang++-3.8' C_COMPILER='clang-3.8' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='debug'
   - os: linux
     compiler: gcc
     addons: &5
@@ -119,13 +102,9 @@ matrix:
         - gcc-4.6
         - libboost1.55-all-dev
         - gfortran-4.6
+        - python-virtualenv
     env: CXX_COMPILER='g++-4.6' C_COMPILER='gcc-4.6' Fortran_COMPILER='gfortran-4.6'
       BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *5
-    env: CXX_COMPILER='g++-4.6' C_COMPILER='gcc-4.6' Fortran_COMPILER='gfortran-4.6'
-      BUILD_TYPE='debug'
   - os: linux
     compiler: gcc
     addons: &6
@@ -141,13 +120,9 @@ matrix:
         - gcc-4.7
         - libboost1.55-all-dev
         - gfortran-4.7
+        - python-virtualenv
     env: CXX_COMPILER='g++-4.7' C_COMPILER='gcc-4.7' Fortran_COMPILER='gfortran-4.7'
       BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *6
-    env: CXX_COMPILER='g++-4.7' C_COMPILER='gcc-4.7' Fortran_COMPILER='gfortran-4.7'
-      BUILD_TYPE='debug'
   - os: linux
     compiler: gcc
     addons: &7
@@ -163,13 +138,9 @@ matrix:
         - gcc-4.8
         - libboost1.55-all-dev
         - gfortran-4.8
+        - python-virtualenv
     env: CXX_COMPILER='g++-4.8' C_COMPILER='gcc-4.8' Fortran_COMPILER='gfortran-4.8'
       BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *7
-    env: CXX_COMPILER='g++-4.8' C_COMPILER='gcc-4.8' Fortran_COMPILER='gfortran-4.8'
-      BUILD_TYPE='debug'
   - os: linux
     compiler: gcc
     addons: &8
@@ -185,13 +156,9 @@ matrix:
         - gcc-4.9
         - libboost1.55-all-dev
         - gfortran-4.9
+        - python-virtualenv
     env: CXX_COMPILER='g++-4.9' C_COMPILER='gcc-4.9' Fortran_COMPILER='gfortran-4.9'
       BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *8
-    env: CXX_COMPILER='g++-4.9' C_COMPILER='gcc-4.9' Fortran_COMPILER='gfortran-4.9'
-      BUILD_TYPE='debug'
   - os: linux
     compiler: gcc
     addons: &9
@@ -207,15 +174,8 @@ matrix:
         - gcc-5
         - libboost1.55-all-dev
         - gfortran-5
+        - python-virtualenv
     env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran-5' BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *9
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran-5' BUILD_TYPE='debug'
-  - os: osx
-    osx_image: xcode7
-    compiler: clang
-    env: CXX_COMPILER='clang++' C_COMPILER='clang' Fortran_COMPILER='gfortran' BUILD_TYPE='debug'
   - os: osx
     osx_image: xcode7
     compiler: clang
@@ -223,26 +183,20 @@ matrix:
   - os: osx
     osx_image: xcode7
     compiler: gcc
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran' BUILD_TYPE='debug'
-  - os: osx
-    osx_image: xcode7
-    compiler: gcc
     env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran' BUILD_TYPE='release'
   - os: linux
     compiler: gcc
     addons: *9
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran-5' BUILD_TYPE='debug'
+    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran-5' BUILD_TYPE='release'
       COVERAGE=true
 install:
-- DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-- mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 - |
-  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    pip install --upgrade ${PYTHON_PACKAGES} --user `whoami`
-  elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-    brew install cmake boost python gcc
-    pip install --upgrade ${PYTHON_PACKAGES}
+  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+    brew install cmake boost python gcc pyenv-virtualenv
   fi
+  virtualenv venv
+  source venv/bin/activate
+  pip install --upgrade -r .travis_requirements.txt
 before_script:
 - cd ${TRAVIS_BUILD_DIR}
 - export CXX=${CXX_COMPILER}

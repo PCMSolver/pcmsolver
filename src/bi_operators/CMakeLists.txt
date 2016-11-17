@@ -10,5 +10,5 @@ add_dependencies(bi_operators generate-config-hpp)
 target_compile_options(bi_operators PRIVATE "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>")
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})
-   install(FILES ${_header} DESTINATION include/bi_operators)
+   install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/bi_operators)
 endforeach()

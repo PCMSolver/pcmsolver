@@ -17,6 +17,7 @@ modules:
       - 'custom/compilers/FortranFlags.cmake'
   - plugins:
     - source:
+      - '%(url_root)modules/custom_color_messages.cmake'
       - 'custom/GNUdirs.cmake'
       - '%(url_root)modules/ccache.cmake'
       - 'custom/rpath.cmake'

@@ -11,10 +11,15 @@
 #
 # autocmake.yml configuration::
 #
-# ?
-
-if("${${CMAKE_INSTALL_LIBDIR}}" STREQUAL "" OR NOT DEFINED ${CMAKE_INSTALL_LIBDIR})
-  set(${CMAKE_INSTALL_LIBDIR} lib CACHE STRING "Directory to which libraries are installed" FORCE)
-endif()
+#   docopt:
+#     - "--bindir=<CMAKE_INSTALL_BINDIR> User executables [default: bin]."
+#     - "--libdir=<CMAKE_INSTALL_LIBDIR> Object code libraries [default: lib]."
+#     - "--includedir=<CMAKE_INSTALL_INCLUDEDIR> C header files [default: include]."
+#     - "--datadir=<CMAKE_INSTALL_DATADIR> Read-only architecture-independent data root [default: share]."
+#   define:
+#     - "'-DCMAKE_INSTALL_BINDIR={0}'.format(arguments['--bindir'])"
+#     - "'-DCMAKE_INSTALL_LIBDIR={0}'.format(arguments['--libdir'])"
+#     - "'-DCMAKE_INSTALL_INCLUDEDIR={0}'.format(arguments['--includedir'])"
+#     - "'-DCMAKE_INSTALL_DATADIR={0}'.format(arguments['--datadir'])"
 
 include(GNUInstallDirs)

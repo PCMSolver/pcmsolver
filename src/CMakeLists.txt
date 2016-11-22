@@ -24,14 +24,15 @@ if(NOT STATIC_LIBRARY_ONLY)
   add_library(pcm-shared SHARED ${_objects})
   target_link_libraries(pcm-shared ${ZLIB_LIBRARIES} ${LIBC_INTERJECT})
   set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} CLEAN_DIRECT_OUTPUT 1 OUTPUT_NAME "pcm")
-  install(TARGETS pcm-shared 
+  install(TARGETS pcm-shared
+          RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
   add_dependencies(pcm-shared generate-config-hpp)
 endif()
 
 add_library(pcm-static STATIC ${_objects})
 set_target_properties(pcm-static PROPERTIES CLEAN_DIRECT_OUTPUT 1 OUTPUT_NAME "pcm")
-install(TARGETS pcm-static 
+install(TARGETS pcm-static
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 add_dependencies(pcm-static generate-config-hpp)
 

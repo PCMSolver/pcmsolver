@@ -17,31 +17,35 @@ Usage:
   ./setup.py (-h | --help)
 
 Options:
-  --fc=<FC>                              Fortran compiler [default: gfortran].
-  --extra-fc-flags=<EXTRA_FCFLAGS>       Extra Fortran compiler flags [default: ''].
-  --cc=<CC>                              C compiler [default: gcc].
-  --extra-cc-flags=<EXTRA_CFLAGS>        Extra C compiler flags [default: ''].
-  --cxx=<CXX>                            C++ compiler [default: g++].
-  --extra-cxx-flags=<EXTRA_CXXFLAGS>     Extra C++ compiler flags [default: ''].
-  --ccache=<USE_CCACHE>                  Toggle use of ccache <ON/OFF> [default: ON].
-  --add-definitions=<STRING>             Add preprocesor definitions [default: ''].
-  --coverage                             Enable code coverage [default: False].
-  --int64                                Enable 64bit integers [default: False].
-  --omp                                  Enable OpenMP parallelization [default: False].
-  --python=<PYTHON_INTERPRETER>          The Python interpreter (development version) to use. [default: ''].
-  --boost-headers=<BOOST_INCLUDEDIR>     Include directories for Boost [default: ''].
-  --boost-libraries=<BOOST_LIBRARYDIR>   Library directories for Boost [default: ''].
-  --build-boost=<FORCE_CUSTOM_BOOST>     Deactivate Boost detection and build on-the-fly <ON/OFF> [default: OFF].
-  --static                               Create only the static library [default: False].
-  --eigen=<EIGEN3_ROOT>                  Root directory for Eigen3 [default: ''].
-  --type=<TYPE>                          Set the CMake build type (debug, release, or relwithdeb) [default: release].
-  --generator=<STRING>                   Set the CMake build system generator [default: Unix Makefiles].
-  --show                                 Show CMake command and exit.
-  --cmake-executable=<CMAKE_EXECUTABLE>  Set the CMake executable [default: cmake].
-  --cmake-options=<STRING>               Define options to CMake [default: ''].
-  --prefix=<PATH>                        Set the install path for make install.
-  <builddir>                             Build directory.
-  -h --help                              Show this screen.
+  --fc=<FC>                                Fortran compiler [default: gfortran].
+  --extra-fc-flags=<EXTRA_FCFLAGS>         Extra Fortran compiler flags [default: ''].
+  --cc=<CC>                                C compiler [default: gcc].
+  --extra-cc-flags=<EXTRA_CFLAGS>          Extra C compiler flags [default: ''].
+  --cxx=<CXX>                              C++ compiler [default: g++].
+  --extra-cxx-flags=<EXTRA_CXXFLAGS>       Extra C++ compiler flags [default: ''].
+  --bindir=<CMAKE_INSTALL_BINDIR>          User executables [default: bin].
+  --libdir=<CMAKE_INSTALL_LIBDIR>          Object code libraries [default: lib].
+  --includedir=<CMAKE_INSTALL_INCLUDEDIR>  C header files [default: include].
+  --datadir=<CMAKE_INSTALL_DATADIR>        Read-only architecture-independent data root [default: share].
+  --ccache=<USE_CCACHE>                    Toggle use of ccache <ON/OFF> [default: ON].
+  --add-definitions=<STRING>               Add preprocesor definitions [default: ''].
+  --coverage                               Enable code coverage [default: False].
+  --int64                                  Enable 64bit integers [default: False].
+  --omp                                    Enable OpenMP parallelization [default: False].
+  --python=<PYTHON_INTERPRETER>            The Python interpreter (development version) to use. [default: ''].
+  --boost-headers=<BOOST_INCLUDEDIR>       Include directories for Boost [default: ''].
+  --boost-libraries=<BOOST_LIBRARYDIR>     Library directories for Boost [default: ''].
+  --build-boost=<FORCE_CUSTOM_BOOST>       Deactivate Boost detection and build on-the-fly <ON/OFF> [default: OFF].
+  --static                                 Create only the static library [default: False].
+  --eigen=<EIGEN3_ROOT>                    Root directory for Eigen3 [default: ''].
+  --type=<TYPE>                            Set the CMake build type (debug, release, or relwithdeb) [default: release].
+  --generator=<STRING>                     Set the CMake build system generator [default: Unix Makefiles].
+  --show                                   Show CMake command and exit.
+  --cmake-executable=<CMAKE_EXECUTABLE>    Set the CMake executable [default: cmake].
+  --cmake-options=<STRING>                 Define options to CMake [default: ''].
+  --prefix=<PATH>                          Set the install path for make install.
+  <builddir>                               Build directory.
+  -h --help                                Show this screen.
 """
 
 
@@ -57,6 +61,10 @@ def gen_cmake_command(options, arguments):
     command.append('-DEXTRA_FCFLAGS="{0}"'.format(arguments['--extra-fc-flags']))
     command.append('-DEXTRA_CFLAGS="{0}"'.format(arguments['--extra-cc-flags']))
     command.append('-DEXTRA_CXXFLAGS="{0}"'.format(arguments['--extra-cxx-flags']))
+    command.append('-DCMAKE_INSTALL_BINDIR={0}'.format(arguments['--bindir']))
+    command.append('-DCMAKE_INSTALL_LIBDIR={0}'.format(arguments['--libdir']))
+    command.append('-DCMAKE_INSTALL_INCLUDEDIR={0}'.format(arguments['--includedir']))
+    command.append('-DCMAKE_INSTALL_DATADIR={0}'.format(arguments['--datadir']))
     command.append('-DUSE_CCACHE={0}'.format(arguments['--ccache']))
     command.append('-DPREPROCESSOR_DEFINITIONS="{0}"'.format(arguments['--add-definitions']))
     command.append('-DENABLE_CODE_COVERAGE={0}'.format(arguments['--coverage']))

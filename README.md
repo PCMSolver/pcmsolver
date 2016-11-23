@@ -1,7 +1,6 @@
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.11910.png)](http://dx.doi.org/10.5281/zenodo.11910)
 [![Travis CI Build Status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=master)](https://travis-ci.org/PCMSolver/pcmsolver)
 [![Magnum CI build status](https://magnum-ci.com/status/9207aa29405095b0b7aef0cd809ed6c2.png?branch=master)](https://magnum-ci.com/builds)
-[![AppVeyor CI Build status](https://ci.appveyor.com/api/projects/status/qolwog8ql2gefebr?svg=true)](https://ci.appveyor.com/project/robertodr/pcmsolver)
 [![Documentation Status](https://readthedocs.org/projects/pcmsolver/badge/?version=latest)](http://pcmsolver.readthedocs.org/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/PCMSolver/pcmsolver/badge.svg?branch=release)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
 [![Coverity Scan Build](https://scan.coverity.com/projects/3046/badge.svg)](https://scan.coverity.com/projects/3046)
@@ -29,15 +28,15 @@ stated otherwise.
 Continuous integration builds
 -----------------------------
 
-The Magnum CI builds are run on push events to any branch, while those
-on Travis CI only when pushing to the `master` branch.
-All Travis CI builds on master use ccache to speed up execution.
+All CI builds are triggered by push events to any branch.
+Travis CI runs release builds using [ccache](https://ccache.samba.org/) to speed up compilation.
+Magnum CI runs debug builds.
 
 - Ubuntu 12.04 LTS 64-bit. GCC 4.6, Python 2.7.3, CMake 3.4.2
   This is the environment offered by [Magnum CI](https://magnum-ci.com)
 - Ubuntu 12.04 LTS 64-bit with Python 2.7.3, CMake 3.3.2 and Boost 1.55.0
   this is the environment offered by [Travis CI](https://travis-ci.org) pulling
-  in various PPA. The following compilers are used, both in release and debug:
+  in various PPA. The following compilers are used:
 
   1. GCC 4.6
   2. GCC 4.7
@@ -49,12 +48,25 @@ All Travis CI builds on master use ccache to speed up execution.
   8. Clang 3.7 and GFortran 4.6
   9. Clang 3.8 and GFortran 4.6
 
-- Mac OS X 10.9.5 with Python 2.7.10, CMake 3.2.3 and Boost 1.58.0
+- Mac OS X 10.11 with Python 2.7.12, CMake 3.6.2 and Boost 1.61.0
   this is the environment offered by [Travis CI](https://travis-ci.org)
-  The following compilers are used, both in release and debug:
+  with their Xcode 7.3.1 image.
+  The following compilers are used:
 
-  1. XCode 7.0 with Clang and GFortran 5.2
-  2. XCode 7.0 with GCC 5.2
+  1. Apple LLVM 7.3.0 and GFortran 5.4.0
+  2. GCC 5.4.0
+  3. Apple LLVM 7.3.0 and GFortran 6.2.0
+  4. GCC 6.2.0
+
+- Mac OS X 10.12 with Python 2.7.12, CMake 3.6.1 and Boost 1.61.0
+  this is the environment offered by [Travis CI](https://travis-ci.org)
+  with their Xcode 8.1 image.
+  The following compilers are used:
+
+  1. Apple LLVM 8.1.0 and GFortran 5.4.0
+  2. GCC 5.4.0
+  3. Apple LLVM 8.1.0 and GFortran 6.2.0
+  4. GCC 6.2.0
 
 The build needed for submission to [Coverity scan](https://scan.coverity.com/)
 is triggered by pushes to the `coverity_scan` branch. It is run on

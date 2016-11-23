@@ -95,7 +95,7 @@ typedef enum {
  *  \param[in] message_length length of the passed message
  *  This function **must** be defined by the host program
  */
-void host_writer(const char * message, int message_length);
+PCMSOLVER_API void host_writer(const char * message, int message_length);
 
 /*! \brief Creates a new PCM context object
  *  \param[in] input_reading input processing strategy

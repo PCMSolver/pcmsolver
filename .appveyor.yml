@@ -13,7 +13,6 @@ version: '{build}-{branch}'
 # branches to build
 branches:
   only:
-    - fix-travis
     - fix-appveyor
 
 os: Windows Server 2012 R2

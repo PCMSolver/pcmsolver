@@ -27,6 +27,7 @@ module utilities
 
   public pcmsolver_input
   public nuclear_mep
+  public host_writer
 
   private
 
@@ -104,6 +105,26 @@ contains
     host_input%outside_type    = outside_type
 
   end function pcmsolver_input
+
+  !> \brief Flushes module output to host program
+  !> \param message contents of the module output
+  subroutine host_writer(message) bind(c)
+
+    use, intrinsic :: iso_c_binding, only: c_char, c_int, c_null_char
+    use, intrinsic :: iso_fortran_env, only: output_unit
+
+    character(kind=c_char), intent(in) :: message(*)
+    integer(c_int) :: length, i
+
+    length = 0
+    do
+       if (message(length + 1) == c_null_char) exit
+       length = length + 1
+    end do
+
+    write(output_unit, '(1000A)') (message(i), i = 1, length)
+
+  end subroutine host_writer
 
   !> \brief calculates nuclear molecular electrostatic potential (MEP) at cavity points
   !> \author Roberto Di Remigio

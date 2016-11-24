@@ -97,7 +97,8 @@ program pcm_fortran_host
 
       pcm_context = pcmsolver_new(PCMSOLVER_READER_HOST,           &
                                   nr_nuclei, charges, coordinates, &
-                                  symmetry_info, host_input)
+                                  symmetry_info, host_input,       &
+                                  c_funloc(host_writer))
 
       call pcmsolver_print(pcm_context)
 
@@ -183,18 +184,3 @@ program pcm_fortran_host
       close(output_unit)
 
 end program pcm_fortran_host
-
-subroutine host_writer(message, message_length) bind(c, name='host_writer')
-
-  use, intrinsic :: iso_c_binding, only: c_char, c_int
-  use, intrinsic :: iso_fortran_env, only: output_unit
-
-  character(kind=c_char) :: message(*)
-  integer(c_int), intent(in), value :: message_length
-
-  character(len=message_length) :: f_message
-
-  call pcmsolver_c2f_string(message, f_message, message_length)
-  write(output_unit, '(1000A)') f_message
-
-end subroutine host_writer

@@ -35,9 +35,7 @@
 
 FILE * output;
 
-void host_writer(const char * message, int UNUSED(message_length)) {
-  fprintf(output, "%s\n", message);
-}
+void host_writer(const char * message) { fprintf(output, "%s\n", message); }
 
 int main() {
 
@@ -60,7 +58,7 @@ int main() {
 
   pcmsolver_context_t * pcm_context =
       pcmsolver_new(PCMSOLVER_READER_HOST, NR_NUCLEI, charges, coordinates,
-                    symmetry_info, &host_input);
+                    symmetry_info, &host_input, host_writer);
 
   pcmsolver_print(pcm_context);
 

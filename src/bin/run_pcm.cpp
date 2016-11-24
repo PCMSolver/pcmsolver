@@ -38,11 +38,13 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
+#include "interface/Input.hpp"
 #include "interface/Meddle.hpp"
+#include "utils/Molecule.hpp"
 
 std::ofstream pcmsolver_out;
 
-extern "C" void host_writer(const char * message, int message_length);
+void host_writer(const char * message);
 
 std::string remove_extension(const std::string & filename);
 
@@ -57,7 +59,7 @@ int main(int argc, char * argv[]) {
   TIMER_ON("Initializing molecule");
   input.initMolecule();
   TIMER_OFF("Initializing molecule");
-  Meddle context_(input);
+  Meddle context_(input, host_writer);
 
   // Prepare output filename
   pcmsolver_out.open(remove_extension(argv[1]).erase(0, 1) + ".out");
@@ -96,7 +98,7 @@ int main(int argc, char * argv[]) {
   return EXIT_SUCCESS;
 }
 
-void host_writer(const char * message, int /* message_length */) {
+void host_writer(const char * message) {
   pcmsolver_out << std::string(message) << std::endl;
 }
 

@@ -43,8 +43,6 @@
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"
 
-extern "C" void host_writer(const char * message, int message_length);
-
 void save_vacuum_collocation();
 void save_uniform_dielectric_collocation();
 void save_tanh_spherical_diffuse_collocation();
@@ -242,5 +240,3 @@ void save_tanh_spherical_diffuse_numerical() {
   Eigen::MatrixXd D_results = op.computeD(cavity, gf);
   cnpy::custom::npy_save("tanhsphericaldiffuse_D_numerical.npy", D_results);
 }
-
-extern "C" void host_writer(const char * /* message */, int /* message_length */) {}

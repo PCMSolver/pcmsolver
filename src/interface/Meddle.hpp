@@ -55,8 +55,11 @@ typedef SurfaceFunctionMap::value_type SurfaceFunctionPair;
 typedef SurfaceFunctionMap::iterator SurfaceFunctionMapIter;
 typedef SurfaceFunctionMap::const_iterator SurfaceFunctionMapConstIter;
 
-void printer(const std::string & message);
-void printer(const std::ostringstream & stream);
+struct Printer {
+  HostWriter writer_;
+  void operator()(const std::string & message);
+  void operator()(const std::ostringstream & stream);
+};
 void initMolecule(const Input & inp, const Symmetry & group, int nuclei,
                   const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
                   Molecule & molecule);
@@ -75,7 +78,7 @@ public:
       *  \warning This CTOR is meant to be used with the standalone
       *  executable only
       */
-  Meddle(const Input & parsed);
+  Meddle(const Input & parsed, const HostWriter & write);
   /*! \brief Constructor
    *  \param[in] input_reading input processing strategy
    *  \param[in] nr_nuclei     number of atoms in the molecule
@@ -89,7 +92,8 @@ public:
    *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
    */
   Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
-         double coordinates[], int symmetry_info[], const PCMInput & host_input);
+         double coordinates[], int symmetry_info[], const PCMInput & host_input,
+         const HostWriter & write);
   ~Meddle();
   /*! \brief Getter for the molecule object */
   Molecule molecule() const attribute(pure);
@@ -213,13 +217,13 @@ private:
   /*! Collects info on atomic radii set */
   std::string radiiSetName_;
   /*! \brief Initialize input_
-        *  \param[in] input_reading input processing strategy
-        *  \param[in] nr_nuclei     number of atoms in the molecule
-        *  \param[in] charges       atomic charges
-        *  \param[in] coordinates   atomic coordinates
-        *  \param[in] symmetry_info molecular point group information
-        *  \param[in] host_input    input to the module, as read by the host
-        */
+   *  \param[in] input_reading input processing strategy
+   *  \param[in] nr_nuclei     number of atoms in the molecule
+   *  \param[in] charges       atomic charges
+   *  \param[in] coordinates   atomic coordinates
+   *  \param[in] symmetry_info molecular point group information
+   *  \param[in] host_input    input to the module, as read by the host
+   */
   void initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
                  double coordinates[], int symmetry_info[],
                  const PCMInput & host_input);

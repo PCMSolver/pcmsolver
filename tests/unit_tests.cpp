@@ -26,8 +26,6 @@
 
 #include "PhysicalConstants.hpp"
 
-extern "C" void host_writer(const char * /* message */, int /* message_length */);
-
 int main(int argc, char * const argv[]) {
   // global setup...
   initBohrToAngstrom(bohrToAngstrom);
@@ -38,5 +36,3 @@ int main(int argc, char * const argv[]) {
 
   return result;
 }
-
-extern "C" void host_writer(const char * /* message */, int /* message_length */) {}

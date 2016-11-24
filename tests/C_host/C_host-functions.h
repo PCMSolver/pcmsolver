@@ -49,6 +49,8 @@ typedef enum { false, true } bool;
 #define UNUSED_FUNCTION(x) UNUSED_##x
 #endif
 
+void host_writer(const char * message);
+
 struct PCMInput pcmsolver_input();
 
 /*! \brief calculates nuclear molecular electrostatic potential (MEP) at cavity

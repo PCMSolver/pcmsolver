@@ -68,7 +68,7 @@ before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
   # Workaround for CMake not wanting sh.exe on PATH for MinGW
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - python setup.py --generator="%GENERATOR%" --cmake-options="-DENABLE_FORTRAN_API=ON"
+  - python setup.py --generator="%GENERATOR%"
   - cd build
 
 build_script:

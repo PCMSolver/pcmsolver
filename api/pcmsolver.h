@@ -73,7 +73,7 @@ extern "C" {
  */
 struct pcmsolver_context_s;
 /*! \typedef pcmsolver_context_t
- *  Workaround to have pcmsolver_context_s available to C
+ *  Workaround to have pcmsolver_context_t available to C
  */
 typedef struct pcmsolver_context_s pcmsolver_context_t;
 
@@ -90,12 +90,11 @@ typedef enum {
   PCMSOLVER_READER_HOST /*!< Module receives input from host */
 } pcmsolver_reader_t;
 
-/*! \brief Flushes module output to host program
- *  \param[in,out] message    contents of the module output
- *  \param[in] message_length length of the passed message
- *  This function **must** be defined by the host program
+/*! \typedef HostWriter
+ *  Flushes module output to host program
+ *  \param[in,out] message contents of the module output
  */
-PCMSOLVER_API void host_writer(const char * message, int message_length);
+typedef void (*HostWriter)(const char * message);
 
 /*! \brief Creates a new PCM context object
  *  \param[in] input_reading input processing strategy
@@ -113,7 +112,8 @@ PCMSOLVER_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_readi
                                                   int nr_nuclei, double charges[],
                                                   double coordinates[],
                                                   int symmetry_info[],
-                                                  struct PCMInput * host_input);
+                                                  struct PCMInput * host_input,
+                                                  HostWriter writer);
 
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted

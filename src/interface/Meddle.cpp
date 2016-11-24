@@ -56,10 +56,11 @@
 
 pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei,
                                     double charges[], double coordinates[],
-                                    int symmetry_info[], PCMInput * host_input) {
+                                    int symmetry_info[], PCMInput * host_input,
+                                    HostWriter write) {
   return AS_TYPE(pcmsolver_context_t,
                  new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates,
-                                 symmetry_info, *host_input));
+                                 symmetry_info, *host_input, write));
 }
 
 void pcmsolver_delete(pcmsolver_context_t * context) {
@@ -166,7 +167,17 @@ void pcmsolver_write_timings(pcmsolver_context_t * context) {
 }
 
 namespace pcm {
-Meddle::Meddle(const Input & parsed) : input_(parsed), hasDynamic_(false) {
+void Printer::operator()(const std::string & message) { writer_(message.c_str()); }
+
+void Printer::operator()(const std::ostringstream & stream) {
+  writer_(stream.str().c_str());
+}
+
+Printer hostWriter;
+
+Meddle::Meddle(const Input & parsed, const HostWriter & write)
+    : input_(parsed), hasDynamic_(false) {
+  hostWriter.writer_ = write;
   infoStream_ << std::endl;
   infoStream_ << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
   infoStream_ << "Using CODATA " << input_.CODATAyear() << " set of constants."
@@ -193,8 +204,9 @@ Meddle::Meddle(const Input & parsed) : input_(parsed), hasDynamic_(false) {
 
 Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
                double coordinates[], int symmetry_info[],
-               const PCMInput & host_input)
+               const PCMInput & host_input, const HostWriter & write)
     : hasDynamic_(false) {
+  hostWriter.writer_ = write;
   TIMER_ON("Meddle::initInput");
   initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info,
             host_input);
@@ -341,14 +353,14 @@ void Meddle::printSurfaceFunction(const char * name) const {
     std::ostringstream print_sf;
     Eigen::IOFormat fmt(Eigen::FullPrecision);
     print_sf << functions_[functionName].format(fmt) << std::endl;
-    printer(print_sf);
+    hostWriter(print_sf);
   } else {
     PCMSOLVER_ERROR("You are trying to print a nonexistent SurfaceFunction!");
   }
 }
 
 void Meddle::saveSurfaceFunctions() const {
-  printer("\nDumping surface functions to .npy files");
+  hostWriter("\nDumping surface functions to .npy files");
   BOOST_FOREACH (SurfaceFunctionPair pair, functions_) {
     unsigned int dim = static_cast<unsigned int>(pair.second.size());
     const unsigned int shape[] = {dim};
@@ -369,7 +381,7 @@ void Meddle::saveSurfaceFunction(const char * name) const {
 
 void Meddle::loadSurfaceFunction(const char * name) const {
   std::string functionName(name);
-  printer("\nLoading surface function " + functionName + " from .npy file");
+  hostWriter("\nLoading surface function " + functionName + " from .npy file");
   std::string fname = functionName + ".npy";
   Eigen::VectorXd values = cnpy::custom::npy_load<double>(fname);
   if (values.size() != cavity_->size())
@@ -483,20 +495,9 @@ void Meddle::mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const {
 }
 
 void Meddle::printInfo() const {
-  printer(citation_message());
-  printer(version_info());
-  printer(infoStream_);
-}
-
-void printer(const std::string & message) {
-  const char * message_C = message.c_str();
-  host_writer(message_C, std::strlen(message_C));
-}
-
-void printer(const std::ostringstream & stream) {
-  std::string message = stream.str();
-  const char * message_C = message.c_str();
-  host_writer(message_C, std::strlen(message_C));
+  hostWriter(citation_message());
+  hostWriter(version_info());
+  hostWriter(infoStream_);
 }
 
 void initMolecule(const Input & inp, const Symmetry & pg, int nuclei,
@@ -543,7 +544,7 @@ void initMolecule(const Input & inp, const Symmetry & pg, int nuclei,
   if (res != atoms.end()) {
     std::ostringstream print_mol;
     print_mol << molecule << std::endl;
-    printer(print_mol);
+    hostWriter(print_mol);
     PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a "
                     "radius for all atoms (see "
                     "http://pcmsolver.readthedocs.org/en/latest/users/input.html)!");

@@ -5,8 +5,9 @@ if(STATIC_LIBRARY_ONLY)
 else()
   target_link_libraries(Fortran_host pcm-shared)
 endif()
-set_target_properties(Fortran_host PROPERTIES INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/tests/Fortran_host
-                                              INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/api
-                                              LINKER_LANGUAGE Fortran)
+include_directories(${PROJECT_SOURCE_DIR}/tests/C_host
+                    ${PROJECT_SOURCE_DIR}/api
+                    ${PROJECT_BINARY_DIR}/include)
+set_target_properties(Fortran_host PROPERTIES LINKER_LANGUAGE Fortran)
 add_test(NAME Fortran_host COMMAND Fortran_host)
 set_tests_properties(Fortran_host PROPERTIES LABELS "api;Fortran_host")

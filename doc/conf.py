@@ -456,8 +456,8 @@ def setup(app):
           }
     configure_file(rep, 'Doxyfile', in_path=project_doc_dir, suffix='.in')
     # Make a copy of api/pcmsolver.h and strip it of all
-    # PCMSOLVER_API markers in front of function signatures
-    rep = { 'PCMSOLVER_API ' : '' }
+    # PCMSolver_API markers in front of function signatures
+    rep = { 'PCMSolver_API ' : '' }
     configure_file(rep, 'pcmsolver.h',
                    in_path=os.path.join(project_root_dir, 'api'),
                    suffix='', prefix='mock_', out_path=project_doc_dir)

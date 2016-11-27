@@ -1,7 +1,6 @@
 option(ENABLE_LOGGER "Enable logger" OFF)
 option(ENABLE_TIMER "Enable timer" ON)
 option(BUILD_STANDALONE "Enable build of standalone executables" ON)
-option(ENABLE_FORTRAN_API "Builds optional Fortran90 API" OFF)
 
 # Add definitions
 if(ENABLE_TIMER)

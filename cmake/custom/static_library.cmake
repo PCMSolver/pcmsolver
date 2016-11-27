@@ -51,3 +51,7 @@ if(ENABLE_GENERIC)
         endif()
     endif()
 endif()
+
+if(NOT STATIC_LIBRARY_ONLY)
+  add_definitions(-D${PROJECT_NAME}_EXPORTS)
+endif()

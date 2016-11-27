@@ -22,8 +22,10 @@ list(APPEND _objects $<TARGET_OBJECTS:cavity>
     )
 if(NOT STATIC_LIBRARY_ONLY)
   add_library(pcm-shared SHARED ${_objects})
+  add_library(${PROJECT_NAME} ALIAS pcm-shared)
   target_link_libraries(pcm-shared ${ZLIB_LIBRARIES} ${LIBC_INTERJECT})
-  set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} OUTPUT_NAME "pcm")
+  set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR}
+                                              OUTPUT_NAME "pcm")
   install(TARGETS pcm-shared
           RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
@@ -31,10 +33,24 @@ if(NOT STATIC_LIBRARY_ONLY)
 endif()
 
 add_library(pcm-static STATIC ${_objects})
-set_target_properties(pcm-static PROPERTIES OUTPUT_NAME "pcm")
+set_target_properties(pcm-static PROPERTIES OUTPUT_NAME "pcm"
+                                            COMPILE_FLAGS -D${PROJECT_NAME}_STATIC_DEFINE)
 install(TARGETS pcm-static
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 add_dependencies(pcm-static generate-config-hpp)
+
+include(GenerateExportHeader)
+generate_export_header(${PROJECT_NAME}
+  BASE_NAME "PCMSolver"
+  EXPORT_MACRO_NAME "PCMSolver_EXPORT"
+  EXPORT_FILE_NAME "PCMSolverExport.h"
+  DEPRECATED_MACRO_NAME "PCMSolver_DEPRECATED"
+  NO_EXPORT_MACRO_NAME "PCMSolver_NO_EXPORT"
+  STATIC_DEFINE "PCMSolver_STATIC_DEFINE"
+  NO_DEPRECATED_MACRO_NAME "PCMSolver_NO_DEPRECATED"
+  DEFINE_NO_DEPRECATED)
+file(COPY ${CMAKE_CURRENT_BINARY_DIR}/PCMSolverExport.h DESTINATION ${PROJECT_BINARY_DIR}/include)
+install(FILES ${PROJECT_BINARY_DIR}/include/PCMSolverExport.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
 # This directory contains source file for executables
 if(BUILD_STANDALONE)

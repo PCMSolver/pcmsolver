@@ -33,12 +33,12 @@ Options:
   --int64                                  Enable 64bit integers [default: False].
   --omp                                    Enable OpenMP parallelization [default: False].
   --python=<PYTHON_INTERPRETER>            The Python interpreter (development version) to use. [default: ''].
+  --fbindings=<ENABLE_FORTRAN_API>         Enable compilation of Fortran 90 API bindings <ON/OFF> [default: ON].
   --boost-headers=<BOOST_INCLUDEDIR>       Include directories for Boost [default: ''].
   --boost-libraries=<BOOST_LIBRARYDIR>     Library directories for Boost [default: ''].
   --build-boost=<FORCE_CUSTOM_BOOST>       Deactivate Boost detection and build on-the-fly <ON/OFF> [default: OFF].
   --static                                 Create only the static library [default: False].
   --eigen=<EIGEN3_ROOT>                    Root directory for Eigen3 [default: ''].
-  --fbindings=<ENABLE_FORTRAN_API>         Enable compilation of Fortran 90 API bindings <ON/OFF> [default: ON].
   --type=<TYPE>                            Set the CMake build type (debug, release, or relwithdeb) [default: release].
   --generator=<STRING>                     Set the CMake build system generator [default: Unix Makefiles].
   --show                                   Show CMake command and exit.
@@ -72,6 +72,7 @@ def gen_cmake_command(options, arguments):
     command.append('-DENABLE_64BIT_INTEGERS={0}'.format(arguments['--int64']))
     command.append('-DENABLE_OPENMP={0}'.format(arguments['--omp']))
     command.append('-DPYTHON_INTERPRETER="{0}"'.format(arguments['--python']))
+    command.append('-DENABLE_FORTRAN_API={0}'.format(arguments['--fbindings']))
     command.append('-DBOOST_INCLUDEDIR="{0}"'.format(arguments['--boost-headers']))
     command.append('-DBOOST_LIBRARYDIR="{0}"'.format(arguments['--boost-libraries']))
     command.append('-DFORCE_CUSTOM_BOOST={0}'.format(arguments['--build-boost']))
@@ -79,7 +80,6 @@ def gen_cmake_command(options, arguments):
     command.append('-DBOOST_COMPONENTS_REQUIRED=""')
     command.append('-DSTATIC_LIBRARY_ONLY={0}'.format(arguments['--static']))
     command.append('-DEIGEN3_ROOT="{0}"'.format(arguments['--eigen']))
-    command.append('-DENABLE_FORTRAN_API={0}'.format(arguments['--fbindings']))
     command.append('-DCMAKE_BUILD_TYPE={0}'.format(arguments['--type']))
     command.append('-G "{0}"'.format(arguments['--generator']))
     if arguments['--cmake-options'] != "''":

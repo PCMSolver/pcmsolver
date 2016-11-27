@@ -75,7 +75,7 @@ build_script:
   - cmake --build . -- %BUILDFLAGS%
 
 test_script:
-  - ctest --parallel 2 --output-on-failure --verbose --dashboard Experimental
+  - ctest --parallel 2 --output-on-failure --dashboard Experimental --verbose --track AppVeyorCI
 
 notifications:
   - provider: Slack

@@ -25,6 +25,8 @@ if(NOT STATIC_LIBRARY_ONLY)
   add_library(${PROJECT_NAME} ALIAS pcm-shared)
   target_link_libraries(pcm-shared ${ZLIB_LIBRARIES} ${LIBC_INTERJECT})
   set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR}
+                                              CXX_VISIBILITY_PRESET hidden
+                                              VISIBILITY_INLINES_HIDDEN 1
                                               OUTPUT_NAME "pcm")
   install(TARGETS pcm-shared
           RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}

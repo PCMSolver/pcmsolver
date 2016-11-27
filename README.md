@@ -31,6 +31,7 @@ Continuous integration builds
 All CI builds are triggered by push events to any branch.
 Travis CI runs release builds using [ccache](https://ccache.samba.org/) to speed up compilation.
 Magnum CI runs debug builds.
+The outcome of the CI builds is deployed to the [build dashboard](https://testboard.org/cdash/index.php?project=PCMSolver)
 
 - Ubuntu 12.04 LTS 64-bit. GCC 4.6, Python 2.7.3, CMake 3.4.2
   This is the environment offered by [Magnum CI](https://magnum-ci.com)
@@ -42,7 +43,7 @@ Magnum CI runs debug builds.
   2. GCC 4.7
   3. GCC 4.8
   4. GCC 4.9
-  5. GCC 5.1, with and without coverage analysis in debug mode
+  5. GCC 5.1, with and without coverage analysis
   6. Clang 3.5 and GFortran 4.6
   7. Clang 3.6 and GFortran 4.6
   8. Clang 3.7 and GFortran 4.6
@@ -53,20 +54,14 @@ Magnum CI runs debug builds.
   with their Xcode 7.3.1 image.
   The following compilers are used:
 
-  1. Apple LLVM 7.3.0 and GFortran 5.4.0
-  2. GCC 5.4.0
-  3. Apple LLVM 7.3.0 and GFortran 6.2.0
-  4. GCC 6.2.0
-
-- Mac OS X 10.12 with Python 2.7.12, CMake 3.6.1 and Boost 1.61.0
-  this is the environment offered by [Travis CI](https://travis-ci.org)
-  with their Xcode 8.1 image.
-  The following compilers are used:
-
-  1. Apple LLVM 8.1.0 and GFortran 5.4.0
-  2. GCC 5.4.0
-  3. Apple LLVM 8.1.0 and GFortran 6.2.0
-  4. GCC 6.2.0
+  1. Apple LLVM 7.3.0 and GFortran 4.8.5
+  2. GCC 4.8.5
+  3. Apple LLVM 7.3.0 and GFortran 4.9.3
+  4. GCC 4.9.3
+  5. Apple LLVM 7.3.0 and GFortran 5.4.0
+  6. GCC 5.4.0
+  7. Apple LLVM 7.3.0 and GFortran 6.2.0
+  8. GCC 6.2.0
 
 The build needed for submission to [Coverity scan](https://scan.coverity.com/)
 is triggered by pushes to the `coverity_scan` branch. It is run on
@@ -76,6 +71,8 @@ in various PPA. GCC 5.1 is used, in debug mode.
 
 Nightly builds
 --------------
+
+*OUTDATED INFORMATION*
 
 - CentOS 6.6. Intel 12.1.2, Python 2.7.3, CMake 3.1.0
 - CentOS 6.6. Intel 13.0, Python 2.7.3, CMake 3.1.0

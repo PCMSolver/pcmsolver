@@ -5,22 +5,20 @@
 ### Added
 
 - A pre-commit hook in `.githooks/pre-commit-clang-format` checking that the
-  format of C++ header and source files conforms to the project style.
-  **BREAKING CHANGE** `clang-format` is needed to work on the code.
-  The hook uses `clang-format` and the style mandated by the `.clang-format`
-  file to check files in the tree. Commit is rejected if one or more files are
-  non compliant. The hook generates a patch and shows the command needed to
-  apply it.
+  format of C++ header and source files conforms to the project style. The hook
+  uses `clang-format` and the style mandated by the `.clang-format` file to
+  check files in the tree. Commit is rejected if one or more files are non
+  compliant. The hook generates a patch and shows the command needed to apply
+  it.
+  To enable the hooks you need to have a `.git/hooks/pre-commit` file
+  containing this line `.githooks/pre-commit`
   _NOT recommended_ The hook can be skipped by passing the `--no-verify` option to `git commit`
-- A pre-commit hook in `.githooks/pre-commit-license-maintainer` checking the license headers.
-  **BREAKING CHANGE** Perl5 is needed to work on the code.
-  The hook is based on this [project](https://github.com/NitorCreations/license-maintainer)
-  and is configured based on the `.gitattributes` file.
-  The list of authors is automatically extracted from the `license.author`
-  field in `.git/config`. This can either be modified by hand or by invoking
-  `git config license.author="list-of-authors"`.
-  The hook will check the license headers, amend them where possible and abort
-  where not possible, showing the commands needed to update the license.
+- A pre-commit hook in `.githooks/pre-commit-license-maintainer` checking the
+  license headers. The hook is configured based on the `.gitattributes` file.
+  The hook will check the license headers and amend them, either by updating
+  the year and authors information or by adding the whole header.
+  To enable the hooks you need to have a `.git/hooks/pre-commit` file
+  containing this line `.githooks/pre-commit`
   _NOT recommended_ The hook can be skipped by passing the `--no-verify` option to `git commit`
 - An `UNUSED` preprocessor macro to mark arguments as unused.
 - An `UNUSED_FUNCTION` preprocessor macro to mark functions as unused.
@@ -50,6 +48,14 @@
   The PyYAML module is thus required.
 - The standalone `run_pcm` executable now uses the API functions instead of the
   internal headers.
+- The extended diagnostic flags `-Wsuggest-attribute=pure
+  -Wsuggest-attribute=const -Wsuggest-attribute=noreturn -Wsuggest-final-types
+  -Wsuggest-final-methods -Wsuggest-override -Wuseless-cast
+  -Wunsafe-loop-optimizations` are always set when using the GNU C++ compiler
+  in a debug configuration.
+- The C++11 compatibility CMake macros now check for the availability of the
+  `noreturn` attribute. A workaround macro, accessible _via_ `__noreturn`, has
+  been added to the `Cxx11Workarounds.hpp` header file.
 
 ### Deprecated
 

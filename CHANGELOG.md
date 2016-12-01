@@ -46,8 +46,6 @@
 - Switched to the latest version of
   [Autocmake](http://autocmake.readthedocs.io/) The configuration file is now YAML-based.
   The PyYAML module is thus required.
-- The standalone `run_pcm` executable now uses the API functions instead of the
-  internal headers.
 - The extended diagnostic flags `-Wsuggest-attribute=pure
   -Wsuggest-attribute=const -Wsuggest-attribute=noreturn -Wsuggest-final-types
   -Wsuggest-final-methods -Wsuggest-override -Wuseless-cast
@@ -56,6 +54,11 @@
 - The C++11 compatibility CMake macros now check for the availability of the
   `noreturn` attribute. A workaround macro, accessible _via_ `__noreturn`, has
   been added to the `Cxx11Workarounds.hpp` header file.
+- **BREAKING CHANGE** The ouput flushing function must be passed explicitly as
+  a function pointer to the `pcmsolver_new` function during library
+  initialization.
+  The function pointer has the signature `typedef void (*HostWriter)(const char
+  * message)` thus accepting a single argument instead of the previous two.
 
 ### Deprecated
 

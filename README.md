@@ -11,13 +11,13 @@ PCMSolver
 An API for the Polarizable Continuum Model.
 
 - [Project website](https://gitlab.com/PCMSolver/pcmsolver)
-- [Changelog](../master/CHANGELOG.md)
-- [Documentation](http://pcmsolver.readthedocs.org)
+- [Changelog](CHANGELOG.md)
+- [Documentation](http://pcmsolver.readthedocs.io)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
 - [Nightly build dashboard](https://testboard.org/cdash/index.php?project=PCMSolver)
 - Version 1.1.6 available
-- Licensed under [LGPLv3](../master/LICENSE)
-- CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.org/)
+- Licensed under [LGPLv3](LICENSE)
+- CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.io/)
 
 Primary test environments
 =========================

@@ -65,7 +65,7 @@ int main(int argc, char * argv[]) {
   pcmsolver_out.open(remove_extension(argv[1]).erase(0, 1) + ".out");
   context_.printInfo();
 
-  size_t size = context_.getCavitySize();
+  PCMSolverIndex size = context_.getCavitySize();
 
   // Form vector with electrostatic potential
   // First compute the potential from the classical point multipoles distribution

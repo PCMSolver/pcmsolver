@@ -1,8 +1,8 @@
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.11910.png)](http://dx.doi.org/10.5281/zenodo.11910)
-[![Travis CI build status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=master)](https://travis-ci.org/PCMSolver/pcmsolver)
-[![Magnum CI build status](https://magnum-ci.com/status/9207aa29405095b0b7aef0cd809ed6c2.png?branch=master)](https://magnum-ci.com/builds)
-[![Documentation Status](https://readthedocs.org/projects/pcmsolver/badge/?version=latest)](http://pcmsolver.readthedocs.org/en/latest/?badge=latest)
-[![Coverage Status](https://coveralls.io/repos/PCMSolver/pcmsolver/badge.svg?branch=release)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
+[![Travis CI build status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=release%2F1.Y)](https://travis-ci.org/PCMSolver/pcmsolver)
+[![Magnum CI build status](https://magnum-ci.com/status/9207aa29405095b0b7aef0cd809ed6c2.svg?branch=release%2F1.Y)](https://magnum-ci.com/builds)
+[![Documentation Status](https://readthedocs.org/projects/pcmsolver/badge/?version=stable)](http://pcmsolver.readthedocs.org/en/latest/?badge=latest)
+[![Coverage Status](https://coveralls.io/repos/PCMSolver/pcmsolver/badge.svg?branch=release%2F1.Y)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
 [![Coverity Scan Build](https://scan.coverity.com/projects/3046/badge.svg)](https://scan.coverity.com/projects/3046)
 
 PCMSolver
@@ -15,7 +15,7 @@ An API for the Polarizable Continuum Model.
 - [Documentation](http://pcmsolver.readthedocs.io)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
 - [Nightly build dashboard](https://testboard.org/cdash/index.php?project=PCMSolver)
-- Version 1.1.6 available
+- Version 1.1.7 available
 - Licensed under [LGPLv3](LICENSE)
 - CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.io/)
 

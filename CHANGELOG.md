@@ -4,6 +4,20 @@
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [Version 1.1.7] - 2016-12-01
+
+### Added
+
 - A pre-commit hook in `.githooks/pre-commit-clang-format` checking that the
   format of C++ header and source files conforms to the project style. The hook
   uses `clang-format` and the style mandated by the `.clang-format` file to
@@ -61,8 +75,9 @@
 - **BREAKING CHANGE** The ouput flushing function must be passed explicitly as
   a function pointer to the `pcmsolver_new` function during library
   initialization.
-  The function pointer has the signature `typedef void (*HostWriter)(const char
-  * message)` thus accepting a single argument instead of the previous two.
+  The function pointer has the signature
+  `typedef void (*HostWriter)(const char * message)`
+  thus accepting a single argument instead of the previous two.
 
 ### Deprecated
 
@@ -237,7 +252,9 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.5...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.7...HEAD
+[Version 1.1.7]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.6...v1.1.7
+[Version 1.1.6]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.5...v1.1.6
 [Version 1.1.5]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.4...v1.1.5
 [Version 1.1.4]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.3...v1.1.4
 [Version 1.1.3]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.2...v1.1.3

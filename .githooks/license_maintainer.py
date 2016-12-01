@@ -97,8 +97,9 @@ def file_license(attributes):
     with open(attributes, 'r+b') as f:
         # Read in .gitattributes
         tmp_mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
-        # Removing all comment lines
-        gitattributes = re.sub(r'(?m)^\#.*\n?', '', tmp_mm).split()
+        # Removing all comment lines and other attributes
+        pattern = re.compile("|".join([r'(?m)^\#.*\n?', r'^((?!licensefile).)*$']))
+        gitattributes = re.sub(pattern, '', tmp_mm).split()
         # Obtain list of files
         fil = [x for x in gitattributes if not 'licensefile' in x]
         # Remove licensefile= from strings

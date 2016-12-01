@@ -29,6 +29,10 @@
   program output.
 - An API function to get the dipole moment, relative to the origin, due to the ASC
   on the cavity. Both the norm and the components can be obtained.
+- `.gitattributes` now instructs Git to ignore binary files in diff operations.
+  PNG files are diff-ed using EXIF information. To set this up properly,
+  install an EXIF tool on your machine and run `git config diff.exif.textconv
+  exiftool` in your local copy of the repository.
 
 ### Changed
 

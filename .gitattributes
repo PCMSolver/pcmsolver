@@ -1,3 +1,7 @@
+*.tar.gz binary
+*.zip binary
+*.png diff=exif
+
 # API files
 api/*.h   licensefile=.githooks/LICENSE-C
 api/*.F90 licensefile=.githooks/LICENSE-Fortran

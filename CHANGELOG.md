@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [Version 1.1.7] - 2016-12-01
 
 ### Added
 
@@ -61,16 +61,17 @@
 - **BREAKING CHANGE** The ouput flushing function must be passed explicitly as
   a function pointer to the `pcmsolver_new` function during library
   initialization.
-  The function pointer has the signature `typedef void (*HostWriter)(const char
-  * message)` thus accepting a single argument instead of the previous two.
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
+  The function pointer has the signature
+  `typedef void (*HostWriter)(const char * message)`
+  thus accepting a single argument instead of the previous two.
+- [GNU standard installation
+  directories](http://www.gnu.org/prep/standards/html_node/Directory-Variables.html)
+  have been imposed, thanks to work by @loriab.
+  Given a prefix, header files are now installed to `include/pcmsolver`,
+  executables to `bin`, libraries to `lib` and scripting tools to `share`.
+  The install prefix and the installation directories can be specified by the
+  `--prefix`, `--bindir`, `--libdir`, `--includedir` and `--datadir` options to
+  the `setup.py` script (or the corresponding CMake variables)
 
 ## [Version 1.1.6] - 2016-09-20
 
@@ -237,7 +238,9 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.5...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.7...HEAD
+[Version 1.1.7]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.6...v1.1.7
+[Version 1.1.6]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.5...v1.1.6
 [Version 1.1.5]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.4...v1.1.5
 [Version 1.1.4]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.3...v1.1.4
 [Version 1.1.3]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.2...v1.1.3

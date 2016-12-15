@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -53,7 +53,9 @@
 template <typename DerivativeTraits = AD_directional,
           typename IntegratorPolicy = CollocationIntegrator>
 class SphericalSharp __final
-    : public GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
+    : public GreensFunction<DerivativeTraits,
+                            IntegratorPolicy,
+                            Sharp,
                             SphericalSharp<DerivativeTraits, IntegratorPolicy> > {
 public:
   /*! Constructor for a one-layer interface
@@ -63,7 +65,9 @@ public:
    * \param[in] o center of the sphere
    */
   SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o)
-      : GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
+      : GreensFunction<DerivativeTraits,
+                       IntegratorPolicy,
+                       Sharp,
                        SphericalSharp<DerivativeTraits, IntegratorPolicy> >(),
         origin_(o) {
     this->profile_ = Sharp(e, esolv, r);
@@ -74,9 +78,14 @@ public:
    * \param[in] r radius of the dielectric sphere
    * \param[in] o center of the sphere
    */
-  SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o,
+  SphericalSharp(double e,
+                 double esolv,
+                 double r,
+                 const Eigen::Vector3d & o,
                  double f)
-      : GreensFunction<DerivativeTraits, IntegratorPolicy, Sharp,
+      : GreensFunction<DerivativeTraits,
+                       IntegratorPolicy,
+                       Sharp,
                        SphericalSharp<DerivativeTraits, IntegratorPolicy> >(f),
         origin_(o) {
     this->profile_ = Sharp(e, esolv, r);
@@ -183,11 +192,16 @@ public:
   }
   virtual KernelS exportKernelS_impl() const __override {
     return pcm::bind(&SphericalSharp<DerivativeTraits, IntegratorPolicy>::kernelS,
-                     *this, pcm::_1, pcm::_2);
+                     *this,
+                     pcm::_1,
+                     pcm::_2);
   }
   virtual KernelD exportKernelD_impl() const __override {
     return pcm::bind(&SphericalSharp<DerivativeTraits, IntegratorPolicy>::kernelD,
-                     *this, pcm::_1, pcm::_2, pcm::_3);
+                     *this,
+                     pcm::_1,
+                     pcm::_2,
+                     pcm::_3);
   }
   DerivativeTraits imagePotential_impl(DerivativeTraits * sp,
                                        DerivativeTraits * pp) const {

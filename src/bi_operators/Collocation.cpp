@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -29,10 +29,11 @@
 
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
-#include "BIOperatorData.hpp"
-#include "utils/Factory.hpp"
 
-namespace integrator {
+namespace pcm {
+using cavity::Element;
+
+namespace bi_operators {
 Collocation::Collocation() : factor_(1.07) {}
 
 Collocation::Collocation(double fac) : factor_(fac) {}
@@ -69,14 +70,5 @@ Eigen::MatrixXd Collocation::computeD_impl(const std::vector<Element> & elems,
   }
   return D;
 }
-} // namespace integrator
-
-namespace {
-BoundaryIntegralOperator * createCollocation(const biOperatorData & data) {
-  return new integrator::Collocation(data.scaling);
-}
-const std::string COLLOCATION("COLLOCATION");
-const bool registeredCollocation =
-    Factory<BoundaryIntegralOperator, biOperatorData>::TheFactory().registerObject(
-        COLLOCATION, createCollocation);
-}
+} // namespace bi_operators
+} // namespace pcm

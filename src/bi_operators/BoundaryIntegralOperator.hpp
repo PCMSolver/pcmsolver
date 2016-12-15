@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -21,30 +21,65 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef BOUNDARYINTEGRALOPERATORS_HPP
-#define BOUNDARYINTEGRALOPERATORS_HPP
-
-#include <vector>
+#ifndef BOUNDARYINTEGRALOPERATOR_HPP
+#define BOUNDARYINTEGRALOPERATOR_HPP
 
 #include "Config.hpp"
 
-#include <Eigen/Core>
+#include "IBoundaryIntegralOperator.hpp"
+#include "BIOperatorData.hpp"
+#include "Collocation.hpp"
+#include "Purisima.hpp"
+#include "Numerical.hpp"
+#include "utils/Factory.hpp"
 
-class Cavity;
-class Element;
-class IGreensFunction;
+/*!
+ * \file BoundaryIntegralOperator.hpp
+ * \brief Top-level include file for boundary integral operators
+ * \author Roberto Di Remigio
+ * \date 2016
+ *
+ * Includes all boundary integral operator-related headers and defines the bootstrap
+ *function
+ * for the Factory<IBoundaryIntegralOperator, BIOperatorData>
+ */
 
-class BoundaryIntegralOperator {
-public:
-  virtual ~BoundaryIntegralOperator() {}
-  Eigen::MatrixXd computeS(const Cavity & cav, const IGreensFunction & gf) const;
-  Eigen::MatrixXd computeD(const Cavity & cav, const IGreensFunction & gf) const;
+namespace pcm {
+namespace bi_operators {
 
-private:
-  virtual Eigen::MatrixXd computeS_impl(const std::vector<Element> & elems,
-                                        const IGreensFunction & gf) const = 0;
-  virtual Eigen::MatrixXd computeD_impl(const std::vector<Element> & elems,
-                                        const IGreensFunction & gf) const = 0;
-};
+inline IBoundaryIntegralOperator * createCollocation(const BIOperatorData & data) {
+  return new Collocation(data.scaling);
+}
 
-#endif // BOUNDARYINTEGRALOPERATORS_HPP
+inline IBoundaryIntegralOperator * createNumerical(
+    const BIOperatorData & /* data */) {
+  return new Numerical();
+}
+
+inline IBoundaryIntegralOperator * createPurisima(const BIOperatorData & data) {
+  return new Purisima(data.scaling);
+}
+
+inline void bootstrapFactory() {
+  const bool registeredCollocation =
+      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory()
+          .registerObject("COLLOCATION", createCollocation);
+  if (!registeredCollocation)
+    PCMSOLVER_ERROR("Subscription of collocation integrator to factory failed!");
+
+  const bool registeredNumerical =
+      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory()
+          .registerObject("NUMERICAL", createNumerical);
+  if (!registeredNumerical)
+    PCMSOLVER_ERROR("Subscription of numerical integrator to factory failed!");
+
+  const bool registeredPurisima =
+      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory()
+          .registerObject("PURISIMA", createPurisima);
+  if (!registeredPurisima)
+    PCMSOLVER_ERROR("Subscription of Purisima integrator to factory failed!");
+}
+} // namespace bi_operators
+} // namespace pcm
+
+#endif // BOUNDARYINTEGRALOPERATOR_HPP

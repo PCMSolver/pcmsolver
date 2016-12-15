@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -44,6 +44,8 @@
  *  \tparam ProfilePolicy    dielectric profile type
  */
 
+namespace pcm {
+namespace green {
 template <typename DerivativeTraits, typename ProfilePolicy>
 class GreensFunction : public IGreensFunction {
 public:
@@ -131,7 +133,7 @@ public:
 
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const __final __override {
-    return profiles::uniform(this->profile_);
+    return dielectric_profile::uniform(this->profile_);
   }
   /*! Returns a dielectric permittivity profile */
   virtual Permittivity permittivity() const __final __override {
@@ -180,7 +182,7 @@ protected:
 };
 
 template <typename ProfilePolicy>
-class GreensFunction<Numerical, ProfilePolicy> : public IGreensFunction {
+class GreensFunction<Stencil, ProfilePolicy> : public IGreensFunction {
 public:
   GreensFunction() : delta_(1.0e-04) {}
   virtual ~GreensFunction() {}
@@ -199,9 +201,14 @@ public:
                                   const Eigen::Vector3d & p1,
                                   const Eigen::Vector3d & p2) const {
     return threePointStencil(
-        pcm::bind(&GreensFunction<Numerical, ProfilePolicy>::kernelS, this, pcm::_1,
+        pcm::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
+                  this,
+                  pcm::_1,
                   pcm::_2),
-        p1, p2, normal_p1, this->delta_);
+        p1,
+        p2,
+        normal_p1,
+        this->delta_);
   }
   /*! Returns value of the directional derivative of the
    *  Greens's function for the pair of points p1, p2:
@@ -217,9 +224,14 @@ public:
                                  const Eigen::Vector3d & p1,
                                  const Eigen::Vector3d & p2) const __final {
     return threePointStencil(
-        pcm::bind(&GreensFunction<Numerical, ProfilePolicy>::kernelS, this, pcm::_1,
+        pcm::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
+                  this,
+                  pcm::_1,
                   pcm::_2),
-        p2, p1, normal_p2, this->delta_);
+        p2,
+        p1,
+        normal_p2,
+        this->delta_);
   }
   /**@}*/
 
@@ -252,7 +264,7 @@ public:
 
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const __final __override {
-    return profiles::uniform(this->profile_);
+    return dielectric_profile::uniform(this->profile_);
   }
   /*! Returns a dielectric permittivity profile */
   virtual Permittivity permittivity() const __final __override {
@@ -268,7 +280,7 @@ protected:
    *  \param[in] source the source point
    *  \param[in]  probe the probe point
    */
-  virtual Numerical operator()(Numerical * source, Numerical * probe) const = 0;
+  virtual Stencil operator()(Stencil * source, Stencil * probe) const = 0;
   /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e.
    * the value of the
    *  Greens's function for the pair of points p1, p2: \f$ G(\mathbf{p}_1,
@@ -281,8 +293,8 @@ protected:
    */
   virtual double kernelS_impl(const Eigen::Vector3d & p1,
                               const Eigen::Vector3d & p2) const __final __override {
-    return this->operator()(const_cast<Numerical *>(p1.data()),
-                            const_cast<Numerical *>(p2.data()));
+    return this->operator()(const_cast<Stencil *>(p1.data()),
+                            const_cast<Stencil *>(p2.data()));
   }
   virtual std::ostream & printObject(std::ostream & os) __override {
     os << "Green's Function" << std::endl;
@@ -294,7 +306,7 @@ protected:
   ProfilePolicy profile_;
 };
 
-namespace integrator {
+namespace detail {
 /*! Approximate collocation formula for the diagonal of:
  * \f[
  *  (\mathcal{S}_\mathrm{i}f)(\mathbf{s}) = \int_\Gamma
@@ -329,6 +341,8 @@ inline double diagonalSi(double area, double factor) {
 inline double diagonalDi(double area, double radius, double factor) {
   return (-factor * std::sqrt(M_PI / area) * 1.0 / radius);
 }
-} // namespace integrator
+} // namespace detail
+} // namespace green
+} // namespace pcm
 
 #endif // GREENSFUNCTION_HPP

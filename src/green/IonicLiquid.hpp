@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,11 +30,18 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+namespace cavity {
 class Element;
+} // namespace cavity
+namespace dielectric_profile {
 struct Yukawa;
+} // namespace dielectric_profile
+} // namespace pcm
 
 #include "DerivativeTypes.hpp"
 #include "GreensFunction.hpp"
+#include "GreenData.hpp"
 
 /*! \file IonicLiquid.hpp
  *  \class IonicLiquid
@@ -45,8 +52,11 @@ struct Yukawa;
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
 
+namespace pcm {
+namespace green {
 template <typename DerivativeTraits = AD_directional>
-class IonicLiquid __final : public GreensFunction<DerivativeTraits, Yukawa> {
+class IonicLiquid __final
+    : public GreensFunction<DerivativeTraits, dielectric_profile::Yukawa> {
 public:
   IonicLiquid(double eps, double k);
   virtual ~IonicLiquid() {}
@@ -72,5 +82,15 @@ private:
 
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
+
+namespace detail {
+struct buildIonicLiquid {
+  template <typename T> IGreensFunction * operator()(const GreenData & data) {
+    return new IonicLiquid<T>(data.epsilon, data.kappa);
+  }
+};
+} // namespace detail
+} // namespace green
+} // namespace pcm
 
 #endif // IONICLIQUID_HPP

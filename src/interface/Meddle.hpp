@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -33,11 +33,12 @@
 
 #include <boost/container/flat_map.hpp>
 
-class Cavity;
+namespace pcm {
+class ICavity;
 class IGreensFunction;
-class Input;
+class ISolver;
+} // namespace pcm
 struct PCMInput;
-class PCMSolver;
 
 #include "Input.hpp"
 #include "utils/Molecule.hpp"
@@ -60,10 +61,15 @@ struct Printer {
   void operator()(const std::string & message);
   void operator()(const std::ostringstream & stream);
 };
-void initMolecule(const Input & inp, const Symmetry & group, int nuclei,
-                  const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
+void bootstrap();
+void initMolecule(const Input & inp,
+                  const Symmetry & group,
+                  int nuclei,
+                  const Eigen::VectorXd & charges,
+                  const Eigen::Matrix3Xd & centers,
                   Molecule & molecule);
-void initSpheresAtoms(const Input &, const Eigen::Matrix3Xd &,
+void initSpheresAtoms(const Input &,
+                      const Eigen::Matrix3Xd &,
                       std::vector<Sphere> &);
 unsigned int pcmsolver_get_version(void) attribute(const);
 void print(const PCMInput &);
@@ -74,11 +80,12 @@ void print(const PCMInput &);
 class Meddle __final {
 public:
   /*! \brief CTOR from own input reader
-      *  \param[in] parsed parsed input object
+      *  \param[in] inputFileName name of the parsed, machine-readable input file
+      *  \param[in] write the global HostWriter object
       *  \warning This CTOR is meant to be used with the standalone
       *  executable only
       */
-  Meddle(const Input & parsed, const HostWriter & write);
+  Meddle(const std::string & inputFileName, const HostWriter & write);
   /*! \brief Constructor
    *  \param[in] input_reading input processing strategy
    *  \param[in] nr_nuclei     number of atoms in the molecule
@@ -91,8 +98,12 @@ public:
    *  of 4 integers: number of generators, first, second and third generator
    *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
    */
-  Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
-         double coordinates[], int symmetry_info[], const PCMInput & host_input,
+  Meddle(pcmsolver_reader_t input_reading,
+         int nr_nuclei,
+         double charges[],
+         double coordinates[],
+         int symmetry_info[],
+         const PCMInput & host_input,
          const HostWriter & write);
   ~Meddle();
   /*! \brief Getter for the molecule object */
@@ -146,7 +157,8 @@ public:
    * permittivity
    *  otherwise.
    */
-  void computeResponseASC(const char * mep_name, const char * asc_name,
+  void computeResponseASC(const char * mep_name,
+                          const char * asc_name,
                           int irrep) const;
   /*! \brief Computes the polarization energy
    *  \param[in] mep_name label of the MEP surface function
@@ -167,14 +179,16 @@ public:
    *  \param[in] values the values wrapped in the surface function
    *  \param[in] name label of the surface function
    */
-  void getSurfaceFunction(PCMSolverIndex size, double values[],
+  void getSurfaceFunction(PCMSolverIndex size,
+                          double values[],
                           const char * name) const;
   /*! \brief Sets a surface function given data and label
    *  \param[in] size the size of the surface function
    *  \param[in] values the values to be wrapped in the surface function
    *  \param[in] name label of the surface function
    */
-  void setSurfaceFunction(PCMSolverIndex size, double values[],
+  void setSurfaceFunction(PCMSolverIndex size,
+                          double values[],
                           const char * name) const;
   /*! \brief Prints surface function contents to host output
    *  \param[in] name label of the surface function
@@ -203,11 +217,11 @@ private:
   /*! Input object */
   Input input_;
   /*! Cavity */
-  Cavity * cavity_;
+  ICavity * cavity_;
   /*! Solver with static permittivity */
-  PCMSolver * K_0_;
+  ISolver * K_0_;
   /*! Solver with dynamic permittivity */
-  PCMSolver * K_d_;
+  ISolver * K_d_;
   /*! PCMSolver set up information */
   mutable std::ostringstream infoStream_;
   /*! Whether K_d_ was initialized */
@@ -224,8 +238,11 @@ private:
    *  \param[in] symmetry_info molecular point group information
    *  \param[in] host_input    input to the module, as read by the host
    */
-  void initInput(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
-                 double coordinates[], int symmetry_info[],
+  void initInput(pcmsolver_reader_t input_reading,
+                 int nr_nuclei,
+                 double charges[],
+                 double coordinates[],
+                 int symmetry_info[],
                  const PCMInput & host_input);
   /*! Initialize cavity_ */
   void initCavity();
@@ -236,6 +253,6 @@ private:
   /*! Collect info on medium */
   void mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const;
 };
-} /* end namespace pcm */
+} // namespace pcm
 
 #endif /* MEDDLE_HPP */

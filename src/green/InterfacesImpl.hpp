@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -38,7 +38,10 @@
 
 #include "utils/MathUtils.hpp"
 
-namespace interfaces {
+namespace pcm {
+namespace green {
+namespace detail {
+
 /*! \typedef StateType
  *  \brief state vector for the differential equation integrator
  */
@@ -67,8 +70,13 @@ struct IntegratorParameters {
   double r_infinity_;
   /*! Time step between observer calls */
   double observer_step_;
-  IntegratorParameters(double e_abs, double e_rel, double f_x, double f_dxdt,
-                       double r0, double rinf, double step)
+  IntegratorParameters(double e_abs,
+                       double e_rel,
+                       double f_x,
+                       double f_dxdt,
+                       double r0,
+                       double rinf,
+                       double step)
       : eps_abs_(e_abs),
         eps_rel_(e_rel),
         factor_x_(f_x),
@@ -108,7 +116,7 @@ public:
     // Evaluate the dielectric profile
     double eps = 0.0, epsPrime = 0.0;
     pcm::tie(eps, epsPrime) = eval_(r);
-    if (numericalZero(eps))
+    if (utils::numericalZero(eps))
       throw std::domain_error("Division by zero!");
     double gamma_epsilon = epsPrime / eps;
     // System of equations is defined here
@@ -117,10 +125,10 @@ public:
                 l_ * (l_ + 1) / std::pow(r, 2);
   }
 };
-} // namespace interfaces
+} // namespace detail
 
-using interfaces::ProfileEvaluator;
-using interfaces::IntegratorParameters;
+using detail::ProfileEvaluator;
+using detail::IntegratorParameters;
 
 /*! \file InterfacesImpl.hpp
  *  \class RadialFunction
@@ -131,15 +139,19 @@ using interfaces::IntegratorParameters;
  *  \tparam ODESystem system of 1st order ODEs replacing the 2nd order ODE
  *  \tparam IndependentSolution encodes which type of radial solution
  */
-template <typename StateVariable, typename ODESystem,
+template <typename StateVariable,
+          typename ODESystem,
           template <typename, typename> class IndependentSolution>
 class RadialFunction __final {
 public:
   RadialFunction() : solution_(IndependentSolution<StateVariable, ODESystem>()) {}
-  RadialFunction(int l, double r0, double rinf, const ProfileEvaluator & eval,
+  RadialFunction(int l,
+                 double r0,
+                 double rinf,
+                 const ProfileEvaluator & eval,
                  const IntegratorParameters & parms)
-      : solution_(IndependentSolution<StateVariable, ODESystem>(l, r0, rinf, eval,
-                                                                parms)) {}
+      : solution_(IndependentSolution<StateVariable,
+                                      ODESystem>(l, r0, rinf, eval, parms)) {}
   ~RadialFunction() {}
   /*! \brief Returns value of function and its first derivative at given point
    *  \param[in] point evaluation point
@@ -169,7 +181,10 @@ private:
 template <typename StateVariable, typename ODESystem> class Zeta __final {
 public:
   Zeta() : L_(0), r_0_(0.0), r_infinity_(0.0) {}
-  Zeta(int l, double r0, double rinf, const ProfileEvaluator & eval,
+  Zeta(int l,
+       double r0,
+       double rinf,
+       const ProfileEvaluator & eval,
        const IntegratorParameters & parms)
       : L_(l), r_0_(r0), r_infinity_(rinf) {
     compute(eval, parms);
@@ -216,10 +231,15 @@ private:
     // Set initial conditions
     init_zeta[0] = L_ * std::log(r_0_);
     init_zeta[1] = L_ / r_0_;
-    odeint::integrate_adaptive(stepper, system, init_zeta, r_0_, r_infinity_,
-                               parms.observer_step_,
-                               pcm::bind(&Zeta<StateVariable, ODESystem>::push_back,
-                                         this, pcm::_1, pcm::_2));
+    odeint::integrate_adaptive(
+        stepper,
+        system,
+        init_zeta,
+        r_0_,
+        r_infinity_,
+        parms.observer_step_,
+        pcm::bind(
+            &Zeta<StateVariable, ODESystem>::push_back, this, pcm::_1, pcm::_2));
   }
   /*! \brief Returns value of function at given point
    *  \param[in] point evaluation point
@@ -232,7 +252,7 @@ private:
     if (point <= r_0_) {
       zeta = L_ * std::log(point);
     } else {
-      zeta = splineInterpolation(point, function_[0], function_[1]);
+      zeta = utils::splineInterpolation(point, function_[0], function_[1]);
     }
     return zeta;
   }
@@ -247,7 +267,7 @@ private:
     if (point <= r_0_) {
       zeta = L_ / point;
     } else {
-      zeta = splineInterpolation(point, function_[0], function_[2]);
+      zeta = utils::splineInterpolation(point, function_[0], function_[2]);
     }
     return zeta;
   }
@@ -265,7 +285,10 @@ private:
 template <typename StateVariable, typename ODESystem> class Omega __final {
 public:
   Omega() : L_(0), r_0_(0.0), r_infinity_(0.0) {}
-  Omega(int l, double r0, double rinf, const ProfileEvaluator & eval,
+  Omega(int l,
+        double r0,
+        double rinf,
+        const ProfileEvaluator & eval,
         const IntegratorParameters & parms)
       : L_(l), r_0_(r0), r_infinity_(rinf) {
     compute(eval, parms);
@@ -314,9 +337,14 @@ private:
     init_omega[1] = -(L_ + 1) / r_infinity_;
     // Notice that we integrate BACKWARDS, so we pass -step to integrate_adaptive
     boost::numeric::odeint::integrate_adaptive(
-        stepper, system, init_omega, r_infinity_, r_0_, -parms.observer_step_,
-        pcm::bind(&Omega<StateVariable, ODESystem>::push_back, this, pcm::_1,
-                  pcm::_2));
+        stepper,
+        system,
+        init_omega,
+        r_infinity_,
+        r_0_,
+        -parms.observer_step_,
+        pcm::bind(
+            &Omega<StateVariable, ODESystem>::push_back, this, pcm::_1, pcm::_2));
     // Reverse order of StateVariable-s in RadialSolution
     // this ensures that they are in ascending order, as later expected by
     // function_impl and derivative_impl
@@ -335,7 +363,7 @@ private:
     if (point >= r_infinity_) {
       omega = -(L_ + 1) * std::log(point);
     } else {
-      omega = splineInterpolation(point, function_[0], function_[1]);
+      omega = utils::splineInterpolation(point, function_[0], function_[1]);
     }
     return omega;
   }
@@ -350,7 +378,7 @@ private:
     if (point >= r_infinity_) {
       omega = -(L_ + 1) / point;
     } else {
-      omega = splineInterpolation(point, function_[0], function_[2]);
+      omega = utils::splineInterpolation(point, function_[0], function_[2]);
     }
     return omega;
   }
@@ -365,7 +393,8 @@ private:
  *  \tparam ODESystem system of 1st order ODEs replacing the 2nd order ODE
  *  \tparam IndependentSolution encodes which type of radial solution
  */
-template <typename StateVariable, typename ODESystem,
+template <typename StateVariable,
+          typename ODESystem,
           template <typename, typename> class IndependentSolution>
 void writeToFile(RadialFunction<StateVariable, ODESystem, IndependentSolution> & f,
                  const std::string & fname) {
@@ -374,5 +403,7 @@ void writeToFile(RadialFunction<StateVariable, ODESystem, IndependentSolution> &
   fout << f << std::endl;
   fout.close();
 }
+} // namespace green
+} // namespace pcm
 
 #endif // INTERFACESIMPL_HPP

@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -29,7 +29,7 @@
 
 #include "Config.hpp"
 
-#include "Cavity.hpp"
+#include "ICavity.hpp"
 
 /*! \file RestartCavity.hpp
  *  \class RestartCavity
@@ -38,7 +38,9 @@
  *  \date 2014
  */
 
-class RestartCavity __final : public Cavity {
+namespace pcm {
+namespace cavity {
+class RestartCavity __final : public ICavity {
 public:
   RestartCavity(const std::string & _fname) : file(_fname) { makeCavity(); }
   virtual ~RestartCavity() {}
@@ -51,5 +53,7 @@ private:
   std::string file;
   virtual std::ostream & printCavity(std::ostream & os) __override;
 };
+} // namespace cavity
+} // namespace pcm
 
 #endif // RESTARTCAVITY_HPP

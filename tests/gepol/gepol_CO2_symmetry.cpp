@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,6 +32,9 @@
 #include "utils/Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
+using namespace pcm;
+using cavity::GePolCavity;
+
 SCENARIO(
     "GePol cavity for the linear CO2 molecule in different Abelian point groups",
     "[gepol][gepol_CO2_symmetry]") {
@@ -41,8 +44,7 @@ SCENARIO(
     double minRadius = 0.2 / bohrToAngstrom();
     WHEN("the point group is C1") {
       Molecule molec = CO2<0>();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "co2.c1");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "co2.c1");
 
       /*! \class GePolCavity
        *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C1
@@ -96,8 +98,7 @@ SCENARIO(
     double minRadius = 0.2 / bohrToAngstrom();
     WHEN("the point group is C2") {
       Molecule molec = CO2<1>();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "co2.c2");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "co2.c2");
 
       /*! \class GePolCavity
        *  \test \b GePolCavityCO2C1Test_size tests GePol cavity size for CO2 in C2
@@ -151,8 +152,7 @@ SCENARIO(
     double minRadius = 0.2 / bohrToAngstrom();
     WHEN("the point group is Cs") {
       Molecule molec = CO2<2>();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "co2.cs");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "co2.cs");
 
       /*! \class GePolCavity
        *  \test \b GePolCavityCO2CsTest_size tests GePol cavity size for CO2 in Cs
@@ -206,8 +206,7 @@ SCENARIO(
     double minRadius = 0.2 / bohrToAngstrom();
     WHEN("the point group is Ci") {
       Molecule molec = CO2<3>();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "co2.ci");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "co2.ci");
 
       /*! \class GePolCavity
        *  \test \b GePolCavityCO2CiTest_size tests GePol cavity size for CO2 in Ci
@@ -261,8 +260,7 @@ SCENARIO(
     double minRadius = 0.2 / bohrToAngstrom();
     WHEN("the point group is D2") {
       Molecule molec = CO2<4>();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "co2.d2");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "co2.d2");
 
       /*! \class GePolCavity
        *  \test \b GePolCavityCO2D2Test_size tests GePol cavity size for CO2 in D2
@@ -316,8 +314,7 @@ SCENARIO(
     double minRadius = 0.2 / bohrToAngstrom();
     WHEN("the point group is C2v") {
       Molecule molec = CO2<5>();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "co2.c2v");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "co2.c2v");
 
       /*! \class GePolCavity
        *  \test \b GePolCavityCO2C2vTest_size tests GePol cavity size for CO2 in C2v
@@ -371,8 +368,7 @@ SCENARIO(
     double minRadius = 0.2 / bohrToAngstrom();
     WHEN("the point group is C2h") {
       Molecule molec = CO2<6>();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "co2.c2h");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "co2.c2h");
 
       /*! \class GePolCavity
        *  \test \b GePolCavityCO2C2hTest_size tests GePol cavity size for CO2 in C2h
@@ -426,8 +422,7 @@ SCENARIO(
     double minRadius = 0.2 / bohrToAngstrom();
     WHEN("the point group is D2h") {
       Molecule molec = CO2<7>();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "co2.d2h");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "co2.d2h");
 
       /*! \class GePolCavity
        *  \test \b GePolCavityCO2D2hTest_size tests GePol cavity size for CO2 in D2h

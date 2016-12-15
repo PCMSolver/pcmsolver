@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -34,30 +34,30 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 
-#include "bi_operators/BoundaryIntegralOperator.hpp"
-#include "cavity/Cavity.hpp"
+#include "bi_operators/IBoundaryIntegralOperator.hpp"
+#include "cavity/ICavity.hpp"
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
 #include "utils/MathUtils.hpp"
 #include "SolverImpl.hpp"
-#include "SolverData.hpp"
-#include "utils/Factory.hpp"
 
-void IEFSolver::buildSystemMatrix_impl(const Cavity & cavity,
+namespace pcm {
+namespace solver {
+void IEFSolver::buildSystemMatrix_impl(const ICavity & cavity,
                                        const IGreensFunction & gf_i,
                                        const IGreensFunction & gf_o,
-                                       const BoundaryIntegralOperator & op) {
+                                       const IBoundaryIntegralOperator & op) {
   isotropic_ = (gf_i.uniform() && gf_o.uniform());
   isotropic_ ? buildIsotropicMatrix(cavity, gf_i, gf_o, op)
              : buildAnisotropicMatrix(cavity, gf_i, gf_o, op);
 }
 
-void IEFSolver::buildAnisotropicMatrix(const Cavity & cav,
+void IEFSolver::buildAnisotropicMatrix(const ICavity & cav,
                                        const IGreensFunction & gf_i,
                                        const IGreensFunction & gf_o,
-                                       const BoundaryIntegralOperator & op) {
-  Tepsilon_ = solver::anisotropicTEpsilon(cav, gf_i, gf_o, op);
-  Rinfinity_ = solver::anisotropicRinfinity(cav, gf_i, gf_o, op);
+                                       const IBoundaryIntegralOperator & op) {
+  Tepsilon_ = detail::anisotropicTEpsilon(cav, gf_i, gf_o, op);
+  Rinfinity_ = detail::anisotropicRinfinity(cav, gf_i, gf_o, op);
 
   // Pack into a block diagonal matrix
   // The number of irreps in the group
@@ -65,19 +65,19 @@ void IEFSolver::buildAnisotropicMatrix(const Cavity & cav,
   // The size of the irreducible portion of the cavity
   int dimBlock = cav.irreducible_size();
   // For the moment just packs into a std::vector<Eigen::MatrixXd>
-  symmetryPacking(blockTepsilon_, Tepsilon_, dimBlock, nrBlocks);
-  symmetryPacking(blockRinfinity_, Rinfinity_, dimBlock, nrBlocks);
+  utils::symmetryPacking(blockTepsilon_, Tepsilon_, dimBlock, nrBlocks);
+  utils::symmetryPacking(blockRinfinity_, Rinfinity_, dimBlock, nrBlocks);
 
   built_ = true;
 }
 
-void IEFSolver::buildIsotropicMatrix(const Cavity & cav,
+void IEFSolver::buildIsotropicMatrix(const ICavity & cav,
                                      const IGreensFunction & gf_i,
                                      const IGreensFunction & gf_o,
-                                     const BoundaryIntegralOperator & op) {
-  Tepsilon_ = solver::isotropicTEpsilon(cav, gf_i,
-                                        profiles::epsilon(gf_o.permittivity()), op);
-  Rinfinity_ = solver::isotropicRinfinity(cav, gf_i, op);
+                                     const IBoundaryIntegralOperator & op) {
+  Tepsilon_ = detail::isotropicTEpsilon(
+      cav, gf_i, dielectric_profile::epsilon(gf_o.permittivity()), op);
+  Rinfinity_ = detail::isotropicRinfinity(cav, gf_i, op);
 
   // Pack into a block diagonal matrix
   // The number of irreps in the group
@@ -85,8 +85,8 @@ void IEFSolver::buildIsotropicMatrix(const Cavity & cav,
   // The size of the irreducible portion of the cavity
   int dimBlock = cav.irreducible_size();
   // For the moment just packs into a std::vector<Eigen::MatrixXd>
-  symmetryPacking(blockTepsilon_, Tepsilon_, dimBlock, nrBlocks);
-  symmetryPacking(blockRinfinity_, Rinfinity_, dimBlock, nrBlocks);
+  utils::symmetryPacking(blockTepsilon_, Tepsilon_, dimBlock, nrBlocks);
+  utils::symmetryPacking(blockRinfinity_, Rinfinity_, dimBlock, nrBlocks);
 
   built_ = true;
 }
@@ -138,13 +138,5 @@ std::ostream & IEFSolver::printSolver(std::ostream & os) {
 
   return os;
 }
-
-namespace {
-PCMSolver * createIEFSolver(const solverData & data) {
-  return new IEFSolver(data.hermitivitize);
-}
-const std::string IEFSOLVER("IEFPCM");
-const bool registeredIEFSolver =
-    Factory<PCMSolver, solverData>::TheFactory().registerObject(IEFSOLVER,
-                                                                createIEFSolver);
-}
+} // namespace solver
+} // namespace pcm

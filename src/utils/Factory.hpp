@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -42,27 +42,29 @@
  * 	It is implemented as a Singleton.
  */
 
+namespace pcm {
 template <typename Object, typename ObjectInput> class Factory __final {
 public:
   /*! \brief Callback function for object creation
    *  Returns a raw pointer of type Object; accepts an ObjectInput type
    */
-  typedef pcm::function<Object *(const ObjectInput &)> creationalFunctor;
+  typedef function<Object *(const ObjectInput &)> Create;
 
 private:
   /*! std::map from the object type identifier (a string) to its callback function */
-  typedef std::map<std::string, creationalFunctor> CallbackMap;
+  typedef std::map<std::string, Create> CallbackMap;
   /*! std::pair of an object type identifier and a callback function */
-  typedef std::pair<std::string, creationalFunctor> CallbackPair;
+  typedef typename CallbackMap::value_type CallbackPair;
+  /*! const iterator */
+  typedef typename CallbackMap::const_iterator CallbackConstIter;
 
 public:
   /*! \brief Returns true on successful registration of the objID
    * \param[in] objID  the object's identification string
    * \param[in] functor the creation function related to the object type given
    */
-  bool registerObject(const std::string & objID, const creationalFunctor & functor) {
-    return callbacks_.insert(typename CallbackMap::value_type(objID, functor))
-        .second;
+  bool registerObject(const std::string & objID, const Create & functor) {
+    return callbacks_.insert(CallbackPair(objID, functor)).second;
   }
   /*! \brief Returns true if objID was already registered
    *  \param objID the object's identification string
@@ -77,7 +79,7 @@ public:
   Object * create(const std::string & objID, const ObjectInput & data) {
     if (objID.empty())
       PCMSOLVER_ERROR("No object identification string provided to the Factory.");
-    typename CallbackMap::const_iterator i = callbacks_.find(objID);
+    CallbackConstIter i = callbacks_.find(objID);
     if (i == callbacks_.end())
       PCMSOLVER_ERROR("The unknown object ID " + objID +
                       " occurred in the Factory.");
@@ -97,5 +99,6 @@ private:
   ~Factory() {}
   CallbackMap callbacks_;
 };
+} // namespace pcm
 
 #endif // FACTORY_HPP

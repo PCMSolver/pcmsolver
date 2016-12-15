@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -28,6 +28,9 @@
 #include <string>
 
 #include "Config.hpp"
+
+namespace pcm {
+using utils::Solvent;
 
 SolventMap & solvents() {
   static SolventMap availableSolvents;
@@ -73,3 +76,4 @@ std::ostream & operator<<(std::ostream & os, Solvent & solvent) {
   os << "Solvent radius =       " << solvent.probeRadius << " Ang";
   return os;
 }
+} // namespace pcm

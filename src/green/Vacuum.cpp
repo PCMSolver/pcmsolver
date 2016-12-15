@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -34,10 +34,10 @@
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 
-#include "GreenData.hpp"
-#include "utils/ForId.hpp"
-#include "utils/Factory.hpp"
-
+namespace pcm {
+using cavity::Element;
+using dielectric_profile::Uniform;
+namespace green {
 template <typename DerivativeTraits>
 Vacuum<DerivativeTraits>::Vacuum()
     : GreensFunction<DerivativeTraits, Uniform>() {
@@ -64,20 +64,20 @@ KernelS Vacuum<DerivativeTraits>::exportKernelS_impl() const {
 
 template <typename DerivativeTraits>
 KernelD Vacuum<DerivativeTraits>::exportKernelD_impl() const {
-  return pcm::bind(&Vacuum<DerivativeTraits>::kernelD, *this, pcm::_1, pcm::_2,
-                   pcm::_3);
+  return pcm::bind(
+      &Vacuum<DerivativeTraits>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
 }
 
 template <typename DerivativeTraits>
 double Vacuum<DerivativeTraits>::singleLayer_impl(const Element & e,
                                                   double factor) const {
-  return integrator::diagonalSi(e.area(), factor);
+  return detail::diagonalSi(e.area(), factor);
 }
 
 template <typename DerivativeTraits>
 double Vacuum<DerivativeTraits>::doubleLayer_impl(const Element & e,
                                                   double factor) const {
-  return integrator::diagonalDi(e.area(), e.sphere().radius, factor);
+  return detail::diagonalDi(e.area(), e.sphere().radius, factor);
 }
 
 template <typename DerivativeTraits>
@@ -86,24 +86,9 @@ std::ostream & Vacuum<DerivativeTraits>::printObject(std::ostream & os) {
   return os;
 }
 
-namespace {
-struct buildVacuum {
-  template <typename T> IGreensFunction * operator()(const greenData & /* data */) {
-    return new Vacuum<T>();
-  }
-};
-
-IGreensFunction * createVacuum(const greenData & data) {
-  buildVacuum build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
-const std::string VACUUM("VACUUM");
-const bool registeredVacuum =
-    Factory<IGreensFunction, greenData>::TheFactory().registerObject(VACUUM,
-                                                                     createVacuum);
-}
-
-template class Vacuum<Numerical>;
+template class Vacuum<Stencil>;
 template class Vacuum<AD_directional>;
 template class Vacuum<AD_gradient>;
 template class Vacuum<AD_hessian>;
+} // namespace green
+} // namespace pcm

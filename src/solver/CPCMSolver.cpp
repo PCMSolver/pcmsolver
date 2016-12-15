@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -31,27 +31,27 @@
 
 #include <Eigen/Core>
 
-#include "bi_operators/BoundaryIntegralOperator.hpp"
-#include "cavity/Cavity.hpp"
+#include "bi_operators/IBoundaryIntegralOperator.hpp"
+#include "cavity/ICavity.hpp"
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
 #include "utils/MathUtils.hpp"
-#include "SolverData.hpp"
-#include "utils/Factory.hpp"
 
-void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity,
+namespace pcm {
+namespace solver {
+void CPCMSolver::buildSystemMatrix_impl(const ICavity & cavity,
                                         const IGreensFunction & gf_i,
                                         const IGreensFunction & gf_o,
-                                        const BoundaryIntegralOperator & op) {
+                                        const IBoundaryIntegralOperator & op) {
   if (!isotropic_)
     PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
   TIMER_ON("Computing S");
-  double epsilon = profiles::epsilon(gf_o.permittivity());
+  double epsilon = dielectric_profile::epsilon(gf_o.permittivity());
   S_ = op.computeS(cavity, gf_i);
   S_ /= (epsilon - 1.0) / (epsilon + correction_);
   // Get in Hermitian form
   if (hermitivitize_)
-    hermitivitize(S_);
+    utils::hermitivitize(S_);
   TIMER_OFF("Computing S");
 
   // Symmetry-pack
@@ -59,7 +59,7 @@ void CPCMSolver::buildSystemMatrix_impl(const Cavity & cavity,
   int nrBlocks = cavity.pointGroup().nrIrrep();
   // The size of the irreducible portion of the cavity
   int dimBlock = cavity.irreducible_size();
-  symmetryPacking(blockS_, S_, dimBlock, nrBlocks);
+  utils::symmetryPacking(blockS_, S_, dimBlock, nrBlocks);
 
   built_ = true;
 }
@@ -89,13 +89,5 @@ std::ostream & CPCMSolver::printSolver(std::ostream & os) {
 
   return os;
 }
-
-namespace {
-PCMSolver * createCPCMSolver(const solverData & data) {
-  return new CPCMSolver(data.hermitivitize, data.correction);
-}
-const std::string CPCMSOLVER("CPCM");
-const bool registeredCPCMSolver =
-    Factory<PCMSolver, solverData>::TheFactory().registerObject(CPCMSOLVER,
-                                                                createCPCMSolver);
-}
+} // namespace solver
+} // namespace pcm

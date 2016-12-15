@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -31,7 +31,11 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+namespace cavity {
 class Element;
+} // namespace green
+} // namespace pcm
 
 #include "dielectric_profile/ProfileTypes.hpp"
 
@@ -57,17 +61,20 @@ class Element;
  *  The code uses the Non-Virtual Interface (NVI) idiom.
  */
 
+namespace pcm {
+using cavity::Element;
+using dielectric_profile::Permittivity;
 /*! \typedef KernelS
  *  \brief functor handle to the kernelS method
  */
-typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
-    KernelS;
+typedef function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelS;
 
 /*! \typedef KernelD
  *  \brief functor handle to the kernelD method
  */
-typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
-                             const Eigen::Vector3d &)> KernelD;
+typedef function<double(const Eigen::Vector3d &,
+                        const Eigen::Vector3d &,
+                        const Eigen::Vector3d &)> KernelD;
 
 class IGreensFunction {
 public:
@@ -99,7 +106,8 @@ public:
    *  \param[in]        p2 second point
    *  \note This is the Non-Virtual Interface (NVI)
    */
-  double kernelD(const Eigen::Vector3d & direction, const Eigen::Vector3d & p1,
+  double kernelD(const Eigen::Vector3d & direction,
+                 const Eigen::Vector3d & p1,
                  const Eigen::Vector3d & p2) const {
     return kernelD_impl(direction, p1, p2);
   }
@@ -190,5 +198,6 @@ protected:
 
   virtual std::ostream & printObject(std::ostream & os) = 0;
 };
+} // namespace pcm
 
 #endif // IGREENSFUNCTION_HPP

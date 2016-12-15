@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,6 +32,9 @@
 #include "green/DerivativeTypes.hpp"
 #include "green/IonicLiquid.hpp"
 
+using namespace pcm;
+using green::IonicLiquid;
+
 TEST_CASE("Evaluation of the ionic liquid Green's function and its derivatives",
           "[green][green_ionic_liquid]") {
   double epsilon = 60.0;
@@ -50,7 +53,7 @@ TEST_CASE("Evaluation of the ionic liquid Green's function and its derivatives",
    * IonicLiquid Green's function against analytical result
    */
   SECTION("Numerical derivative") {
-    IonicLiquid<Numerical> gf(epsilon, kappa);
+    IonicLiquid<Stencil> gf(epsilon, kappa);
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     REQUIRE(value == Approx(gf_value));

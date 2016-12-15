@@ -21,37 +21,36 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SHARP_HPP
-#define SHARP_HPP
+#ifndef BOUNDARYINTEGRALOPERATORS_HPP
+#define BOUNDARYINTEGRALOPERATORS_HPP
 
-#include <iosfwd>
+#include <vector>
 
 #include "Config.hpp"
 
-/*! \file Sharp.hpp
- *  \struct Sharp
- *  \brief A sharp dielectric separation
- *  \author Roberto Di Remigio
- *  \date 2015
- */
+#include <Eigen/Core>
 
 namespace pcm {
-namespace dielectric_profile {
-struct Sharp __final {
-  double epsilon;
-  double epsilonSolvent;
-  double radius;
-  Sharp() : epsilon(1.0), epsilonSolvent(1.0), radius(1.0) {}
-  Sharp(double eL, double eR, double c)
-      : epsilon(eL), epsilonSolvent(eR), radius(c) {}
-  friend std::ostream & operator<<(std::ostream & os, Sharp & obj) {
-    os << "Sphere permittivity  = " << obj.epsilon << std::endl;
-    os << "Solvent permittivity = " << obj.epsilonSolvent << std::endl;
-    os << "Sphere radius        = " << obj.radius << " AU";
-    return os;
-  }
-};
-} // namespace dielectric_profile
+class ICavity;
+namespace cavity {
+class Element;
+} // namespace cavity
+class IGreensFunction;
 } // namespace pcm
 
-#endif // SHARP_HPP
+namespace pcm {
+class IBoundaryIntegralOperator {
+public:
+  virtual ~IBoundaryIntegralOperator() {}
+  Eigen::MatrixXd computeS(const ICavity & cav, const IGreensFunction & gf) const;
+  Eigen::MatrixXd computeD(const ICavity & cav, const IGreensFunction & gf) const;
+
+private:
+  virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
+                                        const IGreensFunction & gf) const = 0;
+  virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
+                                        const IGreensFunction & gf) const = 0;
+};
+} // namespace pcm
+
+#endif // BOUNDARYINTEGRALOPERATORS_HPP

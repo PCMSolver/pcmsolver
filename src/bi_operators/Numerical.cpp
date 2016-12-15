@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -36,12 +36,13 @@
 
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
-#include "utils/MathUtils.hpp"
 #include "utils/QuadratureRules.hpp"
-#include "BIOperatorData.hpp"
-#include "utils/Factory.hpp"
 
-namespace integrator {
+namespace pcm {
+using cavity::Element;
+using cavity::detail::tangent_and_bitangent;
+
+namespace bi_operators {
 Eigen::MatrixXd Numerical::computeS_impl(const std::vector<Element> & elems,
                                          const IGreensFunction & gf) const {
   PCMSolverIndex cavitySize = elems.size();
@@ -284,7 +285,8 @@ double integrateD(const KernelD & F, const Element & e) {
               point(2) = tangent(2) * sin_theta * cos_phi +
                          bitangent(2) * sin_theta * sin_phi +
                          normal(2) * (cos_theta - 1.0);
-              double value = F(e.normal(), Eigen::Vector3d::Zero(),
+              double value = F(e.normal(),
+                               Eigen::Vector3d::Zero(),
                                point); // Evaluate integrand at Gaussian point
               scratch += std::pow(sph.radius, 2) * value * sin_theta * thetaA *
                          thetaRule.weight(l);
@@ -303,14 +305,5 @@ template double integrateD<32, 16>(const KernelD & F, const Element & e);
 
 template double integrateS<64, 16>(const KernelS & F, const Element & e);
 template double integrateD<64, 16>(const KernelD & F, const Element & e);
-} // namespace integrator
-
-namespace {
-BoundaryIntegralOperator * createNumerical(const biOperatorData & /* data */) {
-  return new integrator::Numerical();
-}
-const std::string NUMERICAL("NUMERICAL");
-const bool registeredNumerical =
-    Factory<BoundaryIntegralOperator, biOperatorData>::TheFactory().registerObject(
-        NUMERICAL, createNumerical);
-}
+} // namespace bi_operators
+} // namespace pcm

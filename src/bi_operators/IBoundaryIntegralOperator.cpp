@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -21,18 +21,23 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#include "BoundaryIntegralOperator.hpp"
+#include "IBoundaryIntegralOperator.hpp"
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
 
-#include "cavity/Cavity.hpp"
+#include "cavity/ICavity.hpp"
 #include "green/IGreensFunction.hpp"
 #include "utils/MathUtils.hpp"
 
-Eigen::MatrixXd BoundaryIntegralOperator::computeS(
-    const Cavity & cav, const IGreensFunction & gf) const {
+namespace pcm {
+using cavity::Element;
+using utils::symmetryBlocking;
+
+Eigen::MatrixXd IBoundaryIntegralOperator::computeS(
+    const ICavity & cav,
+    const IGreensFunction & gf) const {
   Eigen::MatrixXd biop = computeS_impl(cav.elements(), gf);
   // Perform symmetry blocking
   // The total size of the cavity
@@ -49,8 +54,9 @@ Eigen::MatrixXd BoundaryIntegralOperator::computeS(
   return biop;
 }
 
-Eigen::MatrixXd BoundaryIntegralOperator::computeD(
-    const Cavity & cav, const IGreensFunction & gf) const {
+Eigen::MatrixXd IBoundaryIntegralOperator::computeD(
+    const ICavity & cav,
+    const IGreensFunction & gf) const {
   Eigen::MatrixXd biop = computeD_impl(cav.elements(), gf);
   // Perform symmetry blocking
   // The total size of the cavity
@@ -66,3 +72,4 @@ Eigen::MatrixXd BoundaryIntegralOperator::computeD(
   }
   return biop;
 }
+} // namespace pcm

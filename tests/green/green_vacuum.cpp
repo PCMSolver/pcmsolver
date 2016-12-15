@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,6 +32,9 @@
 #include "green/DerivativeTypes.hpp"
 #include "green/Vacuum.hpp"
 
+using namespace pcm;
+using green::Vacuum;
+
 TEST_CASE("Evaluation of the vacuum Green's function and its derivatives",
           "[green][green_vacuum]") {
   Eigen::Vector3d source = Eigen::Vector3d::Random();
@@ -47,7 +50,7 @@ TEST_CASE("Evaluation of the vacuum Green's function and its derivatives",
    * Green's function against analytical result
    */
   SECTION("Numerical derivative") {
-    Vacuum<Numerical> gf;
+    Vacuum<Stencil> gf;
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     REQUIRE(value == Approx(gf_value));

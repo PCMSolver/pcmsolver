@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -26,18 +26,20 @@
 
 #include "Config.hpp"
 
-/*! @struct biOperatorData
- *  @brief Contains all data defined from user input to set up the integrators
+/*! @struct BIOperatorData
+ *  @brief Contains all data defined from user input to set up the bi_operatorss
  */
 
-struct biOperatorData {
+namespace pcm {
+struct BIOperatorData {
   /*! Scaling for the diagonal of the approximate collocation matrices */
   double scaling;
   /*! Whether the structure was initialized with user input or not */
   bool empty;
 
-  biOperatorData() { empty = true; }
-  biOperatorData(double s) : scaling(s) { empty = false; }
+  BIOperatorData() { empty = true; }
+  BIOperatorData(double s) : scaling(s) { empty = false; }
 };
+} // namespace pcm
 
 #endif // BIOPERATORDATA_HPP

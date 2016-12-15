@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -21,19 +21,21 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef PCMSOLVER_HPP
-#define PCMSOLVER_HPP
+#ifndef ISOLVER_HPP
+#define ISOLVER_HPP
 
 #include <iosfwd>
 
 #include "Config.hpp"
 
-class Cavity;
+class ICavity;
 class IGreensFunction;
-class BoundaryIntegralOperator;
+namespace pcm {
+class IBoundaryIntegralOperator;
+} // namespace pcm
 
-/*! \file PCMSolver.hpp
- *  \class PCMSolver
+/*! \file ISolver.hpp
+ *  \class ISolver
  *  \brief Abstract Base Class for solvers inheritance hierarchy.
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2011, 2015, 2016
@@ -41,10 +43,11 @@ class BoundaryIntegralOperator;
  *  We use the Non-Virtual Interface idiom.
  */
 
-class PCMSolver {
+namespace pcm {
+class ISolver {
 public:
-  PCMSolver() : built_(false), isotropic_(true) {}
-  virtual ~PCMSolver() {}
+  ISolver() : built_(false), isotropic_(true) {}
+  virtual ~ISolver() {}
 
   /*! \brief Calculation of the PCM matrix
    *  \param[in] cavity the cavity to be used
@@ -52,9 +55,10 @@ public:
    *  \param[in] gf_o Green's function outside the cavity
    *  \param[in] op integrator strategy for the single and double layer operators
    */
-  void buildSystemMatrix(const Cavity & cavity, const IGreensFunction & gf_i,
+  void buildSystemMatrix(const ICavity & cavity,
+                         const IGreensFunction & gf_i,
                          const IGreensFunction & gf_o,
-                         const BoundaryIntegralOperator & op) {
+                         const IBoundaryIntegralOperator & op) {
     buildSystemMatrix_impl(cavity, gf_i, gf_o, op);
   }
   /*! \brief Returns the ASC given the MEP and the desired irreducible representation
@@ -68,7 +72,7 @@ public:
     return computeCharge_impl(potential, irrep);
   }
 
-  friend std::ostream & operator<<(std::ostream & os, PCMSolver & solver) {
+  friend std::ostream & operator<<(std::ostream & os, ISolver & solver) {
     return solver.printSolver(os);
   }
 
@@ -84,10 +88,10 @@ protected:
    *  \param[in] gf_o Green's function outside the cavity
    *  \param[in] op integrator strategy for the single and double layer operators
    */
-  virtual void buildSystemMatrix_impl(const Cavity & cavity,
+  virtual void buildSystemMatrix_impl(const ICavity & cavity,
                                       const IGreensFunction & gf_i,
                                       const IGreensFunction & gf_o,
-                                      const BoundaryIntegralOperator & op) = 0;
+                                      const IBoundaryIntegralOperator & op) = 0;
   /*! \brief Returns the ASC given the MEP and the desired irreducible representation
    *  \param[in] potential the vector containing the MEP at cavity points
    *  \param[in] irrep the irreducible representation of the MEP and ASC
@@ -96,5 +100,6 @@ protected:
                                              int irrep = 0) const = 0;
   virtual std::ostream & printSolver(std::ostream & os) = 0;
 };
+} // namespace pcm
 
-#endif // PCMSOLVER_HPP
+#endif // ISOLVER_HPP

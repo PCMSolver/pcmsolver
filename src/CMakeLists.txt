@@ -35,8 +35,11 @@ if(NOT STATIC_LIBRARY_ONLY)
 endif()
 
 add_library(pcm-static STATIC ${_objects})
-set_target_properties(pcm-static PROPERTIES OUTPUT_NAME "pcm"
-                                            COMPILE_FLAGS -D${PROJECT_NAME}_STATIC_DEFINE)
+if(NOT TARGET ${PROJECT_NAME})
+  add_library(${PROJECT_NAME} ALIAS pcm-static)
+endif()
+set_target_properties(pcm-static PROPERTIES COMPILE_FLAGS -D${PROJECT_NAME}_STATIC_DEFINE
+                                            OUTPUT_NAME "pcm")
 install(TARGETS pcm-static
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 add_dependencies(pcm-static generate-config-hpp)

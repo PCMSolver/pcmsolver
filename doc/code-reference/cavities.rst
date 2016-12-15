@@ -10,9 +10,9 @@ implemented through the generic Factory class.
    :scale: 70 %
    :align: center
 
-Cavity
-------
-.. doxygenclass:: Cavity
+ICavity
+-------
+.. doxygenclass:: ICavity
    :project: PCMSolver
    :members:
    :protected-members:

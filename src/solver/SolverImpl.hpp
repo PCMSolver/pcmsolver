@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -29,9 +29,11 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 
-class Cavity;
+namespace pcm {
+class ICavity;
 class IGreensFunction;
-class BoundaryIntegralOperator;
+class IBoundaryIntegralOperator;
+} // namespace pcm
 
 /*! \file SolverImpl.hpp
  *  \brief Functions common to all solvers
@@ -39,7 +41,9 @@ class BoundaryIntegralOperator;
  *  \date 2015
  */
 
+namespace pcm {
 namespace solver {
+namespace detail {
 /*! \brief Builds the **anisotropic** IEFPCM matrix
  *  \param[in] cav the discretized cavity
  *  \param[in] gf_i Green's function inside the cavity
@@ -62,10 +66,10 @@ namespace solver {
  *  \f]
  *  The matrix is not symmetrized and is not symmetry packed.
  */
-Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav,
+Eigen::MatrixXd anisotropicIEFMatrix(const ICavity & cav,
                                      const IGreensFunction & gf_i,
                                      const IGreensFunction & gf_o,
-                                     const BoundaryIntegralOperator & op);
+                                     const IBoundaryIntegralOperator & op);
 
 /*! \brief Builds the **isotropic** IEFPCM matrix
  *  \param[in] cav the discretized cavity
@@ -86,9 +90,10 @@ Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav,
  *  \f]
  *  The matrix is not symmetrized and is not symmetry packed.
  */
-Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunction & gf_i,
+Eigen::MatrixXd isotropicIEFMatrix(const ICavity & cav,
+                                   const IGreensFunction & gf_i,
                                    double epsilon,
-                                   const BoundaryIntegralOperator & op);
+                                   const IBoundaryIntegralOperator & op);
 
 /*! \brief Builds the **anisotropic** \f$ \mathbf{T}_\varepsilon \f$ matrix
  *  \param[in] cav the discretized cavity
@@ -107,9 +112,10 @@ Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunction & g
  *  \f]
  *  The matrix is not symmetrized and is not symmetry packed.
  */
-Eigen::MatrixXd anisotropicTEpsilon(const Cavity & cav, const IGreensFunction & gf_i,
+Eigen::MatrixXd anisotropicTEpsilon(const ICavity & cav,
+                                    const IGreensFunction & gf_i,
                                     const IGreensFunction & gf_o,
-                                    const BoundaryIntegralOperator & op);
+                                    const IBoundaryIntegralOperator & op);
 
 /*! \brief Builds the **isotropic** \f$ \mathbf{T}_\varepsilon \f$ matrix
  *  \param[in] cav the discretized cavity
@@ -126,9 +132,10 @@ Eigen::MatrixXd anisotropicTEpsilon(const Cavity & cav, const IGreensFunction & 
  *  \f]
  *  The matrix is not symmetrized and is not symmetry packed.
  */
-Eigen::MatrixXd isotropicTEpsilon(const Cavity & cav, const IGreensFunction & gf_i,
+Eigen::MatrixXd isotropicTEpsilon(const ICavity & cav,
+                                  const IGreensFunction & gf_i,
                                   double epsilon,
-                                  const BoundaryIntegralOperator & op);
+                                  const IBoundaryIntegralOperator & op);
 
 /*! \brief Builds the **anisotropic** \f$ \mathbf{R}_\infty \f$ matrix
  *  \param[in] cav the discretized cavity
@@ -145,10 +152,10 @@ Eigen::MatrixXd isotropicTEpsilon(const Cavity & cav, const IGreensFunction & gf
  *  \f]
  *  The matrix is not symmetrized and is not symmetry packed.
  */
-Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav,
+Eigen::MatrixXd anisotropicRinfinity(const ICavity & cav,
                                      const IGreensFunction & gf_i,
                                      const IGreensFunction & gf_o,
-                                     const BoundaryIntegralOperator & op);
+                                     const IBoundaryIntegralOperator & op);
 
 /*! \brief Builds the **isotropic** \f$ \mathbf{R}_\infty \f$ matrix
  *  \param[in] cav the discretized cavity
@@ -163,6 +170,9 @@ Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav,
  *  \f]
  *  The matrix is not symmetrized and is not symmetry packed.
  */
-Eigen::MatrixXd isotropicRinfinity(const Cavity & cav, const IGreensFunction & gf_i,
-                                   const BoundaryIntegralOperator & D);
+Eigen::MatrixXd isotropicRinfinity(const ICavity & cav,
+                                   const IGreensFunction & gf_i,
+                                   const IBoundaryIntegralOperator & D);
+} // namespace detail
 } // namespace solver
+} // namespace pcm

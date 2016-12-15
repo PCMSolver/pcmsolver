@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,6 +30,9 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+using utils::Sphere;
+
 std::ostream & operator<<(std::ostream & os, Sphere & sph) {
   os << "Sphere radius " << sph.radius << std::endl;
   os << "Sphere center\n" << sph.center;
@@ -48,3 +51,4 @@ void transfer_spheres(const std::vector<Sphere> & spheres,
     sphereRadius(i) = spheres[i].radius;
   }
 }
+} // namespace pcm

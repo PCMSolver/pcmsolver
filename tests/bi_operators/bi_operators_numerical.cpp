@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -40,6 +40,14 @@
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"
 
+using namespace pcm;
+using bi_operators::Numerical;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using green::IonicLiquid;
+using green::AnisotropicLiquid;
+
 SCENARIO(
     "A collocation integrator with numerical integrator of the diagonal elements",
     "[bi_operators][bi_operators_numerical]") {
@@ -49,7 +57,7 @@ SCENARIO(
     GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);
     Eigen::MatrixXd results = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());
     Eigen::MatrixXd reference = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());
-    integrator::Numerical op;
+    Numerical op;
 
     /*! \class Numerical
      *  \test \b NumericalTest_vacuum tests the numerical evaluation of the

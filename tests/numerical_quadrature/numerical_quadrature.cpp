@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -37,11 +37,14 @@
 #include "utils/MathUtils.hpp"
 #include "TestingMolecules.hpp"
 
-using integrator::integrateS;
-using integrator::integrateD;
+using namespace pcm;
+using bi_operators::integrateS;
+using bi_operators::integrateD;
+using cavity::GePolCavity;
 
 double constant(const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */);
-double one_over_r(double r, const Eigen::Vector3d & /* s */,
+double one_over_r(double r,
+                  const Eigen::Vector3d & /* s */,
                   const Eigen::Vector3d & /* p */);
 
 SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]") {
@@ -170,7 +173,8 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]") {
 double constant(const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */) {
   return 1.0;
 }
-double one_over_r(double r, const Eigen::Vector3d & /* s */,
+double one_over_r(double r,
+                  const Eigen::Vector3d & /* s */,
                   const Eigen::Vector3d & /* p */) {
   return 1.0 / r;
 }

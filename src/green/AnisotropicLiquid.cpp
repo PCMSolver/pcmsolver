@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -35,20 +35,22 @@
 #include "cavity/Element.hpp"
 #include "dielectric_profile/Anisotropic.hpp"
 
-#include "GreenData.hpp"
-#include "utils/ForId.hpp"
-#include "utils/Factory.hpp"
-
+namespace pcm {
+using cavity::Element;
+using dielectric_profile::Anisotropic;
+namespace green {
 template <typename DerivativeTraits>
 AnisotropicLiquid<DerivativeTraits>::AnisotropicLiquid(
-    const Eigen::Vector3d & eigen_eps, const Eigen::Vector3d & euler_ang)
+    const Eigen::Vector3d & eigen_eps,
+    const Eigen::Vector3d & euler_ang)
     : GreensFunction<DerivativeTraits, Anisotropic>() {
   this->profile_ = Anisotropic(eigen_eps, euler_ang);
 }
 
 template <typename DerivativeTraits>
 DerivativeTraits AnisotropicLiquid<DerivativeTraits>::operator()(
-    DerivativeTraits * sp, DerivativeTraits * pp) const {
+    DerivativeTraits * sp,
+    DerivativeTraits * pp) const {
   // The distance has to be calculated using epsilonInv_ as metric:
   DerivativeTraits scratch = 0.0;
   Eigen::Matrix3d epsilonInv_ = this->profile_.epsilonInv();
@@ -65,7 +67,8 @@ DerivativeTraits AnisotropicLiquid<DerivativeTraits>::operator()(
 
 template <typename DerivativeTraits>
 double AnisotropicLiquid<DerivativeTraits>::kernelD_impl(
-    const Eigen::Vector3d & direction, const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & direction,
+    const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   // Since the permittivity is a tensorial quantity,
   // the full gradient is needed to get the kernel of D and D^\dagger
@@ -75,26 +78,31 @@ double AnisotropicLiquid<DerivativeTraits>::kernelD_impl(
 
 template <typename DerivativeTraits>
 KernelS AnisotropicLiquid<DerivativeTraits>::exportKernelS_impl() const {
-  return pcm::bind(&AnisotropicLiquid<DerivativeTraits>::kernelS, *this, pcm::_1,
-                   pcm::_2);
+  return pcm::bind(
+      &AnisotropicLiquid<DerivativeTraits>::kernelS, *this, pcm::_1, pcm::_2);
 }
 
 template <typename DerivativeTraits>
 KernelD AnisotropicLiquid<DerivativeTraits>::exportKernelD_impl() const {
-  return pcm::bind(&AnisotropicLiquid<DerivativeTraits>::kernelD, *this, pcm::_1,
-                   pcm::_2, pcm::_3);
+  return pcm::bind(&AnisotropicLiquid<DerivativeTraits>::kernelD,
+                   *this,
+                   pcm::_1,
+                   pcm::_2,
+                   pcm::_3);
 }
 
 template <typename DerivativeTraits>
 double AnisotropicLiquid<DerivativeTraits>::singleLayer_impl(
-    const Element & /* e */, double /* factor */) const {
+    const Element & /* e */,
+    double /* factor */) const {
   PCMSOLVER_ERROR("Not implemented yet for AnisotropicLiquid");
   // return 0.0;
 }
 
 template <typename DerivativeTraits>
 double AnisotropicLiquid<DerivativeTraits>::doubleLayer_impl(
-    const Element & /* e */, double /* factor */) const {
+    const Element & /* e */,
+    double /* factor */) const {
   PCMSOLVER_ERROR("Not implemented yet for AnisotropicLiquid");
   // return 0.0;
 }
@@ -106,24 +114,9 @@ std::ostream & AnisotropicLiquid<DerivativeTraits>::printObject(std::ostream & o
   return os;
 }
 
-namespace {
-struct buildAnisotropicLiquid {
-  template <typename T> IGreensFunction * operator()(const greenData & data) {
-    return new AnisotropicLiquid<T>(data.epsilonTensor, data.eulerAngles);
-  }
-};
-
-IGreensFunction * createAnisotropicLiquid(const greenData & data) {
-  buildAnisotropicLiquid build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
-const std::string ANISOTROPICLIQUID("ANISOTROPICLIQUID");
-const bool registeredAnisotropicLiquid =
-    Factory<IGreensFunction, greenData>::TheFactory().registerObject(
-        ANISOTROPICLIQUID, createAnisotropicLiquid);
-}
-
-template class AnisotropicLiquid<Numerical>;
+template class AnisotropicLiquid<Stencil>;
 template class AnisotropicLiquid<AD_directional>;
 template class AnisotropicLiquid<AD_gradient>;
 template class AnisotropicLiquid<AD_hessian>;
+} // namespace green
+} // namespace pcm

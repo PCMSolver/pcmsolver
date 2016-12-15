@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,11 +30,18 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+namespace cavity {
 class Element;
+} // namespace cavity
+namespace dielectric_profile {
 class OneLayerTanh;
+} // namespace dielectric_profile
+} // namespace pcm
 
 #include "InterfacesImpl.hpp"
 #include "GreensFunction.hpp"
+#include "GreenData.hpp"
 
 /*! \file SphericalDiffuse.hpp
  *  \class SphericalDiffuse
@@ -60,8 +67,10 @@ class OneLayerTanh;
  *  at a pair of points, a translation of the sampling points is performed first.
  */
 
-template <typename ProfilePolicy = OneLayerTanh>
-class SphericalDiffuse __final : public GreensFunction<Numerical, ProfilePolicy> {
+namespace pcm {
+namespace green {
+template <typename ProfilePolicy = dielectric_profile::OneLayerTanh>
+class SphericalDiffuse __final : public GreensFunction<Stencil, ProfilePolicy> {
 public:
   /*! Constructor for a one-layer interface
    * \param[in] e1 left-side dielectric constant
@@ -71,8 +80,12 @@ public:
    * \param[in] o center of the sphere
    * \param[in] l maximum value of angular momentum
    */
-  SphericalDiffuse(double e1, double e2, double w, double c,
-                   const Eigen::Vector3d & o, int l);
+  SphericalDiffuse(double e1,
+                   double e2,
+                   double w,
+                   double c,
+                   const Eigen::Vector3d & o,
+                   int l);
   virtual ~SphericalDiffuse() {}
 
   friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
@@ -150,7 +163,7 @@ private:
    *
    *  \note This takes care of the origin shift
    */
-  virtual Numerical operator()(Numerical * sp, Numerical * pp) const __override;
+  virtual Stencil operator()(Stencil * sp, Stencil * pp) const __override;
   /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the
    * pair of points p1, p2:
    *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1,
@@ -195,13 +208,13 @@ private:
   /*! \brief First independent radial solution, used to build Green's function.
    *  \note The vector has dimension maxLGreen_ and has r^l behavior
    */
-  std::vector<RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial,
-                             Zeta> > zeta_;
+  std::vector<RadialFunction<detail::StateType, detail::LnTransformedRadial, Zeta> >
+      zeta_;
   /*! \brief Second independent radial solution, used to build Green's function.
    *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
    */
-  std::vector<RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial,
-                             Omega> > omega_;
+  std::vector<RadialFunction<detail::StateType, detail::LnTransformedRadial, Omega> >
+      omega_;
   /*! \brief Returns L-th component of the radial part of the Green's function
    *  \param[in] L  angular momentum
    *  \param[in] sp source point
@@ -211,8 +224,10 @@ private:
    * the
    *  dielectric sphere.
    */
-  double imagePotentialComponent_impl(int L, const Eigen::Vector3d & sp,
-                                      const Eigen::Vector3d & pp, double Cr12) const;
+  double imagePotentialComponent_impl(int L,
+                                      const Eigen::Vector3d & sp,
+                                      const Eigen::Vector3d & pp,
+                                      double Cr12) const;
   /**@}*/
 
   /**@{ Parameters and functions for the calculation of the Coulomb singularity
@@ -223,14 +238,12 @@ private:
   /*! \brief First independent radial solution, used to build coefficient.
    *  \note This is needed to separate the Coulomb singularity and has r^l behavior
    */
-  RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial, Zeta>
-      zetaC_;
+  RadialFunction<detail::StateType, detail::LnTransformedRadial, Zeta> zetaC_;
   /*! \brief Second independent radial solution, used to build coefficient.
    *  \note This is needed to separate the Coulomb singularity and has r^(-l-1)
    * behavior
    */
-  RadialFunction<interfaces::StateType, interfaces::LnTransformedRadial, Omega>
-      omegaC_;
+  RadialFunction<detail::StateType, detail::LnTransformedRadial, Omega> omegaC_;
   /*! \brief Returns coefficient for the separation of the Coulomb singularity
    *  \param[in] sp first point
    *  \param[in] pp second point
@@ -242,5 +255,20 @@ private:
                           const Eigen::Vector3d & pp) const;
   /**@}*/
 };
+
+namespace detail {
+struct buildSphericalDiffuse {
+  template <typename T> IGreensFunction * operator()(const GreenData & data) {
+    return new SphericalDiffuse<T>(data.epsilon1,
+                                   data.epsilon2,
+                                   data.width,
+                                   data.center,
+                                   data.origin,
+                                   data.maxL);
+  }
+};
+} // namespace detail
+} // namespace green
+} // namespace pcm
 
 #endif // SPHERICALDIFFUSE_HPP

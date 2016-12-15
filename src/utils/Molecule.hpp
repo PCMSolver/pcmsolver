@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,15 +32,26 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+namespace cavity {
 class Element;
+} // namespace cavity
+} // namespace pcm
 
 #include "Atom.hpp"
 #include "Sphere.hpp"
 #include "Symmetry.hpp"
 
+namespace pcm {
+using utils::Atom;
+using utils::Sphere;
+
 enum rotorType { rtAsymmetric, rtSymmetric, rtSpherical, rtLinear, rtAtom };
-const std::string rotorTypeList[] = {"Asymmetric", "Symmetric", "Spherical",
-                                     "Linear", "Atom"};
+const std::string rotorTypeList[] = {"Asymmetric",
+                                     "Symmetric",
+                                     "Spherical",
+                                     "Linear",
+                                     "Atom"};
 
 /*! \file Molecule.hpp
  *  \class Molecule
@@ -74,7 +85,7 @@ private:
 
 public:
   /*! \brief Default constructor
-   *  Initialize a dummy molecule, e.g. as placeholder, see Cavity.cpp loadCavity
+   *  Initialize a dummy molecule, e.g. as placeholder, see ICavity.cpp loadCavity
    * method
    */
   Molecule() {
@@ -91,8 +102,11 @@ public:
    *
    *  This initializes the molecule in C1 symmetry
    */
-  Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & masses,
-           const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
+  Molecule(int nat,
+           const Eigen::VectorXd & chg,
+           const Eigen::VectorXd & masses,
+           const Eigen::Matrix3Xd & geo,
+           const std::vector<Atom> & at,
            const std::vector<Sphere> & sph);
   /*! \brief Constructor from full molecular data, plus number of generators and
    *generators
@@ -108,9 +122,14 @@ public:
    *  This initializes the molecule in the symmetry prescribed by nr_gen and gen.
    *  See documentation of the Symmetry object for the conventions.
    */
-  Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & masses,
-           const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
-           const std::vector<Sphere> & sph, int nr_gen, int gen[3]);
+  Molecule(int nat,
+           const Eigen::VectorXd & chg,
+           const Eigen::VectorXd & masses,
+           const Eigen::Matrix3Xd & geo,
+           const std::vector<Atom> & at,
+           const std::vector<Sphere> & sph,
+           int nr_gen,
+           int gen[3]);
   /*! \brief Constructor from full molecular data and point group
    *  \param[in] nat number of atoms
    *  \param[in] chg vector of atomic charges
@@ -122,9 +141,13 @@ public:
    *
    *  This initializes the molecule in the symmetry prescribed by pg.
    */
-  Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & masses,
-           const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
-           const std::vector<Sphere> & sph, const Symmetry & pg);
+  Molecule(int nat,
+           const Eigen::VectorXd & chg,
+           const Eigen::VectorXd & masses,
+           const Eigen::Matrix3Xd & geo,
+           const std::vector<Atom> & at,
+           const std::vector<Sphere> & sph,
+           const Symmetry & pg);
   /*! \brief Constructor from list of spheres
    *  \param[in] sph  list of spheres
    *
@@ -198,7 +221,8 @@ public:
  *  \param[in] el  list of finite elements
  *  \return MEP at finite elements center
  */
-Eigen::VectorXd computeMEP(const Molecule & mol, const std::vector<Element> & el);
+Eigen::VectorXd computeMEP(const Molecule & mol,
+                           const std::vector<cavity::Element> & el);
 
 /*! \brief Compute MEP from molecule object and a grid of points
  *  \param[in] mol  molecule object
@@ -213,7 +237,16 @@ Eigen::VectorXd computeMEP(const Molecule & mol, const Eigen::Matrix3Xd & grid);
  *  \param[in] origin location of the point charge
  *  \return MEP at finite elements center
  */
-Eigen::VectorXd computeMEP(const std::vector<Element> & el, double charge = 1.0,
+Eigen::VectorXd computeMEP(const std::vector<cavity::Element> & el,
+                           double charge = 1.0,
                            const Eigen::Vector3d & origin = Eigen::Vector3d::Zero());
+
+/*! \brief Compute MEP for a single point charge
+ *  \param[in] el  list of finite elements
+ *  \param[in] charge value of the charge
+ *  \param[in] origin location of the point charge
+ *  \return MEP at finite elements center
+ */
+} // namespace pcm
 
 #endif // MOLECULE_HPP

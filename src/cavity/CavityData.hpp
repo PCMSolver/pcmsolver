@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,11 +30,12 @@
 
 #include "utils/Molecule.hpp"
 
-/*! @struct cavityData
+/*! @struct CavityData
  *  @brief Contains all data defined from user input in the cavity section.
  */
 
-struct cavityData {
+namespace pcm {
+struct CavityData {
   /*! Molecule object with the relevant data for cavity generation */
   Molecule molecule;
   /*! The average tesserae area. Relevant for GePolCavity */
@@ -61,10 +62,17 @@ struct cavityData {
   /*! Whether the structure was initialized with user input or not */
   bool empty;
 
-  cavityData() { empty = true; }
-  cavityData(const Molecule & _molec, double _area, double _probeRadius,
-             double _minDistance, int _derOrder, double _minRadius, int _patchLevel,
-             double _coarsity, const std::string & _fname, const std::string & _dyad)
+  CavityData() { empty = true; }
+  CavityData(const Molecule & _molec,
+             double _area,
+             double _probeRadius,
+             double _minDistance,
+             int _derOrder,
+             double _minRadius,
+             int _patchLevel,
+             double _coarsity,
+             const std::string & _fname,
+             const std::string & _dyad)
       : molecule(_molec),
         area(_area),
         probeRadius(_probeRadius),
@@ -78,5 +86,6 @@ struct cavityData {
     empty = false;
   }
 };
+} // namespace pcm
 
 #endif // CAVITYDATA_HPP

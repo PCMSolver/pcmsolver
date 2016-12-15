@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -21,7 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#include "Cavity.hpp"
+#include "ICavity.hpp"
 
 #include <iostream>
 
@@ -34,28 +34,29 @@
 #include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
 
-Cavity::Cavity() : nElements_(0), built(false) {}
+namespace pcm {
+ICavity::ICavity() : nElements_(0), built(false) {}
 
-Cavity::Cavity(const Sphere & sph) : built(false) {
+ICavity::ICavity(const Sphere & sph) : built(false) {
   spheres_.push_back(sph);
   molecule_ = Molecule(spheres_);
   nSpheres_ = spheres_.size();
   transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
 }
 
-Cavity::Cavity(const std::vector<Sphere> & sph) : spheres_(sph), built(false) {
+ICavity::ICavity(const std::vector<Sphere> & sph) : spheres_(sph), built(false) {
   molecule_ = Molecule(spheres_);
   nSpheres_ = spheres_.size();
   transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
 }
 
-Cavity::Cavity(const Molecule & molec)
+ICavity::ICavity(const Molecule & molec)
     : spheres_(molec.spheres()), molecule_(molec), built(false) {
   nSpheres_ = spheres_.size();
   transfer_spheres(spheres_, sphereCenter_, sphereRadius_);
 }
 
-void Cavity::saveCavity(const std::string & fname) {
+void ICavity::saveCavity(const std::string & fname) {
   // Write everything in a single .npz binary file
   unsigned int dim = static_cast<unsigned int>(nElements_);
   // Write the number of elements, it will be used to check sanity of the save/load
@@ -78,7 +79,7 @@ void Cavity::saveCavity(const std::string & fname) {
   // const unsigned int arcs_shape[] = {dim, 10, 3};
 }
 
-void Cavity::loadCavity(const std::string & fname) {
+void ICavity::loadCavity(const std::string & fname) {
   // We initialize molecule_ to a dummy Molecule
   molecule_ = Molecule();
   // Load the .npz binary file and then traverse it to get the data needed to rebuild
@@ -130,7 +131,15 @@ void Cavity::loadCavity(const std::string & fname) {
     vertices.resize(Eigen::NoChange, nv); // BOGUS!!!
     arcs.resize(Eigen::NoChange, nv);     // BOGUS!!
     // Populate vertices and arcs
-    elements_.push_back(Element(nv, 0, elementArea_(i), elementCenter_.col(i),
-                                elementNormal_.col(i), irr, sph, vertices, arcs));
+    elements_.push_back(Element(nv,
+                                0,
+                                elementArea_(i),
+                                elementCenter_.col(i),
+                                elementNormal_.col(i),
+                                irr,
+                                sph,
+                                vertices,
+                                arcs));
   }
 }
+} // namespace pcm

@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -29,10 +29,11 @@
 
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
-#include "BIOperatorData.hpp"
-#include "utils/Factory.hpp"
 
-namespace integrator {
+namespace pcm {
+using cavity::Element;
+
+namespace bi_operators {
 Purisima::Purisima() : factor_(1.07) {}
 
 Purisima::Purisima(double fac) : factor_(fac) {}
@@ -72,14 +73,5 @@ Eigen::MatrixXd Purisima::computeD_impl(const std::vector<Element> & elems,
   }
   return D;
 }
-} // namespace integrator
-
-namespace {
-BoundaryIntegralOperator * createPurisima(const biOperatorData & data) {
-  return new integrator::Purisima(data.scaling);
-}
-const std::string PURISIMA("PURISIMA");
-const bool registeredPurisima =
-    Factory<BoundaryIntegralOperator, biOperatorData>::TheFactory().registerObject(
-        PURISIMA, createPurisima);
-}
+} // namespace bi_operators
+} // namespace pcm

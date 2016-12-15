@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -35,7 +35,12 @@
 #include "solver/CPCMSolver.hpp"
 #include "TestingMolecules.hpp"
 
-using integrator::Collocation;
+using namespace pcm;
+using bi_operators::Collocation;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using solver::CPCMSolver;
 
 SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity",
          "[solver][cpcm][cpcm_gepol-point]") {
@@ -62,7 +67,7 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity",
       double area = 0.4;
       double probeRadius = 0.0;
       double minRadius = 100.0;
-      GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
+      GePolCavity cavity(point, area, probeRadius, minRadius);
       cavity.saveCavity("point.npz");
 
       CPCMSolver solver(symm, correction);
@@ -101,7 +106,7 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity",
       double area = 0.4;
       double probeRadius = 0.0;
       double minRadius = 100.0;
-      GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
+      GePolCavity cavity(point, area, probeRadius, minRadius);
 
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);

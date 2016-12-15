@@ -69,6 +69,7 @@ matrix:
         - C_COMPILER='clang-3.6'
         - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='release'
+        - STATIC='--static'
     - os: osx
       osx_image: xcode7.3
       compiler: gcc
@@ -108,6 +109,7 @@ matrix:
         - Fortran_COMPILER='gfortran-4.9'
         - BUILD_TYPE='release'
         - HOMEBREW_GCC='homebrew/versions/gcc49'
+        - STATIC='--static'
     - os: linux
       compiler: clang
       addons: &4
@@ -189,6 +191,7 @@ matrix:
         - C_COMPILER='gcc-4.7'
         - Fortran_COMPILER='gfortran-4.7'
         - BUILD_TYPE='release'
+        - STATIC='--static'
     - os: osx
       osx_image: xcode7.3
       compiler: gcc
@@ -198,6 +201,7 @@ matrix:
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
         - HOMEBREW_GCC='homebrew/versions/gcc5'
+        - STATIC='--static'
     - os: linux
       compiler: gcc
       addons: &7
@@ -287,7 +291,7 @@ matrix:
         - C_COMPILER='gcc-5'
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
-        - COVERAGE=true
+        - COVERAGE='--coverage'
   allow_failures:
     - os: linux
       compiler: gcc
@@ -297,7 +301,7 @@ matrix:
         - C_COMPILER='gcc-5'
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
-        - COVERAGE=true
+        - COVERAGE='--coverage'
 install:
 - |
   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
@@ -316,12 +320,7 @@ before_script:
 - export FC=${Fortran_COMPILER}
 - ${Fortran_COMPILER} --version
 - python --version
-- |
-  if [[ "${COVERAGE}" = true ]]; then
-    python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' --coverage
-  else
-    python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake'
-  fi
+- python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' ${STATIC} ${COVERAGE}
 - cd build
 script:
 - ctest --parallel 2 --output-on-failure --verbose --dashboard Experimental --track TravisCI

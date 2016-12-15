@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -41,15 +41,16 @@
 #include "utils/MathUtils.hpp"
 #include "dielectric_profile/ProfileTypes.hpp"
 
-#include "GreenData.hpp"
-#include "utils/ForId.hpp"
-#include "utils/Factory.hpp"
-
+namespace pcm {
+namespace green {
 template <typename ProfilePolicy>
-SphericalDiffuse<ProfilePolicy>::SphericalDiffuse(double e1, double e2, double w,
+SphericalDiffuse<ProfilePolicy>::SphericalDiffuse(double e1,
+                                                  double e2,
+                                                  double w,
                                                   double c,
-                                                  const Eigen::Vector3d & o, int l)
-    : GreensFunction<Numerical, ProfilePolicy>(),
+                                                  const Eigen::Vector3d & o,
+                                                  int l)
+    : GreensFunction<Stencil, ProfilePolicy>(),
       origin_(o),
       maxLGreen_(l),
       maxLC_(2 * l) {
@@ -59,14 +60,16 @@ SphericalDiffuse<ProfilePolicy>::SphericalDiffuse(double e1, double e2, double w
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::coefficientCoulomb(
-    const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
+    const Eigen::Vector3d & source,
+    const Eigen::Vector3d & probe) const {
   // Obtain coefficient for the separation of the Coulomb singularity
   return this->coefficient_impl(source, probe);
 }
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::Coulomb(
-    const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
+    const Eigen::Vector3d & source,
+    const Eigen::Vector3d & probe) const {
   double r12 = (source - probe).norm();
 
   // Obtain coefficient for the separation of the Coulomb singularity
@@ -75,7 +78,8 @@ double SphericalDiffuse<ProfilePolicy>::Coulomb(
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::imagePotential(
-    const Eigen::Vector3d & source, const Eigen::Vector3d & probe) const {
+    const Eigen::Vector3d & source,
+    const Eigen::Vector3d & probe) const {
   // Obtain coefficient for the separation of the Coulomb singularity
   double Cr12 = this->coefficient_impl(source, probe);
 
@@ -89,31 +93,45 @@ double SphericalDiffuse<ProfilePolicy>::imagePotential(
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::coefficientCoulombDerivative(
-    const Eigen::Vector3d & direction, const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & direction,
+    const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      pcm::bind(&SphericalDiffuse<ProfilePolicy>::coefficientCoulomb, this, pcm::_1,
+      pcm::bind(&SphericalDiffuse<ProfilePolicy>::coefficientCoulomb,
+                this,
+                pcm::_1,
                 pcm::_2),
-      p2, p1, direction, this->delta_);
+      p2,
+      p1,
+      direction,
+      this->delta_);
 }
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::CoulombDerivative(
-    const Eigen::Vector3d & direction, const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & direction,
+    const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
       pcm::bind(&SphericalDiffuse<ProfilePolicy>::Coulomb, this, pcm::_1, pcm::_2),
-      p2, p1, direction, this->delta_);
+      p2,
+      p1,
+      direction,
+      this->delta_);
 }
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::imagePotentialDerivative(
-    const Eigen::Vector3d & direction, const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & direction,
+    const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      pcm::bind(&SphericalDiffuse<ProfilePolicy>::imagePotential, this, pcm::_1,
-                pcm::_2),
-      p2, p1, direction, this->delta_);
+      pcm::bind(
+          &SphericalDiffuse<ProfilePolicy>::imagePotential, this, pcm::_1, pcm::_2),
+      p2,
+      p1,
+      direction,
+      this->delta_);
 }
 
 template <typename ProfilePolicy>
@@ -135,8 +153,8 @@ void SphericalDiffuse<ProfilePolicy>::toFile(const std::string & prefix) {
 }
 
 template <typename ProfilePolicy>
-Numerical SphericalDiffuse<ProfilePolicy>::operator()(Numerical * sp,
-                                                      Numerical * pp) const {
+Stencil SphericalDiffuse<ProfilePolicy>::operator()(Stencil * sp,
+                                                    Stencil * pp) const {
   // Transfer raw arrays to Eigen vectors using the Map type
   Eigen::Map<Eigen::Matrix<double, 3, 1> > source(sp), probe(pp);
 
@@ -154,7 +172,8 @@ Numerical SphericalDiffuse<ProfilePolicy>::operator()(Numerical * sp,
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::kernelD_impl(
-    const Eigen::Vector3d & direction, const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & direction,
+    const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   double eps_r2 = 0.0;
   // Shift p2 by origin_
@@ -165,21 +184,21 @@ double SphericalDiffuse<ProfilePolicy>::kernelD_impl(
 
 template <typename ProfilePolicy>
 KernelS SphericalDiffuse<ProfilePolicy>::exportKernelS_impl() const {
-  return pcm::bind(&SphericalDiffuse<ProfilePolicy>::kernelS, *this, pcm::_1,
-                   pcm::_2);
+  return pcm::bind(
+      &SphericalDiffuse<ProfilePolicy>::kernelS, *this, pcm::_1, pcm::_2);
 }
 
 template <typename ProfilePolicy>
 KernelD SphericalDiffuse<ProfilePolicy>::exportKernelD_impl() const {
-  return pcm::bind(&SphericalDiffuse<ProfilePolicy>::kernelD, *this, pcm::_1,
-                   pcm::_2, pcm::_3);
+  return pcm::bind(
+      &SphericalDiffuse<ProfilePolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
 }
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::singleLayer_impl(const Element & e,
                                                          double factor) const {
   // Diagonal of S inside the cavity
-  double Sii_I = integrator::diagonalSi(e.area(), factor);
+  double Sii_I = detail::diagonalSi(e.area(), factor);
   // "Diagonal" of Coulomb singularity separation coefficient
   double coulomb_coeff = this->coefficientCoulomb(e.center(), e.center());
   // "Diagonal" of the image Green's function
@@ -191,9 +210,9 @@ template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::doubleLayer_impl(const Element & e,
                                                          double factor) const {
   // Diagonal of S inside the cavity
-  double Sii_I = integrator::diagonalSi(e.area(), factor);
+  double Sii_I = detail::diagonalSi(e.area(), factor);
   // Diagonal of D inside the cavity
-  double Dii_I = integrator::diagonalDi(e.area(), e.sphere().radius, factor);
+  double Dii_I = detail::diagonalDi(e.area(), e.sphere().radius, factor);
   // "Diagonal" of Coulomb singularity separation coefficient
   double coulomb_coeff = this->coefficientCoulomb(e.center(), e.center());
   // "Diagonal" of the directional derivative of the Coulomb singularity
@@ -224,14 +243,16 @@ std::ostream & SphericalDiffuse<ProfilePolicy>::printObject(std::ostream & os) {
 }
 
 template <typename ProfilePolicy>
-void SphericalDiffuse<ProfilePolicy>::initProfilePolicy(double e1, double e2,
-                                                        double w, double c) {
+void SphericalDiffuse<ProfilePolicy>::initProfilePolicy(double e1,
+                                                        double e2,
+                                                        double w,
+                                                        double c) {
   this->profile_ = ProfilePolicy(e1, e2, w, c);
 }
 
 template <typename ProfilePolicy>
 void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
-  using namespace interfaces;
+  using namespace detail;
 
   LOG("SphericalDiffuse::initSphericalDiffuse");
   // Parameters for the numerical solution of the radial differential equation
@@ -243,8 +264,13 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double r_infinity_ =
       this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
   double observer_step_ = 1.0e-03;     /*! Time step between observer calls */
-  IntegratorParameters params_(eps_abs_, eps_rel_, factor_x_, factor_dxdt_, r_0_,
-                               r_infinity_, observer_step_);
+  IntegratorParameters params_(eps_abs_,
+                               eps_rel_,
+                               factor_x_,
+                               factor_dxdt_,
+                               r_0_,
+                               r_infinity_,
+                               observer_step_);
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
@@ -295,7 +321,9 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
-    int L, const Eigen::Vector3d & sp, const Eigen::Vector3d & pp,
+    int L,
+    const Eigen::Vector3d & sp,
+    const Eigen::Vector3d & pp,
     double Cr12) const {
   Eigen::Vector3d sp_shift = sp + this->origin_;
   Eigen::Vector3d pp_shift = pp + this->origin_;
@@ -305,9 +333,9 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
   // Evaluate Legendre polynomial of order L
   // First of all clean-up cos_gamma, Legendre polynomials
   // are only defined for -1 <= x <= 1
-  if (numericalZero(cos_gamma - 1))
+  if (utils::numericalZero(cos_gamma - 1))
     cos_gamma = 1.0;
-  if (numericalZero(cos_gamma + 1))
+  if (utils::numericalZero(cos_gamma + 1))
     cos_gamma = -1.0;
   double pl_x = boost::math::legendre_p(L, cos_gamma);
 
@@ -353,7 +381,8 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
 
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::coefficient_impl(
-    const Eigen::Vector3d & sp, const Eigen::Vector3d & pp) const {
+    const Eigen::Vector3d & sp,
+    const Eigen::Vector3d & pp) const {
   double r1 = (sp + this->origin_).norm();
   double r2 = (pp + this->origin_).norm();
 
@@ -397,24 +426,10 @@ double SphericalDiffuse<ProfilePolicy>::coefficient_impl(
   return coeff;
 }
 
-namespace {
-struct buildSphericalDiffuse {
-  template <typename T> IGreensFunction * operator()(const greenData & data) {
-    return new SphericalDiffuse<T>(data.epsilon1, data.epsilon2, data.width,
-                                   data.center, data.origin, data.maxL);
-  }
-};
-
-IGreensFunction * createSphericalDiffuse(const greenData & data) {
-  buildSphericalDiffuse build;
-  return for_id<onelayer_diffuse_profile_types, IGreensFunction>(build, data,
-                                                                 data.howProfile);
-}
-const std::string SPHERICALDIFFUSE("SPHERICALDIFFUSE");
-const bool registeredSphericalDiffuse =
-    Factory<IGreensFunction, greenData>::TheFactory().registerObject(
-        SPHERICALDIFFUSE, createSphericalDiffuse);
-}
-
+using dielectric_profile::OneLayerTanh;
 template class SphericalDiffuse<OneLayerTanh>;
+
+using dielectric_profile::OneLayerErf;
 template class SphericalDiffuse<OneLayerErf>;
+} // namespace green
+} // namespace pcm

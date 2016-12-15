@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -41,6 +41,8 @@ double erf_value(double point, double e1, double e2, double w, double c);
 double erf_deriv(double point, double e1, double e2, double w, double c);
 
 double distribution(double fMin, double fMax);
+
+using namespace pcm::dielectric_profile;
 
 SCENARIO("Diffuse permittivity single layers", "[dielectric_profile][one_layer]") {
   GIVEN("The parameters for a one-layer diffuse permittivity profile") {

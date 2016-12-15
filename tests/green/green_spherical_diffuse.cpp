@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -34,6 +34,11 @@
 #include "green/SphericalDiffuse.hpp"
 #include "green/dielectric_profile/OneLayerErf.hpp"
 #include "green/dielectric_profile/OneLayerTanh.hpp"
+
+using namespace pcm;
+using green::SphericalDiffuse;
+using dielectric_profile::OneLayerErf;
+using dielectric_profile::OneLayerTanh;
 
 SCENARIO("Evaluation of the spherical diffuse Green's function and its derivatives",
          "[green][green_spherical_diffuse]") {
@@ -235,8 +240,8 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
     probeNormal2.normalize();
     WHEN("the spherical droplet is centered at the origin") {
       Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
-      SphericalDiffuse<OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter,
-                                       maxL);
+      SphericalDiffuse<OneLayerErf> gf(
+          eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
         double value = 0.012507311377769814;
         double gf_value = gf.kernelS(source1, probe1);
@@ -312,8 +317,8 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
     AND_WHEN("the spherical droplet is centered away from the origin") {
       Eigen::Vector3d sphereCenter =
           (Eigen::Vector3d() << 25.0, 0.0, 0.0).finished();
-      SphericalDiffuse<OneLayerErf> gf(eps1, eps2, width, sphereRadius, sphereCenter,
-                                       maxL);
+      SphericalDiffuse<OneLayerErf> gf(
+          eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
         double value = 0.012523344896520634;
         double gf_value = gf.kernelS(source1, probe1);

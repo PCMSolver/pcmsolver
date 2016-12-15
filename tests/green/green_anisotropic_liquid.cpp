@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,6 +32,9 @@
 #include "green/AnisotropicLiquid.hpp"
 #include "green/DerivativeTypes.hpp"
 
+using namespace pcm;
+using green::AnisotropicLiquid;
+
 SCENARIO("Evaluation of the anisotropic liquid Green's function and its derivatives",
          "[green][green_anisotropic_liquid]") {
   GIVEN("A liquid with an anisotropic permittivity tensor") {
@@ -43,15 +46,15 @@ SCENARIO("Evaluation of the anisotropic liquid Green's function and its derivati
     Eigen::Vector3d probe = Eigen::Vector3d::Random();
     Eigen::Vector3d probeNormal = probe + Eigen::Vector3d::Random();
     probeNormal.normalize();
-    Eigen::Array4d result = analyticAnisotropicLiquid(epsilon, euler, sourceNormal,
-                                                      source, probeNormal, probe);
+    Eigen::Array4d result = analyticAnisotropicLiquid(
+        epsilon, euler, sourceNormal, source, probeNormal, probe);
 
     /*! \class AnisotropicLiquid
      *  \test \b AnisotropicLiquidTest_numerical tests the numerical evaluation of
      * the AnisotropicLiquid Green's function against analytical result
      */
     WHEN("the derivatives are evaluated numerically") {
-      AnisotropicLiquid<Numerical> gf(epsilon, euler);
+      AnisotropicLiquid<Stencil> gf(epsilon, euler);
       THEN("the value of the Green's function is") {
         double value = result(0);
         double gf_value = gf.kernelS(source, probe);
@@ -171,8 +174,8 @@ SCENARIO("Evaluation of the anisotropic liquid Green's function and its derivati
     Eigen::Vector3d probe = Eigen::Vector3d::Random();
     Eigen::Vector3d probeNormal = probe + Eigen::Vector3d::Random();
     probeNormal.normalize();
-    Eigen::Array4d result = analyticUniformDielectric(epsilon(0), sourceNormal,
-                                                      source, probeNormal, probe);
+    Eigen::Array4d result = analyticUniformDielectric(
+        epsilon(0), sourceNormal, source, probeNormal, probe);
 
     /*! \class AnisotropicLiquid
      *  \test \b AnisotropicLiquidUniformTest_numerical tests the numerical
@@ -180,7 +183,7 @@ SCENARIO("Evaluation of the anisotropic liquid Green's function and its derivati
      * for a uniform dielectric
      */
     WHEN("the derivatives are evaluated numerically") {
-      AnisotropicLiquid<Numerical> gf(epsilon, euler);
+      AnisotropicLiquid<Stencil> gf(epsilon, euler);
       THEN("the value of the Green's function is") {
         double value = result(0);
         double gf_value = gf.kernelS(source, probe);

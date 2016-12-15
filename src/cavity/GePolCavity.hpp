@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,7 +30,7 @@
 
 #include "Config.hpp"
 
-#include "Cavity.hpp"
+#include "ICavity.hpp"
 
 /*! \file GePolCavity.hpp
  *  \class GePolCavity
@@ -42,14 +42,25 @@
  *  of cavities according to the GePol algorithm.
  */
 
-class GePolCavity __final : public Cavity {
+namespace pcm {
+namespace cavity {
+class GePolCavity __final : public ICavity {
 public:
   GePolCavity() {}
-  GePolCavity(const Molecule & molec, double a, double pr, double minR,
+  GePolCavity(const Molecule & molec,
+              double a,
+              double pr,
+              double minR,
               const std::string & suffix = "");
-  GePolCavity(const Sphere & sph, double a, double pr, double minR,
+  GePolCavity(const Sphere & sph,
+              double a,
+              double pr,
+              double minR,
               const std::string & suffix = "");
-  GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR,
+  GePolCavity(const std::vector<Sphere> & sph,
+              double a,
+              double pr,
+              double minR,
               const std::string & suffix = "");
   virtual ~GePolCavity() {}
   friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
@@ -130,13 +141,40 @@ private:
  *  \param[out] vert coordinates of tesserae vertices
  *  \param[out] centr centers of arcs defining the edges of the tesserae
  */
-extern "C" void generatecavity_cpp(
-    int * maxts, int * maxsph, int * maxvert, double * xtscor, double * ytscor,
-    double * ztscor, double * ar, double * xsphcor, double * ysphcor,
-    double * zsphcor, double * rsph, int * nts, int * ntsirr, int * nesfp,
-    int * addsph, double * xe, double * ye, double * ze, double * rin,
-    double * masses, double * avgArea, double * rsolv, double * ret, int * nr_gen,
-    int * gen1, int * gen2, int * gen3, int * nvert, double * vert, double * centr,
-    int * isphe, const char * pedra, int * len_f_pedra);
+extern "C" void generatecavity_cpp(int * maxts,
+                                   int * maxsph,
+                                   int * maxvert,
+                                   double * xtscor,
+                                   double * ytscor,
+                                   double * ztscor,
+                                   double * ar,
+                                   double * xsphcor,
+                                   double * ysphcor,
+                                   double * zsphcor,
+                                   double * rsph,
+                                   int * nts,
+                                   int * ntsirr,
+                                   int * nesfp,
+                                   int * addsph,
+                                   double * xe,
+                                   double * ye,
+                                   double * ze,
+                                   double * rin,
+                                   double * masses,
+                                   double * avgArea,
+                                   double * rsolv,
+                                   double * ret,
+                                   int * nr_gen,
+                                   int * gen1,
+                                   int * gen2,
+                                   int * gen3,
+                                   int * nvert,
+                                   double * vert,
+                                   double * centr,
+                                   int * isphe,
+                                   const char * pedra,
+                                   int * len_f_pedra);
+} // namespace cavity
+} // namespace pcm
 
 #endif // GEPOLCAVITY_HPP

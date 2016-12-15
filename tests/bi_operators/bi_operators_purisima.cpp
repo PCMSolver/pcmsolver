@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -39,7 +39,12 @@
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"
 
-using integrator::Purisima;
+using namespace pcm;
+using bi_operators::Purisima;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using green::SphericalDiffuse;
 
 SCENARIO(
     "A collocation integrator with diagonal elements according to Purisima for D",

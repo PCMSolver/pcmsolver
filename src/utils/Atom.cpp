@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -29,10 +29,15 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+using utils::Atom;
+
 bool invalid(const Atom & atom) {
   return ((std::abs(atom.radius) <= 1.0e-14) ? true : false);
 }
 
+namespace utils {
+namespace detail {
 std::vector<Atom> & initBondi() {
 
   static std::vector<Atom> Bondi(118);
@@ -444,3 +449,6 @@ std::vector<Atom> & initAllinger() {
 
   return Allinger;
 }
+} // namespace detail
+} // namespace utils
+} // namespace pcm

@@ -155,6 +155,24 @@ Some options can only be tweaked `via` `--cmake-options` to the setup script:
 * `ENABLE_FORTRAN_API` Enable compilation of the Fortran90 bindings for the API. Disabled by default.
 * `ENABLE_GENERIC` Enable mostly static linking in shared library. Disabled by default.
 * `ENABLE_TESTS` Enable compilation of unit tests suite. Enabled by default.
+* `SHARED_LIBRARY_ONLY` Create only shared library. Opposite of `--static`.
+* `PYMOD_INSTALL_LIBDIR` *If set*, installs python scripts/modules to 
+  ``${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/pcmsolver`` rather than the
+  default ``${CMAKE_INSTALL_BINDIR}`` (i.e., ``bin``).
+* `CMAKE_INSTALL_BINDIR` Where to install executables, if not to ``bin``.
+* `CMAKE_INSTALL_LIBDIR` Where to install executables, if not to ``bin``.
+* `CMAKE_INSTALL_INCLUDESDIR` Where to install executables, if not to ``bin``.
+
+* `CMAKE_INSTALL_BINDIR` Location within CMAKE_INSTALL_PREFIX (``--prefix``) to
+  which executables are installed (default: bin).
+* `CMAKE_INSTALL_LIBDIR` Location within CMAKE_INSTALL_PREFIX (``--prefix``) to
+  which libraries are installed (default: lib).
+* `CMAKE_INSTALL_INCLUDEDIR` Location within CMAKE_INSTALL_PREFIX (``--prefix``)
+  to which headers are installed (default: include).
+* `PYMOD_INSTALL_LIBDIR` *If set*, location within CMAKE_INSTALL_LIBDIR to which
+  python modules are installed,
+  ``${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/pcmsolver``. *If not set*,
+  python modules installed to default ``${CMAKE_INSTALL_BINDIR}`` (i.e., ``bin``).
 
 Build and test
 --------------

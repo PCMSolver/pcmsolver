@@ -1,3 +1,9 @@
+if(ENABLE_psi4)
+    set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/pcmsolver")
+else()
+    set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_BINDIR}")
+endif()
+
 # Configure the header with library-wide preprocessor definitions
 configure_file(${PROJECT_SOURCE_DIR}/include/Config.hpp.in
                ${PROJECT_BINARY_DIR}/include/tmp-config-hpp @ONLY)
@@ -20,31 +26,31 @@ generate_git_info_header(${PROJECT_BINARY_DIR}/include GitInfo.hpp)
 install(FILES ${PROJECT_BINARY_DIR}/include/GitInfo.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
 # Configure the input parsing script
-configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in ${PROJECT_BINARY_DIR}/bin/tmp-pcmsolver-py @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/tmp-pcmsolver-py @ONLY)
 add_custom_command(
   DEPENDS ${PROJECT_SOURCE_DIR}/tools/pcmsolver.py.in
   OUTPUT
-    ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/pcmsolver.py
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py
   COMMAND
-    cmake -E copy ${PROJECT_BINARY_DIR}/bin/tmp-pcmsolver-py ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/pcmsolver.py
+    cmake -E copy ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/tmp-pcmsolver-py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py
   VERBATIM
   )
-add_custom_target(generate-pcmsolver-py ALL DEPENDS ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/pcmsolver.py)
-install(FILES ${PROJECT_BINARY_DIR}/bin/pcmsolver.py DESTINATION ${CMAKE_INSTALL_BINDIR})
+add_custom_target(generate-pcmsolver-py ALL DEPENDS ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py)
+install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py DESTINATION ${PYMOD_INSTALL_FULLDIR})
 # Configure the codata Python module
-configure_file(${PROJECT_SOURCE_DIR}/tools/codata.py.in ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/codata.py @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/bin/codata.py DESTINATION ${CMAKE_INSTALL_BINDIR})
+configure_file(${PROJECT_SOURCE_DIR}/tools/codata.py.in ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/codata.py @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/codata.py DESTINATION ${PYMOD_INSTALL_FULLDIR})
 
 # Install GetKw Python bindings
 file(COPY ${PROJECT_SOURCE_DIR}/tools/getkw.py
           ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
-     DESTINATION ${CMAKE_INSTALL_BINDIR})
+     DESTINATION ${PYMOD_INSTALL_FULLDIR})
 install(FILES ${PROJECT_SOURCE_DIR}/tools/getkw.py
               ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
-        DESTINATION ${CMAKE_INSTALL_BINDIR})
+        DESTINATION ${PYMOD_INSTALL_FULLDIR})
 
 # Install docopt.py in the bin subdirectory
 file(COPY ${PROJECT_SOURCE_DIR}/cmake/lib/docopt/docopt.py
-     DESTINATION ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+     DESTINATION ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR})
 install(FILES ${PROJECT_SOURCE_DIR}/cmake/lib/docopt/docopt.py
-        DESTINATION ${CMAKE_INSTALL_BINDIR})
+        DESTINATION ${PYMOD_INSTALL_FULLDIR})

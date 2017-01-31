@@ -112,7 +112,7 @@ program pcm_fortran_host
 
       allocate(mep(grid_size))
       mep = 0.0_c_double
-      mep = nuclear_mep(nr_nuclei, charges, reshape(coordinates, (/ 3, nr_nuclei /)), &
+      mep = nuclear_mep(nr_nuclei, charges, reshape(coordinates, (/ 3_c_int, nr_nuclei /)), &
                         grid_size, reshape(grid, (/ 3_c_int, grid_size /)))
       call pcmsolver_set_surface_function(pcm_context, grid_size, mep, mep_lbl)
       ! This is the Ag irreducible representation (totally symmetric)

@@ -143,8 +143,6 @@ def convert_to_upper_case(filename):
         outputFile.write(final)
 
 def main():
-    global topsect
-
     try:
         arguments = docopt.docopt(options, argv=None)
     except docopt.DocoptExit:
@@ -166,8 +164,6 @@ def parse_pcm_input(inputFile):
     This function can be accessed from other Python scripts when
     importing the current file as a module.
     """
-    global topsect
-
     # Set up valid keywords.
     valid_keywords = setup_keywords()
 
@@ -188,9 +184,8 @@ def parse_pcm_input(inputFile):
     # Remove it
     if (os.path.isfile(parsedFile)):
         os.remove(parsedFile)
-    fd = open(parsedFile, 'w')
-    print(inkw.top, file=fd)
-    fd.close()
+    with open(parsedFile, 'wt') as tmp:
+        tmp.write(str(inkw.top))
 
     return parsedFile
 

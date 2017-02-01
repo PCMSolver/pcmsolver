@@ -37,7 +37,7 @@
  * pcmsolver.py
  */
 TEST_CASE("Input reading using GetKw for an input file for a diffuse environment",
-          "[input][diffuse]") {
+          "[input][input_diffuse]") {
   std::string filename = "@diffuse.inp";
   Input parsedInput = Input(filename);
   std::string units = "ANGSTROM";

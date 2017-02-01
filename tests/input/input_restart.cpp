@@ -37,7 +37,7 @@
  * pcmsolver.py
  */
 TEST_CASE("Input reading using GetKw for an input file for a restart cavity",
-          "[input][restart]") {
+          "[input][input_restart]") {
   std::string filename = "@restart.inp";
   Input parsedInput = Input(filename);
   std::string units = "AU";

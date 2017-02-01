@@ -9,23 +9,23 @@ file(COPY diffuse.inp restart.inp tsless.inp wavelet.inp DESTINATION ${CMAKE_CUR
 add_test(NAME parser_script-diffuse COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py diffuse.inp
                                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 set_tests_properties(parser_script-diffuse PROPERTIES LABELS "parser;parser_script" DEPENDS generate-pcmsolver-py)
-add_Catch_test(input_diffuse "input;diffuse")
+add_Catch_test(input_diffuse "input;input_diffuse")
 set_tests_properties(input_diffuse PROPERTIES DEPENDS parser_script-diffuse)
 
 add_test(NAME parser_script-restart COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py restart.inp
                                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 set_tests_properties(parser_script-restart PROPERTIES LABELS "parser;parser_script" DEPENDS generate-pcmsolver-py)
-add_Catch_test(input_restart "input;restart")
+add_Catch_test(input_restart "input;input_restart")
 set_tests_properties(input_restart PROPERTIES DEPENDS parser_script-restart)
 
 add_test(NAME parser_script-tsless  COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py tsless.inp
                                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 set_tests_properties(parser_script-tsless  PROPERTIES LABELS "parser;parser_script" DEPENDS generate-pcmsolver-py)
-add_Catch_test(input_tsless "input;tsless")
+add_Catch_test(input_tsless "input;input_tsless")
 set_tests_properties(input_tsless PROPERTIES DEPENDS parser_script-tsless)
 
 add_test(NAME parser_script-wavelet COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py wavelet.inp
                                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 set_tests_properties(parser_script-wavelet PROPERTIES LABELS "parser;parser_script" DEPENDS generate-pcmsolver-py)
-add_Catch_test(input_wavelet "input;wavelet")
+add_Catch_test(input_wavelet "input;input_wavelet")
 set_tests_properties(input_wavelet PROPERTIES DEPENDS parser_script-wavelet)

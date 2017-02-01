@@ -37,7 +37,7 @@
  * pcmsolver.py
  */
 TEST_CASE("Input reading using GetKw for an input file for a wavelet cavity",
-          "[input][wavelet]") {
+          "[input][input_wavelet]") {
   std::string filename = "@wavelet.inp";
   Input parsedInput = Input(filename);
   std::string units = "ANGSTROM";

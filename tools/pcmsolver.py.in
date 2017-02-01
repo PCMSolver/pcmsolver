@@ -139,7 +139,7 @@ def convert_to_upper_case(filename):
     final = re.sub('TRUE',  'True',  final)
 
     # Write to file
-    with open(filename, 'wb') as outputFile:
+    with open(filename, 'wt') as outputFile:
         outputFile.write(final)
 
 def main():
@@ -189,7 +189,7 @@ def parse_pcm_input(inputFile):
     if (os.path.isfile(parsedFile)):
         os.remove(parsedFile)
     fd = open(parsedFile, 'w')
-    print >> fd, inkw.top
+    print(inkw.top, file=fd)
     fd.close()
 
     return parsedFile
@@ -200,7 +200,7 @@ def execute(parsedFile):
         try:
             subprocess.check_output([executable, parsedFile])
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            print((e.output))
             sys.exit(1)
     else:
         print('No executable available for standalone run')
@@ -466,21 +466,21 @@ def verify_top(section):
     key = section.get('UNITS')
     val = key.get()
     if (val not in allowed_units):
-        print('Units requested {} are not among the allowed units: {}'.format(val, allowed_units))
+        print(('Units requested {} are not among the allowed units: {}'.format(val, allowed_units)))
         sys.exit(1)
     if (val == 'ANGSTROM'):
         isAngstrom = True
     allowed_codata = (2010, 2006, 2002, 1998)
     CODATAyear = section.get('CODATA').get()
     if (CODATAyear not in allowed_codata):
-        print('CODATA set requested {} is not among the allowed sets: {}'.format(CODATAyear, allowed_codata))
+        print(('CODATA set requested {} is not among the allowed sets: {}'.format(CODATAyear, allowed_codata)))
         sys.exit(1)
 
 def verify_cavity(section):
     allowed = ('GEPOL', 'WAVELET', 'TSLESS', 'RESTART')
     type = section.get('TYPE')
     if (type.get() not in allowed):
-        print('Requested {} cavity is not among the allowed types: {}'.format(type, allowed))
+        print(('Requested {} cavity is not among the allowed types: {}'.format(type, allowed)))
         sys.exit(1)
 
     # Convert units if input was given in Angstrom
@@ -497,27 +497,27 @@ def verify_cavity(section):
         area = section.get('AREA')
         a = area.get()
         if (a < 0.01):
-            print('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a))
+            print(('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a)))
             sys.exit(1)
         minRadius = section.get('MINRADIUS')
         mr = minRadius.get()
         if ( mr < 0.4 ):
-            print('Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 au'.format(mr))
+            print(('Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 au'.format(mr)))
             sys.exit(1)
     elif (type.get() == 'WAVELET'):
         key = section.get('PATCHLEVEL')
         if (key.get() < 1):
-            print('Invalid patch level requested: {}. Patch level must be greater than 0'.format(key.get()))
+            print(('Invalid patch level requested: {}. Patch level must be greater than 0'.format(key.get())))
             sys.exit(1)
         key = section.get('COARSITY')
         if (key.get() < 0.0 or key.get() >= 1.0):
-            print('Invalid coarsity requested: {}. Coarsity has to be within ]0, 1['.format(key.get()))
+            print(('Invalid coarsity requested: {}. Coarsity has to be within ]0, 1['.format(key.get())))
             sys.exit(1)
     elif (type.get() == 'TSLESS'):
         area = section.get('AREA')
         a = area.get()
         if (a < 0.01):
-            print('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a))
+            print(('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a)))
             sys.exit(1)
         minDistance = section.get('MINDISTANCE')
         md = minDistance.get()
@@ -543,12 +543,12 @@ def verify_cavity(section):
     radiiSet = section.get('RADIISET')
     allowed_sets = ('BONDI', 'UFF', 'ALLINGER')
     if (radiiSet.get() not in allowed_sets):
-        print('Radii set requested {} is not among the allowed sets: {}'.format(radiiSet.get(), allowed_sets))
+        print(('Radii set requested {} is not among the allowed sets: {}'.format(radiiSet.get(), allowed_sets)))
         sys.exit(1)
     allowed_modes = ('EXPLICIT', 'ATOMS', 'IMPLICIT')
     mode = section.get('MODE')
     if (mode.get() not in allowed_modes):
-        print('Cavity creation mode requested {} is not among the allowed modes: {}'.format(mode.get(), allowed_modes))
+        print(('Cavity creation mode requested {} is not among the allowed modes: {}'.format(mode.get(), allowed_modes)))
         sys.exit(1)
 
     atoms=section.get('ATOMS')
@@ -583,7 +583,7 @@ def verify_medium(section):
         if (not GIF or not GOF or not PRF):
             sys.exit(1)
     solventFound = False
-    for i, v in allowedSolvents.iteritems():
+    for i, v in allowedSolvents.items():
         if (solvent.get() in v):
             solventName = i
             # Set name to the first value in the value pair
@@ -592,8 +592,8 @@ def verify_medium(section):
             solventFound = True
             break
     if (not solventFound):
-        print('Unknown solvent {}'.format(solvent.get()))
-        print('Choose a solvent from the following list:\n{}\n or specify the solvent data explicitly.'.format(allowedSolvents.keys()))
+        print(('Unknown solvent {}'.format(solvent.get())))
+        print(('Choose a solvent from the following list:\n{}\n or specify the solvent data explicitly.'.format(list(allowedSolvents.keys()))))
         sys.exit(1)
 
     correction = section.get('CORRECTION')
@@ -621,13 +621,13 @@ def verify_medium(section):
     key = section.get('SOLVERTYPE')
     val = key.get()
     if (val not in allowed_types):
-        print('Allowed types are: {}'.format(allowed_types))
+        print(('Allowed types are: {}'.format(allowed_types)))
         sys.exit(1)
     allowed_equations = ('FIRSTKIND', 'SECONDKIND', 'FULL')
     key = section.get('EQUATIONTYPE')
     val = key.get()
     if (val not in allowed_equations):
-        print('Allowed equations are: {}'.format(allowed_equations))
+        print(('Allowed equations are: {}'.format(allowed_equations)))
         sys.exit(1)
 
     a = section.get('A')
@@ -669,12 +669,12 @@ def verify_green(section):
 
     type = section.get('TYPE')
     if (type.get() not in allowed):
-        print('Allowed Green\'s functions are: {}'.format(allowed))
+        print(('Allowed Green\'s functions are: {}'.format(allowed)))
         sys.exit(1)
 
     der = section.get('DER')
     if (der.get() not in allowed_der):
-        print('Allowed derivatives strategies are: {}'.format(allowed))
+        print(('Allowed derivatives strategies are: {}'.format(allowed)))
         sys.exit(1)
 
     if (type.get() == 'UNIFORMDIELECTRIC'):
@@ -706,18 +706,18 @@ def verify_green(section):
 
     profile = section.get('PROFILE')
     if (profile.get() not in allowed_profiles):
-        print('Allowed profiles are: {}'.format(allowed_profiles))
+        print(('Allowed profiles are: {}'.format(allowed_profiles)))
         sys.exit(1)
 
 def check_array(name, array, offset):
     dim = len(array)
     if (dim % offset != 0):
-        print('Empty or incoherent {0} array'.format(name))
+        print(('Empty or incoherent {0} array'.format(name)))
         sys.exit(1)
     # Convert only geometry to AU. Leave the rest untouched
     if (isAngstrom):
         j = 0
-        for i in range(dim/offset):
+        for i in range(dim // offset):
             array[j] /= CODATAdict[CODATAyear].ToAngstrom
             array[j+1] /= CODATAdict[CODATAyear].ToAngstrom
             array[j+2] /= CODATAdict[CODATAyear].ToAngstrom

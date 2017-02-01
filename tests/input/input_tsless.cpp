@@ -39,7 +39,7 @@ using pcm::utils::Sphere;
  *  \test \b Input_TsLess tests input reading on an input file parsed by pcmsolver.py
  */
 TEST_CASE("Input reading using GetKw for an input file for a TsLess cavity",
-          "[input][tsless]") {
+          "[input][input_tsless]") {
   std::string filename = "@tsless.inp";
   Input parsedInput = Input(filename);
   std::string units = "ANGSTROM";

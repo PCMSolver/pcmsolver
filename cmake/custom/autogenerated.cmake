@@ -42,11 +42,17 @@ configure_file(${PROJECT_SOURCE_DIR}/tools/codata.py.in ${PROJECT_BINARY_DIR}/${
 install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/codata.py DESTINATION ${PYMOD_INSTALL_FULLDIR})
 
 # Install GetKw Python bindings
-file(COPY ${PROJECT_SOURCE_DIR}/tools/getkw.py
-          ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
+# If using Python 3 use py3.x-getkw.py
+if(PYTHON_VERSION_MAJOR VERSION_EQUAL 3)
+  configure_file(${PROJECT_SOURCE_DIR}/tools/py3.x-getkw.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py COPYONLY)
+else()
+  configure_file(${PROJECT_SOURCE_DIR}/tools/py2.x-getkw.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py COPYONLY)
+endif()
+install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py
+  DESTINATION ${PYMOD_INSTALL_FULLDIR})
+file(COPY ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
      DESTINATION ${PYMOD_INSTALL_FULLDIR})
-install(FILES ${PROJECT_SOURCE_DIR}/tools/getkw.py
-              ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
+install(FILES ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
         DESTINATION ${PYMOD_INSTALL_FULLDIR})
 
 # Install docopt.py in the bin subdirectory

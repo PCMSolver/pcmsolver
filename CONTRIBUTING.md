@@ -2,7 +2,7 @@
 
 We welcome contributions from external contributors, and this document
 describes how to merge code changes into PCMSolver.
-This document is based on [Psi4 contribution guide](https://github.com/psi4/psi4/blob/master/.github/CONTRIBUTING.md)
+Our contribution guide is based on [Psi4 contribution guide](https://github.com/psi4/psi4/blob/master/.github/CONTRIBUTING.md)
 
 ## Getting Started
 
@@ -21,14 +21,17 @@ This document is based on [Psi4 contribution guide](https://github.com/psi4/psi4
   [branch](https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/)
   with the branch name relating to the feature you are going to add.
 * When you are ready for others to examine and comment on your new feature,
-  navigate to your fork of PCMSolver on GitHub and open a [pull
-  request](https://help.github.com/articles/using-pull-requests/) (PR). Note that
-  after you launch a PR from one of your fork's branches, all
+  navigate to your fork of PCMSolver on GitHub and open a
+  [pull request](https://help.github.com/articles/using-pull-requests/) (PR)
+  __towards the `release/1.Y` branch__.
+  Note that after you launch a PR from one of your fork's branches, all
   subsequent commits to that branch will be added to the open pull request
-  automatically.  Each commit added to the PR will be validated for
-  mergability, compilation and test suite compliance; the results of these tests
-  will be visible on the PR page.
-* If you're providing a new feature, you must add test cases and documentation.
+  automatically.
+  Each commit added to the PR will be validated for mergability, compilation
+  and test suite compliance; the results of these tests will be visible on the
+  PR page.
+* If you're providing a new feature, you must add test cases, documentation and
+  update the `CHANGELOG.md` file.
 * When the code is ready to go, make sure you run the full or relevant portion
   of the test suite on your local machine to check that nothing is broken.
 * When you're ready to be considered for merging, check the "Ready to go" box

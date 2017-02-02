@@ -33,12 +33,12 @@ matrix:
             - clang-3.5
             - libboost1.55-all-dev
             - gfortran
-            - python-virtualenv
       env:
         - CXX_COMPILER='clang++-3.5'
         - C_COMPILER='clang-3.5'
         - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
     - os: osx
       osx_image: xcode7.3
       compiler: clang
@@ -47,6 +47,7 @@ matrix:
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran-4.8'
         - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
         - HOMEBREW_GCC='homebrew/versions/gcc48'
     - os: linux
       compiler: clang
@@ -63,13 +64,13 @@ matrix:
             - clang-3.6
             - libboost1.55-all-dev
             - gfortran
-            - python-virtualenv
       env:
         - CXX_COMPILER='clang++-3.6'
         - C_COMPILER='clang-3.6'
         - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='release'
         - STATIC='--static'
+        - PYTHON_VER='3.5'
     - os: osx
       osx_image: xcode7.3
       compiler: gcc
@@ -78,6 +79,7 @@ matrix:
         - C_COMPILER='gcc-4.8'
         - Fortran_COMPILER='gfortran-4.8'
         - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
         - HOMEBREW_GCC='homebrew/versions/gcc48'
     - os: linux
       compiler: clang
@@ -94,11 +96,11 @@ matrix:
             - clang-3.7
             - libboost1.55-all-dev
             - gfortran
-            - python-virtualenv
       env:
         - CXX_COMPILER='clang++-3.7'
         - C_COMPILER='clang-3.7'
         - Fortran_COMPILER='gfortran'
+        - PYTHON_VER='2.7'
         - BUILD_TYPE='release'
     - os: osx
       osx_image: xcode7.3
@@ -108,6 +110,7 @@ matrix:
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran-4.9'
         - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
         - HOMEBREW_GCC='homebrew/versions/gcc49'
         - STATIC='--static'
     - os: linux
@@ -125,12 +128,12 @@ matrix:
             - clang-3.8
             - libboost1.55-all-dev
             - gfortran
-            - python-virtualenv
       env:
         - CXX_COMPILER='clang++-3.8'
         - C_COMPILER='clang-3.8'
         - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
     - os: osx
       osx_image: xcode7.3
       compiler: gcc
@@ -139,6 +142,7 @@ matrix:
         - C_COMPILER='gcc-4.9'
         - Fortran_COMPILER='gfortran-4.9'
         - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
         - HOMEBREW_GCC='homebrew/versions/gcc49'
     - os: linux
       compiler: gcc
@@ -155,12 +159,12 @@ matrix:
             - gcc-4.6
             - libboost1.55-all-dev
             - gfortran-4.6
-            - python-virtualenv
       env:
         - CXX_COMPILER='g++-4.6'
         - C_COMPILER='gcc-4.6'
         - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
     - os: osx
       osx_image: xcode7.3
       compiler: clang
@@ -169,6 +173,7 @@ matrix:
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
         - HOMEBREW_GCC='homebrew/versions/gcc5'
     - os: linux
       compiler: gcc
@@ -185,13 +190,13 @@ matrix:
             - gcc-4.7
             - libboost1.55-all-dev
             - gfortran-4.7
-            - python-virtualenv
       env:
         - CXX_COMPILER='g++-4.7'
         - C_COMPILER='gcc-4.7'
         - Fortran_COMPILER='gfortran-4.7'
         - BUILD_TYPE='release'
         - STATIC='--static'
+        - PYTHON_VER='3.5'
     - os: osx
       osx_image: xcode7.3
       compiler: gcc
@@ -200,6 +205,7 @@ matrix:
         - C_COMPILER='gcc-5'
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
         - HOMEBREW_GCC='homebrew/versions/gcc5'
         - STATIC='--static'
     - os: linux
@@ -217,12 +223,12 @@ matrix:
             - gcc-4.8
             - libboost1.55-all-dev
             - gfortran-4.8
-            - python-virtualenv
       env:
         - CXX_COMPILER='g++-4.8'
         - C_COMPILER='gcc-4.8'
         - Fortran_COMPILER='gfortran-4.8'
         - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
     - os: osx
       osx_image: xcode7.3
       compiler: clang
@@ -231,6 +237,7 @@ matrix:
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran-6'
         - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
         - HOMEBREW_GCC='homebrew/versions/gcc6'
     - os: linux
       compiler: gcc
@@ -247,12 +254,12 @@ matrix:
             - gcc-4.9
             - libboost1.55-all-dev
             - gfortran-4.9
-            - python-virtualenv
       env:
         - CXX_COMPILER='g++-4.9'
         - C_COMPILER='gcc-4.9'
         - Fortran_COMPILER='gfortran-4.9'
         - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
     - os: osx
       osx_image: xcode7.3
       compiler: gcc
@@ -261,6 +268,7 @@ matrix:
         - C_COMPILER='gcc-6'
         - Fortran_COMPILER='gfortran-6'
         - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
         - HOMEBREW_GCC='homebrew/versions/gcc6'
     - os: linux
       compiler: gcc
@@ -277,12 +285,12 @@ matrix:
             - gcc-5
             - libboost1.55-all-dev
             - gfortran-5
-            - python-virtualenv
       env:
         - CXX_COMPILER='g++-5'
         - C_COMPILER='gcc-5'
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
     - os: linux
       compiler: gcc
       addons: *9
@@ -292,6 +300,7 @@ matrix:
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
         - COVERAGE='--coverage'
+        - PYTHON_VER='2.7'
   allow_failures:
     - os: linux
       compiler: gcc
@@ -302,16 +311,38 @@ matrix:
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
         - COVERAGE='--coverage'
+        - PYTHON_VER='2.7'
+before_install:
+  - uname -a
+  - free -m
+  - df -h
+  - ulimit -a
 install:
 - |
-  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-    brew install cmake boost python pyenv-virtualenv
-    brew reinstall ${HOMEBREW_GCC}
+  if [[ "${PYTHON_VER}" == "2.7" ]]; then
+    export MINICONDA_VER="Miniconda2-latest-"
+  else
+    export MINICONDA_VER="Miniconda3-latest-"
   fi
-  virtualenv venv
-  source venv/bin/activate
-  pip install --upgrade -r .travis_requirements.txt
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+    brew install cmake boost
+    brew reinstall ${HOMEBREW_GCC}
+    wget https://repo.continuum.io/miniconda/${MINICONDA_VER}-MacOSX-x86_64.sh -O miniconda.sh;
+  else
+    wget https://repo.continuum.io/miniconda/${MINICONDA_VER}-Linux-x86_64.sh -O miniconda.sh;
+  fi
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update --quiet conda
+- conda info --all
+- conda env create --quiet --file .pcmsolver-travis.yml python=$PYTHON_VER
+- source activate pcmsolver
+- conda list
 before_script:
+- python -V
 - cd ${TRAVIS_BUILD_DIR}
 - export CXX=${CXX_COMPILER}
 - ${CXX_COMPILER} --version

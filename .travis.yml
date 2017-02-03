@@ -13,6 +13,7 @@ env:
     - CCACHE_COMPRESS=1
     - CCACHE_MAXSIZE=200M
     - CCACHE_CPP2=1
+    - MINICONDA_VER=''
 branches:
   except:
     - fix-appveyor
@@ -320,9 +321,9 @@ before_install:
 install:
 - |
   if [[ "${PYTHON_VER}" == "2.7" ]]; then
-    export MINICONDA_VER="Miniconda2-latest-"
+    MINICONDA_VER='Miniconda2-latest-'
   else
-    export MINICONDA_VER="Miniconda3-latest-"
+    MINICONDA_VER='Miniconda3-latest-'
   fi
 - |
   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then

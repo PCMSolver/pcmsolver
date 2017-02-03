@@ -309,11 +309,6 @@ matrix:
         - BUILD_TYPE='release'
         - PYTHON_VER='2.7'
         - COVERAGE=true
-before_install:
-  - uname -a
-  - free -m
-  - df -h
-  - ulimit -a
 install:
 - |
   if [[ "${PYTHON_VER}" == "2.7" ]]; then
@@ -333,7 +328,6 @@ install:
   fi
 - bash miniconda.sh -b -p $HOME/miniconda
 - export PATH="$HOME/miniconda/bin:$PATH"
-- hash -r
 - conda config --set always_yes yes --set changeps1 no
 - conda update --quiet conda
 - conda info --all

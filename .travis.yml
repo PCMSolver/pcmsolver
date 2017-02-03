@@ -321,16 +321,18 @@ before_install:
 install:
 - |
   if [[ "${PYTHON_VER}" == "2.7" ]]; then
-    MINICONDA_VER='Miniconda2-latest-'
+    MINICONDA_VER='Miniconda2-latest'
   else
-    MINICONDA_VER='Miniconda3-latest-'
+    MINICONDA_VER='Miniconda3-latest'
   fi
 - |
   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     brew install cmake boost
     brew reinstall ${HOMEBREW_GCC}
+    echo "Downloading ${MINICONDA_VER}-MacOSX-x86_64.sh"
     wget https://repo.continuum.io/miniconda/${MINICONDA_VER}-MacOSX-x86_64.sh -O miniconda.sh;
   else
+    echo "Downloading ${MINICONDA_VER}-Linux-x86_64.sh"
     wget https://repo.continuum.io/miniconda/${MINICONDA_VER}-Linux-x86_64.sh -O miniconda.sh;
   fi
 - bash miniconda.sh -b -p $HOME/miniconda

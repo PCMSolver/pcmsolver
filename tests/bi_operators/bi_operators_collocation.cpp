@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -39,7 +39,12 @@
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"
 
-using integrator::Collocation;
+using namespace pcm;
+using bi_operators::Collocation;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using green::SphericalDiffuse;
 
 SCENARIO("A collocation integrator with approximate diagonal elements",
          "[bi_operators][bi_operators_collocation]") {
@@ -115,8 +120,8 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
       double epsilon = 80.0;
       double width = 5.0;
       double sphereRadius = 100.0;
-      SphericalDiffuse<> gf(epsilon, epsilon, width, sphereRadius,
-                            Eigen::Vector3d::Zero(), 3);
+      SphericalDiffuse<> gf(
+          epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
       THEN("the matrix elements of S are") {
         results = op.computeS(cavity, gf);
         reference =

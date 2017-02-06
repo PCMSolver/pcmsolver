@@ -10,9 +10,9 @@ implemented through the generic Factory class.
    :scale: 70 %
    :align: center
 
-PCMSolver
----------
-.. doxygenclass:: PCMSolver
+ISolver
+-------
+.. doxygenclass:: ISolver
    :project: PCMSolver
    :members:
    :protected-members:

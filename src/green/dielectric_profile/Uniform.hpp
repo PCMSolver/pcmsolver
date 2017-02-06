@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -35,6 +35,8 @@
  *  \date 2015
  */
 
+namespace pcm {
+namespace dielectric_profile {
 struct Uniform __final {
   double epsilon;
   Uniform() : epsilon(1.0) {}
@@ -44,5 +46,7 @@ struct Uniform __final {
     return os;
   }
 };
+} // namespace dielectric_profile
+} // namespace pcm
 
 #endif // UNIFORM_HPP

@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -34,11 +34,11 @@
 
 #include <boost/foreach.hpp>
 
-#include "bi_operators/BIOperatorData.hpp"
 #include "bi_operators/BoundaryIntegralOperator.hpp"
 #include "cavity/Cavity.hpp"
-#include "green/IGreensFunction.hpp"
-#include "solver/PCMSolver.hpp"
+#include "green/Green.hpp"
+#include "solver/Solver.hpp"
+
 #include "utils/Atom.hpp"
 #include "Citation.hpp"
 #include "utils/cnpy.hpp"
@@ -54,13 +54,21 @@
 #define AS_CTYPE(Type, Obj) reinterpret_cast<const Type *>(Obj)
 #endif
 
-pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading, int nr_nuclei,
-                                    double charges[], double coordinates[],
-                                    int symmetry_info[], PCMInput * host_input,
+pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading,
+                                    int nr_nuclei,
+                                    double charges[],
+                                    double coordinates[],
+                                    int symmetry_info[],
+                                    PCMInput * host_input,
                                     HostWriter write) {
   return AS_TYPE(pcmsolver_context_t,
-                 new pcm::Meddle(input_reading, nr_nuclei, charges, coordinates,
-                                 symmetry_info, *host_input, write));
+                 new pcm::Meddle(input_reading,
+                                 nr_nuclei,
+                                 charges,
+                                 coordinates,
+                                 symmetry_info,
+                                 *host_input,
+                                 write));
 }
 
 void pcmsolver_delete(pcmsolver_context_t * context) {
@@ -100,15 +108,18 @@ void pcmsolver_get_areas(pcmsolver_context_t * context, double areas[]) {
   AS_TYPE(pcm::Meddle, context)->getAreas(areas);
 }
 
-void pcmsolver_compute_asc(pcmsolver_context_t * context, const char * mep_name,
-                           const char * asc_name, int irrep) {
+void pcmsolver_compute_asc(pcmsolver_context_t * context,
+                           const char * mep_name,
+                           const char * asc_name,
+                           int irrep) {
   TIMER_ON("pcmsolver_compute_asc");
   AS_TYPE(pcm::Meddle, context)->computeASC(mep_name, asc_name, irrep);
   TIMER_OFF("pcmsolver_compute_asc");
 }
 
 void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
-                                    const char * mep_name, const char * asc_name,
+                                    const char * mep_name,
+                                    const char * asc_name,
                                     int irrep) {
   TIMER_ON("pcmsolver_compute_response_asc");
   AS_TYPE(pcm::Meddle, context)->computeResponseASC(mep_name, asc_name, irrep);
@@ -122,13 +133,15 @@ double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
       AS_TYPE(pcm::Meddle, context)->computePolarizationEnergy(mep_name, asc_name));
 }
 
-double pcmsolver_get_asc_dipole(pcmsolver_context_t * context, const char * asc_name,
+double pcmsolver_get_asc_dipole(pcmsolver_context_t * context,
+                                const char * asc_name,
                                 double dipole[]) {
   return (AS_TYPE(pcm::Meddle, context)->getASCDipole(asc_name, dipole));
 }
 
 void pcmsolver_get_surface_function(pcmsolver_context_t * context,
-                                    PCMSolverIndex size, double values[],
+                                    PCMSolverIndex size,
+                                    double values[],
                                     const char * name) {
   TIMER_ON("pcmsolver_get_surface_function");
   AS_TYPE(pcm::Meddle, context)->getSurfaceFunction(size, values, name);
@@ -136,7 +149,8 @@ void pcmsolver_get_surface_function(pcmsolver_context_t * context,
 }
 
 void pcmsolver_set_surface_function(pcmsolver_context_t * context,
-                                    PCMSolverIndex size, double values[],
+                                    PCMSolverIndex size,
+                                    double values[],
                                     const char * name) {
   TIMER_ON("pcmsolver_set_surface_function");
   AS_TYPE(pcm::Meddle, context)->setSurfaceFunction(size, values, name);
@@ -175,8 +189,10 @@ void Printer::operator()(const std::ostringstream & stream) {
 
 Printer hostWriter;
 
-Meddle::Meddle(const Input & parsed, const HostWriter & write)
-    : input_(parsed), hasDynamic_(false) {
+Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
+    : input_(Input(inputFileName)), hasDynamic_(false) {
+  bootstrap();
+  input_.initMolecule();
   hostWriter.writer_ = write;
   infoStream_ << std::endl;
   infoStream_ << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
@@ -202,14 +218,19 @@ Meddle::Meddle(const Input & parsed, const HostWriter & write)
   functions_.reserve(12);
 }
 
-Meddle::Meddle(pcmsolver_reader_t input_reading, int nr_nuclei, double charges[],
-               double coordinates[], int symmetry_info[],
-               const PCMInput & host_input, const HostWriter & write)
+Meddle::Meddle(pcmsolver_reader_t input_reading,
+               int nr_nuclei,
+               double charges[],
+               double coordinates[],
+               int symmetry_info[],
+               const PCMInput & host_input,
+               const HostWriter & write)
     : hasDynamic_(false) {
+  bootstrap();
   hostWriter.writer_ = write;
   TIMER_ON("Meddle::initInput");
-  initInput(input_reading, nr_nuclei, charges, coordinates, symmetry_info,
-            host_input);
+  initInput(
+      input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input);
   radiiSetName_ = input_.radiiSetName();
   TIMER_OFF("Meddle::initInput");
 
@@ -278,7 +299,8 @@ double Meddle::getASCDipole(const char * asc_name, double dipole[]) const {
   return asc_dipole.norm();
 }
 
-void Meddle::computeASC(const char * mep_name, const char * asc_name,
+void Meddle::computeASC(const char * mep_name,
+                        const char * asc_name,
                         int irrep) const {
   std::string MEP(mep_name);
   std::string ASC(asc_name);
@@ -296,7 +318,8 @@ void Meddle::computeASC(const char * mep_name, const char * asc_name,
   }
 }
 
-void Meddle::computeResponseASC(const char * mep_name, const char * asc_name,
+void Meddle::computeResponseASC(const char * mep_name,
+                                const char * asc_name,
                                 int irrep) const {
   std::string MEP(mep_name);
   std::string ASC(asc_name);
@@ -318,7 +341,8 @@ void Meddle::computeResponseASC(const char * mep_name, const char * asc_name,
   }
 }
 
-void Meddle::getSurfaceFunction(PCMSolverIndex size, double values[],
+void Meddle::getSurfaceFunction(PCMSolverIndex size,
+                                double values[],
                                 const char * name) const {
   std::string functionName(name);
   if (cavity_->size() != size)
@@ -332,7 +356,8 @@ void Meddle::getSurfaceFunction(PCMSolverIndex size, double values[],
   Eigen::Map<Eigen::VectorXd>(values, size, 1) = iter->second;
 }
 
-void Meddle::setSurfaceFunction(PCMSolverIndex size, double values[],
+void Meddle::setSurfaceFunction(PCMSolverIndex size,
+                                double values[],
                                 const char * name) const {
   std::string functionName(name);
   if (cavity_->size() != size)
@@ -397,8 +422,11 @@ void Meddle::loadSurfaceFunction(const char * name) const {
 
 void Meddle::writeTimings() const { TIMER_DONE("pcmsolver.timer.dat"); }
 
-void Meddle::initInput(pcmsolver_reader_t input_reading, int nr_nuclei,
-                       double charges[], double coordinates[], int symmetry_info[],
+void Meddle::initInput(pcmsolver_reader_t input_reading,
+                       int nr_nuclei,
+                       double charges[],
+                       double coordinates[],
+                       int symmetry_info[],
                        const PCMInput & host_input) {
   if (input_reading) {
     input_ = Input(host_input);
@@ -412,8 +440,8 @@ void Meddle::initInput(pcmsolver_reader_t input_reading, int nr_nuclei,
 
   if (input_.mode() != "EXPLICIT") {
     Molecule molec;
-    Symmetry pg = buildGroup(symmetry_info[0], symmetry_info[1], symmetry_info[2],
-                             symmetry_info[3]);
+    Symmetry pg = buildGroup(
+        symmetry_info[0], symmetry_info[1], symmetry_info[2], symmetry_info[3]);
     initMolecule(input_, pg, nr_nuclei, chg, centers, molec);
     input_.molecule(molec);
   }
@@ -426,8 +454,8 @@ void Meddle::initInput(pcmsolver_reader_t input_reading, int nr_nuclei,
 }
 
 void Meddle::initCavity() {
-  cavity_ = Factory<Cavity, cavityData>::TheFactory().create(input_.cavityType(),
-                                                             input_.cavityParams());
+  cavity_ = Factory<ICavity, CavityData>::TheFactory().create(input_.cavityType(),
+                                                              input_.cavityParams());
   cavity_->saveCavity();
 
   infoStream_ << "========== Cavity " << std::endl;
@@ -436,15 +464,15 @@ void Meddle::initCavity() {
 }
 
 void Meddle::initStaticSolver() {
-  IGreensFunction * gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(
+  IGreensFunction * gf_i = Factory<IGreensFunction, GreenData>::TheFactory().create(
       input_.greenInsideType(), input_.insideGreenParams());
-  IGreensFunction * gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(
+  IGreensFunction * gf_o = Factory<IGreensFunction, GreenData>::TheFactory().create(
       input_.greenOutsideType(), input_.outsideStaticGreenParams());
   std::string modelType = input_.solverType();
-  K_0_ = Factory<PCMSolver, solverData>::TheFactory().create(modelType,
-                                                             input_.solverParams());
-  BoundaryIntegralOperator * biop =
-      Factory<BoundaryIntegralOperator, biOperatorData>::TheFactory().create(
+  K_0_ = Factory<ISolver, SolverData>::TheFactory().create(modelType,
+                                                           input_.solverParams());
+  IBoundaryIntegralOperator * biop =
+      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory().create(
           input_.integratorType(), input_.integratorParams());
   K_0_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   delete biop;
@@ -457,16 +485,16 @@ void Meddle::initStaticSolver() {
 }
 
 void Meddle::initDynamicSolver() {
-  IGreensFunction * gf_i = Factory<IGreensFunction, greenData>::TheFactory().create(
+  IGreensFunction * gf_i = Factory<IGreensFunction, GreenData>::TheFactory().create(
       input_.greenInsideType(), input_.insideGreenParams());
-  IGreensFunction * gf_o = Factory<IGreensFunction, greenData>::TheFactory().create(
+  IGreensFunction * gf_o = Factory<IGreensFunction, GreenData>::TheFactory().create(
       input_.greenOutsideType(), input_.outsideDynamicGreenParams());
   std::string modelType = input_.solverType();
-  K_d_ = Factory<PCMSolver, solverData>::TheFactory().create(modelType,
-                                                             input_.solverParams());
+  K_d_ = Factory<ISolver, SolverData>::TheFactory().create(modelType,
+                                                           input_.solverParams());
 
-  BoundaryIntegralOperator * biop =
-      Factory<BoundaryIntegralOperator, biOperatorData>::TheFactory().create(
+  IBoundaryIntegralOperator * biop =
+      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory().create(
           input_.integratorType(), input_.integratorParams());
   K_d_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   hasDynamic_ = true;
@@ -480,6 +508,7 @@ void Meddle::initDynamicSolver() {
 }
 
 void Meddle::mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const {
+  using utils::Solvent;
   infoStream_ << "============ Medium " << std::endl;
   if (input_.fromSolvent()) {
     infoStream_ << "Medium initialized from solvent built-in data." << std::endl;
@@ -500,22 +529,29 @@ void Meddle::printInfo() const {
   hostWriter(infoStream_);
 }
 
-void initMolecule(const Input & inp, const Symmetry & pg, int nuclei,
-                  const Eigen::VectorXd & charges, const Eigen::Matrix3Xd & centers,
+void bootstrap() {
+  bi_operators::bootstrapFactory();
+  cavity::bootstrapFactory();
+  green::bootstrapFactory();
+  solver::bootstrapFactory();
+  utils::bootstrapRadiiSet();
+}
+
+void initMolecule(const Input & inp,
+                  const Symmetry & pg,
+                  int nuclei,
+                  const Eigen::VectorXd & charges,
+                  const Eigen::Matrix3Xd & centers,
                   Molecule & molecule) {
   bool scaling = inp.scaling();
   std::string set = inp.radiiSet();
   std::vector<Atom> radiiSet;
   std::vector<Atom> atoms;
-  if (set == "UFF") {
-    radiiSet = initUFF();
-  } else if (set == "BONDI") {
-    radiiSet = initBondi();
-  } else {
-    radiiSet = initAllinger();
-  }
-  std::vector<Sphere> spheres;
   atoms.reserve(nuclei);
+  // FIXME This is globally initialized...
+  using utils::Factory;
+  radiiSet = Factory::TheFactory().create(set);
+  std::vector<Sphere> spheres;
   spheres.reserve(nuclei);
   for (int i = 0; i < charges.size(); ++i) {
     int index = int(charges(i)) - 1;
@@ -551,7 +587,8 @@ void initMolecule(const Input & inp, const Symmetry & pg, int nuclei,
   }
 }
 
-void initSpheresAtoms(const Input & inp, const Eigen::Matrix3Xd & sphereCenter_,
+void initSpheresAtoms(const Input & inp,
+                      const Eigen::Matrix3Xd & sphereCenter_,
                       std::vector<Sphere> & spheres_) {
   // Loop over the atomsInput array to get which atoms will have a user-given radius
   for (size_t i = 0; i < inp.atoms().size(); ++i) {
@@ -584,4 +621,4 @@ void print(const PCMInput & inp) {
   std::cout << "outside type " << std::string(inp.outside_type) << std::endl;
   std::cout << "epsilon outside " << inp.outside_epsilon << std::endl;
 }
-} /* end namespace pcm */
+} // namespace pcm

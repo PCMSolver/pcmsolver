@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -35,10 +35,10 @@
 #include "cavity/Element.hpp"
 #include "dielectric_profile/Yukawa.hpp"
 
-#include "GreenData.hpp"
-#include "utils/ForId.hpp"
-#include "utils/Factory.hpp"
-
+namespace pcm {
+using cavity::Element;
+using dielectric_profile::Yukawa;
+namespace green {
 template <typename DerivativeTraits>
 IonicLiquid<DerivativeTraits>::IonicLiquid(double eps, double k)
     : GreensFunction<DerivativeTraits, Yukawa>() {
@@ -47,7 +47,8 @@ IonicLiquid<DerivativeTraits>::IonicLiquid(double eps, double k)
 
 template <typename DerivativeTraits>
 DerivativeTraits IonicLiquid<DerivativeTraits>::operator()(
-    DerivativeTraits * sp, DerivativeTraits * pp) const {
+    DerivativeTraits * sp,
+    DerivativeTraits * pp) const {
   double eps = this->profile_.epsilon;
   double k = this->profile_.kappa;
   return (exp(-k * distance(sp, pp)) / (eps * distance(sp, pp)));
@@ -55,7 +56,8 @@ DerivativeTraits IonicLiquid<DerivativeTraits>::operator()(
 
 template <typename DerivativeTraits>
 double IonicLiquid<DerivativeTraits>::kernelD_impl(
-    const Eigen::Vector3d & direction, const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & direction,
+    const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return this->profile_.epsilon * (this->derivativeProbe(direction, p1, p2));
 }
@@ -67,8 +69,8 @@ KernelS IonicLiquid<DerivativeTraits>::exportKernelS_impl() const {
 
 template <typename DerivativeTraits>
 KernelD IonicLiquid<DerivativeTraits>::exportKernelD_impl() const {
-  return pcm::bind(&IonicLiquid<DerivativeTraits>::kernelD, *this, pcm::_1, pcm::_2,
-                   pcm::_3);
+  return pcm::bind(
+      &IonicLiquid<DerivativeTraits>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
 }
 
 template <typename DerivativeTraits>
@@ -92,24 +94,9 @@ std::ostream & IonicLiquid<DerivativeTraits>::printObject(std::ostream & os) {
   return os;
 }
 
-namespace {
-struct buildIonicLiquid {
-  template <typename T> IGreensFunction * operator()(const greenData & data) {
-    return new IonicLiquid<T>(data.epsilon, data.kappa);
-  }
-};
-
-IGreensFunction * createIonicLiquid(const greenData & data) {
-  buildIonicLiquid build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
-const std::string IONICLIQUID("IONICLIQUID");
-const bool registeredIonicLiquid =
-    Factory<IGreensFunction, greenData>::TheFactory().registerObject(
-        IONICLIQUID, createIonicLiquid);
-}
-
-template class IonicLiquid<Numerical>;
+template class IonicLiquid<Stencil>;
 template class IonicLiquid<AD_directional>;
 template class IonicLiquid<AD_gradient>;
 template class IonicLiquid<AD_hessian>;
+} // namespace green
+} // namespace pcm

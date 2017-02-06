@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -53,13 +53,7 @@ int main(int argc, char * argv[]) {
     PCMSOLVER_ERROR("Too many arguments supplied");
   using namespace pcm;
 
-  TIMER_ON("Input parsing");
-  Input input(argv[1]);
-  TIMER_OFF("Input parsing");
-  TIMER_ON("Initializing molecule");
-  input.initMolecule();
-  TIMER_OFF("Initializing molecule");
-  Meddle context_(input, host_writer);
+  Meddle context_(std::string(argv[1]), host_writer);
 
   // Prepare output filename
   pcmsolver_out.open(remove_extension(argv[1]).erase(0, 1) + ".out");
@@ -68,12 +62,16 @@ int main(int argc, char * argv[]) {
   PCMSolverIndex size = context_.getCavitySize();
 
   // Form vector with electrostatic potential
+  // FIXME
+  // 1. Try to understand why this is needed
+  // 2. Try to re-write this such that the input object is not needed!!!
   // First compute the potential from the classical point multipoles distribution
   // then add the one from the molecule
   TIMER_ON("Computing MEP");
-  Eigen::VectorXd mep = Eigen::VectorXd::Zero(size);
-  if (input.MEPfromMolecule())
-    mep += computeMEP(context_.molecule(), context_.getCenters());
+  // Eigen::VectorXd mep = Eigen::VectorXd::Zero(size);
+  // if (input.MEPfromMolecule())
+  //  mep += computeMEP(context_.molecule(), context_.getCenters());
+  Eigen::VectorXd mep = computeMEP(context_.molecule(), context_.getCenters());
   TIMER_OFF("Computing MEP");
   context_.setSurfaceFunction(mep.size(), mep.data(), "MEP");
   // Compute apparent surface charge

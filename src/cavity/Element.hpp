@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -41,11 +41,20 @@
  *  making up the cavity
  */
 
+namespace pcm {
+using utils::Sphere;
+namespace cavity {
 class Element __final {
 public:
-  Element(int nv, int isphe, double w, const Eigen::Vector3d & c,
-          const Eigen::Vector3d & n, bool i, const Sphere & s,
-          const Eigen::Matrix3Xd & v, const Eigen::Matrix3Xd & a)
+  Element(int nv,
+          int isphe,
+          double w,
+          const Eigen::Vector3d & c,
+          const Eigen::Vector3d & n,
+          bool i,
+          const Sphere & s,
+          const Eigen::Matrix3Xd & v,
+          const Eigen::Matrix3Xd & a)
       : nVertices_(nv),
         iSphere_(isphe),
         area_(w),
@@ -74,8 +83,10 @@ public:
    *  \param[out] phinumb contains azimuth for vertices of subtriangles
    *  \param[out] numb    contains index of polar angle for vertices of subtriangles
    */
-  void spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
-                         std::vector<double> & theta, std::vector<double> & phi,
+  void spherical_polygon(Eigen::Vector3d & t_,
+                         Eigen::Vector3d & b_,
+                         std::vector<double> & theta,
+                         std::vector<double> & phi,
                          std::vector<double> & phinumb,
                          std::vector<int> & numb) const;
 
@@ -116,7 +127,12 @@ private:
  *  \param[out] t_ tangent vector
  *  \param[out] b_ bitangent vector
  */
-void tangent_and_bitangent(const Eigen::Vector3d & n_, Eigen::Vector3d & t_,
+namespace detail {
+void tangent_and_bitangent(const Eigen::Vector3d & n_,
+                           Eigen::Vector3d & t_,
                            Eigen::Vector3d & b_);
+} // namespace detail
+} // namespace cavity
+} // namespace pcm
 
 #endif // ELEMENT_HPP

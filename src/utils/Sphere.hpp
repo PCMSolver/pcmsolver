@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -39,6 +39,8 @@
  *  \date 2011, 2016
  */
 
+namespace pcm {
+namespace utils {
 struct Sphere {
   Sphere() {}
   Sphere(const Eigen::Vector3d & c, double r) : center(c), radius(r) {}
@@ -54,8 +56,9 @@ struct Sphere {
                                      http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
                                      */
 };
+} // namespace utils
 
-std::ostream & operator<<(std::ostream & os, Sphere & sph);
+std::ostream & operator<<(std::ostream & os, utils::Sphere & sph);
 
 /*! \fn inline void transfer_spheres(const std::vector<Sphere> & spheres,
  *Eigen::Matrix3Xd & sphereCenter, Eigen::VectorXd & sphereRadius)
@@ -64,10 +67,11 @@ std::ostream & operator<<(std::ostream & os, Sphere & sph);
  *  \param[out] sphereCenter sphere centers as Eigen::Matrix3Xd (xyz * nSpheres)
  *  \param[out] sphereRadius sphere radii as Eigen::VectorXd
  *
- *  This is used in the Cavity.hpp constructor
+ *  This is used in the ICavity.hpp constructor
  */
-void transfer_spheres(const std::vector<Sphere> & spheres,
+void transfer_spheres(const std::vector<utils::Sphere> & spheres,
                       Eigen::Matrix3Xd & sphereCenter,
                       Eigen::VectorXd & sphereRadius);
+} // namespace pcm
 
 #endif // SPHERE_HPP

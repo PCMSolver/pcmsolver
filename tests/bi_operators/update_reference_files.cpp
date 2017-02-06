@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -43,6 +43,17 @@
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"
 
+using namespace pcm;
+using bi_operators::Collocation;
+using bi_operators::Numerical;
+using bi_operators::Purisima;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using green::IonicLiquid;
+using green::AnisotropicLiquid;
+using green::SphericalDiffuse;
+
 void save_vacuum_collocation();
 void save_uniform_dielectric_collocation();
 void save_tanh_spherical_diffuse_collocation();
@@ -69,8 +80,6 @@ int main() {
 }
 
 void save_vacuum_collocation() {
-  using integrator::Collocation;
-
   Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
   double area = 10.0;
   GePolCavity cavity(molec, area, 0.0, 100.0);
@@ -86,8 +95,6 @@ void save_vacuum_collocation() {
 }
 
 void save_uniform_dielectric_collocation() {
-  using integrator::Collocation;
-
   double epsilon = 80.0;
   Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
   double area = 10.0;
@@ -104,8 +111,6 @@ void save_uniform_dielectric_collocation() {
 }
 
 void save_tanh_spherical_diffuse_collocation() {
-  using integrator::Collocation;
-
   double epsilon = 80.0;
   double width = 5.0;
   double sphereRadius = 100.0;
@@ -115,8 +120,8 @@ void save_tanh_spherical_diffuse_collocation() {
 
   Collocation op;
 
-  SphericalDiffuse<> gf(epsilon, epsilon, width, sphereRadius,
-                        Eigen::Vector3d::Zero(), 3);
+  SphericalDiffuse<> gf(
+      epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
   Eigen::MatrixXd S_results = op.computeS(cavity, gf);
   cnpy::custom::npy_save("tanhsphericaldiffuse_S_collocation.npy", S_results);
@@ -125,8 +130,6 @@ void save_tanh_spherical_diffuse_collocation() {
 }
 
 void save_vacuum_purisima() {
-  using integrator::Purisima;
-
   Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
   double area = 10.0;
   GePolCavity cavity(molec, area, 0.0, 100.0);
@@ -140,8 +143,6 @@ void save_vacuum_purisima() {
 }
 
 void save_uniform_dielectric_purisima() {
-  using integrator::Purisima;
-
   double epsilon = 80.0;
   Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
   double area = 10.0;
@@ -160,7 +161,7 @@ void save_vacuum_numerical() {
   double area = 10.0;
   GePolCavity cavity(molec, area, 0.0, 100.0);
 
-  integrator::Numerical op;
+  Numerical op;
 
   Vacuum<> gf;
 
@@ -176,7 +177,7 @@ void save_uniform_dielectric_numerical() {
   double area = 10.0;
   GePolCavity cavity(molec, area, 0.0, 100.0);
 
-  integrator::Numerical op;
+  Numerical op;
 
   UniformDielectric<> gf(epsilon);
 
@@ -193,7 +194,7 @@ void save_ionic_liquid_numerical() {
   double area = 10.0;
   GePolCavity cavity(molec, area, 0.0, 100.0);
 
-  integrator::Numerical op;
+  Numerical op;
 
   IonicLiquid<> gf(eps, kappa);
 
@@ -212,7 +213,7 @@ void save_anisotropic_liquid_numerical() {
   double area = 10.0;
   GePolCavity cavity(molec, area, 0.0, 100.0);
 
-  integrator::Numerical op;
+  Numerical op;
 
   AnisotropicLiquid<> gf(epsilon, euler);
 
@@ -230,10 +231,10 @@ void save_tanh_spherical_diffuse_numerical() {
   double area = 10.0;
   GePolCavity cavity(molec, area, 0.0, 100.0);
 
-  integrator::Numerical op;
+  Numerical op;
 
-  SphericalDiffuse<> gf(epsilon, epsilon, width, sphereRadius,
-                        Eigen::Vector3d::Zero(), 3);
+  SphericalDiffuse<> gf(
+      epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
   Eigen::MatrixXd S_results = op.computeS(cavity, gf);
   cnpy::custom::npy_save("tanhsphericaldiffuse_S_numerical.npy", S_results);

@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -27,8 +27,6 @@
 #include <iostream>
 #include <vector>
 
-#include "Config.hpp"
-
 #include <Eigen/Core>
 
 #include "utils/Atom.hpp"
@@ -36,6 +34,7 @@
 #include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
 
+namespace pcm {
 /*! Returns the ammonia molecule
  */
 inline Molecule NH3();
@@ -537,5 +536,6 @@ Molecule H2O() {
 
   return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
+} // namespace pcm
 
 #endif // TESTINGMOLECULES_HPP

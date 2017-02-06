@@ -17,7 +17,7 @@ before_install:
   - gfortran --version
   - python --version
 script:
-  - python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug --cmake-options='-Hprojects/CMake'
+  - python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug --static --cmake-options='-Hprojects/CMake'
   - cd build
   - cmake --build . -- --jobs=2 VERBOSE=1
   - ctest --parallel 2 --output-on-failure --verbose --dashboard Experimental --track MagnumCI

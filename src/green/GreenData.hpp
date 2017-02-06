@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,11 +30,12 @@
 
 #include <Eigen/Core>
 
-/*! @struct greenData
+/*! @struct GreenData
  *  @brief Contains all data defined from user input in the green section.
  */
 
-struct greenData {
+namespace pcm {
+struct GreenData {
   /*! The way the derivatives of the Green's function are evaluated */
   int howDerivative;
   /*! Dielectric profile type */
@@ -71,15 +72,23 @@ struct greenData {
   /*! Whether the structure was initialized with user input or not */
   bool empty;
 
-  greenData() { empty = true; }
-  greenData(int how_d, int how_p, double _epsilon = 1.0, double _kappa = 0.0,
+  GreenData() { empty = true; }
+  GreenData(int how_d,
+            int how_p,
+            double _epsilon = 1.0,
+            double _kappa = 0.0,
             const Eigen::Vector3d & epstens = Eigen::Vector3d::Zero(),
             const Eigen::Vector3d & euler = Eigen::Vector3d::Zero(),
-            double _epsReal = 0.0, double _epsImaginary = 0.0,
+            double _epsReal = 0.0,
+            double _epsImaginary = 0.0,
             const std::vector<double> & _sphere = std::vector<double>(),
-            double _sphRadius = 0.0, double _e1 = 1.0, double _e2 = 1.0,
-            double _c = 100.0, double _w = 5.0,
-            const Eigen::Vector3d & _o = Eigen::Vector3d::Zero(), int l = 30)
+            double _sphRadius = 0.0,
+            double _e1 = 1.0,
+            double _e2 = 1.0,
+            double _c = 100.0,
+            double _w = 5.0,
+            const Eigen::Vector3d & _o = Eigen::Vector3d::Zero(),
+            int l = 30)
       : howDerivative(how_d),
         howProfile(how_p),
         epsilon(_epsilon),
@@ -102,5 +111,6 @@ struct greenData {
                                      http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
                                      */
 };
+} // namespace pcm
 
 #endif // GREENDATA_HPP

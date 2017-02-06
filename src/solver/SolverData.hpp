@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -26,11 +26,12 @@
 
 #include "Config.hpp"
 
-/*! @struct solverData
+/*! @struct SolverData
  *  @brief Contains all data defined from user input in the solver section.
  */
 
-struct solverData {
+namespace pcm {
+struct SolverData {
   /*! The correction factor to be use in a CPCM calculation */
   double correction;
   /*! The type of integral equation to solve, relevant only for wavelet solvers */
@@ -40,11 +41,12 @@ struct solverData {
   /*! Whether the structure was initialized with user input or not */
   bool empty;
 
-  solverData() { empty = true; }
-  solverData(double corr, int int_eq = 1, bool symm = true)
+  SolverData() { empty = true; }
+  SolverData(double corr, int int_eq = 1, bool symm = true)
       : correction(corr), integralEquation(int_eq), hermitivitize(symm) {
     empty = false;
   }
 };
+} // namespace pcm
 
 #endif // SOLVERDATA_HPP

@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -31,16 +31,18 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 
-#include "bi_operators/BoundaryIntegralOperator.hpp"
-#include "cavity/Cavity.hpp"
+#include "bi_operators/IBoundaryIntegralOperator.hpp"
+#include "cavity/ICavity.hpp"
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
-#include "utils/MathUtils.hpp"
 
+namespace pcm {
 namespace solver {
-Eigen::MatrixXd anisotropicTEpsilon(const Cavity & cav, const IGreensFunction & gf_i,
+namespace detail {
+Eigen::MatrixXd anisotropicTEpsilon(const ICavity & cav,
+                                    const IGreensFunction & gf_i,
                                     const IGreensFunction & gf_o,
-                                    const BoundaryIntegralOperator & op) {
+                                    const IBoundaryIntegralOperator & op) {
   TIMER_ON("Computing SI");
   Eigen::MatrixXd SI = op.computeS(cav, gf_i);
   TIMER_OFF("Computing SI");
@@ -65,9 +67,10 @@ Eigen::MatrixXd anisotropicTEpsilon(const Cavity & cav, const IGreensFunction & 
   return T;
 }
 
-Eigen::MatrixXd isotropicTEpsilon(const Cavity & cav, const IGreensFunction & gf_i,
+Eigen::MatrixXd isotropicTEpsilon(const ICavity & cav,
+                                  const IGreensFunction & gf_i,
                                   double epsilon,
-                                  const BoundaryIntegralOperator & op) {
+                                  const IBoundaryIntegralOperator & op) {
   TIMER_ON("Computing SI");
   Eigen::MatrixXd SI = op.computeS(cav, gf_i);
   TIMER_OFF("Computing SI");
@@ -86,10 +89,10 @@ Eigen::MatrixXd isotropicTEpsilon(const Cavity & cav, const IGreensFunction & gf
   return T;
 }
 
-Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav,
+Eigen::MatrixXd anisotropicRinfinity(const ICavity & cav,
                                      const IGreensFunction & gf_i,
                                      const IGreensFunction & gf_o,
-                                     const BoundaryIntegralOperator & op) {
+                                     const IBoundaryIntegralOperator & op) {
   TIMER_ON("Computing SI");
   Eigen::MatrixXd SI = op.computeS(cav, gf_i);
   TIMER_OFF("Computing SI");
@@ -114,8 +117,9 @@ Eigen::MatrixXd anisotropicRinfinity(const Cavity & cav,
   return R;
 }
 
-Eigen::MatrixXd isotropicRinfinity(const Cavity & cav, const IGreensFunction & gf_i,
-                                   const BoundaryIntegralOperator & D) {
+Eigen::MatrixXd isotropicRinfinity(const ICavity & cav,
+                                   const IGreensFunction & gf_i,
+                                   const IBoundaryIntegralOperator & D) {
   TIMER_ON("Computing DI");
   Eigen::MatrixXd DI = D.computeD(cav, gf_i);
   TIMER_OFF("Computing DI");
@@ -130,10 +134,10 @@ Eigen::MatrixXd isotropicRinfinity(const Cavity & cav, const IGreensFunction & g
   return R;
 }
 
-Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav,
+Eigen::MatrixXd anisotropicIEFMatrix(const ICavity & cav,
                                      const IGreensFunction & gf_i,
                                      const IGreensFunction & gf_o,
-                                     const BoundaryIntegralOperator & op) {
+                                     const IBoundaryIntegralOperator & op) {
   Eigen::MatrixXd T = anisotropicTEpsilon(cav, gf_i, gf_o, op);
   Eigen::MatrixXd R = anisotropicRinfinity(cav, gf_i, gf_o, op);
 
@@ -144,9 +148,10 @@ Eigen::MatrixXd anisotropicIEFMatrix(const Cavity & cav,
   return fullPCMMatrix;
 }
 
-Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunction & gf_i,
+Eigen::MatrixXd isotropicIEFMatrix(const ICavity & cav,
+                                   const IGreensFunction & gf_i,
                                    double epsilon,
-                                   const BoundaryIntegralOperator & op) {
+                                   const IBoundaryIntegralOperator & op) {
   Eigen::MatrixXd T = isotropicTEpsilon(cav, gf_i, epsilon, op);
   Eigen::MatrixXd R = isotropicRinfinity(cav, gf_i, op);
 
@@ -156,4 +161,6 @@ Eigen::MatrixXd isotropicIEFMatrix(const Cavity & cav, const IGreensFunction & g
 
   return fullPCMMatrix;
 }
+} // namespace detail
 } // namespace solver
+} // namespace pcm

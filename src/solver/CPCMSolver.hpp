@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,11 +32,13 @@
 
 #include <Eigen/Core>
 
-class Cavity;
+namespace pcm {
+class ICavity;
 class IGreensFunction;
-class BoundaryIntegralOperator;
+class IBoundaryIntegralOperator;
+} // namespace pcm
 
-#include "PCMSolver.hpp"
+#include "ISolver.hpp"
 
 /*! \file CPCMSolver.hpp
  *  \class CPCMSolver
@@ -51,7 +53,9 @@ class BoundaryIntegralOperator;
  *  definition of the conductor model!
  */
 
-class CPCMSolver : public PCMSolver {
+namespace pcm {
+namespace solver {
+class CPCMSolver : public ISolver {
 public:
   CPCMSolver() {}
   /*! \brief Construct solver
@@ -59,7 +63,7 @@ public:
    *  \param[in] corr factor to correct the conductor results
    */
   CPCMSolver(bool symm, double corr)
-      : PCMSolver(), hermitivitize_(symm), correction_(corr) {}
+      : ISolver(), hermitivitize_(symm), correction_(corr) {}
   virtual ~CPCMSolver() {}
   friend std::ostream & operator<<(std::ostream & os, CPCMSolver & solver) {
     return solver.printSolver(os);
@@ -81,9 +85,11 @@ private:
    *  \param[in] gf_o Green's function outside the cavity
    *  \param[in] op integrator strategy for the single layer operator
    */
-  virtual void buildSystemMatrix_impl(
-      const Cavity & cavity, const IGreensFunction & gf_i,
-      const IGreensFunction & gf_o, const BoundaryIntegralOperator & op) __override;
+  virtual void buildSystemMatrix_impl(const ICavity & cavity,
+                                      const IGreensFunction & gf_i,
+                                      const IGreensFunction & gf_o,
+                                      const IBoundaryIntegralOperator & op)
+      __override;
   /*! \brief Returns the ASC given the MEP and the desired irreducible representation
    *  \param[in] potential the vector containing the MEP at cavity points
    *  \param[in] irrep the irreducible representation of the MEP and ASC
@@ -92,5 +98,7 @@ private:
                                              int irrep = 0) const __override;
   virtual std::ostream & printSolver(std::ostream & os) __override;
 };
+} // namespace solver
+} // namespace pcm
 
 #endif // CPCMSOLVER_HPP

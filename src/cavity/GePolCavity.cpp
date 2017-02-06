@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -39,34 +39,45 @@
 
 #include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
-#include "CavityData.hpp"
-#include "utils/Factory.hpp"
 
-GePolCavity::GePolCavity(const Molecule & molec, double a, double pr, double minR,
+namespace pcm {
+namespace cavity {
+GePolCavity::GePolCavity(const Molecule & molec,
+                         double a,
+                         double pr,
+                         double minR,
                          const std::string & suffix)
-    : Cavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR) {
+    : ICavity(molec), averageArea(a), probeRadius(pr), minimalRadius(minR) {
   TIMER_ON("GePolCavity::build from Molecule object");
   build(suffix, 50000, 1000, 100000);
   TIMER_OFF("GePolCavity::build from Molecule object");
 }
 
-GePolCavity::GePolCavity(const Sphere & sph, double a, double pr, double minR,
+GePolCavity::GePolCavity(const Sphere & sph,
+                         double a,
+                         double pr,
+                         double minR,
                          const std::string & suffix)
-    : Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR) {
+    : ICavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR) {
   TIMER_ON("GePolCavity::build from single sphere");
   build(suffix, 50000, 1000, 100000);
   TIMER_OFF("GePolCavity::build from single sphere");
 }
 
-GePolCavity::GePolCavity(const std::vector<Sphere> & sph, double a, double pr,
-                         double minR, const std::string & suffix)
-    : Cavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR) {
+GePolCavity::GePolCavity(const std::vector<Sphere> & sph,
+                         double a,
+                         double pr,
+                         double minR,
+                         const std::string & suffix)
+    : ICavity(sph), averageArea(a), probeRadius(pr), minimalRadius(minR) {
   TIMER_ON("GePolCavity::build from list of spheres");
   build(suffix, 50000, 1000, 100000);
   TIMER_OFF("GePolCavity::build from list of spheres");
 }
 
-void GePolCavity::build(const std::string & suffix, int maxts, int maxsph,
+void GePolCavity::build(const std::string & suffix,
+                        int maxts,
+                        int maxsph,
                         int maxvert) {
 
   // This is a wrapper for the generatecavity_cpp function defined in the Fortran
@@ -128,7 +139,7 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph,
   Eigen::VectorXd radii_scratch =
       Eigen::VectorXd::Zero(nSpheres_ + maxAddedSpheres); // Not to be confused with
                                                           // the data member
-                                                          // inherited from Cavity!!!
+  // inherited from ICavity!!!
 
   for (int i = 0; i < nSpheres_; ++i) {
     for (int j = 0; j < 3; ++j) {
@@ -161,11 +172,39 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph,
   int len_f_pedra = std::strlen(pedra.str().c_str());
   // Go PEDRA, Go!
   TIMER_ON("GePolCavity::generatecavity_cpp");
-  generatecavity_cpp(&maxts, &maxsph, &maxvert, xtscor, ytscor, ztscor, ar, xsphcor,
-                     ysphcor, zsphcor, rsph, &nts, &ntsirr, &nSpheres_,
-                     &addedSpheres, xe, ye, ze, rin, mass, &averageArea,
-                     &probeRadius, &minimalRadius, &nr_gen, &gen1, &gen2, &gen3,
-                     nvert, vert, centr, isphe, pedra.str().c_str(), &len_f_pedra);
+  generatecavity_cpp(&maxts,
+                     &maxsph,
+                     &maxvert,
+                     xtscor,
+                     ytscor,
+                     ztscor,
+                     ar,
+                     xsphcor,
+                     ysphcor,
+                     zsphcor,
+                     rsph,
+                     &nts,
+                     &ntsirr,
+                     &nSpheres_,
+                     &addedSpheres,
+                     xe,
+                     ye,
+                     ze,
+                     rin,
+                     mass,
+                     &averageArea,
+                     &probeRadius,
+                     &minimalRadius,
+                     &nr_gen,
+                     &gen1,
+                     &gen2,
+                     &gen3,
+                     nvert,
+                     vert,
+                     centr,
+                     isphe,
+                     pedra.str().c_str(),
+                     &len_f_pedra);
   TIMER_OFF("GePolCavity::generatecavity_cpp");
 
   // The "intensive" part of updating the spheres related class data members will be
@@ -269,8 +308,15 @@ void GePolCavity::build(const std::string & suffix, int maxts, int maxsph,
         arcs(k, j) = centr[offset];
       }
     }
-    elements_.push_back(Element(nv, isph, elementArea_(i), elementCenter_.col(i),
-                                elementNormal_.col(i), irr, sph, vertices, arcs));
+    elements_.push_back(Element(nv,
+                                isph,
+                                elementArea_(i),
+                                elementCenter_.col(i),
+                                elementNormal_.col(i),
+                                irr,
+                                sph,
+                                vertices,
+                                arcs));
   }
 
   // Clean-up
@@ -376,14 +422,5 @@ std::ostream & GePolCavity::printCavity(std::ostream & os) {
   }
   return os;
 }
-
-namespace {
-Cavity * createGePolCavity(const cavityData & data) {
-  return new GePolCavity(data.molecule, data.area, data.probeRadius,
-                         data.minimalRadius);
-}
-const std::string GEPOL("GEPOL");
-const bool registeredGePol =
-    Factory<Cavity, cavityData>::TheFactory().registerObject(GEPOL,
-                                                             createGePolCavity);
-}
+} // namespace cavity
+} // namespace pcm

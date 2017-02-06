@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -40,6 +40,8 @@
  *  the constructor to keep consistency with \cite Frediani2004a
  */
 
+namespace pcm {
+namespace dielectric_profile {
 class OneLayerErf {
 private:
   /// Dielectric constant on the left of the interface
@@ -95,5 +97,7 @@ public:
     return th.printObject(os);
   }
 };
+} // namespace dielectric_profile
+} // namespace pcm
 
 #endif // ONELAYERERF_HPP

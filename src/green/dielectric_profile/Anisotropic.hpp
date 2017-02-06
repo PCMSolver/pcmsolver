@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -39,6 +39,8 @@
  *  \date 2014
  */
 
+namespace pcm {
+namespace dielectric_profile {
 class Anisotropic __final {
 private:
   /// Diagonal of the permittivity tensor in the lab-fixed frame
@@ -58,7 +60,7 @@ private:
    */
   void build() {
     // 1. construct rotation matrix from Euler angles
-    eulerRotation(R_, eulerAngles_);
+    utils::eulerRotation(R_, eulerAngles_);
     // 2. Apply the rotation matrix: epsilon_ = R_^t * epsilonLab_ * R_
     epsilon_ = R_.transpose() * epsilonLab_.asDiagonal() * R_;
     // 3. Obtain epsilonInv_ = R_ * epsilonLab_^-1 * R_^t
@@ -98,5 +100,7 @@ public:
                                      http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
                                      */
 };
+} // namespace dielectric_profile
+} // namespace pcm
 
 #endif // ANISOTROPIC_HPP

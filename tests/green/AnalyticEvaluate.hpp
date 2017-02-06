@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -169,7 +169,8 @@ inline Eigen::Array4d analyticUniformDielectric(double eps,
  *  \end{align}
  *  \f]
  */
-inline Eigen::Array4d analyticIonicLiquid(double eps, double k,
+inline Eigen::Array4d analyticIonicLiquid(double eps,
+                                          double k,
                                           const Eigen::Vector3d & spNormal,
                                           const Eigen::Vector3d & sp,
                                           const Eigen::Vector3d & ppNormal,
@@ -243,7 +244,7 @@ inline Eigen::Array4d analyticAnisotropicLiquid(const Eigen::Vector3d & epsilon,
                                                 const Eigen::Vector3d & pp) {
   Eigen::Array4d result = Eigen::Array4d::Zero();
   Eigen::Matrix3d epsilonInv, R;
-  eulerRotation(R, euler);
+  pcm::utils::eulerRotation(R, euler);
   Eigen::Vector3d scratch;
   scratch << (1.0 / epsilon(0)), (1.0 / epsilon(1)), (1.0 / epsilon(2));
   epsilonInv = R * scratch.asDiagonal() * R.transpose();
@@ -269,7 +270,9 @@ inline Eigen::Array4d analyticAnisotropicLiquid(const Eigen::Vector3d & epsilon,
   return result;
 }
 
-inline double imagePotential(double eps, double epsSolv, double radius,
+inline double imagePotential(double eps,
+                             double epsSolv,
+                             double radius,
                              const Eigen::Vector3d & origin,
                              const Eigen::Vector3d & sp,
                              const Eigen::Vector3d & pp) {
@@ -280,9 +283,9 @@ inline double imagePotential(double eps, double epsSolv, double radius,
   double cos_gamma =
       sp_origin.dot(pp_origin) / (sp_origin.norm() * pp_origin.norm());
   // Clean-up cos_gamma, Legendre polynomials are only defined for -1 <= x <= 1
-  if (numericalZero(cos_gamma - 1))
+  if (pcm::utils::numericalZero(cos_gamma - 1))
     cos_gamma = 1.0;
-  if (numericalZero(cos_gamma + 1))
+  if (pcm::utils::numericalZero(cos_gamma + 1))
     cos_gamma = -1.0;
   // Image charge position
   Eigen::Vector3d r_img = origin + std::pow(radius / pp_origin_norm, 2) * pp_origin;
@@ -308,7 +311,9 @@ inline double imagePotential(double eps, double epsSolv, double radius,
   return G_img / epsSolv;
 }
 
-inline double derivativeImagePotential(double eps, double epsSolv, double radius,
+inline double derivativeImagePotential(double eps,
+                                       double epsSolv,
+                                       double radius,
                                        const Eigen::Vector3d & origin,
                                        const Eigen::Vector3d & sp,
                                        const Eigen::Vector3d & ppNormal,
@@ -319,9 +324,9 @@ inline double derivativeImagePotential(double eps, double epsSolv, double radius
   double pp_origin_norm = pp_origin.norm();
   double cos_gamma = sp_origin.dot(pp_origin) / (sp_origin_norm * pp_origin_norm);
   // Clean-up cos_gamma, Legendre polynomials are only defined for -1 <= x <= 1
-  if (numericalZero(cos_gamma - 1))
+  if (pcm::utils::numericalZero(cos_gamma - 1))
     cos_gamma = 1.0;
-  if (numericalZero(cos_gamma + 1))
+  if (pcm::utils::numericalZero(cos_gamma + 1))
     cos_gamma = -1.0;
   double pp_origin_norm_3 = std::pow(pp_origin_norm, 3);
 
@@ -372,10 +377,14 @@ inline double derivativeImagePotential(double eps, double epsSolv, double radius
  * derivatives
  *  Derivation details in J. Chem. Phys. 139, 0224105 (2013)
  */
-inline Eigen::Array4d analyticSphericalSharp(
-    double eps, double epsSolv, double radius, const Eigen::Vector3d & origin,
-    const Eigen::Vector3d & spNormal, const Eigen::Vector3d & sp,
-    const Eigen::Vector3d & ppNormal, const Eigen::Vector3d & pp) {
+inline Eigen::Array4d analyticSphericalSharp(double eps,
+                                             double epsSolv,
+                                             double radius,
+                                             const Eigen::Vector3d & origin,
+                                             const Eigen::Vector3d & spNormal,
+                                             const Eigen::Vector3d & sp,
+                                             const Eigen::Vector3d & ppNormal,
+                                             const Eigen::Vector3d & pp) {
   Eigen::Array4d result = Eigen::Array4d::Zero();
   double distance = (sp - pp).norm();
   double distance_3 = std::pow(distance, 3);

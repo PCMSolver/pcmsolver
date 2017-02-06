@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -31,6 +31,9 @@
 #include "cavity/GePolCavity.hpp"
 #include "TestingMolecules.hpp"
 
+using namespace pcm;
+using cavity::GePolCavity;
+
 SCENARIO("GePol cavity for a single sphere", "[gepol][gepol_point]") {
   GIVEN("A single sphere") {
     double area = 0.4;
@@ -38,7 +41,7 @@ SCENARIO("GePol cavity for a single sphere", "[gepol][gepol_point]") {
     double minRadius = 100.0;
     WHEN("the sphere is obtained from a Molecule object") {
       Molecule point = dummy<0>();
-      GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius, "point");
+      GePolCavity cavity(point, area, probeRadius, minRadius, "point");
       cavity.saveCavity("point.npz");
 
       /*! \class GePolCavity
@@ -84,7 +87,7 @@ SCENARIO("GePol cavity for a single sphere", "[gepol][gepol_point]") {
     double minRadius = 100.0;
     WHEN("the sphere is obtained from a Sphere object") {
       Sphere sph(Eigen::Vector3d::Zero(), 1.0);
-      GePolCavity cavity = GePolCavity(sph, area, probeRadius, minRadius, "point");
+      GePolCavity cavity(sph, area, probeRadius, minRadius, "point");
 
       /*! \class GePolCavity
        *  \test \b GePolCavitySphereCTORTest_size tests GePol cavity size for a point

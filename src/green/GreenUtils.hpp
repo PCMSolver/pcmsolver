@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -46,10 +46,12 @@ namespace green {
  *  \param[in]        p2 second point
  */
 template <typename DerivativeTraits>
-double derivativeProbe(const pcm::function<DerivativeTraits(
-                           DerivativeTraits *, DerivativeTraits *)> & functor,
-                       const Eigen::Vector3d & normal_p2, const Eigen::Vector3d & p1,
-                       const Eigen::Vector3d & p2) {
+double derivativeProbe(
+    const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
+        functor,
+    const Eigen::Vector3d & normal_p2,
+    const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & p2) {
   DerivativeTraits t1[3], t2[3], der;
   t1[0] = p1(0);
   t1[1] = p1(1);
@@ -78,10 +80,12 @@ double derivativeProbe(const pcm::function<DerivativeTraits(
  *  \param[in]        p2 second point
  */
 template <typename DerivativeTraits>
-double derivativeSource(const pcm::function<DerivativeTraits(
-                            DerivativeTraits *, DerivativeTraits *)> & functor,
-                        const Eigen::Vector3d & normal_p1,
-                        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) {
+double derivativeSource(
+    const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
+        functor,
+    const Eigen::Vector3d & normal_p1,
+    const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & p2) {
   DerivativeTraits t1[3], t2[3], der;
   t1[0] = p1(0);
   t1[1] = p1(1);
@@ -109,7 +113,8 @@ double derivativeSource(const pcm::function<DerivativeTraits(
  *  \param[in]        p2 second point
  */
 double derivativeProbe(const DifferentiableFunction & functor,
-                       const Eigen::Vector3d & normal_p2, const Eigen::Vector3d & p1,
+                       const Eigen::Vector3d & normal_p2,
+                       const Eigen::Vector3d & p1,
                        const Eigen::Vector3d & p2) {
   return threePointStencil(pcm::bind(functor, pcm::_1, _2), p2, p1, normal_p2);
 }
@@ -128,7 +133,8 @@ double derivativeProbe(const DifferentiableFunction & functor,
  */
 double derivativeSource(const DifferentiableFunction & functor,
                         const Eigen::Vector3d & normal_p1,
-                        const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) {
+                        const Eigen::Vector3d & p1,
+                        const Eigen::Vector3d & p2) {
   return threePointStencil(pcm::bind(functor, _1, _2), p1, p2, normal_p1);
 }
 
@@ -145,9 +151,10 @@ template <typename DerivativeTraits>
 Eigen::Vector3d gradientSource(
     const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
         functor,
-    const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) {
-  return (Eigen::Vector3d() << derivativeSource(functor, Eigen::Vector3d::UnitX(),
-                                                p1, p2),
+    const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & p2) {
+  return (Eigen::Vector3d() << derivativeSource(
+              functor, Eigen::Vector3d::UnitX(), p1, p2),
           derivativeSource(functor, Eigen::Vector3d::UnitY(), p1, p2),
           derivativeSource(functor, Eigen::Vector3d::UnitZ(), p1, p2)).finished();
 }
@@ -165,9 +172,10 @@ template <typename DerivativeTraits>
 Eigen::Vector3d gradientProbe(
     const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
         functor,
-    const Eigen::Vector3d & p1, const Eigen::Vector3d & p2) {
-  return (Eigen::Vector3d() << derivativeProbe(functor, Eigen::Vector3d::UnitX(), p1,
-                                               p2),
+    const Eigen::Vector3d & p1,
+    const Eigen::Vector3d & p2) {
+  return (Eigen::Vector3d() << derivativeProbe(
+              functor, Eigen::Vector3d::UnitX(), p1, p2),
           derivativeProbe(functor, Eigen::Vector3d::UnitY(), p1, p2),
           derivativeProbe(functor, Eigen::Vector3d::UnitZ(), p1, p2)).finished();
 }
@@ -183,8 +191,8 @@ Eigen::Vector3d gradientProbe(
 Eigen::Vector3d gradientSource(const DifferentiableFunction & functor,
                                const Eigen::Vector3d & p1,
                                const Eigen::Vector3d & p2) {
-  return (Eigen::Vector3d() << derivativeSource(functor, Eigen::Vector3d::UnitX(),
-                                                p1, p2),
+  return (Eigen::Vector3d() << derivativeSource(
+              functor, Eigen::Vector3d::UnitX(), p1, p2),
           derivativeSource(functor, Eigen::Vector3d::UnitY(), p1, p2),
           derivativeSource(functor, Eigen::Vector3d::UnitZ(), p1, p2)).finished();
 }
@@ -200,8 +208,8 @@ Eigen::Vector3d gradientSource(const DifferentiableFunction & functor,
 Eigen::Vector3d gradientProbe(const DifferentiableFunction & functor,
                               const Eigen::Vector3d & p1,
                               const Eigen::Vector3d & p2) {
-  return (Eigen::Vector3d() << derivativeProbe(functor, Eigen::Vector3d::UnitX(), p1,
-                                               p2),
+  return (Eigen::Vector3d() << derivativeProbe(
+              functor, Eigen::Vector3d::UnitX(), p1, p2),
           derivativeProbe(functor, Eigen::Vector3d::UnitY(), p1, p2),
           derivativeProbe(functor, Eigen::Vector3d::UnitZ(), p1, p2)).finished();
 }

@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -36,7 +36,10 @@
 
 #include "utils/Sphere.hpp"
 
-void Element::spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
+namespace pcm {
+namespace cavity {
+void Element::spherical_polygon(Eigen::Vector3d & t_,
+                                Eigen::Vector3d & b_,
                                 std::vector<double> & theta,
                                 std::vector<double> & phi,
                                 std::vector<double> & phinumb,
@@ -110,7 +113,9 @@ void Element::spherical_polygon(Eigen::Vector3d & t_, Eigen::Vector3d & b_,
   phinumb[nVertices_] = 2 * M_PI;
 }
 
-void tangent_and_bitangent(const Eigen::Vector3d & n_, Eigen::Vector3d & t_,
+namespace detail {
+void tangent_and_bitangent(const Eigen::Vector3d & n_,
+                           Eigen::Vector3d & t_,
                            Eigen::Vector3d & b_) {
   double rmin = 0.99;
   double n0 = n_(0), n1 = n_(1), n2 = n_(2);
@@ -144,3 +149,6 @@ void tangent_and_bitangent(const Eigen::Vector3d & n_, Eigen::Vector3d & t_,
     PCMSOLVER_ERROR("Frenet-Serret local frame is not left-handed!");
   }
 }
+} // namespace detail
+} // namespace cavity
+} // namespace pcm

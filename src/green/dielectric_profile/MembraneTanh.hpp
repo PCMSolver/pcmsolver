@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -36,6 +36,8 @@
  *  \date 2015
  */
 
+namespace pcm {
+namespace dielectric_profile {
 class MembraneTanh {
 private:
   double epsilon1_;
@@ -65,7 +67,12 @@ private:
 
 public:
   MembraneTanh() {}
-  MembraneTanh(double e1, double e2, double e3, double w12, double w23, double c12,
+  MembraneTanh(double e1,
+               double e2,
+               double e3,
+               double w12,
+               double w23,
+               double c12,
                double c23)
       : epsilon1_(e1),
         epsilon2_(e2),
@@ -92,5 +99,7 @@ public:
   double center12() const { return center12_; }
   double center23() const { return center23_; }
 };
+} // namespace dielectric_profile
+} // namespace pcm
 
 #endif // MEMBRANETANH_HPP

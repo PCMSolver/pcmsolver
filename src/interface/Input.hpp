@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -61,6 +61,10 @@ struct PCMInput;
  *  should be carefully considered.
  */
 
+namespace pcm {
+using utils::Sphere;
+using utils::Solvent;
+
 class Input {
 public:
   /// Default constructor
@@ -119,12 +123,12 @@ public:
   std::string providedBy() const { return providedBy_; }
 
   /// Get-ters for input wrapping structs
-  cavityData cavityParams();
-  greenData insideGreenParams();
-  greenData outsideStaticGreenParams();
-  greenData outsideDynamicGreenParams();
-  solverData solverParams();
-  biOperatorData integratorParams();
+  CavityData cavityParams();
+  GreenData insideGreenParams();
+  GreenData outsideStaticGreenParams();
+  GreenData outsideDynamicGreenParams();
+  SolverData solverParams();
+  BIOperatorData integratorParams();
   /// @}
 
   bool MEPfromMolecule() { return MEPfromMolecule_; }
@@ -264,19 +268,20 @@ private:
   /// Who performed the syntactic input parsing
   std::string providedBy_;
   /// Input wrapping struct for the cavity
-  cavityData cavData_;
+  CavityData cavData_;
   /// Input wrapping struct for the Green's function inside
-  greenData insideGreenData_;
+  GreenData insideGreenData_;
   /// Input wrapping struct for the Green's function outside (static permittivity)
-  greenData outsideStaticGreenData_;
+  GreenData outsideStaticGreenData_;
   /// Input wrapping struct for the Green's function outside (dynamic permittivity)
-  greenData outsideDynamicGreenData_;
+  GreenData outsideDynamicGreenData_;
   /// Input wrapping struct for the solver
-  solverData solverData_;
+  SolverData SolverData_;
   /// Input wrapping struct for the integrator
-  biOperatorData integratorData_;
+  BIOperatorData integratorData_;
 };
 
+namespace detail {
 /*! A useful map to convert the Der string to an integer which will be passed to the
  * Green's function CTOR. */
 int derivativeTraits(const std::string & name);
@@ -294,5 +299,7 @@ int integralEquation(const std::string & name);
 std::string trim(const char * src);
 
 std::string trim_and_upper(const char * src);
+} // namespace detail
+} // namespace pcm
 
 #endif // INPUT_HPP

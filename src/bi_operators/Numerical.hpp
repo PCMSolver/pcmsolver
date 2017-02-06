@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,12 +30,17 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+namespace cavity {
 class Element;
+} // namespace cavity
 class IGreensFunction;
+} // namespace pcm
 
-#include "BoundaryIntegralOperator.hpp"
+#include "IBoundaryIntegralOperator.hpp"
 
-namespace integrator {
+namespace pcm {
+namespace bi_operators {
 /*! \file Numerical.hpp
  *  \class Numerical
  *  \brief Implementation of the single and double layer operators matrix
@@ -46,11 +51,11 @@ namespace integrator {
  *  Calculates the diagonal elements of S and D by collocation, using numerical
  *integration.
  */
-class Numerical __final : public BoundaryIntegralOperator {
+class Numerical __final : public IBoundaryIntegralOperator {
 private:
-  virtual Eigen::MatrixXd computeS_impl(const std::vector<Element> & elems,
+  virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
-  virtual Eigen::MatrixXd computeD_impl(const std::vector<Element> & elems,
+  virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
 };
 
@@ -63,7 +68,8 @@ typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
 /*! \typedef KernelD
  *  \brief functor handle to the kernelD method in IGreensFunction
  */
-typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
+typedef pcm::function<double(const Eigen::Vector3d &,
+                             const Eigen::Vector3d &,
                              const Eigen::Vector3d &)> KernelD;
 
 /*! \brief Integrates a single layer type operator on a single spherical polygon
@@ -75,7 +81,7 @@ typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &,
  *  centroid collocation.
  */
 template <int PhiPoints, int ThetaPoints>
-double integrateS(const KernelS & F, const Element & e);
+double integrateS(const KernelS & F, const cavity::Element & e);
 
 /*! \brief Integrates a double layer type operator on a single spherical polygon
  *  \date 2014
@@ -86,7 +92,8 @@ double integrateS(const KernelS & F, const Element & e);
  *  centroid collocation.
  */
 template <int PhiPoints, int ThetaPoints>
-double integrateD(const KernelD & F, const Element & e);
-} // namespace integrator
+double integrateD(const KernelD & F, const cavity::Element & e);
+} // namespace bi_operators
+} // namespace pcm
 
 #endif // NUMERICAL_HPP

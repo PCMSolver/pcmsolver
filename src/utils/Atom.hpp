@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -24,6 +24,7 @@
 #ifndef ATOM_HPP
 #define ATOM_HPP
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -38,6 +39,8 @@
  *  \date 2011, 2016
  */
 
+namespace pcm {
+namespace utils {
 struct Atom {
   /*! Atomic charge */
   double charge;
@@ -64,8 +67,13 @@ struct Atom {
         position(Eigen::Vector3d::Zero()),
         element("Dummy"),
         symbol("Du") {}
-  Atom(const std::string & elem, const std::string & sym, double c, double m,
-       double r, const Eigen::Vector3d & coord, double scal = 1.0)
+  Atom(const std::string & elem,
+       const std::string & sym,
+       double c,
+       double m,
+       double r,
+       const Eigen::Vector3d & coord,
+       double scal = 1.0)
       : charge(c),
         mass(m),
         radius(r),
@@ -75,9 +83,7 @@ struct Atom {
         symbol(sym) {}
 };
 
-/*! An atom is invalid if it has zero radius */
-bool invalid(const Atom & atom);
-
+namespace detail {
 /*! \brief Returns a reference to a vector<Atom> containing Bondi van der Waals
  *radii.
  *
@@ -110,5 +116,84 @@ std::vector<Atom> & initUFF();
  * the ADF program package.
  */
 std::vector<Atom> & initAllinger();
+} // namespace detail
+
+class Factory __final {
+public:
+  /*! \brief Callback function for object creation
+   *  Returns a std::vector<Atom> by reference
+   */
+  typedef function<std::vector<Atom> &()> Create;
+
+private:
+  /*! std::map from the object type identifier (a string) to its callback function */
+  typedef std::map<std::string, Create> CallbackMap;
+  /*! std::pair of an object type identifier and a callback function */
+  typedef typename CallbackMap::value_type CallbackPair;
+  /*! const iterator */
+  typedef typename CallbackMap::const_iterator CallbackConstIter;
+
+public:
+  /*! \brief Returns true on successful registration of the objID
+   * \param[in] objID  the object's identification string
+   * \param[in] functor the creation function related to the object type given
+   */
+  bool registerObject(const std::string & objID, const Create & functor) {
+    return callbacks_.insert(CallbackPair(objID, functor)).second;
+  }
+  /*! \brief Returns true if objID was already registered
+   *  \param objID the object's identification string
+   */
+  bool unRegisterObject(const std::string & objID) {
+    return callbacks_.erase(objID) == 1;
+  }
+  /*! \brief Calls the appropriate creation functor, based on the passed objID
+   *  \param[in] objID the object's identification string
+   *  \param[in] data  input data for the creation of the object
+   */
+  std::vector<Atom> & create(const std::string & objID) {
+    if (objID.empty())
+      PCMSOLVER_ERROR("No object identification string provided to the Factory.");
+    CallbackConstIter i = callbacks_.find(objID);
+    if (i == callbacks_.end())
+      PCMSOLVER_ERROR("The unknown object ID " + objID +
+                      " occurred in the Factory.");
+    return (i->second)();
+  }
+  /*! Unique point of access to the unique instance of the Factory */
+  static Factory & TheFactory() {
+    static Factory obj;
+    return obj;
+  }
+
+private:
+  Factory() {}
+  /// Copy constructor is made private
+  Factory(const Factory & other);
+  Factory & operator=(const Factory & other);
+  ~Factory() {}
+  CallbackMap callbacks_;
+};
+
+inline void bootstrapRadiiSet() {
+  const bool bondi =
+      Factory::TheFactory().registerObject("BONDI", detail::initBondi);
+  if (!bondi)
+    PCMSOLVER_ERROR("Subscription of Bondi radii set to factory failed!");
+
+  const bool uff = Factory::TheFactory().registerObject("UFF", detail::initUFF);
+  if (!uff)
+    PCMSOLVER_ERROR("Subscription of UFF radii set to factory failed!");
+
+  const bool allinger =
+      Factory::TheFactory().registerObject("ALLINGER", detail::initAllinger);
+  if (!allinger)
+    PCMSOLVER_ERROR("Subscription of Allinger's MM3 radii set to factory failed!");
+}
+} // namespace utils
+
+/*! An atom is invalid if it has zero radius */
+bool invalid(const utils::Atom & atom);
+} // namespace pcm
 
 #endif // ATOM_HPP

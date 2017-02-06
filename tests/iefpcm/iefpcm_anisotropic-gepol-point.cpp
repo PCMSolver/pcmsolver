@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -36,7 +36,12 @@
 #include "solver/IEFSolver.hpp"
 #include "TestingMolecules.hpp"
 
-using integrator::Collocation;
+using namespace pcm;
+using bi_operators::Collocation;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using solver::IEFSolver;
 
 SCENARIO(
     "Test solver for the anisotropic IEFPCM for a point charge and a GePol cavity",

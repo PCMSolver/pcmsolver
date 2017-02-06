@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,11 +32,13 @@
 
 #include <Eigen/Core>
 
-class Cavity;
+namespace pcm {
+class ICavity;
 class IGreensFunction;
-class BoundaryIntegralOperator;
+class IBoundaryIntegralOperator;
+} // namespace pcm
 
-#include "PCMSolver.hpp"
+#include "ISolver.hpp"
 
 /*! \file IEFSolver.hpp
  *  \class IEFSolver
@@ -66,13 +68,15 @@ class BoundaryIntegralOperator;
  *  both T(epsilon) and Rinfinity.
  */
 
-class IEFSolver : public PCMSolver {
+namespace pcm {
+namespace solver {
+class IEFSolver : public ISolver {
 public:
   IEFSolver() {}
   /*! \brief Construct solver
    *  \param[in] symm whether the system matrix has to be symmetrized
    */
-  IEFSolver(bool symm) : PCMSolver(), hermitivitize_(symm) {}
+  IEFSolver(bool symm) : ISolver(), hermitivitize_(symm) {}
   virtual ~IEFSolver() {}
   /*! \brief Builds PCM matrix for an anisotropic environment
    *  \param[in] cavity the cavity to be used.
@@ -80,18 +84,20 @@ public:
    *  \param[in] gf_o Green's function outside the cavity
    *  \param[in] op integrator strategy for the single and double layer operators
    */
-  void buildAnisotropicMatrix(const Cavity & cavity, const IGreensFunction & gf_i,
+  void buildAnisotropicMatrix(const ICavity & cavity,
+                              const IGreensFunction & gf_i,
                               const IGreensFunction & gf_o,
-                              const BoundaryIntegralOperator & op);
+                              const IBoundaryIntegralOperator & op);
   /*! \brief Builds PCM matrix for an isotropic environment
    *  \param[in] cavity the cavity to be used.
    *  \param[in] gf_i Green's function inside the cavity
    *  \param[in] gf_o Green's function outside the cavity
    *  \param[in] op integrator strategy for the single and double layer operators
    */
-  void buildIsotropicMatrix(const Cavity & cavity, const IGreensFunction & gf_i,
+  void buildIsotropicMatrix(const ICavity & cavity,
+                            const IGreensFunction & gf_i,
                             const IGreensFunction & gf_o,
-                            const BoundaryIntegralOperator & op);
+                            const IBoundaryIntegralOperator & op);
   friend std::ostream & operator<<(std::ostream & os, IEFSolver & solver) {
     return solver.printSolver(os);
   }
@@ -108,12 +114,16 @@ private:
   /*! R_infinity matrix, symmetry blocked form */
   std::vector<Eigen::MatrixXd> blockRinfinity_;
 
-  virtual void buildSystemMatrix_impl(
-      const Cavity & cavity, const IGreensFunction & gf_i,
-      const IGreensFunction & gf_o, const BoundaryIntegralOperator & op) __override;
+  virtual void buildSystemMatrix_impl(const ICavity & cavity,
+                                      const IGreensFunction & gf_i,
+                                      const IGreensFunction & gf_o,
+                                      const IBoundaryIntegralOperator & op)
+      __override;
   virtual Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential,
                                              int irrep = 0) const __override;
   virtual std::ostream & printSolver(std::ostream & os) __override;
 };
+} // namespace solver
+} // namespace pcm
 
 #endif // IEFSOLVER_HPP

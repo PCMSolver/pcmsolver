@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -42,6 +42,8 @@
 #include "SplineFunction.hpp"
 #include "Symmetry.hpp"
 
+namespace pcm {
+namespace utils {
 /*! \fn inline int parity(std::bitset<nBits> bitrep)
  *  \param[in] bitrep a bitset
  *  \tparam nBits lenght of the input bitset
@@ -110,8 +112,10 @@ inline bool numericalZero(double value) { return (isZero(value, 1.0e-14)); }
  *  \param[in]  nr_irrep   the number of irreducible representations (number of
  * blocks)
  */
-inline void symmetryBlocking(Eigen::MatrixXd & matrix, PCMSolverIndex cavitySize,
-                             PCMSolverIndex ntsirr, int nr_irrep) {
+inline void symmetryBlocking(Eigen::MatrixXd & matrix,
+                             PCMSolverIndex cavitySize,
+                             PCMSolverIndex ntsirr,
+                             int nr_irrep) {
   // This function implements the simmetry-blocking of the PCM
   // matrix due to point group symmetry as reported in:
   // L. Frediani, R. Cammi, C. S. Pomelli, J. Tomasi and K. Ruud, J. Comput.Chem. 25,
@@ -188,7 +192,8 @@ inline void symmetryBlocking(Eigen::MatrixXd & matrix, PCMSolverIndex cavitySize
  *  \param[in]  nrBlocks the number of square blocks
  */
 inline void symmetryPacking(std::vector<Eigen::MatrixXd> & blockedMatrix,
-                            const Eigen::MatrixXd & fullMatrix, int dimBlock,
+                            const Eigen::MatrixXd & fullMatrix,
+                            int dimBlock,
                             int nrBlocks) {
   // This function packs the square block diagonal fullMatrix with nrBlocks of
   // dimension dimBlock
@@ -326,6 +331,8 @@ inline void print_eigen_matrix(const Eigen::MatrixBase<Derived> & matrix,
   }
   fout.close();
 }
+} // namespace utils
+} // namespace pcm
 
 namespace cnpy {
 /*!
@@ -361,7 +368,8 @@ inline void npy_save(const std::string & fname,
  *  \tparam Cols number of columns in the Eigen object. Default is dynamic
  */
 template <typename Scalar, int Rows, int Cols>
-inline void npz_save(const std::string & fname, const std::string & name,
+inline void npz_save(const std::string & fname,
+                     const std::string & name,
                      const Eigen::Matrix<Scalar, Rows, Cols> & obj,
                      bool overwrite = false) {
   unsigned int rows = static_cast<unsigned int>(obj.rows());
@@ -387,7 +395,8 @@ inline Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> npy_to_eigen(
   if (npy_array.shape.size() > 2)
     PCMSOLVER_ERROR("Only vectors and matrices can be read into Eigen objects.");
   return Eigen::Map<Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> >(
-      reinterpret_cast<Scalar *>(npy_array.data), npy_array.shape[0],
+      reinterpret_cast<Scalar *>(npy_array.data),
+      npy_array.shape[0],
       npy_array.shape[1]);
 }
 

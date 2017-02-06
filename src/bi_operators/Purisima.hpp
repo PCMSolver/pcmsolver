@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,12 +30,17 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+namespace cavity {
 class Element;
+} // namespace cavity
 class IGreensFunction;
+} // namespace pcm
 
-#include "BoundaryIntegralOperator.hpp"
+#include "IBoundaryIntegralOperator.hpp"
 
-namespace integrator {
+namespace pcm {
+namespace bi_operators {
 /*! \file Purisima.hpp
  *  \class Purisima
  *  \brief Implementation of the double layer operator matrix representation using
@@ -49,7 +54,7 @@ namespace integrator {
  *  \f]
  *  The original reference is \cite Purisima1995
  */
-class Purisima __final : public BoundaryIntegralOperator {
+class Purisima __final : public IBoundaryIntegralOperator {
 public:
   Purisima();
   Purisima(double fac);
@@ -60,7 +65,7 @@ private:
    * the S operator
    */
   double factor_;
-  virtual Eigen::MatrixXd computeS_impl(const std::vector<Element> & elems,
+  virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
   /*! Computes the matrix representation of the double layer operator by collocation
    *  using the Purisima sum rule to compute the diagonal elements.
@@ -72,9 +77,10 @@ private:
    *    D_{ii} = -\left(2\pi + \sum_{j\neq i}D_{ij}a_j \right)\frac{1}{a_i}
    *  \f]
    */
-  virtual Eigen::MatrixXd computeD_impl(const std::vector<Element> & elems,
+  virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
 };
-} // namespace integrator
+} // namespace bi_operators
+} // namespace pcm
 
 #endif // PURISIMA_HPP

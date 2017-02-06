@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -41,6 +41,8 @@
  * terms calculations.
  */
 
+namespace pcm {
+namespace utils {
 struct Solvent {
   Solvent() {}
   Solvent(const std::string & n, double es, double ed, double r)
@@ -54,11 +56,12 @@ struct Solvent {
   /*! Radius of the spherical probe mimicking the solvent, in Angstrom */
   double probeRadius;
 };
+} // namespace utils
 
-std::ostream & operator<<(std::ostream & os, Solvent & solvent);
+std::ostream & operator<<(std::ostream & os, utils::Solvent & solvent);
 
 /*! \brief typedef for the map between solvent name and Solvent object. */
-typedef std::map<std::string, Solvent> SolventMap;
+typedef std::map<std::string, utils::Solvent> SolventMap;
 
 /*! \brief Returns the map between solvent names and Solvent objects.
  *
@@ -66,5 +69,6 @@ typedef std::map<std::string, Solvent> SolventMap;
  *  implementation of the Polarizable Continuum Model.
  */
 SolventMap & solvents();
+} // namespace pcm
 
 #endif // SOLVENT_HPP

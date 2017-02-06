@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -42,8 +42,15 @@
 #include "MathUtils.hpp"
 #include "Symmetry.hpp"
 
-Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m,
-                   const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
+namespace pcm {
+using cavity::Element;
+using utils::hermitivitize;
+
+Molecule::Molecule(int nat,
+                   const Eigen::VectorXd & chg,
+                   const Eigen::VectorXd & m,
+                   const Eigen::Matrix3Xd & geo,
+                   const std::vector<Atom> & at,
                    const std::vector<Sphere> & sph)
     : nAtoms_(nat),
       charges_(chg),
@@ -55,9 +62,14 @@ Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd &
   pointGroup_ = buildGroup(0, 0, 0, 0);
 }
 
-Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m,
-                   const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
-                   const std::vector<Sphere> & sph, int nr_gen, int gen[3])
+Molecule::Molecule(int nat,
+                   const Eigen::VectorXd & chg,
+                   const Eigen::VectorXd & m,
+                   const Eigen::Matrix3Xd & geo,
+                   const std::vector<Atom> & at,
+                   const std::vector<Sphere> & sph,
+                   int nr_gen,
+                   int gen[3])
     : nAtoms_(nat),
       charges_(chg),
       masses_(m),
@@ -68,9 +80,13 @@ Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd &
   pointGroup_ = buildGroup(nr_gen, gen[0], gen[1], gen[2]);
 }
 
-Molecule::Molecule(int nat, const Eigen::VectorXd & chg, const Eigen::VectorXd & m,
-                   const Eigen::Matrix3Xd & geo, const std::vector<Atom> & at,
-                   const std::vector<Sphere> & sph, const Symmetry & pg)
+Molecule::Molecule(int nat,
+                   const Eigen::VectorXd & chg,
+                   const Eigen::VectorXd & m,
+                   const Eigen::Matrix3Xd & geo,
+                   const std::vector<Atom> & at,
+                   const std::vector<Sphere> & sph,
+                   const Symmetry & pg)
     : nAtoms_(nat),
       charges_(chg),
       masses_(m),
@@ -279,7 +295,8 @@ Eigen::VectorXd computeMEP(const Molecule & mol, const Eigen::Matrix3Xd & grid) 
   return mep;
 }
 
-Eigen::VectorXd computeMEP(const std::vector<Element> & el, double charge,
+Eigen::VectorXd computeMEP(const std::vector<Element> & el,
+                           double charge,
                            const Eigen::Vector3d & origin) {
   Eigen::VectorXd mep = Eigen::VectorXd::Zero(el.size());
   for (size_t i = 0; i < el.size(); ++i) {
@@ -288,3 +305,4 @@ Eigen::VectorXd computeMEP(const std::vector<Element> & el, double charge,
   }
   return mep;
 }
+} // namespace pcm

@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -39,9 +39,17 @@
 #include "Uniform.hpp"
 #include "Yukawa.hpp"
 
+namespace pcm {
+namespace dielectric_profile {
 /*! All possible profile types */
-typedef boost::mpl::vector<Uniform, Yukawa, Anisotropic, OneLayerTanh, OneLayerErf,
-                           MembraneTanh, Metal, Sharp> profile_types;
+typedef boost::mpl::vector<Uniform,
+                           Yukawa,
+                           Anisotropic,
+                           OneLayerTanh,
+                           OneLayerErf,
+                           MembraneTanh,
+                           Metal,
+                           Sharp> profile_types;
 
 /*! One-layer diffuse profile types */
 typedef boost::mpl::vector<OneLayerTanh, OneLayerErf> onelayer_diffuse_profile_types;
@@ -53,7 +61,6 @@ typedef boost::mpl::vector<MembraneTanh> membrane_diffuse_profile_types;
  * profile_types */
 typedef boost::make_variant_over<profile_types>::type Permittivity;
 
-namespace profiles {
 class isUniform : public boost::static_visitor<bool> {
 public:
   bool operator()(const Uniform & /* arg */) const { return true; }
@@ -87,6 +94,7 @@ public:
 inline double epsilon(const Permittivity & arg) {
   return boost::any_cast<double>(boost::apply_visitor(epsilonValue(), arg));
 }
-} // namespace profiles
+} // namespace dielectric_profile
+} // namespace pcm
 
 #endif // PROFILETYPES_HPP

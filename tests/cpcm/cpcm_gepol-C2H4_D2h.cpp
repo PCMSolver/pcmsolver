@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -37,7 +37,12 @@
 #include "solver/CPCMSolver.hpp"
 #include "TestingMolecules.hpp"
 
-using integrator::Collocation;
+using namespace pcm;
+using bi_operators::Collocation;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using solver::CPCMSolver;
 
 /*! \class CPCMSolver
  *  \test \b C2H4GePolD2h tests CPCMSolver using C2H4 with a GePol cavity in D2h
@@ -49,8 +54,7 @@ TEST_CASE("Test solver for the CPCM and the C2H4 molecule in D2h symmetry",
   double area = 0.2 / bohr2ToAngstrom2();
   double probeRadius = 1.385 / bohrToAngstrom();
   double minRadius = 100.0 / bohrToAngstrom();
-  GePolCavity cavity =
-      GePolCavity(molec, area, probeRadius, minRadius, "cpcm_d2h_noadd");
+  GePolCavity cavity(molec, area, probeRadius, minRadius, "cpcm_d2h_noadd");
 
   double permittivity = 78.39;
   Vacuum<> gf_i;

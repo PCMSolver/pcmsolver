@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
+
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
-#  Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+#  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
 #
 #  This file is part of PCMSolver.
 #
@@ -122,14 +123,14 @@ if (lang == 'CXX'):
     f.write('target_compile_options(' + libname + ' PRIVATE "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>")\n')
     f.write('# Sets install directory for all the headers in the list\n')
     f.write('foreach(_header ${headers_list})\n')
-    f.write('    install(FILES ${_header} DESTINATION include/' + libname + ')\n')
+    f.write('    install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/' + libname + ')\n')
     f.write('endforeach()\n')
 elif (lang == 'C'):
     f.write('add_library(' + libname + ' OBJECT ${sources_list} ${headers_list})\n')
     f.write('set_target_properties(' + libname + ' PROPERTIES POSITION_INDEPENDENT_CODE 1 )\n')
     f.write('# Sets install directory for all the headers in the list\n')
     f.write('foreach(_header ${headers_list})\n')
-    f.write('    install(FILES ${_header} DESTINATION include/' + libname + ')\n')
+    f.write('    install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/' + libname + ')\n')
     f.write('endforeach()\n')
 else:
     f.write('add_library(' + libname + ' OBJECT ${sources_list})\n')

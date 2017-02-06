@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -33,6 +33,9 @@
 #include "utils/Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
+using namespace pcm;
+using cavity::GePolCavity;
+
 SCENARIO("GePol cavity for the C2H4 molecule in D2h symmetry",
          "[gepol][gepol_C2H4_D2h]") {
   GIVEN("The C2H4 molecule in D2h symmetry") {
@@ -42,7 +45,7 @@ SCENARIO("GePol cavity for the C2H4 molecule in D2h symmetry",
       double area = 0.2 / bohr2ToAngstrom2();
       double probeRadius = 1.385 / bohrToAngstrom();
       double minRadius = 0.2 / bohrToAngstrom();
-      GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "d2h");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "d2h");
       cavity.saveCavity("c2h4_d2h.npz");
 
       /*! \class GePolCavity
@@ -94,8 +97,7 @@ SCENARIO("GePol cavity for the C2H4 molecule in D2h symmetry",
       double area = 0.2 / bohr2ToAngstrom2();
       double probeRadius = 1.385 / bohrToAngstrom();
       double minRadius = 100.0 / bohrToAngstrom();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "d2h_noadd");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "d2h_noadd");
       cavity.saveCavity("c2h4_d2h_noadd.npz");
 
       /*! \class GePolCavity

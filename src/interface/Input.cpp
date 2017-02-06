@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -43,8 +43,7 @@
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
 
-using boost::algorithm::to_upper_copy;
-using boost::algorithm::trim;
+namespace pcm {
 
 Input::Input(const std::string & filename) {
   reader(filename);
@@ -83,9 +82,9 @@ void Input::reader(const std::string & filename) {
   dyadicFilename_ = cavity.getStr("DYADICFILE");
 
   scaling_ = cavity.getBool("SCALING");
-  radiiSet_ = to_upper_copy(cavity.getStr("RADIISET"));
+  radiiSet_ = boost::algorithm::to_upper_copy(cavity.getStr("RADIISET"));
   minimalRadius_ = cavity.getDbl("MINRADIUS");
-  mode_ = to_upper_copy(cavity.getStr("MODE"));
+  mode_ = boost::algorithm::to_upper_copy(cavity.getStr("MODE"));
   if (mode_ == "EXPLICIT") {
     std::vector<double> spheresInput = cavity.getDblVec("SPHERES");
     int j = 0;
@@ -117,13 +116,13 @@ void Input::reader(const std::string & filename) {
     const Section & inside = medium.getSect("GREEN<INSIDE>");
     // ...and initialize the data members
     greenInsideType_ = inside.getStr("TYPE");
-    derivativeInsideType_ = derivativeTraits(inside.getStr("DER"));
+    derivativeInsideType_ = detail::derivativeTraits(inside.getStr("DER"));
     epsilonInside_ = inside.getDbl("EPS");
     // Get the contents of the Green<outside> section...
     const Section & outside = medium.getSect("GREEN<OUTSIDE>");
     // ...and initialize the data members
     greenOutsideType_ = outside.getStr("TYPE");
-    derivativeOutsideType_ = derivativeTraits(outside.getStr("DER"));
+    derivativeOutsideType_ = detail::derivativeTraits(outside.getStr("DER"));
     epsilonStaticOutside_ = outside.getDbl("EPS");
     epsilonDynamicOutside_ = outside.getDbl("EPSDYN");
     // This will be needed for the metal sphere only
@@ -140,7 +139,7 @@ void Input::reader(const std::string & filename) {
     center_ = outside.getDbl("CENTER");
     width_ = outside.getDbl("WIDTH");
     origin_ = outside.getDblVec("INTERFACEORIGIN");
-    profileType_ = profilePolicy(outside.getStr("PROFILE"));
+    profileType_ = detail::profilePolicy(outside.getStr("PROFILE"));
     maxL_ = outside.getInt("MAXL");
   } else { // This part must be reviewed!! Some data members are not initialized...
     // Just initialize the solvent object in this class
@@ -155,10 +154,10 @@ void Input::reader(const std::string & filename) {
     // We have to initialize the Green's functions data here, Solvent class
     // is an helper class and should not be used in the core classes.
     greenInsideType_ = "VACUUM";
-    derivativeInsideType_ = derivativeTraits("DERIVATIVE");
+    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonInside_ = 1.0;
     greenOutsideType_ = "UNIFORMDIELECTRIC";
-    derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
+    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;
   }
@@ -166,7 +165,7 @@ void Input::reader(const std::string & filename) {
   integratorScaling_ = medium.getDbl("DIAGONALSCALING");
 
   solverType_ = medium.getStr("SOLVERTYPE");
-  equationType_ = integralEquation(medium.getStr("EQUATIONTYPE"));
+  equationType_ = detail::integralEquation(medium.getStr("EQUATIONTYPE"));
   correction_ = medium.getDbl("CORRECTION");
   hermitivitize_ = medium.getBool("MATRIXSYMM");
   isDynamic_ = medium.getBool("NONEQUILIBRIUM");
@@ -174,30 +173,22 @@ void Input::reader(const std::string & filename) {
   providedBy_ = std::string("API-side");
 }
 
-std::string trim(const char * src) {
-  std::string tmp(src);
-  trim(tmp);
-  return tmp;
-}
-
-std::string trim_and_upper(const char * src) { return to_upper_copy(trim(src)); }
-
 void Input::reader(const PCMInput & host_input) {
   CODATAyear_ = 2010;
   initBohrToAngstrom(bohrToAngstrom, CODATAyear_);
 
-  type_ = trim_and_upper(host_input.cavity_type);
+  type_ = detail::trim_and_upper(host_input.cavity_type);
   area_ = host_input.area * angstrom2ToBohr2();
   patchLevel_ = host_input.patch_level;
   coarsity_ = host_input.coarsity * angstromToBohr();
   minDistance_ = host_input.min_distance * angstromToBohr();
   derOrder_ = host_input.der_order;
   if (type_ == "RESTART") {
-    cavFilename_ = trim(host_input.restart_name); // No case conversion here!
+    cavFilename_ = detail::trim(host_input.restart_name); // No case conversion here!
   }
 
   scaling_ = host_input.scaling;
-  radiiSet_ = trim_and_upper(host_input.radii_set);
+  radiiSet_ = detail::trim_and_upper(host_input.radii_set);
   if (radiiSet_ == "UFF") {
     radiiSetName_ = "UFF";
   } else if (radiiSet_ == "BONDI") {
@@ -208,20 +199,20 @@ void Input::reader(const PCMInput & host_input) {
   minimalRadius_ = host_input.min_radius * angstromToBohr();
   mode_ = std::string("IMPLICIT");
 
-  std::string name = trim_and_upper(host_input.solvent);
+  std::string name = detail::trim_and_upper(host_input.solvent);
   if (name.empty() || name == "EXPLICIT") {
     hasSolvent_ = false;
     // Get the probe radius
     probeRadius_ = host_input.probe_radius * angstromToBohr();
     // Get the contents of the Green<inside> section...
     // ...and initialize the data members
-    greenInsideType_ = trim_and_upper(host_input.inside_type);
-    derivativeInsideType_ = derivativeTraits("DERIVATIVE");
+    greenInsideType_ = detail::trim_and_upper(host_input.inside_type);
+    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonInside_ = 1.0;
     // Get the contents of the Green<outside> section...
     // ...and initialize the data members
-    greenOutsideType_ = trim_and_upper(host_input.outside_type);
-    derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
+    greenOutsideType_ = detail::trim_and_upper(host_input.outside_type);
+    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonStaticOutside_ = host_input.outside_epsilon;
     epsilonDynamicOutside_ = host_input.outside_epsilon;
   } else { // This part must be reviewed!! Some data members are not initialized...
@@ -233,19 +224,19 @@ void Input::reader(const PCMInput & host_input) {
     // We have to initialize the Green's functions data here, Solvent class
     // is an helper class and should not be used in the core classes.
     greenInsideType_ = std::string("VACUUM");
-    derivativeInsideType_ = derivativeTraits("DERIVATIVE");
+    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonInside_ = 1.0;
     greenOutsideType_ = std::string("UNIFORMDIELECTRIC");
-    derivativeOutsideType_ = derivativeTraits("DERIVATIVE");
+    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;
   }
   integratorType_ = "COLLOCATION";
   integratorScaling_ = 1.07;
 
-  solverType_ = trim_and_upper(host_input.solver_type);
-  std::string inteq = trim_and_upper(host_input.equation_type);
-  equationType_ = integralEquation(inteq);
+  solverType_ = detail::trim_and_upper(host_input.solver_type);
+  std::string inteq = detail::trim_and_upper(host_input.equation_type);
+  equationType_ = detail::integralEquation(inteq);
   correction_ = host_input.correction;
   hermitivitize_ = true;
   isDynamic_ = false;
@@ -253,11 +244,11 @@ void Input::reader(const PCMInput & host_input) {
   providedBy_ = std::string("host-side");
 
   // Fill the input wrapping structs
-  insideGreenData_ = greenData(derivativeInsideType_, profileType_, epsilonInside_);
+  insideGreenData_ = GreenData(derivativeInsideType_, profileType_, epsilonInside_);
   outsideStaticGreenData_ =
-      greenData(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
+      GreenData(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
   outsideDynamicGreenData_ =
-      greenData(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
+      GreenData(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
 }
 
 void Input::semanticCheck() {}
@@ -279,14 +270,14 @@ void Input::initMolecule() {
   std::vector<Atom> radiiSet;
   std::vector<Atom> atoms;
   atoms.reserve(nuclei);
+  // FIXME This was globally bootstrapped...
+  using utils::Factory;
+  radiiSet = Factory::TheFactory().create(radiiSet_);
   if (radiiSet_ == "UFF") {
-    radiiSet = initUFF();
     radiiSetName_ = "UFF";
   } else if (radiiSet_ == "BONDI") {
-    radiiSet = initBondi();
     radiiSetName_ = "Bondi-Mantina";
   } else {
-    radiiSet = initAllinger();
     radiiSetName_ = "Allinger's MM3";
   }
   for (int i = 0; i < charges.size(); ++i) {
@@ -336,27 +327,34 @@ void Input::initMolecule() {
   }
 }
 
-cavityData Input::cavityParams() {
+CavityData Input::cavityParams() {
   if (cavData_.empty) {
-    cavData_ = cavityData(molecule_, area_, probeRadius_, minDistance_, derOrder_,
-                          minimalRadius_, patchLevel_, coarsity_, cavFilename_,
+    cavData_ = CavityData(molecule_,
+                          area_,
+                          probeRadius_,
+                          minDistance_,
+                          derOrder_,
+                          minimalRadius_,
+                          patchLevel_,
+                          coarsity_,
+                          cavFilename_,
                           dyadicFilename_);
   }
   return cavData_;
 }
 
-greenData Input::insideGreenParams() {
+GreenData Input::insideGreenParams() {
   if (insideGreenData_.empty) {
     insideGreenData_ =
-        greenData(derivativeInsideType_, profileType_, epsilonInside_);
+        GreenData(derivativeInsideType_, profileType_, epsilonInside_);
   }
   return insideGreenData_;
 }
 
-greenData Input::outsideStaticGreenParams() {
+GreenData Input::outsideStaticGreenParams() {
   if (outsideStaticGreenData_.empty) {
     outsideStaticGreenData_ =
-        greenData(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
+        GreenData(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
     if (not hasSolvent_) {
       outsideStaticGreenData_.howProfile = profileType_;
       outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
@@ -370,10 +368,10 @@ greenData Input::outsideStaticGreenParams() {
   return outsideStaticGreenData_;
 }
 
-greenData Input::outsideDynamicGreenParams() {
+GreenData Input::outsideDynamicGreenParams() {
   if (outsideDynamicGreenData_.empty) {
     outsideDynamicGreenData_ =
-        greenData(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
+        GreenData(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
     if (not hasSolvent_) {
       outsideDynamicGreenData_.howProfile = profileType_;
       outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
@@ -387,20 +385,21 @@ greenData Input::outsideDynamicGreenParams() {
   return outsideDynamicGreenData_;
 }
 
-solverData Input::solverParams() {
-  if (solverData_.empty) {
-    solverData_ = solverData(correction_, equationType_, hermitivitize_);
+SolverData Input::solverParams() {
+  if (SolverData_.empty) {
+    SolverData_ = SolverData(correction_, equationType_, hermitivitize_);
   }
-  return solverData_;
+  return SolverData_;
 }
 
-biOperatorData Input::integratorParams() {
+BIOperatorData Input::integratorParams() {
   if (integratorData_.empty) {
-    integratorData_ = biOperatorData(integratorScaling_);
+    integratorData_ = BIOperatorData(integratorScaling_);
   }
   return integratorData_;
 }
 
+namespace detail {
 int derivativeTraits(const std::string & name) {
   static std::map<std::string, int> mapStringToInt;
   mapStringToInt.insert(std::map<std::string, int>::value_type("NUMERICAL", 0));
@@ -427,3 +426,15 @@ int integralEquation(const std::string & name) {
 
   return mapStringToInt.find(name)->second;
 }
+
+std::string trim(const char * src) {
+  std::string tmp(src);
+  boost::algorithm::trim(tmp);
+  return tmp;
+}
+
+std::string trim_and_upper(const char * src) {
+  return boost::algorithm::to_upper_copy(trim(src));
+}
+} // namespace detail
+} // namespace pcm

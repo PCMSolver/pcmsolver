@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -29,6 +29,9 @@
 #include <Eigen/Core>
 
 #include "cavity/GePolCavity.hpp"
+
+using namespace pcm;
+using cavity::GePolCavity;
 
 TEST_CASE("Restart GePol cavity for a single sphere",
           "[gepol][gepol_point_from-file]") {

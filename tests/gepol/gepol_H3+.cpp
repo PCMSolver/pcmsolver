@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,12 +32,15 @@
 #include "utils/Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
+using namespace pcm;
+using cavity::GePolCavity;
+
 TEST_CASE("GePol cavity for an H3+ molecule in C1 symmetry", "[gepol][gepol_H3+]") {
   Molecule molec = H3<0>();
   double area = 0.2 / bohr2ToAngstrom2();
   double probeRadius = 1.385 / bohrToAngstrom();
   double minRadius = 0.2 / bohrToAngstrom();
-  GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "");
+  GePolCavity cavity(molec, area, probeRadius, minRadius, "");
   cavity.saveCavity("h3+.npz");
 
   /*! \class GePolCavity

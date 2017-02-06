@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,13 +32,16 @@
 #include "utils/Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
+using namespace pcm;
+using cavity::GePolCavity;
+
 TEST_CASE("GePol cavity for the benzene molecule", "[gepol][gepol_C6H6]") {
   double area = 0.3 / bohr2ToAngstrom2();
   double probeRadius = 1.385 / bohrToAngstrom();
   // Addition of spheres is enabled, but will not happen in this particular case
   double minRadius = 10.0 / bohrToAngstrom();
   Molecule molec = C6H6();
-  GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "c6h6");
+  GePolCavity cavity(molec, area, probeRadius, minRadius, "c6h6");
   cavity.saveCavity("c6h6.npz");
 
   /*! \class GePolCavity

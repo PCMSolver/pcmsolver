@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -57,7 +57,9 @@ public:
       : xMin_(x.minCoeff()),
         xMax_(x.maxCoeff()),
         spline_(Eigen::SplineFitting<CubicSpline>::Interpolate(
-            y.transpose(), std::min<int>(x.rows() - 1, 3), fitVector(x))) {}
+            y.transpose(),
+            std::min<int>(x.rows() - 1, 3),
+            fitVector(x))) {}
   /*! \brief Evaluate spline at given point
    *  \param[in] x evaluation point
    */

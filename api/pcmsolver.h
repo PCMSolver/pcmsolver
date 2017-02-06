@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -94,7 +94,8 @@ typedef void (*HostWriter)(const char * message);
  *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
  */
 PCMSolver_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading,
-                                                  int nr_nuclei, double charges[],
+                                                  int nr_nuclei,
+                                                  double charges[],
                                                   double coordinates[],
                                                   int symmetry_info[],
                                                   struct PCMInput * host_input,
@@ -145,7 +146,8 @@ PCMSolver_API void pcmsolver_get_centers(pcmsolver_context_t * context,
  *  \param[in] its index of the finite element
  *  \param[out] center array holding the coordinates of the finite element center
  */
-PCMSolver_API void pcmsolver_get_center(pcmsolver_context_t * context, int its,
+PCMSolver_API void pcmsolver_get_center(pcmsolver_context_t * context,
+                                        int its,
                                         double center[]);
 
 /*! \brief Getter for the areas/weights of the finite elements
@@ -166,7 +168,8 @@ PCMSolver_API void pcmsolver_get_areas(pcmsolver_context_t * context,
  */
 PCMSolver_API void pcmsolver_compute_asc(pcmsolver_context_t * context,
                                          const char * mep_name,
-                                         const char * asc_name, int irrep);
+                                         const char * asc_name,
+                                         int irrep);
 
 /*! \brief Computes response ASC given a MEP and the desired irreducible
  * representation
@@ -181,7 +184,8 @@ PCMSolver_API void pcmsolver_compute_asc(pcmsolver_context_t * context,
  */
 PCMSolver_API void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
                                                   const char * mep_name,
-                                                  const char * asc_name, int irrep);
+                                                  const char * asc_name,
+                                                  int irrep);
 
 /*! \brief Computes the polarization energy
  *  \param[in, out] context the PCM context object
@@ -191,7 +195,9 @@ PCMSolver_API void pcmsolver_compute_response_asc(pcmsolver_context_t * context,
  *  This function calculates the dot product of the given MEP and ASC vectors.
  */
 PCMSolver_API double pcmsolver_compute_polarization_energy(
-    pcmsolver_context_t * context, const char * mep_name, const char * asc_name);
+    pcmsolver_context_t * context,
+    const char * mep_name,
+    const char * asc_name);
 
 /*! \brief Getter for the ASC dipole
  *  \param[in, out] context the PCM context object
@@ -210,7 +216,8 @@ PCMSolver_API double pcmsolver_get_asc_dipole(pcmsolver_context_t * context,
  *  \param[in] name label of the surface function
  */
 PCMSolver_API void pcmsolver_get_surface_function(pcmsolver_context_t * context,
-                                                  int size, double values[],
+                                                  int size,
+                                                  double values[],
                                                   const char * name);
 
 /*! \brief Sets a surface function given data and label
@@ -220,7 +227,8 @@ PCMSolver_API void pcmsolver_get_surface_function(pcmsolver_context_t * context,
  *  \param[in] name label of the surface function
  */
 PCMSolver_API void pcmsolver_set_surface_function(pcmsolver_context_t * context,
-                                                  int size, double values[],
+                                                  int size,
+                                                  double values[],
                                                   const char * name);
 
 /*! \brief Prints surface function contents to host output

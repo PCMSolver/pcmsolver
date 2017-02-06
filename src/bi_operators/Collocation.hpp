@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,12 +30,17 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+namespace cavity {
 class Element;
+} // namespace cavity
 class IGreensFunction;
+} // namespace pcm
 
-#include "BoundaryIntegralOperator.hpp"
+#include "IBoundaryIntegralOperator.hpp"
 
-namespace integrator {
+namespace pcm {
+namespace bi_operators {
 /*! \file Collocation.hpp
  *  \class Collocation
  *  \brief Implementation of the single and double layer operators matrix
@@ -52,7 +57,7 @@ namespace integrator {
  *   D_{ii} = -factor * \sqrt{\frac{\pi}{a_i}} \frac{1}{R_I}
  *  \f]
  */
-class Collocation __final : public BoundaryIntegralOperator {
+class Collocation __final : public IBoundaryIntegralOperator {
 public:
   Collocation();
   Collocation(double fac);
@@ -63,11 +68,12 @@ private:
    * the S and D operators
    */
   double factor_;
-  virtual Eigen::MatrixXd computeS_impl(const std::vector<Element> & elems,
+  virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
-  virtual Eigen::MatrixXd computeD_impl(const std::vector<Element> & elems,
+  virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
 };
-} // namespace integrator
+} // namespace bi_operators
+} // namespace pcm
 
 #endif // COLLOCATION_HPP

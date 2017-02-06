@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -122,8 +122,11 @@ template <int D, typename T1, typename T2, typename T3> struct ApplyFunctor;
  *  \note The mechanics of the code is also documented, since this is quite an
  *intricate piece of code!
  */
-template <int D, typename S1, typename S2 = mpl::vector<>,
-          typename S3 = mpl::vector<>, typename B1 = typename mpl::begin<S1>::type,
+template <int D,
+          typename S1,
+          typename S2 = mpl::vector<>,
+          typename S3 = mpl::vector<>,
+          typename B1 = typename mpl::begin<S1>::type,
           typename B2 = typename mpl::begin<S2>::type,
           typename B3 = typename mpl::begin<S3>::type,
           typename E1 = typename mpl::end<S1>::type,
@@ -144,20 +147,32 @@ struct for_id_impl {
    *  \tparam InputType type of the input data
    */
   template <typename ReturnType, typename T, typename InputType>
-  static ReturnType * execute(T & f, const InputType & data, int id1, int id2 = 0,
+  static ReturnType * execute(T & f,
+                              const InputType & data,
+                              int id1,
+                              int id2 = 0,
                               int id3 = 0) {
     if (position<S1, typename mpl::deref<B1>::type>::value ==
         id1) {      // Desired type in S1 found
       if (1 == D) { // One-dimensional, we're done!
-        return ApplyFunctor<D, typename mpl::deref<B1>::type, T2,
-                            T3>::template apply<ReturnType>(f, data);
+        return ApplyFunctor<D, typename mpl::deref<B1>::type, T2, T3>::
+            template apply<ReturnType>(f, data);
       } else { // Resolve second and third dimensions
         // Call first partial specialization of for_id_impl
         // B1 is not "passed", since the type desired from S1 has been resolved
         // The resolved type is "saved" into T1 and "passed" to the first partial
         // specialization
         return (
-            for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3,
+            for_id_impl<D,
+                        S1,
+                        S2,
+                        S3,
+                        E1,
+                        B2,
+                        B3,
+                        E1,
+                        E2,
+                        E3,
                         typename mpl::deref<B1>::type,
                         T2>::template execute<ReturnType>(f, data, id1, id2, id3));
       }
@@ -167,10 +182,19 @@ struct for_id_impl {
     } else { // First type not resolved, but S1 type sequence not exhausted
       // Call for_id_impl primary template with type of B1 moved to the next type in
       // S1
-      return (for_id_impl<D, S1, S2, S3, typename mpl::next<B1>::type, B2, B3, E1,
-                          E2, E3, T1, T2, T3>::template execute<ReturnType>(f, data,
-                                                                            id1, id2,
-                                                                            id3));
+      return (for_id_impl<D,
+                          S1,
+                          S2,
+                          S3,
+                          typename mpl::next<B1>::type,
+                          B2,
+                          B3,
+                          E1,
+                          E2,
+                          E3,
+                          T1,
+                          T2,
+                          T3>::template execute<ReturnType>(f, data, id1, id2, id3));
     }
   }
 };
@@ -199,8 +223,17 @@ struct for_id_impl {
  *  \note The mechanics of the code is also documented, since this is quite an
  *intricate piece of code!
  */
-template <int D, typename S1, typename S2, typename S3, typename B2, typename B3,
-          typename E1, typename E2, typename E3, typename T1, typename T2,
+template <int D,
+          typename S1,
+          typename S2,
+          typename S3,
+          typename B2,
+          typename B3,
+          typename E1,
+          typename E2,
+          typename E3,
+          typename T1,
+          typename T2,
           typename T3>
 struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3> {
   /*! Executes given functor with selected template arguments
@@ -214,23 +247,33 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3> {
    *  \tparam InputType type of the input data
    */
   template <typename ReturnType, typename T, typename InputType>
-  static ReturnType * execute(T & f, const InputType & data, int id1, int id2 = 0,
+  static ReturnType * execute(T & f,
+                              const InputType & data,
+                              int id1,
+                              int id2 = 0,
                               int id3 = 0) {
     if (position<S2, typename mpl::deref<B2>::type>::value ==
         id2) {      // Desired type in S2 found
       if (2 == D) { // Two-dimensional, we're done!
-        return ApplyFunctor<D, T1, typename mpl::deref<B2>::type,
-                            T3>::template apply<ReturnType>(f, data);
+        return ApplyFunctor<D, T1, typename mpl::deref<B2>::type, T3>::
+            template apply<ReturnType>(f, data);
       } else { // Resolve third dimension
         // Call second partial specialization of for_id_impl
         // B2 is not "passed", since the type desired from S2 has been resolved
         // The resolved type is "saved" into T2 and "passed" to the first partial
         // specialization
-        return (for_id_impl<
-            D, S1, S2, S3, E1, E2, B3, E1, E2, E3,
-            typename mpl::deref<B2>::type>::template execute<ReturnType>(f, data,
-                                                                         id1, id2,
-                                                                         id3));
+        return (for_id_impl<D,
+                            S1,
+                            S2,
+                            S3,
+                            E1,
+                            E2,
+                            B3,
+                            E1,
+                            E2,
+                            E3,
+                            typename mpl::deref<B2>::type>::
+                    template execute<ReturnType>(f, data, id1, id2, id3));
       }
     } else if (1 == mpl::distance<B2, E2>::value) { // Desired type NOT found in S2
       throw std::invalid_argument("Invalid integrator policy (id2 = " +
@@ -238,10 +281,19 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3> {
     } else { // Second type not resolved, but S2 type sequence not exhausted
       // Call for_id_impl first partial specialization with type of B2 moved to the
       // next type in S2
-      return (for_id_impl<D, S1, S2, S3, E1, typename mpl::next<B2>::type, B3, E1,
-                          E2, E3, T1, T2, T3>::template execute<ReturnType>(f, data,
-                                                                            id1, id2,
-                                                                            id3));
+      return (for_id_impl<D,
+                          S1,
+                          S2,
+                          S3,
+                          E1,
+                          typename mpl::next<B2>::type,
+                          B3,
+                          E1,
+                          E2,
+                          E3,
+                          T1,
+                          T2,
+                          T3>::template execute<ReturnType>(f, data, id1, id2, id3));
     }
   }
 };
@@ -269,8 +321,17 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3> {
  *  \note The mechanics of the code is also documented, since this is quite an
  *intricate piece of code!
  */
-template <int D, typename S1, typename S2, typename S3, typename B3, typename E1,
-          typename E2, typename E3, typename T1, typename T2, typename T3>
+template <int D,
+          typename S1,
+          typename S2,
+          typename S3,
+          typename B3,
+          typename E1,
+          typename E2,
+          typename E3,
+          typename T1,
+          typename T2,
+          typename T3>
 struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3> {
   /*! Executes given functor with selected template arguments
    *  \param[in] f the creational functor to be applied
@@ -283,7 +344,10 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3> {
    *  \tparam InputType type of the input data
    */
   template <typename ReturnType, typename T, typename InputType>
-  static ReturnType * execute(T & f, const InputType & data, int id1, int id2 = 0,
+  static ReturnType * execute(T & f,
+                              const InputType & data,
+                              int id1,
+                              int id2 = 0,
                               int id3 = 0) {
     if (position<S3, typename mpl::deref<B3>::type>::value ==
         id3) { // Desired type in S3 found, we're done!
@@ -295,9 +359,17 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3> {
     } else { // Third type not resolved, but S3 type sequence not exhausted
       // Call for_id_impl second partial specialization with type of B3 moved to the
       // next type in S3
-      return (
-          for_id_impl<D, S1, S2, S3, typename mpl::next<B3>::type, E1, E2, E3, T1,
-                      T2, T3>::template execute<ReturnType>(f, data, id1, id2, id3));
+      return (for_id_impl<D,
+                          S1,
+                          S2,
+                          S3,
+                          typename mpl::next<B3>::type,
+                          E1,
+                          E2,
+                          E3,
+                          T1,
+                          T2,
+                          T3>::template execute<ReturnType>(f, data, id1, id2, id3));
     }
   }
 };
@@ -323,8 +395,16 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3> {
  *  It is never reached at run-time, it is needed to stop the recursive instantiation
  *at compile-time.
  */
-template <int D, typename S1, typename S2, typename S3, typename E1, typename E2,
-          typename E3, typename T1, typename T2, typename T3>
+template <int D,
+          typename S1,
+          typename S2,
+          typename S3,
+          typename E1,
+          typename E2,
+          typename E3,
+          typename T1,
+          typename T2,
+          typename T3>
 struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3> {
   /*! Executes given functor with selected template arguments
    *  \tparam ReturnType type of the object returned
@@ -332,8 +412,11 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3> {
    *  \tparam InputType type of the input data
    */
   template <typename ReturnType, typename T, typename InputType>
-  static ReturnType * execute(T & /* f */, const InputType & /* data */,
-                              int /* id1 */, int /* id2 */ = 0, int /* id3 */ = 0) {
+  static ReturnType * execute(T & /* f */,
+                              const InputType & /* data */,
+                              int /* id1 */,
+                              int /* id2 */ = 0,
+                              int /* id3 */ = 0) {
     return __nullptr;
   }
 };
@@ -405,11 +488,15 @@ template <typename T1, typename T2, typename T3> struct ApplyFunctor<1, T1, T2, 
  *  \param[in] id2  index of the second template argument, selected in S2
  *  \param[in] id3  index of the third template argument, selected in S3
  */
-template <typename S1, typename S2, typename S3, typename ReturnType, typename T,
+template <typename S1,
+          typename S2,
+          typename S3,
+          typename ReturnType,
+          typename T,
           typename InputType>
 ReturnType * for_id(T & f, const InputType & data, int id1, int id2, int id3) {
-  return for_id_impl<3, S1, S2, S3>::template execute<ReturnType>(f, data, id1, id2,
-                                                                  id3);
+  return for_id_impl<3, S1, S2, S3>::template execute<ReturnType>(
+      f, data, id1, id2, id3);
 }
 
 /*! Wrapper for the two-dimensional case.
@@ -423,7 +510,10 @@ ReturnType * for_id(T & f, const InputType & data, int id1, int id2, int id3) {
  *  \param[in] id1  index of the first template argument, selected in S1
  *  \param[in] id2  index of the second template argument, selected in S2
  */
-template <typename S1, typename S2, typename ReturnType, typename T,
+template <typename S1,
+          typename S2,
+          typename ReturnType,
+          typename T,
           typename InputType>
 ReturnType * for_id(T & f, const InputType & data, int id1, int id2) {
   return for_id_impl<2, S1, S2>::template execute<ReturnType>(f, data, id1, id2);

@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -32,6 +32,9 @@
 #include "utils/Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
+using namespace pcm;
+using cavity::GePolCavity;
+
 SCENARIO("GePol cavity for the H3+ molecule in C2v symmetry",
          "[gepol][gepol_H3+_C2v]") {
   GIVEN("The H3+ molecule in C2v symmetry") {
@@ -41,7 +44,7 @@ SCENARIO("GePol cavity for the H3+ molecule in C2v symmetry",
       double area = 0.2 / bohr2ToAngstrom2();
       double probeRadius = 1.385 / bohrToAngstrom();
       double minRadius = 0.2 / bohrToAngstrom();
-      GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "c2v");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "c2v");
       cavity.saveCavity("h3+_c2v.npz");
 
       /*! \class GePolCavity
@@ -93,8 +96,7 @@ SCENARIO("GePol cavity for the H3+ molecule in C2v symmetry",
       double area = 0.2 / bohr2ToAngstrom2();
       double probeRadius = 1.385 / bohrToAngstrom();
       double minRadius = 100.0 / bohrToAngstrom();
-      GePolCavity cavity =
-          GePolCavity(molec, area, probeRadius, minRadius, "c2v_noadd");
+      GePolCavity cavity(molec, area, probeRadius, minRadius, "c2v_noadd");
       cavity.saveCavity("h3+_c2v_noadd.npz");
 
       /*! \class GePolCavity

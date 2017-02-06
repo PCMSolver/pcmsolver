@@ -1,5 +1,61 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- Namespaces for all of the internal code have been introduced.
+  The top-level namespace is `pcm`. At finer levels the namespaces have the same
+  names as the respective subdirectories. Read the programmers' documentation
+  for further details on the use of namespaces in the project.
+  Related to issue #34 on [GitHub] and #60 on [GitLab].
+- The top-level, convenience header `BoundaryIntegralOperator.hpp` includes all
+  subclasses and utility headers in the `bi_operators` subdirectory.
+  Related to issue #34 on [GitHub] and #60 on [GitLab].
+- The top-level, convenience header `Cavity.hpp` includes all subclasses and
+  utility headers in the `cavity` subdirectory.
+  Related to issue #34 on [GitHub] and #60 on [GitLab].
+- The top-level, convenience header `Green.hpp` includes all subclasses and
+  utility headers in the `green` subdirectory.
+  Related to issue #34 on [GitHub] and #60 on [GitLab].
+- The top-level, convenience header `Solver.hpp` includes all subclasses and
+  utility headers in the `solver` subdirectory.
+  Related to issue #34 on [GitHub] and #60 on [GitLab].
+
+### Changed
+
+- The abstract base class for the boundary integral operator integrators has
+  been renamed `IBoundaryIntegralOperator`.
+  The relevant factory is bootstrapped upon creation of the `Meddle` object,
+  i.e. at library initialization.
+  Related to issue #34 on [GitHub] and #60 on [GitLab].
+- The abstract base class for the cavities has been renamed `ICavity`.
+  The relevant factory is bootstrapped upon creation of the `Meddle` object,
+  i.e. at library initialization.
+  Related to issue #34 on [GitHub] and #60 on [GitLab].
+- The abstract base class for the solvers has been renamed `ISolver`.
+  The relevant factory is bootstrapped upon creation of the `Meddle` object,
+  i.e. at library initialization.
+  Related to issue #34 on [GitHub] and #60 on [GitLab].
+- The `typedef` for numerical differentiation in the Green's function classes
+  has been renamed `Stencil` to avoid name clashes with the `Numerical`
+  boundary integral operator type.
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+- A bug in the selection of the extended diagnostics flags for the GNU C++
+  compiler. These flags are now enabled only for versions >= 5.1.0 and when the
+  C++11 standard is enable. Fixes issue #36 on [GitHub] and #62 on [GitLab].
+- A bug in the initialization of the factory for the cavity classes was fixed.
+  The bug manifested only in the static library `libpcm.a`
+  Fixes issue #34 on [GitHub] and #60 on [GitLab].
+
+### Security
+
 ## [Version 1.1.7] - 2016-12-01
 
 ### Added
@@ -247,3 +303,6 @@
 [Version 1.1.2]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.1...v1.1.3
 [Version 1.1.1]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.0...v1.1.1
 [Version 1.1.0]: https://github.com/PCMSolver/pcmsolver/releases/tag/v1.1.0
+
+[GitHub]: https://github.com/PCMSolver/pcmsolver
+[GitLab]: https://gitlab.com/PCMSolver/pcmsolver

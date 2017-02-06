@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -37,7 +37,12 @@
 #include "solver/IEFSolver.hpp"
 #include "TestingMolecules.hpp"
 
-using integrator::Collocation;
+using namespace pcm;
+using bi_operators::Collocation;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using solver::IEFSolver;
 
 /*! \class IEFSolver
  *  \test \b C2H4GePolD2h tests IEFSolver using C2H4 with a GePol cavity in D2h

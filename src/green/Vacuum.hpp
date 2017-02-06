@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -30,11 +30,18 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
+namespace cavity {
 class Element;
+} // namespace cavity
+namespace dielectric_profile {
 struct Uniform;
+} // namespace dielectric_profile
+} // namespace pcm
 
 #include "DerivativeTypes.hpp"
 #include "GreensFunction.hpp"
+#include "GreenData.hpp"
 
 /*! \file Vacuum.hpp
  *  \class Vacuum
@@ -47,8 +54,11 @@ struct Uniform;
 //       * can we use enable_if (or similar tricks) to avoid implementing useless
 //       functions?
 
+namespace pcm {
+namespace green {
 template <typename DerivativeTraits = AD_directional>
-class Vacuum __final : public GreensFunction<DerivativeTraits, Uniform> {
+class Vacuum __final
+    : public GreensFunction<DerivativeTraits, dielectric_profile::Uniform> {
 public:
   Vacuum();
   virtual ~Vacuum() {}
@@ -72,5 +82,15 @@ private:
 
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
+
+namespace detail {
+struct buildVacuum {
+  template <typename T> IGreensFunction * operator()(const GreenData & /* data */) {
+    return new Vacuum<T>();
+  }
+};
+} // namespace detail
+} // namespace green
+} // namespace pcm
 
 #endif // VACUUM_HPP

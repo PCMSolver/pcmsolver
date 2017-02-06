@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -31,6 +31,9 @@
 
 #include "interface/Input.hpp"
 #include "utils/Sphere.hpp"
+
+using pcm::Input;
+using pcm::utils::Sphere;
 
 /*! \class Input
  *  \test \b InputDiffuseTest_Diffuse tests input reading on an input file parsed by

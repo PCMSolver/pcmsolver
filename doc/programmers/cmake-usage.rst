@@ -61,10 +61,10 @@ to generate a template ``CMakeLists.txt.try`` file:
 .. code-block:: cmake
 
    # List of headers
-   list(APPEND headers_list Cavity.hpp Element.hpp GePolCavity.hpp RegisterCavityToFactory.hpp RestartCavity.hpp)
+   list(APPEND headers_list Cavity.hpp ICavity.hpp Element.hpp GePolCavity.hpp RegisterCavityToFactory.hpp RestartCavity.hpp)
 
    # List of sources
-   list(APPEND sources_list Cavity.cpp Element.cpp GePolCavity.cpp RestartCavity.cpp)
+   list(APPEND sources_list ICavity.cpp Element.cpp GePolCavity.cpp RestartCavity.cpp)
 
    add_library(cavity OBJECT ${sources_list} ${headers_list})
    set_target_properties(cavity PROPERTIES POSITION_INDEPENDENT_CODE 1 )

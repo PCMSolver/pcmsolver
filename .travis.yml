@@ -313,7 +313,6 @@ matrix:
         - BUILD_TYPE='release'
         - COVERAGE='--coverage'
         - PYTHON_VER='2.7'
-        - COVERAGE=true
 install:
 - |
   if [[ "${PYTHON_VER}" == "2.7" ]]; then

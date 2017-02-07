@@ -77,10 +77,12 @@ if(NOT STATIC_LIBRARY_ONLY)
         set_target_properties(pcm-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
     endif()
     target_compile_definitions(pcm-shared INTERFACE USING_${PROJECT_NAME})
+    target_include_directories(pcm-shared INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 endif()
 
 if(NOT SHARED_LIBRARY_ONLY)
     target_compile_definitions(pcm-static INTERFACE USING_${PROJECT_NAME})
+    target_include_directories(pcm-static INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 endif()
 
 # <<<  Export Config  >>>

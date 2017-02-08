@@ -18,6 +18,7 @@ if(BROKEN_MACOSX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 endif()
 
+include(GNUInstallDirs)
 include(FortranCInterface)
 FortranCInterface_VERIFY(CXX)
 # Generates with name-mangling helper macros and post-process it to add the copyright notice

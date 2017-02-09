@@ -52,18 +52,20 @@ inline ISolver * createIEFSolver(const SolverData & data) {
   return new IEFSolver(data.hermitivitize);
 }
 
-inline void bootstrapFactory() {
+inline Factory<ISolver, SolverData> bootstrapFactory() {
+  Factory<ISolver, SolverData> factory_;
+
   const bool registeredCPCMSolver =
-      Factory<ISolver, SolverData>::TheFactory().registerObject("CPCM",
-                                                                createCPCMSolver);
+      factory_.registerObject("CPCM", createCPCMSolver);
   if (!registeredCPCMSolver)
     PCMSOLVER_ERROR("Subscription of solver for CPCM to factory failed!");
 
   const bool registeredIEFSolver =
-      Factory<ISolver, SolverData>::TheFactory().registerObject("IEFPCM",
-                                                                createIEFSolver);
+      factory_.registerObject("IEFPCM", createIEFSolver);
   if (!registeredIEFSolver)
     PCMSOLVER_ERROR("Subscription of solver for IEF to factory failed!");
+
+  return factory_;
 }
 } // namespace solver
 } // namespace pcm

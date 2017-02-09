@@ -74,40 +74,38 @@ inline IGreensFunction * createSphericalDiffuse(const GreenData & data) {
       build, data, data.howProfile);
 }
 
-inline void bootstrapFactory() {
-  const bool registeredVacuum =
-      Factory<IGreensFunction, GreenData>::TheFactory().registerObject("VACUUM",
-                                                                       createVacuum);
+inline Factory<IGreensFunction, GreenData> bootstrapFactory() {
+  Factory<IGreensFunction, GreenData> factory_;
+
+  const bool registeredVacuum = factory_.registerObject("VACUUM", createVacuum);
   if (!registeredVacuum)
     PCMSOLVER_ERROR("Subscription of vacuum Green's function to factory failed!");
 
   const bool registeredUniformDielectric =
-      Factory<IGreensFunction, GreenData>::TheFactory().registerObject(
-          "UNIFORMDIELECTRIC", createUniformDielectric);
+      factory_.registerObject("UNIFORMDIELECTRIC", createUniformDielectric);
   if (!registeredUniformDielectric)
     PCMSOLVER_ERROR(
         "Subscription of uniform dielectric Green's function to factory failed!");
 
   const bool registeredSphericalDiffuse =
-      Factory<IGreensFunction, GreenData>::TheFactory().registerObject(
-          "SPHERICALDIFFUSE", createSphericalDiffuse);
+      factory_.registerObject("SPHERICALDIFFUSE", createSphericalDiffuse);
   if (!registeredSphericalDiffuse)
     PCMSOLVER_ERROR(
         "Subscription of spherical diffuse Green's function to factory failed!");
 
   const bool registeredIonicLiquid =
-      Factory<IGreensFunction, GreenData>::TheFactory().registerObject(
-          "IONICLIQUID", createIonicLiquid);
+      factory_.registerObject("IONICLIQUID", createIonicLiquid);
   if (!registeredIonicLiquid)
     PCMSOLVER_ERROR(
         "Subscription of ionic liquid Green's function to factory failed!");
 
   const bool registeredAnisotropicLiquid =
-      Factory<IGreensFunction, GreenData>::TheFactory().registerObject(
-          "ANISOTROPICLIQUID", createAnisotropicLiquid);
+      factory_.registerObject("ANISOTROPICLIQUID", createAnisotropicLiquid);
   if (!registeredAnisotropicLiquid)
     PCMSOLVER_ERROR(
         "Subscription of anisotropic liquid Green's function to factory failed!");
+
+  return factory_;
 }
 } // namespace green
 } // namespace pcm

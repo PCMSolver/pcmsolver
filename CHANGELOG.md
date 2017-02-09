@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [Version 1.1.8] - 2017-02-06
 
 ### Added
 
@@ -41,10 +41,6 @@
   has been renamed `Stencil` to avoid name clashes with the `Numerical`
   boundary integral operator type.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - A bug in the selection of the extended diagnostics flags for the GNU C++
@@ -53,8 +49,6 @@
 - A bug in the initialization of the factory for the cavity classes was fixed.
   The bug manifested only in the static library `libpcm.a`
   Fixes issue #34 on [GitHub] and #60 on [GitLab].
-
-### Security
 
 ## [Version 1.1.7] - 2016-12-01
 

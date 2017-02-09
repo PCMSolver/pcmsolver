@@ -505,29 +505,30 @@ Molecule H2O() {
   int nAtoms = 3;
 
   // Geometry in atomic units
-  Eigen::Vector3d H1(0.0000000000, 0.0000000000, -0.2249058930);
+  Eigen::Vector3d O(0.0000000000, 0.0000000000, -0.2249058930);
+  Eigen::Vector3d H1(1.4523499293, 0.0000000000, 0.8996235720);
   Eigen::Vector3d H2(-1.4523499293, 0.0000000000, 0.8996235720);
-  Eigen::Vector3d O(1.4523499293, 0.0000000000, 0.8996235720);
 
   Eigen::MatrixXd geom(3, nAtoms);
-  geom.col(0) = H1.transpose();
-  geom.col(1) = H2.transpose();
-  geom.col(2) = O.transpose();
+  geom.col(0) = O.transpose();
+  geom.col(1) = H1.transpose();
+  geom.col(2) = H2.transpose();
   Eigen::Vector3d charges, masses;
-  charges << 1.0, 1.0, 8.0;
-  masses << 1.0078250, 1.0078250, 15.9949150;
+  charges << 8.0, 1.0, 1.0;
+  masses << 15.9949150, 1.0078250, 1.0078250;
 
-  double radiusO = (1.52 * 1.20) / bohrToAngstrom();
-  double radiusH = (1.20 * 1.20) / bohrToAngstrom();
+  // We use Allinger's MM3 radii
+  double radiusO = (1.82 / 1.2) / bohrToAngstrom();
+  double radiusH = (1.62 / 1.2) / bohrToAngstrom();
   std::vector<Atom> atoms;
-  atoms.push_back(Atom("Hydrogen", "H", charges(0), masses(0), radiusH, H1, 1.0));
-  atoms.push_back(Atom("Hydrogen", "H", charges(1), masses(1), radiusH, H2, 1.0));
-  atoms.push_back(Atom("Oxygen", "O", charges(2), masses(2), radiusO, O, 1.0));
+  atoms.push_back(Atom("Oxygen", "O", charges(0), masses(0), radiusO, O, 1.0));
+  atoms.push_back(Atom("Hydrogen", "H", charges(1), masses(1), radiusH, H1, 1.0));
+  atoms.push_back(Atom("Hydrogen", "H", charges(2), masses(2), radiusH, H2, 1.0));
 
   std::vector<Sphere> spheres;
-  Sphere sph1(H1, radiusH);
-  Sphere sph2(H2, radiusH);
-  Sphere sph3(O, radiusO);
+  Sphere sph1(O, radiusO);
+  Sphere sph2(H1, radiusH);
+  Sphere sph3(H2, radiusH);
   spheres.push_back(sph1);
   spheres.push_back(sph2);
   spheres.push_back(sph3);

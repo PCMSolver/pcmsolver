@@ -37,9 +37,7 @@
  *  \tparam Object type of the object the factory will create
  *  \tparam ObjectInput type of the input wrapper struct
  *
- * 	Factory method implementation shamelessly copied from here \cite
- *Alexandrescu2001
- * 	It is implemented as a Singleton.
+ *  Factory method implementation shamelessly copied from here \cite Alexandrescu2001
  */
 
 namespace pcm {
@@ -85,18 +83,11 @@ public:
                       " occurred in the Factory.");
     return (i->second)(data);
   }
-  /*! Unique point of access to the unique instance of the Factory */
-  static Factory & TheFactory() {
-    static Factory obj;
-    return obj;
-  }
+
+  Factory() {}
+  ~Factory() { callbacks_.clear(); }
 
 private:
-  Factory() {}
-  /// Copy constructor is made private
-  Factory(const Factory & other);
-  Factory & operator=(const Factory & other);
-  ~Factory() {}
   CallbackMap callbacks_;
 };
 } // namespace pcm

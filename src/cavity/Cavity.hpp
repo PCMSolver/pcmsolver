@@ -53,18 +53,19 @@ inline ICavity * createRestartCavity(const CavityData & data) {
   return new RestartCavity(data.filename);
 }
 
-inline void bootstrapFactory() {
-  const bool registeredGePol =
-      Factory<ICavity, CavityData>::TheFactory().registerObject("GEPOL",
-                                                                createGePolCavity);
+inline Factory<ICavity, CavityData> bootstrapFactory() {
+  Factory<ICavity, CavityData> factory_;
+
+  const bool registeredGePol = factory_.registerObject("GEPOL", createGePolCavity);
   if (!registeredGePol)
     PCMSOLVER_ERROR("Subscription of GePol cavity to factory failed!");
 
   const bool registeredRestart =
-      Factory<ICavity, CavityData>::TheFactory().registerObject("RESTART",
-                                                                createRestartCavity);
+      factory_.registerObject("RESTART", createRestartCavity);
   if (!registeredRestart)
     PCMSOLVER_ERROR("Subscription of restart cavity to factory failed!");
+
+  return factory_;
 }
 } // namespace cavity
 } // namespace pcm

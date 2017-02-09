@@ -83,8 +83,10 @@ struct Atom {
         symbol(sym) {}
 };
 
+typedef tuple<std::string, std::vector<Atom> > RadiiSet;
+
 namespace detail {
-/*! \brief Returns a reference to a vector<Atom> containing Bondi van der Waals
+/*! \brief Returns a vector<Atom> containing Bondi van der Waals
  *radii.
  *
  * The van der Waals radii are taken from:
@@ -94,18 +96,18 @@ namespace detail {
  *     J. Phys. Chem. A, 113, 5806-5812 (2009)
  * We are here using Angstrom as in the papers.
  */
-std::vector<Atom> & initBondi();
+RadiiSet initBondi();
 
-/*! \brief Returns a reference to a vector<Atom> containing UFF radii.
+/*! \brief Returns a vector<Atom> containing UFF radii.
  *
  * The UFF set of radii is taken from:
  * --- A. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard, W. M. Skiff,
  *     J. Am. Chem. Soc., 114, 10024-10035 (1992)
  * We are here using Angstrom as in the paper.
  */
-std::vector<Atom> & initUFF();
+RadiiSet initUFF();
 
-/*! \brief Returns a reference to a vector<Atom> containing Allinger's MM3 radii.
+/*! \brief Returns a vector<Atom> containing Allinger's MM3 radii.
  *
  * The MM3 set of radii is taken from:
  * --- N. L. Allinger, X. Zhou, J. Bergsma,
@@ -115,7 +117,7 @@ std::vector<Atom> & initUFF();
  * \note We *divide* the values reported in the paper by 1.2, as done in
  * the ADF program package.
  */
-std::vector<Atom> & initAllinger();
+RadiiSet initAllinger();
 } // namespace detail
 
 class Factory __final {
@@ -123,7 +125,7 @@ public:
   /*! \brief Callback function for object creation
    *  Returns a std::vector<Atom> by reference
    */
-  typedef function<std::vector<Atom> &()> Create;
+  typedef function<RadiiSet()> Create;
 
 private:
   /*! std::map from the object type identifier (a string) to its callback function */
@@ -151,7 +153,7 @@ public:
    *  \param[in] objID the object's identification string
    *  \param[in] data  input data for the creation of the object
    */
-  std::vector<Atom> & create(const std::string & objID) {
+  RadiiSet create(const std::string & objID) {
     if (objID.empty())
       PCMSOLVER_ERROR("No object identification string provided to the Factory.");
     CallbackConstIter i = callbacks_.find(objID);
@@ -160,35 +162,30 @@ public:
                       " occurred in the Factory.");
     return (i->second)();
   }
-  /*! Unique point of access to the unique instance of the Factory */
-  static Factory & TheFactory() {
-    static Factory obj;
-    return obj;
-  }
+
+  Factory() {}
+  ~Factory() { callbacks_.clear(); }
 
 private:
-  Factory() {}
-  /// Copy constructor is made private
-  Factory(const Factory & other);
-  Factory & operator=(const Factory & other);
-  ~Factory() {}
   CallbackMap callbacks_;
 };
 
-inline void bootstrapRadiiSet() {
-  const bool bondi =
-      Factory::TheFactory().registerObject("BONDI", detail::initBondi);
+inline Factory bootstrapRadiiSet() {
+  Factory factory_;
+
+  const bool bondi = factory_.registerObject("BONDI", detail::initBondi);
   if (!bondi)
     PCMSOLVER_ERROR("Subscription of Bondi radii set to factory failed!");
 
-  const bool uff = Factory::TheFactory().registerObject("UFF", detail::initUFF);
+  const bool uff = factory_.registerObject("UFF", detail::initUFF);
   if (!uff)
     PCMSOLVER_ERROR("Subscription of UFF radii set to factory failed!");
 
-  const bool allinger =
-      Factory::TheFactory().registerObject("ALLINGER", detail::initAllinger);
+  const bool allinger = factory_.registerObject("ALLINGER", detail::initAllinger);
   if (!allinger)
     PCMSOLVER_ERROR("Subscription of Allinger's MM3 radii set to factory failed!");
+
+  return factory_;
 }
 } // namespace utils
 

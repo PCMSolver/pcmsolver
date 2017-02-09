@@ -191,7 +191,6 @@ Printer hostWriter;
 
 Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
     : input_(Input(inputFileName)), hasDynamic_(false) {
-  bootstrap();
   input_.initMolecule();
   hostWriter.writer_ = write;
   infoStream_ << std::endl;
@@ -226,7 +225,6 @@ Meddle::Meddle(pcmsolver_reader_t input_reading,
                const PCMInput & host_input,
                const HostWriter & write)
     : hasDynamic_(false) {
-  bootstrap();
   hostWriter.writer_ = write;
   TIMER_ON("Meddle::initInput");
   initInput(
@@ -454,8 +452,8 @@ void Meddle::initInput(pcmsolver_reader_t input_reading,
 }
 
 void Meddle::initCavity() {
-  cavity_ = Factory<ICavity, CavityData>::TheFactory().create(input_.cavityType(),
-                                                              input_.cavityParams());
+  cavity_ =
+      cavity::bootstrapFactory().create(input_.cavityType(), input_.cavityParams());
   cavity_->saveCavity();
 
   infoStream_ << "========== Cavity " << std::endl;
@@ -464,16 +462,16 @@ void Meddle::initCavity() {
 }
 
 void Meddle::initStaticSolver() {
-  IGreensFunction * gf_i = Factory<IGreensFunction, GreenData>::TheFactory().create(
+  IGreensFunction * gf_i = green::bootstrapFactory().create(
       input_.greenInsideType(), input_.insideGreenParams());
-  IGreensFunction * gf_o = Factory<IGreensFunction, GreenData>::TheFactory().create(
+  IGreensFunction * gf_o = green::bootstrapFactory().create(
       input_.greenOutsideType(), input_.outsideStaticGreenParams());
-  std::string modelType = input_.solverType();
-  K_0_ = Factory<ISolver, SolverData>::TheFactory().create(modelType,
-                                                           input_.solverParams());
-  IBoundaryIntegralOperator * biop =
-      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory().create(
-          input_.integratorType(), input_.integratorParams());
+
+  K_0_ =
+      solver::bootstrapFactory().create(input_.solverType(), input_.solverParams());
+
+  IBoundaryIntegralOperator * biop = bi_operators::bootstrapFactory().create(
+      input_.integratorType(), input_.integratorParams());
   K_0_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   delete biop;
 
@@ -485,17 +483,16 @@ void Meddle::initStaticSolver() {
 }
 
 void Meddle::initDynamicSolver() {
-  IGreensFunction * gf_i = Factory<IGreensFunction, GreenData>::TheFactory().create(
+  IGreensFunction * gf_i = green::bootstrapFactory().create(
       input_.greenInsideType(), input_.insideGreenParams());
-  IGreensFunction * gf_o = Factory<IGreensFunction, GreenData>::TheFactory().create(
+  IGreensFunction * gf_o = green::bootstrapFactory().create(
       input_.greenOutsideType(), input_.outsideDynamicGreenParams());
-  std::string modelType = input_.solverType();
-  K_d_ = Factory<ISolver, SolverData>::TheFactory().create(modelType,
-                                                           input_.solverParams());
 
-  IBoundaryIntegralOperator * biop =
-      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory().create(
-          input_.integratorType(), input_.integratorParams());
+  K_d_ =
+      solver::bootstrapFactory().create(input_.solverType(), input_.solverParams());
+
+  IBoundaryIntegralOperator * biop = bi_operators::bootstrapFactory().create(
+      input_.integratorType(), input_.integratorParams());
   K_d_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   hasDynamic_ = true;
   delete biop;
@@ -529,14 +526,6 @@ void Meddle::printInfo() const {
   hostWriter(infoStream_);
 }
 
-void bootstrap() {
-  bi_operators::bootstrapFactory();
-  cavity::bootstrapFactory();
-  green::bootstrapFactory();
-  solver::bootstrapFactory();
-  utils::bootstrapRadiiSet();
-}
-
 void initMolecule(const Input & inp,
                   const Symmetry & pg,
                   int nuclei,
@@ -548,9 +537,8 @@ void initMolecule(const Input & inp,
   std::vector<Atom> radiiSet;
   std::vector<Atom> atoms;
   atoms.reserve(nuclei);
-  // FIXME This is globally initialized...
-  using utils::Factory;
-  radiiSet = Factory::TheFactory().create(set);
+  // FIXME Code duplication in function initMolecule in interface/Input.cpp
+  tie(ignore, radiiSet) = utils::bootstrapRadiiSet().create(set);
   std::vector<Sphere> spheres;
   spheres.reserve(nuclei);
   for (int i = 0; i < charges.size(); ++i) {

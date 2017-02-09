@@ -21,10 +21,9 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#include <catch.hpp>
+#include "catch.hpp"
 
-#include <cmath>
-#include <vector>
+#include <iostream>
 
 #include <Eigen/Core>
 
@@ -35,6 +34,7 @@
 #include "green/Vacuum.hpp"
 #include "green/UniformDielectric.hpp"
 #include "solver/CPCMSolver.hpp"
+#include "utils/Symmetry.hpp"
 #include "TestingMolecules.hpp"
 
 using namespace pcm;
@@ -45,16 +45,15 @@ using green::UniformDielectric;
 using solver::CPCMSolver;
 
 /*! \class CPCMSolver
- *  \test \b C2H4GePolD2h tests CPCMSolver using C2H4 with a GePol cavity in D2h
- * symmetry
+ *  \test \b NH3GePol tests CPCMSolver using water and a GePol cavity
  */
-TEST_CASE("Test solver for the CPCM and the C2H4 molecule in D2h symmetry",
-          "[cpcm][cpcm_symmetry][cpcm_gepol-C2H4_D2h]") {
-  Molecule molec = C2H4();
+TEST_CASE("Test solver for the C-PCM with H2O molecule and a GePol cavity",
+          "[solver][cpcm][cpcm_gepol-H2O]") {
+  Molecule molecule = H2O();
   double area = 0.2 / bohr2ToAngstrom2();
-  double probeRadius = 1.385 / bohrToAngstrom();
-  double minRadius = 100.0 / bohrToAngstrom();
-  GePolCavity cavity(molec, area, probeRadius, minRadius, "cpcm_d2h_noadd");
+  double probeRadius = 0.0;
+  double minRadius = 100.0;
+  GePolCavity cavity = GePolCavity(molecule, area, probeRadius, minRadius);
 
   double permittivity = 78.39;
   Vacuum<> gf_i;
@@ -62,41 +61,25 @@ TEST_CASE("Test solver for the CPCM and the C2H4 molecule in D2h symmetry",
   bool symm = true;
   double correction = 0.0;
 
-  Collocation S;
-
   CPCMSolver solver(symm, correction);
-  solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
+  solver.buildSystemMatrix(cavity, gf_i, gf_o, Collocation());
 
-  double Ccharge = 6.0;
+  double Ocharge = 8.0;
   double Hcharge = 1.0;
   int size = cavity.size();
-  Eigen::VectorXd fake_mep = computeMEP(molec, cavity.elements());
-  // The total ASC for a dielectric is -Q*(epsilon-1)/epsilon
-  int irr_size = cavity.irreducible_size();
+  Eigen::VectorXd fake_mep = computeMEP(molecule, cavity.elements());
+  // The total ASC for a conductor is -Q
+  // for CPCM it will be -Q*(epsilon-1)/(epsilon + correction)
   Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
   fake_asc = solver.computeCharge(fake_mep);
-
-  for (int i = 0; i < size; ++i) {
-    INFO("fake_mep(" << i << ") = " << fake_mep(i));
-  }
-  for (int i = 0; i < size; ++i) {
-    INFO("fake_asc(" << i << ") = " << fake_asc(i));
-  }
-
-  // The total ASC for a conductor is -Q
-  // for CPCM it will be -Q*(epsilon-1)/epsilon
   double totalASC =
-      -(2.0 * Ccharge + 4.0 * Hcharge) * (permittivity - 1) / permittivity;
-  // Renormalize
-  int nr_irrep = cavity.pointGroup().nrIrrep();
-  double totalFakeASC = fake_asc.sum() * nr_irrep;
-  CAPTURE(totalASC);
-  CAPTURE(totalFakeASC);
+      -(Ocharge + 2.0 * Hcharge) * (permittivity - 1) / (permittivity + correction);
+  double totalFakeASC = fake_asc.sum();
   CAPTURE(totalASC - totalFakeASC);
   REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
 
   Eigen::VectorXd reference =
-      cnpy::custom::npy_load<double>("ASC-cpcm_gepol-C2H4_D2h.npy");
+      cnpy::custom::npy_load<double>("ASC-cpcm_gepol-H2O.npy");
   for (int i = 0; i < cavity.size(); ++i) {
     REQUIRE(reference(i) == Approx(fake_asc(i)));
   }

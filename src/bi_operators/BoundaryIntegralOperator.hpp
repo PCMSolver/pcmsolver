@@ -60,24 +60,25 @@ inline IBoundaryIntegralOperator * createPurisima(const BIOperatorData & data) {
   return new Purisima(data.scaling);
 }
 
-inline void bootstrapFactory() {
+inline Factory<IBoundaryIntegralOperator, BIOperatorData> bootstrapFactory() {
+  Factory<IBoundaryIntegralOperator, BIOperatorData> factory_;
+
   const bool registeredCollocation =
-      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory()
-          .registerObject("COLLOCATION", createCollocation);
+      factory_.registerObject("COLLOCATION", createCollocation);
   if (!registeredCollocation)
     PCMSOLVER_ERROR("Subscription of collocation integrator to factory failed!");
 
   const bool registeredNumerical =
-      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory()
-          .registerObject("NUMERICAL", createNumerical);
+      factory_.registerObject("NUMERICAL", createNumerical);
   if (!registeredNumerical)
     PCMSOLVER_ERROR("Subscription of numerical integrator to factory failed!");
 
   const bool registeredPurisima =
-      Factory<IBoundaryIntegralOperator, BIOperatorData>::TheFactory()
-          .registerObject("PURISIMA", createPurisima);
+      factory_.registerObject("PURISIMA", createPurisima);
   if (!registeredPurisima)
     PCMSOLVER_ERROR("Subscription of Purisima integrator to factory failed!");
+
+  return factory_;
 }
 } // namespace bi_operators
 } // namespace pcm

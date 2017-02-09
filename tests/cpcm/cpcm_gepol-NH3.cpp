@@ -81,4 +81,10 @@ TEST_CASE("Test solver for the C-PCM with NH3 molecule and a GePol cavity",
   double totalFakeASC = fake_asc.sum();
   CAPTURE(totalASC - totalFakeASC);
   REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+
+  Eigen::VectorXd reference =
+      cnpy::custom::npy_load<double>("ASC-cpcm_gepol-NH3.npy");
+  for (int i = 0; i < cavity.size(); ++i) {
+    REQUIRE(reference(i) == Approx(fake_asc(i)));
+  }
 }

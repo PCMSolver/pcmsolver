@@ -160,35 +160,32 @@ public:
                       " occurred in the Factory.");
     return (i->second)();
   }
-  /*! Unique point of access to the unique instance of the Factory */
-  static Factory & TheFactory() {
-    static Factory obj;
-    return obj;
-  }
+
+  Factory() {}
+  ~Factory() { callbacks_.clear(); }
 
 private:
-  Factory() {}
-  /// Copy constructor is made private
-  Factory(const Factory & other);
-  Factory & operator=(const Factory & other);
-  ~Factory() {}
   CallbackMap callbacks_;
 };
 
-inline void bootstrapRadiiSet() {
+inline Factory bootstrapRadiiSet() {
+  Factory factory_;
+
   const bool bondi =
-      Factory::TheFactory().registerObject("BONDI", detail::initBondi);
+      factory_.registerObject("BONDI", detail::initBondi);
   if (!bondi)
     PCMSOLVER_ERROR("Subscription of Bondi radii set to factory failed!");
 
-  const bool uff = Factory::TheFactory().registerObject("UFF", detail::initUFF);
+  const bool uff = factory_.registerObject("UFF", detail::initUFF);
   if (!uff)
     PCMSOLVER_ERROR("Subscription of UFF radii set to factory failed!");
 
   const bool allinger =
-      Factory::TheFactory().registerObject("ALLINGER", detail::initAllinger);
+      factory_.registerObject("ALLINGER", detail::initAllinger);
   if (!allinger)
     PCMSOLVER_ERROR("Subscription of Allinger's MM3 radii set to factory failed!");
+
+  return factory_;
 }
 } // namespace utils
 

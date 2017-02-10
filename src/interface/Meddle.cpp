@@ -191,7 +191,6 @@ Printer hostWriter;
 
 Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
     : input_(Input(inputFileName)), hasDynamic_(false) {
-  bootstrap();
   input_.initMolecule();
   hostWriter.writer_ = write;
   infoStream_ << std::endl;
@@ -226,7 +225,6 @@ Meddle::Meddle(pcmsolver_reader_t input_reading,
                const PCMInput & host_input,
                const HostWriter & write)
     : hasDynamic_(false) {
-  bootstrap();
   hostWriter.writer_ = write;
   TIMER_ON("Meddle::initInput");
   initInput(
@@ -528,8 +526,6 @@ void Meddle::printInfo() const {
   hostWriter(infoStream_);
 }
 
-void bootstrap() { utils::bootstrapRadiiSet(); }
-
 void initMolecule(const Input & inp,
                   const Symmetry & pg,
                   int nuclei,
@@ -541,9 +537,8 @@ void initMolecule(const Input & inp,
   std::vector<Atom> radiiSet;
   std::vector<Atom> atoms;
   atoms.reserve(nuclei);
-  // FIXME This is globally initialized...
-  using utils::Factory;
-  radiiSet = Factory::TheFactory().create(set);
+  // FIXME Code duplication in function initMolecule in interface/Input.cpp
+  radiiSet = utils::bootstrapRadiiSet().create(set);
   std::vector<Sphere> spheres;
   spheres.reserve(nuclei);
   for (int i = 0; i < charges.size(); ++i) {

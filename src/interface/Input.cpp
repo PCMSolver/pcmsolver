@@ -270,9 +270,8 @@ void Input::initMolecule() {
   std::vector<Atom> radiiSet;
   std::vector<Atom> atoms;
   atoms.reserve(nuclei);
-  // FIXME This was globally bootstrapped...
-  using utils::Factory;
-  radiiSet = Factory::TheFactory().create(radiiSet_);
+  // FIXME Code duplication in function initMolecule in interface/Meddle.cpp
+  radiiSet = utils::bootstrapRadiiSet().create(radiiSet_);
   if (radiiSet_ == "UFF") {
     radiiSetName_ = "UFF";
   } else if (radiiSet_ == "BONDI") {

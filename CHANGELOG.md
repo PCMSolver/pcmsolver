@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `Factory` is no longer implemented as a Singleton.
+- Revert to use [Robust Cholesky decomposition](https://eigen.tuxfamily.org/dox/classEigen_1_1LDLT.html)
+  to compute the inverse of the S matrix in `CPCMSolver`.
+
+## [Version 1.1.8] - 2017-02-06
+
 ### Added
 
 - Namespaces for all of the internal code have been introduced.
@@ -41,10 +49,6 @@
   has been renamed `Stencil` to avoid name clashes with the `Numerical`
   boundary integral operator type.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - A bug in the selection of the extended diagnostics flags for the GNU C++
@@ -53,8 +57,6 @@
 - A bug in the initialization of the factory for the cavity classes was fixed.
   The bug manifested only in the static library `libpcm.a`
   Fixes issue #34 on [GitHub] and #60 on [GitLab].
-
-### Security
 
 ## [Version 1.1.7] - 2016-12-01
 
@@ -294,7 +296,8 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.7...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.8...HEAD
+[Version 1.1.8]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.7...v1.1.8
 [Version 1.1.7]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.6...v1.1.7
 [Version 1.1.6]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.5...v1.1.6
 [Version 1.1.5]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.4...v1.1.5

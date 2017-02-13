@@ -538,7 +538,7 @@ void initMolecule(const Input & inp,
   std::vector<Atom> atoms;
   atoms.reserve(nuclei);
   // FIXME Code duplication in function initMolecule in interface/Input.cpp
-  radiiSet = utils::bootstrapRadiiSet().create(set);
+  tie(ignore, radiiSet) = utils::bootstrapRadiiSet().create(set);
   std::vector<Sphere> spheres;
   spheres.reserve(nuclei);
   for (int i = 0; i < charges.size(); ++i) {

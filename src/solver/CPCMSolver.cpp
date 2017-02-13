@@ -29,6 +29,7 @@
 
 #include "Config.hpp"
 
+#include <Eigen/Cholesky>
 #include <Eigen/Core>
 
 #include "bi_operators/IBoundaryIntegralOperator.hpp"
@@ -74,7 +75,7 @@ Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential
   int nrBlocks = blockS_.size();
   int irrDim = fullDim / nrBlocks;
   charge.segment(irrep * irrDim, irrDim) =
-      -blockS_[irrep].llt().solve(potential.segment(irrep * irrDim, irrDim));
+      -blockS_[irrep].ldlt().solve(potential.segment(irrep * irrDim, irrDim));
 
   return charge;
 }
@@ -82,10 +83,11 @@ Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential
 std::ostream & CPCMSolver::printSolver(std::ostream & os) {
   os << "Solver Type: C-PCM" << std::endl;
   if (hermitivitize_) {
-    os << "PCM matrix hermitivitized";
+    os << "PCM matrix hermitivitized" << std::endl;
   } else {
-    os << "PCM matrix NOT hermitivitized (matches old DALTON)";
+    os << "PCM matrix NOT hermitivitized (matches old DALTON)" << std::endl;
   }
+  os << "Correction = " << correction_;
 
   return os;
 }

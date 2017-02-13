@@ -92,6 +92,12 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity",
         CAPTURE(totalFakeASC);
         CAPTURE(totalASC - totalFakeASC);
         REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+
+        Eigen::VectorXd reference =
+            cnpy::custom::npy_load<double>("ASC-cpcm_gepol-point.npy");
+        for (int i = 0; i < cavity.size(); ++i) {
+          REQUIRE(reference(i) == Approx(fake_asc(i)));
+        }
       }
     }
 
@@ -131,6 +137,12 @@ SCENARIO("Test solver for the C-PCM for a point charge and a GePol cavity",
         CAPTURE(totalFakeASC);
         CAPTURE(totalASC - totalFakeASC);
         REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));
+
+        Eigen::VectorXd reference =
+            cnpy::custom::npy_load<double>("ASC-cpcm_gepol-point.npy");
+        for (int i = 0; i < cavity.size(); ++i) {
+          REQUIRE(reference(i) == Approx(fake_asc(i)));
+        }
       }
     }
   }

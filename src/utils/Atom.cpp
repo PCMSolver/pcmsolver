@@ -38,9 +38,8 @@ bool invalid(const Atom & atom) {
 
 namespace utils {
 namespace detail {
-std::vector<Atom> & initBondi() {
-
-  static std::vector<Atom> Bondi(118);
+RadiiSet initBondi() {
+  std::vector<Atom> Bondi(118);
   Eigen::Vector3d Origin = Eigen::Vector3d::Zero();
 
   // ------------------------------------------------------------
@@ -167,12 +166,12 @@ std::vector<Atom> & initBondi() {
 
   // ------------------------------------------------------------
 
-  return Bondi;
+  return make_tuple("Bondi-Mantina", Bondi);
 }
 
-std::vector<Atom> & initUFF() {
+RadiiSet initUFF() {
 
-  static std::vector<Atom> UFF(118);
+  std::vector<Atom> UFF(118);
   Eigen::Vector3d Origin = Eigen::Vector3d::Zero();
 
   // ------------------------------------------------------------
@@ -298,12 +297,12 @@ std::vector<Atom> & initUFF() {
   UFF[117] = Atom("Ununoctium", "Uuo", 118.0, 294.0000000, 0.0000, Origin, 1.0);
   // ------------------------------------------------------------
 
-  return UFF;
+  return make_tuple("UFF", UFF);
 }
 
-std::vector<Atom> & initAllinger() {
+RadiiSet initAllinger() {
 
-  static std::vector<Atom> Allinger(118);
+  std::vector<Atom> Allinger(118);
   Eigen::Vector3d Origin = Eigen::Vector3d::Zero();
 
   // ------------------------------------------------------------
@@ -447,7 +446,7 @@ std::vector<Atom> & initAllinger() {
       Atom("Ununoctium", "Uuo", 118.0, 294.0000000, 0.000000, Origin, 1.0);
   // ------------------------------------------------------------
 
-  return Allinger;
+  return make_tuple("Allinger's MM3", Allinger);
 }
 } // namespace detail
 } // namespace utils

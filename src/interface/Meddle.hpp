@@ -61,7 +61,6 @@ struct Printer {
   void operator()(const std::string & message);
   void operator()(const std::ostringstream & stream);
 };
-void bootstrap();
 void initMolecule(const Input & inp,
                   const Symmetry & group,
                   int nuclei,

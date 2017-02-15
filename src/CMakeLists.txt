@@ -22,27 +22,35 @@ list(APPEND _objects $<TARGET_OBJECTS:cavity>
     )
 if(NOT STATIC_LIBRARY_ONLY)
   add_library(pcm-shared SHARED ${_objects})
-  add_library(${PROJECT_NAME} ALIAS pcm-shared)
-  target_link_libraries(pcm-shared ${ZLIB_LIBRARIES} ${LIBC_INTERJECT})
+  target_link_libraries(pcm-shared PRIVATE ${ZLIB_LIBRARIES} ${LIBC_INTERJECT})
   set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR}
                                               CXX_VISIBILITY_PRESET hidden
                                               VISIBILITY_INLINES_HIDDEN 1
-                                              OUTPUT_NAME "pcm")
+                                              OUTPUT_NAME "pcm"
+                                              EXPORT_NAME "pcm")
   install(TARGETS pcm-shared
+          EXPORT "${PROJECT_NAME}Targets-shared"
           RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
   add_dependencies(pcm-shared generate-config-hpp)
 endif()
 
-add_library(pcm-static STATIC ${_objects})
-if(NOT TARGET ${PROJECT_NAME})
-  add_library(${PROJECT_NAME} ALIAS pcm-static)
+if(NOT SHARED_LIBRARY_ONLY)
+    add_library(pcm-static STATIC ${_objects})
+    set_target_properties(pcm-static PROPERTIES OUTPUT_NAME "pcm"
+                                                COMPILE_FLAGS -D${PROJECT_NAME}_STATIC_DEFINE
+                                                EXPORT_NAME "pcm")
+    install(TARGETS pcm-static
+            EXPORT "${PROJECT_NAME}Targets-static"
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    add_dependencies(pcm-static generate-config-hpp)
 endif()
-set_target_properties(pcm-static PROPERTIES COMPILE_FLAGS -D${PROJECT_NAME}_STATIC_DEFINE
-                                            OUTPUT_NAME "pcm")
-install(TARGETS pcm-static
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-add_dependencies(pcm-static generate-config-hpp)
+
+if(STATIC_LIBRARY_ONLY)
+    add_library(${PROJECT_NAME} ALIAS pcm-static)
+else ()
+    add_library(${PROJECT_NAME} ALIAS pcm-shared)
+endif()
 
 include(GenerateExportHeader)
 generate_export_header(${PROJECT_NAME}
@@ -60,4 +68,35 @@ install(FILES ${PROJECT_BINARY_DIR}/include/PCMSolverExport.h DESTINATION ${CMAK
 # This directory contains source file for executables
 if(BUILD_STANDALONE)
    add_subdirectory(bin)
+endif()
+
+# <<<  Export interface  >>>
+
+if(NOT STATIC_LIBRARY_ONLY)
+    if (APPLE)
+        set_target_properties(pcm-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    endif()
+    target_compile_definitions(pcm-shared INTERFACE USING_${PROJECT_NAME})
+    target_include_directories(pcm-shared INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+endif()
+
+if(NOT SHARED_LIBRARY_ONLY)
+    target_compile_definitions(pcm-static INTERFACE USING_${PROJECT_NAME})
+    target_include_directories(pcm-static INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+endif()
+
+# <<<  Export Config  >>>
+
+    # explicit "share" not "DATADIR" for CMake search path
+set (CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}")
+if(NOT STATIC_LIBRARY_ONLY)
+    install (EXPORT "${PROJECT_NAME}Targets-shared"
+             NAMESPACE "${PROJECT_NAME}::"
+             DESTINATION ${CMAKECONFIG_INSTALL_DIR})
+endif()
+
+if(NOT SHARED_LIBRARY_ONLY)
+    install (EXPORT "${PROJECT_NAME}Targets-static"
+             NAMESPACE "${PROJECT_NAME}::"
+             DESTINATION ${CMAKECONFIG_INSTALL_DIR})
 endif()

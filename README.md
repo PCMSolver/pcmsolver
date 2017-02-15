@@ -35,37 +35,39 @@ The outcome of the CI builds is deployed to the [build dashboard](https://testbo
 
 - Ubuntu 12.04 LTS 64-bit. GCC 4.6, Python 2.7.3, CMake 3.4.2
   This is the environment offered by [Magnum CI](https://magnum-ci.com)
-- Ubuntu 12.04 LTS 64-bit with Python 2.7.3, CMake 3.3.2 and Boost 1.55.0
-  this is the environment offered by [Travis CI](https://travis-ci.org) pulling
-  in various PPA. The following compilers are used:
+- Ubuntu 12.04 LTS 64-bit with CMake 3.3.2 and Boost 1.55.0 this is the
+  environment offered by [Travis CI](https://travis-ci.org) pulling in various
+  PPA. Python and Python packages are installed and managed _via_ Conda within
+  an environment defined in the `.pcmsolver-travis.yml` file. The following
+  compilers are used:
 
-  1. GCC 4.6
-  2. GCC 4.7
-  3. GCC 4.8
-  4. GCC 4.9
-  5. GCC 5.1, with and without coverage analysis
-  6. Clang 3.5 and GFortran 4.6
-  7. Clang 3.6 and GFortran 4.6
-  8. Clang 3.7 and GFortran 4.6
-  9. Clang 3.8 and GFortran 4.6
+  1. GCC 4.6, Python 2.7
+  2. GCC 4.7, Python 3.5
+  3. GCC 4.8, Python 2.7
+  4. GCC 4.9, Python 3.5
+  5. GCC 5.1, Python 2.7, with and without coverage analysis
+  6. Clang 3.5, GFortran 4.6, Python 2.7
+  7. Clang 3.6, GFortran 4.6, Python 3.5
+  8. Clang 3.7, GFortran 4.6, Python 2.7
+  9. Clang 3.8, GFortran 4.6, Python 3.5
 
-- Mac OS X 10.11 with Python 2.7.12, CMake 3.6.2 and Boost 1.61.0
+- Mac OS X 10.11 with CMake 3.6.2 and Boost 1.61.0
   this is the environment offered by [Travis CI](https://travis-ci.org)
   with their Xcode 7.3.1 image.
   The following compilers are used:
 
-  1. Apple LLVM 7.3.0 and GFortran 4.8.5
-  2. GCC 4.8.5
-  3. Apple LLVM 7.3.0 and GFortran 4.9.3
-  4. GCC 4.9.3
-  5. Apple LLVM 7.3.0 and GFortran 5.4.0
-  6. GCC 5.4.0
-  7. Apple LLVM 7.3.0 and GFortran 6.2.0
-  8. GCC 6.2.0
+  1. Apple LLVM 7.3.0, GFortran 4.8.5, Python 2.7
+  2. GCC 4.8.5, Python 2.7
+  3. Apple LLVM 7.3.0, GFortran 4.9.3, Python 3.5
+  4. GCC 4.9.3, Python 3.5
+  5. Apple LLVM 7.3.0, GFortran 5.4.0, Python 2.7
+  6. GCC 5.4.0, Python 2.7
+  7. Apple LLVM 7.3.0, GFortran 6.2.0, Python 3.5
+  8. GCC 6.2.0, Python 3.5
 
 The build needed for submission to [Coverity scan](https://scan.coverity.com/)
 is triggered by pushes to the `coverity_scan` branch. It is run on
-Ubuntu 12.04 LTS 64-bit with Python 2.7.3, CMake 3.3.2 and Boost 1.55.0
+Ubuntu 12.04 LTS 64-bit with Python 2.7, CMake 3.3.2 and Boost 1.55.0
 this is the environment offered by [Travis CI](https://travis-ci.org) pulling
 in various PPA. GCC 5.1 is used, in debug mode.
 

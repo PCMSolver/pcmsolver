@@ -4,6 +4,6 @@ if(NOT DEFINED ENV{CFLAGS})
         set(CMAKE_C_FLAGS_DEBUG   "-O0 -DDEBUG -g -w3 -Wall -Wuninitialized -Wno-sign-compare")
         set(CMAKE_C_FLAGS_RELEASE "-O3 -ip -DNDEBUG")
         # FIXME Not sure this is really needed
-        set(CMAKE_C_LINK_FLAGS    "-shared-intel -fPIC")
+        #set(CMAKE_C_LINK_FLAGS    "-shared-intel -fPIC")
     endif()
 endif()

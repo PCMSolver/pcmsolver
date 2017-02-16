@@ -32,8 +32,6 @@
 
 #include <Eigen/Core>
 
-#include "Factory.hpp"
-
 /*! \file Atom.hpp
  *  \struct Atom
  *  \brief A POD describing an atom.
@@ -42,6 +40,8 @@
  */
 
 namespace pcm {
+template <typename CreateObject> class Factory;
+
 namespace utils {
 struct Atom {
   /*! Atomic charge */
@@ -124,15 +124,7 @@ RadiiSet initAllinger();
 typedef pcm::function<RadiiSet()> CreateRadiiSet;
 } // namespace detail
 
-inline Factory<detail::CreateRadiiSet> bootstrapRadiiSet() {
-  Factory<detail::CreateRadiiSet> factory_;
-
-  factory_.subscribe("BONDI", detail::initBondi);
-  factory_.subscribe("UFF", detail::initUFF);
-  factory_.subscribe("ALLINGER", detail::initAllinger);
-
-  return factory_;
-}
+Factory<detail::CreateRadiiSet> bootstrapRadiiSet();
 } // namespace utils
 
 /*! An atom is invalid if it has zero radius */

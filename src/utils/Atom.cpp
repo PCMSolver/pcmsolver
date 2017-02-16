@@ -29,6 +29,8 @@
 
 #include <Eigen/Core>
 
+#include "Factory.hpp"
+
 namespace pcm {
 using utils::Atom;
 
@@ -449,5 +451,15 @@ RadiiSet initAllinger() {
   return make_tuple("Allinger's MM3", Allinger);
 }
 } // namespace detail
+
+Factory<detail::CreateRadiiSet> bootstrapRadiiSet() {
+  Factory<detail::CreateRadiiSet> factory_;
+
+  factory_.subscribe("BONDI", detail::initBondi);
+  factory_.subscribe("UFF", detail::initUFF);
+  factory_.subscribe("ALLINGER", detail::initAllinger);
+
+  return factory_;
+}
 } // namespace utils
 } // namespace pcm

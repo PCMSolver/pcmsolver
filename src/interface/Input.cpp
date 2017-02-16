@@ -40,6 +40,7 @@
 #include "green/GreenData.hpp"
 #include "solver/SolverData.hpp"
 #include "PCMInput.h"
+#include "utils/Factory.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
 

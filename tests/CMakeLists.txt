@@ -1,6 +1,10 @@
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
+if(NOT ENABLE_CXX11_SUPPORT)
+  add_definitions(-DCATCH_CONFIG_NO_CPP11)
+endif()
+
 add_subdirectory(input)
 add_subdirectory(numerical_quadrature)
 add_subdirectory(gepol)

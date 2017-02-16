@@ -29,12 +29,18 @@
 
 #include "Config.hpp"
 
+#include "CavityData.hpp"
+
 namespace pcm {
 namespace cavity {
 std::ostream & RestartCavity::printCavity(std::ostream & os) {
   os << "Cavity type: Restart" << std::endl;
   os << "Number of finite elements = " << nElements_;
   return os;
+}
+
+ICavity * createRestartCavity(const CavityData & data) {
+  return new RestartCavity(data.filename);
 }
 } // namespace cavity
 } // namespace pcm

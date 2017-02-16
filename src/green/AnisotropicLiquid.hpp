@@ -40,8 +40,8 @@ class Anisotropic;
 } // namespace pcm
 
 #include "DerivativeTypes.hpp"
-#include "GreensFunction.hpp"
 #include "GreenData.hpp"
+#include "GreensFunction.hpp"
 
 /*! \file AnisotropicLiquid.hpp
  *  \class AnisotropicLiquid
@@ -94,6 +94,8 @@ struct buildAnisotropicLiquid {
   }
 };
 } // namespace detail
+
+IGreensFunction * createAnisotropicLiquid(const GreenData & data);
 } // namespace green
 } // namespace pcm
 

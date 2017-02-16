@@ -30,6 +30,10 @@
 
 #include "Config.hpp"
 
+namespace pcm {
+struct CavityData;
+} // namespace pcm
+
 #include "ICavity.hpp"
 
 /*! \file GePolCavity.hpp
@@ -174,6 +178,8 @@ extern "C" void generatecavity_cpp(int * maxts,
                                    int * isphe,
                                    const char * pedra,
                                    int * len_f_pedra);
+
+ICavity * createGePolCavity(const CavityData & data);
 } // namespace cavity
 } // namespace pcm
 

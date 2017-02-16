@@ -36,6 +36,7 @@ namespace pcm {
 class ICavity;
 class IGreensFunction;
 class IBoundaryIntegralOperator;
+struct SolverData;
 } // namespace pcm
 
 #include "ISolver.hpp"
@@ -98,6 +99,8 @@ private:
                                              int irrep = 0) const __override;
   virtual std::ostream & printSolver(std::ostream & os) __override;
 };
+
+ISolver * createCPCMSolver(const SolverData & data);
 } // namespace solver
 } // namespace pcm
 

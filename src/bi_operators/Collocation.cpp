@@ -27,6 +27,7 @@
 
 #include <Eigen/Core>
 
+#include "BIOperatorData.hpp"
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
 
@@ -69,6 +70,10 @@ Eigen::MatrixXd Collocation::computeD_impl(const std::vector<Element> & elems,
     }
   }
   return D;
+}
+
+IBoundaryIntegralOperator * createCollocation(const BIOperatorData & data) {
+  return new Collocation(data.scaling);
 }
 } // namespace bi_operators
 } // namespace pcm

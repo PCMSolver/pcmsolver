@@ -24,44 +24,59 @@
 #ifndef FACTORY_HPP
 #define FACTORY_HPP
 
-#include <string>
 #include <map>
+#include <string>
 
 #include "Config.hpp"
 
-/*! \file Factory.hpp
- *	\class Factory
- *	\brief Implementation of the Factory Method
- *	\author Roberto Di Remigio
- *	\date 2015
- *  \tparam Object type of the object the factory will create
- *  \tparam ObjectInput type of the input wrapper struct
- *
- *  Factory method implementation shamelessly copied from here \cite Alexandrescu2001
- */
+#ifdef HAS_CXX11_VARIADIC_TEMPLATES
+#include <type_traits>
+#else /* HAS_CXX11_VARIADIC_TEMPLATES */
+#include <boost/utility/result_of.hpp>
+#endif /* HAS_CXX11_VARIADIC_TEMPLATES */
 
 namespace pcm {
-template <typename Object, typename ObjectInput> class Factory __final {
-public:
-  /*! \brief Callback function for object creation
-   *  Returns a raw pointer of type Object; accepts an ObjectInput type
-   */
-  typedef function<Object *(const ObjectInput &)> Create;
-
+namespace detail {
+/*! \file Factory.hpp
+ *  \class BaseFactory
+ *  \brief A base class for the Factory Method
+ *  \author Roberto Di Remigio
+ *  \date 2017
+ *  \tparam CreateObject type of the object creation callback function
+ *
+ *  This class provides basic functionality to implement the Factory Method
+ *  as described by Alexandrescu in \cite Alexandrescu2001
+ */
+template <typename CreateObject> class BaseFactory {
 private:
   /*! std::map from the object type identifier (a string) to its callback function */
-  typedef std::map<std::string, Create> CallbackMap;
+  typedef std::map<std::string, CreateObject> CallbackMap;
   /*! std::pair of an object type identifier and a callback function */
   typedef typename CallbackMap::value_type CallbackPair;
   /*! const iterator */
   typedef typename CallbackMap::const_iterator CallbackConstIter;
 
-public:
+protected:
+  CallbackMap callbacks_;
+  /*! \brief Retrieve constant iterator from map given object identifier
+   * \param[in] objID  the object's identification string
+   */
+  CallbackConstIter retrieve(const std::string & objID) const {
+    if (objID.empty())
+      PCMSOLVER_ERROR("No object identification string provided to the Factory.");
+    CallbackConstIter i = callbacks_.find(objID);
+    if (i == callbacks_.end())
+      PCMSOLVER_ERROR("The unknown object ID " + objID +
+                      " occurred in the Factory.");
+    return i;
+  }
+
+private:
   /*! \brief Returns true on successful registration of the objID
    * \param[in] objID  the object's identification string
    * \param[in] functor the creation function related to the object type given
    */
-  bool registerObject(const std::string & objID, const Create & functor) {
+  bool registerObject(const std::string & objID, const CreateObject & functor) {
     return callbacks_.insert(CallbackPair(objID, functor)).second;
   }
   /*! \brief Returns true if objID was already registered
@@ -70,26 +85,97 @@ public:
   bool unRegisterObject(const std::string & objID) {
     return callbacks_.erase(objID) == 1;
   }
+
+public:
+  /*! \brief Subscribes object with objID to factory
+   * \param[in] objID  the object's identification string
+   * \param[in] functor the creation function related to the object type given
+   */
+  void subscribe(const std::string & objID, const CreateObject & functor) {
+    bool done = this->registerObject(objID, functor);
+    if (!done)
+      PCMSOLVER_ERROR("Subscription of object ID " + objID + " to factory failed!");
+  }
+  /*! \brief Unsubscribes object with objID from factory
+   *  \param objID the object's identification string
+   */
+  void unsubscribe(const std::string & objID) {
+    bool done = this->unRegisterObject(objID);
+    if (!done)
+      PCMSOLVER_ERROR("Unsubscription of object ID " + objID +
+                      " from factory failed!");
+  }
+};
+} // namespace detail
+#ifdef HAS_CXX11_VARIADIC_TEMPLATES
+/*! \file Factory.hpp
+ *  \class Factory
+ *  \brief C++11 implementation of the Factory Method
+ *  \author Roberto Di Remigio
+ *  \date 2017
+ *  \tparam CreateObject type of the object creation callback function
+ *
+ *  Factory Method using a variadic template parameter pack to handle possible
+ *  input value to the object creation callback function.
+ */
+template <typename CreateObject>
+class Factory __final : public detail::BaseFactory<CreateObject> {
+public:
   /*! \brief Calls the appropriate creation functor, based on the passed objID
    *  \param[in] objID the object's identification string
    *  \param[in] data  input data for the creation of the object
+   *  \tparam ObjectInputArgs type(s) of the object creation callback function input
+   * arguments
+   *  \note Return type is deduced based on the type(s) of the input
+   *  argument(s) template parameter pack and the type of the object creation
+   *  callback function.
    */
-  Object * create(const std::string & objID, const ObjectInput & data) {
-    if (objID.empty())
-      PCMSOLVER_ERROR("No object identification string provided to the Factory.");
-    CallbackConstIter i = callbacks_.find(objID);
-    if (i == callbacks_.end())
-      PCMSOLVER_ERROR("The unknown object ID " + objID +
-                      " occurred in the Factory.");
-    return (i->second)(data);
+  template <typename... ObjectInputArgs>
+  typename std::result_of<CreateObject(ObjectInputArgs...)>::type create(
+      const std::string & objID,
+      ObjectInputArgs... data) const {
+    return (this->retrieve(objID)->second)(data...);
+  }
+};
+#else  /* HAS_CXX11_VARIADIC_TEMPLATES */
+/*! \file Factory.hpp
+ *  \class Factory
+ *  \brief C++03 implementation of the one- or zero-argument Factory Method
+ *  \author Roberto Di Remigio
+ *  \date 2015-2017
+ *  \tparam CreateObject type of the object creation callback function
+ *
+ *  \warning This will only work when the CreateObject function accepts zero or
+ *  one input arguments.
+ */
+template <typename CreateObject>
+class Factory : public detail::BaseFactory<CreateObject> {
+public:
+  /*! \brief Calls the appropriate creation functor, based on the passed objID
+   *  \param[in] objID the object's identification string
+   *  \param[in] data  input data for the creation of the object
+   *  \note This is the one-parameter version. Return type is deduced based on
+   *  the type of the input argument template parameter and the type of the
+   *  object creation callback function.
+   */
+  template <typename ObjectInputArg>
+  typename boost::result_of<CreateObject(ObjectInputArg)>::type create(
+      const std::string & objID,
+      const ObjectInputArg & data) const {
+    return (this->retrieve(objID)->second)(data);
   }
 
-  Factory() {}
-  ~Factory() { callbacks_.clear(); }
-
-private:
-  CallbackMap callbacks_;
+  /*! \brief Calls the appropriate creation functor, based on the passed objID
+   *  \param[in] objID the object's identification string
+   *  \note This is the zero-parameter version. Return type is deduced based on
+   *  the type of the type of the object creation callback function.
+   */
+  typename boost::result_of<CreateObject()>::type create(
+      const std::string & objID) const {
+    return (this->retrieve(objID)->second)();
+  }
 };
+#endif /* HAS_CXX11_VARIADIC_TEMPLATES */
 } // namespace pcm
 
 #endif // FACTORY_HPP

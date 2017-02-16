@@ -31,6 +31,7 @@
 #include <Eigen/Core>
 
 namespace pcm {
+struct BIOperatorData;
 namespace cavity {
 class Element;
 } // namespace cavity
@@ -73,6 +74,8 @@ private:
   virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
 };
+
+IBoundaryIntegralOperator * createCollocation(const BIOperatorData & data);
 } // namespace bi_operators
 } // namespace pcm
 

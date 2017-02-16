@@ -37,6 +37,7 @@
 
 #include <Eigen/Core>
 
+#include "CavityData.hpp"
 #include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
 
@@ -421,6 +422,11 @@ std::ostream & GePolCavity::printCavity(std::ostream & os) {
     os << std::endl;
   }
   return os;
+}
+
+ICavity * createGePolCavity(const CavityData & data) {
+  return new GePolCavity(
+      data.molecule, data.area, data.probeRadius, data.minimalRadius);
 }
 } // namespace cavity
 } // namespace pcm

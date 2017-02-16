@@ -34,5 +34,5 @@ int main(int argc, char * const argv[]) {
 
   // global clean-up...
 
-  return result;
+  return (result < 0xff ? result : 0xff);
 }

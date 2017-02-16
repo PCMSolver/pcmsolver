@@ -40,8 +40,8 @@ struct Uniform;
 } // namespace pcm
 
 #include "DerivativeTypes.hpp"
-#include "GreensFunction.hpp"
 #include "GreenData.hpp"
+#include "GreensFunction.hpp"
 
 /*! \file UniformDielectric.hpp
  *  \class UniformDielectric
@@ -89,6 +89,7 @@ struct buildUniformDielectric {
   }
 };
 } // namespace detail
+IGreensFunction * createUniformDielectric(const GreenData & data);
 } // namespace green
 } // namespace pcm
 

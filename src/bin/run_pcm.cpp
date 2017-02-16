@@ -56,7 +56,8 @@ int main(int argc, char * argv[]) {
   Meddle context_(std::string(argv[1]), host_writer);
 
   // Prepare output filename
-  pcmsolver_out.open(remove_extension(argv[1]).erase(0, 1) + ".out");
+  std::string filename(remove_extension(argv[1]).erase(0, 1) + ".out");
+  pcmsolver_out.open(filename.c_str());
   context_.printInfo();
 
   PCMSolverIndex size = context_.getCavitySize();

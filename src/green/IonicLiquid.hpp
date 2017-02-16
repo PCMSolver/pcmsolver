@@ -40,8 +40,8 @@ struct Yukawa;
 } // namespace pcm
 
 #include "DerivativeTypes.hpp"
-#include "GreensFunction.hpp"
 #include "GreenData.hpp"
+#include "GreensFunction.hpp"
 
 /*! \file IonicLiquid.hpp
  *  \class IonicLiquid
@@ -90,6 +90,8 @@ struct buildIonicLiquid {
   }
 };
 } // namespace detail
+
+IGreensFunction * createIonicLiquid(const GreenData & data);
 } // namespace green
 } // namespace pcm
 

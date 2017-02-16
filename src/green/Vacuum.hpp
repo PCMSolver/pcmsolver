@@ -31,6 +31,7 @@
 #include <Eigen/Core>
 
 namespace pcm {
+struct GreenData;
 namespace cavity {
 class Element;
 } // namespace cavity
@@ -41,7 +42,6 @@ struct Uniform;
 
 #include "DerivativeTypes.hpp"
 #include "GreensFunction.hpp"
-#include "GreenData.hpp"
 
 /*! \file Vacuum.hpp
  *  \class Vacuum
@@ -90,6 +90,8 @@ struct buildVacuum {
   }
 };
 } // namespace detail
+
+IGreensFunction * createVacuum(const GreenData & data);
 } // namespace green
 } // namespace pcm
 

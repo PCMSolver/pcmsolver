@@ -32,6 +32,8 @@
 
 #include <Eigen/Core>
 
+#include "Factory.hpp"
+
 /*! \file Atom.hpp
  *  \struct Atom
  *  \brief A POD describing an atom.
@@ -118,72 +120,16 @@ RadiiSet initUFF();
  * the ADF program package.
  */
 RadiiSet initAllinger();
+
+typedef pcm::function<RadiiSet()> CreateRadiiSet;
 } // namespace detail
 
-class Factory __final {
-public:
-  /*! \brief Callback function for object creation
-   *  Returns a std::vector<Atom> by reference
-   */
-  typedef function<RadiiSet()> Create;
+inline Factory<detail::CreateRadiiSet> bootstrapRadiiSet() {
+  Factory<detail::CreateRadiiSet> factory_;
 
-private:
-  /*! std::map from the object type identifier (a string) to its callback function */
-  typedef std::map<std::string, Create> CallbackMap;
-  /*! std::pair of an object type identifier and a callback function */
-  typedef typename CallbackMap::value_type CallbackPair;
-  /*! const iterator */
-  typedef typename CallbackMap::const_iterator CallbackConstIter;
-
-public:
-  /*! \brief Returns true on successful registration of the objID
-   * \param[in] objID  the object's identification string
-   * \param[in] functor the creation function related to the object type given
-   */
-  bool registerObject(const std::string & objID, const Create & functor) {
-    return callbacks_.insert(CallbackPair(objID, functor)).second;
-  }
-  /*! \brief Returns true if objID was already registered
-   *  \param objID the object's identification string
-   */
-  bool unRegisterObject(const std::string & objID) {
-    return callbacks_.erase(objID) == 1;
-  }
-  /*! \brief Calls the appropriate creation functor, based on the passed objID
-   *  \param[in] objID the object's identification string
-   *  \param[in] data  input data for the creation of the object
-   */
-  RadiiSet create(const std::string & objID) {
-    if (objID.empty())
-      PCMSOLVER_ERROR("No object identification string provided to the Factory.");
-    CallbackConstIter i = callbacks_.find(objID);
-    if (i == callbacks_.end())
-      PCMSOLVER_ERROR("The unknown object ID " + objID +
-                      " occurred in the Factory.");
-    return (i->second)();
-  }
-
-  Factory() {}
-  ~Factory() { callbacks_.clear(); }
-
-private:
-  CallbackMap callbacks_;
-};
-
-inline Factory bootstrapRadiiSet() {
-  Factory factory_;
-
-  const bool bondi = factory_.registerObject("BONDI", detail::initBondi);
-  if (!bondi)
-    PCMSOLVER_ERROR("Subscription of Bondi radii set to factory failed!");
-
-  const bool uff = factory_.registerObject("UFF", detail::initUFF);
-  if (!uff)
-    PCMSOLVER_ERROR("Subscription of UFF radii set to factory failed!");
-
-  const bool allinger = factory_.registerObject("ALLINGER", detail::initAllinger);
-  if (!allinger)
-    PCMSOLVER_ERROR("Subscription of Allinger's MM3 radii set to factory failed!");
+  factory_.subscribe("BONDI", detail::initBondi);
+  factory_.subscribe("UFF", detail::initUFF);
+  factory_.subscribe("ALLINGER", detail::initAllinger);
 
   return factory_;
 }

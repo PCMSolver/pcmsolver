@@ -33,7 +33,6 @@
 #include "AnisotropicLiquid.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"
-#include "utils/ForId.hpp"
 #include "utils/Factory.hpp"
 
 /*!
@@ -48,62 +47,18 @@
 
 namespace pcm {
 namespace green {
-inline IGreensFunction * createVacuum(const GreenData & data) {
-  detail::buildVacuum build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
+namespace detail {
+typedef pcm::function<IGreensFunction *(const GreenData &)> CreateGreensFunction;
+} // namespace detail
 
-inline IGreensFunction * createUniformDielectric(const GreenData & data) {
-  detail::buildUniformDielectric build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
+inline Factory<detail::CreateGreensFunction> bootstrapFactory() {
+  Factory<detail::CreateGreensFunction> factory_;
 
-inline IGreensFunction * createAnisotropicLiquid(const GreenData & data) {
-  detail::buildAnisotropicLiquid build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
-
-inline IGreensFunction * createIonicLiquid(const GreenData & data) {
-  detail::buildIonicLiquid build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
-
-inline IGreensFunction * createSphericalDiffuse(const GreenData & data) {
-  detail::buildSphericalDiffuse build;
-  return for_id<dielectric_profile::onelayer_diffuse_profile_types, IGreensFunction>(
-      build, data, data.howProfile);
-}
-
-inline Factory<IGreensFunction, GreenData> bootstrapFactory() {
-  Factory<IGreensFunction, GreenData> factory_;
-
-  const bool registeredVacuum = factory_.registerObject("VACUUM", createVacuum);
-  if (!registeredVacuum)
-    PCMSOLVER_ERROR("Subscription of vacuum Green's function to factory failed!");
-
-  const bool registeredUniformDielectric =
-      factory_.registerObject("UNIFORMDIELECTRIC", createUniformDielectric);
-  if (!registeredUniformDielectric)
-    PCMSOLVER_ERROR(
-        "Subscription of uniform dielectric Green's function to factory failed!");
-
-  const bool registeredSphericalDiffuse =
-      factory_.registerObject("SPHERICALDIFFUSE", createSphericalDiffuse);
-  if (!registeredSphericalDiffuse)
-    PCMSOLVER_ERROR(
-        "Subscription of spherical diffuse Green's function to factory failed!");
-
-  const bool registeredIonicLiquid =
-      factory_.registerObject("IONICLIQUID", createIonicLiquid);
-  if (!registeredIonicLiquid)
-    PCMSOLVER_ERROR(
-        "Subscription of ionic liquid Green's function to factory failed!");
-
-  const bool registeredAnisotropicLiquid =
-      factory_.registerObject("ANISOTROPICLIQUID", createAnisotropicLiquid);
-  if (!registeredAnisotropicLiquid)
-    PCMSOLVER_ERROR(
-        "Subscription of anisotropic liquid Green's function to factory failed!");
+  factory_.subscribe("VACUUM", createVacuum);
+  factory_.subscribe("UNIFORMDIELECTRIC", createUniformDielectric);
+  factory_.subscribe("SPHERICALDIFFUSE", createSphericalDiffuse);
+  factory_.subscribe("IONICLIQUID", createIonicLiquid);
+  factory_.subscribe("ANISOTROPICLIQUID", createAnisotropicLiquid);
 
   return factory_;
 }

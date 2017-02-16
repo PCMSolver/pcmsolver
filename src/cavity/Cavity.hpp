@@ -27,7 +27,6 @@
 #include "Config.hpp"
 
 #include "ICavity.hpp"
-#include "CavityData.hpp"
 #include "GePolCavity.hpp"
 #include "RestartCavity.hpp"
 #include "utils/Factory.hpp"
@@ -44,26 +43,15 @@
 
 namespace pcm {
 namespace cavity {
-inline ICavity * createGePolCavity(const CavityData & data) {
-  return new GePolCavity(
-      data.molecule, data.area, data.probeRadius, data.minimalRadius);
-}
+namespace detail {
+typedef pcm::function<ICavity *(const CavityData &)> CreateCavity;
+} // namespace detail
 
-inline ICavity * createRestartCavity(const CavityData & data) {
-  return new RestartCavity(data.filename);
-}
+inline Factory<detail::CreateCavity> bootstrapFactory() {
+  Factory<detail::CreateCavity> factory_;
 
-inline Factory<ICavity, CavityData> bootstrapFactory() {
-  Factory<ICavity, CavityData> factory_;
-
-  const bool registeredGePol = factory_.registerObject("GEPOL", createGePolCavity);
-  if (!registeredGePol)
-    PCMSOLVER_ERROR("Subscription of GePol cavity to factory failed!");
-
-  const bool registeredRestart =
-      factory_.registerObject("RESTART", createRestartCavity);
-  if (!registeredRestart)
-    PCMSOLVER_ERROR("Subscription of restart cavity to factory failed!");
+  factory_.subscribe("GEPOL", createGePolCavity);
+  factory_.subscribe("RESTART", createRestartCavity);
 
   return factory_;
 }

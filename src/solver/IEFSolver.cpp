@@ -39,6 +39,7 @@
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
 #include "utils/MathUtils.hpp"
+#include "SolverData.hpp"
 #include "SolverImpl.hpp"
 
 namespace pcm {
@@ -137,6 +138,10 @@ std::ostream & IEFSolver::printSolver(std::ostream & os) {
   }
 
   return os;
+}
+
+ISolver * createIEFSolver(const SolverData & data) {
+  return new IEFSolver(data.hermitivitize);
 }
 } // namespace solver
 } // namespace pcm

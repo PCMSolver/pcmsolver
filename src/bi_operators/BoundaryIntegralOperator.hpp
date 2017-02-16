@@ -46,37 +46,17 @@
 
 namespace pcm {
 namespace bi_operators {
+namespace detail {
+typedef pcm::function<IBoundaryIntegralOperator *(const BIOperatorData &)>
+    CreateBIOperator;
+} // namespace detail
 
-inline IBoundaryIntegralOperator * createCollocation(const BIOperatorData & data) {
-  return new Collocation(data.scaling);
-}
+inline Factory<detail::CreateBIOperator> bootstrapFactory() {
+  Factory<detail::CreateBIOperator> factory_;
 
-inline IBoundaryIntegralOperator * createNumerical(
-    const BIOperatorData & /* data */) {
-  return new Numerical();
-}
-
-inline IBoundaryIntegralOperator * createPurisima(const BIOperatorData & data) {
-  return new Purisima(data.scaling);
-}
-
-inline Factory<IBoundaryIntegralOperator, BIOperatorData> bootstrapFactory() {
-  Factory<IBoundaryIntegralOperator, BIOperatorData> factory_;
-
-  const bool registeredCollocation =
-      factory_.registerObject("COLLOCATION", createCollocation);
-  if (!registeredCollocation)
-    PCMSOLVER_ERROR("Subscription of collocation integrator to factory failed!");
-
-  const bool registeredNumerical =
-      factory_.registerObject("NUMERICAL", createNumerical);
-  if (!registeredNumerical)
-    PCMSOLVER_ERROR("Subscription of numerical integrator to factory failed!");
-
-  const bool registeredPurisima =
-      factory_.registerObject("PURISIMA", createPurisima);
-  if (!registeredPurisima)
-    PCMSOLVER_ERROR("Subscription of Purisima integrator to factory failed!");
+  factory_.subscribe("COLLOCATION", createCollocation);
+  factory_.subscribe("NUMERICAL", createNumerical);
+  factory_.subscribe("PURISIMA", createPurisima);
 
   return factory_;
 }

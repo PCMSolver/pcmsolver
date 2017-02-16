@@ -7,6 +7,9 @@
 - `Factory` is no longer implemented as a Singleton.
 - Revert to use [Robust Cholesky decomposition](https://eigen.tuxfamily.org/dox/classEigen_1_1LDLT.html)
   to compute the inverse of the S matrix in `CPCMSolver`.
+- The [Catch unit test framework](https://github.com/philsquared/Catch) has
+  been updated to its latest version
+  [v1.7.2](https://github.com/philsquared/Catch/releases/tag/v1.7.2)
 
 ## [Version 1.1.8] - 2017-02-06
 

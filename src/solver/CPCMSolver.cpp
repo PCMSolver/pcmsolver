@@ -32,6 +32,7 @@
 #include <Eigen/Cholesky>
 #include <Eigen/Core>
 
+#include "SolverData.hpp"
 #include "bi_operators/IBoundaryIntegralOperator.hpp"
 #include "cavity/ICavity.hpp"
 #include "cavity/Element.hpp"
@@ -90,6 +91,10 @@ std::ostream & CPCMSolver::printSolver(std::ostream & os) {
   os << "Correction = " << correction_;
 
   return os;
+}
+
+ISolver * createCPCMSolver(const SolverData & data) {
+  return new CPCMSolver(data.hermitivitize, data.correction);
 }
 } // namespace solver
 } // namespace pcm

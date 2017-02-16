@@ -29,6 +29,10 @@
 
 #include "Config.hpp"
 
+namespace pcm {
+struct CavityData;
+} // namespace pcm
+
 #include "ICavity.hpp"
 
 /*! \file RestartCavity.hpp
@@ -53,6 +57,8 @@ private:
   std::string file;
   virtual std::ostream & printCavity(std::ostream & os) __override;
 };
+
+ICavity * createRestartCavity(const CavityData & data);
 } // namespace cavity
 } // namespace pcm
 

@@ -34,6 +34,7 @@
 #include <boost/mpl/int.hpp>
 #include <boost/mpl/map.hpp>
 
+#include "BIOperatorData.hpp"
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
 #include "utils/QuadratureRules.hpp"
@@ -74,6 +75,10 @@ Eigen::MatrixXd Numerical::computeD_impl(const std::vector<Element> & elems,
     }
   }
   return D;
+}
+
+IBoundaryIntegralOperator * createNumerical(const BIOperatorData & /* data */) {
+  return new Numerical();
 }
 
 template <int PhiPoints, int ThetaPoints>

@@ -40,8 +40,8 @@ class OneLayerTanh;
 } // namespace pcm
 
 #include "InterfacesImpl.hpp"
-#include "GreensFunction.hpp"
 #include "GreenData.hpp"
+#include "GreensFunction.hpp"
 
 /*! \file SphericalDiffuse.hpp
  *  \class SphericalDiffuse
@@ -268,6 +268,8 @@ struct buildSphericalDiffuse {
   }
 };
 } // namespace detail
+
+IGreensFunction * createSphericalDiffuse(const GreenData & data);
 } // namespace green
 } // namespace pcm
 

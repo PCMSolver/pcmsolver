@@ -27,7 +27,6 @@
 #include "Config.hpp"
 
 #include "ISolver.hpp"
-#include "SolverData.hpp"
 #include "IEFSolver.hpp"
 #include "CPCMSolver.hpp"
 #include "utils/Factory.hpp"
@@ -44,26 +43,15 @@
 
 namespace pcm {
 namespace solver {
-inline ISolver * createCPCMSolver(const SolverData & data) {
-  return new CPCMSolver(data.hermitivitize, data.correction);
-}
+namespace detail {
+typedef pcm::function<ISolver *(const SolverData &)> CreateSolver;
+} // namespace detail
 
-inline ISolver * createIEFSolver(const SolverData & data) {
-  return new IEFSolver(data.hermitivitize);
-}
+inline Factory<detail::CreateSolver> bootstrapFactory() {
+  Factory<detail::CreateSolver> factory_;
 
-inline Factory<ISolver, SolverData> bootstrapFactory() {
-  Factory<ISolver, SolverData> factory_;
-
-  const bool registeredCPCMSolver =
-      factory_.registerObject("CPCM", createCPCMSolver);
-  if (!registeredCPCMSolver)
-    PCMSOLVER_ERROR("Subscription of solver for CPCM to factory failed!");
-
-  const bool registeredIEFSolver =
-      factory_.registerObject("IEFPCM", createIEFSolver);
-  if (!registeredIEFSolver)
-    PCMSOLVER_ERROR("Subscription of solver for IEF to factory failed!");
+  factory_.subscribe("CPCM", createCPCMSolver);
+  factory_.subscribe("IEFPCM", createIEFSolver);
 
   return factory_;
 }

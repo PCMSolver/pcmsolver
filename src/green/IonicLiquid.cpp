@@ -31,9 +31,11 @@
 
 #include "DerivativeTypes.hpp"
 #include "DerivativeUtils.hpp"
+#include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 #include "dielectric_profile/Yukawa.hpp"
+#include "utils/ForId.hpp"
 
 namespace pcm {
 using cavity::Element;
@@ -98,5 +100,10 @@ template class IonicLiquid<Stencil>;
 template class IonicLiquid<AD_directional>;
 template class IonicLiquid<AD_gradient>;
 template class IonicLiquid<AD_hessian>;
+
+IGreensFunction * createIonicLiquid(const GreenData & data) {
+  detail::buildIonicLiquid build;
+  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
+}
 } // namespace green
 } // namespace pcm

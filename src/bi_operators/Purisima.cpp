@@ -27,6 +27,7 @@
 
 #include <Eigen/Core>
 
+#include "BIOperatorData.hpp"
 #include "cavity/Element.hpp"
 #include "green/IGreensFunction.hpp"
 
@@ -72,6 +73,10 @@ Eigen::MatrixXd Purisima::computeD_impl(const std::vector<Element> & elems,
     D(i, i) = -(2 * M_PI + D_ii) / (source.area());
   }
   return D;
+}
+
+IBoundaryIntegralOperator * createPurisima(const BIOperatorData & data) {
+  return new Purisima(data.scaling);
 }
 } // namespace bi_operators
 } // namespace pcm

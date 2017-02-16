@@ -1,18 +1,24 @@
 # Change Log
 
-## [Unreleased]
+## [Version 1.1.9] - 2017-02-16
 
 ### Changed
 
+- PCMSolver is now exported as a proper [CMake target](https://cmake.org/cmake/help/v3.0/manual/cmake-buildsystem.7.html)
+  See PR #38 for details. Thanks @loriab for the work.
+- The Python scripts shipped with the library are now Python 2 and Python 3 compatible.
 - `Factory` is no longer implemented as a Singleton.
-- Revert to use [Robust Cholesky decomposition](https://eigen.tuxfamily.org/dox/classEigen_1_1LDLT.html)
-  to compute the inverse of the S matrix in `CPCMSolver`.
 - The [Catch unit test framework](https://github.com/philsquared/Catch) has
   been updated to its latest version
   [v1.7.2](https://github.com/philsquared/Catch/releases/tag/v1.7.2)
 - Updated the version of Eigen bundled with the code.
   The minimum required version of Eigen is still 3.3.0, but we ship
   [Eigen 3.3.2](http://eigen.tuxfamily.org/index.php?title=ChangeLog#Eigen_3.3.2)
+
+### Fixed
+
+- Revert to use [Robust Cholesky decomposition](https://eigen.tuxfamily.org/dox/classEigen_1_1LDLT.html)
+  to compute the inverse of the S matrix in `CPCMSolver`.
 
 ## [Version 1.1.8] - 2017-02-06
 
@@ -302,7 +308,8 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.8...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.9...HEAD
+[Version 1.1.9]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.8...v1.1.9
 [Version 1.1.8]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.7...v1.1.8
 [Version 1.1.7]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.6...v1.1.7
 [Version 1.1.6]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.5...v1.1.6

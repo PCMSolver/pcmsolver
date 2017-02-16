@@ -4,6 +4,6 @@ exec_prefix=${prefix}
 Name: Eigen3
 Description: A C++ template library for linear algebra: vectors, matrices, and related algorithms
 Requires:
-Version: 3.3.0
+Version: 3.3.2
 Libs:
 Cflags: -I${prefix}/include/eigen3

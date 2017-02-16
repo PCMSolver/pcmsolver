@@ -10,6 +10,9 @@
 - The [Catch unit test framework](https://github.com/philsquared/Catch) has
   been updated to its latest version
   [v1.7.2](https://github.com/philsquared/Catch/releases/tag/v1.7.2)
+- Updated the version of Eigen bundled with the code.
+  The minimum required version of Eigen is still 3.3.0, but we ship
+  [Eigen 3.3.2](http://eigen.tuxfamily.org/index.php?title=ChangeLog#Eigen_3.3.2)
 
 ## [Version 1.1.8] - 2017-02-06
 

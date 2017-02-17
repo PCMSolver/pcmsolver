@@ -1,5 +1,11 @@
 # Change Log
 
+## [Unreleased]
+
+### Changed
+
+- Updated the `cloc.pl` script to version 1.72
+
 ## [Version 1.1.9] - 2017-02-16
 
 ### Changed

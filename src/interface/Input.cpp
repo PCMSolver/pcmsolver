@@ -243,13 +243,6 @@ void Input::reader(const PCMInput & host_input) {
   isDynamic_ = false;
 
   providedBy_ = std::string("host-side");
-
-  // Fill the input wrapping structs
-  insideGreenData_ = GreenData(derivativeInsideType_, profileType_, epsilonInside_);
-  outsideStaticGreenData_ =
-      GreenData(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
-  outsideDynamicGreenData_ =
-      GreenData(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
 }
 
 void Input::semanticCheck() {}
@@ -320,76 +313,57 @@ void Input::initMolecule() {
   }
 }
 
-CavityData Input::cavityParams() {
-  if (cavData_.empty) {
-    cavData_ = CavityData(molecule_,
-                          area_,
-                          probeRadius_,
-                          minDistance_,
-                          derOrder_,
-                          minimalRadius_,
-                          patchLevel_,
-                          coarsity_,
-                          cavFilename_,
-                          dyadicFilename_);
-  }
-  return cavData_;
+CavityData Input::cavityParams() const {
+  return CavityData(molecule_,
+                    area_,
+                    probeRadius_,
+                    minDistance_,
+                    derOrder_,
+                    minimalRadius_,
+                    patchLevel_,
+                    coarsity_,
+                    cavFilename_,
+                    dyadicFilename_);
 }
 
-GreenData Input::insideGreenParams() {
-  if (insideGreenData_.empty) {
-    insideGreenData_ =
-        GreenData(derivativeInsideType_, profileType_, epsilonInside_);
-  }
-  return insideGreenData_;
+GreenData Input::insideGreenParams() const {
+  return GreenData(derivativeInsideType_, profileType_, epsilonInside_);
 }
 
-GreenData Input::outsideStaticGreenParams() {
-  if (outsideStaticGreenData_.empty) {
-    outsideStaticGreenData_ =
-        GreenData(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
-    if (not hasSolvent_) {
-      outsideStaticGreenData_.howProfile = profileType_;
-      outsideStaticGreenData_.epsilon1 = epsilonStatic1_;
-      outsideStaticGreenData_.epsilon2 = epsilonStatic2_;
-      outsideStaticGreenData_.center = center_;
-      outsideStaticGreenData_.width = width_;
-      outsideStaticGreenData_.origin << origin_[0], origin_[1], origin_[2];
-      outsideStaticGreenData_.maxL = maxL_;
-    }
+GreenData Input::outsideStaticGreenParams() const {
+  GreenData retval(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
+  if (not hasSolvent_) {
+    retval.howProfile = profileType_;
+    retval.epsilon1 = epsilonStatic1_;
+    retval.epsilon2 = epsilonStatic2_;
+    retval.center = center_;
+    retval.width = width_;
+    retval.origin << origin_[0], origin_[1], origin_[2];
+    retval.maxL = maxL_;
   }
-  return outsideStaticGreenData_;
+  return retval;
 }
 
-GreenData Input::outsideDynamicGreenParams() {
-  if (outsideDynamicGreenData_.empty) {
-    outsideDynamicGreenData_ =
-        GreenData(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
-    if (not hasSolvent_) {
-      outsideDynamicGreenData_.howProfile = profileType_;
-      outsideDynamicGreenData_.epsilon1 = epsilonDynamic1_;
-      outsideDynamicGreenData_.epsilon2 = epsilonDynamic2_;
-      outsideDynamicGreenData_.center = center_;
-      outsideDynamicGreenData_.width = width_;
-      outsideDynamicGreenData_.origin << origin_[0], origin_[1], origin_[2];
-      outsideDynamicGreenData_.maxL = maxL_;
-    }
+GreenData Input::outsideDynamicGreenParams() const {
+  GreenData retval(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
+  if (not hasSolvent_) {
+    retval.howProfile = profileType_;
+    retval.epsilon1 = epsilonDynamic1_;
+    retval.epsilon2 = epsilonDynamic2_;
+    retval.center = center_;
+    retval.width = width_;
+    retval.origin << origin_[0], origin_[1], origin_[2];
+    retval.maxL = maxL_;
   }
-  return outsideDynamicGreenData_;
+  return retval;
 }
 
-SolverData Input::solverParams() {
-  if (SolverData_.empty) {
-    SolverData_ = SolverData(correction_, equationType_, hermitivitize_);
-  }
-  return SolverData_;
+SolverData Input::solverParams() const {
+  return SolverData(correction_, equationType_, hermitivitize_);
 }
 
-BIOperatorData Input::integratorParams() {
-  if (integratorData_.empty) {
-    integratorData_ = BIOperatorData(integratorScaling_);
-  }
-  return integratorData_;
+BIOperatorData Input::integratorParams() const {
+  return BIOperatorData(integratorScaling_);
 }
 
 namespace detail {

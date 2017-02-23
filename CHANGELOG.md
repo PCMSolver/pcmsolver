@@ -5,6 +5,7 @@
 ### Changed
 
 - Updated the `cloc.pl` script to version 1.72
+- Simplified the internal structure of the `Meddle` and `Input` objects.
 
 ## [Version 1.1.9] - 2017-02-16
 

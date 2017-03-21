@@ -92,7 +92,7 @@ void Input::reader(const std::string & filename) {
     int nAtoms = int(spheresInput.size() / 4);
     for (int i = 0; i < nAtoms; ++i) {
       Eigen::Vector3d center;
-      center << spheresInput[j], spheresInput[j + 1], spheresInput[j + 2];
+      center = (Eigen::Vector3d() << spheresInput[j], spheresInput[j + 1], spheresInput[j + 2]).finished();
       Sphere sph(center, spheresInput[j + 3]);
       spheres_.push_back(sph);
       j += 4;
@@ -216,6 +216,16 @@ void Input::reader(const PCMInput & host_input) {
     derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonStaticOutside_ = host_input.outside_epsilon;
     epsilonDynamicOutside_ = host_input.outside_epsilon;
+    // Initialize interface parameters with bogus values
+    epsilonStatic1_ = 0.0;
+    epsilonDynamic1_ = 0.0;
+    epsilonStatic2_ = 0.0;
+    epsilonDynamic2_ = 0.0;
+    center_ = 0.0;
+    width_ = 0.0;
+    origin_ = std::vector<double>(3, 0.0);
+    profileType_ = 0;
+    maxL_ = 0;
   } else { // This part must be reviewed!! Some data members are not initialized...
     // Just initialize the solvent object in this class
     hasSolvent_ = true;
@@ -232,6 +242,7 @@ void Input::reader(const PCMInput & host_input) {
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;
   }
+
   integratorType_ = "COLLOCATION";
   integratorScaling_ = 1.07;
 
@@ -256,7 +267,7 @@ void Input::initMolecule() {
   Eigen::VectorXd charges = Eigen::VectorXd::Zero(nuclei);
   int j = 0;
   for (int i = 0; i < nuclei; ++i) {
-    centers.col(i) << geometry_[j], geometry_[j + 1], geometry_[j + 2];
+    centers.col(i) = (Eigen::Vector3d() << geometry_[j], geometry_[j + 1], geometry_[j + 2]).finished();
     charges(i) = geometry_[j + 3];
     j += 4;
   }
@@ -338,7 +349,7 @@ GreenData Input::outsideStaticGreenParams() const {
     retval.epsilon2 = epsilonStatic2_;
     retval.center = center_;
     retval.width = width_;
-    retval.origin << origin_[0], origin_[1], origin_[2];
+    retval.origin = (Eigen::Vector3d() << origin_[0], origin_[1], origin_[2]).finished();
     retval.maxL = maxL_;
   }
   return retval;
@@ -352,7 +363,7 @@ GreenData Input::outsideDynamicGreenParams() const {
     retval.epsilon2 = epsilonDynamic2_;
     retval.center = center_;
     retval.width = width_;
-    retval.origin << origin_[0], origin_[1], origin_[2];
+    retval.origin = (Eigen::Vector3d() << origin_[0], origin_[1], origin_[2]).finished();
     retval.maxL = maxL_;
   }
   return retval;

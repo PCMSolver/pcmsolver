@@ -1,3 +1,5 @@
+cmake_policy (SET CMP0022 NEW)
+
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/utils/getkw)
 
@@ -21,24 +23,27 @@ list(APPEND _objects $<TARGET_OBJECTS:cavity>
                      $<TARGET_OBJECTS:getkw>
     )
 if(NOT STATIC_LIBRARY_ONLY)
-  add_library(pcm-shared SHARED ${_objects})
-  target_link_libraries(pcm-shared PRIVATE ${ZLIB_LIBRARIES} ${LIBC_INTERJECT})
-  set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR}
-                                              CXX_VISIBILITY_PRESET hidden
-                                              VISIBILITY_INLINES_HIDDEN 1
-                                              OUTPUT_NAME "pcm"
-                                              EXPORT_NAME "pcm")
-  install(TARGETS pcm-shared
-          EXPORT "${PROJECT_NAME}Targets-shared"
-          RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
-          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-  add_dependencies(pcm-shared generate-config-hpp)
+    add_library(pcm-shared SHARED ${_objects})
+    target_link_libraries(pcm-shared PRIVATE ${LIBC_INTERJECT}
+                                             ZLIB::ZLIB)
+    set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR}
+                                                CXX_VISIBILITY_PRESET hidden
+                                                VISIBILITY_INLINES_HIDDEN 1
+                                                OUTPUT_NAME "pcm"
+                                                EXPORT_NAME "pcm")
+
+    install(TARGETS pcm-shared
+            EXPORT "${PROJECT_NAME}Targets-shared"
+            RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    add_dependencies(pcm-shared generate-config-hpp)
 endif()
 
 if(NOT SHARED_LIBRARY_ONLY)
     add_library(pcm-static STATIC ${_objects})
-    set_target_properties(pcm-static PROPERTIES OUTPUT_NAME "pcm"
-                                                COMPILE_FLAGS -D${PROJECT_NAME}_STATIC_DEFINE
+    target_link_libraries(pcm-static PRIVATE ZLIB::ZLIB)
+    set_target_properties(pcm-static PROPERTIES COMPILE_FLAGS -D${PROJECT_NAME}_STATIC_DEFINE
+                                                OUTPUT_NAME "pcm"
                                                 EXPORT_NAME "pcm")
     install(TARGETS pcm-static
             EXPORT "${PROJECT_NAME}Targets-static"

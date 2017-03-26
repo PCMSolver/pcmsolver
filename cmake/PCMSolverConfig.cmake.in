@@ -154,5 +154,10 @@ if(NOT TARGET ${PN}::pcm)
     else()
         include("${CMAKE_CURRENT_LIST_DIR}/${PN}Targets-static.cmake")
     endif()
+
+    include(CMakeFindDependencyMacro)
+    if(NOT TARGET ZLIB::ZLIB)
+        find_dependency(ZLIB)
+    endif()
 endif()
 

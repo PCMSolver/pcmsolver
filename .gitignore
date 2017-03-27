@@ -28,7 +28,7 @@
 *.app
 
 # Build directories
-*build*
+*build*/
 
 # Python stuff
 *.pyc

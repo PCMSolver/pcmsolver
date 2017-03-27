@@ -53,7 +53,10 @@ int main(int argc, char * argv[]) {
     PCMSOLVER_ERROR("Too many arguments supplied");
   using namespace pcm;
 
-  Meddle context_(std::string(argv[1]), host_writer);
+  TIMER_ON("Input parsing");
+  Input input(argv[1]);
+  TIMER_OFF("Input parsing");
+  Meddle context_(input, host_writer);
 
   // Prepare output filename
   std::string filename(remove_extension(argv[1]).erase(0, 1) + ".out");
@@ -93,6 +96,7 @@ int main(int argc, char * argv[]) {
   pcmsolver_out.close();
   // Write timings out
   context_.writeTimings();
+  TIMER_DONE("pcmsolver.timer.dat");
 
   return EXIT_SUCCESS;
 }

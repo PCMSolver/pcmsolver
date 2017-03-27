@@ -25,13 +25,13 @@
 #define MEDDLE_HPP
 
 #include "pcmsolver.h"
+
+#include <map>
 #include <string>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
-
-#include <boost/container/flat_map.hpp>
 
 namespace pcm {
 class ICavity;
@@ -51,33 +51,34 @@ struct PCMInput;
 
 /*! \namespace pcm */
 namespace pcm {
-typedef boost::container::flat_map<std::string, Eigen::VectorXd> SurfaceFunctionMap;
-typedef SurfaceFunctionMap::value_type SurfaceFunctionPair;
-typedef SurfaceFunctionMap::iterator SurfaceFunctionMapIter;
-typedef SurfaceFunctionMap::const_iterator SurfaceFunctionMapConstIter;
+unsigned int pcmsolver_get_version(void) attribute(const);
 
-struct Printer {
-  HostWriter writer_;
-  void operator()(const std::string & message);
-  void operator()(const std::ostringstream & stream);
-};
-void initMolecule(const Input & inp,
-                  const Symmetry & group,
-                  int nuclei,
-                  const Eigen::VectorXd & charges,
-                  const Eigen::Matrix3Xd & centers,
-                  Molecule & molecule);
+namespace detail {
+Molecule initMolecule(const Input & inp,
+                      const Symmetry & group,
+                      int nuclei,
+                      const Eigen::VectorXd & charges,
+                      const Eigen::Matrix3Xd & centers);
 void initSpheresAtoms(const Input &,
                       const Eigen::Matrix3Xd &,
                       std::vector<Sphere> &);
-unsigned int pcmsolver_get_version(void) attribute(const);
 void print(const PCMInput &);
+} // namespace detail
 
 /*! \class Meddle
  *  \brief Contains functions exposing an interface to the module internals
+ *  \author Roberto Di Remigio
+ *  \date 2015-2017
  */
 class Meddle __final {
 public:
+  /*! \brief CTOR from Input object
+      *  \param[in] input an Input object
+      *  \param[in] write the global HostWriter object
+      *  \warning This CTOR is meant to be used with the standalone
+      *  executable only
+      */
+  Meddle(const Input & input, const HostWriter & write);
   /*! \brief CTOR from own input reader
       *  \param[in] inputFileName name of the parsed, machine-readable input file
       *  \param[in] write the global HostWriter object
@@ -213,6 +214,21 @@ public:
   void writeTimings() const;
 
 private:
+  typedef std::map<std::string, Eigen::VectorXd> SurfaceFunctionMap;
+  typedef SurfaceFunctionMap::value_type SurfaceFunctionPair;
+  typedef SurfaceFunctionMap::iterator SurfaceFunctionMapIter;
+  typedef SurfaceFunctionMap::const_iterator SurfaceFunctionMapConstIter;
+
+  struct Printer {
+    Printer(const HostWriter & hw) : writer_(hw) {}
+    HostWriter writer_;
+    void operator()(const std::string & message) const { writer_(message.c_str()); }
+    void operator()(const std::ostringstream & stream) const {
+      writer_(stream.str().c_str());
+    }
+  };
+  /*! Output redirect-or to host program output */
+  Printer hostWriter_;
   /*! Input object */
   Input input_;
   /*! Cavity */
@@ -227,8 +243,8 @@ private:
   bool hasDynamic_;
   /*! SurfaceFunction map */
   mutable SurfaceFunctionMap functions_;
-  /*! Collects info on atomic radii set */
-  std::string radiiSetName_;
+  /*! Common implemenation for the CTOR-s */
+  void CTORBody();
   /*! \brief Initialize input_
    *  \param[in] input_reading input processing strategy
    *  \param[in] nr_nuclei     number of atoms in the molecule

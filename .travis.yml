@@ -349,8 +349,10 @@ before_script:
 - ${Fortran_COMPILER} --version
 - python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' ${STATIC} ${COVERAGE}
 - cd build
+- ../.scripts/ci_build.sh
 script:
-- ctest --parallel 2 --output-on-failure --verbose --dashboard Experimental --track TravisCI
+- python ../.scripts/ci_test.py ctest --parallel 2 --output-on-failure --verbose --dashboard Experimental --track TravisCI
+- python ../.scripts/ci_print_failing.py
 after_success:
 - |
   if [[ "${COVERAGE}" = true ]]; then

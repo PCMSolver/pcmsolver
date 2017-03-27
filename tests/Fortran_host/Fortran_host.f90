@@ -57,18 +57,18 @@ program pcm_fortran_host
       end if
 
       ! Open a file for the output...
-      inquire(file = 'fortran_host.log', opened = log_open, &
+      inquire(file = 'Fortran_host.out', opened = log_open, &
         exist = log_exist)
       if (log_exist) then
         open(unit = output_unit,                   &
-          file = 'fortran_host.log',       &
+          file = 'Fortran_host.out',       &
           status = 'unknown',       &
           form = 'formatted',       &
           access = 'sequential')
         close(unit = output_unit, status = 'delete')
       end if
       open(unit = output_unit,                      &
-        file = 'fortran_host.log',          &
+        file = 'Fortran_host.out',          &
         status = 'new',              &
         form = 'formatted',          &
         access = 'sequential')

@@ -33,13 +33,20 @@
 
 struct PCMInput;
 
-#include "bi_operators/BIOperatorData.hpp"
-#include "cavity/CavityData.hpp"
-#include "green/GreenData.hpp"
-#include "solver/SolverData.hpp"
+namespace pcm {
+struct BIOperatorData;
+struct CavityData;
+struct GreenData;
+struct SolverData;
+} // namespace pcm
+
 #include "utils/Molecule.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
+
+namespace pcm {
+using utils::Solvent;
+using utils::Sphere;
 
 /*! \file Input.hpp
  *  \class Input
@@ -60,11 +67,6 @@ struct PCMInput;
  *rule
  *  should be carefully considered.
  */
-
-namespace pcm {
-using utils::Sphere;
-using utils::Solvent;
-
 class Input {
 public:
   /// Default constructor
@@ -123,12 +125,12 @@ public:
   std::string providedBy() const { return providedBy_; }
 
   /// Get-ters for input wrapping structs
-  CavityData cavityParams();
-  GreenData insideGreenParams();
-  GreenData outsideStaticGreenParams();
-  GreenData outsideDynamicGreenParams();
-  SolverData solverParams();
-  BIOperatorData integratorParams();
+  CavityData cavityParams() const;
+  GreenData insideGreenParams() const;
+  GreenData outsideStaticGreenParams() const;
+  GreenData outsideDynamicGreenParams() const;
+  SolverData solverParams() const;
+  BIOperatorData integratorParams() const;
   /// @}
 
   bool MEPfromMolecule() { return MEPfromMolecule_; }
@@ -267,18 +269,6 @@ private:
   bool MEPfromMolecule_;
   /// Who performed the syntactic input parsing
   std::string providedBy_;
-  /// Input wrapping struct for the cavity
-  CavityData cavData_;
-  /// Input wrapping struct for the Green's function inside
-  GreenData insideGreenData_;
-  /// Input wrapping struct for the Green's function outside (static permittivity)
-  GreenData outsideStaticGreenData_;
-  /// Input wrapping struct for the Green's function outside (dynamic permittivity)
-  GreenData outsideDynamicGreenData_;
-  /// Input wrapping struct for the solver
-  SolverData SolverData_;
-  /// Input wrapping struct for the integrator
-  BIOperatorData integratorData_;
 };
 
 namespace detail {

@@ -1,11 +1,13 @@
 # Change Log
 
-## [Unreleased]
+## [Version 1.1.10] - 2017-03-27
 
 ### Changed
 
 - Updated the `cloc.pl` script to version 1.72
 - Simplified the internal structure of the `Meddle` and `Input` objects.
+- Export dependency on Zlib for the static libraries. Thanks @loriab for the pull request
+  fixing [a build problem within Psi4](http://forum.psicode.org/t/crc32-undefined-symbol-at-runtime-when-built-with-pcmsolver-gcc-4-9-4/449/7)
 
 ## [Version 1.1.9] - 2017-02-16
 
@@ -315,7 +317,8 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.9...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.10...HEAD
+[Version 1.1.10]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.9...v1.1.10
 [Version 1.1.9]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.8...v1.1.9
 [Version 1.1.8]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.7...v1.1.8
 [Version 1.1.7]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.6...v1.1.7

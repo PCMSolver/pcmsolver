@@ -210,15 +210,15 @@ contains
 
     !> \brief Create and translate Leopardi points
     !> \author Christian S. Pomelli
-    !> \param[in] ntssp
-    !> \param[in] nts
-    !> \param[in] x
-    !> \param[in] y
-    !> \param[in] z
-    !> \param[in] r
-    !> \param[in] xtscor
-    !> \param[in] ytscor
-    !> \param[in] ztscor
+    !> \param[in] ntssp number of points on the sphere
+    !> \param[in] nts   a counter for the total number of points generated
+    !> \param[in] x x-coordinate of sphere center
+    !> \param[in] y y-coordinate of sphere center
+    !> \param[in] z z-coordinate of sphere center
+    !> \param[in] r radius of sphere
+    !> \param[in] xtscor x-coordinates of points on the sphere
+    !> \param[in] ytscor y-coordinates of points on the sphere
+    !> \param[in] ztscor z-coordinates of points on the sphere
     !> \param[in] print_unit
     subroutine leopardi_grid(ntssp, nts, x, y, z, r, xtscor, ytscor, ztscor, print_unit)
 

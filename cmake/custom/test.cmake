@@ -9,10 +9,9 @@ macro(add_Catch_test _name _labels)
   endforeach()
   unset(_labels)
 
-  # This is the unit tests runner
-  set(RUNNER ${PROJECT_BINARY_DIR}/tests/unit_tests)
-
-  add_test(NAME ${_name} COMMAND ${RUNNER} [${_name}])
+  add_test(NAME ${_name}
+           COMMAND ${PROJECT_BINARY_DIR}/tests/unit_tests [${_name}] --success --out ${PROJECT_BINARY_DIR}/tests/${_name}.log --durations yes
+           WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
   if(labels)
     set_tests_properties(${_name} PROPERTIES LABELS "${labels}")

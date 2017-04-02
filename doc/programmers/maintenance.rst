@@ -11,6 +11,21 @@ Bump version
 Version numbering follows the guidelines of `semantic versioning <http://semver.org/>`_
 To update, change the relevant field in the ``README.md`` file.
 
+Changelog
+---------
+
+We follow the guidelines of `Keep a CHANGELOG <http://keepachangelog.com/>`_
+On all **but** the release branches, there is an ``Unreleased`` section
+under which new additions should be listed.
+To simplify perusal of the ``CHANGELOG.md``, use the following subsections:
+
+1. ``Added`` for new features.
+2. ``Changed`` for changes in existing functionality.
+3. ``Deprecated`` for once-stable features removed in upcoming releases.
+4. ``Removed`` for deprecated features removed in this release.
+5. ``Fixed`` for any bug fixes.
+6. ``Security`` to invite users to upgrade in case of vulnerabilities.
+
 Updating Eigen distribution
 ---------------------------
 

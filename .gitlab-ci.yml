@@ -1,16 +1,25 @@
 before_script:
-    - ls -la
-    - apt-get update -y
-    - apt-get install gcc g++ gfortran make cmake zlib1g-dev python-dateutil python-pyparsing python-numpy python-matplotlib python-pip python-setuptools python-dev -y
-gcc_debug:
-    script:
-        - "python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug"
-        - cd build
-        - make
-        - ctest
-gcc_debug_nocxx11:
-    script:
-        - "python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=debug --cmake-options='-DENABLE_CXX11_SUPPORT=OFF'"
-        - cd build
-        - make
-        - ctest
+  - ls -la
+  - apt-get update -y
+  - apt-get install cmake zlib1g-dev libboost-all-dev python-dateutil python-pyparsing python-numpy python-matplotlib python-pip python-setuptools python-dev -y
+  - python -V
+  - cmake --version
+  - g++ --version
+  - gcc --version
+  - gfortran --version
+
+variables:
+  CTEST_COMMAND: "ctest --parallel 2 --output-on-failure --verbose --dashboard Experimental --track GitLabCI"
+
+gcc:
+  image: gcc:5.4
+  script:
+    - python setup.py --cxx=g++ --cc=gcc --fc=gfortran --type=release
+    - cd build
+    - ../.scripts/ci_build.sh
+    - python ../.scripts/ci_test.py ${CTEST_COMMAND}
+    - python ../.scripts/ci_print_failing.py
+  artifacts:
+    paths:
+      - build.log
+      - full_ctest_output.dat

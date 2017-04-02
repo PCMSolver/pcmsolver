@@ -1,31 +1,31 @@
-!pcmsolver_copyright_start
-!       PCMSolver, an API for the Polarizable Continuum Model
-!       Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
-! 
-!       This file is part of PCMSolver.
-! 
-!       PCMSolver is free software: you can redistribute it and/or modify
-!       it under the terms of the GNU Lesser General Public License as published by
-!       the Free Software Foundation, either version 3 of the License, or
-!       (at your option) any later version.
-! 
-!       PCMSolver is distributed in the hope that it will be useful,
-!       but WITHOUT ANY WARRANTY; without even the implied warranty of
-!       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-!       GNU Lesser General Public License for more details.
-! 
-!       You should have received a copy of the GNU Lesser General Public License
-!       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
-!       For information on the complete list of contributors to the
-!       PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
-!pcmsolver_copyright_end
+!
+! PCMSolver, an API for the Polarizable Continuum Model
+! Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+!
+! This file is part of PCMSolver.
+!
+! PCMSolver is free software: you can redistribute it and/or modify
+! it under the terms of the GNU Lesser General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! PCMSolver is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU Lesser General Public License for more details.
+!
+! You should have received a copy of the GNU Lesser General Public License
+! along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+!
+! For information on the complete list of contributors to the
+! PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+!
 
     module pedra_symmetry
 ! NOTE: the ibtfun module is gone, as we can safely use Fortran
-!       standard intrinsic functions. 
+!       standard intrinsic functions.
 !       Mapping between intrinsics and ibtfun:
-!           ibtand(i, j) <-> iand(i, j)             
+!           ibtand(i, j) <-> iand(i, j)
 !           ibtor(i, j)  <-> ior(i, j)
 !           ibtshl(i, j) <-> ishft(i, j)
 !           ibtshr(i, j) <-> ishft(i, -j) !WARNING!
@@ -56,11 +56,11 @@
 ! C. Indexing of the jsop array
 !  The jsop array contains the position at which the operation
 !  i (index given in point A) appears
-!       
+!
 
     type, public :: point_group
     ! A type containing all you need to know about the point group
- 
+
       ! String with the group name:
       ! C1, C2, Cs, Ci, D2, C2v, C2h, D2h
       character(len=3) :: group_name
@@ -82,7 +82,7 @@
       ! Of course, that's also the binary representation of
       ! numbers from 0 to 7!
       integer(kind=regint_k)          :: jsop(0:7)
-      ! 
+      !
       integer(kind=regint_k)          :: nr_rotations
       !
       integer(kind=regint_k)          :: nr_reflections
@@ -95,7 +95,7 @@
     integer(kind=regint_k) :: global_print_unit
 
     contains
-    
+
     real(kind=dp) function get_pt(bit_rep)
 
     integer(kind=regint_k), intent(in) :: bit_rep
@@ -121,36 +121,36 @@
     end function get_pt
 
     subroutine get_point_group(print_unit, pgroup, nr_gen, gen1, gen2, gen3)
-    
+
     type(point_group), intent(inout) :: pgroup
     integer(kind=regint_k),           intent(in)    :: print_unit
-    integer(kind=regint_k),           intent(in)    :: nr_gen 
+    integer(kind=regint_k),           intent(in)    :: nr_gen
     integer(kind=regint_k),           intent(in)    :: gen1, gen2, gen3
 
     global_print_unit = print_unit
     pgroup = build_point_group(nr_gen, gen1, gen2, gen3)
-   
+
     end subroutine get_point_group
 
     type(point_group) function build_point_group(nr_gen, gen1, gen2, gen3)
 !
 ! Builds point group given the generators
 ! Originally written by Trond Saue for DALTON/DIRAC
-! Copied and adapted by Roberto Di Remigio                   
-!   
+! Copied and adapted by Roberto Di Remigio
+!
 
-    integer(kind=regint_k), intent(in)  :: nr_gen                   
+    integer(kind=regint_k), intent(in)  :: nr_gen
     integer(kind=regint_k), intent(in)  :: gen1, gen2, gen3
 ! Local variables
     integer(kind=regint_k)              :: maxrep
     integer(kind=regint_k)              :: isymax(3, 2)
     integer(kind=regint_k)              :: igen(3)
-! Integer representation of the rotations bitmaps                   
+! Integer representation of the rotations bitmaps
     integer(kind=regint_k), parameter   :: irots(3) = [3, 5, 6]
     integer(kind=regint_k), parameter   :: rots(3) = [6, 5, 3]
-! Integer representation of the reflections bitmaps                   
-    integer(kind=regint_k), parameter   :: irefl(3) = [4, 2, 1] 
-! Parity of the symmetry operations bitmaps                   
+! Integer representation of the reflections bitmaps
+    integer(kind=regint_k), parameter   :: irefl(3) = [4, 2, 1]
+! Parity of the symmetry operations bitmaps
     integer(kind=regint_k), parameter   :: jpar(0:7) = [1, -1, -1, 1, -1, 1, 1, -1]
     integer(kind=regint_k)              :: i, j, k, l, i0, i1, i2, ind, ipos, bitmap
     integer(kind=regint_k)              :: nrots, nrefl, ninvc, igroup
@@ -168,28 +168,28 @@
     isymax = 0
     igen = 0
     maxrep = 2**nr_gen - 1
-! igen contains the bitmap for the generators                   
+! igen contains the bitmap for the generators
     igen = [gen1, gen2, gen3]
 ! Build isymax(:, 1)
-!  determine to which irrep the translations belong to                                     
+!  determine to which irrep the translations belong to
 ! Loop over Cartesian axes
-    do i = 1, 3 
+    do i = 1, 3
       bitmap = 0
-! Loop over generators      
+! Loop over generators
       do j = 1, nr_gen
 ! Apply generators on Cartesian axes rots(i) and check the character
         if (nint(get_pt(ior(igen(j), rots(i)))) == -1) then
-! Set the bitmap                
+! Set the bitmap
           bitmap = ibset(bitmap, j)
         end if
       end do
-! Right-shift the bitmap and assign to isymax      
+! Right-shift the bitmap and assign to isymax
       isymax(i, 1) = ishft(bitmap, -1)
     end do
 
 ! Build isymax(:, 2)
-!  determine to which irrep the rotations belong to        
-!  R_x = (y XOR z) and cyclic permutations 
+!  determine to which irrep the rotations belong to
+!  R_x = (y XOR z) and cyclic permutations
     isymax(1, 2) = ieor(isymax(2, 1), isymax(3, 1))
     isymax(2, 2) = ieor(isymax(3, 1), isymax(1, 1))
     isymax(3, 2) = ieor(isymax(1, 1), isymax(2, 1))
@@ -197,7 +197,7 @@
 ! Build the character table
     lsymop = .false.
 ! Activate all symmetry operations of the group
-    lsymop(0) = .true. 
+    lsymop(0) = .true.
     jsop(0) = 0
     ipar(0) = 1
     do i = 1, maxrep
@@ -209,7 +209,7 @@
       ipar(i) = jpar(ind)
     end do
 ! List group operations in preferred order
-! Identity, E      
+! Identity, E
     ind = 0
     jsop(ind) = 0
 ! Rotations
@@ -245,7 +245,7 @@
     char_tab = 0
 ! Now generate the character table
     do i = 0, maxrep
-      ! The character of the identity is always +1 
+      ! The character of the identity is always +1
       char_tab(0, i) = 1
       do j = 1, nr_gen
         char_tab(igen(j), i) = nint(get_pt(iand(ishft(i,-(j-1)), 1_regint_k)))
@@ -303,9 +303,9 @@
           rep(i)(ipos:ipos) = 'u'
         end if
       end if
-    end do  
+    end do
 ! Output
-! 1. Group name and generators      
+! 1. Group name and generators
     write(global_print_unit, '(a, a3)') 'Point group: ', group
     if (nr_gen > 0) then
       write(global_print_unit, '(/3x, a/)') '* The point group was generated by:'
@@ -318,7 +318,7 @@
           write(global_print_unit, '(6x, a)') 'Inversion center'
         end if
       end do
-! 2. Group multiplication table      
+! 2. Group multiplication table
       write(global_print_unit,'(/3x, a/)') '* Group multiplication table'
       write(global_print_unit,'(8x, a1, 8(1x, a3, 1x))') '|', (symop(jsop(i)), i = 0, maxrep)
       write(global_print_unit,'(3x,a6,8a5)') '-----+', ('-----', i = 0, maxrep)

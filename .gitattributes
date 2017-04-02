@@ -1,0 +1,77 @@
+*.tar.gz binary
+*.zip binary
+*.png diff=exif
+
+# API files
+api/*.h   licensefile=.githooks/LICENSE-C
+api/*.f90 licensefile=.githooks/LICENSE-Fortran
+
+# include directory
+include/*.hpp         licensefile=.githooks/LICENSE-C++
+include/STLUtils.hpp  !licensefile
+include/Config.hpp.in licensefile=.githooks/LICENSE-C++
+
+# bin
+src/bin/*.cpp licensefile=.githooks/LICENSE-C++
+
+# bi_operators
+src/bi_operators/*.hpp licensefile=.githooks/LICENSE-C++
+src/bi_operators/*.cpp licensefile=.githooks/LICENSE-C++
+
+# cavity
+src/cavity/*.hpp licensefile=.githooks/LICENSE-C++
+src/cavity/*.cpp licensefile=.githooks/LICENSE-C++
+
+# green
+src/green/*.hpp                    licensefile=.githooks/LICENSE-C++
+src/green/*.cpp                    licensefile=.githooks/LICENSE-C++
+src/green/dielectric_profile/*.hpp licensefile=.githooks/LICENSE-C++
+
+# interface
+src/interface/*.hpp licensefile=.githooks/LICENSE-C++
+src/interface/*.cpp licensefile=.githooks/LICENSE-C++
+
+# metal
+src/metal/*.F90 licensefile=.githooks/LICENSE-Fortran
+
+# pedra
+src/pedra/*.inc             licensefile=.githooks/LICENSE-Fortran
+src/pedra/*.F90             licensefile=.githooks/LICENSE-Fortran
+src/pedra/pedra_dlapack.F90 !licensefile
+
+# solver
+src/solver/*.hpp licensefile=.githooks/LICENSE-C++
+src/solver/*.cpp licensefile=.githooks/LICENSE-C++
+
+# utils
+src/utils/*.hpp           licensefile=.githooks/LICENSE-C++
+src/utils/*.cpp           licensefile=.githooks/LICENSE-C++
+src/utils/cnpy.hpp        !licensefile
+src/utils/cnpy.cpp        !licensefile
+src/utils/legendre.h      !licensefile
+src/utils/Interpolation.* !licensefile
+src/utils/Vector*         !licensefile
+
+# tests
+tests/unit_tests.cpp             licensefile=.githooks/LICENSE-C++
+tests/TestingMolecules.hpp       licensefile=.githooks/LICENSE-C++
+tests/Fortran_host/*.f90         licensefile=.githooks/LICENSE-Fortran
+/tests/C_host/*.h                licensefile=.githooks/LICENSE-C
+/tests/C_host/*.c                licensefile=.githooks/LICENSE-C
+tests/bi_operators/*.cpp         licensefile=.githooks/LICENSE-C++
+tests/cpcm/*.cpp                 licensefile=.githooks/LICENSE-C++
+tests/dielectric_profile/*.cpp   licensefile=.githooks/LICENSE-C++
+tests/gepol/*.cpp                licensefile=.githooks/LICENSE-C++
+tests/green/*.hpp                licensefile=.githooks/LICENSE-C++
+tests/green/*.cpp                licensefile=.githooks/LICENSE-C++
+tests/iefpcm/*.cpp               licensefile=.githooks/LICENSE-C++
+tests/input/*.cpp                licensefile=.githooks/LICENSE-C++
+tests/numerical_quadrature/*.cpp licensefile=.githooks/LICENSE-C++
+
+# tools
+doc/conf.py               licensefile=.githooks/LICENSE-Python
+doc/gfx/cloc_tools.py.in  licensefile=.githooks/LICENSE-Python
+src/make_cmake_files.py   licensefile=.githooks/LICENSE-Python
+tools/codata.py.in        licensefile=.githooks/LICENSE-Python
+tools/pcmsolver.py.in     licensefile=.githooks/LICENSE-Python
+tests/make_cmake_files.py licensefile=.githooks/LICENSE-Python

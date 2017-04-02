@@ -9,257 +9,337 @@ cache:
   - "$HOME/.ccache"
 env:
   global:
-  - USE_CCACHE=1
-  - CCACHE_COMPRESS=1
-  - CCACHE_MAXSIZE=200M
-  - CCACHE_CPP2=1
-  - PYTHON_PACKAGES="pip pep8 cpp-coveralls"
+    - USE_CCACHE=1
+    - CCACHE_COMPRESS=1
+    - CCACHE_MAXSIZE=200M
+    - CCACHE_CPP2=1
+    - MINICONDA_VER=''
+branches:
+  except:
+    - fix-appveyor
 matrix:
   include:
-  - os: linux
-    compiler: clang
-    addons: &1
-      apt:
-        sources:
-        - llvm-toolchain-precise-3.5
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - clang-3.5
-        - libboost1.55-all-dev
-        - gfortran
-    env: CXX_COMPILER='clang++-3.5' C_COMPILER='clang-3.5' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='release'
-  - os: linux
-    compiler: clang
-    addons: *1
-    env: CXX_COMPILER='clang++-3.5' C_COMPILER='clang-3.5' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='debug'
-  - os: linux
-    compiler: clang
-    addons: &2
-      apt:
-        sources:
-        - llvm-toolchain-precise-3.6
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - clang-3.6
-        - libboost1.55-all-dev
-        - gfortran
-    env: CXX_COMPILER='clang++-3.6' C_COMPILER='clang-3.6' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='release'
-  - os: linux
-    compiler: clang
-    addons: *2
-    env: CXX_COMPILER='clang++-3.6' C_COMPILER='clang-3.6' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='debug'
-  - os: linux
-    compiler: clang
-    addons: &3
-      apt:
-        sources:
-        - llvm-toolchain-precise-3.7
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - clang-3.7
-        - libboost1.55-all-dev
-        - gfortran
-    env: CXX_COMPILER='clang++-3.7' C_COMPILER='clang-3.7' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='release'
-  - os: linux
-    compiler: clang
-    addons: *3
-    env: CXX_COMPILER='clang++-3.7' C_COMPILER='clang-3.7' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='debug'
-  - os: linux
-    compiler: clang
-    addons: &4
-      apt:
-        sources:
-        - llvm-toolchain-precise-3.8
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - clang-3.8
-        - libboost1.55-all-dev
-        - gfortran
-    env: CXX_COMPILER='clang++-3.8' C_COMPILER='clang-3.8' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='release'
-  - os: linux
-    compiler: clang
-    addons: *4
-    env: CXX_COMPILER='clang++-3.8' C_COMPILER='clang-3.8' Fortran_COMPILER='gfortran'
-      BUILD_TYPE='debug'
-  - os: linux
-    compiler: gcc
-    addons: &5
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - g++-4.6
-        - gcc-4.6
-        - libboost1.55-all-dev
-        - gfortran-4.6
-    env: CXX_COMPILER='g++-4.6' C_COMPILER='gcc-4.6' Fortran_COMPILER='gfortran-4.6'
-      BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *5
-    env: CXX_COMPILER='g++-4.6' C_COMPILER='gcc-4.6' Fortran_COMPILER='gfortran-4.6'
-      BUILD_TYPE='debug'
-  - os: linux
-    compiler: gcc
-    addons: &6
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - g++-4.7
-        - gcc-4.7
-        - libboost1.55-all-dev
-        - gfortran-4.7
-    env: CXX_COMPILER='g++-4.7' C_COMPILER='gcc-4.7' Fortran_COMPILER='gfortran-4.7'
-      BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *6
-    env: CXX_COMPILER='g++-4.7' C_COMPILER='gcc-4.7' Fortran_COMPILER='gfortran-4.7'
-      BUILD_TYPE='debug'
-  - os: linux
-    compiler: gcc
-    addons: &7
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - g++-4.8
-        - gcc-4.8
-        - libboost1.55-all-dev
-        - gfortran-4.8
-    env: CXX_COMPILER='g++-4.8' C_COMPILER='gcc-4.8' Fortran_COMPILER='gfortran-4.8'
-      BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *7
-    env: CXX_COMPILER='g++-4.8' C_COMPILER='gcc-4.8' Fortran_COMPILER='gfortran-4.8'
-      BUILD_TYPE='debug'
-  - os: linux
-    compiler: gcc
-    addons: &8
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - g++-4.9
-        - gcc-4.9
-        - libboost1.55-all-dev
-        - gfortran-4.9
-    env: CXX_COMPILER='g++-4.9' C_COMPILER='gcc-4.9' Fortran_COMPILER='gfortran-4.9'
-      BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *8
-    env: CXX_COMPILER='g++-4.9' C_COMPILER='gcc-4.9' Fortran_COMPILER='gfortran-4.9'
-      BUILD_TYPE='debug'
-  - os: linux
-    compiler: gcc
-    addons: &9
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        - boost-latest
-        - george-edison55-precise-backports
-        packages:
-        - cmake
-        - cmake-data
-        - g++-5
-        - gcc-5
-        - libboost1.55-all-dev
-        - gfortran-5
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran-5' BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *9
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran-5' BUILD_TYPE='debug'
-  - os: osx
-    osx_image: xcode6.4
-    compiler: clang
-    env: CXX_COMPILER='clang++' C_COMPILER='clang' Fortran_COMPILER='gfortran' BUILD_TYPE='debug'
-  - os: osx
-    osx_image: xcode6.4
-    compiler: clang
-    env: CXX_COMPILER='clang++' C_COMPILER='clang' Fortran_COMPILER='gfortran' BUILD_TYPE='release'
-  - os: osx
-    osx_image: xcode7
-    compiler: clang
-    env: CXX_COMPILER='clang++' C_COMPILER='clang' Fortran_COMPILER='gfortran' BUILD_TYPE='debug'
-  - os: osx
-    osx_image: xcode7
-    compiler: clang
-    env: CXX_COMPILER='clang++' C_COMPILER='clang' Fortran_COMPILER='gfortran' BUILD_TYPE='release'
-  - os: osx
-    osx_image: xcode6.4
-    compiler: gcc
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran' BUILD_TYPE='debug'
-  - os: osx
-    osx_image: xcode6.4
-    compiler: gcc
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran' BUILD_TYPE='release'
-  - os: osx
-    osx_image: xcode7
-    compiler: gcc
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran' BUILD_TYPE='debug'
-  - os: osx
-    osx_image: xcode7
-    compiler: gcc
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran' BUILD_TYPE='release'
-  - os: linux
-    compiler: gcc
-    addons: *9
-    env: CXX_COMPILER='g++-5' C_COMPILER='gcc-5' Fortran_COMPILER='gfortran-5' BUILD_TYPE='debug'
-      COVERAGE=true
+    - os: linux
+      compiler: clang
+      addons: &1
+        apt:
+          sources:
+            - llvm-toolchain-precise-3.5
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - clang-3.5
+            - libboost1.55-all-dev
+            - gfortran
+      env:
+        - CXX_COMPILER='clang++-3.5'
+        - C_COMPILER='clang-3.5'
+        - Fortran_COMPILER='gfortran'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
+    - os: osx
+      osx_image: xcode7.3
+      compiler: clang
+      env:
+        - CXX_COMPILER='clang++'
+        - C_COMPILER='clang'
+        - Fortran_COMPILER='gfortran-4.8'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
+        - HOMEBREW_GCC='homebrew/versions/gcc48'
+    - os: linux
+      compiler: clang
+      addons: &2
+        apt:
+          sources:
+            - llvm-toolchain-precise-3.6
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - clang-3.6
+            - libboost1.55-all-dev
+            - gfortran
+      env:
+        - CXX_COMPILER='clang++-3.6'
+        - C_COMPILER='clang-3.6'
+        - Fortran_COMPILER='gfortran'
+        - BUILD_TYPE='release'
+        - STATIC='--static'
+        - PYTHON_VER='3.5'
+    - os: osx
+      osx_image: xcode7.3
+      compiler: gcc
+      env:
+        - CXX_COMPILER='g++-4.8'
+        - C_COMPILER='gcc-4.8'
+        - Fortran_COMPILER='gfortran-4.8'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
+        - HOMEBREW_GCC='homebrew/versions/gcc48'
+    - os: linux
+      compiler: clang
+      addons: &3
+        apt:
+          sources:
+            - llvm-toolchain-precise-3.7
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - clang-3.7
+            - libboost1.55-all-dev
+            - gfortran
+      env:
+        - CXX_COMPILER='clang++-3.7'
+        - C_COMPILER='clang-3.7'
+        - Fortran_COMPILER='gfortran'
+        - PYTHON_VER='2.7'
+        - BUILD_TYPE='release'
+    - os: osx
+      osx_image: xcode7.3
+      compiler: clang
+      env:
+        - CXX_COMPILER='clang++'
+        - C_COMPILER='clang'
+        - Fortran_COMPILER='gfortran-4.9'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
+        - HOMEBREW_GCC='homebrew/versions/gcc49'
+        - STATIC='--static'
+    - os: linux
+      compiler: clang
+      addons: &4
+        apt:
+          sources:
+            - llvm-toolchain-precise-3.8
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - clang-3.8
+            - libboost1.55-all-dev
+            - gfortran
+      env:
+        - CXX_COMPILER='clang++-3.8'
+        - C_COMPILER='clang-3.8'
+        - Fortran_COMPILER='gfortran'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
+    - os: osx
+      osx_image: xcode7.3
+      compiler: gcc
+      env:
+        - CXX_COMPILER='g++-4.9'
+        - C_COMPILER='gcc-4.9'
+        - Fortran_COMPILER='gfortran-4.9'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
+        - HOMEBREW_GCC='homebrew/versions/gcc49'
+    - os: linux
+      compiler: gcc
+      addons: &5
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - g++-4.6
+            - gcc-4.6
+            - libboost1.55-all-dev
+            - gfortran-4.6
+      env:
+        - CXX_COMPILER='g++-4.6'
+        - C_COMPILER='gcc-4.6'
+        - Fortran_COMPILER='gfortran-4.6'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
+    - os: osx
+      osx_image: xcode7.3
+      compiler: clang
+      env:
+        - CXX_COMPILER='clang++'
+        - C_COMPILER='clang'
+        - Fortran_COMPILER='gfortran-5'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
+        - HOMEBREW_GCC='homebrew/versions/gcc5'
+    - os: linux
+      compiler: gcc
+      addons: &6
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - g++-4.7
+            - gcc-4.7
+            - libboost1.55-all-dev
+            - gfortran-4.7
+      env:
+        - CXX_COMPILER='g++-4.7'
+        - C_COMPILER='gcc-4.7'
+        - Fortran_COMPILER='gfortran-4.7'
+        - BUILD_TYPE='release'
+        - STATIC='--static'
+        - PYTHON_VER='3.5'
+    - os: osx
+      osx_image: xcode7.3
+      compiler: gcc
+      env:
+        - CXX_COMPILER='g++-5'
+        - C_COMPILER='gcc-5'
+        - Fortran_COMPILER='gfortran-5'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
+        - HOMEBREW_GCC='homebrew/versions/gcc5'
+        - STATIC='--static'
+    - os: linux
+      compiler: gcc
+      addons: &7
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - g++-4.8
+            - gcc-4.8
+            - libboost1.55-all-dev
+            - gfortran-4.8
+      env:
+        - CXX_COMPILER='g++-4.8'
+        - C_COMPILER='gcc-4.8'
+        - Fortran_COMPILER='gfortran-4.8'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
+    - os: osx
+      osx_image: xcode7.3
+      compiler: clang
+      env:
+        - CXX_COMPILER='clang++'
+        - C_COMPILER='clang'
+        - Fortran_COMPILER='gfortran-6'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
+        - HOMEBREW_GCC='homebrew/versions/gcc6'
+    - os: linux
+      compiler: gcc
+      addons: &8
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - g++-4.9
+            - gcc-4.9
+            - libboost1.55-all-dev
+            - gfortran-4.9
+      env:
+        - CXX_COMPILER='g++-4.9'
+        - C_COMPILER='gcc-4.9'
+        - Fortran_COMPILER='gfortran-4.9'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
+    - os: osx
+      osx_image: xcode7.3
+      compiler: gcc
+      env:
+        - CXX_COMPILER='g++-6'
+        - C_COMPILER='gcc-6'
+        - Fortran_COMPILER='gfortran-6'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='3.5'
+        - HOMEBREW_GCC='homebrew/versions/gcc6'
+    - os: linux
+      compiler: gcc
+      addons: &9
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - boost-latest
+            - george-edison55-precise-backports
+          packages:
+            - cmake
+            - cmake-data
+            - g++-5
+            - gcc-5
+            - libboost1.55-all-dev
+            - gfortran-5
+      env:
+        - CXX_COMPILER='g++-5'
+        - C_COMPILER='gcc-5'
+        - Fortran_COMPILER='gfortran-5'
+        - BUILD_TYPE='release'
+        - PYTHON_VER='2.7'
+    - os: linux
+      compiler: gcc
+      addons: *9
+      env:
+        - CXX_COMPILER='g++-5'
+        - C_COMPILER='gcc-5'
+        - Fortran_COMPILER='gfortran-5'
+        - BUILD_TYPE='release'
+        - COVERAGE='--coverage'
+        - PYTHON_VER='2.7'
+  allow_failures:
+    - os: linux
+      compiler: gcc
+      addons: *9
+      env:
+        - CXX_COMPILER='g++-5'
+        - C_COMPILER='gcc-5'
+        - Fortran_COMPILER='gfortran-5'
+        - BUILD_TYPE='release'
+        - COVERAGE='--coverage'
+        - PYTHON_VER='2.7'
 install:
-- DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-- mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 - |
-  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    pip install --upgrade ${PYTHON_PACKAGES} --user `whoami`
-  elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-    brew install cmake boost python gcc
-    pip install --upgrade ${PYTHON_PACKAGES}
+  if [[ "${PYTHON_VER}" == "2.7" ]]; then
+    MINICONDA_VER='Miniconda2-latest'
+  else
+    MINICONDA_VER='Miniconda3-latest'
   fi
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+    brew install cmake boost
+    brew reinstall ${HOMEBREW_GCC}
+    echo "Downloading ${MINICONDA_VER}-MacOSX-x86_64.sh"
+    wget https://repo.continuum.io/miniconda/${MINICONDA_VER}-MacOSX-x86_64.sh -O miniconda.sh;
+  else
+    echo "Downloading ${MINICONDA_VER}-Linux-x86_64.sh"
+    wget https://repo.continuum.io/miniconda/${MINICONDA_VER}-Linux-x86_64.sh -O miniconda.sh;
+  fi
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- conda config --set always_yes yes --set changeps1 no
+- conda update --quiet conda
+- conda info --all
+- conda env create --quiet --file .pcmsolver-travis.yml python=$PYTHON_VER
+- source activate pcmsolver
+- conda list
 before_script:
+- python -V
 - cd ${TRAVIS_BUILD_DIR}
 - export CXX=${CXX_COMPILER}
 - ${CXX_COMPILER} --version
@@ -267,16 +347,12 @@ before_script:
 - ${C_COMPILER} --version
 - export FC=${Fortran_COMPILER}
 - ${Fortran_COMPILER} --version
-- |
-  if [[ "${COVERAGE}" = true ]]; then
-    python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake -DENABLE_FORTRAN_API=ON' --coverage
-  else
-    python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake -DENABLE_FORTRAN_API=ON'
-  fi
+- python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' ${STATIC} ${COVERAGE}
 - cd build
+- ../.scripts/ci_build.sh
 script:
-- VERBOSE=1 make -j 2
-- ctest -V -j 2
+- python ../.scripts/ci_test.py ctest --parallel 2 --output-on-failure --verbose --dashboard Experimental --track TravisCI
+- python ../.scripts/ci_print_failing.py
 after_success:
 - |
   if [[ "${COVERAGE}" = true ]]; then

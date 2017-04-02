@@ -1,27 +1,25 @@
-/* pcmsolver_copyright_start */
-/*
- *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
- *     
- *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *     
- *     PCMSolver is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Lesser General Public License for more details.
- *     
- *     You should have received a copy of the GNU Lesser General Public License
- *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
- *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+/**
+ * PCMSolver, an API for the Polarizable Continuum Model
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ *
+ * This file is part of PCMSolver.
+ *
+ * PCMSolver is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PCMSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For information on the complete list of contributors to the
+ * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
-/* pcmsolver_copyright_end */
 
 #ifndef GEPOLCAVITY_HPP
 #define GEPOLCAVITY_HPP
@@ -31,8 +29,13 @@
 #include <vector>
 
 #include "Config.hpp"
+#include "FCMangle.hpp"
 
-#include "Cavity.hpp"
+namespace pcm {
+struct CavityData;
+} // namespace pcm
+
+#include "ICavity.hpp"
 
 /*! \file GePolCavity.hpp
  *  \class GePolCavity
@@ -44,46 +47,56 @@
  *  of cavities according to the GePol algorithm.
  */
 
-class GePolCavity __final : public Cavity
-{
-  public:
-    GePolCavity() {}
-    GePolCavity(const Molecule & molec, double a, double pr, double minR, const std::string & suffix = "");
-    GePolCavity(const Sphere & sph, double a, double pr, double minR, const std::string & suffix = "");
-    GePolCavity(const std::vector<Sphere> & sph, double a, double pr, double minR, const std::string & suffix = "");
-    virtual ~GePolCavity() {}
-    friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
-      return cavity.printCavity(os);
-    }
-  private:
-    double averageArea;
-    double probeRadius;
-    double minimalRadius;
-    int addedSpheres;
-    virtual std::ostream & printCavity(std::ostream & os) __override;
-    virtual void makeCavity() __override { build(std::string("PEDRA.OUT"), 10000, 200, 25000); }
-    /*! \brief Driver for PEDRA Fortran module.
-     *  \param[in]  suffix for the cavity.off and PEDRA.OUT files, the PID will also be added
-     *  \param[in]   maxts maximum number of tesserae
-     *  \param[in]   maxsp maximum number of spheres (original + added)
-     *  \param[in] maxvert maximum number of vertices
-     */
-    void build(const std::string & suffix, size_t maxts, size_t maxsp, size_t maxvert);
-    /*! \brief Writes the cavity.off file for visualizing the cavity
-     *  \param[in]  suffix for the cavity.off
-     *  The full name of the visualization file will be cavity.off_suffix_PID
-     */
-    void writeOFF(const std::string & suffix);
+namespace pcm {
+namespace cavity {
+class GePolCavity __final : public ICavity {
+public:
+  GePolCavity() {}
+  GePolCavity(const Molecule & molec,
+              double a,
+              double pr,
+              double minR,
+              const std::string & suffix = "");
+  GePolCavity(const Sphere & sph,
+              double a,
+              double pr,
+              double minR,
+              const std::string & suffix = "");
+  GePolCavity(const std::vector<Sphere> & sph,
+              double a,
+              double pr,
+              double minR,
+              const std::string & suffix = "");
+  virtual ~GePolCavity() {}
+  friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
+    return cavity.printCavity(os);
+  }
+
+private:
+  double averageArea;
+  double probeRadius;
+  double minimalRadius;
+  int addedSpheres;
+  virtual std::ostream & printCavity(std::ostream & os) __override;
+  virtual void makeCavity() __override {
+    build(std::string("PEDRA.OUT"), 10000, 200, 25000);
+  }
+  /*! \brief Driver for PEDRA Fortran module.
+   *  \param[in]  suffix for the cavity.off and PEDRA.OUT files, the PID will also be
+   * added
+   *  \param[in]   maxts maximum number of tesserae
+   *  \param[in]   maxsp maximum number of spheres (original + added)
+   *  \param[in] maxvert maximum number of vertices
+   */
+  void build(const std::string & suffix, int maxts, int maxsp, int maxvert);
+  /*! \brief Writes the cavity.off file for visualizing the cavity
+   *  \param[in]  suffix for the cavity.off
+   *  The full name of the visualization file will be cavity.off_suffix_PID
+   */
+  void writeOFF(const std::string & suffix);
 };
 
-/*! \fn extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
- *                                 double * xtscor, double * ytscor, double * ztscor, double * ar,
- *                                 double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
- *                                 int * nts, int * ntsirr, int * nesfp, int * addsph,
- *                                 double * xe, double * ye, double * ze, double * rin,
- *                                 double * avgArea, double * rsolv, double * ret,
- *                                 int * nr_gen, int * gen1, int * gen2, int * gen3,
- *                                 int * nvert, double * vert, double * centr)
+/*! \brief Interface to the Fortran PEDRA code
  *  \param[in] maxts maximum number of tesserae allowed
  *  \param[in] maxsph maximum number of spheres allowed
  *  \param[in] maxvert maximum number of vertices allowed
@@ -115,13 +128,20 @@ class GePolCavity __final : public Cavity
  *  \param[out] vert coordinates of tesserae vertices
  *  \param[out] centr centers of arcs defining the edges of the tesserae
  */
-extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
-    double * xtscor, double * ytscor, double * ztscor, double * ar,
-    double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
-    int * nts, int * ntsirr, int * nesfp, int * addsph,
-    double * xe, double * ye, double * ze, double * rin, double * masses,
-    double * avgArea, double * rsolv, double * ret,
-    int * nr_gen, int * gen1, int * gen2, int * gen3,
-    int * nvert, double * vert, double * centr, int * isphe, const char * pedra, int * len_f_pedra);
+#define pedra_driver\
+    FortranCInterface_GLOBAL_(pedra_driver, PEDRA_DRIVER)
+extern "C" void pedra_driver(int * maxts, int * maxsph, int * maxvert,
+        double * xtscor, double * ytscor, double * ztscor, double * ar,
+        double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
+        int * nts, int * ntsirr, int * nesfp, int * addsph,
+        double * xe, double * ye, double * ze, double * rin, double * masses,
+        double * avgArea, double * rsolv, double * ret,
+        int * nr_gen, int * gen1, int * gen2, int * gen3,
+        int * nvert, double * vert, double * centr,
+        int * isphe, const char * pedra, int * len_f_pedra);
+
+ICavity * createGePolCavity(const CavityData & data);
+} // namespace cavity
+} // namespace pcm
 
 #endif // GEPOLCAVITY_HPP

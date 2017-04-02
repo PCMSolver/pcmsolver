@@ -807,7 +807,7 @@ EXCLUDE_SYMLINKS       = NO
 # exclude all test directories for example use the pattern */test/*
 
 EXCLUDE_PATTERNS       = @PROJECT_SOURCE_DIR@/api/pcmsolver.h \
-                         @PROJECT_SOURCE_DIR@/api/pcmsolver.F90
+                         @PROJECT_SOURCE_DIR@/api/pcmsolver.f90
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -838,6 +838,7 @@ EXCLUDE_SYMBOLS        = EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
                          __final \
                          __override \
                          __noexcept \
+                         __noreturn \
                          __nullptr
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories

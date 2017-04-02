@@ -1,26 +1,3 @@
-!pcmsolver_copyright_start
-!       PCMSolver, an API for the Polarizable Continuum Model
-!       Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
-! 
-!       This file is part of PCMSolver.
-! 
-!       PCMSolver is free software: you can redistribute it and/or modify
-!       it under the terms of the GNU Lesser General Public License as published by
-!       the Free Software Foundation, either version 3 of the License, or
-!       (at your option) any later version.
-! 
-!       PCMSolver is distributed in the hope that it will be useful,
-!       but WITHOUT ANY WARRANTY; without even the implied warranty of
-!       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-!       GNU Lesser General Public License for more details.
-! 
-!       You should have received a copy of the GNU Lesser General Public License
-!       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
-!       For information on the complete list of contributors to the
-!       PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
-!pcmsolver_copyright_end
-
 ! ----------------------------------------------------------------------------
 ! Numerical diagonalization of 3x3 matrcies
 ! Copyright (C) 2006  Joachim Kopp
@@ -51,13 +28,13 @@
 !      arXiv.org: physics/0610206
 
     module pedra_dlapack
-    
+
     use pedra_precision
 
     implicit none
 
     public dsyevv3 ! Diagonalize using the analytical method
-    public dsyevh3 ! Diagonalize using an hybrid analytical/numerical method 
+    public dsyevh3 ! Diagonalize using an hybrid analytical/numerical method
     public dsyevj3 ! Diagonalize using the Jacobi method
     public order   ! Sort eigenvalues and eigenvectors in decreasing order
 
@@ -164,7 +141,7 @@
             Q(J, 1) = Q(J, 1) * NORM
         20 end do
     end if
-     
+
 !     Prepare calculation of second eigenvector
     T = W(1) - W(2)
 
@@ -214,7 +191,7 @@
     ELSE
     !       For degenerate eigenvalue, calculate second eigenvector according to
     !         v[1] = v[0] x (A - lambda[1]).e[i]
-    
+
     !       This would really get to complicated if we could not assume all of A to
     !       contain meaningful values.
         A(2, 1) = A(1, 2)
@@ -239,7 +216,7 @@
                 end if
             end if
         50 end do
-           
+
     !       This means that any vector orthogonal to v[0] is an EV.
         60 IF (I == 4) THEN
             DO 70 J = 1, 3
@@ -343,7 +320,7 @@
             Q(J, 1) = Q(J, 1) * NORM
         20 end do
     end if
-     
+
 !     Calculate second eigenvector by the formula
 !       v[1] = (A - lambda[1]).e1 x (A - lambda[1]).e2
     Q(1, 2) = Q(1, 2) + A(1, 3) * W(2)
@@ -391,7 +368,7 @@
 !     .. Parameters ..
       INTEGER          N
       PARAMETER        ( N = 3 )
-    
+
 !     .. Local Variables ..
       DOUBLE PRECISION SD, SO
       DOUBLE PRECISION S, C, T
@@ -414,13 +391,13 @@
         W(X) = A(X, X)
    20 CONTINUE
 
-!     Calculate SQR(tr(A))  
+!     Calculate SQR(tr(A))
       SD = 0.0D0
       DO 30 X = 1, N
         SD = SD + ABS(W(X))
    30 CONTINUE
       SD = SD**2
- 
+
 !     Main iteration loop
       DO 40 I = 1, 50
 !       Test for convergence
@@ -445,7 +422,7 @@
           DO 61 Y = X+1, N
             G = 100.0D0 * ( ABS(A(X, Y)) )
             IF ( I .GT. 4 .AND. ABS(W(X)) + G .EQ. ABS(W(X))  &
-                         .AND. ABS(W(Y)) + G .EQ. ABS(W(Y)) ) THEN 
+                         .AND. ABS(W(Y)) + G .EQ. ABS(W(Y)) ) THEN
               A(X, Y) = 0.0D0
             ELSE IF (ABS(A(X, Y)) .GT. THRESH) THEN
 !             Calculate Jacobi transformation
@@ -464,7 +441,7 @@
               C = 1.0D0 / SQRT( 1.0D0 + T**2 )
               S = T * C
               Z = T * A(X, Y)
-              
+
 !             Apply Jacobi transformation
               A(X, Y) = 0.0D0
               W(X)    = W(X) - Z
@@ -496,9 +473,9 @@
    61     CONTINUE
    60   CONTINUE
    40 CONTINUE
-      
+
       PRINT *, "DSYEVJ3: No convergence."
-            
+
       END SUBROUTINE
 ! End of subroutine DSYEVJ3
 
@@ -526,7 +503,7 @@
     DOUBLE PRECISION :: M, C1, C0
     DOUBLE PRECISION :: DE, DD, EE, FF
     DOUBLE PRECISION :: P, SQRTP, Q, C, S, PHI
-      
+
 !     Determine coefficients of characteristic poynomial. We write
 !           | A   D   F  |
 !      A =  | D*  B   E  |
@@ -670,7 +647,7 @@
             E(M) = 0.0D0
         11 end do
     10 end do
-      
+
     END SUBROUTINE
 ! End of subroutine DSYEVQ3
 
@@ -750,7 +727,7 @@
                 Q(I,J) = Q(I,J) - F * U(I)
             41 end do
         40 end do
-                    
+
     !       Calculated updated A(2, 3) and store it in E(2)
         E(2) = A(2, 3) - P(2) * U(3) - U(2) * P(3)
     ELSE
@@ -759,7 +736,7 @@
         50 end do
         E(2) = A(2, 3)
     end if
-          
+
     END SUBROUTINE
 ! End of subroutine DSYTRD3
 
@@ -780,7 +757,7 @@
 
     integer(kind=regint_k) :: beg, imin, nevec, i, j
     real(kind=dp) :: emin
-   
+
     if (n.le.1) return
     beg = 1
     do i=1,n-1

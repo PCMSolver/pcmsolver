@@ -1,27 +1,25 @@
-/* pcmsolver_copyright_start */
-/*
- *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
- *     
- *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *     
- *     PCMSolver is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Lesser General Public License for more details.
- *     
- *     You should have received a copy of the GNU Lesser General Public License
- *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
- *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+/**
+ * PCMSolver, an API for the Polarizable Continuum Model
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ *
+ * This file is part of PCMSolver.
+ *
+ * PCMSolver is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PCMSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For information on the complete list of contributors to the
+ * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
-/* pcmsolver_copyright_end */
 
 #include "TsLessCavity.hpp"
 
@@ -31,57 +29,69 @@
 #include <vector>
 
 #include "Config.hpp"
-#include "FCMangle.hpp"
+
+#include <boost/format.hpp>
 
 #include <Eigen/Core>
 
+#include "CavityData.hpp"
 #include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
 
-/*! \brief Fortran interface function to TsLess cavity generation
- *  \param[in] maxts maximum number of tesserae allowed
- *  \param[in] maxsph maximum number of spheres allowed
- *  \param[in] maxvert maximum number of vertices allowed
- *  \param[out] nesfp number of spheres (original + added)
- *  \param[out] nts number of generated tesserae
- *  \param[out] ntsirr number of generated irreducible tesserae
- *  \param[out] addsph number of added spheres
- *  \param[out] xtscor x-coordinate of tesserae centers (dimension maxts)
- *  \param[out] ytscor y-coordinate of tesserae centers (dimension maxts)
- *  \param[out] ztscor z-coordinate of tesserae centers (dimension maxts)
- *  \param[out] ar area of the tessera (dimension maxts)
- *  \param[out] xsphcor x-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] ysphcor y-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] zsphcor z-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] rsph radii of the sphere the tessera belongs to, i.e. its curvature (dimension maxts)
- *  \param[out] xe x-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
- *  \param[out] ye y-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
- *  \param[out] ze z-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
- *  \param[out] rin radius of the spheres (dimension nSpheres_ + maxAddedSpheres)
- *  \param[in] masses atomic masses (for inertia tensor formation in TSLESS)
- *  \param[in] nr_gen number of symmetry generators
- *  \param[in] gen1 first generator
- *  \param[in] gen2 second generator
- *  \param[in] gen3 third generator
- *  \param[in] avgArea average tesserae area
- *  \param[in] dmin mininal distance between sampling points
- *  \param[in] nord maximum order of continuous derivative of weight function
- *  \param[in] ifun whether to use the normalized or unnormalized form of the weight function
- *  \param[in] rsolv solvent probe radius
- *  \param[in] work scratch space
- */
-#define tsless_driver \
-    FortranCInterface_MODULE_(tsless_cavity, tsless_driver, TSLESS_CAVITY, TSLESS_DRIVER)
-extern "C" void tsless_driver(size_t * maxts, size_t * maxsph, size_t * maxvert,
-        int * nesfp, int * nts, int * ntsirr, int * addsph,
-        double * xtscor, double * ytscor, double * ztscor, double * ar,
-        double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
-        double * xe, double * ye, double * ze, double * rin, double * masses,
-        int * nr_gen, int * gen1, int * gen2, int * gen3,
-        double * avgArea, double * dmin, int * nord, int * ifun, double * rsolv,
-        double * work);
+namespace pcm {
+namespace cavity {
+TsLessCavity::TsLessCavity(const Molecule & molec,
+             double a,
+             double pr,
+             double minR,
+             double minD,
+             int der)
+    : ICavity(molec),
+      averageArea_(a),
+      probeRadius_(pr),
+      minimalRadius_(minR),
+      minDistance_(minD),
+      derOrder_(der) {
+  TIMER_ON("TsLessCavity::build from Molecule");
+  build(10000, 200, 25000);
+  TIMER_OFF("TsLessCavity::build from Molecule");
+}
 
-void TsLessCavity::build(size_t maxts, size_t maxsph, size_t maxvert)
+TsLessCavity::TsLessCavity(const Sphere & sph,
+             double a,
+             double pr,
+             double minR,
+             double minD,
+             int der)
+    : ICavity(sph),
+      averageArea_(a),
+      probeRadius_(pr),
+      minimalRadius_(minR),
+      minDistance_(minD),
+      derOrder_(der) {
+  TIMER_ON("TsLessCavity::build from a single sphere");
+  build(10000, 200, 25000);
+  TIMER_OFF("TsLessCavity::build from a single sphere");
+}
+
+TsLessCavity::TsLessCavity(const std::vector<Sphere> & sph,
+             double a,
+             double pr,
+             double minR,
+             double minD,
+             int der)
+    : ICavity(sph),
+      averageArea_(a),
+      probeRadius_(pr),
+      minimalRadius_(minR),
+      minDistance_(minD),
+      derOrder_(der) {
+  TIMER_ON("TsLessCavity::build from list of spheres");
+  build(10000, 200, 25000);
+  TIMER_OFF("TsLessCavity::build from list of spheres");
+}
+
+void TsLessCavity::build(int maxts, int maxsph, int maxvert)
 {
     // This is a wrapper for the generatecavity_cpp_ function defined in the Fortran code TsLess.
     // Here we allocate the necessary arrays to be passed to TsLess, in particular we allow
@@ -258,16 +268,40 @@ std::ostream & TsLessCavity::printCavity(std::ostream & os)
     os << "Number of spheres = " << nSpheres_ << " [initial = " << nSpheres_ -
        addedSpheres << "; added = " << addedSpheres << "]" << std::endl;
     os << "Number of finite elements = " << nElements_;
-    /*
-    for (int i = 0; i < nElements_; i++)
-    {
-       os << std::endl;
-       os << i+1 << " ";
-       os << elementCenter_(0,i) << " ";
-       os << elementCenter_(1,i) << " ";
-       os << elementCenter_(2,i) << " ";
-       os << elementArea_(i) << " ";
-    }
-    */
+  os << "Number of irreducible finite elements = " << nIrrElements_ << std::endl;
+  os << "============ Spheres list (in Angstrom)" << std::endl;
+  os << " Sphere   on   Radius   Alpha       X            Y            Z     \n";
+  os << "-------- ---- -------- ------- -----------  -----------  -----------\n";
+  // Print original set of spheres
+  int original = nSpheres_ - addedSpheres;
+  for (int i = 0; i < original; ++i) {
+    os << boost::format("%4i") % (i + 1);
+    os << boost::format("      %s") % molecule_.atoms()[i].symbol;
+    os << boost::format("%10.4f") % (molecule_.atoms()[i].radius);
+    os << boost::format("   %1.2f   ") % (molecule_.atoms()[i].radiusScaling);
+    os << boost::format("%10.6f  ") % (molecule_.geometry(0, i) * bohrToAngstrom());
+    os << boost::format(" %10.6f  ") % (molecule_.geometry(1, i) * bohrToAngstrom());
+    os << boost::format(" %10.6f  ") % (molecule_.geometry(2, i) * bohrToAngstrom());
+    os << std::endl;
+  }
+  // Print added spheres
+  for (int j = 0; j < addedSpheres; ++j) {
+    int idx = original + j;
+    os << boost::format("%4i") % (idx + 1);
+    os << boost::format("      %s") % "Du";
+    os << boost::format("%9.4f") % (sphereRadius_(idx) * bohrToAngstrom());
+    os << boost::format("   %1.2f   ") % 1.00;
+    os << boost::format("%10.6f  ")  % (sphereCenter_(0, idx) * bohrToAngstrom());
+    os << boost::format(" %10.6f  ") % (sphereCenter_(1, idx) * bohrToAngstrom());
+    os << boost::format(" %10.6f  ") % (sphereCenter_(2, idx) * bohrToAngstrom());
+    os << std::endl;
+  }
     return os;
 }
+
+ICavity * createTsLessCavity(const CavityData & data) {
+  return new TsLessCavity(data.molecule, data.area, data.probeRadius, data.minimalRadius,
+                                data.minDistance, data.derOrder);
+}
+} // namespace cavity
+} // namespace pcm

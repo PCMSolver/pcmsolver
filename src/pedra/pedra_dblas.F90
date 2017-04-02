@@ -1,28 +1,28 @@
-!pcmsolver_copyright_start
-!       PCMSolver, an API for the Polarizable Continuum Model
-!       Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
-! 
-!       This file is part of PCMSolver.
-! 
-!       PCMSolver is free software: you can redistribute it and/or modify
-!       it under the terms of the GNU Lesser General Public License as published by
-!       the Free Software Foundation, either version 3 of the License, or
-!       (at your option) any later version.
-! 
-!       PCMSolver is distributed in the hope that it will be useful,
-!       but WITHOUT ANY WARRANTY; without even the implied warranty of
-!       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-!       GNU Lesser General Public License for more details.
-! 
-!       You should have received a copy of the GNU Lesser General Public License
-!       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
-!       For information on the complete list of contributors to the
-!       PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
-!pcmsolver_copyright_end
+!
+! PCMSolver, an API for the Polarizable Continuum Model
+! Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+!
+! This file is part of PCMSolver.
+!
+! PCMSolver is free software: you can redistribute it and/or modify
+! it under the terms of the GNU Lesser General Public License as published by
+! the Free Software Foundation, either version 3 of the License, or
+! (at your option) any later version.
+!
+! PCMSolver is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU Lesser General Public License for more details.
+!
+! You should have received a copy of the GNU Lesser General Public License
+! along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+!
+! For information on the complete list of contributors to the
+! PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+!
 
     module pedra_dblas
-    
+
     use pedra_precision
 
     implicit none
@@ -38,7 +38,7 @@
     public vector_product
 
     contains
-      
+
     real(kind=dp) function dasum(n, dx, incx)
 !
 ! - Reference BLAS level1 routine (version 3.4.0) --
@@ -97,7 +97,7 @@
        end do
     end if
     dasum = dtemp
-    
+
     end function dasum
 
     subroutine daxpy(n, da, dx, incx, dy, incy)
@@ -161,7 +161,7 @@
         iy = iy + incy
        end do
     end if
-    
+
     end subroutine daxpy
 
     subroutine dzero(dx, length)
@@ -238,9 +238,9 @@
     end if
 !
     dnorm2 = norm
-    
+
     end function dnorm2
-    
+
     subroutine dscal(n, da, dx, incx)
 !
 ! - Reference BLAS level1 routine (version 3.4.0) --
@@ -296,7 +296,7 @@
           dx(i) = da*dx(i)
        end do
     end if
-    
+
     end subroutine dscal
 
     integer(kind=regint_k) function idamax(n, dx, incx)
@@ -352,7 +352,7 @@
           ix = ix + incx
        end do
     end if
-    
+
     end function idamax
 
     subroutine dswap(n, dx, incx, dy, incy)
@@ -424,7 +424,7 @@
           iy = iy + incy
        end do
     end if
-    
+
     end subroutine dswap
 
     subroutine dcopy(n, dx, incx, dy, incy)
@@ -463,7 +463,7 @@
              dy(i) = dx(i)
           end do
           if (n.lt.7) return
-       end if   
+       end if
        mp1 = m + 1
        do i = mp1,n,7
           dy(i) = dx(i)
@@ -474,7 +474,7 @@
           dy(i+5) = dx(i+5)
           dy(i+6) = dx(i+6)
        end do
-    else      
+    else
 !
 !      code for unequal increments or equal increments
 !        not equal to 1
@@ -489,7 +489,7 @@
           iy = iy + incy
        end do
     end if
-    
+
     end subroutine dcopy
 
     subroutine vector_product(p1, p2, p3, dnorm3)
@@ -502,7 +502,7 @@
     p3(2) = p1(3)*p2(1) - p1(1)*p2(3)
     p3(3) = p1(1)*p2(2) - p1(2)*p2(1)
     dnorm3 = sqrt(p3(1)*p3(1) + p3(2)*p3(2) + p3(3)*p3(3))
-    
+
     end subroutine vector_product
 
     end module pedra_dblas

@@ -1,10 +1,18 @@
+#.rst:
+#
+# Manage compilation of API.
+# Optionally, enable compilation of Fortran 90 API bindings.
+#
+# Variables defined::
+#
+#   ENABLE_FORTRAN_API
+#
+# autocmake.yml configuration::
+#
+#   docopt: "--fbindings=<ENABLE_FORTRAN_API> Enable compilation of Fortran 90 API bindings <ON/OFF> [default: ON]."
+#   define: "'-DENABLE_FORTRAN_API={0}'.format(arguments['--fbindings'])"
+
+option(ENABLE_FORTRAN_API "Enable compilation of Fortran 90 API bindings" ON)
+
+add_subdirectory(api)
 include_directories(${PROJECT_SOURCE_DIR}/api)
-
-install(FILES ${PROJECT_SOURCE_DIR}/api/pcmsolver.h DESTINATION include)
-install(FILES ${PROJECT_SOURCE_DIR}/api/PCMInput.h DESTINATION include)
-
-if(ENABLE_FORTRAN_API)
-    add_definitions(-DENABLE_FORTRAN_API)
-    add_library(fortran_bindings OBJECT ${PROJECT_SOURCE_DIR}/api/pcmsolver.F90)
-    list(APPEND _objects $<TARGET_OBJECTS:fortran_bindings>)
-endif()

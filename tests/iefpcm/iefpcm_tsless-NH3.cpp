@@ -1,27 +1,25 @@
-/* pcmsolver_copyright_start */
-/*
- *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
- *     
- *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *     
- *     PCMSolver is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Lesser General Public License for more details.
- *     
- *     You should have received a copy of the GNU Lesser General Public License
- *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
- *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+/**
+ * PCMSolver, an API for the Polarizable Continuum Model
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ *
+ * This file is part of PCMSolver.
+ *
+ * PCMSolver is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PCMSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For information on the complete list of contributors to the
+ * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
-/* pcmsolver_copyright_end */
 
 #include "catch.hpp"
 
@@ -29,15 +27,22 @@
 
 #include <Eigen/Core>
 
-#include "CollocationIntegrator.hpp"
-#include "DerivativeTypes.hpp"
-#include "TsLessCavity.hpp"
-#include "Molecule.hpp"
-#include "Vacuum.hpp"
+#include "bi_operators/Collocation.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "cavity/TsLessCavity.hpp"
+#include "utils/Molecule.hpp"
+#include "green/Vacuum.hpp"
 #include "TestingMolecules.hpp"
-#include "UniformDielectric.hpp"
-#include "IEFSolver.hpp"
-#include "Symmetry.hpp"
+#include "green/UniformDielectric.hpp"
+#include "solver/IEFSolver.hpp"
+#include "utils/Symmetry.hpp"
+
+using namespace pcm;
+using bi_operators::Collocation;
+using cavity::TsLessCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using solver::IEFSolver;
 
 /*! \class IEFSolver
  *  \test \b NH3TsLess tests IEFSolver using ammonia and a TsLess cavity
@@ -54,12 +59,14 @@ TEST_CASE("Test solver for the IEFPCM with NH3 molecule and a TsLess cavity", "[
     TsLessCavity cavity = TsLessCavity(molec, area, probeRadius, minRadius, minDistance, derOrder);
 
     double permittivity = 78.39;
-    Vacuum<AD_directional, CollocationIntegrator> gfInside = Vacuum<AD_directional, CollocationIntegrator>();
-    UniformDielectric<AD_directional, CollocationIntegrator> gfOutside =
-    UniformDielectric<AD_directional, CollocationIntegrator>(permittivity);
+    Vacuum<> gfInside;
+    UniformDielectric<> gfOutside(permittivity);
+
+    Collocation op;
+
     bool symm = true;
     IEFSolver solver(symm);
-    solver.buildSystemMatrix(cavity, gfInside, gfOutside);
+    solver.buildSystemMatrix(cavity, gfInside, gfOutside, op);
 
     double Ncharge = 7.0;
     double Hcharge = 1.0;

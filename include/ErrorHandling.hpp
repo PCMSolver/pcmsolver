@@ -1,27 +1,25 @@
-/* pcmsolver_copyright_start */
-/*
- *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
- *     
- *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *     
- *     PCMSolver is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Lesser General Public License for more details.
- *     
- *     You should have received a copy of the GNU Lesser General Public License
- *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
- *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+/**
+ * PCMSolver, an API for the Polarizable Continuum Model
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ *
+ * This file is part of PCMSolver.
+ *
+ * PCMSolver is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PCMSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For information on the complete list of contributors to the
+ * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
-/* pcmsolver_copyright_end */
 
 #ifndef ERRORHANDLING_HPP
 #define ERRORHANDLING_HPP
@@ -29,6 +27,9 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 /*! \file ErrorHandling.hpp
  *  \brief Provide macros for error handling
@@ -65,33 +66,20 @@
  *  Uses static_assert. If not available, falls back to BOOST_STATIC_ASSERT_MSG
  *  Same usage pattern as for normal assertions. Static assertions are
  *  checked at compile-time.
- *  See also here: http://www.boost.org/doc/libs/1_59_0/doc/html/boost_staticassert.html
+ *  See also here:
+ *http://www.boost.org/doc/libs/1_59_0/doc/html/boost_staticassert.html
  */
-
-/*! \brief Kills execution and prints out error message to stderr
- *  \param message Error message
- *  \param function Name of the function killing execution
- *  \param code Error code. Defaults to EXIT_FAILURE
- */
-inline void pcmsolver_die(const std::string & message, const std::string & function, int code = EXIT_FAILURE)
-{
-  pcmsolver_die(message.c_str(), function.c_str(), code);
-}
-
-/*! \brief Kills execution and prints out error message to stderr
- *  \param message Error message
- *  \param function Name of the function killing execution
- *  \param code Error code. Defaults to EXIT_FAILURE
- */
-inline void pcmsolver_die(const char * message, const char * function, int code = EXIT_FAILURE)
-{
-  std::fprintf(stderr, "In function: %s\n", function);
-  std::fprintf(stderr, "PCMSolver fatal error %i: %s\n", code, message);
-  std::exit(EXIT_FAILURE);
-}
 
 /// Macro to be used to signal error conditions
-#define PCMSOLVER_ERROR(arg, func) pcmsolver_die(arg, func)
+#define PCMSOLVER_ERROR(message)                                                    \
+  {                                                                                 \
+    std::ostringstream _err;                                                        \
+    _err << "PCMSolver fatal error.\n"                                              \
+         << " In function " << __func__ << " at line " << __LINE__ << " of file "   \
+         << __FILE__ << "\n" << message << std::endl;                               \
+    std::fprintf(stderr, "%s\n", _err.str().c_str());                               \
+    std::exit(EXIT_FAILURE);                                                        \
+  }
 
 /// Macro to be used for assertions
 #define PCMSOLVER_ASSERT(arg) assert(arg)

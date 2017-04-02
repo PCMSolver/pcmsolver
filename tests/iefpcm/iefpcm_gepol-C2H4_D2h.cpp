@@ -1,37 +1,34 @@
-/* pcmsolver_copyright_start */
-/*
- *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
- *     
- *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *     
- *     PCMSolver is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Lesser General Public License for more details.
- *     
- *     You should have received a copy of the GNU Lesser General Public License
- *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
- *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+/**
+ * PCMSolver, an API for the Polarizable Continuum Model
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ *
+ * This file is part of PCMSolver.
+ *
+ * PCMSolver is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PCMSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For information on the complete list of contributors to the
+ * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
-/* pcmsolver_copyright_end */
 
 #include <catch.hpp>
 
 #include <cmath>
 #include <vector>
 
-
 #include <Eigen/Core>
 
-#include "bi_operators/CollocationIntegrator.hpp"
+#include "bi_operators/Collocation.hpp"
 #include "green/DerivativeTypes.hpp"
 #include "cavity/GePolCavity.hpp"
 #include "utils/Molecule.hpp"
@@ -40,23 +37,35 @@
 #include "solver/IEFSolver.hpp"
 #include "TestingMolecules.hpp"
 
+using namespace pcm;
+using bi_operators::Collocation;
+using cavity::GePolCavity;
+using green::Vacuum;
+using green::UniformDielectric;
+using solver::IEFSolver;
+
 /*! \class IEFSolver
- *  \test \b C2H4GePolD2h tests IEFSolver using C2H4 with a GePol cavity in D2h symmetry
+ *  \test \b C2H4GePolD2h tests IEFSolver using C2H4 with a GePol cavity in D2h
+ * symmetry
  */
-TEST_CASE("Test solver for the IEFPCM and the C2H4 molecule in D2h symmetry", "[iefpcm][iefpcm_symmetry][iefpcm_gepol-C2H4_D2h]")
-{
+TEST_CASE("Test solver for the IEFPCM and the C2H4 molecule in D2h symmetry",
+          "[iefpcm][iefpcm_symmetry][iefpcm_gepol-C2H4_D2h]") {
   Molecule molec = C2H4();
   double area = 0.2 / bohr2ToAngstrom2();
   double probeRadius = 1.385 / bohrToAngstrom();
   double minRadius = 100.0 / bohrToAngstrom();
-  GePolCavity cavity = GePolCavity(molec, area, probeRadius, minRadius, "ief_d2h_noadd");
+  GePolCavity cavity =
+      GePolCavity(molec, area, probeRadius, minRadius, "ief_d2h_noadd");
 
   double permittivity = 78.39;
   Vacuum<> gf_i;
   UniformDielectric<> gf_o(permittivity);
+
+  Collocation op;
+
   bool symm = true;
   IEFSolver solver(symm);
-  solver.buildSystemMatrix(cavity, gf_i, gf_o);
+  solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
 
   double Ccharge = 6.0;
   double Hcharge = 1.0;
@@ -74,7 +83,8 @@ TEST_CASE("Test solver for the IEFPCM and the C2H4 molecule in D2h symmetry", "[
     INFO("fake_asc(" << i << ") = " << fake_asc(i));
   }
 
-  double totalASC = - (2.0 * Ccharge + 4.0 * Hcharge) * (permittivity - 1) / permittivity;
+  double totalASC =
+      -(2.0 * Ccharge + 4.0 * Hcharge) * (permittivity - 1) / permittivity;
   // Renormalize
   int nr_irrep = cavity.pointGroup().nrIrrep();
   double totalFakeASC = fake_asc.sum() * nr_irrep;

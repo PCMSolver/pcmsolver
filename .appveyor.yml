@@ -8,7 +8,12 @@
 # Where "ps:" is used commands are executed in PowerShell
 
 # build version format: 1, 2, ...
-version: '{build}'
+version: '{build}-{branch}'
+
+# branches to build
+branches:
+  only:
+    - fix-appveyor
 
 os: Windows Server 2012 R2
 
@@ -20,7 +25,7 @@ build:
 # prepare environment
 environment:
   # set custom path (will be more extended later in build_script section)
-  path: C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Git\cmd;C:\Program Files\7-Zip;C:\Program Files (x86)\CMake\bin
+  #path: C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Git\cmd;C:\Program Files\7-Zip;C:\Program Files (x86)\CMake\bin
   # set MinGw-w64 (64-bit) version 5.1.0 download URL
   url: http://kent.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/5.1.0/threads-posix/seh/x86_64-5.1.0-release-posix-seh-rt_v4-rev0.7z
   # user can possibly use different Python versions, we try to test multiple cases
@@ -61,14 +66,16 @@ before_build:
   - python get-pip.py
   # go back to project source dir
   - cd %APPVEYOR_BUILD_FOLDER%
+  # Workaround for CMake not wanting sh.exe on PATH for MinGW
+  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+  - python setup.py --generator="%GENERATOR%"
+  - cd build
 
 build_script:
-  - python setup.py --generator="%GENERATOR%" --cmake-options="-DENABLE_FORTRAN_API=ON"
-  - cd build
   - cmake --build . -- %BUILDFLAGS%
 
 test_script:
-  - ctest --parallel 2 --output-on-failure --verbose --dashboard Experimental
+  - ctest --parallel 2 --output-on-failure --dashboard Experimental --verbose --track AppVeyorCI
 
 notifications:
   - provider: Slack

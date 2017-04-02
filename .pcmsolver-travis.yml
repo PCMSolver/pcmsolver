@@ -1,0 +1,6 @@
+name: pcmsolver
+dependencies:
+  - pep8
+  - pyyaml
+  - pip:
+    - cpp-coveralls

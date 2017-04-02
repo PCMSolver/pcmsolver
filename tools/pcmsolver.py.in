@@ -1,4 +1,29 @@
 #!@PYTHON_EXECUTABLE@
+
+
+#
+#  PCMSolver, an API for the Polarizable Continuum Model
+#  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+#
+#  This file is part of PCMSolver.
+#
+#  PCMSolver is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  PCMSolver is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+#
+#  For information on the complete list of contributors to the
+#  PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+#
+
 # -*- python -*-
 # -*- coding: utf-8 -*-
 # vim:filetype=python:
@@ -25,16 +50,17 @@ keyword names MYPERFECTKEYWORD
 
 isAngstrom = False
 CODATAyear = 2010
-# Dictionary with the au-to-Angstrom conversion factors for various CODATA sets of constants
-CODATAdict = dict([(2010, 0.52917721092), (2006, 0.52917720859), (2002, 0.5291772108), (1998, 0.5291772083)])
 
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
 
-import docopt
+try:
+    import docopt
+except:
+    sys.path.append('cmake/lib/docopt')
+    import docopt
 from copy import deepcopy
-import getkw
 import re
 import subprocess
 
@@ -48,6 +74,31 @@ Options:
   <input_file>                           PCMSolver input file.
   -h --help                              Show this screen.
 """
+
+import getkw
+from codata import CODATA, CODATAdict
+
+allowedSolvents = {'Water'                : ('WATER',                'H2O'),
+                   'Propylene Carbonate'  : ('PROPYLENE CARBONATE',  'C4H6O3'),
+                   'Dimethylsulfoxide'    : ('DIMETHYLSULFOXIDE',    'DMSO'),
+                   'Nitromethane'         : ('NITROMETHANE',         'CH3NO2'),
+                   'Acetonitrile'         : ('ACETONITRILE',         'CH3CN'),
+                   'Methanol'             : ('METHANOL',             'CH3OH'),
+                   'Ethanol'              : ('ETHANOL',              'CH3CH2OH'),
+                   'Acetone'              : ('ACETONE',              'C2H6CO'),
+                   '1,2-Dichloroethane'   : ('1,2-DICHLOROETHANE',   'C2H4CL2'),
+                   'Methylenechloride'    : ('METHYLENECHLORIDE',    'CH2CL2'),
+                   'Tetrahydrofurane'     : ('TETRAHYDROFURANE',     'THF'),
+                   'Aniline'              : ('ANILINE',              'C6H5NH2'),
+                   'Chlorobenzene'        : ('CHLOROBENZENE',        'C6H5CL'),
+                   'Chloroform'           : ('CHLOROFORM',           'CHCL3'),
+                   'Toluene'              : ('TOLUENE',              'C6H5CH3'),
+                   '1,4-Dioxane'          : ('1,4-DIOXANE',          'C4H8O2'),
+                   'Benzene'              : ('BENZENE',              'C6H6'),
+                   'Carbon Tetrachloride' : ('CARBON TETRACHLORIDE', 'CCL4'),
+                   'Cyclohexane'          : ('CYCLOHEXANE',          'C6H12'),
+                   'N-heptane'            : ('N-HEPTANE',            'C7H16'),
+                   'Explicit'             : ('EXPLICIT',             'DUMMY')}
 
 def iequal(a, b):
     """
@@ -87,12 +138,10 @@ def convert_to_upper_case(filename):
     final = re.sub('TRUE',  'True',  final)
 
     # Write to file
-    with open(filename, 'wb') as outputFile:
+    with open(filename, 'wt') as outputFile:
         outputFile.write(final)
 
 def main():
-    global topsect
-
     try:
         arguments = docopt.docopt(options, argv=None)
     except docopt.DocoptExit:
@@ -114,8 +163,6 @@ def parse_pcm_input(inputFile):
     This function can be accessed from other Python scripts when
     importing the current file as a module.
     """
-    global topsect
-
     # Set up valid keywords.
     valid_keywords = setup_keywords()
 
@@ -131,26 +178,24 @@ def parse_pcm_input(inputFile):
     inkw.run_callbacks(valid_keywords)
 
     # The parsed, machine-readable file is now saved.
-    parsedFile = '@' + inputFile
+    parsedFile = os.path.join(os.path.dirname(inputFile), '@' + os.path.basename(inputFile))
     # If parsedFile already exists, it might be a leftover.
     # Remove it
     if (os.path.isfile(parsedFile)):
         os.remove(parsedFile)
-    fd = open(parsedFile, 'w')
-    print >> fd, inkw.top
-    fd.close()
+    with open(parsedFile, 'wt') as tmp:
+        tmp.write(str(inkw.top))
 
     return parsedFile
 
 def execute(parsedFile):
-    exename = "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@"
-    executable = os.path.join(os.path.dirname(__file__), exename)
+    executable = os.path.join(os.path.dirname(__file__), "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@")
     if (executable):
-        command = executable + ' ' + parsedFile
-        p = subprocess.Popen(command, shell=True,
-                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        s = p.communicate()[0]
-        print(s)
+        try:
+            subprocess.check_output([executable, parsedFile])
+        except subprocess.CalledProcessError as e:
+            print((e.output))
+            sys.exit(1)
     else:
         print('No executable available for standalone run')
         sys.exit(1)
@@ -256,7 +301,8 @@ def setup_keywords():
     # Solvent
     # Valid for: IEFPCM, CPCM, Wavelet and PWL solvers
     # Valid values: string
-    medium.add_kw('SOLVENT',      'STR')
+    # Default: Explicit
+    medium.add_kw('SOLVENT',      'STR', 'EXPLICIT')
     # Type of integral equation
     # Valid for: Wavelet and PWL
     # Valid values: FIRSTKIND, SECONDKIND or FULL
@@ -398,8 +444,12 @@ def setup_keywords():
     molecule = getkw.Section('MOLECULE')
     # List of geometry and classical point charges
     # Valid values: array of doubles in format [x, y, z, Q]
-    # charges are in always in atomic units
+    # Notes: charges are always in atomic units
     molecule.add_kw('GEOMETRY',     'DBL_ARRAY', callback = verify_geometry)
+    # Calculate the molecular electrostatic potential (MEP) at the cavity for the given molecule
+    # Valid values: boolean
+    # Default: True
+    molecule.add_kw('MEP', 'BOOL', True)
     top.add_sect(molecule)
 
     return top
@@ -410,21 +460,21 @@ def verify_top(section):
     key = section.get('UNITS')
     val = key.get()
     if (val not in allowed_units):
-        print('Units requested {} are not among the allowed units: {}'.format(val, allowed_units))
+        print(('Units requested {} are not among the allowed units: {}'.format(val, allowed_units)))
         sys.exit(1)
     if (val == 'ANGSTROM'):
         isAngstrom = True
     allowed_codata = (2010, 2006, 2002, 1998)
     CODATAyear = section.get('CODATA').get()
     if (CODATAyear not in allowed_codata):
-        print('CODATA set requested {} is not among the allowed sets: {}'.format(CODATAyear, allowed_codata))
+        print(('CODATA set requested {} is not among the allowed sets: {}'.format(CODATAyear, allowed_codata)))
         sys.exit(1)
 
 def verify_cavity(section):
     allowed = ('GEPOL', 'WAVELET', 'TSLESS', 'RESTART')
     type = section.get('TYPE')
     if (type.get() not in allowed):
-        print('Requested {} cavity is not among the allowed types: {}'.format(type, allowed))
+        print(('Requested {} cavity is not among the allowed types: {}'.format(type, allowed)))
         sys.exit(1)
 
     # Convert units if input was given in Angstrom
@@ -441,27 +491,27 @@ def verify_cavity(section):
         area = section.get('AREA')
         a = area.get()
         if (a < 0.01):
-            print('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a))
+            print(('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a)))
             sys.exit(1)
         minRadius = section.get('MINRADIUS')
         mr = minRadius.get()
         if ( mr < 0.4 ):
-            print('Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 au'.format(mr))
+            print(('Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 au'.format(mr)))
             sys.exit(1)
     elif (type.get() == 'WAVELET'):
         key = section.get('PATCHLEVEL')
         if (key.get() < 1):
-            print('Invalid patch level requested: {}. Patch level must be greater than 0'.format(key.get()))
+            print(('Invalid patch level requested: {}. Patch level must be greater than 0'.format(key.get())))
             sys.exit(1)
         key = section.get('COARSITY')
         if (key.get() < 0.0 or key.get() >= 1.0):
-            print('Invalid coarsity requested: {}. Coarsity has to be within ]0, 1['.format(key.get()))
+            print(('Invalid coarsity requested: {}. Coarsity has to be within ]0, 1['.format(key.get())))
             sys.exit(1)
     elif (type.get() == 'TSLESS'):
         area = section.get('AREA')
         a = area.get()
         if (a < 0.01):
-            print('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a))
+            print(('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a)))
             sys.exit(1)
         minDistance = section.get('MINDISTANCE')
         md = minDistance.get()
@@ -487,12 +537,12 @@ def verify_cavity(section):
     radiiSet = section.get('RADIISET')
     allowed_sets = ('BONDI', 'UFF', 'ALLINGER')
     if (radiiSet.get() not in allowed_sets):
-        print('Radii set requested {} is not among the allowed sets: {}'.format(radiiSet.get(), allowed_sets))
+        print(('Radii set requested {} is not among the allowed sets: {}'.format(radiiSet.get(), allowed_sets)))
         sys.exit(1)
     allowed_modes = ('EXPLICIT', 'ATOMS', 'IMPLICIT')
     mode = section.get('MODE')
     if (mode.get() not in allowed_modes):
-        print('Cavity creation mode requested {} is not among the allowed modes: {}'.format(mode.get(), allowed_modes))
+        print(('Cavity creation mode requested {} is not among the allowed modes: {}'.format(mode.get(), allowed_modes)))
         sys.exit(1)
 
     atoms=section.get('ATOMS')
@@ -512,27 +562,6 @@ def verify_cavity(section):
                     sys.exit(1)
 
 def verify_medium(section):
-    allowedSolvents = {'Water'                : ('WATER',                'H2O'),
-                       'Propylene Carbonate'  : ('PROPYLENE CARBONATE',  'C4H6O3'),
-                       'Dimethylsulfoxide'    : ('DIMETHYLSULFOXIDE',    'DMSO'),
-                       'Nitromethane'         : ('NITROMETHANE',         'CH3NO2'),
-                       'Acetonitrile'         : ('ACETONITRILE',         'CH3CN'),
-                       'Methanol'             : ('METHANOL',             'CH3OH'),
-                       'Ethanol'              : ('ETHANOL',              'CH3CH2OH'),
-                       'Acetone'              : ('ACETONE',              'C2H6CO'),
-                       '1,2-Dichloroethane'   : ('1,2-DICHLOROETHANE',   'C2H4CL2'),
-                       'Methylenechloride'    : ('METHYLENECHLORIDE',    'CH2CL2'),
-                       'Tetrahydrofurane'     : ('TETRAHYDROFURANE',     'THF'),
-                       'Aniline'              : ('ANILINE',              'C6H5NH2'),
-                       'Chlorobenzene'        : ('CHLOROBENZENE',        'C6H5CL'),
-                       'Chloroform'           : ('CHLOROFORM',           'CHCL3'),
-                       'Toluene'              : ('TOLUENE',              'C6H5CH3'),
-                       '1,4-Dioxane'          : ('1,4-DIOXANE',          'C4H8O2'),
-                       'Benzene'              : ('BENZENE',              'C6H6'),
-                       'Carbon Tetrachloride' : ('CARBON TETRACHLORIDE', 'CCL4'),
-                       'Cyclohexane'          : ('CYCLOHEXANE',          'C6H12'),
-                       'N-heptane'            : ('N-HEPTANE',            'C7H16'),
-                       'Explicit'             : ('EXPLICIT',             'DUMMY')}
     solvent = section.get('SOLVENT')
     explicitSolvent = solvent.get() in allowedSolvents['Explicit']
     if (explicitSolvent):
@@ -548,7 +577,7 @@ def verify_medium(section):
         if (not GIF or not GOF or not PRF):
             sys.exit(1)
     solventFound = False
-    for i, v in allowedSolvents.iteritems():
+    for i, v in allowedSolvents.items():
         if (solvent.get() in v):
             solventName = i
             # Set name to the first value in the value pair
@@ -557,8 +586,8 @@ def verify_medium(section):
             solventFound = True
             break
     if (not solventFound):
-        print('Unknown solvent {}'.format(solvent.get()))
-        print('Choose a solvent from the following list:\n{}\n or specify the solvent data explicitly.'.format(allowedSolvents.keys()))
+        print(('Unknown solvent {}'.format(solvent.get())))
+        print(('Choose a solvent from the following list:\n{}\n or specify the solvent data explicitly.'.format(list(allowedSolvents.keys()))))
         sys.exit(1)
 
     correction = section.get('CORRECTION')
@@ -586,13 +615,13 @@ def verify_medium(section):
     key = section.get('SOLVERTYPE')
     val = key.get()
     if (val not in allowed_types):
-        print('Allowed types are: {}'.format(allowed_types))
+        print(('Allowed types are: {}'.format(allowed_types)))
         sys.exit(1)
     allowed_equations = ('FIRSTKIND', 'SECONDKIND', 'FULL')
     key = section.get('EQUATIONTYPE')
     val = key.get()
     if (val not in allowed_equations):
-        print('Allowed equations are: {}'.format(allowed_equations))
+        print(('Allowed equations are: {}'.format(allowed_equations)))
         sys.exit(1)
 
     a = section.get('A')
@@ -634,12 +663,12 @@ def verify_green(section):
 
     type = section.get('TYPE')
     if (type.get() not in allowed):
-        print('Allowed Green\'s functions are: {}'.format(allowed))
+        print(('Allowed Green\'s functions are: {}'.format(allowed)))
         sys.exit(1)
 
     der = section.get('DER')
     if (der.get() not in allowed_der):
-        print('Allowed derivatives strategies are: {}'.format(allowed))
+        print(('Allowed derivatives strategies are: {}'.format(allowed)))
         sys.exit(1)
 
     if (type.get() == 'UNIFORMDIELECTRIC'):
@@ -671,23 +700,26 @@ def verify_green(section):
 
     profile = section.get('PROFILE')
     if (profile.get() not in allowed_profiles):
-        print('Allowed profiles are: {}'.format(allowed_profiles))
+        print(('Allowed profiles are: {}'.format(allowed_profiles)))
         sys.exit(1)
+
+def check_array(name, array, offset):
+    dim = len(array)
+    if (dim % offset != 0):
+        print(('Empty or incoherent {0} array'.format(name)))
+        sys.exit(1)
+    # Convert only geometry to AU. Leave the rest untouched
+    if (isAngstrom):
+        j = 0
+        for i in range(dim // offset):
+            array[j] /= CODATAdict[CODATAyear].ToAngstrom
+            array[j+1] /= CODATAdict[CODATAyear].ToAngstrom
+            array[j+2] /= CODATAdict[CODATAyear].ToAngstrom
+            j += offset
 
 def verify_geometry(keyword):
     data = keyword.get()
-    length=len(data)
-    if (length % 4 != 0):
-        print('Empty or incoherent geometry')
-        sys.exit(1)
-    # Convert only geometry to AU. Leave charges untouched
-    if (isAngstrom):
-        j = 0
-        for i in range(length/4):
-            data[j] /= CODATAdict[CODATAyear]
-            data[j+1] /= CODATAdict[CODATAyear]
-            data[j+2] /= CODATAdict[CODATAyear]
-            j += 4
+    check_array('GEOMETRY', data, 4)
 
 def verify_spheres(keyword):
     length=len(keyword.get())
@@ -700,15 +732,15 @@ def convert_length_array(keyword):
     length=len(keyword.get())
     if (isAngstrom):
         for i in range(length):
-            keyword[i] /= CODATAdict[CODATAyear]
+            keyword[i] /= CODATAdict[CODATAyear].ToAngstrom
 
 def convert_length_scalar(keyword):
     if (isAngstrom):
-        keyword[0] /= CODATAdict[CODATAyear]
+        keyword[0] /= CODATAdict[CODATAyear].ToAngstrom
 
 def convert_area_scalar(keyword):
     if (isAngstrom):
-        keyword[0] /= (CODATAdict[CODATAyear] * CODATAdict[CODATAyear])
+        keyword[0] /= (CODATAdict[CODATAyear].ToAngstrom * CODATAdict[CODATAyear].ToAngstrom)
 
 if __name__ == '__main__':
     main()

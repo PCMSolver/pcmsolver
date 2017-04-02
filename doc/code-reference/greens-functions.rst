@@ -13,6 +13,7 @@ generic Factory class.
 
 IGreensFunction
 ---------------
+
 .. doxygenclass:: IGreensFunction
    :project: PCMSolver
    :members:

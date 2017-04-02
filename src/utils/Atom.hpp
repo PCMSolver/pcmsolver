@@ -1,31 +1,30 @@
-/* pcmsolver_copyright_start */
-/*
- *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
- *     
- *     This file is part of PCMSolver.
- *     
- *     PCMSolver is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Lesser General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *     
- *     PCMSolver is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Lesser General Public License for more details.
- *     
- *     You should have received a copy of the GNU Lesser General Public License
- *     along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
- *     
- *     For information on the complete list of contributors to the
- *     PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+/**
+ * PCMSolver, an API for the Polarizable Continuum Model
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ *
+ * This file is part of PCMSolver.
+ *
+ * PCMSolver is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PCMSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For information on the complete list of contributors to the
+ * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
-/* pcmsolver_copyright_end */
 
 #ifndef ATOM_HPP
 #define ATOM_HPP
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -40,8 +39,11 @@
  *  \date 2011, 2016
  */
 
-struct Atom
-{
+namespace pcm {
+template <typename CreateObject> class Factory;
+
+namespace utils {
+struct Atom {
   /*! Atomic charge */
   double charge;
   /*! Atomic mass */
@@ -56,19 +58,38 @@ struct Atom
   std::string element;
   /*! Atomic symbol */
   std::string symbol;
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
-  Atom() {}
-  Atom(const std::string & elem, const std::string & sym,
-      double c, double m, double r,
-      const Eigen::Vector3d & coord, double scal = 1.2)
-    : charge(c), mass(m), radius(r), radiusScaling(scal),
-      position(coord), element(elem), symbol(sym) {}
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See
+                                     http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
+                                     */
+      Atom()
+      : charge(0.0),
+        mass(0.0),
+        radius(0.0),
+        radiusScaling(0.0),
+        position(Eigen::Vector3d::Zero()),
+        element("Dummy"),
+        symbol("Du") {}
+  Atom(const std::string & elem,
+       const std::string & sym,
+       double c,
+       double m,
+       double r,
+       const Eigen::Vector3d & coord,
+       double scal = 1.0)
+      : charge(c),
+        mass(m),
+        radius(r),
+        radiusScaling(scal),
+        position(coord),
+        element(elem),
+        symbol(sym) {}
 };
 
-/*! An atom is invalid if it has zero radius */
-bool invalid(const Atom & atom);
+typedef pcm::tuple<std::string, std::vector<Atom> > RadiiSet;
 
-/*! \brief Returns a reference to a vector<Atom> containing Bondi van der Waals radii.
+namespace detail {
+/*! \brief Returns a vector<Atom> containing Bondi van der Waals
+ *radii.
  *
  * The van der Waals radii are taken from:
  * --- A. Bondi, J. Phys. Chem. 68, 441-451 (1964)
@@ -77,18 +98,18 @@ bool invalid(const Atom & atom);
  *     J. Phys. Chem. A, 113, 5806-5812 (2009)
  * We are here using Angstrom as in the papers.
  */
-std::vector<Atom> & initBondi();
+RadiiSet initBondi();
 
-/*! \brief Returns a reference to a vector<Atom> containing UFF radii.
+/*! \brief Returns a vector<Atom> containing UFF radii.
  *
  * The UFF set of radii is taken from:
  * --- A. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard, W. M. Skiff,
  *     J. Am. Chem. Soc., 114, 10024-10035 (1992)
  * We are here using Angstrom as in the paper.
  */
-std::vector<Atom> & initUFF();
+RadiiSet initUFF();
 
-/*! \brief Returns a reference to a vector<Atom> containing Allinger's MM3 radii.
+/*! \brief Returns a vector<Atom> containing Allinger's MM3 radii.
  *
  * The MM3 set of radii is taken from:
  * --- N. L. Allinger, X. Zhou, J. Bergsma,
@@ -98,6 +119,16 @@ std::vector<Atom> & initUFF();
  * \note We *divide* the values reported in the paper by 1.2, as done in
  * the ADF program package.
  */
-std::vector<Atom> & initAllinger();
+RadiiSet initAllinger();
+
+typedef pcm::function<RadiiSet()> CreateRadiiSet;
+} // namespace detail
+
+Factory<detail::CreateRadiiSet> bootstrapRadiiSet();
+} // namespace utils
+
+/*! An atom is invalid if it has zero radius */
+bool invalid(const utils::Atom & atom);
+} // namespace pcm
 
 #endif // ATOM_HPP

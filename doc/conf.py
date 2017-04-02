@@ -1,4 +1,29 @@
 #!/usr/bin/env python
+
+
+#
+#  PCMSolver, an API for the Polarizable Continuum Model
+#  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+#
+#  This file is part of PCMSolver.
+#
+#  PCMSolver is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  PCMSolver is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
+#
+#  For information on the complete list of contributors to the
+#  PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
+#
+
 # -*- coding: utf-8 -*-
 #
 # PCMSolver documentation build configuration file, created by
@@ -456,8 +481,8 @@ def setup(app):
           }
     configure_file(rep, 'Doxyfile', in_path=project_doc_dir, suffix='.in')
     # Make a copy of api/pcmsolver.h and strip it of all
-    # PCMSOLVER_API markers in front of function signatures
-    rep = { 'PCMSOLVER_API ' : '' }
+    # PCMSolver_API markers in front of function signatures
+    rep = { 'PCMSolver_API ' : '' }
     configure_file(rep, 'pcmsolver.h',
                    in_path=os.path.join(project_root_dir, 'api'),
                    suffix='', prefix='mock_', out_path=project_doc_dir)

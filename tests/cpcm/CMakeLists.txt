@@ -1,11 +1,21 @@
-add_library(cpcm-tests OBJECT cpcm_gepol-C2H4_D2h.cpp cpcm_gepol-NH3.cpp cpcm_gepol-NH3_from-file.cpp cpcm_gepol-point.cpp cpcm_gepol-point_from-file.cpp cpcm_symmetry.cpp)
+add_library(cpcm-tests OBJECT cpcm_gepol-C2H4_D2h.cpp cpcm_gepol-H2O.cpp
+  cpcm_gepol-NH3.cpp cpcm_gepol-NH3_from-file.cpp cpcm_gepol-point.cpp
+  cpcm_gepol-point_from-file.cpp cpcm_symmetry.cpp
+  cpcm_tsless-point.cpp cpcm_tsless-NH3.cpp)
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(cpcm-tests custom_boost)
 endif()
 
+# Copy reference files to ${PROJECT_BINARY_DIR}/tests/bi_operators (aka ${CMAKE_CURRENT_BINARY_DIR})
+list(APPEND reference_files ASC-cpcm_gepol-point.npy ASC-cpcm_gepol-NH3.npy
+                            ASC-cpcm_gepol-H2O.npy ASC-cpcm_gepol-C2H4_D2h.npy)
+file(COPY ${reference_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 # cpcm_gepol-NH3_from-file.cpp test
 add_Catch_test(cpcm_gepol-NH3_from-file "solver;cpcm;cpcm_gepol-NH3_from-file")
 set_tests_properties(cpcm_gepol-NH3_from-file PROPERTIES DEPENDS cpcm_gepol-NH3)
+
+# cpcm_gepol-H2O.cpp test
+add_Catch_test(cpcm_gepol-H2O "solver;cpcm;cpcm_gepol-H2O")
 
 # cpcm_gepol-point_from-file.cpp test
 add_Catch_test(cpcm_gepol-point_from-file "solver;cpcm;cpcm_gepol-point_from-file")

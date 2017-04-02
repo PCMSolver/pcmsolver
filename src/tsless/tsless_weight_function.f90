@@ -1,22 +1,22 @@
 !pcmsolver_copyright_start
 !       PCMSolver, an API for the Polarizable Continuum Model
 !       Copyright (C) 2013-2016 Roberto Di Remigio, Luca Frediani and contributors
-! 
+!
 !       This file is part of PCMSolver.
-! 
+!
 !       PCMSolver is free software: you can redistribute it and/or modify
 !       it under the terms of the GNU Lesser General Public License as published by
 !       the Free Software Foundation, either version 3 of the License, or
 !       (at your option) any later version.
-! 
+!
 !       PCMSolver is distributed in the hope that it will be useful,
 !       but WITHOUT ANY WARRANTY; without even the implied warranty of
 !       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 !       GNU Lesser General Public License for more details.
-! 
+!
 !       You should have received a copy of the GNU Lesser General Public License
 !       along with PCMSolver.  If not, see <http://www.gnu.org/licenses/>.
-! 
+!
 !       For information on the complete list of contributors to the
 !       PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
 !pcmsolver_copyright_end
@@ -29,7 +29,7 @@ use tsless_precision
 implicit none
 
 !> \brief Describes a weight function
-!> Data fiels have dimensiont 2*nr_derivative+3
+!> Data fiels have dimensions 2*nr_derivative+3
 type, public :: weight_function
     !> Number of continuous derivatives
     integer(kind=regint_k) :: nr_derivative
@@ -49,13 +49,14 @@ private
 
 contains
 
-    function create_weight_function(nderiv, normalization, printer) result(wfun)
+    function create_weight_function(nderiv, normalization, dmin, printer) result(wfun)
 
     use, intrinsic :: iso_fortran_env, only: output_unit
 
     !> Passed variables
     integer(kind=regint_k), intent(in) :: nderiv
     integer(kind=regint_k), intent(in) :: normalization
+    real(kind=dp),          intent(in) :: dmin
     integer, optional,      intent(in) :: printer
     !> Output variables
     type(weight_function) :: wfun
@@ -69,7 +70,7 @@ contains
     end if
 
     call allocate_weight_function(wfun, nderiv)
-    call compute(wfun, normalization, print_out)
+    call compute(wfun, normalization, dmin, print_out)
 
     end function create_weight_function
 
@@ -106,11 +107,11 @@ contains
     !> \param[inout] wfun weight function
     !> \param[in] nord maximum number of continuous derivatives
     !> \param[in] ifun
+    !> \param[in] dmin minimal distance between sampling points
     !> \param[in] printer logical unit for printing
     !> ifun = 0 non-normalized function (gamma)
     !> ifun = 1 normalized function (omega)
-    !> d0: threshold value
-    subroutine compute(wfun, ifun, printer)
+    subroutine compute(wfun, ifun, dmin, printer)
 
     use, intrinsic :: iso_fortran_env, only: output_unit
 
@@ -119,14 +120,13 @@ contains
     !> Passed variables
     type(weight_function), intent(inout) :: wfun
     integer(kind=regint_k),   intent(in) :: ifun
+    real(kind=dp),            intent(in) :: dmin
     integer, optional,        intent(in) :: printer
     !> Local variables
     real(kind=dp), allocatable :: C(:, :)
     real(kind=dp), allocatable :: b(:)
     integer :: i, j, k, n, m
     integer :: print_out
-    !> Parameters
-    real(kind=dp),          parameter :: d0 = 0.0_dp
 
     if (present(printer)) then
        print_out = printer
@@ -163,13 +163,13 @@ contains
     do j = 0_regint_k, n
        do k = j, m - 1_regint_k
           C(j+2+n, k+1) = coefficients(j, k)
-          C(j+2+n, k+1) = C(j+2+n, k+1) * d0**(k-j)
+          C(j+2+n, k+1) = C(j+2+n, k+1) * dmin**(k-j)
        end do
     end do
     !   normalization condition
     if (ifun .eq. 1_regint_k) then
        do k = 0_regint_k, m - 1_regint_k
-          C(m, k+1) = (1.0_dp - d0**(k+1)) / (1.0_dp * (k+1))
+          C(m, k+1) = (1.0_dp - dmin**(k+1)) / (1.0_dp * (k+1))
        end do
     end if
     ! 1. Fill b vector (RHS)

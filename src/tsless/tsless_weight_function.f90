@@ -147,12 +147,8 @@ contains
     else
        m = 2*n + 3
     end if
-    !> Allocations and clean-up
+    !> Allocate, clean up and fill coefficient matrix C
     allocate(C(m, m)); C = 0.0_dp
-    allocate(b(m)); b = 0.0_dp
-
-    ! Solve C * wfun%weight_0 = b
-    ! 0. Fill coefficient matrix
     !   l = 1 boundary conditions
     do j = 0_regint_k, n
        do k = j, m - 1_regint_k
@@ -172,9 +168,10 @@ contains
           C(m, k+1) = (1.0_dp - dmin**(k+1)) / (1.0_dp * (k+1))
        end do
     end if
-    ! 1. Fill b vector (RHS)
+    ! Allocate, clean up and fill b vector (RHS)
+    allocate(b(m)); b = 0.0_dp
     b(1) = 1.0_dp
-    if (ifun .eq. 1) b(m) = 1.0_dp
+    if (ifun .eq. 1) b(m) = 1.0_dp - dmin
     ! 2. Solve linear system of equations
     call solve_linear_system(ndim=m, A=C, b=b, x=wfun%weight_1)
     ! write function and derivatives

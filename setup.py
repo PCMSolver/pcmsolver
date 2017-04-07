@@ -40,7 +40,7 @@ Options:
   --build-boost=<FORCE_CUSTOM_BOOST>       Deactivate Boost detection and build on-the-fly <ON/OFF> [default: OFF].
   --static                                 Create only the static library [default: False].
   --eigen=<EIGEN3_ROOT>                    Root directory for Eigen3 [default: ''].
-  --type=<TYPE>                            Set the CMake build type (debug, release, or relwithdeb) [default: release].
+  --type=<TYPE>                            Set the CMake build type (debug, release, relwithdebinfo, minsizerel) [default: debug].
   --generator=<STRING>                     Set the CMake build system generator [default: Unix Makefiles].
   --show                                   Show CMake command and exit.
   --cmake-executable=<CMAKE_EXECUTABLE>    Set the CMake executable [default: cmake].

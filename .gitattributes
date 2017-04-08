@@ -74,4 +74,5 @@ doc/gfx/cloc_tools.py.in  licensefile=.githooks/LICENSE-Python
 src/make_cmake_files.py   licensefile=.githooks/LICENSE-Python
 tools/codata.py.in        licensefile=.githooks/LICENSE-Python
 tools/pcmsolver.py.in     licensefile=.githooks/LICENSE-Python
+tools/plot_cavity.py.in   licensefile=.githooks/LICENSE-Python
 tests/make_cmake_files.py licensefile=.githooks/LICENSE-Python

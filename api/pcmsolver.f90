@@ -47,6 +47,7 @@ module pcmsolver
   public pcmsolver_print_surface_function
   public pcmsolver_save_surface_functions
   public pcmsolver_save_surface_function
+  public pcmsolver_save_surface_function_to_npz
   public pcmsolver_load_surface_function
   public pcmsolver_write_timings
 
@@ -200,6 +201,14 @@ module pcmsolver
       type(c_ptr), value :: context
       character(kind=c_char, len=1), intent(in) :: name(*)
     end subroutine pcmsolver_save_surface_function
+
+    subroutine pcmsolver_save_surface_function_to_npz(context, npz_name, name, suffix) bind(C)
+      import
+      type(c_ptr), value :: context
+      character(kind=c_char, len=1), intent(in) :: npz_name(*)
+      character(kind=c_char, len=1), intent(in) :: name(*)
+      character(kind=c_char, len=1), intent(in) :: suffix(*)
+    end subroutine pcmsolver_save_surface_function_to_npz
 
     subroutine pcmsolver_load_surface_function(context, name) bind(C)
       import

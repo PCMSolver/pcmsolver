@@ -75,9 +75,10 @@ void ICavity::saveCavity(const std::string & fname) {
   cnpy::custom::npz_save(fname, "normals", elementNormal_);
   for (PCMSolverIndex i = 0; i < nElements_; ++i) {
     // Write vertices
-    cnpy::custom::npz_save(fname, "vertices_" + std::to_string(i), elements_[i].vertices());
+    cnpy::custom::npz_save(
+        fname, "vertices_" + pcm::to_string(i), elements_[i].vertices());
     // Write arcs
-    cnpy::custom::npz_save(fname, "arcs_" + std::to_string(i), elements_[i].arcs());
+    cnpy::custom::npz_save(fname, "arcs_" + pcm::to_string(i), elements_[i].arcs());
   }
 }
 
@@ -130,14 +131,13 @@ void ICavity::loadCavity(const std::string & fname) {
     Sphere sph(elementSphereCenter_.col(i), elementRadius_(i));
     Eigen::Matrix3Xd vertices, arcs;
     // 6. Get vertices and arcs
-    for (PCMSolverIndex i = 0; i < nElements_; ++i) {
-      cnpy::NpyArray raw_vertices = loaded_cavity["vertices_" + std::to_string(i)];
-      vertices = cnpy::custom::npy_to_eigen<double>(raw_vertices);
-      cnpy::NpyArray raw_arcs = loaded_cavity["arcs_" + std::to_string(i)];
-      arcs = cnpy::custom::npy_to_eigen<double>(raw_arcs);
-    }
+    cnpy::NpyArray raw_vertices = loaded_cavity["vertices_" + pcm::to_string(i)];
+    vertices = cnpy::custom::npy_to_eigen<double>(raw_vertices);
+    cnpy::NpyArray raw_arcs = loaded_cavity["arcs_" + pcm::to_string(i)];
+    arcs = cnpy::custom::npy_to_eigen<double>(raw_arcs);
     if (arcs.cols() != vertices.cols())
-      PCMSOLVER_ERROR("Inconsistent number of vertices read from file for element " + to_string(i));
+      PCMSOLVER_ERROR("Inconsistent number of vertices read from file for element " +
+                      pcm::to_string(i));
     int nv = vertices.cols();
     // Populate vertices and arcs
     elements_.push_back(Element(nv,

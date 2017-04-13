@@ -1,0 +1,21 @@
+UNITS = AU
+CAVITY
+{
+  TYPE = GEPOL
+  MODE = ATOMS
+  ATOMS = [1]
+  RADII = [1.2]
+}
+
+MEDIUM
+{
+  SOLVENT = WATER
+}
+
+FQ
+{
+  # X, Y, Z, CHI, ETA
+  FRAGMENTS = [0.0, 0.0, 0.0, 1.0, 2.0,
+               0.0, 0.0, 0.0, 1.0, 2.0]
+}
+

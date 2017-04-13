@@ -75,9 +75,10 @@ void ICavity::saveCavity(const std::string & fname) {
   cnpy::custom::npz_save(fname, "normals", elementNormal_);
   for (PCMSolverIndex i = 0; i < nElements_; ++i) {
     // Write vertices
-    cnpy::custom::npz_save(fname, "vertices_" + std::to_string(i), elements_[i].vertices());
+    cnpy::custom::npz_save(
+        fname, "vertices_" + pcm::to_string(i), elements_[i].vertices());
     // Write arcs
-    cnpy::custom::npz_save(fname, "arcs_" + std::to_string(i), elements_[i].arcs());
+    cnpy::custom::npz_save(fname, "arcs_" + pcm::to_string(i), elements_[i].arcs());
   }
 }
 
@@ -137,7 +138,8 @@ void ICavity::loadCavity(const std::string & fname) {
       arcs = cnpy::custom::npy_to_eigen<double>(raw_arcs);
     }
     if (arcs.cols() != vertices.cols())
-      PCMSOLVER_ERROR("Inconsistent number of vertices read from file for element " + to_string(i));
+      PCMSOLVER_ERROR("Inconsistent number of vertices read from file for element " +
+                      to_string(i));
     int nv = vertices.cols();
     // Populate vertices and arcs
     elements_.push_back(Element(nv,

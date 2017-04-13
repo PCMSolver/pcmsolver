@@ -67,6 +67,7 @@ tests/green/*.cpp                licensefile=.githooks/LICENSE-C++
 tests/iefpcm/*.cpp               licensefile=.githooks/LICENSE-C++
 tests/input/*.cpp                licensefile=.githooks/LICENSE-C++
 tests/numerical_quadrature/*.cpp licensefile=.githooks/LICENSE-C++
+tests/utils/*.cpp                licensefile=.githooks/LICENSE-C++
 
 # tools
 doc/conf.py               licensefile=.githooks/LICENSE-Python

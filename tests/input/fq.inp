@@ -1,4 +1,4 @@
-UNITS = AU
+UNITS = Angstrom
 CAVITY
 {
   TYPE = GEPOL

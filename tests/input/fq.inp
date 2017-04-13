@@ -12,10 +12,10 @@ MEDIUM
   SOLVENT = WATER
 }
 
-FQ
+CHARGEDISTRIBUTION
 {
   # X, Y, Z, CHI, ETA
-  FRAGMENTS = [0.0, 0.0, 0.0, 1.0, 2.0,
-               0.0, 0.0, 0.0, 1.0, 2.0]
+  FQ = [0.0, 0.0, 0.0, 1.0, 2.0,
+        0.0, 0.0, 0.0, 1.0, 2.0]
 }
 

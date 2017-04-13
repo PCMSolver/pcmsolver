@@ -166,12 +166,12 @@ void Input::reader(const std::string & filename) {
       std::vector<double> mono = chgdist.getDblVec("MONOPOLES");
       int j = 0;
       int n = int(mono.size() / 4);
-      multipoles_.monopoles = Eigen::VectorXd::Zero(n);
-      multipoles_.monopolesSites = Eigen::Matrix3Xd::Zero(3, n);
+      fragments_.monopoles = Eigen::VectorXd::Zero(n);
+      fragments_.monopolesSites = Eigen::Matrix3Xd::Zero(3, n);
       for (int i = 0; i < n; ++i) {
-        multipoles_.monopolesSites.col(i) =
+        fragments_.monopolesSites.col(i) =
             (Eigen::Vector3d() << mono[j], mono[j + 1], mono[j + 2]).finished();
-        multipoles_.monopoles(i) = mono[j + 3];
+        fragments_.monopoles(i) = mono[j + 3];
         j += 4;
       }
     }
@@ -180,14 +180,32 @@ void Input::reader(const std::string & filename) {
       std::vector<double> dipo = chgdist.getDblVec("DIPOLES");
       int j = 0;
       int n = int(dipo.size() / 6);
-      multipoles_.dipoles = Eigen::Matrix3Xd::Zero(3, n);
-      multipoles_.dipolesSites = Eigen::Matrix3Xd::Zero(3, n);
+      fragments_.dipoles = Eigen::Matrix3Xd::Zero(3, n);
+      fragments_.dipolesSites = Eigen::Matrix3Xd::Zero(3, n);
       for (int i = 0; i < n; ++i) {
-        multipoles_.dipolesSites.col(i) =
+        fragments_.dipolesSites.col(i) =
             (Eigen::Vector3d() << dipo[j], dipo[j + 1], dipo[j + 2]).finished();
-        multipoles_.dipoles.col(i) =
+        fragments_.dipoles.col(i) =
             (Eigen::Vector3d() << dipo[j + 3], dipo[j + 4], dipo[j + 5]).finished();
         j += 6;
+      }
+    }
+    // Set fluctuating charges
+    isFQ_ = false;
+    if (chgdist.getKey<std::vector<double> >("FQ").isDefined()) {
+      isFQ_ = true;
+      std::vector<double> fq = chgdist.getDblVec("FQ");
+      int j = 0;
+      int n = int(fq.size() / 5);
+      fragments_.FQSites = Eigen::Matrix3Xd::Zero(3, n);
+      fragments_.FQChi = Eigen::VectorXd::Zero(n);
+      fragments_.FQEta = Eigen::VectorXd::Zero(n);
+      for (int i = 0; i < n; ++i) {
+        fragments_.FQSites.col(i) =
+            (Eigen::Vector3d() << fq[j], fq[j + 1], fq[j + 2]).finished();
+        fragments_.FQChi(i) = fq[j + 3];
+        fragments_.FQEta(i) = fq[j + 4];
+        j += 5;
       }
     }
   }
@@ -264,6 +282,7 @@ void Input::reader(const PCMInput & host_input) {
   correction_ = host_input.correction;
   hermitivitize_ = true;
   isDynamic_ = false;
+  isFQ_ = false;
 
   providedBy_ = std::string("host-side");
 }

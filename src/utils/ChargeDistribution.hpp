@@ -52,6 +52,12 @@ struct ChargeDistribution {
   Eigen::Matrix3Xd dipoles;
   /*! Dipoles sites */
   Eigen::Matrix3Xd dipolesSites;
+  /*! FQ electronegativities */
+  Eigen::VectorXd FQChi;
+  /*! FQ hardnesses */
+  Eigen::VectorXd FQEta;
+  /*! FQ sites */
+  Eigen::Matrix3Xd FQSites;
 };
 
 /*! \typedef GFValue

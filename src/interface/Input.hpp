@@ -46,12 +46,14 @@ struct SolverData;
 } // namespace pcm
 
 #include "utils/ChargeDistribution.hpp"
+#include "utils/MMFQ.hpp"
 #include "utils/Molecule.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
 
 namespace pcm {
 using utils::ChargeDistribution;
+using utils::MMFQ;
 using utils::Solvent;
 using utils::Sphere;
 
@@ -131,7 +133,8 @@ public:
   BIOperatorData integratorParams() const;
   /// @}
 
-  ChargeDistribution fragments() const { return fragments_; }
+  ChargeDistribution multipoles() const { return multipoles_; }
+  MMFQ fragments() const { return fragments_; }
   bool MEPfromMolecule() { return MEPfromMolecule_; }
 
   /// Operators
@@ -246,8 +249,10 @@ private:
   bool isFQ_;
   /// Whether to calculate the MEP from the molecular geometry
   bool MEPfromMolecule_;
-  /// Classical charge distribution
-  ChargeDistribution fragments_;
+  /// Classical charge distribution of point multipoles
+  ChargeDistribution multipoles_;
+  /// Classical fluctuating charges MM force field
+  MMFQ fragments_;
   /// Who performed the syntactic input parsing
   std::string providedBy_;
 };

@@ -59,8 +59,6 @@ def parse_pcm_input(inputFile, write_out=False):
     Parsing occurs after case conversion, so that input reading is case-insensitive.
     Optionally, save the result of parsing to file.
 
-    Constructs a Psi4 JK object from an input basis.
-
     Parameters
     ----------
     inputFile: str
@@ -374,8 +372,17 @@ def setup_keywords():
     charge_distribution.add_kw('DIPOLES', 'DBL_ARRAY')
     top.add_sect(charge_distribution)
 
-    return top
+    # FQ section
+    # Set a classical fluctuating charge force field
+    # No additional spheres will be generated.
+    fq = getkw.Section('FQ', callback = verify_fq)
+    # FQ force field
+    # Valid values: array of doubles in format [x, y, z, chi, eta]
+    fq.add_kw('FRAGMENTS', 'DBL_ARRAY')
+    # TODO: smearing parameters
+    top.add_sect(fq)
 
+    return top
 
 def verify_top(section):
     global isAngstrom, CODATAyear

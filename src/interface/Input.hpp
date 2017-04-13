@@ -116,6 +116,7 @@ public:
   bool hermitivitize() const { return hermitivitize_; }
   bool isDynamic() const { return isDynamic_; }
   double integratorScaling() const { return integratorScaling_; }
+  bool isFQ() const { return isFQ_; }
   /// @}
 
   /// Keeps track of who did the parsing: the API or the host program
@@ -130,7 +131,7 @@ public:
   BIOperatorData integratorParams() const;
   /// @}
 
-  ChargeDistribution multipoles() const { return multipoles_; }
+  ChargeDistribution fragments() const { return fragments_; }
   bool MEPfromMolecule() { return MEPfromMolecule_; }
 
   /// Operators
@@ -249,10 +250,12 @@ private:
   std::vector<double> origin_;
   /// Molecular geometry
   std::vector<double> geometry_;
+  /// Whether this is a FQ calculation
+  bool isFQ_;
   /// Whether to calculate the MEP from the molecular geometry
   bool MEPfromMolecule_;
-  /// Classical charge distribution of point multipoles
-  ChargeDistribution multipoles_;
+  /// Classical charge distribution
+  ChargeDistribution fragments_;
   /// Who performed the syntactic input parsing
   std::string providedBy_;
 };

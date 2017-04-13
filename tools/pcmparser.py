@@ -375,12 +375,12 @@ def setup_keywords():
     # FQ section
     # Set a classical fluctuating charge force field
     # No additional spheres will be generated.
-    fq = getkw.Section('FQ', callback = verify_fq)
+    fq = Section('FQ', callback = verify_fq)
     # FQ force field
     # Valid values: array of doubles in format [x, y, z, chi, eta]
-    fq.add_kw('FRAGMENTS', 'DBL_ARRAY')
-    # TODO: smearing parameters
-    top.add_sect(fq)
+    charge_distribution.add_kw('FQ', 'DBL_ARRAY')
+    # TODO: smearing parameters for FQ
+    top.add_sect(charge_distribution)
 
     return top
 

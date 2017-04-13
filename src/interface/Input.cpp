@@ -173,12 +173,12 @@ void Input::reader(const std::string & filename) {
       std::vector<double> mono = chgdist.getDblVec("MONOPOLES");
       int j = 0;
       int n = int(mono.size() / 4);
-      fragments_.monopoles = Eigen::VectorXd::Zero(n);
-      fragments_.monopolesSites = Eigen::Matrix3Xd::Zero(3, n);
+      multipoles_.monopoles = Eigen::VectorXd::Zero(n);
+      multipoles_.monopolesSites = Eigen::Matrix3Xd::Zero(3, n);
       for (int i = 0; i < n; ++i) {
-        fragments_.monopolesSites.col(i) =
+        multipoles_.monopolesSites.col(i) =
             (Eigen::Vector3d() << mono[j], mono[j + 1], mono[j + 2]).finished();
-        fragments_.monopoles(i) = mono[j + 3];
+        multipoles_.monopoles(i) = mono[j + 3];
         j += 4;
       }
     }
@@ -187,12 +187,12 @@ void Input::reader(const std::string & filename) {
       std::vector<double> dipo = chgdist.getDblVec("DIPOLES");
       int j = 0;
       int n = int(dipo.size() / 6);
-      fragments_.dipoles = Eigen::Matrix3Xd::Zero(3, n);
-      fragments_.dipolesSites = Eigen::Matrix3Xd::Zero(3, n);
+      multipoles_.dipoles = Eigen::Matrix3Xd::Zero(3, n);
+      multipoles_.dipolesSites = Eigen::Matrix3Xd::Zero(3, n);
       for (int i = 0; i < n; ++i) {
-        fragments_.dipolesSites.col(i) =
+        multipoles_.dipolesSites.col(i) =
             (Eigen::Vector3d() << dipo[j], dipo[j + 1], dipo[j + 2]).finished();
-        fragments_.dipoles.col(i) =
+        multipoles_.dipoles.col(i) =
             (Eigen::Vector3d() << dipo[j + 3], dipo[j + 4], dipo[j + 5]).finished();
         j += 6;
       }

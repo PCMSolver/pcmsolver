@@ -131,7 +131,7 @@ public:
   BIOperatorData integratorParams() const;
   /// @}
 
-  ChargeDistribution fragments() const { return fragments_; }
+  ChargeDistribution multipoles() const { return multipoles_; }
   bool MEPfromMolecule() { return MEPfromMolecule_; }
 
   /// Operators
@@ -254,8 +254,8 @@ private:
   bool isFQ_;
   /// Whether to calculate the MEP from the molecular geometry
   bool MEPfromMolecule_;
-  /// Classical charge distribution
-  ChargeDistribution fragments_;
+  /// Classical charge distribution of point multipoles
+  ChargeDistribution multipoles_;
   /// Who performed the syntactic input parsing
   std::string providedBy_;
 };

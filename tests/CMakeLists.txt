@@ -19,6 +19,7 @@ add_subdirectory(bi_operators)
 add_subdirectory(cpcm)
 add_subdirectory(iefpcm)
 add_subdirectory(utils)
+add_subdirectory(mmfq)
 
 add_executable(unit_tests unit_tests.cpp
   $<TARGET_OBJECTS:bi_operators-tests>
@@ -30,6 +31,7 @@ add_executable(unit_tests unit_tests.cpp
   $<TARGET_OBJECTS:input-tests>
   $<TARGET_OBJECTS:numerical_quadrature-tests>
   $<TARGET_OBJECTS:utils-tests>
+  $<TARGET_OBJECTS:mmfq-tests>
   )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(unit_tests custom_boost)

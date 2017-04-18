@@ -199,19 +199,22 @@ void Input::reader(const std::string & filename) {
     }
     // Set fluctuating charges
     isFQ_ = false;
-    if (chgdist.getKey<std::vector<double> >("FQ").isDefined()) {
+    const Section & mmfq = input_.getSect("MMFQ");
+    if (mmfq.isDefined()) {
       isFQ_ = true;
-      std::vector<double> fq = chgdist.getDblVec("FQ");
+      fragments_.nSitesPerFragment =
+          static_cast<PCMSolverIndex>(mmfq.getInt("SITESPERFRAGMENT"));
+      std::vector<double> sites = mmfq.getDblVec("SITES");
       int j = 0;
-      int n = int(fq.size() / 5);
-      fragments_.FQSites = Eigen::Matrix3Xd::Zero(3, n);
-      fragments_.FQChi = Eigen::VectorXd::Zero(n);
-      fragments_.FQEta = Eigen::VectorXd::Zero(n);
+      int n = int(sites.size() / 5);
+      fragments_.sites = Eigen::Matrix3Xd::Zero(3, n);
+      fragments_.chi = Eigen::VectorXd::Zero(n);
+      fragments_.eta = Eigen::VectorXd::Zero(n);
       for (int i = 0; i < n; ++i) {
-        fragments_.FQSites.col(i) =
-            (Eigen::Vector3d() << fq[j], fq[j + 1], fq[j + 2]).finished();
-        fragments_.FQChi(i) = fq[j + 3];
-        fragments_.FQEta(i) = fq[j + 4];
+        fragments_.sites.col(i) =
+            (Eigen::Vector3d() << sites[j], sites[j + 1], sites[j + 2]).finished();
+        fragments_.chi(i) = sites[j + 3];
+        fragments_.eta(i) = sites[j + 4];
         j += 5;
       }
     }

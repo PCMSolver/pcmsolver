@@ -11,7 +11,7 @@ if(BUILD_CUSTOM_BOOST)
   add_dependencies(cpcm-tests custom_boost)
 endif()
 
-# Copy reference files to ${PROJECT_BINARY_DIR}/tests/bi_operators (aka ${CMAKE_CURRENT_BINARY_DIR})
+# Copy reference files to ${PROJECT_BINARY_DIR}/tests/cpcm (aka ${CMAKE_CURRENT_BINARY_DIR})
 list(APPEND reference_files
   ASC-cpcm_gepol-point.npy
   ASC-cpcm_gepol-NH3.npy

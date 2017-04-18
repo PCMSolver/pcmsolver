@@ -28,6 +28,7 @@ list(APPEND _objects
     $<TARGET_OBJECTS:solver>
     $<TARGET_OBJECTS:utils>
     $<TARGET_OBJECTS:getkw>
+    $<TARGET_OBJECTS:mmfq>
     )
 
 if(NOT STATIC_LIBRARY_ONLY)

@@ -131,12 +131,10 @@ void ICavity::loadCavity(const std::string & fname) {
     Sphere sph(elementSphereCenter_.col(i), elementRadius_(i));
     Eigen::Matrix3Xd vertices, arcs;
     // 6. Get vertices and arcs
-    for (PCMSolverIndex i = 0; i < nElements_; ++i) {
-      cnpy::NpyArray raw_vertices = loaded_cavity["vertices_" + pcm::to_string(i)];
-      vertices = cnpy::custom::npy_to_eigen<double>(raw_vertices);
-      cnpy::NpyArray raw_arcs = loaded_cavity["arcs_" + pcm::to_string(i)];
-      arcs = cnpy::custom::npy_to_eigen<double>(raw_arcs);
-    }
+    cnpy::NpyArray raw_vertices = loaded_cavity["vertices_" + pcm::to_string(i)];
+    vertices = cnpy::custom::npy_to_eigen<double>(raw_vertices);
+    cnpy::NpyArray raw_arcs = loaded_cavity["arcs_" + pcm::to_string(i)];
+    arcs = cnpy::custom::npy_to_eigen<double>(raw_arcs);
     if (arcs.cols() != vertices.cols())
       PCMSOLVER_ERROR("Inconsistent number of vertices read from file for element " +
                       pcm::to_string(i));

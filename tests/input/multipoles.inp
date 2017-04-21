@@ -1,0 +1,22 @@
+units = angstrom
+codata = 2002
+medium
+{
+    solvertype = iefpcm
+    solvent = acetonitrile
+}
+
+cavity
+{
+    type = gepol
+    area = 10.0
+    mode = implicit
+}
+
+chargedistribution
+{
+  # x, y, z, Q
+  monopoles = [0.0, 0.0, 0.0, 1.0]
+  # x, y, z, mu_x, mu_y, mu_z
+  dipoles = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+}

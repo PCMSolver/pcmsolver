@@ -7,6 +7,10 @@
 - A Python script, using Matplotlib, to plot the cavity.
   The script can also color-map the finite elements according to the values of
   a surface function.
+- The input learnt to parse the additional `ChargeDistribution` section.
+  It is possible to specify a classical charge distribution of point multipoles.
+  This can be an additional source of electrostatic potential for the calculation
+  of the ASC.
 
 ## [Version 1.1.10] - 2017-03-27
 

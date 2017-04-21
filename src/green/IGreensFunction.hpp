@@ -72,9 +72,17 @@ typedef function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> Kerne
 /*! \typedef KernelD
  *  \brief functor handle to the kernelD method
  */
-typedef function<double(const Eigen::Vector3d &,
-                        const Eigen::Vector3d &,
-                        const Eigen::Vector3d &)> KernelD;
+typedef pcm::function<double(const Eigen::Vector3d &,
+                             const Eigen::Vector3d &,
+                             const Eigen::Vector3d &)> KernelD;
+
+/*! \typedef DerivativeProbe
+ *  \brief functor handle to the derivativeProbe method
+ *  \note This is the directional derivative wrt the probe point
+ */
+typedef pcm::function<double(const Eigen::Vector3d &,
+                             const Eigen::Vector3d &,
+                             const Eigen::Vector3d &)> DerivativeProbe;
 
 class IGreensFunction {
 public:
@@ -115,6 +123,9 @@ public:
 
   KernelS exportKernelS() const { return exportKernelS_impl(); }
   KernelD exportKernelD() const { return exportKernelD_impl(); }
+  DerivativeProbe exportDerivativeProbe() const {
+    return exportDerivativeProbe_impl();
+  }
 
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const = 0;
@@ -179,6 +190,7 @@ protected:
 
   virtual KernelS exportKernelS_impl() const = 0;
   virtual KernelD exportKernelD_impl() const = 0;
+  virtual DerivativeProbe exportDerivativeProbe_impl() const = 0;
 
   /**@{ Methods to compute the diagonal of the matrix representation of the S and D
    *    operators by approximate collocation. */

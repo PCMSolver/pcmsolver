@@ -13,10 +13,13 @@ Cavity {
        Spheres = [Array of Doubles]
 }
 Medium {
+       Nonequilibrium = [Bool]
        Solvent = [String]
        SolverType = [String]
        MatrixSymm = [Bool]
        Correction = [Double]
+       DiagonalIntegrator = [String]
+       DiagonalScaling = [Double]
        ProbeRadius = [Double]
        Green<GreenTag> {
              Type = [String]
@@ -32,4 +35,12 @@ Medium {
              InterfaceOrigin = [Array of Doubles]
              MaxL = [Integer]
        }
+}
+Molecule {
+   MEP = [Bool]
+   Geometry = [Double]
+}
+ChargeDistribution {
+  Monopoles = [Double]
+  Dipoles = [Double]
 }

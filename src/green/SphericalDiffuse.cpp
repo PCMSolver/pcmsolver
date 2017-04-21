@@ -196,6 +196,16 @@ KernelD SphericalDiffuse<ProfilePolicy>::exportKernelD_impl() const {
       &SphericalDiffuse<ProfilePolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
 }
 
+template <typename DerivativeTraits>
+DerivativeProbe SphericalDiffuse<DerivativeTraits>::exportDerivativeProbe_impl()
+    const {
+  return pcm::bind(&SphericalDiffuse<DerivativeTraits>::derivativeProbe,
+                   *this,
+                   pcm::_1,
+                   pcm::_2,
+                   pcm::_3);
+}
+
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::singleLayer_impl(const Element & e,
                                                          double factor) const {

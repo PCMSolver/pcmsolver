@@ -331,10 +331,7 @@ void pcmsolver_save_surface_functions(pcmsolver_context_t * context) {
 void pcm::Meddle::saveSurfaceFunctions() const {
   hostWriter_("\nDumping surface functions to .npy files");
   BOOST_FOREACH (SurfaceFunctionPair pair, functions_) {
-    unsigned int dim = static_cast<unsigned int>(pair.second.size());
-    const unsigned int shape[] = {dim};
-    std::string fname = pair.first + ".npy";
-    cnpy::npy_save(fname, pair.second.data(), shape, 1, "w", true);
+    cnpy::custom::npy_save(pair.first + ".npy", pair.second);
   }
 }
 
@@ -343,13 +340,8 @@ void pcmsolver_save_surface_function(pcmsolver_context_t * context,
   AS_TYPE(pcm::Meddle, context)->saveSurfaceFunction(name);
 }
 void pcm::Meddle::saveSurfaceFunction(const char * name) const {
-  std::string functionName(name);
-  std::string fname = functionName + ".npy";
-
-  SurfaceFunctionMapConstIter it = functions_.find(functionName);
-  unsigned int dim = static_cast<unsigned int>(it->second.size());
-  const unsigned int shape[] = {dim};
-  cnpy::npy_save(fname, it->second.data(), shape, 1, "w", true);
+  SurfaceFunctionMapConstIter it = functions_.find(name);
+  cnpy::custom::npy_save(std::string(name) + ".npy", it->second);
 }
 
 void pcmsolver_load_surface_function(pcmsolver_context_t * context,

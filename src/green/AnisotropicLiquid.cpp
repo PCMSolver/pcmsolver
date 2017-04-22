@@ -94,6 +94,16 @@ KernelD AnisotropicLiquid<DerivativeTraits>::exportKernelD_impl() const {
 }
 
 template <typename DerivativeTraits>
+DerivativeProbe AnisotropicLiquid<DerivativeTraits>::exportDerivativeProbe_impl()
+    const {
+  return pcm::bind(&AnisotropicLiquid<DerivativeTraits>::derivativeProbe,
+                   *this,
+                   pcm::_1,
+                   pcm::_2,
+                   pcm::_3);
+}
+
+template <typename DerivativeTraits>
 double AnisotropicLiquid<DerivativeTraits>::singleLayer_impl(
     const Element & /* e */,
     double /* factor */) const {

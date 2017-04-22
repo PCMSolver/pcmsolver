@@ -40,11 +40,13 @@ struct GreenData;
 struct SolverData;
 } // namespace pcm
 
+#include "utils/ChargeDistribution.hpp"
 #include "utils/Molecule.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
 
 namespace pcm {
+using utils::ChargeDistribution;
 using utils::Solvent;
 using utils::Sphere;
 
@@ -133,6 +135,7 @@ public:
   BIOperatorData integratorParams() const;
   /// @}
 
+  ChargeDistribution multipoles() const { return multipoles_; }
   bool MEPfromMolecule() { return MEPfromMolecule_; }
 
   /// Operators
@@ -267,6 +270,8 @@ private:
   std::vector<double> geometry_;
   /// Whether to calculate the MEP from the molecular geometry
   bool MEPfromMolecule_;
+  /// Classical charge distribution of point multipoles
+  ChargeDistribution multipoles_;
   /// Who performed the syntactic input parsing
   std::string providedBy_;
 };

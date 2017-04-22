@@ -450,6 +450,20 @@ def setup_keywords():
     molecule.add_kw('MEP', 'BOOL', True)
     top.add_sect(molecule)
 
+    # ChargeDistribution section
+    # Set a classical charge distribution, inside or outside the cavity
+    # No additional spheres will be generated.
+    charge_distribution = getkw.Section('CHARGEDISTRIBUTION', callback = verify_charge_distribution)
+    # Monopoles
+    # Valid values: array of doubles in format [x, y, z, Q]
+    # Notes: charges are always in atomic units
+    charge_distribution.add_kw('MONOPOLES', 'DBL_ARRAY')
+    # Dipoles
+    # Valid values: array of doubles in format [x, y, z, mu_x, mu_y, mu_z]
+    # Notes: dipole moment components are always in atomic units
+    charge_distribution.add_kw('DIPOLES', 'DBL_ARRAY')
+    top.add_sect(charge_distribution)
+
     return top
 
 def verify_top(section):
@@ -718,6 +732,12 @@ def check_array(name, array, offset):
 def verify_geometry(keyword):
     data = keyword.get()
     check_array('GEOMETRY', data, 4)
+
+def verify_charge_distribution(section):
+    mono = section.get('MONOPOLES').get()
+    check_array('MONOPOLES', mono, 4)
+    dipole = section.get('DIPOLES').get()
+    check_array('DIPOLES', dipole, 6)
 
 def verify_spheres(keyword):
     length=len(keyword.get())

@@ -15,6 +15,21 @@ core parameters.
 In this page, input style and input parameters available in Method 1 will be
 documented.
 
+Note that it is also possible to run the module standalone and use a classical charge
+distribution.
+The classical charge distribution can be specified by giving a molecular geometry
+in the molecule section and an additional point multipoles distribution
+in the charge distribution section.
+The ``run_pcm.x`` executable has to be compiled for a standalone run with:
+
+.. code-block:: bash
+
+   python pcmsolver.py -x molecule.inp
+
+where the ``molecule.inp`` input file looks like:
+
+.. literalinclude:: ../snippets/molecule.inp
+
 Input style
 -----------
 
@@ -46,6 +61,14 @@ Available sections:
   i.e. the Green's functions inside and outside the cavity;
 + Green, subsection of medium. Sets up the Green's function inside and
   outside the cavity.
++ Molecule: molecular geometry to be used in a standalone run.
++ ChargeDistribution: sets up a classical multipolar (currently up to dipoles)
+  charge distribution to use as additional source of electrostatic potential.
+
+.. note::
+
+   The Molecule and ChargeDistribution sections only make sense in a standalone run,
+   i.e. when using the ``run_pcm.x`` executable.
 
 .. warning::
 
@@ -433,6 +456,27 @@ where the ``molecule.inp`` input file looks like:
      Coordinates and charges of the molecular aggregate.
      Format is :math:`[\ldots, x_i, y_i, z_i, Q_i, \ldots]`
      Charges are always assumed to be in atomic units
+
+     * **Type**: array of doubles
+
+ChargeDistribution section keywords
+-----------------------------------
+
+Set a classical charge distribution, inside or outside the cavity
+No additional spheres will be generated.
+
+.. glossary::
+
+   Monopoles
+     Array of point charges
+     Format is :math:`[\ldots, x_i, y_i, z_i, Q_i, \ldots]`
+
+     * **Type**: array of doubles
+
+   Dipoles
+     Array of point dipoles.
+     Format is :math:`[\ldots, x_i, y_i, z_i, \mu_{x_i}, \mu_{y_i}, \mu_{z_i} \ldots]`
+     The dipole moment components are always read in atomic units.
 
      * **Type**: array of doubles
 

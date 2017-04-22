@@ -187,7 +187,7 @@ module pcmsolver
     subroutine pcmsolver_print_surface_function(context, name) bind(C)
       import
       type(c_ptr), value :: context
-      character(c_char), intent(in) :: name
+      character(c_char), intent(in) :: name(*)
     end subroutine pcmsolver_print_surface_function
 
     subroutine pcmsolver_save_surface_functions(context) bind(C)
@@ -198,13 +198,13 @@ module pcmsolver
     subroutine pcmsolver_save_surface_function(context, name) bind(C)
       import
       type(c_ptr), value :: context
-      character(kind=c_char, len=1), intent(in) :: name
+      character(kind=c_char, len=1), intent(in) :: name(*)
     end subroutine pcmsolver_save_surface_function
 
     subroutine pcmsolver_load_surface_function(context, name) bind(C)
       import
       type(c_ptr), value :: context
-      character(kind=c_char, len=1), intent(in) :: name
+      character(kind=c_char, len=1), intent(in) :: name(*)
     end subroutine pcmsolver_load_surface_function
 
     subroutine pcmsolver_write_timings(context) bind(C)

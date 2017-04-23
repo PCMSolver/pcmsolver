@@ -142,14 +142,14 @@ add_Catch_test(
 
 add_test(
   NAME
-    parser_script-fq
+    parser_script-mmfq
   COMMAND
     ${PYTHON_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
-     parsed = parse_pcm_input('fq.inp', write_out=True)"
+     parsed = parse_pcm_input('mmfq.inp', write_out=True)"
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}
   )
-set_tests_properties(parser_script-fq
+set_tests_properties(parser_script-mmfq
   PROPERTIES
   LABELS "parser;parser_script"
   ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}

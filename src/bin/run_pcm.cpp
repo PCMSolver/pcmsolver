@@ -70,12 +70,12 @@ int main(int argc, char * argv[]) {
   // First compute the potential from the classical point multipoles distribution
   // then add the one from the molecule
   TIMER_ON("Computing MEP");
-  // FIXME currently hardcoded to the dipole-dipole interaction potential in vacuum
-  Eigen::VectorXd mep =
-      computeDipolarPotential(context_.getCenters(), input.multipoles());
   // FIXME
-  // 1. Try to understand why this is needed
+  // 1. Currently hardcoded to the dipole-dipole interaction potential in vacuum
   // 2. Try to re-write this such that the input object is not needed!!!
+  Eigen::VectorXd mep = Eigen::VectorXd::Zero(size);
+  if (input.MEPfromChargeDistribution())
+    mep += computeDipolarPotential(context_.getCenters(), input.multipoles());
   if (input.MEPfromMolecule())
     mep += computeMEP(context_.molecule(), context_.getCenters());
   TIMER_OFF("Computing MEP");
@@ -90,6 +90,7 @@ int main(int argc, char * argv[]) {
   Eigen::VectorXd rsp_asc(size);
   context_.getSurfaceFunction(rsp_asc.size(), rsp_asc.data(), "RspASC");
   TIMER_OFF("Computing ASC");
+  context_.printSurfaceFunction("ASC");
   // Compute energy and print it out
   pcmsolver_out << "Solvation energy = "
                 << std::setprecision(std::numeric_limits<long double>::digits10)

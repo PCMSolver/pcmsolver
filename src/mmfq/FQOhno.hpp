@@ -58,6 +58,8 @@ public:
     return solver.printSolver(os);
   }
   Eigen::VectorXd computeCharge(const Eigen::VectorXd & potential) const {
+    if (!built_)
+      PCMSOLVER_ERROR("MMFQ matrix not calculated yet");
     return computeCharge_impl(potential);
   }
 

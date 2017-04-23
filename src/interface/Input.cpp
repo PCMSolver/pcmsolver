@@ -167,7 +167,9 @@ void Input::reader(const std::string & filename) {
   isDynamic_ = medium.getBool("NONEQUILIBRIUM");
 
   const Section & chgdist = input_.getSect("CHARGEDISTRIBUTION");
+  MEPfromChargeDist_ = false;
   if (chgdist.isDefined()) {
+    MEPfromChargeDist_ = true;
     // Set monopoles
     if (chgdist.getKey<std::vector<double> >("MONOPOLES").isDefined()) {
       std::vector<double> mono = chgdist.getDblVec("MONOPOLES");
@@ -197,26 +199,27 @@ void Input::reader(const std::string & filename) {
         j += 6;
       }
     }
-    // Set fluctuating charges
-    isFQ_ = false;
-    const Section & mmfq = input_.getSect("MMFQ");
-    if (mmfq.isDefined()) {
-      isFQ_ = true;
-      fragments_.nSitesPerFragment =
-          static_cast<PCMSolverIndex>(mmfq.getInt("SITESPERFRAGMENT"));
-      std::vector<double> sites = mmfq.getDblVec("SITES");
-      int j = 0;
-      int n = int(sites.size() / 5);
-      fragments_.sites = Eigen::Matrix3Xd::Zero(3, n);
-      fragments_.chi = Eigen::VectorXd::Zero(n);
-      fragments_.eta = Eigen::VectorXd::Zero(n);
-      for (int i = 0; i < n; ++i) {
-        fragments_.sites.col(i) =
-            (Eigen::Vector3d() << sites[j], sites[j + 1], sites[j + 2]).finished();
-        fragments_.chi(i) = sites[j + 3];
-        fragments_.eta(i) = sites[j + 4];
-        j += 5;
-      }
+  }
+  // Set fluctuating charges
+  isFQ_ = false;
+  const Section & mmfq = input_.getSect("MMFQ");
+  if (mmfq.isDefined()) {
+    isFQ_ = true;
+    fragments_.nSitesPerFragment =
+        static_cast<PCMSolverIndex>(mmfq.getInt("SITESPERFRAGMENT"));
+    std::vector<double> sites = mmfq.getDblVec("SITES");
+    int j = 0;
+    int n = int(sites.size() / 5);
+    fragments_.nFragments = int(n / fragments_.nSitesPerFragment);
+    fragments_.sites = Eigen::Matrix3Xd::Zero(3, n);
+    fragments_.chi = Eigen::VectorXd::Zero(n);
+    fragments_.eta = Eigen::VectorXd::Zero(n);
+    for (int i = 0; i < n; ++i) {
+      fragments_.sites.col(i) =
+          (Eigen::Vector3d() << sites[j], sites[j + 1], sites[j + 2]).finished();
+      fragments_.chi(i) = sites[j + 3];
+      fragments_.eta(i) = sites[j + 4];
+      j += 5;
     }
   }
 

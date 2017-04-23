@@ -109,29 +109,39 @@ void Meddle::CTORBody() {
               << std::endl;
   infoStream_ << "Input parsing done " << input_.providedBy() << std::endl;
 
-  TIMER_ON("Meddle::initCavity");
-  initCavity();
-  TIMER_OFF("Meddle::initCavity");
+  if (input_.isFQ()) { /* MMFQ calculation */
+    hasFQ_ = true;
+    TIMER_ON("Meddle::initMMFQ");
+    initMMFQ();
+    TIMER_OFF("Meddle::initMMFQ");
+  } else { /* Pure PCM calculation */
+    TIMER_ON("Meddle::initCavity");
+    initCavity();
+    TIMER_OFF("Meddle::initCavity");
 
-  TIMER_ON("Meddle::initStaticSolver");
-  initStaticSolver();
-  TIMER_OFF("Meddle::initStaticSolver");
+    TIMER_ON("Meddle::initStaticSolver");
+    initStaticSolver();
+    TIMER_OFF("Meddle::initStaticSolver");
 
-  if (input_.isDynamic()) {
-    TIMER_ON("Meddle::initDynamicSolver");
-    initDynamicSolver();
-    TIMER_OFF("Meddle::initDynamicSolver");
+    if (input_.isDynamic()) {
+      TIMER_ON("Meddle::initDynamicSolver");
+      initDynamicSolver();
+      TIMER_OFF("Meddle::initDynamicSolver");
+    }
   }
 }
 
 Meddle::Meddle(const Input & input, const HostWriter & write)
-    : hostWriter_(write), input_(input), hasDynamic_(false) {
+    : hostWriter_(write), input_(input), hasDynamic_(false), hasFQ_(false) {
   input_.initMolecule();
   CTORBody();
 }
 
 Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
-    : hostWriter_(write), input_(Input(inputFileName)), hasDynamic_(false) {
+    : hostWriter_(write),
+      input_(Input(inputFileName)),
+      hasDynamic_(false),
+      hasFQ_(false) {
   input_.initMolecule();
   CTORBody();
 }
@@ -142,8 +152,7 @@ Meddle::Meddle(int nr_nuclei,
                int symmetry_info[],
                const HostWriter & write,
                const std::string & inputFileName)
-    : hostWriter_(write), input_(Input(inputFileName)), hasDynamic_(false) {
-  TIMER_ON("Meddle::initInput");
+    : hostWriter_(write), input_(Input(inputFileName)), hasDynamic_(false), hasFQ_(false) {  TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
   TIMER_OFF("Meddle::initInput");
 
@@ -156,7 +165,7 @@ Meddle::Meddle(int nr_nuclei,
                int symmetry_info[],
                const PCMInput & host_input,
                const HostWriter & write)
-    : hostWriter_(write), input_(Input(host_input)), hasDynamic_(false) {
+    : hostWriter_(write), hasDynamic_(false), hasFQ_(false) {
   TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
   TIMER_OFF("Meddle::initInput");
@@ -171,22 +180,26 @@ void pcmsolver_delete(pcmsolver_context_t * context) {
   delete AS_TYPE(pcm::Meddle, context);
 }
 pcm::Meddle::~Meddle() {
-  delete cavity_;
-  delete K_0_;
-  if (hasDynamic_)
-    delete K_d_;
+  if (hasFQ_) { /* MMFQ calculation */
+    delete FQ_;
+  } else { /* Pure PCM calculation */
+    delete cavity_;
+    delete K_0_;
+    if (hasDynamic_)
+      delete K_d_;
+  }
 }
 
 PCMSolverIndex pcmsolver_get_cavity_size(pcmsolver_context_t * context) {
   return (AS_TYPE(pcm::Meddle, context)->getCavitySize());
 }
-PCMSolverIndex pcm::Meddle::getCavitySize() const { return cavity_->size(); }
+PCMSolverIndex pcm::Meddle::getCavitySize() const { return pcm::get<0>(size_); }
 
 PCMSolverIndex pcmsolver_get_irreducible_cavity_size(pcmsolver_context_t * context) {
   return (AS_TYPE(pcm::Meddle, context)->getIrreducibleCavitySize());
 }
 PCMSolverIndex pcm::Meddle::getIrreducibleCavitySize() const {
-  return cavity_->irreducible_size();
+  return pcm::get<1>(size_);
 }
 
 void pcmsolver_get_centers(pcmsolver_context_t * context, double centers[]) {
@@ -196,8 +209,13 @@ void pcmsolver_get_centers(pcmsolver_context_t * context, double centers[]) {
 }
 void pcm::Meddle::getCenters(double centers[]) const {
   TIMER_ON("Meddle::getCenters");
-  Eigen::Map<Eigen::Matrix3Xd>(centers, 3, cavity_->size()) =
-      cavity_->elementCenter();
+  if (hasFQ_) { /* MMFQ calculation */
+    PCMSolverIndex size = input_.fragments().sites.cols();
+    Eigen::Map<Eigen::Matrix3Xd>(centers, 3, size) = input_.fragments().sites;
+  } else { /* Pure PCM calculation */
+    Eigen::Map<Eigen::Matrix3Xd>(centers, 3, cavity_->size()) =
+        cavity_->elementCenter();
+  }
   TIMER_OFF("Meddle::getCenters");
 }
 
@@ -205,7 +223,12 @@ void pcmsolver_get_center(pcmsolver_context_t * context, int its, double center[
   AS_TYPE(pcm::Meddle, context)->getCenter(its, center);
 }
 void pcm::Meddle::getCenter(int its, double center[]) const {
-  Eigen::Map<Eigen::Vector3d>(center, 3, 1) = cavity_->elementCenter(its - 1);
+  if (hasFQ_) { /* MMFQ calculation */
+    Eigen::Map<Eigen::Matrix3Xd>(center, 3, 1) =
+        input_.fragments().sites.col(its - 1);
+  } else { /* Pure PCM calculation */
+    Eigen::Map<Eigen::Vector3d>(center, 3, 1) = cavity_->elementCenter(its - 1);
+  }
 }
 
 void pcmsolver_get_areas(pcmsolver_context_t * context, double areas[]) {
@@ -223,9 +246,16 @@ double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
 }
 double pcm::Meddle::computePolarizationEnergy(const char * mep_name,
                                               const char * asc_name) const {
-  // Dot product of MEP and ASC surface function
-  double energy =
-      functions_[std::string(mep_name)].dot(functions_[std::string(asc_name)]);
+  double energy = 0.0;
+  if (hasFQ_) { /* MMFQ calculation */
+    // Dot product of MEP + Electronegativities times Fluctuating charges
+    energy = (functions_[std::string(mep_name)] + input_.fragments().chi)
+                 .dot(functions_[std::string(asc_name)]);
+  } else { /* Pure PCM calculation */
+    // Dot product of MEP and ASC surface function
+    energy =
+        functions_[std::string(mep_name)].dot(functions_[std::string(asc_name)]);
+  }
   return (energy / 2.0);
 }
 
@@ -258,9 +288,14 @@ void pcm::Meddle::computeASC(const char * mep_name,
 
   // Get the proper iterators
   SurfaceFunctionMapConstIter iter_pot = functions_.find(MEP);
-  Eigen::VectorXd asc = K_0_->computeCharge(iter_pot->second, irrep);
-  // Renormalize
-  asc /= double(cavity_->pointGroup().nrIrrep());
+  Eigen::VectorXd asc = Eigen::VectorXd::Zero(iter_pot->second.size());
+  if (hasFQ_) { /* MMFQ calculation */
+    asc = FQ_->computeCharge(iter_pot->second);
+  } else { /* Pure PCM calculation */
+    asc = K_0_->computeCharge(iter_pot->second, irrep);
+    // Renormalize
+    asc /= double(cavity_->pointGroup().nrIrrep());
+  }
   // Insert it into the map
   if (functions_.count(ASC) == 1) { // Key in map already
     functions_[ASC] = asc;
@@ -285,14 +320,19 @@ void pcm::Meddle::computeResponseASC(const char * mep_name,
 
   // Get the proper iterators
   SurfaceFunctionMapConstIter iter_pot = functions_.find(MEP);
-  Eigen::VectorXd asc(cavity_->size());
-  if (hasDynamic_) {
-    asc = K_d_->computeCharge(iter_pot->second, irrep);
-  } else {
-    asc = K_0_->computeCharge(iter_pot->second, irrep);
+  Eigen::VectorXd asc = Eigen::VectorXd::Zero(iter_pot->second.size());
+  if (hasFQ_) { /* MMFQ calculation */
+    asc = FQ_->computeCharge(iter_pot->second);
+  } else { /* Pure PCM calculation */
+    if (hasDynamic_) {
+      asc = K_d_->computeCharge(iter_pot->second, irrep);
+    } else {
+      asc = K_0_->computeCharge(iter_pot->second, irrep);
+    }
+    // Renormalize
+    asc /= double(cavity_->pointGroup().nrIrrep());
   }
-  // Renormalize
-  asc /= double(cavity_->pointGroup().nrIrrep());
+
   if (functions_.count(ASC) == 1) { // Key in map already
     functions_[ASC] = asc;
   } else { // Create key-value pair
@@ -312,7 +352,7 @@ void pcm::Meddle::getSurfaceFunction(PCMSolverIndex size,
                                      double values[],
                                      const char * name) const {
   std::string functionName(name);
-  if (cavity_->size() != size)
+  if (pcm::get<0>(size_) != size)
     PCMSOLVER_ERROR("The " + functionName +
                     " SurfaceFunction is bigger than the cavity!");
 
@@ -335,7 +375,7 @@ void pcm::Meddle::setSurfaceFunction(PCMSolverIndex size,
                                      double values[],
                                      const char * name) const {
   std::string functionName(name);
-  if (cavity_->size() != size)
+  if (pcm::get<0>(size_) != size)
     PCMSOLVER_ERROR("The " + functionName +
                     " SurfaceFunction is bigger than the cavity!");
 
@@ -394,7 +434,7 @@ void pcm::Meddle::loadSurfaceFunction(const char * name) const {
   std::string functionName(name);
   hostWriter_("\nLoading surface function " + functionName + " from .npy file");
   Eigen::VectorXd values = cnpy::custom::npy_load<double>(functionName + ".npy");
-  if (values.size() != cavity_->size())
+  if (values.size() != pcm::get<0>(size_))
     PCMSOLVER_ERROR("The loaded " + functionName +
                     " surface function is bigger than the cavity!");
   // Append to global map
@@ -448,6 +488,7 @@ void Meddle::initInput(int nr_nuclei,
 void Meddle::initCavity() {
   cavity_ = cavity::bootstrapFactory().create(input_.cavityParams().cavityType,
                                               input_.cavityParams());
+  size_ = pcm::make_tuple(cavity_->size(), cavity_->irreducible_size());
   cavity_->saveCavity();
 
   infoStream_ << "========== Cavity " << std::endl;
@@ -498,6 +539,16 @@ void Meddle::initDynamicSolver() {
   mediumInfo(gf_i, gf_o);
   delete gf_o;
   delete gf_i;
+}
+
+void Meddle::initMMFQ() {
+  FQ_ = new mmfq::FQOhno(input_.fragments());
+  size_ = pcm::make_tuple(input_.fragments().sites.cols(),
+                          input_.fragments().sites.cols());
+  hasFQ_ = true;
+
+  infoStream_ << "========== MMFQ solver " << std::endl;
+  infoStream_ << *FQ_ << std::endl;
 }
 
 void Meddle::mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const {

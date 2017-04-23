@@ -375,12 +375,14 @@ def setup_keywords():
     # FQ section
     # Set a classical fluctuating charge force field
     # No additional spheres will be generated.
-    fq = Section('FQ', callback = verify_fq)
+    mmfq = Section('MMFQ', callback = verify_mmfq)
+    # Valid values: integer
+    mmfq.add_kw('SITESPERFRAGMENT', 'INT', 3)
     # FQ force field
     # Valid values: array of doubles in format [x, y, z, chi, eta]
-    charge_distribution.add_kw('FQ', 'DBL_ARRAY')
-    # TODO: smearing parameters for FQ
-    top.add_sect(charge_distribution)
+    mmfq.add_kw('SITES', 'DBL_ARRAY')
+    # TODO: smearing parameters
+    top.add_sect(mmfq)
 
     return top
 
@@ -610,6 +612,17 @@ def verify_charge_distribution(section):
     dipole = section.get('DIPOLES').get()
     check_array('DIPOLES', dipole, 6)
 
+
+def verify_mmfq(section):
+    array = section.get('SITES').get()
+    # Check that we specified x, y, chi, eta for all sites
+    check_array('SITES', array, 5)
+    # Check that we didn't include more sites
+    dim = len(array)
+    nSitesPerFragment = section.get('SITESPERFRAGMENT').get()
+    if (dim % nSitesPerFragment != 0):
+        print('Empty or incoherent SITES array')
+        sys.exit(1)
 
 def verify_spheres(keyword):
     length = len(keyword.get())

@@ -73,8 +73,8 @@ TEST_CASE("Test MMFQ for a pair of water fragments and the Ohno kernel",
     REQUIRE(reference(i) == Approx(charge(i)));
   }
 
-  double ref_energy = 0.12133410792682;
-  double energy = -0.5 * (charge.dot(fragments.chi));
+  double ref_energy = -0.12133410792682;
+  double energy = 0.5 * (charge.dot(fragments.chi));
   REQUIRE(ref_energy == Approx(energy));
   CAPTURE(ref_energy - energy);
 }

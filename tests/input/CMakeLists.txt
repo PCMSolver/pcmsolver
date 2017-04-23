@@ -14,7 +14,7 @@ file(
     restart.inp
     cpcm.inp
     multipoles.inp
-    fq.inp
+    mmfq.inp
   DESTINATION
     ${CMAKE_CURRENT_BINARY_DIR}
   )
@@ -89,13 +89,17 @@ set_tests_properties(input_cpcm PROPERTIES DEPENDS parser_script-cpcm)
 
 add_test(
   NAME 
-    parser_script-fq 
+    parser_script-mmfq 
   COMMAND
     ${PYTHON_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
-     parsed = parse_pcm_input('fq.inp', write_out=True)"
+     parsed = parse_pcm_input('mmfq.inp', write_out=True)"
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}
   )
-set_tests_properties(parser_script-fq PROPERTIES LABELS "parser;parser_script" DEPENDS generate-pcmsolver-py)
-#add_Catch_test(input_fq "input;input_fq")
+set_tests_properties(parser_script-mmfq
+  PROPERTIES
+  LABELS "parser;parser_script"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
+  )
+#add_Catch_test(input_mmfq "input;input_mmfq")
 #set_tests_properties(input_fq PROPERTIES DEPENDS parser_script-fq)

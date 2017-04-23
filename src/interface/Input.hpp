@@ -136,6 +136,7 @@ public:
   ChargeDistribution multipoles() const { return multipoles_; }
   MMFQ fragments() const { return fragments_; }
   bool MEPfromMolecule() { return MEPfromMolecule_; }
+  bool MEPfromChargeDistribution() { return MEPfromChargeDist_; }
 
   /// Operators
   /// operator<<
@@ -257,6 +258,8 @@ private:
   bool isFQ_;
   /// Whether to calculate the MEP from the molecular geometry
   bool MEPfromMolecule_;
+  /// Whether to calculate the MEP from the charge distribution
+  bool MEPfromChargeDist_;
   /// Classical charge distribution of point multipoles
   ChargeDistribution multipoles_;
   /// Classical fluctuating charges MM force field

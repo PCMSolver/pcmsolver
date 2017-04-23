@@ -36,6 +36,9 @@ namespace pcm {
 class ICavity;
 class IGreensFunction;
 class ISolver;
+namespace mmfq {
+class FQOhno;
+} // namespace mmfq
 } // namespace pcm
 struct PCMInput;
 
@@ -45,7 +48,7 @@ struct PCMInput;
 
 /*! \file Meddle.hpp
  *  \author Roberto Di Remigio
- *  \date 2015
+ *  \date 2015-2017
  */
 
 /*! \namespace pcm */
@@ -269,14 +272,20 @@ private:
   Input input_;
   /*! Cavity */
   ICavity * cavity_;
+  /*! Number of reducible and irreducible classical sites */
+  pcm::tuple<PCMSolverIndex, PCMSolverIndex> size_;
   /*! Solver with static permittivity */
   ISolver * K_0_;
   /*! Solver with dynamic permittivity */
   ISolver * K_d_;
+  /*! Fluctuating charges solver with Ohno kernel */
+  mmfq::FQOhno * FQ_;
   /*! PCMSolver set up information */
   mutable std::ostringstream infoStream_;
   /*! Whether K_d_ was initialized */
   bool hasDynamic_;
+  /*! Whether FQ_ was initialized */
+  bool hasFQ_;
   /*! SurfaceFunction map */
   mutable SurfaceFunctionMap functions_;
   /*! Common implemenation for the CTOR-s */
@@ -297,6 +306,8 @@ private:
   void initStaticSolver();
   /*! Initialize dynamic solver K_d_ */
   void initDynamicSolver();
+  /*! Initialize fluctuating charges solver FQ_ */
+  void initMMFQ();
   /*! Collect info on medium */
   void mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const;
 };

@@ -4,6 +4,7 @@ file(
     standalone.pcm
     standalone_atoms.pcm
     standalone_explicit.pcm
+    standalone_mmfq.pcm
     pNA_SPD_warning.pcm
   DESTINATION
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -54,6 +55,22 @@ add_test(
 set_tests_properties(pcmsolver_standalone-explicit
   PROPERTIES
   LABELS "pcmsolver;standalone;explicit"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
+  )
+
+add_test(
+  NAME
+    pcmsolver_standalone-mmfq
+  COMMAND
+    ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
+      --exe=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+      --inp=standalone_mmfq.pcm
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_BINARY_DIR}
+  )
+set_tests_properties(pcmsolver_standalone-mmfq
+  PROPERTIES
+  LABELS "pcmsolver;standalone;mmfq"
   ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )
 

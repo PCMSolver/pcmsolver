@@ -57,10 +57,11 @@ public:
   friend std::ostream & operator<<(std::ostream & os, FQOhno & solver) {
     return solver.printSolver(os);
   }
-  Eigen::VectorXd computeCharge(const Eigen::VectorXd & potential) const {
+  Eigen::VectorXd computeCharge(const Eigen::VectorXd & potential,
+                                bool scf = true) const {
     if (!built_)
       PCMSOLVER_ERROR("MMFQ matrix not calculated yet");
-    return computeCharge_impl(potential);
+    return computeCharge_impl(potential, scf);
   }
 
 private:
@@ -70,7 +71,8 @@ private:
   Eigen::MatrixXd Dlambda_;
 
   void buildSystemMatrix_impl();
-  Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential) const;
+  Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential,
+                                     bool scf = true) const;
   std::ostream & printSolver(std::ostream & os);
 };
 } // namespace mmfq

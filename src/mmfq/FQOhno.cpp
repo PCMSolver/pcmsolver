@@ -68,10 +68,13 @@ void FQOhno::buildSystemMatrix_impl() {
   built_ = true;
 }
 
-Eigen::VectorXd FQOhno::computeCharge_impl(const Eigen::VectorXd & potential) const {
-  // We have to add electronegativities on top of the potential
+Eigen::VectorXd FQOhno::computeCharge_impl(const Eigen::VectorXd & potential,
+                                           bool scf) const {
   Eigen::VectorXd RHS = Eigen::VectorXd::Zero(Dlambda_.rows());
-  RHS.head(potential.size()) = potential + mmfq_.chi;
+  RHS.head(potential.size()) = potential;
+  // If doing SCF, we have to add electronegativities on top of the potential
+  if (scf)
+    RHS.head(potential.size()) += mmfq_.chi;
   return -Dlambda_.ldlt().solve(RHS).head(potential.size());
 }
 

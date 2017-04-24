@@ -322,7 +322,8 @@ void pcm::Meddle::computeResponseASC(const char * mep_name,
   SurfaceFunctionMapConstIter iter_pot = functions_.find(MEP);
   Eigen::VectorXd asc = Eigen::VectorXd::Zero(iter_pot->second.size());
   if (hasFQ_) { /* MMFQ calculation */
-    asc = FQ_->computeCharge(iter_pot->second);
+    // Do NOT add classical (electronegativities) contributions to RHS
+    asc = FQ_->computeCharge(iter_pot->second, false);
   } else { /* Pure PCM calculation */
     if (hasDynamic_) {
       asc = K_d_->computeCharge(iter_pot->second, irrep);

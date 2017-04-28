@@ -11,6 +11,7 @@
   It is possible to specify a classical charge distribution of point multipoles.
   This can be an additional source of electrostatic potential for the calculation
   of the ASC.
+- Restored compilation for g++ < v5.1.
 
 ## [Version 1.1.10] - 2017-03-27
 

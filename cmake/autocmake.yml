@@ -53,4 +53,3 @@ modules:
   - custom:
     - source:
       - 'custom/test.cmake'
-      - 'custom/summary.cmake'

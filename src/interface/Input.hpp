@@ -88,6 +88,7 @@ public:
   /// Cavity section input
   std::string cavityType() const { return type_; }
   bool scaling() const { return scaling_; }
+  double cavityArea() const { return area_; }
   std::string radiiSet() const { return radiiSet_; }
   std::string radiiSetName() const { return radiiSetName_; }
   std::string mode() const { return mode_; }

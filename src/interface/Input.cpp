@@ -73,14 +73,9 @@ void Input::reader(const std::string & filename) {
 
   type_ = cavity.getStr("TYPE");
   area_ = cavity.getDbl("AREA");
-  patchLevel_ = cavity.getInt("PATCHLEVEL");
-  coarsity_ = cavity.getDbl("COARSITY");
-  minDistance_ = cavity.getDbl("MINDISTANCE");
-  derOrder_ = cavity.getInt("DERORDER");
   if (type_ == "RESTART") {
     cavFilename_ = cavity.getStr("NPZFILE");
   }
-  dyadicFilename_ = cavity.getStr("DYADICFILE");
 
   scaling_ = cavity.getBool("SCALING");
   radiiSet_ = boost::algorithm::to_upper_copy(cavity.getStr("RADIISET"));
@@ -168,7 +163,6 @@ void Input::reader(const std::string & filename) {
   integratorScaling_ = medium.getDbl("DIAGONALSCALING");
 
   solverType_ = medium.getStr("SOLVERTYPE");
-  equationType_ = detail::integralEquation(medium.getStr("EQUATIONTYPE"));
   correction_ = medium.getDbl("CORRECTION");
   hermitivitize_ = medium.getBool("MATRIXSYMM");
   isDynamic_ = medium.getBool("NONEQUILIBRIUM");

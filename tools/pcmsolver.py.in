@@ -121,9 +121,8 @@ def convert_to_upper_case(filename):
     # "restart" should not be touched, whereas the rest of the file
     # has to be put in uppercase.
     npz_file = re.compile('NPZFILE', re.IGNORECASE)
-    dyadic_file = re.compile('DYADICFILE', re.IGNORECASE)
     for line in contents:
-        if (npz_file.search(line)) or (dyadic_file.search(line)):
+        if (npz_file.search(line)):
             rst_split = re.split(r"=", line)
             rst_split = rst_split[0].upper() + ' = ' + rst_split[1]
             line = ''.join(rst_split)
@@ -225,8 +224,8 @@ def setup_keywords():
     cavity.add_kw('NPZFILE',     'STR', '')
     # Average area (in au^2)
     # Valid for: GePol cavity
-    # Valid values: double strictly greater than 0.01 au^2
-    # Default: 0.3 au^2
+    # Valid values: double strictly greater than 0.01 Angstrom^2
+    # Default: 0.3 Angstrom^2 (later converted to 1.07132... au^2) 
     cavity.add_kw('AREA',        'DBL', 0.3)
     # Scaling of the atomic radii
     # Valid for: GePol

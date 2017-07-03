@@ -48,14 +48,12 @@ TEST_CASE("Input reading using GetKw for an input file for a TsLess cavity",
   Input parsedInput = Input(filename);
   std::string units = "ANGSTROM";
   int CODATAyear = 2002;
-  std::string type = "TSLESS";
+  std::string type = "GEPOL";
   double area = 0.6 * angstrom2ToBohr2();
-  double minDistance = 5.0 * angstromToBohr();
-  int derOrder = 25;
   bool scaling = false;
   double diagonalScaling = 1.0694;
   std::string radiiSet = "UFF";
-  double minimalRadius = 0.1 * angstromToBohr();
+  double minimalRadius = 0.3 * angstromToBohr();
   std::string mode = "ATOMS";
   std::vector<int> atoms;
   std::vector<double> radii;
@@ -79,8 +77,6 @@ TEST_CASE("Input reading using GetKw for an input file for a TsLess cavity",
   REQUIRE(CODATAyear == parsedInput.CODATAyear());
   REQUIRE(type == parsedInput.cavityType());
   REQUIRE(area == Approx(parsedInput.cavityParams().area));
-  REQUIRE(minDistance == Approx(parsedInput.cavityParams().minDistance));
-  REQUIRE(derOrder == parsedInput.cavityParams().derOrder);
   REQUIRE(scaling == parsedInput.scaling());
   REQUIRE(diagonalScaling == Approx(parsedInput.integratorScaling()));
   REQUIRE(radiiSet == parsedInput.radiiSet());

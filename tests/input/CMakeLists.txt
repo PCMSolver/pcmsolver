@@ -1,11 +1,11 @@
-add_library(input-tests OBJECT input_diffuse.cpp input_restart.cpp input_tsless.cpp input_wavelet.cpp input_multipoles.cpp)
+add_library(input-tests OBJECT input_diffuse.cpp input_restart.cpp input_cpcm.cpp input_wavelet.cpp input_multipoles.cpp)
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(input-tests custom_boost)
 endif()
 
 # Copy input files to ${PROJECT_BINARY_DIR}/tests/input (aka ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY diffuse.inp restart.inp
-          tsless.inp wavelet.inp
+          cpcm.inp wavelet.inp
           multipoles.inp
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -27,11 +27,11 @@ set_tests_properties(parser_script-restart PROPERTIES LABELS "parser;parser_scri
 add_Catch_test(input_restart "input;input_restart")
 set_tests_properties(input_restart PROPERTIES DEPENDS parser_script-restart)
 
-add_test(NAME parser_script-tsless  COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py tsless.inp
+add_test(NAME parser_script-cpcm  COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py cpcm.inp
                                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-set_tests_properties(parser_script-tsless  PROPERTIES LABELS "parser;parser_script" DEPENDS generate-pcmsolver-py)
-add_Catch_test(input_tsless "input;input_tsless")
-set_tests_properties(input_tsless PROPERTIES DEPENDS parser_script-tsless)
+set_tests_properties(parser_script-cpcm  PROPERTIES LABELS "parser;parser_script" DEPENDS generate-pcmsolver-py)
+add_Catch_test(input_cpcm "input;input_cpcm")
+set_tests_properties(input_cpcm PROPERTIES DEPENDS parser_script-cpcm)
 
 add_test(NAME parser_script-wavelet COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py wavelet.inp
                                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})

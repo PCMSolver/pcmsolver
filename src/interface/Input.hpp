@@ -111,7 +111,6 @@ public:
   Solvent solvent() const { return solvent_; }
   bool fromSolvent() const { return hasSolvent_; }
   std::string solverType() const { return solverType_; }
-  int equationType() const { return equationType_; }
   double correction() const { return correction_; }
   bool hermitivitize() const { return hermitivitize_; }
   bool isDynamic() const { return isDynamic_; }
@@ -176,18 +175,10 @@ private:
   std::string type_;
   /// Filename for the .npz cavity restart file
   std::string cavFilename_;
-  /// Filename for the wavelet cavity dyadic file
-  std::string dyadicFilename_;
-  /// Wavelet cavity patch level
-  int patchLevel_;
-  /// Wavelet cavity coarsity
-  double coarsity_;
   /// GePol and TsLess cavities average element area
   double area_;
   /// TsLess cavity minimal distance between sampling points
   double minDistance_;
-  /// TsLess cavity maximum derivative order of switch function
-  int derOrder_;
   /// Whether the radii should be scaled by 1.2
   bool scaling_;
   /// The set of radii to be used
@@ -212,8 +203,6 @@ private:
   bool hasSolvent_;
   /// The solver type
   std::string solverType_;
-  /// The integral equation type (wavelet solvers)
-  int equationType_;
   /// Correction factor (C-PCM)
   double correction_;
   /// Whether the PCM matrix should be hermitivitized (collocation solvers)
@@ -287,10 +276,6 @@ int derivativeTraits(const std::string & name);
  *  which will be passed to the Green's function CTOR.
  */
 int profilePolicy(const std::string & name);
-
-/*! A useful map to convert the EquationType string to an integer which will be
- * passed to the Solver CTOR. */
-int integralEquation(const std::string & name);
 
 std::string trim(const char * src);
 

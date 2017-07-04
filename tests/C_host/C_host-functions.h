@@ -53,6 +53,8 @@ typedef enum { false, true } bool;
 
 #define M_PI 3.14159265358979323846
 
+void host_writer(const char * message);
+
 struct PCMInput pcmsolver_input();
 
 /*! \brief calculates nuclear molecular electrostatic potential (MEP) at cavity

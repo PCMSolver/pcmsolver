@@ -209,10 +209,7 @@ void Input::reader(const PCMInput & host_input) {
 
   type_ = detail::trim_and_upper(host_input.cavity_type);
   area_ = host_input.area * angstrom2ToBohr2();
-  patchLevel_ = host_input.patch_level;
-  coarsity_ = host_input.coarsity * angstromToBohr();
   minDistance_ = host_input.min_distance * angstromToBohr();
-  derOrder_ = host_input.der_order;
   if (type_ == "RESTART") {
     cavFilename_ = detail::trim(host_input.restart_name); // No case conversion here!
   }
@@ -276,8 +273,6 @@ void Input::reader(const PCMInput & host_input) {
   integratorScaling_ = 1.07;
 
   solverType_ = detail::trim_and_upper(host_input.solver_type);
-  std::string inteq = detail::trim_and_upper(host_input.equation_type);
-  equationType_ = detail::integralEquation(inteq);
   correction_ = host_input.correction;
   hermitivitize_ = true;
   isDynamic_ = false;
@@ -360,12 +355,8 @@ CavityData Input::cavityParams() const {
                     area_,
                     probeRadius_,
                     minDistance_,
-                    derOrder_,
                     minimalRadius_,
-                    patchLevel_,
-                    coarsity_,
-                    cavFilename_,
-                    dyadicFilename_);
+                    cavFilename_);
 }
 
 GreenData Input::insideGreenParams() const {
@@ -403,7 +394,7 @@ GreenData Input::outsideDynamicGreenParams() const {
 }
 
 SolverData Input::solverParams() const {
-  return SolverData(correction_, equationType_, hermitivitize_);
+  return SolverData(correction_, hermitivitize_);
 }
 
 BIOperatorData Input::integratorParams() const {

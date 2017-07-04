@@ -351,12 +351,8 @@ void Input::initMolecule() {
 }
 
 CavityData Input::cavityParams() const {
-  return CavityData(molecule_,
-                    area_,
-                    probeRadius_,
-                    minDistance_,
-                    minimalRadius_,
-                    cavFilename_);
+  return CavityData(
+      molecule_, area_, probeRadius_, minDistance_, minimalRadius_, cavFilename_);
 }
 
 GreenData Input::insideGreenParams() const {
@@ -416,15 +412,6 @@ int profilePolicy(const std::string & name) {
   static std::map<std::string, int> mapStringToInt;
   mapStringToInt.insert(std::map<std::string, int>::value_type("TANH", 0));
   mapStringToInt.insert(std::map<std::string, int>::value_type("ERF", 1));
-
-  return mapStringToInt.find(name)->second;
-}
-
-int integralEquation(const std::string & name) {
-  static std::map<std::string, int> mapStringToInt;
-  mapStringToInt.insert(std::map<std::string, int>::value_type("FIRSTKIND", 0));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("SECONDKIND", 1));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("FULL", 2));
 
   return mapStringToInt.find(name)->second;
 }

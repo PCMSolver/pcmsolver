@@ -33,13 +33,6 @@
 namespace pcm {
 using utils::Sphere;
 
-std::ostream & operator<<(std::ostream & os, Sphere & sph) {
-  os << "Sphere radius " << sph.radius << std::endl;
-  os << "Sphere center\n" << sph.center.transpose();
-
-  return os;
-}
-
 void transfer_spheres(const std::vector<Sphere> & spheres,
                       Eigen::Matrix3Xd & sphereCenter,
                       Eigen::VectorXd & sphereRadius) {

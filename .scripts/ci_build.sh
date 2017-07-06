@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # The return code will capture an error from ANY of the functions in the pipe
-set -o pipefail
+set -euo pipefail
 cmake --build . -- --jobs=2 VERBOSE=1 | tee build.log | grep "Building"
 RESULT=$?
 

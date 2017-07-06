@@ -351,8 +351,7 @@ void pcmsolver_load_surface_function(pcmsolver_context_t * context,
 void pcm::Meddle::loadSurfaceFunction(const char * name) const {
   std::string functionName(name);
   hostWriter_("\nLoading surface function " + functionName + " from .npy file");
-  std::string fname = functionName + ".npy";
-  Eigen::VectorXd values = cnpy::custom::npy_load<double>(fname);
+  Eigen::VectorXd values = cnpy::custom::npy_load<double>(functionName + ".npy");
   if (values.size() != cavity_->size())
     PCMSOLVER_ERROR("The loaded " + functionName +
                     " surface function is bigger than the cavity!");

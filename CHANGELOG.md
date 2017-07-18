@@ -13,6 +13,12 @@
   of the ASC.
 - Restored compilation for g++ < v5.1.
 
+### Changed
+
+- **BREAKING CHANGE** The minimum required version of CMake is now 3.3.0
+- **BREAKING CHANGE** The code now requires a fully C++11-compliant compiler.
+- **BREAKING CHANGE** The code now requires a fully C99-compliant compiler.
+
 ## [Version 1.1.10] - 2017-03-27
 
 ### Changed

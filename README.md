@@ -30,15 +30,15 @@ Continuous integration builds
 All CI builds are triggered by push events to any branch.
 Travis CI runs release builds using [ccache](https://ccache.samba.org/) to speed up compilation.
 
-- Ubuntu 12.04 LTS 64-bit with CMake 3.3.2 and Boost 1.55.0 this is the
-  environment offered by [Travis CI](https://travis-ci.org) pulling in various
-  PPA. Python and Python packages are installed and managed _via_ Conda within
+- Ubuntu 14.04 LTS 64-bit with CMake 3.5.1 and Boost 1.54.0 this is the
+  environment offered by [Travis CI](https://travis-ci.org).
+  Python and Python packages are installed and managed _via_ Conda within
   an environment defined in the `.pcmsolver-travis.yml` file. The following
   compilers are used:
 
   1. GCC 4.6, Python 2.7 This build generates _both_ the shared and static
      libraries, linking executables to the former. The build is run with and
-     without coverage analysis.
+     without coverage analysis, the latter being a _debug_ build.
   2. Clang 3.5, GFortran 4.6, Python 3.5 This build generates _only_ the static
      library.
 

@@ -14,8 +14,10 @@ program, the unit test suite and an offline copy of this documentation.
 Compilers
 ~~~~~~~~~
 
-+ a C++ compiler, compliant with the 1998 ISO C++ standard plus the 2003
-  technical corrigendum and some additional defect reports.
++ a C++ compiler, compliant with the 2011 ISO C++ standard:
+  - GCC 4.8 or later
+  - Clang 3.6 or later
+  - Intel 15.0.1 or later
 + a C compiler, compliant with the ISO C99 standard.
 + a Fortran compiler, compliant with the Fortran 2003 standard.
 
@@ -28,9 +30,9 @@ the unit test suite.
 Libraries and toolchain programs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-+ CMake version 2.8.9 and higher;
++ CMake version 3.3.0 and higher;
 + Git version 1.7.1 and higher;
-+ Python interpreter 2.4 and higher;
++ Python interpreter 2.7 and higher;
 + Boost libraries version 1.54.0 and higher;
 
 .. note::

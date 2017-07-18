@@ -76,6 +76,15 @@ KernelD IonicLiquid<DerivativeTraits>::exportKernelD_impl() const {
 }
 
 template <typename DerivativeTraits>
+DerivativeProbe IonicLiquid<DerivativeTraits>::exportDerivativeProbe_impl() const {
+  return pcm::bind(&IonicLiquid<DerivativeTraits>::derivativeProbe,
+                   *this,
+                   pcm::_1,
+                   pcm::_2,
+                   pcm::_3);
+}
+
+template <typename DerivativeTraits>
 double IonicLiquid<DerivativeTraits>::singleLayer_impl(const Element & /* e */,
                                                        double /* factor */) const {
   PCMSOLVER_ERROR("Not implemented yet for IonicLiquid");

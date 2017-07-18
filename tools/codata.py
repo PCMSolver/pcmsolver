@@ -1,6 +1,3 @@
-#!@PYTHON_EXECUTABLE@
-
-
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
 #  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.

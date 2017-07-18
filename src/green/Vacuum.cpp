@@ -71,6 +71,12 @@ KernelD Vacuum<DerivativeTraits>::exportKernelD_impl() const {
 }
 
 template <typename DerivativeTraits>
+DerivativeProbe Vacuum<DerivativeTraits>::exportDerivativeProbe_impl() const {
+  return pcm::bind(
+      &Vacuum<DerivativeTraits>::derivativeProbe, *this, pcm::_1, pcm::_2, pcm::_3);
+}
+
+template <typename DerivativeTraits>
 double Vacuum<DerivativeTraits>::singleLayer_impl(const Element & e,
                                                   double factor) const {
   return detail::diagonalSi(e.area(), factor);

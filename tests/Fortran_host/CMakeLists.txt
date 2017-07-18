@@ -1,7 +1,7 @@
 link_directories(${PROJECT_BINARY_DIR}/lib)
 add_executable(Fortran_host Fortran_host.f90 Fortran_host-modules.f90)
 if(STATIC_LIBRARY_ONLY)
-  target_link_libraries(Fortran_host pcm-static ${ZLIB_LIBRARIES})
+  target_link_libraries(Fortran_host pcm-static)
 else()
   target_link_libraries(Fortran_host pcm-shared)
 endif()

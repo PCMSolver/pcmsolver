@@ -78,6 +78,16 @@ KernelD UniformDielectric<DerivativeTraits>::exportKernelD_impl() const {
 }
 
 template <typename DerivativeTraits>
+DerivativeProbe UniformDielectric<DerivativeTraits>::exportDerivativeProbe_impl()
+    const {
+  return pcm::bind(&UniformDielectric<DerivativeTraits>::derivativeProbe,
+                   *this,
+                   pcm::_1,
+                   pcm::_2,
+                   pcm::_3);
+}
+
+template <typename DerivativeTraits>
 double UniformDielectric<DerivativeTraits>::singleLayer_impl(const Element & e,
                                                              double factor) const {
   return (detail::diagonalSi(e.area(), factor) / this->profile_.epsilon);

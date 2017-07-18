@@ -37,7 +37,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-struct Yukawa __final {
+struct Yukawa final {
   double epsilon;
   double kappa;
   Yukawa() : epsilon(1.0), kappa(0.0) {}

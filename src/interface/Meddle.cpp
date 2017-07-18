@@ -32,8 +32,6 @@
 
 #include <Eigen/Core>
 
-#include <boost/foreach.hpp>
-
 #include "bi_operators/BIOperatorData.hpp"
 #include "bi_operators/BoundaryIntegralOperator.hpp"
 #include "cavity/CavityData.hpp"
@@ -330,7 +328,7 @@ void pcmsolver_save_surface_functions(pcmsolver_context_t * context) {
 }
 void pcm::Meddle::saveSurfaceFunctions() const {
   hostWriter_("\nDumping surface functions to .npy files");
-  BOOST_FOREACH (SurfaceFunctionPair pair, functions_) {
+  for (const SurfaceFunctionPair & pair : functions_) {
     cnpy::custom::npy_save(pair.first + ".npy", pair.second);
   }
 }

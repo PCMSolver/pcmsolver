@@ -41,7 +41,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-class Anisotropic __final {
+class Anisotropic final {
 private:
   /// Diagonal of the permittivity tensor in the lab-fixed frame
   Eigen::Vector3d epsilonLab_;
@@ -68,7 +68,7 @@ private:
     scratch << (1.0 / epsilonLab_(0)), (1.0 / epsilonLab_(1)),
         (1.0 / epsilonLab_(2));
     epsilonInv_ = R_ * scratch.asDiagonal() * R_.transpose();
-    // 4. As a __final step, calculate the determinant
+    // 4. As a final step, calculate the determinant
     detEps_ = epsilonLab_(0) * epsilonLab_(1) * epsilonLab_(2);
   }
 

@@ -24,6 +24,8 @@
 #ifndef CAVITY_HPP
 #define CAVITY_HPP
 
+#include <functional>
+
 #include "Config.hpp"
 
 #include "ICavity.hpp"
@@ -44,7 +46,7 @@
 namespace pcm {
 namespace cavity {
 namespace detail {
-typedef pcm::function<ICavity *(const CavityData &)> CreateCavity;
+typedef std::function<ICavity *(const CavityData &)> CreateCavity;
 } // namespace detail
 
 inline Factory<detail::CreateCavity> bootstrapFactory() {

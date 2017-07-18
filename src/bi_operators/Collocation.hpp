@@ -58,7 +58,7 @@ namespace bi_operators {
  *   D_{ii} = -factor * \sqrt{\frac{\pi}{a_i}} \frac{1}{R_I}
  *  \f]
  */
-class Collocation __final : public IBoundaryIntegralOperator {
+class Collocation final : public IBoundaryIntegralOperator {
 public:
   Collocation();
   Collocation(double fac);
@@ -70,9 +70,9 @@ private:
    */
   double factor_;
   virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
-                                        const IGreensFunction & gf) const __override;
+                                        const IGreensFunction & gf) const override;
   virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
-                                        const IGreensFunction & gf) const __override;
+                                        const IGreensFunction & gf) const override;
 };
 
 IBoundaryIntegralOperator * createCollocation(const BIOperatorData & data);

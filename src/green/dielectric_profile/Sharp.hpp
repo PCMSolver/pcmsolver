@@ -37,7 +37,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-struct Sharp __final {
+struct Sharp final {
   double epsilon;
   double epsilonSolvent;
   double radius;

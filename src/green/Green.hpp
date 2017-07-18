@@ -24,6 +24,8 @@
 #ifndef GREEN_HPP
 #define GREEN_HPP
 
+#include <functional>
+
 #include "Config.hpp"
 
 #include "IGreensFunction.hpp"
@@ -48,7 +50,7 @@
 namespace pcm {
 namespace green {
 namespace detail {
-typedef pcm::function<IGreensFunction *(const GreenData &)> CreateGreensFunction;
+typedef std::function<IGreensFunction *(const GreenData &)> CreateGreensFunction;
 } // namespace detail
 
 inline Factory<detail::CreateGreensFunction> bootstrapFactory() {

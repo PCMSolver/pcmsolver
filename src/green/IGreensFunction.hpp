@@ -24,6 +24,7 @@
 #ifndef IGREENSFUNCTION_HPP
 #define IGREENSFUNCTION_HPP
 
+#include <functional>
 #include <iosfwd>
 #include <vector>
 
@@ -67,12 +68,12 @@ using dielectric_profile::Permittivity;
 /*! \typedef KernelS
  *  \brief functor handle to the kernelS method
  */
-typedef function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelS;
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> KernelS;
 
 /*! \typedef KernelD
  *  \brief functor handle to the kernelD method
  */
-typedef pcm::function<double(const Eigen::Vector3d &,
+typedef std::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
                              const Eigen::Vector3d &)> KernelD;
 
@@ -80,7 +81,7 @@ typedef pcm::function<double(const Eigen::Vector3d &,
  *  \brief functor handle to the derivativeProbe method
  *  \note This is the directional derivative wrt the probe point
  */
-typedef pcm::function<double(const Eigen::Vector3d &,
+typedef std::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
                              const Eigen::Vector3d &)> DerivativeProbe;
 

@@ -38,7 +38,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-struct Metal __final {
+struct Metal final {
   std::complex<double> epsilon;
   Metal() : epsilon(std::complex<double>(1.0, 1.0)) {}
   Metal(double eRe, double eIm) : epsilon(std::complex<double>(eRe, eIm)) {}

@@ -37,7 +37,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-struct Uniform __final {
+struct Uniform final {
   double epsilon;
   Uniform() : epsilon(1.0) {}
   Uniform(double e) : epsilon(e) {}

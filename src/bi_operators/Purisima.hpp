@@ -55,7 +55,7 @@ namespace bi_operators {
  *  \f]
  *  The original reference is \cite Purisima1995
  */
-class Purisima __final : public IBoundaryIntegralOperator {
+class Purisima final : public IBoundaryIntegralOperator {
 public:
   Purisima();
   Purisima(double fac);
@@ -67,7 +67,7 @@ private:
    */
   double factor_;
   virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
-                                        const IGreensFunction & gf) const __override;
+                                        const IGreensFunction & gf) const override;
   /*! Computes the matrix representation of the double layer operator by collocation
    *  using the Purisima sum rule to compute the diagonal elements.
    *  \param[in] cav discretized cavity
@@ -79,7 +79,7 @@ private:
    *  \f]
    */
   virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
-                                        const IGreensFunction & gf) const __override;
+                                        const IGreensFunction & gf) const override;
 };
 
 IBoundaryIntegralOperator * createPurisima(const BIOperatorData & data);

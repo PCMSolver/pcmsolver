@@ -44,18 +44,18 @@ struct CavityData;
 
 namespace pcm {
 namespace cavity {
-class RestartCavity __final : public ICavity {
+class RestartCavity final : public ICavity {
 public:
   RestartCavity(const std::string & _fname) : file(_fname) { makeCavity(); }
   virtual ~RestartCavity() {}
-  virtual void makeCavity() __override { loadCavity(file); }
+  virtual void makeCavity() override { loadCavity(file); }
   friend std::ostream & operator<<(std::ostream & os, RestartCavity & cavity) {
     return cavity.printCavity(os);
   }
 
 private:
   std::string file;
-  virtual std::ostream & printCavity(std::ostream & os) __override;
+  virtual std::ostream & printCavity(std::ostream & os) override;
 };
 
 ICavity * createRestartCavity(const CavityData & data);

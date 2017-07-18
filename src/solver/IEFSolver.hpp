@@ -119,10 +119,10 @@ private:
                                       const IGreensFunction & gf_i,
                                       const IGreensFunction & gf_o,
                                       const IBoundaryIntegralOperator & op)
-      __override;
+      override;
   virtual Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential,
-                                             int irrep = 0) const __override;
-  virtual std::ostream & printSolver(std::ostream & os) __override;
+                                             int irrep = 0) const override;
+  virtual std::ostream & printSolver(std::ostream & os) override;
 };
 
 ISolver * createIEFSolver(const SolverData & data);

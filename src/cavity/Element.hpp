@@ -44,7 +44,7 @@
 namespace pcm {
 using utils::Sphere;
 namespace cavity {
-class Element __final {
+class Element final {
 public:
   Element(int nv,
           int isphe,

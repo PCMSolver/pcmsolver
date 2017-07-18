@@ -24,6 +24,7 @@
 #ifndef ATOM_HPP
 #define ATOM_HPP
 
+#include <functional>
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -91,7 +92,7 @@ struct Atom {
                                      */
 };
 
-typedef pcm::tuple<std::string, std::vector<Atom> > RadiiSet;
+typedef std::tuple<std::string, std::vector<Atom> > RadiiSet;
 
 namespace detail {
 /*! \brief Returns a vector<Atom> containing Bondi van der Waals
@@ -127,7 +128,7 @@ RadiiSet initUFF();
  */
 RadiiSet initAllinger();
 
-typedef pcm::function<RadiiSet()> CreateRadiiSet;
+typedef std::function<RadiiSet()> CreateRadiiSet;
 } // namespace detail
 
 Factory<detail::CreateRadiiSet> bootstrapRadiiSet();

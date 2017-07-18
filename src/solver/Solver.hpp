@@ -24,6 +24,8 @@
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
 
+#include <functional>
+
 #include "Config.hpp"
 
 #include "ISolver.hpp"
@@ -44,7 +46,7 @@
 namespace pcm {
 namespace solver {
 namespace detail {
-typedef pcm::function<ISolver *(const SolverData &)> CreateSolver;
+typedef std::function<ISolver *(const SolverData &)> CreateSolver;
 } // namespace detail
 
 inline Factory<detail::CreateSolver> bootstrapFactory() {

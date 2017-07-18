@@ -3,6 +3,10 @@ min_cmake_version: 3.3.0
 setup_script: setup.py
 url_root: https://github.com/coderefinery/autocmake/raw/master/
 default_build_type: debug
+language:
+  - CXX
+  - C
+  - Fortran
 
 modules:
   - compilers:

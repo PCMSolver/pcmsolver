@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.3.0 FATAL_ERROR)
 
 # project name
-project(PCMSolver)
+project(PCMSolver CXX C Fortran)
 
 # do not rebuild if rules (compiler flags) change
 set(CMAKE_SKIP_RULE_DEPENDENCY TRUE)

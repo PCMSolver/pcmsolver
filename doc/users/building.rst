@@ -16,7 +16,7 @@ Compilers
 
 + a C++ compiler, compliant with the 2011 ISO C++ standard:
   - GCC 4.8 or later
-  - Clang 3.6 or later
+  - Clang 3.5 or later
   - Intel 15.0.1 or later
 + a C compiler, compliant with the ISO C99 standard.
 + a Fortran compiler, compliant with the Fortran 2003 standard.

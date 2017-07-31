@@ -24,6 +24,7 @@
 #ifndef NUMERICAL_HPP
 #define NUMERICAL_HPP
 
+#include <functional>
 #include <vector>
 
 #include "Config.hpp"
@@ -52,12 +53,12 @@ namespace bi_operators {
  *  Calculates the diagonal elements of S and D by collocation, using numerical
  *integration.
  */
-class Numerical __final : public IBoundaryIntegralOperator {
+class Numerical final : public IBoundaryIntegralOperator {
 private:
   virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
-                                        const IGreensFunction & gf) const __override;
+                                        const IGreensFunction & gf) const override;
   virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
-                                        const IGreensFunction & gf) const __override;
+                                        const IGreensFunction & gf) const override;
 };
 
 IBoundaryIntegralOperator * createNumerical(const BIOperatorData & /* data */);
@@ -65,13 +66,13 @@ IBoundaryIntegralOperator * createNumerical(const BIOperatorData & /* data */);
 /*! \typedef KernelS
  *  \brief functor handle to the kernelS method in IGreensFunction
  */
-typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
     KernelS;
 
 /*! \typedef KernelD
  *  \brief functor handle to the kernelD method in IGreensFunction
  */
-typedef pcm::function<double(const Eigen::Vector3d &,
+typedef std::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
                              const Eigen::Vector3d &)> KernelD;
 

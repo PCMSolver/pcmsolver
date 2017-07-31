@@ -63,11 +63,8 @@
  *  PCMSOLVER_STATIC_ASSERT(<Condition>, <Error Message>)
  *  \endverbatim
  *
- *  Uses static_assert. If not available, falls back to BOOST_STATIC_ASSERT_MSG
- *  Same usage pattern as for normal assertions. Static assertions are
- *  checked at compile-time.
- *  See also here:
- *http://www.boost.org/doc/libs/1_59_0/doc/html/boost_staticassert.html
+ *  Uses static_assert. Same usage pattern as for normal assertions. Static
+ *  assertions are checked at compile-time.
  */
 
 /// Macro to be used to signal error conditions
@@ -85,11 +82,6 @@
 #define PCMSOLVER_ASSERT(arg) assert(arg)
 
 /// Macro to be used for static assertions
-#ifdef HAS_CXX11_STATIC_ASSERT
 #define PCMSOLVER_STATIC_ASSERT(arg, msg) static_assert(arg, msg)
-#else /* HAS_CXX11_STATIC_ASSERT */
-#include <boost/static_assert.hpp>
-#define PCMSOLVER_STATIC_ASSERT(arg, msg) BOOST_STATIC_ASSERT_MSG(arg, msg)
-#endif /* HAS_CXX11_STATIC_ASSERT */
 
 #endif /* ERRORHANDLING_HPP */

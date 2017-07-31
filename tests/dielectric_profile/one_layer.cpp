@@ -60,7 +60,7 @@ SCENARIO("Diffuse permittivity single layers", "[dielectric_profile][one_layer]"
       OneLayerTanh diffuse(eps1, eps2, width, center);
       double value = 0.0, deriv = 0.0;
       double point = distribution(0.0, 100.0);
-      pcm::tie(value, deriv) = diffuse(point);
+      std::tie(value, deriv) = diffuse(point);
       THEN("the value of the profile at a random point is") {
         double analytic = tanh_value(point, eps1, eps2, width, center);
         INFO(" The evaluation point is: " << point);
@@ -81,7 +81,7 @@ SCENARIO("Diffuse permittivity single layers", "[dielectric_profile][one_layer]"
       OneLayerErf diffuse(eps1, eps2, width, center);
       double value = 0.0, deriv = 0.0;
       double point = distribution(0.0, 100.0);
-      pcm::tie(value, deriv) = diffuse(point);
+      std::tie(value, deriv) = diffuse(point);
       THEN("the value of the profile at a random point is") {
         double analytic = erf_value(point, eps1, eps2, width, center);
         INFO(" The evaluation point is: " << point);

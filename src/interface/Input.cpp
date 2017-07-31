@@ -92,7 +92,9 @@ void Input::reader(const std::string & filename) {
     int nAtoms = int(spheresInput.size() / 4);
     for (int i = 0; i < nAtoms; ++i) {
       Eigen::Vector3d center;
-      center = (Eigen::Vector3d() << spheresInput[j], spheresInput[j + 1], spheresInput[j + 2]).finished();
+      center = (Eigen::Vector3d() << spheresInput[j],
+                spheresInput[j + 1],
+                spheresInput[j + 2]).finished();
       Sphere sph(center, spheresInput[j + 3]);
       spheres_.push_back(sph);
       j += 4;
@@ -170,6 +172,39 @@ void Input::reader(const std::string & filename) {
   correction_ = medium.getDbl("CORRECTION");
   hermitivitize_ = medium.getBool("MATRIXSYMM");
   isDynamic_ = medium.getBool("NONEQUILIBRIUM");
+
+  const Section & chgdist = input_.getSect("CHARGEDISTRIBUTION");
+  if (chgdist.isDefined()) {
+    // Set monopoles
+    if (chgdist.getKey<std::vector<double> >("MONOPOLES").isDefined()) {
+      std::vector<double> mono = chgdist.getDblVec("MONOPOLES");
+      int j = 0;
+      int n = int(mono.size() / 4);
+      multipoles_.monopoles = Eigen::VectorXd::Zero(n);
+      multipoles_.monopolesSites = Eigen::Matrix3Xd::Zero(3, n);
+      for (int i = 0; i < n; ++i) {
+        multipoles_.monopolesSites.col(i) =
+            (Eigen::Vector3d() << mono[j], mono[j + 1], mono[j + 2]).finished();
+        multipoles_.monopoles(i) = mono[j + 3];
+        j += 4;
+      }
+    }
+    // Set dipoles
+    if (chgdist.getKey<std::vector<double> >("DIPOLES").isDefined()) {
+      std::vector<double> dipo = chgdist.getDblVec("DIPOLES");
+      int j = 0;
+      int n = int(dipo.size() / 6);
+      multipoles_.dipoles = Eigen::Matrix3Xd::Zero(3, n);
+      multipoles_.dipolesSites = Eigen::Matrix3Xd::Zero(3, n);
+      for (int i = 0; i < n; ++i) {
+        multipoles_.dipolesSites.col(i) =
+            (Eigen::Vector3d() << dipo[j], dipo[j + 1], dipo[j + 2]).finished();
+        multipoles_.dipoles.col(i) =
+            (Eigen::Vector3d() << dipo[j + 3], dipo[j + 4], dipo[j + 5]).finished();
+        j += 6;
+      }
+    }
+  }
 
   providedBy_ = std::string("API-side");
 }
@@ -267,7 +302,9 @@ void Input::initMolecule() {
   Eigen::VectorXd charges = Eigen::VectorXd::Zero(nuclei);
   int j = 0;
   for (int i = 0; i < nuclei; ++i) {
-    centers.col(i) = (Eigen::Vector3d() << geometry_[j], geometry_[j + 1], geometry_[j + 2]).finished();
+    centers.col(i) =
+        (Eigen::Vector3d() << geometry_[j], geometry_[j + 1], geometry_[j + 2])
+            .finished();
     charges(i) = geometry_[j + 3];
     j += 4;
   }
@@ -349,7 +386,8 @@ GreenData Input::outsideStaticGreenParams() const {
     retval.epsilon2 = epsilonStatic2_;
     retval.center = center_;
     retval.width = width_;
-    retval.origin = (Eigen::Vector3d() << origin_[0], origin_[1], origin_[2]).finished();
+    retval.origin =
+        (Eigen::Vector3d() << origin_[0], origin_[1], origin_[2]).finished();
     retval.maxL = maxL_;
   }
   return retval;
@@ -363,7 +401,8 @@ GreenData Input::outsideDynamicGreenParams() const {
     retval.epsilon2 = epsilonDynamic2_;
     retval.center = center_;
     retval.width = width_;
-    retval.origin = (Eigen::Vector3d() << origin_[0], origin_[1], origin_[2]).finished();
+    retval.origin =
+        (Eigen::Vector3d() << origin_[0], origin_[1], origin_[2]).finished();
     retval.maxL = maxL_;
   }
   return retval;

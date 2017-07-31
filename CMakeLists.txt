@@ -2,10 +2,10 @@
 # Copyright (c) 2015-2017 by Radovan Bast, Jonas Juselius, and contributors.
 
 # set minimum cmake version
-cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3.0 FATAL_ERROR)
 
 # project name
-project(PCMSolver)
+project(PCMSolver CXX C Fortran)
 
 # do not rebuild if rules (compiler flags) change
 set(CMAKE_SKIP_RULE_DEPENDENCY TRUE)
@@ -54,4 +54,3 @@ include(documentation)
 include(export)
 include(autocmake_src)
 include(test)
-include(summary)

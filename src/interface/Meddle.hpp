@@ -70,7 +70,7 @@ void print(const PCMInput &);
  *  \author Roberto Di Remigio
  *  \date 2015-2017
  */
-class Meddle __final {
+class Meddle final {
 public:
   /*! \brief CTOR from Input object
       *  \param[in] input an Input object
@@ -200,10 +200,16 @@ public:
   void saveSurfaceFunctions() const;
   /*! \brief Dumps a surface function to NumPy array in .npy file
    *  \param[in] name label of the surface function
+   *
+   *  \note The name parameter is the name of the NumPy array file
+   *  **without** .npy extension
    */
   void saveSurfaceFunction(const char * name) const;
   /*! \brief Loads a surface function from a .npy file
    *  \param[in] name label of the surface function
+   *
+   *  \note The name parameter is the name of the NumPy array file
+   *  **without** .npy extension
    */
   void loadSurfaceFunction(const char * name) const;
   /*! \brief Prints citation and set up information

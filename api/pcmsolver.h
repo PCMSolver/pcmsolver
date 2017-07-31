@@ -246,6 +246,9 @@ PCMSolver_API void pcmsolver_save_surface_functions(pcmsolver_context_t * contex
 /*! \brief Dumps a surface function to NumPy array in .npy file
  *  \param[in, out] context the PCM context object
  *  \param[in] name label of the surface function
+ *
+ *  \note The name parameter is the name of the NumPy array file
+ *  **without** .npy extension
  */
 PCMSolver_API void pcmsolver_save_surface_function(pcmsolver_context_t * context,
                                                    const char * name);
@@ -253,6 +256,9 @@ PCMSolver_API void pcmsolver_save_surface_function(pcmsolver_context_t * context
 /*! \brief Loads a surface function from a .npy file
  *  \param[in, out] context the PCM context object
  *  \param[in] name label of the surface function
+ *
+ *  \note The name parameter is the name of the NumPy array file
+ *  **without** .npy extension
  */
 PCMSolver_API void pcmsolver_load_surface_function(pcmsolver_context_t * context,
                                                    const char * name);

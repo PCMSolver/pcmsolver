@@ -25,6 +25,7 @@
 #define SPHERICALSHARP_HPP
 
 #include <cmath>
+#include <functional>
 #include <iosfwd>
 #include <vector>
 
@@ -52,7 +53,7 @@
 
 template <typename DerivativeTraits = AD_directional,
           typename IntegratorPolicy = CollocationIntegrator>
-class SphericalSharp __final
+class SphericalSharp final
     : public GreensFunction<DerivativeTraits,
                             IntegratorPolicy,
                             Sharp,
@@ -96,14 +97,14 @@ public:
    *  \param[in] e list of finite elements
    */
   virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const
-      __override {
+      override {
     return this->integrator_.singleLayer(*this, e);
   }
   /*! Calculates the matrix representation of the D operator
    *  \param[in] e list of finite elements
    */
   virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const
-      __override {
+      override {
     return this->integrator_.doubleLayer(*this, e);
   }
 
@@ -190,18 +191,18 @@ public:
     return (this->profile_.epsilonSolvent *
             this->derivativeProbe(direction, p1, p2));
   }
-  virtual KernelS exportKernelS_impl() const __override {
-    return pcm::bind(&SphericalSharp<DerivativeTraits, IntegratorPolicy>::kernelS,
+  virtual KernelS exportKernelS_impl() const override {
+    return std::bind(&SphericalSharp<DerivativeTraits, IntegratorPolicy>::kernelS,
                      *this,
-                     pcm::_1,
-                     pcm::_2);
+                     std::placeholders::_1,
+                     std::placeholders::_2);
   }
-  virtual KernelD exportKernelD_impl() const __override {
-    return pcm::bind(&SphericalSharp<DerivativeTraits, IntegratorPolicy>::kernelD,
+  virtual KernelD exportKernelD_impl() const override {
+    return std::bind(&SphericalSharp<DerivativeTraits, IntegratorPolicy>::kernelD,
                      *this,
-                     pcm::_1,
-                     pcm::_2,
-                     pcm::_3);
+                     std::placeholders::_1,
+                     std::placeholders::_2,
+                     std::placeholders::_3);
   }
   DerivativeTraits imagePotential_impl(DerivativeTraits * sp,
                                        DerivativeTraits * pp) const {

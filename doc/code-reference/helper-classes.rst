@@ -29,6 +29,14 @@ Atom
    :protected-members:
    :private-members:
 
+ChargeDistribution
+------------------
+.. doxygenstruct:: ChargeDistribution
+   :project: PCMSolver
+   :members:
+   :protected-members:
+   :private-members:
+
 Molecule
 --------
 .. doxygenclass:: Molecule

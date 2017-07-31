@@ -48,7 +48,7 @@ struct CavityData;
 
 namespace pcm {
 namespace cavity {
-class GePolCavity __final : public ICavity {
+class GePolCavity final : public ICavity {
 public:
   GePolCavity() {}
   GePolCavity(const Molecule & molec,
@@ -76,8 +76,8 @@ private:
   double probeRadius;
   double minimalRadius;
   int addedSpheres;
-  virtual std::ostream & printCavity(std::ostream & os) __override;
-  virtual void makeCavity() __override {
+  virtual std::ostream & printCavity(std::ostream & os) override;
+  virtual void makeCavity() override {
     build(std::string("PEDRA.OUT"), 10000, 200, 25000);
   }
   /*! \brief Driver for PEDRA Fortran module.

@@ -80,8 +80,8 @@ inline bool uniform(const Permittivity & arg) {
 class epsilonValue : public boost::static_visitor<boost::any> {
 public:
   double operator()(const Uniform & arg) const { return arg.epsilon; }
-  pcm::tuple<double, double> operator()(const Yukawa & arg) const {
-    return pcm::make_tuple(arg.epsilon, arg.kappa);
+  std::tuple<double, double> operator()(const Yukawa & arg) const {
+    return std::make_tuple(arg.epsilon, arg.kappa);
   }
   bool operator()(const Anisotropic & /* arg */) const { return false; }
   bool operator()(const OneLayerTanh & /* arg */) const { return false; }

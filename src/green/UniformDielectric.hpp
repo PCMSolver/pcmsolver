@@ -54,7 +54,7 @@ struct Uniform;
 namespace pcm {
 namespace green {
 template <typename DerivativeTraits = AD_directional>
-class UniformDielectric __final
+class UniformDielectric final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Uniform> {
 public:
   UniformDielectric(double eps);
@@ -68,18 +68,19 @@ public:
 
 private:
   virtual DerivativeTraits operator()(DerivativeTraits * sp,
-                                      DerivativeTraits * pp) const __override;
+                                      DerivativeTraits * pp) const override;
   virtual double kernelD_impl(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1,
-                              const Eigen::Vector3d & p2) const __override;
+                              const Eigen::Vector3d & p2) const override;
 
-  virtual KernelS exportKernelS_impl() const __override;
-  virtual KernelD exportKernelD_impl() const __override;
+  virtual KernelS exportKernelS_impl() const override;
+  virtual KernelD exportKernelD_impl() const override;
+  virtual DerivativeProbe exportDerivativeProbe_impl() const override;
 
-  virtual double singleLayer_impl(const Element & e, double factor) const __override;
-  virtual double doubleLayer_impl(const Element & e, double factor) const __override;
+  virtual double singleLayer_impl(const Element & e, double factor) const override;
+  virtual double doubleLayer_impl(const Element & e, double factor) const override;
 
-  virtual std::ostream & printObject(std::ostream & os) __override;
+  virtual std::ostream & printObject(std::ostream & os) override;
 };
 
 namespace detail {

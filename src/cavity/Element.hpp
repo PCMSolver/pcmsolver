@@ -44,7 +44,7 @@
 namespace pcm {
 using utils::Sphere;
 namespace cavity {
-class Element __final {
+class Element final {
 public:
   Element(int nv,
           int isphe,
@@ -116,8 +116,13 @@ private:
   Eigen::Matrix3Xd arcs_;
   virtual std::ostream & printElement(std::ostream & os) {
     os << "Finite element" << std::endl;
-    os << "Number of vertices = " << nVertices_ << std::endl;
-    os << "Area = " << area_;
+    os << "Center\n" << center_.transpose() << std::endl;
+    os << "Normal\n" << normal_.transpose() << std::endl;
+    os << "Weight " << area_ << std::endl;
+    os << sphere_ << std::endl;
+    os << "Number of vertices and arcs " << nVertices_ << std::endl;
+    os << "Vertices\n" << vertices_ << std::endl;
+    os << "Arcs\n" << arcs_;
     return os;
   }
 };

@@ -178,7 +178,7 @@ struct for_id_impl {
       }
     } else if (1 == mpl::distance<B1, E1>::value) { // Desired type NOT found in S1
       throw std::invalid_argument("Invalid derivative type (id1 = " +
-                                  pcm::to_string(id1) + ") in for_id metafunction.");
+                                  std::to_string(id1) + ") in for_id metafunction.");
     } else { // First type not resolved, but S1 type sequence not exhausted
       // Call for_id_impl primary template with type of B1 moved to the next type in
       // S1
@@ -277,7 +277,7 @@ struct for_id_impl<D, S1, S2, S3, E1, B2, B3, E1, E2, E3, T1, T2, T3> {
       }
     } else if (1 == mpl::distance<B2, E2>::value) { // Desired type NOT found in S2
       throw std::invalid_argument("Invalid integrator policy (id2 = " +
-                                  pcm::to_string(id2) + ") in for_id metafunction.");
+                                  std::to_string(id2) + ") in for_id metafunction.");
     } else { // Second type not resolved, but S2 type sequence not exhausted
       // Call for_id_impl first partial specialization with type of B2 moved to the
       // next type in S2
@@ -355,7 +355,7 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, B3, E1, E2, E3, T1, T2, T3> {
           ReturnType>(f, data);
     } else if (1 == mpl::distance<B3, E3>::value) { // Desired type NOT found in S3
       throw std::invalid_argument("Invalid permittivity profile (id3 = " +
-                                  pcm::to_string(id3) + ") in for_id metafunction.");
+                                  std::to_string(id3) + ") in for_id metafunction.");
     } else { // Third type not resolved, but S3 type sequence not exhausted
       // Call for_id_impl second partial specialization with type of B3 moved to the
       // next type in S3
@@ -417,7 +417,7 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3> {
                               int /* id1 */,
                               int /* id2 */ = 0,
                               int /* id3 */ = 0) {
-    return __nullptr;
+    return nullptr;
   }
 };
 

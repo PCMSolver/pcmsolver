@@ -23,6 +23,7 @@
 
 #include "AnisotropicLiquid.hpp"
 
+#include <functional>
 #include <iosfwd>
 
 #include "Config.hpp"
@@ -80,17 +81,27 @@ double AnisotropicLiquid<DerivativeTraits>::kernelD_impl(
 
 template <typename DerivativeTraits>
 KernelS AnisotropicLiquid<DerivativeTraits>::exportKernelS_impl() const {
-  return pcm::bind(
-      &AnisotropicLiquid<DerivativeTraits>::kernelS, *this, pcm::_1, pcm::_2);
+  return std::bind(
+      &AnisotropicLiquid<DerivativeTraits>::kernelS, *this, std::placeholders::_1, std::placeholders::_2);
 }
 
 template <typename DerivativeTraits>
 KernelD AnisotropicLiquid<DerivativeTraits>::exportKernelD_impl() const {
-  return pcm::bind(&AnisotropicLiquid<DerivativeTraits>::kernelD,
+  return std::bind(&AnisotropicLiquid<DerivativeTraits>::kernelD,
                    *this,
-                   pcm::_1,
-                   pcm::_2,
-                   pcm::_3);
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
+}
+
+template <typename DerivativeTraits>
+DerivativeProbe AnisotropicLiquid<DerivativeTraits>::exportDerivativeProbe_impl()
+    const {
+  return std::bind(&AnisotropicLiquid<DerivativeTraits>::derivativeProbe,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>

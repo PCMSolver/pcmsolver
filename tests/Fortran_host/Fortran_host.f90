@@ -168,6 +168,9 @@ program pcm_fortran_host
       ! Surface functions
       call test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g, areas)
 
+      call pcmsolver_save_surface_function(pcm_context, mep_lbl)
+      call pcmsolver_load_surface_function(pcm_context, mep_lbl)
+
       call pcmsolver_write_timings(pcm_context)
 
       call pcmsolver_delete(pcm_context)

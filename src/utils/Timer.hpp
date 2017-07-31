@@ -25,20 +25,17 @@
 #define TIMER_HPP
 
 #include <fstream>
+#include <map>
 #include <string>
+#include <tuple>
 #include <utility>
 
-#include "Cxx11Workarounds.hpp"
-
-#include <boost/container/flat_map.hpp>
-#include <boost/foreach.hpp>
-
 namespace timer {
-typedef pcm::tuple<double, double> timing;
-typedef boost::container::flat_map<std::string, timing> TimingsMap;
-typedef std::pair<std::string, timing> TimingsPair;
+typedef std::tuple<double, double> Timing;
+typedef std::map<std::string, Timing> TimingsMap;
+typedef std::pair<std::string, Timing> TimingsPair;
 
-timing get_timing();
+Timing get_timing();
 double get_wall_time();
 double get_cpu_time();
 
@@ -57,10 +54,10 @@ private:
   std::ostream & printObject(std::ostream & os) const {
     os << "            PCMSolver API timing results            " << std::endl;
     os << "----------------------------------------------------" << std::endl;
-    BOOST_FOREACH (TimingsPair t_pair, timings_) {
+    for (const auto & t_pair : timings_) {
       os << "Checkpoint:  " << t_pair.first << std::endl;
-      os << "   Wall time: " << pcm::get<0>(t_pair.second) << " ms" << std::endl;
-      os << "   CPU time:  " << pcm::get<1>(t_pair.second) << " ms" << std::endl;
+      os << "   Wall time: " << std::get<0>(t_pair.second) << " ms" << std::endl;
+      os << "   CPU time:  " << std::get<1>(t_pair.second) << " ms" << std::endl;
     }
     os << "----------------------------------------------------" << std::endl;
     return os;
@@ -84,10 +81,10 @@ public:
    *  \param[in] chkpt_name timing checkpoint
    *  \param[in] t_stop stopping time
    */
-  void registerElapsed(const std::string & chkpt_name, timing t_stop) {
-    double wall_elapsed = pcm::get<0>(t_stop) - pcm::get<0>(timings_[chkpt_name]);
-    double cpu_elapsed = pcm::get<1>(t_stop) - pcm::get<1>(timings_[chkpt_name]);
-    timings_[chkpt_name] = pcm::make_tuple(wall_elapsed, cpu_elapsed);
+  void registerElapsed(const std::string & chkpt_name, Timing t_stop) {
+    double wall_elapsed = std::get<0>(t_stop) - std::get<0>(timings_[chkpt_name]);
+    double cpu_elapsed = std::get<1>(t_stop) - std::get<1>(timings_[chkpt_name]);
+    timings_[chkpt_name] = std::make_tuple(wall_elapsed, cpu_elapsed);
   }
 };
 
@@ -124,8 +121,8 @@ inline void timerDONE(const std::string & fname) {
 }
 
 /*! Returns wall and CPU times in milliseconds */
-inline timing get_timing() {
-  return pcm::make_tuple(get_wall_time() / 1000.0, get_cpu_time() / 1000.0);
+inline Timing get_timing() {
+  return std::make_tuple(get_wall_time() / 1000.0, get_cpu_time() / 1000.0);
 }
 
 // This code was taken from:

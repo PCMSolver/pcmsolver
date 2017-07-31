@@ -23,6 +23,7 @@
 
 #include "SphericalDiffuse.hpp"
 
+#include <functional>
 #include <iosfwd>
 
 #include "Config.hpp"
@@ -99,10 +100,10 @@ double SphericalDiffuse<ProfilePolicy>::coefficientCoulombDerivative(
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      pcm::bind(&SphericalDiffuse<ProfilePolicy>::coefficientCoulomb,
+      std::bind(&SphericalDiffuse<ProfilePolicy>::coefficientCoulomb,
                 this,
-                pcm::_1,
-                pcm::_2),
+                std::placeholders::_1,
+                std::placeholders::_2),
       p2,
       p1,
       direction,
@@ -115,7 +116,7 @@ double SphericalDiffuse<ProfilePolicy>::CoulombDerivative(
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      pcm::bind(&SphericalDiffuse<ProfilePolicy>::Coulomb, this, pcm::_1, pcm::_2),
+      std::bind(&SphericalDiffuse<ProfilePolicy>::Coulomb, this, std::placeholders::_1, std::placeholders::_2),
       p2,
       p1,
       direction,
@@ -128,8 +129,8 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialDerivative(
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      pcm::bind(
-          &SphericalDiffuse<ProfilePolicy>::imagePotential, this, pcm::_1, pcm::_2),
+      std::bind(
+          &SphericalDiffuse<ProfilePolicy>::imagePotential, this, std::placeholders::_1, std::placeholders::_2),
       p2,
       p1,
       direction,
@@ -137,7 +138,7 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialDerivative(
 }
 
 template <typename ProfilePolicy>
-pcm::tuple<double, double> SphericalDiffuse<ProfilePolicy>::epsilon(
+std::tuple<double, double> SphericalDiffuse<ProfilePolicy>::epsilon(
     const Eigen::Vector3d & point) const {
   return this->profile_((point + this->origin_).norm());
 }
@@ -149,8 +150,8 @@ void SphericalDiffuse<ProfilePolicy>::toFile(const std::string & prefix) {
   writeToFile(zetaC_, tmp + "zetaC.dat");
   writeToFile(omegaC_, tmp + "omegaC.dat");
   for (int L = 1; L <= maxLGreen_; ++L) {
-    writeToFile(zeta_[L], tmp + "zeta_" + pcm::to_string(L) + ".dat");
-    writeToFile(omega_[L], tmp + "omega_" + pcm::to_string(L) + ".dat");
+    writeToFile(zeta_[L], tmp + "zeta_" + std::to_string(L) + ".dat");
+    writeToFile(omega_[L], tmp + "omega_" + std::to_string(L) + ".dat");
   }
 }
 
@@ -179,21 +180,31 @@ double SphericalDiffuse<ProfilePolicy>::kernelD_impl(
     const Eigen::Vector3d & p2) const {
   double eps_r2 = 0.0;
   // Shift p2 by origin_
-  pcm::tie(eps_r2, pcm::ignore) = this->epsilon(p2);
+  std::tie(eps_r2, std::ignore) = this->epsilon(p2);
 
   return (eps_r2 * this->derivativeProbe(direction, p1, p2));
 }
 
 template <typename ProfilePolicy>
 KernelS SphericalDiffuse<ProfilePolicy>::exportKernelS_impl() const {
-  return pcm::bind(
-      &SphericalDiffuse<ProfilePolicy>::kernelS, *this, pcm::_1, pcm::_2);
+  return std::bind(
+      &SphericalDiffuse<ProfilePolicy>::kernelS, *this, std::placeholders::_1, std::placeholders::_2);
 }
 
 template <typename ProfilePolicy>
 KernelD SphericalDiffuse<ProfilePolicy>::exportKernelD_impl() const {
-  return pcm::bind(
-      &SphericalDiffuse<ProfilePolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
+  return std::bind(
+      &SphericalDiffuse<ProfilePolicy>::kernelD, *this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+}
+
+template <typename DerivativeTraits>
+DerivativeProbe SphericalDiffuse<DerivativeTraits>::exportDerivativeProbe_impl()
+    const {
+  return std::bind(&SphericalDiffuse<DerivativeTraits>::derivativeProbe,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename ProfilePolicy>
@@ -227,7 +238,7 @@ double SphericalDiffuse<ProfilePolicy>::doubleLayer_impl(const Element & e,
       this->imagePotentialDerivative(e.normal(), e.center(), e.center());
 
   double eps_r2 = 0.0;
-  pcm::tie(eps_r2, pcm::ignore) = this->epsilon(e.center());
+  std::tie(eps_r2, std::ignore) = this->epsilon(e.center());
 
   return (eps_r2 * (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad));
 }
@@ -274,22 +285,22 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
                                r_infinity_,
                                observer_step_);
   ProfileEvaluator eval_ =
-      pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
+      std::bind(&ProfilePolicy::operator(), this->profile_, std::placeholders::_1);
 
   LOG("Computing coefficient for the separation of the Coulomb singularity");
-  LOG("Computing first radial solution L = " + pcm::to_string(maxLC_));
+  LOG("Computing first radial solution L = " + std::to_string(maxLC_));
   TIMER_ON("computeZeta for coefficient");
   zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(
       maxLC_, r_0_, r_infinity_, eval_, params_);
   TIMER_OFF("computeZeta for coefficient");
-  LOG("DONE: Computing first radial solution L = " + pcm::to_string(maxLC_));
+  LOG("DONE: Computing first radial solution L = " + std::to_string(maxLC_));
 
-  LOG("Computing second radial solution L = " + pcm::to_string(maxLC_));
+  LOG("Computing second radial solution L = " + std::to_string(maxLC_));
   TIMER_ON("computeOmega for coefficient");
   omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(
       maxLC_, r_0_, r_infinity_, eval_, params_);
   TIMER_OFF("computeOmega for coefficient");
-  LOG("Computing second radial solution L = " + pcm::to_string(maxLC_));
+  LOG("Computing second radial solution L = " + std::to_string(maxLC_));
   LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
 
   LOG("Computing radial solutions for Green's function");
@@ -298,24 +309,24 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   omega_.reserve(maxLGreen_ + 1);
   for (int L = 0; L <= maxLGreen_; ++L) {
     // First radial solution
-    LOG("Computing first radial solution L = " + pcm::to_string(L));
-    TIMER_ON("computeZeta L = " + pcm::to_string(L));
+    LOG("Computing first radial solution L = " + std::to_string(L));
+    TIMER_ON("computeZeta L = " + std::to_string(L));
     // Create an empty RadialSolution
     RadialFunction<StateType, LnTransformedRadial, Zeta> tmp_zeta_(
         L, r_0_, r_infinity_, eval_, params_);
     zeta_.push_back(tmp_zeta_);
-    TIMER_OFF("computeZeta L = " + pcm::to_string(L));
-    LOG("DONE: Computing first radial solution L = " + pcm::to_string(L));
+    TIMER_OFF("computeZeta L = " + std::to_string(L));
+    LOG("DONE: Computing first radial solution L = " + std::to_string(L));
 
     // Second radial solution
-    LOG("Computing second radial solution L = " + pcm::to_string(L));
-    TIMER_ON("computeOmega L = " + pcm::to_string(L));
+    LOG("Computing second radial solution L = " + std::to_string(L));
+    TIMER_ON("computeOmega L = " + std::to_string(L));
     // Create an empty RadialSolution
     RadialFunction<StateType, LnTransformedRadial, Omega> tmp_omega_(
         L, r_0_, r_infinity_, eval_, params_);
     omega_.push_back(tmp_omega_);
-    TIMER_OFF("computeOmega L = " + pcm::to_string(L));
-    LOG("DONE: Computing second radial solution L = " + pcm::to_string(L));
+    TIMER_OFF("computeOmega L = " + std::to_string(L));
+    LOG("DONE: Computing second radial solution L = " + std::to_string(L));
   }
   TIMER_OFF("SphericalDiffuse: Looping over angular momentum");
   LOG("DONE: Computing radial solutions for Green's function");
@@ -344,19 +355,19 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
   /* Sample zeta_[L] */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
   /* Value of zeta_[L] at point with index 1 */
-  pcm::tie(zeta1, pcm::ignore) = zeta_[L](r1);
+  std::tie(zeta1, std::ignore) = zeta_[L](r1);
   /* Value of zeta_[L] and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2) = zeta_[L](r2);
+  std::tie(zeta2, d_zeta2) = zeta_[L](r2);
 
   /* Sample omega_[L] */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omega_[L] at point with index 1 */
-  pcm::tie(omega1, pcm::ignore) = omega_[L](r1);
+  std::tie(omega1, std::ignore) = omega_[L](r1);
   /* Value of omega_[L] and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2) = omega_[L](r2);
+  std::tie(omega2, d_omega2) = omega_[L](r2);
 
   double eps_r2 = 0.0;
-  pcm::tie(eps_r2, pcm::ignore) = this->profile_(pp_shift.norm());
+  std::tie(eps_r2, std::ignore) = this->profile_(pp_shift.norm());
 
   /* Evaluation of the Wronskian and the denominator */
   double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
@@ -391,20 +402,20 @@ double SphericalDiffuse<ProfilePolicy>::coefficient_impl(
   /* Sample zetaC_ */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
   /* Value of zetaC_ at point with index 1 */
-  pcm::tie(zeta1, pcm::ignore) = zetaC_(r1);
+  std::tie(zeta1, std::ignore) = zetaC_(r1);
   /* Value of zetaC_ and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2) = zetaC_(r2);
+  std::tie(zeta2, d_zeta2) = zetaC_(r2);
 
   /* Sample omegaC_ */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omegaC_ at point with index 1 */
-  pcm::tie(omega1, pcm::ignore) = omegaC_(r1);
+  std::tie(omega1, std::ignore) = omegaC_(r1);
   /* Value of omegaC_ and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2) = omegaC_(r2);
+  std::tie(omega2, d_omega2) = omegaC_(r2);
 
   double tmp = 0.0, coeff = 0.0;
   double eps_r2 = 0.0;
-  pcm::tie(eps_r2, pcm::ignore) = this->profile_(r2);
+  std::tie(eps_r2, std::ignore) = this->profile_(r2);
 
   /* Evaluation of the Wronskian and the denominator */
   double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;

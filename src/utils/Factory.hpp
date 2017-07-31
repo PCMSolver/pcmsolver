@@ -29,11 +29,7 @@
 
 #include "Config.hpp"
 
-#ifdef HAS_CXX11_VARIADIC_TEMPLATES
 #include <type_traits>
-#else /* HAS_CXX11_VARIADIC_TEMPLATES */
-#include <boost/utility/result_of.hpp>
-#endif /* HAS_CXX11_VARIADIC_TEMPLATES */
 
 namespace pcm {
 namespace detail {
@@ -107,7 +103,7 @@ public:
   }
 };
 } // namespace detail
-#ifdef HAS_CXX11_VARIADIC_TEMPLATES
+
 /*! \file Factory.hpp
  *  \class Factory
  *  \brief C++11 implementation of the Factory Method
@@ -119,7 +115,7 @@ public:
  *  input value to the object creation callback function.
  */
 template <typename CreateObject>
-class Factory __final : public detail::BaseFactory<CreateObject> {
+class Factory final : public detail::BaseFactory<CreateObject> {
 public:
   /*! \brief Calls the appropriate creation functor, based on the passed objID
    *  \param[in] objID the object's identification string
@@ -137,45 +133,6 @@ public:
     return (this->retrieve(objID)->second)(data...);
   }
 };
-#else  /* HAS_CXX11_VARIADIC_TEMPLATES */
-/*! \file Factory.hpp
- *  \class Factory
- *  \brief C++03 implementation of the one- or zero-argument Factory Method
- *  \author Roberto Di Remigio
- *  \date 2015-2017
- *  \tparam CreateObject type of the object creation callback function
- *
- *  \warning This will only work when the CreateObject function accepts zero or
- *  one input arguments.
- */
-template <typename CreateObject>
-class Factory : public detail::BaseFactory<CreateObject> {
-public:
-  /*! \brief Calls the appropriate creation functor, based on the passed objID
-   *  \param[in] objID the object's identification string
-   *  \param[in] data  input data for the creation of the object
-   *  \note This is the one-parameter version. Return type is deduced based on
-   *  the type of the input argument template parameter and the type of the
-   *  object creation callback function.
-   */
-  template <typename ObjectInputArg>
-  typename boost::result_of<CreateObject(ObjectInputArg)>::type create(
-      const std::string & objID,
-      const ObjectInputArg & data) const {
-    return (this->retrieve(objID)->second)(data);
-  }
-
-  /*! \brief Calls the appropriate creation functor, based on the passed objID
-   *  \param[in] objID the object's identification string
-   *  \note This is the zero-parameter version. Return type is deduced based on
-   *  the type of the type of the object creation callback function.
-   */
-  typename boost::result_of<CreateObject()>::type create(
-      const std::string & objID) const {
-    return (this->retrieve(objID)->second)();
-  }
-};
-#endif /* HAS_CXX11_VARIADIC_TEMPLATES */
 } // namespace pcm
 
 #endif // FACTORY_HPP

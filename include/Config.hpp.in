@@ -57,7 +57,6 @@
 typedef PCMSOLVER_DEFAULT_INDEX_TYPE PCMSolverIndex;
 #endif
 
-#include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
 #include "LoggerInterface.hpp"
 #include "PhysicalConstants.hpp"

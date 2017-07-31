@@ -24,6 +24,8 @@
 #ifndef BOUNDARYINTEGRALOPERATOR_HPP
 #define BOUNDARYINTEGRALOPERATOR_HPP
 
+#include <functional>
+
 #include "Config.hpp"
 
 #include "IBoundaryIntegralOperator.hpp"
@@ -47,7 +49,7 @@
 namespace pcm {
 namespace bi_operators {
 namespace detail {
-typedef pcm::function<IBoundaryIntegralOperator *(const BIOperatorData &)>
+typedef std::function<IBoundaryIntegralOperator *(const BIOperatorData &)>
     CreateBIOperator;
 } // namespace detail
 

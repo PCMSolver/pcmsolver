@@ -1,5 +1,4 @@
 list(APPEND headers_list Citation.hpp
-                         Cxx11Workarounds.hpp
                          ErrorHandling.hpp
                          LoggerInterface.hpp
                          PhysicalConstants.hpp

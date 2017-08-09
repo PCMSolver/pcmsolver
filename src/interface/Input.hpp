@@ -274,7 +274,17 @@ namespace detail {
  * passed to the Solver CTOR. */
 int integralEquation(const std::string & name);
 
+std::string left_trim(std::string s);
+std::string left_trim(const char * src);
+
+std::string right_trim(std::string s);
+std::string right_trim(const char * src);
+
+std::string trim(std::string s);
 std::string trim(const char * src);
+
+std::string uppercase(std::string s);
+std::string uppercase(const char * src);
 
 std::string trim_and_upper(const char * src);
 } // namespace detail

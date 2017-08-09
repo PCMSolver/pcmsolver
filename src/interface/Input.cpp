@@ -23,6 +23,8 @@
 
 #include "Input.hpp"
 
+#include <algorithm>
+#include <functional> 
 #include <iostream>
 #include <map>
 #include <string>
@@ -30,10 +32,8 @@
 
 #include "Config.hpp"
 
-#include "utils/getkw/Getkw.h"
 #include <Eigen/Core>
-
-#include <boost/algorithm/string.hpp>
+#include "utils/getkw/Getkw.h"
 
 #include "PCMInput.h"
 #include "bi_operators/BIOperatorData.hpp"
@@ -83,9 +83,9 @@ void Input::reader(const std::string & filename) {
   dyadicFilename_ = cavity.getStr("DYADICFILE");
 
   scaling_ = cavity.getBool("SCALING");
-  radiiSet_ = boost::algorithm::to_upper_copy(cavity.getStr("RADIISET"));
+  radiiSet_ = detail::uppercase(cavity.getStr("RADIISET"));
   minimalRadius_ = cavity.getDbl("MINRADIUS");
-  mode_ = boost::algorithm::to_upper_copy(cavity.getStr("MODE"));
+  mode_ = detail::uppercase(cavity.getStr("MODE"));
   if (mode_ == "EXPLICIT") {
     std::vector<double> spheresInput = cavity.getDblVec("SPHERES");
     int j = 0;
@@ -94,8 +94,7 @@ void Input::reader(const std::string & filename) {
       Eigen::Vector3d center;
       center = (Eigen::Vector3d() << spheresInput[j],
                 spheresInput[j + 1],
-                spheresInput[j + 2])
-                   .finished();
+                spheresInput[j + 2]).finished();
       Sphere sph(center, spheresInput[j + 3]);
       spheres_.push_back(sph);
       j += 4;
@@ -421,14 +420,68 @@ int integralEquation(const std::string & name) {
   return mapStringToInt.find(name)->second;
 }
 
+#ifndef HAS_CXX11_LAMBDA
+std::string left_trim(std::string s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+
+std::string right_trim(std::string s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+#else /* HAS_CXX11_LAMBDA */
+std::string left_trim(std::string s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+        return !std::isspace(ch);
+    }));
+    return s;
+}
+
+std::string right_trim(std::string s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+        return !std::isspace(ch);
+    }).base(), s.end());
+    return s;
+}
+#endif /* HAS_CXX11_LAMBDA */
+
+std::string left_trim(const char * src) {
+  std::string tmp(src);
+  return left_trim(tmp);
+}
+
+std::string right_trim(const char * src) {
+  std::string tmp(src);
+  return right_trim(tmp);
+}
+
+std::string trim(std::string s) {
+  left_trim(s);
+  right_trim(s);
+  return s;
+}
+
 std::string trim(const char * src) {
   std::string tmp(src);
-  boost::algorithm::trim(tmp);
-  return tmp;
+  return trim(tmp);
+}
+
+std::string uppercase(std::string s) {
+  std::transform(s.begin(), s.end(), s.begin(), std::ptr_fun<int, int>(std::toupper));
+  return s;
+}
+
+std::string uppercase(const char * src) {
+  std::string tmp(src);
+  return uppercase(tmp);
 }
 
 std::string trim_and_upper(const char * src) {
-  return boost::algorithm::to_upper_copy(trim(src));
+  std::string tmp(src);
+  return uppercase(trim(tmp));
 }
 } // namespace detail
 } // namespace pcm

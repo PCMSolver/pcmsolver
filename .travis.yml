@@ -1,5 +1,6 @@
 language: cpp
 sudo: false
+dist: trusty
 notifications:
   slack:
     secure: F2nQIW6SiaGdw1LjuZOlgBu8rUVMllrDG/5bhmTQP7gyETfViFBjTsHQdTle6jtdb+LudleZaG7WhdEiVcKUa834rKqDk1UOt9p6bsmgbsBZBAaxmPh01iVFhKn3ML7JLjfr1YtH7MWJcsS60cNBrohXfVKfFzNgDqZEu/llr90=
@@ -20,20 +21,15 @@ branches:
 matrix:
   include:
     - os: linux
-      compiler: gcc
       addons: &1
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - boost-latest
-            - george-edison55-precise-backports
           packages:
-            - cmake
-            - cmake-data
+            - cmake3
+            - cmake3-data
             - g++-4.6
             - gcc-4.6
-            - libboost1.55-all-dev
             - gfortran-4.6
+            - libboost-math-dev
       env:
         - CXX_COMPILER='g++-4.6'
         - C_COMPILER='gcc-4.6'
@@ -41,31 +37,24 @@ matrix:
         - BUILD_TYPE='release'
         - PYTHON_VER='2.7'
     - os: linux
-      compiler: clang
       addons:
         apt:
-          sources:
-            - llvm-toolchain-precise-3.5
-            - ubuntu-toolchain-r-test
-            - boost-latest
-            - george-edison55-precise-backports
           packages:
-            - cmake
-            - cmake-data
-            - clang-3.5
-            - libboost1.55-all-dev
-            - gfortran
+            - cmake3
+            - cmake3-data
+            - clang
+            - gfortran-4.6
+            - libboost-math-dev
       env:
-        - CXX_COMPILER='clang++-3.5'
-        - C_COMPILER='clang-3.5'
-        - Fortran_COMPILER='gfortran'
+        - CXX_COMPILER='clang++'
+        - C_COMPILER='clang'
+        - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='release'
         - PYTHON_VER='3.5'
         - STATIC='--static'
 
     - os: osx
       osx_image: xcode7.3
-      compiler: clang
       env:
         - CXX_COMPILER='clang++'
         - C_COMPILER='clang'
@@ -76,7 +65,6 @@ matrix:
         - STATIC='--static'
     - os: osx
       osx_image: xcode7.3
-      compiler: gcc
       env:
         - CXX_COMPILER='g++-6'
         - C_COMPILER='gcc-6'
@@ -86,24 +74,22 @@ matrix:
         - HOMEBREW_GCC='homebrew/versions/gcc6'
 
     - os: linux
-      compiler: gcc
       addons: *1
       env:
         - CXX_COMPILER='g++-4.6'
         - C_COMPILER='gcc-4.6'
         - Fortran_COMPILER='gfortran-4.6'
-        - BUILD_TYPE='release'
+        - BUILD_TYPE='debug'
         - PYTHON_VER='2.7'
         - COVERAGE='--coverage'
   allow_failures:
     - os: linux
-      compiler: gcc
       addons: *1
       env:
         - CXX_COMPILER='g++-4.6'
         - C_COMPILER='gcc-4.6'
         - Fortran_COMPILER='gfortran-4.6'
-        - BUILD_TYPE='release'
+        - BUILD_TYPE='debug'
         - PYTHON_VER='2.7'
         - COVERAGE='--coverage'
 install:

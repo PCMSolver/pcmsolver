@@ -74,7 +74,9 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
       double minRadius = 100.0;
       GePolCavity cavity(point, area, probeRadius, minRadius);
 
-      SphericalDiffuse<> gf_o(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 3);
+      int maxL = 5;
+      SphericalDiffuse<> gf_o(
+          eps1, eps2, width, center, Eigen::Vector3d::Zero(), maxL);
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       int size = cavity.size();
@@ -105,7 +107,8 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
       double minRadius = 100.0;
       GePolCavity cavity(point, area, probeRadius, minRadius);
 
-      SphericalDiffuse<> gf_o(eps1, eps2, width, center, origin, 3);
+      int maxL = 5;
+      SphericalDiffuse<> gf_o(eps1, eps2, width, center, origin, maxL);
 
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);

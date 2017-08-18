@@ -38,6 +38,8 @@
 - The uppercased contents of the `.pcm` input file are written to a temporary
   file, instead of overwriting the user provided file. The temporary file is
   removed after it has been parsed. Fixes #91 as noted by @ilfreddy.
+- Use Runge-Kutta-Fehlberg 7(8) ODE solver to integrate the radial equation
+  in the spherical diffuse Green's function class.
 
 ### Fixed
 

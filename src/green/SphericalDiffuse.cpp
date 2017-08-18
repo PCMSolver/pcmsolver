@@ -39,9 +39,9 @@
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
-#include "utils/MathUtils.hpp"
 #include "dielectric_profile/ProfileTypes.hpp"
 #include "utils/ForId.hpp"
+#include "utils/MathUtils.hpp"
 
 namespace pcm {
 namespace green {
@@ -272,10 +272,10 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double eps_rel_ = 1.0e-06; /*! Relative tolerance level */
   double factor_x_ = 0.0;    /*! Weight of the state      */
   double factor_dxdt_ = 0.0; /*! Weight of the state derivative */
-  double r_0_ = 0.5;         /*! Lower bound of the integration interval */
+  double r_0_ = 0.1;         /*! Lower bound of the integration interval */
   double r_infinity_ =
       this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
-  double observer_step_ = 1.0e-03;     /*! Time step between observer calls */
+  double observer_step_ = 1.0e-02;     /*! Time step between observer calls */
   IntegratorParameters params_(eps_abs_,
                                eps_rel_,
                                factor_x_,

@@ -294,14 +294,26 @@ inline double splineInterpolation(const double point,
                                   const std::vector<double> & grid,
                                   const std::vector<double> & function) {
   // Find nearest points on grid to the arbitrary point given
-  size_t index = std::distance(grid.begin(),
-                               std::lower_bound(grid.begin(), grid.end(), point)) -
-                 1;
+  int index =
+      std::distance(grid.begin(), std::lower_bound(grid.begin(), grid.end(), point));
+
+  int imax = grid.size() - 1;
+  if (index <= 0)
+    index = 1;
+  if (index >= imax - 1)
+    index = imax - 2;
 
   // Parameters for the interpolating spline
-  Eigen::Vector3d x, y;
-  x << grid[index - 1], grid[index], grid[index + 1];
-  y << function[index - 1], function[index], function[index + 1];
+  Eigen::Vector4d x = (Eigen::Vector4d() << grid[index - 1],
+                       grid[index],
+                       grid[index + 1],
+                       grid[index + 2])
+                          .finished();
+  Eigen::Vector4d y = (Eigen::Vector4d() << function[index - 1],
+                       function[index],
+                       function[index + 1],
+                       function[index + 2])
+                          .finished();
   SplineFunction s(x, y);
 
   return s(point);

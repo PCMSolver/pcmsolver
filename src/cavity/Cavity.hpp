@@ -21,13 +21,12 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef CAVITY_HPP
-#define CAVITY_HPP
+#pragma once
 
 #include "Config.hpp"
 
-#include "ICavity.hpp"
 #include "GePolCavity.hpp"
+#include "ICavity.hpp"
 #include "RestartCavity.hpp"
 #include "utils/Factory.hpp"
 
@@ -57,5 +56,3 @@ inline Factory<detail::CreateCavity> bootstrapFactory() {
 }
 } // namespace cavity
 } // namespace pcm
-
-#endif // CAVITY_HPP

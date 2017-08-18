@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SPHERE_HPP
-#define SPHERE_HPP
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -77,5 +76,3 @@ void transfer_spheres(const std::vector<utils::Sphere> & spheres,
                       Eigen::Matrix3Xd & sphereCenter,
                       Eigen::VectorXd & sphereRadius);
 } // namespace pcm
-
-#endif // SPHERE_HPP

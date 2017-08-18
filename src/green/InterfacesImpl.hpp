@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef INTERFACESIMPL_HPP
-#define INTERFACESIMPL_HPP
+#pragma once
 
 #include <cmath>
 #include <fstream>
@@ -150,8 +149,11 @@ public:
                  double rinf,
                  const ProfileEvaluator & eval,
                  const IntegratorParameters & parms)
-      : solution_(IndependentSolution<StateVariable,
-                                      ODESystem>(l, r0, rinf, eval, parms)) {}
+      : solution_(IndependentSolution<StateVariable, ODESystem>(l,
+                                                                r0,
+                                                                rinf,
+                                                                eval,
+                                                                parms)) {}
   ~RadialFunction() {}
   /*! \brief Returns value of function and its first derivative at given point
    *  \param[in] point evaluation point
@@ -405,5 +407,3 @@ void writeToFile(RadialFunction<StateVariable, ODESystem, IndependentSolution> &
 }
 } // namespace green
 } // namespace pcm
-
-#endif // INTERFACESIMPL_HPP

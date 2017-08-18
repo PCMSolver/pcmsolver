@@ -21,18 +21,17 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef GREEN_HPP
-#define GREEN_HPP
+#pragma once
 
 #include "Config.hpp"
 
-#include "IGreensFunction.hpp"
-#include "GreenData.hpp"
-#include "Vacuum.hpp"
-#include "UniformDielectric.hpp"
 #include "AnisotropicLiquid.hpp"
+#include "GreenData.hpp"
+#include "IGreensFunction.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"
+#include "UniformDielectric.hpp"
+#include "Vacuum.hpp"
 #include "utils/Factory.hpp"
 
 /*!
@@ -64,5 +63,3 @@ inline Factory<detail::CreateGreensFunction> bootstrapFactory() {
 }
 } // namespace green
 } // namespace pcm
-
-#endif // GREEN_HPP

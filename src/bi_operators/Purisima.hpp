@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef PURISIMA_HPP
-#define PURISIMA_HPP
+#pragma once
 
 #include <vector>
 
@@ -85,5 +84,3 @@ private:
 IBoundaryIntegralOperator * createPurisima(const BIOperatorData & data);
 } // namespace bi_operators
 } // namespace pcm
-
-#endif // PURISIMA_HPP

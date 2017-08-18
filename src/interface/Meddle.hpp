@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef MEDDLE_HPP
-#define MEDDLE_HPP
+#pragma once
 
 #include "pcmsolver.h"
 
@@ -275,5 +274,3 @@ private:
   void mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const;
 };
 } // namespace pcm
-
-#endif /* MEDDLE_HPP */

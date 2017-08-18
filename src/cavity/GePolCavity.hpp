@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef GEPOLCAVITY_HPP
-#define GEPOLCAVITY_HPP
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -182,5 +181,3 @@ extern "C" void generatecavity_cpp(int * maxts,
 ICavity * createGePolCavity(const CavityData & data);
 } // namespace cavity
 } // namespace pcm
-
-#endif // GEPOLCAVITY_HPP

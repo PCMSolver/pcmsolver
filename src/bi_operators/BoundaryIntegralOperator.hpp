@@ -21,16 +21,15 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef BOUNDARYINTEGRALOPERATOR_HPP
-#define BOUNDARYINTEGRALOPERATOR_HPP
+#pragma once
 
 #include "Config.hpp"
 
-#include "IBoundaryIntegralOperator.hpp"
 #include "BIOperatorData.hpp"
 #include "Collocation.hpp"
-#include "Purisima.hpp"
+#include "IBoundaryIntegralOperator.hpp"
 #include "Numerical.hpp"
+#include "Purisima.hpp"
 #include "utils/Factory.hpp"
 
 /*!
@@ -62,5 +61,3 @@ inline Factory<detail::CreateBIOperator> bootstrapFactory() {
 }
 } // namespace bi_operators
 } // namespace pcm
-
-#endif // BOUNDARYINTEGRALOPERATOR_HPP

@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ATOM_HPP
-#define ATOM_HPP
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -136,5 +135,3 @@ Factory<detail::CreateRadiiSet> bootstrapRadiiSet();
 /*! An atom is invalid if it has zero radius */
 bool invalid(const utils::Atom & atom);
 } // namespace pcm
-
-#endif // ATOM_HPP

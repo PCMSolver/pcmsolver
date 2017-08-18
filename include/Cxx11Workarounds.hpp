@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef CXX11WORKAROUNDS_HPP
-#define CXX11WORKAROUNDS_HPP
+#pragma once
 
 /*! \file Cxx11Workarounds.hpp
  *  \brief Provide hacks and workarounds for C++11
@@ -73,8 +72,8 @@ using std::to_string;
 } /* end namespace pcm */
 #else /* HAS_CXX11*/
 /* Smart pointers workarounds */
-#include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 namespace pcm {
 using boost::shared_ptr;
 using boost::make_shared;
@@ -105,8 +104,8 @@ namespace pcm {
 using boost::array;
 } /* end namespace pcm */
 /* std::to_string workarounds */
-#include <string>
 #include <boost/lexical_cast.hpp>
+#include <string>
 namespace pcm {
 template <typename Source> std::string to_string(const Source & arg) {
   return boost::lexical_cast<std::string>(arg);
@@ -153,5 +152,3 @@ template <typename Source> std::string to_string(const Source & arg) {
 #else /* HAS_CXX11_NORETURN */
 #define __noreturn
 #endif /* HAS_CXX11_NORETURN */
-
-#endif /* CXX11WORKAROUNDS_HPP */

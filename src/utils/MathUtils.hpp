@@ -21,15 +21,14 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef MATHUTILS_HPP
-#define MATHUTILS_HPP
+#pragma once
 
 #include <algorithm>
 #include <bitset>
 #include <cmath>
 #include <fstream>
-#include <iterator>
 #include <iomanip>
+#include <iterator>
 #include <limits>
 #include <vector>
 
@@ -38,9 +37,9 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include "cnpy.hpp"
 #include "SplineFunction.hpp"
 #include "Symmetry.hpp"
+#include "cnpy.hpp"
 
 namespace pcm {
 namespace utils {
@@ -415,5 +414,3 @@ inline Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> npy_load(
 } // namespace custom
 /*! @} */
 } // namespace cnpy
-
-#endif // MATHUTILS_HPP

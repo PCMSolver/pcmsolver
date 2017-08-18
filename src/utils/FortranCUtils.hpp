@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef FORTRANCUTILS_HPP
-#define FORTRANCUTILS_HPP
+#pragma once
 
 #include "FCMangle.hpp"
 
@@ -56,5 +55,3 @@ void pcmsolver_f2c_string(char * src, char * dest, int * len);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // FORTRANCUTILS_HPP

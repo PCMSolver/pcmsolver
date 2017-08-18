@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SPHERICALDIFFUSE_HPP
-#define SPHERICALDIFFUSE_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -39,9 +38,9 @@ class OneLayerTanh;
 } // namespace dielectric_profile
 } // namespace pcm
 
-#include "InterfacesImpl.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
+#include "InterfacesImpl.hpp"
 
 /*! \file SphericalDiffuse.hpp
  *  \class SphericalDiffuse
@@ -273,5 +272,3 @@ struct buildSphericalDiffuse {
 IGreensFunction * createSphericalDiffuse(const GreenData & data);
 } // namespace green
 } // namespace pcm
-
-#endif // SPHERICALDIFFUSE_HPP

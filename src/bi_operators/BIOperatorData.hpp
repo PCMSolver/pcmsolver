@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef BIOPERATORDATA_HPP
-#define BIOPERATORDATA_HPP
+#pragma once
 
 #include "Config.hpp"
 
@@ -41,5 +40,3 @@ struct BIOperatorData {
   BIOperatorData(double s) : scaling(s) { empty = false; }
 };
 } // namespace pcm
-
-#endif // BIOPERATORDATA_HPP

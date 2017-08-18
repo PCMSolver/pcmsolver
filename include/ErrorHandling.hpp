@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ERRORHANDLING_HPP
-#define ERRORHANDLING_HPP
+#pragma once
 
 #include <cassert>
 #include <cstdio>
@@ -76,7 +75,8 @@
     std::ostringstream _err;                                                        \
     _err << "PCMSolver fatal error.\n"                                              \
          << " In function " << __func__ << " at line " << __LINE__ << " of file "   \
-         << __FILE__ << "\n" << message << std::endl;                               \
+         << __FILE__ << "\n"                                                        \
+         << message << std::endl;                                                   \
     std::fprintf(stderr, "%s\n", _err.str().c_str());                               \
     std::exit(EXIT_FAILURE);                                                        \
   }
@@ -91,5 +91,3 @@
 #include <boost/static_assert.hpp>
 #define PCMSOLVER_STATIC_ASSERT(arg, msg) BOOST_STATIC_ASSERT_MSG(arg, msg)
 #endif /* HAS_CXX11_STATIC_ASSERT */
-
-#endif /* ERRORHANDLING_HPP */

@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ELEMENT_HPP
-#define ELEMENT_HPP
+#pragma once
 
 #include <ostream>
 #include <vector>
@@ -139,5 +138,3 @@ void tangent_and_bitangent(const Eigen::Vector3d & n_,
 } // namespace detail
 } // namespace cavity
 } // namespace pcm
-
-#endif // ELEMENT_HPP

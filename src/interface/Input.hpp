@@ -21,11 +21,10 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef INPUT_HPP
-#define INPUT_HPP
+#pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -296,5 +295,3 @@ std::string trim(const char * src);
 std::string trim_and_upper(const char * src);
 } // namespace detail
 } // namespace pcm
-
-#endif // INPUT_HPP

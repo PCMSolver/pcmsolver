@@ -13,6 +13,12 @@
   of the ASC.
 - Restored compilation for g++ < v5.1.
 
+### Changed
+
+- Use [`#pragma once`](https://en.wikipedia.org/wiki/Pragma_once) instead of
+  `#ifndef, #define, #endif` to guard against multiple inclusion of header
+  files.
+
 ## [Version 1.1.10] - 2017-03-27
 
 ### Changed

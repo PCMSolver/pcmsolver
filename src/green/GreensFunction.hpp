@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef GREENSFUNCTION_HPP
-#define GREENSFUNCTION_HPP
+#pragma once
 
 #include <cmath>
 #include <iosfwd>
@@ -115,7 +114,8 @@ public:
                                  const Eigen::Vector3d & p2) const {
     return (Eigen::Vector3d() << derivativeSource(Eigen::Vector3d::UnitX(), p1, p2),
             derivativeSource(Eigen::Vector3d::UnitY(), p1, p2),
-            derivativeSource(Eigen::Vector3d::UnitZ(), p1, p2)).finished();
+            derivativeSource(Eigen::Vector3d::UnitZ(), p1, p2))
+        .finished();
   }
   /*! Returns full gradient of Greens's function for the pair of points p1, p2:
    *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
@@ -127,7 +127,8 @@ public:
                                 const Eigen::Vector3d & p2) const {
     return (Eigen::Vector3d() << derivativeProbe(Eigen::Vector3d::UnitX(), p1, p2),
             derivativeProbe(Eigen::Vector3d::UnitY(), p1, p2),
-            derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2)).finished();
+            derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2))
+        .finished();
   }
   /**@}*/
 
@@ -246,7 +247,8 @@ public:
                                  const Eigen::Vector3d & p2) const {
     return (Eigen::Vector3d() << derivativeSource(Eigen::Vector3d::UnitX(), p1, p2),
             derivativeSource(Eigen::Vector3d::UnitY(), p1, p2),
-            derivativeSource(Eigen::Vector3d::UnitZ(), p1, p2)).finished();
+            derivativeSource(Eigen::Vector3d::UnitZ(), p1, p2))
+        .finished();
   }
   /*! Returns full gradient of Greens's function for the pair of points p1, p2:
    *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
@@ -258,7 +260,8 @@ public:
                                 const Eigen::Vector3d & p2) const {
     return (Eigen::Vector3d() << derivativeProbe(Eigen::Vector3d::UnitX(), p1, p2),
             derivativeProbe(Eigen::Vector3d::UnitY(), p1, p2),
-            derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2)).finished();
+            derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2))
+        .finished();
   }
   /**@}*/
 
@@ -344,5 +347,3 @@ inline double diagonalDi(double area, double radius, double factor) {
 } // namespace detail
 } // namespace green
 } // namespace pcm
-
-#endif // GREENSFUNCTION_HPP

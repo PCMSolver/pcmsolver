@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef TIMERINTERFACE_HPP
-#define TIMERINTERFACE_HPP
+#pragma once
 
 /*  To time a code snippet:
  *  \code{.cpp}
@@ -47,5 +46,3 @@
 #define TIMER_DONE(...)
 
 #endif /* ENABLE_TIMER */
-
-#endif /* TIMERINTERFACE_HPP */

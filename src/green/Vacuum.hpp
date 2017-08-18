@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef VACUUM_HPP
-#define VACUUM_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -95,5 +94,3 @@ struct buildVacuum {
 IGreensFunction * createVacuum(const GreenData & data);
 } // namespace green
 } // namespace pcm
-
-#endif // VACUUM_HPP

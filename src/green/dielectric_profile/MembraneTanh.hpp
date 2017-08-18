@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef MEMBRANETANH_HPP
-#define MEMBRANETANH_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -101,5 +100,3 @@ public:
 };
 } // namespace dielectric_profile
 } // namespace pcm
-
-#endif // MEMBRANETANH_HPP

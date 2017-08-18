@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ANISOTROPICLIQUID_HPP
-#define ANISOTROPICLIQUID_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -99,5 +98,3 @@ struct buildAnisotropicLiquid {
 IGreensFunction * createAnisotropicLiquid(const GreenData & data);
 } // namespace green
 } // namespace pcm
-
-#endif // ANISOTROPICLIQUID_HPP

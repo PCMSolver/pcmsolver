@@ -21,10 +21,10 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef PCMSOLVER_H_INCLUDED
-#define PCMSOLVER_H_INCLUDED
+#pragma once
 
 #include <stddef.h>
+
 #include "PCMInput.h"
 #include "PCMSolverExport.h"
 
@@ -271,5 +271,3 @@ PCMSolver_API void pcmsolver_write_timings(pcmsolver_context_t * context);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* PCMSOLVER_H_INCLUDED */

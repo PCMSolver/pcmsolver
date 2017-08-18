@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef BOUNDARYINTEGRALOPERATORS_HPP
-#define BOUNDARYINTEGRALOPERATORS_HPP
+#pragma once
 
 #include <vector>
 
@@ -52,5 +51,3 @@ private:
                                         const IGreensFunction & gf) const = 0;
 };
 } // namespace pcm
-
-#endif // BOUNDARYINTEGRALOPERATORS_HPP

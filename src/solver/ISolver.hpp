@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ISOLVER_HPP
-#define ISOLVER_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -101,5 +100,3 @@ protected:
   virtual std::ostream & printSolver(std::ostream & os) = 0;
 };
 } // namespace pcm
-
-#endif // ISOLVER_HPP

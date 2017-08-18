@@ -45,22 +45,21 @@ routine names my_perfect_routine
 keyword names MYPERFECTKEYWORD
 """
 
-isAngstrom = False
-CODATAyear = 2010
-
 import sys
+import tempfile
 import os
-sys.path.append(os.path.dirname(__file__))
-
-try:
-    import docopt
-except:
-    sys.path.append('cmake/lib/docopt')
-    import docopt
 from copy import deepcopy
 import getkw
 import re
 import subprocess
+from codata import CODATAdict
+
+sys.path.append(os.path.dirname(__file__))
+try:
+    import docopt
+except ImportError:
+    sys.path.append('cmake/lib/docopt')
+    import docopt
 
 options = """
 Usage:
@@ -73,8 +72,8 @@ Options:
   -h --help                              Show this screen.
 """
 
-import getkw
-from codata import CODATA, CODATAdict
+isAngstrom = False
+CODATAyear = 2010
 
 allowedSolvents = {'Water'                : ('WATER',                'H2O'),
                    'Propylene Carbonate'  : ('PROPYLENE CARBONATE',  'C4H6O3'),
@@ -110,12 +109,12 @@ def iequal(a, b):
 def convert_to_upper_case(filename):
     """
     Reads contents of filename and converts them to uppercase.
-    The case-converted contents are written back to filename.
+    The case-converted contents are written back to a temporary file.
     """
     contents = ''
-    final    = ''
+    final = ''
     with open(filename, 'r') as inputFile:
-        contents  = inputFile.readlines()
+        contents = inputFile.readlines()
     # In case the "restart" field is present the case conversion
     # has to be done a bit more carefully. The filename argument to
     # "restart" should not be touched, whereas the rest of the file
@@ -135,9 +134,14 @@ def convert_to_upper_case(filename):
     final = re.sub('FALSE', 'False', final)
     final = re.sub('TRUE',  'True',  final)
 
-    # Write to file
-    with open(filename, 'wt') as outputFile:
+    # Write to temporary file in current working directory
+    # The temporary file has the name of the input file, joined with a unique id
+    temp, path = tempfile.mkstemp(prefix=filename + '.', dir=os.getcwd())
+    with open(path, 'wt') as outputFile:
         outputFile.write(final)
+    os.close(temp)
+    return path
+
 
 def main():
     try:
@@ -164,15 +168,15 @@ def parse_pcm_input(inputFile):
     # Set up valid keywords.
     valid_keywords = setup_keywords()
 
-    # Convert to uppercase
-    convert_to_upper_case(inputFile)
+    # Convert to uppercase and get the path to the temporary file
+    uppercased = convert_to_upper_case(inputFile)
 
     # Set up a GetKw object and let it parse our input:
     # here is where the magic happens.
-    input = getkw.GetkwParser()
-    inkw  = input.parseFile(inputFile)
+    inkw = getkw.GetkwParser().parseFile(uppercased)
+    # Remove temporary file
+    os.remove(uppercased)
     inkw.sanitize(valid_keywords)
-    topsect = inkw.get_topsect()
     inkw.run_callbacks(valid_keywords)
 
     # The parsed, machine-readable file is now saved.
@@ -185,6 +189,7 @@ def parse_pcm_input(inputFile):
         tmp.write(str(inkw.top))
 
     return parsedFile
+
 
 def execute(parsedFile):
     executable = os.path.join(os.path.dirname(__file__), "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@")
@@ -205,12 +210,13 @@ def execute(parsedFile):
         print('No executable available for standalone run')
         sys.exit(1)
 
+
 def setup_keywords():
     """
     Sets up sections, keywords and respective callback functions.
     """
     # Top-level section
-    top = getkw.Section('toplevel', callback = verify_top)
+    top = getkw.Section('toplevel', callback=verify_top)
     top.set_status(True)
     # Define units of measure
     # Valid values: AU (atomic units) or ANGSTROM
@@ -222,7 +228,7 @@ def setup_keywords():
     top.add_kw('CODATA', 'INT', 2010)
 
     # Cavity section
-    cavity = getkw.Section('CAVITY', callback = verify_cavity)
+    cavity = getkw.Section('CAVITY', callback=verify_cavity)
     # Type of the cavity
     # Valid values: GEPOL, WAVELET, TSLESS and RESTART
     cavity.add_kw('TYPE',        'STR')
@@ -290,11 +296,11 @@ def setup_keywords():
     # List of spheres
     # Valid for: GePol, TsLess and Wavelet in MODE=EXPLICIT
     # Valid values: array of doubles in format [x, y, z, R]
-    cavity.add_kw('SPHERES',     'DBL_ARRAY', callback = verify_spheres)
+    cavity.add_kw('SPHERES',     'DBL_ARRAY', callback=verify_spheres)
     top.add_sect(cavity)
 
     # Medium section
-    medium = getkw.Section('MEDIUM', callback = verify_medium)
+    medium = getkw.Section('MEDIUM', callback=verify_medium)
     # Type of solver
     # Valid values: IEFPCM, CPCM, WAVELET or LINEAR
     medium.add_kw('SOLVERTYPE',   'STR', 'IEFPCM')
@@ -356,7 +362,7 @@ def setup_keywords():
     top.add_sect(medium)
 
     # Green's function section
-    green = getkw.Section('GREEN', callback = verify_green)
+    green = getkw.Section('GREEN', callback=verify_green)
     # Green's function type
     # Valid values: VACUUM, UNIFORMDIELECTRIC, SPHERICALDIFFUSE, METALSPHERE, GREENSFUNCTIONSUM
     # Default: VACUUM
@@ -450,7 +456,7 @@ def setup_keywords():
     # List of geometry and classical point charges
     # Valid values: array of doubles in format [x, y, z, Q]
     # Notes: charges are always in atomic units
-    molecule.add_kw('GEOMETRY',     'DBL_ARRAY', callback = verify_geometry)
+    molecule.add_kw('GEOMETRY',     'DBL_ARRAY', callback=verify_geometry)
     # Calculate the molecular electrostatic potential (MEP) at the cavity for the given molecule
     # Valid values: boolean
     # Default: True
@@ -460,7 +466,7 @@ def setup_keywords():
     # ChargeDistribution section
     # Set a classical charge distribution, inside or outside the cavity
     # No additional spheres will be generated.
-    charge_distribution = getkw.Section('CHARGEDISTRIBUTION', callback = verify_charge_distribution)
+    charge_distribution = getkw.Section('CHARGEDISTRIBUTION', callback=verify_charge_distribution)
     # Monopoles
     # Valid values: array of doubles in format [x, y, z, Q]
     # Notes: charges are always in atomic units
@@ -472,6 +478,7 @@ def setup_keywords():
     top.add_sect(charge_distribution)
 
     return top
+
 
 def verify_top(section):
     global isAngstrom, CODATAyear
@@ -489,6 +496,7 @@ def verify_top(section):
         print(('CODATA set requested {} is not among the allowed sets: {}'.format(CODATAyear, allowed_codata)))
         sys.exit(1)
 
+
 def verify_cavity(section):
     allowed = ('GEPOL', 'WAVELET', 'TSLESS', 'RESTART')
     type = section.get('TYPE')
@@ -505,7 +513,6 @@ def verify_cavity(section):
     if (section['MINDISTANCE'].is_set()):
         convert_length_scalar(section['MINDISTANCE'])
 
-
     if (type.get() == 'GEPOL'):
         area = section.get('AREA')
         a = area.get()
@@ -514,7 +521,7 @@ def verify_cavity(section):
             sys.exit(1)
         minRadius = section.get('MINRADIUS')
         mr = minRadius.get()
-        if ( mr < 0.4 ):
+        if (mr < 0.4):
             print(('Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 au'.format(mr)))
             sys.exit(1)
     elif (type.get() == 'WAVELET'):
@@ -532,16 +539,16 @@ def verify_cavity(section):
         if (a < 0.01):
             print(('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a)))
             sys.exit(1)
-        minDistance = section.get('MINDISTANCE')
-        md = minDistance.get()
+        # minDistance = section.get('MINDISTANCE')
+        # md = minDistance.get()
         # Insert a sanity check on minimal distance!
-        #if ( md < 0.4 ):
+        # if ( md < 0.4 ):
         #       print("Requested minimal distance between sampling points too small: {}. Minimal value is: 0.4 au".format(md))
         #       sys.exit(1)
-        derOrder = section.get('DERORDER')
-        do = derOrder.get()
+        # derOrder = section.get('DERORDER')
+        # do = derOrder.get()
         # Insert a check on derivative order
-        #if ( do > 4 ):
+        # if ( do > 4 ):
         #       print("Invalid derivative order requested: {}. Derivative order has to be within [1, 5]".format(md))
         #       sys.exit(1)
     elif (type.get() == 'RESTART'):
@@ -564,10 +571,10 @@ def verify_cavity(section):
         print(('Cavity creation mode requested {} is not among the allowed modes: {}'.format(mode.get(), allowed_modes)))
         sys.exit(1)
 
-    atoms=section.get('ATOMS')
-    at=atoms.get()
+    atoms = section.get('ATOMS')
+    at = atoms.get()
     radii = section.get('RADII')
-    convert_length_array(radii);
+    convert_length_array(radii)
     r = radii.get()
 
     if (mode.get() == 'ATOMS'):
@@ -579,6 +586,7 @@ def verify_cavity(section):
                 if (at.count(v) > 1):
                     print('Incoherent input for Atoms keyword. Too many spheres on the same atom(s).')
                     sys.exit(1)
+
 
 def verify_medium(section):
     solvent = section.get('SOLVENT')
@@ -598,7 +606,6 @@ def verify_medium(section):
     solventFound = False
     for i, v in allowedSolvents.items():
         if (solvent.get() in v):
-            solventName = i
             # Set name to the first value in the value pair
             # C++ will look for this name!
             solvent.set(v[0])
@@ -660,17 +667,18 @@ def verify_medium(section):
         print('A posteriori compression parameter has to be in ]0.0, 1.0[')
         sys.exit(1)
 
+
 def verify_green(section):
-    allowed     = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'ALTERNATESPHERICALDIFFUSE', 'METALSPHERE', 'GREENSFUNCTIONSUM')
+    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'ALTERNATESPHERICALDIFFUSE', 'METALSPHERE', 'GREENSFUNCTIONSUM')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
     allowed_profiles = ('TANH', 'ERF')
 
     green1 = section.fetch_sect('GREEN<ONE>')
     green2 = section.fetch_sect('GREEN<TWO>')
-    eps    = section.get('EPS')
+    eps = section.get('EPS')
     epsdyn = section.get('EPSDYN')
     epsimg = section.get('EPSIMG')
-    epsre  = section.get('EPSRE')
+    epsre = section.get('EPSRE')
 
     convert_length_array(section.get('SPHEREPOSITION'))
     position = section.get('SPHEREPOSITION')
@@ -722,6 +730,7 @@ def verify_green(section):
         print(('Allowed profiles are: {}'.format(allowed_profiles)))
         sys.exit(1)
 
+
 def check_array(name, array, offset):
     dim = len(array)
     if (dim % offset != 0):
@@ -736,9 +745,11 @@ def check_array(name, array, offset):
             array[j+2] /= CODATAdict[CODATAyear].ToAngstrom
             j += offset
 
+
 def verify_geometry(keyword):
     data = keyword.get()
     check_array('GEOMETRY', data, 4)
+
 
 def verify_charge_distribution(section):
     mono = section.get('MONOPOLES').get()
@@ -746,26 +757,31 @@ def verify_charge_distribution(section):
     dipole = section.get('DIPOLES').get()
     check_array('DIPOLES', dipole, 6)
 
+
 def verify_spheres(keyword):
-    length=len(keyword.get())
+    length = len(keyword.get())
     if (length % 4 != 0):
         print('Empty or incoherent Spheres list.')
         sys.exit(1)
     convert_length_array(keyword)
 
+
 def convert_length_array(keyword):
-    length=len(keyword.get())
+    length = len(keyword.get())
     if (isAngstrom):
         for i in range(length):
             keyword[i] /= CODATAdict[CODATAyear].ToAngstrom
+
 
 def convert_length_scalar(keyword):
     if (isAngstrom):
         keyword[0] /= CODATAdict[CODATAyear].ToAngstrom
 
+
 def convert_area_scalar(keyword):
     if (isAngstrom):
         keyword[0] /= (CODATAdict[CODATAyear].ToAngstrom * CODATAdict[CODATAyear].ToAngstrom)
+
 
 if __name__ == '__main__':
     main()

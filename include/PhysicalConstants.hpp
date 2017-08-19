@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef PHYSICALCONSTANTS_HPP
-#define PHYSICALCONSTANTS_HPP
+#pragma once
 
 #include <cmath>
 
@@ -51,5 +50,3 @@ double angstrom2ToBohr2();
 double bohr3ToAngstrom3();
 
 double angstrom3ToBohr3();
-
-#endif // PHYSICALCONSTANTS_HPP

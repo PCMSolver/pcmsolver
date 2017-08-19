@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef PCMINPUT_H
-#define PCMINPUT_H
+#pragma once
 
 // To cope with the fact that C doesn't have bool as primitive type
 #ifndef pcmsolver_bool_t_DEFINED
@@ -78,5 +77,3 @@ typedef struct PCMInput {
   /// Type of Green's function requested outside the cavity.
   char outside_type[22];
 } PCMInput;
-
-#endif // PCMINPUT_H

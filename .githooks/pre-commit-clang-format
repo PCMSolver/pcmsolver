@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # git pre-commit hook that runs an clang-format stylecheck.
 # Features:

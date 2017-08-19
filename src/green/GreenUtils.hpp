@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef GREENUTILS_HPP
-#define GREENUTILS_HPP
+#pragma once
 
 #include "Config.hpp"
 
@@ -156,7 +155,8 @@ Eigen::Vector3d gradientSource(
   return (Eigen::Vector3d() << derivativeSource(
               functor, Eigen::Vector3d::UnitX(), p1, p2),
           derivativeSource(functor, Eigen::Vector3d::UnitY(), p1, p2),
-          derivativeSource(functor, Eigen::Vector3d::UnitZ(), p1, p2)).finished();
+          derivativeSource(functor, Eigen::Vector3d::UnitZ(), p1, p2))
+      .finished();
 }
 
 /*! Returns full gradient of the function passed for the pair of points p1, p2:
@@ -177,7 +177,8 @@ Eigen::Vector3d gradientProbe(
   return (Eigen::Vector3d() << derivativeProbe(
               functor, Eigen::Vector3d::UnitX(), p1, p2),
           derivativeProbe(functor, Eigen::Vector3d::UnitY(), p1, p2),
-          derivativeProbe(functor, Eigen::Vector3d::UnitZ(), p1, p2)).finished();
+          derivativeProbe(functor, Eigen::Vector3d::UnitZ(), p1, p2))
+      .finished();
 }
 
 /*! Returns full gradient of the function passed for the pair of points p1, p2:
@@ -194,7 +195,8 @@ Eigen::Vector3d gradientSource(const DifferentiableFunction & functor,
   return (Eigen::Vector3d() << derivativeSource(
               functor, Eigen::Vector3d::UnitX(), p1, p2),
           derivativeSource(functor, Eigen::Vector3d::UnitY(), p1, p2),
-          derivativeSource(functor, Eigen::Vector3d::UnitZ(), p1, p2)).finished();
+          derivativeSource(functor, Eigen::Vector3d::UnitZ(), p1, p2))
+      .finished();
 }
 
 /*! Returns full gradient of the function passed for the pair of points p1, p2:
@@ -211,8 +213,7 @@ Eigen::Vector3d gradientProbe(const DifferentiableFunction & functor,
   return (Eigen::Vector3d() << derivativeProbe(
               functor, Eigen::Vector3d::UnitX(), p1, p2),
           derivativeProbe(functor, Eigen::Vector3d::UnitY(), p1, p2),
-          derivativeProbe(functor, Eigen::Vector3d::UnitZ(), p1, p2)).finished();
+          derivativeProbe(functor, Eigen::Vector3d::UnitZ(), p1, p2))
+      .finished();
 }
 } // namespace green
-
-#endif // GREENUTILS_HPP

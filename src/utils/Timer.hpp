@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef TIMER_HPP
-#define TIMER_HPP
+#pragma once
 
 #include <fstream>
 #include <string>
@@ -158,8 +157,8 @@ inline double get_cpu_time() {
   }
 }
 #else /* _WIN32 */
-#include <time.h>
 #include <sys/time.h>
+#include <time.h>
 
 inline double get_wall_time() {
   struct timeval time;
@@ -173,5 +172,3 @@ inline double get_wall_time() {
 inline double get_cpu_time() { return (double)clock() / CLOCKS_PER_SEC; }
 #endif /* _WIN32 */
 } // namespace timer
-
-#endif // TIMER_HPP

@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SOLVERDATA_HPP
-#define SOLVERDATA_HPP
+#pragma once
 
 #include "Config.hpp"
 
@@ -48,5 +47,3 @@ struct SolverData {
   }
 };
 } // namespace pcm
-
-#endif // SOLVERDATA_HPP

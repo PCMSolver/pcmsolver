@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef UNIFORMDIELECTRIC_HPP
-#define UNIFORMDIELECTRIC_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -93,5 +92,3 @@ struct buildUniformDielectric {
 IGreensFunction * createUniformDielectric(const GreenData & data);
 } // namespace green
 } // namespace pcm
-
-#endif // UNIFORMDIELECTRIC_HPP

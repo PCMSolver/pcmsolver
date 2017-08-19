@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef METAL_HPP
-#define METAL_HPP
+#pragma once
 
 #include <complex>
 #include <iosfwd>
@@ -50,5 +49,3 @@ struct Metal __final {
 };
 } // namespace dielectric_profile
 } // namespace pcm
-
-#endif // METAL_HPP

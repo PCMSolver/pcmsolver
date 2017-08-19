@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef FORID_HPP
-#define FORID_HPP
+#pragma once
 
 #include <stdexcept>
 #include <string>
@@ -435,7 +434,7 @@ template <typename T1, typename T2, typename T3> struct ApplyFunctor<3, T1, T2, 
    */
   template <typename ReturnType, typename T, typename InputType>
   static ReturnType * apply(T & f, const InputType & data) {
-    return (f.template operator() < T1, T2, T3 > (data));
+    return (f.template operator()<T1, T2, T3>(data));
   }
 };
 
@@ -452,7 +451,7 @@ template <typename T1, typename T2, typename T3> struct ApplyFunctor<2, T1, T2, 
    */
   template <typename ReturnType, typename T, typename InputType>
   static ReturnType * apply(T & f, const InputType & data) {
-    return (f.template operator() < T1, T2 > (data));
+    return (f.template operator()<T1, T2>(data));
   }
 };
 
@@ -469,7 +468,7 @@ template <typename T1, typename T2, typename T3> struct ApplyFunctor<1, T1, T2, 
    */
   template <typename ReturnType, typename T, typename InputType>
   static ReturnType * apply(T & f, const InputType & data) {
-    return (f.template operator() < T1 > (data));
+    return (f.template operator()<T1>(data));
   }
 };
 /**@}*/
@@ -533,5 +532,3 @@ ReturnType * for_id(T & f, const InputType & data, int id1) {
   return for_id_impl<1, S1>::template execute<ReturnType>(f, data, id1);
 }
 /**@}*/
-
-#endif // FORIDTDSOLVER_HPP

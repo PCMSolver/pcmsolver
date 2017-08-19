@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef IGREENSFUNCTION_HPP
-#define IGREENSFUNCTION_HPP
+#pragma once
 
 #include <iosfwd>
 #include <vector>
@@ -74,7 +73,8 @@ typedef function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)> Kerne
  */
 typedef pcm::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
-                             const Eigen::Vector3d &)> KernelD;
+                             const Eigen::Vector3d &)>
+    KernelD;
 
 /*! \typedef DerivativeProbe
  *  \brief functor handle to the derivativeProbe method
@@ -82,7 +82,8 @@ typedef pcm::function<double(const Eigen::Vector3d &,
  */
 typedef pcm::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
-                             const Eigen::Vector3d &)> DerivativeProbe;
+                             const Eigen::Vector3d &)>
+    DerivativeProbe;
 
 class IGreensFunction {
 public:
@@ -211,5 +212,3 @@ protected:
   virtual std::ostream & printObject(std::ostream & os) = 0;
 };
 } // namespace pcm
-
-#endif // IGREENSFUNCTION_HPP

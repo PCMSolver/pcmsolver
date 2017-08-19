@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef RESTARTCAVITY_HPP
-#define RESTARTCAVITY_HPP
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -61,5 +60,3 @@ private:
 ICavity * createRestartCavity(const CavityData & data);
 } // namespace cavity
 } // namespace pcm
-
-#endif // RESTARTCAVITY_HPP

@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef CITATION_HPP
-#define CITATION_HPP
+#pragma once
 
 #include <algorithm>
 #include <sstream>
@@ -45,7 +44,8 @@ inline std::string citation_message() {
   std::string version(TOSTRING(PROJECT_VERSION));
   rest << "\n" << std::endl;
   rest << " * PCMSolver, an API for the Polarizable Continuum Model electrostatic "
-          "problem. Version " << version << std::endl;
+          "problem. Version "
+       << version << std::endl;
   rest << "   Main authors: R. Di Remigio, L. Frediani, K. Mozgawa" << std::endl;
   rest << "    With contributions from:" << std::endl;
   rest << "     R. Bast            (CMake framework)" << std::endl;
@@ -54,9 +54,11 @@ inline std::string citation_message() {
        << std::endl;
   rest << "   Theory: - J. Tomasi, B. Mennucci and R. Cammi:" << std::endl;
   rest << "            \"Quantum Mechanical Continuum Solvation Models\", Chem. "
-          "Rev., 105 (2005) 2999" << std::endl;
+          "Rev., 105 (2005) 2999"
+       << std::endl;
   rest << "   PCMSolver is distributed under the terms of the GNU Lesser General "
-          "Public License." << std::endl;
+          "Public License."
+       << std::endl;
   return rest.str();
 }
 
@@ -67,5 +69,3 @@ inline std::string version_info() {
   retval << " * Git last commit author : " << GIT_COMMIT_AUTHOR << std::endl;
   return retval.str();
 }
-
-#endif // CITATION_HPP

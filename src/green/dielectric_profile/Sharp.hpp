@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SHARP_HPP
-#define SHARP_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -53,5 +52,3 @@ struct Sharp __final {
 };
 } // namespace dielectric_profile
 } // namespace pcm
-
-#endif // SHARP_HPP

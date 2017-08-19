@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef IONICLIQUID_HPP
-#define IONICLIQUID_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -95,5 +94,3 @@ struct buildIonicLiquid {
 IGreensFunction * createIonicLiquid(const GreenData & data);
 } // namespace green
 } // namespace pcm
-
-#endif // IONICLIQUID_HPP

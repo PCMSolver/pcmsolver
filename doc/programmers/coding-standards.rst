@@ -31,8 +31,7 @@ Follow these guidelines to decide whether to include or forward declare:
 
 .. code-block:: cpp
 
-    #ifndef MYCLASS_HPP
-    #define MYCLASS_HPP
+    #pragma once
 
     //==============================
     // Forward declared dependencies
@@ -56,8 +55,6 @@ Follow these guidelines to decide whether to include or forward declare:
         friend class MyFriend;    // friend declaration is not a dependency
                                   //    don't do anything about MyFriend
     };
-
-    #endif // MYCLASS_HPP
 
 
 Proper overloading of `operator<<`

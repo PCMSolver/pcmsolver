@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef CHARGEDISTRIBUTION_HPP
-#define CHARGEDISTRIBUTION_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -65,7 +64,8 @@ typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
  */
 typedef pcm::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
-                             const Eigen::Vector3d &)> GFDerivative;
+                             const Eigen::Vector3d &)>
+    GFDerivative;
 
 /*! \brief Computes Newton potential in a set of points for given Green's function
  * and classical charge distribution
@@ -105,5 +105,3 @@ Eigen::VectorXd computeDipolarPotential(const GFDerivative & gf,
 ChargeDistribution nuclearChargeDistribution(const Molecule & mol);
 } // namespace utils
 } // namespace pcm
-
-#endif // CHARGEDISTRIBUTION_HPP

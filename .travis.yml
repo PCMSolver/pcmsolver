@@ -1,11 +1,13 @@
 language: cpp
 sudo: false
 dist: trusty
+ruby: 2.2.0
 notifications:
   slack:
     secure: F2nQIW6SiaGdw1LjuZOlgBu8rUVMllrDG/5bhmTQP7gyETfViFBjTsHQdTle6jtdb+LudleZaG7WhdEiVcKUa834rKqDk1UOt9p6bsmgbsBZBAaxmPh01iVFhKn3ML7JLjfr1YtH7MWJcsS60cNBrohXfVKfFzNgDqZEu/llr90=
 cache:
   ccache: true
+  bundler: true
   directories:
   - "$HOME/.ccache"
 env:
@@ -36,6 +38,7 @@ matrix:
         - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='release'
         - PYTHON_VER='2.7'
+        - RUN_DANGER=false
     - os: linux
       addons:
         apt:
@@ -43,6 +46,7 @@ matrix:
             - cmake3
             - cmake3-data
             - clang
+            - clang-format-3.9
             - gfortran-4.6
             - libboost-math-dev
       env:
@@ -52,6 +56,7 @@ matrix:
         - BUILD_TYPE='release'
         - PYTHON_VER='3.5'
         - STATIC='--static'
+        - RUN_DANGER=true
 
     - os: osx
       osx_image: xcode7.3
@@ -63,6 +68,7 @@ matrix:
         - PYTHON_VER='2.7'
         - HOMEBREW_GCC='homebrew/versions/gcc5'
         - STATIC='--static'
+        - RUN_DANGER=false
     - os: osx
       osx_image: xcode7.3
       env:
@@ -72,6 +78,7 @@ matrix:
         - BUILD_TYPE='release'
         - PYTHON_VER='3.5'
         - HOMEBREW_GCC='homebrew/versions/gcc6'
+        - RUN_DANGER=false
 
     - os: linux
       addons: *1
@@ -82,6 +89,7 @@ matrix:
         - BUILD_TYPE='debug'
         - PYTHON_VER='2.7'
         - COVERAGE='--coverage'
+        - RUN_DANGER=false
   allow_failures:
     - os: linux
       addons: *1
@@ -92,6 +100,7 @@ matrix:
         - BUILD_TYPE='debug'
         - PYTHON_VER='2.7'
         - COVERAGE='--coverage'
+        - RUN_DANGER=false
 install:
 - |
   if [[ "${PYTHON_VER}" == "2.7" ]]; then
@@ -125,10 +134,18 @@ before_script:
 - ${CXX_COMPILER} --version
 - ${C_COMPILER} --version
 - ${Fortran_COMPILER} --version
+- |
+  if [[ "${RUN_DANGER}" = true ]]; then
+    bundle install
+  fi
+script:
+- |
+  if [[ "${RUN_DANGER}" = true ]]; then
+    bundle exec danger
+  fi
 - python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' ${STATIC} ${COVERAGE}
 - cd build
 - ../.scripts/ci_build.sh
-script:
 - python ../.scripts/ci_test.py ctest --output-on-failure --verbose
 - python ../.scripts/ci_print_failing.py
 after_success:

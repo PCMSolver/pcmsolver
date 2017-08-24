@@ -50,11 +50,9 @@ struct Sphere {
   }
   Eigen::Vector3d center;
   double radius;
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See
-                                     http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
-                                     */
-      friend std::ostream &
-      operator<<(std::ostream & os, Sphere & sph) {
+  /* See http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html */
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  friend std::ostream & operator<<(std::ostream & os, Sphere & sph) {
     os << "Sphere radius " << sph.radius << std::endl;
     os << "Sphere center " << sph.center.transpose();
 

@@ -12,6 +12,10 @@
   This can be an additional source of electrostatic potential for the calculation
   of the ASC.
 - Restored compilation for g++ < v5.1.
+- [Ninja](https://ninja-build.org/) can be used as a generator.
+  Notice that at least [CMake 3.7.2](https://cmake.org/cmake/help/v3.7/generator/Ninja.html#fortran-support)
+  **and** the [Kitware-maintained](https://github.com/Kitware/ninja) version of
+  Ninja are required to successfully compile.
 
 ### Changed
 

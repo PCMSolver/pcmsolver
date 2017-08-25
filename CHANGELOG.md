@@ -16,8 +16,10 @@
 ### Changed
 
 - Use [`#pragma once`](https://en.wikipedia.org/wiki/Pragma_once) instead of
-  `#ifndef, #define, #endif` to guard against multiple inclusion of header
-  files.
+  `#ifndef, #define, #endif` to guard against multiple inclusion of header files.
+- The uppercased contents of the `.pcm` input file are written to a temporary
+  file, instead of overwriting the user provided file. The temporary file is
+  removed after it has been parsed. Fixes #91 as noted by @ilfreddy.
 
 ## [Version 1.1.10] - 2017-03-27
 

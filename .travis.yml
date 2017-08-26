@@ -141,6 +141,9 @@ before_script:
 script:
 - |
   if [[ "${RUN_DANGER}" = true ]]; then
+    `type -P clang-format` --version
+    `type -P clang-format-3.9` --version
+    alias clang-format=`type -P clang-format-3.9`
     bundle exec danger
   fi
 - python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' ${STATIC} ${COVERAGE}

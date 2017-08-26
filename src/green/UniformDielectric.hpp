@@ -92,5 +92,10 @@ struct buildUniformDielectric {
 } // namespace detail
 
 IGreensFunction * createUniformDielectric(const GreenData & data);
+
+template <typename DerivativeTraits>
+IGreensFunction * createUniformDielectric(const GreenData & data) {
+  return new UniformDielectric<DerivativeTraits>(data.epsilon);
+}
 } // namespace green
 } // namespace pcm

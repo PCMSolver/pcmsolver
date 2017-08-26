@@ -272,5 +272,11 @@ struct buildSphericalDiffuse {
 } // namespace detail
 
 IGreensFunction * createSphericalDiffuse(const GreenData & data);
+
+template <typename ProfilePolicy>
+IGreensFunction * createSphericalDiffuse(const GreenData & data) {
+  return new SphericalDiffuse<ProfilePolicy>(
+      data.epsilon1, data.epsilon2, data.width, data.center, data.origin, data.maxL);
+}
 } // namespace green
 } // namespace pcm

@@ -93,5 +93,10 @@ struct buildVacuum {
 } // namespace detail
 
 IGreensFunction * createVacuum(const GreenData & data);
+
+template <typename DerivativeTraits>
+IGreensFunction * createVacuum(const GreenData & /* data */) {
+  return new Vacuum<DerivativeTraits>();
+}
 } // namespace green
 } // namespace pcm

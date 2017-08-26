@@ -225,15 +225,15 @@ private:
    */
   void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
     namespace odeint = boost::numeric::odeint;
-    odeint::bulirsch_stoer_dense_out<StateVariable> stepper(
-        parms.eps_abs_, parms.eps_rel_, parms.factor_x_, parms.factor_dxdt_);
+    odeint::runge_kutta_fehlberg78<StateVariable> stepper;
+
     ODESystem system(eval, L_);
     // Holds the initial conditions
     StateVariable init_zeta(2);
     // Set initial conditions
     init_zeta[0] = L_ * std::log(r_0_);
     init_zeta[1] = L_ / r_0_;
-    odeint::integrate_adaptive(
+    odeint::integrate_const(
         stepper,
         system,
         init_zeta,
@@ -329,8 +329,8 @@ private:
    */
   void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
     namespace odeint = boost::numeric::odeint;
-    odeint::bulirsch_stoer_dense_out<StateVariable> stepper(
-        parms.eps_abs_, parms.eps_rel_, parms.factor_x_, parms.factor_dxdt_);
+    odeint::runge_kutta_fehlberg78<StateVariable> stepper;
+
     ODESystem system(eval, L_);
     // Holds the initial conditions
     StateVariable init_omega(2);
@@ -338,7 +338,7 @@ private:
     init_omega[0] = -(L_ + 1) * std::log(r_infinity_);
     init_omega[1] = -(L_ + 1) / r_infinity_;
     // Notice that we integrate BACKWARDS, so we pass -step to integrate_adaptive
-    boost::numeric::odeint::integrate_adaptive(
+    odeint::integrate_const(
         stepper,
         system,
         init_omega,

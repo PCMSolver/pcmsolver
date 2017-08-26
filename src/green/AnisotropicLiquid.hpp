@@ -97,5 +97,11 @@ struct buildAnisotropicLiquid {
 } // namespace detail
 
 IGreensFunction * createAnisotropicLiquid(const GreenData & data);
+
+template <typename DerivativeTraits>
+IGreensFunction * createAnisotropicLiquid(const GreenData & data) {
+  return new AnisotropicLiquid<DerivativeTraits>(data.epsilonTensor,
+                                                 data.eulerAngles);
+}
 } // namespace green
 } // namespace pcm

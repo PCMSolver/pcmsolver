@@ -93,5 +93,10 @@ struct buildIonicLiquid {
 } // namespace detail
 
 IGreensFunction * createIonicLiquid(const GreenData & data);
+
+template <typename DerivativeTraits>
+IGreensFunction * createIonicLiquid(const GreenData & data) {
+  return new IonicLiquid<DerivativeTraits>(data.epsilon, data.kappa);
+}
 } // namespace green
 } // namespace pcm

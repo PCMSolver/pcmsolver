@@ -119,18 +119,20 @@ void Input::reader(const std::string & filename) {
     // Get the contents of the Green<inside> section...
     const Section & inside = medium.getSect("GREEN<INSIDE>");
     // ...and initialize the data members
-    greenInsideType_ = inside.getStr("TYPE");
+    greenInsideType_ = inside.getStr("TYPE") + "_" + inside.getStr("DER");
+    // TODO Clean up derivative determination
     derivativeInsideType_ = detail::derivativeTraits(inside.getStr("DER"));
     epsilonInside_ = inside.getDbl("EPS");
     // Get the contents of the Green<outside> section...
     const Section & outside = medium.getSect("GREEN<OUTSIDE>");
     // ...and initialize the data members
-    greenOutsideType_ = outside.getStr("TYPE");
+    greenOutsideType_ = outside.getStr("TYPE") + "_" + outside.getStr("DER");
+    // TODO Clean up derivative determination
     derivativeOutsideType_ = detail::derivativeTraits(outside.getStr("DER"));
     epsilonStaticOutside_ = outside.getDbl("EPS");
     epsilonDynamicOutside_ = outside.getDbl("EPSDYN");
     // This will be needed for the metal sphere only
-    if (greenOutsideType_ == "METALSPHERE") {
+    if (outside.getStr("TYPE") == "METALSPHERE") {
       epsilonReal_ = outside.getDbl("EPSRE");
       epsilonImaginary_ = outside.getDbl("EPSIMG");
       spherePosition_ = outside.getDblVec("SPHEREPOSITION");
@@ -143,6 +145,10 @@ void Input::reader(const std::string & filename) {
     center_ = outside.getDbl("CENTER");
     width_ = outside.getDbl("WIDTH");
     origin_ = outside.getDblVec("INTERFACEORIGIN");
+    if (outside.getStr("TYPE") == "SPHERICALDIFFUSE") {
+      greenOutsideType_ += "_" + outside.getStr("PROFILE");
+    }
+    // TODO Clean up profile determination
     profileType_ = detail::profilePolicy(outside.getStr("PROFILE"));
     maxL_ = outside.getInt("MAXL");
   } else { // This part must be reviewed!! Some data members are not initialized...
@@ -157,10 +163,10 @@ void Input::reader(const std::string & filename) {
     // Specification of the solvent by name means isotropic PCM
     // We have to initialize the Green's functions data here, Solvent class
     // is an helper class and should not be used in the core classes.
-    greenInsideType_ = "VACUUM";
+    greenInsideType_ = "VACUUM_DERIVATIVE";
     derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonInside_ = 1.0;
-    greenOutsideType_ = "UNIFORMDIELECTRIC";
+    greenOutsideType_ = "UNIFORMDIELECTRIC_DERIVATIVE";
     derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;
@@ -244,11 +250,13 @@ void Input::reader(const PCMInput & host_input) {
     // Get the contents of the Green<inside> section...
     // ...and initialize the data members
     greenInsideType_ = detail::trim_and_upper(host_input.inside_type);
+    greenInsideType_ += "_DERIVATIVE";
     derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonInside_ = 1.0;
     // Get the contents of the Green<outside> section...
     // ...and initialize the data members
     greenOutsideType_ = detail::trim_and_upper(host_input.outside_type);
+    greenOutsideType_ += "_DERIVATIVE";
     derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonStaticOutside_ = host_input.outside_epsilon;
     epsilonDynamicOutside_ = host_input.outside_epsilon;
@@ -271,9 +279,11 @@ void Input::reader(const PCMInput & host_input) {
     // We have to initialize the Green's functions data here, Solvent class
     // is an helper class and should not be used in the core classes.
     greenInsideType_ = std::string("VACUUM");
+    greenInsideType_ += "_DERIVATIVE";
     derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonInside_ = 1.0;
     greenOutsideType_ = std::string("UNIFORMDIELECTRIC");
+    greenOutsideType_ += "_DERIVATIVE";
     derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;

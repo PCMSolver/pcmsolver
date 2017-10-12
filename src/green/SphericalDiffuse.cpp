@@ -164,12 +164,14 @@ Stencil SphericalDiffuse<ProfilePolicy>::operator()(Stencil * sp,
   double Cr12 = this->coefficient_impl(source, probe);
 
   double gr12 = 0.0;
-  for (int L = 1; L <= maxLGreen_; ++L) {
+  for (int L = 0; L <= maxLGreen_; ++L) {
     gr12 += this->imagePotentialComponent_impl(L, source, probe, Cr12);
   }
   double r12 = (source - probe).norm();
 
-  return (1.0 / (Cr12 * r12) + gr12);
+  double gf = (1.0 / (Cr12 * r12) + gr12);
+  //  std::cout << "Source " << source.transpose() << " Probe " << probe.transpose() << " Tot " << gf << " Img " << gr12 << " Cr12 " << Cr12 << std::endl; 
+  return gf;
 }
 
 template <typename ProfilePolicy>
@@ -266,15 +268,14 @@ template <typename ProfilePolicy>
 void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   using namespace detail;
 
-  LOG("SphericalDiffuse::initSphericalDiffuse");
   // Parameters for the numerical solution of the radial differential equation
   double eps_abs_ = 1.0e-10; /*! Absolute tolerance level */
   double eps_rel_ = 1.0e-06; /*! Relative tolerance level */
   double factor_x_ = 0.0;    /*! Weight of the state      */
   double factor_dxdt_ = 0.0; /*! Weight of the state derivative */
-  double r_0_ = 0.1;         /*! Lower bound of the integration interval */
+  double r_0_ = 0.3;         /*! Lower bound of the integration interval */
   double r_infinity_ =
-      this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
+      this->profile_.center() + 20.0; /*! Upper bound of the integration interval */
   double observer_step_ = 1.0e-02;     /*! Time step between observer calls */
   IntegratorParameters params_(eps_abs_,
                                eps_rel_,
@@ -286,49 +287,45 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
-  LOG("Computing coefficient for the separation of the Coulomb singularity");
-  LOG("Computing first radial solution L = " + pcm::to_string(maxLC_));
-  TIMER_ON("computeZeta for coefficient");
   zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(
       maxLC_, r_0_, r_infinity_, eval_, params_);
-  TIMER_OFF("computeZeta for coefficient");
-  LOG("DONE: Computing first radial solution L = " + pcm::to_string(maxLC_));
-
-  LOG("Computing second radial solution L = " + pcm::to_string(maxLC_));
-  TIMER_ON("computeOmega for coefficient");
   omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(
       maxLC_, r_0_, r_infinity_, eval_, params_);
-  TIMER_OFF("computeOmega for coefficient");
-  LOG("Computing second radial solution L = " + pcm::to_string(maxLC_));
-  LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
-
-  LOG("Computing radial solutions for Green's function");
-  TIMER_ON("SphericalDiffuse: Looping over angular momentum");
   zeta_.reserve(maxLGreen_ + 1);
   omega_.reserve(maxLGreen_ + 1);
+  //  std::cout << " ZETA " << std::endl;
   for (int L = 0; L <= maxLGreen_; ++L) {
-    // First radial solution
-    LOG("Computing first radial solution L = " + pcm::to_string(L));
-    TIMER_ON("computeZeta L = " + pcm::to_string(L));
-    // Create an empty RadialSolution
     RadialFunction<StateType, LnTransformedRadial, Zeta> tmp_zeta_(
         L, r_0_, r_infinity_, eval_, params_);
+	//	std::cout << tmp_zeta_ << std::endl << std::endl;;
     zeta_.push_back(tmp_zeta_);
-    TIMER_OFF("computeZeta L = " + pcm::to_string(L));
-    LOG("DONE: Computing first radial solution L = " + pcm::to_string(L));
-
-    // Second radial solution
-    LOG("Computing second radial solution L = " + pcm::to_string(L));
-    TIMER_ON("computeOmega L = " + pcm::to_string(L));
-    // Create an empty RadialSolution
+  }
+  //  std::cout << " OMEGA " << std::endl;
+  for (int L = 0; L <= maxLGreen_; ++L) {
     RadialFunction<StateType, LnTransformedRadial, Omega> tmp_omega_(
         L, r_0_, r_infinity_, eval_, params_);
+	//	std::cout << tmp_omega_ << std::endl << std::endl;;
     omega_.push_back(tmp_omega_);
-    TIMER_OFF("computeOmega L = " + pcm::to_string(L));
-    LOG("DONE: Computing second radial solution L = " + pcm::to_string(L));
   }
-  TIMER_OFF("SphericalDiffuse: Looping over angular momentum");
-  LOG("DONE: Computing radial solutions for Green's function");
+
+  /*
+	Eigen::Vector3d sp, pp, step; 
+	sp << 0.0, 0.0, 2.8;
+	pp << 0.0, 2.8, -5.0;
+	step << 0.0, 0.0, 0.1;
+	for (int i = 0; i < 101; i++) {
+	double cr12 = coefficient_impl(sp, pp);
+	double Gc = Coulomb(sp, pp);
+	double Gi = imagePotential(sp, pp);
+	double d = (sp - pp).norm();
+	std::cout << pp(2) << " " << d << " " << cr12 << " " << Gc << " " << Gi << " " << Gi * d << std:: endl; 
+	for (int L = 0; L <= maxLGreen_; ++L) {
+	double gr12L = imagePotentialComponent_impl(L, sp, pp, cr12);
+	std::cout << L << " " << gr12L << std::endl;
+	} 
+	pp = pp + step;
+	}
+  */
 }
 
 template <typename ProfilePolicy>
@@ -387,7 +384,6 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
     }
     gr12 = (gr12 - f_L / (r1 * Cr12)) * pl_x;
   }
-
   return gr12;
 }
 

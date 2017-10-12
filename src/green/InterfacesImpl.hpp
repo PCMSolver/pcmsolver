@@ -225,7 +225,7 @@ private:
    */
   void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
     namespace odeint = boost::numeric::odeint;
-    odeint::runge_kutta_fehlberg78<StateVariable> stepper;
+    odeint::runge_kutta4<StateVariable> stepper;
 
     ODESystem system(eval, L_);
     // Holds the initial conditions
@@ -329,7 +329,7 @@ private:
    */
   void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
     namespace odeint = boost::numeric::odeint;
-    odeint::runge_kutta_fehlberg78<StateVariable> stepper;
+    odeint::runge_kutta4<StateVariable> stepper;
 
     ODESystem system(eval, L_);
     // Holds the initial conditions

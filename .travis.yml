@@ -136,18 +136,18 @@ before_script:
 - ${Fortran_COMPILER} --version
 - |
   if [[ "${RUN_DANGER}" = true ]]; then
-    bundle install
+    bundle install --gemfile=.ci/Gemfile
   fi
 script:
 - |
   if [[ "${RUN_DANGER}" = true ]]; then
-    bundle exec danger
+    BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile
   fi
 - python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' ${STATIC} ${COVERAGE}
 - cd build
-- ../.scripts/ci_build.sh
-- python ../.scripts/ci_test.py ctest --output-on-failure --verbose
-- python ../.scripts/ci_print_failing.py
+- ../.ci/ci_build.sh
+- python ../.ci/ci_test.py ctest --output-on-failure --verbose
+- python ../.ci/ci_print_failing.py
 after_success:
 - |
   if [[ "${COVERAGE}" = true ]]; then

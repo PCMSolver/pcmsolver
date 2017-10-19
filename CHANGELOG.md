@@ -25,6 +25,15 @@
   file, instead of overwriting the user provided file. The temporary file is
   removed after it has been parsed. Fixes #91 as noted by @ilfreddy.
 
+### Fixed
+
+- A bug in the initialization of a restart cavity from old `.npz` files.
+  Currently, the `.npz` file saves sphere center, arcs and vertices of each
+  finite element. This information is in fact needed to plot the cavity using
+  the Python script in `tools`. Older `.npz` files did not contain this
+  information and could not be read in. The additional information is read in
+  as arrays of zeros in case it is not present on file.
+
 ## [Version 1.1.10] - 2017-03-27
 
 ### Changed

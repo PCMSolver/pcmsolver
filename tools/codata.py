@@ -25,6 +25,7 @@
 # -*- coding: utf-8 -*-
 # vim:filetype=python:
 
+
 class CODATA:
     """A class holding conversion factors from atomic units
 
@@ -32,6 +33,7 @@ class CODATA:
            ToAngstrom conversion factor from AU of length to Angstrom
            ToFemtoseconds conversion factor from AU of time to Femtoseconds
     """
+
     def __init__(self, toang, tofs):
         self.ToAngstrom = toang
         self.ToFemtosecond = tofs

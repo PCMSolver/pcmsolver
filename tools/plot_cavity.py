@@ -27,7 +27,6 @@
 
 # Written by Roberto Di Remigio <roberto.d.remigio@uit.no>
 # University of Tromso, 2017
-
 """
 Plot molecular cavity from a compressed NumPy format file.
 Color map the finite elements according to a surface function, saved
@@ -62,6 +61,7 @@ Options:
   -h --help      Show this screen.
 """
 
+
 def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     '''
     Function to offset the "center" of a colormap. Useful for
@@ -84,20 +84,16 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
           Defaults to 1.0 (no upper ofset). Should be between
           `midpoint` and 1.0.
     '''
-    cdict = {
-        'red': [],
-        'green': [],
-        'blue': [],
-        'alpha': []
-    }
+    cdict = {'red': [], 'green': [], 'blue': [], 'alpha': []}
 
     # regular index to compute the colors
     reg_index = np.linspace(start, stop, 257)
 
     # shifted index to match the data
     shift_index = np.hstack([
-        np.linspace(0.0, midpoint, 128, endpoint=False),
-        np.linspace(midpoint, 1.0, 129, endpoint=True)
+        np.linspace(
+            0.0, midpoint, 128, endpoint=False), np.linspace(
+                midpoint, 1.0, 129, endpoint=True)
     ])
 
     for ri, si in zip(reg_index, shift_index):
@@ -124,7 +120,7 @@ def plot(cavity_npz, surf_func_npy=None):
     centroids = cavity['centers']
 
     # Plot collocation points
-    ax.scatter(centroids[0, :], centroids[1,:], centroids[2,:], c='black', alpha=0.5)
+    ax.scatter(centroids[0, :], centroids[1, :], centroids[2, :], c='black', alpha=0.5)
 
     # Generate color mapping
     colors = (.5, .1, .3, 0.3)
@@ -137,7 +133,10 @@ def plot(cavity_npz, surf_func_npy=None):
         # Provide colors for Poly3DCollection
         colors = mappable.to_rgba(surf_func.flatten())
     # Generate list of vertices
-    vertices = [zip(cavity['vertices_' + str(i)][0, :], cavity['vertices_' + str(i)][1, :], cavity['vertices_' + str(i)][2, :]) for i in range(nElements)]
+    vertices = [
+        zip(cavity['vertices_' + str(i)][0, :], cavity['vertices_' + str(i)][1, :], cavity['vertices_' + str(i)][2, :])
+        for i in range(nElements)
+    ]
     elements = Poly3DCollection(vertices, facecolors=colors)
     ax.add_collection3d(elements)
     ax.set_axis_off()

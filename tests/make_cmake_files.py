@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
 #  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
@@ -33,6 +32,7 @@
 
 import os
 
+
 def glob_sources(dname):
     import glob
     import os
@@ -51,7 +51,7 @@ dname = os.getcwd()
 fname = os.path.join(dname, 'CMakeLists.txt.try')
 f = open(fname, 'w')
 sources = glob_sources(dname)
-labels  = extract_labels(dname, sources)
+labels = extract_labels(dname, sources)
 src_lbl = dict(zip([os.path.basename(src) for src in sources], labels))
 
 dirname = os.path.basename(os.path.normpath(dname))

@@ -24,19 +24,19 @@
 #include "catch.hpp"
 
 #include <cmath>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <limits>
 
 #include <Eigen/Core>
 
-#include "green/AnisotropicLiquid.hpp"
+#include "TestingMolecules.hpp"
+#include "bi_operators/Numerical.hpp"
 #include "cavity/Element.hpp"
 #include "cavity/GePolCavity.hpp"
+#include "green/AnisotropicLiquid.hpp"
 #include "green/IonicLiquid.hpp"
-#include "bi_operators/Numerical.hpp"
 #include "green/UniformDielectric.hpp"
-#include "TestingMolecules.hpp"
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"
 

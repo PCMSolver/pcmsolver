@@ -23,8 +23,8 @@
 
 #include "catch.hpp"
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include <Eigen/Core>
 

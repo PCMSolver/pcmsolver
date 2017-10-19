@@ -23,15 +23,15 @@
 
 #include "catch.hpp"
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include <Eigen/Core>
 
-#include "cavity/GePolCavity.hpp"
 #include "LoggerInterface.hpp"
-#include "utils/Molecule.hpp"
 #include "TestingMolecules.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "utils/Molecule.hpp"
 #include "utils/Symmetry.hpp"
 
 using namespace pcm;

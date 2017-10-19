@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
 #  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
@@ -49,6 +48,7 @@ Options:
   -h --help                              Show this screen.
 """
 
+
 def glob_sources_cxx(dir_name):
     """Create a list of C++ headers and sources to be used in a CMakeLists.txt file."""
     headers = 'list(APPEND headers_list '
@@ -62,6 +62,7 @@ def glob_sources_cxx(dir_name):
     message = '# List of headers\n' + headers \
             + '# List of sources\n' + sources
     return message
+
 
 def glob_sources_c(dir_name):
     """Create a list of C headers and sources to be used in a CMakeLists.txt file."""
@@ -77,6 +78,7 @@ def glob_sources_c(dir_name):
             + '# List of sources\n' + sources
     return message
 
+
 def glob_sources_fortran(dir_name):
     """Create a list of Fortran sources to be used in a CMakeLists.txt file."""
     types = ('*.f', '*.F', '*.f77', '*.F77', '*.f90', '*.F90')
@@ -90,6 +92,7 @@ def glob_sources_fortran(dir_name):
     message = '# List of sources\n' + sources
     return message
 
+
 try:
     arguments = docopt.docopt(options, argv=None)
 except docopt.DocoptExit:
@@ -99,7 +102,7 @@ except docopt.DocoptExit:
 
 # Grab command-line arguments
 libname = arguments['--libname']
-lang    = arguments['--lang']
+lang = arguments['--lang']
 
 root_directory = os.getcwd()
 dname = os.path.join(root_directory, libname)

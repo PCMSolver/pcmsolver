@@ -32,8 +32,8 @@
 #include "bi_operators/BIOperatorData.hpp"
 #include "cavity/CavityData.hpp"
 #include "green/GreenData.hpp"
-#include "solver/SolverData.hpp"
 #include "interface/Input.hpp"
+#include "solver/SolverData.hpp"
 #include "utils/Sphere.hpp"
 
 using pcm::Input;

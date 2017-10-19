@@ -106,8 +106,7 @@ void Element::spherical_polygon(Eigen::Vector3d & t_,
     }
     numb[i] = i;
     phinumb[i] = phi[i];
-  jump:
-    ; // Do nothing...
+  jump:; // Do nothing...
   }
   numb[nVertices_] = numb[0];
   phinumb[nVertices_] = 2 * M_PI;

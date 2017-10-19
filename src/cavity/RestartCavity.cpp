@@ -35,7 +35,7 @@ namespace pcm {
 namespace cavity {
 std::ostream & RestartCavity::printCavity(std::ostream & os) {
   os << "Cavity type: Restart" << std::endl;
-  os << "Number of finite elements = " << nElements_;
+  os << "Number of finite elements = " << nElements_ << std::endl;
   return os;
 }
 

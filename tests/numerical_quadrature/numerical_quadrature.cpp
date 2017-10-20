@@ -30,12 +30,12 @@
 
 #include <Eigen/Core>
 
-#include "utils/cnpy.hpp"
+#include "TestingMolecules.hpp"
+#include "bi_operators/Numerical.hpp"
 #include "cavity/Element.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "bi_operators/Numerical.hpp"
 #include "utils/MathUtils.hpp"
-#include "TestingMolecules.hpp"
+#include "utils/cnpy.hpp"
 
 using namespace pcm;
 using bi_operators::integrateS;

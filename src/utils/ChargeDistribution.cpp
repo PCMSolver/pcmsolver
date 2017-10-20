@@ -21,8 +21,8 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#include <iostream>
 #include "ChargeDistribution.hpp"
+#include <iostream>
 
 #include "Config.hpp"
 

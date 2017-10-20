@@ -25,21 +25,21 @@
 
 #include <iostream>
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Config.hpp"
 
-#include <Eigen/Core>
 #include "utils/getkw/Getkw.h"
+#include <Eigen/Core>
 
 #include <boost/algorithm/string.hpp>
 
+#include "PCMInput.h"
 #include "bi_operators/BIOperatorData.hpp"
 #include "cavity/CavityData.hpp"
 #include "green/GreenData.hpp"
 #include "solver/SolverData.hpp"
-#include "PCMInput.h"
 #include "utils/Factory.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
@@ -94,7 +94,8 @@ void Input::reader(const std::string & filename) {
       Eigen::Vector3d center;
       center = (Eigen::Vector3d() << spheresInput[j],
                 spheresInput[j + 1],
-                spheresInput[j + 2]).finished();
+                spheresInput[j + 2])
+                   .finished();
       Sphere sph(center, spheresInput[j + 3]);
       spheres_.push_back(sph);
       j += 4;

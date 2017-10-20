@@ -27,14 +27,14 @@
 
 #include <Eigen/Core>
 
+#include "TestingMolecules.hpp"
 #include "bi_operators/Collocation.hpp"
-#include "green/DerivativeTypes.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "utils/Molecule.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "green/SphericalDiffuse.hpp"
 #include "green/Vacuum.hpp"
 #include "solver/IEFSolver.hpp"
-#include "green/SphericalDiffuse.hpp"
-#include "TestingMolecules.hpp"
+#include "utils/Molecule.hpp"
 
 using namespace pcm;
 using bi_operators::Collocation;

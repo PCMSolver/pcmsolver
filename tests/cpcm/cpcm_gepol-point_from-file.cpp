@@ -28,10 +28,10 @@
 #include <Eigen/Core>
 
 #include "bi_operators/Collocation.hpp"
-#include "green/DerivativeTypes.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "green/Vacuum.hpp"
+#include "green/DerivativeTypes.hpp"
 #include "green/UniformDielectric.hpp"
+#include "green/Vacuum.hpp"
 #include "solver/CPCMSolver.hpp"
 
 using namespace pcm;

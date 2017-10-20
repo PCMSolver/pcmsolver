@@ -23,13 +23,13 @@
 
 #include "catch.hpp"
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include <Eigen/Core>
 
-#include "cavity/GePolCavity.hpp"
 #include "TestingMolecules.hpp"
+#include "cavity/GePolCavity.hpp"
 
 using namespace pcm;
 using cavity::GePolCavity;

@@ -27,10 +27,10 @@
 
 #include <Eigen/Core>
 
+#include "TestingMolecules.hpp"
 #include "cavity/GePolCavity.hpp"
 #include "utils/Molecule.hpp"
 #include "utils/Symmetry.hpp"
-#include "TestingMolecules.hpp"
 
 using namespace pcm;
 using cavity::GePolCavity;

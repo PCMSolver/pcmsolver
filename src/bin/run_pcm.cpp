@@ -21,8 +21,8 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <map>
@@ -40,8 +40,8 @@
 
 #include "interface/Input.hpp"
 #include "interface/Meddle.hpp"
-#include "utils/Molecule.hpp"
 #include "utils/ChargeDistribution.hpp"
+#include "utils/Molecule.hpp"
 
 std::ofstream pcmsolver_out;
 

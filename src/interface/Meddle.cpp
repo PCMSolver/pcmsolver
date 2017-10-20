@@ -21,9 +21,9 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#include "pcmsolver.h"
-#include "PCMInput.h"
 #include "Meddle.hpp"
+#include "PCMInput.h"
+#include "pcmsolver.h"
 
 #include <string>
 #include <vector>
@@ -36,19 +36,19 @@
 
 #include "bi_operators/BIOperatorData.hpp"
 #include "bi_operators/BoundaryIntegralOperator.hpp"
-#include "cavity/CavityData.hpp"
 #include "cavity/Cavity.hpp"
-#include "green/GreenData.hpp"
+#include "cavity/CavityData.hpp"
 #include "green/Green.hpp"
-#include "solver/SolverData.hpp"
+#include "green/GreenData.hpp"
 #include "solver/Solver.hpp"
+#include "solver/SolverData.hpp"
 
-#include "utils/Atom.hpp"
 #include "Citation.hpp"
-#include "utils/cnpy.hpp"
+#include "utils/Atom.hpp"
 #include "utils/Factory.hpp"
 #include "utils/Solvent.hpp"
 #include "utils/Sphere.hpp"
+#include "utils/cnpy.hpp"
 
 #ifndef AS_TYPE
 #define AS_TYPE(Type, Obj) reinterpret_cast<Type *>(Obj)

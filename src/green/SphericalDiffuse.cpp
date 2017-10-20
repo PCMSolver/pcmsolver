@@ -39,9 +39,9 @@
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
-#include "utils/MathUtils.hpp"
 #include "dielectric_profile/ProfileTypes.hpp"
 #include "utils/ForId.hpp"
+#include "utils/MathUtils.hpp"
 
 namespace pcm {
 namespace green {

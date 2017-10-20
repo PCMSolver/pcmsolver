@@ -27,15 +27,15 @@
 
 #include <Eigen/Core>
 
-#include "bi_operators/Collocation.hpp"
-#include "green/DerivativeTypes.hpp"
-#include "cavity/GePolCavity.hpp"
-#include "utils/Molecule.hpp"
-#include "green/Vacuum.hpp"
-#include "green/UniformDielectric.hpp"
-#include "solver/CPCMSolver.hpp"
-#include "utils/Symmetry.hpp"
 #include "TestingMolecules.hpp"
+#include "bi_operators/Collocation.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "green/UniformDielectric.hpp"
+#include "green/Vacuum.hpp"
+#include "solver/CPCMSolver.hpp"
+#include "utils/Molecule.hpp"
+#include "utils/Symmetry.hpp"
 
 using namespace pcm;
 using bi_operators::Collocation;

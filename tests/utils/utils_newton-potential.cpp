@@ -23,17 +23,17 @@
 
 #include "catch.hpp"
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include <Eigen/Core>
 
+#include "TestingMolecules.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "green/Vacuum.hpp"
 #include "green/IonicLiquid.hpp"
 #include "green/UniformDielectric.hpp"
+#include "green/Vacuum.hpp"
 #include "utils/ChargeDistribution.hpp"
-#include "TestingMolecules.hpp"
 
 using namespace pcm;
 using cavity::GePolCavity;

@@ -23,9 +23,9 @@
 
 #include "IEFSolver.hpp"
 
-#include <iostream>
 #include <cmath>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -34,13 +34,13 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 
-#include "bi_operators/IBoundaryIntegralOperator.hpp"
-#include "cavity/ICavity.hpp"
-#include "cavity/Element.hpp"
-#include "green/IGreensFunction.hpp"
-#include "utils/MathUtils.hpp"
 #include "SolverData.hpp"
 #include "SolverImpl.hpp"
+#include "bi_operators/IBoundaryIntegralOperator.hpp"
+#include "cavity/Element.hpp"
+#include "cavity/ICavity.hpp"
+#include "green/IGreensFunction.hpp"
+#include "utils/MathUtils.hpp"
 
 namespace pcm {
 namespace solver {

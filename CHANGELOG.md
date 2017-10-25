@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [Version 1.1.11] - 2017-10-25
 
 ### Added
 
@@ -352,6 +352,7 @@
 ## v1.0.0 - 2014-09-30 [YANKED]
 
 [Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.10...HEAD
+[Version 1.1.11]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.10...v1.1.11
 [Version 1.1.10]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.9...v1.1.10
 [Version 1.1.9]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.8...v1.1.9
 [Version 1.1.8]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.7...v1.1.8

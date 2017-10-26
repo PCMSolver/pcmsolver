@@ -91,6 +91,8 @@ inline Factory<detail::CreateGreensFunction> bootstrapFactory() {
   factory_.subscribe("SPHERICALDIFFUSE_NUMERICAL_LOG",
                      createSphericalDiffuse<dielectric_profile::OneLayerLog>);
 
+  factory_.subscribe("SPHERICALSHARP", createSphericalSharp);
+
   return factory_;
 }
 } // namespace green

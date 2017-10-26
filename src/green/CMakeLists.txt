@@ -22,6 +22,7 @@ IonicLiquid.cpp
 SphericalDiffuse.cpp
 UniformDielectric.cpp
 Vacuum.cpp
+SphericalSharp.cpp
 )
 
 add_library(green OBJECT ${sources_list} ${headers_list})

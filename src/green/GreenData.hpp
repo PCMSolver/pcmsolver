@@ -55,9 +55,9 @@ struct GreenData {
   /*! Imaginary part of the permittivity of a metal sphere */
   double epsilonImaginary;
   /*! Coordinates of the metal sphere center */
-  std::vector<double> NPspheres;
+  Eigen::Vector3d NPcenter;
   /*! Radius of the the metal sphere */
-  double NPradii;
+  double NPradius;
   /*! Permittivity inside the interface */
   double epsilon1;
   /*! Permittivity outside the interface */
@@ -81,7 +81,7 @@ struct GreenData {
             const Eigen::Vector3d & euler = Eigen::Vector3d::Zero(),
             double _epsReal = 0.0,
             double _epsImaginary = 0.0,
-            const std::vector<double> & _sphere = std::vector<double>(),
+            const Eigen::Vector3d & _sphere = Eigen::Vector3d::Zero(),
             double _sphRadius = 0.0,
             double _e1 = 1.0,
             double _e2 = 1.0,
@@ -96,8 +96,8 @@ struct GreenData {
         eulerAngles(euler),
         epsilonReal(_epsReal),
         epsilonImaginary(_epsImaginary),
-        NPspheres(_sphere),
-        NPradii(_sphRadius),
+        NPcenter(_sphere),
+        NPradius(_sphRadius),
         epsilon1(_e1),
         epsilon2(_e2),
         center(_c),

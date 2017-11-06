@@ -81,12 +81,9 @@ void GePolCavity::build(const std::string & suffix,
                         int maxsph,
                         int maxvert) {
 
-  // This is a wrapper for the generatecavity_cpp function defined in the Fortran
-  // code PEDRA.
-  // Here we allocate the necessary arrays to be passed to PEDRA, in particular we
-  // allow
-  // for the insertion of additional spheres as in the most general formulation of
-  // the
+  // This is a wrapper for the generatecavity_cpp function defined in the Fortran code PEDRA.
+  // Here we allocate the necessary arrays to be passed to PEDRA, in particular we allow
+  // for the insertion of additional spheres as in the most general formulation of the
   // GePol algorithm.
 
   double * xtscor = new double[maxts];
@@ -173,7 +170,7 @@ void GePolCavity::build(const std::string & suffix,
   int len_f_pedra = std::strlen(pedra.str().c_str());
   // Go PEDRA, Go!
   TIMER_ON("GePolCavity::generatecavity_cpp");
-  generatecavity_cpp(&maxts,
+  pedra_driver(&maxts,
                      &maxsph,
                      &maxvert,
                      xtscor,
@@ -416,7 +413,7 @@ std::ostream & GePolCavity::printCavity(std::ostream & os) {
     os << boost::format("      %s") % "Du";
     os << boost::format("%9.4f") % (sphereRadius_(idx) * bohrToAngstrom());
     os << boost::format("   %1.2f   ") % 1.00;
-    os << boost::format("%10.6f  ") % (sphereCenter_(0, idx) * bohrToAngstrom());
+    os << boost::format("%10.6f  ")  % (sphereCenter_(0, idx) * bohrToAngstrom());
     os << boost::format(" %10.6f  ") % (sphereCenter_(1, idx) * bohrToAngstrom());
     os << boost::format(" %10.6f  ") % (sphereCenter_(2, idx) * bohrToAngstrom());
     os << std::endl;

@@ -1,3 +1,6 @@
+#!@PYTHON_EXECUTABLE@
+
+
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
 #  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
@@ -56,7 +59,7 @@ from codata import CODATAdict
 sys.path.append(os.path.dirname(__file__))
 try:
     import docopt
-except ImportError:
+except:
     sys.path.append('cmake/lib/docopt')
     import docopt
 
@@ -541,16 +544,16 @@ def verify_cavity(section):
         if (a < 0.01):
             print(('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a)))
             sys.exit(1)
-        # minDistance = section.get('MINDISTANCE')
-        # md = minDistance.get()
+        minDistance = section.get('MINDISTANCE')
+        md = minDistance.get()
         # Insert a sanity check on minimal distance!
         # if ( md < 0.4 ):
         #       print("Requested minimal distance between sampling points too small: {}. Minimal value is: 0.4 au".format(md))
         #       sys.exit(1)
-        # derOrder = section.get('DERORDER')
-        # do = derOrder.get()
+        derOrder = section.get('DERORDER')
+        do = derOrder.get()
         # Insert a check on derivative order
-        # if ( do > 4 ):
+        #if ( do > 4 ):
         #       print("Invalid derivative order requested: {}. Derivative order has to be within [1, 5]".format(md))
         #       sys.exit(1)
     elif (type.get() == 'RESTART'):

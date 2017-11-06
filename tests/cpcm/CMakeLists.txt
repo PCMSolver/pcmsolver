@@ -1,4 +1,7 @@
-add_library(cpcm-tests OBJECT cpcm_gepol-C2H4_D2h.cpp cpcm_gepol-H2O.cpp cpcm_gepol-NH3.cpp cpcm_gepol-NH3_from-file.cpp cpcm_gepol-point.cpp cpcm_gepol-point_from-file.cpp cpcm_symmetry.cpp)
+add_library(cpcm-tests OBJECT cpcm_gepol-C2H4_D2h.cpp cpcm_gepol-H2O.cpp
+  cpcm_gepol-NH3.cpp cpcm_gepol-NH3_from-file.cpp cpcm_gepol-point.cpp
+  cpcm_gepol-point_from-file.cpp cpcm_symmetry.cpp
+  cpcm_tsless-point.cpp cpcm_tsless-NH3.cpp)
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(cpcm-tests custom_boost)
 endif()
@@ -30,3 +33,8 @@ add_Catch_test(cpcm_gepol-point "solver;cpcm;cpcm_gepol-point")
 # cpcm_gepol-C2H4_D2h.cpp test
 add_Catch_test(cpcm_gepol-C2H4_D2h "cpcm;cpcm_symmetry;cpcm_gepol-C2H4_D2h")
 
+# cpcm_tsless-point.cpp test
+add_Catch_test(cpcm_tsless-point "solver;cpcm;cpcm_tsless-point")
+
+# cpcm_tsless-NH3.cpp test
+add_Catch_test(cpcm_tsless-NH3 "solver;cpcm;cpcm_tsless-NH3")

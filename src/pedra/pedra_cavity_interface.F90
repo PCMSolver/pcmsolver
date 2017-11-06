@@ -27,14 +27,14 @@
 !
 !     RDR, 280114. Put things in makecav.F inside here directly.
 !
-subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
+subroutine pedra_driver(maxts_, maxsph_, maxvert_,         &
     xtscor_, ytscor_, ztscor_, ar_,                              &
     xsphcor_, ysphcor_, zsphcor_, rsph_,                         &
     nts_, ntsirr_, nesfp_, addsph_,                              &
     xe_, ye_, ze_, rin_, masses_, avgArea_, rsolv_, ret_,        &
     nr_gen_, gen1_, gen2_, gen3_,                                &
-    nvert_, vert_, centr_, isphe_, pedra_, len_pedra_)           &
-    bind(c, name='generatecavity_cpp')
+    nvert_, vert_, centr_,                                       &
+    isphe_, pedra_, len_pedra_)
 
 use, intrinsic :: iso_c_binding
 use pedra_precision
@@ -47,7 +47,7 @@ implicit none
 #include "pcm_mxcent.inc"
 #include "pcm_pcm.inc"
 
-integer(c_int)  :: maxts_, maxsph_, maxvert_
+integer(c_size_t) :: maxts_, maxsph_, maxvert_
 real(c_double)  :: xtscor_(maxts_), ytscor_(maxts_), ztscor_(maxts_)
 real(c_double)  :: xsphcor_(maxts_), ysphcor_(maxts_), zsphcor_(maxts_), rsph_(maxts_)
 real(c_double)  :: ar_(maxts_), xe_(maxts_), ye_(maxts_), ze_(maxts_), rin_(maxts_)
@@ -170,4 +170,4 @@ write(pedra_unit, *) '<<< Done with PEDRA Fortran code >>>'
 
 close(pedra_unit)
 
-end subroutine generatecavity_cpp
+end subroutine pedra_driver

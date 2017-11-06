@@ -1,4 +1,7 @@
-add_library(gepol-tests OBJECT gepol_C2H4_D2h.cpp gepol_C6H6.cpp gepol_CH3+_Cs.cpp gepol_CO2_symmetry.cpp gepol_H3+.cpp gepol_H3+_C2v.cpp gepol_H3+_from-file.cpp gepol_NH3.cpp gepol_NH3_from-file.cpp gepol_point.cpp gepol_point_from-file.cpp gepol_point_symmetry.cpp)
+add_library(gepol-tests OBJECT gepol_C2H4_D2h.cpp gepol_C6H6.cpp
+  gepol_CH3+_Cs.cpp gepol_CO2_symmetry.cpp gepol_H3+.cpp gepol_H3+_C2v.cpp
+  gepol_H3+_from-file.cpp gepol_NH3.cpp gepol_NH3_from-file.cpp gepol_point.cpp
+  gepol_point_from-file.cpp gepol_point_symmetry.cpp gepol_HF.cpp)
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(gepol-tests custom_boost)
 endif()
@@ -41,3 +44,6 @@ add_Catch_test(gepol_H3+ "gepol;gepol_H3+")
 # gepol_NH3_from-file.cpp test
 add_Catch_test(gepol_NH3_from-file "gepol;gepol_NH3_from-file")
 set_tests_properties(gepol_NH3_from-file PROPERTIES DEPENDS gepol_NH3)
+
+# gepol_HF.cpp test
+add_Catch_test(gepol_HF "gepol;gepol_HF")

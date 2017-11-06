@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef COLLOCATION_HPP
-#define COLLOCATION_HPP
+#pragma once
 
 #include <vector>
 
@@ -78,5 +77,3 @@ private:
 IBoundaryIntegralOperator * createCollocation(const BIOperatorData & data);
 } // namespace bi_operators
 } // namespace pcm
-
-#endif // COLLOCATION_HPP

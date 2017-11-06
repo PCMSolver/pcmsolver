@@ -35,7 +35,7 @@ using utils::Sphere;
 
 std::ostream & operator<<(std::ostream & os, Sphere & sph) {
   os << "Sphere radius " << sph.radius << std::endl;
-  os << "Sphere center\n" << sph.center;
+  os << "Sphere center\n" << sph.center.transpose();
 
   return os;
 }

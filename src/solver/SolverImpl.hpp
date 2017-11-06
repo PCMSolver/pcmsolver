@@ -21,6 +21,8 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
+#pragma once
+
 #include <cmath>
 
 #include "Config.hpp"

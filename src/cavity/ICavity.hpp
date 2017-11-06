@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ICAVITY_HPP
-#define ICAVITY_HPP
+#pragma once
 
 #include <iosfwd>
 #include <vector>
@@ -169,5 +168,3 @@ public:
   }
 };
 } // namespace pcm
-
-#endif // ICAVITY_HPP

@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef DERIVATIVETYPES_HPP
-#define DERIVATIVETYPES_HPP
+#pragma once
 
 #include "Config.hpp"
 
@@ -41,5 +40,3 @@ typedef boost::mpl::vector<Stencil, AD_directional, AD_gradient, AD_hessian>
     derivative_types;
 } // namespace green
 } // namespace pcm
-
-#endif // DERIVATIVETYPES_HPP

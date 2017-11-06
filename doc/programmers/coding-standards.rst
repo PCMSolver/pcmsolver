@@ -31,8 +31,7 @@ Follow these guidelines to decide whether to include or forward declare:
 
 .. code-block:: cpp
 
-    #ifndef MYCLASS_HPP
-    #define MYCLASS_HPP
+    #pragma once
 
     //==============================
     // Forward declared dependencies
@@ -56,8 +55,6 @@ Follow these guidelines to decide whether to include or forward declare:
         friend class MyFriend;    // friend declaration is not a dependency
                                   //    don't do anything about MyFriend
     };
-
-    #endif // MYCLASS_HPP
 
 
 Proper overloading of `operator<<`
@@ -132,9 +129,21 @@ Code formatting
 
 We conform to the so-called Linux (aka kernel) formatting style for C/C++ code
 (see http://en.wikipedia.org/wiki/Indent_style#Kernel_style) with minimal
-modifications. If uncertain on your code formatting use the Artistic Style
-command-line utility to rectify it:
+modifications.
+Using `clang-format <https://clang.llvm.org/docs/ClangFormat.html>`_ is the
+preferred method to get the source code in the right format.
+Formatting style is defined in the ``.clang-format`` file, kept at the root of the project.
+
+.. note::
+   We recommend using at least v3.9 of the program, which is the version used to
+   generate the ``.clang-format`` file defining all formatting settings.
+
+``clang-format`` can be `integrated with both
+Emacs and Vim. <https://clang.llvm.org/docs/ClangFormat.html#vim-integration>`_
+It is also possible to install the Git pre-commit hooks to perform the necessary code style
+checks prior to committing changes:
 
 .. code-block:: bash
 
-   astyle --style=linux --max-code-length=85 --indent-namespaces --keep-one-line-blocks filename
+   cd .git/hooks
+   cp --symbolic-link ../../.githooks/* .

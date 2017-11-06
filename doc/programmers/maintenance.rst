@@ -5,7 +5,48 @@ Description and how-to for maintenance operations.
 Some of the maintenance scripts have been moved to the `pcmsolvermeta
 repository <https://gitlab.com/PCMSolver/pcmsolvermeta>`_
 
-Bump version
+Branching Model and Release Process
+-----------------------------------
+
+.. warning::
+   **Incomplete or outdated information!**
+
+Releases in a ``X.Y.Z`` series are annotated tags on the corresponding branch.
+
+Pull Request Requirements
+-------------------------
+
+The project is integrated with `Danger.Systems <http://danger.systems/ruby/>`_.
+On each PR, one CI job will run the integration and a `bot <https://github.com/minazobot>`_ will
+report which requirements are **not met** in your PR.
+These reports can be _warnings_ and _errors_. You will discuss and solve both
+of them with the reviewers.
+The automatic rules are laid out in the ``Dangerfile`` and are used to enforce an
+adequate level of testing, documentation and code quality.
+
+Danger.Systems Warnings
+=======================
+
+- PRs classed as Work in Progress.
+- Codebase was modified, but no tests were added.
+- Nontrivial changes to the codebase, but no documentation added.
+- Codebase was modified, but ``CHANGELOG.md`` was not updated.
+- Source files were added or removed, but ``.gitattributes`` was not updated.
+
+Danger.Systems Errors
+=====================
+
+- Commit message linting, based on some of `these recommendations <https://chris.beams.io/posts/git-commit/>`_:
+  - Commit subject is more than one word.
+  - Commit subject is no longer than 50 characters.
+  - Commit subject and body are separated by an empty line.
+
+- Clean commit history, without merge commits.
+
+- Code style for ``.hpp``, ``.cpp``, ``.h`` files follows the conventions in
+  ``.clang-format``.
+
+Bump Version
 ------------
 
 Version numbering follows the guidelines of `semantic versioning <http://semver.org/>`_
@@ -26,7 +67,7 @@ To simplify perusal of the ``CHANGELOG.md``, use the following subsections:
 5. ``Fixed`` for any bug fixes.
 6. ``Security`` to invite users to upgrade in case of vulnerabilities.
 
-Updating Eigen distribution
+Updating Eigen Distribution
 ---------------------------
 
 The C++ linear algebra library Eigen comes bundled with the module. To update
@@ -41,59 +82,43 @@ the distributed version one has to:
 
    .. code-block:: bash
 
-	  cmake .. -DCMAKE_INSTALL_PREFIX=@PROJECT_SOURCE_DIR@/external/eigen3
+    cmake .. -DCMAKE_INSTALL_PREFIX=@PROJECT_SOURCE_DIR@/external/eigen3
 
 Remember to commit and push your modifications.
 
-Updating the copyright notice
------------------------------
+Git Pre-Commit Hooks
+--------------------
 
-You need to have access to the ``pcmsolvermeta`` repository to update the
-copyright notice.  The copyright notice text is in the file
-``copyright_notice.txt`` in the ``tools`` directory.  The script
-``update_copyright.py`` will extract the text from the file, create the
-appropriate header and perform the update on the files in the subdirectory
-where it is invoked.
+[Git pre-commit hooks](https://git-scm.com/book/gr/v2/Customizing-Git-Git-Hooks) are used to
+keep track of code style and license header in source files.
+Code style is checked using ``clang-format``.
 
 .. warning::
-   The copyright notice on top of the Config.hpp.in file needs to be **manually** updated!
+   **You need to install ``clang-format`` (v3.9 recommended) to run the code style validation hook!**
 
-Release process
----------------
-
-We have two repositories one public for the release, hosted on `GitHub
-<https://github.com/PCMSolver/pcmsolver>`_ and one private for the
-development, hosted on `GitLab <https://gitlab.com/PCMSolver/pcmsolver>`_.
-At release time the master branch on the private repository is synced to that
-of the public repository.
-
-.. warning::
-   This means that **WHATEVER** is on master at release time is considered
-   ready for release.  Protection of functionality happens **EXCLUSIVELY** by
-   making use of branches/forks on the private repository.
-
-You need to compile the to-be-released code and run the unit test suite.  If
-compilation works and all unit tests are passing then the code is ready to be
-released:
+License headers are checked using the ``license_maintainer.py`` script and the
+header templates for the different languages used in this project.
+The Python script checks the ``.gitattributes`` file to determine which license
+headers need to be maintained and in which files:
 
 .. code-block:: bash
 
-   git push Origin release
+   src/pedra/pedra_dlapack.F90 !licensefile
+   src/solver/*.hpp licensefile=.githooks/LICENSE-C++
 
-Notice that ``Origin`` has been spelled with a capital ``O`` the reason being
-that the release branch gets pushed both to the private and the public
-repositories (`trick explanation
-<http://stackoverflow.com/questions/849308/pull-push-from-multiple-remote-locations>`_)
-In brief, you need to have a ``.git/config`` file that resembles the following:
+The first line specifies that the file in ``src/pedra/pedra_dlapack.F90`` should
+not be touched, while the second line states that all ``.hpp`` files in ``src/solver``
+should get an header from the template in ``.githooks/LICENSE-C++``
+Location of files in ``.gitattributes`` are always specified with respect
+to the project root directory.
+
+The hooks are located in the ``.githooks`` subdirectory and **have to be installed by hand**
+whenever you clone the repository anew:
 
 .. code-block:: bash
 
-   [remote "origin"]
-       url = git@gitlab.com:PCMSolver/pcmsolver.git
-       fetch = +refs/heads/*:refs/remotes/origin/*
-   [remote "GitHub"]
-       url = git@github.com:PCMSolver/pcmsolver.git
-       fetch = +refs/heads/*:refs/remotes/GitHub/*
-   [remote "Origin"]
-       url = git@gitlab.com:PCMSolver/pcmsolver.git
-       url = git@github.com:PCMSolver/pcmsolver.git
+   cd .git/hooks
+   cp --symbolic-link ../../.githooks/* .
+
+Installed hooks will **always** be executed. Use ``git commit --no-verify`` to
+bypass explicitly the hooks.

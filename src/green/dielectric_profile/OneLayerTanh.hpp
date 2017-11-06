@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ONELAYERTANH_HPP
-#define ONELAYERTANH_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -95,5 +94,3 @@ public:
 };
 } // namespace dielectric_profile
 } // namespace pcm
-
-#endif // ONELAYERTANH_HPP

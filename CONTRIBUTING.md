@@ -27,9 +27,11 @@ Our contribution guide is based on [Psi4 contribution guide](https://github.com/
   Note that after you launch a PR from one of your fork's branches, all
   subsequent commits to that branch will be added to the open pull request
   automatically.
-  Each commit added to the PR will be validated for mergability, compilation
+  Each commit added to the PR will be validated for mergeability, compilation
   and test suite compliance; the results of these tests will be visible on the
   PR page.
+* The title of your pull request should be marked with `[WIP]` if it’s a work
+  in progress and with `#trivial` if it is a set of trivial changes.
 * If you're providing a new feature, you must add test cases, documentation and
   update the `CHANGELOG.md` file.
 * When the code is ready to go, make sure you run the full or relevant portion
@@ -39,6 +41,36 @@ Our contribution guide is based on [Psi4 contribution guide](https://github.com/
   The code will not be merged until this box is checked, the continuous
   integration (Travis for Linux and Mac) returns checkmarks, and multiple core
   developers give "Approved" reviews.
+
+## Pull Request Requirements
+
+The project is integrated with [Danger.Systems](http://danger.systems/ruby/).
+On each PR, one CI job will run the integration and a [bot](https://github.com/minazobot) will
+report which requirements are **not met** in your PR.
+These reports can be _warnings_ and _errors_. You will discuss and solve both
+of them with the reviewers.
+The automatic rules are laid out in the `Dangerfile` and are used to enforce an
+adequate level of testing, documentation and code quality.
+
+### Danger.Systems Warnings
+
+- PRs classed as Work in Progress.
+- Codebase was modified, but no tests were added.
+- Nontrivial changes to the codebase, but no documentation added.
+- Codebase was modified, but `CHANGELOG.md` was not updated.
+- Source files were added or removed, but `.gitattributes` was not updated.
+
+### Danger.Systems Errors
+
+- Commit message linting, based on some of [these recommendations](https://chris.beams.io/posts/git-commit/):
+  - Commit subject is more than one word.
+  - Commit subject is no longer than 50 characters.
+  - Commit subject and body are separated by an empty line.
+
+- Clean commit history, without merge commits.
+
+- Code style for `.hpp`, `.cpp`, `.h` files follows the conventions in
+  `.clang-format`.
 
 ## Licensing
 

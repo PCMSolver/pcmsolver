@@ -23,21 +23,21 @@
 
 #include <cmath>
 #include <cstdlib>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <limits>
 
 #include <Eigen/Core>
 
+#include "TestingMolecules.hpp"
 #include "bi_operators/Collocation.hpp"
-#include "bi_operators/Purisima.hpp"
 #include "bi_operators/Numerical.hpp"
+#include "bi_operators/Purisima.hpp"
 #include "cavity/Element.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "green/SphericalDiffuse.hpp"
-#include "TestingMolecules.hpp"
 #include "green/AnisotropicLiquid.hpp"
 #include "green/IonicLiquid.hpp"
+#include "green/SphericalDiffuse.hpp"
 #include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"

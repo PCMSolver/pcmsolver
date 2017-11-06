@@ -21,14 +21,13 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SOLVER_HPP
-#define SOLVER_HPP
+#pragma once
 
 #include "Config.hpp"
 
-#include "ISolver.hpp"
-#include "IEFSolver.hpp"
 #include "CPCMSolver.hpp"
+#include "IEFSolver.hpp"
+#include "ISolver.hpp"
 #include "utils/Factory.hpp"
 
 /*!
@@ -57,5 +56,3 @@ inline Factory<detail::CreateSolver> bootstrapFactory() {
 }
 } // namespace solver
 } // namespace pcm
-
-#endif // SOLVER_HPP

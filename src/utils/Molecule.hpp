@@ -21,12 +21,11 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef MOLECULE_HPP
-#define MOLECULE_HPP
+#pragma once
 
 #include <iosfwd>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Config.hpp"
 
@@ -248,5 +247,3 @@ Eigen::VectorXd computeMEP(const std::vector<cavity::Element> & el,
  *  \return MEP at finite elements center
  */
 } // namespace pcm
-
-#endif // MOLECULE_HPP

@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SPHERICALDIFFUSE_HPP
-#define SPHERICALDIFFUSE_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -39,9 +38,9 @@ class OneLayerTanh;
 } // namespace dielectric_profile
 } // namespace pcm
 
-#include "InterfacesImpl.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
+#include "InterfacesImpl.hpp"
 
 /*! \file SphericalDiffuse.hpp
  *  \class SphericalDiffuse
@@ -182,6 +181,7 @@ private:
 
   virtual KernelS exportKernelS_impl() const __override;
   virtual KernelD exportKernelD_impl() const __override;
+  virtual DerivativeProbe exportDerivativeProbe_impl() const __override;
 
   virtual double singleLayer_impl(const Element & e, double factor) const __override;
   virtual double doubleLayer_impl(const Element & e, double factor) const __override;
@@ -272,5 +272,3 @@ struct buildSphericalDiffuse {
 IGreensFunction * createSphericalDiffuse(const GreenData & data);
 } // namespace green
 } // namespace pcm
-
-#endif // SPHERICALDIFFUSE_HPP

@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef PROFILETYPES_HPP
-#define PROFILETYPES_HPP
+#pragma once
 
 #include "Config.hpp"
 
@@ -31,10 +30,10 @@
 #include <boost/variant.hpp>
 
 #include "Anisotropic.hpp"
-#include "OneLayerErf.hpp"
-#include "OneLayerTanh.hpp"
 #include "MembraneTanh.hpp"
 #include "Metal.hpp"
+#include "OneLayerErf.hpp"
+#include "OneLayerTanh.hpp"
 #include "Sharp.hpp"
 #include "Uniform.hpp"
 #include "Yukawa.hpp"
@@ -49,7 +48,8 @@ typedef boost::mpl::vector<Uniform,
                            OneLayerErf,
                            MembraneTanh,
                            Metal,
-                           Sharp> profile_types;
+                           Sharp>
+    profile_types;
 
 /*! One-layer diffuse profile types */
 typedef boost::mpl::vector<OneLayerTanh, OneLayerErf> onelayer_diffuse_profile_types;
@@ -96,5 +96,3 @@ inline double epsilon(const Permittivity & arg) {
 }
 } // namespace dielectric_profile
 } // namespace pcm
-
-#endif // PROFILETYPES_HPP

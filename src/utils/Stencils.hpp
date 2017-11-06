@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef STENCILS_HPP
-#define STENCILS_HPP
+#pragma once
 
 #include <functional>
 
@@ -132,5 +131,3 @@ inline double sevenPointStencil(const DifferentiableFunction & func,
 
   return (function_values.dot(stencil) / step);
 }
-
-#endif // STENCILS_HPP

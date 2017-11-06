@@ -21,12 +21,11 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SOLVENT_HPP
-#define SOLVENT_HPP
+#pragma once
 
 #include <iosfwd>
-#include <string>
 #include <map>
+#include <string>
 
 #include "Config.hpp"
 
@@ -70,5 +69,3 @@ typedef std::map<std::string, utils::Solvent> SolventMap;
  */
 SolventMap & solvents();
 } // namespace pcm
-
-#endif // SOLVENT_HPP

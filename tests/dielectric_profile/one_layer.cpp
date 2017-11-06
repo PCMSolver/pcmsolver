@@ -31,8 +31,8 @@
 #include <Eigen/Core>
 #include <boost/math/special_functions/erf.hpp>
 
-#include "green/dielectric_profile/OneLayerTanh.hpp"
 #include "green/dielectric_profile/OneLayerErf.hpp"
+#include "green/dielectric_profile/OneLayerTanh.hpp"
 
 double tanh_value(double point, double e1, double e2, double w, double c);
 double tanh_deriv(double point, double e1, double e2, double w, double c);

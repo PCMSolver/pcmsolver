@@ -141,6 +141,14 @@ def process_yaml(argv):
         sys.stderr.write("ERROR: project name contains a space\n")
         sys.exit(-1)
 
+    if 'language' in config:
+        project_language = ' '.join(config['language']) if isinstance(config['language'], list) else config['language']
+    else:
+        sys.stderr.write("ERROR: you have to specify the project language(s) in autocmake.yml\n\n")
+        sys.stderr.write("# for instance like this (several languages):\nlanguage:\n  - CXX\n  - Fortran\n\n")
+        sys.stderr.write("# or like this (one language):\nlanguage: Fortran\n\n")
+        sys.exit(-1)
+
     if 'min_cmake_version' in config:
         min_cmake_version = config['min_cmake_version']
     else:
@@ -150,7 +158,8 @@ def process_yaml(argv):
     if 'default_build_type' in config:
         default_build_type = config['default_build_type'].lower()
     else:
-        sys.stderr.write("ERROR: you have to specify default_build_type in autocmake.yml\n")
+        sys.stderr.write("ERROR: you have to specify default_build_type in autocmake.yml\n\n")
+        sys.stderr.write("# for instance like this (debug, release, relwithdebinfo, or minsizerel):\ndefault_build_type: release\n\n")
         sys.exit(-1)
 
     if 'setup_script' in config:
@@ -179,18 +188,19 @@ def process_yaml(argv):
 
     # create CMakeLists.txt
     print('- generating CMakeLists.txt')
-    s = gen_cmakelists(project_name, min_cmake_version, default_build_type, relative_path, modules)
+    s = gen_cmakelists(project_name, project_language, min_cmake_version, default_build_type, relative_path, modules)
     with open(os.path.join(project_root, 'CMakeLists.txt'), 'w') as f:
         f.write('{0}\n'.format('\n'.join(s)))
 
-    # create setup script
-    print('- generating setup script')
-    s = gen_setup(cleaned_config, default_build_type, relative_path, setup_script_name)
-    file_path = os.path.join(project_root, setup_script_name)
-    with open(file_path, 'w') as f:
-        f.write('{0}\n'.format('\n'.join(s)))
-    if sys.platform != 'win32':
-        make_executable(file_path)
+    # create setup script unless it is 'None' or 'none'
+    if setup_script_name.lower() != 'none':
+        print('- generating setup script')
+        s = gen_setup(cleaned_config, default_build_type, relative_path, setup_script_name)
+        file_path = os.path.join(project_root, setup_script_name)
+        with open(file_path, 'w') as f:
+            f.write('{0}\n'.format('\n'.join(s)))
+        if sys.platform != 'win32':
+            make_executable(file_path)
 
 
 def main(argv):

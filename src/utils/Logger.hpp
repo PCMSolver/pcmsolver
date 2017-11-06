@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef LOGGER_HPP
-#define LOGGER_HPP
+#pragma once
 
 #include <ctime>
 #include <mutex>
@@ -76,8 +75,8 @@ public:
     }
     policy_->open_ostream(name);
     // Write the logfile header
-    logStream_ << "\t\tPCMSolver execution log\n" << buildInfo()
-               << "\n\t\tLog started : " << getTime() << std::endl;
+    logStream_ << "\t\tPCMSolver execution log\n"
+               << buildInfo() << "\n\t\tLog started : " << getTime() << std::endl;
   }
   /// Destructor
   ~logger() {
@@ -112,5 +111,3 @@ inline std::string getTime() {
 }
 
 } // close namespace logging
-
-#endif // LOGGER_HPP

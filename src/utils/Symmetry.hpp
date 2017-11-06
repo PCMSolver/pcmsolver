@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SYMMETRY_HPP
-#define SYMMETRY_HPP
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -81,5 +80,3 @@ public:
  * \note C1 is built as Symmetry C1 = buildGroup(0, 0, 0, 0);
  */
 Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3);
-
-#endif // SYMMETRY_HPP

@@ -41,8 +41,7 @@ using cavity::Element;
 using dielectric_profile::Uniform;
 namespace green {
 template <typename DerivativeTraits>
-Vacuum<DerivativeTraits>::Vacuum()
-    : GreensFunction<DerivativeTraits, Uniform>() {
+Vacuum<DerivativeTraits>::Vacuum() : GreensFunction<DerivativeTraits, Uniform>() {
   this->profile_ = Uniform(1.0);
 }
 
@@ -68,6 +67,12 @@ template <typename DerivativeTraits>
 KernelD Vacuum<DerivativeTraits>::exportKernelD_impl() const {
   return pcm::bind(
       &Vacuum<DerivativeTraits>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
+}
+
+template <typename DerivativeTraits>
+DerivativeProbe Vacuum<DerivativeTraits>::exportDerivativeProbe_impl() const {
+  return pcm::bind(
+      &Vacuum<DerivativeTraits>::derivativeProbe, *this, pcm::_1, pcm::_2, pcm::_3);
 }
 
 template <typename DerivativeTraits>

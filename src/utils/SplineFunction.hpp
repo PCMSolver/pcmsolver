@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SPLINEFUNCTION_HPP
-#define SPLINEFUNCTION_HPP
+#pragma once
 
 #include <algorithm>
 
@@ -95,4 +94,3 @@ private:
   }
 #endif /*HAS_CXX11_LAMBDA */
 };
-#endif // SPLINEFUNCTION_HPP

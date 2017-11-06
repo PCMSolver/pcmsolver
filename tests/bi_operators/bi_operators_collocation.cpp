@@ -24,17 +24,17 @@
 #include "catch.hpp"
 
 #include <cmath>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <limits>
 
 #include <Eigen/Core>
 
+#include "TestingMolecules.hpp"
+#include "bi_operators/Collocation.hpp"
 #include "cavity/Element.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "bi_operators/Collocation.hpp"
 #include "green/SphericalDiffuse.hpp"
-#include "TestingMolecules.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"

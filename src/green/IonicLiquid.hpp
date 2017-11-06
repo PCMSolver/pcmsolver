@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef IONICLIQUID_HPP
-#define IONICLIQUID_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -74,6 +73,7 @@ private:
 
   virtual KernelS exportKernelS_impl() const __override;
   virtual KernelD exportKernelD_impl() const __override;
+  virtual DerivativeProbe exportDerivativeProbe_impl() const __override;
 
   __noreturn virtual double singleLayer_impl(const Element & /* e */,
                                              double /* factor */) const __override;
@@ -94,5 +94,3 @@ struct buildIonicLiquid {
 IGreensFunction * createIonicLiquid(const GreenData & data);
 } // namespace green
 } // namespace pcm
-
-#endif // IONICLIQUID_HPP

@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef SPHERICALSHARP_HPP
-#define SPHERICALSHARP_HPP
+#pragma once
 
 #include <cmath>
 #include <iosfwd>
@@ -34,11 +33,11 @@
 
 #include "DerivativeTypes.hpp"
 #include "DerivativeUtils.hpp"
-#include "bi_operators/IntegratorForward.hpp"
 #include "GreensFunction.hpp"
-#include "utils/legendre.h"
-#include "utils/MathUtils.hpp"
+#include "bi_operators/IntegratorForward.hpp"
 #include "dielectric_profile/Sharp.hpp"
+#include "utils/MathUtils.hpp"
+#include "utils/legendre.h"
 
 /*! \file SphericalSharp.hpp
  *  \class SphericalSharp
@@ -249,5 +248,3 @@ public:
     return os;
   }
 };
-
-#endif // SPHERICALSHARP_HPP

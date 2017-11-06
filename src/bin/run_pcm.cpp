@@ -21,8 +21,8 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <map>
@@ -40,6 +40,7 @@
 
 #include "interface/Input.hpp"
 #include "interface/Meddle.hpp"
+#include "utils/ChargeDistribution.hpp"
 #include "utils/Molecule.hpp"
 
 std::ofstream pcmsolver_out;
@@ -66,16 +67,17 @@ int main(int argc, char * argv[]) {
   PCMSolverIndex size = context_.getCavitySize();
 
   // Form vector with electrostatic potential
-  // FIXME
-  // 1. Try to understand why this is needed
-  // 2. Try to re-write this such that the input object is not needed!!!
   // First compute the potential from the classical point multipoles distribution
   // then add the one from the molecule
   TIMER_ON("Computing MEP");
-  // Eigen::VectorXd mep = Eigen::VectorXd::Zero(size);
-  // if (input.MEPfromMolecule())
-  //  mep += computeMEP(context_.molecule(), context_.getCenters());
-  Eigen::VectorXd mep = computeMEP(context_.molecule(), context_.getCenters());
+  // FIXME currently hardcoded to the dipole-dipole interaction potential in vacuum
+  Eigen::VectorXd mep =
+      computeDipolarPotential(context_.getCenters(), input.multipoles());
+  // FIXME
+  // 1. Try to understand why this is needed
+  // 2. Try to re-write this such that the input object is not needed!!!
+  if (input.MEPfromMolecule())
+    mep += computeMEP(context_.molecule(), context_.getCenters());
   TIMER_OFF("Computing MEP");
   context_.setSurfaceFunction(mep.size(), mep.data(), "MEP");
   // Compute apparent surface charge

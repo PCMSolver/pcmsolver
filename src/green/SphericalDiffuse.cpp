@@ -39,9 +39,9 @@
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
-#include "utils/MathUtils.hpp"
 #include "dielectric_profile/ProfileTypes.hpp"
 #include "utils/ForId.hpp"
+#include "utils/MathUtils.hpp"
 
 namespace pcm {
 namespace green {
@@ -194,6 +194,16 @@ template <typename ProfilePolicy>
 KernelD SphericalDiffuse<ProfilePolicy>::exportKernelD_impl() const {
   return pcm::bind(
       &SphericalDiffuse<ProfilePolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
+}
+
+template <typename DerivativeTraits>
+DerivativeProbe SphericalDiffuse<DerivativeTraits>::exportDerivativeProbe_impl()
+    const {
+  return pcm::bind(&SphericalDiffuse<DerivativeTraits>::derivativeProbe,
+                   *this,
+                   pcm::_1,
+                   pcm::_2,
+                   pcm::_3);
 }
 
 template <typename ProfilePolicy>

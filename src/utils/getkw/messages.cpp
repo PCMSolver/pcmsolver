@@ -11,5 +11,4 @@
 #include "messages.h"
 
 int GetkwMessageStream::msg::DebugLevel = 0;
-std::ostream *GetkwMessageStream::msg::out = &std::cout;
-
+std::ostream * GetkwMessageStream::msg::out = &std::cout;

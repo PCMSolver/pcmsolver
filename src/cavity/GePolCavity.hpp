@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef GEPOLCAVITY_HPP
-#define GEPOLCAVITY_HPP
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -104,17 +103,24 @@ private:
  *  \param[out] ytscor y-coordinate of tesserae centers (dimension maxts)
  *  \param[out] ztscor z-coordinate of tesserae centers (dimension maxts)
  *  \param[out] ar area of the tessera (dimension maxts)
- *  \param[out] xsphcor x-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] ysphcor y-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] zsphcor z-coordinate of the sphere center the tessera belongs to (dimension maxts)
- *  \param[out] rsph radii of the sphere the tessera belongs to, i.e. its curvature (dimension maxts)
+ *  \param[out] xsphcor x-coordinate of the sphere center the tessera belongs to
+ * (dimension maxts)
+ *  \param[out] ysphcor y-coordinate of the sphere center the tessera belongs to
+ * (dimension maxts)
+ *  \param[out] zsphcor z-coordinate of the sphere center the tessera belongs to
+ * (dimension maxts)
+ *  \param[out] rsph radii of the sphere the tessera belongs to, i.e. its curvature
+ * (dimension maxts)
  *  \param[out] nts number of generated tesserae
  *  \param[out] ntsirr number of generated irreducible tesserae
  *  \param[out] nesfp number of spheres (original + added)
  *  \param[out] addsph number of added spheres
- *  \param[out] xe x-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
- *  \param[out] ye y-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
- *  \param[out] ze z-coordinate of the sphere center (dimension nSpheres_ + maxAddedSpheres)
+ *  \param[out] xe x-coordinate of the sphere center (dimension nSpheres_ +
+ * maxAddedSpheres)
+ *  \param[out] ye y-coordinate of the sphere center (dimension nSpheres_ +
+ * maxAddedSpheres)
+ *  \param[out] ze z-coordinate of the sphere center (dimension nSpheres_ +
+ * maxAddedSpheres)
  *  \param[out] rin radius of the spheres (dimension nSpheres_ + maxAddedSpheres)
  *  \param[in] masses atomic masses (for inertia tensor formation in PEDRA)
  *  \param[in] avgArea average tesserae area
@@ -128,20 +134,41 @@ private:
  *  \param[out] vert coordinates of tesserae vertices
  *  \param[out] centr centers of arcs defining the edges of the tesserae
  */
-#define pedra_driver\
-    FortranCInterface_GLOBAL_(pedra_driver, PEDRA_DRIVER)
-extern "C" void pedra_driver(int * maxts, int * maxsph, int * maxvert,
-        double * xtscor, double * ytscor, double * ztscor, double * ar,
-        double * xsphcor, double * ysphcor, double * zsphcor, double * rsph,
-        int * nts, int * ntsirr, int * nesfp, int * addsph,
-        double * xe, double * ye, double * ze, double * rin, double * masses,
-        double * avgArea, double * rsolv, double * ret,
-        int * nr_gen, int * gen1, int * gen2, int * gen3,
-        int * nvert, double * vert, double * centr,
-        int * isphe, const char * pedra, int * len_f_pedra);
+#define pedra_driver FortranCInterface_GLOBAL_(pedra_driver, PEDRA_DRIVER)
+extern "C" void pedra_driver(int * maxts,
+                             int * maxsph,
+                             int * maxvert,
+                             double * xtscor,
+                             double * ytscor,
+                             double * ztscor,
+                             double * ar,
+                             double * xsphcor,
+                             double * ysphcor,
+                             double * zsphcor,
+                             double * rsph,
+                             int * nts,
+                             int * ntsirr,
+                             int * nesfp,
+                             int * addsph,
+                             double * xe,
+                             double * ye,
+                             double * ze,
+                             double * rin,
+                             double * masses,
+                             double * avgArea,
+                             double * rsolv,
+                             double * ret,
+                             int * nr_gen,
+                             int * gen1,
+                             int * gen2,
+                             int * gen3,
+                             int * nvert,
+                             double * vert,
+                             double * centr,
+                             int * isphe,
+                             const char * pedra,
+                             int * len_f_pedra);
 
 ICavity * createGePolCavity(const CavityData & data);
 } // namespace cavity
 } // namespace pcm
-
-#endif // GEPOLCAVITY_HPP

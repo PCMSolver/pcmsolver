@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef UNIFORM_HPP
-#define UNIFORM_HPP
+#pragma once
 
 #include <iostream>
 
@@ -48,5 +47,3 @@ struct Uniform __final {
 };
 } // namespace dielectric_profile
 } // namespace pcm
-
-#endif // UNIFORM_HPP

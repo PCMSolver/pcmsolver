@@ -16,7 +16,7 @@
 # Known bugs: names with '-' mess things up...
 #
 
-import sys,os,inspect
+import sys, os, inspect
 import re, string
 from copy import deepcopy
 from types import *
@@ -27,43 +27,45 @@ from pyparsing import \
     commaSeparatedList, OneOrMore, Combine, srange, delimitedList, \
     downcaseTokens, line, lineno, StringEnd, Regex
 
-verbose=True
-strict=True
+verbose = True
+strict = True
+
 
 class Section:
     """Section class
 
     Placehoder for section objects
     """
-    def __init__(self,name,tag=None,req=False, callback=None):
-        self.name=name
-        self.sect={}
-        self.kw={}
-        self.tag=tag
-        self.req=req
-        self.isset=False
-        self.callback=callback
-        self.fullname=self.name
+
+    def __init__(self, name, tag=None, req=False, callback=None):
+        self.name = name
+        self.sect = {}
+        self.kw = {}
+        self.tag = tag
+        self.req = req
+        self.isset = False
+        self.callback = callback
+        self.fullname = self.name
         if tag != None:
-            self.fullname=self.fullname+'<'+self.tag+'>'
+            self.fullname = self.fullname + '<' + self.tag + '>'
 
     def __cmp__(self, other):
-        return cmp(self.name,other.name)
+        return cmp(self.name, other.name)
 
     def __getitem__(self, key):
         if key in self.sect:
-            foo=self.sect
+            foo = self.sect
         elif key in self.kw:
-            foo=self.kw
+            foo = self.kw
         else:
             return None
         return foo[key]
 
     def __setitem__(self, k, val):
         if isinstance(val, Section):
-            self.sect[k]=val
+            self.sect[k] = val
         elif isinstance(val, Keyword):
-            self.kw[k]=val
+            self.kw[k] = val
         else:
             raise TypeError('Not a Section or Keyword')
 
@@ -71,26 +73,25 @@ class Section:
         return self.__getitem__(k)
 
     def set(self, k, val):
-        self.__setitem__(k,val)
+        self.__setitem__(k, val)
 
     def _split_tag(self, key):
-        i=string.find(key, '<')
+        i = string.find(key, '<')
         if i == -1:
             return (key, None)
-        j=string.rfind(key, '>')
+        j = string.rfind(key, '>')
         if j == -1:
             raise KeyError('faulty tag spec')
-        return (key[0:i], key[i+1:j])
-
+        return (key[0:i], key[i + 1:j])
 
     def is_set(self, key=None):
         if key is None:
             return self.isset
         if key in self.kw:
             return self.kw[key].is_set()
-        (key, tag)=self._split_tag(key)
+        (key, tag) = self._split_tag(key)
         if key in self.sect:
-            sects=self.sect[key]
+            sects = self.sect[key]
             if tag in sects:
                 return sects[tag].is_set()
             else:
@@ -101,34 +102,34 @@ class Section:
         return self.req
 
     def add_sect(self, sect, set=False):
-        s=self.sect
+        s = self.sect
         if sect.name in s:
             if sect.tag in s[sect.name]:
                 print('Error: Section "%s" already defined!' % \
                         (sect.fullname))
                 sys.exit(1)
-            s[sect.name][sect.tag]=sect
+            s[sect.name][sect.tag] = sect
         else:
-            s[sect.name]={sect.tag : sect}
-        sect.isset=set
+            s[sect.name] = {sect.tag: sect}
+        sect.isset = set
 
     def add_kwkw(self, kw, set=False):
         if kw.name not in self.kw:
-            self.kw[kw.name]=kw
+            self.kw[kw.name] = kw
         else:
             print('Error: Keyword "%s.%s" already defined!' % \
                     (self.name, kw.name))
             sys.exit(1)
-        kw.isset=set
+        kw.isset = set
 
     def add_kw(self, name, typ, arg=None, req=False, set=False, callback=None):
         if name in self.kw:
             print('Error: Keyword "%s.%s" already defined!' % \
                     (self.name, kw.name))
             sys.exit(1)
-        kw=Keyword(name,typ,arg,req,callback)
-        kw.isset=set
-        self.kw[name]=kw
+        kw = Keyword(name, typ, arg, req, callback)
+        kw.isset = set
+        self.kw[name] = kw
 
     def fetch_kw(self, name):
         if name in self.kw:
@@ -136,52 +137,52 @@ class Section:
         return None
 
     def find_sect(self, path):
-        path=string.split(path, '.')
-        name=None
-        tag=None
-        s=self.sect
-        pname=''
+        path = string.split(path, '.')
+        name = None
+        tag = None
+        s = self.sect
+        pname = ''
         for i in path:
-            (name, tag)=self._split_tag(i)
-            pname=pname+i
+            (name, tag) = self._split_tag(i)
+            pname = pname + i
             try:
-                s=s[name]
+                s = s[name]
             except:
                 print('Invalid section: ', pname)
                 return None
             else:
-                pname=pname+'.'
+                pname = pname + '.'
         return s[tag]
 
     def get_keyword(self, path):
-        path=string.split(path, '.')
-        s=self.sect
-        k=self.kw
-        pname=''
+        path = string.split(path, '.')
+        s = self.sect
+        k = self.kw
+        pname = ''
         if len(path) == 1:
-            pname=path[0]
-            i=pname
+            pname = path[0]
+            i = pname
         else:
             for i in path[:-1]:
-                (name, tag)=self._split_tag(i)
-                pname=pname+i
+                (name, tag) = self._split_tag(i)
+                pname = pname + i
                 try:
-                    s=s[name]
+                    s = s[name]
                 except:
-                    str='Invalid section: ' + pname
+                    str = 'Invalid section: ' + pname
                     raise AttributeError(str)
                 else:
-                    pname=pname+'.'
-            pname=pname+path[-1:][0]
-            i=path[-1:][0]
-            k=s[tag].kw
+                    pname = pname + '.'
+            pname = pname + path[-1:][0]
+            i = path[-1:][0]
+            k = s[tag].kw
         if i in k:
             return k[i]
-        str='No such key: ' + pname
+        str = 'No such key: ' + pname
         raise AttributeError(str)
 
     def getkw(self, path):
-        kw=self.get_keyword(path)
+        kw = self.get_keyword(path)
         return kw.arg
 
     def setkw(self, name, arg):
@@ -191,7 +192,7 @@ class Section:
             print('Error: invalid kw: ', name)
 
     def fetch_sect(self, name):
-        (key, tag)=self._split_tag(name)
+        (key, tag) = self._split_tag(name)
         if key in self.sect:
             if tag in self.sect[key]:
                 return self.sect[key][tag]
@@ -208,9 +209,9 @@ class Section:
 
     def set_status(self, set):
         if set:
-            self.isset=True
+            self.isset = True
         else:
-            self.isset=False
+            self.isset = False
 
     def sanitize(self, templ):
         self.equalize(templ)
@@ -220,10 +221,10 @@ class Section:
     def equalize(self, templ):
         for i in templ.kw:
             if i not in self.kw:
-                self.kw[i]=deepcopy(templ.kw[i])
+                self.kw[i] = deepcopy(templ.kw[i])
         for i in templ.sect:
             if i not in self.sect:
-                self.sect[i]={None : deepcopy(templ.sect[i][None])}
+                self.sect[i] = {None: deepcopy(templ.sect[i][None])}
             for tag in self.sect[i]:
                 self.sect[i][tag].equalize(templ.sect[i][None])
 
@@ -231,7 +232,7 @@ class Section:
         if templ.callback is not None:
             templ.callback(self)
         for i in templ.kw:
-            cb=templ.kw[i]
+            cb = templ.kw[i]
             if cb.callback is not None:
                 cb.callback(self.kw[i])
         for i in templ.sect:
@@ -239,13 +240,14 @@ class Section:
                 self.sect[i][tag].run_callbacks(templ.sect[i][None])
 
 #verify!
-    def sanity_check(self,path=None):
-        dlm=''
+
+    def sanity_check(self, path=None):
+        dlm = ''
         if path is None:
-            path=''
+            path = ''
         else:
-            path=path+dlm+self.name
-            dlm='.'
+            path = path + dlm + self.name
+            dlm = '.'
         if self.req and not self.isset:
             print('>>> Required section not set: %s \n' % (path))
             sys.exit(0)
@@ -256,57 +258,57 @@ class Section:
                 j.sanity_check(path)
 
     #cross-validate against a template
-    def xvalidate(self,templ,path=None):
-        dlm=''
+    def xvalidate(self, templ, path=None):
+        dlm = ''
         if path is None:
-            path=''
+            path = ''
         else:
-            path=path+dlm+self.name
-            dlm='.'
+            path = path + dlm + self.name
+            dlm = '.'
         if templ.req and not self.isset:
             print('>>> Required section not set: %s \n' % path)
             sys.exit(1)
         for i in self.kw:
-            j=templ.fetch_kw(i)
+            j = templ.fetch_kw(i)
             if j is None:
-                print('>>> Invalid keyword: %s ' % (path+dlm+i))
+                print('>>> Invalid keyword: %s ' % (path + dlm + i))
                 sys.exit(1)
-            self.kw[i].xvalidate(j,path)
+            self.kw[i].xvalidate(j, path)
         for i in self.sect:
-            j=templ.fetch_sect(i)
+            j = templ.fetch_sect(i)
             if j is None:
-                print('>>> Invalid section: %s ' % (path+dlm+i))
+                print('>>> Invalid section: %s ' % (path + dlm + i))
                 sys.exit(1)
             for tag in self.sect[i]:
-                self.sect[i][tag].xvalidate(j,path)
+                self.sect[i][tag].xvalidate(j, path)
 
     def __str__(self):
-        nsect=0
+        nsect = 0
         for i in self.sect:
             for tag in self.sect[i]:
-                nsect=nsect+1
-        nkw=0
+                nsect = nsect + 1
+        nkw = 0
         for i in self.kw:
-            nkw=nkw+1
+            nkw = nkw + 1
 
-        s="SECT %s %d %s\n" % (self.name, nsect, self.isset)
+        s = "SECT %s %d %s\n" % (self.name, nsect, self.isset)
         if self.tag is not None:
-            s=s+"TAG T KW %d\n" % (nkw)
-            s=s+self.tag+'\n'
+            s = s + "TAG T KW %d\n" % (nkw)
+            s = s + self.tag + '\n'
         else:
-            s=s+"TAG F KW %d\n" % (nkw)
+            s = s + "TAG F KW %d\n" % (nkw)
 
         for i in self.kw:
-            s=s+str(self.kw[i])
+            s = s + str(self.kw[i])
         for i in self.sect:
             for tag in self.sect[i]:
-                s=s+str(self.sect[i][tag])
+                s = s + str(self.sect[i][tag])
         return s
 
     def check_key(self, key):
-        (name, tag)=self._split_tag(key)
+        (name, tag) = self._split_tag(key)
         try:
-            k=self.sect[name][tag]
+            k = self.sect[name][tag]
         except:
             print('No such key: ', key)
             sys.exit(1)
@@ -319,58 +321,58 @@ class Section:
 class Keyword:
     """Placehoder for keyword objects
     """
+
     def __init__(self, name, typ, arg=None, req=False, callback=None):
-        self.name=name
-        self.type=typ
-        self.req=req
-        self.nargs=None
-        self.arg=[]
-        self.is_array=False
-        self.callback=callback
+        self.name = name
+        self.type = typ
+        self.req = req
+        self.nargs = None
+        self.arg = []
+        self.is_array = False
+        self.callback = callback
 
         if re.search('_ARRAY', typ) or typ == 'DATA':
-            self.is_array=True
-            if arg is None: # unlimited arg length
-                self.nargs=-1
-            elif isinstance(arg,int): # number of elements in self.arg == arg
-                self.nargs=arg
-                arg=None
-            if isinstance(arg,tuple) or isinstance(arg,list):
-                self.nargs=len(arg)
+            self.is_array = True
+            if arg is None:  # unlimited arg length
+                self.nargs = -1
+            elif isinstance(arg, int):  # number of elements in self.arg == arg
+                self.nargs = arg
+                arg = None
+            if isinstance(arg, tuple) or isinstance(arg, list):
+                self.nargs = len(arg)
         else:
-            self.nargs=1
+            self.nargs = 1
         self.setkw(arg)
-        self.isset=False # reset the self.isset flag
+        self.isset = False  # reset the self.isset flag
 
     def __cmp__(self, other):
-        return cmp(self.name,other.name)
+        return cmp(self.name, other.name)
 
     def __getitem__(self, n):
         return self.arg[n]
 
     def __setitem__(self, n, arg):
-        if n > len(self.arg)-1:
+        if n > len(self.arg) - 1:
             raise IndexError
-        self.arg[n]=arg
+        self.arg[n] = arg
 
     def setkw(self, arg):
-        if arg is None: # init stage
+        if arg is None:  # init stage
             return
 
         if self.is_array and self.nargs > 0:
             if len(arg) != self.nargs:
-                print("keyword lenght mismatsh %s(%i): %i" % (self.name,
-                        self.nargs, len(arg)))
+                print("keyword lenght mismatsh %s(%i): %i" % (self.name, self.nargs, len(arg)))
                 sys.exit(1)
-            self.arg=arg
+            self.arg = arg
         else:
-            self.arg=[arg]
+            self.arg = [arg]
         try:
             self.typecheck()
         except TypeError:
             print('Invalid argument:', arg)
             sys.exit(1)
-        self.isset=True
+        self.isset = True
 
     def get(self):
         if self.is_array:
@@ -381,31 +383,31 @@ class Keyword:
     def set(self, val):
         self.setkw(val)
 
-    def sanity_check(self,path):
+    def sanity_check(self, path):
         if path is None:
-            path=self.name
+            path = self.name
         else:
-            path=path+'.'+self.name
-        if self.req  and not self.isset:
+            path = path + '.' + self.name
+        if self.req and not self.isset:
             print('>>> Required key not set: %s' % (path))
             if strict:
                 sys.exit(1)
 
-    def xvalidate(self,templ,path=None):
+    def xvalidate(self, templ, path=None):
         if path is None or path == '':
-            path=self.name
+            path = self.name
         else:
-            path=path+'.'+self.name
+            path = path + '.' + self.name
         if templ.req and not self.isset:
             print('>>> Required key not set: %s' % (path))
             sys.exit(1)
         if templ.type != self.type:
             if self.type == 'INT':
-                self.arg=list(map(float,self.arg))
-                self.type='DBL'
+                self.arg = list(map(float, self.arg))
+                self.type = 'DBL'
             elif self.type == 'INT_ARRAY':
-                self.arg=list(map(float,self.arg))
-                self.type='DBL_ARRAY'
+                self.arg = list(map(float, self.arg))
+                self.type = 'DBL_ARRAY'
             else:
                 print('>>> Invalid data type in: %s' % (path))
                 print(' -> wanted %s, got %s' % (templ.type, self.type))
@@ -425,19 +427,19 @@ class Keyword:
         if (self.type == 'INT' or self.type == 'INT_ARRAY'):
             for i in self.arg:
                 if not type(i) == IntType:
-                    print('getkw: Not an integer: ', self.name, '=',i)
+                    print('getkw: Not an integer: ', self.name, '=', i)
                     raise TypeError
         elif (self.type == 'DBL' or self.type == 'DBL_ARRAY'):
             for i in range(len(self.arg)):
                 if type(self.arg[i]) == IntType:
-                    self.arg[i]=float(self.arg[i])
+                    self.arg[i] = float(self.arg[i])
                 if not type(self.arg[i]) == FloatType:
                     print('getkw: Not a real: ', self.name, '=', self.arg[i])
                     raise TypeError
         elif (self.type == 'BOOL' or self.type == 'BOOL_ARRAY'):
             for i in self.arg:
                 if not type(i) == BooleanType:
-                    print('getkw: Not a bool: ', self.name, '=',i)
+                    print('getkw: Not a bool: ', self.name, '=', i)
                     raise TypeError
         elif self.type == 'STR' or self.type == 'STR_ARRAY':
             return True
@@ -461,32 +463,34 @@ class Keyword:
 
     def set_status(self, set):
         if set:
-            self.isset=True
+            self.isset = True
         else:
-            self.isset=False
+            self.isset = False
 
     def __str__(self):
-#        if self.type == 'STR':
-#            print 'foo', self.name, self.arg
+        #        if self.type == 'STR':
+        #            print 'foo', self.name, self.arg
         if (self.type == 'STR' or 'STR_ARRAY' or 'DATA') and \
                 (self.arg == '' or self.arg == None): # empty string
-            nargs=-1 # flags as empty for Fortran code
+            nargs = -1  # flags as empty for Fortran code
         else:
-            nargs=len(self.arg)
-            tmp=''
+            nargs = len(self.arg)
+            tmp = ''
             for i in self.arg:
-                tmp=tmp+str(i)+'\n'
-        s="%s %s %d %s\n" % (self.type, self.name, nargs, self.isset)
-        return s+tmp
+                tmp = tmp + str(i) + '\n'
+        s = "%s %s %d %s\n" % (self.type, self.name, nargs, self.isset)
+        return s + tmp
+
 
 class Getkw:
     """Unified interface to sections and keywords.
     Implements a path stack.
     """
+
     def __init__(self, top):
-        self.top=top
-        self.stack=[self.top]
-        self.cur=self.stack[0]
+        self.top = top
+        self.stack = [self.top]
+        self.cur = self.stack[0]
 
     def get_active_section(self):
         return self.cur
@@ -495,7 +499,7 @@ class Getkw:
         return self.cur.getkw(path)
 
     def get_keyword(self, path):
-        retur=self.cur.get_keyword(path)
+        retur = self.cur.get_keyword(path)
         return retur
 
     def setkw(self, path):
@@ -511,11 +515,11 @@ class Getkw:
         return self.cur.run_callbacks(templ)
 
     def push_sect(self, path):
-        k=self.cur.find_sect(path)
+        k = self.cur.find_sect(path)
         if k is None:
             return None
         self.stack.append(k)
-        self.cur=self.stack[-1]
+        self.cur = self.stack[-1]
         return self.cur
 
     def pop_sect(self):
@@ -523,187 +527,181 @@ class Getkw:
             del self.stack[-1]
         except:
             return None
-        self.cur=self.stack[-1]
+        self.cur = self.stack[-1]
         return self.cur
 
     def get_topsect(self):
         return self.top
+
 
 class GetkwParser:
     """Implements a class to do the actual parsing of input files and store
     the results in Sections and Keywords. The parseFile() method returns a
     Getkw object.
     """
-    bnf=None
-    caseless=False
-    yes=re.compile(r'(1|yes|true|on)$',re.I)
-    no=re.compile(r'(0|no|false|off)$',re.I)
+    bnf = None
+    caseless = False
+    yes = re.compile(r'(1|yes|true|on)$', re.I)
+    no = re.compile(r'(0|no|false|off)$', re.I)
 
-    def __init__(self,templ=None):
-        self.top=Section('toplevel')
-        self.stack=[self.top]
-        self.cur=self.stack[0]
-        self.templ=templ
-        self.strg=None
-        self.loc=None
+    def __init__(self, templ=None):
+        self.top = Section('toplevel')
+        self.stack = [self.top]
+        self.cur = self.stack[0]
+        self.templ = templ
+        self.strg = None
+        self.loc = None
         if templ is not None:
-            self.path=[self.templ]
+            self.path = [self.templ]
         else:
-            self.path=None
+            self.path = None
         if GetkwParser.bnf == None:
-            GetkwParser.bnf=self.getkw_bnf()
+            GetkwParser.bnf = self.getkw_bnf()
 #        self.parseString=self.bnf.parseString
 #        GetkwParser.bnf.setDebug(True)
 
     def set_caseless(self, arg):
         if arg is True:
-            self.caseless=True
+            self.caseless = True
         else:
-            self.caseless=False
+            self.caseless = False
 
-    def parseFile(self,fil):
+    def parseFile(self, fil):
         self.bnf.parseFile(fil)
         return Getkw(self.top)
 
-    def parseString(self,str):
+    def parseString(self, str):
         self.bnf.parseString(str)
         return Getkw(self.top)
 
-    def add_sect(self,s,l,t):
-        q=t.asList()
-        self.strg=s
-        self.loc=l
-        name=q[0]
-        tag=None
+    def add_sect(self, s, l, t):
+        q = t.asList()
+        self.strg = s
+        self.loc = l
+        name = q[0]
+        tag = None
         if len(q) > 1:
             if len(q[1]) > 0:
-                tag=q[1][0]
+                tag = q[1][0]
         if self.caseless:
-            name=name.lower()
-        k=Section(name, tag)
+            name = name.lower()
+        k = Section(name, tag)
         self.cur.add_sect(k, set=True)
         self.push_sect(k)
 
-    def push_sect(self,k):
+    def push_sect(self, k):
         self.stack.append(k)
-        self.cur=self.stack[-1]
+        self.cur = self.stack[-1]
         if self.templ is not None:
-            x=self.path[-1].fetch_sect(k.name)
+            x = self.path[-1].fetch_sect(k.name)
             if x is None:
-                print("Invalid section on line %d: \n%s" % (
-                        lineno(self.loc,self.strg), line(self.loc,self.strg)))
+                print("Invalid section on line %d: \n%s" % (lineno(self.loc, self.strg), line(self.loc, self.strg)))
                 sys.exit(1)
             self.path.append(x)
 
-    def pop_sect(self,s,l,t):
+    def pop_sect(self, s, l, t):
         if self.templ is not None:
             del self.path[-1]
         del self.stack[-1]
-        self.cur=self.stack[-1]
+        self.cur = self.stack[-1]
 
-    def store_key(self,s,l,t):
-        q=t.asList()
-        self.strg=s
-        self.loc=l
-        name=q[0]
-        arg=q[1]
+    def store_key(self, s, l, t):
+        q = t.asList()
+        self.strg = s
+        self.loc = l
+        name = q[0]
+        arg = q[1]
         if self.caseless:
-            name=name.lower()
+            name = name.lower()
         if self.templ is None:
-            argt=self.fixate_type(arg)
+            argt = self.fixate_type(arg)
         else:
-            k=self.path[-1].fetch_kw(name)
+            k = self.path[-1].fetch_kw(name)
             if k is None:
-                print("Unknown keyword '%s' line: %d" % (name,
-                        lineno(self.loc,self.strg)))
+                print("Unknown keyword '%s' line: %d" % (name, lineno(self.loc, self.strg)))
                 if strict:
                     sys.exit(1)
-                argt=None
+                argt = None
             else:
-                argt=self.check_type(arg,k.type)
-        k=Keyword(name,argt,arg)
-        self.cur.add_kwkw(k,set=True)
+                argt = self.check_type(arg, k.type)
+        k = Keyword(name, argt, arg)
+        self.cur.add_kwkw(k, set=True)
 
-    def store_vector(self,s,l,t):
-        q=t.asList()
-        self.strg=s
-        self.loc=l
-        name=q[0]
-        arg=q[1:]
+    def store_vector(self, s, l, t):
+        q = t.asList()
+        self.strg = s
+        self.loc = l
+        name = q[0]
+        arg = q[1:]
         if self.caseless:
-            name=name.lower()
+            name = name.lower()
         if self.templ is None:
-            argt=self.fixate_type(arg[0])
-            argt=argt+'_ARRAY'
+            argt = self.fixate_type(arg[0])
+            argt = argt + '_ARRAY'
         else:
-            k=self.path[-1].fetch_kw(name)
+            k = self.path[-1].fetch_kw(name)
             if k is None:
-                print("Unknown keyword '%s', line: %d" % (name,
-                        lineno(self.loc,self.strg)))
+                print("Unknown keyword '%s', line: %d" % (name, lineno(self.loc, self.strg)))
                 if strict:
                     sys.exit(1)
-                argt=None
+                argt = None
             else:
                 if k.nargs == -1:
                     pass
                 elif len(arg) != k.nargs:
                     print("Invalid number of elements for key '%s',\
-line: %d" % ( name, lineno(self.loc,self.strg)))
+line: %d" % (name, lineno(self.loc, self.strg)))
                     print("  -> %d required, %d given." % (k.nargs, len(arg)))
                     if strict:
                         sys.exit(1)
-                argt=self.check_type(arg,k.type)
-        k=Keyword(name,argt,arg)
-        self.cur.add_kwkw(k,set=True)
+                argt = self.check_type(arg, k.type)
+        k = Keyword(name, argt, arg)
+        self.cur.add_kwkw(k, set=True)
 
-    def store_data(self,s,l,t):
-        name=t[0]
-        self.strg=s
-        self.loc=l
+    def store_data(self, s, l, t):
+        name = t[0]
+        self.strg = s
+        self.loc = l
         if self.caseless:
-            name=name.lower()
-        dat=t[1].split('\n')
-        dat=dat[:-1] # remove empty element at the end
-        arg=[]
+            name = name.lower()
+        dat = t[1].split('\n')
+        dat = dat[:-1]  # remove empty element at the end
+        arg = []
         for i in dat:
             arg.append(i.strip())
-        k=Keyword(name,'DATA',arg)
-        self.cur.add_kwkw(k,set=True)
+        k = Keyword(name, 'DATA', arg)
+        self.cur.add_kwkw(k, set=True)
 
     def check_type(self, arg, argt):
         print("You hit a bug! Yipeee!")
         sys.exit(1)
         if (isinstance(arg, tuple) or isinstance(arg, list)):
-            argt=re.sub('_ARRAY', '', argt)
+            argt = re.sub('_ARRAY', '', argt)
             for i in arg:
                 self.check_type(i, argt)
 
         if argt == 'INT':
             if not ival.match(arg):
-                print('Invalid type on line %d: Not an int: \n -> %s' % (
-                        lineno(self.loc,self.strg), line(self.loc,
-                            self.strg).strip()))
+                print('Invalid type on line %d: Not an int: \n -> %s' % (lineno(self.loc, self.strg),
+                                                                         line(self.loc, self.strg).strip()))
                 sys.exit(1)
         elif argt == 'DBL':
             if not dval.match(arg):
-                print('Invalid type on line %d: Not a float: \n -> %s' % (
-                        lineno(self.loc,self.strg), line(self.loc,
-                            self.strg).strip()))
+                print('Invalid type on line %d: Not a float: \n -> %s' % (lineno(self.loc, self.strg),
+                                                                          line(self.loc, self.strg).strip()))
                 sys.exit(1)
         elif argt == 'BOOL':
             if not lval.match(arg):
-                print('Invalid type on line %d: Not a bool: \n -> %s' % (
-                        lineno(self.loc,self.strg), line(self.loc,
-                            self.strg).strip()))
+                print('Invalid type on line %d: Not a bool: \n -> %s' % (lineno(self.loc, self.strg),
+                                                                         line(self.loc, self.strg).strip()))
                 sys.exit(1)
         elif argt != 'STR':
-            print('Invalid type on line %d: Not a %s: \n -> %s' % (
-                    lineno(self.loc,self.strg), argt, line(self.loc,
-                        self.strg).strip()))
+            print('Invalid type on line %d: Not a %s: \n -> %s' % (lineno(self.loc, self.strg), argt,
+                                                                   line(self.loc, self.strg).strip()))
             sys.exit(1)
         return argt
 
-    def fixate_type(self,arg):
+    def fixate_type(self, arg):
         if isinstance(arg, bool):
             return 'BOOL'
         if isinstance(arg, int):
@@ -728,39 +726,39 @@ line: %d" % ( name, lineno(self.loc,self.strg)))
         return False
 
     def getkw_bnf(self):
-        sect_begin   = Literal("{").suppress()
-        sect_end   = Literal("}").suppress()
-        array_begin   = Literal("[").suppress()
-        array_end   = Literal("]").suppress()
-        tag_begin   = Literal("<").suppress()
-        tag_end   = Literal(">").suppress()
-        eql   = Literal("=").suppress()
+        sect_begin = Literal("{").suppress()
+        sect_end = Literal("}").suppress()
+        array_begin = Literal("[").suppress()
+        array_end = Literal("]").suppress()
+        tag_begin = Literal("<").suppress()
+        tag_end = Literal(">").suppress()
+        eql = Literal("=").suppress()
         dmark = Literal('$').suppress()
-        end_data=Literal('$end').suppress()
-        prtable = alphanums+r'!$%&*+-./<>?@^_|~'
-        ival=Regex('[-]?\d+')
-        dval=Regex('-?\d+\.\d*([eE]?[+-]?\d+)?')
-        lval=Regex('([Yy]es|[Nn]o|[Tt]rue|[Ff]alse|[Oo]n|[Oo]ff)')
+        end_data = Literal('$end').suppress()
+        prtable = alphanums + r'!$%&*+-./<>?@^_|~'
+        ival = Regex('[-]?\d+')
+        dval = Regex('-?\d+\.\d*([eE]?[+-]?\d+)?')
+        lval = Regex('([Yy]es|[Nn]o|[Tt]rue|[Ff]alse|[Oo]n|[Oo]ff)')
 
         # Helper definitions
 
         kstr= quotedString.setParseAction(removeQuotes) ^ \
                 dval ^ ival ^ lval ^ Word(prtable)
-        name = Word(alphas+"_",alphanums+"_")
+        name = Word(alphas + "_", alphanums + "_")
         vec=array_begin+delimitedList(dval ^ ival ^ lval ^ Word(prtable) ^ \
                 Literal("\n").suppress() ^ \
                 quotedString.setParseAction(removeQuotes))+array_end
-        sect=name+sect_begin
-        tag_sect=name+Group(tag_begin+name+tag_end)+sect_begin
+        sect = name + sect_begin
+        tag_sect = name + Group(tag_begin + name + tag_end) + sect_begin
 
         # Grammar
         keyword = name + eql + kstr
         vector = name + eql + vec
-        data=Combine(dmark+name)+SkipTo(end_data)+end_data
-        section=Forward()
-        sect_def=(sect | tag_sect ) #| vec_sect)
-        input=section | data | vector | keyword
-        section << sect_def+ZeroOrMore(input) + sect_end
+        data = Combine(dmark + name) + SkipTo(end_data) + end_data
+        section = Forward()
+        sect_def = (sect | tag_sect)  #| vec_sect)
+        input = section | data | vector | keyword
+        section << sect_def + ZeroOrMore(input) + sect_end
 
         # Parsing actions
         ival.setParseAction(self.conv_ival)
@@ -773,20 +771,21 @@ line: %d" % ( name, lineno(self.loc,self.strg)))
         tag_sect.setParseAction(self.add_sect)
         sect_end.setParseAction(self.pop_sect)
 
-        bnf=ZeroOrMore(input) + StringEnd().setFailAction(parse_error)
+        bnf = ZeroOrMore(input) + StringEnd().setFailAction(parse_error)
         bnf.ignore(pythonStyleComment)
         return bnf
 
-def parse_error(s,t,d,err):
-    print("Parse error, line %d: %s" %  ( lineno(err.loc,err.pstr),
-            line(err.loc,err.pstr)))
+
+def parse_error(s, t, d, err):
+    print("Parse error, line %d: %s" % (lineno(err.loc, err.pstr), line(err.loc, err.pstr)))
     sys.exit(1)
 
 ######## Convenience routines for callbacks ########
 
-def check_opt(sect,key):
+
+def check_opt(sect, key):
     try:
-        k=sect[key]
+        k = sect[key]
     except:
         print('You have a typo in the code for key', key)
         sys.exit(1)
@@ -795,8 +794,9 @@ def check_opt(sect,key):
             return True
     return False
 
+
 def check_required(list, sect):
-    err="Error: Required option '%s' not set in section '%s%s'!"
+    err = "Error: Required option '%s' not set in section '%s%s'!"
     for i in list:
         if not check_opt(sect, i):
             if sect.name == sect.tag or sect.tag is None:
@@ -805,8 +805,9 @@ def check_required(list, sect):
                 print(err % (i, sect.name, '<' + sect.tag + '>'))
             sys.exit(1)
 
+
 def check_ignored(list, sect):
-    warn="Warning: The '%s' option will be ignored in section '%s%s'."
+    warn = "Warning: The '%s' option will be ignored in section '%s%s'."
     for i in list:
         if check_opt(sect, i):
             if sect.name == sect.tag:
@@ -816,18 +817,20 @@ def check_ignored(list, sect):
 
 ####################################################
 
-def test( strng ):
+
+def test(strng):
     bnf = GetkwParser()
     try:
-        tokens=bnf.parseString(strng)
+        tokens = bnf.parseString(strng)
     except ParseException as err:
         print(err.line)
-        print(" "*(err.column-1) + "^")
+        print(" " * (err.column - 1) + "^")
         print(err)
     return tokens
 
+
 if __name__ == '__main__':
-    teststr="""
+    teststr = """
 title = foo
 string="fooo bar"
 
@@ -880,4 +883,3 @@ raboof {
     print(ini.top)
 #    foo=ini.get_keyword('raboof.foo')
 #    print dir(foo)
-

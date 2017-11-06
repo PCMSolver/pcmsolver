@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef DERIVATIVEUTILS_HPP
-#define DERIVATIVEUTILS_HPP
+#pragma once
 
 #include "Config.hpp"
 
@@ -40,5 +39,3 @@ template <typename DerivativeTraits>
 inline DerivativeTraits dot_product(DerivativeTraits u[3], DerivativeTraits v[3]) {
   return (u[0] * v[0] + u[1] * v[1] + u[2] * v[2]);
 }
-
-#endif // DERIVATIVEUTILS_HPP

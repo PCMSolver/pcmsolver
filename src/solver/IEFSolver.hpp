@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef IEFSOLVER_HPP
-#define IEFSOLVER_HPP
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -128,5 +127,3 @@ private:
 ISolver * createIEFSolver(const SolverData & data);
 } // namespace solver
 } // namespace pcm
-
-#endif // IEFSOLVER_HPP

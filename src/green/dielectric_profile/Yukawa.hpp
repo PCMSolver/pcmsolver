@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef YUKAWA_HPP
-#define YUKAWA_HPP
+#pragma once
 
 #include <iostream>
 
@@ -50,5 +49,3 @@ struct Yukawa __final {
 };
 } // namespace dielectric_profile
 } // namespace pcm
-
-#endif // YUKAWA_HPP

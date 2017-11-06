@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ELEMENT_HPP
-#define ELEMENT_HPP
+#pragma once
 
 #include <ostream>
 #include <vector>
@@ -116,8 +115,13 @@ private:
   Eigen::Matrix3Xd arcs_;
   virtual std::ostream & printElement(std::ostream & os) {
     os << "Finite element" << std::endl;
-    os << "Number of vertices = " << nVertices_ << std::endl;
-    os << "Area = " << area_;
+    os << "Center\n" << center_.transpose() << std::endl;
+    os << "Normal\n" << normal_.transpose() << std::endl;
+    os << "Weight " << area_ << std::endl;
+    os << sphere_ << std::endl;
+    os << "Number of vertices and arcs " << nVertices_ << std::endl;
+    os << "Vertices\n" << vertices_ << std::endl;
+    os << "Arcs\n" << arcs_;
     return os;
   }
 };
@@ -134,5 +138,3 @@ void tangent_and_bitangent(const Eigen::Vector3d & n_,
 } // namespace detail
 } // namespace cavity
 } // namespace pcm
-
-#endif // ELEMENT_HPP

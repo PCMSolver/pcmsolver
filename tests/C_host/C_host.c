@@ -26,8 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pcmsolver.h"
 #include "PCMInput.h"
+#include "pcmsolver.h"
 
 #include "C_host-functions.h"
 
@@ -156,6 +156,10 @@ int main() {
   // Surface functions
   test_surface_functions(
       output, grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g, areas);
+
+  pcmsolver_save_surface_functions(pcm_context);
+  pcmsolver_save_surface_function(pcm_context, asc_lbl);
+  pcmsolver_load_surface_function(pcm_context, mep_lbl);
 
   pcmsolver_write_timings(pcm_context);
 

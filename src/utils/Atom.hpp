@@ -21,10 +21,9 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ATOM_HPP
-#define ATOM_HPP
+#pragma once
 
-#include <map>
+#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -44,24 +43,7 @@ template <typename CreateObject> class Factory;
 
 namespace utils {
 struct Atom {
-  /*! Atomic charge */
-  double charge;
-  /*! Atomic mass */
-  double mass;
-  /*! Atomic radius */
-  double radius;
-  /*! Scaling of the atomic radius */
-  double radiusScaling;
-  /*! Position of the atom */
-  Eigen::Vector3d position;
-  /*! Name of the element */
-  std::string element;
-  /*! Atomic symbol */
-  std::string symbol;
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See
-                                     http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
-                                     */
-      Atom()
+  Atom()
       : charge(0.0),
         mass(0.0),
         radius(0.0),
@@ -83,6 +65,29 @@ struct Atom {
         position(coord),
         element(elem),
         symbol(sym) {}
+  friend std::ostream & operator<<(std::ostream & os, Atom & at) {
+    os << "Atom: " << at.symbol << " " << at.charge << " " << at.mass << std::endl;
+    os << "  Radius " << at.radius << std::endl;
+    os << "  Position " << at.position.transpose();
+    return os;
+  }
+  /*! Atomic charge */
+  double charge;
+  /*! Atomic mass */
+  double mass;
+  /*! Atomic radius */
+  double radius;
+  /*! Scaling of the atomic radius */
+  double radiusScaling;
+  /*! Position of the atom */
+  Eigen::Vector3d position;
+  /*! Name of the element */
+  std::string element;
+  /*! Atomic symbol */
+  std::string symbol;
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See
+                                     http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
+                                     */
 };
 
 typedef pcm::tuple<std::string, std::vector<Atom> > RadiiSet;
@@ -130,5 +135,3 @@ Factory<detail::CreateRadiiSet> bootstrapRadiiSet();
 /*! An atom is invalid if it has zero radius */
 bool invalid(const utils::Atom & atom);
 } // namespace pcm
-
-#endif // ATOM_HPP

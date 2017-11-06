@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef NUMERICAL_HPP
-#define NUMERICAL_HPP
+#pragma once
 
 #include <vector>
 
@@ -73,7 +72,8 @@ typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
  */
 typedef pcm::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
-                             const Eigen::Vector3d &)> KernelD;
+                             const Eigen::Vector3d &)>
+    KernelD;
 
 /*! \brief Integrates a single layer type operator on a single spherical polygon
  *  \date 2014
@@ -98,5 +98,3 @@ template <int PhiPoints, int ThetaPoints>
 double integrateD(const KernelD & F, const cavity::Element & e);
 } // namespace bi_operators
 } // namespace pcm
-
-#endif // NUMERICAL_HPP

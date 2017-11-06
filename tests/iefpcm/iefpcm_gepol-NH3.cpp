@@ -27,14 +27,14 @@
 
 #include <Eigen/Core>
 
-#include "bi_operators/Collocation.hpp"
-#include "green/DerivativeTypes.hpp"
-#include "cavity/GePolCavity.hpp"
-#include "utils/Molecule.hpp"
-#include "green/Vacuum.hpp"
 #include "TestingMolecules.hpp"
+#include "bi_operators/Collocation.hpp"
+#include "cavity/GePolCavity.hpp"
+#include "green/DerivativeTypes.hpp"
 #include "green/UniformDielectric.hpp"
+#include "green/Vacuum.hpp"
 #include "solver/IEFSolver.hpp"
+#include "utils/Molecule.hpp"
 #include "utils/Symmetry.hpp"
 
 using namespace pcm;

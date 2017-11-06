@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef CAVITYDATA_HPP
-#define CAVITYDATA_HPP
+#pragma once
 
 #include <string>
 
@@ -87,5 +86,3 @@ struct CavityData {
   }
 };
 } // namespace pcm
-
-#endif // CAVITYDATA_HPP

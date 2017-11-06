@@ -7,6 +7,7 @@ list(APPEND headers_list Green.hpp AnisotropicLiquid.hpp DerivativeTypes.hpp Der
 # List of sources
 list(APPEND sources_list Vacuum.cpp UniformDielectric.cpp IonicLiquid.cpp AnisotropicLiquid.cpp SphericalDiffuse.cpp)
 
+include_directories(dielectric_profile)
 add_library(green OBJECT ${sources_list} ${headers_list})
 set_target_properties(green PROPERTIES POSITION_INDEPENDENT_CODE 1 )
 add_dependencies(green generate-config-hpp)

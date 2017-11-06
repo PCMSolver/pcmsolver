@@ -32,8 +32,8 @@
 #include <Eigen/LU>
 
 #include "bi_operators/IBoundaryIntegralOperator.hpp"
-#include "cavity/ICavity.hpp"
 #include "cavity/Element.hpp"
+#include "cavity/ICavity.hpp"
 #include "green/IGreensFunction.hpp"
 
 namespace pcm {

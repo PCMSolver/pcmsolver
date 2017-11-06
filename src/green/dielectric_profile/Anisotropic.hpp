@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef ANISOTROPIC_HPP
-#define ANISOTROPIC_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -102,5 +101,3 @@ public:
 };
 } // namespace dielectric_profile
 } // namespace pcm
-
-#endif // ANISOTROPIC_HPP

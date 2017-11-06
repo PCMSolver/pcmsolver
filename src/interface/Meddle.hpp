@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef MEDDLE_HPP
-#define MEDDLE_HPP
+#pragma once
 
 #include "pcmsolver.h"
 
@@ -200,10 +199,16 @@ public:
   void saveSurfaceFunctions() const;
   /*! \brief Dumps a surface function to NumPy array in .npy file
    *  \param[in] name label of the surface function
+   *
+   *  \note The name parameter is the name of the NumPy array file
+   *  **without** .npy extension
    */
   void saveSurfaceFunction(const char * name) const;
   /*! \brief Loads a surface function from a .npy file
    *  \param[in] name label of the surface function
+   *
+   *  \note The name parameter is the name of the NumPy array file
+   *  **without** .npy extension
    */
   void loadSurfaceFunction(const char * name) const;
   /*! \brief Prints citation and set up information
@@ -269,5 +274,3 @@ private:
   void mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const;
 };
 } // namespace pcm
-
-#endif /* MEDDLE_HPP */

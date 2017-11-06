@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef LOGGERINTERFACE_HPP
-#define LOGGERINTERFACE_HPP
+#pragma once
 
 #ifdef ENABLE_LOGGER
 
@@ -46,5 +45,3 @@ static logging::logger<logging::FileLogPolicy> loggerInstance(
 #define LOG_TIME
 
 #endif /* ENABLE_LOGGER */
-
-#endif /* LOGGERINTERFACE_HPP */

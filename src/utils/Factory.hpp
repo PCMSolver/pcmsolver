@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef FACTORY_HPP
-#define FACTORY_HPP
+#pragma once
 
 #include <map>
 #include <string>
@@ -177,5 +176,3 @@ public:
 };
 #endif /* HAS_CXX11_VARIADIC_TEMPLATES */
 } // namespace pcm
-
-#endif // FACTORY_HPP

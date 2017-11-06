@@ -27,14 +27,14 @@
 
 #include <Eigen/Core>
 
+#include "TestingMolecules.hpp"
 #include "bi_operators/Collocation.hpp"
-#include "green/DerivativeTypes.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "utils/Molecule.hpp"
+#include "green/DerivativeTypes.hpp"
+#include "green/SphericalDiffuse.hpp"
 #include "green/Vacuum.hpp"
 #include "solver/IEFSolver.hpp"
-#include "green/SphericalDiffuse.hpp"
-#include "TestingMolecules.hpp"
+#include "utils/Molecule.hpp"
 
 using namespace pcm;
 using bi_operators::Collocation;
@@ -72,7 +72,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
       double area = 1.0;
       double probeRadius = 0.0;
       double minRadius = 100.0;
-      GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
+      GePolCavity cavity(point, area, probeRadius, minRadius);
 
       SphericalDiffuse<> gf_o(eps1, eps2, width, center, Eigen::Vector3d::Zero(), 3);
       IEFSolver solver(symm);
@@ -103,7 +103,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
       double area = 1.0;
       double probeRadius = 0.0;
       double minRadius = 100.0;
-      GePolCavity cavity = GePolCavity(point, area, probeRadius, minRadius);
+      GePolCavity cavity(point, area, probeRadius, minRadius);
 
       SphericalDiffuse<> gf_o(eps1, eps2, width, center, origin, 3);
 

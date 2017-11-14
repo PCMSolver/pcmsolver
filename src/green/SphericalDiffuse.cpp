@@ -276,56 +276,39 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double r_0_ = 0.5;         /*! Lower bound of the integration interval */
   double r_infinity_ =
       this->profile_.center() + 30.0; /*! Upper bound of the integration interval */
-  double observer_step_ = 1.0e-02;     /*! Time step between observer calls */
+  
+  double y_0_ = log(r_0_);
+  double y_infinity_ = log(r_infinity_);
+  double observer_step_ = 1.0e-2 * this->profile_.width / this->profile_.center();     /*! Time step between observer calls */
+
+
+  
   IntegratorParameters params_(eps_abs_,
                                eps_rel_,
                                factor_x_,
                                factor_dxdt_,
-                               r_0_,
-                               r_infinity_,
+                               y_0_,
+                               y_infinity_,
                                observer_step_);
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
   zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(
-      maxLC_, r_0_, r_infinity_, eval_, params_);
+      maxLC_, y_0_, y_infinity_, eval_, params_);
   omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(
-      maxLC_, r_0_, r_infinity_, eval_, params_);
+      maxLC_, y_0_, y_infinity_, eval_, params_);
   zeta_.reserve(maxLGreen_ + 1);
   omega_.reserve(maxLGreen_ + 1);
-  //  std::cout << " ZETA " << std::endl;
   for (int L = 0; L <= maxLGreen_; ++L) {
     RadialFunction<StateType, LnTransformedRadial, Zeta> tmp_zeta_(
-        L, r_0_, r_infinity_, eval_, params_);
-	//	std::cout << tmp_zeta_ << std::endl << std::endl;;
+        L, y_0_, y_infinity_, eval_, params_);
     zeta_.push_back(tmp_zeta_);
   }
-  //  std::cout << " OMEGA " << std::endl;
   for (int L = 0; L <= maxLGreen_; ++L) {
     RadialFunction<StateType, LnTransformedRadial, Omega> tmp_omega_(
-        L, r_0_, r_infinity_, eval_, params_);
-	//	std::cout << tmp_omega_ << std::endl << std::endl;;
+        L, y_0_, y_infinity_, eval_, params_);
     omega_.push_back(tmp_omega_);
   }
-
-  /*
-	Eigen::Vector3d sp, pp, step; 
-	sp << 0.0, 0.0, 2.8;
-	pp << 0.0, 2.8, -5.0;
-	step << 0.0, 0.0, 0.1;
-	for (int i = 0; i < 101; i++) {
-	double cr12 = coefficient_impl(sp, pp);
-	double Gc = Coulomb(sp, pp);
-	double Gi = imagePotential(sp, pp);
-	double d = (sp - pp).norm();
-	std::cout << pp(2) << " " << d << " " << cr12 << " " << Gc << " " << Gi << " " << Gi * d << std:: endl; 
-	for (int L = 0; L <= maxLGreen_; ++L) {
-	double gr12L = imagePotentialComponent_impl(L, sp, pp, cr12);
-	std::cout << L << " " << gr12L << std::endl;
-	} 
-	pp = pp + step;
-	}
-  */
 }
 
 template <typename ProfilePolicy>
@@ -348,19 +331,27 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
     cos_gamma = -1.0;
   double pl_x = boost::math::legendre_p(L, cos_gamma);
 
+  /* Zeta and Omega are now on a logarithmic scale We need to pass the
+	 arguments in the correct scale and then use the chain rule to get
+	 the proper derivative */
+  double y1 = log(r1);
+  double y2 = log(r2);
+  double dy1 = 1/r1;
+  double dy2 = 1/r2;
+
   /* Sample zeta_[L] */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
   /* Value of zeta_[L] at point with index 1 */
-  pcm::tie(zeta1, pcm::ignore) = zeta_[L](r1);
+  pcm::tie(zeta1, pcm::ignore) = zeta_[L](y1);
   /* Value of zeta_[L] and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2) = zeta_[L](r2);
+  pcm::tie(zeta2, d_zeta2 * dy2) = zeta_[L](y2);
 
   /* Sample omega_[L] */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omega_[L] at point with index 1 */
-  pcm::tie(omega1, pcm::ignore) = omega_[L](r1);
+  pcm::tie(omega1, pcm::ignore) = omega_[L](y1);
   /* Value of omega_[L] and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2) = omega_[L](r2);
+  pcm::tie(omega2, d_omega2 * dy2) = omega_[L](y2);
 
   double eps_r2 = 0.0;
   pcm::tie(eps_r2, pcm::ignore) = this->profile_(pp_shift.norm());

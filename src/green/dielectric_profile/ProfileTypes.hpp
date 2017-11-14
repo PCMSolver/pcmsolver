@@ -54,7 +54,8 @@ typedef boost::mpl::vector<Uniform,
     profile_types;
 
 /*! One-layer diffuse profile types */
-	typedef boost::mpl::vector<OneLayerTanh, OneLayerErf, OneLayerLog> onelayer_diffuse_profile_types;
+typedef boost::mpl::vector<OneLayerTanh, OneLayerErf, OneLayerLog>
+    onelayer_diffuse_profile_types;
 
 /*! Two-layer (aka membrane-like) diffuse profile types */
 typedef boost::mpl::vector<MembraneTanh> membrane_diffuse_profile_types;

@@ -432,6 +432,7 @@ int profilePolicy(const std::string & name) {
   static std::map<std::string, int> mapStringToInt;
   mapStringToInt.insert(std::map<std::string, int>::value_type("TANH", 0));
   mapStringToInt.insert(std::map<std::string, int>::value_type("ERF", 1));
+  mapStringToInt.insert(std::map<std::string, int>::value_type("LOG", 2));
 
   return mapStringToInt.find(name)->second;
 }

@@ -33,6 +33,7 @@
 #include "MembraneTanh.hpp"
 #include "Metal.hpp"
 #include "OneLayerErf.hpp"
+#include "OneLayerLog.hpp"
 #include "OneLayerTanh.hpp"
 #include "Sharp.hpp"
 #include "Uniform.hpp"
@@ -46,13 +47,14 @@ typedef boost::mpl::vector<Uniform,
                            Anisotropic,
                            OneLayerTanh,
                            OneLayerErf,
+                           OneLayerLog,
                            MembraneTanh,
                            Metal,
                            Sharp>
     profile_types;
 
 /*! One-layer diffuse profile types */
-typedef boost::mpl::vector<OneLayerTanh, OneLayerErf> onelayer_diffuse_profile_types;
+	typedef boost::mpl::vector<OneLayerTanh, OneLayerErf, OneLayerLog> onelayer_diffuse_profile_types;
 
 /*! Two-layer (aka membrane-like) diffuse profile types */
 typedef boost::mpl::vector<MembraneTanh> membrane_diffuse_profile_types;
@@ -68,6 +70,7 @@ public:
   bool operator()(const Anisotropic & /* arg */) const { return false; }
   bool operator()(const OneLayerTanh & /* arg */) const { return false; }
   bool operator()(const OneLayerErf & /* arg */) const { return false; }
+  bool operator()(const OneLayerLog & /* arg */) const { return false; }
   bool operator()(const MembraneTanh & /* arg */) const { return false; }
   bool operator()(const Metal & /* arg */) const { return false; }
   bool operator()(const Sharp & /* arg */) const { return false; }
@@ -86,6 +89,7 @@ public:
   bool operator()(const Anisotropic & /* arg */) const { return false; }
   bool operator()(const OneLayerTanh & /* arg */) const { return false; }
   bool operator()(const OneLayerErf & /* arg */) const { return false; }
+  bool operator()(const OneLayerLog & /* arg */) const { return false; }
   bool operator()(const MembraneTanh & /* arg */) const { return false; }
   std::complex<double> operator()(const Metal & arg) const { return arg.epsilon; }
   double operator()(const Sharp & arg) const { return arg.epsilon; }

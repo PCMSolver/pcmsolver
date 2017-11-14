@@ -431,6 +431,9 @@ template class SphericalDiffuse<OneLayerTanh>;
 using dielectric_profile::OneLayerErf;
 template class SphericalDiffuse<OneLayerErf>;
 
+using dielectric_profile::OneLayerLog;
+template class SphericalDiffuse<OneLayerLog>;
+
 IGreensFunction * createSphericalDiffuse(const GreenData & data) {
   detail::buildSphericalDiffuse build;
   return for_id<dielectric_profile::onelayer_diffuse_profile_types, IGreensFunction>(

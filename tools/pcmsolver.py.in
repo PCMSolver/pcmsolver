@@ -405,7 +405,7 @@ def setup_keywords():
     green.add_kw('SPHEREPOSITION', 'DBL_ARRAY', [0.0, 0.0, 0.0])
     # Dielectric profile type
     # Valid for: SPHERICALDIFFUSE
-    # Valid values: TANH, ERF
+    # Valid values: TANH, ERF, LOG
     # Default: TANH
     green.add_kw('PROFILE', 'STR', 'TANH')
     # Static dielectric permittivity inside the interface
@@ -676,7 +676,7 @@ def verify_green(section):
     allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'ALTERNATESPHERICALDIFFUSE', 'METALSPHERE',
                'GREENSFUNCTIONSUM')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
-    allowed_profiles = ('TANH', 'ERF')
+    allowed_profiles = ('TANH', 'ERF', 'LOG')
 
     green1 = section.fetch_sect('GREEN<ONE>')
     green2 = section.fetch_sect('GREEN<TWO>')

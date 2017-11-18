@@ -5,3 +5,4 @@ breathe
 sphinxcontrib-bibtex
 pyyaml
 Pygments
+matplotlib

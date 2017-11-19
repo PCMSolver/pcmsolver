@@ -44,5 +44,8 @@ documentation.
 
 .. warning::
 
-   Building the documentation requires Doxygen, Sphinx, Perl and the Python
-   modules PyYAML, Breathe and Matplotlib.
+   Building the documentation requires Python2, Doxygen, Sphinx, Perl and the 
+   Python modules pyyaml, breathe, matplotlib, sphinx-rtd-theme, 
+   sphinxcontrib-bibtex and recommonmark.
+
+The required python modules can be installed by running ``pip install -r doc/requirements.txt``.

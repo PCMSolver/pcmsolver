@@ -53,17 +53,17 @@ private:
    *  \param[in] point where to evaluate the profile
    */
 	double value(double point) const {
-		double epsLog = std::log(epsilon2/epsilon1);
+		double epsLog = std::log(epsilon2_/epsilon1_);
 		double val = (1.0 + boost::math::erf(point - center_) / width_) / 2.0;
-		return std::eps1 * std::exp(epsLog * val); // epsilon(r)
+		return epsilon1_ * std::exp(epsLog * val); // epsilon(r)
 	}
 	/*! Returns value of derivative of dielectric profile at given point
 	 *  \param[in] point where to evaluate the derivative
 	 */
 	double derivative(double point) const {
 		double functionValue = value(point);
-		double epsLog = std::log(epsilon2/epsilon1);
-		double factor = epsLog / (width * std::sqrt(M_PI));
+		double epsLog = std::log(epsilon2_/epsilon1_);
+		double factor = epsLog / (width_ * std::sqrt(M_PI) );
 		double t = (point - center_) / width_;
 		double val = std::exp(-std::pow(t, 2));
 		return functionValue * factor * val; // first derivative of epsilon(r)
@@ -78,8 +78,8 @@ private:
   }
 
 public:
-  OneLayerErf() {}
-  OneLayerErf(double e1, double e2, double w, double c)
+  OneLayerLog() {}
+  OneLayerLog(double e1, double e2, double w, double c)
       : epsilon1_(e1), epsilon2_(e2), width_(w / 6.0), center_(c) {}
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
@@ -91,7 +91,7 @@ public:
   double epsilon2() const { return epsilon2_; }
   double width() const { return width_; }
   double center() const { return center_; }
-  friend std::ostream & operator<<(std::ostream & os, OneLayerErf & th) {
+  friend std::ostream & operator<<(std::ostream & os, OneLayerLog & th) {
     return th.printObject(os);
   }
 };

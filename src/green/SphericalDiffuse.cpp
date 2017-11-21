@@ -344,14 +344,14 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
   /* Value of zeta_[L] at point with index 1 */
   pcm::tie(zeta1, pcm::ignore) = zeta_[L](y1);
   /* Value of zeta_[L] and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2 * dy2) = zeta_[L](y2);
+  pcm::tie(zeta2, d_zeta2) = zeta_[L](y2);
 
   /* Sample omega_[L] */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omega_[L] at point with index 1 */
   pcm::tie(omega1, pcm::ignore) = omega_[L](y1);
   /* Value of omega_[L] and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2 * dy2) = omega_[L](y2);
+  pcm::tie(omega2, d_omega2) = omega_[L](y2);
 
   double eps_r2 = 0.0;
   pcm::tie(eps_r2, pcm::ignore) = this->profile_(pp_shift.norm());

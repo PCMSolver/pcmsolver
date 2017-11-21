@@ -316,7 +316,7 @@ private:
   /// The actual data: grid, function value and first derivative values
   RadialSolution function_;
   /*! Reports progress of differential equation integrator */
-  void push_back(const StateVariable & x, double r) {
+  void push_back(const StateVariable & x, double y) {
     function_[0].push_back(y);
     function_[1].push_back(x[0]);
     function_[2].push_back(x[1]);
@@ -375,7 +375,7 @@ private:
    */
   double derivative_impl(double point) const {
     double omega = 0.0;
-    if (point >= r_infinity_) {
+    if (point >= y_infinity_) {
       omega = -(L_ + 1);
     } else {
       omega = utils::splineInterpolation(point, function_[0], function_[2]);

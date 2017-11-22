@@ -48,7 +48,7 @@ TEST_CASE("Input reading using GetKw for an input file for a TsLess cavity",
   Input parsedInput = Input(filename);
   std::string units = "ANGSTROM";
   int CODATAyear = 2002;
-  std::string type = "TSLESS";
+  std::string cavityType = "TSLESS";
   double area = 0.6 * angstrom2ToBohr2();
   double minDistance = 5.0 * angstromToBohr();
   int derOrder = 25;
@@ -70,14 +70,12 @@ TEST_CASE("Input reading using GetKw for an input file for a TsLess cavity",
   double correction = 0.5;
   bool hermitivitize = false;
   double probeRadius = 2.815 * angstromToBohr(); // The value for water
-  std::string greenInsideType = "VACUUM";
-  std::string greenOutsideType = "UNIFORMDIELECTRIC";
-  int derivativeInsideType = 1;
-  int derivativeOutsideType = 1;
+  std::string greenInsideType = "VACUUM_DERIVATIVE";
+  std::string greenOutsideType = "UNIFORMDIELECTRIC_DERIVATIVE";
 
   REQUIRE(units == parsedInput.units());
   REQUIRE(CODATAyear == parsedInput.CODATAyear());
-  REQUIRE(type == parsedInput.cavityType());
+  REQUIRE(cavityType == parsedInput.cavityParams().cavityType);
   REQUIRE(area == Approx(parsedInput.cavityParams().area));
   REQUIRE(minDistance == Approx(parsedInput.cavityParams().minDistance));
   REQUIRE(derOrder == parsedInput.cavityParams().derOrder);
@@ -91,13 +89,11 @@ TEST_CASE("Input reading using GetKw for an input file for a TsLess cavity",
     REQUIRE(radii[i] == Approx(parsedInput.radii(i)));
   }
   REQUIRE(solvent == parsedInput.solvent().name);
-  REQUIRE(solverType == parsedInput.solverType());
+  REQUIRE(solverType == parsedInput.solverParams().solverType);
   REQUIRE(correction == Approx(parsedInput.correction()));
   REQUIRE(hermitivitize == parsedInput.hermitivitize());
   REQUIRE(probeRadius == Approx(parsedInput.cavityParams().probeRadius));
-  REQUIRE(greenInsideType == parsedInput.greenInsideType());
-  REQUIRE(greenOutsideType == parsedInput.greenOutsideType());
-  REQUIRE(derivativeInsideType == parsedInput.insideGreenParams().howDerivative);
-  REQUIRE(derivativeOutsideType ==
-          parsedInput.outsideStaticGreenParams().howDerivative);
+  REQUIRE(greenInsideType == parsedInput.insideGreenParams().greensFunctionType);
+  REQUIRE(greenOutsideType ==
+          parsedInput.outsideStaticGreenParams().greensFunctionType);
 }

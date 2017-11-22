@@ -26,6 +26,7 @@
 #include "Config.hpp"
 
 #include "AnisotropicLiquid.hpp"
+#include "DerivativeTypes.hpp"
 #include "GreenData.hpp"
 #include "IGreensFunction.hpp"
 #include "IonicLiquid.hpp"

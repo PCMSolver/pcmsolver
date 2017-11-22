@@ -72,10 +72,8 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
   std::string solverType = "WAVELET";
   int equationType = 0;
   double probeRadius = 1.385 * angstromToBohr(); // The value for water
-  std::string greenInsideType = "VACUUM";
-  std::string greenOutsideType = "SPHERICALDIFFUSE";
-  int derivativeInsideType = 0;
-  int derivativeOutsideType = 0;
+  std::string greenInsideType = "VACUUM_NUMERICAL";
+  std::string greenOutsideType = "SPHERICALDIFFUSE_NUMERICAL_ERF";
   double epsilonInside = 1.0;
   double epsilonStatic1 = 78.39;
   double epsilonDynamic1 = 10.423;
@@ -83,13 +81,12 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
   double epsilonDynamic2 = 4.0;
   double center = 100.0 * angstromToBohr();
   double width = 5.0 * angstromToBohr();
-  int profile = 1;
   Eigen::Vector3d origin = (Eigen::Vector3d() << 70.0, 1.0, 23.0).finished();
   origin *= angstromToBohr();
 
   REQUIRE(units == parsedInput.units());
   REQUIRE(CODATAyear == parsedInput.CODATAyear());
-  REQUIRE(type == parsedInput.cavityType());
+  REQUIRE(type == parsedInput.cavityParams().cavityType);
   REQUIRE(patchLevel == parsedInput.cavityParams().patchLevel);
   REQUIRE(coarsity == Approx(parsedInput.cavityParams().coarsity));
   REQUIRE(scaling == parsedInput.scaling());
@@ -102,14 +99,12 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
     }
     REQUIRE(spheres[i].radius == Approx(parsedInput.spheres(i).radius));
   }
-  REQUIRE(solverType == parsedInput.solverType());
+  REQUIRE(solverType == parsedInput.solverParams().solverType);
   REQUIRE(equationType == parsedInput.equationType());
   REQUIRE(probeRadius == Approx(parsedInput.cavityParams().probeRadius));
-  REQUIRE(greenInsideType == parsedInput.greenInsideType());
-  REQUIRE(greenOutsideType == parsedInput.greenOutsideType());
-  REQUIRE(derivativeInsideType == parsedInput.insideGreenParams().howDerivative);
-  REQUIRE(derivativeOutsideType ==
-          parsedInput.outsideStaticGreenParams().howDerivative);
+  REQUIRE(greenInsideType == parsedInput.insideGreenParams().greensFunctionType);
+  REQUIRE(greenOutsideType ==
+          parsedInput.outsideStaticGreenParams().greensFunctionType);
   REQUIRE(epsilonInside == Approx(parsedInput.insideGreenParams().epsilon));
   REQUIRE(epsilonStatic1 == Approx(parsedInput.outsideStaticGreenParams().epsilon1));
   REQUIRE(epsilonStatic2 == Approx(parsedInput.outsideStaticGreenParams().epsilon2));
@@ -119,7 +114,6 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
           Approx(parsedInput.outsideDynamicGreenParams().epsilon2));
   REQUIRE(center == Approx(parsedInput.outsideDynamicGreenParams().center));
   REQUIRE(width == Approx(parsedInput.outsideDynamicGreenParams().width));
-  REQUIRE(profile == parsedInput.outsideDynamicGreenParams().howProfile);
   for (int i = 0; i < 3; ++i) {
     REQUIRE(origin(i) == Approx(parsedInput.outsideStaticGreenParams().origin(i)));
     REQUIRE(origin(i) == Approx(parsedInput.outsideDynamicGreenParams().origin(i)));

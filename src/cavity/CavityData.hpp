@@ -35,6 +35,8 @@
 
 namespace pcm {
 struct CavityData {
+  /*! The type of cavity */
+  std::string cavityType;
   /*! Molecule object with the relevant data for cavity generation */
   Molecule molecule;
   /*! The average tesserae area. Relevant for GePolCavity */
@@ -62,7 +64,8 @@ struct CavityData {
   bool empty;
 
   CavityData() { empty = true; }
-  CavityData(const Molecule & _molec,
+  CavityData(const std::string & type,
+             const Molecule & _molec,
              double _area,
              double _probeRadius,
              double _minDistance,
@@ -72,7 +75,8 @@ struct CavityData {
              double _coarsity,
              const std::string & _fname,
              const std::string & _dyad)
-      : molecule(_molec),
+      : cavityType(type),
+        molecule(_molec),
         area(_area),
         probeRadius(_probeRadius),
         minDistance(_minDistance),

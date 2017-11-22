@@ -412,8 +412,8 @@ void Meddle::initInput(pcmsolver_reader_t input_reading,
 }
 
 void Meddle::initCavity() {
-  cavity_ =
-      cavity::bootstrapFactory().create(input_.cavityType(), input_.cavityParams());
+  cavity_ = cavity::bootstrapFactory().create(input_.cavityParams().cavityType,
+                                              input_.cavityParams());
   cavity_->saveCavity();
 
   infoStream_ << "========== Cavity " << std::endl;
@@ -423,15 +423,16 @@ void Meddle::initCavity() {
 
 void Meddle::initStaticSolver() {
   IGreensFunction * gf_i = green::bootstrapFactory().create(
-      input_.greenInsideType(), input_.insideGreenParams());
+      input_.insideGreenParams().greensFunctionType, input_.insideGreenParams());
   IGreensFunction * gf_o = green::bootstrapFactory().create(
-      input_.greenOutsideType(), input_.outsideStaticGreenParams());
+      input_.outsideStaticGreenParams().greensFunctionType,
+      input_.outsideStaticGreenParams());
 
-  K_0_ =
-      solver::bootstrapFactory().create(input_.solverType(), input_.solverParams());
+  K_0_ = solver::bootstrapFactory().create(input_.solverParams().solverType,
+                                           input_.solverParams());
 
   IBoundaryIntegralOperator * biop = bi_operators::bootstrapFactory().create(
-      input_.integratorType(), input_.integratorParams());
+      input_.integratorParams().integratorType, input_.integratorParams());
   K_0_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   delete biop;
 
@@ -444,15 +445,16 @@ void Meddle::initStaticSolver() {
 
 void Meddle::initDynamicSolver() {
   IGreensFunction * gf_i = green::bootstrapFactory().create(
-      input_.greenInsideType(), input_.insideGreenParams());
+      input_.insideGreenParams().greensFunctionType, input_.insideGreenParams());
   IGreensFunction * gf_o = green::bootstrapFactory().create(
-      input_.greenOutsideType(), input_.outsideDynamicGreenParams());
+      input_.outsideDynamicGreenParams().greensFunctionType,
+      input_.outsideDynamicGreenParams());
 
-  K_d_ =
-      solver::bootstrapFactory().create(input_.solverType(), input_.solverParams());
+  K_d_ = solver::bootstrapFactory().create(input_.solverParams().solverType,
+                                           input_.solverParams());
 
   IBoundaryIntegralOperator * biop = bi_operators::bootstrapFactory().create(
-      input_.integratorType(), input_.integratorParams());
+      input_.integratorParams().integratorType, input_.integratorParams());
   K_d_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   hasDynamic_ = true;
   delete biop;

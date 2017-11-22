@@ -30,11 +30,9 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
-#include "utils/ForId.hpp"
 
 namespace pcm {
 using cavity::Element;
@@ -97,10 +95,5 @@ template class Vacuum<Stencil>;
 template class Vacuum<AD_directional>;
 template class Vacuum<AD_gradient>;
 template class Vacuum<AD_hessian>;
-
-IGreensFunction * createVacuum(const GreenData & data) {
-  detail::buildVacuum build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
 } // namespace green
 } // namespace pcm

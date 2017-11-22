@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "Config.hpp"
@@ -35,10 +36,11 @@
 
 namespace pcm {
 struct GreenData {
-  /*! The way the derivatives of the Green's function are evaluated */
-  int howDerivative;
-  /*! Dielectric profile type */
-  int howProfile;
+  /*! The Green's function type inside the cavity.
+   * It encodes the Green's function type, derivative calculation strategy and
+   * dielectric profile: TYPE_DERIVATIVE_PROFILE
+   */
+  std::string greensFunctionType;
   /*! The permittivity */
   double epsilon;
   /*! Inverse of the Debye length */
@@ -72,8 +74,7 @@ struct GreenData {
   bool empty;
 
   GreenData() { empty = true; }
-  GreenData(int how_d,
-            int how_p,
+  GreenData(const std::string & type,
             double _epsilon = 1.0,
             double _kappa = 0.0,
             const Eigen::Vector3d & epstens = Eigen::Vector3d::Zero(),
@@ -88,8 +89,7 @@ struct GreenData {
             double _w = 5.0,
             const Eigen::Vector3d & _o = Eigen::Vector3d::Zero(),
             int l = 30)
-      : howDerivative(how_d),
-        howProfile(how_p),
+      : greensFunctionType(type),
         epsilon(_epsilon),
         kappa(_kappa),
         epsilonTensor(epstens),

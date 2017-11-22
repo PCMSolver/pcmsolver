@@ -1,5 +1,5 @@
 # List of headers
-list(APPEND headers_list Green.hpp AnisotropicLiquid.hpp DerivativeTypes.hpp DerivativeUtils.hpp GreenData.hpp GreenUtils.hpp GreensFunction.hpp
+list(APPEND headers_list Green.hpp AnisotropicLiquid.hpp DerivativeTypes.hpp GreenData.hpp GreenUtils.hpp GreensFunction.hpp
                          IGreensFunction.hpp InterfacesImpl.hpp IonicLiquid.hpp
                          SphericalDiffuse.hpp
                          SphericalSharp.hpp UniformDielectric.hpp Vacuum.hpp)

@@ -1,6 +1,11 @@
 # List of headers
-list(APPEND headers_list Atom.hpp ChargeDistribution.hpp Factory.hpp ForId.hpp
-                         Logger.hpp LoggerImpl.hpp MathUtils.hpp Molecule.hpp
+list(APPEND headers_list Atom.hpp 
+ChargeDistribution.hpp 
+Factory.hpp  
+Logger.hpp 
+LoggerImpl.hpp 
+MathUtils.hpp 
+Molecule.hpp
                          QuadratureRules.hpp Solvent.hpp Sphere.hpp SplineFunction.hpp Stencils.hpp
                          Symmetry.hpp Timer.hpp cnpy.hpp)
 set_source_files_properties(cnpy.hpp PROPERTIES COMPILE_FLAGS -w)

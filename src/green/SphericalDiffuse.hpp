@@ -258,21 +258,6 @@ private:
   /*! @}*/
 };
 
-namespace detail {
-struct buildSphericalDiffuse {
-  template <typename T> IGreensFunction * operator()(const GreenData & data) {
-    return new SphericalDiffuse<T>(data.epsilon1,
-                                   data.epsilon2,
-                                   data.width,
-                                   data.center,
-                                   data.origin,
-                                   data.maxL);
-  }
-};
-} // namespace detail
-
-IGreensFunction * createSphericalDiffuse(const GreenData & data);
-
 template <typename ProfilePolicy>
 IGreensFunction * createSphericalDiffuse(const GreenData & data) {
   return new SphericalDiffuse<ProfilePolicy>(

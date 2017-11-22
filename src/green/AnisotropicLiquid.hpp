@@ -41,7 +41,6 @@ class Anisotropic;
 } // namespace dielectric_profile
 } // namespace pcm
 
-#include "DerivativeTypes.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 
@@ -87,16 +86,6 @@ private:
 
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
-
-namespace detail {
-struct buildAnisotropicLiquid {
-  template <typename T> IGreensFunction * operator()(const GreenData & data) {
-    return new AnisotropicLiquid<T>(data.epsilonTensor, data.eulerAngles);
-  }
-};
-} // namespace detail
-
-IGreensFunction * createAnisotropicLiquid(const GreenData & data);
 
 template <typename DerivativeTraits>
 IGreensFunction * createAnisotropicLiquid(const GreenData & data) {

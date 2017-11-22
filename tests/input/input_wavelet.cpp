@@ -49,7 +49,7 @@ TEST_CASE("Input reading using GetKw for an input file for a wavelet cavity",
   Input parsedInput = Input(filename);
   std::string units = "ANGSTROM";
   int CODATAyear = 1998;
-  std::string type = "WAVELET";
+  std::string cavityType = "WAVELET";
   int patchLevel = 1;
   double coarsity = 0.3;
   bool scaling = true;
@@ -72,17 +72,15 @@ TEST_CASE("Input reading using GetKw for an input file for a wavelet cavity",
   std::string solverType = "WAVELET";
   int equationType = 0;
   double probeRadius = 1.385 * angstromToBohr(); // The value for water
-  std::string greenInsideType = "VACUUM";
-  std::string greenOutsideType = "UNIFORMDIELECTRIC";
-  int derivativeInsideType = 0;
-  int derivativeOutsideType = 2;
+  std::string greenInsideType = "VACUUM_NUMERICAL";
+  std::string greenOutsideType = "UNIFORMDIELECTRIC_GRADIENT";
   double epsilonInside = 1.0;
   double epsilonStaticOutside = 78.39;
   double epsilonDynamicOutside = 10.423;
 
   REQUIRE(units == parsedInput.units());
   REQUIRE(CODATAyear == parsedInput.CODATAyear());
-  REQUIRE(type == parsedInput.cavityType());
+  REQUIRE(cavityType == parsedInput.cavityParams().cavityType);
   REQUIRE(patchLevel == parsedInput.cavityParams().patchLevel);
   REQUIRE(coarsity == Approx(parsedInput.cavityParams().coarsity));
   REQUIRE(scaling == parsedInput.scaling());
@@ -95,14 +93,12 @@ TEST_CASE("Input reading using GetKw for an input file for a wavelet cavity",
     }
     REQUIRE(spheres[i].radius == Approx(parsedInput.spheres(i).radius));
   }
-  REQUIRE(solverType == parsedInput.solverType());
+  REQUIRE(solverType == parsedInput.solverParams().solverType);
   REQUIRE(equationType == parsedInput.equationType());
   REQUIRE(probeRadius == Approx(parsedInput.cavityParams().probeRadius));
-  REQUIRE(greenInsideType == parsedInput.greenInsideType());
-  REQUIRE(greenOutsideType == parsedInput.greenOutsideType());
-  REQUIRE(derivativeInsideType == parsedInput.insideGreenParams().howDerivative);
-  REQUIRE(derivativeOutsideType ==
-          parsedInput.outsideStaticGreenParams().howDerivative);
+  REQUIRE(greenInsideType == parsedInput.insideGreenParams().greensFunctionType);
+  REQUIRE(greenOutsideType ==
+          parsedInput.outsideStaticGreenParams().greensFunctionType);
   REQUIRE(epsilonInside == Approx(parsedInput.insideGreenParams().epsilon));
   REQUIRE(epsilonStaticOutside ==
           Approx(parsedInput.outsideStaticGreenParams().epsilon));

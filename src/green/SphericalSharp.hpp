@@ -32,7 +32,6 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreensFunction.hpp"
 #include "bi_operators/IntegratorForward.hpp"
 #include "dielectric_profile/Sharp.hpp"

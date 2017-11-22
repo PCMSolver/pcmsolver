@@ -30,12 +30,10 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 #include "dielectric_profile/Anisotropic.hpp"
-#include "utils/ForId.hpp"
 
 namespace pcm {
 using cavity::Element;
@@ -130,10 +128,5 @@ template class AnisotropicLiquid<Stencil>;
 template class AnisotropicLiquid<AD_directional>;
 template class AnisotropicLiquid<AD_gradient>;
 template class AnisotropicLiquid<AD_hessian>;
-
-IGreensFunction * createAnisotropicLiquid(const GreenData & data) {
-  detail::buildAnisotropicLiquid build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
 } // namespace green
 } // namespace pcm

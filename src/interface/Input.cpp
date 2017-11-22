@@ -71,13 +71,13 @@ void Input::reader(const std::string & filename) {
 
   const Section & cavity = input_.getSect("CAVITY");
 
-  type_ = cavity.getStr("TYPE");
+  cavityType_ = cavity.getStr("TYPE");
   area_ = cavity.getDbl("AREA");
   patchLevel_ = cavity.getInt("PATCHLEVEL");
   coarsity_ = cavity.getDbl("COARSITY");
   minDistance_ = cavity.getDbl("MINDISTANCE");
   derOrder_ = cavity.getInt("DERORDER");
-  if (type_ == "RESTART") {
+  if (cavityType_ == "RESTART") {
     cavFilename_ = cavity.getStr("NPZFILE");
   }
   dyadicFilename_ = cavity.getStr("DYADICFILE");
@@ -120,15 +120,11 @@ void Input::reader(const std::string & filename) {
     const Section & inside = medium.getSect("GREEN<INSIDE>");
     // ...and initialize the data members
     greenInsideType_ = inside.getStr("TYPE") + "_" + inside.getStr("DER");
-    // TODO Clean up derivative determination
-    derivativeInsideType_ = detail::derivativeTraits(inside.getStr("DER"));
     epsilonInside_ = inside.getDbl("EPS");
     // Get the contents of the Green<outside> section...
     const Section & outside = medium.getSect("GREEN<OUTSIDE>");
     // ...and initialize the data members
     greenOutsideType_ = outside.getStr("TYPE") + "_" + outside.getStr("DER");
-    // TODO Clean up derivative determination
-    derivativeOutsideType_ = detail::derivativeTraits(outside.getStr("DER"));
     epsilonStaticOutside_ = outside.getDbl("EPS");
     epsilonDynamicOutside_ = outside.getDbl("EPSDYN");
     // This will be needed for the metal sphere only
@@ -148,8 +144,6 @@ void Input::reader(const std::string & filename) {
     if (outside.getStr("TYPE") == "SPHERICALDIFFUSE") {
       greenOutsideType_ += "_" + outside.getStr("PROFILE");
     }
-    // TODO Clean up profile determination
-    profileType_ = detail::profilePolicy(outside.getStr("PROFILE"));
     maxL_ = outside.getInt("MAXL");
   } else { // This part must be reviewed!! Some data members are not initialized...
     // Just initialize the solvent object in this class
@@ -164,10 +158,8 @@ void Input::reader(const std::string & filename) {
     // We have to initialize the Green's functions data here, Solvent class
     // is an helper class and should not be used in the core classes.
     greenInsideType_ = "VACUUM_DERIVATIVE";
-    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonInside_ = 1.0;
     greenOutsideType_ = "UNIFORMDIELECTRIC_DERIVATIVE";
-    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;
   }
@@ -220,13 +212,13 @@ void Input::reader(const PCMInput & host_input) {
   CODATAyear_ = 2010;
   initBohrToAngstrom(bohrToAngstrom, CODATAyear_);
 
-  type_ = detail::trim_and_upper(host_input.cavity_type);
+  cavityType_ = detail::trim_and_upper(host_input.cavity_type);
   area_ = host_input.area * angstrom2ToBohr2();
   patchLevel_ = host_input.patch_level;
   coarsity_ = host_input.coarsity * angstromToBohr();
   minDistance_ = host_input.min_distance * angstromToBohr();
   derOrder_ = host_input.der_order;
-  if (type_ == "RESTART") {
+  if (cavityType_ == "RESTART") {
     cavFilename_ = detail::trim(host_input.restart_name); // No case conversion here!
   }
 
@@ -249,15 +241,13 @@ void Input::reader(const PCMInput & host_input) {
     probeRadius_ = host_input.probe_radius * angstromToBohr();
     // Get the contents of the Green<inside> section...
     // ...and initialize the data members
-    greenInsideType_ = detail::trim_and_upper(host_input.inside_type);
-    greenInsideType_ += "_DERIVATIVE";
-    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenInsideType_ =
+        detail::trim_and_upper(host_input.inside_type) + "_DERIVATIVE";
     epsilonInside_ = 1.0;
     // Get the contents of the Green<outside> section...
     // ...and initialize the data members
-    greenOutsideType_ = detail::trim_and_upper(host_input.outside_type);
-    greenOutsideType_ += "_DERIVATIVE";
-    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenOutsideType_ =
+        detail::trim_and_upper(host_input.outside_type) + "_DERIVATIVE";
     epsilonStaticOutside_ = host_input.outside_epsilon;
     epsilonDynamicOutside_ = host_input.outside_epsilon;
     // Initialize interface parameters with bogus values
@@ -268,7 +258,6 @@ void Input::reader(const PCMInput & host_input) {
     center_ = 0.0;
     width_ = 0.0;
     origin_ = std::vector<double>(3, 0.0);
-    profileType_ = 0;
     maxL_ = 0;
   } else { // This part must be reviewed!! Some data members are not initialized...
     // Just initialize the solvent object in this class
@@ -278,13 +267,9 @@ void Input::reader(const PCMInput & host_input) {
     // Specification of the solvent by name means isotropic PCM
     // We have to initialize the Green's functions data here, Solvent class
     // is an helper class and should not be used in the core classes.
-    greenInsideType_ = std::string("VACUUM");
-    greenInsideType_ += "_DERIVATIVE";
-    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenInsideType_ = std::string("VACUUM_DERIVATIVE");
     epsilonInside_ = 1.0;
-    greenOutsideType_ = std::string("UNIFORMDIELECTRIC");
-    greenOutsideType_ += "_DERIVATIVE";
-    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenOutsideType_ = std::string("UNIFORMDIELECTRIC_DERIVATIVE");
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;
   }
@@ -373,7 +358,8 @@ void Input::initMolecule() {
 }
 
 CavityData Input::cavityParams() const {
-  return CavityData(molecule_,
+  return CavityData(cavityType_,
+                    molecule_,
                     area_,
                     probeRadius_,
                     minDistance_,
@@ -386,13 +372,12 @@ CavityData Input::cavityParams() const {
 }
 
 GreenData Input::insideGreenParams() const {
-  return GreenData(derivativeInsideType_, profileType_, epsilonInside_);
+  return GreenData(greenInsideType_, epsilonInside_);
 }
 
 GreenData Input::outsideStaticGreenParams() const {
-  GreenData retval(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
+  GreenData retval(greenOutsideType_, epsilonStaticOutside_);
   if (not hasSolvent_) {
-    retval.howProfile = profileType_;
     retval.epsilon1 = epsilonStatic1_;
     retval.epsilon2 = epsilonStatic2_;
     retval.center = center_;
@@ -405,9 +390,8 @@ GreenData Input::outsideStaticGreenParams() const {
 }
 
 GreenData Input::outsideDynamicGreenParams() const {
-  GreenData retval(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
+  GreenData retval(greenOutsideType_, epsilonDynamicOutside_);
   if (not hasSolvent_) {
-    retval.howProfile = profileType_;
     retval.epsilon1 = epsilonDynamic1_;
     retval.epsilon2 = epsilonDynamic2_;
     retval.center = center_;
@@ -420,32 +404,14 @@ GreenData Input::outsideDynamicGreenParams() const {
 }
 
 SolverData Input::solverParams() const {
-  return SolverData(correction_, equationType_, hermitivitize_);
+  return SolverData(solverType_, correction_, equationType_, hermitivitize_);
 }
 
 BIOperatorData Input::integratorParams() const {
-  return BIOperatorData(integratorScaling_);
+  return BIOperatorData(integratorType_, integratorScaling_);
 }
 
 namespace detail {
-int derivativeTraits(const std::string & name) {
-  static std::map<std::string, int> mapStringToInt;
-  mapStringToInt.insert(std::map<std::string, int>::value_type("NUMERICAL", 0));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("DERIVATIVE", 1));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("GRADIENT", 2));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("HESSIAN", 3));
-
-  return mapStringToInt.find(name)->second;
-}
-
-int profilePolicy(const std::string & name) {
-  static std::map<std::string, int> mapStringToInt;
-  mapStringToInt.insert(std::map<std::string, int>::value_type("TANH", 0));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("ERF", 1));
-
-  return mapStringToInt.find(name)->second;
-}
-
 int integralEquation(const std::string & name) {
   static std::map<std::string, int> mapStringToInt;
   mapStringToInt.insert(std::map<std::string, int>::value_type("FIRSTKIND", 0));

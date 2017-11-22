@@ -41,7 +41,6 @@ struct Yukawa;
 } // namespace dielectric_profile
 } // namespace pcm
 
-#include "DerivativeTypes.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 
@@ -83,16 +82,6 @@ private:
 
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
-
-namespace detail {
-struct buildIonicLiquid {
-  template <typename T> IGreensFunction * operator()(const GreenData & data) {
-    return new IonicLiquid<T>(data.epsilon, data.kappa);
-  }
-};
-} // namespace detail
-
-IGreensFunction * createIonicLiquid(const GreenData & data);
 
 template <typename DerivativeTraits>
 IGreensFunction * createIonicLiquid(const GreenData & data) {

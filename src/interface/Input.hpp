@@ -89,7 +89,6 @@ public:
   /// @}
 
   /// Cavity section input
-  std::string cavityType() const { return type_; }
   bool scaling() const { return scaling_; }
   std::string radiiSet() const { return radiiSet_; }
   std::string radiiSetName() const { return radiiSetName_; }
@@ -112,18 +111,11 @@ public:
   /// Medium section input
   Solvent solvent() const { return solvent_; }
   bool fromSolvent() const { return hasSolvent_; }
-  std::string solverType() const { return solverType_; }
   int equationType() const { return equationType_; }
   double correction() const { return correction_; }
   bool hermitivitize() const { return hermitivitize_; }
   bool isDynamic() const { return isDynamic_; }
-  std::string integratorType() const { return integratorType_; }
   double integratorScaling() const { return integratorScaling_; }
-  /// @}
-
-  /// Green's function section input
-  std::string greenInsideType() const { return greenInsideType_; }
-  std::string greenOutsideType() const { return greenOutsideType_; }
   /// @}
 
   /// Keeps track of who did the parsing: the API or the host program
@@ -175,7 +167,7 @@ private:
   /// Year of the CODATA set to be used
   int CODATAyear_;
   /// The type of cavity
-  std::string type_;
+  std::string cavityType_;
   /// Filename for the .npz cavity restart file
   std::string cavFilename_;
   /// Filename for the wavelet cavity dyadic file
@@ -229,14 +221,14 @@ private:
   /// Scaling factor for the diagonal of the approximate collocation boundary
   /// integral operators
   double integratorScaling_;
-  /// The Green's function type inside the cavity
+  /// The Green's function type inside the cavity.
+  /// It encodes the Green's function type, derivative calculation strategy and
+  /// dielectric profile: TYPE_DERIVATIVE_PROFILE
   std::string greenInsideType_;
   /// The Green's function type outside the cavity
+  /// It encodes the Green's function type, derivative calculation strategy and
+  /// dielectric profile: TYPE_DERIVATIVE_PROFILE
   std::string greenOutsideType_;
-  /// How to calculate Green's function derivatives inside the cavity
-  int derivativeInsideType_;
-  /// How to calculate Green's function derivatives outside the cavity
-  int derivativeOutsideType_;
   /// Permittivity inside the cavity
   double epsilonInside_;
   /// Static permittivity outside the cavity
@@ -263,8 +255,6 @@ private:
   double center_;
   /// Width of the diffuse interface
   double width_;
-  /// Profile chosen for the diffuse interface
-  int profileType_;
   /// Maximum angular momentum
   int maxL_;
   /// Center of the dielectric sphere
@@ -280,16 +270,6 @@ private:
 };
 
 namespace detail {
-/*! A useful map to convert the Der string to an integer which will be passed to the
- * Green's function CTOR. */
-int derivativeTraits(const std::string & name);
-
-/*! A useful map to convert from a string specifying the dielectric profile to an
- * integer
- *  which will be passed to the Green's function CTOR.
- */
-int profilePolicy(const std::string & name);
-
 /*! A useful map to convert the EquationType string to an integer which will be
  * passed to the Solver CTOR. */
 int integralEquation(const std::string & name);

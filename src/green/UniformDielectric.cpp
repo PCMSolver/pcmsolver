@@ -30,12 +30,10 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 #include "dielectric_profile/Uniform.hpp"
-#include "utils/ForId.hpp"
 
 namespace pcm {
 using cavity::Element;
@@ -110,10 +108,5 @@ template class UniformDielectric<Stencil>;
 template class UniformDielectric<AD_directional>;
 template class UniformDielectric<AD_gradient>;
 template class UniformDielectric<AD_hessian>;
-
-IGreensFunction * createUniformDielectric(const GreenData & data) {
-  detail::buildUniformDielectric build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
 } // namespace green
 } // namespace pcm

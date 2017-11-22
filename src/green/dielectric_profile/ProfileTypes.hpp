@@ -26,7 +26,6 @@
 #include "Config.hpp"
 
 #include <boost/any.hpp>
-#include <boost/mpl/vector.hpp>
 #include <boost/variant.hpp>
 
 #include "Anisotropic.hpp"
@@ -40,26 +39,16 @@
 
 namespace pcm {
 namespace dielectric_profile {
-/*! All possible profile types */
-typedef boost::mpl::vector<Uniform,
-                           Yukawa,
-                           Anisotropic,
-                           OneLayerTanh,
-                           OneLayerErf,
-                           MembraneTanh,
-                           Metal,
-                           Sharp>
-    profile_types;
-
-/*! One-layer diffuse profile types */
-typedef boost::mpl::vector<OneLayerTanh, OneLayerErf> onelayer_diffuse_profile_types;
-
-/*! Two-layer (aka membrane-like) diffuse profile types */
-typedef boost::mpl::vector<MembraneTanh> membrane_diffuse_profile_types;
-
-/*! An object of Permittivity type can have one of the types in the type sequence
- * profile_types */
-typedef boost::make_variant_over<profile_types>::type Permittivity;
+/*! An object of Permittivity type can have one of the dielectric_profile types */
+typedef boost::variant<Uniform,
+                       Yukawa,
+                       Anisotropic,
+                       OneLayerTanh,
+                       OneLayerErf,
+                       MembraneTanh,
+                       Metal,
+                       Sharp>
+    Permittivity;
 
 class isUniform : public boost::static_visitor<bool> {
 public:

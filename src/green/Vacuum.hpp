@@ -84,16 +84,6 @@ private:
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
 
-namespace detail {
-struct buildVacuum {
-  template <typename T> IGreensFunction * operator()(const GreenData & /* data */) {
-    return new Vacuum<T>();
-  }
-};
-} // namespace detail
-
-IGreensFunction * createVacuum(const GreenData & data);
-
 template <typename DerivativeTraits>
 IGreensFunction * createVacuum(const GreenData & /* data */) {
   return new Vacuum<DerivativeTraits>();

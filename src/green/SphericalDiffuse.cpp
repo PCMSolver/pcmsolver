@@ -34,13 +34,10 @@
 // Boost.Math includes
 #include <boost/math/special_functions/legendre.hpp>
 
-#include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 #include "dielectric_profile/ProfileTypes.hpp"
-#include "utils/ForId.hpp"
 #include "utils/MathUtils.hpp"
 
 namespace pcm {
@@ -443,11 +440,5 @@ template class SphericalDiffuse<OneLayerTanh>;
 
 using dielectric_profile::OneLayerErf;
 template class SphericalDiffuse<OneLayerErf>;
-
-IGreensFunction * createSphericalDiffuse(const GreenData & data) {
-  detail::buildSphericalDiffuse build;
-  return for_id<dielectric_profile::onelayer_diffuse_profile_types, IGreensFunction>(
-      build, data, data.howProfile);
-}
 } // namespace green
 } // namespace pcm

@@ -11,13 +11,26 @@
 
 ### Changed
 
+- Dispatching of Green’s functions in the factory is purely label-based. The
+  input reader generates a string that holds the type of the Green’s function,
+  the strategy for calculating its normal derivatives and the dielectric
+  profile (if needed): `TYPE_DERIVATIVE_PROFILE`. The Green’s functions are
+  subscribed to the factory using this label, which is then also the one used
+  for their creation. Iteration over _lists of types_ to dispatch the correct
+  template parameters is thus completely avoided. This removes the dependency
+  on the metafunctions in `ForId.hpp` and the dependency on Boost.MPL, the
+  Boost metaprogramming library.
+- Dispatching of quadrature rules for the numerical boundary integral operator
+  has been rewritten, removing the dependency on Boost.MPL.
+- The input wrapping data `struct`-s have been modified to include the string
+  defining the type of object and to remove now unused information.
 - Documentation building is fully handled _via_ `sphinx-build`: CMake will no longer generate a `doc` build target.
 - Simplified `.travis.yml` and got rid of Conda to handle multiple Python versions.
 
 ### Fixed
 
-- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada:
-  The build had been failing for a while since docs were generated for all files, including
+- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada: 
+  The build had been failing for a while since docs were generated for all files, including 
   documentation files from previous build. Besides, source code doxygen blocks were not
   exctracted when inside namespaces.
 
@@ -26,6 +39,24 @@
 - `FortranCUtils` header and source files were removed. The `pcmsolver_f2c_string` and `pcmsolver_c2f_string`
   functions are thus gone. For the former, use the replacement
   `pcmsolver_fstring_to_carray` function provided in the Fortran bindings to the library.
+- Some unused files have been removed:
+  * `Interpolation.hpp`
+  * `Interpolation.cpp`
+  * `Vector2.hpp`
+  * `Vector3.hpp`
+  * `ForId.hpp`
+  * `DerivativeUtils.hpp`
+- The `cavityType()`, `solverType()`, `greenInsideType()`, `greenOutsideType()`
+  and `integratorType()` functions in the `Input` object have been removed.
+  This information is now wrapped into the corresponding input-wrapping
+  `struct`-s: `CavityData`, `SolverData`, `GreenData` and `BIOperatorData`.
+
+### Deprecated
+
+- We are in the process of removing the dependency on the Boost libraries. The
+  only dependency on Boost allowed in the 1.Y.Z release series will be for
+  replacing C++11 functionality that is missing from the C++98 standard. For
+  such code, we will require a pure C++11 counterpart.
 
 ## [Version 1.1.11] - 2017-10-25
 
@@ -378,7 +409,7 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.11..HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.11...HEAD
 [Version 1.1.11]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.10...v1.1.11
 [Version 1.1.10]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.9...v1.1.10
 [Version 1.1.9]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.8...v1.1.9

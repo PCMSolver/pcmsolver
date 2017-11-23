@@ -6,7 +6,7 @@ This is a brief guide to our CMake infrastructure which is managed
 
 .. warning::
 
-   The minimum required CMake version is 2.8.8
+   The minimum required CMake version is 2.8.10
 
 Adding new source subdirectories and/or files
 ---------------------------------------------

@@ -51,11 +51,7 @@ TEST_CASE("Input reading using GetKw for an input file for a restart cavity",
   int CODATAyear = 2010;
   std::string cavityType = "RESTART";
   std::string cavFilename = "cavity.npz";
-  int patchLevel = 2;
-  double coarsity = 0.5;
   double area = 0.3;
-  double minDistance = 0.1;
-  int derOrder = 4;
   bool scaling = true;
   std::string radiiSet = "BONDI";
   double minimalRadius = 100.0;
@@ -63,7 +59,6 @@ TEST_CASE("Input reading using GetKw for an input file for a restart cavity",
   std::string mode = "IMPLICIT";
   std::string solvent = "Water"; // Name in the Solvent object
   std::string solverType = "IEFPCM";
-  int equationType = 1;
   double correction = 0.0;
   bool hermitivitize = true;
   double probeRadius = 1.385 * angstromToBohr(); // The value for water
@@ -74,19 +69,14 @@ TEST_CASE("Input reading using GetKw for an input file for a restart cavity",
   REQUIRE(CODATAyear == parsedInput.CODATAyear());
   REQUIRE(cavityType == parsedInput.cavityParams().cavityType);
   REQUIRE(cavFilename == parsedInput.cavityParams().filename);
-  REQUIRE(patchLevel == parsedInput.cavityParams().patchLevel);
-  REQUIRE(coarsity == Approx(parsedInput.cavityParams().coarsity));
   REQUIRE(area == Approx(parsedInput.cavityParams().area));
-  REQUIRE(minDistance == Approx(parsedInput.cavityParams().minDistance));
   REQUIRE(diagonalScaling == Approx(parsedInput.integratorScaling()));
-  REQUIRE(derOrder == parsedInput.cavityParams().derOrder);
   REQUIRE(scaling == parsedInput.scaling());
   REQUIRE(radiiSet == parsedInput.radiiSet());
   REQUIRE(minimalRadius == Approx(parsedInput.cavityParams().minimalRadius));
   REQUIRE(mode == parsedInput.mode());
   REQUIRE(solvent == parsedInput.solvent().name);
   REQUIRE(solverType == parsedInput.solverParams().solverType);
-  REQUIRE(equationType == parsedInput.equationType());
   REQUIRE(correction == Approx(parsedInput.correction()));
   REQUIRE(hermitivitize == parsedInput.hermitivitize());
   REQUIRE(probeRadius == Approx(parsedInput.cavityParams().probeRadius));

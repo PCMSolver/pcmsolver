@@ -37,19 +37,14 @@ struct SolverData {
   std::string solverType;
   /*! The correction factor to be use in a CPCM calculation */
   double correction;
-  /*! The type of integral equation to solve, relevant only for wavelet solvers */
-  int integralEquation;
   /*! Triggers hermitivitization of the PCM matrix obtained by collocation */
   bool hermitivitize;
   /*! Whether the structure was initialized with user input or not */
   bool empty;
 
   SolverData() { empty = true; }
-  SolverData(const std::string & type, double corr, int int_eq = 1, bool symm = true)
-      : solverType(type),
-        correction(corr),
-        integralEquation(int_eq),
-        hermitivitize(symm) {
+  SolverData(const std::string & type, double corr, bool symm = true)
+      : solverType(type), correction(corr), hermitivitize(symm) {
     empty = false;
   }
 };

@@ -49,9 +49,8 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
   Input parsedInput = Input(filename);
   std::string units = "ANGSTROM";
   int CODATAyear = 1998;
-  std::string type = "WAVELET";
-  int patchLevel = 1;
-  double coarsity = 0.3;
+  std::string cavityType = "GEPOL";
+  double area = 0.3 * angstrom2ToBohr2();
   bool scaling = true;
   double diagonalScaling = 1.07;
   std::string radiiSet = "BONDI";
@@ -69,9 +68,8 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
   spheres.push_back(sph1);
   spheres.push_back(sph2);
   spheres.push_back(sph3);
-  std::string solverType = "WAVELET";
-  int equationType = 0;
-  double probeRadius = 1.385 * angstromToBohr(); // The value for water
+  std::string solverType = "IEFPCM";
+  double probeRadius = 1.5 * angstromToBohr(); // The value for water
   std::string greenInsideType = "VACUUM_NUMERICAL";
   std::string greenOutsideType = "SPHERICALDIFFUSE_NUMERICAL_ERF";
   double epsilonInside = 1.0;
@@ -86,9 +84,8 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
 
   REQUIRE(units == parsedInput.units());
   REQUIRE(CODATAyear == parsedInput.CODATAyear());
-  REQUIRE(type == parsedInput.cavityParams().cavityType);
-  REQUIRE(patchLevel == parsedInput.cavityParams().patchLevel);
-  REQUIRE(coarsity == Approx(parsedInput.cavityParams().coarsity));
+  REQUIRE(cavityType == parsedInput.cavityParams().cavityType);
+  REQUIRE(area == Approx(parsedInput.cavityParams().area));
   REQUIRE(scaling == parsedInput.scaling());
   REQUIRE(radiiSet == parsedInput.radiiSet());
   REQUIRE(mode == parsedInput.mode());
@@ -100,7 +97,6 @@ TEST_CASE("Input reading using GetKw for an input file for a diffuse environment
     REQUIRE(spheres[i].radius == Approx(parsedInput.spheres(i).radius));
   }
   REQUIRE(solverType == parsedInput.solverParams().solverType);
-  REQUIRE(equationType == parsedInput.equationType());
   REQUIRE(probeRadius == Approx(parsedInput.cavityParams().probeRadius));
   REQUIRE(greenInsideType == parsedInput.insideGreenParams().greensFunctionType);
   REQUIRE(greenOutsideType ==

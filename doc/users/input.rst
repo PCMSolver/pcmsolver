@@ -128,8 +128,7 @@ Cavity section keywords
      * **Default**: empty string
 
    Area
-     Average area (weight) of the surface partition for the GePol (TsLess)
-     cavity.
+     Average area (weight) of the surface partition for the GePol cavity.
 
      * **Type**: double
      * **Valid values**: :math:`d \geq 0.01\,\text{a.u.}^2`

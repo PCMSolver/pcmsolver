@@ -43,23 +43,11 @@ struct CavityData {
   double area;
   /*! The radius of the spherical probe representing the solvent */
   double probeRadius;
-  /*! The minimal distance between two sampling points on different spheres. Relevant
-   * for TsLessCavity */
-  double minDistance;
-  /*! The maximum derivative order to be used in the definition of the smoothing
-   * function. Relevant for TsLessCavity */
-  int derOrder;
   /*! Triggers the addition of spheres not centered on atoms, relevant for
    * GePolCavity */
   double minimalRadius;
-  /*! Patch level, relevant for WaveletCavity */
-  int patchLevel;
-  /*! Relevant for WaveletCavity */
-  double coarsity;
   /*! Name of the .npz file containing the cavity specification for a restart */
   std::string filename;
-  /*! Name of the text file with list of points for a wavelet cavityr restart */
-  std::string dyadicFile;
   /*! Whether the structure was initialized with user input or not */
   bool empty;
 
@@ -68,24 +56,14 @@ struct CavityData {
              const Molecule & _molec,
              double _area,
              double _probeRadius,
-             double _minDistance,
-             int _derOrder,
              double _minRadius,
-             int _patchLevel,
-             double _coarsity,
-             const std::string & _fname,
-             const std::string & _dyad)
+             const std::string & _fname)
       : cavityType(type),
         molecule(_molec),
         area(_area),
         probeRadius(_probeRadius),
-        minDistance(_minDistance),
-        derOrder(_derOrder),
         minimalRadius(_minRadius),
-        patchLevel(_patchLevel),
-        coarsity(_coarsity),
-        filename(_fname),
-        dyadicFile(_dyad) {
+        filename(_fname) {
     empty = false;
   }
 };

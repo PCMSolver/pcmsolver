@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -40,22 +40,21 @@ using pcm::Input;
 using pcm::utils::Sphere;
 
 /*! \class Input
- *  \test \b Input_TsLess tests input reading on an input file parsed by pcmsolver.py
+ *  \test \b Input_CPCM tests input reCPCMading on an input file parsed by
+ * pcmsolver.py
  */
-TEST_CASE("Input reading using GetKw for an input file for a TsLess cavity",
-          "[input][input_tsless]") {
-  std::string filename = "@tsless.inp";
+TEST_CASE("Input reading using GetKw for an input file for a CPCM solver",
+          "[input][input_cpcm]") {
+  std::string filename = "@cpcm.inp";
   Input parsedInput = Input(filename);
   std::string units = "ANGSTROM";
   int CODATAyear = 2002;
-  std::string cavityType = "TSLESS";
+  std::string type = "GEPOL";
   double area = 0.6 * angstrom2ToBohr2();
-  double minDistance = 5.0 * angstromToBohr();
-  int derOrder = 25;
   bool scaling = false;
   double diagonalScaling = 1.0694;
   std::string radiiSet = "UFF";
-  double minimalRadius = 0.1 * angstromToBohr();
+  double minimalRadius = 0.3 * angstromToBohr();
   std::string mode = "ATOMS";
   std::vector<int> atoms;
   std::vector<double> radii;
@@ -75,10 +74,8 @@ TEST_CASE("Input reading using GetKw for an input file for a TsLess cavity",
 
   REQUIRE(units == parsedInput.units());
   REQUIRE(CODATAyear == parsedInput.CODATAyear());
-  REQUIRE(cavityType == parsedInput.cavityParams().cavityType);
+  REQUIRE(type == parsedInput.cavityParams().cavityType);
   REQUIRE(area == Approx(parsedInput.cavityParams().area));
-  REQUIRE(minDistance == Approx(parsedInput.cavityParams().minDistance));
-  REQUIRE(derOrder == parsedInput.cavityParams().derOrder);
   REQUIRE(scaling == parsedInput.scaling());
   REQUIRE(diagonalScaling == Approx(parsedInput.integratorScaling()));
   REQUIRE(radiiSet == parsedInput.radiiSet());

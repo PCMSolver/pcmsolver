@@ -26,14 +26,16 @@
 #include <algorithm>
 #include <cctype>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include "Config.hpp"
+#include <sys/types.h>
+#include <unistd.h>
 
-#include <boost/format.hpp>
+#include "Config.hpp"
 
 #include <Eigen/Core>
 
@@ -169,7 +171,7 @@ void GePolCavity::build(const std::string & suffix,
   int gen3 = molecule_.pointGroup().generators(2);
 
   std::stringstream pedra;
-  pedra << "PEDRA.OUT_" << suffix << "_" << ::getpid();
+  pedra << "PEDRA.OUT_" << suffix << "_" << getpid();
   int len_f_pedra = std::strlen(pedra.str().c_str());
   // Go PEDRA, Go!
   TIMER_ON("GePolCavity::generatecavity_cpp");
@@ -342,7 +344,7 @@ void GePolCavity::build(const std::string & suffix,
 
 void GePolCavity::writeOFF(const std::string & suffix) {
   std::stringstream off;
-  off << "cavity.off_" << suffix << "_" << ::getpid();
+  off << "cavity.off_" << suffix << "_" << getpid();
 
   std::ofstream fout;
   fout.open(off.str().c_str());
@@ -359,23 +361,26 @@ void GePolCavity::writeOFF(const std::string & suffix) {
   Eigen::MatrixXi ivts = Eigen::MatrixXi::Zero(nElements_, 10);
   for (PCMSolverIndex i = 0; i < nElements_; ++i) {
     if (i == 0)
-      fout << boost::format("# Sphere number %i\n") % elements_[i].iSphere();
+      fout << "# Sphere number " << elements_[i].iSphere() << std::endl;
     c1 = 1.0;
     c2 = 1.0;
     c3 = 1.0;
     for (int j = 0; j < elements_[i].nVertices(); ++j) {
       ivts(i, j) = k;
       k = k + 1;
-      fout << boost::format("%20.14f\t%20.14f\t%20.14f\t%1.3f\t%1.3f\t%1.3f\t%1.3f  "
-                            " # Tess %i\n") %
-                  elements_[i].vertices()(0, j) % elements_[i].vertices()(1, j) %
-                  elements_[i].vertices()(2, j) % c1 % c2 % c3 % 0.75 % (i + 1);
+      fout << std::fixed << std::left << std::setfill('0') << std::setprecision(14)
+           << elements_[i].vertices()(0, j) << "    "
+           << elements_[i].vertices()(1, j) << "    "
+           << elements_[i].vertices()(2, j) << "    " << std::fixed << std::left
+           << std::setfill('0') << std::setprecision(4) << c1 << "    " << c2
+           << "    " << c3 << "    " << 0.75 << "  "
+           << " # Tess " << (i + 1) << std::endl;
     }
   }
   for (PCMSolverIndex i = 0; i < nElements_; ++i) {
-    fout << boost::format("%i ") % elements_[i].nVertices();
+    fout << elements_[i].nVertices() << " ";
     for (int j = 0; j < elements_[i].nVertices(); ++j) {
-      fout << boost::format("%i ") % ivts(i, j);
+      fout << ivts(i, j) << " ";
     }
     fout << std::endl;
   }
@@ -399,26 +404,26 @@ std::ostream & GePolCavity::printCavity(std::ostream & os) {
   os << "-------- ---- -------- ------- -----------  -----------  -----------\n";
   // Print original set of spheres
   int original = nSpheres_ - addedSpheres;
+  Eigen::IOFormat CleanFmt(6, Eigen::DontAlignCols, "     ", "\n", "", "");
   for (int i = 0; i < original; ++i) {
-    os << boost::format("%4i") % (i + 1);
-    os << boost::format("      %s") % molecule_.atoms()[i].symbol;
-    os << boost::format("%10.4f") % (molecule_.atoms()[i].radius);
-    os << boost::format("   %1.2f   ") % (molecule_.atoms()[i].radiusScaling);
-    os << boost::format("%10.6f  ") % (molecule_.geometry(0, i) * bohrToAngstrom());
-    os << boost::format(" %10.6f  ") % (molecule_.geometry(1, i) * bohrToAngstrom());
-    os << boost::format(" %10.6f  ") % (molecule_.geometry(2, i) * bohrToAngstrom());
+    os << std::setw(4) << i + 1;
+    os << "      " << molecule_.atoms()[i].symbol << "    ";
+    os << std::fixed << std::setprecision(4) << molecule_.atoms()[i].radius;
+    os << std::fixed << std::setprecision(2) << "   "
+       << molecule_.atoms()[i].radiusScaling << "     ";
+    os << (molecule_.geometry().col(i).transpose() * bohrToAngstrom())
+              .format(CleanFmt);
     os << std::endl;
   }
   // Print added spheres
   for (int j = 0; j < addedSpheres; ++j) {
     int idx = original + j;
-    os << boost::format("%4i") % (idx + 1);
-    os << boost::format("      %s") % "Du";
-    os << boost::format("%9.4f") % (sphereRadius_(idx) * bohrToAngstrom());
-    os << boost::format("   %1.2f   ") % 1.00;
-    os << boost::format("%10.6f  ") % (sphereCenter_(0, idx) * bohrToAngstrom());
-    os << boost::format(" %10.6f  ") % (sphereCenter_(1, idx) * bohrToAngstrom());
-    os << boost::format(" %10.6f  ") % (sphereCenter_(2, idx) * bohrToAngstrom());
+    os << std::setw(4) << idx + 1;
+    os << "      Du    ";
+    os << std::fixed << std::setprecision(4)
+       << sphereRadius_(idx) * bohrToAngstrom();
+    os << std::fixed << std::setprecision(2) << "   1.00";
+    os << (sphereCenter_.col(idx).transpose() * bohrToAngstrom()).format(CleanFmt);
     os << std::endl;
   }
   return os;

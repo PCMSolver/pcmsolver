@@ -32,8 +32,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/LU>
 
-#include <boost/math/special_functions/sign.hpp>
-
+#include "utils/MathUtils.hpp"
 #include "utils/Sphere.hpp"
 
 namespace pcm {
@@ -144,7 +143,7 @@ void tangent_and_bitangent(const Eigen::Vector3d & n_,
   M.col(0) = n_;
   M.col(1) = t_;
   M.col(2) = b_;
-  if (boost::math::sign(M.determinant()) != 1) {
+  if (utils::sign(M.determinant()) != 1) {
     PCMSOLVER_ERROR("Frenet-Serret local frame is not left-handed!");
   }
 }

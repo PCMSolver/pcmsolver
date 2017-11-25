@@ -104,6 +104,15 @@ inline bool isZero(double value, double threshold) {
  */
 inline bool numericalZero(double value) { return (isZero(value, 1.0e-14)); }
 
+/*! \fn inline int sign(T val)
+ *  \param[in] val value whose sign should be determined
+ *  \tparam    type of the parameter val
+ *
+ *  This function implements the signum function and returns the sign of the passed
+ * value: -1, 0 or 1
+ */
+template <typename T> inline int sign(T val) { return (T(0) < val) - (val < T(0)); }
+
 /*! \fn inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int
  * ntsirr, int nr_irrep)
  *  \param[out] matrix the matrix to be block-diagonalized

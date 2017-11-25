@@ -31,13 +31,12 @@
 
 // Has to be included here
 #include "InterfacesImpl.hpp"
-// Boost.Math includes
-#include <boost/math/special_functions/legendre.hpp>
 
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 #include "dielectric_profile/ProfileTypes.hpp"
+#include "utils/Legendre.hpp"
 #include "utils/MathUtils.hpp"
 
 namespace pcm {
@@ -346,7 +345,7 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
     cos_gamma = 1.0;
   if (utils::numericalZero(cos_gamma + 1))
     cos_gamma = -1.0;
-  double pl_x = boost::math::legendre_p(L, cos_gamma);
+  double pl_x = Legendre::Pn<double>(L, cos_gamma);
 
   /* Sample zeta_[L] */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;

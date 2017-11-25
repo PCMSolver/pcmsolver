@@ -148,7 +148,7 @@ def cloc_wrapper(files, ofile):
        temp.write(out)
        temp.seek(0)
        lines = temp.readlines()
-       outfile = open(ofile, 'w')
+       outfile = open(ofile, 'wb')
        outfile.writelines(lines[6:])
        outfile.close()
    finally:

@@ -57,5 +57,14 @@ Host input forwarding
 Internal details of the API
 ---------------------------
 
-.. doxygenclass:: Meddle
+.. doxygenclass:: pcm::Meddle
    :project: PCMSolver
+   :members:
+   :protected-members:
+   :private-members:
+
+.. doxygenclass:: pcm::Input
+   :project: PCMSolver
+   :members:
+   :protected-members:
+   :private-members:

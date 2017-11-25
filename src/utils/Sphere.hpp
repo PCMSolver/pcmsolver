@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -31,10 +31,11 @@
 
 #include <Eigen/Core>
 
+/*! \file Sphere.hpp */
+
 namespace pcm {
 namespace utils {
-/*! \file Sphere.hpp
- *  \struct Sphere
+/*! \struct Sphere
  *  \brief POD describing a sphere.
  *  \author Roberto Di Remigio
  *  \date 2011, 2016

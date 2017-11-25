@@ -773,7 +773,7 @@ INPUT_ENCODING         = UTF-8
 # *.md, *.mm, *.dox, *.py, *.f90, *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf,
 # *.qsf, *.as and *.js.
 
-FILE_PATTERNS          =
+FILE_PATTERNS          = *.h *.cpp *.hpp *.c
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -790,7 +790,7 @@ RECURSIVE              = YES
 
 EXCLUDE                = Python/pyparsing.py \
                          @PROJECT_SOURCE_DIR@/src/bin \
-                         @PROJECT_SOURCE_DIR@/src/metal
+                         @PROJECT_SOURCE_DIR@/src/utils/getkw
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

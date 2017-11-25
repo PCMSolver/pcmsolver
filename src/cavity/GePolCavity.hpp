@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -29,14 +29,17 @@
 
 #include "Config.hpp"
 
+/*! \file GePolCavity.hpp*/
+
 namespace pcm {
 struct CavityData;
 } // namespace pcm
 
 #include "ICavity.hpp"
 
-/*! \file GePolCavity.hpp
- *  \class GePolCavity
+namespace pcm {
+namespace cavity {
+/*! \class GePolCavity
  *  \brief A class for GePol cavity.
  *  \author Krzysztof Mozgawa, Roberto Di Remigio
  *  \date 2011, 2016
@@ -44,9 +47,6 @@ struct CavityData;
  *  This class is an interface to the Fortran code PEDRA for the generation
  *  of cavities according to the GePol algorithm.
  */
-
-namespace pcm {
-namespace cavity {
 class GePolCavity __final : public ICavity {
 public:
   GePolCavity() {}

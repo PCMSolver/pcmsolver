@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -31,6 +31,8 @@
 
 #include <Eigen/Core>
 
+/*! \file Molecule.hpp */
+
 namespace pcm {
 namespace cavity {
 class Element;
@@ -52,8 +54,7 @@ const std::string rotorTypeList[] = {"Asymmetric",
                                      "Linear",
                                      "Atom"};
 
-/*! \file Molecule.hpp
- *  \class Molecule
+/*! \class Molecule
  *  \brief Class representing a molecule or general aggregate of atoms.
  *  \author Roberto Di Remigio
  *  \date 2014

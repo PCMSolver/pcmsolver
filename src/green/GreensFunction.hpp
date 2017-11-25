@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -34,23 +34,24 @@
 #include "IGreensFunction.hpp"
 #include "utils/Stencils.hpp"
 
-/*! \file GreensFunction.hpp
- *  \class GreensFunction
+/*! \file GreensFunction.hpp */
+
+namespace pcm {
+namespace green {
+template <typename DerivativeTraits, typename ProfilePolicy>
+
+/*! \class GreensFunction
  *  \brief Templated interface for Green's functions
  *  \author Luca Frediani and Roberto Di Remigio
  *  \date 2012-2016
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  *  \tparam ProfilePolicy    dielectric profile type
  */
-
-namespace pcm {
-namespace green {
-template <typename DerivativeTraits, typename ProfilePolicy>
 class GreensFunction : public IGreensFunction {
 public:
   GreensFunction() : delta_(1.0e-04) {}
   virtual ~GreensFunction() {}
-  /**@{ Methods to sample the Green's function directional derivatives */
+  /*! @{ Methods to sample the Green's function directional derivatives */
   /*! Returns value of the directional derivative of the
    *  Greens's function for the pair of points p1, p2:
    *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot
@@ -101,9 +102,9 @@ public:
     t2[2][1] = normal_p2(2);
     return this->operator()(t1, t2)[1];
   }
-  /**@}*/
+  /*! @} */
 
-  /**@{ Methods to sample the Green's function gradients */
+  /*! @{ Methods to sample the Green's function gradients */
   /*! Returns full gradient of Greens's function for the pair of points p1, p2:
    *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
    *  Notice that this method returns the gradient with respect to the source point.
@@ -130,7 +131,7 @@ public:
             derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2))
         .finished();
   }
-  /**@}*/
+  /*! @}*/
 
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const __final __override {
@@ -187,7 +188,7 @@ class GreensFunction<Stencil, ProfilePolicy> : public IGreensFunction {
 public:
   GreensFunction() : delta_(1.0e-04) {}
   virtual ~GreensFunction() {}
-  /**@{ Methods to sample the Green's function directional derivatives */
+  /*! @{ Methods to sample the Green's function directional derivatives */
   /*! Returns value of the directional derivative of the
    *  Greens's function for the pair of points p1, p2:
    *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot
@@ -234,9 +235,9 @@ public:
         normal_p2,
         this->delta_);
   }
-  /**@}*/
+  /*! @}*/
 
-  /**@{ Methods to sample the Green's functions gradients */
+  /*! @{ Methods to sample the Green's functions gradients */
   /*! Returns full gradient of Greens's function for the pair of points p1, p2:
    *  \f$ \nabla_{\mathbf{p_1}}G(\mathbf{p}_1, \mathbf{p}_2)\f$
    *  Notice that this method returns the gradient with respect to the source point.
@@ -263,7 +264,7 @@ public:
             derivativeProbe(Eigen::Vector3d::UnitZ(), p1, p2))
         .finished();
   }
-  /**@}*/
+  /*! @}*/
 
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const __final __override {

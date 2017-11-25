@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -27,22 +27,23 @@
 
 #include "Config.hpp"
 
+/*! \file ISolver.hpp */
+
 class ICavity;
 class IGreensFunction;
+
 namespace pcm {
 class IBoundaryIntegralOperator;
 } // namespace pcm
 
-/*! \file ISolver.hpp
- *  \class ISolver
+namespace pcm {
+/*! \class ISolver
  *  \brief Abstract Base Class for solvers inheritance hierarchy.
  *  \author Luca Frediani, Roberto Di Remigio
  *  \date 2011, 2015, 2016
  *
  *  We use the Non-Virtual Interface idiom.
  */
-
-namespace pcm {
 class ISolver {
 public:
   ISolver() : built_(false), isotropic_(true) {}

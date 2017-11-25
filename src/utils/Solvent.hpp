@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -29,8 +29,12 @@
 
 #include "Config.hpp"
 
-/*! \file Solvent.hpp
- *  \struct Solvent
+/*! \file Solvent.hpp */
+
+namespace pcm {
+namespace utils {
+
+/*! \struct Solvent
  *  \brief POD describing a solvent.
  *  \author Roberto Di Remigio
  *  \date 2011, 2016
@@ -40,8 +44,6 @@
  * terms calculations.
  */
 
-namespace pcm {
-namespace utils {
 struct Solvent {
   Solvent() {}
   Solvent(const std::string & n, double es, double ed, double r)

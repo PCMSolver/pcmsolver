@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -31,6 +31,8 @@
 
 #include <Eigen/Core>
 
+/*! \file CPCMSolver.hpp */
+
 namespace pcm {
 class ICavity;
 class IGreensFunction;
@@ -40,8 +42,9 @@ struct SolverData;
 
 #include "ISolver.hpp"
 
-/*! \file CPCMSolver.hpp
- *  \class CPCMSolver
+namespace pcm {
+namespace solver {
+/*! \class CPCMSolver
  *  \brief Solver for conductor-like approximation: C-PCM (COSMO)
  *  \author Roberto Di Remigio
  *  \date 2013, 2016
@@ -52,9 +55,6 @@ struct SolverData;
  *  The S matrix is already scaled by the dielectric factor entering the
  *  definition of the conductor model!
  */
-
-namespace pcm {
-namespace solver {
 class CPCMSolver : public ISolver {
 public:
   CPCMSolver() {}

@@ -93,9 +93,9 @@ source_parsers = {
 master_doc = 'index'
 
 # General information about the project.
-project = u'PCMSolver'
-copyright = u'2015, Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa'
-author = u'Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa'
+project = 'PCMSolver'
+copyright = '2015, Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa'
+author = 'Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -277,8 +277,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'PCMSolver.tex', u'PCMSolver Documentation',
-   u'Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa', 'manual'),
+  (master_doc, 'PCMSolver.tex', 'PCMSolver Documentation',
+   'Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -307,7 +307,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pcmsolver', u'PCMSolver Documentation',
+    (master_doc, 'pcmsolver', 'PCMSolver Documentation',
      [author], 1)
 ]
 
@@ -321,7 +321,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'PCMSolver', u'PCMSolver Documentation',
+  (master_doc, 'PCMSolver', 'PCMSolver Documentation',
    author, 'PCMSolver', 'One line description of project.',
    'Miscellaneous'),
 ]
@@ -419,8 +419,8 @@ def configure_file(rep, fname, **kwargs):
     f = open(os.path.join(in_path, fname_in), 'r')
     filedata = f.read()
     f.close()
-    rep = dict((re.escape(k), v) for k, v in rep.iteritems())
-    pattern = re.compile("|".join(rep.keys()))
+    rep = dict((re.escape(k), v) for k, v in rep.items())
+    pattern = re.compile("|".join(list(rep.keys())))
     filedata = pattern.sub(lambda m: rep[re.escape(m.group(0))], filedata)
     fname_out = prefix + fname
     f = open(os.path.join(out_path, fname_out), 'w+')
@@ -442,9 +442,10 @@ def generate_bar_charts(mod_dir, dir_lang, savedir):
     sys.path.append(mod_dir)
     from cloc_tools import bar_chart
     # Generate scripts and list of scripts (absolute paths)
-    list_of_scripts = [bar_chart(root_dir, language, savedir) for root_dir, language in dir_lang.iteritems()]
+    list_of_scripts = [bar_chart(root_dir, language, savedir) for root_dir, language in dir_lang.items()]
     # Generate charts
-    [execfile(fname) for fname in list_of_scripts]
+    for fname in list_of_scripts:
+        exec(compile(open(fname).read(), fname, 'exec'))
 
 
 def setup(app):
@@ -462,17 +463,15 @@ def setup(app):
         project_root_dir = os.getcwd()
         project_doc_dir  = os.path.join(project_root_dir, 'doc')
         project_src_dir  = os.path.join(project_root_dir, 'src')
-    print('Project root directory {}'.format(project_root_dir))
-    print('Project doc directory {}'.format(project_doc_dir))
-    print('Project src directory {}'.format(project_src_dir))
+    print(('Project root directory {}'.format(project_root_dir)))
+    print(('Project doc directory {}'.format(project_doc_dir)))
+    print(('Project src directory {}'.format(project_src_dir)))
 
     # Clean up leftovers
     print('Clean up leftovers from previous build')
     [remove(os.path.join(project_doc_dir, x.strip())) for x in open(os.path.join(project_doc_dir, '.gitignore'))]
     # Configure Doxyfile.in
-    dot = which('dot')
-    if dot is not None:
-        dot_path = os.path.split(which('dot'))[0]
+    dot_path = os.path.split(which('dot'))[0] if which('dot') else ''
     rep = { '@PROJECT_VERSION_MAJOR@' : major,
             '@PROJECT_VERSION_MINOR@' : minor,
             '@PROJECT_VERSION_PATCH@' : patch,
@@ -495,16 +494,15 @@ def setup(app):
     configure_file(rep, 'cloc_tools.py', in_path=os.path.join(project_doc_dir, 'gfx'),
                    suffix='.in', out_path=project_doc_dir)
     # Generate directories list (full paths), remove bin using filter
-    d = filter(lambda y: y != os.path.join(project_src_dir, 'bin'),
-            [os.path.join(root, x) for root, dirs, _ in os.walk(project_src_dir) for x in dirs])
+    d = [y for y in [os.path.join(root, x) for root, dirs, _ in os.walk(project_src_dir) for x in dirs] if y != os.path.join(project_src_dir, 'bin')]
     # Remove 'CMakeLists.txt' from sublists using filter
-    f = [filter(lambda z: not z.endswith('.mod'), filter(lambda y: y != 'CMakeLists.txt', filter(lambda x: os.path.isfile(os.path.join(l, x)), os.listdir(l)))) for l in d]
+    f = [[z for z in [y for y in [x for x in os.listdir(l) if os.path.isfile(os.path.join(l, x))] if y != 'CMakeLists.txt'] if not z.endswith('.mod')] for l in d]
     # Take first element in each sublist
     f = [x[0] for x in f]
     # Apply map to get language name
     l = [get_lexer_for_filename(x).name for x in f]
     # Finally zip d and f into the dir_lang dictionary
-    dir_lang = dict(zip(d, l))
+    dir_lang = dict(list(zip(d, l)))
     generate_bar_charts(project_doc_dir, dir_lang, project_doc_dir)
 
     if (os.environ.get('READTHEDOCS', None) == 'True'):

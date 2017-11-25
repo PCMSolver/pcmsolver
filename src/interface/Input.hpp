@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -30,6 +30,11 @@
 
 #include "utils/getkw/Getkw.h"
 
+/*! \file Input.hpp */
+
+/*! \struct PCMInput
+ */
+
 struct PCMInput;
 
 namespace pcm {
@@ -49,8 +54,7 @@ using utils::ChargeDistribution;
 using utils::Solvent;
 using utils::Sphere;
 
-/*! \file Input.hpp
- *  \class Input
+/*! \class Input
  *  \brief A wrapper class for the Getkw Library C++ bindings.
  *  \author Roberto Di Remigio
  *  \date 2013

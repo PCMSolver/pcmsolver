@@ -14,7 +14,7 @@ generic Factory class.
 IGreensFunction
 ---------------
 
-.. doxygenclass:: IGreensFunction
+.. doxygenclass:: pcm::IGreensFunction
    :project: PCMSolver
    :members:
    :protected-members:
@@ -22,7 +22,7 @@ IGreensFunction
 
 GreensFunction
 --------------
-.. doxygenclass:: GreensFunction
+.. doxygenclass:: pcm::green::GreensFunction
    :project: PCMSolver
    :members:
    :protected-members:
@@ -30,7 +30,7 @@ GreensFunction
 
 Vacuum
 ------
-.. doxygenclass:: Vacuum
+.. doxygenclass:: pcm::green::Vacuum
    :project: PCMSolver
    :members:
    :protected-members:
@@ -38,7 +38,7 @@ Vacuum
 
 UniformDielectric
 -----------------
-.. doxygenclass:: UniformDielectric
+.. doxygenclass:: pcm::green::UniformDielectric
    :project: PCMSolver
    :members:
    :protected-members:
@@ -46,7 +46,7 @@ UniformDielectric
 
 IonicLiquid
 -----------
-.. doxygenclass:: IonicLiquid
+.. doxygenclass:: pcm::green::IonicLiquid
    :project: PCMSolver
    :members:
    :protected-members:
@@ -54,7 +54,7 @@ IonicLiquid
 
 AnisotropicLiquid
 -----------------
-.. doxygenclass:: AnisotropicLiquid
+.. doxygenclass:: pcm::green::AnisotropicLiquid
    :project: PCMSolver
    :members:
    :protected-members:
@@ -62,7 +62,7 @@ AnisotropicLiquid
 
 SphericalDiffuse
 ----------------
-.. doxygenclass:: SphericalDiffuse
+.. doxygenclass:: pcm::green::SphericalDiffuse
    :project: PCMSolver
    :members:
    :protected-members:

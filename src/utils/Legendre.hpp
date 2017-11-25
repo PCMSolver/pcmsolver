@@ -22,8 +22,8 @@
  */
 
 //==================================================================
-/**
- *  legendre.h -- C++ functions to evaluate Legendre polynomials
+/*
+ *  Legendre.hpp -- C++ functions to evaluate Legendre polynomials
  *
  *  Copyright (C) 2014 by James A. Chappell
  *

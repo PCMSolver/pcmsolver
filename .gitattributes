@@ -49,7 +49,7 @@ src/utils/*.hpp           licensefile=.githooks/LICENSE-C++
 src/utils/*.cpp           licensefile=.githooks/LICENSE-C++
 src/utils/cnpy.hpp        !licensefile
 src/utils/cnpy.cpp        !licensefile
-src/utils/legendre.h      !licensefile
+src/utils/Legendre.hpp    !licensefile
 
 # tests
 tests/unit_tests.cpp             licensefile=.githooks/LICENSE-C++

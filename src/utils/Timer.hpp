@@ -24,17 +24,17 @@
 #pragma once
 
 #include <fstream>
+#include <map>
 #include <string>
 #include <utility>
 
 #include "Cxx11Workarounds.hpp"
 
-#include <boost/container/flat_map.hpp>
 #include <boost/foreach.hpp>
 
 namespace timer {
 typedef pcm::tuple<double, double> timing;
-typedef boost::container::flat_map<std::string, timing> TimingsMap;
+typedef std::map<std::string, timing> TimingsMap;
 typedef std::pair<std::string, timing> TimingsPair;
 
 timing get_timing();

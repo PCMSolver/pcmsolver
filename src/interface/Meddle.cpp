@@ -32,7 +32,9 @@
 
 #include <Eigen/Core>
 
+#ifndef HAS_CXX11
 #include <boost/foreach.hpp>
+#endif
 
 #include "bi_operators/BIOperatorData.hpp"
 #include "bi_operators/BoundaryIntegralOperator.hpp"
@@ -330,8 +332,12 @@ void pcmsolver_save_surface_functions(pcmsolver_context_t * context) {
 }
 void pcm::Meddle::saveSurfaceFunctions() const {
   hostWriter_("\nDumping surface functions to .npy files");
-  BOOST_FOREACH (SurfaceFunctionPair pair, functions_) {
-    cnpy::custom::npy_save(pair.first + ".npy", pair.second);
+#ifdef HAS_CXX11
+  for (auto sf_pair : functions_) {
+#else  /* HAS_CXX11 */
+  BOOST_FOREACH (SurfaceFunctionPair sf_pair, functions_) {
+#endif /* HAS_CXX11 */
+    cnpy::custom::npy_save(sf_pair.first + ".npy", sf_pair.second);
   }
 }
 

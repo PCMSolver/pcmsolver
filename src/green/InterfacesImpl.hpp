@@ -30,8 +30,10 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
-#include <boost/foreach.hpp>
 
+#ifndef HAS_CXX11
+#include <boost/foreach.hpp>
+#endif
 // Boost.Odeint includes
 #include <boost/numeric/odeint.hpp>
 
@@ -347,10 +349,14 @@ private:
         -parms.observer_step_,
         pcm::bind(
             &Omega<StateVariable, ODESystem>::push_back, this, pcm::_1, pcm::_2));
-    // Reverse order of StateVariable-s in RadialSolution
-    // this ensures that they are in ascending order, as later expected by
-    // function_impl and derivative_impl
+// Reverse order of StateVariable-s in RadialSolution
+// this ensures that they are in ascending order, as later expected by
+// function_impl and derivative_impl
+#ifdef HAS_CXX11
+    for (auto & comp : function_) {
+#else  /* HAS_CXX11 */
     BOOST_FOREACH (StateVariable & comp, function_) {
+#endif /* HAS_CXX11 */
       std::reverse(comp.begin(), comp.end());
     }
   }

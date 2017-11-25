@@ -89,7 +89,7 @@ public:
    */
   virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
                                  const Eigen::Vector3d & p1,
-                                 const Eigen::Vector3d & p2) const {
+                                 const Eigen::Vector3d & p2) const __final {
     DerivativeTraits t1[3], t2[3];
     t1[0] = p1(0);
     t1[1] = p1(1);

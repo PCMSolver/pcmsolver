@@ -70,6 +70,11 @@ using std::array;
 namespace pcm {
 using std::to_string;
 } /* end namespace pcm */
+/* <cmath> workarounds */
+#include <cmath>
+namespace pcm {
+using std::erf;
+} /* end namespace pcm */
 #else /* HAS_CXX11*/
 /* Smart pointers workarounds */
 #include <boost/make_shared.hpp>
@@ -110,6 +115,11 @@ namespace pcm {
 template <typename Source> std::string to_string(const Source & arg) {
   return boost::lexical_cast<std::string>(arg);
 }
+/* <cmath> workarounds */
+#include <boost/math/special_functions/erf.hpp>
+namespace pcm {
+using boost::math::erf;
+} /* end namespace pcm */
 } /* end namespace pcm */
 #endif /* HAS_CXX11 */
 

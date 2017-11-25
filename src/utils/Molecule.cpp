@@ -32,8 +32,6 @@
 
 #include "Config.hpp"
 
-#include <boost/format.hpp>
-
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 
@@ -255,14 +253,13 @@ Molecule & Molecule::operator=(const Molecule & other) {
 
 std::ostream & operator<<(std::ostream & os, const Molecule & m) {
   if (m.nAtoms_ != 0) {
+    Eigen::IOFormat CleanFmt(6, Eigen::DontAlignCols, " ", "\n", "", "");
     os << "                 Geometry (in Angstrom)" << std::endl;
     os << "   Center            X             Y             Z     \n";
     os << "------------   ------------  ------------  ------------\n";
     for (size_t i = 0; i < m.nAtoms_; ++i) {
-      os << boost::format("%|=12s|") % m.atoms_[i].symbol;
-      os << boost::format("   %10.6f  ") % (m.geometry_(0, i) * bohrToAngstrom());
-      os << boost::format("  %10.6f  ") % (m.geometry_(1, i) * bohrToAngstrom());
-      os << boost::format("  %10.6f  ") % (m.geometry_(2, i) * bohrToAngstrom());
+      os << std::setw(12) << m.atoms_[i].symbol;
+      os << (m.geometry_.col(i).transpose() * bohrToAngstrom()).format(CleanFmt);
       os << std::endl;
     }
     os << "Rotor type: " << rotorTypeList[m.rotor_];

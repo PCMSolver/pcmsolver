@@ -28,7 +28,7 @@ first step:
    1. if your new subdirectory contains header files, add a line like
    the following to the ``CMakeLists.txt`` file contained in the ``src`` directory:
 
-   .. code-block:: cmake
+   .. code-block:: bash
 
       ${CMAKE_CURRENT_LIST_DIR}/subdir_name
 

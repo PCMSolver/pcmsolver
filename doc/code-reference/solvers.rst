@@ -12,7 +12,7 @@ implemented through the generic Factory class.
 
 ISolver
 -------
-.. doxygenclass:: ISolver
+.. doxygenclass:: pcm::ISolver
    :project: PCMSolver
    :members:
    :protected-members:
@@ -20,7 +20,7 @@ ISolver
 
 IEFSolver
 ---------
-.. doxygenclass:: IEFSolver
+.. doxygenclass:: pcm::solver::IEFSolver
    :project: PCMSolver
    :members:
    :protected-members:
@@ -28,7 +28,7 @@ IEFSolver
 
 CPCMSolver
 ----------
-.. doxygenclass:: CPCMSolver
+.. doxygenclass:: pcm::solver::CPCMSolver
    :project: PCMSolver
    :members:
    :protected-members:

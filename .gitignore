@@ -32,6 +32,7 @@
 
 # Python stuff
 *.pyc
+.venv
 
 # Autocmake stuff
 cmake/lib/*.pyc

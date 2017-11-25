@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -29,14 +29,15 @@
 
 #include <Eigen/Core>
 
+/*! \file ChargeDistribution.hpp */
+
 namespace pcm {
 class Molecule;
 } // namespace pcm
 
 namespace pcm {
 namespace utils {
-/*! \file ChargeDistribution.hpp
- *  \struct ChargeDistribution
+/*!  \struct ChargeDistribution
  *  \brief POD representing a classical charge distribution
  *  \author Roberto Di Remigio
  *  \date 2016

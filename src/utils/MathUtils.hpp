@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -40,6 +40,8 @@
 #include "SplineFunction.hpp"
 #include "Symmetry.hpp"
 #include "cnpy.hpp"
+
+/*! \file MathUtils.hpp */
 
 namespace pcm {
 namespace utils {
@@ -334,10 +336,6 @@ inline void print_eigen_matrix(const Eigen::MatrixBase<Derived> & matrix,
 } // namespace pcm
 
 namespace cnpy {
-/*!
- *  \addtogroup custom
- *  @{
- */
 /*! Custom overloads for cnpy load and save functions */
 namespace custom {
 /*! \brief Save Eigen object to NumPy array file
@@ -412,5 +410,4 @@ inline Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> npy_load(
   return npy_to_eigen<Scalar>(cnpy::npy_load(fname));
 }
 } // namespace custom
-/*! @} */
 } // namespace cnpy

@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -29,10 +29,13 @@
 
 #include <Eigen/Core>
 
+/*! \file SphericalDiffuse.hpp */
+
 namespace pcm {
 namespace cavity {
 class Element;
 } // namespace cavity
+
 namespace dielectric_profile {
 class OneLayerTanh;
 } // namespace dielectric_profile
@@ -42,8 +45,11 @@ class OneLayerTanh;
 #include "GreensFunction.hpp"
 #include "InterfacesImpl.hpp"
 
-/*! \file SphericalDiffuse.hpp
- *  \class SphericalDiffuse
+namespace pcm {
+namespace green {
+template <typename ProfilePolicy = dielectric_profile::OneLayerTanh>
+
+/*! \class SphericalDiffuse
  *  \brief Green's function for a diffuse interface with spherical symmetry
  *  \author Hui Cao, Ville Weijo, Luca Frediani and Roberto Di Remigio
  *  \date 2010-2015
@@ -65,10 +71,6 @@ class OneLayerTanh;
  *  system. Whenever the public methods are invoked to "sample" the Green's function
  *  at a pair of points, a translation of the sampling points is performed first.
  */
-
-namespace pcm {
-namespace green {
-template <typename ProfilePolicy = dielectric_profile::OneLayerTanh>
 class SphericalDiffuse __final : public GreensFunction<Stencil, ProfilePolicy> {
 public:
   /*! Constructor for a one-layer interface
@@ -200,7 +202,7 @@ private:
   /*! Center of the dielectric sphere */
   Eigen::Vector3d origin_;
 
-  /**@{ Parameters and functions for the calculation of the Green's function,
+  /*! @{ Parameters and functions for the calculation of the Green's function,
    * including Coulomb singularity */
   /*! Maximum angular momentum in the __final summation over Legendre polynomials to
    * obtain G */
@@ -228,9 +230,9 @@ private:
                                       const Eigen::Vector3d & sp,
                                       const Eigen::Vector3d & pp,
                                       double Cr12) const;
-  /**@}*/
+  /*! @}*/
 
-  /**@{ Parameters and functions for the calculation of the Coulomb singularity
+  /*! @{ Parameters and functions for the calculation of the Coulomb singularity
    * separation coefficient */
   /*! Maximum angular momentum to obtain C(r, r'), needed to separate the Coulomb
    * singularity */
@@ -253,7 +255,7 @@ private:
    */
   double coefficient_impl(const Eigen::Vector3d & sp,
                           const Eigen::Vector3d & pp) const;
-  /**@}*/
+  /*! @}*/
 };
 
 namespace detail {

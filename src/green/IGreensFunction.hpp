@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -30,6 +30,8 @@
 
 #include <Eigen/Core>
 
+/*! \file IGreensFunction.hpp */
+
 namespace pcm {
 namespace cavity {
 class Element;
@@ -37,28 +39,6 @@ class Element;
 } // namespace pcm
 
 #include "dielectric_profile/ProfileTypes.hpp"
-
-/*! \file IGreensFunction.hpp
- *  \class IGreensFunction
- *  \brief Interface for Green's function classes
- *  \author Luca Frediani and Roberto Di Remigio
- *  \date 2012-2016
- *
- *  We **define** as _Green's function_ a function:
- *  \f[
- *      G(\mathbf{r}, \mathbf{r}^\prime) : \mathbb{R}^6 \rightarrow \mathbb{R}
- *  \f]
- *  Green's functions and their directional derivatives appear as kernels of
- *  the \f$\mathcal{S}\f$ and \f$\mathcal{D}\f$ integral operators.
- *  Forming the matrix representation of these operators requires performing
- *  integrations over surface finite elements.
- *  Since these Green's functions present a Coulombic divergence, the diagonal
- *  elements of the operators will diverge unless appropriately formulated.
- *  This is possible, but requires **explicit** access to the _subtype_
- *  of this abstract base object.
- *  This justifies the need for the singleLayer and doubleLayer functions.
- *  The code uses the Non-Virtual Interface (NVI) idiom.
- */
 
 namespace pcm {
 using cavity::Element;
@@ -85,11 +65,31 @@ typedef pcm::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &)>
     DerivativeProbe;
 
+/*! \class IGreensFunction
+ *  \brief Interface for Green's function classes
+ *  \author Luca Frediani and Roberto Di Remigio
+ *  \date 2012-2016
+ *
+ *  We **define** as _Green's function_ a function:
+ *  \f[
+ *      G(\mathbf{r}, \mathbf{r}^\prime) : \mathbb{R}^6 \rightarrow \mathbb{R}
+ *  \f]
+ *  Green's functions and their directional derivatives appear as kernels of
+ *  the \f$\mathcal{S}\f$ and \f$\mathcal{D}\f$ integral operators.
+ *  Forming the matrix representation of these operators requires performing
+ *  integrations over surface finite elements.
+ *  Since these Green's functions present a Coulombic divergence, the diagonal
+ *  elements of the operators will diverge unless appropriately formulated.
+ *  This is possible, but requires **explicit** access to the _subtype_
+ *  of this abstract base object.
+ *  This justifies the need for the singleLayer and doubleLayer functions.
+ *  The code uses the Non-Virtual Interface (NVI) idiom.
+ */
 class IGreensFunction {
 public:
   virtual ~IGreensFunction() {}
 
-  /**@{ Methods to sample the Green's function and its probe point directional
+  /*! @{ Methods to sample the Green's function and its probe point directional
    * derivative */
   /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e.
    * the value of the
@@ -120,7 +120,7 @@ public:
                  const Eigen::Vector3d & p2) const {
     return kernelD_impl(direction, p1, p2);
   }
-  /**@}*/
+  /*! @}*/
 
   KernelS exportKernelS() const { return exportKernelS_impl(); }
   KernelD exportKernelD() const { return exportKernelD_impl(); }
@@ -133,7 +133,7 @@ public:
   /*! Returns a dielectric permittivity profile */
   virtual Permittivity permittivity() const = 0;
 
-  /**@{ Methods to compute the diagonal of the matrix representation of the S and D
+  /*! @{ Methods to compute the diagonal of the matrix representation of the S and D
    *    operators by approximate collocation. */
   /*! Calculates an element on the diagonal of the matrix representation of the
    * S operator using an approximate collocation formula.
@@ -154,14 +154,14 @@ public:
   double doubleLayer(const Element & e, double factor) const {
     return doubleLayer_impl(e, factor);
   }
-  /**@}*/
+  /*! @}*/
 
   friend std::ostream & operator<<(std::ostream & os, IGreensFunction & gf) {
     return gf.printObject(os);
   }
 
 protected:
-  /**@{ Methods to sample the Green's function and its probe point directional
+  /*! @{ Methods to sample the Green's function and its probe point directional
    * derivative */
   /*! Returns value of the kernel of the \f$\mathcal{S}\f$ integral operator, i.e.
    * the value of the
@@ -187,13 +187,13 @@ protected:
   virtual double kernelD_impl(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1,
                               const Eigen::Vector3d & p2) const = 0;
-  /**@}*/
+  /*! @}*/
 
   virtual KernelS exportKernelS_impl() const = 0;
   virtual KernelD exportKernelD_impl() const = 0;
   virtual DerivativeProbe exportDerivativeProbe_impl() const = 0;
 
-  /**@{ Methods to compute the diagonal of the matrix representation of the S and D
+  /*! @{ Methods to compute the diagonal of the matrix representation of the S and D
    *    operators by approximate collocation. */
   /*! Calculates an element on the diagonal of the matrix representation of the
    * S operator using an approximate collocation formula.
@@ -208,6 +208,7 @@ protected:
    *  \param[in] factor the scaling factor for the diagonal elements
    */
   virtual double doubleLayer_impl(const Element & e, double factor) const = 0;
+  /*! @}*/
 
   virtual std::ostream & printObject(std::ostream & os) = 0;
 };

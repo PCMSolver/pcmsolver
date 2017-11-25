@@ -12,7 +12,7 @@ implemented through the generic Factory class.
 
 ICavity
 -------
-.. doxygenclass:: ICavity
+.. doxygenclass:: pcm::ICavity
    :project: PCMSolver
    :members:
    :protected-members:
@@ -21,7 +21,7 @@ ICavity
 GePolCavity
 -----------
 
-.. doxygenclass:: GePolCavity
+.. doxygenclass:: pcm::cavity::GePolCavity
    :project: PCMSolver
    :members:
    :protected-members:
@@ -30,7 +30,7 @@ GePolCavity
 RestartCavity
 -------------
 
-.. doxygenclass:: RestartCavity
+.. doxygenclass:: pcm::cavity::RestartCavity
    :project: PCMSolver
    :members:
    :protected-members:

@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -31,17 +31,19 @@
 
 #include <Eigen/Core>
 
-/*! \file Atom.hpp
- *  \struct Atom
- *  \brief A POD describing an atom.
- *  \author Roberto Di Remigio
- *  \date 2011, 2016
- */
+/*! \file Atom.hpp */
 
 namespace pcm {
 template <typename CreateObject> class Factory;
 
 namespace utils {
+
+/*! \struct Atom
+ *  \brief A POD describing an atom.
+ *  \author Roberto Di Remigio
+ *  \date 2011, 2016
+ */
+
 struct Atom {
   Atom()
       : charge(0.0),
@@ -71,6 +73,7 @@ struct Atom {
     os << "  Position " << at.position.transpose();
     return os;
   }
+
   /*! Atomic charge */
   double charge;
   /*! Atomic mass */

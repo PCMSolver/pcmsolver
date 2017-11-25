@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -29,10 +29,13 @@
 
 #include <Eigen/Core>
 
+/*! \file UniformDielectric.hpp */
+
 namespace pcm {
 namespace cavity {
 class Element;
 } // namespace cavity
+
 namespace dielectric_profile {
 struct Uniform;
 } // namespace dielectric_profile
@@ -42,17 +45,15 @@ struct Uniform;
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 
-/*! \file UniformDielectric.hpp
- *  \class UniformDielectric
+namespace pcm {
+namespace green {
+template <typename DerivativeTraits = AD_directional>
+/*! \class UniformDielectric
  *  \brief Green's function for uniform dielectric.
  *  \author Luca Frediani and Roberto Di Remigio
  *  \date 2012-2016
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
-
-namespace pcm {
-namespace green {
-template <typename DerivativeTraits = AD_directional>
 class UniformDielectric __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Uniform> {
 public:
@@ -89,6 +90,7 @@ struct buildUniformDielectric {
   }
 };
 } // namespace detail
+
 IGreensFunction * createUniformDielectric(const GreenData & data);
 } // namespace green
 } // namespace pcm

@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -36,7 +36,6 @@
 #include <boost/mpl/vector.hpp>
 
 /*! \file ForId.hpp
- *
  *  Metafunction for fake run-time selection of template arguments.
  *  D. Langr, P.Tvrdik, T. Dytrych and J. P. Draayer
  *  "Fake Run-Time Selection of Template Arguments in C++"
@@ -420,7 +419,7 @@ struct for_id_impl<D, S1, S2, S3, E1, E2, E3, E1, E2, E3, T1, T2, T3> {
   }
 };
 
-/**@{ Wrappers to the functor */
+/*! @{ Wrappers to the functor */
 /*! Wrapper to the three-dimensional case
  *  \tparam T1 type selected from S1
  *  \tparam T2 type selected from S2
@@ -471,9 +470,9 @@ template <typename T1, typename T2, typename T3> struct ApplyFunctor<1, T1, T2, 
     return (f.template operator()<T1>(data));
   }
 };
-/**@}*/
+/*! @}*/
 
-/**@{ Wrappers to the primary template for the metafunction */
+/*! @{ Wrappers to the primary template for the metafunction */
 /*! Wrapper for the three-dimensional case.
  *  \tparam S1 type sequence 1
  *  \tparam S2 type sequence 2
@@ -531,4 +530,4 @@ template <typename S1, typename ReturnType, typename T, typename InputType>
 ReturnType * for_id(T & f, const InputType & data, int id1) {
   return for_id_impl<1, S1>::template execute<ReturnType>(f, data, id1);
 }
-/**@}*/
+/*! @}*/

@@ -5,17 +5,9 @@ Helper classes and functions
    :scale: 70 %
    :align: center
 
-Input
------
-.. doxygenclass:: Input
-   :project: PCMSolver
-   :members:
-   :protected-members:
-   :private-members:
-
 Sphere
 ------
-.. doxygenstruct:: Sphere
+.. doxygenstruct:: pcm::utils::Sphere
    :project: PCMSolver
    :members:
    :protected-members:
@@ -23,15 +15,16 @@ Sphere
 
 Atom
 ----
-.. doxygenstruct:: Atom
+.. doxygenstruct:: pcm::utils::Atom
    :project: PCMSolver
    :members:
    :protected-members:
    :private-members:
 
+
 ChargeDistribution
 ------------------
-.. doxygenstruct:: ChargeDistribution
+.. doxygenstruct:: pcm::utils::ChargeDistribution
    :project: PCMSolver
    :members:
    :protected-members:
@@ -39,7 +32,7 @@ ChargeDistribution
 
 Molecule
 --------
-.. doxygenclass:: Molecule
+.. doxygenclass:: pcm::Molecule
    :project: PCMSolver
    :members:
    :protected-members:
@@ -47,7 +40,7 @@ Molecule
 
 Solvent
 -------
-.. doxygenstruct:: Solvent
+.. doxygenstruct:: pcm::utils::Solvent
    :project: PCMSolver
    :members:
    :protected-members:

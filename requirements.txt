@@ -1,0 +1,10 @@
+breathe
+cpp-coveralls
+matplotlib
+pep8
+Pygments
+pyyaml
+recommonmark
+sphinx
+sphinx-rtd-theme
+sphinxcontrib-bibtex

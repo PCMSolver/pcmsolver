@@ -30,7 +30,9 @@
 
 #include "Cxx11Workarounds.hpp"
 
+#ifndef HAS_CXX11
 #include <boost/foreach.hpp>
+#endif
 
 namespace timer {
 typedef pcm::tuple<double, double> timing;
@@ -56,7 +58,11 @@ private:
   std::ostream & printObject(std::ostream & os) const {
     os << "            PCMSolver API timing results            " << std::endl;
     os << "----------------------------------------------------" << std::endl;
+#ifdef HAS_CXX11
+    for (auto t_pair : timings_) {
+#else  /* HAS_CXX11 */
     BOOST_FOREACH (TimingsPair t_pair, timings_) {
+#endif /* HAS_CXX11 */
       os << "Checkpoint:  " << t_pair.first << std::endl;
       os << "   Wall time: " << pcm::get<0>(t_pair.second) << " ms" << std::endl;
       os << "   CPU time:  " << pcm::get<1>(t_pair.second) << " ms" << std::endl;

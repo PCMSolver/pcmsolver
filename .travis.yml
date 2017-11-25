@@ -6,17 +6,15 @@ notifications:
   slack:
     secure: F2nQIW6SiaGdw1LjuZOlgBu8rUVMllrDG/5bhmTQP7gyETfViFBjTsHQdTle6jtdb+LudleZaG7WhdEiVcKUa834rKqDk1UOt9p6bsmgbsBZBAaxmPh01iVFhKn3ML7JLjfr1YtH7MWJcsS60cNBrohXfVKfFzNgDqZEu/llr90=
 cache:
-  ccache: true
   bundler: true
-  directories:
-  - "$HOME/.ccache"
+  ccache: true
+  pip: true
 env:
   global:
     - USE_CCACHE=1
     - CCACHE_COMPRESS=1
     - CCACHE_MAXSIZE=200M
     - CCACHE_CPP2=1
-    - MINICONDA_VER=''
 branches:
   except:
     - fix-appveyor
@@ -37,7 +35,7 @@ matrix:
         - C_COMPILER='gcc-4.6'
         - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='release'
-        - PYTHON_VER='2.7'
+        - PYTHON='python2'
         - RUN_DANGER=false
     - os: linux
       addons:
@@ -54,7 +52,7 @@ matrix:
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='release'
-        - PYTHON_VER='3.5'
+        - PYTHON='python3'
         - STATIC='--static'
         - RUN_DANGER=true
 
@@ -65,8 +63,8 @@ matrix:
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran-5'
         - BUILD_TYPE='release'
-        - PYTHON_VER='2.7'
-        - HOMEBREW_GCC='homebrew/versions/gcc5'
+        - PYTHON='python2'
+        - HOMEBREW_GCC='gcc@5'
         - STATIC='--static'
         - RUN_DANGER=false
     - os: osx
@@ -76,8 +74,8 @@ matrix:
         - C_COMPILER='gcc-6'
         - Fortran_COMPILER='gfortran-6'
         - BUILD_TYPE='release'
-        - PYTHON_VER='3.5'
-        - HOMEBREW_GCC='homebrew/versions/gcc6'
+        - PYTHON='python3'
+        - HOMEBREW_GCC='gcc@6'
         - RUN_DANGER=false
 
     - os: linux
@@ -87,7 +85,7 @@ matrix:
         - C_COMPILER='gcc-4.6'
         - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='debug'
-        - PYTHON_VER='2.7'
+        - PYTHON='python2'
         - COVERAGE='--coverage'
         - RUN_DANGER=false
   allow_failures:
@@ -98,58 +96,46 @@ matrix:
         - C_COMPILER='gcc-4.6'
         - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='debug'
-        - PYTHON_VER='2.7'
+        - PYTHON='python2'
         - COVERAGE='--coverage'
         - RUN_DANGER=false
+before_install:
+  - test -n $CC && unset CC
+  - test -n $CXX && unset CXX
+  - test -n $FC && unset FC
 install:
-- |
-  if [[ "${PYTHON_VER}" == "2.7" ]]; then
-    MINICONDA_VER='Miniconda2-latest'
-  else
-    MINICONDA_VER='Miniconda3-latest'
-  fi
-- |
-  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-    brew install cmake boost
-    brew reinstall ${HOMEBREW_GCC}
-    echo "Downloading ${MINICONDA_VER}-MacOSX-x86_64.sh"
-    wget https://repo.continuum.io/miniconda/${MINICONDA_VER}-MacOSX-x86_64.sh -O miniconda.sh;
-  else
-    echo "Downloading ${MINICONDA_VER}-Linux-x86_64.sh"
-    wget https://repo.continuum.io/miniconda/${MINICONDA_VER}-Linux-x86_64.sh -O miniconda.sh;
-  fi
-- bash miniconda.sh -b -p $HOME/miniconda
-- export PATH="$HOME/miniconda/bin:$PATH"
-- conda config --set always_yes yes --set changeps1 no
-- conda update --quiet conda
-- conda info --all
-- conda env create --quiet --file .pcmsolver-travis.yml python=$PYTHON_VER
-- source activate pcmsolver
-- conda list
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      brew update
+      brew install ${HOMEBREW_GCC} ${PYTHON} boost ccache cmake
+      pip install virtualenv --upgrade
+      export PATH="/usr/local/opt/ccache/libexec:$PATH"
+    else
+      pip install --user virtualenv --upgrade
+    fi
+  - virtualenv --python=${PYTHON} venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
 before_script:
-- python -V
-- cmake --version
-- cd ${TRAVIS_BUILD_DIR}
-- echo 'Build set up summary'
-- ${CXX_COMPILER} --version
-- ${C_COMPILER} --version
-- ${Fortran_COMPILER} --version
-- |
-  if [[ "${RUN_DANGER}" = true ]]; then
-    bundle install --gemfile=.ci/Gemfile
-  fi
+  - ./.ci/report_versions.sh
+  - cd ${TRAVIS_BUILD_DIR}
+  - echo 'Build set up summary'
+  - |
+    if [[ "${RUN_DANGER}" = true ]]; then
+      bundle install --gemfile=.ci/Gemfile
+    fi
 script:
-- |
-  if [[ "${RUN_DANGER}" = true ]]; then
-    BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile
-  fi
-- python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} --cmake-options='-Hprojects/CMake' ${STATIC} ${COVERAGE}
-- cd build
-- ../.ci/ci_build.sh
-- python ../.ci/ci_test.py ctest --output-on-failure --verbose
-- python ../.ci/ci_print_failing.py
+  - |
+    if [[ "${RUN_DANGER}" = true ]]; then
+      BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile
+    fi
+  - python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} ${STATIC} ${COVERAGE}
+  - cd build
+  - ../.ci/ci_build.sh
+  - python ../.ci/ci_test.py ctest --output-on-failure --verbose
+  - python ../.ci/ci_print_failing.py
 after_success:
-- |
-  if [[ "${COVERAGE}" = true ]]; then
-    coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*tests*" -E ".*tools.*" -E ".*cmake*" -E ".*doc*" -E ".*examples*" || echo 'coveralls upload failed.'
-  fi
+  - |
+    if [[ "${COVERAGE}" = true ]]; then
+      coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*tests*" -E ".*tools.*" -E ".*cmake*" -E ".*doc*" -E ".*examples*" || echo 'coveralls upload failed.'
+    fi

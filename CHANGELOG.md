@@ -1,5 +1,20 @@
 # Change Log
 
+## [Version 1.1.12] -
+
+### Changed
+
+- CMake will no longer generate doc build target.
+- Simplify .travis.yml and got rid of Conda
+
+### Fixed
+
+- The readthedocs build. Failed since docs were generated for all files, including 
+  doc files from previous build. Besides, source code doxygen blocks were not
+  exctracted when inside namespaces.
+  
+
+
 ## [Version 1.1.11] - 2017-10-25
 
 ### Added

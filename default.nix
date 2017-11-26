@@ -20,12 +20,13 @@ in
       cmake
       doxygen
       exa
-      gcc
+      #gcc
       gdb
       gfortran
       graphviz
       lldb
-      openmpi
+      python35Packages.matplotlib
+      python35Packages.numpy
       python35Packages.virtualenvwrapper
       valgrind
       zlib

@@ -97,4 +97,4 @@ if has_deleted_files && !has_gitattributes_changes
   warn("You have removed source files without updating `.gitattributes`.", :sticky => false)
 end
 
-lgtm.check_lgtm
+lgtm.check_lgtm image_url: 'https://media.giphy.com/media/tIeCLkB8geYtW/giphy.gif'

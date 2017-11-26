@@ -1,19 +1,18 @@
 # Change Log
 
-## [Version 1.1.12] -
+## [Unreleased]
 
 ### Changed
 
-- CMake will no longer generate doc build target.
-- Simplify .travis.yml and got rid of Conda
+- Documentation building is fully handled _via_ `sphinx-build`: CMake will no longer generate a `doc` build target.
+- Simplified `.travis.yml` and got rid of Conda to handle multiple Python versions.
 
 ### Fixed
 
-- The readthedocs build. Failed since docs were generated for all files, including 
-  doc files from previous build. Besides, source code doxygen blocks were not
+- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada: 
+  The build had been failing for a while since docs were generated for all files, including 
+  documentation files from previous build. Besides, source code doxygen blocks were not
   exctracted when inside namespaces.
-  
-
 
 ## [Version 1.1.11] - 2017-10-25
 
@@ -366,7 +365,7 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.10...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.11..HEAD
 [Version 1.1.11]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.10...v1.1.11
 [Version 1.1.10]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.9...v1.1.10
 [Version 1.1.9]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.8...v1.1.9

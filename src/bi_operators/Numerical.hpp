@@ -29,6 +29,8 @@
 
 #include <Eigen/Core>
 
+/*! \file Numerical.hpp */
+
 namespace pcm {
 struct BIOperatorData;
 namespace cavity {
@@ -41,8 +43,7 @@ class IGreensFunction;
 
 namespace pcm {
 namespace bi_operators {
-/*! \file Numerical.hpp
- *  \class Numerical
+/*! \class Numerical
  *  \brief Implementation of the single and double layer operators matrix
  *representation using one-point collocation
  *  \author Roberto Di Remigio
@@ -53,8 +54,16 @@ namespace bi_operators {
  */
 class Numerical __final : public IBoundaryIntegralOperator {
 private:
+  /*! Computes the matrix representation of the single layer operator
+   *  \param[in] elems list of finite elements of the discretized cavity
+   *  \param[in] gf  a Green's function
+   */
   virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
+  /*! Computes the matrix representation of the double layer operator
+   *  \param[in] elems list of finite elements of the discretized cavity
+   *  \param[in] gf  a Green's function
+   */
   virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
 };
@@ -75,8 +84,11 @@ typedef pcm::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &)>
     KernelD;
 
-/*! \brief Integrates a single layer type operator on a single spherical polygon
+/*! \fn double integrateS(const KernelS & F, const cavity::Element & e)
+ *  \brief Integrates a single layer type operator on a single spherical polygon
  *  \date 2014
+ *  \param[in] F single layer type operator
+ *  \param[in] e a finite element on the cavity
  *  \tparam PhiPoints Gaussian rule to be used in the angular phi integration
  *  \tparam ThetaPoints Gaussian rule to be used in the angular theta integration
  *
@@ -86,8 +98,11 @@ typedef pcm::function<double(const Eigen::Vector3d &,
 template <int PhiPoints, int ThetaPoints>
 double integrateS(const KernelS & F, const cavity::Element & e);
 
-/*! \brief Integrates a double layer type operator on a single spherical polygon
+/*! \fn double integrateD(const KernelD & F, const cavity::Element & e)
+ *  \brief Integrates a double layer type operator on a single spherical polygon
  *  \date 2014
+ *  \param[in] F double layer type operator
+ *  \param[in] e a finite element on the cavity
  *  \tparam PhiPoints Gaussian rule to be used in the angular phi integration
  *  \tparam ThetaPoints Gaussian rule to be used in the angular theta integration
  *

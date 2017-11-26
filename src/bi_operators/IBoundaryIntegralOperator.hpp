@@ -41,12 +41,28 @@ namespace pcm {
 class IBoundaryIntegralOperator {
 public:
   virtual ~IBoundaryIntegralOperator() {}
+  /*! Computes the matrix representation of the single layer operator
+   *  \param[in] cav the discretized cavity
+   *  \param[in] gf  a Green's function
+   */
   Eigen::MatrixXd computeS(const ICavity & cav, const IGreensFunction & gf) const;
+  /*! Computes the matrix representation of the double layer operator
+   *  \param[in] cav the discretized cavity
+   *  \param[in] gf  a Green's function
+   */
   Eigen::MatrixXd computeD(const ICavity & cav, const IGreensFunction & gf) const;
 
 private:
+  /*! Computes the matrix representation of the single layer operator
+   *  \param[in] elems list of finite elements of the discretized cavity
+   *  \param[in] gf  a Green's function
+   */
   virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const = 0;
+  /*! Computes the matrix representation of the double layer operator
+   *  \param[in] elems list of finite elements of the discretized cavity
+   *  \param[in] gf  a Green's function
+   */
   virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const = 0;
 };

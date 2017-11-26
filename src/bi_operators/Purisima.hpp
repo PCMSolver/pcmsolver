@@ -65,11 +65,15 @@ private:
    * the S operator
    */
   double factor_;
+  /*! Computes the matrix representation of the single layer operator
+   *  \param[in] elems list of finite elements of the discretized cavity
+   *  \param[in] gf  a Green's function
+   */
   virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
                                         const IGreensFunction & gf) const __override;
   /*! Computes the matrix representation of the double layer operator by collocation
    *  using the Purisima sum rule to compute the diagonal elements.
-   *  \param[in] cav discretized cavity
+   *  \param[in] elems discretized cavity
    *  \param[in] gf  a Green's function
    *
    *  The sum rule for the diagonal elements is:

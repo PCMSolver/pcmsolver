@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -27,17 +27,17 @@
 
 #include "Config.hpp"
 
-/*! \file OneLayerTanh.hpp
- *  \class OneLayerTanh
+/*! \file OneLayerTanh.hpp */
+
+namespace pcm {
+namespace dielectric_profile {
+/*!  \class OneLayerTanh
  *  \brief A tanh dielectric profile as in \cite Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2014
  *  \note The parameter given from user input for width_ is divided by 6.0 in
  *  the constructor to keep consistency with \cite Frediani2004a
  */
-
-namespace pcm {
-namespace dielectric_profile {
 class OneLayerTanh {
 private:
   /// Dielectric constant on the left of the interface

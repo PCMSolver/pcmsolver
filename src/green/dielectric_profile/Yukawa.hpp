@@ -27,15 +27,15 @@
 
 #include "Config.hpp"
 
-/*! \file Yukawa.hpp
- *  \struct Yukawa
+/*! \file Yukawa.hpp */
+
+namespace pcm {
+namespace dielectric_profile {
+/*! \struct Yukawa
  *  \brief describes a medium with damping, i.e. ionic liquid
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-
-namespace pcm {
-namespace dielectric_profile {
 struct Yukawa __final {
   double epsilon;
   double kappa;

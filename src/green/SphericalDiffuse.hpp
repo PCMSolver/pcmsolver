@@ -24,6 +24,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <type_traits>
 
 #include "Config.hpp"
 
@@ -38,6 +39,7 @@ class Element;
 
 namespace dielectric_profile {
 class OneLayerTanh;
+class MembraneTanh;
 } // namespace dielectric_profile
 } // namespace pcm
 
@@ -46,31 +48,27 @@ class OneLayerTanh;
 #include "InterfacesImpl.hpp"
 
 namespace pcm {
-namespace green {
-template <typename ProfilePolicy = dielectric_profile::OneLayerTanh>
+template <typename T, typename U>
+using IsSame = typename std::enable_if<std::is_same<T, U>::value>::type;
 
+template <typename T, typename U>
+using IsNotSame = typename std::enable_if<!std::is_same<T, U>::value>::type;
+namespace green {
 /*! \class SphericalDiffuse
  *  \brief Green's function for a diffuse interface with spherical symmetry
  *  \author Hui Cao, Ville Weijo, Luca Frediani and Roberto Di Remigio
  *  \date 2010-2015
  *  \tparam ProfilePolicy functional form of the diffuse layer
  *
- *  This class is general, in the sense that no specific dielectric profile has been
- *set in its definition.
- *  In principle any profile that can be described by:
- *  1. a left-side dielectric constant;
- *  2. a right-side dielectric constant;
- *  3. an interface layer width;
- *  4. an interface layer center
- *  can be used to define a new diffuse interface with spherical symmetry.
  *  The origin of the dielectric sphere can be changed by means of the constructor.
  *  The solution of the differential equation defining the Green's function is
- ***always**
- *  performed assuming that the dielectric sphere is centered in the origin of the
- *coordinate
- *  system. Whenever the public methods are invoked to "sample" the Green's function
+ *  **always** performed assuming that the dielectric sphere is centered in the
+ * origin of the
+ *  coordinate system. Whenever the public methods are invoked to "sample" the
+ * Green's function
  *  at a pair of points, a translation of the sampling points is performed first.
  */
+template <typename ProfilePolicy = dielectric_profile::OneLayerTanh>
 class SphericalDiffuse __final : public GreensFunction<Stencil, ProfilePolicy> {
 public:
   /*! Constructor for a one-layer interface
@@ -80,13 +78,54 @@ public:
    * \param[in] c center of the diffuse layer
    * \param[in] o center of the sphere
    * \param[in] l maximum value of angular momentum
+   * \note For SFINAE to work correctly, this constructor **must be** in the header
+   * file.
    */
+  template <typename U = ProfilePolicy,
+            typename = IsNotSame<U, dielectric_profile::MembraneTanh> >
   SphericalDiffuse(double e1,
                    double e2,
                    double w,
                    double c,
                    const Eigen::Vector3d & o,
-                   int l);
+                   int l)
+      : GreensFunction<Stencil, ProfilePolicy>(ProfilePolicy(e1, e2, w, c)),
+        origin_(o),
+        maxLGreen_(l),
+        maxLC_(2 * l) {
+    initSphericalDiffuse();
+  }
+  /*! Constructor for a two-layer interface (membrane)
+   * \param[in] e1 left-side dielectric constant
+   * \param[in] e2 middle portion dielectric constant
+   * \param[in] e3 right-side dielectric constant
+   * \param[in] w12 width of the first interface layer
+   * \param[in] w23 width of the second interface layer
+   * \param[in] c12 center of the first diffuse layer
+   * \param[in] c23 center of the second diffuse layer
+   * \param[in] o center of the sphere
+   * \param[in] l maximum value of angular momentum
+   * \note For SFINAE to work correctly, this constructor **must be** in the header
+   * file.
+   */
+  template <typename U = ProfilePolicy,
+            typename = IsSame<U, dielectric_profile::MembraneTanh> >
+  SphericalDiffuse(double e1,
+                   double e2,
+                   double e3,
+                   double w12,
+                   double w23,
+                   double c12,
+                   double c23,
+                   const Eigen::Vector3d & o,
+                   int l)
+      : GreensFunction<Stencil, ProfilePolicy>(
+            ProfilePolicy(e1, e2, e3, w12, w23, c12, c23)),
+        origin_(o),
+        maxLGreen_(l),
+        maxLC_(2 * l) {
+    initSphericalDiffuse();
+  }
   virtual ~SphericalDiffuse() {}
 
   friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
@@ -115,7 +154,8 @@ public:
    *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot
    *\mathbf{n}_{\mathbf{p}_2}\f$
    *  Notice that this method returns the directional derivative with respect
-   *  to the probe point, thus assuming that the direction is relative to that point.
+   *  to the probe point, thus assuming that the direction is relative to that
+   *point.
    *
    *  \param[in] direction the direction
    *  \param[in]        p1 first point
@@ -129,7 +169,8 @@ public:
    *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot
    *\mathbf{n}_{\mathbf{p}_2}\f$
    *  Notice that this method returns the directional derivative with respect
-   *  to the probe point, thus assuming that the direction is relative to that point.
+   *  to the probe point, thus assuming that the direction is relative to that
+   *point.
    *
    *  \param[in] direction the direction
    *  \param[in]        p1 first point
@@ -144,7 +185,8 @@ public:
    *  \f$ \nabla_{\mathbf{p_2}}G(\mathbf{p}_1, \mathbf{p}_2)\cdot
    *\mathbf{n}_{\mathbf{p}_2}\f$
    *  Notice that this method returns the directional derivative with respect
-   *  to the probe point, thus assuming that the direction is relative to that point.
+   *  to the probe point, thus assuming that the direction is relative to that
+   *point.
    *
    *  \param[in] direction the direction
    *  \param[in]        p1 first point
@@ -165,7 +207,8 @@ private:
    *  \note This takes care of the origin shift
    */
   virtual Stencil operator()(Stencil * sp, Stencil * pp) const __override;
-  /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the
+  /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for
+   * the
    * pair of points p1, p2:
    *  \f$ [\boldsymbol{\varepsilon}\nabla_{\mathbf{p_2}}G(\mathbf{p}_1,
    * \mathbf{p}_2)]\cdot \mathbf{n}_{\mathbf{p}_2}\f$
@@ -189,13 +232,6 @@ private:
   virtual double doubleLayer_impl(const Element & e, double factor) const __override;
 
   virtual std::ostream & printObject(std::ostream & os) __override;
-  /*! Initializes a one-layer profile
-   *  \param[in] e1 left-side dielectric constant
-   *  \param[in] e2 right-side dielectric constant
-   *  \param[in] w width of the interface layer
-   *  \param[in] c center of the diffuse layer
-   */
-  void initProfilePolicy(double e1, double e2, double w, double c);
   /*! This calculates all the components needed to evaluate the Green's function */
   void initSphericalDiffuse();
 
@@ -204,7 +240,8 @@ private:
 
   /*! @{ Parameters and functions for the calculation of the Green's function,
    * including Coulomb singularity */
-  /*! Maximum angular momentum in the __final summation over Legendre polynomials to
+  /*! Maximum angular momentum in the __final summation over Legendre polynomials
+   * to
    * obtain G */
   int maxLGreen_;
   /*! \brief First independent radial solution, used to build Green's function.
@@ -222,7 +259,8 @@ private:
    *  \param[in] sp source point
    *  \param[in] pp probe point
    *  \param[in] Cr12 Coulomb singularity separation coefficient
-   *  \note This function shifts the given source and probe points by the location of
+   *  \note This function shifts the given source and probe points by the location
+   * of
    * the
    *  dielectric sphere.
    */
@@ -249,7 +287,8 @@ private:
   /*! \brief Returns coefficient for the separation of the Coulomb singularity
    *  \param[in] sp first point
    *  \param[in] pp second point
-   *  \note This function shifts the given source and probe points by the location of
+   *  \note This function shifts the given source and probe points by the location
+   * of
    * the
    *  dielectric sphere.
    */

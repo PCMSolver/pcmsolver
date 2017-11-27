@@ -46,7 +46,6 @@ class Anisotropic;
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits = AD_directional>
 /*! \class AnisotropicLiquid
  *  \brief Green's functions for anisotropic liquid, described by a tensorial
  * permittivity
@@ -54,6 +53,7 @@ template <typename DerivativeTraits = AD_directional>
  *  \date 2016
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
+template <typename DerivativeTraits = AD_directional>
 class AnisotropicLiquid __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Anisotropic> {
 public:

@@ -12,6 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <sys/select.h>
 #include <typeinfo>
 #include <vector>
 #include <zlib.h>

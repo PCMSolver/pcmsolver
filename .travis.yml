@@ -57,7 +57,7 @@ matrix:
         - RUN_DANGER=true
 
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode7.3
       env:
         - CXX_COMPILER='clang++'
         - C_COMPILER='clang'
@@ -68,7 +68,7 @@ matrix:
         - STATIC='--static'
         - RUN_DANGER=false
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode7.3
       env:
         - CXX_COMPILER='g++-7'
         - C_COMPILER='gcc-7'

@@ -43,9 +43,8 @@ template <typename DerivativeTraits>
 AnisotropicLiquid<DerivativeTraits>::AnisotropicLiquid(
     const Eigen::Vector3d & eigen_eps,
     const Eigen::Vector3d & euler_ang)
-    : GreensFunction<DerivativeTraits, Anisotropic>() {
-  this->profile_ = Anisotropic(eigen_eps, euler_ang);
-}
+    : GreensFunction<DerivativeTraits, Anisotropic>(
+          Anisotropic(eigen_eps, euler_ang)) {}
 
 template <typename DerivativeTraits>
 DerivativeTraits AnisotropicLiquid<DerivativeTraits>::operator()(

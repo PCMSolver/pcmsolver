@@ -28,6 +28,7 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
+
 /*! \file Vacuum.hpp */
 
 namespace pcm {
@@ -46,8 +47,6 @@ struct Uniform;
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits = AD_directional>
-
 /*! \class Vacuum
  *  \brief Green's function for vacuum.
  *  \author Luca Frediani and Roberto Di Remigio
@@ -57,6 +56,7 @@ template <typename DerivativeTraits = AD_directional>
 // TODO: * I don't think the ProfilePolicy parameter is needed in this case!
 //       * can we use enable_if (or similar tricks) to avoid implementing useless
 //       functions?
+template <typename DerivativeTraits = AD_directional>
 class Vacuum __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Uniform> {
 public:

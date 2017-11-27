@@ -24,6 +24,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <utility>
 
 #include "Config.hpp"
 
@@ -31,7 +32,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-/*!  \class OneLayerTanh
+/*! \class OneLayerTanh
  *  \brief A tanh dielectric profile as in \cite Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2014
@@ -48,22 +49,31 @@ private:
   double width_;
   /// Center of the transition layer
   double center_;
+  /*! Domain of the permittivity function
+   * This is formally \f$ [0, +\infty) \f$, for all practical purposes
+   * the permittivity function is equal to the epsilon2_ already at 6.0 * width_
+   * Thus the upper limit in the domain_ is initialized as center_ + 12.0 * width_
+   */
+  std::pair<double, double> domain_;
   /*! Returns value of dielectric profile at given point
    *  \param[in] point where to evaluate the profile
+   *  \note We return epsilon2_ when the sampling point is outside the upper limit.
    */
   double value(double point) const {
     double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
     double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
     double tanh_r = std::tanh((point - center_) / width_);
-    return (epsPlus + epsMinus * tanh_r); // epsilon(r)
+    return (point > domain_.second) ? epsilon2_ : (epsPlus + epsMinus * tanh_r);
   }
   /*! Returns value of derivative of dielectric profile at given point
    *  \param[in] point where to evaluate the derivative
+   *  \note We return 0.0 (derivative of the constant value epsilon2_) when the
+   * sampling point is outside the upper limit.
    */
   double derivative(double point) const {
     double factor = (epsilon2_ - epsilon1_) / (2.0 * width_);
     double tanh_r = std::tanh((point - center_) / width_);
-    return (factor * (1 - std::pow(tanh_r, 2))); // first derivative of epsilon(r)
+    return (point > domain_.second) ? 0.0 : (factor * (1 - std::pow(tanh_r, 2)));
   }
   std::ostream & printObject(std::ostream & os) {
     os << "Profile functional form: tanh" << std::endl;
@@ -77,17 +87,18 @@ private:
 public:
   OneLayerTanh() {}
   OneLayerTanh(double e1, double e2, double w, double c)
-      : epsilon1_(e1), epsilon2_(e2), width_(w / 6.0), center_(c) {}
+      : epsilon1_(e1),
+        epsilon2_(e2),
+        width_(w / 6.0),
+        center_(c),
+        domain_(std::make_pair(0.0, center_ + 12.0 * width_)) {}
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
   pcm::tuple<double, double> operator()(const double r) const {
     return pcm::make_tuple(value(r), derivative(r));
   }
-  double epsilon1() const { return epsilon1_; }
-  double epsilon2() const { return epsilon2_; }
-  double width() const { return width_; }
-  double center() const { return center_; }
+  double upperLimit() const { return domain_.second; }
   friend std::ostream & operator<<(std::ostream & os, OneLayerTanh & th) {
     return th.printObject(os);
   }

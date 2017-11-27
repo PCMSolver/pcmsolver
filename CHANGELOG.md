@@ -26,11 +26,14 @@
   defining the type of object and to remove now unused information.
 - Documentation building is fully handled _via_ `sphinx-build`: CMake will no longer generate a `doc` build target.
 - Simplified `.travis.yml` and got rid of Conda to handle multiple Python versions.
+- The [Catch unit test framework](https://github.com/philsquared/Catch) has
+  been updated to its latest version still supporting C++03
+  [v1.11.0](https://github.com/philsquared/Catch/releases/tag/v1.11.0)
 
 ### Fixed
 
-- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada: 
-  The build had been failing for a while since docs were generated for all files, including 
+- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada:
+  The build had been failing for a while since docs were generated for all files, including
   documentation files from previous build. Besides, source code doxygen blocks were not
   exctracted when inside namespaces.
 

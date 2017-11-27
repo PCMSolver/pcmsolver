@@ -24,7 +24,6 @@
 #pragma once
 
 #include <iosfwd>
-#include <type_traits>
 
 #include "Config.hpp"
 
@@ -48,11 +47,6 @@ class MembraneTanh;
 #include "InterfacesImpl.hpp"
 
 namespace pcm {
-template <typename T, typename U>
-using IsSame = typename std::enable_if<std::is_same<T, U>::value>::type;
-
-template <typename T, typename U>
-using IsNotSame = typename std::enable_if<!std::is_same<T, U>::value>::type;
 namespace green {
 /*! \class SphericalDiffuse
  *  \brief Green's function for a diffuse interface with spherical symmetry
@@ -82,7 +76,7 @@ public:
    * file.
    */
   template <typename U = ProfilePolicy,
-            typename = IsNotSame<U, dielectric_profile::MembraneTanh> >
+            typename = pcm::IsNotSame<U, dielectric_profile::MembraneTanh> >
   SphericalDiffuse(double e1,
                    double e2,
                    double w,
@@ -109,7 +103,7 @@ public:
    * file.
    */
   template <typename U = ProfilePolicy,
-            typename = IsSame<U, dielectric_profile::MembraneTanh> >
+            typename = pcm::IsSame<U, dielectric_profile::MembraneTanh> >
   SphericalDiffuse(double e1,
                    double e2,
                    double e3,

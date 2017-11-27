@@ -49,7 +49,7 @@ template <typename DerivativeTraits, typename ProfilePolicy>
  */
 class GreensFunction : public IGreensFunction {
 public:
-  GreensFunction() : delta_(1.0e-04) {}
+  GreensFunction(const ProfilePolicy & p) : delta_(1.0e-04), profile_(p) {}
   virtual ~GreensFunction() {}
   /*! @{ Methods to sample the Green's function directional derivatives */
   /*! Returns value of the directional derivative of the
@@ -186,7 +186,7 @@ protected:
 template <typename ProfilePolicy>
 class GreensFunction<Stencil, ProfilePolicy> : public IGreensFunction {
 public:
-  GreensFunction() : delta_(1.0e-04) {}
+  GreensFunction(const ProfilePolicy & p) : delta_(1.0e-04), profile_(p) {}
   virtual ~GreensFunction() {}
   /*! @{ Methods to sample the Green's function directional derivatives */
   /*! Returns value of the directional derivative of the

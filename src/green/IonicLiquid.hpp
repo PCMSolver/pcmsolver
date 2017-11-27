@@ -46,7 +46,6 @@ struct Yukawa;
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits = AD_directional>
 /*! \class IonicLiquid
  *  \brief Green's functions for ionic liquid, described by the linearized
  * Poisson-Boltzmann equation.
@@ -54,6 +53,7 @@ template <typename DerivativeTraits = AD_directional>
  *  \date 2013-2016
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
+template <typename DerivativeTraits = AD_directional>
 class IonicLiquid __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Yukawa> {
 public:

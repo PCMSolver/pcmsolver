@@ -42,21 +42,6 @@
 namespace pcm {
 namespace green {
 template <typename ProfilePolicy>
-SphericalDiffuse<ProfilePolicy>::SphericalDiffuse(double e1,
-                                                  double e2,
-                                                  double w,
-                                                  double c,
-                                                  const Eigen::Vector3d & o,
-                                                  int l)
-    : GreensFunction<Stencil, ProfilePolicy>(),
-      origin_(o),
-      maxLGreen_(l),
-      maxLC_(2 * l) {
-  initProfilePolicy(e1, e2, w, c);
-  initSphericalDiffuse();
-}
-
-template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::coefficientCoulomb(
     const Eigen::Vector3d & source,
     const Eigen::Vector3d & probe) const {
@@ -248,14 +233,6 @@ std::ostream & SphericalDiffuse<ProfilePolicy>::printObject(std::ostream & os) {
   os << "Angular momentum (Green's function)    = " << this->maxLGreen_ << std::endl;
   os << "Angular momentum (Coulomb coefficient) = " << this->maxLC_;
   return os;
-}
-
-template <typename ProfilePolicy>
-void SphericalDiffuse<ProfilePolicy>::initProfilePolicy(double e1,
-                                                        double e2,
-                                                        double w,
-                                                        double c) {
-  this->profile_ = ProfilePolicy(e1, e2, w, c);
 }
 
 template <typename ProfilePolicy>

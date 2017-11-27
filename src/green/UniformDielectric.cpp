@@ -41,9 +41,7 @@ using dielectric_profile::Uniform;
 namespace green {
 template <typename DerivativeTraits>
 UniformDielectric<DerivativeTraits>::UniformDielectric(double eps)
-    : GreensFunction<DerivativeTraits, Uniform>() {
-  this->profile_ = Uniform(eps);
-}
+    : GreensFunction<DerivativeTraits, Uniform>(Uniform(eps)) {}
 
 template <typename DerivativeTraits>
 DerivativeTraits UniformDielectric<DerivativeTraits>::operator()(

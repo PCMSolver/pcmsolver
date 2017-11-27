@@ -41,9 +41,7 @@ using dielectric_profile::Yukawa;
 namespace green {
 template <typename DerivativeTraits>
 IonicLiquid<DerivativeTraits>::IonicLiquid(double eps, double k)
-    : GreensFunction<DerivativeTraits, Yukawa>() {
-  this->profile_ = Yukawa(eps, k);
-}
+    : GreensFunction<DerivativeTraits, Yukawa>(Yukawa(eps, k)) {}
 
 template <typename DerivativeTraits>
 DerivativeTraits IonicLiquid<DerivativeTraits>::operator()(

@@ -54,8 +54,9 @@ private:
    */
 	double value(double point) const {
 		double epsLog = std::log(epsilon2_/epsilon1_);
-		double val = (1.0 + boost::math::erf(point - center_) / width_) / 2.0;
-		return epsilon1_ * std::exp(epsLog * val); // epsilon(r)
+		double val = (1.0 + boost::math::erf((point - center_) / width_)) / 2.0;
+		double retval = epsilon1_ * std::exp(epsLog * val); // epsilon(r)
+		return retval;
 	}
 	/*! Returns value of derivative of dielectric profile at given point
 	 *  \param[in] point where to evaluate the derivative
@@ -69,7 +70,7 @@ private:
 		return functionValue * factor * val; // first derivative of epsilon(r)
 	}
   std::ostream & printObject(std::ostream & os) {
-    os << "Profile functional form: erf" << std::endl;
+    os << "Profile functional form: log" << std::endl;
     os << "Permittivity left/inside   = " << epsilon1_ << std::endl;
     os << "Permittivity right/outside = " << epsilon2_ << std::endl;
     os << "Profile width        = " << width_ << " AU" << std::endl;

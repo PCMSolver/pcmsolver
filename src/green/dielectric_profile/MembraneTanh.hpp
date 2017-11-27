@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -27,16 +27,16 @@
 
 #include "Config.hpp"
 
-/*! \file MembraneTanh.hpp
- *  \class MembraneTanh
+/*! \file MembraneTanh.hpp */
+
+namespace pcm {
+namespace dielectric_profile {
+/*! \class MembraneTanh
  *  \brief A dielectric profile mimicking a memmbrane as in Eq. 30 in \cite
  * Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-
-namespace pcm {
-namespace dielectric_profile {
 class MembraneTanh {
 private:
   double epsilon1_;
@@ -63,9 +63,29 @@ private:
             factor_23 *
                 (1 - std::pow(tanh_r_23, 2))); // first derivative of epsilon(r)
   }
+  std::ostream & printObject(std::ostream & os) {
+    os << "Profile functional form: tanh" << std::endl;
+    os << "Permittivity left-side  = " << epsilon1_ << std::endl;
+    os << "Permittivity middle     = " << epsilon2_ << std::endl;
+    os << "Permittivity right-side = " << epsilon3_ << std::endl;
+    os << "Profile width, 1st layer = " << width12_ << " AU" << std::endl;
+    os << "Profile width, 2nd layer = " << width23_ << " AU" << std::endl;
+    os << "Profile center, 1st layer = " << center12_ << " AU" << std::endl;
+    os << "Profile center, 2nd layer = " << center23_ << " AU";
+    return os;
+  }
 
 public:
   MembraneTanh() {}
+  /*! Constructor for a two-layer interface (membrane)
+   * \param[in] e1 left-side dielectric constant
+   * \param[in] e2 middle portion dielectric constant
+   * \param[in] e3 right-side dielectric constant
+   * \param[in] w12 width of the first interface layer
+   * \param[in] w23 width of the second interface layer
+   * \param[in] c12 center of the first diffuse layer
+   * \param[in] c23 center of the second diffuse layer
+   */
   MembraneTanh(double e1,
                double e2,
                double e3,
@@ -76,19 +96,15 @@ public:
       : epsilon1_(e1),
         epsilon2_(e2),
         epsilon3_(e3),
-        width12_(w12),
-        width23_(w23),
+        width12_(w12 / 6.0),
+        width23_(w23 / 6.0),
         center12_(c12),
         center23_(c23) {}
-  /*! The permittivity profile of the transition layer
-   *  \param[out]  e the value of the dielectric constant at point r
-   *  \param[out] de the value of the derivative of the dielectric constant
-   *                 at point r
+  /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
-  void operator()(double & e, double & de, const double r) const {
-    e = value(r);
-    de = derivative(r);
+  pcm::tuple<double, double> operator()(const double r) const {
+    return pcm::make_tuple(value(r), derivative(r));
   }
   double epsilon1() const { return epsilon1_; }
   double epsilon2() const { return epsilon2_; }
@@ -97,6 +113,9 @@ public:
   double width23() const { return width23_; }
   double center12() const { return center12_; }
   double center23() const { return center23_; }
+  friend std::ostream & operator<<(std::ostream & os, MembraneTanh & th) {
+    return th.printObject(os);
+  }
 };
 } // namespace dielectric_profile
 } // namespace pcm

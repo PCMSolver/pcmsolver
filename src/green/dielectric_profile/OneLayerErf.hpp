@@ -32,7 +32,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-/*!  \class OneLayerErf
+/*! \class OneLayerErf
  *  \brief A erf dielectric profile
  *  \author Roberto Di Remigio
  *  \date 2015

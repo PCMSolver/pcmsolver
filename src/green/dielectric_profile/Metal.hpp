@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -28,15 +28,15 @@
 
 #include "Config.hpp"
 
-/*! \file Metal.hpp
- *  \struct Metal
+/*! \file Metal.hpp */
+
+namespace pcm {
+namespace dielectric_profile {
+/*!  \struct Metal
  *  \brief An object with complex permittivity
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-
-namespace pcm {
-namespace dielectric_profile {
 struct Metal __final {
   std::complex<double> epsilon;
   Metal() : epsilon(std::complex<double>(1.0, 1.0)) {}

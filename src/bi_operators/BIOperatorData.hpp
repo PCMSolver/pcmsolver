@@ -25,11 +25,12 @@
 
 #include "Config.hpp"
 
-/*! @struct BIOperatorData
- *  @brief Contains all data defined from user input to set up the bi_operatorss
- */
+/*! \file BIOperatorData.hpp */
 
 namespace pcm {
+/*! \struct BIOperatorData
+ *  \brief Contains all data defined from user input to set up the bi_operators
+ */
 struct BIOperatorData {
   /*! Scaling for the diagonal of the approximate collocation matrices */
   double scaling;

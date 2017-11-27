@@ -30,8 +30,12 @@
 
 #include "utils/Sphere.hpp"
 
-/*! \file Element.hpp
- *  \class Element
+/*! \file Element.hpp */
+
+namespace pcm {
+using utils::Sphere;
+namespace cavity {
+/*! \class Element
  *  \brief Element data structure
  *  \author Roberto Di Remigio
  *  \date 2014
@@ -39,10 +43,6 @@
  *  Data structure containing relevant information about a finite element
  *  making up the cavity
  */
-
-namespace pcm {
-using utils::Sphere;
-namespace cavity {
 class Element __final {
 public:
   Element(int nv,
@@ -126,12 +126,12 @@ private:
   }
 };
 
+namespace detail {
 /*! \brief Calculate tangent and bitangent vector for the representative point
  *  \param[in]  n_ normal vector
  *  \param[out] t_ tangent vector
  *  \param[out] b_ bitangent vector
  */
-namespace detail {
 void tangent_and_bitangent(const Eigen::Vector3d & n_,
                            Eigen::Vector3d & t_,
                            Eigen::Vector3d & b_);

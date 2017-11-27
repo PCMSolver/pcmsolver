@@ -30,17 +30,17 @@
 
 #include <boost/math/special_functions/erf.hpp>
 
-/*! \file OneLayerErf.hpp
- *  \class OneLayerErf
+/*! \file OneLayerErf.hpp */
+
+namespace pcm {
+namespace dielectric_profile {
+/*!  \class OneLayerErf
  *  \brief A erf dielectric profile
  *  \author Roberto Di Remigio
  *  \date 2015
  *  \note The parameter given from user input for width_ is divided by 6.0 in
  *  the constructor to keep consistency with \cite Frediani2004a
  */
-
-namespace pcm {
-namespace dielectric_profile {
 class OneLayerErf {
 private:
   /// Dielectric constant on the left of the interface

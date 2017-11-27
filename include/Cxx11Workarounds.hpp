@@ -75,6 +75,18 @@ using std::to_string;
 namespace pcm {
 using std::erf;
 } /* end namespace pcm */
+/* <type_traits> workarounds */
+#include <type_traits>
+namespace pcm {
+using std::enable_if;
+using std::is_same;
+
+template <typename T, typename U>
+using IsSame = typename std::enable_if<std::is_same<T, U>::value>::type;
+
+template <typename T, typename U>
+using IsNotSame = typename std::enable_if<!std::is_same<T, U>::value>::type;
+} /* end namespace pcm */
 #else /* HAS_CXX11*/
 /* Smart pointers workarounds */
 #include <boost/make_shared.hpp>
@@ -115,11 +127,26 @@ namespace pcm {
 template <typename Source> std::string to_string(const Source & arg) {
   return boost::lexical_cast<std::string>(arg);
 }
+} /* end namespace pcm */
 /* <cmath> workarounds */
 #include <boost/math/special_functions/erf.hpp>
 namespace pcm {
 using boost::math::erf;
 } /* end namespace pcm */
+/* <type_traits> workarounds */
+#include <boost/core/enable_if.hpp>
+#include <boost/type_traits/is_same.hpp>
+namespace pcm {
+using boost::enable_if;
+using boost::is_same;
+
+template <typename T, typename U> struct IsSame {
+  typedef boost::enable_if<boost::is_same<T, U>::value>::type;
+};
+
+template <typename T, typename U> struct IsNotSame {
+  typedef boost::enable_if<!boost::is_same<T, U>::value>::type;
+};
 } /* end namespace pcm */
 #endif /* HAS_CXX11 */
 

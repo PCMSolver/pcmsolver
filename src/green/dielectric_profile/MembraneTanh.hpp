@@ -24,6 +24,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <utility>
 
 #include "Config.hpp"
 
@@ -46,22 +47,40 @@ private:
   double width23_;
   double center12_;
   double center23_;
+  /*! Domain of the permittivity function
+   * This is formally \f$ [0, +\infty) \f$, for all practical purposes
+   * the permittivity function is equal to the epsilon3_ already at 6.0 * width23_
+   * Thus the upper limit in the domain_ is initialized as center23_ + 12.0 *
+   * width23_
+   */
+  std::pair<double, double> domain_;
+  /*! Returns value of dielectric profile at given point
+   *  \param[in] point where to evaluate the profile
+   *  \note We return epsilon3_ when the sampling point is outside the upper limit.
+   */
   double value(double point) const {
     double eps_13 = (epsilon1_ + epsilon3_) / 2.0;
     double eps_21 = (epsilon2_ - epsilon1_) / 2.0;
     double eps_23 = (epsilon2_ - epsilon3_) / 2.0;
     double tanh_r_12 = std::tanh((point - center12_) / width12_);
     double tanh_r_23 = std::tanh((point - center23_) / width23_);
-    return (eps_13 + eps_21 * tanh_r_12 - eps_23 * tanh_r_23); // epsilon(r)
+    return (point > domain_.second)
+               ? epsilon3_
+               : (eps_13 + eps_21 * tanh_r_12 - eps_23 * tanh_r_23);
   }
+  /*! Returns value of derivative of dielectric profile at given point
+   *  \param[in] point where to evaluate the derivative
+   *  \note We return 0.0 (derivative of the constant value epsilon3_) when the
+   * sampling point is outside the upper limit.
+   */
   double derivative(double point) const {
     double factor_21 = (epsilon2_ - epsilon1_) / (2.0 * width12_);
     double factor_23 = (epsilon2_ - epsilon3_) / (2.0 * width23_);
     double tanh_r_12 = std::tanh((point - center12_) / width12_);
     double tanh_r_23 = std::tanh((point - center23_) / width23_);
-    return (factor_21 * (1 - std::pow(tanh_r_12, 2)) -
-            factor_23 *
-                (1 - std::pow(tanh_r_23, 2))); // first derivative of epsilon(r)
+    return (point > domain_.second) ? epsilon3_
+                                    : (factor_21 * (1 - std::pow(tanh_r_12, 2)) -
+                                       factor_23 * (1 - std::pow(tanh_r_23, 2)));
   }
   std::ostream & printObject(std::ostream & os) {
     os << "Profile functional form: tanh" << std::endl;
@@ -99,20 +118,15 @@ public:
         width12_(w12 / 6.0),
         width23_(w23 / 6.0),
         center12_(c12),
-        center23_(c23) {}
+        center23_(c23),
+        domain_(std::make_pair(0.0, center23_ + 12.0 * width23_)) {}
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
   pcm::tuple<double, double> operator()(const double r) const {
     return pcm::make_tuple(value(r), derivative(r));
   }
-  double epsilon1() const { return epsilon1_; }
-  double epsilon2() const { return epsilon2_; }
-  double epsilon3() const { return epsilon3_; }
-  double width12() const { return width12_; }
-  double width23() const { return width23_; }
-  double center12() const { return center12_; }
-  double center23() const { return center23_; }
+  double upperLimit() const { return domain_.second; }
   friend std::ostream & operator<<(std::ostream & os, MembraneTanh & th) {
     return th.printObject(os);
   }

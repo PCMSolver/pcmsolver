@@ -246,9 +246,9 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double factor_x_ = 0.0;    /*! Weight of the state      */
   double factor_dxdt_ = 0.0; /*! Weight of the state derivative */
   double r_0_ = 0.5;         /*! Lower bound of the integration interval */
-  double r_infinity_ =
-      this->profile_.center() + 200.0; /*! Upper bound of the integration interval */
-  double observer_step_ = 1.0e-03;     /*! Time step between observer calls */
+  double r_infinity_ = this->profile_.upperLimit() +
+                       200.0;      /*! Upper bound of the integration interval */
+  double observer_step_ = 1.0e-03; /*! Time step between observer calls */
   IntegratorParameters params_(eps_abs_,
                                eps_rel_,
                                factor_x_,
@@ -416,5 +416,8 @@ template class SphericalDiffuse<OneLayerTanh>;
 
 using dielectric_profile::OneLayerErf;
 template class SphericalDiffuse<OneLayerErf>;
+
+using dielectric_profile::MembraneTanh;
+template class SphericalDiffuse<MembraneTanh>;
 } // namespace green
 } // namespace pcm

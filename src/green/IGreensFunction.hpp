@@ -127,7 +127,7 @@ public:
 
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const = 0;
-  /*! Returns a dielectric permittivity profile */
+  /*! Returns a dielectric permittivity */
   virtual double permittivity() const = 0;
 
   /*! @{ Methods to compute the diagonal of the matrix representation of the S and D

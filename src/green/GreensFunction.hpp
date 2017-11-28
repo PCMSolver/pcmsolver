@@ -62,9 +62,9 @@ public:
    *  \param[in]        p1 first point
    *  \param[in]        p2 second point
    */
-  virtual double derivativeSource(const Eigen::Vector3d & normal_p1,
-                                  const Eigen::Vector3d & p1,
-                                  const Eigen::Vector3d & p2) const {
+  double derivativeSource(const Eigen::Vector3d & normal_p1,
+                          const Eigen::Vector3d & p1,
+                          const Eigen::Vector3d & p2) const {
     DerivativeTraits t1[3], t2[3];
     t1[0] = p1(0);
     t1[1] = p1(1);
@@ -87,9 +87,9 @@ public:
    *  \param[in]        p1 first point
    *  \param[in]        p2 second point
    */
-  virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                 const Eigen::Vector3d & p1,
-                                 const Eigen::Vector3d & p2) const __final {
+  double derivativeProbe(const Eigen::Vector3d & normal_p2,
+                         const Eigen::Vector3d & p1,
+                         const Eigen::Vector3d & p2) const {
     DerivativeTraits t1[3], t2[3];
     t1[0] = p1(0);
     t1[1] = p1(1);
@@ -195,9 +195,9 @@ public:
    *  \param[in]        p1 first point
    *  \param[in]        p2 second point
    */
-  virtual double derivativeSource(const Eigen::Vector3d & normal_p1,
-                                  const Eigen::Vector3d & p1,
-                                  const Eigen::Vector3d & p2) const {
+  double derivativeSource(const Eigen::Vector3d & normal_p1,
+                          const Eigen::Vector3d & p1,
+                          const Eigen::Vector3d & p2) const {
     return threePointStencil(
         pcm::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
                   this,
@@ -218,9 +218,9 @@ public:
    *  \param[in]        p1 first point
    *  \param[in]        p2 second point
    */
-  virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                 const Eigen::Vector3d & p1,
-                                 const Eigen::Vector3d & p2) const __final {
+  double derivativeProbe(const Eigen::Vector3d & normal_p2,
+                         const Eigen::Vector3d & p1,
+                         const Eigen::Vector3d & p2) const {
     return threePointStencil(
         pcm::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
                   this,

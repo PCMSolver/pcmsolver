@@ -279,10 +279,8 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   
   double y_0_ = log(r_0_);
   double y_infinity_ = log(r_infinity_);
-  double observer_step_ = 1.0e-2 * this->profile_.width / this->profile_.center();     /*! Time step between observer calls */
+  double observer_step_ = 1.0e-2 * this->profile_.width() / this->profile_.center();     /*! Time step between observer calls */
 
-
-  
   IntegratorParameters params_(eps_abs_,
                                eps_rel_,
                                factor_x_,
@@ -336,8 +334,6 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
 	 the proper derivative */
   double y1 = log(r1);
   double y2 = log(r2);
-  double dy1 = 1/r1;
-  double dy2 = 1/r2;
 
   /* Sample zeta_[L] */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
@@ -387,8 +383,6 @@ double SphericalDiffuse<ProfilePolicy>::coefficient_impl(
 
   double y1 = log(r1);
   double y2 = log(r2);
-  double dy1 = 1/r1;
-  double dy2 = 1/r2;
 
   /* Sample zetaC_ */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;

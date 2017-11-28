@@ -106,7 +106,7 @@ inline bool numericalZero(double value) { return (isZero(value, 1.0e-14)); }
 
 /*! \fn inline int sign(T val)
  *  \param[in] val value whose sign should be determined
- *  \tparam    type of the parameter val
+ *  \tparam    T of the parameter val
  *
  *  This function implements the signum function and returns the sign of the passed
  * value: -1, 0 or 1

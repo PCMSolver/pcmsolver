@@ -291,10 +291,8 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
-  zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(
-      maxLC_, y_0_, y_infinity_, eval_, params_);
-  omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(
-      maxLC_, y_0_, y_infinity_, eval_, params_);
+  zetaC_  = RadialFunction<StateType, LnTransformedRadial, Zeta> (maxLC_, y_0_, y_infinity_, eval_, params_);
+  omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(maxLC_, y_0_, y_infinity_, eval_, params_);
   zeta_.reserve(maxLGreen_ + 1);
   omega_.reserve(maxLGreen_ + 1);
   for (int L = 0; L <= maxLGreen_; ++L) {

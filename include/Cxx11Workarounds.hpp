@@ -80,12 +80,6 @@ using std::erf;
 namespace pcm {
 using std::enable_if;
 using std::is_same;
-
-template <typename T, typename U>
-using IsSame = typename std::enable_if<std::is_same<T, U>::value>::type;
-
-template <typename T, typename U>
-using IsNotSame = typename std::enable_if<!std::is_same<T, U>::value>::type;
 } /* end namespace pcm */
 #else /* HAS_CXX11*/
 /* Smart pointers workarounds */
@@ -139,14 +133,6 @@ using boost::math::erf;
 namespace pcm {
 using boost::enable_if;
 using boost::is_same;
-
-template <typename T, typename U> struct IsSame {
-  typedef boost::enable_if<boost::is_same<T, U>::value>::type;
-};
-
-template <typename T, typename U> struct IsNotSame {
-  typedef boost::enable_if<!boost::is_same<T, U>::value>::type;
-};
 } /* end namespace pcm */
 #endif /* HAS_CXX11 */
 

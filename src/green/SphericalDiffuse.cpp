@@ -35,7 +35,6 @@
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
-#include "dielectric_profile/ProfileTypes.hpp"
 #include "utils/Legendre.hpp"
 #include "utils/MathUtils.hpp"
 

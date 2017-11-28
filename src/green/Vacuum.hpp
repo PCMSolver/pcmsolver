@@ -36,14 +36,11 @@ struct GreenData;
 namespace cavity {
 class Element;
 } // namespace cavity
-
-namespace dielectric_profile {
-struct Uniform;
-} // namespace dielectric_profile
 } // namespace pcm
 
 #include "DerivativeTypes.hpp"
 #include "GreensFunction.hpp"
+#include "dielectric_profile/Uniform.hpp"
 
 namespace pcm {
 namespace green {
@@ -62,6 +59,10 @@ class Vacuum __final
 public:
   Vacuum();
   virtual ~Vacuum() {}
+
+  virtual double permittivity() const __override __final {
+    return this->profile_.epsilon;
+  }
 
   friend std::ostream & operator<<(std::ostream & os, Vacuum & gf) {
     return gf.printObject(os);

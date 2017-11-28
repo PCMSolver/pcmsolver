@@ -35,13 +35,11 @@ namespace pcm {
 namespace cavity {
 class Element;
 } // namespace cavity
-namespace dielectric_profile {
-struct Uniform;
-} // namespace dielectric_profile
 } // namespace pcm
 
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
+#include "dielectric_profile/Uniform.hpp"
 
 namespace pcm {
 namespace green {
@@ -58,7 +56,9 @@ public:
   UniformDielectric(double eps);
   virtual ~UniformDielectric() {}
 
-  double epsilon() const { return this->profile_.epsilon; }
+  virtual double permittivity() const __override __final {
+    return this->profile_.epsilon;
+  }
 
   friend std::ostream & operator<<(std::ostream & os, UniformDielectric & gf) {
     return gf.printObject(os);

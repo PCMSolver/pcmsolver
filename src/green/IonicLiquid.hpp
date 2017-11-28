@@ -35,14 +35,11 @@ namespace pcm {
 namespace cavity {
 class Element;
 } // namespace cavity
-
-namespace dielectric_profile {
-struct Yukawa;
-} // namespace dielectric_profile
 } // namespace pcm
 
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
+#include "dielectric_profile/Yukawa.hpp"
 
 namespace pcm {
 namespace green {
@@ -59,6 +56,10 @@ class IonicLiquid __final
 public:
   IonicLiquid(double eps, double k);
   virtual ~IonicLiquid() {}
+
+  virtual double permittivity() const __override __final {
+    PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
+  }
 
   friend std::ostream & operator<<(std::ostream & os, IonicLiquid & gf) {
     return gf.printObject(os);

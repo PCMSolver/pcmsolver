@@ -59,14 +59,20 @@ private:
    *  \note We return epsilon3_ when the sampling point is outside the upper limit.
    */
   double value(double point) const {
-    double eps_13 = (epsilon1_ + epsilon3_) / 2.0;
-    double eps_21 = (epsilon2_ - epsilon1_) / 2.0;
-    double eps_23 = (epsilon2_ - epsilon3_) / 2.0;
-    double tanh_r_12 = std::tanh((point - center12_) / width12_);
-    double tanh_r_23 = std::tanh((point - center23_) / width23_);
-    return (point > domain_.second)
-               ? epsilon3_
-               : (eps_13 + eps_21 * tanh_r_12 - eps_23 * tanh_r_23);
+    double retval = 0.0;
+    if (point < domain_.first) {
+      retval = epsilon1_;
+    } else if (point > domain_.second) {
+      retval = epsilon3_;
+    } else {
+      double eps_13 = (epsilon1_ + epsilon3_) / 2.0;
+      double eps_21 = (epsilon2_ - epsilon1_) / 2.0;
+      double eps_23 = (epsilon2_ - epsilon3_) / 2.0;
+      double tanh_r_12 = std::tanh((point - center12_) / width12_);
+      double tanh_r_23 = std::tanh((point - center23_) / width23_);
+      retval = eps_13 + eps_21 * tanh_r_12 - eps_23 * tanh_r_23;
+    }
+    return retval;
   }
   /*! Returns value of derivative of dielectric profile at given point
    *  \param[in] point where to evaluate the derivative
@@ -74,13 +80,18 @@ private:
    * sampling point is outside the upper limit.
    */
   double derivative(double point) const {
-    double factor_21 = (epsilon2_ - epsilon1_) / (2.0 * width12_);
-    double factor_23 = (epsilon2_ - epsilon3_) / (2.0 * width23_);
-    double tanh_r_12 = std::tanh((point - center12_) / width12_);
-    double tanh_r_23 = std::tanh((point - center23_) / width23_);
-    return (point > domain_.second) ? epsilon3_
-                                    : (factor_21 * (1 - std::pow(tanh_r_12, 2)) -
-                                       factor_23 * (1 - std::pow(tanh_r_23, 2)));
+    double retval = 0.0;
+    if (point < domain_.first || point > domain_.second) {
+      retval = 0.0;
+    } else {
+      double factor_21 = (epsilon2_ - epsilon1_) / (2.0 * width12_);
+      double factor_23 = (epsilon2_ - epsilon3_) / (2.0 * width23_);
+      double tanh_r_12 = std::tanh((point - center12_) / width12_);
+      double tanh_r_23 = std::tanh((point - center23_) / width23_);
+      retval = factor_21 * (1 - std::pow(tanh_r_12, 2)) -
+               factor_23 * (1 - std::pow(tanh_r_23, 2));
+    }
+    return retval;
   }
   std::ostream & printObject(std::ostream & os) {
     os << "Profile functional form: tanh" << std::endl;

@@ -38,11 +38,8 @@ class Element;
 } // namespace green
 } // namespace pcm
 
-#include "dielectric_profile/ProfileTypes.hpp"
-
 namespace pcm {
 using cavity::Element;
-using dielectric_profile::Permittivity;
 /*! \typedef KernelS
  *  \brief functor handle to the kernelS method
  */
@@ -131,7 +128,7 @@ public:
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const = 0;
   /*! Returns a dielectric permittivity profile */
-  virtual Permittivity permittivity() const = 0;
+  virtual double permittivity() const = 0;
 
   /*! @{ Methods to compute the diagonal of the matrix representation of the S and D
    *    operators by approximate collocation. */

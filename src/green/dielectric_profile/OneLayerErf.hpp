@@ -61,10 +61,18 @@ private:
    *  \note We return epsilon2_ when the sampling point is outside the upper limit.
    */
   double value(double point) const {
-    double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
-    double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-    double val = pcm::erf((point - center_) / width_);
-    return (point > domain_.second) ? epsilon2_ : (epsPlus + epsMinus * val);
+    double retval = 0.0;
+    if (point < domain_.first) {
+      retval = epsilon1_;
+    } else if (point > domain_.second) {
+      retval = epsilon2_;
+    } else {
+      double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
+      double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
+      double val = pcm::erf((point - center_) / width_);
+      retval = epsPlus + epsMinus * val;
+    }
+    return retval;
   }
   /*! Returns value of derivative of dielectric profile at given point
    *  \param[in] point where to evaluate the derivative
@@ -72,10 +80,16 @@ private:
    * sampling point is outside the upper limit.
    */
   double derivative(double point) const {
-    double factor = (epsilon2_ - epsilon1_) / (width_ * std::sqrt(M_PI));
-    double t = (point - center_) / width_;
-    double val = std::exp(-std::pow(t, 2));
-    return (point > domain_.second) ? 0.0 : (factor * val);
+    double retval = 0.0;
+    if (point < domain_.first || point > domain_.second) {
+      retval = 0.0;
+    } else {
+      double factor = (epsilon2_ - epsilon1_) / (width_ * std::sqrt(M_PI));
+      double t = (point - center_) / width_;
+      double val = std::exp(-std::pow(t, 2));
+      retval = factor * val;
+    }
+    return retval;
   }
   std::ostream & printObject(std::ostream & os) {
     os << "Profile functional form: erf" << std::endl;

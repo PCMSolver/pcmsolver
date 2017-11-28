@@ -32,14 +32,13 @@
 
 #include "DerivativeTypes.hpp"
 #include "IGreensFunction.hpp"
+#include "dielectric_profile/Uniform.hpp"
 #include "utils/Stencils.hpp"
 
 /*! \file GreensFunction.hpp */
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits, typename ProfilePolicy>
-
 /*! \class GreensFunction
  *  \brief Templated interface for Green's functions
  *  \author Luca Frediani and Roberto Di Remigio
@@ -47,6 +46,7 @@ template <typename DerivativeTraits, typename ProfilePolicy>
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  *  \tparam ProfilePolicy    dielectric profile type
  */
+template <typename DerivativeTraits, typename ProfilePolicy>
 class GreensFunction : public IGreensFunction {
 public:
   GreensFunction(const ProfilePolicy & p) : delta_(1.0e-04), profile_(p) {}
@@ -135,11 +135,7 @@ public:
 
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const __final __override {
-    return dielectric_profile::uniform(this->profile_);
-  }
-  /*! Returns a dielectric permittivity profile */
-  virtual Permittivity permittivity() const __final __override {
-    return this->profile_;
+    return pcm::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
   }
 
   friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
@@ -266,13 +262,12 @@ public:
   }
   /*! @}*/
 
-  /*! Whether the Green's function describes a uniform environment */
+  /*! \return Whether the Green's function describes a uniform environment
+   *  \note This uses is_same to check whether the type of ProfilePolicy is uniform
+   * not.
+   */
   virtual bool uniform() const __final __override {
-    return dielectric_profile::uniform(this->profile_);
-  }
-  /*! Returns a dielectric permittivity profile */
-  virtual Permittivity permittivity() const __final __override {
-    return this->profile_;
+    return pcm::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
   }
 
   friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {

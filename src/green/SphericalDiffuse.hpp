@@ -35,16 +35,14 @@ namespace pcm {
 namespace cavity {
 class Element;
 } // namespace cavity
-
-namespace dielectric_profile {
-class OneLayerTanh;
-class MembraneTanh;
-} // namespace dielectric_profile
 } // namespace pcm
 
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "InterfacesImpl.hpp"
+#include "dielectric_profile/MembraneTanh.hpp"
+#include "dielectric_profile/OneLayerErf.hpp"
+#include "dielectric_profile/OneLayerTanh.hpp"
 
 namespace pcm {
 namespace green {
@@ -76,7 +74,8 @@ public:
    * file.
    */
   template <typename U = ProfilePolicy,
-            typename = pcm::IsNotSame<U, dielectric_profile::MembraneTanh> >
+            typename = typename pcm::enable_if<
+                !pcm::is_same<U, dielectric_profile::MembraneTanh>::value>::type>
   SphericalDiffuse(double e1,
                    double e2,
                    double w,
@@ -103,7 +102,8 @@ public:
    * file.
    */
   template <typename U = ProfilePolicy,
-            typename = pcm::IsSame<U, dielectric_profile::MembraneTanh> >
+            typename = typename pcm::enable_if<
+                pcm::is_same<U, dielectric_profile::MembraneTanh>::value>::type>
   SphericalDiffuse(double e1,
                    double e2,
                    double e3,
@@ -121,6 +121,10 @@ public:
     initSphericalDiffuse();
   }
   virtual ~SphericalDiffuse() {}
+
+  virtual double permittivity() const __override __final {
+    PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
+  }
 
   friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
     return gf.printObject(os);

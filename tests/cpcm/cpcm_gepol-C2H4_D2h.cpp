@@ -35,6 +35,7 @@
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
 #include "solver/CPCMSolver.hpp"
+#include "utils/MathUtils.hpp"
 #include "utils/Molecule.hpp"
 
 using namespace pcm;

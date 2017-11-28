@@ -60,10 +60,18 @@ private:
    *  \note We return epsilon2_ when the sampling point is outside the upper limit.
    */
   double value(double point) const {
-    double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
-    double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-    double tanh_r = std::tanh((point - center_) / width_);
-    return (point > domain_.second) ? epsilon2_ : (epsPlus + epsMinus * tanh_r);
+    double retval = 0.0;
+    if (point < domain_.first) {
+      retval = epsilon1_;
+    } else if (point > domain_.second) {
+      retval = epsilon2_;
+    } else {
+      double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
+      double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
+      double tanh_r = std::tanh((point - center_) / width_);
+      retval = epsPlus + epsMinus * tanh_r;
+    }
+    return retval;
   }
   /*! Returns value of derivative of dielectric profile at given point
    *  \param[in] point where to evaluate the derivative
@@ -71,9 +79,15 @@ private:
    * sampling point is outside the upper limit.
    */
   double derivative(double point) const {
-    double factor = (epsilon2_ - epsilon1_) / (2.0 * width_);
-    double tanh_r = std::tanh((point - center_) / width_);
-    return (point > domain_.second) ? 0.0 : (factor * (1 - std::pow(tanh_r, 2)));
+    double retval = 0.0;
+    if (point < domain_.first || point > domain_.second) {
+      retval = 0.0;
+    } else {
+      double factor = (epsilon2_ - epsilon1_) / (2.0 * width_);
+      double tanh_r = std::tanh((point - center_) / width_);
+      retval = factor * (1 - std::pow(tanh_r, 2));
+    }
+    return retval;
   }
   std::ostream & printObject(std::ostream & os) {
     os << "Profile functional form: tanh" << std::endl;

@@ -357,7 +357,7 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
   pcm::tie(eps_r2, pcm::ignore) = this->profile_(pp_shift.norm());
 
   /* Evaluation of the Wronskian and the denominator */
-  double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
+  double denominator = (d_zeta2 - d_omega2) * r2 * eps_r2;
 
   double gr12 = 0.0;
   if (r1 < r2) {
@@ -385,26 +385,31 @@ double SphericalDiffuse<ProfilePolicy>::coefficient_impl(
   double r1 = (sp + this->origin_).norm();
   double r2 = (pp + this->origin_).norm();
 
+  double y1 = log(r1);
+  double y2 = log(r2);
+  double dy1 = 1/r1;
+  double dy2 = 1/r2;
+
   /* Sample zetaC_ */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
   /* Value of zetaC_ at point with index 1 */
-  pcm::tie(zeta1, pcm::ignore) = zetaC_(r1);
+  pcm::tie(zeta1, pcm::ignore) = zetaC_(y1);
   /* Value of zetaC_ and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2) = zetaC_(r2);
+  pcm::tie(zeta2, d_zeta2) = zetaC_(y2);
 
   /* Sample omegaC_ */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omegaC_ at point with index 1 */
-  pcm::tie(omega1, pcm::ignore) = omegaC_(r1);
+  pcm::tie(omega1, pcm::ignore) = omegaC_(y1);
   /* Value of omegaC_ and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2) = omegaC_(r2);
+  pcm::tie(omega2, d_omega2) = omegaC_(y2);
 
   double tmp = 0.0, coeff = 0.0;
   double eps_r2 = 0.0;
   pcm::tie(eps_r2, pcm::ignore) = this->profile_(r2);
 
   /* Evaluation of the Wronskian and the denominator */
-  double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
+  double denominator = (d_zeta2 - d_omega2) * r2 * eps_r2;
 
   if (r1 < r2) {
     double f_L = r1 / r2;

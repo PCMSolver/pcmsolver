@@ -47,9 +47,9 @@ Travis CI runs release builds using [ccache](https://ccache.samba.org/) to speed
   with their Xcode 7.3.1 image.
   The following compilers are used:
 
-  1. Apple Clang 7.3.0, GFortran 5.5.0, Python 2.7 This build generates _only_
+  1. Apple Clang 7.3.0, GFortran 6.4.0, Python 2.7 This build generates _only_
      the static library.
-  2. GCC 7.2.0, Python 3.6 This build generates _both_ the shared and static
+  2. Apple Clang 7.3.0, GFortran 7.2.0, Python 3.6 This build generates _both_ the shared and static
      libraries, linking executables to the former.
 
 The build needed for submission to [Coverity scan](https://scan.coverity.com/)

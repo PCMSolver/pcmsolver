@@ -1,7 +1,7 @@
 if(PYMOD_INSTALL_LIBDIR)
     set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/pcmsolver")
 else()
-    set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_BINDIR}")
+    set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_BINDIR}/pcmsolver")
 endif()
 
 # Configure the header with library-wide preprocessor definitions
@@ -62,4 +62,9 @@ install(FILES ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
 file(COPY ${PROJECT_SOURCE_DIR}/cmake/lib/docopt/docopt.py
      DESTINATION ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR})
 install(FILES ${PROJECT_SOURCE_DIR}/cmake/lib/docopt/docopt.py
+        DESTINATION ${PYMOD_INSTALL_FULLDIR})
+
+# Install __init__.py
+configure_file(${PROJECT_SOURCE_DIR}/tools/init.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py COPYONLY)
+install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py
         DESTINATION ${PYMOD_INSTALL_FULLDIR})

@@ -48,10 +48,19 @@ import sys
 import tempfile
 import os
 from copy import deepcopy
-import getkw
 import re
 import subprocess
-from codata import CODATAdict
+
+# this contraption is here because this script can be called directly
+# but also imported and then relative imports fail
+# it would be good to separate the __main__ part out which should then import
+# everything it needs to separate the script part from the library part
+try:
+    from getkw import Section, GetkwParser
+    from codata import CODATAdict
+except ModuleNotFoundError:
+    from .getkw import Section, GetkwParser
+    from .codata import CODATAdict
 
 sys.path.append(os.path.dirname(__file__))
 try:
@@ -173,7 +182,7 @@ def parse_pcm_input(inputFile):
 
     # Set up a GetKw object and let it parse our input:
     # here is where the magic happens.
-    inkw = getkw.GetkwParser().parseFile(uppercased)
+    inkw = GetkwParser().parseFile(uppercased)
     # Remove temporary file
     os.remove(uppercased)
     inkw.sanitize(valid_keywords)
@@ -192,7 +201,7 @@ def parse_pcm_input(inputFile):
 
 
 def execute(parsedFile):
-    executable = os.path.join(os.path.dirname(__file__), "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@")
+    executable = os.path.join(os.path.dirname(__file__), '..', "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@")
     if (executable):
         p = subprocess.Popen(
             [executable, parsedFile],
@@ -217,7 +226,7 @@ def setup_keywords():
     Sets up sections, keywords and respective callback functions.
     """
     # Top-level section
-    top = getkw.Section('toplevel', callback=verify_top)
+    top = Section('toplevel', callback=verify_top)
     top.set_status(True)
     # Define units of measure
     # Valid values: AU (atomic units) or ANGSTROM
@@ -229,7 +238,7 @@ def setup_keywords():
     top.add_kw('CODATA', 'INT', 2010)
 
     # Cavity section
-    cavity = getkw.Section('CAVITY', callback=verify_cavity)
+    cavity = Section('CAVITY', callback=verify_cavity)
     # Type of the cavity
     # Valid values: GEPOL and RESTART
     cavity.add_kw('TYPE', 'STR')
@@ -277,7 +286,7 @@ def setup_keywords():
     top.add_sect(cavity)
 
     # Medium section
-    medium = getkw.Section('MEDIUM', callback=verify_medium)
+    medium = Section('MEDIUM', callback=verify_medium)
     # Type of solver
     # Valid values: IEFPCM, CPCM
     medium.add_kw('SOLVERTYPE', 'STR', 'IEFPCM')
@@ -320,7 +329,7 @@ def setup_keywords():
     top.add_sect(medium)
 
     # Green's function section
-    green = getkw.Section('GREEN', callback=verify_green)
+    green = Section('GREEN', callback=verify_green)
     # Green's function type
     # Valid values: VACUUM, UNIFORMDIELECTRIC, SPHERICALDIFFUSE, METALSPHERE, GREENSFUNCTIONSUM
     # Default: VACUUM
@@ -410,7 +419,7 @@ def setup_keywords():
     green.add_sect(green_part)
 
     # Molecule section
-    molecule = getkw.Section('MOLECULE')
+    molecule = Section('MOLECULE')
     # List of geometry and classical point charges
     # Valid values: array of doubles in format [x, y, z, Q]
     # Notes: charges are always in atomic units
@@ -424,7 +433,7 @@ def setup_keywords():
     # ChargeDistribution section
     # Set a classical charge distribution, inside or outside the cavity
     # No additional spheres will be generated.
-    charge_distribution = getkw.Section('CHARGEDISTRIBUTION', callback=verify_charge_distribution)
+    charge_distribution = Section('CHARGEDISTRIBUTION', callback=verify_charge_distribution)
     # Monopoles
     # Valid values: array of doubles in format [x, y, z, Q]
     # Notes: charges are always in atomic units

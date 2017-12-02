@@ -37,9 +37,11 @@ add_custom_command(
   )
 add_custom_target(generate-pcmsolver-py ALL DEPENDS ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py)
 install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py DESTINATION ${PYMOD_INSTALL_FULLDIR})
+
 # Configure the codata Python module
 file(COPY ${PROJECT_SOURCE_DIR}/tools/codata.py DESTINATION ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR})
 install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/codata.py DESTINATION ${PYMOD_INSTALL_FULLDIR})
+
 # Configure the plot_cavity Python script
 file(COPY ${PROJECT_SOURCE_DIR}/tools/plot_cavity.py DESTINATION ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR})
 install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/plot_cavity.py DESTINATION ${PYMOD_INSTALL_FULLDIR})

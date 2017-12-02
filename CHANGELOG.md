@@ -26,14 +26,15 @@
   defining the type of object and to remove now unused information.
 - Documentation building is fully handled _via_ `sphinx-build`: CMake will no longer generate a `doc` build target.
 - Simplified `.travis.yml` and got rid of Conda to handle multiple Python versions.
+- Moved python scripts from `bin/` to `bin/pcmsolver/` and introduced `bin/pcmsolver/__init__.py`.
 - The [Catch unit test framework](https://github.com/philsquared/Catch) has
   been updated to its latest version still supporting C++03
   [v1.11.0](https://github.com/philsquared/Catch/releases/tag/v1.11.0)
 
 ### Fixed
 
-- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada:
-  The build had been failing for a while since docs were generated for all files, including
+- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada: 
+  The build had been failing for a while since docs were generated for all files, including 
   documentation files from previous build. Besides, source code doxygen blocks were not
   exctracted when inside namespaces.
 - Compiler warning in the `Sphere` class due to a redeclaration of `operator<<`.
@@ -413,7 +414,7 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.11...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.11..HEAD
 [Version 1.1.11]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.10...v1.1.11
 [Version 1.1.10]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.9...v1.1.10
 [Version 1.1.9]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.8...v1.1.9

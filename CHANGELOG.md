@@ -23,8 +23,9 @@
 
 ### Removed
 
-- The `pcmsolver_f2c_string` function was removed from the `FortranCUtils`
-  header and source files.
+- `FortranCUtils` header and source files were removed. The `pcmsolver_f2c_string` and `pcmsolver_c2f_string`
+  functions are thus gone. For the former, use the replacement
+  `pcmsolver_fstring_to_carray` function provided in the Fortran bindings to the library.
 
 ## [Version 1.1.11] - 2017-10-25
 

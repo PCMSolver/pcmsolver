@@ -13,6 +13,7 @@ add_subdirectory(solver)
 add_subdirectory(utils)
 
 list(APPEND _objects $<TARGET_OBJECTS:cavity>
+                     $<$<BOOL:${ENABLE_Fortran_API}>:$<TARGET_OBJECTS:fortran_bindings>>
                      $<TARGET_OBJECTS:green>
                      $<TARGET_OBJECTS:interface>
                      $<TARGET_OBJECTS:metal>

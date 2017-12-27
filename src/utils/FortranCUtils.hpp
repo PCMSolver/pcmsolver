@@ -41,17 +41,6 @@ extern "C" {
   FortranCInterface_GLOBAL_(pcmsolver_c2f_string, PCMSOLVER_C2F_STRING)
 void pcmsolver_c2f_string(char * src, char * dest, int * len);
 
-/*! \brief Convert a Fortran string to a C string
- *  \param[in] src Fortran string
- *  \param[out] dest C string
- *  \param[in] len length of Fortran string
- *  Chop off trailing blanks off of a Fortran string and
- *  move it into C string.
- */
-#define pcmsolver_f2c_string                                                        \
-  FortranCInterface_GLOBAL_(pcmsolver_f2c_string, PCMSOLVER_F2C_STRING)
-void pcmsolver_f2c_string(char * src, char * dest, int * len);
-
 #ifdef __cplusplus
 }
 #endif

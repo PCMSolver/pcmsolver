@@ -37,7 +37,7 @@ else()
 endif()
 
 add_subdirectory(C_host)
-if(ENABLE_FORTRAN_API)
+if(ENABLE_Fortran_API)
   add_subdirectory(Fortran_host)
 endif()
 if(BUILD_STANDALONE)

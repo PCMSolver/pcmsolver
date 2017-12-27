@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Added
+
+- The function `pcmsolver_fstring_to_carray` was added to the Fortran bindings
+  for the library. As the name suggests, this function "translates" a Fortran
+  string into a C `char` array. This supersedes and replaces the
+  `pcmsolver_f2c_string` function.
+
 ### Changed
 
 - Documentation building is fully handled _via_ `sphinx-build`: CMake will no longer generate a `doc` build target.
@@ -9,10 +16,15 @@
 
 ### Fixed
 
-- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada: 
-  The build had been failing for a while since docs were generated for all files, including 
+- Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada:
+  The build had been failing for a while since docs were generated for all files, including
   documentation files from previous build. Besides, source code doxygen blocks were not
   exctracted when inside namespaces.
+
+### Removed
+
+- The `pcmsolver_f2c_string` function was removed from the `FortranCUtils`
+  header and source files.
 
 ## [Version 1.1.11] - 2017-10-25
 

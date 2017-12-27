@@ -3,8 +3,8 @@ let
   nixpkgs = (hostPkgs.fetchFromGitHub {
     owner = "NixOS";
     repo = "nixpkgs-channels";
-    rev = "ac355040656de04f59406ba2380a96f4124ebdad";
-    sha256 = "0frhc7mnx88sird6ipp6578k5badibsl0jfa22ab9w6qrb88j825";
+    rev = "nixos-unstable";
+    sha256 = "1d4q92jw42d51s9bn380jayy2rs1v0h1y8kvrbjg3i43f72ck5q5";
   });
 in
   with import nixpkgs {};
@@ -21,13 +21,13 @@ in
       doxygen
       exa
       #gcc
-      gdb
       gfortran
       graphviz
       lldb
-      python35Packages.matplotlib
-      python35Packages.numpy
-      python35Packages.virtualenvwrapper
+      python3Packages.matplotlib
+      python3Packages.numpy
+      python3Packages.pyyaml
+      python3Packages.virtualenvwrapper
       valgrind
       zlib
     ];

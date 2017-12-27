@@ -152,11 +152,11 @@ Some options can only be tweaked `via` `--cmake-options` to the setup script:
 
 * `ENABLE_TIMER` Enable compilation of timer sources. Enabled by default.
 * `BUILD_STANDALONE` Enable compilation of standalone `run_pcm` executable. Enabled by default.
-* `ENABLE_FORTRAN_API` Enable compilation of the Fortran90 bindings for the API. Disabled by default.
+* `ENABLE_Fortran_API` Enable compilation of the Fortran90 bindings for the API. Enabled by default.
 * `ENABLE_GENERIC` Enable mostly static linking in shared library. Disabled by default.
 * `ENABLE_TESTS` Enable compilation of unit tests suite. Enabled by default.
 * `SHARED_LIBRARY_ONLY` Create only shared library. Opposite of `--static`.
-* `PYMOD_INSTALL_LIBDIR` *If set*, installs python scripts/modules to 
+* `PYMOD_INSTALL_LIBDIR` *If set*, installs python scripts/modules to
   ``${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/pcmsolver`` rather than the
   default ``${CMAKE_INSTALL_BINDIR}`` (i.e., ``bin``).
 * `CMAKE_INSTALL_BINDIR` Where to install executables, if not to ``bin``.

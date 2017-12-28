@@ -9,7 +9,6 @@ LoggerImpl.hpp
 MathUtils.hpp
 Molecule.hpp
 QuadratureRules.hpp
-RungeKutta4.hpp
 Solvent.hpp
 Sphere.hpp
 SplineFunction.hpp
@@ -25,7 +24,6 @@ Atom.cpp
 ChargeDistribution.cpp
 Molecule.cpp
 QuadratureRules.cpp
-RungeKutta4.cpp
 Solvent.cpp
 Sphere.cpp
 Symmetry.cpp

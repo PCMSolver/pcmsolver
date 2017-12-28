@@ -25,8 +25,10 @@
 
 #include <stddef.h>
 
-#include "PCMInput.h"
 #include "PCMSolverExport.h"
+
+#include "PCMInput.h"
+#include "PCMSolverInput.h"
 
 #define PCMSolver_API PCMSolver_EXPORT
 
@@ -66,6 +68,11 @@ typedef struct pcmsolver_context_s pcmsolver_context_t;
  *  Forward-declare PCMInput input wrapping struct
  */
 struct PCMInput;
+
+/*! \struct PCMSolverInput
+ *  Forward-declare PCMSolverInput input wrapping struct
+ */
+struct PCMSolverInput;
 
 /*! \enum pcmsolver_reader_t
  *  \brief Input processing strategies
@@ -126,6 +133,12 @@ PCMSolver_API pcmsolver_context_t * pcmsolver_new_v1112(
     const char * parsed_fname,
     struct PCMInput * host_input,
     HostWriter writer);
+
+/*! \brief Creates a new PCM context object
+ *  \param[in] input input parameters for PCMSolver
+ */
+PCMSolver_API pcmsolver_context_t * pcmsolver_ctor(
+    struct PCMSolverInput * host_input);
 
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted

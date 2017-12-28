@@ -37,7 +37,8 @@ src/metal/*.F90 licensefile=.githooks/LICENSE-Fortran
 # pedra
 src/pedra/*.inc             licensefile=.githooks/LICENSE-Fortran
 src/pedra/*.F90             licensefile=.githooks/LICENSE-Fortran
-src/pedra/pedra_dlapack.F90 !licensefile
+src/pedra/*.f90             licensefile=.githooks/LICENSE-Fortran
+src/pedra/pedra_dlapack.f90 !licensefile
 
 # solver
 src/solver/*.hpp licensefile=.githooks/LICENSE-C++

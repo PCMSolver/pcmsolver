@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include "PCMSolverExport.h"
+
 // To cope with the fact that C doesn't have bool as primitive type
 #ifndef pcmsolver_bool_t_DEFINED
 #define pcmsolver_bool_t_DEFINED
@@ -39,7 +41,7 @@ typedef bool pcmsolver_bool_t;
 /*! \struct PCMInput
  *  \brief Data structure for host-API input communication.
  */
-typedef struct PCMInput {
+PCMSolver_DEPRECATED typedef struct PCMInput {
   /// Type of cavity requested.
   char cavity_type[8];
   /// Wavelet cavity mesh patch level.

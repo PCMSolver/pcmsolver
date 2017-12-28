@@ -70,7 +70,7 @@ struct PCMInput;
 /*! \enum pcmsolver_reader_t
  *  \brief Input processing strategies
  */
-typedef enum {
+PCMSolver_DEPRECATED typedef enum {
   PCMSOLVER_READER_OWN, /*!< Module reads input on its own */
   PCMSOLVER_READER_HOST /*!< Module receives input from host */
 } pcmsolver_reader_t;
@@ -94,13 +94,14 @@ typedef void (*HostWriter)(const char * message);
  *  of 4 integers: number of generators, first, second and third generator
  *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
  */
-PCMSolver_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading,
-                                                  int nr_nuclei,
-                                                  double charges[],
-                                                  double coordinates[],
-                                                  int symmetry_info[],
-                                                  struct PCMInput * host_input,
-                                                  HostWriter writer);
+PCMSolver_DEPRECATED PCMSolver_API pcmsolver_context_t * pcmsolver_new(
+    pcmsolver_reader_t input_reading,
+    int nr_nuclei,
+    double charges[],
+    double coordinates[],
+    int symmetry_info[],
+    struct PCMInput * host_input,
+    HostWriter writer);
 
 /*! \brief Creates a new PCM context object, updated in v1.1.12
  *  \param[in] input_reading input processing strategy

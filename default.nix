@@ -24,6 +24,7 @@ in
       gfortran
       graphviz
       lldb
+      python3Packages.docopt
       python3Packages.matplotlib
       python3Packages.numpy
       python3Packages.pyyaml

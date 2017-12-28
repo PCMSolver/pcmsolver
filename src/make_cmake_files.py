@@ -51,12 +51,12 @@ Options:
 
 def glob_sources_cxx(dir_name):
     """Create a list of C++ headers and sources to be used in a CMakeLists.txt file."""
-    headers = 'list(APPEND headers_list '
-    headers += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.hpp')))
+    headers = 'list(APPEND headers_list\n'
+    headers += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.hpp')))
     headers += ')\n\n'
 
-    sources = 'list(APPEND sources_list '
-    sources += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.cpp')))
+    sources = 'list(APPEND sources_list\n'
+    sources += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.cpp')))
     sources += ')\n\n'
 
     message = '# List of headers\n' + headers \
@@ -66,12 +66,12 @@ def glob_sources_cxx(dir_name):
 
 def glob_sources_c(dir_name):
     """Create a list of C headers and sources to be used in a CMakeLists.txt file."""
-    headers = 'list(APPEND headers_list '
-    headers += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.h')))
+    headers = 'list(APPEND headers_list \n'
+    headers += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.h')))
     headers += ')\n\n'
 
-    sources = 'list(APPEND sources_list '
-    sources += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.c')))
+    sources = 'list(APPEND sources_list\n'
+    sources += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.c')))
     sources += ')\n\n'
 
     message = '# List of headers\n' + headers \
@@ -85,8 +85,8 @@ def glob_sources_fortran(dir_name):
     list_of_sources = []
     for ftype in types:
         list_of_sources.extend(sorted(glob.glob(dir_name + '/' + ftype)))
-    sources = 'list(APPEND sources_list '
-    sources += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in list_of_sources)
+    sources = 'list(APPEND sources_list\n'
+    sources += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in list_of_sources)
     sources += ')\n\n'
 
     message = '# List of sources\n' + sources

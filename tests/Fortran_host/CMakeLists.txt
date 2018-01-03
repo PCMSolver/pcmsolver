@@ -1,4 +1,7 @@
-add_executable(Fortran_host Fortran_host.f90 Fortran_host-modules.f90)
+add_executable(Fortran_host 
+  Fortran_host.f90 
+  Fortran_host-modules.f90
+  )
 target_link_libraries(Fortran_host PCMSolver)
 set_target_properties(Fortran_host PROPERTIES LINKER_LANGUAGE Fortran)
 add_test(

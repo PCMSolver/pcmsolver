@@ -23,6 +23,7 @@
 
 #include "Meddle.hpp"
 #include "PCMInput.h"
+#include "PCMSolverInput.h"
 #include "pcmsolver.h"
 
 #include <string>
@@ -100,6 +101,9 @@ pcmsolver_context_t * pcmsolver_new_v1112(pcmsolver_reader_t input_reading,
             nr_nuclei, charges, coordinates, symmetry_info, writer, parsed_fname));
   }
 }
+pcmsolver_context_t * pcmsolver_ctor(PCMSolverInput * input) {
+  return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(*input));
+}
 
 namespace pcm {
 void Meddle::CTORBody() {
@@ -160,6 +164,18 @@ Meddle::Meddle(int nr_nuclei,
     : hostWriter_(write), input_(Input(host_input)), hasDynamic_(false) {
   TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
+  TIMER_OFF("Meddle::initInput");
+
+  CTORBody();
+}
+
+Meddle::Meddle(const PCMSolverInput & input)
+    : hostWriter_(input.writer), input_(Input(detail::translate(input))), hasDynamic_(false) {
+  TIMER_ON("Meddle::initInput");
+  initInput(input.nr_nuclei,
+            input.charges,
+            input.coordinates,
+            input.symmetry_info);
   TIMER_OFF("Meddle::initInput");
 
   CTORBody();
@@ -597,6 +613,23 @@ void print(const PCMInput & inp) {
   std::cout << "inside type " << std::string(inp.inside_type) << std::endl;
   std::cout << "outside type " << std::string(inp.outside_type) << std::endl;
   std::cout << "epsilon outside " << inp.outside_epsilon << std::endl;
+}
+
+PCMInput translate(const PCMSolverInput & input) {
+  struct PCMInput inp = {.area = input.area,
+                         .scaling = input.scaling,
+                         .min_radius = input.min_radius,
+                         .correction = input.correction,
+                         .probe_radius = input.probe_radius,
+                         .outside_epsilon = input.outside_epsilon};
+  strcpy(inp.cavity_type, input.cavity_type);
+  strcpy(inp.radii_set, input.radii_set);
+  strcpy(inp.restart_name, input.restart_name);
+  strcpy(inp.solver_type, input.solver_type);
+  strcpy(inp.solvent, input.solvent);
+  strcpy(inp.inside_type, input.inside_type);
+  strcpy(inp.outside_type, input.outside_type);
+  return inp;
 }
 } // namespace detail
 } // namespace pcm

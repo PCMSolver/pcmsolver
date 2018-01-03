@@ -41,7 +41,7 @@ typedef bool pcmsolver_bool_t;
 /*! \struct PCMInput
  *  \brief Data structure for host-API input communication.
  */
-PCMSolver_DEPRECATED typedef struct PCMInput {
+struct PCMSolver_DEPRECATED PCMInput {
   /// Type of cavity requested.
   char cavity_type[8];
   /// Wavelet cavity mesh patch level.
@@ -78,4 +78,4 @@ PCMSolver_DEPRECATED typedef struct PCMInput {
   double outside_epsilon;
   /// Type of Green's function requested outside the cavity.
   char outside_type[22];
-} PCMInput;
+};

@@ -38,6 +38,7 @@ class IGreensFunction;
 class ISolver;
 } // namespace pcm
 struct PCMInput;
+struct PCMSolverInput;
 
 #include "Input.hpp"
 #include "utils/Molecule.hpp"
@@ -62,6 +63,8 @@ void initSpheresAtoms(const Input &,
                       const Eigen::Matrix3Xd &,
                       std::vector<Sphere> &);
 void print(const PCMInput &);
+void print(const PCMSolverInput &);
+PCMInput translate(const PCMSolverInput &);
 } // namespace detail
 
 /*! \class Meddle
@@ -117,6 +120,10 @@ public:
          int symmetry_info[],
          const PCMInput & host_input,
          const HostWriter & writer);
+  /*! \brief Constructor
+   *  \param[in] input input to the module, as read by the host
+   */
+  Meddle(const PCMSolverInput & input);
   ~Meddle();
 
   /*! \brief Getter for the molecule object */

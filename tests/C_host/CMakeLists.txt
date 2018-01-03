@@ -48,3 +48,28 @@ set_tests_properties(fail-C_host
     LABELS "api;C_host;fail"
     WILL_FAIL TRUE
   )
+
+add_executable(C_host-new C_host-new.c)
+target_include_directories(C_host-new
+  PRIVATE
+    ${PROJECT_SOURCE_DIR}/tests/C_host
+    ${PROJECT_SOURCE_DIR}/api
+  )
+target_link_libraries(C_host-new PCMSolver)
+target_link_libraries(C_host-new m)
+set_target_properties(C_host-new
+  PROPERTIES
+    LINKER_LANGUAGE C
+  )
+add_test(
+  NAME
+    C_host-new
+  COMMAND
+    C_host-new
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_BINARY_DIR}
+  )
+set_tests_properties(C_host-new
+  PROPERTIES
+    LABELS "api;C_host-new"
+  )

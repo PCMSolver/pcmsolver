@@ -36,34 +36,50 @@ typedef bool pcmsolver_bool_t;
           !defined(__cplusplus) */
 #endif /* pcmsolver_bool_t_DEFINED */
 
+/*! \typedef HostWriter
+ *  Flushes module output to host program
+ *  \param[in,out] message contents of the module output
+ */
+typedef void (*HostWriter)(const char * message);
+
 /*! \struct PCMSolverInput
  *  \brief Data structure for host-API input communication.
  */
-typedef struct PCMSolverInput {
+struct PCMSolverInput {
+  /// Number of atomic centers
+  int nr_nuclei;
+  /// Array of atomic charges
+  double * charges;
+  /// Array of atomic coordinates
+  double * coordinates;
+  /// Molecular point group generators
+  int * symmetry_info;
+  /// Function pointer for module output flushing
+  HostWriter writer;
   /// Type of cavity requested.
-  char cavity_type[8];
+  const char * cavity_type;
   /// Average tesserae area.
   double area;
   /// The built-in radii set to be used.
-  char radii_set[8];
+  const char * radii_set;
   /// Whether to scale or not the atomic radii.
   pcmsolver_bool_t scaling;
   /// Name of the .npz file for GePol cavity restart.
-  char restart_name[20];
+  const char * restart_name;
   /// Minimal radius for the added spheres.
   double min_radius;
   /// Type of solver requested.
-  char solver_type[7];
+  const char * solver_type;
   /// Correction in the CPCM apparent surface charge scaling factor.
   double correction;
   /// Name of the solvent.
-  char solvent[16];
+  const char * solvent;
   /// Radius of the spherical probe mimicking the solvent.
   double probe_radius;
   /// Type of Green's function requested inside the cavity.
-  char inside_type[7];
+  const char * inside_type;
   /// Value of the static permittivity outside the cavity.
   double outside_epsilon;
   /// Type of Green's function requested outside the cavity.
-  char outside_type[22];
-} PCMSolverInput;
+  const char * outside_type;
+};

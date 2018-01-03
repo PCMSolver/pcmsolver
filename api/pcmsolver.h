@@ -77,16 +77,10 @@ struct PCMSolverInput;
 /*! \enum pcmsolver_reader_t
  *  \brief Input processing strategies
  */
-PCMSolver_DEPRECATED typedef enum {
+enum PCMSolver_DEPRECATED pcmsolver_reader_t {
   PCMSOLVER_READER_OWN, /*!< Module reads input on its own */
   PCMSOLVER_READER_HOST /*!< Module receives input from host */
-} pcmsolver_reader_t;
-
-/*! \typedef HostWriter
- *  Flushes module output to host program
- *  \param[in,out] message contents of the module output
- */
-typedef void (*HostWriter)(const char * message);
+};
 
 /*! \brief Creates a new PCM context object
  *  \param[in] input_reading input processing strategy
@@ -102,7 +96,7 @@ typedef void (*HostWriter)(const char * message);
  *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
  */
 PCMSolver_DEPRECATED PCMSolver_API pcmsolver_context_t * pcmsolver_new(
-    pcmsolver_reader_t input_reading,
+    enum pcmsolver_reader_t input_reading,
     int nr_nuclei,
     double charges[],
     double coordinates[],
@@ -137,8 +131,7 @@ PCMSolver_API pcmsolver_context_t * pcmsolver_new_v1112(
 /*! \brief Creates a new PCM context object
  *  \param[in] input input parameters for PCMSolver
  */
-PCMSolver_API pcmsolver_context_t * pcmsolver_ctor(
-    struct PCMSolverInput * host_input);
+PCMSolver_API pcmsolver_context_t * pcmsolver_ctor(struct PCMSolverInput * input);
 
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted

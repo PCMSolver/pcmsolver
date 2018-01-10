@@ -101,8 +101,8 @@ pcmsolver_context_t * pcmsolver_new_v1112(pcmsolver_reader_t input_reading,
             nr_nuclei, charges, coordinates, symmetry_info, writer, parsed_fname));
   }
 }
-pcmsolver_context_t * pcmsolver_ctor(PCMSolverInput * input) {
-  return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(*input));
+pcmsolver_context_t * pcmsolver_ctor(const PCMSolverInput input) {
+  return AS_TYPE(pcmsolver_context_t, new pcm::Meddle(input));
 }
 
 namespace pcm {

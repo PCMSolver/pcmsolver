@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "PCMSolverInput.h"
 #include "pcmsolver.h"
 
 #include "C_host-functions.h"
@@ -87,7 +88,7 @@ int main() {
                                  .inside_type = "vacuum",
                                  .outside_epsilon = 1.0,
                                  .outside_type = "uniformdielectric"};
-  pcmsolver_context_t * pcm_context = pcmsolver_ctor(&input);
+  pcmsolver_context_t * pcm_context = pcmsolver_ctor(input);
 
   pcmsolver_print(pcm_context);
 

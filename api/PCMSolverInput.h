@@ -36,48 +36,67 @@ typedef bool pcmsolver_bool_t;
           !defined(__cplusplus) */
 #endif /* pcmsolver_bool_t_DEFINED */
 
-/*! \typedef HostWriter
+/*! \typedef OutputWriter
  *  Flushes module output to host program
  *  \param[in,out] message contents of the module output
  */
-typedef void (*HostWriter)(const char * message);
+typedef void (*OutputWriter)(const char * message);
 
 /*! \struct PCMSolverInput
  *  \brief Data structure for host-API input communication.
+ *
+ *  The input is expected to be in **atomic units**
  */
 struct PCMSolverInput {
   /// Number of atomic centers
   int nr_nuclei;
   /// Array of atomic charges
   double * charges;
-  /// Array of atomic coordinates
+  /*! Array of atomic coordinates
+   *  These are expected in the format 3*nr_nuclei
+   */
   double * coordinates;
-  /// Molecular point group generators
+  /*! Array specifying the generators of the molecular point group.
+   *  The molecular point group information is passed as an array
+   *  of 4 integers: number of generators, first, second and third generator
+   *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
+   */
   int * symmetry_info;
   /// Function pointer for module output flushing
-  HostWriter writer;
+  OutputWriter writer;
   /// Type of cavity requested.
   const char * cavity_type;
-  /// Average tesserae area.
-  double area;
-  /// The built-in radii set to be used.
-  const char * radii_set;
-  /// Whether to scale or not the atomic radii.
-  pcmsolver_bool_t scaling;
   /// Name of the .npz file for GePol cavity restart.
   const char * restart_name;
+  /// Average tesserae area.
+  double area;
+  /// Whether to scale or not the atomic radii.
+  pcmsolver_bool_t scaling;
+  /// The built-in radii set to be used.
+  const char * radii_set;
   /// Minimal radius for the added spheres.
   double min_radius;
+  const char * mode;
+  int * atoms;
+  double * radii;
+  double * spheres;
+
   /// Type of solver requested.
   const char * solver_type;
-  /// Correction in the CPCM apparent surface charge scaling factor.
-  double correction;
+  pcmsolver_bool_t nonequilibrium;
   /// Name of the solvent.
   const char * solvent;
+  pcmsolver_bool_t matrix_symmetry;
+  /// Correction in the CPCM apparent surface charge scaling factor.
+  double correction;
+  const char * diagonal_integrator;
+  double diagonal_scaling;
   /// Radius of the spherical probe mimicking the solvent.
   double probe_radius;
+
   /// Type of Green's function requested inside the cavity.
   const char * inside_type;
+  const char * inside_derivative;
   /// Value of the static permittivity outside the cavity.
   double outside_epsilon;
   /// Type of Green's function requested outside the cavity.

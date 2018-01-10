@@ -27,9 +27,6 @@
 
 #include "PCMSolverExport.h"
 
-#include "PCMInput.h"
-#include "PCMSolverInput.h"
-
 #define PCMSolver_API PCMSolver_EXPORT
 
 // To cope with the fact that C doesn't have bool as primitive type
@@ -63,6 +60,12 @@ struct pcmsolver_context_s;
  *  Workaround to have pcmsolver_context_t available to C
  */
 typedef struct pcmsolver_context_s pcmsolver_context_t;
+
+/*! \typedef HostWriter
+ *  \brief Flushes module output to host program
+ *  \param[in,out] message contents of the module output
+ */
+typedef void (*HostWriter)(const char * message);
 
 /*! \struct PCMInput
  *  Forward-declare PCMInput input wrapping struct
@@ -131,7 +134,8 @@ PCMSolver_API pcmsolver_context_t * pcmsolver_new_v1112(
 /*! \brief Creates a new PCM context object
  *  \param[in] input input parameters for PCMSolver
  */
-PCMSolver_API pcmsolver_context_t * pcmsolver_ctor(struct PCMSolverInput * input);
+PCMSolver_API pcmsolver_context_t * pcmsolver_ctor(
+    const struct PCMSolverInput input);
 
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted

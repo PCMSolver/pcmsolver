@@ -38,7 +38,6 @@ class IGreensFunction;
 class ISolver;
 } // namespace pcm
 struct PCMInput;
-struct PCMSolverInput;
 
 #include "Input.hpp"
 #include "utils/Molecule.hpp"

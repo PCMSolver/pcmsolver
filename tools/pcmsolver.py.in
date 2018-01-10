@@ -146,7 +146,7 @@ def convert_to_upper_case(filename):
     # Write to temporary file in current working directory
     # The temporary file has the name of the input file, joined with a unique id
     temp, path = tempfile.mkstemp(prefix=filename + '.', dir=os.getcwd())
-    with open(path, 'wt') as outputFile:
+    with open(path, 'w') as outputFile:
         outputFile.write(final)
     os.close(temp)
     return path

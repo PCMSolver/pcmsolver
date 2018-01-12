@@ -36,6 +36,7 @@
   The build had been failing for a while since docs were generated for all files, including
   documentation files from previous build. Besides, source code doxygen blocks were not
   exctracted when inside namespaces.
+- Compiler warning in the `Sphere` class due to a redeclaration of `operator<<`.
 
 ### Removed
 

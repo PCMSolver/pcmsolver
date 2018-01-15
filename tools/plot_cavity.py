@@ -116,7 +116,7 @@ def plot(cavity_npz, surf_func_npy=None):
 
     cavity = np.load(cavity_npz)
 
-    nElements = cavity['elements']
+    nElements = cavity['elements'][0]
     centroids = cavity['centers']
 
     # Plot collocation points
@@ -134,7 +134,9 @@ def plot(cavity_npz, surf_func_npy=None):
         colors = mappable.to_rgba(surf_func.flatten())
     # Generate list of vertices
     vertices = [
-        zip(cavity['vertices_' + str(i)][0, :], cavity['vertices_' + str(i)][1, :], cavity['vertices_' + str(i)][2, :])
+        list(zip(cavity['vertices_' + str(i)][0, :],
+                 cavity['vertices_' + str(i)][1, :],
+                 cavity['vertices_' + str(i)][2, :]))
         for i in range(nElements)
     ]
     elements = Poly3DCollection(vertices, facecolors=colors)

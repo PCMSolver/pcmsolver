@@ -46,8 +46,9 @@
 - Documentation building on ReadTheDocs is fully functional again, thanks @arnfinn :tada:
   The build had been failing for a while since docs were generated for all files, including
   documentation files from previous build. Besides, source code doxygen blocks were not
-  exctracted when inside namespaces.
+  extracted when inside namespaces.
 - Compiler warning in the `Sphere` class due to a redeclaration of `operator<<`.
+- The `plot_cavity.py` script is now Python 3 compatible.
 
 ### Removed
 

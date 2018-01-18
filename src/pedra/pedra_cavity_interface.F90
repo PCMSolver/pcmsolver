@@ -60,7 +60,7 @@ integer(c_int)  :: nvert_(maxts_)
 real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)
 integer(c_int)  :: isphe_(maxts_)
 integer(c_int) :: len_pedra_
-character(kind=c_char, len=1), intent(in) :: pedra_(len_pedra_)
+character(kind=c_char, len=1), intent(in) :: pedra_(len_pedra_+1)
 
 integer(c_int)    :: i, j, k, offset
 integer(c_int)    :: error_code

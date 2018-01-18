@@ -160,17 +160,23 @@ def main():
         sys.stderr.write(options)
         sys.exit(-1)
     inpfil = arguments['<input_file>']
-    # Do the parsing and return parsed file name
+    # Do the parsing and return validated input
     parsed = parse_pcm_input(inpfil)
+    # The parsed, machine-readable file is now saved.
+    parsedFile = os.path.join(os.path.dirname(inpfil), '@' + os.path.basename(inpfil))
+    # Any leftover parsedFile will be overwritten
+    with open(parsedFile, 'w') as tmp:
+        tmp.write(parsed)
     # Execute standalone
     if arguments['--exe']:
-        execute(parsed)
+        execute(parsedFile)
 
 
-def parse_pcm_input(inputFile):
+def parse_pcm_input(inputFile, write_out=False):
     """
-    Parses human-readable input to PCMSolver and writes to
-    file the machine-readable parsed file.
+    Parses human-readable input to PCMSolver and return string with
+    machine-readable input.
+    Optionally, save the result of parsing to file.
     This function can be accessed from other Python scripts when
     importing the current file as a module.
     """
@@ -188,16 +194,13 @@ def parse_pcm_input(inputFile):
     inkw.sanitize(valid_keywords)
     inkw.run_callbacks(valid_keywords)
 
-    # The parsed, machine-readable file is now saved.
-    parsedFile = os.path.join(os.path.dirname(inputFile), '@' + os.path.basename(inputFile))
-    # If parsedFile already exists, it might be a leftover.
-    # Remove it
-    if (os.path.isfile(parsedFile)):
-        os.remove(parsedFile)
-    with open(parsedFile, 'wt') as tmp:
-        tmp.write(str(inkw.top))
+    if write_out:
+       # The parsed, machine-readable file is now saved.
+       parsedFile = os.path.join(os.path.dirname(inputFile), '@' + os.path.basename(inputFile))
+       with open(parsedFile, 'w') as tmp:
+           tmp.write(str(inkw.top))
 
-    return parsedFile
+    return str(inkw.top)
 
 
 def execute(parsedFile):

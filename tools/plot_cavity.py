@@ -1,6 +1,6 @@
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
-#  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+#  Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and collaborators.
 #
 #  This file is part of PCMSolver.
 #
@@ -90,11 +90,9 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     reg_index = np.linspace(start, stop, 257)
 
     # shifted index to match the data
-    shift_index = np.hstack([
-        np.linspace(
-            0.0, midpoint, 128, endpoint=False), np.linspace(
-                midpoint, 1.0, 129, endpoint=True)
-    ])
+    shift_index = np.hstack(
+        [np.linspace(0.0, midpoint, 128, endpoint=False),
+         np.linspace(midpoint, 1.0, 129, endpoint=True)])
 
     for ri, si in zip(reg_index, shift_index):
         r, g, b, a = cmap(ri)
@@ -134,10 +132,9 @@ def plot(cavity_npz, surf_func_npy=None):
         colors = mappable.to_rgba(surf_func.flatten())
     # Generate list of vertices
     vertices = [
-        list(zip(cavity['vertices_' + str(i)][0, :],
-                 cavity['vertices_' + str(i)][1, :],
-                 cavity['vertices_' + str(i)][2, :]))
-        for i in range(nElements)
+        list(
+            zip(cavity['vertices_' + str(i)][0, :], cavity['vertices_' + str(i)][1, :], cavity['vertices_' + str(i)][
+                2, :])) for i in range(nElements)
     ]
     elements = Poly3DCollection(vertices, facecolors=colors)
     ax.add_collection3d(elements)

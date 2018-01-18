@@ -1,7 +1,7 @@
 /* pcmsolver_copyright_start */
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ *     Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  *     This file is part of PCMSolver.
  *

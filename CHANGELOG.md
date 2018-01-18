@@ -39,6 +39,7 @@
 - The [Catch unit test framework](https://github.com/philsquared/Catch) has
   been updated to its latest version still supporting C++03
   [v1.11.0](https://github.com/philsquared/Catch/releases/tag/v1.11.0)
+- Travis continuous integration is _no longer_ run on Mac infrastructure.
 
 ### Fixed
 

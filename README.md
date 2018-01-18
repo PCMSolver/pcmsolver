@@ -30,27 +30,19 @@ Continuous integration builds
 All CI builds are triggered by push events to any branch.
 Travis CI runs release builds using [ccache](https://ccache.samba.org/) to speed up compilation.
 
-- Ubuntu 14.04 LTS 64-bit with CMake 3.5.1 and Boost 1.54.0 this is the
-  environment offered by [Travis CI](https://travis-ci.org).
-  Python and Python packages are installed and managed _via_ a virtual environment.
-  Python dependencies are listed in the `requirements.txt` file. The following
-  compilers are used:
+Ubuntu 14.04 LTS 64-bit with CMake 3.5.1 and Boost 1.54.0 this is the
+environment offered by [Travis CI](https://travis-ci.org).
+Python and Python packages are installed and managed _via_ [Pipenv](http://pipenv.readthedocs.io/en/latest/),
+using the `Pipfile` and `Pipfile.lock` files. The following
+compilers are used:
 
-  1. GCC 4.6, Python 2.7 This build generates _both_ the shared and static
-     libraries, linking executables to the former. The build is run with and
-     without coverage analysis, the latter being a _debug_ build.
-  2. Clang 3.5, GFortran 4.6, Python 3.5 This build generates _only_ the static
-     library.
-
-- Mac OS X 10.11 with CMake 3.6.2 and Boost 1.61.0
-  this is the environment offered by [Travis CI](https://travis-ci.org)
-  with their Xcode 7.3.1 image.
-  The following compilers are used:
-
-  1. Apple Clang 7.3.0, GFortran 6.4.0, Python 2.7 This build generates _only_
-     the static library.
-  2. Apple Clang 7.3.0, GFortran 7.2.0, Python 3.6 This build generates _both_ the shared and static
-     libraries, linking executables to the former.
+1. GCC 4.6, Python 2.7 This build generates _both_ the shared and static
+   libraries, linking executables to the former. The build is run with and
+   without coverage analysis, the latter being a _debug_ build.
+2. GCC 6.3.0, Python 2.7 This build generates _only_ the static library.
+3. Clang 3.5, GFortran 4.6, Python 3.5 This build generates _both_ the shared and static
+   libraries, linking executables to the former. The build is run with and
+   without coverage analysis, the latter being a _debug_ build.
 
 The build needed for submission to [Coverity scan](https://scan.coverity.com/)
 is triggered by pushes to the `coverity_scan` branch. It is run on

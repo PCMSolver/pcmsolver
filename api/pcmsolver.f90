@@ -67,6 +67,22 @@ interface pcmsolver_new
   end function
 end interface
 
+interface pcmsolver_new_v1112
+  function pcmsolver_new_v1112(input_reading, nr_nuclei, charges, coordinates, symmetry_info, &
+                               parsed_fname, host_input, writer) result(context) bind(C)
+    import
+    integer(c_int), intent(in), value :: input_reading
+    integer(c_int), intent(in), value :: nr_nuclei
+    real(c_double), intent(in)        :: charges(*)
+    real(c_double), intent(in)        :: coordinates(*)
+    integer(c_int), intent(in)        :: symmetry_info(*)
+    character(kind=c_char, len=1), intent(in) :: parsed_fname(*)
+    type(PCMInput), intent(in)        :: host_input
+    type(c_funptr), intent(in), value :: writer
+    type(c_ptr) :: context
+  end function
+end interface
+
 interface pcmsolver_delete
   subroutine pcmsolver_delete(context) bind(C)
     import

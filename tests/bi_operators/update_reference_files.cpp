@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -37,7 +37,6 @@
 #include "cavity/GePolCavity.hpp"
 #include "green/AnisotropicLiquid.hpp"
 #include "green/IonicLiquid.hpp"
-#include "green/SphericalDiffuse.hpp"
 #include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"

@@ -7,25 +7,19 @@
 PCMSolver
 =========
 
-An API for the Polarizable Continuum Model.
+An API for the Polarizable Continuum Model. Copyright [Roberto Di Remigio](mailto:roberto.d.remigio@uit.no),
+[Luca Frediani](mailto:luca.frediani@uit.no) and [contributors](https://github.com/PCMSolver/pcmsolver/blob/release/1.Y/AUTHORS.md)
 
 - [Project website](https://github.com/PCMSolver/pcmsolver)
 - [Changelog](CHANGELOG.md)
 - [Documentation](http://pcmsolver.readthedocs.io)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
-- [Build dashboard](https://testboard.org/cdash/index.php?project=PCMSolver)
-- Version 1.1.11 available
+- Version 1.1.12 available
 - Licensed under [LGPLv3](LICENSE)
 - CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.io/)
 
-Primary test environments
-=========================
-
-All builds force custom build of the needed Boost libraries, except when
-stated otherwise.
-
 Continuous integration builds
------------------------------
+=============================
 
 All CI builds are triggered by push events to any branch.
 Travis CI runs release builds using [ccache](https://ccache.samba.org/) to speed up compilation.

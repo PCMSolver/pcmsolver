@@ -69,7 +69,7 @@ void print(const PCMInput &);
  *  \author Roberto Di Remigio
  *  \date 2015-2017
  */
-class Meddle __final {
+class PCMSolver_API Meddle __final {
 public:
   /*! \brief CTOR from Input object
    *  \param[in] input an Input object

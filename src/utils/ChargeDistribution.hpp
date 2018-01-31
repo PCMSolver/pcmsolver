@@ -26,6 +26,7 @@
 #include <iosfwd>
 
 #include "Config.hpp"
+#include "PCMSolverExport.h"
 
 #include <Eigen/Core>
 
@@ -85,8 +86,9 @@ Eigen::VectorXd computeNewtonPotential(const GFValue & gf,
  *  \param[in] dist classical charge distribution
  *  \return the Newton potential on the grid
  */
-Eigen::VectorXd computeDipolarPotential(const Eigen::Matrix3Xd & grid,
-                                        const ChargeDistribution & dist);
+PCMSolver_EXPORT Eigen::VectorXd computeDipolarPotential(
+    const Eigen::Matrix3Xd & grid,
+    const ChargeDistribution & dist);
 
 /*! \brief Computes dipolar potential in a set of points for given Green's function
  * and classical charge distribution

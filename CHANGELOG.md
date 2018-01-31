@@ -1,5 +1,30 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- A new CMake module `options_wrappers.cmake` that adds new wrapper macros for
+  the CMake `option` command.
+
+### Fixed
+
+- Visibility of symbols in the shared library is _finally_ handled properly.
+  The necessary flags to the C++ compiler were not set for the subtargets built
+  as CMake `OBJECT` libraries. This results in a modest decrease in library
+  size.
+- `RPATH` handling for the standalone executable `run_pcm`.
+  For the executable in `<build_dir>/bin` the `RPATH` will contain
+  `<build_dir>/lib64` (or `<build_dir>/lib`) as path to `libpcm.so.1`.
+  For the executable in `<install_prefix>/bin` the `RPATH` will contain
+  `<install_prefix>/lib64` (or `<install_prefix>/lib`) as path to `libpcm.so.1`.
+
+### Changed
+
+- As a result of the visibility change, unit tests can only be linked against
+  the static library, since all symbols are always visible in a static archive
+  library.
+
 ## [Version 1.1.12] - 2018-01-20
 
 ### Added

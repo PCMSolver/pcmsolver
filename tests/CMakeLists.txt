@@ -15,7 +15,7 @@ add_subdirectory(cpcm)
 add_subdirectory(iefpcm)
 add_subdirectory(utils)
 
-link_directories(${PROJECT_BINARY_DIR}/lib)
+link_directories(${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 add_executable(unit_tests unit_tests.cpp
                           $<TARGET_OBJECTS:bi_operators-tests>
                           $<TARGET_OBJECTS:cpcm-tests>
@@ -30,11 +30,7 @@ add_executable(unit_tests unit_tests.cpp
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(unit_tests custom_boost)
 endif()
-if(STATIC_LIBRARY_ONLY)
-  target_link_libraries(unit_tests pcm-static)
-else()
-  target_link_libraries(unit_tests pcm-shared)
-endif()
+target_link_libraries(unit_tests pcm-static)
 
 add_subdirectory(C_host)
 if(ENABLE_Fortran_API)

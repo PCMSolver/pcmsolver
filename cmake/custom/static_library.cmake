@@ -1,6 +1,6 @@
 #.rst:
 #
-# Enables creation of static library.
+# Enables creation of static/shared library.
 # If the shared library is created, make it as static as possible.
 #
 # Variables modified (provided the corresponding language is enabled)::
@@ -15,6 +15,7 @@
 #   define: "'-DSTATIC_LIBRARY_ONLY={0}'.format(arguments['--static'])"
 
 option(STATIC_LIBRARY_ONLY "Create the static library only" OFF)
+option(SHARED_LIBRARY_ONLY "Create the shared library only" OFF)
 option(ENABLE_GENERIC "Enable mostly static linking in shared library" OFF)
 
 if(ENABLE_GENERIC)

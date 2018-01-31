@@ -1,4 +1,4 @@
-link_directories(${PROJECT_BINARY_DIR}/lib)
+link_directories(${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 add_executable(C_host C_host.c)
 add_executable(fail-C_host fail-C_host.c)
 if(STATIC_LIBRARY_ONLY)

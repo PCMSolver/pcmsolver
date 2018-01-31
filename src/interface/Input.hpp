@@ -27,6 +27,7 @@
 #include <vector>
 
 #include "Config.hpp"
+#include "PCMSolverExport.h"
 
 #include "utils/getkw/Getkw.h"
 
@@ -72,7 +73,7 @@ using utils::Sphere;
  *rule
  *  should be carefully considered.
  */
-class Input {
+class PCMSolver_EXPORT Input {
 public:
   /// Default constructor
   Input() {}

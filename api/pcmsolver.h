@@ -122,7 +122,7 @@ PCMSolver_DEPRECATED PCMSolver_API pcmsolver_context_t * pcmsolver_new(
  *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
  */
 PCMSolver_API pcmsolver_context_t * pcmsolver_new_v1112(
-    pcmsolver_reader_t input_reading,
+    enum pcmsolver_reader_t input_reading,
     int nr_nuclei,
     double charges[],
     double coordinates[],

@@ -1,8 +1,11 @@
 cmake_policy(SET CMP0022 NEW)
 cmake_policy(SET CMP0063 NEW)
 
-include_directories(${CMAKE_CURRENT_LIST_DIR})
-include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/utils/getkw)
+include_directories(${CMAKE_CURRENT_LIST_DIR}
+  ${PROJECT_BINARY_DIR}/include
+  ${PROJECT_SOURCE_DIR}/include
+  SYSTEM ${CMAKE_CURRENT_LIST_DIR}/utils/getkw
+  )
 
 add_subdirectory(cavity)
 add_subdirectory(green)

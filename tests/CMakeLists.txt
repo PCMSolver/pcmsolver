@@ -1,5 +1,9 @@
-include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${CMAKE_CURRENT_LIST_DIR})
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_BINARY_DIR}/include
+  ${CMAKE_CURRENT_LIST_DIR}
+  )
 
 if(NOT ENABLE_CXX11_SUPPORT)
   add_definitions(-DCATCH_CONFIG_NO_CPP11)

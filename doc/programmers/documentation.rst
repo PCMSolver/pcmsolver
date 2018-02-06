@@ -60,10 +60,10 @@ To have an offline version of the documentation just issue
 Open the ``_build/index.html`` file with your browser to see and browse the
 documentation.
 
-.. warning::
+.. note::
 
    Building the documentation requires Python, Doxygen, Sphinx, Perl and the 
    Python modules pyyaml, breathe, matplotlib, sphinx-rtd-theme, 
-   sphinxcontrib-bibtex and recommonmark.
-
-The required python modules can be installed by running ``pip install -r doc/requirements.txt``.
+   sphinxcontrib-bibtex and recommonmark. The required python modules can be 
+   installed by running ``pip install -r requirements.txt``. There is also a
+   ``Pipfile`` in case people prefer to use ``pipenv``.

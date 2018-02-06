@@ -9,8 +9,6 @@ api/*.f90 licensefile=.githooks/LICENSE-Fortran
 # include directory
 include/*.hpp         licensefile=.githooks/LICENSE-C++
 include/STLUtils.hpp  !licensefile
-include/Config.hpp    !licensefile
-include/GitInfo.hpp   !licensefile
 include/Config.hpp.in licensefile=.githooks/LICENSE-C++
 
 # bin

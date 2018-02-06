@@ -1,22 +1,23 @@
 # Configure the header with library-wide preprocessor definitions
-configure_file(Config.hpp.in ${PROJECT_SOURCE_DIR}/include/Config.hpp @ONLY)
-set_source_files_properties(${PROJECT_SOURCE_DIR}/include/Config.hpp PROPERTIES GENERATED TRUE)
+configure_file(Config.hpp.in ${PROJECT_BINARY_DIR}/include/Config.hpp @ONLY)
+set_source_files_properties(${PROJECT_BINARY_DIR}/include/Config.hpp PROPERTIES GENERATED TRUE)
 add_custom_target(
   generate-config-hpp
   ALL DEPENDS
-    ${PROJECT_SOURCE_DIR}/include/Config.hpp
+    ${PROJECT_BINARY_DIR}/include/Config.hpp
     ${PROJECT_SOURCE_DIR}/include/Config.hpp.in
     $<$<BOOL:${BUILD_CUSTOM_BOOST}>:custom_boost>
   )
 
-generate_git_info_header(${PROJECT_SOURCE_DIR}/include GitInfo.hpp)
+generate_git_info_header(${PROJECT_BINARY_DIR}/include GitInfo.hpp)
+set_source_files_properties(${PROJECT_BINARY_DIR}/include/GitInfo.hpp PROPERTIES GENERATED TRUE)
 
 list(APPEND headers_list
   Citation.hpp
-  Config.hpp
+  ${PROJECT_BINARY_DIR}/include/Config.hpp
   Cxx11Workarounds.hpp
   ErrorHandling.hpp
-  GitInfo.hpp
+  ${PROJECT_BINARY_DIR}/include/GitInfo.hpp
   LoggerInterface.hpp
   PhysicalConstants.hpp
   STLUtils.hpp

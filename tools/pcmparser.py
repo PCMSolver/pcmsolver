@@ -45,34 +45,10 @@ from copy import deepcopy
 import re
 
 from .getkw import Section, GetkwParser
-from .codata import CODATAdict
+from .pcmdata import CODATAdict, allowedSolvents
 
 isAngstrom = False
 CODATAyear = 2010
-
-allowedSolvents = {
-    'Water': ('WATER', 'H2O'),
-    'Propylene Carbonate': ('PROPYLENE CARBONATE', 'C4H6O3'),
-    'Dimethylsulfoxide': ('DIMETHYLSULFOXIDE', 'DMSO'),
-    'Nitromethane': ('NITROMETHANE', 'CH3NO2'),
-    'Acetonitrile': ('ACETONITRILE', 'CH3CN'),
-    'Methanol': ('METHANOL', 'CH3OH'),
-    'Ethanol': ('ETHANOL', 'CH3CH2OH'),
-    'Acetone': ('ACETONE', 'C2H6CO'),
-    '1,2-Dichloroethane': ('1,2-DICHLOROETHANE', 'C2H4CL2'),
-    'Methylenechloride': ('METHYLENECHLORIDE', 'CH2CL2'),
-    'Tetrahydrofurane': ('TETRAHYDROFURANE', 'THF'),
-    'Aniline': ('ANILINE', 'C6H5NH2'),
-    'Chlorobenzene': ('CHLOROBENZENE', 'C6H5CL'),
-    'Chloroform': ('CHLOROFORM', 'CHCL3'),
-    'Toluene': ('TOLUENE', 'C6H5CH3'),
-    '1,4-Dioxane': ('1,4-DIOXANE', 'C4H8O2'),
-    'Benzene': ('BENZENE', 'C6H6'),
-    'Carbon Tetrachloride': ('CARBON TETRACHLORIDE', 'CCL4'),
-    'Cyclohexane': ('CYCLOHEXANE', 'C6H12'),
-    'N-heptane': ('N-HEPTANE', 'C7H16'),
-    'Explicit': ('EXPLICIT', 'DUMMY')
-}
 
 
 def parse_pcm_input(inputFile, write_out=False):

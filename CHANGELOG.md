@@ -18,6 +18,8 @@
   `<build_dir>/lib64` (or `<build_dir>/lib`) as path to `libpcm.so.1`.
   For the executable in `<install_prefix>/bin` the `RPATH` will contain
   `<install_prefix>/lib64` (or `<install_prefix>/lib`) as path to `libpcm.so.1`.
+- Code coverage analysis was restored. We now use
+  [Codecov](https://codecov.io). Thanks @arnfinn :tada:
 
 ### Changed
 

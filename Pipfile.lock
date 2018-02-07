@@ -68,12 +68,6 @@
             ],
             "version": "==0.5.4"
         },
-        "cpp-coveralls": {
-            "hashes": [
-                "sha256:2adfaa1a8983ced767467fd9a7c73834523ad5907c60b7ec1f6f43b5100217c1"
-            ],
-            "version": "==0.4.0"
-        },
         "cycler": {
             "hashes": [
                 "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d",

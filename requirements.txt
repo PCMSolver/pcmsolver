@@ -1,5 +1,4 @@
 breathe
-cpp-coveralls
 matplotlib
 pep8
 Pygments

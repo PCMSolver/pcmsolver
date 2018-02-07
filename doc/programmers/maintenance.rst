@@ -46,6 +46,19 @@ Danger.Systems Errors
 - Code style for ``.hpp``, ``.cpp``, ``.h`` files follows the conventions in
   ``.clang-format``.
 
+- Code style for ``.py`` files follows the conventions in ``.style.yapf``.
+
+Updating the Danger Bot
+=======================
+
+The bot reports results from running the `Danger.System ruby gem
+<http://danger.systems/ruby/>`_. From time to time, it is necessary to update
+the ``Gemfile`` and ``Gemfile.lock``:
+
+.. code-block:: bash
+
+   bundle install --gemfile=.ci/Gemfile
+
 Minting a new release
 ---------------------
 

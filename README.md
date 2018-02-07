@@ -1,7 +1,7 @@
 [![DOI](https://zenodo.org/badge/23794148.svg)](https://zenodo.org/badge/latestdoi/23794148)
 [![Travis CI build status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=release%2F1.Y)](https://travis-ci.org/PCMSolver/pcmsolver)
 [![Documentation Status](https://readthedocs.org/projects/pcmsolver/badge/?version=stable)](http://pcmsolver.readthedocs.org/en/latest/?badge=latest)
-[![Coverage Status](https://coveralls.io/repos/PCMSolver/pcmsolver/badge.svg?branch=release%2F1.Y)](https://coveralls.io/r/PCMSolver/pcmsolver?branch=release)
+[![Coverage Status](https://codecov.io/gh/PCMSolver/pcmsolver/branch/release%2F1.Y/graph/badge.svg)](https://codecov.io/gh/PCMSolver/pcmsolver)
 [![Coverity Scan Build](https://scan.coverity.com/projects/3046/badge.svg)](https://scan.coverity.com/projects/3046)
 
 PCMSolver
@@ -31,12 +31,13 @@ using the `Pipfile` and `Pipfile.lock` files. The following
 compilers are used:
 
 1. GCC 4.6, Python 2.7 This build generates _both_ the shared and static
-   libraries, linking executables to the former. The build is run with and
-   without coverage analysis, the latter being a _debug_ build.
+   libraries, linking executables to the former.
 2. GCC 6.3.0, Python 2.7 This build generates _only_ the static library.
 3. Clang 3.5, GFortran 4.6, Python 3.5 This build generates _both_ the shared and static
-   libraries, linking executables to the former. The build is run with and
-   without coverage analysis, the latter being a _debug_ build.
+   libraries, linking executables to the former.
+4. GCC 4.8, Python 2.7 This is a _debug_ build generating _both_ the shared and static
+   libraries, linking executables to the former. The build is run with
+   coverage analysis for submission to [Codecov](https://codecov.io).
 
 The build needed for submission to [Coverity scan](https://scan.coverity.com/)
 is triggered by pushes to the `coverity_scan` branch. It is run on

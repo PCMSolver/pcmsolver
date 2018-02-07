@@ -31,7 +31,6 @@ if(NOT STATIC_LIBRARY_ONLY)
     set_target_properties(pcm-shared PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR}
                                                 CXX_VISIBILITY_PRESET hidden
                                                 VISIBILITY_INLINES_HIDDEN 1
-                                                MACOSX_RPATH ON
                                                 OUTPUT_NAME "pcm"
                                                 EXPORT_NAME "pcm")
 

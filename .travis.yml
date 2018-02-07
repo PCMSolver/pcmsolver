@@ -23,7 +23,7 @@ branches:
 matrix:
   include:
     - os: linux
-      addons: &1
+      addons:
         apt:
           packages:
             - cmake3
@@ -77,22 +77,20 @@ matrix:
         - PYTHON='python3'
         - RUN_DANGER=true
     - os: linux
-      addons: *1
+      addons:
+        apt:
+          packages:
+            - cmake3
+            - cmake3-data
+            - g++-4.8
+            - gcc-4.8
+            - gfortran-4.8
+            - libboost-math-dev
+            - lcov
       env:
-        - CXX_COMPILER='g++-4.6'
-        - C_COMPILER='gcc-4.6'
-        - Fortran_COMPILER='gfortran-4.6'
-        - BUILD_TYPE='debug'
-        - PYTHON='python2'
-        - COVERAGE='--coverage'
-        - RUN_DANGER=false
-  allow_failures:
-    - os: linux
-      addons: *1
-      env:
-        - CXX_COMPILER='g++-4.6'
-        - C_COMPILER='gcc-4.6'
-        - Fortran_COMPILER='gfortran-4.6'
+        - CXX_COMPILER='g++-4.8'
+        - C_COMPILER='gcc-4.8'
+        - Fortran_COMPILER='gfortran-4.8'
         - BUILD_TYPE='debug'
         - PYTHON='python2'
         - COVERAGE='--coverage'
@@ -121,10 +119,17 @@ script:
   - python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} ${STATIC} ${COVERAGE}
   - cd build
   - ../.ci/ci_build.sh
-  - python ../.ci/ci_test.py ctest --output-on-failure --verbose
+  - travis_wait python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2
   - python ../.ci/ci_print_failing.py
 after_success:
   - |
-    if [[ "${COVERAGE}" = true ]]; then
-      coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*generated.*" -E ".*tests*" -E ".*tools.*" -E ".*cmake*" -E ".*doc*" -E ".*examples*" || echo 'coveralls upload failed.'
+    if [[ "$COVERAGE" = "--coverage" ]]; then
+      cd $TRAVIS_BUILD_DIR
+      lcov --version
+      lcov --directory . --capture --output-file coverage.info
+      lcov --remove coverage.info '/usr/*' --output-file coverage.info
+      lcov --remove coverage.info 'external/*' --output-file coverage.info
+      lcov --remove coverage.info 'tests/*' --output-file coverage.info
+      lcov --list coverage.info
+      bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
     fi

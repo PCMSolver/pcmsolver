@@ -1,6 +1,6 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -31,15 +31,15 @@
 
 #include "utils/MathUtils.hpp"
 
-/*! \file Anisotropic.hpp
- *  \class Anisotropic
+/*! \file Anisotropic.hpp */
+
+namespace pcm {
+namespace dielectric_profile {
+/*! \class Anisotropic
  *  \brief describes a medium with anisotropy, i.e. liquid crystal
  *  \author Roberto Di Remigio
  *  \date 2014
  */
-
-namespace pcm {
-namespace dielectric_profile {
 class Anisotropic __final {
 private:
   /// Diagonal of the permittivity tensor in the lab-fixed frame

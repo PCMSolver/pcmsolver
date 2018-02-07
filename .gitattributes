@@ -37,7 +37,8 @@ src/metal/*.F90 licensefile=.githooks/LICENSE-Fortran
 # pedra
 src/pedra/*.inc             licensefile=.githooks/LICENSE-Fortran
 src/pedra/*.F90             licensefile=.githooks/LICENSE-Fortran
-src/pedra/pedra_dlapack.F90 !licensefile
+src/pedra/*.f90             licensefile=.githooks/LICENSE-Fortran
+src/pedra/pedra_dlapack.f90 !licensefile
 
 # solver
 src/solver/*.hpp licensefile=.githooks/LICENSE-C++
@@ -48,7 +49,8 @@ src/utils/*.hpp           licensefile=.githooks/LICENSE-C++
 src/utils/*.cpp           licensefile=.githooks/LICENSE-C++
 src/utils/cnpy.hpp        !licensefile
 src/utils/cnpy.cpp        !licensefile
-src/utils/legendre.h      !licensefile
+src/utils/Legendre.hpp    !licensefile
+src/utils/RungeKutta4.*   !licensefile
 
 # tests
 tests/unit_tests.cpp             licensefile=.githooks/LICENSE-C++
@@ -73,5 +75,5 @@ doc/gfx/cloc_tools.py.in  licensefile=.githooks/LICENSE-Python
 src/make_cmake_files.py   licensefile=.githooks/LICENSE-Python
 tools/codata.py.in        licensefile=.githooks/LICENSE-Python
 tools/pcmsolver.py.in     licensefile=.githooks/LICENSE-Python
-tools/plot_cavity.py.in   licensefile=.githooks/LICENSE-Python
+tools/plot_cavity.py      licensefile=.githooks/LICENSE-Python
 tests/make_cmake_files.py licensefile=.githooks/LICENSE-Python

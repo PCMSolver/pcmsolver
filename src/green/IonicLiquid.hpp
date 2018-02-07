@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -35,19 +35,14 @@ namespace pcm {
 namespace cavity {
 class Element;
 } // namespace cavity
-
-namespace dielectric_profile {
-struct Yukawa;
-} // namespace dielectric_profile
 } // namespace pcm
 
-#include "DerivativeTypes.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
+#include "dielectric_profile/Yukawa.hpp"
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits = AD_directional>
 /*! \class IonicLiquid
  *  \brief Green's functions for ionic liquid, described by the linearized
  * Poisson-Boltzmann equation.
@@ -55,11 +50,16 @@ template <typename DerivativeTraits = AD_directional>
  *  \date 2013-2016
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
+template <typename DerivativeTraits = AD_directional>
 class IonicLiquid __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Yukawa> {
 public:
   IonicLiquid(double eps, double k);
   virtual ~IonicLiquid() {}
+
+  virtual double permittivity() const __override __final {
+    PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
+  }
 
   friend std::ostream & operator<<(std::ostream & os, IonicLiquid & gf) {
     return gf.printObject(os);
@@ -84,14 +84,9 @@ private:
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
 
-namespace detail {
-struct buildIonicLiquid {
-  template <typename T> IGreensFunction * operator()(const GreenData & data) {
-    return new IonicLiquid<T>(data.epsilon, data.kappa);
-  }
-};
-} // namespace detail
-
-IGreensFunction * createIonicLiquid(const GreenData & data);
+template <typename DerivativeTraits>
+IGreensFunction * createIonicLiquid(const GreenData & data) {
+  return new IonicLiquid<DerivativeTraits>(data.epsilon, data.kappa);
+}
 } // namespace green
 } // namespace pcm

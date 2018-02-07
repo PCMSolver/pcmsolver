@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -32,12 +32,17 @@ namespace pcm {
  *  \brief Contains all data defined from user input to set up the bi_operators
  */
 struct BIOperatorData {
+  /*! Type of boundary integral operator */
+  std::string integratorType;
   /*! Scaling for the diagonal of the approximate collocation matrices */
   double scaling;
   /*! Whether the structure was initialized with user input or not */
   bool empty;
 
   BIOperatorData() { empty = true; }
-  BIOperatorData(double s) : scaling(s) { empty = false; }
+  BIOperatorData(const std::string & type, double s)
+      : integratorType(type), scaling(s) {
+    empty = false;
+  }
 };
 } // namespace pcm

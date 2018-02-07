@@ -2,7 +2,7 @@
 
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
-#  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+#  Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
 #
 #  This file is part of PCMSolver.
 #
@@ -51,12 +51,12 @@ Options:
 
 def glob_sources_cxx(dir_name):
     """Create a list of C++ headers and sources to be used in a CMakeLists.txt file."""
-    headers = 'list(APPEND headers_list '
-    headers += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.hpp')))
+    headers = 'list(APPEND headers_list\n'
+    headers += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.hpp')))
     headers += ')\n\n'
 
-    sources = 'list(APPEND sources_list '
-    sources += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.cpp')))
+    sources = 'list(APPEND sources_list\n'
+    sources += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.cpp')))
     sources += ')\n\n'
 
     message = '# List of headers\n' + headers \
@@ -66,12 +66,12 @@ def glob_sources_cxx(dir_name):
 
 def glob_sources_c(dir_name):
     """Create a list of C headers and sources to be used in a CMakeLists.txt file."""
-    headers = 'list(APPEND headers_list '
-    headers += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.h')))
+    headers = 'list(APPEND headers_list \n'
+    headers += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.h')))
     headers += ')\n\n'
 
-    sources = 'list(APPEND sources_list '
-    sources += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.c')))
+    sources = 'list(APPEND sources_list\n'
+    sources += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in sorted(glob.glob(dir_name + '/*.c')))
     sources += ')\n\n'
 
     message = '# List of headers\n' + headers \
@@ -85,8 +85,8 @@ def glob_sources_fortran(dir_name):
     list_of_sources = []
     for ftype in types:
         list_of_sources.extend(sorted(glob.glob(dir_name + '/' + ftype)))
-    sources = 'list(APPEND sources_list '
-    sources += ' '.join('%s' % ''.join(map(str, os.path.basename(x))) for x in list_of_sources)
+    sources = 'list(APPEND sources_list\n'
+    sources += ''.join('%s\n' % ''.join(map(str, os.path.basename(x))) for x in list_of_sources)
     sources += ')\n\n'
 
     message = '# List of sources\n' + sources
@@ -119,25 +119,39 @@ else:
     f.write(glob_sources_fortran(dname))
     language = 'Fortran'
 
+library_c = 'add_library({0} OBJECT {1} {2})\n'.format(libname, '${sources_list}', '${headers_list}')
+library_f = 'add_library({0} OBJECT {1})\n'.format(libname, '${sources_list}')
+properties = """set_target_properties({0}
+  PROPERTIES
+    POSITION_INDEPENDENT_CODE 1
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN 1
+  )
+""".format(libname)
+cxx_compile_options = """add_dependencies({0} generate-config-hpp)
+target_compile_options({0}
+  PRIVATE
+    {1}
+  )\n
+""".format(libname, '\"$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>\"')
+header_install = """# Sets install directory for all the headers in the list
+foreach(_header {0})
+    install(FILES {1} DESTINATION {2}/{3}/{4})
+endforeach()
+""".format('${headers_list}', '${_header}', '${CMAKE_INSTALL_INCLUDEDIR}', '${PROJECT_NAME}', libname)
+
 if (lang == 'CXX'):
-    f.write('add_library(' + libname + ' OBJECT ${sources_list} ${headers_list})\n')
-    f.write('set_target_properties(' + libname + ' PROPERTIES POSITION_INDEPENDENT_CODE 1 )\n')
-    f.write('add_dependencies(' + libname + ' generate-config-hpp)\n')
-    f.write('target_compile_options(' + libname + ' PRIVATE "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>")\n')
-    f.write('# Sets install directory for all the headers in the list\n')
-    f.write('foreach(_header ${headers_list})\n')
-    f.write('    install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/' + libname + ')\n')
-    f.write('endforeach()\n')
+    f.write(library_c)
+    f.write(properties)
+    f.write(cxx_compile_options)
+    f.write(header_install)
 elif (lang == 'C'):
-    f.write('add_library(' + libname + ' OBJECT ${sources_list} ${headers_list})\n')
-    f.write('set_target_properties(' + libname + ' PROPERTIES POSITION_INDEPENDENT_CODE 1 )\n')
-    f.write('# Sets install directory for all the headers in the list\n')
-    f.write('foreach(_header ${headers_list})\n')
-    f.write('    install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/' + libname + ')\n')
-    f.write('endforeach()\n')
+    f.write(library_c)
+    f.write(properties)
+    f.write(header_install)
 else:
-    f.write('add_library(' + libname + ' OBJECT ${sources_list})\n')
-    f.write('set_target_properties(' + libname + ' PROPERTIES POSITION_INDEPENDENT_CODE 1 )\n')
+    f.write(library_f)
+    f.write(properties)
 
 print('Template for {} created'.format(libname))
 print('Don\'t forget to fix excluded files and dependencies!!!')

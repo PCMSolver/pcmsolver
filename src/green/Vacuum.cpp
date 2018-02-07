@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -30,20 +30,17 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
-#include "utils/ForId.hpp"
 
 namespace pcm {
 using cavity::Element;
 using dielectric_profile::Uniform;
 namespace green {
 template <typename DerivativeTraits>
-Vacuum<DerivativeTraits>::Vacuum() : GreensFunction<DerivativeTraits, Uniform>() {
-  this->profile_ = Uniform(1.0);
-}
+Vacuum<DerivativeTraits>::Vacuum()
+    : GreensFunction<DerivativeTraits, Uniform>(Uniform(1.0)) {}
 
 template <typename DerivativeTraits>
 DerivativeTraits Vacuum<DerivativeTraits>::operator()(DerivativeTraits * sp,
@@ -97,10 +94,5 @@ template class Vacuum<Stencil>;
 template class Vacuum<AD_directional>;
 template class Vacuum<AD_gradient>;
 template class Vacuum<AD_hessian>;
-
-IGreensFunction * createVacuum(const GreenData & data) {
-  detail::buildVacuum build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
 } // namespace green
 } // namespace pcm

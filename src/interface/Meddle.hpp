@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -69,44 +69,55 @@ void print(const PCMInput &);
  *  \author Roberto Di Remigio
  *  \date 2015-2017
  */
-class Meddle __final {
+class PCMSolver_API Meddle __final {
 public:
 
   /*! \brief CTOR from Input object
-      *  \param[in] input an Input object
-      *  \param[in] write the global HostWriter object
-      *  \warning This CTOR is meant to be used with the standalone
-      *  executable only
-      */
-  Meddle(const Input & input, const HostWriter & write);
-
+   *  \param[in] input an Input object
+   *  \param[in] writer the global HostWriter object
+   *  \warning This CTOR is meant to be used with the standalone
+   *  executable only
+   */
+  Meddle(const Input & input, const HostWriter & writer);
   /*! \brief CTOR from own input reader
-      *  \param[in] inputFileName name of the parsed, machine-readable input file
-      *  \param[in] write the global HostWriter object
-      *  \warning This CTOR is meant to be used with the standalone
-      *  executable only
-      */
-  Meddle(const std::string & inputFileName, const HostWriter & write);
-
+   *  \param[in] inputFileName name of the parsed, machine-readable input file
+   *  \param[in] writer the global HostWriter object
+   *  \warning This CTOR is meant to be used with the standalone
+   *  executable only
+   */
+  Meddle(const std::string & inputFileName, const HostWriter & writer);
+  /*! \brief CTOR from parsed input file name
+   *  \param[in] inputFileName name of the parsed, machine-readable input file
+   *  \param[in] nr_nuclei     number of atoms in the molecule
+   *  \param[in] charges       atomic charges
+   *  \param[in] coordinates   atomic coordinates
+   *  \param[in] symmetry_info molecular point group information
+   *  \param[in] writer        the global HostWriter object
+   */
+  Meddle(int nr_nuclei,
+         double charges[],
+         double coordinates[],
+         int symmetry_info[],
+         const HostWriter & writer,
+         const std::string & inputFileName = "@pcmsolver.inp");
   /*! \brief Constructor
-   *  \param[in] input_reading input processing strategy
    *  \param[in] nr_nuclei     number of atoms in the molecule
    *  \param[in] charges       atomic charges
    *  \param[in] coordinates   atomic coordinates
    *  \param[in] symmetry_info molecular point group information
    *  \param[in] host_input    input to the module, as read by the host
+   *  \param[in] writer        the global HostWriter object
    *
    *  The molecular point group information is passed as an array
    *  of 4 integers: number of generators, first, second and third generator
    *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
    */
-  Meddle(pcmsolver_reader_t input_reading,
-         int nr_nuclei,
+  Meddle(int nr_nuclei,
          double charges[],
          double coordinates[],
          int symmetry_info[],
          const PCMInput & host_input,
-         const HostWriter & write);
+         const HostWriter & writer);
   ~Meddle();
 
   /*! \brief Getter for the molecule object */
@@ -272,19 +283,15 @@ private:
   /*! Common implemenation for the CTOR-s */
   void CTORBody();
   /*! \brief Initialize input_
-   *  \param[in] input_reading input processing strategy
    *  \param[in] nr_nuclei     number of atoms in the molecule
    *  \param[in] charges       atomic charges
    *  \param[in] coordinates   atomic coordinates
    *  \param[in] symmetry_info molecular point group information
-   *  \param[in] host_input    input to the module, as read by the host
    */
-  void initInput(pcmsolver_reader_t input_reading,
-                 int nr_nuclei,
+  void initInput(int nr_nuclei,
                  double charges[],
                  double coordinates[],
-                 int symmetry_info[],
-                 const PCMInput & host_input);
+                 int symmetry_info[]);
   /*! Initialize cavity_ */
   void initCavity();
   /*! Initialize static solver K_0_ */

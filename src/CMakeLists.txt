@@ -1,4 +1,5 @@
-cmake_policy (SET CMP0022 NEW)
+cmake_policy(SET CMP0022 NEW)
+cmake_policy(SET CMP0063 NEW)
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/utils/getkw)
@@ -13,6 +14,7 @@ add_subdirectory(solver)
 add_subdirectory(utils)
 
 list(APPEND _objects $<TARGET_OBJECTS:cavity>
+                     $<$<BOOL:${ENABLE_Fortran_API}>:$<TARGET_OBJECTS:fortran_bindings>>
                      $<TARGET_OBJECTS:green>
                      $<TARGET_OBJECTS:interface>
                      $<TARGET_OBJECTS:metal>
@@ -53,7 +55,7 @@ endif()
 
 if(STATIC_LIBRARY_ONLY)
     add_library(${PROJECT_NAME} ALIAS pcm-static)
-else ()
+else()
     add_library(${PROJECT_NAME} ALIAS pcm-shared)
 endif()
 
@@ -78,7 +80,7 @@ endif()
 # <<<  Export interface  >>>
 
 if(NOT STATIC_LIBRARY_ONLY)
-    if (APPLE)
+    if(APPLE)
         set_target_properties(pcm-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
     endif()
     target_compile_definitions(pcm-shared INTERFACE USING_${PROJECT_NAME})
@@ -93,7 +95,7 @@ endif()
 # <<<  Export Config  >>>
 
     # explicit "share" not "DATADIR" for CMake search path
-set (CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}")
+set(CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}")
 if(NOT STATIC_LIBRARY_ONLY)
     install (EXPORT "${PROJECT_NAME}Targets-shared"
              NAMESPACE "${PROJECT_NAME}::"

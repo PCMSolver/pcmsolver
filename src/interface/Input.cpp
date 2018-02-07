@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -23,6 +23,8 @@
 
 #include "Input.hpp"
 
+#include <algorithm>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <string>
@@ -32,8 +34,6 @@
 
 #include "utils/getkw/Getkw.h"
 #include <Eigen/Core>
-
-#include <boost/algorithm/string.hpp>
 
 #include "PCMInput.h"
 #include "bi_operators/BIOperatorData.hpp"
@@ -71,21 +71,16 @@ void Input::reader(const std::string & filename) {
 
   const Section & cavity = input_.getSect("CAVITY");
 
-  type_ = cavity.getStr("TYPE");
+  cavityType_ = cavity.getStr("TYPE");
   area_ = cavity.getDbl("AREA");
-  patchLevel_ = cavity.getInt("PATCHLEVEL");
-  coarsity_ = cavity.getDbl("COARSITY");
-  minDistance_ = cavity.getDbl("MINDISTANCE");
-  derOrder_ = cavity.getInt("DERORDER");
-  if (type_ == "RESTART") {
+  if (cavityType_ == "RESTART") {
     cavFilename_ = cavity.getStr("NPZFILE");
   }
-  dyadicFilename_ = cavity.getStr("DYADICFILE");
 
   scaling_ = cavity.getBool("SCALING");
-  radiiSet_ = boost::algorithm::to_upper_copy(cavity.getStr("RADIISET"));
+  radiiSet_ = detail::uppercase(cavity.getStr("RADIISET"));
   minimalRadius_ = cavity.getDbl("MINRADIUS");
-  mode_ = boost::algorithm::to_upper_copy(cavity.getStr("MODE"));
+  mode_ = detail::uppercase(cavity.getStr("MODE"));
   if (mode_ == "EXPLICIT") {
     std::vector<double> spheresInput = cavity.getDblVec("SPHERES");
     int j = 0;
@@ -119,18 +114,16 @@ void Input::reader(const std::string & filename) {
     // Get the contents of the Green<inside> section...
     const Section & inside = medium.getSect("GREEN<INSIDE>");
     // ...and initialize the data members
-    greenInsideType_ = inside.getStr("TYPE");
-    derivativeInsideType_ = detail::derivativeTraits(inside.getStr("DER"));
+    greenInsideType_ = inside.getStr("TYPE") + "_" + inside.getStr("DER");
     epsilonInside_ = inside.getDbl("EPS");
     // Get the contents of the Green<outside> section...
     const Section & outside = medium.getSect("GREEN<OUTSIDE>");
     // ...and initialize the data members
-    greenOutsideType_ = outside.getStr("TYPE");
-    derivativeOutsideType_ = detail::derivativeTraits(outside.getStr("DER"));
+    greenOutsideType_ = outside.getStr("TYPE") + "_" + outside.getStr("DER");
     epsilonStaticOutside_ = outside.getDbl("EPS");
     epsilonDynamicOutside_ = outside.getDbl("EPSDYN");
     // This will be needed for the metal sphere only
-    if (greenOutsideType_ == "METALSPHERE") {
+    if (outside.getStr("TYPE") == "METALSPHERE") {
       epsilonReal_ = outside.getDbl("EPSRE");
       epsilonImaginary_ = outside.getDbl("EPSIMG");
       spherePosition_ = outside.getDblVec("SPHEREPOSITION");
@@ -143,7 +136,9 @@ void Input::reader(const std::string & filename) {
     center_ = outside.getDbl("CENTER");
     width_ = outside.getDbl("WIDTH");
     origin_ = outside.getDblVec("INTERFACEORIGIN");
-    profileType_ = detail::profilePolicy(outside.getStr("PROFILE"));
+    if (outside.getStr("TYPE") == "SPHERICALDIFFUSE") {
+      greenOutsideType_ += "_" + outside.getStr("PROFILE");
+    }
     maxL_ = outside.getInt("MAXL");
   } else { // This part must be reviewed!! Some data members are not initialized...
     // Just initialize the solvent object in this class
@@ -157,11 +152,9 @@ void Input::reader(const std::string & filename) {
     // Specification of the solvent by name means isotropic PCM
     // We have to initialize the Green's functions data here, Solvent class
     // is an helper class and should not be used in the core classes.
-    greenInsideType_ = "VACUUM";
-    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenInsideType_ = "VACUUM_DERIVATIVE";
     epsilonInside_ = 1.0;
-    greenOutsideType_ = "UNIFORMDIELECTRIC";
-    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenOutsideType_ = "UNIFORMDIELECTRIC_DERIVATIVE";
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;
   }
@@ -169,7 +162,6 @@ void Input::reader(const std::string & filename) {
   integratorScaling_ = medium.getDbl("DIAGONALSCALING");
 
   solverType_ = medium.getStr("SOLVERTYPE");
-  equationType_ = detail::integralEquation(medium.getStr("EQUATIONTYPE"));
   correction_ = medium.getDbl("CORRECTION");
   hermitivitize_ = medium.getBool("MATRIXSYMM");
   isDynamic_ = medium.getBool("NONEQUILIBRIUM");
@@ -214,13 +206,9 @@ void Input::reader(const PCMInput & host_input) {
   CODATAyear_ = 2010;
   initBohrToAngstrom(bohrToAngstrom, CODATAyear_);
 
-  type_ = detail::trim_and_upper(host_input.cavity_type);
+  cavityType_ = detail::trim_and_upper(host_input.cavity_type);
   area_ = host_input.area * angstrom2ToBohr2();
-  patchLevel_ = host_input.patch_level;
-  coarsity_ = host_input.coarsity * angstromToBohr();
-  minDistance_ = host_input.min_distance * angstromToBohr();
-  derOrder_ = host_input.der_order;
-  if (type_ == "RESTART") {
+  if (cavityType_ == "RESTART") {
     cavFilename_ = detail::trim(host_input.restart_name); // No case conversion here!
   }
 
@@ -243,13 +231,13 @@ void Input::reader(const PCMInput & host_input) {
     probeRadius_ = host_input.probe_radius * angstromToBohr();
     // Get the contents of the Green<inside> section...
     // ...and initialize the data members
-    greenInsideType_ = detail::trim_and_upper(host_input.inside_type);
-    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenInsideType_ =
+        detail::trim_and_upper(host_input.inside_type) + "_DERIVATIVE";
     epsilonInside_ = 1.0;
     // Get the contents of the Green<outside> section...
     // ...and initialize the data members
-    greenOutsideType_ = detail::trim_and_upper(host_input.outside_type);
-    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenOutsideType_ =
+        detail::trim_and_upper(host_input.outside_type) + "_DERIVATIVE";
     epsilonStaticOutside_ = host_input.outside_epsilon;
     epsilonDynamicOutside_ = host_input.outside_epsilon;
     // Initialize interface parameters with bogus values
@@ -260,7 +248,6 @@ void Input::reader(const PCMInput & host_input) {
     center_ = 0.0;
     width_ = 0.0;
     origin_ = std::vector<double>(3, 0.0);
-    profileType_ = 0;
     maxL_ = 0;
   } else { // This part must be reviewed!! Some data members are not initialized...
     // Just initialize the solvent object in this class
@@ -270,11 +257,9 @@ void Input::reader(const PCMInput & host_input) {
     // Specification of the solvent by name means isotropic PCM
     // We have to initialize the Green's functions data here, Solvent class
     // is an helper class and should not be used in the core classes.
-    greenInsideType_ = std::string("VACUUM");
-    derivativeInsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenInsideType_ = std::string("VACUUM_DERIVATIVE");
     epsilonInside_ = 1.0;
-    greenOutsideType_ = std::string("UNIFORMDIELECTRIC");
-    derivativeOutsideType_ = detail::derivativeTraits("DERIVATIVE");
+    greenOutsideType_ = std::string("UNIFORMDIELECTRIC_DERIVATIVE");
     epsilonStaticOutside_ = solvent_.epsStatic;
     epsilonDynamicOutside_ = solvent_.epsDynamic;
   }
@@ -283,8 +268,6 @@ void Input::reader(const PCMInput & host_input) {
   integratorScaling_ = 1.07;
 
   solverType_ = detail::trim_and_upper(host_input.solver_type);
-  std::string inteq = detail::trim_and_upper(host_input.equation_type);
-  equationType_ = detail::integralEquation(inteq);
   correction_ = host_input.correction;
   hermitivitize_ = true;
   isDynamic_ = false;
@@ -363,26 +346,17 @@ void Input::initMolecule() {
 }
 
 CavityData Input::cavityParams() const {
-  return CavityData(molecule_,
-                    area_,
-                    probeRadius_,
-                    minDistance_,
-                    derOrder_,
-                    minimalRadius_,
-                    patchLevel_,
-                    coarsity_,
-                    cavFilename_,
-                    dyadicFilename_);
+  return CavityData(
+      cavityType_, molecule_, area_, probeRadius_, minimalRadius_, cavFilename_);
 }
 
 GreenData Input::insideGreenParams() const {
-  return GreenData(derivativeInsideType_, profileType_, epsilonInside_);
+  return GreenData(greenInsideType_, epsilonInside_);
 }
 
 GreenData Input::outsideStaticGreenParams() const {
-  GreenData retval(derivativeOutsideType_, profileType_, epsilonStaticOutside_);
+  GreenData retval(greenOutsideType_, epsilonStaticOutside_);
   if (not hasSolvent_) {
-    retval.howProfile = profileType_;
     retval.epsilon1 = epsilonStatic1_;
     retval.epsilon2 = epsilonStatic2_;
     retval.center = center_;
@@ -395,9 +369,8 @@ GreenData Input::outsideStaticGreenParams() const {
 }
 
 GreenData Input::outsideDynamicGreenParams() const {
-  GreenData retval(derivativeOutsideType_, profileType_, epsilonDynamicOutside_);
+  GreenData retval(greenOutsideType_, epsilonDynamicOutside_);
   if (not hasSolvent_) {
-    retval.howProfile = profileType_;
     retval.epsilon1 = epsilonDynamic1_;
     retval.epsilon2 = epsilonDynamic2_;
     retval.center = center_;
@@ -410,50 +383,81 @@ GreenData Input::outsideDynamicGreenParams() const {
 }
 
 SolverData Input::solverParams() const {
-  return SolverData(correction_, equationType_, hermitivitize_);
+  return SolverData(solverType_, correction_, hermitivitize_);
 }
 
 BIOperatorData Input::integratorParams() const {
-  return BIOperatorData(integratorScaling_);
+  return BIOperatorData(integratorType_, integratorScaling_);
 }
 
 namespace detail {
-int derivativeTraits(const std::string & name) {
-  static std::map<std::string, int> mapStringToInt;
-  mapStringToInt.insert(std::map<std::string, int>::value_type("NUMERICAL", 0));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("DERIVATIVE", 1));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("GRADIENT", 2));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("HESSIAN", 3));
-
-  return mapStringToInt.find(name)->second;
+#ifndef HAS_CXX11_LAMBDA
+std::string left_trim(std::string s) {
+  s.erase(s.begin(),
+          std::find_if(
+              s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+  return s;
 }
 
-int profilePolicy(const std::string & name) {
-  static std::map<std::string, int> mapStringToInt;
-  mapStringToInt.insert(std::map<std::string, int>::value_type("TANH", 0));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("ERF", 1));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("LOG", 2));
-
-  return mapStringToInt.find(name)->second;
+std::string right_trim(std::string s) {
+  s.erase(std::find_if(
+              s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace)))
+              .base(),
+          s.end());
+  return s;
+}
+#else  /* HAS_CXX11_LAMBDA */
+std::string left_trim(std::string s) {
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+            return !std::isspace(ch);
+          }));
+  return s;
 }
 
-int integralEquation(const std::string & name) {
-  static std::map<std::string, int> mapStringToInt;
-  mapStringToInt.insert(std::map<std::string, int>::value_type("FIRSTKIND", 0));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("SECONDKIND", 1));
-  mapStringToInt.insert(std::map<std::string, int>::value_type("FULL", 2));
+std::string right_trim(std::string s) {
+  s.erase(
+      std::find_if(s.rbegin(), s.rend(), [](int ch) { return !std::isspace(ch); })
+          .base(),
+      s.end());
+  return s;
+}
+#endif /* HAS_CXX11_LAMBDA */
 
-  return mapStringToInt.find(name)->second;
+std::string left_trim(const char * src) {
+  std::string tmp(src);
+  return left_trim(tmp);
+}
+
+std::string right_trim(const char * src) {
+  std::string tmp(src);
+  return right_trim(tmp);
+}
+
+std::string trim(std::string s) {
+  left_trim(s);
+  right_trim(s);
+  return s;
 }
 
 std::string trim(const char * src) {
   std::string tmp(src);
-  boost::algorithm::trim(tmp);
-  return tmp;
+  return trim(tmp);
+}
+
+std::string uppercase(std::string s) {
+  std::transform(
+      s.begin(), s.end(), s.begin(), std::ptr_fun<int, int>(std::toupper));
+  return s;
+}
+
+std::string uppercase(const char * src) {
+  std::string tmp(src);
+  return uppercase(tmp);
 }
 
 std::string trim_and_upper(const char * src) {
-  return boost::algorithm::to_upper_copy(trim(src));
+  std::string tmp(src);
+  return uppercase(trim(tmp));
 }
 } // namespace detail
 } // namespace pcm

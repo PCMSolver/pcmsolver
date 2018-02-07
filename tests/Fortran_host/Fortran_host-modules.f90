@@ -1,6 +1,6 @@
 !
 ! PCMSolver, an API for the Polarizable Continuum Model
-! Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+! Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
 !
 ! This file is part of PCMSolver.
 !
@@ -38,7 +38,7 @@ contains
   function pcmsolver_input() result(host_input)
 
     use, intrinsic :: iso_c_binding
-    use pcmsolver, only: PCMInput
+    use pcmsolver, only: PCMInput, pcmsolver_fstring_to_carray
 
     type(PCMInput) :: host_input
 
@@ -66,43 +66,26 @@ contains
     character(kind=c_char, len=18) :: pcmmod_outside_type = 'uniformdielectric'//c_null_char
     real(c_double) :: pcmmod_outside_epsilon = 1.0
 
-    character(kind=c_char, len=1) :: cavity_type(8)
-    character(kind=c_char, len=1) :: radii_set(8)
-    character(kind=c_char, len=1) :: restart_name(20)
-    character(kind=c_char, len=1) :: solver_type(7)
-    character(kind=c_char, len=1) :: solvent(16)
-    character(kind=c_char, len=1) :: equation_type(11)
-    character(kind=c_char, len=1) :: inside_type(7)
-    character(kind=c_char, len=1) :: outside_type(22)
-
-    call pcmsolver_f2c_string(pcmmod_cavity_type, cavity_type, 6_c_int)
-    host_input%cavity_type  = cavity_type
+    host_input%cavity_type  = pcmsolver_fstring_to_carray(pcmmod_cavity_type)
     host_input%patch_level  = int(pcmmod_patch_level, kind=c_int)
     host_input%coarsity     = pcmmod_coarsity
     host_input%area         = pcmmod_cavity_area
     host_input%min_distance = pcmmod_min_distance
     host_input%der_order    = int(pcmmod_der_order, kind=c_int)
     host_input%scaling      = pcmmod_scaling
-    call pcmsolver_f2c_string(pcmmod_radii_set, radii_set, 6_c_int)
-    host_input%radii_set    = radii_set
-    call pcmsolver_f2c_string(pcmmod_restart_name, restart_name, 11_c_int)
-    host_input%restart_name = restart_name
+    host_input%radii_set    = pcmsolver_fstring_to_carray(pcmmod_radii_set)
+    host_input%restart_name = pcmsolver_fstring_to_carray(pcmmod_restart_name)
     host_input%min_radius   = pcmmod_min_radius
 
-    call pcmsolver_f2c_string(pcmmod_solver_type, solver_type, 7_c_int)
-    host_input%solver_type   = solver_type
-    call pcmsolver_f2c_string(pcmmod_solvent, solvent, 6_c_int)
-    host_input%solvent       = solvent
-    call pcmsolver_f2c_string(pcmmod_equation_type, equation_type, 11_c_int)
-    host_input%equation_type = equation_type
+    host_input%solver_type   = pcmsolver_fstring_to_carray(pcmmod_solver_type)
+    host_input%solvent       = pcmsolver_fstring_to_carray(pcmmod_solvent)
+    host_input%equation_type = pcmsolver_fstring_to_carray(pcmmod_equation_type)
     host_input%correction    = pcmmod_correction
     host_input%probe_radius  = pcmmod_probe_radius
 
-    call pcmsolver_f2c_string(pcmmod_inside_type, inside_type, 7_c_int)
-    host_input%inside_type     = inside_type
+    host_input%inside_type     = pcmsolver_fstring_to_carray(pcmmod_inside_type)
     host_input%outside_epsilon = pcmmod_outside_epsilon
-    call pcmsolver_f2c_string(pcmmod_outside_type, outside_type, 18_c_int)
-    host_input%outside_type    = outside_type
+    host_input%outside_type    = pcmsolver_fstring_to_carray(pcmmod_outside_type)
 
   end function pcmsolver_input
 

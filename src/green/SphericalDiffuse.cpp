@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -31,35 +31,15 @@
 
 // Has to be included here
 #include "InterfacesImpl.hpp"
-// Boost.Math includes
-#include <boost/math/special_functions/legendre.hpp>
 
-#include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
-#include "dielectric_profile/ProfileTypes.hpp"
-#include "utils/ForId.hpp"
+#include "utils/Legendre.hpp"
 #include "utils/MathUtils.hpp"
 
 namespace pcm {
 namespace green {
-template <typename ProfilePolicy>
-SphericalDiffuse<ProfilePolicy>::SphericalDiffuse(double e1,
-                                                  double e2,
-                                                  double w,
-                                                  double c,
-                                                  const Eigen::Vector3d & o,
-                                                  int l)
-    : GreensFunction<Stencil, ProfilePolicy>(),
-      origin_(o),
-      maxLGreen_(l),
-      maxLC_(2 * l) {
-  initProfilePolicy(e1, e2, w, c);
-  initSphericalDiffuse();
-}
-
 template <typename ProfilePolicy>
 double SphericalDiffuse<ProfilePolicy>::coefficientCoulomb(
     const Eigen::Vector3d & source,
@@ -257,14 +237,6 @@ std::ostream & SphericalDiffuse<ProfilePolicy>::printObject(std::ostream & os) {
 }
 
 template <typename ProfilePolicy>
-void SphericalDiffuse<ProfilePolicy>::initProfilePolicy(double e1,
-                                                        double e2,
-                                                        double w,
-                                                        double c) {
-  this->profile_ = ProfilePolicy(e1, e2, w, c);
-}
-
-template <typename ProfilePolicy>
 void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   using namespace detail;
 
@@ -325,7 +297,7 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
     cos_gamma = 1.0;
   if (utils::numericalZero(cos_gamma + 1))
     cos_gamma = -1.0;
-  double pl_x = boost::math::legendre_p(L, cos_gamma);
+  double pl_x = Legendre::Pn<double>(L, cos_gamma);
 
   /* Zeta and Omega are now on a logarithmic scale We need to pass the
 	 arguments in the correct scale and then use the chain rule to get
@@ -431,10 +403,7 @@ template class SphericalDiffuse<OneLayerErf>;
 using dielectric_profile::OneLayerLog;
 template class SphericalDiffuse<OneLayerLog>;
 
-IGreensFunction * createSphericalDiffuse(const GreenData & data) {
-  detail::buildSphericalDiffuse build;
-  return for_id<dielectric_profile::onelayer_diffuse_profile_types, IGreensFunction>(
-      build, data, data.howProfile);
-}
+using dielectric_profile::MembraneTanh;
+template class SphericalDiffuse<MembraneTanh>;
 } // namespace green
 } // namespace pcm

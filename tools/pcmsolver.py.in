@@ -1,6 +1,6 @@
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
-#  Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+#  Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
 #
 #  This file is part of PCMSolver.
 #
@@ -48,10 +48,19 @@ import sys
 import tempfile
 import os
 from copy import deepcopy
-import getkw
 import re
 import subprocess
-from codata import CODATAdict
+
+# this contraption is here because this script can be called directly
+# but also imported and then relative imports fail
+# it would be good to separate the __main__ part out which should then import
+# everything it needs to separate the script part from the library part
+try:
+    from getkw import Section, GetkwParser
+    from codata import CODATAdict
+except ModuleNotFoundError:
+    from .getkw import Section, GetkwParser
+    from .codata import CODATAdict
 
 sys.path.append(os.path.dirname(__file__))
 try:
@@ -121,9 +130,8 @@ def convert_to_upper_case(filename):
     # "restart" should not be touched, whereas the rest of the file
     # has to be put in uppercase.
     npz_file = re.compile('NPZFILE', re.IGNORECASE)
-    dyadic_file = re.compile('DYADICFILE', re.IGNORECASE)
     for line in contents:
-        if (npz_file.search(line)) or (dyadic_file.search(line)):
+        if npz_file.search(line):
             rst_split = re.split(r"=", line)
             rst_split = rst_split[0].upper() + ' = ' + rst_split[1]
             line = ''.join(rst_split)
@@ -138,7 +146,7 @@ def convert_to_upper_case(filename):
     # Write to temporary file in current working directory
     # The temporary file has the name of the input file, joined with a unique id
     temp, path = tempfile.mkstemp(prefix=filename + '.', dir=os.getcwd())
-    with open(path, 'wt') as outputFile:
+    with open(path, 'w') as outputFile:
         outputFile.write(final)
     os.close(temp)
     return path
@@ -152,17 +160,23 @@ def main():
         sys.stderr.write(options)
         sys.exit(-1)
     inpfil = arguments['<input_file>']
-    # Do the parsing and return parsed file name
+    # Do the parsing and return validated input
     parsed = parse_pcm_input(inpfil)
+    # The parsed, machine-readable file is now saved.
+    parsedFile = os.path.join(os.path.dirname(inpfil), '@' + os.path.basename(inpfil))
+    # Any leftover parsedFile will be overwritten
+    with open(parsedFile, 'w') as tmp:
+        tmp.write(parsed)
     # Execute standalone
     if arguments['--exe']:
-        execute(parsed)
+        execute(parsedFile)
 
 
-def parse_pcm_input(inputFile):
+def parse_pcm_input(inputFile, write_out=False):
     """
-    Parses human-readable input to PCMSolver and writes to
-    file the machine-readable parsed file.
+    Parses human-readable input to PCMSolver and return string with
+    machine-readable input.
+    Optionally, save the result of parsing to file.
     This function can be accessed from other Python scripts when
     importing the current file as a module.
     """
@@ -174,26 +188,23 @@ def parse_pcm_input(inputFile):
 
     # Set up a GetKw object and let it parse our input:
     # here is where the magic happens.
-    inkw = getkw.GetkwParser().parseFile(uppercased)
+    inkw = GetkwParser().parseFile(uppercased)
     # Remove temporary file
     os.remove(uppercased)
     inkw.sanitize(valid_keywords)
     inkw.run_callbacks(valid_keywords)
 
-    # The parsed, machine-readable file is now saved.
-    parsedFile = os.path.join(os.path.dirname(inputFile), '@' + os.path.basename(inputFile))
-    # If parsedFile already exists, it might be a leftover.
-    # Remove it
-    if (os.path.isfile(parsedFile)):
-        os.remove(parsedFile)
-    with open(parsedFile, 'wt') as tmp:
-        tmp.write(str(inkw.top))
+    if write_out:
+       # The parsed, machine-readable file is now saved.
+       parsedFile = os.path.join(os.path.dirname(inputFile), '@' + os.path.basename(inputFile))
+       with open(parsedFile, 'w') as tmp:
+           tmp.write(str(inkw.top))
 
-    return parsedFile
+    return str(inkw.top)
 
 
 def execute(parsedFile):
-    executable = os.path.join(os.path.dirname(__file__), "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@")
+    executable = os.path.join(os.path.dirname(__file__), '..', "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@")
     if (executable):
         p = subprocess.Popen(
             [executable, parsedFile],
@@ -218,7 +229,7 @@ def setup_keywords():
     Sets up sections, keywords and respective callback functions.
     """
     # Top-level section
-    top = getkw.Section('toplevel', callback=verify_top)
+    top = Section('toplevel', callback=verify_top)
     top.set_status(True)
     # Define units of measure
     # Valid values: AU (atomic units) or ANGSTROM
@@ -230,96 +241,68 @@ def setup_keywords():
     top.add_kw('CODATA', 'INT', 2010)
 
     # Cavity section
-    cavity = getkw.Section('CAVITY', callback=verify_cavity)
+    cavity = Section('CAVITY', callback=verify_cavity)
     # Type of the cavity
-    # Valid values: GEPOL, WAVELET, TSLESS and RESTART
+    # Valid values: GEPOL and RESTART
     cavity.add_kw('TYPE', 'STR')
     # Name of the file containing data for restarting a cavity
     # Valid for: Restart cavity
     # Default: empty string
     cavity.add_kw('NPZFILE', 'STR', '')
-    # Name of the file containing the list of points for a wavelet cavity
-    # Valid for: Wavelet cavity
-    # Default: empty string
-    cavity.add_kw('DYADICFILE', 'STR', '')
-    # Patch level
-    # Valid for: Wavelet cavity
-    # Valid values: integer strictly greater than 0
-    # Default: 2
-    cavity.add_kw('PATCHLEVEL', 'INT', 2)
-    # Coarsity
-    # Valid for: Wavelet cavity
-    # Valid values: double in ]0.0, 1.0[
-    # Default: 0.5
-    cavity.add_kw('COARSITY', 'DBL', 0.5)
     # Average area (in au^2)
-    # Valid for: GePol and TsLess cavities
+    # Valid for: GePol
     # Valid values: double strictly greater than 0.01 au^2
     # Default: 0.3 au^2
     cavity.add_kw('AREA', 'DBL', 0.3)
-    # Minimal distance between sampling points (in au)
-    # Valid for: TsLess cavity
-    # Valid values: double
-    # Default: 0.1 au
-    cavity.add_kw('MINDISTANCE', 'DBL', 0.1)
-    # Derivative order for the weight function
-    # Valid for: TsLess cavity
-    # Valid values: integer
-    # Default: 4
-    cavity.add_kw('DERORDER', 'INT', 4)
     # Scaling of the atomic radii
-    # Valid for: GePol, Wavelet and TsLess
+    # Valid for: GePol
     # Valid values: boolean
     # Default: True
     cavity.add_kw('SCALING', 'BOOL', True)
     # Built-in radii set
-    # Valid for: GePol, Wavelet and TsLess
+    # Valid for: GePol
     # Valid values: BONDI, UFF or ALLINGER
     # Default: BONDI
     cavity.add_kw('RADIISET', 'STR', 'BONDI')
     # Minimal radius of added spheres (in au)
-    # Valid for: GePol and TsLess
+    # Valid for: GePol
     # Valid values: double greater than 0.4 au
     # Default: 100.0 au (no added spheres)
     cavity.add_kw('MINRADIUS', 'DBL', 100.0)
     # Spheres geometry creation mode
-    # Valid for: GePol, TsLess and Wavelet
+    # Valid for: GePol
     # Valid values: EXPLICIT, ATOMS or IMPLICIT
     # Default: IMPLICIT
     cavity.add_kw('MODE', 'STR', 'IMPLICIT')
     # List of atoms with custom radius
-    # Valid for: GePol, TsLess and Wavelet in MODE=ATOMS
+    # Valid for: GePol in MODE=ATOMS
     # Valid values: array of integers
     cavity.add_kw('ATOMS', 'INT_ARRAY')
     # List of custom radii
-    # Valid for: GePol, TsLess and Wavelet in MODE=ATOMS
+    # Valid for: GePol in MODE=ATOMS
     # Valid values: array of doubles
     cavity.add_kw('RADII', 'DBL_ARRAY')
     # List of spheres
-    # Valid for: GePol, TsLess and Wavelet in MODE=EXPLICIT
+    # Valid for: GePol in MODE=EXPLICIT
     # Valid values: array of doubles in format [x, y, z, R]
     cavity.add_kw('SPHERES', 'DBL_ARRAY', callback=verify_spheres)
     top.add_sect(cavity)
 
     # Medium section
-    medium = getkw.Section('MEDIUM', callback=verify_medium)
+    medium = Section('MEDIUM', callback=verify_medium)
     # Type of solver
-    # Valid values: IEFPCM, CPCM, WAVELET or LINEAR
+    # Valid values: IEFPCM, CPCM
     medium.add_kw('SOLVERTYPE', 'STR', 'IEFPCM')
     # Whether nonequilibrium response is to be used
-    # Valid for: IEFPCM, CPCM, WAVELET or LINEAR
+    # Valid for: IEFPCM, CPCM
     # Valid values: boolean
     # Default: False
     medium.add_kw('NONEQUILIBRIUM', 'BOOL', False)
     # Solvent
-    # Valid for: IEFPCM, CPCM, Wavelet and PWL solvers
+    # Valid for: IEFPCM, CPCM
     # Valid values: string
     # Default: Explicit
     medium.add_kw('SOLVENT', 'STR', 'EXPLICIT')
-    # Type of integral equation
-    # Valid for: Wavelet and PWL
-    # Valid values: FIRSTKIND, SECONDKIND or FULL
-    medium.add_kw('EQUATIONTYPE', 'STR', 'SECONDKIND')
     # Symmetrization of the PCM matrix
     # Valid for: IEFPCM
     # Valid values: boolean
@@ -342,29 +325,14 @@ def setup_keywords():
     # Notes: values commonly used in the literature are 1.07 and 1.0694
     medium.add_kw('DIAGONALSCALING', 'DBL', 1.07)
     # Radius of the solvent probe (in au)
-    # Valid for: IEFPCM, CPCM, Wavelet and PWL
+    # Valid for: IEFPCM, CPCM
     # Valid values: double in [0.1, 100.0] au
     # Default: 1.0
     medium.add_kw('PROBERADIUS', 'DBL', 1.0)
-    # A priori compression parameter a
-    # Valid for: wavelet solvers
-    # Valid values: double greater than 1.0
-    # Default: 1.25
-    medium.add_kw('A', 'DBL', 1.25)
-    # A priori compression parameter d'
-    # Valid for: wavelet solvers
-    # Valid values: double greater than 1.0
-    # Default: 1.25 (PWC) or 2.25 (PWL)
-    medium.add_kw('DPRIME', 'DBL', 0.0)
-    # A posteriori compression parameter b
-    # Valid for: wavelet solvers
-    # Valid values: double in ]0, 1[
-    # Default: 0.001
-    medium.add_kw('B', 'DBL', 0.001)
     top.add_sect(medium)
 
     # Green's function section
-    green = getkw.Section('GREEN', callback=verify_green)
+    green = Section('GREEN', callback=verify_green)
     # Green's function type
     # Valid values: VACUUM, UNIFORMDIELECTRIC, SPHERICALDIFFUSE, METALSPHERE, GREENSFUNCTIONSUM
     # Default: VACUUM
@@ -454,7 +422,7 @@ def setup_keywords():
     green.add_sect(green_part)
 
     # Molecule section
-    molecule = getkw.Section('MOLECULE')
+    molecule = Section('MOLECULE')
     # List of geometry and classical point charges
     # Valid values: array of doubles in format [x, y, z, Q]
     # Notes: charges are always in atomic units
@@ -468,7 +436,7 @@ def setup_keywords():
     # ChargeDistribution section
     # Set a classical charge distribution, inside or outside the cavity
     # No additional spheres will be generated.
-    charge_distribution = getkw.Section('CHARGEDISTRIBUTION', callback=verify_charge_distribution)
+    charge_distribution = Section('CHARGEDISTRIBUTION', callback=verify_charge_distribution)
     # Monopoles
     # Valid values: array of doubles in format [x, y, z, Q]
     # Notes: charges are always in atomic units
@@ -500,7 +468,7 @@ def verify_top(section):
 
 
 def verify_cavity(section):
-    allowed = ('GEPOL', 'WAVELET', 'TSLESS', 'RESTART')
+    allowed = ('GEPOL', 'RESTART')
     type = section.get('TYPE')
     if (type.get() not in allowed):
         print(('Requested {} cavity is not among the allowed types: {}'.format(type, allowed)))
@@ -512,8 +480,6 @@ def verify_cavity(section):
         convert_area_scalar(section['AREA'])
     if (section['MINRADIUS'].is_set()):
         convert_length_scalar(section['MINRADIUS'])
-    if (section['MINDISTANCE'].is_set()):
-        convert_length_scalar(section['MINDISTANCE'])
 
     if (type.get() == 'GEPOL'):
         area = section.get('AREA')
@@ -526,33 +492,6 @@ def verify_cavity(section):
         if (mr < 0.4):
             print(('Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 au'.format(mr)))
             sys.exit(1)
-    elif (type.get() == 'WAVELET'):
-        key = section.get('PATCHLEVEL')
-        if (key.get() < 1):
-            print(('Invalid patch level requested: {}. Patch level must be greater than 0'.format(key.get())))
-            sys.exit(1)
-        key = section.get('COARSITY')
-        if (key.get() < 0.0 or key.get() >= 1.0):
-            print(('Invalid coarsity requested: {}. Coarsity has to be within ]0, 1['.format(key.get())))
-            sys.exit(1)
-    elif (type.get() == 'TSLESS'):
-        area = section.get('AREA')
-        a = area.get()
-        if (a < 0.01):
-            print(('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a)))
-            sys.exit(1)
-        # minDistance = section.get('MINDISTANCE')
-        # md = minDistance.get()
-        # Insert a sanity check on minimal distance!
-        # if ( md < 0.4 ):
-        #       print("Requested minimal distance between sampling points too small: {}. Minimal value is: 0.4 au".format(md))
-        #       sys.exit(1)
-        # derOrder = section.get('DERORDER')
-        # do = derOrder.get()
-        # Insert a check on derivative order
-        # if ( do > 4 ):
-        #       print("Invalid derivative order requested: {}. Derivative order has to be within [1, 5]".format(md))
-        #       sys.exit(1)
     elif (type.get() == 'RESTART'):
         npzfile = section.get('NPZFILE')
         # Restart string is the filename, with extension, where the cavity specs were saved.
@@ -641,39 +580,16 @@ def verify_medium(section):
         print('Probe radius has to be within [0.1,100] Atomic Units')
         sys.exit(1)
 
-    allowed_types = ('IEFPCM', 'CPCM', 'WAVELET', 'LINEAR')
+    allowed_types = ('IEFPCM', 'CPCM')
     key = section.get('SOLVERTYPE')
     val = key.get()
     if (val not in allowed_types):
         print(('Allowed types are: {}'.format(allowed_types)))
         sys.exit(1)
-    allowed_equations = ('FIRSTKIND', 'SECONDKIND', 'FULL')
-    key = section.get('EQUATIONTYPE')
-    val = key.get()
-    if (val not in allowed_equations):
-        print(('Allowed equations are: {}'.format(allowed_equations)))
-        sys.exit(1)
-
-    a = section.get('A')
-    if (a.get() < 1.0):
-        print('A priori compression parameter a has to be greater than 1.0')
-        sys.exit(1)
-    dprime = section.get('DPRIME')
-    solver = section.get('SOLVERTYPE')
-    if (dprime.get() == 0.0):
-        if (solver.get() == 'WAVELET'):
-            dprime.set(1.25)
-        elif (solver.get() == 'LINEAR'):
-            dprime.set(2.25)
-
-    b = section.get('B')
-    if (b.get() >= 1.0 and b.get() <= 0.0):
-        print('A posteriori compression parameter has to be in ]0.0, 1.0[')
-        sys.exit(1)
 
 
 def verify_green(section):
-    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'ALTERNATESPHERICALDIFFUSE', 'METALSPHERE',
+    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'METALSPHERE',
                'GREENSFUNCTIONSUM')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
     allowed_profiles = ('TANH', 'ERF', 'LOG')

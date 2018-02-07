@@ -1,5 +1,19 @@
 # List of sources
-list(APPEND sources_list pedra_cavity.F90 pedra_cavity_interface.F90 pedra_dblas.F90 pedra_dlapack.F90 pedra_precision.F90 pedra_print.F90 pedra_symmetry.F90 pedra_utils.F90)
+list(APPEND sources_list
+pedra_dblas.f90
+pedra_dlapack.f90
+pedra_precision.f90
+pedra_print.f90
+pedra_symmetry.f90
+pedra_utils.f90
+pedra_cavity.F90
+pedra_cavity_interface.F90
+)
 
 add_library(pedra OBJECT ${sources_list})
-set_target_properties(pedra PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+set_target_properties(pedra
+  PROPERTIES
+    POSITION_INDEPENDENT_CODE 1
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN 1
+  )

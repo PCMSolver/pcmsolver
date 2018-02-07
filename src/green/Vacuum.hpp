@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -28,6 +28,7 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
+
 /*! \file Vacuum.hpp */
 
 namespace pcm {
@@ -35,19 +36,14 @@ struct GreenData;
 namespace cavity {
 class Element;
 } // namespace cavity
-
-namespace dielectric_profile {
-struct Uniform;
-} // namespace dielectric_profile
 } // namespace pcm
 
 #include "DerivativeTypes.hpp"
 #include "GreensFunction.hpp"
+#include "dielectric_profile/Uniform.hpp"
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits = AD_directional>
-
 /*! \class Vacuum
  *  \brief Green's function for vacuum.
  *  \author Luca Frediani and Roberto Di Remigio
@@ -57,11 +53,16 @@ template <typename DerivativeTraits = AD_directional>
 // TODO: * I don't think the ProfilePolicy parameter is needed in this case!
 //       * can we use enable_if (or similar tricks) to avoid implementing useless
 //       functions?
+template <typename DerivativeTraits = AD_directional>
 class Vacuum __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Uniform> {
 public:
   Vacuum();
   virtual ~Vacuum() {}
+
+  virtual double permittivity() const __override __final {
+    return this->profile_.epsilon;
+  }
 
   friend std::ostream & operator<<(std::ostream & os, Vacuum & gf) {
     return gf.printObject(os);
@@ -84,14 +85,9 @@ private:
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
 
-namespace detail {
-struct buildVacuum {
-  template <typename T> IGreensFunction * operator()(const GreenData & /* data */) {
-    return new Vacuum<T>();
-  }
-};
-} // namespace detail
-
-IGreensFunction * createVacuum(const GreenData & data);
+template <typename DerivativeTraits>
+IGreensFunction * createVacuum(const GreenData & /* data */) {
+  return new Vacuum<DerivativeTraits>();
+}
 } // namespace green
 } // namespace pcm

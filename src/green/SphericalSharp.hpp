@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -32,7 +32,6 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreensFunction.hpp"
 #include "bi_operators/IntegratorForward.hpp"
 #include "dielectric_profile/Sharp.hpp"

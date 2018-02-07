@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -28,8 +28,9 @@
 #include <ctime>
 #include <iostream>
 
+#include "Config.hpp"
+
 #include <Eigen/Core>
-#include <boost/math/special_functions/erf.hpp>
 
 #include "green/dielectric_profile/OneLayerErf.hpp"
 #include "green/dielectric_profile/OneLayerTanh.hpp"
@@ -114,7 +115,7 @@ double erf_value(double point, double e1, double e2, double w, double c) {
   w /= 6.0;
   double epsPlus = (e1 + e2) / 2.0;
   double epsMinus = (e2 - e1) / 2.0;
-  double val = boost::math::erf((point - c) / w);
+  double val = pcm::erf((point - c) / w);
   return (epsPlus + epsMinus * val);
 }
 double erf_deriv(double point, double e1, double e2, double w, double c) {

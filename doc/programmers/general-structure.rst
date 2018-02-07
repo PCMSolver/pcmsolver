@@ -8,15 +8,18 @@ General Structure
 External libraries:
 
 + parts of the C++ `Boost <http://www.boost.org/>`_ libraries are used to provide
-  various functionality, like timing and metaprogramming.
+  various functionality, like ordinary differential equations integrators.
   The source for the 1.54.0 release is shipped with the
   module's source code. Some of the libraries used
   need to be compiled. Boost is released under the terms
   of the `Boost Software License, v1.0 <http://opensource.org/licenses/BSL-1.0>`_ (see also
-  http://www.boost.org/users/license.html) We encourage the use of
-  Boost whenever some functionality has already been coded within those
-  libraries. However, consider **carefully** the introduction of functionality
-  depending on compiler Boost libraries.
+  http://www.boost.org/users/license.html)
+
+  .. warning::
+
+     As of v1.1.11 we have started removing the dependency from Boost.
+     The use of Boost is thus deprecated.
+
 + the `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page>`_ template
   library for linear algebra.  Almost every operation involving matrices and
   vectors is performed through Eigen.  Eigen provides convenient type

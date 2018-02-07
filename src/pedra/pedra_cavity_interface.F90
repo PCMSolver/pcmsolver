@@ -1,6 +1,6 @@
 !
 ! PCMSolver, an API for the Polarizable Continuum Model
-! Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+! Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
 !
 ! This file is part of PCMSolver.
 !
@@ -34,12 +34,13 @@ subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
     xe_, ye_, ze_, rin_, masses_, avgArea_, rsolv_, ret_,        &
     nr_gen_, gen1_, gen2_, gen3_,                                &
     nvert_, vert_, centr_, isphe_, pedra_, len_pedra_)           &
-    bind(c, name='generatecavity_cpp')
+    bind(C, name='generatecavity_cpp')
 
 use, intrinsic :: iso_c_binding
 use pedra_precision
 use pedra_symmetry, only: get_point_group, point_group
 use pedra_cavity, only: polyhedra_driver
+use strings, only: carray_to_fstring
 
 implicit none
 
@@ -58,8 +59,8 @@ integer(c_int)  :: nr_gen_, gen1_, gen2_, gen3_
 integer(c_int)  :: nvert_(maxts_)
 real(c_double)  :: vert_(maxts_ * 30), centr_(maxts_ * 30)
 integer(c_int)  :: isphe_(maxts_)
-character(kind=c_char) :: pedra_
 integer(c_int) :: len_pedra_
+character(kind=c_char, len=1), intent(in) :: pedra_(len_pedra_+1)
 
 integer(c_int)    :: i, j, k, offset
 integer(c_int)    :: error_code
@@ -69,7 +70,8 @@ real(c_double), allocatable :: vert(:, :, :), centr(:, :, :)
 character(len=len_pedra_) :: pedra
 type(point_group) :: pgroup
 
-call pcmsolver_c2f_string(pedra_, pedra, len_pedra_)
+
+pedra = carray_to_fstring(pedra_)
 !lvpri = 121201_regint_k
 ! The following INQUIRE statement returns whether the file named cavity.off is
 ! connected in logical variable off_open, whether the file exists in logical

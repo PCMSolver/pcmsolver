@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -33,10 +33,6 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
-
-// Include Boost headers here
-#include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
 
 #include "interface/Input.hpp"
 #include "interface/Meddle.hpp"

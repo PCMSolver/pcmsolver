@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -103,6 +103,15 @@ inline bool isZero(double value, double threshold) {
  *  Returns true if value is less than 1.0e-14
  */
 inline bool numericalZero(double value) { return (isZero(value, 1.0e-14)); }
+
+/*! \fn inline int sign(T val)
+ *  \param[in] val value whose sign should be determined
+ *  \tparam    T of the parameter val
+ *
+ *  This function implements the signum function and returns the sign of the passed
+ * value: -1, 0 or 1
+ */
+template <typename T> inline int sign(T val) { return (T(0) < val) - (val < T(0)); }
 
 /*! \fn inline void symmetryBlocking(Eigen::MatrixXd & matrix, int cavitySize, int
  * ntsirr, int nr_irrep)

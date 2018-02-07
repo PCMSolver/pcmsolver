@@ -52,7 +52,7 @@ def add_header(filepath, header, YEAR, AUTHORS):
                     output.append(inpt[0] + '\n')
                     inpt = inpt[1:]
                 regex = re.compile(r'Copyright \(C\).*\n')
-                repl  = r'Copyright (C) ' + YEAR + ' ' + AUTHORS + '\n'
+                repl = r'Copyright (C) ' + YEAR + ' ' + AUTHORS + '\n'
                 output.extend([re.sub(regex, repl, x) for x in inpt])
         else:
             print(('Adding header in {}'.format(filepath)))
@@ -82,7 +82,7 @@ def prepare_header(stub, YEAR, AUTHORS):
     with open(stub, 'r') as l:
         header = l.read()
         # Insert correct YEAR and AUTHORS in stub
-        rep = {'YEAR' : YEAR, 'AUTHORS' : AUTHORS}
+        rep = {'YEAR': YEAR, 'AUTHORS': AUTHORS}
         rep = dict((re.escape(k), v) for k, v in rep.items())
         pattern = re.compile("|".join(list(rep.keys())))
         header = pattern.sub(lambda m: rep[re.escape(m.group(0))], header)
@@ -105,15 +105,16 @@ def file_license(attributes):
         # Remove licensefile= from strings
         lic = [re.sub(r'licensefile\=', '', x) for x in gitattributes if 'licensefile' in x]
         # Create list of blacklisted files
-        blacklist = [fname for key, value in list(dict(list(zip(fil, lic))).items())
-                       if value == '!licensefile'
-                       for fname in glob.glob(key)]
+        blacklist = [
+            fname for key, value in list(dict(list(zip(fil, lic))).items())
+            if value == '!licensefile' for fname in glob.glob(key)
+        ]
         # Now create a dictionary with the files to be considered for
         # license header manipulation
-        file_license = {key: value
-                        for k, value in list(dict(list(zip(fil, lic))).items())
-                        for key in glob.glob(k)
-                        if key not in blacklist}
+        file_license = {
+            key: value
+            for k, value in list(dict(list(zip(fil, lic))).items()) for key in glob.glob(k) if key not in blacklist
+        }
     return file_license
 
 
@@ -121,8 +122,8 @@ def license_maintainer():
     """
     Maintain license header in source files
     """
-    YEAR    = str(date.today().year)
-    AUTHORS = 'Roberto Di Remigio, Luca Frediani and collaborators.'
+    YEAR = str(date.today().year)
+    AUTHORS = 'Roberto Di Remigio, Luca Frediani and contributors.'
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root_dir = os.path.abspath(os.path.join(script_dir, os.pardir))

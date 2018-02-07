@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -35,19 +35,14 @@ namespace pcm {
 namespace cavity {
 class Element;
 } // namespace cavity
-
-namespace dielectric_profile {
-class Anisotropic;
-} // namespace dielectric_profile
 } // namespace pcm
 
-#include "DerivativeTypes.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
+#include "dielectric_profile/Anisotropic.hpp"
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits = AD_directional>
 /*! \class AnisotropicLiquid
  *  \brief Green's functions for anisotropic liquid, described by a tensorial
  * permittivity
@@ -55,6 +50,7 @@ template <typename DerivativeTraits = AD_directional>
  *  \date 2016
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
+template <typename DerivativeTraits = AD_directional>
 class AnisotropicLiquid __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Anisotropic> {
 public:
@@ -64,6 +60,10 @@ public:
   AnisotropicLiquid(const Eigen::Vector3d & eigen_eps,
                     const Eigen::Vector3d & euler_ang);
   virtual ~AnisotropicLiquid() {}
+
+  virtual double permittivity() const __override __final {
+    PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
+  }
 
   friend std::ostream & operator<<(std::ostream & os, AnisotropicLiquid & gf) {
     return gf.printObject(os);
@@ -88,14 +88,10 @@ private:
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
 
-namespace detail {
-struct buildAnisotropicLiquid {
-  template <typename T> IGreensFunction * operator()(const GreenData & data) {
-    return new AnisotropicLiquid<T>(data.epsilonTensor, data.eulerAngles);
-  }
-};
-} // namespace detail
-
-IGreensFunction * createAnisotropicLiquid(const GreenData & data);
+template <typename DerivativeTraits>
+IGreensFunction * createAnisotropicLiquid(const GreenData & data) {
+  return new AnisotropicLiquid<DerivativeTraits>(data.epsilonTensor,
+                                                 data.eulerAngles);
+}
 } // namespace green
 } // namespace pcm

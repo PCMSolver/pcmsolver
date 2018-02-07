@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -30,12 +30,10 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 #include "dielectric_profile/Anisotropic.hpp"
-#include "utils/ForId.hpp"
 
 namespace pcm {
 using cavity::Element;
@@ -45,9 +43,8 @@ template <typename DerivativeTraits>
 AnisotropicLiquid<DerivativeTraits>::AnisotropicLiquid(
     const Eigen::Vector3d & eigen_eps,
     const Eigen::Vector3d & euler_ang)
-    : GreensFunction<DerivativeTraits, Anisotropic>() {
-  this->profile_ = Anisotropic(eigen_eps, euler_ang);
-}
+    : GreensFunction<DerivativeTraits, Anisotropic>(
+          Anisotropic(eigen_eps, euler_ang)) {}
 
 template <typename DerivativeTraits>
 DerivativeTraits AnisotropicLiquid<DerivativeTraits>::operator()(
@@ -130,10 +127,5 @@ template class AnisotropicLiquid<Stencil>;
 template class AnisotropicLiquid<AD_directional>;
 template class AnisotropicLiquid<AD_gradient>;
 template class AnisotropicLiquid<AD_hessian>;
-
-IGreensFunction * createAnisotropicLiquid(const GreenData & data) {
-  detail::buildAnisotropicLiquid build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
 } // namespace green
 } // namespace pcm

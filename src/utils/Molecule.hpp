@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "Config.hpp"
+#include "PCMSolverExport.h"
 
 #include <Eigen/Core>
 
@@ -229,7 +230,8 @@ Eigen::VectorXd computeMEP(const Molecule & mol,
  *  \param[in] grid grid points coordinates
  *  \return MEP at grid points
  */
-Eigen::VectorXd computeMEP(const Molecule & mol, const Eigen::Matrix3Xd & grid);
+PCMSolver_EXPORT Eigen::VectorXd computeMEP(const Molecule & mol,
+                                            const Eigen::Matrix3Xd & grid);
 
 /*! \brief Compute MEP for a single point charge
  *  \param[in] el  list of finite elements

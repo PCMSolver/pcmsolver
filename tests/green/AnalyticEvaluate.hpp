@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -28,10 +28,9 @@
 
 #include <Eigen/Core>
 
-// Boost.Math includes
-#include <boost/math/special_functions/legendre.hpp>
-
+#include "utils/Legendre.hpp"
 #include "utils/MathUtils.hpp"
+#include "utils/Stencils.hpp"
 
 /*! \brief Analytic evaluation of vacuum Green's function and its derivatives
  *
@@ -304,7 +303,7 @@ inline double imagePotential(double eps,
   for (int l = 1; l <= 200; ++l) {
     f_l = f_l * radius * f_0;
     double C_0_l = (eps - epsSolv) * l / ((eps + epsSolv) * l + epsSolv);
-    double pl_x = boost::math::legendre_p(l, cos_gamma);
+    double pl_x = Legendre::Pn<double>(l, cos_gamma);
     G_img += f_l * (C_0_l - factor) * pl_x;
   }
 
@@ -351,8 +350,8 @@ inline double derivativeImagePotential(double eps,
       pp_origin_norm_l_3 *= pp_origin_norm;
       pp_origin_norm_l_1 *= pp_origin_norm;
 
-      double pl_x = boost::math::legendre_p(l, cos_gamma); // P_l(cos_gamma)
-      double pl_1_x = boost::math::legendre_p(l+1, cos_gamma); // P_(l+1)(cos_gamma)
+      double pl_x = Legendre::Pn<double>(l, cos_gamma); // P_l(cos_gamma)
+      double pl_1_x = Legendre::Pn<double>(l+1, cos_gamma); // P_(l+1)(cos_gamma)
       double cos_denom = std::pow(cos_gamma, 2) - 1;
 
       double tmp_a = ((l+1) * pl_x * pp_origin.dot(ppNormal)) / pp_origin_norm_l_3;
@@ -376,6 +375,8 @@ inline double derivativeImagePotential(double eps,
 /*! \brief Analytic evaluation of spherical sharp Green's function and its
  * derivatives
  *  Derivation details in J. Chem. Phys. 139, 0224105 (2013)
+ *  TODO Now using a 7-point stencil for the derivatives. Should double-check formula
+ * given in paper and code that up.
  */
 inline Eigen::Array4d analyticSphericalSharp(double eps,
                                              double epsSolv,
@@ -393,12 +394,21 @@ inline Eigen::Array4d analyticSphericalSharp(double eps,
   // Value of the function
   result(0) = 1.0 / (epsSolv * distance) - G_img;
 
-  double d_probe_G_img =
-      derivativeImagePotential(eps, epsSolv, radius, origin, sp, ppNormal, pp);
+  double d_probe_G_img = sevenPointStencil(
+      pcm::bind(imagePotential, eps, epsSolv, radius, origin, pcm::_1, pcm::_2),
+      pp,
+      sp,
+      ppNormal,
+      1.0e-04);
   // Value of the directional derivative wrt probe
   result(1) = (sp - pp).dot(ppNormal) / (epsSolv * distance_3) - d_probe_G_img;
 
-  double d_source_G_img = 0.0;
+  double d_source_G_img = sevenPointStencil(
+      pcm::bind(imagePotential, eps, epsSolv, radius, origin, pcm::_1, pcm::_2),
+      sp,
+      pp,
+      spNormal,
+      1.0e-04);
   // Directional derivative wrt source
   result(2) = -(sp - pp).dot(spNormal) / (epsSolv * distance_3) - d_source_G_img;
   // Value of the Hessian

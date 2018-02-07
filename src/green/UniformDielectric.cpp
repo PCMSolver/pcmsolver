@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -30,12 +30,10 @@
 #include <Eigen/Core>
 
 #include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 #include "dielectric_profile/Uniform.hpp"
-#include "utils/ForId.hpp"
 
 namespace pcm {
 using cavity::Element;
@@ -43,9 +41,7 @@ using dielectric_profile::Uniform;
 namespace green {
 template <typename DerivativeTraits>
 UniformDielectric<DerivativeTraits>::UniformDielectric(double eps)
-    : GreensFunction<DerivativeTraits, Uniform>() {
-  this->profile_ = Uniform(eps);
-}
+    : GreensFunction<DerivativeTraits, Uniform>(Uniform(eps)) {}
 
 template <typename DerivativeTraits>
 DerivativeTraits UniformDielectric<DerivativeTraits>::operator()(
@@ -110,10 +106,5 @@ template class UniformDielectric<Stencil>;
 template class UniformDielectric<AD_directional>;
 template class UniformDielectric<AD_gradient>;
 template class UniformDielectric<AD_hessian>;
-
-IGreensFunction * createUniformDielectric(const GreenData & data) {
-  detail::buildUniformDielectric build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
 } // namespace green
 } // namespace pcm

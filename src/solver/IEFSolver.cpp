@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -76,8 +76,7 @@ void IEFSolver::buildIsotropicMatrix(const ICavity & cav,
                                      const IGreensFunction & gf_i,
                                      const IGreensFunction & gf_o,
                                      const IBoundaryIntegralOperator & op) {
-  Tepsilon_ = detail::isotropicTEpsilon(
-      cav, gf_i, dielectric_profile::epsilon(gf_o.permittivity()), op);
+  Tepsilon_ = detail::isotropicTEpsilon(cav, gf_i, gf_o.permittivity(), op);
   Rinfinity_ = detail::isotropicRinfinity(cav, gf_i, op);
 
   // Pack into a block diagonal matrix

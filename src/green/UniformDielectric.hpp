@@ -1,6 +1,6 @@
-/*
+/**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -35,32 +35,30 @@ namespace pcm {
 namespace cavity {
 class Element;
 } // namespace cavity
-
-namespace dielectric_profile {
-struct Uniform;
-} // namespace dielectric_profile
 } // namespace pcm
 
-#include "DerivativeTypes.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
+#include "dielectric_profile/Uniform.hpp"
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits = AD_directional>
 /*! \class UniformDielectric
  *  \brief Green's function for uniform dielectric.
  *  \author Luca Frediani and Roberto Di Remigio
  *  \date 2012-2016
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
+template <typename DerivativeTraits = AD_directional>
 class UniformDielectric __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Uniform> {
 public:
   UniformDielectric(double eps);
   virtual ~UniformDielectric() {}
 
-  double epsilon() const { return this->profile_.epsilon; }
+  virtual double permittivity() const __override __final {
+    return this->profile_.epsilon;
+  }
 
   friend std::ostream & operator<<(std::ostream & os, UniformDielectric & gf) {
     return gf.printObject(os);
@@ -83,14 +81,9 @@ private:
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
 
-namespace detail {
-struct buildUniformDielectric {
-  template <typename T> IGreensFunction * operator()(const GreenData & data) {
-    return new UniformDielectric<T>(data.epsilon);
-  }
-};
-} // namespace detail
-
-IGreensFunction * createUniformDielectric(const GreenData & data);
+template <typename DerivativeTraits>
+IGreensFunction * createUniformDielectric(const GreenData & data) {
+  return new UniformDielectric<DerivativeTraits>(data.epsilon);
+}
 } // namespace green
 } // namespace pcm

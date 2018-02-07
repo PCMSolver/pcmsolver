@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -48,7 +48,7 @@ void CPCMSolver::buildSystemMatrix_impl(const ICavity & cavity,
   if (!isotropic_)
     PCMSOLVER_ERROR("C-PCM is defined only for isotropic environments!");
   TIMER_ON("Computing S");
-  double epsilon = dielectric_profile::epsilon(gf_o.permittivity());
+  double epsilon = gf_o.permittivity();
   S_ = op.computeS(cavity, gf_i);
   S_ /= (epsilon - 1.0) / (epsilon + correction_);
   // Get in Hermitian form

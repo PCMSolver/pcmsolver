@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -88,6 +88,7 @@ typedef void (*HostWriter)(const char * message);
  *  \param[in] coordinates   atomic coordinates
  *  \param[in] symmetry_info molecular point group information
  *  \param[in] host_input    input to the module, as read by the host
+ *  \param[in] writer        flush-to-host function
  *
  *  The molecular point group information is passed as an array
  *  of 4 integers: number of generators, first, second and third generator
@@ -100,6 +101,30 @@ PCMSolver_API pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_readi
                                                   int symmetry_info[],
                                                   struct PCMInput * host_input,
                                                   HostWriter writer);
+
+/*! \brief Creates a new PCM context object, updated in v1.1.12
+ *  \param[in] input_reading input processing strategy
+ *  \param[in] nr_nuclei     number of atoms in the molecule
+ *  \param[in] charges       atomic charges
+ *  \param[in] coordinates   atomic coordinates
+ *  \param[in] symmetry_info molecular point group information
+ *  \param[in] parsed_fname  name of the input file parsed by pcmsolver.py
+ *  \param[in] host_input    input to the module, as read by the host
+ *  \param[in] writer        flush-to-host function
+ *
+ *  The molecular point group information is passed as an array
+ *  of 4 integers: number of generators, first, second and third generator
+ *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
+ */
+PCMSolver_API pcmsolver_context_t * pcmsolver_new_v1112(
+    pcmsolver_reader_t input_reading,
+    int nr_nuclei,
+    double charges[],
+    double coordinates[],
+    int symmetry_info[],
+    const char * parsed_fname,
+    struct PCMInput * host_input,
+    HostWriter writer);
 
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted

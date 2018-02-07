@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -25,16 +25,15 @@
 
 #include <cmath>
 #include <iosfwd>
+#include <utility>
 
 #include "Config.hpp"
-
-#include <boost/math/special_functions/erf.hpp>
 
 /*! \file OneLayerErf.hpp */
 
 namespace pcm {
 namespace dielectric_profile {
-/*!  \class OneLayerErf
+/*! \class OneLayerErf
  *  \brief A erf dielectric profile
  *  \author Roberto Di Remigio
  *  \date 2015
@@ -51,23 +50,46 @@ private:
   double width_;
   /// Center of the transition layer
   double center_;
+  /*! Domain of the permittivity function
+   * This is formally \f$ [0, +\infty) \f$, for all practical purposes
+   * the permittivity function is equal to the epsilon2_ already at 6.0 * width_
+   * Thus the upper limit in the domain_ is initialized as center_ + 12.0 * width_
+   */
+  std::pair<double, double> domain_;
   /*! Returns value of dielectric profile at given point
    *  \param[in] point where to evaluate the profile
+   *  \note We return epsilon2_ when the sampling point is outside the upper limit.
    */
   double value(double point) const {
-    double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
-    double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-    double val = boost::math::erf((point - center_) / width_);
-    return (epsPlus + epsMinus * val); // epsilon(r)
+    double retval = 0.0;
+    if (point < domain_.first) {
+      retval = epsilon1_;
+    } else if (point > domain_.second) {
+      retval = epsilon2_;
+    } else {
+      double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
+      double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
+      double val = pcm::erf((point - center_) / width_);
+      retval = epsPlus + epsMinus * val;
+    }
+    return retval;
   }
   /*! Returns value of derivative of dielectric profile at given point
    *  \param[in] point where to evaluate the derivative
+   *  \note We return 0.0 (derivative of the constant value epsilon2_) when the
+   * sampling point is outside the upper limit.
    */
   double derivative(double point) const {
-    double factor = (epsilon2_ - epsilon1_) / (width_ * std::sqrt(M_PI));
-    double t = (point - center_) / width_;
-    double val = std::exp(-std::pow(t, 2));
-    return (factor * val); // first derivative of epsilon(r)
+    double retval = 0.0;
+    if (point < domain_.first || point > domain_.second) {
+      retval = 0.0;
+    } else {
+      double factor = (epsilon2_ - epsilon1_) / (width_ * std::sqrt(M_PI));
+      double t = (point - center_) / width_;
+      double val = std::exp(-std::pow(t, 2));
+      retval = factor * val;
+    }
+    return retval;
   }
   std::ostream & printObject(std::ostream & os) {
     os << "Profile functional form: erf" << std::endl;
@@ -81,17 +103,18 @@ private:
 public:
   OneLayerErf() {}
   OneLayerErf(double e1, double e2, double w, double c)
-      : epsilon1_(e1), epsilon2_(e2), width_(w / 6.0), center_(c) {}
+      : epsilon1_(e1),
+        epsilon2_(e2),
+        width_(w / 6.0),
+        center_(c),
+        domain_(std::make_pair(0.0, center_ + 12.0 * width_)) {}
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
   pcm::tuple<double, double> operator()(const double r) const {
     return pcm::make_tuple(value(r), derivative(r));
   }
-  double epsilon1() const { return epsilon1_; }
-  double epsilon2() const { return epsilon2_; }
-  double width() const { return width_; }
-  double center() const { return center_; }
+  double upperLimit() const { return domain_.second; }
   friend std::ostream & operator<<(std::ostream & os, OneLayerErf & th) {
     return th.printObject(os);
   }

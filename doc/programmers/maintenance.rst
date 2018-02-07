@@ -46,11 +46,41 @@ Danger.Systems Errors
 - Code style for ``.hpp``, ``.cpp``, ``.h`` files follows the conventions in
   ``.clang-format``.
 
-Bump Version
-------------
+- Code style for ``.py`` files follows the conventions in ``.style.yapf``.
 
-Version numbering follows the guidelines of `semantic versioning <http://semver.org/>`_
-To update, change the relevant field in the ``README.md`` file.
+Updating the Danger Bot
+=======================
+
+The bot reports results from running the `Danger.System ruby gem
+<http://danger.systems/ruby/>`_. From time to time, it is necessary to update
+the ``Gemfile`` and ``Gemfile.lock``:
+
+.. code-block:: bash
+
+   bundle install --gemfile=.ci/Gemfile
+
+Minting a new release
+---------------------
+
+1. Version numbering follows the guidelines of `semantic versioning <http://semver.org/>`_
+   To update, change the relevant field in the ``README.md`` file.
+2. Tidy up ``CHANGELOG.md``. This includes:
+   a. Making sure that the topmost header is the new version number, with the
+   correct release date.
+   b. Making sure that the links at the bottom of the document are correct.
+3. Run ``git shortlog -sn`` and check that the all authors are listed in
+   ``AUTHORS.md``.
+4. Update the version number in the citation snippet in
+   ``doc/snippets/citation.bib``.
+5. Commit your changes and push.
+6. If CI was happy, you can tag a new release. For example for ``v1.1.12``:
+
+   .. code-block:: bash
+
+    git tag -a v1.1.12 -m "Version 1.1.12 released"
+7. Head over to GitHub and add a short release description in `web UI <https://github.com/PCMSolver/pcmsolver/releases>`_.
+8. As a final step, get the release DOI from `Zenodo <https://zenodo.org/>`_. File a pull request on
+   GitHub to update the Zenodo badge in ``README.md``.
 
 Changelog
 ---------

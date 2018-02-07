@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -27,16 +27,24 @@
 
 #include "taylor.hpp"
 
-#include <boost/mpl/vector.hpp>
-
 namespace pcm {
 typedef double Stencil;
 typedef taylor<double, 1, 1> AD_directional;
 typedef taylor<double, 3, 1> AD_gradient;
 typedef taylor<double, 3, 2> AD_hessian;
 
-namespace green {
-typedef boost::mpl::vector<Stencil, AD_directional, AD_gradient, AD_hessian>
-    derivative_types;
-} // namespace green
+template <typename DerivativeTraits>
+inline DerivativeTraits distance(DerivativeTraits u[3], DerivativeTraits v[3]) {
+  return sqrt(pow(u[0] - v[0], 2) + pow(u[1] - v[1], 2) + pow(u[2] - v[2], 2));
+}
+
+template <typename DerivativeTraits>
+inline DerivativeTraits norm(DerivativeTraits u[3]) {
+  return sqrt(pow(u[0], 2) + pow(u[1], 2) + pow(u[2], 2));
+}
+
+template <typename DerivativeTraits>
+inline DerivativeTraits dot_product(DerivativeTraits u[3], DerivativeTraits v[3]) {
+  return (u[0] * v[0] + u[1] * v[1] + u[2] * v[2]);
+}
 } // namespace pcm

@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -32,7 +32,9 @@
 
 #include <Eigen/Core>
 
+#ifndef HAS_CXX11
 #include <boost/foreach.hpp>
+#endif
 
 #include "bi_operators/BIOperatorData.hpp"
 #include "bi_operators/BoundaryIntegralOperator.hpp"
@@ -64,16 +66,40 @@ pcmsolver_context_t * pcmsolver_new(pcmsolver_reader_t input_reading,
                                     double coordinates[],
                                     int symmetry_info[],
                                     PCMInput * host_input,
-                                    HostWriter write) {
-  return AS_TYPE(pcmsolver_context_t,
-                 new pcm::Meddle(input_reading,
-                                 nr_nuclei,
-                                 charges,
-                                 coordinates,
-                                 symmetry_info,
-                                 *host_input,
-                                 write));
+                                    HostWriter writer) {
+  return pcmsolver_new_v1112(input_reading,
+                             nr_nuclei,
+                             charges,
+                             coordinates,
+                             symmetry_info,
+                             "@pcmsolver.inp",
+                             host_input,
+                             writer);
 }
+
+pcmsolver_context_t * pcmsolver_new_v1112(pcmsolver_reader_t input_reading,
+                                          int nr_nuclei,
+                                          double charges[],
+                                          double coordinates[],
+                                          int symmetry_info[],
+                                          const char * parsed_fname,
+                                          PCMInput * host_input,
+                                          HostWriter writer) {
+  if (input_reading) {
+    // Use host_input data structured as passed from host
+    return AS_TYPE(
+        pcmsolver_context_t,
+        new pcm::Meddle(
+            nr_nuclei, charges, coordinates, symmetry_info, *host_input, writer));
+  } else {
+    // Use parsed the PCMSolver input file parsed_fname, as found on disk
+    return AS_TYPE(
+        pcmsolver_context_t,
+        new pcm::Meddle(
+            nr_nuclei, charges, coordinates, symmetry_info, writer, parsed_fname));
+  }
+}
+
 namespace pcm {
 void Meddle::CTORBody() {
   // Write PCMSolver output header
@@ -111,17 +137,29 @@ Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
   CTORBody();
 }
 
-Meddle::Meddle(pcmsolver_reader_t input_reading,
-               int nr_nuclei,
+Meddle::Meddle(int nr_nuclei,
+               double charges[],
+               double coordinates[],
+               int symmetry_info[],
+               const HostWriter & write,
+               const std::string & inputFileName)
+    : hostWriter_(write), input_(Input(inputFileName)), hasDynamic_(false) {
+  TIMER_ON("Meddle::initInput");
+  initInput(nr_nuclei, charges, coordinates, symmetry_info);
+  TIMER_OFF("Meddle::initInput");
+
+  CTORBody();
+}
+
+Meddle::Meddle(int nr_nuclei,
                double charges[],
                double coordinates[],
                int symmetry_info[],
                const PCMInput & host_input,
                const HostWriter & write)
-    : hostWriter_(write), hasDynamic_(false) {
+    : hostWriter_(write), input_(Input(host_input)), hasDynamic_(false) {
   TIMER_ON("Meddle::initInput");
-  initInput(
-      input_reading, nr_nuclei, charges, coordinates, symmetry_info, host_input);
+  initInput(nr_nuclei, charges, coordinates, symmetry_info);
   TIMER_OFF("Meddle::initInput");
 
   CTORBody();
@@ -333,8 +371,12 @@ void pcmsolver_save_surface_functions(pcmsolver_context_t * context) {
 }
 void pcm::Meddle::saveSurfaceFunctions() const {
   hostWriter_("\nDumping surface functions to .npy files");
-  BOOST_FOREACH (SurfaceFunctionPair pair, functions_) {
-    cnpy::custom::npy_save(pair.first + ".npy", pair.second);
+#ifdef HAS_CXX11
+  for (auto sf_pair : functions_) {
+#else  /* HAS_CXX11 */
+  BOOST_FOREACH (SurfaceFunctionPair sf_pair, functions_) {
+#endif /* HAS_CXX11 */
+    cnpy::custom::npy_save(sf_pair.first + ".npy", sf_pair.second);
   }
 }
 
@@ -391,19 +433,11 @@ Molecule Meddle::molecule() const { return input_.molecule(); }
 
 Eigen::Matrix3Xd Meddle::getCenters() const { return cavity_->elementCenter(); }
 
-void Meddle::initInput(pcmsolver_reader_t input_reading,
-                       int nr_nuclei,
+void Meddle::initInput(int nr_nuclei,
                        double charges[],
                        double coordinates[],
-                       int symmetry_info[],
-                       const PCMInput & host_input) {
-  if (input_reading) {
-    input_ = Input(host_input);
-  } else {
-    input_ = Input("@pcmsolver.inp");
-  }
-
-  // 2. position and charges of atomic centers
+                       int symmetry_info[]) {
+  // Position and charges of atomic centers
   Eigen::VectorXd chg = Eigen::Map<Eigen::VectorXd>(charges, nr_nuclei, 1);
   Eigen::Matrix3Xd centers = Eigen::Map<Eigen::Matrix3Xd>(coordinates, 3, nr_nuclei);
 
@@ -415,8 +449,8 @@ void Meddle::initInput(pcmsolver_reader_t input_reading,
 }
 
 void Meddle::initCavity() {
-  cavity_ =
-      cavity::bootstrapFactory().create(input_.cavityType(), input_.cavityParams());
+  cavity_ = cavity::bootstrapFactory().create(input_.cavityParams().cavityType,
+                                              input_.cavityParams());
   cavity_->saveCavity();
 
   infoStream_ << "========== Cavity " << std::endl;
@@ -426,15 +460,16 @@ void Meddle::initCavity() {
 
 void Meddle::initStaticSolver() {
   IGreensFunction * gf_i = green::bootstrapFactory().create(
-      input_.greenInsideType(), input_.insideGreenParams());
+      input_.insideGreenParams().greensFunctionType, input_.insideGreenParams());
   IGreensFunction * gf_o = green::bootstrapFactory().create(
-      input_.greenOutsideType(), input_.outsideStaticGreenParams());
+      input_.outsideStaticGreenParams().greensFunctionType,
+      input_.outsideStaticGreenParams());
 
-  K_0_ =
-      solver::bootstrapFactory().create(input_.solverType(), input_.solverParams());
+  K_0_ = solver::bootstrapFactory().create(input_.solverParams().solverType,
+                                           input_.solverParams());
 
   IBoundaryIntegralOperator * biop = bi_operators::bootstrapFactory().create(
-      input_.integratorType(), input_.integratorParams());
+      input_.integratorParams().integratorType, input_.integratorParams());
   K_0_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   delete biop;
 
@@ -447,15 +482,16 @@ void Meddle::initStaticSolver() {
 
 void Meddle::initDynamicSolver() {
   IGreensFunction * gf_i = green::bootstrapFactory().create(
-      input_.greenInsideType(), input_.insideGreenParams());
+      input_.insideGreenParams().greensFunctionType, input_.insideGreenParams());
   IGreensFunction * gf_o = green::bootstrapFactory().create(
-      input_.greenOutsideType(), input_.outsideDynamicGreenParams());
+      input_.outsideDynamicGreenParams().greensFunctionType,
+      input_.outsideDynamicGreenParams());
 
-  K_d_ =
-      solver::bootstrapFactory().create(input_.solverType(), input_.solverParams());
+  K_d_ = solver::bootstrapFactory().create(input_.solverParams().solverType,
+                                           input_.solverParams());
 
   IBoundaryIntegralOperator * biop = bi_operators::bootstrapFactory().create(
-      input_.integratorType(), input_.integratorParams());
+      input_.integratorParams().integratorType, input_.integratorParams());
   K_d_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   hasDynamic_ = true;
   delete biop;

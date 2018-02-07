@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -26,12 +26,16 @@
 #include "Config.hpp"
 
 #include "AnisotropicLiquid.hpp"
+#include "DerivativeTypes.hpp"
 #include "GreenData.hpp"
 #include "IGreensFunction.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
+#include "dielectric_profile/MembraneTanh.hpp"
+#include "dielectric_profile/OneLayerErf.hpp"
+#include "dielectric_profile/OneLayerTanh.hpp"
 #include "utils/Factory.hpp"
 
 /*!
@@ -53,11 +57,38 @@ typedef pcm::function<IGreensFunction *(const GreenData &)> CreateGreensFunction
 inline Factory<detail::CreateGreensFunction> bootstrapFactory() {
   Factory<detail::CreateGreensFunction> factory_;
 
-  factory_.subscribe("VACUUM", createVacuum);
-  factory_.subscribe("UNIFORMDIELECTRIC", createUniformDielectric);
-  factory_.subscribe("SPHERICALDIFFUSE", createSphericalDiffuse);
-  factory_.subscribe("IONICLIQUID", createIonicLiquid);
-  factory_.subscribe("ANISOTROPICLIQUID", createAnisotropicLiquid);
+  factory_.subscribe("VACUUM_NUMERICAL", createVacuum<Stencil>);
+  factory_.subscribe("VACUUM_DERIVATIVE", createVacuum<AD_directional>);
+  factory_.subscribe("VACUUM_GRADIENT", createVacuum<AD_gradient>);
+  factory_.subscribe("VACUUM_HESSIAN", createVacuum<AD_hessian>);
+
+  factory_.subscribe("UNIFORMDIELECTRIC_NUMERICAL",
+                     createUniformDielectric<Stencil>);
+  factory_.subscribe("UNIFORMDIELECTRIC_DERIVATIVE",
+                     createUniformDielectric<AD_directional>);
+  factory_.subscribe("UNIFORMDIELECTRIC_GRADIENT",
+                     createUniformDielectric<AD_gradient>);
+  factory_.subscribe("UNIFORMDIELECTRIC_HESSIAN",
+                     createUniformDielectric<AD_hessian>);
+
+  factory_.subscribe("IONICLIQUID_NUMERICAL", createIonicLiquid<Stencil>);
+  factory_.subscribe("IONICLIQUID_DERIVATIVE", createIonicLiquid<AD_directional>);
+  factory_.subscribe("IONICLIQUID_GRADIENT", createIonicLiquid<AD_gradient>);
+  factory_.subscribe("IONICLIQUID_HESSIAN", createIonicLiquid<AD_hessian>);
+
+  factory_.subscribe("ANISOTROPICLIQUID_NUMERICAL",
+                     createAnisotropicLiquid<Stencil>);
+  factory_.subscribe("ANISOTROPICLIQUID_DERIVATIVE",
+                     createAnisotropicLiquid<AD_directional>);
+  factory_.subscribe("ANISOTROPICLIQUID_GRADIENT",
+                     createAnisotropicLiquid<AD_gradient>);
+  factory_.subscribe("ANISOTROPICLIQUID_HESSIAN",
+                     createAnisotropicLiquid<AD_hessian>);
+
+  factory_.subscribe("SPHERICALDIFFUSE_NUMERICAL_TANH",
+                     createSphericalDiffuse<dielectric_profile::OneLayerTanh>);
+  factory_.subscribe("SPHERICALDIFFUSE_NUMERICAL_ERF",
+                     createSphericalDiffuse<dielectric_profile::OneLayerErf>);
 
   return factory_;
 }

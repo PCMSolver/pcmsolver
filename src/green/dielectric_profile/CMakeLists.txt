@@ -1,5 +1,15 @@
 # List of headers
-list(APPEND _headers_list Anisotropic.hpp MembraneTanh.hpp Metal.hpp OneLayerErf.hpp OneLayerTanh.hpp ProfileTypes.hpp Sharp.hpp Uniform.hpp Yukawa.hpp OneLayerLog.hpp)
+list(APPEND headers_list
+Anisotropic.hpp
+MembraneTanh.hpp
+Metal.hpp
+OneLayerErf.hpp
+OneLayerLog.hpp
+OneLayerTanh.hpp
+Sharp.hpp
+Uniform.hpp
+Yukawa.hpp
+)
 
 # Sets install directory for all the headers in the list
 foreach(_header ${_headers_list})

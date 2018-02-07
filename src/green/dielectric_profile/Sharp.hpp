@@ -1,6 +1,6 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -27,15 +27,15 @@
 
 #include "Config.hpp"
 
-/*! \file Sharp.hpp
- *  \struct Sharp
+/*! \file Sharp.hpp */
+
+namespace pcm {
+namespace dielectric_profile {
+/*!  \struct Sharp
  *  \brief A sharp dielectric separation
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-
-namespace pcm {
-namespace dielectric_profile {
 struct Sharp __final {
   double epsilon;
   double epsilonSolvent;

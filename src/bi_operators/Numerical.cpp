@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -29,10 +29,6 @@
 #include "Config.hpp"
 
 #include <Eigen/Core>
-
-#include <boost/mpl/at.hpp>
-#include <boost/mpl/int.hpp>
-#include <boost/mpl/map.hpp>
 
 #include "BIOperatorData.hpp"
 #include "cavity/Element.hpp"
@@ -81,16 +77,14 @@ IBoundaryIntegralOperator * createNumerical(const BIOperatorData & /* data */) {
   return new Numerical();
 }
 
+using utils::GaussLegendreRule;
+
 template <int PhiPoints, int ThetaPoints>
 double integrateS(const KernelS & F, const Element & e) {
   double result = 0.0;
 
-  // Get the quadrature rules for azimuthal and polar integrations
-  namespace mpl = boost::mpl;
-  typedef typename mpl::at<rules_map, mpl::int_<PhiPoints> >::type PhiPolicy;
-  typedef typename mpl::at<rules_map, mpl::int_<ThetaPoints> >::type ThetaPolicy;
-  QuadratureRule<PhiPolicy> phiRule;
-  QuadratureRule<ThetaPolicy> thetaRule;
+  GaussLegendreRule<PhiPoints> phiRule;
+  GaussLegendreRule<ThetaPoints> thetaRule;
   int upper_phi = PhiPoints / 2;     // Upper limit for loop on phi points
   int upper_theta = ThetaPoints / 2; // Upper limit for loop on theta points
 
@@ -197,12 +191,8 @@ template <int PhiPoints, int ThetaPoints>
 double integrateD(const KernelD & F, const Element & e) {
   double result = 0.0;
 
-  // Get the quadrature rules for azimuthal and polar integrations
-  namespace mpl = boost::mpl;
-  typedef typename mpl::at<rules_map, mpl::int_<PhiPoints> >::type PhiPolicy;
-  typedef typename mpl::at<rules_map, mpl::int_<ThetaPoints> >::type ThetaPolicy;
-  QuadratureRule<PhiPolicy> phiRule;
-  QuadratureRule<ThetaPolicy> thetaRule;
+  GaussLegendreRule<PhiPoints> phiRule;
+  GaussLegendreRule<ThetaPoints> thetaRule;
   int upper_phi = PhiPoints / 2;     // Upper limit for loop on phi points
   int upper_theta = ThetaPoints / 2; // Upper limit for loop on theta points
 

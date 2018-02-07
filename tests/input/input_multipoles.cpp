@@ -1,7 +1,7 @@
 /* pcmsolver_copyright_start */
 /*
  *     PCMSolver, an API for the Polarizable Continuum Model
- *     Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ *     Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  *     This file is part of PCMSolver.
  *
@@ -54,27 +54,23 @@ TEST_CASE("Input reading using GetKw for an input file for a classical point "
   Input parsedInput("@multipoles.inp");
   std::string units = "ANGSTROM";
   int CODATAyear = 2002;
-  std::string type = "GEPOL";
+  std::string cavityType = "GEPOL";
   std::string radiiSet = "BONDI";
   std::string mode = "IMPLICIT";
   std::string solverType = "IEFPCM";
-  std::string greenInsideType = "VACUUM";
-  std::string greenOutsideType = "UNIFORMDIELECTRIC";
-  int derivativeInsideType = 1;
-  int derivativeOutsideType = 1;
+  std::string greenInsideType = "VACUUM_DERIVATIVE";
+  std::string greenOutsideType = "UNIFORMDIELECTRIC_DERIVATIVE";
   double area = 10.0 * angstrom2ToBohr2();
   std::string solvent = "Acetonitrile"; // Name in the Solvent object
   REQUIRE(units == parsedInput.units());
   REQUIRE(CODATAyear == parsedInput.CODATAyear());
-  REQUIRE(type == parsedInput.cavityType());
+  REQUIRE(cavityType == parsedInput.cavityParams().cavityType);
   REQUIRE(radiiSet == parsedInput.radiiSet());
   REQUIRE(mode == parsedInput.mode());
-  REQUIRE(solverType == parsedInput.solverType());
-  REQUIRE(greenInsideType == parsedInput.greenInsideType());
-  REQUIRE(greenOutsideType == parsedInput.greenOutsideType());
-  REQUIRE(derivativeInsideType == parsedInput.insideGreenParams().howDerivative);
-  REQUIRE(derivativeOutsideType ==
-          parsedInput.outsideStaticGreenParams().howDerivative);
+  REQUIRE(solverType == parsedInput.solverParams().solverType);
+  REQUIRE(greenInsideType == parsedInput.insideGreenParams().greensFunctionType);
+  REQUIRE(greenOutsideType ==
+          parsedInput.outsideStaticGreenParams().greensFunctionType);
   REQUIRE(area == Approx(parsedInput.cavityParams().area));
   REQUIRE(solvent == parsedInput.solvent().name);
   for (size_t j = 0; j < 3; ++j) {

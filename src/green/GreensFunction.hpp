@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -32,14 +32,13 @@
 
 #include "DerivativeTypes.hpp"
 #include "IGreensFunction.hpp"
+#include "dielectric_profile/Uniform.hpp"
 #include "utils/Stencils.hpp"
 
 /*! \file GreensFunction.hpp */
 
 namespace pcm {
 namespace green {
-template <typename DerivativeTraits, typename ProfilePolicy>
-
 /*! \class GreensFunction
  *  \brief Templated interface for Green's functions
  *  \author Luca Frediani and Roberto Di Remigio
@@ -47,9 +46,10 @@ template <typename DerivativeTraits, typename ProfilePolicy>
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  *  \tparam ProfilePolicy    dielectric profile type
  */
+template <typename DerivativeTraits, typename ProfilePolicy>
 class GreensFunction : public IGreensFunction {
 public:
-  GreensFunction() : delta_(1.0e-04) {}
+  GreensFunction(const ProfilePolicy & p) : delta_(1.0e-04), profile_(p) {}
   virtual ~GreensFunction() {}
   /*! @{ Methods to sample the Green's function directional derivatives */
   /*! Returns value of the directional derivative of the
@@ -62,9 +62,9 @@ public:
    *  \param[in]        p1 first point
    *  \param[in]        p2 second point
    */
-  virtual double derivativeSource(const Eigen::Vector3d & normal_p1,
-                                  const Eigen::Vector3d & p1,
-                                  const Eigen::Vector3d & p2) const {
+  double derivativeSource(const Eigen::Vector3d & normal_p1,
+                          const Eigen::Vector3d & p1,
+                          const Eigen::Vector3d & p2) const {
     DerivativeTraits t1[3], t2[3];
     t1[0] = p1(0);
     t1[1] = p1(1);
@@ -87,9 +87,9 @@ public:
    *  \param[in]        p1 first point
    *  \param[in]        p2 second point
    */
-  virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                 const Eigen::Vector3d & p1,
-                                 const Eigen::Vector3d & p2) const {
+  double derivativeProbe(const Eigen::Vector3d & normal_p2,
+                         const Eigen::Vector3d & p1,
+                         const Eigen::Vector3d & p2) const {
     DerivativeTraits t1[3], t2[3];
     t1[0] = p1(0);
     t1[1] = p1(1);
@@ -135,11 +135,7 @@ public:
 
   /*! Whether the Green's function describes a uniform environment */
   virtual bool uniform() const __final __override {
-    return dielectric_profile::uniform(this->profile_);
-  }
-  /*! Returns a dielectric permittivity profile */
-  virtual Permittivity permittivity() const __final __override {
-    return this->profile_;
+    return pcm::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
   }
 
   friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
@@ -189,7 +185,7 @@ protected:
 template <typename ProfilePolicy>
 class GreensFunction<Stencil, ProfilePolicy> : public IGreensFunction {
 public:
-  GreensFunction() : delta_(1.0e-04) {}
+  GreensFunction(const ProfilePolicy & p) : delta_(1.0e-04), profile_(p) {}
   virtual ~GreensFunction() {}
   /*! @{ Methods to sample the Green's function directional derivatives */
   /*! Returns value of the directional derivative of the
@@ -202,9 +198,9 @@ public:
    *  \param[in]        p1 first point
    *  \param[in]        p2 second point
    */
-  virtual double derivativeSource(const Eigen::Vector3d & normal_p1,
-                                  const Eigen::Vector3d & p1,
-                                  const Eigen::Vector3d & p2) const {
+  double derivativeSource(const Eigen::Vector3d & normal_p1,
+                          const Eigen::Vector3d & p1,
+                          const Eigen::Vector3d & p2) const {
     return threePointStencil(
         pcm::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
                   this,
@@ -225,9 +221,9 @@ public:
    *  \param[in]        p1 first point
    *  \param[in]        p2 second point
    */
-  virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
-                                 const Eigen::Vector3d & p1,
-                                 const Eigen::Vector3d & p2) const __final {
+  double derivativeProbe(const Eigen::Vector3d & normal_p2,
+                         const Eigen::Vector3d & p1,
+                         const Eigen::Vector3d & p2) const {
     return threePointStencil(
         pcm::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
                   this,
@@ -269,13 +265,12 @@ public:
   }
   /*! @}*/
 
-  /*! Whether the Green's function describes a uniform environment */
+  /*! \return Whether the Green's function describes a uniform environment
+   *  \note This uses is_same to check whether the type of ProfilePolicy is uniform
+   * not.
+   */
   virtual bool uniform() const __final __override {
-    return dielectric_profile::uniform(this->profile_);
-  }
-  /*! Returns a dielectric permittivity profile */
-  virtual Permittivity permittivity() const __final __override {
-    return this->profile_;
+    return pcm::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
   }
 
   friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {

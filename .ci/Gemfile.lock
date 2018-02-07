@@ -1,9 +1,8 @@
 GIT
-  remote: https://github.com/robertodr/danger-code_style_validation.git
-  revision: 49cb68348ff8e5440cdeb3512f85a2c602a9db83
-  branch: pass-exe
+  remote: https://github.com/flix-tech/danger-code_style_validation.git
+  revision: f1ffb28af0f4d6f27711639abcd1e29ed065e232
   specs:
-    danger-code_style_validation (0.1.0)
+    danger-code_style_validation (0.3.0)
       danger-plugin-api (~> 1.0)
 
 GEM
@@ -60,9 +59,9 @@ PLATFORMS
 
 DEPENDENCIES
   danger
-  danger-code_style_validation!
+  danger-code_style_validation (= 0.3.0)!
   danger-commit_lint
   danger-lgtm
 
 BUNDLED WITH
-   1.14.4
+   1.14.6

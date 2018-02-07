@@ -1,7 +1,7 @@
 if(PYMOD_INSTALL_LIBDIR)
     set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/pcmsolver")
 else()
-    set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_BINDIR}")
+    set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_BINDIR}/pcmsolver")
 endif()
 
 # Configure the header with library-wide preprocessor definitions
@@ -37,9 +37,11 @@ add_custom_command(
   )
 add_custom_target(generate-pcmsolver-py ALL DEPENDS ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py)
 install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmsolver.py DESTINATION ${PYMOD_INSTALL_FULLDIR})
+
 # Configure the codata Python module
 file(COPY ${PROJECT_SOURCE_DIR}/tools/codata.py DESTINATION ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR})
 install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/codata.py DESTINATION ${PYMOD_INSTALL_FULLDIR})
+
 # Configure the plot_cavity Python script
 file(COPY ${PROJECT_SOURCE_DIR}/tools/plot_cavity.py DESTINATION ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR})
 install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/plot_cavity.py DESTINATION ${PYMOD_INSTALL_FULLDIR})
@@ -62,4 +64,9 @@ install(FILES ${PROJECT_SOURCE_DIR}/tools/pyparsing.py
 file(COPY ${PROJECT_SOURCE_DIR}/cmake/lib/docopt/docopt.py
      DESTINATION ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR})
 install(FILES ${PROJECT_SOURCE_DIR}/cmake/lib/docopt/docopt.py
+        DESTINATION ${PYMOD_INSTALL_FULLDIR})
+
+# Install __init__.py
+configure_file(${PROJECT_SOURCE_DIR}/tools/init.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py COPYONLY)
+install(FILES ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py
         DESTINATION ${PYMOD_INSTALL_FULLDIR})

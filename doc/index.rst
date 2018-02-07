@@ -20,8 +20,7 @@ With PCMSolver we aim to:
 2. create a playground for easily extending the implementation of the model.
 
 PCMSolver is distributed under the terms of the GNU Lesser General Public License.
-An archive with the currently released source can be found on `GitHub <https://github.com/PCMSolver/pcmsolver/releases>`_
-or on `zenodo <http://dx.doi.org/10.5281/zenodo.11910>`_.
+An archive with the currently released source can be found on `GitHub <https://github.com/PCMSolver/pcmsolver/releases>`_.
 
 .. literalinclude:: snippets/citation.bib
    :language: tex

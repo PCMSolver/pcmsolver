@@ -1,6 +1,6 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -24,20 +24,21 @@
 #pragma once
 
 #include <iosfwd>
+#include <utility>
 
 #include "Config.hpp"
 
-/*! \file OneLayerTanh.hpp
- *  \class OneLayerTanh
+/*! \file OneLayerTanh.hpp */
+
+namespace pcm {
+namespace dielectric_profile {
+/*! \class OneLayerTanh
  *  \brief A tanh dielectric profile as in \cite Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2014
  *  \note The parameter given from user input for width_ is divided by 6.0 in
  *  the constructor to keep consistency with \cite Frediani2004a
  */
-
-namespace pcm {
-namespace dielectric_profile {
 class OneLayerTanh {
 private:
   /// Dielectric constant on the left of the interface
@@ -48,22 +49,45 @@ private:
   double width_;
   /// Center of the transition layer
   double center_;
+  /*! Domain of the permittivity function
+   * This is formally \f$ [0, +\infty) \f$, for all practical purposes
+   * the permittivity function is equal to the epsilon2_ already at 6.0 * width_
+   * Thus the upper limit in the domain_ is initialized as center_ + 12.0 * width_
+   */
+  std::pair<double, double> domain_;
   /*! Returns value of dielectric profile at given point
    *  \param[in] point where to evaluate the profile
+   *  \note We return epsilon2_ when the sampling point is outside the upper limit.
    */
   double value(double point) const {
-    double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
-    double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-    double tanh_r = std::tanh((point - center_) / width_);
-    return (epsPlus + epsMinus * tanh_r); // epsilon(r)
+    double retval = 0.0;
+    if (point < domain_.first) {
+      retval = epsilon1_;
+    } else if (point > domain_.second) {
+      retval = epsilon2_;
+    } else {
+      double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
+      double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
+      double tanh_r = std::tanh((point - center_) / width_);
+      retval = epsPlus + epsMinus * tanh_r;
+    }
+    return retval;
   }
   /*! Returns value of derivative of dielectric profile at given point
    *  \param[in] point where to evaluate the derivative
+   *  \note We return 0.0 (derivative of the constant value epsilon2_) when the
+   * sampling point is outside the upper limit.
    */
   double derivative(double point) const {
-    double factor = (epsilon2_ - epsilon1_) / (2.0 * width_);
-    double tanh_r = std::tanh((point - center_) / width_);
-    return (factor * (1 - std::pow(tanh_r, 2))); // first derivative of epsilon(r)
+    double retval = 0.0;
+    if (point < domain_.first || point > domain_.second) {
+      retval = 0.0;
+    } else {
+      double factor = (epsilon2_ - epsilon1_) / (2.0 * width_);
+      double tanh_r = std::tanh((point - center_) / width_);
+      retval = factor * (1 - std::pow(tanh_r, 2));
+    }
+    return retval;
   }
   std::ostream & printObject(std::ostream & os) {
     os << "Profile functional form: tanh" << std::endl;
@@ -77,17 +101,18 @@ private:
 public:
   OneLayerTanh() {}
   OneLayerTanh(double e1, double e2, double w, double c)
-      : epsilon1_(e1), epsilon2_(e2), width_(w / 6.0), center_(c) {}
+      : epsilon1_(e1),
+        epsilon2_(e2),
+        width_(w / 6.0),
+        center_(c),
+        domain_(std::make_pair(0.0, center_ + 12.0 * width_)) {}
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
   pcm::tuple<double, double> operator()(const double r) const {
     return pcm::make_tuple(value(r), derivative(r));
   }
-  double epsilon1() const { return epsilon1_; }
-  double epsilon2() const { return epsilon2_; }
-  double width() const { return width_; }
-  double center() const { return center_; }
+  double upperLimit() const { return domain_.second; }
   friend std::ostream & operator<<(std::ostream & os, OneLayerTanh & th) {
     return th.printObject(os);
   }

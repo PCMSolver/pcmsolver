@@ -3,11 +3,24 @@ let
   nixpkgs = (hostPkgs.fetchFromGitHub {
     owner = "NixOS";
     repo = "nixpkgs-channels";
-    rev = "ac355040656de04f59406ba2380a96f4124ebdad";
-    sha256 = "0frhc7mnx88sird6ipp6578k5badibsl0jfa22ab9w6qrb88j825";
+    rev = "nixos-unstable";
+    sha256 = "1zcbvzxk1vyk4ngfdyss8mlb3mqp050ygpnwqny0bxbzlqkrc4bh";
   });
 in
-  with import nixpkgs {};
+  with import nixpkgs {
+    overlays = [(self: super:
+      {
+        python3 = super.python3.override {
+          packageOverrides = py-self: py-super: {
+            matplotlib = py-super.matplotlib.override {
+              enableTk = true;
+              enableQt = true;
+            };
+          };
+        };
+      }
+    )];
+  };
   stdenv.mkDerivation {
     name = "PCMSolver-dev";
     buildInputs = [
@@ -20,15 +33,23 @@ in
       cmake
       doxygen
       exa
-      #gcc
-      gdb
+      ffmpeg
       gfortran
       graphviz
-      lldb
-      python35Packages.matplotlib
-      python35Packages.numpy
-      python35Packages.virtualenvwrapper
+      lcov
+      pipenv
+      python3Full
+      python3Packages.docopt
+      python3Packages.jupyter
+      python3Packages.matplotlib
+      python3Packages.numpy
+      python3Packages.pyyaml
       valgrind
       zlib
     ];
+    src = null;
+    shellHook = ''
+    export NINJA_STATUS="[Built edge %f of %t in %e sec]"
+    SOURCE_DATE_EPOCH=$(date +%s)
+    '';
   }

@@ -21,10 +21,6 @@
 #  PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
 #
 
-# -*- python -*-
-# -*- coding: utf-8 -*-
-# vim:filetype=python:
-
 # Written by Roberto Di Remigio <roberto.d.remigio@uit.no>
 # University of Tromso, 2017
 """
@@ -33,20 +29,11 @@ Color map the finite elements according to a surface function, saved
 to NumPy format file.
 """
 
-import os
 import sys
-sys.path.append(os.path.dirname(__file__))
-
-try:
-    import docopt
-except:
-    sys.path.append('cmake/lib/docopt')
-    import docopt
-
+import docopt
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
 from matplotlib import cm
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 

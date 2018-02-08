@@ -4,12 +4,15 @@ Publications
 Peer-reviewed journal articles
 ------------------------------
 
++ `Open-ended formulation of self-consistent field response theory with the polarizable continuum model for solvation <https://doi.org/10.1039/C6CP06814F>`_
 + `Four-Component Relativistic Calculations in Solution with the Polarizable Continuum Model of Solvation: Theory, Implementation, and Application to the Group 16 Dihydrides H2X (X = O, S, Se, Te, Po) <http://pubs.acs.org/doi/abs/10.1021/jp507279y>`_
 + `Wavelet Formulation of the Polarizable Continuum Model. II. Use of Piecewise Bilinear Boundary Elements <http://pubs.rsc.org/en/content/articlelanding/2015/cp/c5cp03410h>`_
 + `A Polarizable Continuum Model for Molecules at Spherical Diffuse Interfaces <http://dx.doi.org/10.1063/1.4943782>`_
 
 Theses
 ------
+
++ `The Polarizable Continuum Model Goes Viral! Extensible, Modular and Sustainable Development of Quantum Mechanical Continuum Solvation Models <https://munin.uit.no/handle/10037/10786>`_ Doctoral thesis, Roberto Di Remigio, January 2017.
 
 Presentations
 -------------

@@ -1,3 +1,6 @@
+option_with_default(PYMOD_INSTALL_LIBDIR "Location within CMAKE_INSTALL_LIBDIR to which Python modules are installed" "python")
+
+set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}")
 file(
   COPY
     go_pcm.py

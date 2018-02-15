@@ -49,6 +49,12 @@ private:
   double width_;
   /// Center of the transition layer
   double center_;
+  /*! Domain of the permittivity function
+   * This is formally \f$ [0, +\infty) \f$, for all practical purposes
+   * the permittivity function is equal to the epsilon2_ already at 6.0 * width_
+   * Thus the upper limit in the domain_ is initialized as center_ + 12.0 * width_
+   */
+  std::pair<double, double> domain_;
   /*! Returns value of dielectric profile at given point
    *  \param[in] point where to evaluate the profile
    */
@@ -69,32 +75,34 @@ private:
 		double val = std::exp(-std::pow(t, 2));
 		return functionValue * factor * val; // first derivative of epsilon(r)
 	}
-  std::ostream & printObject(std::ostream & os) {
-    os << "Profile functional form: log" << std::endl;
-    os << "Permittivity left/inside   = " << epsilon1_ << std::endl;
-    os << "Permittivity right/outside = " << epsilon2_ << std::endl;
-    os << "Profile width        = " << width_ << " AU" << std::endl;
-    os << "Profile center       = " << center_ << " AU";
-    return os;
-  }
-
+    std::ostream & printObject(std::ostream & os) {
+        os << "Profile functional form: log" << std::endl;
+        os << "Permittivity left/inside   = " << epsilon1_ << std::endl;
+        os << "Permittivity right/outside = " << epsilon2_ << std::endl;
+        os << "Profile width        = " << width_ << " AU" << std::endl;
+        os << "Profile center       = " << center_ << " AU";
+        return os;
+    }
+    
 public:
-  OneLayerLog() {}
-  OneLayerLog(double e1, double e2, double w, double c)
-      : epsilon1_(e1), epsilon2_(e2), width_(w / 6.0), center_(c) {}
-  /*! Returns a tuple holding the permittivity and its derivative
-   *  \param[in]   r evaluation point
-   */
-  pcm::tuple<double, double> operator()(const double r) const {
-    return pcm::make_tuple(value(r), derivative(r));
-  }
-  double epsilon1() const { return epsilon1_; }
-  double epsilon2() const { return epsilon2_; }
-  double width() const { return width_; }
-  double center() const { return center_; }
-  friend std::ostream & operator<<(std::ostream & os, OneLayerLog & th) {
-    return th.printObject(os);
-  }
+    OneLayerLog() {}
+    OneLayerLog(double e1, double e2, double w, double c)
+        : epsilon1_(e1),
+          epsilon2_(e2),
+          width_(w / 6.0),
+          center_(c),
+          domain_(std::make_pair(0.0, center_ + 12.0 * width_)){}
+    /*! Returns a tuple holding the permittivity and its derivative
+     *  \param[in]   r evaluation point
+     */
+    pcm::tuple<double, double> operator()(const double r) const {
+        return pcm::make_tuple(value(r), derivative(r));
+    }
+    double upperLimit() const { return domain_.second; }
+    double relativeWidth() const { return width_ / std::abs(domain_.second - domain_.first); }
+    friend std::ostream & operator<<(std::ostream & os, OneLayerLog & th) {
+        return th.printObject(os);
+    }
 };
 } // namespace dielectric_profile
 } // namespace pcm

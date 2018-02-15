@@ -111,7 +111,7 @@ public:
    *  are reported in the manuscript.
    *  \param[in] rho state vector holding the function and its first derivative
    *  \param[out] drhodr state vector holding the first and second derivative
-   *  \param[in] r position on the integration grid
+   *  \param[in] y logarithmic position on the integration grid
    */
   void operator()(const StateType & rho, StateType & drhodr, const double y) {
     // Evaluate the dielectric profile

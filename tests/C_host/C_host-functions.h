@@ -51,7 +51,9 @@ typedef enum { false, true } bool;
 #define UNUSED_FUNCTION(x) UNUSED_##x
 #endif
 
+#ifndef M_PI
 #define M_PI 3.14159265358979323846
+#endif
 
 void host_writer(const char * message);
 

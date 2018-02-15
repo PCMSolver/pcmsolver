@@ -247,11 +247,12 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double factor_dxdt_ = 0.0; /*! Weight of the state derivative */
   double r_0_ = 0.5;         /*! Lower bound of the integration interval */
   double r_infinity_ =
-      this->profile_.center() + 30.0; /*! Upper bound of the integration interval */
+      this->profile_.upperLimit() + 30.0; /*! Upper bound of the integration interval */
   
   double y_0_ = log(r_0_);
   double y_infinity_ = log(r_infinity_);
-  double observer_step_ = 1.0e-2 * this->profile_.width() / this->profile_.center();     /*! Time step between observer calls */
+  double relative_width = this->profile_.relativeWidth();
+  double observer_step_ = 1.0e-2 * relative_width;     /*! Time step between observer calls */
 
   IntegratorParameters params_(eps_abs_,
                                eps_rel_,
@@ -403,7 +404,15 @@ template class SphericalDiffuse<OneLayerErf>;
 using dielectric_profile::OneLayerLog;
 template class SphericalDiffuse<OneLayerLog>;
 
-using dielectric_profile::MembraneTanh;
-template class SphericalDiffuse<MembraneTanh>;
+    /*
+      FIXME: the numerical integration in logarithmic scale requires a step
+      size dependent on the width of the profile (there are two for a
+      membrane) and the distance of it from the oringin (center of the
+      sphere). This requires some thinking to do it correctly
+      
+      using dielectric_profile::MembraneTanh;
+      template class SphericalDiffuse<MembraneTanh>;
+    */
+
 } // namespace green
 } // namespace pcm

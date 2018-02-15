@@ -170,7 +170,6 @@ Stencil SphericalDiffuse<ProfilePolicy>::operator()(Stencil * sp,
   double r12 = (source - probe).norm();
 
   double gf = (1.0 / (Cr12 * r12) + gr12);
-  //  std::cout << "Source " << source.transpose() << " Probe " << probe.transpose() << " Tot " << gf << " Img " << gr12 << " Cr12 " << Cr12 << std::endl; 
   return gf;
 }
 
@@ -273,7 +272,7 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double eps_rel_ = 1.0e-06; /*! Relative tolerance level */
   double factor_x_ = 0.0;    /*! Weight of the state      */
   double factor_dxdt_ = 0.0; /*! Weight of the state derivative */
-  double r_0_ = 0.5;         /*! Lower bound of the integration interval */
+  double r_0_ = 0.1;         /*! Lower bound of the integration interval */
   double r_infinity_ =
       this->profile_.center() + 30.0; /*! Upper bound of the integration interval */
   

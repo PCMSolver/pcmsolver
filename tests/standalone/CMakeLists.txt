@@ -13,8 +13,8 @@ add_test(
   )
 set_tests_properties(pcmsolver_standalone
   PROPERTIES
-    LABELS "pcmsolver;standalone"
-    ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/python:$ENV{PYTHONPATH}
+  LABELS "pcmsolver;standalone"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )
 
 add_test(
@@ -29,8 +29,8 @@ add_test(
   )
 set_tests_properties(pcmsolver_standalone-atoms
   PROPERTIES
-    LABELS "pcmsolver;standalone;atoms"
-    ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/python:$ENV{PYTHONPATH}
+  LABELS "pcmsolver;standalone;atoms"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )
 
 add_test(
@@ -45,6 +45,6 @@ add_test(
   )
 set_tests_properties(pcmsolver_standalone-explicit
   PROPERTIES
-    LABELS "pcmsolver;standalone;explicit"
-    ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/python:$ENV{PYTHONPATH}
+  LABELS "pcmsolver;standalone;explicit"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )

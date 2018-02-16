@@ -17,8 +17,8 @@ add_test(
   )
 set_tests_properties(parser_script-diffuse
   PROPERTIES
-    LABELS "parser;parser_script"
-    ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/python:$ENV{PYTHONPATH}
+  LABELS "parser;parser_script"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )
 add_Catch_test(input_diffuse "input;input_diffuse")
 set_tests_properties(input_diffuse PROPERTIES DEPENDS parser_script-diffuse)
@@ -34,8 +34,8 @@ add_test(
   )
 set_tests_properties(parser_script-multipoles
   PROPERTIES
-    LABELS "parser;parser_script"
-    ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/python:$ENV{PYTHONPATH}
+  LABELS "parser;parser_script"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )
 add_Catch_test(input_multipoles "input;input_multipoles")
 set_tests_properties(input_multipoles PROPERTIES DEPENDS parser_script-multipoles)
@@ -51,8 +51,8 @@ add_test(
   )
 set_tests_properties(parser_script-restart
   PROPERTIES
-    LABELS "parser;parser_script"
-    ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/python:$ENV{PYTHONPATH}
+  LABELS "parser;parser_script"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )
 add_Catch_test(input_restart "input;input_restart")
 set_tests_properties(input_restart PROPERTIES DEPENDS parser_script-restart)
@@ -68,8 +68,8 @@ add_test(
   )
 set_tests_properties(parser_script-cpcm
   PROPERTIES
-    LABELS "parser;parser_script"
-    ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/python:$ENV{PYTHONPATH}
+  LABELS "parser;parser_script"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )
 add_Catch_test(input_cpcm "input;input_cpcm")
 set_tests_properties(input_cpcm PROPERTIES DEPENDS parser_script-cpcm)

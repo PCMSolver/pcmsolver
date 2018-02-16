@@ -23,7 +23,7 @@ endmacro(option_with_print)
 # Written by Lori A. Burns (@loriab) and Ryan M. Richard (@ryanmrichard)
 # NOTE: Can\'t combine with above b/c CMake handles ON/OFF options specially
 # NOTE2: CMake variables are always defined so need to further check for if
-#       they are the NULL string. This is also why weneed the force
+#       they are the NULL string. This is also why we need the force
 # Syntax: option_with_default(<option name> <description> <default value>)
 macro(option_with_default variable msge default)
   print_option(${variable} "${default}")

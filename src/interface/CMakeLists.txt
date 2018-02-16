@@ -18,6 +18,13 @@ set_target_properties(interface
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN 1
   )
+target_compile_definitions(interface
+  PUBLIC
+    PCMSolver_EXPORTS
+  )
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(interface custom_boost)
+endif()
 add_dependencies(interface generate-config-hpp)
 target_compile_options(interface
   PRIVATE

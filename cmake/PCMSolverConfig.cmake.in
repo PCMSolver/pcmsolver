@@ -139,7 +139,7 @@ endif()
 set(CMAKE_FIND_LIBRARY_SUFFIXES ${_hold_library_suffixes})
 set(${PN}_LIBRARIES ${${PN}_LIBRARY})
 set(${PN}_DEFINITIONS USING_${PN})
-set(${PN}_PYMOD ${PACKAGE_PREFIX_DIR}/@PYMOD_INSTALL_FULLDIR@)
+set(${PN}_PYMOD ${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_LIBDIR@/@PYMOD_INSTALL_LIBDIR@)
 
 check_required_components(${PN})
 

@@ -120,8 +120,15 @@ properties = """set_target_properties({0}
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN 1
   )
+target_compile_definitions({0}
+  PUBLIC
+    PCMSolver_EXPORTS
+  )
 """.format(libname)
-cxx_compile_options = """add_dependencies({0} generate-config-hpp)
+cxx_compile_options = """if(BUILD_CUSTOM_BOOST)
+  add_dependencies({0} custom_boost)
+endif()
+add_dependencies({0} generate-config-hpp)
 target_compile_options({0}
   PRIVATE
     {1}

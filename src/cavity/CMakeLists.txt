@@ -23,6 +23,13 @@ set_target_properties(cavity
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN 1
   )
+target_compile_definitions(cavity
+  PUBLIC
+    PCMSolver_EXPORTS
+  )
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(cavity custom_boost)
+endif()
 add_dependencies(cavity generate-config-hpp)
 target_compile_options(cavity
   PRIVATE

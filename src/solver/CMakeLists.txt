@@ -22,6 +22,13 @@ set_target_properties(solver
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN 1
   )
+target_compile_definitions(solver
+  PUBLIC
+    PCMSolver_EXPORTS
+  )
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(solver custom_boost)
+endif()
 add_dependencies(solver generate-config-hpp)
 target_compile_options(solver
   PRIVATE

@@ -206,10 +206,3 @@ You can also use CTest to run a specific test or a set of tests. For example:
 
 will run all the test containing the string "gepol" in their name.
 
-If Doxygen was found, an offline copy of this documentation can be built by:
-
-.. code-block:: bash
-
-   make doc
-
-and visualized by opening the `doc/html/index.html` file in your browser.

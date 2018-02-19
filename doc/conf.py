@@ -107,10 +107,12 @@ author = 'Roberto Di Remigio, Luca Frediani, Krzysztof Mozgawa'
 # Get project version
 with open('../README.md') as f:
     content = f.read().replace('\n', '')
-pcmsolver_version = re.search('[0-9]\.[0-9]\.[0-9]', content).group(0)
+pcmsolver_version = re.search('[0-9]+\.[0-9]+\.[0-9]+', content).group(0)
 major = pcmsolver_version.split('.')[0]
 minor = pcmsolver_version.split('.')[1]
 patch = pcmsolver_version.split('.')[2]
+
+print(pcmsolver_version)
 
 version = pcmsolver_version
 

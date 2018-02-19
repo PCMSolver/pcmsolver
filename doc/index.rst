@@ -25,6 +25,17 @@ An archive with the currently released source can be found on `GitHub <https://g
 .. literalinclude:: snippets/citation.bib
    :language: tex
 
+PCMSolver has been added to the following quantum chemistry programs
+
++ `Psi4 <http://www.psicode.org/>`_
++ `DALTON <http://daltonprogram.org/>`_
++ `LSDALTON <http://daltonprogram.org/>`_
++ `DIRAC <http://www.diracprogram.org/>`_
++ `ReSpect <http://www.respectprogram.org/>`_
++ `KOALA <dx.doi.org/10.1002/jcc.23679>`_
+
+Don't see you code listed here? `Please contact us <roberto.d.remigio@uit.no>`_.
+
 Contents:
 
 .. toctree::

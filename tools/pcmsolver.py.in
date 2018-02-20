@@ -415,7 +415,7 @@ def setup_keywords():
     # Maximum angular momentum value
     # Valid for: SPHERICALDIFFUSE
     # Valid values: integer
-    green.add_kw('MAXL', 'INT', 30)
+    green.add_kw('MAXL', 'INT', 50)
     medium.add_sect(green)
 
     green_part = deepcopy(green)

@@ -44,7 +44,6 @@ if(NOT STATIC_LIBRARY_ONLY)
     PRIVATE
       ${LIBC_INTERJECT}
       ZLIB::ZLIB
-      $<$<BOOL:${APPLE}>:"-undefined dynamic_lookup">
     )
   set_target_properties(pcm-shared
     PROPERTIES

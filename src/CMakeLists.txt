@@ -71,10 +71,10 @@ endif()
 if(NOT SHARED_LIBRARY_ONLY)
   add_library(pcm-static STATIC ${_objects})
   target_compile_definitions(pcm-static
+    PUBLIC
+      PCMSolver_STATIC_DEFINE
     INTERFACE
       $<INSTALL_INTERFACE:USING_PCMSolver>
-    PRIVATE
-      PCMSolver_STATIC_DEFINE
     )
   target_include_directories(pcm-static
     INTERFACE

@@ -1,7 +1,8 @@
-breathe
-matplotlib
-pep8
 Pygments
+breathe
+docopt
+matplotlib
+pyparsing
 pyyaml
 recommonmark
 sphinx

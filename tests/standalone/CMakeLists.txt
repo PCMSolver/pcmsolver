@@ -1,5 +1,12 @@
 # Copy input files to ${PROJECT_BINARY_DIR}/tests/standalone (aka ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY standalone.pcm standalone_atoms.pcm standalone_explicit.pcm DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(
+  COPY
+    standalone.pcm
+    standalone_atoms.pcm
+    standalone_explicit.pcm
+  DESTINATION
+    ${CMAKE_CURRENT_BINARY_DIR}
+  )
 
 add_test(
   NAME

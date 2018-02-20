@@ -1,13 +1,18 @@
-include_directories(
-  ${PROJECT_SOURCE_DIR}/src
-  ${PROJECT_SOURCE_DIR}/include
-  ${PROJECT_BINARY_DIR}/include
-  ${CMAKE_CURRENT_LIST_DIR}
-  )
+cmake_policy(SET CMP0063 NEW)
 
-if(NOT ENABLE_CXX11_SUPPORT)
-  add_definitions(-DCATCH_CONFIG_NO_CPP11)
-endif()
+# FIXME/TODO
+# The unit tests can be built without use of OBJECT libraries
+# and using target_sources instead.
+# To be done when finally switching to CMake 3.3
+include_directories(
+  SYSTEM PUBLIC
+    ${PROJECT_SOURCE_DIR}/external/Catch
+  PRIVATE
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/tests
+  )
 
 add_subdirectory(input)
 add_subdirectory(numerical_quadrature)
@@ -19,22 +24,28 @@ add_subdirectory(cpcm)
 add_subdirectory(iefpcm)
 add_subdirectory(utils)
 
-link_directories(${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 add_executable(unit_tests unit_tests.cpp
-                          $<TARGET_OBJECTS:bi_operators-tests>
-                          $<TARGET_OBJECTS:cpcm-tests>
-                          $<TARGET_OBJECTS:dielectric_profile-tests>
-                          $<TARGET_OBJECTS:gepol-tests>
-                          $<TARGET_OBJECTS:green-tests>
-                          $<TARGET_OBJECTS:iefpcm-tests>
-                          $<TARGET_OBJECTS:input-tests>
-                          $<TARGET_OBJECTS:numerical_quadrature-tests>
-                          $<TARGET_OBJECTS:utils-tests>
-                          )
+  $<TARGET_OBJECTS:bi_operators-tests>
+  $<TARGET_OBJECTS:cpcm-tests>
+  $<TARGET_OBJECTS:dielectric_profile-tests>
+  $<TARGET_OBJECTS:gepol-tests>
+  $<TARGET_OBJECTS:green-tests>
+  $<TARGET_OBJECTS:iefpcm-tests>
+  $<TARGET_OBJECTS:input-tests>
+  $<TARGET_OBJECTS:numerical_quadrature-tests>
+  $<TARGET_OBJECTS:utils-tests>
+  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(unit_tests custom_boost)
 endif()
-target_link_libraries(unit_tests pcm-static)
+target_compile_definitions(unit_tests
+  PRIVATE
+    $<$<NOT:$<BOOL:${ENABLE_CXX11_SUPPORT}>>:CATCH_CONFIG_NO_CPP11>
+  )
+target_link_libraries(unit_tests
+  PRIVATE
+    pcm-static
+  )
 
 add_subdirectory(C_host)
 if(ENABLE_Fortran_API)

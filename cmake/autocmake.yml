@@ -44,7 +44,6 @@ modules:
   - general:
     - source:
       - 'custom/static_library.cmake'
-      - 'custom/catch.cmake'
       - 'custom/eigen.cmake'
       - 'custom/libtaylor.cmake'
       - 'custom/zlib.cmake'

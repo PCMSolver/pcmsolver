@@ -12,12 +12,6 @@ add_library(gepol-tests OBJECT
   gepol_point_from-file.cpp
   gepol_point_symmetry.cpp
   )
-set_target_properties(gepol-tests
-  PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
-  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(gepol-tests custom_boost)
 endif()

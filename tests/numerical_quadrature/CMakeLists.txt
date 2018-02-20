@@ -1,12 +1,6 @@
 add_library(numerical_quadrature-tests OBJECT
   numerical_quadrature.cpp
   )
-set_target_properties(numerical_quadrature-tests
-  PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
-  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(numerical_quadrature-tests custom_boost)
 endif()

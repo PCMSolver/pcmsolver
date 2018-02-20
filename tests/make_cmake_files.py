@@ -49,12 +49,6 @@ dirname = os.path.basename(os.path.normpath(dname))
 message = """add_library({0}-tests OBJECT
   {1}
   )
-set_target_properties({0}-tests
-  PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
-  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies({0}-tests custom_boost)
 endif()

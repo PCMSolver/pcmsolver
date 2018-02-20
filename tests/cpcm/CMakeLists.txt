@@ -7,12 +7,6 @@ add_library(cpcm-tests OBJECT
   cpcm_gepol-point_from-file.cpp
   cpcm_symmetry.cpp
   )
-set_target_properties(cpcm-tests
-  PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
-  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(cpcm-tests custom_boost)
 endif()

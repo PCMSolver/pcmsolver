@@ -4,12 +4,6 @@ add_library(input-tests OBJECT
   input_multipoles.cpp
   input_restart.cpp
   )
-set_target_properties(input-tests
-  PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
-  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(input-tests custom_boost)
 endif()

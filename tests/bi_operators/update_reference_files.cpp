@@ -223,17 +223,20 @@ void save_anisotropic_liquid_numerical() {
 }
 
 void save_tanh_spherical_diffuse_numerical() {
-  double epsilon = 80.0;
+  double epsilon1 = 2.0;
+  double epsilon2 = 80.0;
   double width = 5.0;
-  double sphereRadius = 100.0;
-  Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
+  double sphereRadius = 10.0;
+  Eigen::Vector3d offset;
+  offset << 1.0, 2.0, 3.0;
+  Molecule molec = dummy<0>(1.44 / bohrToAngstrom(), offset);
   double area = 10.0;
   GePolCavity cavity(molec, area, 0.0, 100.0);
 
   Numerical op;
 
   SphericalDiffuse<> gf(
-      epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
+      epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
   Eigen::MatrixXd S_results = op.computeS(cavity, gf);
   cnpy::custom::npy_save("tanhsphericaldiffuse_S_numerical.npy", S_results);

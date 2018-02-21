@@ -95,29 +95,12 @@ matrix:
         - PYTHON='--two'
         - COVERAGE='--coverage'
         - RUN_DANGER=false
-    - os: osx
-      env:
-        - CXX_COMPILER='clang++'
-        - C_COMPILER='clang'
-        - Fortran_COMPILER='gfortran-7'
-        - BUILD_TYPE='release'
-        - PYTHON='--three'
-        - RUN_DANGER=false
 before_install:
   - test -n $CC && unset CC
   - test -n $CXX && unset CXX
   - test -n $FC && unset FC
 install:
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew update &> /dev/null
-      brew cask uninstall --force oclint
-      brew install gcc python3 ccache
-      pip3 install pipenv --upgrade
-      export PATH="/usr/local/opt/ccache/libexec:$PATH"
-    else
-      pip install --user pipenv --upgrade
-    fi
+  - pip install --user pipenv --upgrade
   - pipenv $PYTHON install
 before_script:
   - source $(pipenv --venv)/bin/activate

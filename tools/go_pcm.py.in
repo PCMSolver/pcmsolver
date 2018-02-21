@@ -21,10 +21,6 @@
 #  PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
 #
 
-# -*- python -*-
-# -*- coding: utf-8 -*-
-# vim:filetype=python:
-#
 # Python front-end to run_pcm standalone PCMSolver executable
 #
 # Written by Roberto Di Remigio <roberto.d.remigio@uit.no>
@@ -39,7 +35,14 @@ import platform
 import subprocess
 import sys
 
-from pcmsolver import parse_pcm_input
+try:
+    from pcmsolver import parse_pcm_input
+except ImportError as ops:
+    sys.stderr.write("{}\n\n".format(ops))
+    sys.stderr.write("""You should update your PYTHONPATH to use go_pcm.py
+    export PYTHONPATH=<prefix>/@CMAKE_INSTALL_LIBDIR@/@PYMOD_INSTALL_LIBDIR@:$PYTHONPATH
+where <prefix> is either the build or the install prefix.""")
+    sys.exit(-1)
 
 options = """
 Usage:

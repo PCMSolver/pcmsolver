@@ -1,8 +1,8 @@
 set(PYMOD_INSTALL_FULLDIR "${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}/pcmsolver")
 
+configure_file(go_pcm.py.in ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py @ONLY)
 file(
   COPY
-    go_pcm.py
     plot_cavity.py
   DESTINATION
     ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}

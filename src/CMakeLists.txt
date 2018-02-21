@@ -33,6 +33,8 @@ list(APPEND _objects
 if(NOT STATIC_LIBRARY_ONLY)
   add_library(pcm-shared SHARED ${_objects})
   target_compile_definitions(pcm-shared
+    PUBLIC
+      PCMSolver_EXPORTS
     INTERFACE
       $<INSTALL_INTERFACE:USING_PCMSolver>
     )

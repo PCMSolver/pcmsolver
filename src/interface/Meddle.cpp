@@ -38,6 +38,7 @@
 #include "cavity/CavityData.hpp"
 #include "green/Green.hpp"
 #include "green/GreenData.hpp"
+#include "mmfq/FQOhno.hpp"
 #include "solver/Solver.hpp"
 #include "solver/SolverData.hpp"
 
@@ -89,7 +90,7 @@ pcmsolver_context_t * pcmsolver_new_v1112(pcmsolver_reader_t input_reading,
         new pcm::Meddle(
             nr_nuclei, charges, coordinates, symmetry_info, *host_input, writer));
   } else {
-    // Use parsed the PCMSolver input file parsed_fname, as found on disk
+    // Use the parsed PCMSolver input file parsed_fname, as found on disk
     return AS_TYPE(
         pcmsolver_context_t,
         new pcm::Meddle(
@@ -755,6 +756,16 @@ void Meddle::initDynamicSolver() {
   mediumInfo(gf_i, gf_o);
   delete gf_o;
   delete gf_i;
+}
+
+void Meddle::initMMFQ() {
+  FQ_ = new mmfq::FQOhno(input_.fragments());
+  size_ = pcm::make_tuple(input_.fragments().sites.cols(),
+                          input_.fragments().sites.cols());
+  hasFQ_ = true;
+
+  infoStream_ << "========== MMFQ solver " << std::endl;
+  infoStream_ << *FQ_ << std::endl;
 }
 
 void Meddle::mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) {

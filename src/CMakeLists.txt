@@ -24,11 +24,12 @@ target_include_directories(pcm-objlib
     ${CMAKE_CURRENT_LIST_DIR}/utils/getkw
   )
 
+add_subdirectory(bi_operators)
 add_subdirectory(cavity)
 add_subdirectory(green)
 add_subdirectory(interface)
 add_subdirectory(metal)
-add_subdirectory(bi_operators)
+add_subdirectory(mmfq)
 add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)

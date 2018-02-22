@@ -79,7 +79,10 @@ Eigen::VectorXd FQOhno::computeCharge_impl(const Eigen::VectorXd & potential,
 }
 
 std::ostream & FQOhno::printSolver(std::ostream & os) {
-  os << "Fluctuating charge solver type: Ohno";
+  os << "Fluctuating charge solver type: Ohno" << std::endl;
+  os << "Number of fragments = " << mmfq_.nFragments << std::endl;
+  os << "Number of sites per fragment = " << mmfq_.nSitesPerFragment << std::endl;
+  os << "Number of sites = " << mmfq_.nFragments * mmfq_.nSitesPerFragment;
   return os;
 }
 } // namespace mmfq

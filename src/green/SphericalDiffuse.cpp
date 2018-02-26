@@ -245,13 +245,14 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double factor_x_ = 0.0;    /*! Weight of the state      */
   double factor_dxdt_ = 0.0; /*! Weight of the state derivative */
   double r_0_ = 0.1;         /*! Lower bound of the integration interval */
-  double r_infinity_ =
-      this->profile_.upperLimit() + 30.0; /*! Upper bound of the integration interval */
-  
+  double r_infinity_ = this->profile_.upperLimit() +
+                       30.0; /*! Upper bound of the integration interval */
+
   double y_0_ = std::log(r_0_);
   double y_infinity_ = std::log(r_infinity_);
   double relative_width = this->profile_.relativeWidth();
-  double observer_step_ = 1.0e-2 * relative_width;     /*! Time step between observer calls */
+  double observer_step_ =
+      1.0e-2 * relative_width; /*! Time step between observer calls */
 
   IntegratorParameters params_(eps_abs_,
                                eps_rel_,
@@ -263,8 +264,10 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
-  zetaC_  = RadialFunction<StateType, LnTransformedRadial, Zeta> (maxLC_, y_0_, y_infinity_, eval_, params_);
-  omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(maxLC_, y_0_, y_infinity_, eval_, params_);
+  zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(
+      maxLC_, y_0_, y_infinity_, eval_, params_);
+  omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(
+      maxLC_, y_0_, y_infinity_, eval_, params_);
   zeta_.reserve(maxLGreen_ + 1);
   omega_.reserve(maxLGreen_ + 1);
   for (int L = 0; L <= maxLGreen_; ++L) {
@@ -300,8 +303,8 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
   double pl_x = Legendre::Pn<double>(L, cos_gamma);
 
   /* Zeta and Omega are now on a logarithmic scale We need to pass the
-	 arguments in the correct scale and then use the chain rule to get
-	 the proper derivative */
+         arguments in the correct scale and then use the chain rule to get
+         the proper derivative */
   double y1 = std::log(r1);
   double y2 = std::log(r2);
 
@@ -403,15 +406,15 @@ template class SphericalDiffuse<OneLayerErf>;
 using dielectric_profile::OneLayerLog;
 template class SphericalDiffuse<OneLayerLog>;
 
-    /*
-      FIXME: the numerical integration in logarithmic scale requires a step
-      size dependent on the width of the profile (there are two for a
-      membrane) and the distance of it from the oringin (center of the
-      sphere). This requires some thinking to do it correctly
-      
-      using dielectric_profile::MembraneTanh;
-      template class SphericalDiffuse<MembraneTanh>;
-    */
+/*
+  FIXME: the numerical integration in logarithmic scale requires a step
+  size dependent on the width of the profile (there are two for a
+  membrane) and the distance of it from the oringin (center of the
+  sphere). This requires some thinking to do it correctly
+
+  using dielectric_profile::MembraneTanh;
+  template class SphericalDiffuse<MembraneTanh>;
+*/
 
 } // namespace green
 } // namespace pcm

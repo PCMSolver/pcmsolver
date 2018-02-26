@@ -47,8 +47,8 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
          "environment and a GePol cavity",
          "[solver][iefpcm][iefpcm_diffuse-gepol-point][anisotropic]") {
   GIVEN("An isotropic environment modelled as a spherical diffuse permittivity") {
-	Eigen::Vector3d offset;
-	offset << 10.0, -5.00, 5.00;
+    Eigen::Vector3d offset;
+    offset << 10.0, -5.00, 5.00;
     double eps1 = 2.0;
     double eps2 = 80.0;
     double center = 10.0;

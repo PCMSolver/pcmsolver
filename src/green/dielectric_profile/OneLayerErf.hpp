@@ -111,11 +111,13 @@ public:
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
-    pcm::tuple<double, double> operator()(const double r) const {
+  pcm::tuple<double, double> operator()(const double r) const {
     return pcm::make_tuple(value(r), derivative(r));
   }
   double upperLimit() const { return domain_.second; }
-  double relativeWidth() const { return width_ / std::abs(domain_.second - domain_.first); }  
+  double relativeWidth() const {
+    return width_ / std::abs(domain_.second - domain_.first);
+  }
   friend std::ostream & operator<<(std::ostream & os, OneLayerErf & th) {
     return th.printObject(os);
   }

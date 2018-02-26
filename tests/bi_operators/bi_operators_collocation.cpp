@@ -50,8 +50,8 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
          "[bi_operators][bi_operators_collocation]") {
   GIVEN("A GePol cavity for a single sphere in the origin") {
     double radius = 1.44;
-	Eigen::Vector3d offset;
-	offset << 1.0, 2.0, 3.0;
+    Eigen::Vector3d offset;
+    offset << 1.0, 2.0, 3.0;
     Molecule molec = dummy<0>(1.44 / bohrToAngstrom(), offset);
     double area = 10.0;
     GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);

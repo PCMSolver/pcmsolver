@@ -71,7 +71,6 @@ void print(const PCMInput &);
  */
 class PCMSolver_API Meddle __final {
 public:
-
   /*! \brief CTOR from Input object
    *  \param[in] input an Input object
    *  \param[in] writer the global HostWriter object

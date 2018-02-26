@@ -143,7 +143,6 @@ public:
   }
 
 protected:
-
   /*! Evaluates the Green's function given a pair of points
    *  \param[in] source the source point
    *  \param[in]  probe the probe point
@@ -169,7 +168,7 @@ protected:
     pp[0] = p2(0);
     pp[1] = p2(1);
     pp[2] = p2(2);
-	return this->operator()(sp, pp)[0];
+    return this->operator()(sp, pp)[0];
   }
 
   virtual std::ostream & printObject(std::ostream & os) __override {

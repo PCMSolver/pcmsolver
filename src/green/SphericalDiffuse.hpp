@@ -42,8 +42,8 @@ class Element;
 #include "InterfacesImpl.hpp"
 #include "dielectric_profile/MembraneTanh.hpp"
 #include "dielectric_profile/OneLayerErf.hpp"
-#include "dielectric_profile/OneLayerTanh.hpp"
 #include "dielectric_profile/OneLayerLog.hpp"
+#include "dielectric_profile/OneLayerTanh.hpp"
 
 namespace pcm {
 namespace green {
@@ -206,7 +206,6 @@ public:
   void toFile(const std::string & prefix = "");
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 private:
-
   /*! Evaluates the Green's function given a pair of points
    *  \param[in] sp the source point
    *  \param[in] pp the probe point

@@ -248,8 +248,8 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double r_infinity_ =
       this->profile_.upperLimit() + 30.0; /*! Upper bound of the integration interval */
   
-  double y_0_ = log(r_0_);
-  double y_infinity_ = log(r_infinity_);
+  double y_0_ = std::log(r_0_);
+  double y_infinity_ = std::log(r_infinity_);
   double relative_width = this->profile_.relativeWidth();
   double observer_step_ = 1.0e-2 * relative_width;     /*! Time step between observer calls */
 
@@ -302,8 +302,8 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
   /* Zeta and Omega are now on a logarithmic scale We need to pass the
 	 arguments in the correct scale and then use the chain rule to get
 	 the proper derivative */
-  double y1 = log(r1);
-  double y2 = log(r2);
+  double y1 = std::log(r1);
+  double y2 = std::log(r2);
 
   /* Sample zeta_[L] */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
@@ -351,8 +351,8 @@ double SphericalDiffuse<ProfilePolicy>::coefficient_impl(
   double r1 = (sp + this->origin_).norm();
   double r2 = (pp + this->origin_).norm();
 
-  double y1 = log(r1);
-  double y2 = log(r2);
+  double y1 = std::log(r1);
+  double y2 = std::log(r2);
 
   /* Sample zetaC_ */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;

@@ -116,10 +116,10 @@ public:
   void operator()(const StateType & rho, StateType & drhodr, const double y) {
     // Evaluate the dielectric profile
     double eps = 0.0, epsPrime = 0.0;
-    pcm::tie(eps, epsPrime) = eval_(exp(y));
+    pcm::tie(eps, epsPrime) = eval_(std::exp(y));
     if (utils::numericalZero(eps))
-      throw std::domain_error("Division by zero!");
-    double gamma_epsilon = exp(y) * epsPrime / eps;
+      PCMSOLVER_ERROR("Division by zero!");
+    double gamma_epsilon = std::exp(y) * epsPrime / eps;
     // System of equations is defined here
     drhodr[0] = rho[1];
     drhodr[1] = -rho[1] * (rho[1] + 1.0 + gamma_epsilon) + l_ * (l_ + 1);
@@ -251,13 +251,13 @@ private:
    *  the asymptotic form L*y in point.
    */
   double function_impl(double point) const {
-	  double zeta = 0.0;
-	  if (point <= y_0_) {
-		  zeta = L_ * point;
-	  } else {
-		  zeta = utils::splineInterpolation(point, function_[0], function_[1]);
-	  }
-	  return zeta;
+    double zeta = 0.0;
+    if (point <= y_0_) {
+      zeta = L_ * point;
+    } else {
+      zeta = utils::splineInterpolation(point, function_[0], function_[1]);
+    }
+    return zeta;
   }
   /*! \brief Returns value of 1st derivative of function at given point
    *  \param[in] point evaluation point

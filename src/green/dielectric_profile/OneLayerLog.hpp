@@ -32,7 +32,8 @@
 
 /*! \file OneLayerLog.hpp
  *  \class OneLayerLog
- *  \brief A dielectric profile based on the Harrison and Fosso-Tande work
+ *  \brief A dielectric profile based on the Harrison and Fosso-Tande work \cite
+ * Fosso-Tande2013
  *  \author Luca Frediani
  *  \date 2017
  */
@@ -58,51 +59,53 @@ private:
   /*! Returns value of dielectric profile at given point
    *  \param[in] point where to evaluate the profile
    */
-	double value(double point) const {
-		double epsLog = std::log(epsilon2_/epsilon1_);
-		double val = (1.0 + boost::math::erf((point - center_) / width_)) / 2.0;
-		double retval = epsilon1_ * std::exp(epsLog * val); // epsilon(r)
-		return retval;
-	}
-	/*! Returns value of derivative of dielectric profile at given point
-	 *  \param[in] point where to evaluate the derivative
-	 */
-	double derivative(double point) const {
-		double functionValue = value(point);
-		double epsLog = std::log(epsilon2_/epsilon1_);
-		double factor = epsLog / (width_ * std::sqrt(M_PI) );
-		double t = (point - center_) / width_;
-		double val = std::exp(-std::pow(t, 2));
-		return functionValue * factor * val; // first derivative of epsilon(r)
-	}
-    std::ostream & printObject(std::ostream & os) {
-        os << "Profile functional form: log" << std::endl;
-        os << "Permittivity left/inside   = " << epsilon1_ << std::endl;
-        os << "Permittivity right/outside = " << epsilon2_ << std::endl;
-        os << "Profile width        = " << width_ << " AU" << std::endl;
-        os << "Profile center       = " << center_ << " AU";
-        return os;
-    }
-    
+  double value(double point) const {
+    double epsLog = std::log(epsilon2_ / epsilon1_);
+    double val = (1.0 + boost::math::erf((point - center_) / width_)) / 2.0;
+    double retval = epsilon1_ * std::exp(epsLog * val); // epsilon(r)
+    return retval;
+  }
+  /*! Returns value of derivative of dielectric profile at given point
+   *  \param[in] point where to evaluate the derivative
+   */
+  double derivative(double point) const {
+    double functionValue = value(point);
+    double epsLog = std::log(epsilon2_ / epsilon1_);
+    double factor = epsLog / (width_ * std::sqrt(M_PI));
+    double t = (point - center_) / width_;
+    double val = std::exp(-std::pow(t, 2));
+    return functionValue * factor * val; // first derivative of epsilon(r)
+  }
+  std::ostream & printObject(std::ostream & os) {
+    os << "Profile functional form: log" << std::endl;
+    os << "Permittivity left/inside   = " << epsilon1_ << std::endl;
+    os << "Permittivity right/outside = " << epsilon2_ << std::endl;
+    os << "Profile width        = " << width_ << " AU" << std::endl;
+    os << "Profile center       = " << center_ << " AU";
+    return os;
+  }
+
 public:
-    OneLayerLog() {}
-    OneLayerLog(double e1, double e2, double w, double c)
-        : epsilon1_(e1),
-          epsilon2_(e2),
-          width_(w / 6.0),
-          center_(c),
-          domain_(std::make_pair(0.0, center_ + 12.0 * width_)){}
-    /*! Returns a tuple holding the permittivity and its derivative
-     *  \param[in]   r evaluation point
-     */
-    pcm::tuple<double, double> operator()(const double r) const {
-        return pcm::make_tuple(value(r), derivative(r));
-    }
-    double upperLimit() const { return domain_.second; }
-    double relativeWidth() const { return width_ / std::abs(domain_.second - domain_.first); }
-    friend std::ostream & operator<<(std::ostream & os, OneLayerLog & th) {
-        return th.printObject(os);
-    }
+  OneLayerLog() {}
+  OneLayerLog(double e1, double e2, double w, double c)
+      : epsilon1_(e1),
+        epsilon2_(e2),
+        width_(w / 6.0),
+        center_(c),
+        domain_(std::make_pair(0.0, center_ + 12.0 * width_)) {}
+  /*! Returns a tuple holding the permittivity and its derivative
+   *  \param[in]   r evaluation point
+   */
+  pcm::tuple<double, double> operator()(const double r) const {
+    return pcm::make_tuple(value(r), derivative(r));
+  }
+  double upperLimit() const { return domain_.second; }
+  double relativeWidth() const {
+    return width_ / std::abs(domain_.second - domain_.first);
+  }
+  friend std::ostream & operator<<(std::ostream & os, OneLayerLog & th) {
+    return th.printObject(os);
+  }
 };
 } // namespace dielectric_profile
 } // namespace pcm

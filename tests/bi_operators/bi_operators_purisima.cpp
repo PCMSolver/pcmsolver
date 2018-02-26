@@ -34,7 +34,6 @@
 #include "bi_operators/Purisima.hpp"
 #include "cavity/Element.hpp"
 #include "cavity/GePolCavity.hpp"
-#include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
 #include "utils/MathUtils.hpp"
@@ -44,7 +43,6 @@ using bi_operators::Purisima;
 using cavity::GePolCavity;
 using green::Vacuum;
 using green::UniformDielectric;
-using green::SphericalDiffuse;
 
 SCENARIO(
     "A collocation integrator with diagonal elements according to Purisima for D",

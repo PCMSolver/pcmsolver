@@ -115,7 +115,6 @@ void Meddle::CTORBody() {
 
   TIMER_ON("Meddle::initStaticSolver");
   initStaticSolver();
-  //  exit(-1);
   TIMER_OFF("Meddle::initStaticSolver");
 
   if (input_.isDynamic()) {
@@ -227,8 +226,6 @@ double pcm::Meddle::computePolarizationEnergy(const char * mep_name,
   // Dot product of MEP and ASC surface function
   double energy =
       functions_[std::string(mep_name)].dot(functions_[std::string(asc_name)]);
-  std::cout << functions_[std::string(mep_name)] << std::endl;
-  std::cout << functions_[std::string(asc_name)] << std::endl;
   return (energy / 2.0);
 }
 

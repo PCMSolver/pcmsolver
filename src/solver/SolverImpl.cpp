@@ -51,7 +51,6 @@ Eigen::MatrixXd anisotropicTEpsilon(const ICavity & cav,
   TIMER_OFF("Computing DI");
   TIMER_ON("Computing SE");
   Eigen::MatrixXd SE = op.computeS(cav, gf_o);
-  //  exit(-1);
   TIMER_OFF("Computing SE");
   TIMER_ON("Computing DE");
   Eigen::MatrixXd DE = op.computeD(cav, gf_o);

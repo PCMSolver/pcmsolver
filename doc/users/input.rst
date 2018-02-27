@@ -363,13 +363,13 @@ while the Green's function outside might vary.
      * **Valid values**: :math:`\varepsilon \geq 1.0`
      * **Default**: 1.0
 
-    Profile
+   Profile
       Functional form of the dielectric profile
 
       * **Type**: string
-      * **Valid values**: Tanh | Erf
+      * **Valid values**: Tanh | Erf | Log
       * **Valid for**: SphericalDiffuse
-      * **Default**: Tanh
+      * **Default**: Log
 
    Eps1
      Static dielectric permittivity inside the interface

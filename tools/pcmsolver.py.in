@@ -374,8 +374,8 @@ def setup_keywords():
     # Dielectric profile type
     # Valid for: SPHERICALDIFFUSE
     # Valid values: TANH, ERF, LOG
-    # Default: TANH
-    green.add_kw('PROFILE', 'STR', 'TANH')
+    # Default: LOG
+    green.add_kw('PROFILE', 'STR', 'LOG')
     # Static dielectric permittivity inside the interface
     # Valid for: SPHERICALDIFFUSE
     # Valid values: positive double greater than 1.0

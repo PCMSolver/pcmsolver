@@ -5,6 +5,7 @@ endif()
 
 # green_spherical_diffuse.cpp test
 add_Catch_test(green_spherical_diffuse "green;green_spherical_diffuse")
+set_tests_properties(green_spherical_diffuse PROPERTIES COST 100.0)
 
 # green_vacuum.cpp test
 add_Catch_test(green_vacuum "green;green_vacuum")

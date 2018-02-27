@@ -57,32 +57,16 @@ typedef pcm::function<pcm::tuple<double, double>(const double)> ProfileEvaluator
  *  \brief holds parameters for the integrator
  */
 struct IntegratorParameters {
-  /*! Absolute tolerance level */
-  double eps_abs_;
-  /*! Relative tolerance level */
-  double eps_rel_;
-  /*! Weight of the state      */
-  double factor_x_;
-  /*! Weight of the state derivative */
-  double factor_dxdt_;
   /*! Lower bound of the integration interval */
   double r_0_;
   /*! Upper bound of the integration interval */
   double r_infinity_;
   /*! Time step between observer calls */
   double observer_step_;
-  IntegratorParameters(double e_abs,
-                       double e_rel,
-                       double f_x,
-                       double f_dxdt,
-                       double r0,
+  IntegratorParameters(double r0,
                        double rinf,
                        double step)
-      : eps_abs_(e_abs),
-        eps_rel_(e_rel),
-        factor_x_(f_x),
-        factor_dxdt_(f_dxdt),
-        r_0_(r0),
+      : r_0_(r0),
         r_infinity_(rinf),
         observer_step_(step) {}
 };

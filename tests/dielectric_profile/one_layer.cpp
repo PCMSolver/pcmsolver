@@ -153,7 +153,7 @@ double erf_deriv(double point, double e1, double e2, double w, double c) {
 double log_value(double point, double e1, double e2, double w, double c) {
   w /= 6.0;
   double epsLog = std::log(e2 / e1);
-  double val = (1.0 + boost::math::erf((point - c) / w)) / 2.0;
+  double val = (1.0 + pcm::erf((point - c) / w)) / 2.0;
   double retval = e1 * std::exp(epsLog * val); // epsilon(r)
   return retval;
 }

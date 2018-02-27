@@ -1,7 +1,6 @@
 # List of headers
 list(APPEND headers_list
 Anisotropic.hpp
-MembraneTanh.hpp
 Metal.hpp
 OneLayerErf.hpp
 OneLayerLog.hpp

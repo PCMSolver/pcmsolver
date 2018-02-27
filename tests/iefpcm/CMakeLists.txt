@@ -11,6 +11,7 @@ add_Catch_test(iefpcm_anisotropic-symmetry "solver;iefpcm;iefpcm_anisotropic-sym
 
 # iefpcm_diffuse-gepol-point.cpp test
 add_Catch_test(iefpcm_diffuse-gepol-point "solver;iefpcm;iefpcm_diffuse-gepol-point;anisotropic")
+set_tests_properties(iefpcm_diffuse-gepol-point PROPERTIES COST 200.0)
 
 # iefpcm_gepol-point.cpp test
 add_Catch_test(iefpcm_gepol-point "solver;iefpcm;iefpcm_gepol-point")

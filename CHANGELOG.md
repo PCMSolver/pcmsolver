@@ -6,14 +6,14 @@
 
 - Double logarithmic scale for the integration of spherical diffuse
   interfaces: much more stable than the previous version, allowing for
-  RK4 integration and no adaptive integration steps.
+  Runge-Kutta 4 integrator.
 
 ### Fixed
 
 - Bug in the diffuse interface Green's function. Contrary to the sharp
   interface case, it is wrong to remove the monopole, which becomes
   identically zero when the corresponding differential equation is
-  solved in etreme cases (e.g. charge far away from the sphere).
+  solved in extreme cases (e.g. charge far away from the sphere).
 
 ### Added
 

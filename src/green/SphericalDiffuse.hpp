@@ -40,7 +40,6 @@ class Element;
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "InterfacesImpl.hpp"
-#include "dielectric_profile/MembraneTanh.hpp"
 #include "dielectric_profile/OneLayerErf.hpp"
 #include "dielectric_profile/OneLayerLog.hpp"
 #include "dielectric_profile/OneLayerTanh.hpp"
@@ -71,12 +70,7 @@ public:
    * \param[in] c center of the diffuse layer
    * \param[in] o center of the sphere
    * \param[in] l maximum value of angular momentum
-   * \note For SFINAE to work correctly, this constructor **must be** in the header
-   * file.
    */
-  template <typename U = ProfilePolicy,
-            typename = typename pcm::enable_if<
-                !pcm::is_same<U, dielectric_profile::MembraneTanh>::value>::type>
   SphericalDiffuse(double e1,
                    double e2,
                    double w,
@@ -89,38 +83,7 @@ public:
         maxLC_(2 * l) {
     initSphericalDiffuse();
   }
-  /*! Constructor for a two-layer interface (membrane)
-   * \param[in] e1 left-side dielectric constant
-   * \param[in] e2 middle portion dielectric constant
-   * \param[in] e3 right-side dielectric constant
-   * \param[in] w12 width of the first interface layer
-   * \param[in] w23 width of the second interface layer
-   * \param[in] c12 center of the first diffuse layer
-   * \param[in] c23 center of the second diffuse layer
-   * \param[in] o center of the sphere
-   * \param[in] l maximum value of angular momentum
-   * \note For SFINAE to work correctly, this constructor **must be** in the header
-   * file.
-   */
-  template <typename U = ProfilePolicy,
-            typename = typename pcm::enable_if<
-                pcm::is_same<U, dielectric_profile::MembraneTanh>::value>::type>
-  SphericalDiffuse(double e1,
-                   double e2,
-                   double e3,
-                   double w12,
-                   double w23,
-                   double c12,
-                   double c23,
-                   const Eigen::Vector3d & o,
-                   int l)
-      : GreensFunction<Stencil, ProfilePolicy>(
-            ProfilePolicy(e1, e2, e3, w12, w23, c12, c23)),
-        origin_(o),
-        maxLGreen_(l),
-        maxLC_(2 * l) {
-    initSphericalDiffuse();
-  }
+
   virtual ~SphericalDiffuse() {}
 
   virtual double permittivity() const __override __final {

@@ -240,7 +240,7 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   using namespace detail;
 
   // Parameters for the numerical solution of the radial differential equation
-  double r_0_ = 0.1;         /*! Lower bound of the integration interval */
+  double r_0_ = 0.1; /*! Lower bound of the integration interval */
   double r_infinity_ = this->profile_.upperLimit() +
                        30.0; /*! Upper bound of the integration interval */
 
@@ -250,9 +250,7 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   double observer_step_ =
       1.0e-2 * relative_width; /*! Time step between observer calls */
 
-  IntegratorParameters params_(y_0_,
-                               y_infinity_,
-                               observer_step_);
+  IntegratorParameters params_(y_0_, y_infinity_, observer_step_);
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 

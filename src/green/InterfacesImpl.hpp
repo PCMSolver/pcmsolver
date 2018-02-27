@@ -63,12 +63,8 @@ struct IntegratorParameters {
   double r_infinity_;
   /*! Time step between observer calls */
   double observer_step_;
-  IntegratorParameters(double r0,
-                       double rinf,
-                       double step)
-      : r_0_(r0),
-        r_infinity_(rinf),
-        observer_step_(step) {}
+  IntegratorParameters(double r0, double rinf, double step)
+      : r_0_(r0), r_infinity_(rinf), observer_step_(step) {}
 };
 
 /*! \class LnTransformedRadial

@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
@@ -36,9 +36,9 @@
 #include "green/dielectric_profile/OneLayerTanh.hpp"
 
 using namespace pcm;
-using green::SphericalDiffuse;
 using dielectric_profile::OneLayerErf;
 using dielectric_profile::OneLayerTanh;
+using green::SphericalDiffuse;
 
 SCENARIO("Evaluation of the spherical diffuse Green's function and its derivatives",
          "[green][green_spherical_diffuse]") {

@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
@@ -50,12 +50,12 @@ using bi_operators::Collocation;
 using bi_operators::Numerical;
 using bi_operators::Purisima;
 using cavity::GePolCavity;
-using green::Vacuum;
-using green::UniformDielectric;
-using green::IonicLiquid;
-using green::AnisotropicLiquid;
-using green::SphericalDiffuse;
 using dielectric_profile::OneLayerTanh;
+using green::AnisotropicLiquid;
+using green::IonicLiquid;
+using green::SphericalDiffuse;
+using green::UniformDielectric;
+using green::Vacuum;
 
 void save_vacuum_collocation();
 void save_uniform_dielectric_collocation();

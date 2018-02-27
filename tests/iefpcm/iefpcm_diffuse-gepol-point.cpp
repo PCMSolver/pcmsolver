@@ -33,6 +33,7 @@
 #include "green/DerivativeTypes.hpp"
 #include "green/SphericalDiffuse.hpp"
 #include "green/Vacuum.hpp"
+#include "green/dielectric_profile/OneLayerTanh.hpp"
 #include "solver/IEFSolver.hpp"
 #include "utils/Molecule.hpp"
 
@@ -42,6 +43,7 @@ using cavity::GePolCavity;
 using green::Vacuum;
 using green::SphericalDiffuse;
 using solver::IEFSolver;
+using dielectric_profile::OneLayerTanh;
 
 SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
          "environment and a GePol cavity",
@@ -75,7 +77,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
       GePolCavity cavity(point, area, probeRadius, minRadius);
 
       int maxL = 5;
-      SphericalDiffuse<> gf_o(
+      SphericalDiffuse<OneLayerTanh> gf_o(
           eps1, eps2, width, center, Eigen::Vector3d::Zero(), maxL);
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
@@ -108,7 +110,7 @@ SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
       GePolCavity cavity(point, area, probeRadius, minRadius);
 
       int maxL = 5;
-      SphericalDiffuse<> gf_o(eps1, eps2, width, center, offset, maxL);
+      SphericalDiffuse<OneLayerTanh> gf_o(eps1, eps2, width, center, offset, maxL);
 
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);

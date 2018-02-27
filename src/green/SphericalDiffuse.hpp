@@ -60,7 +60,7 @@ namespace green {
  * Green's function
  *  at a pair of points, a translation of the sampling points is performed first.
  */
-template <typename ProfilePolicy = dielectric_profile::OneLayerTanh>
+template <typename ProfilePolicy = dielectric_profile::OneLayerLog>
 class SphericalDiffuse __final : public GreensFunction<Stencil, ProfilePolicy> {
 public:
   /*! Constructor for a one-layer interface

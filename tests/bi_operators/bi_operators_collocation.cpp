@@ -37,6 +37,7 @@
 #include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
+#include "green/dielectric_profile/OneLayerTanh.hpp"
 #include "utils/MathUtils.hpp"
 
 using namespace pcm;
@@ -45,6 +46,7 @@ using cavity::GePolCavity;
 using green::Vacuum;
 using green::UniformDielectric;
 using green::SphericalDiffuse;
+using dielectric_profile::OneLayerTanh;
 
 SCENARIO("A collocation integrator with approximate diagonal elements",
          "[bi_operators][bi_operators_collocation]") {
@@ -123,7 +125,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
       double epsilon2 = 80.0;
       double width = 5.0;
       double sphereRadius = 20.0;
-      SphericalDiffuse<> gf(
+      SphericalDiffuse<OneLayerTanh> gf(
           epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 5);
       THEN("the matrix elements of S are") {
         results = op.computeS(cavity, gf);

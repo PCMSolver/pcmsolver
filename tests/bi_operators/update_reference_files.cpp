@@ -40,6 +40,7 @@
 #include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
+#include "green/dielectric_profile/OneLayerTanh.hpp"
 #include "utils/MathUtils.hpp"
 
 using namespace pcm;
@@ -52,6 +53,7 @@ using green::UniformDielectric;
 using green::IonicLiquid;
 using green::AnisotropicLiquid;
 using green::SphericalDiffuse;
+using dielectric_profile::OneLayerTanh;
 
 void save_vacuum_collocation();
 void save_uniform_dielectric_collocation();
@@ -114,7 +116,7 @@ void save_tanh_spherical_diffuse_collocation() {
   double epsilon2 = 80.0;
   double width = 5.0;
   double sphereRadius = 20.0;
-  SphericalDiffuse<> gf(
+  SphericalDiffuse<OneLayerTanh> gf(
       epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 5);
   Eigen::Vector3d offset;
   offset << 1.0, 2.0, 3.0;
@@ -237,7 +239,7 @@ void save_tanh_spherical_diffuse_numerical() {
 
   Numerical op;
 
-  SphericalDiffuse<> gf(
+  SphericalDiffuse<OneLayerTanh> gf(
       epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
 
   Eigen::MatrixXd S_results = op.computeS(cavity, gf);

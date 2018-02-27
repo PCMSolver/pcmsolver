@@ -66,7 +66,8 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
     probeNormal2.normalize();
     WHEN("the spherical droplet is centered at the origin") {
       Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
-      SphericalDiffuse<> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
+      SphericalDiffuse<OneLayerTanh> gf(
+          eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
         double value = 0.0204265162808782985;
         double gf_value = gf.kernelS(source1, probe1);
@@ -142,7 +143,8 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
     AND_WHEN("the spherical droplet is centered away from the origin") {
       Eigen::Vector3d sphereCenter =
           (Eigen::Vector3d() << 25.0, 0.0, 0.0).finished();
-      SphericalDiffuse<> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
+      SphericalDiffuse<OneLayerTanh> gf(
+          eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
         double value = 0.0173358023608628994;
         double gf_value = gf.kernelS(source1, probe1);

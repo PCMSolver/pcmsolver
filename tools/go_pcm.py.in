@@ -31,7 +31,6 @@ run_pcm executable.
 
 import docopt
 import os
-import platform
 import subprocess
 import sys
 
@@ -46,12 +45,12 @@ where <prefix> is either the build or the install prefix.""")
 
 options = """
 Usage:
-    ./pcmsolver.py --inp=<input_file> --exe=<path_to_exe>
-    ./pcmsolver.py (-h | --help)
+    ./go_pcm.py --inp=<input_file> [--exe=<path_to_exe>]
+    ./go_pcm.py (-h | --help)
 
 Options:
-  --exe=<path_to_exe>  Path to run_pcm executable.
   --inp=<input_file>   PCMSolver input file.
+  --exe=<path_to_exe>  Path to run_pcm executable.
   -h --help            Show this screen.
 """
 
@@ -64,7 +63,6 @@ def main():
         sys.stderr.write(options)
         sys.exit(-1)
     input_file = arguments['--inp']
-    path_to_exe = arguments['--exe']
     # Do the parsing and return validated input
     parsed = parse_pcm_input(input_file)
     # The parsed, machine-readable file is now saved.
@@ -73,12 +71,13 @@ def main():
     with open(parsedFile, 'w') as tmp:
         tmp.write(parsed)
     # Execute standalone
-    run_pcm(path_to_exe, parsedFile)
+    path_to_exe = arguments['--exe']
+    if path_to_exe:
+        run_pcm(path_to_exe, parsedFile)
 
 
 def run_pcm(path_to_exe, parsedFile):
-    suffix = '.exe' if platform.system() == 'Windows' else ''
-    executable = os.path.join(path_to_exe, 'run_pcm' + suffix)
+    executable = os.path.join(path_to_exe, 'run_pcm@CMAKE_EXECUTABLE_SUFFIX@')
     p = subprocess.Popen(
         [executable, parsedFile], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_coded, stderr_coded = p.communicate()

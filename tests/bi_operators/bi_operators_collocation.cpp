@@ -131,7 +131,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
             cnpy::custom::npy_load<double>("tanhsphericaldiffuse_S_collocation.npy");
         for (int i = 0; i < cavity.size(); ++i) {
           for (int j = 0; j < cavity.size(); ++j) {
-            REQUIRE(results(i, j) == Approx(results(i, j)));
+            REQUIRE(reference(i, j) == Approx(results(i, j)));
           }
         }
       }
@@ -141,7 +141,7 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
             cnpy::custom::npy_load<double>("tanhsphericaldiffuse_D_collocation.npy");
         for (int i = 0; i < cavity.size(); ++i) {
           for (int j = 0; j < cavity.size(); ++j) {
-            REQUIRE(results(i, j) == Approx(results(i, j)));
+            REQUIRE(reference(i, j) == Approx(results(i, j)));
           }
         }
       }

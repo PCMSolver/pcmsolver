@@ -7,19 +7,12 @@ Green's functions objects relies on the Factory Method pattern
 :cite:`Gamma1994,Alexandrescu2001`, implemented through the
 generic Factory class.
 
-The top-level header, _i.e._ to be included in client code, is `Green.hpp`.
-The common interface to all Green's function classes is specified by the `IGreensFunction` class,
+The top-level header, _i.e._ to be included in client code, is ``Green.hpp``.
+The common interface to all Green's function classes is specified by the ``IGreensFunction`` class,
 this is non-templated.
-All other classes are templated. TODO: explain template parameters.
+All other classes are templated.
 The Green's functions are registered to the factory based on a label encoding: type, derivative, and dielectric profile.
-The only allowed labels are:
-- `VACUUM_NUMERICAL`
-- `VACUUM_DERIVATIVE`
-- `VACUMM_GRADIENT`
-- `VACUUM_HESSIAN`
-
-- `SPHERICALDIFFUSE_TANH`
-- `SPHERICALDIFFUSE_ERF`
+The only allowed labels must be listed in ``src/green/Green.hpp``. If they are not, they can not be selected at run time.
 
 .. image:: ../gfx/green.png
    :scale: 70 %

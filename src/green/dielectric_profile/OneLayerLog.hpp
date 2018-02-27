@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -25,22 +25,22 @@
 
 #include <cmath>
 #include <iosfwd>
-#include <utility>
 
 #include "Config.hpp"
 
-/*! \file OneLayerErf.hpp */
+#include <boost/math/special_functions/erf.hpp>
+
+/*! \file OneLayerLog.hpp
+ *  \class OneLayerLog
+ *  \brief A dielectric profile based on the Harrison and Fosso-Tande work \cite
+ * Fosso-Tande2013
+ *  \author Luca Frediani
+ *  \date 2017
+ */
 
 namespace pcm {
 namespace dielectric_profile {
-/*! \class OneLayerErf
- *  \brief A erf dielectric profile
- *  \author Roberto Di Remigio
- *  \date 2015
- *  \note The parameter given from user input for width_ is divided by 6.0 in
- *  the constructor to keep consistency with \cite Frediani2004a
- */
-class OneLayerErf {
+class OneLayerLog {
 private:
   /// Dielectric constant on the left of the interface
   double epsilon1_;
@@ -58,51 +58,36 @@ private:
   std::pair<double, double> domain_;
   /*! Returns value of dielectric profile at given point
    *  \param[in] point where to evaluate the profile
-   *  \note We return epsilon2_ when the sampling point is outside the upper limit.
    */
   double value(double point) const {
-    double retval = 0.0;
-    if (point < domain_.first) {
-      retval = epsilon1_;
-    } else if (point > domain_.second) {
-      retval = epsilon2_;
-    } else {
-      double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
-      double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-      double val = pcm::erf((point - center_) / width_);
-      retval = epsPlus + epsMinus * val;
-    }
+    double epsLog = std::log(epsilon2_ / epsilon1_);
+    double val = (1.0 + boost::math::erf((point - center_) / width_)) / 2.0;
+    double retval = epsilon1_ * std::exp(epsLog * val); // epsilon(r)
     return retval;
   }
   /*! Returns value of derivative of dielectric profile at given point
    *  \param[in] point where to evaluate the derivative
-   *  \note We return 0.0 (derivative of the constant value epsilon2_) when the
-   * sampling point is outside the upper limit.
    */
   double derivative(double point) const {
-    double retval = 0.0;
-    if (point < domain_.first || point > domain_.second) {
-      retval = 0.0;
-    } else {
-      double factor = (epsilon2_ - epsilon1_) / (width_ * std::sqrt(M_PI));
-      double t = (point - center_) / width_;
-      double val = std::exp(-std::pow(t, 2));
-      retval = factor * val;
-    }
-    return retval;
+    double functionValue = value(point);
+    double epsLog = std::log(epsilon2_ / epsilon1_);
+    double factor = epsLog / (width_ * std::sqrt(M_PI));
+    double t = (point - center_) / width_;
+    double val = std::exp(-std::pow(t, 2));
+    return functionValue * factor * val; // first derivative of epsilon(r)
   }
   std::ostream & printObject(std::ostream & os) {
-    os << "Profile functional form: erf" << std::endl;
-    os << "Permittivity inside  = " << epsilon1_ << std::endl;
-    os << "Permittivity outside = " << epsilon2_ << std::endl;
+    os << "Profile functional form: log" << std::endl;
+    os << "Permittivity left/inside   = " << epsilon1_ << std::endl;
+    os << "Permittivity right/outside = " << epsilon2_ << std::endl;
     os << "Profile width        = " << width_ << " AU" << std::endl;
     os << "Profile center       = " << center_ << " AU";
     return os;
   }
 
 public:
-  OneLayerErf() {}
-  OneLayerErf(double e1, double e2, double w, double c)
+  OneLayerLog() {}
+  OneLayerLog(double e1, double e2, double w, double c)
       : epsilon1_(e1),
         epsilon2_(e2),
         width_(w / 6.0),
@@ -118,7 +103,7 @@ public:
   double relativeWidth() const {
     return width_ / std::abs(domain_.second - domain_.first);
   }
-  friend std::ostream & operator<<(std::ostream & os, OneLayerErf & th) {
+  friend std::ostream & operator<<(std::ostream & os, OneLayerLog & th) {
     return th.printObject(os);
   }
 };

@@ -373,9 +373,9 @@ def setup_keywords():
     green.add_kw('SPHEREPOSITION', 'DBL_ARRAY', [0.0, 0.0, 0.0])
     # Dielectric profile type
     # Valid for: SPHERICALDIFFUSE
-    # Valid values: TANH, ERF
-    # Default: TANH
-    green.add_kw('PROFILE', 'STR', 'TANH')
+    # Valid values: TANH, ERF, LOG
+    # Default: LOG
+    green.add_kw('PROFILE', 'STR', 'LOG')
     # Static dielectric permittivity inside the interface
     # Valid for: SPHERICALDIFFUSE
     # Valid values: positive double greater than 1.0
@@ -415,7 +415,7 @@ def setup_keywords():
     # Maximum angular momentum value
     # Valid for: SPHERICALDIFFUSE
     # Valid values: integer
-    green.add_kw('MAXL', 'INT', 30)
+    green.add_kw('MAXL', 'INT', 50)
     medium.add_sect(green)
 
     green_part = deepcopy(green)
@@ -592,7 +592,7 @@ def verify_green(section):
     allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'METALSPHERE',
                'GREENSFUNCTIONSUM')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
-    allowed_profiles = ('TANH', 'ERF')
+    allowed_profiles = ('TANH', 'ERF', 'LOG')
 
     green1 = section.fetch_sect('GREEN<ONE>')
     green2 = section.fetch_sect('GREEN<TWO>')

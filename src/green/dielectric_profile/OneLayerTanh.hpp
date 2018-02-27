@@ -113,6 +113,9 @@ public:
     return pcm::make_tuple(value(r), derivative(r));
   }
   double upperLimit() const { return domain_.second; }
+  double relativeWidth() const {
+    return width_ / std::abs(domain_.second - domain_.first);
+  }
   friend std::ostream & operator<<(std::ostream & os, OneLayerTanh & th) {
     return th.printObject(os);
   }

@@ -37,6 +37,7 @@
 #include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
+#include "green/dielectric_profile/OneLayerTanh.hpp"
 #include "utils/MathUtils.hpp"
 
 using namespace pcm;
@@ -45,12 +46,15 @@ using cavity::GePolCavity;
 using green::Vacuum;
 using green::UniformDielectric;
 using green::SphericalDiffuse;
+using dielectric_profile::OneLayerTanh;
 
 SCENARIO("A collocation integrator with approximate diagonal elements",
          "[bi_operators][bi_operators_collocation]") {
   GIVEN("A GePol cavity for a single sphere in the origin") {
     double radius = 1.44;
-    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
+    Eigen::Vector3d offset;
+    offset << 1.0, 2.0, 3.0;
+    Molecule molec = dummy<0>(1.44 / bohrToAngstrom(), offset);
     double area = 10.0;
     GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);
     Eigen::MatrixXd results = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());
@@ -117,11 +121,12 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
      * by collocation of the spherical diffuse matrix representations of S and D
      */
     AND_WHEN("the spherical diffuse with a tanh profile Green's function is used") {
-      double epsilon = 80.0;
+      double epsilon1 = 2.0;
+      double epsilon2 = 80.0;
       double width = 5.0;
-      double sphereRadius = 100.0;
-      SphericalDiffuse<> gf(
-          epsilon, epsilon, width, sphereRadius, Eigen::Vector3d::Zero(), 3);
+      double sphereRadius = 20.0;
+      SphericalDiffuse<OneLayerTanh> gf(
+          epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 5);
       THEN("the matrix elements of S are") {
         results = op.computeS(cavity, gf);
         reference =

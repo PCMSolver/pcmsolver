@@ -57,34 +57,14 @@ typedef pcm::function<pcm::tuple<double, double>(const double)> ProfileEvaluator
  *  \brief holds parameters for the integrator
  */
 struct IntegratorParameters {
-  /*! Absolute tolerance level */
-  double eps_abs_;
-  /*! Relative tolerance level */
-  double eps_rel_;
-  /*! Weight of the state      */
-  double factor_x_;
-  /*! Weight of the state derivative */
-  double factor_dxdt_;
   /*! Lower bound of the integration interval */
   double r_0_;
   /*! Upper bound of the integration interval */
   double r_infinity_;
   /*! Time step between observer calls */
   double observer_step_;
-  IntegratorParameters(double e_abs,
-                       double e_rel,
-                       double f_x,
-                       double f_dxdt,
-                       double r0,
-                       double rinf,
-                       double step)
-      : eps_abs_(e_abs),
-        eps_rel_(e_rel),
-        factor_x_(f_x),
-        factor_dxdt_(f_dxdt),
-        r_0_(r0),
-        r_infinity_(rinf),
-        observer_step_(step) {}
+  IntegratorParameters(double r0, double rinf, double step)
+      : r_0_(r0), r_infinity_(rinf), observer_step_(step) {}
 };
 
 /*! \class LnTransformedRadial
@@ -111,19 +91,18 @@ public:
    *  are reported in the manuscript.
    *  \param[in] rho state vector holding the function and its first derivative
    *  \param[out] drhodr state vector holding the first and second derivative
-   *  \param[in] r position on the integration grid
+   *  \param[in] y logarithmic position on the integration grid
    */
-  void operator()(const StateType & rho, StateType & drhodr, const double r) {
+  void operator()(const StateType & rho, StateType & drhodr, const double y) {
     // Evaluate the dielectric profile
     double eps = 0.0, epsPrime = 0.0;
-    pcm::tie(eps, epsPrime) = eval_(r);
+    pcm::tie(eps, epsPrime) = eval_(std::exp(y));
     if (utils::numericalZero(eps))
-      throw std::domain_error("Division by zero!");
-    double gamma_epsilon = epsPrime / eps;
+      PCMSOLVER_ERROR("Division by zero!");
+    double gamma_epsilon = std::exp(y) * epsPrime / eps;
     // System of equations is defined here
     drhodr[0] = rho[1];
-    drhodr[1] = -rho[1] * (rho[1] + 2.0 / r + gamma_epsilon) +
-                l_ * (l_ + 1) / std::pow(r, 2);
+    drhodr[1] = -rho[1] * (rho[1] + 1.0 + gamma_epsilon) + l_ * (l_ + 1);
   }
 };
 } // namespace detail
@@ -147,13 +126,13 @@ class RadialFunction __final {
 public:
   RadialFunction() : solution_(IndependentSolution<StateVariable, ODESystem>()) {}
   RadialFunction(int l,
-                 double r0,
-                 double rinf,
+                 double y0,
+                 double yinf,
                  const ProfileEvaluator & eval,
                  const IntegratorParameters & parms)
       : solution_(IndependentSolution<StateVariable, ODESystem>(l,
-                                                                r0,
-                                                                rinf,
+                                                                y0,
+                                                                yinf,
                                                                 eval,
                                                                 parms)) {}
   ~RadialFunction() {}
@@ -184,13 +163,13 @@ private:
  */
 template <typename StateVariable, typename ODESystem> class Zeta __final {
 public:
-  Zeta() : L_(0), r_0_(0.0), r_infinity_(0.0) {}
+  Zeta() : L_(0), y_0_(0.0), y_infinity_(0.0) {}
   Zeta(int l,
-       double r0,
-       double rinf,
+       double y0,
+       double yinf,
        const ProfileEvaluator & eval,
        const IntegratorParameters & parms)
-      : L_(l), r_0_(r0), r_infinity_(rinf) {
+      : L_(l), y_0_(y0), y_infinity_(yinf) {
     compute(eval, parms);
   }
   ~Zeta() {}
@@ -210,14 +189,14 @@ private:
   /// Angular momentum of the solution
   int L_;
   /// Lower bound of the integration interval
-  double r_0_;
+  double y_0_;
   /// Upper bound of the integration interval
-  double r_infinity_;
+  double y_infinity_;
   /// The actual data: grid, function value and first derivative values
   RadialSolution function_;
   /*! Reports progress of differential equation integrator */
-  void push_back(const StateVariable & x, double r) {
-    function_[0].push_back(r);
+  void push_back(const StateVariable & x, double y) {
+    function_[0].push_back(y);
     function_[1].push_back(x[0]);
     function_[2].push_back(x[1]);
   }
@@ -227,20 +206,20 @@ private:
    */
   void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
     namespace odeint = boost::numeric::odeint;
-    odeint::bulirsch_stoer_dense_out<StateVariable> stepper(
-        parms.eps_abs_, parms.eps_rel_, parms.factor_x_, parms.factor_dxdt_);
+    odeint::runge_kutta4<StateVariable> stepper;
+
     ODESystem system(eval, L_);
     // Holds the initial conditions
     StateVariable init_zeta(2);
     // Set initial conditions
-    init_zeta[0] = L_ * std::log(r_0_);
-    init_zeta[1] = L_ / r_0_;
-    odeint::integrate_adaptive(
+    init_zeta[0] = L_ * y_0_;
+    init_zeta[1] = L_;
+    odeint::integrate_const(
         stepper,
         system,
         init_zeta,
-        r_0_,
-        r_infinity_,
+        y_0_,
+        y_infinity_,
         parms.observer_step_,
         pcm::bind(
             &Zeta<StateVariable, ODESystem>::push_back, this, pcm::_1, pcm::_2));
@@ -248,13 +227,13 @@ private:
   /*! \brief Returns value of function at given point
    *  \param[in] point evaluation point
    *
-   *  We first check if point is below r_0_, if yes we use
-   *  the asymptotic form L*log(r) in point.
+   *  We first check if point is below y_0_, if yes we use
+   *  the asymptotic form L*y in point.
    */
   double function_impl(double point) const {
     double zeta = 0.0;
-    if (point <= r_0_) {
-      zeta = L_ * std::log(point);
+    if (point <= y_0_) {
+      zeta = L_ * point;
     } else {
       zeta = utils::splineInterpolation(point, function_[0], function_[1]);
     }
@@ -263,13 +242,12 @@ private:
   /*! \brief Returns value of 1st derivative of function at given point
    *  \param[in] point evaluation point
    *
-   *  We first check if point is below r_0_, if yes we use
-   *  the asymptotic form L / r in point.
+   *  Below y_0_, the as asymptotic form L is used. Otherwise we interpolate.
    */
   double derivative_impl(double point) const {
     double zeta = 0.0;
-    if (point <= r_0_) {
-      zeta = L_ / point;
+    if (point <= y_0_) {
+      zeta = L_;
     } else {
       zeta = utils::splineInterpolation(point, function_[0], function_[2]);
     }
@@ -288,13 +266,13 @@ private:
  */
 template <typename StateVariable, typename ODESystem> class Omega __final {
 public:
-  Omega() : L_(0), r_0_(0.0), r_infinity_(0.0) {}
+  Omega() : L_(0), y_0_(0.0), y_infinity_(0.0) {}
   Omega(int l,
-        double r0,
-        double rinf,
+        double y0,
+        double yinf,
         const ProfileEvaluator & eval,
         const IntegratorParameters & parms)
-      : L_(l), r_0_(r0), r_infinity_(rinf) {
+      : L_(l), y_0_(y0), y_infinity_(yinf) {
     compute(eval, parms);
   }
   ~Omega() {}
@@ -314,14 +292,14 @@ private:
   /// Angular momentum of the solution
   int L_;
   /// Lower bound of the integration interval
-  double r_0_;
+  double y_0_;
   /// Upper bound of the integration interval
-  double r_infinity_;
+  double y_infinity_;
   /// The actual data: grid, function value and first derivative values
   RadialSolution function_;
   /*! Reports progress of differential equation integrator */
-  void push_back(const StateVariable & x, double r) {
-    function_[0].push_back(r);
+  void push_back(const StateVariable & x, double y) {
+    function_[0].push_back(y);
     function_[1].push_back(x[0]);
     function_[2].push_back(x[1]);
   }
@@ -331,21 +309,21 @@ private:
    */
   void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
     namespace odeint = boost::numeric::odeint;
-    odeint::bulirsch_stoer_dense_out<StateVariable> stepper(
-        parms.eps_abs_, parms.eps_rel_, parms.factor_x_, parms.factor_dxdt_);
+    odeint::runge_kutta4<StateVariable> stepper;
+
     ODESystem system(eval, L_);
     // Holds the initial conditions
     StateVariable init_omega(2);
     // Set initial conditions
-    init_omega[0] = -(L_ + 1) * std::log(r_infinity_);
-    init_omega[1] = -(L_ + 1) / r_infinity_;
+    init_omega[0] = -(L_ + 1) * y_infinity_;
+    init_omega[1] = -(L_ + 1);
     // Notice that we integrate BACKWARDS, so we pass -step to integrate_adaptive
-    boost::numeric::odeint::integrate_adaptive(
+    odeint::integrate_const(
         stepper,
         system,
         init_omega,
-        r_infinity_,
-        r_0_,
+        y_infinity_,
+        y_0_,
         -parms.observer_step_,
         pcm::bind(
             &Omega<StateVariable, ODESystem>::push_back, this, pcm::_1, pcm::_2));
@@ -364,12 +342,12 @@ private:
    *  \param[in] point evaluation point
    *
    * We first check if point is above r_infinity_, if yes we use
-   * the asymptotic form -(L+1)*log(r) in point.
+   * the asymptotic form -(L+1)*y in point.
    */
   double function_impl(double point) const {
     double omega = 0.0;
-    if (point >= r_infinity_) {
-      omega = -(L_ + 1) * std::log(point);
+    if (point >= y_infinity_) {
+      omega = -(L_ + 1) * point;
     } else {
       omega = utils::splineInterpolation(point, function_[0], function_[1]);
     }
@@ -379,12 +357,12 @@ private:
    *  \param[in] point evaluation point
    *
    * We first check if point is above r_infinity_, if yes we use
-   * the asymptotic form -(L+1)/r in point.
+   * the asymptotic form -(L+1) in point.
    */
   double derivative_impl(double point) const {
     double omega = 0.0;
-    if (point >= r_infinity_) {
-      omega = -(L_ + 1) / point;
+    if (point >= y_infinity_) {
+      omega = -(L_ + 1);
     } else {
       omega = utils::splineInterpolation(point, function_[0], function_[2]);
     }

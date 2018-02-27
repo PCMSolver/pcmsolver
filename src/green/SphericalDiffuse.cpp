@@ -144,12 +144,13 @@ Stencil SphericalDiffuse<ProfilePolicy>::operator()(Stencil * sp,
   double Cr12 = this->coefficient_impl(source, probe);
 
   double gr12 = 0.0;
-  for (int L = 1; L <= maxLGreen_; ++L) {
+  for (int L = 0; L <= maxLGreen_; ++L) {
     gr12 += this->imagePotentialComponent_impl(L, source, probe, Cr12);
   }
   double r12 = (source - probe).norm();
 
-  return (1.0 / (Cr12 * r12) + gr12);
+  double gf = (1.0 / (Cr12 * r12) + gr12);
+  return gf;
 }
 
 template <typename ProfilePolicy>
@@ -238,69 +239,37 @@ template <typename ProfilePolicy>
 void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   using namespace detail;
 
-  LOG("SphericalDiffuse::initSphericalDiffuse");
   // Parameters for the numerical solution of the radial differential equation
-  double eps_abs_ = 1.0e-10; /*! Absolute tolerance level */
-  double eps_rel_ = 1.0e-06; /*! Relative tolerance level */
-  double factor_x_ = 0.0;    /*! Weight of the state      */
-  double factor_dxdt_ = 0.0; /*! Weight of the state derivative */
-  double r_0_ = 0.5;         /*! Lower bound of the integration interval */
+  double r_0_ = 0.1; /*! Lower bound of the integration interval */
   double r_infinity_ = this->profile_.upperLimit() +
-                       200.0;      /*! Upper bound of the integration interval */
-  double observer_step_ = 1.0e-03; /*! Time step between observer calls */
-  IntegratorParameters params_(eps_abs_,
-                               eps_rel_,
-                               factor_x_,
-                               factor_dxdt_,
-                               r_0_,
-                               r_infinity_,
-                               observer_step_);
+                       30.0; /*! Upper bound of the integration interval */
+
+  double y_0_ = std::log(r_0_);
+  double y_infinity_ = std::log(r_infinity_);
+  double relative_width = this->profile_.relativeWidth();
+  double observer_step_ =
+      1.0e-2 * relative_width; /*! Time step between observer calls */
+
+  IntegratorParameters params_(y_0_, y_infinity_, observer_step_);
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
-  LOG("Computing coefficient for the separation of the Coulomb singularity");
-  LOG("Computing first radial solution L = " + pcm::to_string(maxLC_));
-  TIMER_ON("computeZeta for coefficient");
   zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(
-      maxLC_, r_0_, r_infinity_, eval_, params_);
-  TIMER_OFF("computeZeta for coefficient");
-  LOG("DONE: Computing first radial solution L = " + pcm::to_string(maxLC_));
-
-  LOG("Computing second radial solution L = " + pcm::to_string(maxLC_));
-  TIMER_ON("computeOmega for coefficient");
+      maxLC_, y_0_, y_infinity_, eval_, params_);
   omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(
-      maxLC_, r_0_, r_infinity_, eval_, params_);
-  TIMER_OFF("computeOmega for coefficient");
-  LOG("Computing second radial solution L = " + pcm::to_string(maxLC_));
-  LOG("DONE: Computing coefficient for the separation of the Coulomb singularity");
-
-  LOG("Computing radial solutions for Green's function");
-  TIMER_ON("SphericalDiffuse: Looping over angular momentum");
+      maxLC_, y_0_, y_infinity_, eval_, params_);
   zeta_.reserve(maxLGreen_ + 1);
   omega_.reserve(maxLGreen_ + 1);
   for (int L = 0; L <= maxLGreen_; ++L) {
-    // First radial solution
-    LOG("Computing first radial solution L = " + pcm::to_string(L));
-    TIMER_ON("computeZeta L = " + pcm::to_string(L));
-    // Create an empty RadialSolution
     RadialFunction<StateType, LnTransformedRadial, Zeta> tmp_zeta_(
-        L, r_0_, r_infinity_, eval_, params_);
+        L, y_0_, y_infinity_, eval_, params_);
     zeta_.push_back(tmp_zeta_);
-    TIMER_OFF("computeZeta L = " + pcm::to_string(L));
-    LOG("DONE: Computing first radial solution L = " + pcm::to_string(L));
-
-    // Second radial solution
-    LOG("Computing second radial solution L = " + pcm::to_string(L));
-    TIMER_ON("computeOmega L = " + pcm::to_string(L));
-    // Create an empty RadialSolution
-    RadialFunction<StateType, LnTransformedRadial, Omega> tmp_omega_(
-        L, r_0_, r_infinity_, eval_, params_);
-    omega_.push_back(tmp_omega_);
-    TIMER_OFF("computeOmega L = " + pcm::to_string(L));
-    LOG("DONE: Computing second radial solution L = " + pcm::to_string(L));
   }
-  TIMER_OFF("SphericalDiffuse: Looping over angular momentum");
-  LOG("DONE: Computing radial solutions for Green's function");
+  for (int L = 0; L <= maxLGreen_; ++L) {
+    RadialFunction<StateType, LnTransformedRadial, Omega> tmp_omega_(
+        L, y_0_, y_infinity_, eval_, params_);
+    omega_.push_back(tmp_omega_);
+  }
 }
 
 template <typename ProfilePolicy>
@@ -323,25 +292,31 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
     cos_gamma = -1.0;
   double pl_x = Legendre::Pn<double>(L, cos_gamma);
 
+  /* Zeta and Omega are now on a logarithmic scale We need to pass the
+         arguments in the correct scale and then use the chain rule to get
+         the proper derivative */
+  double y1 = std::log(r1);
+  double y2 = std::log(r2);
+
   /* Sample zeta_[L] */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
   /* Value of zeta_[L] at point with index 1 */
-  pcm::tie(zeta1, pcm::ignore) = zeta_[L](r1);
+  pcm::tie(zeta1, pcm::ignore) = zeta_[L](y1);
   /* Value of zeta_[L] and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2) = zeta_[L](r2);
+  pcm::tie(zeta2, d_zeta2) = zeta_[L](y2);
 
   /* Sample omega_[L] */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omega_[L] at point with index 1 */
-  pcm::tie(omega1, pcm::ignore) = omega_[L](r1);
+  pcm::tie(omega1, pcm::ignore) = omega_[L](y1);
   /* Value of omega_[L] and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2) = omega_[L](r2);
+  pcm::tie(omega2, d_omega2) = omega_[L](y2);
 
   double eps_r2 = 0.0;
   pcm::tie(eps_r2, pcm::ignore) = this->profile_(pp_shift.norm());
 
   /* Evaluation of the Wronskian and the denominator */
-  double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
+  double denominator = (d_zeta2 - d_omega2) * r2 * eps_r2;
 
   double gr12 = 0.0;
   if (r1 < r2) {
@@ -359,7 +334,6 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
     }
     gr12 = (gr12 - f_L / (r1 * Cr12)) * pl_x;
   }
-
   return gr12;
 }
 
@@ -370,26 +344,29 @@ double SphericalDiffuse<ProfilePolicy>::coefficient_impl(
   double r1 = (sp + this->origin_).norm();
   double r2 = (pp + this->origin_).norm();
 
+  double y1 = std::log(r1);
+  double y2 = std::log(r2);
+
   /* Sample zetaC_ */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
   /* Value of zetaC_ at point with index 1 */
-  pcm::tie(zeta1, pcm::ignore) = zetaC_(r1);
+  pcm::tie(zeta1, pcm::ignore) = zetaC_(y1);
   /* Value of zetaC_ and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2) = zetaC_(r2);
+  pcm::tie(zeta2, d_zeta2) = zetaC_(y2);
 
   /* Sample omegaC_ */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omegaC_ at point with index 1 */
-  pcm::tie(omega1, pcm::ignore) = omegaC_(r1);
+  pcm::tie(omega1, pcm::ignore) = omegaC_(y1);
   /* Value of omegaC_ and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2) = omegaC_(r2);
+  pcm::tie(omega2, d_omega2) = omegaC_(y2);
 
   double tmp = 0.0, coeff = 0.0;
   double eps_r2 = 0.0;
   pcm::tie(eps_r2, pcm::ignore) = this->profile_(r2);
 
   /* Evaluation of the Wronskian and the denominator */
-  double denominator = (d_zeta2 - d_omega2) * std::pow(r2, 2) * eps_r2;
+  double denominator = (d_zeta2 - d_omega2) * r2 * eps_r2;
 
   if (r1 < r2) {
     double f_L = r1 / r2;
@@ -416,7 +393,8 @@ template class SphericalDiffuse<OneLayerTanh>;
 using dielectric_profile::OneLayerErf;
 template class SphericalDiffuse<OneLayerErf>;
 
-using dielectric_profile::MembraneTanh;
-template class SphericalDiffuse<MembraneTanh>;
+using dielectric_profile::OneLayerLog;
+template class SphericalDiffuse<OneLayerLog>;
+
 } // namespace green
 } // namespace pcm

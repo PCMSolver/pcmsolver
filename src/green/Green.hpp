@@ -33,7 +33,6 @@
 #include "SphericalDiffuse.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
-#include "dielectric_profile/MembraneTanh.hpp"
 #include "dielectric_profile/OneLayerErf.hpp"
 #include "dielectric_profile/OneLayerTanh.hpp"
 #include "utils/Factory.hpp"
@@ -89,6 +88,8 @@ inline Factory<detail::CreateGreensFunction> bootstrapFactory() {
                      createSphericalDiffuse<dielectric_profile::OneLayerTanh>);
   factory_.subscribe("SPHERICALDIFFUSE_NUMERICAL_ERF",
                      createSphericalDiffuse<dielectric_profile::OneLayerErf>);
+  factory_.subscribe("SPHERICALDIFFUSE_NUMERICAL_LOG",
+                     createSphericalDiffuse<dielectric_profile::OneLayerLog>);
 
   return factory_;
 }

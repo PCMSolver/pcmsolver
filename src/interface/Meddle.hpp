@@ -118,38 +118,46 @@ public:
          const PCMInput & host_input,
          const HostWriter & writer);
   ~Meddle();
+
   /*! \brief Getter for the molecule object */
   Molecule molecule() const attribute(pure);
+
   /*! \brief Getter for the number of finite elements composing the molecular cavity
    *  \return the size of the cavity
    */
   PCMSolverIndex getCavitySize() const attribute(pure);
+
   /*! \brief Getter for the number of irreducible finite elements composing the
    * molecular cavity
    *  \return the number of irreducible finite elements
    */
   PCMSolverIndex getIrreducibleCavitySize() const attribute(pure);
+
   /*! \brief Getter for the centers of the finite elements composing the molecular
    * cavity
    *  \param[out] centers array holding the coordinates of the finite elements
    * centers
    */
   void getCenters(double centers[]) const;
+
   /*! \brief Getter for the center of the i-th finite element
    *  \param[in] its index of the finite element
    *  \param[out] center array holding the coordinates of the finite element center
    */
   void getCenter(int its, double center[]) const;
+
   /*! \brief Getter for the centers of the finite elements composing the molecular
    * cavity
    *  \return a matrix with the finite elements centers (dimensions 3 x number of
    * finite elements)
    */
   Eigen::Matrix3Xd getCenters() const attribute(pure);
+
   /*! \brief Getter for the areas/weights of the finite elements
    *  \param[out] areas array holding the weights/areas of the finite elements
    */
   void getAreas(double areas[]) const;
+
   /*! \brief Computes ASC given a MEP and the desired irreducible representation
    *  \param[in] mep_name label of the MEP surface function
    *  \param[in] asc_name label of the ASC surface function
@@ -159,6 +167,7 @@ public:
    *  and computes the corresponding ASC.
    */
   void computeASC(const char * mep_name, const char * asc_name, int irrep) const;
+
   /*! \brief Computes response ASC given a MEP and the desired irreducible
    * representation
    *  \param[in] mep_name label of the MEP surface function
@@ -172,6 +181,7 @@ public:
   void computeResponseASC(const char * mep_name,
                           const char * asc_name,
                           int irrep) const;
+
   /*! \brief Computes the polarization energy
    *  \param[in] mep_name label of the MEP surface function
    *  \param[in] asc_name label of the ASC surface function
@@ -186,6 +196,7 @@ public:
          *  \return the ASC dipole, i.e. \sqrt{\sum_i \mu_i^2}
          */
   double getASCDipole(const char * asc_name, double dipole[]) const;
+
   /*! \brief Retrieves data wrapped in a given surface function
    *  \param[in] size the size of the surface function
    *  \param[in] values the values wrapped in the surface function
@@ -194,6 +205,7 @@ public:
   void getSurfaceFunction(PCMSolverIndex size,
                           double values[],
                           const char * name) const;
+
   /*! \brief Sets a surface function given data and label
    *  \param[in] size the size of the surface function
    *  \param[in] values the values to be wrapped in the surface function
@@ -202,14 +214,17 @@ public:
   void setSurfaceFunction(PCMSolverIndex size,
                           double values[],
                           const char * name) const;
+
   /*! \brief Prints surface function contents to host output
    *  \param[in] name label of the surface function
    */
   void printSurfaceFunction(const char * name) const;
+
   /*! \brief Dumps all currently saved surface functions to NumPy arrays in .npy
    * files
    */
   void saveSurfaceFunctions() const;
+
   /*! \brief Dumps a surface function to NumPy array in .npy file
    *  \param[in] name label of the surface function
    *
@@ -217,6 +232,7 @@ public:
    *  **without** .npy extension
    */
   void saveSurfaceFunction(const char * name) const;
+
   /*! \brief Loads a surface function from a .npy file
    *  \param[in] name label of the surface function
    *
@@ -224,9 +240,11 @@ public:
    *  **without** .npy extension
    */
   void loadSurfaceFunction(const char * name) const;
+
   /*! \brief Prints citation and set up information
    */
   void printInfo() const;
+
   /*! \brief Writes timing results for the API
    */
   void writeTimings() const;

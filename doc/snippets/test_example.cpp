@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2016 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -23,13 +23,13 @@
 
 #include "catch.hpp"
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include <Eigen/Core>
 
-#include "cavity/GePolCavity.hpp"
 #include "TestingMolecules.hpp"
+#include "cavity/GePolCavity.hpp"
 
 SCENARIO("GePol cavity for a single sphere", "[gepol][gepol_point]") {
   GIVEN("A single sphere") {

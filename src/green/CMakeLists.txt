@@ -24,19 +24,29 @@ UniformDielectric.cpp
 Vacuum.cpp
 )
 
-include_directories(dielectric_profile)
 add_library(green OBJECT ${sources_list} ${headers_list})
+target_compile_definitions(green
+  PUBLIC
+    PCMSolver_EXPORTS
+  )
+target_compile_options(green
+  PRIVATE
+    "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"
+  )
+target_include_directories(green
+  PUBLIC
+    ${PROJECT_SOURCE_DIR}/src/dielectric_profile
+  )
 set_target_properties(green
   PROPERTIES
     POSITION_INDEPENDENT_CODE 1
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN 1
   )
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(green custom_boost)
+endif()
 add_dependencies(green generate-config-hpp)
-target_compile_options(green
-  PRIVATE
-    "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"
-  )
 
 # Sets install directory for all the headers in the list
 foreach(_header ${headers_list})

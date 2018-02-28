@@ -1,4 +1,14 @@
-add_library(iefpcm-tests OBJECT iefpcm_anisotropic-gepol-point.cpp iefpcm_anisotropic-symmetry.cpp iefpcm_diffuse-gepol-point.cpp iefpcm_gepol-C2H4_D2h.cpp iefpcm_gepol-NH3.cpp iefpcm_gepol-NH3_from-file.cpp iefpcm_gepol-point.cpp iefpcm_gepol-point_from-file.cpp iefpcm_symmetry.cpp)
+add_library(iefpcm-tests OBJECT
+  iefpcm_anisotropic-gepol-point.cpp
+  iefpcm_anisotropic-symmetry.cpp
+  iefpcm_diffuse-gepol-point.cpp
+  iefpcm_gepol-C2H4_D2h.cpp
+  iefpcm_gepol-NH3.cpp
+  iefpcm_gepol-NH3_from-file.cpp
+  iefpcm_gepol-point.cpp
+  iefpcm_gepol-point_from-file.cpp
+  iefpcm_symmetry.cpp
+  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(iefpcm-tests custom_boost)
 endif()

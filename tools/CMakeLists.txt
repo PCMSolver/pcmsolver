@@ -1,0 +1,41 @@
+file(TO_NATIVE_PATH "${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}/pcmsolver" PYMOD_INSTALL_FULLDIR)
+
+configure_file(go_pcm.py.in ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py @ONLY)
+file(
+  COPY
+    plot_cavity.py
+  DESTINATION
+    ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+  )
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
+    ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/plot_cavity.py
+  DESTINATION
+    ${CMAKE_INSTALL_BINDIR}
+  )
+
+if(PYTHON_VERSION_MAJOR VERSION_EQUAL 3)
+  configure_file(py3.x-getkw.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py COPYONLY)
+else()
+  configure_file(py2.x-getkw.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py COPYONLY)
+endif()
+configure_file(init.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py COPYONLY)
+file(
+  COPY
+    pcmdata.py
+    pcmparser.py
+    pyparsing.py
+  DESTINATION
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}
+  )
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmdata.py
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmparser.py
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pyparsing.py
+  DESTINATION
+    ${PYMOD_INSTALL_FULLDIR}
+  )

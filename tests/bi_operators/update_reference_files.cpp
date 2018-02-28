@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
@@ -27,6 +27,8 @@
 #include <iostream>
 #include <limits>
 
+#include "PCMSolverExport.h"
+
 #include <Eigen/Core>
 
 #include "TestingMolecules.hpp"
@@ -48,12 +50,12 @@ using bi_operators::Collocation;
 using bi_operators::Numerical;
 using bi_operators::Purisima;
 using cavity::GePolCavity;
-using green::Vacuum;
-using green::UniformDielectric;
-using green::IonicLiquid;
-using green::AnisotropicLiquid;
-using green::SphericalDiffuse;
 using dielectric_profile::OneLayerTanh;
+using green::AnisotropicLiquid;
+using green::IonicLiquid;
+using green::SphericalDiffuse;
+using green::UniformDielectric;
+using green::Vacuum;
 
 void save_vacuum_collocation();
 void save_uniform_dielectric_collocation();
@@ -116,8 +118,6 @@ void save_tanh_spherical_diffuse_collocation() {
   double epsilon2 = 80.0;
   double width = 5.0;
   double sphereRadius = 20.0;
-  SphericalDiffuse<OneLayerTanh> gf(
-      epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 5);
   Eigen::Vector3d offset;
   offset << 1.0, 2.0, 3.0;
   Molecule molec = dummy<0>(1.44 / bohrToAngstrom(), offset);
@@ -125,6 +125,9 @@ void save_tanh_spherical_diffuse_collocation() {
   GePolCavity cavity(molec, area, 0.0, 100.0);
 
   Collocation op;
+
+  SphericalDiffuse<OneLayerTanh> gf(
+      epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 5);
 
   Eigen::MatrixXd S_results = op.computeS(cavity, gf);
   cnpy::custom::npy_save("tanhsphericaldiffuse_S_collocation.npy", S_results);

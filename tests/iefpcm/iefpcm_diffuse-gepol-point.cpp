@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
@@ -40,10 +40,10 @@
 using namespace pcm;
 using bi_operators::Collocation;
 using cavity::GePolCavity;
-using green::Vacuum;
-using green::SphericalDiffuse;
-using solver::IEFSolver;
 using dielectric_profile::OneLayerTanh;
+using green::SphericalDiffuse;
+using green::Vacuum;
+using solver::IEFSolver;
 
 SCENARIO("Test solver for the IEFPCM for a point charge in a spherical diffuse "
          "environment and a GePol cavity",

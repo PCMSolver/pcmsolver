@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
@@ -38,8 +38,8 @@
 #include "utils/cnpy.hpp"
 
 using namespace pcm;
-using bi_operators::integrateS;
 using bi_operators::integrateD;
+using bi_operators::integrateS;
 using cavity::GePolCavity;
 
 double constant(const Eigen::Vector3d & /* s */, const Eigen::Vector3d & /* p */);

@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
@@ -21,15 +21,18 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#pragma once
 
+// clang-format off
 #define PROJECT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 #define PROJECT_VERSION_MINOR @PROJECT_VERSION_MINOR@
 #define PROJECT_VERSION_PATCH @PROJECT_VERSION_PATCH@
 
-#define PROJECT_VERSION @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@
-#define PCMSOLVER_VERSION ((PROJECT_VERSION_MAJOR << 16) | PROJECT_VERSION_MINOR | PROJECT_VERSION_PATCH)
+#define PROJECT_VERSION                                                             \
+  @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@
+#define PCMSOLVER_VERSION                                                           \
+  ((PROJECT_VERSION_MAJOR << 16) | PROJECT_VERSION_MINOR | PROJECT_VERSION_PATCH)
+// clang-format on
 
 #cmakedefine HAVE_OPENMP
 
@@ -62,5 +65,3 @@ typedef PCMSOLVER_DEFAULT_INDEX_TYPE PCMSolverIndex;
 #include "LoggerInterface.hpp"
 #include "PhysicalConstants.hpp"
 #include "TimerInterface.hpp"
-
-#endif // CONFIG_HPP

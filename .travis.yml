@@ -37,7 +37,7 @@ matrix:
         - C_COMPILER='gcc-4.6'
         - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='release'
-        - PYTHON='python2'
+        - PYTHON='--two'
         - RUN_DANGER=false
     - os: linux
       addons:
@@ -56,7 +56,7 @@ matrix:
         - C_COMPILER='gcc-6'
         - Fortran_COMPILER='gfortran-6'
         - BUILD_TYPE='release'
-        - PYTHON='python2'
+        - PYTHON='--two'
         - STATIC='--static'
         - RUN_DANGER=false
     - os: linux
@@ -74,7 +74,7 @@ matrix:
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran-4.6'
         - BUILD_TYPE='release'
-        - PYTHON='python3'
+        - PYTHON='--three'
         - RUN_DANGER=true
     - os: linux
       addons:
@@ -92,7 +92,7 @@ matrix:
         - C_COMPILER='gcc-4.8'
         - Fortran_COMPILER='gfortran-4.8'
         - BUILD_TYPE='debug'
-        - PYTHON='python2'
+        - PYTHON='--two'
         - COVERAGE='--coverage'
         - RUN_DANGER=false
 before_install:
@@ -101,22 +101,29 @@ before_install:
   - test -n $FC && unset FC
 install:
   - pip install --user pipenv --upgrade
-  - pipenv install
+  - pipenv $PYTHON install
 before_script:
   - source $(pipenv --venv)/bin/activate
   - ./.ci/report_versions.sh
-  - cd ${TRAVIS_BUILD_DIR}
+  - cd $TRAVIS_BUILD_DIR
   - echo 'Build set up summary'
   - |
-    if [[ "${RUN_DANGER}" = true ]]; then
+    if [[ "$RUN_DANGER" = true ]]; then
       bundle install --gemfile=.ci/Gemfile
     fi
 script:
   - |
-    if [[ "${RUN_DANGER}" = true ]]; then
+    if [[ "$RUN_DANGER" = true ]]; then
       BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile
     fi
-  - python setup.py --cxx=${CXX_COMPILER} --cc=${C_COMPILER} --fc=${Fortran_COMPILER} --type=${BUILD_TYPE} ${STATIC} ${COVERAGE}
+  - |
+    python setup.py --cxx=$CXX_COMPILER \
+                    --cc=$C_COMPILER \
+                    --fc=$Fortran_COMPILER \
+                    --type=$BUILD_TYPE \
+                    $STATIC \
+                    $COVERAGE \
+                    --prefix=$HOME/Software/pcmsolver
   - cd build
   - ../.ci/ci_build.sh
   - travis_wait python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2

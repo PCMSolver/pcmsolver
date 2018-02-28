@@ -11,9 +11,14 @@ macro(add_Catch_test _name _labels)
   endforeach()
   unset(_labels)
 
-  add_test(NAME ${_name}
-           COMMAND unit_tests [${_name}] --success --out ${PROJECT_BINARY_DIR}/tests/${_name}.log --durations yes
-           WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  add_test(
+    NAME
+      ${_name}
+    COMMAND
+      ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/unit_tests [${_name}] --success --out ${PROJECT_BINARY_DIR}/tests/${_name}.log --durations yes
+    WORKING_DIRECTORY
+      ${CMAKE_CURRENT_BINARY_DIR}
+    )
 
   if(labels)
     set_tests_properties(${_name} PROPERTIES LABELS "${labels}")

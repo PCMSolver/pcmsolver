@@ -1,6 +1,6 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -27,8 +27,6 @@
 #include <iosfwd>
 
 #include "Config.hpp"
-
-#include <boost/math/special_functions/erf.hpp>
 
 /*! \file OneLayerLog.hpp
  *  \class OneLayerLog
@@ -61,7 +59,7 @@ private:
    */
   double value(double point) const {
     double epsLog = std::log(epsilon2_ / epsilon1_);
-    double val = (1.0 + boost::math::erf((point - center_) / width_)) / 2.0;
+    double val = (1.0 + pcm::erf((point - center_) / width_)) / 2.0;
     double retval = epsilon1_ * std::exp(epsLog * val); // epsilon(r)
     return retval;
   }

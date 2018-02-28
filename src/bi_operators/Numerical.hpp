@@ -89,8 +89,8 @@ typedef pcm::function<double(const Eigen::Vector3d &,
  *  \date 2014
  *  \param[in] F single layer type operator
  *  \param[in] e a finite element on the cavity
- *  \tparam PhiPoints Gaussian rule to be used in the angular phi integration
- *  \tparam ThetaPoints Gaussian rule to be used in the angular theta integration
+ *  \param PhiPoints Gaussian rule to be used in the angular phi integration
+ *  \param ThetaPoints Gaussian rule to be used in the angular theta integration
  *
  *  This is needed for the numerical evaluation of the diagonal elements when using
  *  centroid collocation.
@@ -103,8 +103,8 @@ double integrateS(const KernelS & F, const cavity::Element & e);
  *  \date 2014
  *  \param[in] F double layer type operator
  *  \param[in] e a finite element on the cavity
- *  \tparam PhiPoints Gaussian rule to be used in the angular phi integration
- *  \tparam ThetaPoints Gaussian rule to be used in the angular theta integration
+ *  \param PhiPoints Gaussian rule to be used in the angular phi integration
+ *  \param ThetaPoints Gaussian rule to be used in the angular theta integration
  *
  *  This is needed for the numerical evaluation of the diagonal elements when using
  *  centroid collocation.

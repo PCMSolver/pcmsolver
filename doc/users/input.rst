@@ -4,7 +4,7 @@ Input description
 PCMSolver needs a number of input parameters at runtime. The API provides two
 ways of providing them:
 
-1. by means of an additional input file, parsed by the ``pcmsolver.py`` script;
+1. by means of an additional input file, parsed by the ``go_pcm.py`` script;
 2. by means of a special section in the host program input.
 
 Method 1 is more flexible: all parameters that can be modified by the user
@@ -20,11 +20,11 @@ distribution.
 The classical charge distribution can be specified by giving a molecular geometry
 in the molecule section and an additional point multipoles distribution
 in the charge distribution section.
-The ``run_pcm.x`` executable has to be compiled for a standalone run with:
+The ``run_pcm`` executable has to be compiled for a standalone run with:
 
 .. code-block:: bash
 
-   python pcmsolver.py -x molecule.inp
+   python go_pcm.py -x molecule.inp
 
 where the ``molecule.inp`` input file looks like:
 
@@ -68,7 +68,7 @@ Available sections:
 .. note::
 
    The Molecule and ChargeDistribution sections only make sense in a standalone run,
-   i.e. when using the ``run_pcm.x`` executable.
+   i.e. when using the ``run_pcm`` executable.
 
 .. warning::
 
@@ -439,11 +439,11 @@ Molecule section keywords
 
 It is possible to run the module standalone and use a classical charge
 distribution as specified in this section of the input.
-The ``run_pcm.x`` executable has to be compiled for a standalone run with:
+The ``run_pcm`` executable has to be compiled for a standalone run with:
 
 .. code-block:: bash
 
-   python pcmsolver.py -x molecule.inp
+   python go_pcm.py -x molecule.inp
 
 where the ``molecule.inp`` input file looks like:
 

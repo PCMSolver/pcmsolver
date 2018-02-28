@@ -37,6 +37,13 @@ set_target_properties(utils
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN 1
   )
+target_compile_definitions(utils
+  PUBLIC
+    PCMSolver_EXPORTS
+  )
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(utils custom_boost)
+endif()
 add_dependencies(utils generate-config-hpp)
 target_compile_options(utils
   PRIVATE

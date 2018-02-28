@@ -21,23 +21,17 @@
 #  PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
 #
 
-# -*- python -*-
-# -*- coding: utf-8 -*-
-# vim:filetype=python:
-#
 # Written by Jonas Juselius <jonas.juselius@chem.uit.no>
 # University of Tromso, 2008
-#
 # Adapted to PCMSolver by Luca Frediani <luca.frediani@uit.no>
 # University of Tromso, 2011
 # Various modifications by Roberto Di Remigio <roberto.d.remigio@uit.no>
 # University of Pisa, 2011-2012
-# University of Tromso 2013-2014
+# University of Tromso 2013-2017
+# Virginia Tech 2017-
 """
-Parses the PCMSolver input file and generates a machine-readable input file.
-Based on the Getkw library by J. Juselius.
-The human-readable input file is first read and converted to uppercase.
-Parsing occurs after case conversion, so that input reading is case-insensitive.
+Module collecting functions to parse the input to PCMSolver.
+This is based on the Getkw library by J. Juselius.
 
 Conventions:
 routine names my_perfect_routine
@@ -49,61 +43,66 @@ import tempfile
 import os
 from copy import deepcopy
 import re
-import subprocess
 
-# this contraption is here because this script can be called directly
-# but also imported and then relative imports fail
-# it would be good to separate the __main__ part out which should then import
-# everything it needs to separate the script part from the library part
-try:
-    from getkw import Section, GetkwParser
-    from codata import CODATAdict
-except ModuleNotFoundError:
-    from .getkw import Section, GetkwParser
-    from .codata import CODATAdict
-
-sys.path.append(os.path.dirname(__file__))
-try:
-    import docopt
-except ImportError:
-    sys.path.append('cmake/lib/docopt')
-    import docopt
-
-options = """
-Usage:
-    ./pcmsolver.py [options] [<input_file>]
-    ./pcmsolver.py (-h | --help)
-
-Options:
-  -x --exe                               Execute standalone program.
-  <input_file>                           PCMSolver input file.
-  -h --help                              Show this screen.
-"""
+from .getkw import Section, GetkwParser
+from .pcmdata import CODATAdict, allowedSolvents
 
 isAngstrom = False
 CODATAyear = 2010
 
-allowedSolvents = {'Water': ('WATER', 'H2O'),
-                   'Propylene Carbonate': ('PROPYLENE CARBONATE', 'C4H6O3'),
-                   'Dimethylsulfoxide': ('DIMETHYLSULFOXIDE', 'DMSO'),
-                   'Nitromethane': ('NITROMETHANE', 'CH3NO2'),
-                   'Acetonitrile': ('ACETONITRILE', 'CH3CN'),
-                   'Methanol': ('METHANOL', 'CH3OH'),
-                   'Ethanol': ('ETHANOL', 'CH3CH2OH'),
-                   'Acetone': ('ACETONE', 'C2H6CO'),
-                   '1,2-Dichloroethane': ('1,2-DICHLOROETHANE', 'C2H4CL2'),
-                   'Methylenechloride': ('METHYLENECHLORIDE', 'CH2CL2'),
-                   'Tetrahydrofurane': ('TETRAHYDROFURANE', 'THF'),
-                   'Aniline': ('ANILINE', 'C6H5NH2'),
-                   'Chlorobenzene': ('CHLOROBENZENE', 'C6H5CL'),
-                   'Chloroform': ('CHLOROFORM', 'CHCL3'),
-                   'Toluene': ('TOLUENE', 'C6H5CH3'),
-                   '1,4-Dioxane': ('1,4-DIOXANE', 'C4H8O2'),
-                   'Benzene': ('BENZENE', 'C6H6'),
-                   'Carbon Tetrachloride': ('CARBON TETRACHLORIDE', 'CCL4'),
-                   'Cyclohexane': ('CYCLOHEXANE', 'C6H12'),
-                   'N-heptane': ('N-HEPTANE', 'C7H16'),
-                   'Explicit': ('EXPLICIT', 'DUMMY')}
+
+def parse_pcm_input(inputFile, write_out=False):
+    """
+    Parses human-readable input to PCMSolver.
+
+    The human-readable input file is first read and converted to uppercase.
+    Parsing occurs after case conversion, so that input reading is case-insensitive.
+    Optionally, save the result of parsing to file.
+
+    Constructs a Psi4 JK object from an input basis.
+
+    Parameters
+    ----------
+    inputFile: str
+        Full path to human-readable PCMSolver input.
+    write_out: bool, optional
+        Whether to save the result of parsing to file.
+        If True, the name for the new file will be the name of the input file,
+        prefixed by '@'.
+
+    Returns
+    -------
+    parsed: str
+        The parsed, machine-readable input.
+
+    Example
+    -------
+
+    parsed = pcmsolver.parse_pcm_input(inp, write_out=True)
+
+    ...
+    """
+    # Set up valid keywords.
+    valid_keywords = setup_keywords()
+
+    # Convert to uppercase and get the path to the temporary file
+    uppercased = convert_to_upper_case(inputFile)
+
+    # Set up a GetKw object and let it parse our input:
+    # here is where the magic happens.
+    inkw = GetkwParser().parseFile(uppercased)
+    # Remove temporary file
+    os.remove(uppercased)
+    inkw.sanitize(valid_keywords)
+    inkw.run_callbacks(valid_keywords)
+
+    if write_out:
+        # The parsed, machine-readable file is now saved.
+        parsedFile = os.path.join(os.path.dirname(inputFile), '@' + os.path.basename(inputFile))
+        with open(parsedFile, 'w') as tmp:
+            tmp.write(str(inkw.top))
+
+    return str(inkw.top)
 
 
 def iequal(a, b):
@@ -150,78 +149,6 @@ def convert_to_upper_case(filename):
         outputFile.write(final)
     os.close(temp)
     return path
-
-
-def main():
-    try:
-        arguments = docopt.docopt(options, argv=None)
-    except docopt.DocoptExit:
-        sys.stderr.write('ERROR: bad input to %s\n' % sys.argv[0])
-        sys.stderr.write(options)
-        sys.exit(-1)
-    inpfil = arguments['<input_file>']
-    # Do the parsing and return validated input
-    parsed = parse_pcm_input(inpfil)
-    # The parsed, machine-readable file is now saved.
-    parsedFile = os.path.join(os.path.dirname(inpfil), '@' + os.path.basename(inpfil))
-    # Any leftover parsedFile will be overwritten
-    with open(parsedFile, 'w') as tmp:
-        tmp.write(parsed)
-    # Execute standalone
-    if arguments['--exe']:
-        execute(parsedFile)
-
-
-def parse_pcm_input(inputFile, write_out=False):
-    """
-    Parses human-readable input to PCMSolver and return string with
-    machine-readable input.
-    Optionally, save the result of parsing to file.
-    This function can be accessed from other Python scripts when
-    importing the current file as a module.
-    """
-    # Set up valid keywords.
-    valid_keywords = setup_keywords()
-
-    # Convert to uppercase and get the path to the temporary file
-    uppercased = convert_to_upper_case(inputFile)
-
-    # Set up a GetKw object and let it parse our input:
-    # here is where the magic happens.
-    inkw = GetkwParser().parseFile(uppercased)
-    # Remove temporary file
-    os.remove(uppercased)
-    inkw.sanitize(valid_keywords)
-    inkw.run_callbacks(valid_keywords)
-
-    if write_out:
-       # The parsed, machine-readable file is now saved.
-       parsedFile = os.path.join(os.path.dirname(inputFile), '@' + os.path.basename(inputFile))
-       with open(parsedFile, 'w') as tmp:
-           tmp.write(str(inkw.top))
-
-    return str(inkw.top)
-
-
-def execute(parsedFile):
-    executable = os.path.join(os.path.dirname(__file__), '..', "run_pcm" + "@CMAKE_EXECUTABLE_SUFFIX@")
-    if (executable):
-        p = subprocess.Popen(
-            [executable, parsedFile],
-            shell=False,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        stdout_coded, stderr_coded = p.communicate()
-        stdout = stdout_coded.decode('UTF-8')
-        stderr = stderr_coded.decode('UTF-8')
-
-        print(stdout)
-        # Print the contents of stderr, without exiting
-        sys.stderr.write(stderr)
-    else:
-        print('No executable available for standalone run')
-        sys.exit(1)
 
 
 def setup_keywords():
@@ -458,8 +385,7 @@ def verify_top(section):
     if (val not in allowed_units):
         print(('Units requested {} are not among the allowed units: {}'.format(val, allowed_units)))
         sys.exit(1)
-    if (val == 'ANGSTROM'):
-        isAngstrom = True
+    isAngstrom = True if (val == 'ANGSTROM') else False
     allowed_codata = (2010, 2006, 2002, 1998)
     CODATAyear = section.get('CODATA').get()
     if (CODATAyear not in allowed_codata):
@@ -509,8 +435,8 @@ def verify_cavity(section):
     allowed_modes = ('EXPLICIT', 'ATOMS', 'IMPLICIT')
     mode = section.get('MODE')
     if (mode.get() not in allowed_modes):
-        print(
-            ('Cavity creation mode requested {} is not among the allowed modes: {}'.format(mode.get(), allowed_modes)))
+        print(('Cavity creation mode requested {} is not among the allowed modes: {}'.format(
+            mode.get(), allowed_modes)))
         sys.exit(1)
 
     atoms = section.get('ATOMS')
@@ -589,8 +515,7 @@ def verify_medium(section):
 
 
 def verify_green(section):
-    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'METALSPHERE',
-               'GREENSFUNCTIONSUM')
+    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'METALSPHERE', 'GREENSFUNCTIONSUM')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
     allowed_profiles = ('TANH', 'ERF', 'LOG')
 
@@ -702,7 +627,3 @@ def convert_length_scalar(keyword):
 def convert_area_scalar(keyword):
     if (isAngstrom):
         keyword[0] /= (CODATAdict[CODATAyear].ToAngstrom * CODATAdict[CODATAyear].ToAngstrom)
-
-
-if __name__ == '__main__':
-    main()

@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
@@ -43,10 +43,10 @@
 using namespace pcm;
 using bi_operators::Numerical;
 using cavity::GePolCavity;
-using green::Vacuum;
-using green::UniformDielectric;
-using green::IonicLiquid;
 using green::AnisotropicLiquid;
+using green::IonicLiquid;
+using green::UniformDielectric;
+using green::Vacuum;
 
 SCENARIO(
     "A collocation integrator with numerical integrator of the diagonal elements",

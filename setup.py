@@ -26,7 +26,7 @@ Options:
   --extra-cxx-flags=<EXTRA_CXXFLAGS>     Extra C++ compiler flags [default: ''].
   --ccache=<USE_CCACHE>                  Toggle use of ccache <ON/OFF> [default: ON].
   --add-definitions=<STRING>             Add preprocesor definitions [default: ''].
-  --coverage                             Enable code coverage [default: False].
+  --coverage                             Enable code coverage [default: OFF].
   --int64                                Enable 64bit integers [default: False].
   --omp                                  Enable OpenMP parallelization [default: False].
   --python=<PYTHON_INTERPRETER>          The Python interpreter (development version) to use. [default: ''].

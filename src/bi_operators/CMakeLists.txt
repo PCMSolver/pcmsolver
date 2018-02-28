@@ -23,6 +23,13 @@ set_target_properties(bi_operators
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN 1
   )
+target_compile_definitions(bi_operators
+  PUBLIC
+    PCMSolver_EXPORTS
+  )
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(bi_operators custom_boost)
+endif()
 add_dependencies(bi_operators generate-config-hpp)
 target_compile_options(bi_operators
   PRIVATE

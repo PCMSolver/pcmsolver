@@ -1,4 +1,7 @@
-add_library(utils-tests OBJECT utils_newton-potential.cpp utils_dipolar-potential.cpp)
+add_library(utils-tests OBJECT
+  utils_dipolar-potential.cpp
+  utils_newton-potential.cpp
+  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(utils-tests custom_boost)
 endif()

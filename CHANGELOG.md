@@ -7,6 +7,8 @@
 - Double logarithmic scale for the integration of spherical diffuse
   interfaces: much more stable than the previous version, allowing for
   Runge-Kutta 4 integrator.
+- A new CMake module `options_wrappers.cmake` that adds new wrapper macros for
+  the CMake `option` command.
 
 ### Fixed
 
@@ -14,14 +16,6 @@
   interface case, it is wrong to remove the monopole, which becomes
   identically zero when the corresponding differential equation is
   solved in extreme cases (e.g. charge far away from the sphere).
-
-### Added
-
-- A new CMake module `options_wrappers.cmake` that adds new wrapper macros for
-  the CMake `option` command.
-
-### Fixed
-
 - Visibility of symbols in the shared library is _finally_ handled properly.
   The necessary flags to the C++ compiler were not set for the subtargets built
   as CMake `OBJECT` libraries. This results in a modest decrease in library
@@ -33,12 +27,58 @@
   `<install_prefix>/lib64` (or `<install_prefix>/lib`) as path to `libpcm.so.1`.
 - Code coverage analysis was restored. We now use
   [Codecov](https://codecov.io). Thanks @arnfinn :tada:
+- **BREAKING CHANGE** The layout of the installation for the Python scripts has
+  been changed. This addresses issue #116. Given the user-defined installation
+  prefix (`<prefix>`) one would obtain:
+  ```
+  <prefix>/pcmsolver
+           ├── bin
+           │   ├── go_pcm.py
+           │   ├── plot_cavity.py
+           │   └── run_pcm
+           ├── include
+           │   └── PCMSolver
+           │       ├── bi_operators
+           │       ├── cavity
+           │       ├── Citation.hpp
+           │       ├── Config.hpp
+           │       ├── Cxx11Workarounds.hpp
+           │       ├── ErrorHandling.hpp
+           │       ├── external
+           │       ├── GitInfo.hpp
+           │       ├── green
+           │       ├── interface
+           │       ├── LoggerInterface.hpp
+           │       ├── PCMInput.h
+           │       ├── PCMSolverExport.h
+           │       ├── pcmsolver.h
+           │       ├── PhysicalConstants.hpp
+           │       ├── solver
+           │       ├── STLUtils.hpp
+           │       ├── TimerInterface.hpp
+           │       └── utils
+           ├── lib64
+           │   ├── libpcm.a
+           │   ├── libpcm.so -> libpcm.so.1
+           │   ├── libpcm.so.1
+           │   └── python
+           │       └── pcmsolver
+           └── share
+               └── cmake
+                   └── PCMSolver
+  ```
 
 ### Changed
 
 - As a result of the visibility change, unit tests can only be linked against
   the static library, since all symbols are always visible in a static archive
   library.
+- **BREAKING CHANGE** The `pcmsolver.py` script/module **was removed** to
+  address issues #111 and #112. The `main` portion of the script has now been
+  separated into a `go_pcm.py` script which can be used in the same way as
+  `pcmsolver.py` was used before: to parse the PCMSolver input and to run the
+  module standalone. This separation greatly simplifies the use as a module
+  within the Python launcher scripts of host programs.
 
 ## [Version 1.1.12] - 2018-01-20
 

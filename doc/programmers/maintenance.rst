@@ -25,7 +25,7 @@ The automatic rules are laid out in the ``Dangerfile`` and are used to enforce a
 adequate level of testing, documentation and code quality.
 
 Danger.Systems Warnings
-=======================
+~~~~~~~~~~~~~~~~~~~~~~~
 
 - PRs classed as Work in Progress.
 - Codebase was modified, but no tests were added.
@@ -34,7 +34,7 @@ Danger.Systems Warnings
 - Source files were added or removed, but ``.gitattributes`` was not updated.
 
 Danger.Systems Errors
-=====================
+~~~~~~~~~~~~~~~~~~~~~
 
 - Commit message linting, based on some of `these recommendations <https://chris.beams.io/posts/git-commit/>`_:
   - Commit subject is more than one word.
@@ -49,7 +49,7 @@ Danger.Systems Errors
 - Code style for ``.py`` files follows the conventions in ``.style.yapf``.
 
 Updating the Danger Bot
-=======================
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The bot reports results from running the `Danger.System ruby gem
 <http://danger.systems/ruby/>`_. From time to time, it is necessary to update
@@ -57,10 +57,18 @@ the ``Gemfile`` and ``Gemfile.lock``:
 
 .. code-block:: bash
 
+   cd .ci
+   bundle update
+   bundle install
+
+The last command can also be ru outside of the ``.ci`` folder:
+
+.. code-block:: bash
+
    bundle install --gemfile=.ci/Gemfile
 
 Minting a new release
----------------------
+=====================
 
 1. Version numbering follows the guidelines of `semantic versioning <http://semver.org/>`_
    To update, change the relevant field in the ``README.md`` file.
@@ -83,7 +91,7 @@ Minting a new release
    GitHub to update the Zenodo badge in ``README.md``.
 
 Changelog
----------
+=========
 
 We follow the guidelines of `Keep a CHANGELOG <http://keepachangelog.com/>`_
 On all **but** the release branches, there is an ``Unreleased`` section
@@ -98,7 +106,7 @@ To simplify perusal of the ``CHANGELOG.md``, use the following subsections:
 6. ``Security`` to invite users to upgrade in case of vulnerabilities.
 
 Updating Eigen Distribution
----------------------------
+===========================
 
 The C++ linear algebra library Eigen comes bundled with the module. To update
 the distributed version one has to:
@@ -117,7 +125,7 @@ the distributed version one has to:
 Remember to commit and push your modifications.
 
 Git Pre-Commit Hooks
---------------------
+====================
 
 [Git pre-commit hooks](https://git-scm.com/book/gr/v2/Customizing-Git-Git-Hooks) are used to
 keep track of code style and license header in source files.

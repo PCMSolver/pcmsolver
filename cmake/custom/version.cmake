@@ -3,12 +3,13 @@ string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[a-z,A-Z,0-9]+)?" PCMSolver_
 string(REPLACE "." ";" _version_list ${PCMSolver_VERSION})
 list(GET _version_list 0 PROJECT_VERSION_MAJOR)
 list(GET _version_list 1 PROJECT_VERSION_MINOR)
-list(GET _version_list 2 PROJECT_VERSION_PATCH)
-# Separate on the dash
-string(FIND ${PROJECT_VERSION_PATCH} "-" _has_describe)
-if(NOT _has_describe EQUAL -1)
-  string(REPLACE "-" ";" _repatch ${PROJECT_VERSION_PATCH})
-  list(GET _repatch 1 PROJECT_VERSION_DESCRIBE)
+list(GET _version_list 2 _patch_describe)
+# Get PROJECT_VERSION_PATCH
+string(FIND ${_patch_describe} "-" _has_describe)
+if(_has_describe GREATER -1)
+  string(REGEX REPLACE "-[a-z,A-Z,0-9]+" "" PROJECT_VERSION_PATCH ${_patch_describe})
+else()
+  set(PROJECT_VERSION_PATCH ${_patch_describe})
 endif()
 
 message(STATUS "${BoldGreen}PCMSolver v${PCMSolver_VERSION}${ColourReset}")

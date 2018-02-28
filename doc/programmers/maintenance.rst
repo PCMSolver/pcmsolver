@@ -9,9 +9,10 @@ Branching Model and Release Process
 -----------------------------------
 
 .. warning::
-   **Incomplete or outdated information!**
+   **Soon to be updated**
 
-Releases in a ``X.Y.Z`` series are annotated tags on the corresponding branch.
+- `Semantic Versioning <https://semver.org/>`_
+- `The branching model <https://dev-cafe.github.io/branching-model/>`_
 
 Pull Request Requirements
 -------------------------

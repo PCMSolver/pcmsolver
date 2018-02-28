@@ -47,7 +47,6 @@ modules:
       - 'custom/eigen.cmake'
       - 'custom/libtaylor.cmake'
       - 'custom/zlib.cmake'
-      - 'custom/export.cmake'
   - src:
     - source: '%(url_root)modules/src.cmake'
   - custom:

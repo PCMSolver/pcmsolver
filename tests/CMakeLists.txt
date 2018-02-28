@@ -1,9 +1,5 @@
 cmake_policy(SET CMP0063 NEW)
 
-# FIXME/TODO
-# The unit tests can be built without use of OBJECT libraries
-# and using target_sources instead.
-# To be done when finally switching to CMake 3.3
 include_directories(
   SYSTEM PUBLIC
     ${PROJECT_SOURCE_DIR}/external/Catch

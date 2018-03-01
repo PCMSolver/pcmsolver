@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 #
 #  PCMSolver, an API for the Polarizable Continuum Model

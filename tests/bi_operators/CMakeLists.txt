@@ -1,6 +1,5 @@
 add_library(bi_operators-tests OBJECT
   bi_operators_collocation.cpp
-  bi_operators_numerical.cpp
   bi_operators_purisima.cpp
   )
 if(BUILD_CUSTOM_BOOST)
@@ -17,16 +16,6 @@ add_Catch_test(
   REFERENCE_FILES
     uniformdielectric_D_purisima.npy
     vacuum_D_purisima.npy
-  )
-
-# bi_operators_numerical.cpp test
-add_Catch_test(
-  NAME
-    bi_operators_numerical
-  LABELS
-    bi_operators
-    bi_operators_numerical
-  REFERENCE_FILES
   )
 
 # bi_operators_collocation.cpp test

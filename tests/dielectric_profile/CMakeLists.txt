@@ -6,5 +6,11 @@ if(BUILD_CUSTOM_BOOST)
 endif()
 
 # one_layer.cpp test
-add_Catch_test(one_layer "dielectric_profile;one_layer")
+add_Catch_test(
+  NAME
+    one_layer
+  LABELS
+    dielectric_profile
+    one_layer
+ )
 

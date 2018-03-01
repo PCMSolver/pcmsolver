@@ -10,17 +10,48 @@ if(BUILD_CUSTOM_BOOST)
 endif()
 
 # green_spherical_diffuse.cpp test
-add_Catch_test(green_spherical_diffuse "green;green_spherical_diffuse")
-set_tests_properties(green_spherical_diffuse PROPERTIES COST 100.0)
+add_Catch_test(
+  NAME
+    green_spherical_diffuse
+  LABELS
+    green
+    green_spherical_diffuse
+  COST
+    100.0
+  )
 
 # green_vacuum.cpp test
-add_Catch_test(green_vacuum "green;green_vacuum")
+add_Catch_test(
+  NAME
+    green_vacuum
+  LABELS
+    green
+    green_vacuum
+  )
 
 # green_ionic_liquid.cpp test
-add_Catch_test(green_ionic_liquid "green;green_ionic_liquid")
+add_Catch_test(
+  NAME
+    green_ionic_liquid
+  LABELS
+    green
+    green_ionic_liquid
+  )
 
 # green_uniform_dielectric.cpp test
-add_Catch_test(green_uniform_dielectric "green;green_uniform_dielectric")
+add_Catch_test(
+  NAME
+    green_uniform_dielectric
+  LABELS
+    green
+    green_uniform_dielectric
+  )
 
 # green_anisotropic_liquid.cpp test
-add_Catch_test(green_anisotropic_liquid "green;green_anisotropic_liquid")
+add_Catch_test(
+  NAME
+    green_anisotropic_liquid
+  LABELS
+    green
+    green_anisotropic_liquid
+  )

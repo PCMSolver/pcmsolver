@@ -1,20 +1,20 @@
 [![DOI](https://zenodo.org/badge/23794148.svg)](https://zenodo.org/badge/latestdoi/23794148)
-[![Travis CI build status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=release%2F1.Y)](https://travis-ci.org/PCMSolver/pcmsolver)
+[![Travis CI build status](https://travis-ci.org/PCMSolver/pcmsolver.svg?branch=release%2F1.2.Z)](https://travis-ci.org/PCMSolver/pcmsolver)
 [![Documentation Status](https://readthedocs.org/projects/pcmsolver/badge/?version=stable)](http://pcmsolver.readthedocs.org/en/latest/?badge=latest)
-[![Coverage Status](https://codecov.io/gh/PCMSolver/pcmsolver/branch/release%2F1.Y/graph/badge.svg)](https://codecov.io/gh/PCMSolver/pcmsolver)
+[![Coverage Status](https://codecov.io/gh/PCMSolver/pcmsolver/branch/release%2F1.2.Z/graph/badge.svg)](https://codecov.io/gh/PCMSolver/pcmsolver)
 [![Coverity Scan Build](https://scan.coverity.com/projects/3046/badge.svg)](https://scan.coverity.com/projects/3046)
 
 PCMSolver
 =========
 
 An API for the Polarizable Continuum Model. Copyright [Roberto Di Remigio](mailto:roberto.d.remigio@uit.no),
-[Luca Frediani](mailto:luca.frediani@uit.no) and [contributors](https://github.com/PCMSolver/pcmsolver/blob/release/1.Y/AUTHORS.md)
+[Luca Frediani](mailto:luca.frediani@uit.no) and [contributors](https://github.com/PCMSolver/pcmsolver/blob/release/1.2.Z/AUTHORS.md)
 
 - [Project website](https://github.com/PCMSolver/pcmsolver)
 - [Changelog](CHANGELOG.md)
 - [Documentation](http://pcmsolver.readthedocs.io)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
-- Version 1.1.12 available
+- Version 1.2.0-rc1 available
 - Licensed under [LGPLv3](LICENSE)
 - CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.io/)
 

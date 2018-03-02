@@ -28,6 +28,23 @@ matrix:
           packages:
             - cmake3
             - cmake3-data
+            - clang
+            - clang-format-3.9
+            - gfortran-4.6
+            - libboost-math-dev
+      env:
+        - CXX_COMPILER='clang++'
+        - C_COMPILER='clang'
+        - Fortran_COMPILER='gfortran-4.6'
+        - BUILD_TYPE='release'
+        - PYTHON='--three'
+        - RUN_DANGER=true
+    - os: linux
+      addons:
+        apt:
+          packages:
+            - cmake3
+            - cmake3-data
             - g++-4.6
             - gcc-4.6
             - gfortran-4.6
@@ -59,23 +76,6 @@ matrix:
         - PYTHON='--two'
         - STATIC='--static'
         - RUN_DANGER=false
-    - os: linux
-      addons:
-        apt:
-          packages:
-            - cmake3
-            - cmake3-data
-            - clang
-            - clang-format-3.9
-            - gfortran-4.6
-            - libboost-math-dev
-      env:
-        - CXX_COMPILER='clang++'
-        - C_COMPILER='clang'
-        - Fortran_COMPILER='gfortran-4.6'
-        - BUILD_TYPE='release'
-        - PYTHON='--three'
-        - RUN_DANGER=true
     - os: linux
       addons:
         apt:
@@ -114,6 +114,9 @@ before_script:
 script:
   - |
     if [[ "$RUN_DANGER" = true ]]; then
+      type -P clang-format
+      type -P clang-format-3.9
+      type -P yapf
       ls -a $PWD
       BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile --verbose
     fi

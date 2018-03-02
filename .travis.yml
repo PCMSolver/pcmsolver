@@ -114,8 +114,8 @@ before_script:
 script:
   - |
     if [[ "$RUN_DANGER" = true ]]; then
-      echo $PWD
-      BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile
+      ls -a $PWD
+      BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile --verbose
     fi
   - |
     python setup.py --cxx=$CXX_COMPILER \

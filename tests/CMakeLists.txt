@@ -1,13 +1,14 @@
 cmake_policy(SET CMP0063 NEW)
 
 include_directories(
-  SYSTEM PUBLIC
+  SYSTEM
     ${PROJECT_SOURCE_DIR}/external/Catch
-  PRIVATE
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_BINARY_DIR}/include
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/tests
+  )
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_BINARY_DIR}/include
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/tests
   )
 
 add_subdirectory(input)

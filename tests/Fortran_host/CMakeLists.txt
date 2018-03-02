@@ -9,4 +9,7 @@ add_test(
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}
   )
-set_tests_properties(Fortran_host PROPERTIES LABELS "api;Fortran_host")
+set_tests_properties(Fortran_host
+  PROPERTIES
+    LABELS "api;Fortran_host"
+  )

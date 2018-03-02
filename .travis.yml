@@ -109,7 +109,10 @@ before_script:
   - echo 'Build set up summary'
   - |
     if [[ "$RUN_DANGER" = true ]]; then
-      bundle install --gemfile=.ci/Gemfile
+      cd .ci
+      bundle update
+      bundle install
+      cd $TRAVIS_BUILD_DIR
     fi
 script:
   - |

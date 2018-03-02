@@ -13,6 +13,37 @@ Branching Model and Release Process
 
 Releases in a ``X.Y.Z`` series are annotated tags on the corresponding branch.
 
+Minting a new release
+~~~~~~~~~~~~~~~~~~~~~
+
+1. Version numbering follows the guidelines of `semantic versioning <http://semver.org/>`_
+   To update, change the relevant field in the ``README.md`` file.
+2. Tidy up ``CHANGELOG.md``. This includes:
+
+   a. Making sure that the topmost header is the new version number, with the
+   correct release date.
+   b. Making sure that the links at the bottom of the document are correct.
+
+3. Run ``git shortlog -sn`` and check that the all authors are listed in
+   ``AUTHORS.md``. You also need to update the revision date of this file.
+   Make sure to check that the ``.mailmap`` file is also up-to-date.
+4. Update the version number in the citation snippet in
+   ``doc/snippets/citation.bib``.
+5. Commit your changes and push.
+6. If CI was happy, you can tag a new release. For example for ``v1.1.12``:
+
+   .. code-block:: bash
+
+    git tag -a v1.1.12 -m "Version 1.1.12 released"
+    git push upstream --tags
+
+7. Head over to GitHub and add a short release description in `web UI <https://github.com/PCMSolver/pcmsolver/releases>`_.
+
+`Zenodo <https://zenodo.org/>`_ will automatically generate a new, versioned
+DOI for the new release. It is no longer necessary to update the badge
+in the ``README.md`` since it will always resolve to the latest released by
+Zenodo.
+
 Pull Request Requirements
 -------------------------
 
@@ -66,29 +97,6 @@ The last command can also be ru outside of the ``.ci`` folder:
 .. code-block:: bash
 
    bundle install --gemfile=.ci/Gemfile
-
-Minting a new release
-=====================
-
-1. Version numbering follows the guidelines of `semantic versioning <http://semver.org/>`_
-   To update, change the relevant field in the ``README.md`` file.
-2. Tidy up ``CHANGELOG.md``. This includes:
-   a. Making sure that the topmost header is the new version number, with the
-   correct release date.
-   b. Making sure that the links at the bottom of the document are correct.
-3. Run ``git shortlog -sn`` and check that the all authors are listed in
-   ``AUTHORS.md``.
-4. Update the version number in the citation snippet in
-   ``doc/snippets/citation.bib``.
-5. Commit your changes and push.
-6. If CI was happy, you can tag a new release. For example for ``v1.1.12``:
-
-   .. code-block:: bash
-
-    git tag -a v1.1.12 -m "Version 1.1.12 released"
-7. Head over to GitHub and add a short release description in `web UI <https://github.com/PCMSolver/pcmsolver/releases>`_.
-8. As a final step, get the release DOI from `Zenodo <https://zenodo.org/>`_. File a pull request on
-   GitHub to update the Zenodo badge in ``README.md``.
 
 Changelog
 =========

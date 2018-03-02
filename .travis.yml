@@ -109,14 +109,12 @@ before_script:
   - echo 'Build set up summary'
   - |
     if [[ "$RUN_DANGER" = true ]]; then
-      cd .ci
-      bundle update
-      bundle install
-      cd $TRAVIS_BUILD_DIR
+      bundle install --gemfile=.ci/Gemfile
     fi
 script:
   - |
     if [[ "$RUN_DANGER" = true ]]; then
+      echo $PWD
       BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile
     fi
   - |

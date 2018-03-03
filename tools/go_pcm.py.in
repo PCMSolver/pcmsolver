@@ -35,12 +35,12 @@ import subprocess
 import sys
 
 try:
-    from pcmsolver import parse_pcm_input
+    import pcmsolver as pcm
 except ImportError as ops:
     sys.stderr.write("{}\n\n".format(ops))
     sys.stderr.write("""You should update your PYTHONPATH to use go_pcm.py
     export PYTHONPATH=<prefix>/@CMAKE_INSTALL_LIBDIR@/@PYMOD_INSTALL_LIBDIR@:$PYTHONPATH
-where <prefix> is either the build or the install prefix.""")
+where <prefix> is either the build or the install prefix.\n""")
     sys.exit(-1)
 
 options = """
@@ -64,7 +64,7 @@ def main():
         sys.exit(-1)
     input_file = arguments['--inp']
     # Do the parsing and return validated input
-    parsed = parse_pcm_input(input_file)
+    parsed = pcm.parse_pcm_input(input_file)
     # The parsed, machine-readable file is now saved.
     parsedFile = os.path.join(os.path.dirname(input_file), '@' + os.path.basename(input_file))
     # Any leftover parsedFile will be overwritten

@@ -1,3 +1,20 @@
+add_custom_target(update_version
+  ALL
+  COMMAND
+    ${PYTHON_EXECUTABLE} tools/versioner.py --metaout ${CMAKE_CURRENT_BINARY_DIR}/metadata.py
+                                            --cmakeout ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
+  COMMAND
+    ${CMAKE_COMMAND} -DWTO="${CMAKE_CURRENT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}"
+          -DPN="PCMSolver"
+          -P ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT
+    "Generating version info"
+  )
+#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/metadata.py
+#        DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/pylibefp)
+
 file(READ ${PROJECT_SOURCE_DIR}/README.md _readme)
 string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[a-z,A-Z,0-9]+)?" PCMSolver_VERSION ${_readme})
 string(REPLACE "." ";" _version_list ${PCMSolver_VERSION})

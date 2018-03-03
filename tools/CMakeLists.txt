@@ -23,6 +23,7 @@ endif()
 configure_file(init.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py COPYONLY)
 file(
   COPY
+    ${PROJECT_BINARY_DIR}/src/metadata.py
     pcmdata.py
     pcmparser.py
     pyparsing.py
@@ -33,6 +34,7 @@ install(
   FILES
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/metadata.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmdata.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmparser.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pyparsing.py

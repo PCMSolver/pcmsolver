@@ -49,7 +49,7 @@ if(NOT STATIC_LIBRARY_ONLY)
     )
   set_target_properties(pcm-shared
     PROPERTIES
-      SOVERSION ${PROJECT_VERSION_MAJOR}
+      SOVERSION 1
       CXX_VISIBILITY_PRESET hidden
       VISIBILITY_INLINES_HIDDEN 1
       MACOSX_RPATH ON
@@ -128,20 +128,33 @@ endif()
 # <<<  Export Config  >>>
 
 include(CMakePackageConfigHelpers)
-set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}")
+# Hardcode to share, rather than use CMAKE_INSTALL_DATAROOTDIR as the latter
+# might resolve to a place not recognized by CMake
+set(CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}")
 configure_package_config_file(
   ${PCMSolver_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION
     ${CMAKECONFIG_INSTALL_DIR}
   )
-write_basic_package_version_file(
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-  VERSION
-    ${PCMSolver_VERSION}
-  COMPATIBILITY
-    SameMajorVersion
+
+add_custom_target(update_version
+  ALL
+  COMMAND
+    ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/versioner.py
+        --metaout ${CMAKE_CURRENT_BINARY_DIR}/metadata.py
+        --cmakeout ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
+  COMMAND
+    ${CMAKE_COMMAND}
+         -DWTO="${CMAKE_CURRENT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}"
+         -DPN="PCMSolver"
+         -P ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT
+    "Generating version info"
   )
+
 install(
   FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake

@@ -32,7 +32,6 @@ modules:
       - '%(url_root)modules/omp.cmake'
       - '%(url_root)modules/safeguards.cmake'
       - '%(url_root)modules/python_interpreter.cmake'
-      - 'custom/version.cmake'
       - '%(url_root)modules/git_info/git_info.cmake'
       - 'custom/pcmsolver.cmake'
       - 'custom/api.cmake'

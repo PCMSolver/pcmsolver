@@ -22,7 +22,6 @@
 #
 
 from .pcmparser import parse_pcm_input
+from .metadata import version_formatter
 
-__all__ = [
-    'parse_pcm_input',
-]
+__all__ = ['parse_pcm_input', 'version_formatter']

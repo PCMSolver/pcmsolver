@@ -120,8 +120,8 @@ def plot(cavity_npz, surf_func_npy=None):
     # Generate list of vertices
     vertices = [
         list(
-            zip(cavity['vertices_' + str(i)][0, :], cavity['vertices_' + str(i)][1, :], cavity['vertices_' + str(i)][
-                2, :])) for i in range(nElements)
+            zip(cavity['vertices_' + str(i)][0, :], cavity['vertices_' + str(i)][1, :],
+                cavity['vertices_' + str(i)][2, :])) for i in range(nElements)
     ]
     elements = Poly3DCollection(vertices, facecolors=colors)
     ax.add_collection3d(elements)

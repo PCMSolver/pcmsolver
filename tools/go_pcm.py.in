@@ -29,7 +29,7 @@ Parses the PCMSolver input file and launches a standalone calculation with the
 run_pcm executable.
 """
 
-import docopt
+from pcmsolver.external import docopt
 import os
 import subprocess
 import sys

@@ -114,9 +114,6 @@ before_script:
 script:
   - |
     if [[ "$RUN_DANGER" = true ]]; then
-      type -P yapf
-      yapf --version
-      ls -a $PWD
       BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile --verbose
     fi
   - |

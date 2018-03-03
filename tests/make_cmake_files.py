@@ -61,7 +61,8 @@ add_Catch_test(
     {1}
   LABELS
     {2}
-  )\n""".format(src, os.path.splitext(src)[0], '\n'.join(lbl)))
+  )\n""".format(src,
+                os.path.splitext(src)[0], '\n'.join(lbl)))
 with open(fname, 'w') as f:
     f.write(message)
     f.write('\n'.join(add_test))

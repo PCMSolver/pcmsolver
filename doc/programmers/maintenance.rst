@@ -137,10 +137,11 @@ Git Pre-Commit Hooks
 
 [Git pre-commit hooks](https://git-scm.com/book/gr/v2/Customizing-Git-Git-Hooks) are used to
 keep track of code style and license header in source files.
-Code style is checked using ``clang-format``.
+Code style is checked using ``clang-format`` for C/C++ and ``yapf`` for Python.
 
 .. warning::
-   **You need to install ``clang-format`` (v3.9 recommended) to run the code style validation hook!**
+   **You need to install ``clang-format`` (v3.9 recommended) and ``yapf``
+   (v0.20 recommended) to run the code style validation hook!**
 
 License headers are checked using the ``license_maintainer.py`` script and the
 header templates for the different languages used in this project.

@@ -42,6 +42,7 @@
 #include "cavity/CavityData.hpp"
 #include "green/Green.hpp"
 #include "green/GreenData.hpp"
+#include "mmfq/FQOhno.hpp"
 #include "solver/Solver.hpp"
 #include "solver/SolverData.hpp"
 
@@ -92,7 +93,7 @@ pcmsolver_context_t * pcmsolver_new_v1112(pcmsolver_reader_t input_reading,
         new pcm::Meddle(
             nr_nuclei, charges, coordinates, symmetry_info, *host_input, writer));
   } else {
-    // Use parsed the PCMSolver input file parsed_fname, as found on disk
+    // Use the parsed PCMSolver input file parsed_fname, as found on disk
     return AS_TYPE(
         pcmsolver_context_t,
         new pcm::Meddle(
@@ -152,7 +153,11 @@ Meddle::Meddle(int nr_nuclei,
                int symmetry_info[],
                const HostWriter & write,
                const std::string & inputFileName)
-    : hostWriter_(write), input_(Input(inputFileName)), hasDynamic_(false), hasFQ_(false) {  TIMER_ON("Meddle::initInput");
+    : hostWriter_(write),
+      input_(Input(inputFileName)),
+      hasDynamic_(false),
+      hasFQ_(false) {
+  TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
   TIMER_OFF("Meddle::initInput");
 
@@ -165,7 +170,7 @@ Meddle::Meddle(int nr_nuclei,
                int symmetry_info[],
                const PCMInput & host_input,
                const HostWriter & write)
-    : hostWriter_(write), hasDynamic_(false), hasFQ_(false) {
+    : hostWriter_(write), input_(Input(host_input)), hasDynamic_(false), hasFQ_(false) {
   TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
   TIMER_OFF("Meddle::initInput");

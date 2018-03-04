@@ -1,4 +1,4 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
  * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
  *
@@ -21,8 +21,7 @@
  * PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
  */
 
-#ifndef FQOHNO_HPP
-#define FQOHNO_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -32,8 +31,10 @@
 
 #include "utils/MMFQ.hpp"
 
-/*! \file FQOhno.hpp
- *  \class FQOhno
+/*! \file FQOhno.hpp */
+namespace pcm {
+namespace mmfq {
+/*! \class FQOhno
  *  \brief Solver for MMFQ with Ohno interaction kernel
  *  \author Roberto Di Remigio
  *  \date 2017
@@ -42,14 +43,11 @@
  *  to solve for the charges.
  *  This avoids computing and storing the inverse explicitly.
  */
-
-namespace pcm {
-namespace mmfq {
 class FQOhno __final {
 public:
   FQOhno() {}
   /*! \brief Construct solver
-   *  \param[in] the fluctuating charges force field
+   *  \param[in] ff the fluctuating charges force field
    */
   FQOhno(const utils::MMFQ & ff);
 
@@ -77,5 +75,3 @@ private:
 };
 } // namespace mmfq
 } // namespace pcm
-
-#endif // FQOHNO_HPP

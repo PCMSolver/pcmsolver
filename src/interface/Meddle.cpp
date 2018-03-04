@@ -170,7 +170,10 @@ Meddle::Meddle(int nr_nuclei,
                int symmetry_info[],
                const PCMInput & host_input,
                const HostWriter & write)
-    : hostWriter_(write), input_(Input(host_input)), hasDynamic_(false), hasFQ_(false) {
+    : hostWriter_(write),
+      input_(Input(host_input)),
+      hasDynamic_(false),
+      hasFQ_(false) {
   TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
   TIMER_OFF("Meddle::initInput");

@@ -37,12 +37,14 @@
 #include "green/SphericalDiffuse.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
+#include "green/dielectric_profile/OneLayerErf.hpp"
 #include "green/dielectric_profile/OneLayerTanh.hpp"
 #include "utils/MathUtils.hpp"
 
 using namespace pcm;
 using bi_operators::Collocation;
 using cavity::GePolCavity;
+using dielectric_profile::OneLayerErf;
 using dielectric_profile::OneLayerTanh;
 using green::SphericalDiffuse;
 using green::UniformDielectric;
@@ -117,6 +119,39 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
     }
 
     /*! \class Collocation
+     *  \test \b CollocationTest_logsphericaldiffuse tests the evaluation
+     * by collocation of the spherical diffuse matrix representations of S and D
+     */
+    AND_WHEN("the spherical diffuse with a log profile Green's function is used") {
+      double epsilon1 = 2.0;
+      double epsilon2 = 80.0;
+      double width = 5.0;
+      double sphereRadius = 20.0;
+      SphericalDiffuse<> gf(
+          epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 5);
+      THEN("the matrix elements of S are") {
+        results = op.computeS(cavity, gf);
+        reference =
+            cnpy::custom::npy_load<double>("logsphericaldiffuse_S_collocation.npy");
+        for (int i = 0; i < cavity.size(); ++i) {
+          for (int j = 0; j < cavity.size(); ++j) {
+            REQUIRE(reference(i, j) == Approx(results(i, j)));
+          }
+        }
+      }
+      AND_THEN("the matrix elements of D are") {
+        results = op.computeD(cavity, gf);
+        reference =
+            cnpy::custom::npy_load<double>("logsphericaldiffuse_D_collocation.npy");
+        for (int i = 0; i < cavity.size(); ++i) {
+          for (int j = 0; j < cavity.size(); ++j) {
+            REQUIRE(reference(i, j) == Approx(results(i, j)));
+          }
+        }
+      }
+    }
+
+    /*! \class Collocation
      *  \test \b CollocationTest_tanhsphericaldiffuse tests the evaluation
      * by collocation of the spherical diffuse matrix representations of S and D
      */
@@ -141,6 +176,39 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
         results = op.computeD(cavity, gf);
         reference =
             cnpy::custom::npy_load<double>("tanhsphericaldiffuse_D_collocation.npy");
+        for (int i = 0; i < cavity.size(); ++i) {
+          for (int j = 0; j < cavity.size(); ++j) {
+            REQUIRE(reference(i, j) == Approx(results(i, j)));
+          }
+        }
+      }
+    }
+
+    /*! \class Collocation
+     *  \test \b CollocationTest_erfsphericaldiffuse tests the evaluation
+     * by collocation of the spherical diffuse matrix representations of S and D
+     */
+    AND_WHEN("the spherical diffuse with a erf profile Green's function is used") {
+      double epsilon1 = 2.0;
+      double epsilon2 = 80.0;
+      double width = 5.0;
+      double sphereRadius = 20.0;
+      SphericalDiffuse<OneLayerErf> gf(
+          epsilon1, epsilon2, width, sphereRadius, Eigen::Vector3d::Zero(), 5);
+      THEN("the matrix elements of S are") {
+        results = op.computeS(cavity, gf);
+        reference =
+            cnpy::custom::npy_load<double>("erfsphericaldiffuse_S_collocation.npy");
+        for (int i = 0; i < cavity.size(); ++i) {
+          for (int j = 0; j < cavity.size(); ++j) {
+            REQUIRE(reference(i, j) == Approx(results(i, j)));
+          }
+        }
+      }
+      AND_THEN("the matrix elements of D are") {
+        results = op.computeD(cavity, gf);
+        reference =
+            cnpy::custom::npy_load<double>("erfsphericaldiffuse_D_collocation.npy");
         for (int i = 0; i < cavity.size(); ++i) {
           for (int j = 0; j < cavity.size(); ++j) {
             REQUIRE(reference(i, j) == Approx(results(i, j)));

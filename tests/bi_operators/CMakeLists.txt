@@ -9,14 +9,18 @@ endif()
 
 # Copy reference files to ${PROJECT_BINARY_DIR}/tests/bi_operators (aka ${CMAKE_CURRENT_BINARY_DIR})
 list(APPEND reference_files
+  erfsphericaldiffuse_D_collocation.npy
+  erfsphericaldiffuse_S_collocation.npy
+  logsphericaldiffuse_D_collocation.npy
+  logsphericaldiffuse_S_collocation.npy
   tanhsphericaldiffuse_D_collocation.npy
-  uniformdielectric_D_purisima.npy
-  vacuum_D_purisima.npy
   tanhsphericaldiffuse_S_collocation.npy
-  uniformdielectric_S_collocation.npy
-  vacuum_S_collocation.npy
   uniformdielectric_D_collocation.npy
+  uniformdielectric_D_purisima.npy
+  uniformdielectric_S_collocation.npy
   vacuum_D_collocation.npy
+  vacuum_D_purisima.npy
+  vacuum_S_collocation.npy
   )
 file(COPY ${reference_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 

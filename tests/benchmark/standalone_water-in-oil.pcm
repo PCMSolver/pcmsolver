@@ -1,0 +1,36 @@
+UNITS = ANGSTROM
+CODATA = 1998
+MEDIUM
+{
+	PROBERADIUS = 1.385
+    SOLVENT = EXPLICIT
+	GREEN<INSIDE>
+	{
+		TYPE=VACUUM
+		DER = NUMERICAL
+	}
+	GREEN<OUTSIDE>
+	{
+        CENTER = 3.0
+        WIDTH = 1.0
+		TYPE = SPHERICALDIFFUSE
+        PROFILE = LOG
+        EPS1 = 80.
+	    EPS2 = 2.
+		DER = NUMERICAL
+        INTERFACEORIGIN = [0.0, 0.0, 0.0]
+        MAXL = 30
+	}
+}
+
+MOLECULE
+{
+  # X, Y, Z, Q
+  GEOMETRY = [6.0, 0.0, 0.0, 1.0]
+}
+
+CAVITY
+{
+    TYPE = GEPOL
+	SPHERES = [ 0.00,   0.00,  0.00,  1.80]
+}

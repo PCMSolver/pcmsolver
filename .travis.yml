@@ -126,7 +126,7 @@ script:
                     --prefix=$HOME/Software/pcmsolver
   - cd build
   - ../.ci/ci_build.sh
-  - travis_wait python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2
+  - travis_wait 40 python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2
   - python ../.ci/ci_print_failing.py
 after_success:
   - |

@@ -212,8 +212,7 @@ private:
 
   /*! @{ Parameters and functions for the calculation of the Green's function,
    * including Coulomb singularity */
-  /*! Maximum angular momentum in the __final summation over Legendre polynomials
-   * to
+  /*! Maximum angular momentum in the final summation over Legendre polynomials to
    * obtain G */
   int maxLGreen_;
 

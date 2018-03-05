@@ -31,6 +31,8 @@
 
 #include <Eigen/Core>
 
+/*! \file SphericalSharp.hpp */
+
 namespace pcm {
 namespace cavity {
 class Element;
@@ -43,31 +45,15 @@ struct Sharp;
 #include "DerivativeTypes.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
-#include "bi_operators/IntegratorForward.hpp"
 #include "dielectric_profile/Sharp.hpp"
-#include "utils/MathUtils.hpp"
-#include "utils/legendre.h"
 
-/*! \file SphericalSharp.hpp */
-
-/*!
- * \addtogroup pcm
- * @{
- */
 namespace pcm {
-/*!
- * \addtogroup green
- * @{
- */
 namespace green {
-
 /*! \class SphericalSharp
  *  \brief Green's function for a sharp interface with spherical symmetry
  *  \author Roberto Di Remigio
- *  \date 2017
+ *  \date 2018
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
- *  \tparam IntegratorPolicy policy for the calculation of the matrix represenation
- * of S and D
  */
 template <typename DerivativeTraits = AD_directional>
 class SphericalSharp __final
@@ -78,23 +64,13 @@ public:
    * \param[in] esolv permittivity of the solvent
    * \param[in] r radius of the dielectric sphere
    * \param[in] o center of the sphere
+   * \param[in] l maximum value of angular momentum
    */
-  SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o);
+  SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o, int l);
   virtual ~SphericalSharp() {}
 
-  /*! Calculates the matrix representation of the S operator
-   *  \param[in] e list of finite elements
-   */
-  virtual Eigen::MatrixXd singleLayer(const std::vector<Element> & e) const
-      __override {
-    return this->integrator_.singleLayer(*this, e);
-  }
-  /*! Calculates the matrix representation of the D operator
-   *  \param[in] e list of finite elements
-   */
-  virtual Eigen::MatrixXd doubleLayer(const std::vector<Element> & e) const
-      __override {
-    return this->integrator_.doubleLayer(*this, e);
+  virtual double permittivity() const __override __final {
+    PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
   }
 
   /*! \brief Returns non-singular part of the Green's function (image potential)
@@ -128,6 +104,9 @@ public:
 private:
   /*! Center of the dielectric sphere */
   Eigen::Vector3d origin_;
+
+  /*! Maximum angular momentum in the final summation over Legendre polynomials */
+  int maxLGreen_;
 
   /*! Evaluates the Green's function given a pair of points
    *  \param[in] sp the source point
@@ -165,22 +144,10 @@ private:
   virtual std::ostream & printObject(std::ostream & os) __override;
 };
 
-/*!
- * \addtogroup detail
- * @{
- */
-namespace detail {
-struct buildSphericalSharp {
-  template <typename T> IGreensFunction * operator()(const GreenData & data) {
-    return new SphericalSharp<T>(
-        data.epsilonReal, data.epsilon, data.NPradius, data.NPcenter);
-  }
-};
+template <typename DerivativeTraits>
+IGreensFunction * createSphericalSharp(const GreenData & data) {
+  return new SphericalSharp<DerivativeTraits>(
+      data.epsilon1, data.epsilon2, data.center, data.origin, data.maxL);
 }
-/*! @} namespace detail */
-
-IGreensFunction * createSphericalSharp(const GreenData & data);
-}
-/*! @} namespace green */
-}
-/*! @} namespace pcm */
+} // namespace green
+} // namespace pcm

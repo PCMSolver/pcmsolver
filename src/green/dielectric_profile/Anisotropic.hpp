@@ -95,9 +95,7 @@ public:
     os << "Permittivity tensor (molecule-fixed frame) =\n" << arg.epsilon_;
     return os;
   }
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See
-                                     http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
-                                     */
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 } // namespace dielectric_profile
 } // namespace pcm

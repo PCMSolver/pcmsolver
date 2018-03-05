@@ -30,11 +30,10 @@
 
 #include <Eigen/Core>
 
+namespace pcm {
 /*! @struct GreenData
  *  @brief Contains all data defined from user input in the green section.
  */
-
-namespace pcm {
 struct GreenData {
   /*! The Green's function type inside the cavity.
    * It encodes the Green's function type, derivative calculation strategy and
@@ -50,64 +49,45 @@ struct GreenData {
   /*! Euler angles giving the rotation of the solvent orientation with respect to the
    * lab frame */
   Eigen::Vector3d eulerAngles;
-  /*! Real part of the permittivity of a metal sphere */
-  double epsilonReal;
-  /*! Imaginary part of the permittivity of a metal sphere */
-  double epsilonImaginary;
-  /*! Coordinates of the metal sphere center */
-  Eigen::Vector3d NPcenter;
-  /*! Radius of the the metal sphere */
-  double NPradius;
   /*! Permittivity inside the interface */
   double epsilon1;
   /*! Permittivity outside the interface */
   double epsilon2;
-  /*! Center of the diffuse layer */
+  /*! Center of the diffuse/sharp layer aka the radius of diffuse/sharp sphere */
   double center;
   /*! Width of the diffuse layer */
   double width;
-  /*! Origin of the dielectric layer */
+  /*! Origin of the dielectric diffuse/sharp layer aka the center of the
+   * diffuse/sharp sphere.
+   */
   Eigen::Vector3d origin;
-  /*! Maximum angular momentum */
+  /*! Maximum angular momentum in the spherical diffuse/sharp Green's function
+   * summation.
+   */
   int maxL;
-  /*! Whether the structure was initialized with user input or not */
-  bool empty;
 
-  GreenData() { empty = true; }
   GreenData(const std::string & type,
-            double _epsilon = 1.0,
-            double _kappa = 0.0,
+            double eps = 1.0,
+            double k = 0.0,
             const Eigen::Vector3d & epstens = Eigen::Vector3d::Zero(),
             const Eigen::Vector3d & euler = Eigen::Vector3d::Zero(),
-            double _epsReal = 0.0,
-            double _epsImaginary = 0.0,
-            const Eigen::Vector3d & _sphere = Eigen::Vector3d::Zero(),
-            double _sphRadius = 0.0,
-            double _e1 = 1.0,
-            double _e2 = 1.0,
-            double _c = 100.0,
-            double _w = 5.0,
-            const Eigen::Vector3d & _o = Eigen::Vector3d::Zero(),
-            int l = 30)
+            double e1 = 1.0,
+            double e2 = 1.0,
+            double c = 100.0,
+            double w = 5.0,
+            const Eigen::Vector3d & o = Eigen::Vector3d::Zero(),
+            int l = 50)
       : greensFunctionType(type),
-        epsilon(_epsilon),
-        kappa(_kappa),
+        epsilon(eps),
+        kappa(k),
         epsilonTensor(epstens),
         eulerAngles(euler),
-        epsilonReal(_epsReal),
-        epsilonImaginary(_epsImaginary),
-        NPcenter(_sphere),
-        NPradius(_sphRadius),
-        epsilon1(_e1),
-        epsilon2(_e2),
-        center(_c),
-        width(_w),
-        origin(_o),
-        maxL(l) {
-    empty = false;
-  }
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See
-                                     http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
-                                     */
+        epsilon1(e1),
+        epsilon2(e2),
+        center(c),
+        width(w),
+        origin(o),
+        maxL(l) {}
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 } // namespace pcm

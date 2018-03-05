@@ -46,7 +46,7 @@ using pcm::utils::Sphere;
 /*! \class Input
  *  \test \b InputMultipolesTest_Multipoles tests input reading on an input file
  * parsed
- * by pcmsolver.py
+ * by go_pcm.py
  */
 TEST_CASE("Input reading using GetKw for an input file for a classical point "
           "multipoles distribution",

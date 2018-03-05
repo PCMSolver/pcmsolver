@@ -3,6 +3,7 @@ add_library(input-tests OBJECT
   input_diffuse.cpp
   input_multipoles.cpp
   input_restart.cpp
+  input_sharp.cpp
   )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(input-tests custom_boost)
@@ -10,10 +11,11 @@ endif()
 
 file(
   COPY
-    diffuse.inp
-    restart.inp
     cpcm.inp
+    diffuse.inp
     multipoles.inp
+    restart.inp
+    sharp.inp
   DESTINATION
     ${CMAKE_CURRENT_BINARY_DIR}
   )
@@ -113,4 +115,28 @@ add_Catch_test(
     input_cpcm
   DEPENDS
     parser_script-cpcm
+  )
+
+add_test(
+  NAME
+    parser_script-sharp
+  COMMAND
+    ${PYTHON_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
+     parsed = parse_pcm_input('sharp.inp', write_out=True)"
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_BINARY_DIR}
+  )
+set_tests_properties(parser_script-sharp
+  PROPERTIES
+  LABELS "parser;parser_script"
+  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
+  )
+add_Catch_test(
+  NAME
+    input_sharp
+  LABELS
+    input
+    input_sharp
+  DEPENDS
+    parser_script-sharp
   )

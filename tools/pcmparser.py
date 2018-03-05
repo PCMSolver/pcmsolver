@@ -59,8 +59,6 @@ def parse_pcm_input(inputFile, write_out=False):
     Parsing occurs after case conversion, so that input reading is case-insensitive.
     Optionally, save the result of parsing to file.
 
-    Constructs a Psi4 JK object from an input basis.
-
     Parameters
     ----------
     inputFile: str
@@ -261,7 +259,7 @@ def setup_keywords():
     # Green's function section
     green = Section('GREEN', callback=verify_green)
     # Green's function type
-    # Valid values: VACUUM, UNIFORMDIELECTRIC, SPHERICALDIFFUSE, METALSPHERE, GREENSFUNCTIONSUM
+    # Valid values: VACUUM, UNIFORMDIELECTRIC, SPHERICALDIFFUSE, SPHERICALSHARP
     # Default: VACUUM
     green.add_kw('TYPE', 'STR', 'VACUUM')
     # Green's function derivative calculation strategy
@@ -279,68 +277,49 @@ def setup_keywords():
     # Valid values: positive double greater than 1.0
     # Default: 1.0
     green.add_kw('EPSDYN', 'DBL', 1.0)
-    # Real part of the metal's dielectric permittivity
-    # Valid for: METALSPHERE
-    # Valid values: positive double greater than 1.0
-    # Default: 1.0
-    green.add_kw('EPSRE', 'DBL', 1.0)
-    # Imaginary part of the metal's dielectric permittivity
-    # Valid for: METALSPHERE
-    # Valid values: positive double greater than 1.0
-    # Default: 1.0
-    green.add_kw('EPSIMG', 'DBL', 1.0)
-    # Radius of the metal sphere (in au)
-    # Valid for: METALSPHERE
-    # Valid values: positive double greater than 1.0 au
-    # Default: 1.0
-    green.add_kw('SPHERERADIUS', 'DBL', 1.0)
-    # Position of the metal sphere (in au)
-    # Valid for: METALSPHERE
-    # Valid values: array of doubles
-    green.add_kw('SPHEREPOSITION', 'DBL_ARRAY', [0.0, 0.0, 0.0])
     # Dielectric profile type
     # Valid for: SPHERICALDIFFUSE
     # Valid values: TANH, ERF, LOG
     # Default: LOG
     green.add_kw('PROFILE', 'STR', 'LOG')
     # Static dielectric permittivity inside the interface
-    # Valid for: SPHERICALDIFFUSE
+    # Valid for: SPHERICALDIFFUSE, SPHERICALSHARP
     # Valid values: positive double greater than 1.0
     # Default: 1.0
     green.add_kw('EPS1', 'DBL', 1.0)
     # Dynamic dielectric permittivity inside the interface
-    # Valid for: SPHERICALDIFFUSE
+    # Valid for: SPHERICALDIFFUSE, SPHERICALSHARP
     # Valid values: positive double greater than 1.0
     # Default: 1.0
     green.add_kw('EPSDYN1', 'DBL', 1.0)
     # Static dielectric permittivity outside the interface
-    # Valid for: SPHERICALDIFFUSE
+    # Valid for: SPHERICALDIFFUSE, SPHERICALSHARP
     # Valid values: positive double greater than 1.0
     # Default: 1.0
     green.add_kw('EPS2', 'DBL', 1.0)
     # Dynamic dielectric permittivity outside the interface
-    # Valid for: SPHERICALDIFFUSE
+    # Valid for: SPHERICALDIFFUSE, SPHERICALSHARP
     # Valid values: positive double greater than 1.0
     # Default: 1.0
     green.add_kw('EPSDYN2', 'DBL', 1.0)
     # Center of the diffuse profile
-    # Valid for: SPHERICALDIFFUSE
+    # Valid for: SPHERICALDIFFUSE, SPHERICALSHARP
     # Valid values: positive double
     # Default: 100.0
-    # Notes: for SPHERICALDIFFUSE, corresponds to the sphere radius
+    # Notes: for SPHERICALDIFFUSE and SPHERICALSHARP corresponds to the sphere radius
     green.add_kw('CENTER', 'DBL', 100.0)
     # Width of the diffuse profile
-    # Valid for: SPHERICALDIFFUSE
+    # Valid for: SPHERICALDIFFUSE, SPHERICALSHARP
     # Valid values: positive double
     # Default: 5.0
     # Notes: this is used differently for different profiles
     green.add_kw('WIDTH', 'DBL', 5.0)
     # Center of the diffuse interface
-    # Valid for: SPHERICALDIFFUSE
+    # Valid for: SPHERICALDIFFUSE, SPHERICALSHARP
     # Valid values: array of doubles
     green.add_kw('INTERFACEORIGIN', 'DBL_ARRAY', [0.0, 0.0, 0.0])
     # Maximum angular momentum value
-    # Valid for: SPHERICALDIFFUSE
+    # Valid for: SPHERICALDIFFUSE, SPHERICALSHARP
     # Valid values: integer
     green.add_kw('MAXL', 'INT', 50)
     medium.add_sect(green)
@@ -515,21 +494,13 @@ def verify_medium(section):
 
 
 def verify_green(section):
-    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'METALSPHERE', 'GREENSFUNCTIONSUM')
+    allowed = ('VACUUM', 'UNIFORMDIELECTRIC', 'SPHERICALDIFFUSE', 'SPHERICALSHARP')
     allowed_der = ('NUMERICAL', 'DERIVATIVE', 'GRADIENT', 'HESSIAN')
     allowed_profiles = ('TANH', 'ERF', 'LOG')
 
-    green1 = section.fetch_sect('GREEN<ONE>')
-    green2 = section.fetch_sect('GREEN<TWO>')
     eps = section.get('EPS')
     epsdyn = section.get('EPSDYN')
-    epsimg = section.get('EPSIMG')
-    epsre = section.get('EPSRE')
 
-    convert_length_array(section.get('SPHEREPOSITION'))
-    position = section.get('SPHEREPOSITION')
-    convert_length_scalar(section.get('SPHERERADIUS'))
-    radius = section.get('SPHERERADIUS')
     convert_length_scalar(section.get('CENTER'))
     convert_length_scalar(section.get('WIDTH'))
     convert_length_array(section.get('INTERFACEORIGIN'))
@@ -550,25 +521,6 @@ def verify_green(section):
             sys.exit(1)
         if not epsdyn.is_set():
             print('EpsDyn not defined for UniformDielectric')
-            sys.exit(1)
-
-    if (type.get() == 'METALSPHERE'):
-        if not (eps.is_set() and epsre.is_set and epsimg.is_set()):
-            print('Eps and/or EpsImg not defined for MetalSphere')
-            sys.exit(1)
-        if not (position.is_set() and radius.is_set()):
-            print('SpherePosition and/or SphereRadius not defined for MetalSphere')
-            sys.exit(1)
-        if (len(position.get()) != 3):
-            print('SpherePosition error')
-            sys.exit(1)
-        if (radius.get() < 0.1):
-            print('Minimum value allowed for Radius is 0.1 au')
-            sys.exit(1)
-
-    if (type.get() == 'GREENSFUNCTIONSUM'):
-        if not (green1.is_set() and green2.is_set()):
-            print('One or both components not defined for GreensFunctionSum')
             sys.exit(1)
 
     profile = section.get('PROFILE')

@@ -41,7 +41,7 @@ using pcm::utils::Sphere;
 
 /*! \class Input
  *  \test \b InputDiffuseTest_Diffuse tests input reading on an input file parsed by
- * pcmsolver.py
+ * go_pcm.py
  */
 TEST_CASE("Input reading using GetKw for an input file for a diffuse environment",
           "[input][input_diffuse]") {

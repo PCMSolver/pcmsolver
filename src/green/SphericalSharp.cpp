@@ -1,6 +1,6 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -29,13 +29,10 @@
 
 #include <Eigen/Core>
 
-#include "DerivativeTypes.hpp"
-#include "DerivativeUtils.hpp"
 #include "GreenData.hpp"
 #include "GreensFunction.hpp"
 #include "cavity/Element.hpp"
 #include "dielectric_profile/Sharp.hpp"
-#include "utils/ForId.hpp"
 #include "utils/Legendre.hpp"
 #include "utils/MathUtils.hpp"
 
@@ -47,10 +44,11 @@ template <typename DerivativeTraits>
 SphericalSharp<DerivativeTraits>::SphericalSharp(double e,
                                                  double esolv,
                                                  double r,
-                                                 const Eigen::Vector3d & o)
-    : GreensFunction<DerivativeTraits, Sharp>(), origin_(o) {
-  this->profile_ = Sharp(e, esolv, r);
-}
+                                                 const Eigen::Vector3d & o,
+                                                 int l)
+    : GreensFunction<DerivativeTraits, Sharp>(Sharp(e, esolv, r)),
+      origin_(o),
+      maxLGreen_(l) {}
 
 template <typename DerivativeTraits>
 double SphericalSharp<DerivativeTraits>::imagePotential(
@@ -163,15 +161,21 @@ DerivativeProbe SphericalSharp<DerivativeTraits>::exportDerivativeProbe_impl()
 template <typename DerivativeTraits>
 double SphericalSharp<DerivativeTraits>::singleLayer_impl(const Element & e,
                                                           double factor) const {
-  return 0.0;
-  // return (detail::diagonalSi(e.area(), factor) / this->profile_.epsilon);
+  // Diagonal of S inside the cavity
+  double Sii_I = detail::diagonalSi(e.area(), factor);
+  double image = this->imagePotential(e.center(), e.center());
+  return (Sii_I / this->profile_.epsilonSolvent + image);
 }
 
 template <typename DerivativeTraits>
 double SphericalSharp<DerivativeTraits>::doubleLayer_impl(const Element & e,
                                                           double factor) const {
-  return 0.0;
-  // return detail::diagonalDi(e.area(), e.sphere().radius, factor);
+  // Diagonal of D inside the cavity
+  double Dii_I = detail::diagonalDi(e.area(), e.sphere().radius, factor);
+  // "Diagonal" of the directional derivative of the image Green's function
+  double image_grad =
+      this->imagePotentialDerivative(e.normal(), e.center(), e.center());
+  return (Dii_I + this->profile_.epsilonSolvent * image_grad);
 }
 
 template <typename DerivativeTraits>
@@ -205,7 +209,7 @@ DerivativeTraits SphericalSharp<DerivativeTraits>::imagePotential_impl(
   DerivativeTraits G_img = factor * (q_img / sp_image - q_img / sp_origin_norm);
   DerivativeTraits f_0 = radius / (sp_origin_norm * pp_origin_norm);
   DerivativeTraits f_L = f_0;
-  for (int L = 1; L <= 200; ++L) {
+  for (int L = 1; L <= maxLGreen_; ++L) {
     f_L = f_L * radius * f_0;
     double C_0_L = (eps - epsSolv) * L / ((eps + epsSolv) * L + epsSolv);
     DerivativeTraits pl_x = Legendre::Pn<DerivativeTraits>(L, cos_gamma);
@@ -220,7 +224,9 @@ std::ostream & SphericalSharp<DerivativeTraits>::printObject(std::ostream & os) 
   Eigen::IOFormat CleanFmt(Eigen::StreamPrecision, 0, ", ", "\n", "(", ")");
   os << "Green's function type: spherical sharp" << std::endl;
   os << this->profile_ << std::endl;
-  os << "Sphere center        = " << this->origin_.transpose().format(CleanFmt);
+  os << "Sphere center        = " << this->origin_.transpose().format(CleanFmt)
+     << std::endl;
+  os << "Angular momentum (Green's function)    = " << this->maxLGreen_;
   return os;
 }
 
@@ -228,10 +234,5 @@ template class SphericalSharp<Stencil>;
 template class SphericalSharp<AD_directional>;
 template class SphericalSharp<AD_gradient>;
 template class SphericalSharp<AD_hessian>;
-
-IGreensFunction * createSphericalSharp(const GreenData & data) {
-  detail::buildSphericalSharp build;
-  return for_id<derivative_types, IGreensFunction>(build, data, data.howDerivative);
-}
 } // namespace green
 } // namespace pcm

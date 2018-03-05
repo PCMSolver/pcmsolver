@@ -1,4 +1,5 @@
 *.tar.gz binary
+*.npy binary
 *.zip binary
 *.png diff=exif
 

@@ -329,7 +329,7 @@ while the Green's function outside might vary.
      Which Green's function characterizes the medium.
 
      * **Type**: string
-     * **Valid values**: Vacuum | UniformDielectric | SphericalDiffuse
+     * **Valid values**: Vacuum | UniformDielectric | SphericalDiffuse | SphericalSharp
      * **Default**: Vacuum
 
    Der
@@ -376,6 +376,7 @@ while the Green's function outside might vary.
 
      * **Type**: double
      * **Valid values**: :math:`\varepsilon \geq 1.0`
+     * **Valid for**: SphericalDiffuse, SphericalSharp
      * **Default**: 1.0
 
    EpsDyn1
@@ -383,6 +384,7 @@ while the Green's function outside might vary.
 
      * **Type**: double
      * **Valid values**: :math:`\varepsilon \geq 1.0`
+     * **Valid for**: SphericalDiffuse, SphericalSharp
      * **Default**: 1.0
 
    Eps2
@@ -390,6 +392,7 @@ while the Green's function outside might vary.
 
      * **Type**: double
      * **Valid values**: :math:`\varepsilon \geq 1.0`
+     * **Valid for**: SphericalDiffuse, SphericalSharp
      * **Default**: 1.0
 
    EpsDyn2
@@ -397,6 +400,7 @@ while the Green's function outside might vary.
 
      * **Type**: double
      * **Valid values**: :math:`\varepsilon \geq 1.0`
+     * **Valid for**: SphericalDiffuse, SphericalSharp
      * **Default**: 1.0
 
    Center
@@ -404,7 +408,7 @@ while the Green's function outside might vary.
      of the spherical droplet.
 
      * **Type**: double
-     * **Valid for**: SphericalDiffuse
+     * **Valid for**: SphericalDiffuse, SphericalSharp
      * **Default**: 100.0 a.u.
 
    Width
@@ -423,7 +427,7 @@ while the Green's function outside might vary.
      Center of the spherical droplet
 
      * **Type**: array of doubles
-     * **Valid for**: SphericalDiffuse
+     * **Valid for**: SphericalDiffuse, SphericalSharp
      * **Default**: :math:`[0.0, 0.0, 0.0]`
 
    MaxL
@@ -431,7 +435,7 @@ while the Green's function outside might vary.
      Green's function for the spherical diffuse Green's function
 
      * **Type**: integer
-     * **Valid for**: SphericalDiffuse
+     * **Valid for**: SphericalDiffuse, SphericalSharp
      * **Default**: 30
 
 Molecule section keywords

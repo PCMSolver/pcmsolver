@@ -122,13 +122,6 @@ void Input::reader(const std::string & filename) {
     greenOutsideType_ = outside.getStr("TYPE") + "_" + outside.getStr("DER");
     epsilonStaticOutside_ = outside.getDbl("EPS");
     epsilonDynamicOutside_ = outside.getDbl("EPSDYN");
-    // This will be needed for the metal sphere only
-    if (outside.getStr("TYPE") == "METALSPHERE") {
-      epsilonReal_ = outside.getDbl("EPSRE");
-      epsilonImaginary_ = outside.getDbl("EPSIMG");
-      spherePosition_ = outside.getDblVec("SPHEREPOSITION");
-      sphereRadius_ = outside.getDbl("SPHERERADIUS");
-    }
     epsilonStatic1_ = outside.getDbl("EPS1");
     epsilonDynamic1_ = outside.getDbl("EPSDYN1");
     epsilonStatic2_ = outside.getDbl("EPS2");

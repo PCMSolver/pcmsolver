@@ -27,11 +27,10 @@
 
 #include "Config.hpp"
 
+namespace pcm {
 /*! @struct SolverData
  *  @brief Contains all data defined from user input in the solver section.
  */
-
-namespace pcm {
 struct SolverData {
   /*! The type of solver */
   std::string solverType;
@@ -39,13 +38,8 @@ struct SolverData {
   double correction;
   /*! Triggers hermitivitization of the PCM matrix obtained by collocation */
   bool hermitivitize;
-  /*! Whether the structure was initialized with user input or not */
-  bool empty;
 
-  SolverData() { empty = true; }
   SolverData(const std::string & type, double corr, bool symm = true)
-      : solverType(type), correction(corr), hermitivitize(symm) {
-    empty = false;
-  }
+      : solverType(type), correction(corr), hermitivitize(symm) {}
 };
 } // namespace pcm

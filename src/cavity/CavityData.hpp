@@ -29,11 +29,10 @@
 
 #include "utils/Molecule.hpp"
 
+namespace pcm {
 /*! @struct CavityData
  *  @brief Contains all data defined from user input in the cavity section.
  */
-
-namespace pcm {
 struct CavityData {
   /*! The type of cavity */
   std::string cavityType;
@@ -48,10 +47,7 @@ struct CavityData {
   double minimalRadius;
   /*! Name of the .npz file containing the cavity specification for a restart */
   std::string filename;
-  /*! Whether the structure was initialized with user input or not */
-  bool empty;
 
-  CavityData() { empty = true; }
   CavityData(const std::string & type,
              const Molecule & _molec,
              double _area,
@@ -63,8 +59,6 @@ struct CavityData {
         area(_area),
         probeRadius(_probeRadius),
         minimalRadius(_minRadius),
-        filename(_fname) {
-    empty = false;
-  }
+        filename(_fname) {}
 };
 } // namespace pcm

@@ -26,6 +26,8 @@ add_Catch_test(
     bi_operators
     bi_operators_collocation
   REFERENCE_FILES
+    sphericalsharp_D_collocation.npy
+    sphericalsharp_S_collocation.npy
     erfsphericaldiffuse_D_collocation.npy
     erfsphericaldiffuse_S_collocation.npy
     logsphericaldiffuse_D_collocation.npy

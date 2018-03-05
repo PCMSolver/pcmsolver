@@ -4,6 +4,7 @@ add_library(iefpcm-tests OBJECT
   iefpcm_tanh-spherical-diffuse-gepol-point.cpp
   iefpcm_erf-spherical-diffuse-gepol-point.cpp
   iefpcm_log-spherical-diffuse-gepol-point.cpp
+  iefpcm_sharp-gepol-point.cpp
   iefpcm_gepol-C2H4_D2h.cpp
   iefpcm_gepol-NH3.cpp
   iefpcm_gepol-NH3_from-file.cpp
@@ -73,6 +74,17 @@ add_Catch_test(
     anisotropic
   COST
     200.0
+  )
+
+# iefpcm_sharp-gepol-point.cpp test
+add_Catch_test(
+  NAME
+    iefpcm_sharp-gepol-point
+  LABELS
+    solver
+    iefpcm
+    iefpcm_sharp-gepol-point
+    anisotropic
   )
 
 # iefpcm_gepol-point.cpp test

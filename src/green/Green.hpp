@@ -31,6 +31,7 @@
 #include "IGreensFunction.hpp"
 #include "IonicLiquid.hpp"
 #include "SphericalDiffuse.hpp"
+#include "SphericalSharp.hpp"
 #include "UniformDielectric.hpp"
 #include "Vacuum.hpp"
 #include "dielectric_profile/OneLayerErf.hpp"
@@ -91,7 +92,11 @@ inline Factory<detail::CreateGreensFunction> bootstrapFactory() {
   factory_.subscribe("SPHERICALDIFFUSE_NUMERICAL_LOG",
                      createSphericalDiffuse<dielectric_profile::OneLayerLog>);
 
-  factory_.subscribe("SPHERICALSHARP", createSphericalSharp);
+  factory_.subscribe("SPHERICALSHARP_NUMERICAL", createSphericalSharp<Stencil>);
+  factory_.subscribe("SPHERICALSHARP_DERIVATIVE",
+                     createSphericalSharp<AD_directional>);
+  factory_.subscribe("SPHERICALSHARP_GRADIENT", createSphericalSharp<AD_gradient>);
+  factory_.subscribe("SPHERICALSHARP_HESSIAN", createSphericalSharp<AD_hessian>);
 
   return factory_;
 }

@@ -36,13 +36,8 @@ struct BIOperatorData {
   std::string integratorType;
   /*! Scaling for the diagonal of the approximate collocation matrices */
   double scaling;
-  /*! Whether the structure was initialized with user input or not */
-  bool empty;
 
-  BIOperatorData() { empty = true; }
   BIOperatorData(const std::string & type, double s)
-      : integratorType(type), scaling(s) {
-    empty = false;
-  }
+      : integratorType(type), scaling(s) {}
 };
 } // namespace pcm

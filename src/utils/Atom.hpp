@@ -88,9 +88,7 @@ struct Atom {
   std::string element;
   /*! Atomic symbol */
   std::string symbol;
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See
-                                     http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
-                                     */
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 typedef pcm::tuple<std::string, std::vector<Atom> > RadiiSet;

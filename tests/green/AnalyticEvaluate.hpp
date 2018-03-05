@@ -273,6 +273,7 @@ inline double imagePotential(double eps,
                              double epsSolv,
                              double radius,
                              const Eigen::Vector3d & origin,
+                             int maxL,
                              const Eigen::Vector3d & sp,
                              const Eigen::Vector3d & pp) {
   Eigen::Vector3d sp_origin = sp - origin;
@@ -300,7 +301,7 @@ inline double imagePotential(double eps,
   // Accumulate Legendre polynomial expansion of image potential
   double f_0 = radius / (sp_origin_norm * pp_origin_norm);
   double f_l = f_0;
-  for (int l = 1; l <= 200; ++l) {
+  for (int l = 1; l <= maxL; ++l) {
     f_l = f_l * radius * f_0;
     double C_0_l = (eps - epsSolv) * l / ((eps + epsSolv) * l + epsSolv);
     double pl_x = Legendre::Pn<double>(l, cos_gamma);
@@ -382,6 +383,7 @@ inline Eigen::Array4d analyticSphericalSharp(double eps,
                                              double epsSolv,
                                              double radius,
                                              const Eigen::Vector3d & origin,
+                                             int maxL,
                                              const Eigen::Vector3d & spNormal,
                                              const Eigen::Vector3d & sp,
                                              const Eigen::Vector3d & ppNormal,
@@ -390,12 +392,13 @@ inline Eigen::Array4d analyticSphericalSharp(double eps,
   double distance = (sp - pp).norm();
   double distance_3 = std::pow(distance, 3);
 
-  double G_img = imagePotential(eps, epsSolv, radius, origin, sp, pp);
+  double G_img = imagePotential(eps, epsSolv, radius, origin, maxL, sp, pp);
   // Value of the function
   result(0) = 1.0 / (epsSolv * distance) - G_img;
 
   double d_probe_G_img = sevenPointStencil(
-      pcm::bind(imagePotential, eps, epsSolv, radius, origin, pcm::_1, pcm::_2),
+      pcm::bind(
+          imagePotential, eps, epsSolv, radius, origin, maxL, pcm::_1, pcm::_2),
       pp,
       sp,
       ppNormal,
@@ -404,7 +407,8 @@ inline Eigen::Array4d analyticSphericalSharp(double eps,
   result(1) = (sp - pp).dot(ppNormal) / (epsSolv * distance_3) - d_probe_G_img;
 
   double d_source_G_img = sevenPointStencil(
-      pcm::bind(imagePotential, eps, epsSolv, radius, origin, pcm::_1, pcm::_2),
+      pcm::bind(
+          imagePotential, eps, epsSolv, radius, origin, maxL, pcm::_1, pcm::_2),
       sp,
       pp,
       spNormal,

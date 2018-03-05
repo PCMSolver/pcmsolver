@@ -40,6 +40,7 @@
 #include "green/AnisotropicLiquid.hpp"
 #include "green/IonicLiquid.hpp"
 #include "green/SphericalDiffuse.hpp"
+#include "green/SphericalSharp.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
 #include "green/dielectric_profile/OneLayerErf.hpp"
@@ -56,6 +57,7 @@ using dielectric_profile::OneLayerTanh;
 using green::AnisotropicLiquid;
 using green::IonicLiquid;
 using green::SphericalDiffuse;
+using green::SphericalSharp;
 using green::UniformDielectric;
 using green::Vacuum;
 
@@ -64,6 +66,7 @@ void save_uniform_dielectric_collocation();
 void save_log_spherical_diffuse_collocation();
 void save_tanh_spherical_diffuse_collocation();
 void save_erf_spherical_diffuse_collocation();
+void save_spherical_sharp_collocation();
 
 void save_vacuum_purisima();
 void save_uniform_dielectric_purisima();
@@ -75,6 +78,7 @@ void save_anisotropic_liquid_numerical();
 void save_log_spherical_diffuse_numerical();
 void save_tanh_spherical_diffuse_numerical();
 void save_erf_spherical_diffuse_numerical();
+void save_spherical_sharp_numerical();
 
 int main() {
   initBohrToAngstrom(bohrToAngstrom);
@@ -83,6 +87,7 @@ int main() {
   save_log_spherical_diffuse_collocation();
   save_tanh_spherical_diffuse_collocation();
   save_erf_spherical_diffuse_collocation();
+  save_spherical_sharp_collocation();
 
   save_vacuum_purisima();
   save_uniform_dielectric_purisima();
@@ -185,6 +190,27 @@ void save_erf_spherical_diffuse_collocation() {
   cnpy::custom::npy_save("erfsphericaldiffuse_S_collocation.npy", S_results);
   Eigen::MatrixXd D_results = op.computeD(cavity, gf);
   cnpy::custom::npy_save("erfsphericaldiffuse_D_collocation.npy", D_results);
+}
+
+void save_spherical_sharp_collocation() {
+  double epsNP = 114.0;
+  double epsSolv = 35.7;
+  double sphereRadius = 100;
+  int maxL = 200;
+  Eigen::Vector3d offset;
+  offset << 105.0, 106.0, 107.0;
+  Molecule molec = dummy<0>(1.44 / bohrToAngstrom(), offset);
+  double area = 10.0;
+  GePolCavity cavity(molec, area, 0.0, 100.0);
+
+  Collocation op;
+
+  SphericalSharp<> gf(epsNP, epsSolv, sphereRadius, Eigen::Vector3d::Zero(), maxL);
+
+  Eigen::MatrixXd S_results = op.computeS(cavity, gf);
+  cnpy::custom::npy_save("sphericalsharp_S_collocation.npy", S_results);
+  Eigen::MatrixXd D_results = op.computeD(cavity, gf);
+  cnpy::custom::npy_save("sphericalsharp_D_collocation.npy", D_results);
 }
 
 void save_vacuum_purisima() {
@@ -345,4 +371,25 @@ void save_erf_spherical_diffuse_numerical() {
   cnpy::custom::npy_save("erfsphericaldiffuse_S_numerical.npy", S_results);
   Eigen::MatrixXd D_results = op.computeD(cavity, gf);
   cnpy::custom::npy_save("erfsphericaldiffuse_D_numerical.npy", D_results);
+}
+
+void save_spherical_sharp_numerical() {
+  double epsNP = 114.0;
+  double epsSolv = 35.7;
+  double sphereRadius = 100;
+  int maxL = 200;
+  Eigen::Vector3d offset;
+  offset << 105.0, 106.0, 107.0;
+  Molecule molec = dummy<0>(1.44 / bohrToAngstrom(), offset);
+  double area = 10.0;
+  GePolCavity cavity(molec, area, 0.0, 100.0);
+
+  Numerical op;
+
+  SphericalSharp<> gf(epsNP, epsSolv, sphereRadius, Eigen::Vector3d::Zero(), maxL);
+
+  Eigen::MatrixXd S_results = op.computeS(cavity, gf);
+  cnpy::custom::npy_save("sphericalsharp_S_numerical.npy", S_results);
+  Eigen::MatrixXd D_results = op.computeD(cavity, gf);
+  cnpy::custom::npy_save("sphericalsharp_D_numerical.npy", D_results);
 }

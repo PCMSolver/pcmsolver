@@ -212,9 +212,7 @@ public:
   Molecule & operator=(const Molecule & other);
   friend std::ostream & operator<<(std::ostream & os, const Molecule & molecule);
   /// @}
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW /* See
-                                     http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
-                                     */
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /*! \brief Compute MEP from molecule object and list of finite elements
@@ -242,11 +240,4 @@ PCMSolver_EXPORT Eigen::VectorXd computeMEP(const Molecule & mol,
 Eigen::VectorXd computeMEP(const std::vector<cavity::Element> & el,
                            double charge = 1.0,
                            const Eigen::Vector3d & origin = Eigen::Vector3d::Zero());
-
-/*! \brief Compute MEP for a single point charge
- *  \param[in] el  list of finite elements
- *  \param[in] charge value of the charge
- *  \param[in] origin location of the point charge
- *  \return MEP at finite elements center
- */
 } // namespace pcm

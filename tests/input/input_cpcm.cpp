@@ -41,7 +41,7 @@ using pcm::utils::Sphere;
 
 /*! \class Input
  *  \test \b Input_CPCM tests input reCPCMading on an input file parsed by
- * pcmsolver.py
+ * go_pcm.py
  */
 TEST_CASE("Input reading using GetKw for an input file for a CPCM solver",
           "[input][input_cpcm]") {

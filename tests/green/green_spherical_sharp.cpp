@@ -1,6 +1,6 @@
-/**
+/*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -40,6 +40,7 @@ TEST_CASE("Evaluation of the spherical sharp Green's function and its derivative
   double epsSolv = 80.0;
   double epsNP = 40.0;
   double NPradius = 50.0;
+  int maxL = 200;
   Eigen::Vector3d NPcenter = Eigen::Vector3d::Zero();
   Eigen::Vector3d source = Eigen::Vector3d::Random() * 100.0;
   Eigen::Vector3d sourceNormal = source + Eigen::Vector3d::Random();
@@ -47,15 +48,22 @@ TEST_CASE("Evaluation of the spherical sharp Green's function and its derivative
   Eigen::Vector3d probe = Eigen::Vector3d::Random() * 100.0;
   Eigen::Vector3d probeNormal = probe + Eigen::Vector3d::Random();
   probeNormal.normalize();
-  Eigen::Array4d result = analyticSphericalSharp(
-      epsNP, epsSolv, NPradius, NPcenter, sourceNormal, source, probeNormal, probe);
+  Eigen::Array4d result = analyticSphericalSharp(epsNP,
+                                                 epsSolv,
+                                                 NPradius,
+                                                 NPcenter,
+                                                 maxL,
+                                                 sourceNormal,
+                                                 source,
+                                                 probeNormal,
+                                                 probe);
 
   /*! \class SphericalSharp
    *  \test \b SphericalSharpTest_numerical tests the numerical evaluation of the
    * SphericalSharp Green's function against analytical result
    */
   SECTION("Numerical derivative") {
-    SphericalSharp<Stencil> gf(epsNP, epsSolv, NPradius, NPcenter);
+    SphericalSharp<Stencil> gf(epsNP, epsSolv, NPradius, NPcenter, maxL);
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     REQUIRE(value == Approx(gf_value));
@@ -75,7 +83,7 @@ TEST_CASE("Evaluation of the spherical sharp Green's function and its derivative
    *  of the SphericalSharp Green's function against analytical result
    */
   SECTION("Directional derivative via AD") {
-    SphericalSharp<> gf(epsNP, epsSolv, NPradius, NPcenter);
+    SphericalSharp<> gf(epsNP, epsSolv, NPradius, NPcenter, maxL);
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     REQUIRE(value == Approx(gf_value));
@@ -95,7 +103,7 @@ TEST_CASE("Evaluation of the spherical sharp Green's function and its derivative
    *  of the SphericalSharp Green's function against analytical result
    */
   SECTION("Gradient via AD") {
-    SphericalSharp<AD_gradient> gf(epsNP, epsSolv, NPradius, NPcenter);
+    SphericalSharp<AD_gradient> gf(epsNP, epsSolv, NPradius, NPcenter, maxL);
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     REQUIRE(value == Approx(gf_value));
@@ -115,7 +123,7 @@ TEST_CASE("Evaluation of the spherical sharp Green's function and its derivative
    *  of the SphericalSharp Green's function against analytical result
    */
   SECTION("Hessian via AD") {
-    SphericalSharp<AD_hessian> gf(epsNP, epsSolv, NPradius, NPcenter);
+    SphericalSharp<AD_hessian> gf(epsNP, epsSolv, NPradius, NPcenter, maxL);
     double value = result(0);
     double gf_value = gf.kernelS(source, probe);
     REQUIRE(value == Approx(gf_value));

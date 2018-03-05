@@ -223,14 +223,6 @@ private:
   double epsilonStaticOutside_;
   /// Dynamic permittivity outside the cavity
   double epsilonDynamicOutside_;
-  /// Real part of the metal NP permittivity
-  double epsilonReal_;
-  /// Imaginary part of the metal NP permittivity
-  double epsilonImaginary_;
-  /// Center of the spherical metal NP
-  std::vector<double> spherePosition_;
-  /// Radius of the spherical metal NP
-  double sphereRadius_;
   /// Diffuse interface: static permittivity inside the interface
   double epsilonStatic1_;
   /// Diffuse interface: dynamic permittivity inside the interface

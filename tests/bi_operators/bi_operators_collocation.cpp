@@ -35,6 +35,7 @@
 #include "cavity/Element.hpp"
 #include "cavity/GePolCavity.hpp"
 #include "green/SphericalDiffuse.hpp"
+#include "green/SphericalSharp.hpp"
 #include "green/UniformDielectric.hpp"
 #include "green/Vacuum.hpp"
 #include "green/dielectric_profile/OneLayerErf.hpp"
@@ -47,6 +48,7 @@ using cavity::GePolCavity;
 using dielectric_profile::OneLayerErf;
 using dielectric_profile::OneLayerTanh;
 using green::SphericalDiffuse;
+using green::SphericalSharp;
 using green::UniformDielectric;
 using green::Vacuum;
 
@@ -209,6 +211,47 @@ SCENARIO("A collocation integrator with approximate diagonal elements",
         results = op.computeD(cavity, gf);
         reference =
             cnpy::custom::npy_load<double>("erfsphericaldiffuse_D_collocation.npy");
+        for (int i = 0; i < cavity.size(); ++i) {
+          for (int j = 0; j < cavity.size(); ++j) {
+            REQUIRE(reference(i, j) == Approx(results(i, j)));
+          }
+        }
+      }
+    }
+
+    /*! \class Collocation
+     *  \test \b CollocationTest_sphericalsharp tests the evaluation
+     * by collocation of the spherical sharp matrix representations of S and D
+     */
+    AND_WHEN("the spherical sharp Green's function is used") {
+      double epsNP = 114.0;
+      double epsSolv = 35.7;
+      double sphereRadius = 100.0;
+      int maxL = 200;
+      Eigen::Vector3d offset;
+      offset << 105.0, 106.0, 107.0;
+      Molecule molec = dummy<0>(1.44 / bohrToAngstrom(), offset);
+      double area = 10.0;
+      GePolCavity cavity(molec, area, 0.0, 100.0);
+
+      Collocation op;
+
+      SphericalSharp<> gf(
+          epsNP, epsSolv, sphereRadius, Eigen::Vector3d::Zero(), maxL);
+      THEN("the matrix elements of S are") {
+        results = op.computeS(cavity, gf);
+        reference =
+            cnpy::custom::npy_load<double>("sphericalsharp_S_collocation.npy");
+        for (int i = 0; i < cavity.size(); ++i) {
+          for (int j = 0; j < cavity.size(); ++j) {
+            REQUIRE(reference(i, j) == Approx(results(i, j)));
+          }
+        }
+      }
+      AND_THEN("the matrix elements of D are") {
+        results = op.computeD(cavity, gf);
+        reference =
+            cnpy::custom::npy_load<double>("sphericalsharp_D_collocation.npy");
         for (int i = 0; i < cavity.size(); ++i) {
           for (int j = 0; j < cavity.size(); ++j) {
             REQUIRE(reference(i, j) == Approx(results(i, j)));

@@ -24,6 +24,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <string>
@@ -88,6 +89,7 @@ int main(int argc, char * argv[]) {
   TIMER_OFF("Computing ASC");
   // Compute energy and print it out
   pcmsolver_out << "Solvation energy = "
+                << std::setprecision(std::numeric_limits<long double>::digits10)
                 << context_.computePolarizationEnergy("MEP", "ASC") << std::endl;
   pcmsolver_out << "DONE!" << std::endl;
 

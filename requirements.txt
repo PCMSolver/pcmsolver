@@ -5,6 +5,7 @@ matplotlib
 pyparsing
 pyyaml
 recommonmark
+runtest
 sphinx
 sphinx-rtd-theme
 sphinxcontrib-bibtex

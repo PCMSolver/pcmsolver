@@ -34,9 +34,11 @@ in
       doxygen
       exa
       ffmpeg
+      flameGraph
       gfortran
       graphviz
       lcov
+      linuxPackages.perf
       pipenv
       python3Full
       python3Packages.docopt

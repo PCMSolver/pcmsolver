@@ -1,5 +1,14 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- Green’s function for a spherical nanoparticle with **real** permittivity.
+  The Green's function is known in analytical form from the work of
+  Messina (J. Chem. Phys. 2002, 117 (24), 11062) and
+  Delgado _et al._ (J. Chem. Phys. 2013, 139 (2), 024105)
+
 ## [Version 1.2.0-rc1] - 2018-03-02
 
 ### Added

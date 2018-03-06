@@ -36,9 +36,9 @@ in
       ffmpeg
       flameGraph
       gfortran
+      gperftools
       graphviz
       lcov
-      linuxPackages.perf
       pipenv
       python3Full
       python3Packages.docopt

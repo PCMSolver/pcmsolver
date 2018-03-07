@@ -32,10 +32,28 @@ file(
 install(
   FILES
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py
-    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmdata.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmdata.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmparser.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pyparsing.py
   DESTINATION
     ${PYMOD_INSTALL_FULLDIR}
   )
+
+# Install docopt.py provided by Autocmake
+file(TO_NATIVE_PATH "${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}/docopt" PYMOD_INSTALL_EXTDIR)
+file(
+  COPY
+    ${PROJECT_SOURCE_DIR}/cmake/autocmake/external/__init__.py
+    ${PROJECT_SOURCE_DIR}/cmake/autocmake/external/docopt.py
+  DESTINATION
+  ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/external
+  )
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/external/__init__.py
+    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/external/docopt.py
+  DESTINATION
+    ${PYMOD_INSTALL_FULLDIR}/external
+  )
+

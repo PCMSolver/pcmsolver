@@ -7,7 +7,21 @@ if(BUILD_CUSTOM_BOOST)
 endif()
 
 # utils_newton-potential.cpp test
-add_Catch_test(utils_newton-potential "utils;newton_potential;utils_newton-potential")
+add_Catch_test(
+  NAME
+    utils_newton-potential
+  LABELS
+    utils
+    newton_potential
+    utils_newton-potential
+  )
 
 # utils_dipolar-potential.cpp test
-add_Catch_test(utils_dipolar-potential "utils;dipolar_potential;utils_dipolar-potential")
+add_Catch_test(
+  NAME
+    utils_dipolar-potential
+  LABELS
+    utils
+    dipolar_potential
+    utils_dipolar-potential
+  )

@@ -1,37 +1,42 @@
 add_library(bi_operators-tests OBJECT
   bi_operators_collocation.cpp
-  bi_operators_numerical.cpp
   bi_operators_purisima.cpp
   )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(bi_operators-tests custom_boost)
 endif()
 
-# Copy reference files to ${PROJECT_BINARY_DIR}/tests/bi_operators (aka ${CMAKE_CURRENT_BINARY_DIR})
-list(APPEND reference_files
-  erfsphericaldiffuse_D_collocation.npy
-  erfsphericaldiffuse_S_collocation.npy
-  logsphericaldiffuse_D_collocation.npy
-  logsphericaldiffuse_S_collocation.npy
-  tanhsphericaldiffuse_D_collocation.npy
-  tanhsphericaldiffuse_S_collocation.npy
-  uniformdielectric_D_collocation.npy
-  uniformdielectric_D_purisima.npy
-  uniformdielectric_S_collocation.npy
-  vacuum_D_collocation.npy
-  vacuum_D_purisima.npy
-  vacuum_S_collocation.npy
-  )
-file(COPY ${reference_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 # bi_operators_purisima.cpp test
-add_Catch_test(bi_operators_purisima "bi_operators;bi_operators_purisima")
-
-# bi_operators_numerical.cpp test
-add_Catch_test(bi_operators_numerical "bi_operators;bi_operators_numerical")
+add_Catch_test(
+  NAME
+    bi_operators_purisima
+  LABELS
+    bi_operators
+    bi_operators_purisima
+  REFERENCE_FILES
+    uniformdielectric_D_purisima.npy
+    vacuum_D_purisima.npy
+  )
 
 # bi_operators_collocation.cpp test
-add_Catch_test(bi_operators_collocation "bi_operators;bi_operators_collocation")
+add_Catch_test(
+  NAME
+    bi_operators_collocation
+  LABELS
+    bi_operators
+    bi_operators_collocation
+  REFERENCE_FILES
+    erfsphericaldiffuse_D_collocation.npy
+    erfsphericaldiffuse_S_collocation.npy
+    logsphericaldiffuse_D_collocation.npy
+    logsphericaldiffuse_S_collocation.npy
+    tanhsphericaldiffuse_D_collocation.npy
+    tanhsphericaldiffuse_S_collocation.npy
+    uniformdielectric_S_collocation.npy
+    vacuum_S_collocation.npy
+    uniformdielectric_D_collocation.npy
+    vacuum_D_collocation.npy
+  )
 
 # This executable updates the .npy files containing the reference values
 if(BUILD_STANDALONE)

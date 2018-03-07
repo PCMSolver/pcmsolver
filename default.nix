@@ -44,6 +44,7 @@ in
       python3Packages.matplotlib
       python3Packages.numpy
       python3Packages.pyyaml
+      python3Packages.yapf
       valgrind
       zlib
     ];

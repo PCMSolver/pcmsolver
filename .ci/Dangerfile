@@ -20,7 +20,8 @@ end
 commit_lint.check disable: [:subject_cap, :subject_period]
 
 # Check code style with clang-format
-code_style_validation.check file_extensions: ['.hpp', '.cpp', '.h'],
+code_style_validation.check validator: 'clang-format-3.9',
+                            file_extensions: ['.hpp', '.cpp', '.h'],
                             ignore_file_patterns: [/^external\//]
 
 # Check code style with YAPF

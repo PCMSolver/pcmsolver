@@ -53,11 +53,19 @@ if(BUILD_CUSTOM_BOOST)
   add_dependencies({0}-tests custom_boost)
 endif()
 """.format(dirname, '\n  '.join(sources))
+add_test = []
+for src, lbl in src_lbl.items():
+    add_test.append("""# {0} test
+add_Catch_test(
+  NAME
+    {1}
+  LABELS
+    {2}
+  )\n""".format(src,
+                os.path.splitext(src)[0], '\n'.join(lbl)))
 with open(fname, 'w') as f:
     f.write(message)
-    for src, lbl in src_lbl.items():
-        f.write('# {} test\n'.format(src))
-        f.write('add_Catch_test({0} \"{1}\")\n\n'.format(os.path.splitext(src)[0], ';'.join(lbl)))
+    f.write('\n'.join(add_test))
 
 print('Template created')
 print('Don\'t forget to fix labels, excluded files and dependencies!!!')

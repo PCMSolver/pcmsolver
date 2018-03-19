@@ -34,9 +34,7 @@ in
       doxygen
       exa
       ffmpeg
-      flameGraph
       gfortran
-      gperftools
       graphviz
       lcov
       pipenv

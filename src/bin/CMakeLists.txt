@@ -12,6 +12,9 @@ if(STATIC_LIBRARY_ONLY)
 else()
   target_link_libraries(run_pcm pcm-shared)
 endif()
+if(ENABLE_GPERFTOOLS)
+  target_link_libraries(run_pcm ${GPERFTOOLS_LIBRARIES})
+endif()
 target_compile_options(run_pcm
   PRIVATE
     "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"

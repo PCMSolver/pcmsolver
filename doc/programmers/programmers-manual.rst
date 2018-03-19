@@ -10,5 +10,6 @@ PCMSolver Programmers' Manual
    cmake-usage
    versioning
    maintenance
+   profiling
    testing
    timer-class

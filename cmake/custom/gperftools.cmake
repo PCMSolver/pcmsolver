@@ -1,17 +1,19 @@
-if(ENABLE_GPERFTOOLS OR ENABLE_TCMALLOC_MINIMAL)
+#.rst:
+#
+# Enable profiling with gperftools.
+#
+# Variables used::
+#
+#   ENABLE_GPERFTOOLS
+#
+# autocmake.yml configuration::
+#
+#   docopt: "--gperf Enable profiling with gperftools [default: False]."
+#   define: "'-DENABLE_GPERFTOOLS={0}'.format(arguments['--gperf'])"
 
-  if(ENABLE_GPERFTOOLS)
-    find_package(Gperftools COMPONENTS tcmalloc OPTIONAL_COMPONENTS profiler)
-  else()
-    find_package(Gperftools REQUIRED COMPONENTS tcmalloc_minimal)
-  endif()
+option_with_print(ENABLE_GPERFTOOLS "Enable profiling with gperftools" OFF)
 
-  # Set the config.h variables
-  if(GPERFTOOLS_FOUND AND ENABLE_TCMALLOC_MINIMAL)
-    set(MADNESS_HAS_GOOGLE_PERF_MINIMAL 1)
-  endif()
-  if(LIBUNWIND_FOUND)
-    set(MADNESS_HAS_LIBUNWIND 1)
-  endif()
-
+if(ENABLE_GPERFTOOLS)
+  message(STATUS "Linking against gperftools libraries for profiling")
+  find_package(Gperftools COMPONENTS tcmalloc profiler)
 endif()

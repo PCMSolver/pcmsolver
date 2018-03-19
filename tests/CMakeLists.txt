@@ -20,6 +20,7 @@ add_subdirectory(bi_operators)
 add_subdirectory(cpcm)
 add_subdirectory(iefpcm)
 add_subdirectory(utils)
+add_subdirectory(benchmark)
 
 add_executable(unit_tests unit_tests.cpp
   $<TARGET_OBJECTS:bi_operators-tests>

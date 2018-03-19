@@ -28,6 +28,7 @@ modules:
       - 'custom/windows.cmake'
       - '%(url_root)modules/definitions.cmake'
       - 'custom/code_coverage.cmake'
+      - 'custom/gperftools.cmake'
       - '%(url_root)modules/int64.cmake'
       - '%(url_root)modules/omp.cmake'
       - '%(url_root)modules/safeguards.cmake'

@@ -129,8 +129,10 @@ void SphericalDiffuse<ProfilePolicy>::toFile(const std::string & prefix) {
   writeToFile(zetaC_, tmp + "zetaC.dat");
   writeToFile(omegaC_, tmp + "omegaC.dat");
   for (int L = 1; L <= maxLGreen_; ++L) {
-    writeToFile(zeta_[L], tmp + "zeta_" + pcm::to_string(L) + ".dat");
-    writeToFile(omega_[L], tmp + "omega_" + pcm::to_string(L) + ".dat");
+    std::ostringstream Llabel;
+    Llabel << std::setw(4) << std::setfill('0') << L;
+    writeToFile(zeta_[L], tmp + "zeta_" + Llabel.str() + ".dat");
+    writeToFile(omega_[L], tmp + "omega_" + Llabel.str() + ".dat");
   }
 }
 
@@ -240,35 +242,30 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   using namespace detail;
 
   // Parameters for the numerical solution of the radial differential equation
-  double r_0_ = 0.1; /*! Lower bound of the integration interval */
-  double r_infinity_ = this->profile_.upperLimit() +
-                       30.0; /*! Upper bound of the integration interval */
-
+  /*! Lower bound of the integration interval */
+  double r_0_ = 0.1;
   double y_0_ = std::log(r_0_);
+  /*! Upper bound of the integration interval */
+  double r_infinity_ = this->profile_.upperLimit() + 30.0;
   double y_infinity_ = std::log(r_infinity_);
   double relative_width = this->profile_.relativeWidth();
-  double observer_step_ =
-      1.0e-2 * relative_width; /*! Time step between observer calls */
+  /*! Time step between observer calls */
+  double step_ = 1.0e-2 * relative_width;
 
-  IntegratorParameters params_(y_0_, y_infinity_, observer_step_);
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
   zetaC_ =
-      RadialFunction<LnTransformedRadial>(maxLC_, y_0_, y_infinity_, eval_, params_);
+      RadialFunction<LnTransformedRadial>(maxLC_, y_0_, y_infinity_, step_, eval_);
   omegaC_ =
-      RadialFunction<LnTransformedRadial>(maxLC_, y_infinity_, y_0_, eval_, params_);
+      RadialFunction<LnTransformedRadial>(maxLC_, y_infinity_, y_0_, step_, eval_);
   zeta_.reserve(maxLGreen_ + 1);
   omega_.reserve(maxLGreen_ + 1);
   for (int L = 0; L <= maxLGreen_; ++L) {
-    RadialFunction<LnTransformedRadial> tmp_zeta_(
-        L, y_0_, y_infinity_, eval_, params_);
-    zeta_.push_back(tmp_zeta_);
-  }
-  for (int L = 0; L <= maxLGreen_; ++L) {
-    RadialFunction<LnTransformedRadial> tmp_omega_(
-        L, y_infinity_, y_0_, eval_, params_);
-    omega_.push_back(tmp_omega_);
+    zeta_.push_back(
+        RadialFunction<LnTransformedRadial>(L, y_0_, y_infinity_, step_, eval_));
+    omega_.push_back(
+        RadialFunction<LnTransformedRadial>(L, y_infinity_, y_0_, step_, eval_));
   }
 }
 

@@ -25,6 +25,7 @@
 
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 #include <vector>
 
 #include "Config.hpp"
@@ -34,36 +35,38 @@
 #ifndef HAS_CXX11
 #include <boost/foreach.hpp>
 #endif
-// Boost.Odeint includes
-#include <boost/numeric/odeint.hpp>
 
 #include "utils/MathUtils.hpp"
-#include "utils/RungeKutta4.hpp"
+#include "utils/RungeKutta.hpp"
+#include "utils/SplineFunction.hpp"
 
 /*! \file InterfacesImpl.hpp */
 
 namespace pcm {
 namespace green {
 namespace detail {
+/*! \brief Abstract class for an system of ordinary differential equations
+ *  \tparam Order The order of the ordinary differential equation
+ *  \author Roberto Di Remigio
+ *  \date 2018
+ */
+template <size_t Order = 1> class ODESystem {
+public:
+  typedef pcm::array<double, Order> StateType;
+  size_t ODEorder() const { return Order; }
+  void operator()(const StateType & f, StateType & dfdx, const double t) const {
+    RHS(f, dfdx, t);
+  }
+  virtual ~ODESystem() {}
+
+private:
+  virtual void RHS(const StateType & f, StateType & dfdx, const double t) const = 0;
+};
 
 /*! \typedef ProfileEvaluator
  *  \brief sort of a function pointer to the dielectric profile evaluation function
  */
 typedef pcm::function<pcm::tuple<double, double>(const double)> ProfileEvaluator;
-
-/*! \struct IntegratorParameters
- *  \brief holds parameters for the integrator
- */
-struct IntegratorParameters {
-  /*! Lower bound of the integration interval */
-  double r_0_;
-  /*! Upper bound of the integration interval */
-  double r_infinity_;
-  /*! Time step between observer calls */
-  double observer_step_;
-  IntegratorParameters(double r0, double rinf, double step)
-      : r_0_(r0), r_infinity_(rinf), observer_step_(step) {}
-};
 
 /*! \class LnTransformedRadial
  *  \brief system of ln-transformed first-order radial differential equations
@@ -73,25 +76,25 @@ struct IntegratorParameters {
  *  Provides a handle to the system of differential equations for the integrator.
  *  The dielectric profile comes in as a boost::function object.
  */
-class LnTransformedRadial __final : public pcm::utils::detail::ODESystem<2> {
+class LnTransformedRadial __final : public pcm::green::detail::ODESystem<2> {
 public:
   /*! Type of the state vector of the ODE */
-  typedef pcm::utils::detail::ODESystem<2>::StateType StateType;
+  typedef pcm::green::detail::ODESystem<2>::StateType StateType;
   /*! Constructor from profile evaluator and angular momentum */
   LnTransformedRadial(const ProfileEvaluator & e, int lval) : eval_(e), l_(lval) {}
 
 private:
   /*! Dielectric profile function and derivative evaluation */
-  ProfileEvaluator eval_;
+  const ProfileEvaluator eval_;
   /*! Angular momentum */
-  int l_;
-  /*! Provides a functor for the evaluation of the system
-   *  of first-order ODEs needed by Boost.Odeint
-   *  The second-order ODE and the system of first-order ODEs
-   *  are reported in the manuscript.
+  const int l_;
+  /*! \brief Provides a functor for the evaluation of the system of first-order ODEs.
    *  \param[in] rho state vector holding the function and its first derivative
    *  \param[out] drhodr state vector holding the first and second derivative
    *  \param[in] y logarithmic position on the integration grid
+   *
+   *  The second-order ODE and the system of first-order ODEs
+   *  are reported in the manuscript.
    */
   virtual void RHS(const StateType & rho, StateType & drhodr, const double y) const {
     // Evaluate the dielectric profile
@@ -107,7 +110,6 @@ private:
 };
 } // namespace detail
 
-using detail::IntegratorParameters;
 using detail::ProfileEvaluator;
 
 /*! \class RadialFunction
@@ -138,21 +140,25 @@ public:
   RadialFunction(int l,
                  double ymin,
                  double ymax,
-                 const ProfileEvaluator & eval,
-                 const IntegratorParameters & parms)
+                 double ystep,
+                 const ProfileEvaluator & eval)
       : L_(l),
         y_min_(ymin),
         y_max_(ymax),
         y_sign_(pcm::utils::sign(y_max_ - y_min_)) {
-    compute(eval, parms);
+    compute(ystep, eval);
   }
   pcm::tuple<double, double> operator()(double point) const {
     return pcm::make_tuple(function_impl(point), derivative_impl(point));
   }
   friend std::ostream & operator<<(std::ostream & os, RadialFunction & obj) {
     for (size_t i = 0; i < obj.function_[0].size(); ++i) {
-      os << obj.function_[0][i] << "    " << obj.function_[1][i] << "    "
+      // clang-format off
+      os << std::fixed << std::left << std::setprecision(14)
+         << obj.function_[0][i] << "    "
+         << obj.function_[1][i] << "    "
          << obj.function_[2][i] << std::endl;
+      // clang-format on
     }
     return os;
   }
@@ -176,21 +182,19 @@ private:
     function_[2].push_back(x[1]);
   }
   /*! \brief Calculates radial solution
-   *  \param[in] eval   dielectric profile evaluator function object
-   *  \param[in] parms parameters for the integrator
+   *  \param[in] step ODE integrator step
+   *  \param[in] eval dielectric profile evaluator function object
+   *  \return the number of integration steps
    *
-   *  This function discriminates between the first, i.e. the one with r^l
-   *  behavior, and the second radial solution, i.e. the one with r^(-l-1)
-   *  behavior, based on the sign of the integration interval y_sign_.
+   *  This function discriminates between the first (zeta-type), i.e. the one
+   *  with r^l behavior, and the second (omega-type) radial solution, i.e. the
+   *  one with r^(-l-1) behavior, based on the sign of the integration interval
+   *  y_sign_.
    */
-  void compute(const ProfileEvaluator & eval, const IntegratorParameters & parms) {
-    namespace odeint = boost::numeric::odeint;
-    odeint::runge_kutta4<StateType> stepper;
-
+  size_t compute(const double step, const ProfileEvaluator & eval) {
     ODE system(eval, L_);
-    // Holds the initial conditions
-    StateType init;
     // Set initial conditions
+    StateType init;
     if (y_sign_ > 0.0) { // zeta-type solution
       init[0] = y_sign_ * L_ * y_min_;
       init[1] = y_sign_ * L_;
@@ -198,14 +202,16 @@ private:
       init[0] = y_sign_ * (L_ + 1) * y_min_;
       init[1] = y_sign_ * (L_ + 1);
     }
-    odeint::integrate_const(
+    pcm::utils::RungeKutta4<StateType> stepper;
+    size_t nSteps = pcm::utils::integrate_const(
         stepper,
         system,
         init,
         y_min_,
         y_max_,
-        y_sign_ * parms.observer_step_,
+        y_sign_ * step,
         pcm::bind(&RadialFunction<ODE>::push_back, this, pcm::_1, pcm::_2));
+
     // clang-format off
     // Reverse order of function_ if omega-type solution was computed
     // this ensures that they are in ascending order, as later expected by
@@ -218,9 +224,10 @@ private:
 #endif /* HAS_CXX11 */
         std::reverse(comp.begin(), comp.end());
       }
-      }
+      // clang-format on
     }
-  // clang-format on
+    return nSteps;
+  }
   /*! \brief Returns value of function at given point
    *  \param[in] point evaluation point
    *

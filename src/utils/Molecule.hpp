@@ -47,6 +47,7 @@ class Element;
 namespace pcm {
 using utils::Atom;
 using utils::Sphere;
+using utils::Symmetry;
 
 enum rotorType { rtAsymmetric, rtSymmetric, rtSpherical, rtLinear, rtAtom };
 const std::string rotorTypeList[] = {"Asymmetric",
@@ -91,7 +92,7 @@ public:
    */
   Molecule() {
     rotor_ = rtAsymmetric;
-    pointGroup_ = buildGroup(0, 0, 0, 0);
+    pointGroup_ = Symmetry(0, 0, 0, 0);
   }
   /*! \brief Constructor from full molecular data
    *  \param[in] nat number of atoms

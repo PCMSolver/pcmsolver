@@ -51,7 +51,7 @@ src/utils/*.cpp           licensefile=.githooks/LICENSE-C++
 src/utils/cnpy.hpp        !licensefile
 src/utils/cnpy.cpp        !licensefile
 src/utils/Legendre.hpp    !licensefile
-src/utils/RungeKutta4.*   !licensefile
+src/utils/RungeKutta.hpp  !licensefile
 
 # tests
 tests/unit_tests.cpp             licensefile=.githooks/LICENSE-C++

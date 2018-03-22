@@ -57,13 +57,13 @@ add_Catch_test(
     green_anisotropic_liquid
   )
 
-# green_sharp_diffuse.cpp test
+# green_spherical_sharp.cpp test
 add_Catch_test(
   NAME
-    green_sharp_diffuse
+    green_spherical_sharp
   LABELS
     green
-    green_sharp_diffuse
+    green_spherical_sharp
   COST
     100.0
   )

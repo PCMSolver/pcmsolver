@@ -459,7 +459,7 @@ void Meddle::initInput(int nr_nuclei,
   Eigen::Matrix3Xd centers = Eigen::Map<Eigen::Matrix3Xd>(coordinates, 3, nr_nuclei);
 
   if (input_.mode() != "EXPLICIT") {
-    Symmetry pg = buildGroup(
+    Symmetry pg(
         symmetry_info[0], symmetry_info[1], symmetry_info[2], symmetry_info[3]);
     input_.molecule(detail::initMolecule(input_, pg, nr_nuclei, chg, centers));
   }

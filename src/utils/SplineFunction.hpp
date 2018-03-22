@@ -24,21 +24,24 @@
 #pragma once
 
 #include <algorithm>
+#include <vector>
 
 #include "Config.hpp"
 
 #include <Eigen/Core>
 #include <unsupported/Eigen/Splines>
 
-/*! \file SplineFunction.hpp
- *  \class SplineFunction
+/*! \file SplineFunction.hpp */
+
+namespace pcm {
+namespace utils {
+/*! \class SplineFunction
  *  \brief Spline interpolation of a function
  *  \author Roberto Di Remigio
  *  \date 2015
  *
  *  Taken from StackOverflow http://stackoverflow.com/a/29825204/2528668
  */
-
 class SplineFunction __final {
 private:
   typedef Eigen::Spline<double, 1> CubicSpline;
@@ -94,3 +97,43 @@ private:
   }
 #endif /*HAS_CXX11_LAMBDA */
 };
+
+/*! \brief Return value of function defined on grid at an arbitrary point
+ *  \param[in] point     where the function has to be evaluated
+ *  \param[in] grid      holds points on grid where function is known
+ *  \param[in] function  holds known function values
+ *
+ *  This function finds the nearest values for the given point
+ *  and performs a cubic spline interpolation.
+ *  \warning This function assumes that grid has already been sorted!
+ */
+inline double splineInterpolation(const double point,
+                                  const std::vector<double> & grid,
+                                  const std::vector<double> & function) {
+  // Find nearest points on grid to the arbitrary point given
+  int index =
+      std::distance(grid.begin(), std::lower_bound(grid.begin(), grid.end(), point));
+
+  int imax = grid.size() - 1;
+  if (index <= 0)
+    index = 1;
+  if (index >= imax - 1)
+    index = imax - 2;
+
+  // Parameters for the interpolating spline
+  Eigen::Vector4d x = (Eigen::Vector4d() << grid[index - 1],
+                       grid[index],
+                       grid[index + 1],
+                       grid[index + 2])
+                          .finished();
+  Eigen::Vector4d y = (Eigen::Vector4d() << function[index - 1],
+                       function[index],
+                       function[index + 1],
+                       function[index + 2])
+                          .finished();
+  SplineFunction s(x, y);
+
+  return s(point);
+}
+} // namespace utils
+} // namespace pcm

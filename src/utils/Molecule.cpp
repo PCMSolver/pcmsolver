@@ -57,7 +57,7 @@ Molecule::Molecule(int nat,
       atoms_(at),
       spheres_(sph) {
   rotor_ = findRotorType();
-  pointGroup_ = buildGroup(0, 0, 0, 0);
+  pointGroup_ = Symmetry(0, 0, 0, 0);
 }
 
 Molecule::Molecule(int nat,
@@ -75,7 +75,7 @@ Molecule::Molecule(int nat,
       atoms_(at),
       spheres_(sph) {
   rotor_ = findRotorType();
-  pointGroup_ = buildGroup(nr_gen, gen[0], gen[1], gen[2]);
+  pointGroup_ = Symmetry(nr_gen, gen);
 }
 
 Molecule::Molecule(int nat,
@@ -108,7 +108,7 @@ Molecule::Molecule(const std::vector<Sphere> & sph)
     atoms_.push_back(Atom("Dummy", "Du", charge, mass, mass, geometry_.col(i)));
   }
   rotor_ = findRotorType();
-  pointGroup_ = buildGroup(0, 0, 0, 0);
+  pointGroup_ = Symmetry(0, 0, 0, 0);
 }
 
 Molecule::Molecule(const Molecule & other) { *this = other; }

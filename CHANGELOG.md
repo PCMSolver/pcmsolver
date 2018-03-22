@@ -34,6 +34,7 @@
 - The implementation of the `RadialSolution` for the second order ODE
   associated with the spherical diffuse Green's function is less heavily
   `template`-d.
+- The dependency on Boost.Odeint has been dropped.
 
 ## [Version 1.2.0-rc1] - 2018-03-02
 

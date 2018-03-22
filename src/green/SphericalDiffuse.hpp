@@ -213,14 +213,12 @@ private:
   /*! \brief First independent radial solution, used to build Green's function.
    *  \note The vector has dimension maxLGreen_ and has r^l behavior
    */
-  std::vector<RadialFunction<detail::StateType, detail::LnTransformedRadial, Zeta> >
-      zeta_;
+  std::vector<RadialFunction<detail::LnTransformedRadial> > zeta_;
 
   /*! \brief Second independent radial solution, used to build Green's function.
    *  \note The vector has dimension maxLGreen_  and has r^(-l-1) behavior
    */
-  std::vector<RadialFunction<detail::StateType, detail::LnTransformedRadial, Omega> >
-      omega_;
+  std::vector<RadialFunction<detail::LnTransformedRadial> > omega_;
 
   /*! \brief Returns L-th component of the radial part of the Green's function
    *  \param[in] L  angular momentum
@@ -246,13 +244,13 @@ private:
   /*! \brief First independent radial solution, used to build coefficient.
    *  \note This is needed to separate the Coulomb singularity and has r^l behavior
    */
-  RadialFunction<detail::StateType, detail::LnTransformedRadial, Zeta> zetaC_;
+  RadialFunction<detail::LnTransformedRadial> zetaC_;
 
   /*! \brief Second independent radial solution, used to build coefficient.
    *  \note This is needed to separate the Coulomb singularity and has r^(-l-1)
    * behavior
    */
-  RadialFunction<detail::StateType, detail::LnTransformedRadial, Omega> omegaC_;
+  RadialFunction<detail::LnTransformedRadial> omegaC_;
 
   /*! \brief Returns coefficient for the separation of the Coulomb singularity
    *  \param[in] sp first point

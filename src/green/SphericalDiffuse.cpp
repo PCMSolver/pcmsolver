@@ -254,20 +254,20 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
   ProfileEvaluator eval_ =
       pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
 
-  zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(
-      maxLC_, y_0_, y_infinity_, eval_, params_);
-  omegaC_ = RadialFunction<StateType, LnTransformedRadial, Omega>(
-      maxLC_, y_0_, y_infinity_, eval_, params_);
+  zetaC_ =
+      RadialFunction<LnTransformedRadial>(maxLC_, y_0_, y_infinity_, eval_, params_);
+  omegaC_ =
+      RadialFunction<LnTransformedRadial>(maxLC_, y_infinity_, y_0_, eval_, params_);
   zeta_.reserve(maxLGreen_ + 1);
   omega_.reserve(maxLGreen_ + 1);
   for (int L = 0; L <= maxLGreen_; ++L) {
-    RadialFunction<StateType, LnTransformedRadial, Zeta> tmp_zeta_(
+    RadialFunction<LnTransformedRadial> tmp_zeta_(
         L, y_0_, y_infinity_, eval_, params_);
     zeta_.push_back(tmp_zeta_);
   }
   for (int L = 0; L <= maxLGreen_; ++L) {
-    RadialFunction<StateType, LnTransformedRadial, Omega> tmp_omega_(
-        L, y_0_, y_infinity_, eval_, params_);
+    RadialFunction<LnTransformedRadial> tmp_omega_(
+        L, y_infinity_, y_0_, eval_, params_);
     omega_.push_back(tmp_omega_);
   }
 }

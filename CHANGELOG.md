@@ -31,6 +31,9 @@
 - The `ENABLE_Fortran_API` configuration option has been renamed
   `TEST_Fortran_API`, since it now only triggers compilation of the
   `Fortran_host` test case.
+- The implementation of the `RadialSolution` for the second order ODE
+  associated with the spherical diffuse Green's function is less heavily
+  `template`-d.
 
 ## [Version 1.2.0-rc1] - 2018-03-02
 

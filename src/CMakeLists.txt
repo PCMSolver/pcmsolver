@@ -128,37 +128,16 @@ endif()
 # <<<  Export Config  >>>
 
 include(CMakePackageConfigHelpers)
-# Hardcode to share, rather than use CMAKE_INSTALL_DATAROOTDIR as the latter
-# might resolve to a place not recognized by CMake
-set(CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}")
 configure_package_config_file(
-  ${PCMSolver_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  ${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+  ${PROJECT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}/${PROJECT_NAME}Config.cmake
   INSTALL_DESTINATION
     ${CMAKECONFIG_INSTALL_DIR}
   )
-
-add_custom_target(update_version
-  ALL
-  COMMAND
-    ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/versioner.py
-        --metaout ${CMAKE_CURRENT_BINARY_DIR}/metadata.py
-        --cmakeout ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
-  COMMAND
-    ${CMAKE_COMMAND}
-         -DWTO="${CMAKE_CURRENT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}"
-         -DPN="PCMSolver"
-         -P ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
-  WORKING_DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMENT
-    "Generating version info"
-  )
-
 install(
   FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    ${PROJECT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}/${PROJECT_NAME}Config.cmake
+    ${PROJECT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}/${PROJECT_NAME}ConfigVersion.cmake
   DESTINATION
     ${CMAKECONFIG_INSTALL_DIR}
   )

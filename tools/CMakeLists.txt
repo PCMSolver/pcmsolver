@@ -1,5 +1,3 @@
-file(TO_NATIVE_PATH "${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}/pcmsolver" PYMOD_INSTALL_FULLDIR)
-
 configure_file(go_pcm.py.in ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py @ONLY)
 file(
   COPY
@@ -23,7 +21,6 @@ endif()
 configure_file(init.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py COPYONLY)
 file(
   COPY
-    ${PROJECT_BINARY_DIR}/src/metadata.py
     pcmdata.py
     pcmparser.py
     pyparsing.py
@@ -34,7 +31,6 @@ install(
   FILES
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py
-    ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/metadata.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmdata.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pcmparser.py
     ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/pyparsing.py

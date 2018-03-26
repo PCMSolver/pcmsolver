@@ -170,8 +170,9 @@ def reconcile_and_compute_version_output(quiet=False):
                         project_version_long = trial_version_long_release
 
                     else:
-                        print("""Undefining version for irreconcilable hashes: {} (computed) vs {} (recorded)""".
-                              format(trial_version_long_release, res['long']))
+                        print(
+                            """Undefining version for irreconcilable hashes: {} (computed) vs {} (recorded)""".format(
+                                trial_version_long_release, res['long']))
 
             else:
                 if res['branch_name'].endswith('.x'):
@@ -273,6 +274,37 @@ write_basic_package_version_file(
         handle.write(main_fn.format(ver=versdata['__version_cmake']))
 
 
+def write_new_header_metafile(versdata, project_name, outfile='metadata.out.h'):
+    main_fn = """
+#pragma once
+
+#define PROJECT_VERSION_MAJOR {major}
+#define PROJECT_VERSION_MINOR {minor}
+#define PROJECT_VERSION_PATCH {patch}
+#define PROJECT_VERSION_DESCRIBE \"{describe}\"
+#define {pn_allcaps}_VERSION ((PROJECT_VERSION_MAJOR << 16) | PROJECT_VERSION_MINOR | PROJECT_VERSION_PATCH)
+#define PROJECT_VERSION \"{version}\"
+
+#define GIT_COMMIT_HASH \"{githash}\"
+#define GIT_COMMIT_BRANCH \"{branch}\"
+"""
+    version = versdata['__version__']
+    version_branch_name = versdata['__version_branch_name']
+    version_long = versdata['__version_long']
+    major, minor, patch, describe = version_long.split('.')
+    with open(os.path.abspath(outfile), 'w') as handle:
+        handle.write(
+            main_fn.format(
+                major=major,
+                minor=minor,
+                patch=patch,
+                pn_allcaps=project_name.upper(),
+                describe=describe,
+                version=version_long,
+                githash=version_long[len(version) + 1:],
+                branch=version_branch_name))
+
+
 def version_formatter(versdata, formatstring="""{version}"""):
     """Return version information string with data from *versdata* when
     supplied with *formatstring* suitable for ``formatstring.format()``.
@@ -307,6 +339,7 @@ if __name__ == '__main__':
     parser.add_argument('--metaout', default='metadata.out.py', help='file to which the computed version info written')
     parser.add_argument(
         '--cmakeout', default='metadata.out.cmake', help='file to which the CMake ConfigVersion generator written')
+    parser.add_argument('--headerout', default='metadata.out.h', help='header file to which the version info written')
     parser.add_argument(
         '--format', default='all', help='string like "{version} {githash}" to be filled in and returned')
     parser.add_argument(
@@ -316,5 +349,6 @@ if __name__ == '__main__':
     ans = reconcile_and_compute_version_output(quiet=args.formatonly)
     write_new_metafile(ans, args.metaout)
     write_new_cmake_metafile(ans, args.cmakeout)
+    write_new_header_metafile(ans, 'PCMSolver', args.headerout)
     ans2 = version_formatter(ans, formatstring=args.format)
     print(ans2)

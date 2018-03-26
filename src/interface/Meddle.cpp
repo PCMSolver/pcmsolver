@@ -46,6 +46,7 @@
 #include "solver/SolverData.hpp"
 
 #include "Citation.hpp"
+#include "VersionInfo.hpp"
 #include "utils/Atom.hpp"
 #include "utils/Factory.hpp"
 #include "utils/Solvent.hpp"
@@ -415,7 +416,6 @@ void pcmsolver_print(pcmsolver_context_t * context) {
 }
 void pcm::Meddle::printInfo() const {
   hostWriter_(citation_message());
-  hostWriter_(version_info());
   hostWriter_(infoStream_);
 }
 

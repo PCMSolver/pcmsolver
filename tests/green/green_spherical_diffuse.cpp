@@ -68,7 +68,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       Eigen::Vector3d sphereCenter = Eigen::Vector3d::Zero();
       SphericalDiffuse<> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
-        double value = 0.0204749331147813275;
+        double value = 0.0204749331147992819;
         double gf_value = gf.kernelS(source1, probe1);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -79,7 +79,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
         REQUIRE(value == Approx(gf_value));
       }
       AND_THEN("the value of the Green's function outside the droplet is") {
-        double value = 0.488060362514614432;
+        double value = 0.487473605103865837;
         double gf_value = gf.kernelS(source2, probe2);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -91,7 +91,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the probe "
            "point inside the droplet is") {
-        double derProbe = -0.0124999765635167015;
+        double derProbe = -0.0124999765637075211;
         double gf_derProbe = gf.derivativeProbe(probeNormal1, source1, probe1);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -103,7 +103,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "probe point outside the droplet is") {
-        double derProbe = -0.290662079075743041;
+        double derProbe = -0.290662955233778053;
         double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -115,7 +115,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the source "
            "point inside the droplet is") {
-        double derSource = 0.00937504723103055326;
+        double derSource = 0.00937504723101320603;
         double gf_derSource = gf.derivativeSource(sourceNormal1, source1, probe1);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -127,7 +127,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "source point outside the droplet is") {
-        double derSource = -0.938830970128590181;
+        double derSource = -0.901954472843635724;
         double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -144,7 +144,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
           (Eigen::Vector3d() << 25.0, 0.0, 0.0).finished();
       SphericalDiffuse<> gf(eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
-        double value = 0.0173845118865096904;
+        double value = 0.0173845118865097424;
         double gf_value = gf.kernelS(source1, probe1);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -155,7 +155,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
         REQUIRE(value == Approx(gf_value));
       }
       AND_THEN("the value of the Green's function outside the droplet is") {
-        double value = 0.501844654162973303;
+        double value = 0.501385603574595162;
         double gf_value = gf.kernelS(source2, probe2);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -167,7 +167,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the probe "
            "point inside the droplet is") {
-        double derProbe = -0.012483438527558649;
+        double derProbe = -0.0124834385275933435;
         double gf_derProbe = gf.derivativeProbe(probeNormal1, source1, probe1);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -179,7 +179,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "probe point outside the droplet is") {
-        double derProbe = -0.291257922496734878;
+        double derProbe = -0.291262383059764929;
         double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -191,7 +191,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the source "
            "point inside the droplet is") {
-        double derSource = 0.0124835646475064677;
+        double derSource = 0.012483564647454426;
         double gf_derSource = gf.derivativeSource(sourceNormal1, source1, probe1);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -203,7 +203,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "source point outside the droplet is") {
-        double derSource = 5.01504540067754245;
+        double derSource = 2.720604738008503;
         double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -221,7 +221,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       SphericalDiffuse<OneLayerTanh> gf(
           eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
-        double value = 0.0204265162808782985;
+        double value = 0.0204265162808963327;
         double gf_value = gf.kernelS(source1, probe1);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -232,7 +232,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
         REQUIRE(value == Approx(gf_value));
       }
       AND_THEN("the value of the Green's function outside the droplet is") {
-        double value = 0.428395676083591359;
+        double value = 0.42831756921770181;
         double gf_value = gf.kernelS(source2, probe2);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -244,7 +244,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the probe "
            "point inside the droplet is") {
-        double derProbe = -0.0124999769449823939;
+        double derProbe = -0.0124999769448609632;
         double gf_derProbe = gf.derivativeProbe(probeNormal1, source1, probe1);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -256,7 +256,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "probe point outside the droplet is") {
-        double derProbe = -0.288385047571004804;
+        double derProbe = -0.288392889131738883;
         double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -280,7 +280,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "source point outside the droplet is") {
-        double derSource = 3.22957321418654297;
+        double derSource = -1.51576208806569745;
         double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -298,7 +298,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       SphericalDiffuse<OneLayerTanh> gf(
           eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
-        double value = 0.0173358023608628994;
+        double value = 0.017335802360862948;
         double gf_value = gf.kernelS(source1, probe1);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -309,7 +309,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
         REQUIRE(value == Approx(gf_value));
       }
       AND_THEN("the value of the Green's function outside the droplet is") {
-        double value = 0.471193749836353093;
+        double value = 0.470725113611886292;
         double gf_value = gf.kernelS(source2, probe2);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -321,7 +321,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the probe "
            "point inside the droplet is") {
-        double derProbe = -0.0124834504454732209;
+        double derProbe = -0.0124834504460630269;
         double gf_derProbe = gf.derivativeProbe(probeNormal1, source1, probe1);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -333,7 +333,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "probe point outside the droplet is") {
-        double derProbe = -0.290867341330436346;
+        double derProbe = -0.290870450536662162;
         double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -345,7 +345,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the source "
            "point inside the droplet is") {
-        double derSource = 0.0124835522706361057;
+        double derSource = 0.012483552270584064;
         double gf_derSource = gf.derivativeSource(sourceNormal1, source1, probe1);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -357,7 +357,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "source point outside the droplet is") {
-        double derSource = 4.9830666203676266;
+        double derSource = 3.75908425086779463;
         double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -376,7 +376,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       SphericalDiffuse<OneLayerErf> gf(
           eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
-        double value = 0.0204465601345453427;
+        double value = 0.0204465601345278428;
         double gf_value = gf.kernelS(source1, probe1);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -387,7 +387,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
         REQUIRE(value == Approx(gf_value));
       }
       AND_THEN("the value of the Green's function outside the droplet is") {
-        double value = 0.546459075558889285;
+        double value = 0.546440841068159378;
         double gf_value = gf.kernelS(source2, probe2);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -399,7 +399,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the probe "
            "point inside the droplet is") {
-        double derProbe = -0.0124999769317464537;
+        double derProbe = -0.0124999769314168563;
         double gf_derProbe = gf.derivativeProbe(probeNormal1, source1, probe1);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -411,7 +411,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "probe point outside the droplet is") {
-        double derProbe = -0.292047321249766512;
+        double derProbe = -0.292045737975143993;
         double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -423,7 +423,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the source "
            "point inside the droplet is") {
-        double derSource = 0.00937504649521289646;
+        double derSource = 0.00937504649523024369;
         double gf_derSource = gf.derivativeSource(sourceNormal1, source1, probe1);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -435,7 +435,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "source point outside the droplet is") {
-        double derSource = -2.1857233870498094;
+        double derSource = -1.60173403890240262;
         double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -453,7 +453,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       SphericalDiffuse<OneLayerErf> gf(
           eps1, eps2, width, sphereRadius, sphereCenter, maxL);
       THEN("the value of the Green's function inside the droplet is") {
-        double value = 0.0173558529449408631;
+        double value = 0.0173558563009676217;
         double gf_value = gf.kernelS(source1, probe1);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -464,7 +464,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
         REQUIRE(value == Approx(gf_value));
       }
       AND_THEN("the value of the Green's function outside the droplet is") {
-        double value = 0.372262125530776311;
+        double value = 0.37238664692877399;
         double gf_value = gf.kernelS(source2, probe2);
         INFO("ref_value = " << std::setprecision(
                                    std::numeric_limits<long double>::digits10)
@@ -476,7 +476,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the probe "
            "point inside the droplet is") {
-        double derProbe = -0.0124834509424368023;
+        double derProbe = -0.0124834500456541542;
         double gf_derProbe = gf.derivativeProbe(probeNormal1, source1, probe1);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -488,7 +488,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "probe point outside the droplet is") {
-        double derProbe = -0.27916006373779334;
+        double derProbe = -0.279220523679291066;
         double gf_derProbe = gf.derivativeProbe(probeNormal2, source2, probe2);
         INFO("ref_derProbe = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -500,7 +500,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       THEN("the value of the Green's function directional derivative wrt the source "
            "point inside the droplet is") {
-        double derSource = 0.0124835526376168571;
+        double derSource = 0.0124835526869870872;
         double gf_derSource = gf.derivativeSource(sourceNormal1, source1, probe1);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)
@@ -512,7 +512,7 @@ SCENARIO("Evaluation of the spherical diffuse Green's function and its derivativ
       }
       AND_THEN("the value of the Green's function directional derivative wrt the "
                "source point outside the droplet is") {
-        double derSource = 3.4616694327527231;
+        double derSource = 4.79631817304426722;
         double gf_derSource = gf.derivativeSource(sourceNormal2, source2, probe2);
         INFO("ref_derSource = "
              << std::setprecision(std::numeric_limits<long double>::digits10)

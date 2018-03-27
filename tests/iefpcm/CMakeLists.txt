@@ -11,6 +11,8 @@ add_library(iefpcm-tests OBJECT
   iefpcm_gepol-point.cpp
   iefpcm_gepol-point_from-file.cpp
   iefpcm_symmetry.cpp
+  iefpcm_tsless-point.cpp
+  iefpcm_tsless-NH3.cpp
   )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(iefpcm-tests custom_boost)
@@ -150,4 +152,24 @@ add_Catch_test(
     iefpcm_gepol-point_from-file
   DEPENDS
     iefpcm_gepol-point
+  )
+
+# iefpcm_tsless-point.cpp test
+add_Catch_test(
+  NAME
+    iefpcm_tsless-point
+  LABELS
+    solver
+    iefpcm
+    iefpcm_tsless-point
+  )
+
+# iefpcm_tsless-NH3.cpp test
+add_Catch_test(
+  NAME
+    iefpcm_tsless-NH3
+  LABELS
+    solver
+    iefpcm
+    iefpcm_tsless-NH3
   )

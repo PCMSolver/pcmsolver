@@ -8,26 +8,28 @@ include_directories(
   SYSTEM ${CMAKE_CURRENT_LIST_DIR}/utils/getkw
   )
 
+add_subdirectory(bi_operators)
 add_subdirectory(cavity)
 add_subdirectory(green)
 add_subdirectory(interface)
 add_subdirectory(metal)
-add_subdirectory(bi_operators)
 add_subdirectory(pedra)
 add_subdirectory(solver)
+add_subdirectory(tsless)
 add_subdirectory(utils)
 
 list(APPEND _objects
-    $<TARGET_OBJECTS:cavity>
     $<$<BOOL:${ENABLE_Fortran_API}>:$<TARGET_OBJECTS:fortran_bindings>>
+    $<TARGET_OBJECTS:bi_operators>
+    $<TARGET_OBJECTS:cavity>
+    $<TARGET_OBJECTS:getkw>
     $<TARGET_OBJECTS:green>
     $<TARGET_OBJECTS:interface>
     $<TARGET_OBJECTS:metal>
-    $<TARGET_OBJECTS:bi_operators>
     $<TARGET_OBJECTS:pedra>
     $<TARGET_OBJECTS:solver>
+    $<TARGET_OBJECTS:tsless>
     $<TARGET_OBJECTS:utils>
-    $<TARGET_OBJECTS:getkw>
     )
 
 if(NOT STATIC_LIBRARY_ONLY)

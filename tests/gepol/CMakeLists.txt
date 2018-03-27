@@ -11,6 +11,7 @@ add_library(gepol-tests OBJECT
   gepol_point.cpp
   gepol_point_from-file.cpp
   gepol_point_symmetry.cpp
+  gepol_HF.cpp
   )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(gepol-tests custom_boost)
@@ -128,4 +129,13 @@ add_Catch_test(
     gepol_NH3_from-file
   DEPENDS
     gepol_NH3
+  )
+
+# gepol_HF.cpp test
+add_Catch_test(
+  NAME
+    gepol_HF
+  LABELS
+    gepol
+    gepol_HF
   )

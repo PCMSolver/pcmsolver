@@ -41,6 +41,10 @@ src/pedra/*.F90             licensefile=.githooks/LICENSE-Fortran
 src/pedra/*.f90             licensefile=.githooks/LICENSE-Fortran
 src/pedra/pedra_dlapack.f90 !licensefile
 
+# tsless
+src/tsless/*.F90             licensefile=.githooks/LICENSE-Fortran
+src/tsless/*.f90             licensefile=.githooks/LICENSE-Fortran
+
 # solver
 src/solver/*.hpp licensefile=.githooks/LICENSE-C++
 src/solver/*.cpp licensefile=.githooks/LICENSE-C++
@@ -69,6 +73,7 @@ tests/iefpcm/*.cpp               licensefile=.githooks/LICENSE-C++
 tests/input/*.cpp                licensefile=.githooks/LICENSE-C++
 tests/numerical_quadrature/*.cpp licensefile=.githooks/LICENSE-C++
 tests/utils/*.cpp                licensefile=.githooks/LICENSE-C++
+tests/tsless/*.cpp               licensefile=.githooks/LICENSE-C++
 
 # tools
 doc/conf.py               licensefile=.githooks/LICENSE-Python

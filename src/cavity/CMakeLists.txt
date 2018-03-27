@@ -6,6 +6,7 @@ Element.hpp
 GePolCavity.hpp
 ICavity.hpp
 RestartCavity.hpp
+TsLessCavity.hpp
 )
 
 # List of sources
@@ -14,6 +15,7 @@ Element.cpp
 GePolCavity.cpp
 ICavity.cpp
 RestartCavity.cpp
+TsLessCavity.cpp
 )
 
 add_library(cavity OBJECT ${sources_list} ${headers_list})

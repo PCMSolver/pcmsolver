@@ -27,14 +27,14 @@
 !
 !     RDR, 280114. Put things in makecav.F inside here directly.
 !
-subroutine generatecavity_cpp(maxts_, maxsph_, maxvert_,         &
+subroutine pedra_driver(maxts_, maxsph_, maxvert_,         &
     xtscor_, ytscor_, ztscor_, ar_,                              &
     xsphcor_, ysphcor_, zsphcor_, rsph_,                         &
     nts_, ntsirr_, nesfp_, addsph_,                              &
     xe_, ye_, ze_, rin_, masses_, avgArea_, rsolv_, ret_,        &
     nr_gen_, gen1_, gen2_, gen3_,                                &
     nvert_, vert_, centr_, isphe_, pedra_, len_pedra_)           &
-    bind(C, name='generatecavity_cpp')
+    bind(C, name='pedra_driver')
 
 use, intrinsic :: iso_c_binding
 use pedra_precision
@@ -69,7 +69,6 @@ logical           :: pedra_open, pedra_exist
 real(c_double), allocatable :: vert(:, :, :), centr(:, :, :)
 character(len=len_pedra_) :: pedra
 type(point_group) :: pgroup
-
 
 pedra = carray_to_fstring(pedra_)
 !lvpri = 121201_regint_k
@@ -172,4 +171,4 @@ write(pedra_unit, *) '<<< Done with PEDRA Fortran code >>>'
 
 close(pedra_unit)
 
-end subroutine generatecavity_cpp
+end subroutine

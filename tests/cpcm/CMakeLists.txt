@@ -6,6 +6,8 @@ add_library(cpcm-tests OBJECT
   cpcm_gepol-point.cpp
   cpcm_gepol-point_from-file.cpp
   cpcm_symmetry.cpp
+  cpcm_tsless-point.cpp
+  cpcm_tsless-NH3.cpp
   )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(cpcm-tests custom_boost)
@@ -95,4 +97,23 @@ add_Catch_test(
     cpcm_gepol-C2H4_D2h
   REFERENCE_FILES
     ASC-cpcm_gepol-C2H4_D2h.npy
+  )
+
+# FIXME Reference files for these two tests
+# cpcm_tsless-point.cpp test
+add_Catch_test(
+  NAME
+    cpcm_tsless-point
+  LABELS
+    cpcm
+    cpcm_tsless-point
+  )
+
+# cpcm_tsless-NH3.cpp test
+add_Catch_test(
+  NAME
+    cpcm_tsless-NH3
+  LABELS
+    cpcm
+    cpcm_tsless-NH3
   )

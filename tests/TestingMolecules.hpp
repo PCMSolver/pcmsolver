@@ -35,6 +35,10 @@
 #include "utils/Symmetry.hpp"
 
 namespace pcm {
+/*! Returns the hydrogen fluoride molecule
+ */
+inline Molecule HF();
+
 /*! Returns the ammonia molecule
  */
 inline Molecule NH3();
@@ -121,6 +125,34 @@ template <int group> Molecule dummy(double radius, const Eigen::Vector3d & cente
   dummy.pointGroup(pGroup);
 
   return dummy;
+};
+
+Molecule HF() {
+  int nAtoms = 2;
+
+  Eigen::Vector3d F(0.000000000, 0.00000000, 0.08729478);
+  Eigen::Vector3d H(0.000000000, 0.00000000, -1.64558444);
+
+  Eigen::MatrixXd geom(3, nAtoms);
+  geom.col(0) = F.transpose();
+  geom.col(1) = H.transpose();
+  Eigen::Vector2d charges, masses;
+  charges << 9.0, 1.0;
+  masses << 18.9984030, 1.0078250;
+  std::vector<Atom> atoms;
+  atoms.push_back(Atom("Fluorine", "F", charges(0), masses(0), 2.777897403, F, 1.0));
+  atoms.push_back(Atom("Hydrogen", "H", charges(1), masses(1), 2.267671349, H, 1.0));
+
+  std::vector<Sphere> spheres;
+  Sphere sph1(F, 2.777897403);
+  Sphere sph2(H, 2.267671349);
+  spheres.push_back(sph1);
+  spheres.push_back(sph2);
+
+  // C1
+  Symmetry pGroup = buildGroup(0, 0, 0, 0);
+
+  return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
 
 Molecule NH3() {

@@ -94,18 +94,7 @@ private:
   void writeOFF(const std::string & suffix);
 };
 
-/*! \fn extern "C" void generatecavity_cpp(int * maxts, int * maxsph, int * maxvert,
- *                                 double * xtscor, double * ytscor, double * ztscor,
- * double * ar,
- *                                 double * xsphcor, double * ysphcor, double *
- * zsphcor, double * rsph,
- *                                 int * nts, int * ntsirr, int * nesfp, int *
- * addsph,
- *                                 double * xe, double * ye, double * ze, double *
- * rin,
- *                                 double * avgArea, double * rsolv, double * ret,
- *                                 int * nr_gen, int * gen1, int * gen2, int * gen3,
- *                                 int * nvert, double * vert, double * centr)
+/*! \brief Interface to the Fortran PEDRA code
  *  \param[in] maxts maximum number of tesserae allowed
  *  \param[in] maxsph maximum number of spheres allowed
  *  \param[in] maxvert maximum number of vertices allowed
@@ -144,39 +133,39 @@ private:
  *  \param[out] vert coordinates of tesserae vertices
  *  \param[out] centr centers of arcs defining the edges of the tesserae
  */
-extern "C" void generatecavity_cpp(int * maxts,
-                                   int * maxsph,
-                                   int * maxvert,
-                                   double * xtscor,
-                                   double * ytscor,
-                                   double * ztscor,
-                                   double * ar,
-                                   double * xsphcor,
-                                   double * ysphcor,
-                                   double * zsphcor,
-                                   double * rsph,
-                                   int * nts,
-                                   int * ntsirr,
-                                   int * nesfp,
-                                   int * addsph,
-                                   double * xe,
-                                   double * ye,
-                                   double * ze,
-                                   double * rin,
-                                   double * masses,
-                                   double * avgArea,
-                                   double * rsolv,
-                                   double * ret,
-                                   int * nr_gen,
-                                   int * gen1,
-                                   int * gen2,
-                                   int * gen3,
-                                   int * nvert,
-                                   double * vert,
-                                   double * centr,
-                                   int * isphe,
-                                   const char * pedra,
-                                   int * len_f_pedra);
+extern "C" void pedra_driver(int * maxts,
+                             int * maxsph,
+                             int * maxvert,
+                             double * xtscor,
+                             double * ytscor,
+                             double * ztscor,
+                             double * ar,
+                             double * xsphcor,
+                             double * ysphcor,
+                             double * zsphcor,
+                             double * rsph,
+                             int * nts,
+                             int * ntsirr,
+                             int * nesfp,
+                             int * addsph,
+                             double * xe,
+                             double * ye,
+                             double * ze,
+                             double * rin,
+                             double * masses,
+                             double * avgArea,
+                             double * rsolv,
+                             double * ret,
+                             int * nr_gen,
+                             int * gen1,
+                             int * gen2,
+                             int * gen3,
+                             int * nvert,
+                             double * vert,
+                             double * centr,
+                             int * isphe,
+                             const char * pedra,
+                             int * len_f_pedra);
 
 ICavity * createGePolCavity(const CavityData & data);
 } // namespace cavity

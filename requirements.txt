@@ -1,6 +1,7 @@
 Pygments
 breathe
 docopt
+fprettify
 matplotlib
 pyparsing
 pyyaml

@@ -7,14 +7,15 @@ name = "pypi"
 
 [packages]
 
+PyYAML = "*"
 Pygments = "*"
+Sphinx = "*"
 breathe = "*"
 docopt = "*"
+fprettify = "*"
 matplotlib = "*"
 pyparsing = "*"
-PyYAML = "*"
 recommonmark = "*"
-Sphinx = "*"
 sphinx_rtd_theme = "*"
 sphinxcontrib-bibtex = "*"
 yapf = "*"

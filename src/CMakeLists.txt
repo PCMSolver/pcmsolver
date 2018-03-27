@@ -49,7 +49,7 @@ if(NOT STATIC_LIBRARY_ONLY)
     )
   set_target_properties(pcm-shared
     PROPERTIES
-      SOVERSION ${PROJECT_VERSION_MAJOR}
+      SOVERSION 1
       CXX_VISIBILITY_PRESET hidden
       VISIBILITY_INLINES_HIDDEN 1
       MACOSX_RPATH ON
@@ -128,24 +128,16 @@ endif()
 # <<<  Export Config  >>>
 
 include(CMakePackageConfigHelpers)
-set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}")
 configure_package_config_file(
-  ${PCMSolver_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  ${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+  ${PROJECT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}/${PROJECT_NAME}Config.cmake
   INSTALL_DESTINATION
     ${CMAKECONFIG_INSTALL_DIR}
   )
-write_basic_package_version_file(
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-  VERSION
-    ${PCMSolver_VERSION}
-  COMPATIBILITY
-    SameMajorVersion
-  )
 install(
   FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    ${PROJECT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}/${PROJECT_NAME}Config.cmake
+    ${PROJECT_BINARY_DIR}/${CMAKECONFIG_INSTALL_DIR}/${PROJECT_NAME}ConfigVersion.cmake
   DESTINATION
     ${CMAKECONFIG_INSTALL_DIR}
   )

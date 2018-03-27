@@ -23,49 +23,48 @@
 
 #pragma once
 
-#include <algorithm>
-#include <sstream>
+#include <cstdio>
+#include <ctime>
 #include <string>
 
-#include "Config.hpp"
-#include "GitInfo.hpp"
-
-// This is to stringify the PROJECT_VERSION preprocessor constant
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define AT __FILE__ ":" TOSTRING(__LINE__)
+#include "VersionInfo.hpp"
 
 /*! \file Citation.hpp
  *  \brief Contains the citation text.
  */
 
 inline std::string citation_message() {
-  std::ostringstream rest;
-  std::string version(TOSTRING(PROJECT_VERSION));
-  rest << "\n" << std::endl;
-  rest << " * PCMSolver, an API for the Polarizable Continuum Model electrostatic "
-          "problem. Version "
-       << version << std::endl;
-  rest << "   Main authors: R. Di Remigio, L. Frediani, K. Mozgawa" << std::endl;
-  rest << "    With contributions from:" << std::endl;
-  rest << "     R. Bast            (CMake framework)" << std::endl;
-  rest << "     U. Ekstroem        (automatic differentiation library)" << std::endl;
-  rest << "     J. Juselius        (input parsing library and CMake framework)"
-       << std::endl;
-  rest << "   Theory: - J. Tomasi, B. Mennucci and R. Cammi:" << std::endl;
-  rest << "            \"Quantum Mechanical Continuum Solvation Models\", Chem. "
-          "Rev., 105 (2005) 2999"
-       << std::endl;
-  rest << "   PCMSolver is distributed under the terms of the GNU Lesser General "
-          "Public License."
-       << std::endl;
-  return rest.str();
-}
+  // clang-format off
+  const char * fmt =
+     "-----------------------------------------------------------------------\n"
+     "   PCMSolver: An Open Source API for the Polarizable Continuum Model\n"
+     "                   PCMSolver %s\n\n"
+     "           Git: Branch {%s}, Revision {%s}\n\n"
+     " R. Di Remigio, A. H. Steindal, K. Mozgawa, V. Weijo, H. Cao, and\n"
+     " L. Frediani, Int. J. Quantum Chem., to be submitted\n\n"
+     " Source repository: https://github.com/PCMSolver/pcmsolver\n"
+     " Documentation: https://pcmsolver.readthedocs.io/\n"
+     " PCMSolver initialized on: %s\n"
+     "-----------------------------------------------------------------------\n\n";
+  // clang-format on
+  // Get current time
+  time_t rawtime;
+  struct tm * timeinfo;
+  char current_time[80];
 
-inline std::string version_info() {
-  std::ostringstream retval;
-  retval << " * Git last commit hash   : " << GIT_COMMIT_HASH << std::endl;
-  retval << " * Git last commit date   : " << GIT_COMMIT_DATE << std::endl;
-  retval << " * Git last commit author : " << GIT_COMMIT_AUTHOR << std::endl;
-  return retval.str();
+  std::time(&rawtime);
+  timeinfo = std::localtime(&rawtime);
+
+  std::strftime(
+      current_time, sizeof(current_time), "%A, %d %B %Y %I:%M %p", timeinfo);
+
+  char citation[1000];
+  std::sprintf(citation,
+               fmt,
+               PROJECT_VERSION,
+               GIT_COMMIT_BRANCH,
+               GIT_COMMIT_HASH,
+               current_time);
+
+  return std::string(citation);
 }

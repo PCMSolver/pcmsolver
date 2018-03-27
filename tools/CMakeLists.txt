@@ -1,5 +1,3 @@
-file(TO_NATIVE_PATH "${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}/pcmsolver" PYMOD_INSTALL_FULLDIR)
-
 configure_file(go_pcm.py.in ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py @ONLY)
 file(
   COPY

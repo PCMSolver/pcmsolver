@@ -23,16 +23,6 @@
 
 #pragma once
 
-// clang-format off
-#define PROJECT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
-#define PROJECT_VERSION_MINOR @PROJECT_VERSION_MINOR@
-#define PROJECT_VERSION_PATCH @PROJECT_VERSION_PATCH@
-
-#define PROJECT_VERSION @PCMSolver_VERSION@
-#define PCMSOLVER_VERSION                                                           \
-  ((PROJECT_VERSION_MAJOR << 16) | PROJECT_VERSION_MINOR | PROJECT_VERSION_PATCH)
-// clang-format on
-
 #cmakedefine HAVE_OPENMP
 
 #ifdef __GNUC__

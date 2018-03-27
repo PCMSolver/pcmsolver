@@ -9,22 +9,16 @@ add_custom_target(
     $<$<BOOL:${BUILD_CUSTOM_BOOST}>:custom_boost>
   )
 
-generate_git_info_header(${PROJECT_BINARY_DIR}/include GitInfo.hpp)
-set_source_files_properties(${PROJECT_BINARY_DIR}/include/GitInfo.hpp PROPERTIES GENERATED TRUE)
-
-list(APPEND headers_list
-  Citation.hpp
-  ${PROJECT_BINARY_DIR}/include/Config.hpp
-  Cxx11Workarounds.hpp
-  ErrorHandling.hpp
-  ${PROJECT_BINARY_DIR}/include/GitInfo.hpp
-  LoggerInterface.hpp
-  PhysicalConstants.hpp
-  STLUtils.hpp
-  TimerInterface.hpp
+install(
+  FILES
+    Citation.hpp
+    ${PROJECT_BINARY_DIR}/include/Config.hpp
+    Cxx11Workarounds.hpp
+    ErrorHandling.hpp
+    LoggerInterface.hpp
+    PhysicalConstants.hpp
+    STLUtils.hpp
+    TimerInterface.hpp
+  DESTINATION
+    ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
   )
-
-# Sets install directory for all the headers in the list
-foreach(_header ${headers_list})
-   install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
-endforeach()

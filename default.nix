@@ -4,7 +4,7 @@ let
     owner = "NixOS";
     repo = "nixpkgs-channels";
     rev = "nixos-unstable";
-    sha256 = "1p0xxyz30bd2bg0wrfviqgsskz00w647h0l2vi33w90i42k8r3li";
+    sha256 = "0im8l87nghsp4z7swidgg2qpx9mxidnc0zs7a86qvw8jh7b6sbv2";
   });
 in
   with import nixpkgs {
@@ -52,5 +52,6 @@ in
     shellHook = ''
     export NINJA_STATUS="[Built edge %f of %t in %e sec]"
     SOURCE_DATE_EPOCH=$(date +%s)
+    source $(pipenv --venv)/bin/activate
     '';
   }

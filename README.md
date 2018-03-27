@@ -14,7 +14,6 @@ An API for the Polarizable Continuum Model. Copyright [Roberto Di Remigio](mailt
 - [Changelog](CHANGELOG.md)
 - [Documentation](http://pcmsolver.readthedocs.io)
 - [Build and test history](https://travis-ci.org/PCMSolver/pcmsolver/builds)
-- Version 1.2.0-rc1 available
 - Licensed under [LGPLv3](LICENSE)
 - CMake infrastructure managed *via* [Autocmake](http://autocmake.readthedocs.io/)
 

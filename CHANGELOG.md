@@ -9,6 +9,11 @@
   Messina (J. Chem. Phys. 2002, 117 (24), 11062) and
   Delgado _et al._ (J. Chem. Phys. 2013, 139 (2), 024105)
 
+### Changed
+
+- The versioning machinery has been updated. The update was inspired by the
+  `versioner.py` tool devised by @loriab.
+
 ## [Version 1.2.0-rc1] - 2018-03-02
 
 ### Added

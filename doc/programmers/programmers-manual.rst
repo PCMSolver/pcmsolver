@@ -8,6 +8,7 @@ PCMSolver Programmers' Manual
    coding-standards
    documentation
    cmake-usage
+   versioning
    maintenance
    testing
    timer-class

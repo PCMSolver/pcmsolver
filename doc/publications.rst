@@ -32,7 +32,7 @@ Presentations
 -------------
 
 + `A modular implementation of the Polarizable Continuum Model for Solvation <https://www.dropbox.com/s/uzzv8c0wx8eswbc/talk_pisa.pdf?dl=0>`_ Presentation given by Roberto Di Remigio at the workshop in honour of professor Jacopo Tomasi's 80th birthday. Pisa, August 31 - September 1 2014.
-+ `The Polarizable Continuum Model Goes Viral! Extensible, Modular and Sustainable Development of Quantum Mechanical Continuum Solvation Models <http://tinyurl.com/phd-forsvaring>`_ PhD defence, Roberto Di Remigio, January 16 2017.
++ `The Polarizable Continuum Model Goes Viral! <http://tinyurl.com/phd-forsvaring>`_ PhD defense, Roberto Di Remigio, January 16 2017.
 + PCMSolver: a modern, modular approach to include solvation in any quantum chemistry code. Presentation given by Luca Frediani at WATOC 2017. Munich, August 27 - September 1 2017.
 
 Posters

@@ -1,14 +1,14 @@
 ## Individual Contributors
 
-- Roberto Di Remigio
-- Luca Frediani
-- Monica Bugeanu
-- Arnfinn Hykkerud Steindal
-- Radovan Bast
-- T. Daniel Crawford
+- Roberto Di Remigio (@robertodr)
+- Luca Frediani (@ilfreddy)
+- Monica Bugeanu (@mbugeanu)
+- Arnfinn Hykkerud Steindal (@arnfinn)
+- Radovan Bast (@bast)
+- T. Daniel Crawford (@lothian)
 - Krzysztof Mozgawa
-- Lori A. Burns
-- Ville Weijo
-- Ward Poelmans
+- Lori A. Burns (@loriab)
+- Ville Weijo (@vweijo)
+- Ward Poelmans (@wpoely86)
 
 This list was obtained 2018-03-02 by running `git shortlog -sn`

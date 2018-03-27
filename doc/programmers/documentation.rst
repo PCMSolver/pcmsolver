@@ -25,8 +25,8 @@ as extensive as for reStructuredText, see `these comments
 <https://blog.readthedocs.com/adding-markdown-support/>`_. Follow the guidelines
 in :cite:`Wilson2014` regarding what to document.
 
-Write the documentation in the header file. To document a class, put 
-``/*! \class <myclass>`` inside the namespace but before the class. 
+Write the documentation in the header file. To document a class, put
+``/*! \class <myclass>`` inside the namespace but before the class.
 Add the following to a ``.rst`` file:
 
 .. code-block:: rst
@@ -40,7 +40,7 @@ Add the following to a ``.rst`` file:
 Do similar when documenting ``struct``-s and complete files.
 
 .. note::
-    
+
    Use ``/*! */`` to open and close a Doxygen comment.
 
 Documenting methods in derived classes
@@ -55,15 +55,15 @@ appropriate ``.rst`` file.
 How does this work?
 -------------------
 
-To have an offline version of the documentation just issue 
-``sphinx-build doc/ _build/.``.  The HTML will be stored in ``_build/``. 
+To have an offline version of the documentation just issue
+``sphinx-build doc/ _build/.``.  The HTML will be stored in ``_build/``.
 Open the ``_build/index.html`` file with your browser to see and browse the
 documentation.
 
 .. note::
 
-   Building the documentation requires Python, Doxygen, Sphinx, Perl and the 
-   Python modules pyyaml, breathe, matplotlib, sphinx-rtd-theme, 
-   sphinxcontrib-bibtex and recommonmark. The required python modules can be 
+   Building the documentation requires Python, Doxygen, Sphinx, Perl and the
+   Python modules pyyaml, breathe, matplotlib, sphinx-rtd-theme,
+   sphinxcontrib-bibtex and recommonmark. The required python modules can be
    installed by running ``pip install -r requirements.txt``. There is also a
    ``Pipfile`` in case people prefer to use ``pipenv``.

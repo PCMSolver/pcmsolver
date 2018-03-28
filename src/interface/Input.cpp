@@ -73,6 +73,8 @@ void Input::reader(const std::string & filename) {
 
   cavityType_ = cavity.getStr("TYPE");
   area_ = cavity.getDbl("AREA");
+  minDistance_ = cavity.getDbl("MINDISTANCE");
+  derOrder_ = cavity.getInt("DERORDER");
   if (cavityType_ == "RESTART") {
     cavFilename_ = cavity.getStr("NPZFILE");
   }
@@ -201,6 +203,8 @@ void Input::reader(const PCMInput & host_input) {
 
   cavityType_ = detail::trim_and_upper(host_input.cavity_type);
   area_ = host_input.area * angstrom2ToBohr2();
+  minDistance_ = host_input.min_distance * angstromToBohr();
+  derOrder_ = host_input.der_order;
   if (cavityType_ == "RESTART") {
     cavFilename_ = detail::trim(host_input.restart_name); // No case conversion here!
   }
@@ -339,8 +343,14 @@ void Input::initMolecule() {
 }
 
 CavityData Input::cavityParams() const {
-  return CavityData(
-      cavityType_, molecule_, area_, probeRadius_, minimalRadius_, cavFilename_);
+  return CavityData(cavityType_,
+                    molecule_,
+                    area_,
+                    probeRadius_,
+                    minDistance_,
+                    derOrder_,
+                    minimalRadius_,
+                    cavFilename_);
 }
 
 GreenData Input::insideGreenParams() const {

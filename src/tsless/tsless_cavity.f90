@@ -26,7 +26,10 @@
 !> Wrapped in a F90 module by Roberto Di Remigio (2015)
 module tsless_cavity
 
+use, intrinsic :: iso_c_binding
 use tsless_precision
+use tsless_symmetry
+use tsless_weight_function
 
 implicit none
 
@@ -75,12 +78,8 @@ contains
                              xe, ye, ze, rin,                    &
                              masses,                             &
                              nr_gen, gen1, gen2, gen3,           &
-                             avgArea, dmin, nord, ifun, rsolv, work)
+                             avgArea, dmin, nord, ifun, rsolv, work) &
                              bind(C, name='tsless_driver')
-
-    use, intrinsic :: iso_c_binding
-    use tsless_symmetry
-    use tsless_weight_function
 
     !> Passed variables
     integer(c_size_t), intent(in) :: maxts, maxsph, maxvert

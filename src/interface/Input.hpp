@@ -170,8 +170,12 @@ private:
   std::string cavityType_;
   /// Filename for the .npz cavity restart file
   std::string cavFilename_;
-  /// GePol cavity average element area
+  /// GePol and TsLess cavity average element area
   double area_;
+  /// TsLess cavity minimal distance between sampling points
+  double minDistance_;
+  /// TsLess cavity maximum derivative order of switch function
+  int derOrder_;
   /// Whether the radii should be scaled by 1.2
   bool scaling_;
   /// The set of radii to be used

@@ -168,47 +168,57 @@ def setup_keywords():
     # Cavity section
     cavity = Section('CAVITY', callback=verify_cavity)
     # Type of the cavity
-    # Valid values: GEPOL and RESTART
+    # Valid values: GEPOL, TSLESS and RESTART
     cavity.add_kw('TYPE', 'STR')
     # Name of the file containing data for restarting a cavity
     # Valid for: Restart cavity
     # Default: empty string
     cavity.add_kw('NPZFILE', 'STR', '')
     # Average area (in au^2)
-    # Valid for: GePol
+    # Valid for: GePol and TsLess cavities
     # Valid values: double strictly greater than 0.01 au^2
     # Default: 0.3 au^2
     cavity.add_kw('AREA', 'DBL', 0.3)
+    # Minimal distance between sampling points (in au)
+    # Valid for: TsLess cavity
+    # Valid values: double
+    # Default: 0.1 au
+    cavity.add_kw('MINDISTANCE', 'DBL', 0.1)
+    # Derivative order for the weight function
+    # Valid for: TsLess cavity
+    # Valid values: integer
+    # Default: 4
+    cavity.add_kw('DERORDER', 'INT', 4)
     # Scaling of the atomic radii
-    # Valid for: GePol
+    # Valid for: GePol and TsLess
     # Valid values: boolean
     # Default: True
     cavity.add_kw('SCALING', 'BOOL', True)
     # Built-in radii set
-    # Valid for: GePol
+    # Valid for: GePol and TsLess
     # Valid values: BONDI, UFF or ALLINGER
     # Default: BONDI
     cavity.add_kw('RADIISET', 'STR', 'BONDI')
     # Minimal radius of added spheres (in au)
-    # Valid for: GePol
+    # Valid for: GePol and TsLess
     # Valid values: double greater than 0.4 au
     # Default: 100.0 au (no added spheres)
     cavity.add_kw('MINRADIUS', 'DBL', 100.0)
     # Spheres geometry creation mode
-    # Valid for: GePol
+    # Valid for: GePol and TsLess
     # Valid values: EXPLICIT, ATOMS or IMPLICIT
     # Default: IMPLICIT
     cavity.add_kw('MODE', 'STR', 'IMPLICIT')
     # List of atoms with custom radius
-    # Valid for: GePol in MODE=ATOMS
+    # Valid for: GePol and TsLess in MODE=ATOMS
     # Valid values: array of integers
     cavity.add_kw('ATOMS', 'INT_ARRAY')
     # List of custom radii
-    # Valid for: GePol in MODE=ATOMS
+    # Valid for: GePol and TsLess in MODE=ATOMS
     # Valid values: array of doubles
     cavity.add_kw('RADII', 'DBL_ARRAY')
     # List of spheres
-    # Valid for: GePol in MODE=EXPLICIT
+    # Valid for: GePol and TsLess in MODE=EXPLICIT
     # Valid values: array of doubles in format [x, y, z, R]
     cavity.add_kw('SPHERES', 'DBL_ARRAY', callback=verify_spheres)
     top.add_sect(cavity)
@@ -373,7 +383,7 @@ def verify_top(section):
 
 
 def verify_cavity(section):
-    allowed = ('GEPOL', 'RESTART')
+    allowed = ('GEPOL', 'TSLESS', 'RESTART')
     type = section.get('TYPE')
     if (type.get() not in allowed):
         print(('Requested {} cavity is not among the allowed types: {}'.format(type, allowed)))
@@ -385,6 +395,8 @@ def verify_cavity(section):
         convert_area_scalar(section['AREA'])
     if (section['MINRADIUS'].is_set()):
         convert_length_scalar(section['MINRADIUS'])
+    if (section['MINDISTANCE'].is_set()):
+        convert_length_scalar(section['MINDISTANCE'])
 
     if (type.get() == 'GEPOL'):
         area = section.get('AREA')
@@ -396,6 +408,12 @@ def verify_cavity(section):
         mr = minRadius.get()
         if (mr < 0.4):
             print(('Requested minimal radius for added spheres too small: {}. Minimal value is: 0.4 au'.format(mr)))
+            sys.exit(1)
+    elif (type.get() == 'TSLESS'):
+        area = section.get('AREA')
+        a = area.get()
+        if (a < 0.01):
+            print(('Requested area value too small: {}. Minimal value is: 0.01 au^2'.format(a)))
             sys.exit(1)
     elif (type.get() == 'RESTART'):
         npzfile = section.get('NPZFILE')

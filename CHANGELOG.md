@@ -4,6 +4,7 @@
 
 ### Added
 
+- A new cavity generator using C. S. Pomelli's [TsLess algorithm](http://dx.doi.org/10.1002/jcc.20076)
 - Green’s function for a spherical nanoparticle with **real** permittivity.
   The Green's function is known in analytical form from the work of
   Messina (J. Chem. Phys. 2002, 117 (24), 11062) and

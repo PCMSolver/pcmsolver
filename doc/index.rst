@@ -36,10 +36,10 @@ PCMSolver has been added to the following quantum chemistry programs
 
 Don't see you code listed here? `Please contact us <roberto.d.remigio@uit.no>`_.
 
-Contents:
-
 .. toctree::
-   :maxdepth: 3
+   :caption: Table of Contents
+   :name: mastertoc
+   :hidden:
 
    users/users-manual
    publications

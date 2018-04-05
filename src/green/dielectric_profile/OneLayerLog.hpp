@@ -28,16 +28,16 @@
 
 #include "Config.hpp"
 
-/*! \file OneLayerLog.hpp
- *  \class OneLayerLog
- *  \brief A dielectric profile based on the Harrison and Fosso-Tande work \cite
- * Fosso-Tande2013
- *  \author Luca Frediani
- *  \date 2017
- */
+/*! \file OneLayerLog.hpp */
 
 namespace pcm {
 namespace dielectric_profile {
+/*!  \class OneLayerLog
+ *  \brief A dielectric profile based on the Harrison and Fosso-Tande work
+ *  \cite Fosso-Tande2013
+ *  \author Luca Frediani
+ *  \date 2017
+ */
 class OneLayerLog {
 private:
   /// Dielectric constant on the left of the interface

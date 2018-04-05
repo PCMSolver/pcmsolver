@@ -228,7 +228,7 @@ PCMSolver_API double pcmsolver_compute_polarization_energy(
  *  \param[in, out] context the PCM context object
  *  \param[in] asc_name label of the ASC surface function
  *  \param[out] dipole  the Cartesian components of the ASC dipole moment
- *  \return the ASC dipole, i.e. \sqrt{\sum_i \mu_i^2}
+ *  \return the ASC dipole, i.e. \f$\sqrt{\sum_i \mu_i^2}\f$
  */
 PCMSolver_API double pcmsolver_get_asc_dipole(pcmsolver_context_t * context,
                                               const char * asc_name,

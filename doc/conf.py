@@ -41,7 +41,6 @@ extensions = [
 breathe_projects = {'PCMSolver': 'xml'}
 breathe_default_project = 'PCMSolver'
 breathe_default_members = ('members', 'protected-members', 'private-members')
-templates_path = ['_templates']
 source_parsers = {
     '.md': CommonMarkParser,
 }
@@ -69,7 +68,6 @@ todo_include_todos = True
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_logo = 'gfx/logo.jpg'
-html_static_path = ['_static']
 html_use_smartypants = True
 html_show_sphinx = True
 html_show_copyright = True
@@ -129,8 +127,6 @@ def remove(obj):
 
 
 def configure_file(rep, fname, **kwargs):
-    import os
-    import re
     r''' Configure a file.
 
     :param rep:
@@ -151,16 +147,15 @@ def configure_file(rep, fname, **kwargs):
     out_path = kwargs.get('out_path', in_path)
     prefix = kwargs.get('prefix', '')
     fname_in = fname + suffix
-    f = open(os.path.join(in_path, fname_in), 'r')
-    filedata = f.read()
-    f.close()
+    filedata = ''
+    with open(os.path.join(in_path, fname_in), 'r') as fin:
+        filedata = fin.read()
     rep = dict((re.escape(k), v) for k, v in rep.items())
     pattern = re.compile("|".join(list(rep.keys())))
     filedata = pattern.sub(lambda m: rep[re.escape(m.group(0))], filedata)
     fname_out = prefix + fname
-    f = open(os.path.join(out_path, fname_out), 'w+')
-    f.write(filedata)
-    f.close()
+    with open(os.path.join(out_path, fname_out), 'w+') as fout:
+        fout.write(filedata)
 
 
 def generate_bar_charts(mod_dir, dir_lang, savedir):
@@ -217,7 +212,7 @@ def setup(app):
     configure_file(rep, 'Doxyfile', in_path=project_doc_dir, suffix='.in')
     # Make a copy of api/pcmsolver.h and strip it of all
     # PCMSolver_API markers in front of function signatures
-    rep = {'PCMSolver_API ': ''}
+    rep = {'PCMSolver_API ': '', 'pcmsolver.h': 'mock_pcmsolver.h'}
     configure_file(
         rep,
         'pcmsolver.h',

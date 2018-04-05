@@ -33,8 +33,8 @@
 namespace pcm {
 namespace dielectric_profile {
 /*! \class MembraneTanh
- *  \brief A dielectric profile mimicking a memmbrane as in Eq. 30 in \cite
- * Frediani2004a
+ *  \brief A dielectric profile mimicking a memmbrane as in Eq. 30 in
+ *  \cite Frediani2004a
  *  \author Roberto Di Remigio
  *  \date 2015
  */

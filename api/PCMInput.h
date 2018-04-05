@@ -36,8 +36,8 @@ typedef bool pcmsolver_bool_t;
           !defined(__cplusplus) */
 #endif /* pcmsolver_bool_t_DEFINED */
 
-/*! @struct PCMInput
- *  @brief Data structure for host-API input communication.
+/*! \struct PCMInput
+ *  \brief Data structure for host-API input communication.
  */
 typedef struct PCMInput {
   /// Type of cavity requested.

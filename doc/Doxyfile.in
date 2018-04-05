@@ -108,12 +108,13 @@ WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
-WARN_LOGFILE           =
+WARN_LOGFILE           = doc/doxygen.log
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = @PROJECT_SOURCE_DIR@/src \
                          @PROJECT_SOURCE_DIR@/api \
+                         @PROJECT_SOURCE_DIR@/doc \
                          @PROJECT_SOURCE_DIR@/include
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
@@ -136,7 +137,9 @@ EXCLUDE                = @PROJECT_SOURCE_DIR@/src/bin \
                          @PROJECT_SOURCE_DIR@/src/utils/getkw
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = @PROJECT_SOURCE_DIR@/api/pcmsolver.h \
-                         @PROJECT_SOURCE_DIR@/api/pcmsolver.f90
+                         @PROJECT_SOURCE_DIR@/api/pcmsolver.f90 \
+                         @PROJECT_SOURCE_DIR@/src/utils/Logger.* \
+                         @PROJECT_SOURCE_DIR@/src/utils/RungeKutta4.*
 EXCLUDE_SYMBOLS        = EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
                          REQUIRE \
                          SCENARIO \

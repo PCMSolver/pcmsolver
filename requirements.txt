@@ -9,3 +9,4 @@ sphinx
 sphinx-rtd-theme
 sphinxcontrib-bibtex
 yapf
+fprettify

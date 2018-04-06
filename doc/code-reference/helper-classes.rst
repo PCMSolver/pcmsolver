@@ -1,7 +1,7 @@
 Helper classes and functions
 ============================
 
-.. image:: ../gfx/utils.png
+.. image:: ../gfx/bar_charts/utils.svg
    :scale: 70 %
    :align: center
 

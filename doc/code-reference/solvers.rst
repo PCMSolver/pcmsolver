@@ -6,7 +6,7 @@ order to use and extend it properly.  The runtime creation of solver objects
 relies on the Factory Method pattern :cite:`Gamma1994,Alexandrescu2001`,
 implemented through the generic Factory class.
 
-.. image:: ../gfx/solver.png
+.. image:: ../gfx/bar_charts/solver.svg
    :scale: 70 %
    :align: center
 

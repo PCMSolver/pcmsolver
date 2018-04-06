@@ -9,7 +9,7 @@ Welcome to PCMSolver's documentation!
 This is the documentation for the PCMSolver application programming interface.
 PCMSolver is an API for solving the Polarizable Continuum Model electrostatic problem :cite:`Tomasi2005`
 
-.. image:: pcmsolver-scheme.png
+.. image:: gfx/pcmsolver-scheme.png
    :scale: 70 %
    :align: center
 

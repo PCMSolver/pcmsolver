@@ -14,7 +14,7 @@ All other classes are templated.
 The Green's functions are registered to the factory based on a label encoding: type, derivative, and dielectric profile.
 The only allowed labels must be listed in ``src/green/Green.hpp``. If they are not, they can not be selected at run time.
 
-.. image:: ../gfx/green.png
+.. image:: ../gfx/bar_charts/green.svg
    :scale: 70 %
    :align: center
 

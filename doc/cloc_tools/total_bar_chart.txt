@@ -1,3 +1,4 @@
+import os
 import matplotlib as mpl
 # Force matplotlib to not use any Xwindows backend.
 mpl.use('Agg')
@@ -11,14 +12,25 @@ font = FontProperties()
 # Font properties for x-ticks labels
 labels_font = font.copy()
 labels_font.set_weight('bold')
-labels_font.set_size('medium')
+labels_font.set_size('small')
+
+save_root = '{svg_dir}'
+tag = '{tag}'
+nr_blanks = {data[nr_blanks]:d}
+nr_comments = {data[nr_comments]:d}
+nr_files = {data[nr_files]:d}
+nr_cpp_code = {data[nr_cpp_code]:d}
+nr_c_code = {data[nr_c_code]:d}
+nr_fortran_code = {data[nr_fortran_code]:d}
+nr_python_code = {data[nr_python_code]:d}
+annotation = {annotation}
 
 # Set properties of bar chart
-N = 3
-data = (nr_blanks, nr_comments, nr_code)
+N = 6
+data = (nr_blanks, nr_comments, nr_cpp_code, nr_c_code, nr_fortran_code, nr_python_code)
 ind = np.arange(N)
 width = 1.0
-my_colors = 'gcy'
+my_colors = ['m', 'g', 'c', 'y', 'b', 'maroon']
 
 fig, ax = plt.subplots()
 # Remove frame and adjust x-ticks and respective labels
@@ -30,12 +42,12 @@ ax.spines['right'].set_color('none')
 ax.spines['left'].set_color('none')
 ax.set_yticks([])
 for label in ax.get_xticklabels() :
-        label.set_fontproperties(labels_font)
+    label.set_fontproperties(labels_font)
 
 # Plot the data
-rects = ax.bar(ind, data, width, color = my_colors, edgecolor = 'white', alpha = 0.5)
-ax.set_xticks(ind + 0.5)
-ax.set_xticklabels(('# Blank', '# Comment', '# Code'))
+rects = ax.bar(ind, data, width, color = my_colors, edgecolor = 'white', alpha = 0.5, align='edge')
+ax.set_xticks(ind+0.5)
+ax.set_xticklabels(('# Blank', '# Comment', '# C++', '# C', '# Fortran 90', '# Python'))
 
 def autolabel(ax, font, rects):
     # attach some text labels on top of the bars
@@ -59,5 +71,6 @@ fig.text(0.15, 0.75, annotation,
         fontsize = 12,
         bbox = props, fontproperties = box_font)
 
+
 # Save to file
-fig.savefig(save_root + '/' + tag + '.png', format = 'png', dpi = 100, bbox_inches = 'tight')
+fig.savefig(os.path.join(save_root, 'total.svg'), format = 'svg', dpi = 200, bbox_inches = 'tight')

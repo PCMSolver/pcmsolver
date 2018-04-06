@@ -6,7 +6,7 @@ order to use and extend it properly.  The runtime creation of cavity objects
 relies on the Factory Method pattern :cite:`Gamma1994,Alexandrescu2001`,
 implemented through the generic Factory class.
 
-.. image:: ../gfx/cavity.png
+.. image:: ../gfx/bar_charts/cavity.svg
    :scale: 70 %
    :align: center
 

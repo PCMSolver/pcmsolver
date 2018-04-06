@@ -28,17 +28,37 @@ from recommonmark.parser import CommonMarkParser
 import sphinx_rtd_theme
 import subprocess
 import shutil
-from pygments.lexers import get_lexer_for_filename
 
-sys.path.insert(0, os.path.abspath('../tools'))
+sys.path.append(os.path.abspath(os.curdir))
+import cloc_tools
+
+sys.path.append(os.path.abspath('../tools'))
 import metadata
+
+# We assume that the sphinx-build command is issued from within the doc
+# directory and that the build directory is called _build:
+# >> sphinx-build . _build
+# This simplifies handling local and RTD build considerably.
+
+# project_root_dir -- the root of the project, i.e. <checkout_dir>/pcmsolver
+project_root_dir = os.path.abspath(os.pardir)
+# project_doc_dir  -- .rst location, i.e. <checkout_dir>/pcmsolver/doc
+project_doc_dir = os.getcwd()
+# project_src_dir  -- source code location, i.e. <checkout_dir>/pcmsolver/src
+project_src_dir = os.path.join(project_root_dir, 'src')
+# Finally, this is where the documentation will be built
+doc_build_dir = os.path.join(project_doc_dir, '_build')
+print('Project root directory {}'.format(project_root_dir))
+print('Project doc directory {}'.format(project_doc_dir))
+print('Project src directory {}'.format(project_src_dir))
+print('Documentation build directory {}'.format(doc_build_dir))
 
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.mathjax', 'sphinx.ext.ifconfig',
     'sphinxcontrib.bibtex', 'breathe'
 ]
 
-breathe_projects = {'PCMSolver': 'xml'}
+breathe_projects = {'PCMSolver': os.path.join(doc_build_dir, 'xml')}
 breathe_default_project = 'PCMSolver'
 breathe_default_members = ('members', 'protected-members', 'private-members')
 source_parsers = {
@@ -104,15 +124,6 @@ def run_doxygen(folder):
         sys.stderr.write("doxygen execution failed: {0}".format(e))
 
 
-def generate_doxygen_xml(app):
-    """Run the doxygen make commands if we're on the ReadTheDocs server"""
-
-    read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
-
-    if read_the_docs_build:
-        run_doxygen(os.getcwd())
-
-
 def remove(obj):
     if os.path.isdir(obj):
         try:
@@ -158,56 +169,48 @@ def configure_file(rep, fname, **kwargs):
         fout.write(filedata)
 
 
-def generate_bar_charts(mod_dir, dir_lang, savedir):
-    r'''Generate lines-of-code bar charts.
+def generate_bar_charts(perl_exe, count_dirs, scratch_dir, output_dir):
+    """Generate lines-of-code bar charts.
 
-    :param mod_dir:
-       location of the cloc_tools module
-    :param dir_lang:
-       a (directory : language) dictionary
-    :param savedir:
-       location of the YAML files
-    '''
-    import sys
-    sys.path.append(mod_dir)
-    from cloc_tools import bar_chart
-    # Generate scripts and list of scripts (absolute paths)
-    list_of_scripts = [bar_chart(root_dir, language, savedir) for root_dir, language in dir_lang.items()]
-    # Generate charts
-    for fname in list_of_scripts:
-        exec(compile(open(fname).read(), fname, 'exec'))
+    :param perl_exe:
+       the perl executable
+    :param count_dirs:
+       a list of directories where to count lines of code
+    :param scratch_dir:
+       where intermediate files (JSON, matplotlib scripts) are to be saved
+    :param output_dir:
+       where the bar charts are to be saved
+    """
+    # Create directory to save bar charts SVG
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    # Generate per-directory and total charts
+    for count_dir in count_dirs:
+        script = cloc_tools.bar_chart(perl_exe, count_dir, scratch_dir, output_dir)
+        exec(compile(open(script).read(), script, 'exec'))
+        os.remove(script)
+    # Generate total charts
+    script = cloc_tools.bar_chart(perl_exe, project_root_dir, scratch_dir, output_dir, is_total=True)
+    exec(compile(open(script).read(), script, 'exec'))
+    os.remove(script)
 
 
 def setup(app):
-    # We first need to define some directories:
-    # project_root_dir -- the root of the project
-    # project_src_dir  -- source code location: os.path.join(project_root_dir, 'src')
-    # project_doc_dir  -- .rst location: os.path.join(project_root_dir, 'doc')
-    if (os.environ.get('READTHEDOCS', None) == 'True'):
-        project_root_dir = os.path.abspath(os.pardir)
-        project_doc_dir = os.getcwd()
-        project_src_dir = os.path.join(project_root_dir, 'src')
-    else:
-        project_root_dir = os.getcwd()
-        project_doc_dir = os.path.join(project_root_dir, 'doc')
-        project_src_dir = os.path.join(project_root_dir, 'src')
-    print(('Project root directory {}'.format(project_root_dir)))
-    print(('Project doc directory {}'.format(project_doc_dir)))
-    print(('Project src directory {}'.format(project_src_dir)))
-
-    # Clean up leftovers
+    # Clean up leftovers, these are identified based on the .gitignore in this directory
     print('Clean up leftovers from previous build')
     [remove(os.path.join(project_doc_dir, x.strip())) for x in open(os.path.join(project_doc_dir, '.gitignore'))]
     # Configure Doxyfile.in
     dot_path = os.path.split(which('dot'))[0] if which('dot') else ''
+    perl_exe = which('perl')
     rep = {
         '@PROJECT_VERSION_MAJOR@': major,
         '@PROJECT_VERSION_MINOR@': minor,
         '@PROJECT_VERSION_PATCH@': patch,
         '@PROJECT_VERSION_TWEAK@': tweak,
-        '@PROJECT_SOURCE_DIR@': project_root_dir,
+        '@project_root_dir@': project_root_dir,
+        '@doc_build_dir@': doc_build_dir,
         '@DOXYGEN_DOT_PATH@': dot_path,
-        '@PERL_EXECUTABLE@': which('perl')
+        '@PERL_EXECUTABLE@': perl_exe
     }
     configure_file(rep, 'Doxyfile', in_path=project_doc_dir, suffix='.in')
     # Make a copy of api/pcmsolver.h and strip it of all
@@ -219,36 +222,21 @@ def setup(app):
         in_path=os.path.join(project_root_dir, 'api'),
         suffix='',
         prefix='mock_',
-        out_path=project_doc_dir)
-    # Configure cloc_tools.py.in
-    rep = {
-        '@PYTHON_EXECUTABLE@': sys.executable,
-        '@PROJECT_SOURCE_DIR@': project_root_dir,
-        '@PROJECT_BINARY_DIR@': project_root_dir,
-        '@PERL_EXECUTABLE@': which('perl')
-    }
-    configure_file(
-        rep, 'cloc_tools.py', in_path=os.path.join(project_doc_dir, 'gfx'), suffix='.in', out_path=project_doc_dir)
+        out_path=doc_build_dir)
     # Generate directories list (full paths), remove bin using filter
-    d = [
-        y for y in [os.path.join(root, x) for root, dirs, _ in os.walk(project_src_dir) for x in dirs]
-        if y != os.path.join(project_src_dir, 'bin')
-    ]
-    # Remove 'CMakeLists.txt' from sublists using filter
-    f = [[
-        z for z in
-        [y for y in [x for x in os.listdir(l) if os.path.isfile(os.path.join(l, x))] if y != 'CMakeLists.txt']
-        if not z.endswith('.mod')
-    ] for l in d]
-    # Take first element in each sublist
-    f = [x[0] for x in f]
-    # Apply map to get language name
-    l = [get_lexer_for_filename(x).name for x in f]
-    # Finally zip d and f into the dir_lang dictionary
-    dir_lang = dict(list(zip(d, l)))
-    generate_bar_charts(project_doc_dir, dir_lang, project_doc_dir)
+    dirs = [os.path.join(r, x) for r, d, _ in os.walk(project_src_dir) for x in d]
+    # Filter bin and utils/getkw from from the directories list
+    exclude = [os.path.join(project_src_dir, 'bin'), os.path.join(project_src_dir, 'utils', 'getkw')]
+    dirs = list(filter(lambda x: x not in exclude, dirs))
+    generate_bar_charts(perl_exe, dirs, os.path.join(doc_build_dir), os.path.join(project_doc_dir, 'gfx',
+                                                                                  'bar_charts'))
 
     if (os.environ.get('READTHEDOCS', None) == 'True'):
+
+        def generate_doxygen_xml(app):
+            """Run the doxygen make commands on the ReadTheDocs server"""
+            run_doxygen(os.getcwd())
+
         # Add hook for building doxygen xml when needed
         app.connect("builder-inited", generate_doxygen_xml)
     else:

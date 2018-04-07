@@ -13,6 +13,17 @@
 
 - The versioning machinery has been updated. The update was inspired by the
   `versioner.py` tool devised by @loriab.
+- The documentation building scripts `conf.py` and `cloc_tools.py` have been
+  thoroughly refactored and simplified:
+  * `cloc_tools.py` is now called `cloc_wrapper.py`. It is no longer configured
+  and can be found in the `cloc_tools` subfolder of `doc`.
+  * A local build of documentation will only work if run from within the `doc` folder:
+  ```
+  sphinx-build . _build
+  ```
+  This choice was made to simplify the set up of the ReadTheDocs and local
+  documentation building procedures and to minimize the chances of breaking
+  either.
 
 ## [Version 1.2.0-rc1] - 2018-03-02
 

@@ -21,6 +21,6 @@
 #  PCMSolver API, see: <http://pcmsolver.readthedocs.io/>
 #
 
-from .cloc_wrapper import bar_chart, total_bar_chart
+from .cloc_wrapper import bar_chart
 
-__all__ = ['bar_chart', 'total_bar_chart']
+__all__ = ['bar_chart']

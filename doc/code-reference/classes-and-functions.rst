@@ -10,6 +10,8 @@ Classes and functions reference
 
    cavities
    greens-functions
+   dielectric-profiles
    solvers
+   bi-operators
    helper-classes
    namespaces

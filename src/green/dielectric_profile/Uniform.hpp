@@ -31,7 +31,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-/*!  \struct Uniform
+/*! \struct Uniform
  *  \brief a uniform dielectric profile
  *  \author Roberto Di Remigio
  *  \date 2015

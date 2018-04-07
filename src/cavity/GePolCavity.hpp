@@ -65,10 +65,6 @@ public:
               double pr,
               double minR,
               const std::string & suffix = "");
-  virtual ~GePolCavity() {}
-  friend std::ostream & operator<<(std::ostream & os, GePolCavity & cavity) {
-    return cavity.printCavity(os);
-  }
 
 private:
   double averageArea;

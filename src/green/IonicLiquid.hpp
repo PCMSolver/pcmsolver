@@ -55,14 +55,9 @@ class IonicLiquid __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Yukawa> {
 public:
   IonicLiquid(double eps, double k);
-  virtual ~IonicLiquid() {}
 
   virtual double permittivity() const __override __final {
     PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
-  }
-
-  friend std::ostream & operator<<(std::ostream & os, IonicLiquid & gf) {
-    return gf.printObject(os);
   }
 
 private:

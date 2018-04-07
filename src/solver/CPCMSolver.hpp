@@ -64,10 +64,6 @@ public:
    */
   CPCMSolver(bool symm, double corr)
       : ISolver(), hermitivitize_(symm), correction_(corr) {}
-  virtual ~CPCMSolver() {}
-  friend std::ostream & operator<<(std::ostream & os, CPCMSolver & solver) {
-    return solver.printSolver(os);
-  }
 
 private:
   /*! Whether the system matrix has to be symmetrized */

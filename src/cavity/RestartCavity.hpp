@@ -46,11 +46,7 @@ namespace cavity {
 class RestartCavity __final : public ICavity {
 public:
   RestartCavity(const std::string & _fname) : file(_fname) { makeCavity(); }
-  virtual ~RestartCavity() {}
   virtual void makeCavity() __override { loadCavity(file); }
-  friend std::ostream & operator<<(std::ostream & os, RestartCavity & cavity) {
-    return cavity.printCavity(os);
-  }
 
 private:
   std::string file;

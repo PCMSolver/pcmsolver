@@ -84,14 +84,8 @@ public:
     initSphericalDiffuse();
   }
 
-  virtual ~SphericalDiffuse() {}
-
   virtual double permittivity() const __override __final {
     PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
-  }
-
-  friend std::ostream & operator<<(std::ostream & os, SphericalDiffuse & gf) {
-    return gf.printObject(os);
   }
 
   /*! \brief Returns Coulomb singularity separation coefficient

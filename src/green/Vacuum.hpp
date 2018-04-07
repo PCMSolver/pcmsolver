@@ -58,14 +58,9 @@ class Vacuum __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Uniform> {
 public:
   Vacuum();
-  virtual ~Vacuum() {}
 
   virtual double permittivity() const __override __final {
     return this->profile_.epsilon;
-  }
-
-  friend std::ostream & operator<<(std::ostream & os, Vacuum & gf) {
-    return gf.printObject(os);
   }
 
 private:

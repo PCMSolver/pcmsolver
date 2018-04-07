@@ -50,7 +50,6 @@ template <typename DerivativeTraits, typename ProfilePolicy>
 class GreensFunction : public IGreensFunction {
 public:
   GreensFunction(const ProfilePolicy & p) : delta_(1.0e-04), profile_(p) {}
-  virtual ~GreensFunction() {}
   /*! @{ Methods to sample the Green's function directional derivatives */
   /*! Returns value of the directional derivative of the
    *  Greens's function for the pair of points p1, p2:
@@ -138,10 +137,6 @@ public:
     return pcm::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
   }
 
-  friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
-    return gf.printObject(os);
-  }
-
 protected:
   /*! Evaluates the Green's function given a pair of points
    *  \param[in] source the source point
@@ -185,7 +180,6 @@ template <typename ProfilePolicy>
 class GreensFunction<Stencil, ProfilePolicy> : public IGreensFunction {
 public:
   GreensFunction(const ProfilePolicy & p) : delta_(1.0e-04), profile_(p) {}
-  virtual ~GreensFunction() {}
   /*! @{ Methods to sample the Green's function directional derivatives */
   /*! Returns value of the directional derivative of the
    *  Greens's function for the pair of points p1, p2:
@@ -270,10 +264,6 @@ public:
    */
   virtual bool uniform() const __final __override {
     return pcm::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
-  }
-
-  friend std::ostream & operator<<(std::ostream & os, GreensFunction & gf) {
-    return gf.printObject(os);
   }
 
 protected:

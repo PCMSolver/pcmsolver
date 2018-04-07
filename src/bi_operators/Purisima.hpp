@@ -58,7 +58,6 @@ class Purisima __final : public IBoundaryIntegralOperator {
 public:
   Purisima();
   Purisima(double fac);
-  virtual ~Purisima() {}
 
 private:
   /*! Scaling factor for the diagonal elements of the matrix representation of

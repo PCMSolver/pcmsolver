@@ -77,7 +77,6 @@ public:
    *  \param[in] symm whether the system matrix has to be symmetrized
    */
   IEFSolver(bool symm) : ISolver(), hermitivitize_(symm) {}
-  virtual ~IEFSolver() {}
   /*! \brief Builds PCM matrix for an anisotropic environment
    *  \param[in] cavity the cavity to be used.
    *  \param[in] gf_i Green's function inside the cavity
@@ -98,9 +97,6 @@ public:
                             const IGreensFunction & gf_i,
                             const IGreensFunction & gf_o,
                             const IBoundaryIntegralOperator & op);
-  friend std::ostream & operator<<(std::ostream & os, IEFSolver & solver) {
-    return solver.printSolver(os);
-  }
 
 private:
   /*! Whether the system matrix has to be symmetrized */

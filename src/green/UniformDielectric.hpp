@@ -54,14 +54,9 @@ class UniformDielectric __final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Uniform> {
 public:
   UniformDielectric(double eps);
-  virtual ~UniformDielectric() {}
 
   virtual double permittivity() const __override __final {
     return this->profile_.epsilon;
-  }
-
-  friend std::ostream & operator<<(std::ostream & os, UniformDielectric & gf) {
-    return gf.printObject(os);
   }
 
 private:

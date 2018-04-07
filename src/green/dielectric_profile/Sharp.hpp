@@ -31,7 +31,7 @@
 
 namespace pcm {
 namespace dielectric_profile {
-/*!  \struct Sharp
+/*! \struct Sharp
  *  \brief A sharp dielectric separation
  *  \author Roberto Di Remigio
  *  \date 2015

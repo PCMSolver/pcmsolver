@@ -59,14 +59,8 @@ public:
    */
   AnisotropicLiquid(const Eigen::Vector3d & eigen_eps,
                     const Eigen::Vector3d & euler_ang);
-  virtual ~AnisotropicLiquid() {}
-
   virtual double permittivity() const __override __final {
     PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
-  }
-
-  friend std::ostream & operator<<(std::ostream & os, AnisotropicLiquid & gf) {
-    return gf.printObject(os);
   }
 
 private:

@@ -67,7 +67,6 @@ public:
    * \param[in] l maximum value of angular momentum
    */
   SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o, int l);
-  virtual ~SphericalSharp() {}
 
   virtual double permittivity() const __override __final {
     PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
@@ -96,9 +95,6 @@ public:
                                   const Eigen::Vector3d & p1,
                                   const Eigen::Vector3d & p2) const;
 
-  friend std::ostream & operator<<(std::ostream & os, SphericalSharp & gf) {
-    return gf.printObject(os);
-  }
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 private:

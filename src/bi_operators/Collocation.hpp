@@ -61,7 +61,6 @@ class Collocation __final : public IBoundaryIntegralOperator {
 public:
   Collocation();
   Collocation(double fac);
-  virtual ~Collocation() {}
 
 private:
   /*! Scaling factor for the diagonal elements of the matrix representation of

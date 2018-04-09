@@ -49,7 +49,7 @@ Version 3.3.0 of Eigen libraries is shipped with the module and resides in the `
 Configuration
 -------------
 
-Configuration is managed through the front-end script ``setup`` residing in the
+Configuration is managed through the front-end script ``setup.py`` residing in the
 repository main directory. Issuing:
 
 .. code-block:: bash
@@ -151,7 +151,7 @@ Some options can only be tweaked `via` ``--cmake-options`` to the setup script:
 
 * ``ENABLE_TIMER`` Enable compilation of timer sources. Enabled by default.
 * ``BUILD_STANDALONE`` Enable compilation of standalone ``run_pcm`` executable. Enabled by default.
-* ``ENABLE_Fortran_API`` Enable compilation of the Fortran90 bindings for the API. Enabled by default.
+* ``TEST_Fortran_API`` Test the Fortran 90 bindings for the API. Enabled by default.
 * ``ENABLE_GENERIC`` Enable mostly static linking in shared library. Disabled by default.
 * ``ENABLE_TESTS`` Enable compilation of unit tests suite. Enabled by default.
 * ``SHARED_LIBRARY_ONLY`` Create only shared library. Opposite of ``--static``.

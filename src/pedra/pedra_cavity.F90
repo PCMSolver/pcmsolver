@@ -116,7 +116,7 @@
     natm   = mxcent
     numver = mxver
 
-    write(lvpri, '(a)') "Memory management through standard Fortran90 allocate/deallocate."
+    write(lvpri, '(a)') "Memory management through standard Fortran 90 allocate/deallocate."
 
     allocate(intsph(numts, 10))
     intsph = 0

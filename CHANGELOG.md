@@ -24,6 +24,13 @@
   This choice was made to simplify the set up of the ReadTheDocs and local
   documentation building procedures and to minimize the chances of breaking
   either.
+- The Fortran API bindings file `pcmsolver.f90` is now installed alongside the
+  `pcmsolver.h` header file. The users will have to compile it explicitly to
+  get the type checking from the API redeclaration in Fortran 90.
+  The file is always installed.
+- The `ENABLE_Fortran_API` configuration option has been renamed
+  `TEST_Fortran_API`, since it now only triggers compilation of the
+  `Fortran_host` test case.
 
 ## [Version 1.2.0-rc1] - 2018-03-02
 

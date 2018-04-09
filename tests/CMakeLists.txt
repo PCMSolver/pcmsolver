@@ -46,7 +46,7 @@ target_link_libraries(unit_tests
   )
 
 add_subdirectory(C_host)
-if(ENABLE_Fortran_API)
+if(TEST_Fortran_API)
   add_subdirectory(Fortran_host)
 endif()
 if(BUILD_STANDALONE)

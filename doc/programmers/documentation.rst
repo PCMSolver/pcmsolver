@@ -56,14 +56,26 @@ How does this work?
 -------------------
 
 To have an offline version of the documentation just issue
-``sphinx-build doc/ _build/.``.  The HTML will be stored in ``_build/``.
-Open the ``_build/index.html`` file with your browser to see and browse the
-documentation.
+in the ``doc`` folder:
+
+.. code-block:: bash
+   sphinx-build . _build
+
+The HTML will be stored in ``_build/``. Open the ``_build/index.html`` file with
+your browser to see and browse the documentation.
+
+.. warning::
+   It is only possible to build documentation locally from within the ``doc``
+   folder.
+   This choice was made to simplify the set up of the ReadTheDocs and local
+   documentation building procedures and to minimize the chances of breaking
+   either.
 
 .. note::
 
    Building the documentation requires Python, Doxygen, Sphinx, Perl and the
-   Python modules pyyaml, breathe, matplotlib, sphinx-rtd-theme,
-   sphinxcontrib-bibtex and recommonmark. The required python modules can be
-   installed by running ``pip install -r requirements.txt``. There is also a
-   ``Pipfile`` in case people prefer to use ``pipenv``.
+   Python modules breathe, matplotlib, sphinx-rtd-theme, sphinxcontrib-bibtex
+   and recommonmark.
+   The required python modules can be installed by running ``pip install -r
+   requirements.txt``.
+   There is also a ``Pipfile`` in case people prefer to use ``pipenv``.

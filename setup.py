@@ -30,7 +30,7 @@ Options:
   --int64                                Enable 64bit integers [default: False].
   --omp                                  Enable OpenMP parallelization [default: False].
   --python=<PYTHON_INTERPRETER>          The Python interpreter (development version) to use. [default: ''].
-  --fbindings=<TEST_Fortran_API>         Enable compilation of Fortran 90 API bindings <ON/OFF> [default: ON].
+  --fbindings=<TEST_Fortran_API>         Enable testing of Fortran 90 API bindings <ON/OFF> [default: ON].
   --boost-headers=<BOOST_INCLUDEDIR>     Include directories for Boost [default: ''].
   --boost-libraries=<BOOST_LIBRARYDIR>   Library directories for Boost [default: ''].
   --build-boost=<FORCE_CUSTOM_BOOST>     Deactivate Boost detection and build on-the-fly <ON/OFF> [default: OFF].

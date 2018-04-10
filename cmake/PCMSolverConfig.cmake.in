@@ -8,7 +8,8 @@
 #
 #   PCMSolver_FOUND - true if PCMSolver and all required components found on the system
 #   PCMSolver_VERSION - PCMSolver version in format Major.Minor.Release
-#   PCMSolver_INCLUDE_DIRS - Directory where PCMSolver/pcmsolver.h header is located.
+#   PCMSolver_INCLUDE_DIRS - Directory where the PCMSolver/pcmsolver.h,
+#                            PCMSolver/PCMInput.h headers and PCMSolver/pcmsolver.f90 source file are located.
 #   PCMSolver_INCLUDE_DIR - same as DIRS
 #   PCMSolver_DEFINITIONS: Definitions necessary to use PCMSolver, namely USING_PCMSolver.
 #   PCMSolver_LIBRARIES - PCMSolver library to link against.

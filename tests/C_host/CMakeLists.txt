@@ -5,7 +5,6 @@ target_include_directories(C_host
     ${PROJECT_SOURCE_DIR}/api
   )
 target_link_libraries(C_host PCMSolver)
-target_link_libraries(C_host m)
 set_target_properties(C_host
   PROPERTIES
     LINKER_LANGUAGE C
@@ -30,7 +29,6 @@ target_include_directories(fail-C_host
     ${PROJECT_SOURCE_DIR}/api
   )
 target_link_libraries(fail-C_host PCMSolver)
-target_link_libraries(fail-C_host m)
 set_target_properties(fail-C_host
   PROPERTIES
     LINKER_LANGUAGE C

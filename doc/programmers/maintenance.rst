@@ -2,8 +2,6 @@ Maintenance
 ===========
 
 Description and how-to for maintenance operations.
-Some of the maintenance scripts have been moved to the `pcmsolvermeta
-repository <https://gitlab.com/PCMSolver/pcmsolvermeta>`_
 
 Branching Model and Release Process
 -----------------------------------

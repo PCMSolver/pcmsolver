@@ -32,7 +32,7 @@ PCMSolver has been added to the following quantum chemistry programs
 + `LSDALTON <http://daltonprogram.org/>`_
 + `DIRAC <http://www.diracprogram.org/>`_
 + `ReSpect <http://www.respectprogram.org/>`_
-+ `KOALA <dx.doi.org/10.1002/jcc.23679>`_
++ `KOALA <https://dx.doi.org/10.1002/jcc.23679>`_
 
 Don't see you code listed here? `Please contact us <roberto.d.remigio@uit.no>`_.
 

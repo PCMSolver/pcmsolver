@@ -8,6 +8,8 @@ repository <https://gitlab.com/PCMSolver/pcmsolvermeta>`_
 Branching Model and Release Process
 -----------------------------------
 
+
+
 .. warning::
    **Soon to be updated**
 
@@ -105,7 +107,7 @@ Remember to commit and push your modifications.
 Git Pre-Commit Hooks
 ====================
 
-[Git pre-commit hooks](https://git-scm.com/book/gr/v2/Customizing-Git-Git-Hooks) are used to
+`Git pre-commit hooks <https://git-scm.com/book/gr/v2/Customizing-Git-Git-Hooks>`_ are used to
 keep track of code style and license header in source files.
 Code style is checked using ``clang-format`` for C/C++ and ``yapf`` for Python.
 

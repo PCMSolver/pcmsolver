@@ -273,10 +273,10 @@ private:
   ISolver * K_0_;
   /*! Solver with dynamic permittivity */
   ISolver * K_d_;
-  /*! PCMSolver set up information */
-  mutable std::ostringstream infoStream_;
   /*! Whether K_d_ was initialized */
   bool hasDynamic_;
+  /*! PCMSolver set up information */
+  mutable std::ostringstream infoStream_;
   /*! SurfaceFunction map */
   mutable SurfaceFunctionMap functions_;
   /*! Common implemenation for the CTOR-s */

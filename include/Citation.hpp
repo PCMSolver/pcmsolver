@@ -36,7 +36,7 @@
 inline std::string citation_message() {
   // clang-format off
   const char * fmt =
-     "-----------------------------------------------------------------------\n"
+     "\n-----------------------------------------------------------------------\n"
      "   PCMSolver: An Open Source API for the Polarizable Continuum Model\n"
      "                   PCMSolver %s\n\n"
      "           Git: Branch {%s}, Revision {%s}\n\n"
@@ -45,7 +45,7 @@ inline std::string citation_message() {
      " Source repository: https://github.com/PCMSolver/pcmsolver\n"
      " Documentation: https://pcmsolver.readthedocs.io/\n"
      " PCMSolver initialized on: %s\n"
-     "-----------------------------------------------------------------------\n\n";
+     "-----------------------------------------------------------------------\n";
   // clang-format on
   // Get current time
   time_t rawtime;

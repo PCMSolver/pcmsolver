@@ -104,8 +104,7 @@ pcmsolver_context_t * pcmsolver_new_v1112(pcmsolver_reader_t input_reading,
 namespace pcm {
 void Meddle::CTORBody() {
   // Write PCMSolver output header
-  infoStream_ << std::endl;
-  infoStream_ << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~" << std::endl;
+  infoStream_ << "~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n";
   infoStream_ << "Using CODATA " << input_.CODATAyear() << " set of constants."
               << std::endl;
   infoStream_ << "Input parsing done " << input_.providedBy() << std::endl;
@@ -126,13 +125,23 @@ void Meddle::CTORBody() {
 }
 
 Meddle::Meddle(const Input & input, const HostWriter & write)
-    : hostWriter_(write), input_(input), hasDynamic_(false) {
+    : hostWriter_(write),
+      input_(input),
+      cavity_(__nullptr),
+      K_0_(__nullptr),
+      K_d_(__nullptr),
+      hasDynamic_(false) {
   input_.initMolecule();
   CTORBody();
 }
 
 Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
-    : hostWriter_(write), input_(Input(inputFileName)), hasDynamic_(false) {
+    : hostWriter_(write),
+      input_(Input(inputFileName)),
+      cavity_(__nullptr),
+      K_0_(__nullptr),
+      K_d_(__nullptr),
+      hasDynamic_(false) {
   input_.initMolecule();
   CTORBody();
 }
@@ -143,7 +152,12 @@ Meddle::Meddle(int nr_nuclei,
                int symmetry_info[],
                const HostWriter & write,
                const std::string & inputFileName)
-    : hostWriter_(write), input_(Input(inputFileName)), hasDynamic_(false) {
+    : hostWriter_(write),
+      input_(Input(inputFileName)),
+      cavity_(__nullptr),
+      K_0_(__nullptr),
+      K_d_(__nullptr),
+      hasDynamic_(false) {
   TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
   TIMER_OFF("Meddle::initInput");
@@ -157,7 +171,13 @@ Meddle::Meddle(int nr_nuclei,
                int symmetry_info[],
                const PCMInput & host_input,
                const HostWriter & write)
-    : hostWriter_(write), input_(Input(host_input)), hasDynamic_(false) {
+    : hostWriter_(write),
+      input_(Input(host_input)),
+      cavity_(__nullptr),
+      K_0_(__nullptr),
+      K_d_(__nullptr),
+      infoStream_("\n~~~~~~~~~~ PCMSolver ~~~~~~~~~~\n"),
+      hasDynamic_(false) {
   TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
   TIMER_OFF("Meddle::initInput");

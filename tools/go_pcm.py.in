@@ -29,13 +29,13 @@ Parses the PCMSolver input file and launches a standalone calculation with the
 run_pcm executable.
 """
 
-from pcmsolver.external import docopt
 import os
 import subprocess
 import sys
 
 try:
     import pcmsolver as pcm
+    from pcmsolver.external import docopt
 except ImportError as ops:
     sys.stderr.write("{}\n\n".format(ops))
     sys.stderr.write("""You should update your PYTHONPATH to use go_pcm.py

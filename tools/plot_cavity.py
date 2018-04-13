@@ -29,6 +29,7 @@ Color map the finite elements according to a surface function, saved
 to NumPy format file.
 """
 
+import os
 import sys
 import docopt
 import numpy as np
@@ -39,13 +40,18 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 options = """
 Usage:
-    ./plot_cavity.py <cavity_npz> [--map-by <npy>]
+    ./plot_cavity.py <cavity_npz> [--save <fname> --map-by <npy> --label <label>]
     ./plot_cavity.py (-h | --help)
 
 Options:
-  <cavity_npz>   Compressed NumPy file with cavity specifications.
-  --map-by <npy> NumPy format file with surface function to color-map finite elements.
-  -h --help      Show this screen.
+  <cavity_npz>    Compressed NumPy file with cavity specifications.
+  --save <fname>  Filename for the output picture, without extension.
+                  A 600 dpi SVG is produced.
+                  If left empty, the name of the .npz and the label are used.
+  --map-by <npy>  NumPy format file with surface function to color-map finite elements.
+  --label <label> Label for the mapping colorbar.
+                  If left empty, the NumPy filename will be used.
+  -h --help       Show this screen.
 """
 
 
@@ -95,7 +101,7 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     return newcmap
 
 
-def plot(cavity_npz, surf_func_npy=None):
+def plot(cavity_npz, save, surf_func_npy=None, label=None):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -105,7 +111,7 @@ def plot(cavity_npz, surf_func_npy=None):
     centroids = cavity['centers']
 
     # Plot collocation points
-    ax.scatter(centroids[0, :], centroids[1, :], centroids[2, :], c='black', alpha=0.5)
+    ax.scatter(centroids[0, :], centroids[1, :], centroids[2, :], c='black', alpha=0.5, s=5)
 
     # Generate color mapping
     colors = (.5, .1, .3, 0.3)
@@ -114,7 +120,8 @@ def plot(cavity_npz, surf_func_npy=None):
         shifted_cmap = shiftedColorMap(cm.coolwarm, midpoint=0.75, name='shifted')
         mappable = cm.ScalarMappable(cmap=shifted_cmap)
         mappable.set_array(surf_func.flatten())
-        plt.colorbar(mappable)
+        cb = plt.colorbar(mappable)
+        cb.set_label(label)
         # Provide colors for Poly3DCollection
         colors = mappable.to_rgba(surf_func.flatten())
     # Generate list of vertices
@@ -126,6 +133,7 @@ def plot(cavity_npz, surf_func_npy=None):
     elements = Poly3DCollection(vertices, facecolors=colors)
     ax.add_collection3d(elements)
     ax.set_axis_off()
+    plt.savefig(os.path.join(os.getcwd(), save + '.svg'), format='svg', dpi=600, bbox_inches='tight')
     plt.show()
 
 
@@ -137,8 +145,12 @@ def main():
         sys.stderr.write(options)
         sys.exit(-1)
     cavity_npz = arguments['<cavity_npz>']
+    cavity = os.path.splitext(cavity_npz)[0]
+    save = arguments['--save'] if arguments['--save'] else cavity
     surf_func_npy = arguments['--map-by']
-    plot(cavity_npz, surf_func_npy)
+    surf_func = os.path.splitext(surf_func_npy)[0] if surf_func_npy else ''
+    label = arguments['--label'] if arguments['--label'] else surf_func
+    plot(cavity_npz, save, surf_func_npy, label)
 
 
 if __name__ == '__main__':

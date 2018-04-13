@@ -166,7 +166,9 @@ public:
    *  and charges. Given labels for each, this function retrieves the MEP
    *  and computes the corresponding ASC.
    */
-  void computeASC(const char * mep_name, const char * asc_name, int irrep) const;
+  void computeASC(const std::string & mep_name,
+                  const std::string & asc_name,
+                  int irrep) const;
 
   /*! \brief Computes response ASC given a MEP and the desired irreducible
    * representation
@@ -178,8 +180,8 @@ public:
    * permittivity
    *  otherwise.
    */
-  void computeResponseASC(const char * mep_name,
-                          const char * asc_name,
+  void computeResponseASC(const std::string & mep_name,
+                          const std::string & asc_name,
                           int irrep) const;
 
   /*! \brief Computes the polarization energy
@@ -188,14 +190,14 @@ public:
    *  \return the polarization energy
    *  This function calculates the dot product of the given MEP and ASC vectors.
    */
-  double computePolarizationEnergy(const char * mep_name,
-                                   const char * asc_name) const;
+  double computePolarizationEnergy(const std::string & mep_name,
+                                   const std::string & asc_name) const;
   /*! \brief Getter for the ASC dipole
    *  \param[in] asc_name label of the ASC surface function
    *  \param[out] dipole  the Cartesian components of the ASC dipole moment
    *  \return the ASC dipole, i.e. \f$\sqrt{\sum_i \mu_i^2}\f$
    */
-  double getASCDipole(const char * asc_name, double dipole[]) const;
+  double getASCDipole(const std::string & asc_name, double dipole[]) const;
 
   /*! \brief Retrieves data wrapped in a given surface function
    *  \param[in] size the size of the surface function
@@ -204,7 +206,7 @@ public:
    */
   void getSurfaceFunction(PCMSolverIndex size,
                           double values[],
-                          const char * name) const;
+                          const std::string & name) const;
 
   /*! \brief Sets a surface function given data and label
    *  \param[in] size the size of the surface function
@@ -213,12 +215,12 @@ public:
    */
   void setSurfaceFunction(PCMSolverIndex size,
                           double values[],
-                          const char * name) const;
+                          const std::string & name) const;
 
   /*! \brief Prints surface function contents to host output
    *  \param[in] name label of the surface function
    */
-  void printSurfaceFunction(const char * name) const;
+  void printSurfaceFunction(const std::string & name) const;
 
   /*! \brief Dumps all currently saved surface functions to NumPy arrays in .npy
    * files
@@ -231,7 +233,7 @@ public:
    *  \note The name parameter is the name of the NumPy array file
    *  **without** .npy extension
    */
-  void saveSurfaceFunction(const char * name) const;
+  void saveSurfaceFunction(const std::string & name) const;
 
   /*! \brief Loads a surface function from a .npy file
    *  \param[in] name label of the surface function
@@ -239,7 +241,7 @@ public:
    *  \note The name parameter is the name of the NumPy array file
    *  **without** .npy extension
    */
-  void loadSurfaceFunction(const char * name) const;
+  void loadSurfaceFunction(const std::string & name) const;
 
   /*! \brief Prints citation and set up information
    */

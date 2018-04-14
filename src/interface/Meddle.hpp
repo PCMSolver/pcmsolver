@@ -168,7 +168,7 @@ public:
    */
   void computeASC(const std::string & mep_name,
                   const std::string & asc_name,
-                  int irrep) const;
+                  int irrep);
 
   /*! \brief Computes response ASC given a MEP and the desired irreducible
    * representation
@@ -182,7 +182,7 @@ public:
    */
   void computeResponseASC(const std::string & mep_name,
                           const std::string & asc_name,
-                          int irrep) const;
+                          int irrep);
 
   /*! \brief Computes the polarization energy
    *  \param[in] mep_name label of the MEP surface function
@@ -215,7 +215,7 @@ public:
    */
   void setSurfaceFunction(PCMSolverIndex size,
                           double values[],
-                          const std::string & name) const;
+                          const std::string & name);
 
   /*! \brief Prints surface function contents to host output
    *  \param[in] name label of the surface function
@@ -241,7 +241,7 @@ public:
    *  \note The name parameter is the name of the NumPy array file
    *  **without** .npy extension
    */
-  void loadSurfaceFunction(const std::string & name) const;
+  void loadSurfaceFunction(const std::string & name);
 
   /*! \brief Prints citation and set up information
    */
@@ -278,9 +278,9 @@ private:
   /*! Whether K_d_ was initialized */
   bool hasDynamic_;
   /*! PCMSolver set up information */
-  mutable std::ostringstream infoStream_;
+  std::ostringstream infoStream_;
   /*! SurfaceFunction map */
-  mutable SurfaceFunctionMap functions_;
+  SurfaceFunctionMap functions_;
   /*! Common implemenation for the CTOR-s */
   void CTORBody();
   /*! \brief Initialize input_
@@ -300,6 +300,6 @@ private:
   /*! Initialize dynamic solver K_d_ */
   void initDynamicSolver();
   /*! Collect info on medium */
-  void mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) const;
+  void mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o);
 };
 } // namespace pcm

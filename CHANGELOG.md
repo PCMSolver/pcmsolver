@@ -32,6 +32,14 @@
   `TEST_Fortran_API`, since it now only triggers compilation of the
   `Fortran_host` test case.
 
+### Fixed
+
+- `std::string`-s are now used in the `Meddle` object functions manipulating
+  the surface functions map. Explicit casts from `const char *` to `std::string`
+  are handled in the API functions.
+- Properly enforce `const`-correctness of the `Meddle` object and of its usage
+  in the context API.
+
 ## [Version 1.2.0-rc1] - 2018-03-02
 
 ### Added

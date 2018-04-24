@@ -76,7 +76,7 @@ Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential
   int nrBlocks = blockS_.size();
   int irrDim = fullDim / nrBlocks;
   charge.segment(irrep * irrDim, irrDim) =
-      -blockS_[irrep].ldlt().solve(potential.segment(irrep * irrDim, irrDim));
+      -blockS_[irrep].llt().solve(potential.segment(irrep * irrDim, irrDim));
 
   return charge;
 }

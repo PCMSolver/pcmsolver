@@ -44,13 +44,12 @@ if(NOT STATIC_LIBRARY_ONLY)
   target_link_libraries(pcm-shared
     PRIVATE
       ${LIBC_INTERJECT}
+    PUBLIC
       ZLIB::ZLIB
     )
   set_target_properties(pcm-shared
     PROPERTIES
       SOVERSION 1
-      CXX_VISIBILITY_PRESET hidden
-      VISIBILITY_INLINES_HIDDEN 1
       MACOSX_RPATH ON
       OUTPUT_NAME "pcm"
       EXPORT_NAME "pcm"
@@ -81,7 +80,7 @@ if(NOT SHARED_LIBRARY_ONLY)
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
   target_link_libraries(pcm-static
-    PRIVATE
+    PUBLIC
       ZLIB::ZLIB
     )
   set_target_properties(pcm-static
@@ -116,8 +115,18 @@ generate_export_header(PCMSolver
   STATIC_DEFINE "PCMSolver_STATIC_DEFINE"
   NO_DEPRECATED_MACRO_NAME "PCMSolver_NO_DEPRECATED"
   DEFINE_NO_DEPRECATED)
-file(COPY ${CMAKE_CURRENT_BINARY_DIR}/PCMSolverExport.h DESTINATION ${PROJECT_BINARY_DIR}/include)
-install(FILES ${PROJECT_BINARY_DIR}/include/PCMSolverExport.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PCMSolver)
+file(
+  COPY
+    ${CMAKE_CURRENT_BINARY_DIR}/PCMSolverExport.h
+  DESTINATION
+    ${PROJECT_BINARY_DIR}/include
+  )
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/include/PCMSolverExport.h
+  DESTINATION
+    ${CMAKE_INSTALL_INCLUDEDIR}/PCMSolver
+  )
 
 # This directory contains source file for executables
 if(BUILD_STANDALONE)

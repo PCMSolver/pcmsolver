@@ -1,11 +1,35 @@
 cmake_policy(SET CMP0022 NEW)
 cmake_policy(SET CMP0063 NEW)
 
-include_directories(
-  ${CMAKE_CURRENT_LIST_DIR}
-  ${PROJECT_BINARY_DIR}/include
-  ${PROJECT_SOURCE_DIR}/include
-  SYSTEM ${CMAKE_CURRENT_LIST_DIR}/utils/getkw
+add_library(pcm-objlib OBJECT "")
+set_target_properties(pcm-objlib
+  PROPERTIES
+    POSITION_INDEPENDENT_CODE 1
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN 1
+  )
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(pcm-objlib custom_boost)
+endif()
+add_dependencies(pcm-objlib generate-config-hpp)
+target_compile_definitions(pcm-objlib
+  PRIVATE
+    "$<$<BOOL:${HAS_CXX11}>:HAS_CXX11>"
+  )
+target_compile_options(pcm-objlib
+  PRIVATE
+    "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"
+  )
+target_include_directories(pcm-objlib
+  PRIVATE
+    ${PROJECT_BINARY_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_LIST_DIR}
+  )
+target_include_directories(pcm-objlib
+  SYSTEM
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/utils/getkw
   )
 
 add_subdirectory(cavity)
@@ -17,20 +41,8 @@ add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)
 
-list(APPEND _objects
-    $<TARGET_OBJECTS:cavity>
-    $<TARGET_OBJECTS:green>
-    $<TARGET_OBJECTS:interface>
-    $<TARGET_OBJECTS:metal>
-    $<TARGET_OBJECTS:bi_operators>
-    $<TARGET_OBJECTS:pedra>
-    $<TARGET_OBJECTS:solver>
-    $<TARGET_OBJECTS:utils>
-    $<TARGET_OBJECTS:getkw>
-    )
-
 if(NOT STATIC_LIBRARY_ONLY)
-  add_library(pcm-shared SHARED ${_objects})
+  add_library(pcm-shared SHARED $<TARGET_OBJECTS:pcm-objlib>)
   target_compile_definitions(pcm-shared
     PUBLIC
       PCMSolver_EXPORTS
@@ -39,18 +51,20 @@ if(NOT STATIC_LIBRARY_ONLY)
     )
   target_include_directories(pcm-shared
     INTERFACE
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
   target_link_libraries(pcm-shared
     PRIVATE
       ${LIBC_INTERJECT}
+    PUBLIC
       ZLIB::ZLIB
     )
   set_target_properties(pcm-shared
     PROPERTIES
       SOVERSION 1
-      CXX_VISIBILITY_PRESET hidden
-      VISIBILITY_INLINES_HIDDEN 1
       MACOSX_RPATH ON
       OUTPUT_NAME "pcm"
       EXPORT_NAME "pcm"
@@ -69,7 +83,7 @@ if(NOT STATIC_LIBRARY_ONLY)
 endif()
 
 if(NOT SHARED_LIBRARY_ONLY)
-  add_library(pcm-static STATIC ${_objects})
+  add_library(pcm-static STATIC $<TARGET_OBJECTS:pcm-objlib>)
   target_compile_definitions(pcm-static
     PUBLIC
       PCMSolver_STATIC_DEFINE
@@ -78,10 +92,13 @@ if(NOT SHARED_LIBRARY_ONLY)
     )
   target_include_directories(pcm-static
     INTERFACE
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
   target_link_libraries(pcm-static
-    PRIVATE
+    PUBLIC
       ZLIB::ZLIB
     )
   set_target_properties(pcm-static
@@ -116,8 +133,18 @@ generate_export_header(PCMSolver
   STATIC_DEFINE "PCMSolver_STATIC_DEFINE"
   NO_DEPRECATED_MACRO_NAME "PCMSolver_NO_DEPRECATED"
   DEFINE_NO_DEPRECATED)
-file(COPY ${CMAKE_CURRENT_BINARY_DIR}/PCMSolverExport.h DESTINATION ${PROJECT_BINARY_DIR}/include)
-install(FILES ${PROJECT_BINARY_DIR}/include/PCMSolverExport.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/PCMSolver)
+file(
+  COPY
+    ${CMAKE_CURRENT_BINARY_DIR}/PCMSolverExport.h
+  DESTINATION
+    ${PROJECT_BINARY_DIR}/include
+  )
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/include/PCMSolverExport.h
+  DESTINATION
+    ${CMAKE_INSTALL_INCLUDEDIR}/PCMSolver
+  )
 
 # This directory contains source file for executables
 if(BUILD_STANDALONE)

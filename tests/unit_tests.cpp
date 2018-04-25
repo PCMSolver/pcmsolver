@@ -24,7 +24,7 @@
 #define CATCH_CONFIG_RUNNER
 #include "catch.hpp"
 
-#include "PhysicalConstants.hpp"
+#include "Config.hpp"
 
 int main(int argc, char * const argv[]) {
   // global setup...

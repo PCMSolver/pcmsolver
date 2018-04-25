@@ -1,13 +1,11 @@
-add_library(input-tests OBJECT
-  input_cpcm.cpp
-  input_diffuse.cpp
-  input_multipoles.cpp
-  input_restart.cpp
-  input_sharp.cpp
+target_sources(unit_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/input_cpcm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/input_diffuse.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/input_multipoles.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/input_restart.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/input_sharp.cpp
   )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(input-tests custom_boost)
-endif()
 
 file(
   COPY

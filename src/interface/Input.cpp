@@ -384,7 +384,7 @@ BIOperatorData Input::integratorParams() const {
 }
 
 namespace detail {
-#ifndef HAS_CXX11_LAMBDA
+#ifndef HAS_CXX11
 std::string left_trim(std::string s) {
   s.erase(s.begin(),
           std::find_if(
@@ -399,7 +399,7 @@ std::string right_trim(std::string s) {
           s.end());
   return s;
 }
-#else  /* HAS_CXX11_LAMBDA */
+#else  /* HAS_CXX11 */
 std::string left_trim(std::string s) {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
             return !std::isspace(ch);
@@ -414,7 +414,7 @@ std::string right_trim(std::string s) {
       s.end());
   return s;
 }
-#endif /* HAS_CXX11_LAMBDA */
+#endif /* HAS_CXX11 */
 
 std::string left_trim(const char * src) {
   std::string tmp(src);

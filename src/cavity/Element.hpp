@@ -113,7 +113,7 @@ private:
   /// Coordinates of the centers of the arcs defining the edges of the finite element
   /// (dimension 3*nVertices_)
   Eigen::Matrix3Xd arcs_;
-  virtual std::ostream & printElement(std::ostream & os) {
+  std::ostream & printElement(std::ostream & os) {
     os << "Finite element" << std::endl;
     os << "Center\n" << center_.transpose() << std::endl;
     os << "Normal\n" << normal_.transpose() << std::endl;

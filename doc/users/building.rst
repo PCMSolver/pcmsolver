@@ -14,8 +14,16 @@ program, the unit test suite and an offline copy of this documentation.
 Compilers
 ~~~~~~~~~
 
-+ a C++ compiler, compliant with the 1998 ISO C++ standard plus the 2003
-  technical corrigendum and some additional defect reports.
++ a C++ compiler, compliant with the 2011 ISO C++ standard. The build system
+  will downgrade to using the 1998 ISO C++ standard plus the 2003 technical
+  corrigendum and some additional defect reports, if no suitable support if
+  found.
+
+  .. warning::
+
+     Backwards compatibility support for the C++03 standard is **deprecated**
+     and will be removed in upcoming releases of the library.
+
 + a C compiler, compliant with the ISO C99 standard.
 + a Fortran compiler, compliant with the Fortran 2003 standard.
 
@@ -28,7 +36,7 @@ the unit test suite.
 Libraries and toolchain programs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-+ CMake version 2.8.10 and higher;
++ CMake version 3.3 and higher;
 + Git version 1.7.1 and higher;
 + Python interpreter 2.7 and higher;
 + Boost libraries version 1.54.0 and higher;
@@ -133,14 +141,8 @@ be useful when not programming the library:
 
 Some options can only be tweaked `via` ``--cmake-options`` to the setup script:
 
-* ``ENABLE_CXX11_SUPPORT`` Enable C++11 support. Tries to detect which C++11 features
-  are supported by the compiler and enables use of the new standard. Enabled by default.
-
-  .. warning::
-
-     This option is **always** overridden for some compilers that have
-     buggy C++11 support.
-
+* ``ENABLE_CXX11_SUPPORT`` Enable C++11 support. This is enabled by default, as
+  C++03 backwards compatibility is deprecated for this project.
 * ``ENABLE_DOCS`` Enable build of documentation. This requires a number of additional dependencies.
   If any of these are not met, documentation is not built. Enabled by default.
 * ``ENABLE_LOGGER`` Enable compilation of logger sources. Disabled by default.

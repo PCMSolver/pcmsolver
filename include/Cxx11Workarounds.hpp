@@ -37,15 +37,15 @@
 /* Smart pointers workarounds */
 #include <memory>
 namespace pcm {
-using std::shared_ptr;
 using std::make_shared;
+using std::shared_ptr;
 using std::unique_ptr;
 } /* end namespace pcm */
 /* <functional> workarounds */
 #include <functional>
 namespace pcm {
-using std::function;
 using std::bind;
+using std::function;
 using std::placeholders::_1;
 using std::placeholders::_2;
 using std::placeholders::_3;
@@ -54,11 +54,11 @@ using std::placeholders::_4;
 /* <tuple> workarounds */
 #include <tuple>
 namespace pcm {
-using std::tuple;
+using std::get;
+using std::ignore;
 using std::make_tuple;
 using std::tie;
-using std::ignore;
-using std::get;
+using std::tuple;
 } /* end namespace pcm */
 /* <array> workarounds */
 #include <array>
@@ -86,28 +86,28 @@ using std::is_same;
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 namespace pcm {
-using boost::shared_ptr;
 using boost::make_shared;
+using boost::shared_ptr;
 } /* end namespace pcm */
 /* <functional> workarounds */
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 namespace pcm {
-using boost::function;
-using boost::bind;
 using ::_1;
 using ::_2;
 using ::_3;
 using ::_4;
+using boost::bind;
+using boost::function;
 } /* end namespace pcm */
 /* <tuple> workarounds */
 #include <boost/tuple/tuple.hpp>
 namespace pcm {
-using boost::tuple;
+using boost::get;
 using boost::make_tuple;
 using boost::tie;
+using boost::tuple;
 using boost::tuples::ignore;
-using boost::get;
 } /* end namespace pcm */
 /* <array> workarounds */
 #include <boost/array.hpp>
@@ -138,40 +138,40 @@ using boost::is_same;
 
 /* --- Workarounds for new keywords */
 /* Workaroud for final */
-#ifdef HAS_CXX11_CLASS_OVERRIDE
+#ifdef HAS_CXX11
 #define __final final
-#else /* HAS_CXX11_CLASS_OVERRIDE */
+#else /* HAS_CXX11 */
 #define __final
-#endif /* HAS_CXX11_CLASS_OVERRIDE */
+#endif /* HAS_CXX11 */
 
 /* Workaroud for override */
-#ifdef HAS_CXX11_CLASS_OVERRIDE
+#ifdef HAS_CXX11
 #define __override override
-#else /* HAS_CXX11_CLASS_OVERRIDE */
+#else /* HAS_CXX11 */
 #define __override
-#endif /* HAS_CXX11_CLASS_OVERRIDE */
+#endif /* HAS_CXX11 */
 
 /* Workaroud for noexcept */
-#ifdef HAS_CXX11_NOEXCEPT
+#ifdef HAS_CXX11
 #define __noexcept noexcept
-#else /* HAS_CXX11_NOEXCEPT */
+#else /* HAS_CXX11 */
 #define __noexcept throw()
-#endif /* HAS_CXX11_NOEXCEPT */
+#endif /* HAS_CXX11 */
 
 /* Workaround for nullptr */
-#ifdef HAS_CXX11_NULLPTR
+#ifdef HAS_CXX11
 #define __nullptr nullptr
-#else /* HAS_CXX11_NULLPTR */
+#else /* HAS_CXX11 */
 #define __nullptr NULL
-#endif /* HAS_CXX11_NULLPTR */
+#endif /* HAS_CXX11 */
 
 /* Workaround for [[noreturn]] */
-#ifdef HAS_CXX11_NORETURN
+#ifdef HAS_CXX11
 #define __noreturn [[noreturn]]
 #elif defined(__GNUC__)
 #define __noreturn __attribute__((noreturn))
 #elif defined(_MSC_VER)
 #define __declspec(noreturn)
-#else /* HAS_CXX11_NORETURN */
+#else /* HAS_CXX11 */
 #define __noreturn
-#endif /* HAS_CXX11_NORETURN */
+#endif /* HAS_CXX11 */

@@ -1,19 +1,11 @@
-# List of sources
-list(APPEND sources_list
-pedra_dblas.f90
-pedra_dlapack.f90
-pedra_precision.f90
-pedra_print.f90
-pedra_symmetry.f90
-pedra_utils.f90
-pedra_cavity.F90
-pedra_cavity_interface.F90
-)
-
-add_library(pedra OBJECT ${sources_list})
-set_target_properties(pedra
-  PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
+target_sources(pcm-objlib
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/pedra_dblas.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pedra_dlapack.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pedra_precision.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pedra_print.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pedra_symmetry.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pedra_utils.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pedra_cavity.F90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pedra_cavity_interface.F90
   )

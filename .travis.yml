@@ -30,12 +30,12 @@ matrix:
             - cmake3-data
             - clang
             - clang-format-3.9
-            - gfortran-4.6
+            - gfortran
             - libboost-math-dev
       env:
         - CXX_COMPILER='clang++'
         - C_COMPILER='clang'
-        - Fortran_COMPILER='gfortran-4.6'
+        - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='release'
         - PYTHON='--three'
         - RUN_DANGER=true
@@ -45,14 +45,14 @@ matrix:
           packages:
             - cmake3
             - cmake3-data
-            - g++-4.6
-            - gcc-4.6
-            - gfortran-4.6
+            - g++
+            - gcc
+            - gfortran
             - libboost-math-dev
       env:
-        - CXX_COMPILER='g++-4.6'
-        - C_COMPILER='gcc-4.6'
-        - Fortran_COMPILER='gfortran-4.6'
+        - CXX_COMPILER='g++'
+        - C_COMPILER='gcc'
+        - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='release'
         - PYTHON='--two'
         - RUN_DANGER=false
@@ -82,15 +82,15 @@ matrix:
           packages:
             - cmake3
             - cmake3-data
-            - g++-4.8
-            - gcc-4.8
-            - gfortran-4.8
+            - g++
+            - gcc
+            - gfortran
             - libboost-math-dev
             - lcov
       env:
-        - CXX_COMPILER='g++-4.8'
-        - C_COMPILER='gcc-4.8'
-        - Fortran_COMPILER='gfortran-4.8'
+        - CXX_COMPILER='g++'
+        - C_COMPILER='gcc'
+        - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='debug'
         - PYTHON='--two'
         - COVERAGE='--coverage'

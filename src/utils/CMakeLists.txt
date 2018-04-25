@@ -1,57 +1,36 @@
+target_sources(pcm-objlib
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Atom.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ChargeDistribution.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Molecule.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/QuadratureRules.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Solvent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sphere.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Symmetry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cnpy.cpp
+  )
+
 # List of headers
 list(APPEND headers_list
-Atom.hpp
-ChargeDistribution.hpp
-Factory.hpp
-Legendre.hpp
-Logger.hpp
-LoggerImpl.hpp
-MathUtils.hpp
-Molecule.hpp
-QuadratureRules.hpp
-Solvent.hpp
-Sphere.hpp
-SplineFunction.hpp
-Stencils.hpp
-Symmetry.hpp
-Timer.hpp
-cnpy.hpp
-)
-
-# List of sources
-list(APPEND sources_list
-Atom.cpp
-ChargeDistribution.cpp
-Molecule.cpp
-QuadratureRules.cpp
-Solvent.cpp
-Sphere.cpp
-Symmetry.cpp
-cnpy.cpp
-)
-
-add_library(utils OBJECT ${sources_list} ${headers_list})
-set_target_properties(utils
-  PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
+  Atom.hpp
+  ChargeDistribution.hpp
+  Factory.hpp
+  Legendre.hpp
+  Logger.hpp
+  LoggerImpl.hpp
+  MathUtils.hpp
+  Molecule.hpp
+  QuadratureRules.hpp
+  Solvent.hpp
+  Sphere.hpp
+  SplineFunction.hpp
+  Stencils.hpp
+  Symmetry.hpp
+  Timer.hpp
+  cnpy.hpp
   )
-target_compile_definitions(utils
-  PUBLIC
-    PCMSolver_EXPORTS
-  )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(utils custom_boost)
-endif()
-add_dependencies(utils generate-config-hpp)
-target_compile_options(utils
-  PRIVATE
-    "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"
-  )
-
 # Sets install directory for all the headers in the list
-foreach(_header ${headers_list})
+foreach(_header IN LISTS headers_list)
     install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/utils)
 endforeach()
 

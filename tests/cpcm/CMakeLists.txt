@@ -1,15 +1,13 @@
-add_library(cpcm-tests OBJECT
-  cpcm_gepol-C2H4_D2h.cpp
-  cpcm_gepol-H2O.cpp
-  cpcm_gepol-NH3.cpp
-  cpcm_gepol-NH3_from-file.cpp
-  cpcm_gepol-point.cpp
-  cpcm_gepol-point_from-file.cpp
-  cpcm_symmetry.cpp
+target_sources(unit_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpcm_gepol-C2H4_D2h.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpcm_gepol-H2O.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpcm_gepol-NH3.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpcm_gepol-NH3_from-file.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpcm_gepol-point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpcm_gepol-point_from-file.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cpcm_symmetry.cpp
   )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(cpcm-tests custom_boost)
-endif()
 
 # cpcm_gepol-NH3_from-file.cpp test
 add_Catch_test(

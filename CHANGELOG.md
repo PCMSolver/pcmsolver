@@ -9,6 +9,12 @@
   Messina (J. Chem. Phys. 2002, 117 (24), 11062) and
   Delgado _et al._ (J. Chem. Phys. 2013, 139 (2), 024105)
 
+### Deprecated
+
+- C++03 support is effectively **deprecated** in favor of C++11. Support for GCC
+  4.6 and earlier has been dropped. Please consider upgrading your C++ compiler
+  to a [fully standard-compliant one](https://en.cppreference.com/w/cpp/compiler_support#cpp11)
+
 ### Changed
 
 - The versioning machinery has been updated. The update was inspired by the
@@ -31,6 +37,7 @@
 - The `ENABLE_Fortran_API` configuration option has been renamed
   `TEST_Fortran_API`, since it now only triggers compilation of the
   `Fortran_host` test case.
+- **BREAKING CHANGE** The minimum required version of CMake is now 3.3 
 
 ### Fixed
 

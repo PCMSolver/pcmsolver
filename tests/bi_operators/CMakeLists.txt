@@ -1,10 +1,8 @@
-add_library(bi_operators-tests OBJECT
-  bi_operators_collocation.cpp
-  bi_operators_purisima.cpp
+target_sources(unit_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/bi_operators_collocation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/bi_operators_purisima.cpp
   )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(bi_operators-tests custom_boost)
-endif()
 
 # bi_operators_purisima.cpp test
 add_Catch_test(
@@ -43,8 +41,13 @@ add_Catch_test(
 # This executable updates the .npy files containing the reference values
 if(BUILD_STANDALONE)
   add_executable(update_reference_files update_reference_files.cpp)
+  target_compile_definitions(update_reference_files
+    PRIVATE
+      "$<$<BOOL:${HAS_CXX11}>:HAS_CXX11>"
+    )
   target_link_libraries(update_reference_files pcm-static)
-  if(BUILD_CUSTOM_BOOST)
-    add_dependencies(update_reference_files custom_boost)
-  endif()
+  target_include_directories(update_reference_files
+    PRIVATE
+      ${PROJECT_SOURCE_DIR}/tests
+    )
 endif()

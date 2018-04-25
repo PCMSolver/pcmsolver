@@ -1,14 +1,12 @@
-add_library(green-tests OBJECT
-  green_anisotropic_liquid.cpp
-  green_ionic_liquid.cpp
-  green_spherical_diffuse.cpp
-  green_uniform_dielectric.cpp
-  green_vacuum.cpp
-  green_spherical_sharp.cpp
+target_sources(unit_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/green_anisotropic_liquid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/green_ionic_liquid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/green_spherical_diffuse.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/green_uniform_dielectric.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/green_vacuum.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/green_spherical_sharp.cpp
   )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(green-tests custom_boost)
-endif()
 
 # green_spherical_diffuse.cpp test
 add_Catch_test(

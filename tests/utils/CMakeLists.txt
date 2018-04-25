@@ -1,10 +1,8 @@
-add_library(utils-tests OBJECT
-  utils_dipolar-potential.cpp
-  utils_newton-potential.cpp
+target_sources(unit_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils_dipolar-potential.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils_newton-potential.cpp
   )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(utils-tests custom_boost)
-endif()
 
 # utils_newton-potential.cpp test
 add_Catch_test(

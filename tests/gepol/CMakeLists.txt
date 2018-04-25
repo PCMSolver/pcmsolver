@@ -1,20 +1,18 @@
-add_library(gepol-tests OBJECT
-  gepol_C2H4_D2h.cpp
-  gepol_C6H6.cpp
-  gepol_CH3+_Cs.cpp
-  gepol_CO2_symmetry.cpp
-  gepol_H3+.cpp
-  gepol_H3+_C2v.cpp
-  gepol_H3+_from-file.cpp
-  gepol_NH3.cpp
-  gepol_NH3_from-file.cpp
-  gepol_point.cpp
-  gepol_point_from-file.cpp
-  gepol_point_symmetry.cpp
+target_sources(unit_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_C2H4_D2h.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_C6H6.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_CH3+_Cs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_CO2_symmetry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_H3+.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_H3+_C2v.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_H3+_from-file.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_NH3.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_NH3_from-file.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_point_from-file.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gepol_point_symmetry.cpp
   )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(gepol-tests custom_boost)
-endif()
 
 # gepol_point_symmetry.cpp test
 add_Catch_test(

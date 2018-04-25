@@ -2,7 +2,6 @@ add_executable(C_host C_host.c)
 target_include_directories(C_host
   PRIVATE
     ${PROJECT_SOURCE_DIR}/tests/C_host
-    ${PROJECT_SOURCE_DIR}/api
   )
 target_link_libraries(C_host PCMSolver)
 target_link_libraries(C_host m)
@@ -27,7 +26,6 @@ add_executable(fail-C_host fail-C_host.c)
 target_include_directories(fail-C_host
   PRIVATE
     ${PROJECT_SOURCE_DIR}/tests/C_host
-    ${PROJECT_SOURCE_DIR}/api
   )
 target_link_libraries(fail-C_host PCMSolver)
 target_link_libraries(fail-C_host m)

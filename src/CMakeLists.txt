@@ -2,6 +2,12 @@ cmake_policy(SET CMP0022 NEW)
 cmake_policy(SET CMP0063 NEW)
 
 add_library(pcm-objlib OBJECT "")
+set_target_properties(pcm-objlib
+  PROPERTIES
+    POSITION_INDEPENDENT_CODE 1
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN 1
+  )
 if(BUILD_CUSTOM_BOOST)
   add_dependencies(pcm-objlib custom_boost)
 endif()

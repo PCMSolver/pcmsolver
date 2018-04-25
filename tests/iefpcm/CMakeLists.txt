@@ -1,20 +1,18 @@
-add_library(iefpcm-tests OBJECT
-  iefpcm_anisotropic-gepol-point.cpp
-  iefpcm_anisotropic-symmetry.cpp
-  iefpcm_tanh-spherical-diffuse-gepol-point.cpp
-  iefpcm_erf-spherical-diffuse-gepol-point.cpp
-  iefpcm_log-spherical-diffuse-gepol-point.cpp
-  iefpcm_sharp-gepol-point.cpp
-  iefpcm_gepol-C2H4_D2h.cpp
-  iefpcm_gepol-NH3.cpp
-  iefpcm_gepol-NH3_from-file.cpp
-  iefpcm_gepol-point.cpp
-  iefpcm_gepol-point_from-file.cpp
-  iefpcm_symmetry.cpp
+target_sources(unit_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_anisotropic-gepol-point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_anisotropic-symmetry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_tanh-spherical-diffuse-gepol-point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_erf-spherical-diffuse-gepol-point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_log-spherical-diffuse-gepol-point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_sharp-gepol-point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_gepol-C2H4_D2h.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_gepol-NH3.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_gepol-NH3_from-file.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_gepol-point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_gepol-point_from-file.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iefpcm_symmetry.cpp
   )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(iefpcm-tests custom_boost)
-endif()
 
 # iefpcm_gepol-NH3.cpp test
 add_Catch_test(

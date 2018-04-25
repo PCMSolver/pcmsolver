@@ -1,14 +1,20 @@
 cmake_policy(SET CMP0063 NEW)
 
-include_directories(
-  SYSTEM
-    ${PROJECT_SOURCE_DIR}/external/Catch
+# Prepare "Catch" library for other executables
+set(CATCH_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/Catch)
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+add_executable(unit_tests unit_tests.cpp)
+set_target_properties(unit_tests
+  PROPERTIES
+    POSITION_INDEPENDENT_CODE 1
   )
-include_directories(
-  ${PROJECT_SOURCE_DIR}/src
-  ${PROJECT_BINARY_DIR}/include
-  ${PROJECT_SOURCE_DIR}/include
-  ${PROJECT_SOURCE_DIR}/tests
+target_compile_definitions(unit_tests
+  PRIVATE
+    $<$<NOT:$<BOOL:${ENABLE_CXX11_SUPPORT}>>:CATCH_CONFIG_NO_CPP11>
   )
 
 add_subdirectory(input)
@@ -22,27 +28,10 @@ add_subdirectory(iefpcm)
 add_subdirectory(utils)
 add_subdirectory(benchmark)
 
-add_executable(unit_tests unit_tests.cpp
-  $<TARGET_OBJECTS:bi_operators-tests>
-  $<TARGET_OBJECTS:cpcm-tests>
-  $<TARGET_OBJECTS:dielectric_profile-tests>
-  $<TARGET_OBJECTS:gepol-tests>
-  $<TARGET_OBJECTS:green-tests>
-  $<TARGET_OBJECTS:iefpcm-tests>
-  $<TARGET_OBJECTS:input-tests>
-  $<TARGET_OBJECTS:numerical_quadrature-tests>
-  $<TARGET_OBJECTS:utils-tests>
-  )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(unit_tests custom_boost)
-endif()
-target_compile_definitions(unit_tests
-  PRIVATE
-    $<$<NOT:$<BOOL:${ENABLE_CXX11_SUPPORT}>>:CATCH_CONFIG_NO_CPP11>
-  )
 target_link_libraries(unit_tests
   PRIVATE
     pcm-static
+    Catch
   )
 
 add_subdirectory(C_host)

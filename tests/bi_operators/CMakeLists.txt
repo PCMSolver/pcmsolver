@@ -41,6 +41,10 @@ add_Catch_test(
 # This executable updates the .npy files containing the reference values
 if(BUILD_STANDALONE)
   add_executable(update_reference_files update_reference_files.cpp)
+  target_compile_definitions(update_reference_files
+    PRIVATE
+      "$<$<BOOL:${HAS_CXX11}>:HAS_CXX11>"
+    )
   target_link_libraries(update_reference_files pcm-static)
   target_include_directories(update_reference_files
     PRIVATE

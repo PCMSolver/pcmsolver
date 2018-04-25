@@ -12,6 +12,10 @@ if(BUILD_CUSTOM_BOOST)
   add_dependencies(pcm-objlib custom_boost)
 endif()
 add_dependencies(pcm-objlib generate-config-hpp)
+target_compile_definitions(pcm-objlib
+  PRIVATE
+    "$<$<BOOL:${HAS_CXX11}>:HAS_CXX11>"
+  )
 target_compile_options(pcm-objlib
   PRIVATE
     "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"

@@ -28,11 +28,11 @@
 
 #include "Config.hpp"
 
-#ifdef HAS_CXX11_VARIADIC_TEMPLATES
+#ifdef HAS_CXX11
 #include <type_traits>
-#else /* HAS_CXX11_VARIADIC_TEMPLATES */
+#else /* HAS_CXX11 */
 #include <boost/utility/result_of.hpp>
-#endif /* HAS_CXX11_VARIADIC_TEMPLATES */
+#endif /* HAS_CXX11 */
 
 namespace pcm {
 namespace detail {
@@ -106,7 +106,7 @@ public:
   }
 };
 } // namespace detail
-#ifdef HAS_CXX11_VARIADIC_TEMPLATES
+#ifdef HAS_CXX11
 /*! \file Factory.hpp
  *  \class Factory
  *  \brief C++11 implementation of the Factory Method
@@ -136,7 +136,7 @@ public:
     return (this->retrieve(objID)->second)(data...);
   }
 };
-#else  /* HAS_CXX11_VARIADIC_TEMPLATES */
+#else  /* HAS_CXX11 */
 /*! \file Factory.hpp
  *  \class Factory
  *  \brief C++03 implementation of the one- or zero-argument Factory Method
@@ -174,5 +174,5 @@ public:
     return (this->retrieve(objID)->second)();
   }
 };
-#endif /* HAS_CXX11_VARIADIC_TEMPLATES */
+#endif /* HAS_CXX11 */
 } // namespace pcm

@@ -14,7 +14,8 @@ set_target_properties(unit_tests
   )
 target_compile_definitions(unit_tests
   PRIVATE
-    $<$<NOT:$<BOOL:${ENABLE_CXX11_SUPPORT}>>:CATCH_CONFIG_NO_CPP11>
+    "$<$<BOOL:${HAS_CXX11}>:HAS_CXX11>"
+    "$<$<NOT:$<BOOL:${HAS_CXX11}>>:CATCH_CONFIG_NO_CPP11>"
   )
 
 add_subdirectory(input)

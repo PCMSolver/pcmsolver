@@ -85,9 +85,9 @@
 #define PCMSOLVER_ASSERT(arg) assert(arg)
 
 /// Macro to be used for static assertions
-#ifdef HAS_CXX11_STATIC_ASSERT
+#ifdef HAS_CXX11
 #define PCMSOLVER_STATIC_ASSERT(arg, msg) static_assert(arg, msg)
-#else /* HAS_CXX11_STATIC_ASSERT */
+#else /* HAS_CXX11 */
 #include <boost/static_assert.hpp>
 #define PCMSOLVER_STATIC_ASSERT(arg, msg) BOOST_STATIC_ASSERT_MSG(arg, msg)
-#endif /* HAS_CXX11_STATIC_ASSERT */
+#endif /* HAS_CXX11 */

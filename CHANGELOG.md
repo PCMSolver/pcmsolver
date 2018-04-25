@@ -39,6 +39,9 @@
   are handled in the API functions.
 - Properly enforce `const`-correctness of the `Meddle` object and of its usage
   in the context API.
+- [Cholesky decomposition](http://eigen.tuxfamily.org/dox/classEigen_1_1LLT.html) is used
+  in CPCMSolver to get the inverse of the S matrix. The robust Cholesky (LDLT)
+  previously used is broken with the latest version of the Intel compilers.
 
 ## [Version 1.2.0-rc1] - 2018-03-02
 

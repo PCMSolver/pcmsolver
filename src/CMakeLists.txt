@@ -1,11 +1,25 @@
 cmake_policy(SET CMP0022 NEW)
 cmake_policy(SET CMP0063 NEW)
 
-include_directories(
-  ${CMAKE_CURRENT_LIST_DIR}
-  ${PROJECT_BINARY_DIR}/include
-  ${PROJECT_SOURCE_DIR}/include
-  SYSTEM ${CMAKE_CURRENT_LIST_DIR}/utils/getkw
+add_library(pcm-objlib OBJECT "")
+if(BUILD_CUSTOM_BOOST)
+  add_dependencies(pcm-objlib custom_boost)
+endif()
+add_dependencies(pcm-objlib generate-config-hpp)
+target_compile_options(pcm-objlib
+  PRIVATE
+    "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"
+  )
+target_include_directories(pcm-objlib
+  PRIVATE
+    ${PROJECT_BINARY_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_LIST_DIR}
+  )
+target_include_directories(pcm-objlib
+  SYSTEM
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/utils/getkw
   )
 
 add_subdirectory(cavity)
@@ -17,20 +31,8 @@ add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)
 
-list(APPEND _objects
-    $<TARGET_OBJECTS:cavity>
-    $<TARGET_OBJECTS:green>
-    $<TARGET_OBJECTS:interface>
-    $<TARGET_OBJECTS:metal>
-    $<TARGET_OBJECTS:bi_operators>
-    $<TARGET_OBJECTS:pedra>
-    $<TARGET_OBJECTS:solver>
-    $<TARGET_OBJECTS:utils>
-    $<TARGET_OBJECTS:getkw>
-    )
-
 if(NOT STATIC_LIBRARY_ONLY)
-  add_library(pcm-shared SHARED ${_objects})
+  add_library(pcm-shared SHARED $<TARGET_OBJECTS:pcm-objlib>)
   target_compile_definitions(pcm-shared
     PUBLIC
       PCMSolver_EXPORTS
@@ -39,6 +41,9 @@ if(NOT STATIC_LIBRARY_ONLY)
     )
   target_include_directories(pcm-shared
     INTERFACE
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
   target_link_libraries(pcm-shared
@@ -68,7 +73,7 @@ if(NOT STATIC_LIBRARY_ONLY)
 endif()
 
 if(NOT SHARED_LIBRARY_ONLY)
-  add_library(pcm-static STATIC ${_objects})
+  add_library(pcm-static STATIC $<TARGET_OBJECTS:pcm-objlib>)
   target_compile_definitions(pcm-static
     PUBLIC
       PCMSolver_STATIC_DEFINE
@@ -77,6 +82,9 @@ if(NOT SHARED_LIBRARY_ONLY)
     )
   target_include_directories(pcm-static
     INTERFACE
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
   target_link_libraries(pcm-static

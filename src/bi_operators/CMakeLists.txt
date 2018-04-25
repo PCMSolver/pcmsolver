@@ -1,42 +1,22 @@
+# List of sources
+target_sources(pcm-objlib
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Collocation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/IBoundaryIntegralOperator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Numerical.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Purisima.cpp
+  )
+
 # List of headers
 list(APPEND headers_list
-BIOperatorData.hpp
-BoundaryIntegralOperator.hpp
-Collocation.hpp
-IBoundaryIntegralOperator.hpp
-Numerical.hpp
-Purisima.hpp
-)
-
-# List of sources
-list(APPEND sources_list
-Collocation.cpp
-IBoundaryIntegralOperator.cpp
-Numerical.cpp
-Purisima.cpp
-)
-
-add_library(bi_operators OBJECT ${sources_list} ${headers_list})
-set_target_properties(bi_operators
-  PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
+  BIOperatorData.hpp
+  BoundaryIntegralOperator.hpp
+  Collocation.hpp
+  IBoundaryIntegralOperator.hpp
+  Numerical.hpp
+  Purisima.hpp
   )
-target_compile_definitions(bi_operators
-  PUBLIC
-    PCMSolver_EXPORTS
-  )
-if(BUILD_CUSTOM_BOOST)
-  add_dependencies(bi_operators custom_boost)
-endif()
-add_dependencies(bi_operators generate-config-hpp)
-target_compile_options(bi_operators
-  PRIVATE
-    "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"
-  )
-
 # Sets install directory for all the headers in the list
-foreach(_header ${headers_list})
+foreach(_header IN LISTS headers_list)
     install(FILES ${_header} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/bi_operators)
 endforeach()

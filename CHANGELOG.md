@@ -31,6 +31,7 @@
 - The `ENABLE_Fortran_API` configuration option has been renamed
   `TEST_Fortran_API`, since it now only triggers compilation of the
   `Fortran_host` test case.
+- **BREAKING CHANGE** The minimum required version of CMake is now 3.3 
 
 ### Fixed
 

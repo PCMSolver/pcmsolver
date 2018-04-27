@@ -14,11 +14,11 @@
 #
 from __future__ import print_function
 
+import argparse
 import os
 import re
-import sys
-import argparse
 import subprocess
+import sys
 
 
 def collect_version_input_from_fallback(meta_file='metadata.py'):
@@ -42,7 +42,7 @@ def is_git_repo(cwd='./', dot_git_qualifies=False, no_git_cmd_result=False):
     try:
         process = subprocess.Popen(
             command.split(), stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=cwd, universal_newlines=True)
-    except EnvironmentError:
+    except EnvironmentError as e:
         # most likely, git command not available
         return no_git_cmd_result
 
@@ -88,7 +88,7 @@ def collect_version_input_from_git():
     if mobj.group('tag'):
         # We got a tag!
         # normal: 0.1-62-ga68d223
-        res['latest_annotated_v_tag'] = mobj.group('tag')  # drop the "v"; tag mismatch caught later
+        res['latest_annotated_v_tag'] = mobj.group('tag')[:-1]  # drop the "v"; tag mismatch caught later
         res['commits_since_tag'] = mobj.group('commits')
         res['seven_char_hash'] = mobj.group('gsha')[1:]  # drop the "g" git identifier
     else:

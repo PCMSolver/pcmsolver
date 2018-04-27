@@ -19,7 +19,6 @@
 import sys, os, inspect
 import re, string
 from copy import deepcopy
-from types import *
 from pyparsing import \
     Literal, Word, ZeroOrMore, Group, Dict, Optional, removeQuotes, \
     printables, ParseException, restOfLine, alphas, alphanums, nums, \
@@ -76,10 +75,10 @@ class Section:
         self.__setitem__(k, val)
 
     def _split_tag(self, key):
-        i = string.find(key, '<')
+        i = key.find('<')
         if i == -1:
             return (key, None)
-        j = string.rfind(key, '>')
+        j = key.rfind('>')
         if j == -1:
             raise KeyError('faulty tag spec')
         return (key[0:i], key[i + 1:j])
@@ -238,6 +237,7 @@ class Section:
         for i in templ.sect:
             for tag in self.sect[i]:
                 self.sect[i][tag].run_callbacks(templ.sect[i][None])
+
 
 #verify!
 
@@ -426,19 +426,19 @@ class Keyword:
             return True
         if (self.type == 'INT' or self.type == 'INT_ARRAY'):
             for i in self.arg:
-                if not type(i) == IntType:
+                if not type(i) == int:
                     print('getkw: Not an integer: ', self.name, '=', i)
                     raise TypeError
         elif (self.type == 'DBL' or self.type == 'DBL_ARRAY'):
             for i in range(len(self.arg)):
-                if type(self.arg[i]) == IntType:
+                if type(self.arg[i]) == int:
                     self.arg[i] = float(self.arg[i])
-                if not type(self.arg[i]) == FloatType:
+                if not type(self.arg[i]) == float:
                     print('getkw: Not a real: ', self.name, '=', self.arg[i])
                     raise TypeError
         elif (self.type == 'BOOL' or self.type == 'BOOL_ARRAY'):
             for i in self.arg:
-                if not type(i) == BooleanType:
+                if not type(i) == bool:
                     print('getkw: Not a bool: ', self.name, '=', i)
                     raise TypeError
         elif self.type == 'STR' or self.type == 'STR_ARRAY':
@@ -557,6 +557,8 @@ class GetkwParser:
             self.path = None
         if GetkwParser.bnf == None:
             GetkwParser.bnf = self.getkw_bnf()
+
+
 #        self.parseString=self.bnf.parseString
 #        GetkwParser.bnf.setDebug(True)
 
@@ -649,8 +651,8 @@ class GetkwParser:
                 if k.nargs == -1:
                     pass
                 elif len(arg) != k.nargs:
-                    print("Invalid number of elements for key '%s',\
-line: %d" % (name, lineno(self.loc, self.strg)))
+                    print("Invalid number of elements for key '{:s}', line: {:d}".format(
+                        name, lineno(self.loc, self.strg)))
                     print("  -> %d required, %d given." % (k.nargs, len(arg)))
                     if strict:
                         sys.exit(1)
@@ -780,6 +782,7 @@ def parse_error(s, t, d, err):
     print("Parse error, line %d: %s" % (lineno(err.loc, err.pstr), line(err.loc, err.pstr)))
     sys.exit(1)
 
+
 ######## Convenience routines for callbacks ########
 
 
@@ -814,6 +817,7 @@ def check_ignored(list, sect):
                 print(warn % (i, sect.name, ''))
             else:
                 print(warn % (i, sect.name, '<' + sect.tag + '>'))
+
 
 ####################################################
 

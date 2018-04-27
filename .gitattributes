@@ -71,12 +71,10 @@ tests/numerical_quadrature/*.cpp licensefile=.githooks/LICENSE-C++
 tests/utils/*.cpp                licensefile=.githooks/LICENSE-C++
 
 # tools
-doc/conf.py               licensefile=.githooks/LICENSE-Python
-doc/gfx/cloc_tools.py.in  licensefile=.githooks/LICENSE-Python
-src/make_cmake_files.py   licensefile=.githooks/LICENSE-Python
-tools/codata.py           licensefile=.githooks/LICENSE-Python
-tools/plot_cavity.py      licensefile=.githooks/LICENSE-Python
-tools/init.py             licensefile=.githooks/LICENSE-Python
-tests/make_cmake_files.py licensefile=.githooks/LICENSE-Python
-tests/go_pcm.py           licensefile=.githooks/LICENSE-Python
-tests/pcmparser.py        licensefile=.githooks/LICENSE-Python
+doc/conf.py                    licensefile=.githooks/LICENSE-Python
+doc/cloc_tools/cloc_wrapper.py licensefile=.githooks/LICENSE-Python
+tools/plot_cavity.py           licensefile=.githooks/LICENSE-Python
+tools/init.py                  licensefile=.githooks/LICENSE-Python
+tools/go_pcm.py.in             licensefile=.githooks/LICENSE-Python
+tools/pcmparser.py             licensefile=.githooks/LICENSE-Python
+tools/pcmdata.py               licensefile=.githooks/LICENSE-Python

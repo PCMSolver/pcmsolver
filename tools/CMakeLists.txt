@@ -13,14 +13,10 @@ install(
     ${CMAKE_INSTALL_BINDIR}
   )
 
-if(PYTHON_VERSION_MAJOR VERSION_EQUAL 3)
-  configure_file(py3.x-getkw.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py COPYONLY)
-else()
-  configure_file(py2.x-getkw.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/getkw.py COPYONLY)
-endif()
 configure_file(init.py ${PROJECT_BINARY_DIR}/${PYMOD_INSTALL_FULLDIR}/__init__.py COPYONLY)
 file(
   COPY
+    getkw.py
     pcmdata.py
     pcmparser.py
     pyparsing.py

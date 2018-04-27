@@ -651,8 +651,8 @@ class GetkwParser:
                 if k.nargs == -1:
                     pass
                 elif len(arg) != k.nargs:
-                    print("Invalid number of elements for key '%s',\
-line: %d" % (name, lineno(self.loc, self.strg)))
+                    print("Invalid number of elements for key '{:s}', line: {:d}".format(
+                        name, lineno(self.loc, self.strg)))
                     print("  -> %d required, %d given." % (k.nargs, len(arg)))
                     if strict:
                         sys.exit(1)

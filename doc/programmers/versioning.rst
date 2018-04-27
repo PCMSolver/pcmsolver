@@ -71,7 +71,6 @@ This is the step-by-step guide to releasing a new version of PCMSolver:
        This list was obtained 2018-03-02 by running `git shortlog -sn`
 
 #. **CHECK** that the ``.mailmap`` file is up-to-date.
-#. **UPDATE** the version number in the citation snippet in ``doc/snippets/citation.bib``.
 #. **ACT** to check all the changed files in.
 #. **OBSERVE** current versioning state
 
@@ -257,7 +256,7 @@ This is the step-by-step guide to releasing a new version of PCMSolver:
 
     ::
 
-      >>> git push origin release/1.2.Z
+      >>> git push origin release/1.2
 
       >>> git push origin v1.2.0
 

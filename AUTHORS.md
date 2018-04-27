@@ -11,4 +11,4 @@
 - Ville Weijo (@vweijo)
 - Ward Poelmans (@wpoely86)
 
-This list was obtained 2018-03-02 by running `git shortlog -sn`
+This list was obtained 2018-04-27 by running `git shortlog -sn`

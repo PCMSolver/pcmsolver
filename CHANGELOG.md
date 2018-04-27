@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [Version 1.2.0] - 2018-04-27
+
 ### Added
 
 - Green’s function for a spherical nanoparticle with **real** permittivity.
@@ -37,7 +39,7 @@
 - The `ENABLE_Fortran_API` configuration option has been renamed
   `TEST_Fortran_API`, since it now only triggers compilation of the
   `Fortran_host` test case.
-- **BREAKING CHANGE** The minimum required version of CMake is now 3.3 
+- **BREAKING CHANGE** The minimum required version of CMake is now 3.3
 
 ### Fixed
 
@@ -557,7 +559,8 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.0-rc1...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.0...HEAD
+[Version 1.2.0]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.0-rc1...v1.2.0
 [Version 1.2.0-rc1]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.12...v1.2.0-rc1
 [Version 1.1.12]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.11...v1.1.12
 [Version 1.1.11]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.10...v1.1.11

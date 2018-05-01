@@ -19,7 +19,7 @@
 import sys, os, inspect
 import re, string
 from copy import deepcopy
-from pyparsing import \
+from .pyparsing import \
     Literal, Word, ZeroOrMore, Group, Dict, Optional, removeQuotes, \
     printables, ParseException, restOfLine, alphas, alphanums, nums, \
     pythonStyleComment, oneOf, quotedString, SkipTo, Forward, \

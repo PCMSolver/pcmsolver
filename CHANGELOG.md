@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [Version 1.2.1] - 2018-05-01
+## [Version 1.2.1] - 2018-05-02
 
 ### Fixed
 

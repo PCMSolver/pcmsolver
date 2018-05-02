@@ -131,7 +131,7 @@ def reconcile_and_compute_version_output(quiet=False):
         #   numerical comparisons such as M.m.p.t and thus can't handle
         #   prereleases and dev snapshots. We compute a Most Recent Ancestral
         #   Release tag (e.g., 1.0 or 1.12.1) for a backward release series.
-        backwardseries = mobj.group('forwardseries')
+        backwardseries = mobj.group('tag')
         if mobj.group('prere'):
             backwardseries = meta_most_recent_release
     else:

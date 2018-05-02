@@ -71,6 +71,7 @@ This is the step-by-step guide to releasing a new version of PCMSolver:
        This list was obtained 2018-03-02 by running `git shortlog -sn`
 
 #. **CHECK** that the ``.mailmap`` file is up-to-date.
+#. **CHECK** that the documentation builds locally.
 #. **ACT** to check all the changed files in.
 #. **OBSERVE** current versioning state
 

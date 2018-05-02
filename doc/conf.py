@@ -78,9 +78,10 @@ mobj = sane_describe.match(pcmsolver_version)
 major = mobj.group('major')
 minor = mobj.group('minor')
 patch = mobj.group('patch')
-prere = mobj.group('prere')
-sha = mobj.group('sha')
-tweak = '+'.join([prere, sha])
+if mobj.group('prere'):
+    tweak = '+'.join([mobj.group('prere'), mobj.group('sha')])
+else:
+    tweak = sha = mobj.group('sha')
 language = 'en'
 exclude_patterns = ['_build']
 pygments_style = 'sphinx'

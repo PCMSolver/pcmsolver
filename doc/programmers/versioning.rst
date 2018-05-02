@@ -286,7 +286,7 @@ tags as are created with the `GitHub interface
 * Delete tag::
 
     >>> git tag -d v1.1.12
-    >>> git push origin :refs/tags/v1.1a1
+    >>> git push origin :refs/tags/v1.1.12
 
 * Pull tags::
 

@@ -24,11 +24,13 @@ The ``run_pcm`` executable has to be compiled for a standalone run with:
 
 .. code-block:: bash
 
-   python go_pcm.py -x molecule.inp
+   python <build-path/bin>/go_pcm.py --exe <build-path/bin> --inp molecule.inp 
 
 where the ``molecule.inp`` input file looks like:
 
 .. literalinclude:: ../snippets/molecule.inp
+
+The script and the executable do not need to be in the same directory.
 
 Input style
 -----------

@@ -37,7 +37,6 @@ in
       gfortran
       graphviz
       lcov
-      pipenv
       python3Full
       python3Packages.docopt
       python3Packages.jupyter
@@ -48,6 +47,7 @@ in
       valgrind
       zlib
     ];
+    hardeningDisable = [ "all" ];
     src = null;
     shellHook = ''
     export NINJA_STATUS="[Built edge %f of %t in %e sec]"

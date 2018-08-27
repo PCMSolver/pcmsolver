@@ -1,17 +1,47 @@
-Maintenance
-===========
+Code contributions
+==================
 
-Description and how-to for maintenance operations.
-Some of the maintenance scripts have been moved to the `pcmsolvermeta
-repository <https://gitlab.com/PCMSolver/pcmsolvermeta>`_
+We have adopted a fully public *fork and pull request* workflow, where every proposed changeset
+has to go through a code review and approval process.
 
-Branching Model and Release Process
------------------------------------
+The code changes are developed on a *branch* of the
+*fork*. When completed, the developer submits the changes for review
+through the web interface: a *pull request* (PR) is opened, requesting that the changes from
+the *source branch* on the fork be merged into a *target branch* in
+the canonical repository.
+Once the PR is open, the new code is automatically tested on Travis. A bot
+will pre-review the changes based on a set of simple rules.
+Core developers of PCMSolver will then review the contribution and
+discuss additional changes to be made.
+Eventually, if all the tests are passing and a developer approves the suggested
+contribution, the changes are merged into the target branch.
+The target branch is (usually) the `master` branch, that is, the main development branch.
 
-.. warning::
-   **Incomplete or outdated information!**
+.. note::
 
-Releases in a ``X.Y.Z`` series are annotated tags on the corresponding branch.
+  All PRs goes to the master branch
+
+The creator of the PR is responsible for keeping the code up to date with master, 
+so the code in the PR reflects what will be the code in the master branch after merging.
+
+Branching Model
+---------------
+
+We are using the `stable mainline branching model for Git <http://www.bitsnbites.eu/a-stable-mainline-branching-model-for-git/>`_.
+In the main repository on github there are two types of branches:
+
+- *one* main developing branch, called ``master``
+- release branches
+
+A new release branch is created from the master branch for a new release, with the format ``release/vMAJOR.MINOR``.
+A release branch will never be merged back to the master branch and will only receive bug fixes, thus no new features.
+These bug fixes would be cherry picked from the master branch, to ensure that the master branch always contains all bug fixes.
+In case a bug fix is only relevant for a given release, the bug should be fixed with a PR directly to the corresponding release branch.
+In case a bug fix is easy to perform on a release branch but challenging to perform on the master branch, the fix can be directed to a release branch.
+Then an issue *have* to be created to make sure it will also be fixed on the master branch.
+
+Feature branches are not created on the main repository, but on forks. 
+These are based on the master branch from the main repository and merged into the master branch through pull requests.
 
 Pull Request Requirements
 -------------------------
@@ -61,7 +91,7 @@ the ``Gemfile`` and ``Gemfile.lock``:
    bundle update
    bundle install
 
-The last command can also be ru outside of the ``.ci`` folder:
+The last command can also be run outside of the ``.ci`` folder:
 
 .. code-block:: bash
 
@@ -104,7 +134,7 @@ Remember to commit and push your modifications.
 Git Pre-Commit Hooks
 ====================
 
-[Git pre-commit hooks](https://git-scm.com/book/gr/v2/Customizing-Git-Git-Hooks) are used to
+`Git pre-commit hooks <https://git-scm.com/book/gr/v2/Customizing-Git-Git-Hooks>`_ are used to
 keep track of code style and license header in source files.
 Code style is checked using ``clang-format`` for C/C++ and ``yapf`` for Python.
 

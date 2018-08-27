@@ -56,7 +56,6 @@ adequate level of testing, documentation and code quality.
 
 * PRs classed as Work in Progress.
 * Codebase was modified, but no tests were added.
-* Codebase was modified, but no tests were added.
 * Nontrivial changes to the codebase, but no documentation added.
 * Codebase was modified, but `CHANGELOG.md` was not updated.
 * Source files were added or removed, but `.gitattributes` was not updated.

@@ -18,6 +18,7 @@ list(APPEND headers_list
   Logger.hpp
   LoggerImpl.hpp
   MathUtils.hpp
+  MMFQ.hpp
   Molecule.hpp
   QuadratureRules.hpp
   Solvent.hpp

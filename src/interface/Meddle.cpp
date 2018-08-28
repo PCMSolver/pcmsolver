@@ -155,16 +155,16 @@ void Meddle::CTORBody() {
     TIMER_ON("Meddle::initCavity");
     initCavity();
     TIMER_OFF("Meddle::initCavity");
+  }
 
-    TIMER_ON("Meddle::initStaticSolver");
-    initStaticSolver();
-    TIMER_OFF("Meddle::initStaticSolver");
+  TIMER_ON("Meddle::initStaticSolver");
+  initStaticSolver();
+  TIMER_OFF("Meddle::initStaticSolver");
 
-    if (input_.isDynamic()) {
-      TIMER_ON("Meddle::initDynamicSolver");
-      initDynamicSolver();
-      TIMER_OFF("Meddle::initDynamicSolver");
-    }
+  if (input_.isDynamic()) {
+    TIMER_ON("Meddle::initDynamicSolver");
+    initDynamicSolver();
+    TIMER_OFF("Meddle::initDynamicSolver");
   }
 }
 
@@ -335,10 +335,12 @@ double pcm::Meddle::computePolarizationEnergy(const std::string & mep_name,
     // Dot product of MEP + Electronegativities times Fluctuating charges
     energy = (functions_.at(mep_name) + input_.fragments().chi)
                  .dot(functions_.at(asc_name));
+    if (input_.isNonPolarizable()) { /* HACK Nonpolarizable doesn't need 1/2 */
+      energy *= 2.0;
+    }
   } else { /* Pure PCM calculation */
     // Dot product of MEP and ASC surface function
-    energy =
-        functions_.at(mep_name).dot(functions_.at(asc_name));
+    energy = functions_.at(mep_name).dot(functions_.at(asc_name));
   }
   return (energy / 2.0);
 }
@@ -372,8 +374,13 @@ void pcm::Meddle::computeASC(const std::string & mep_name,
   // Get the proper iterators
   SurfaceFunctionMapConstIter iter_pot = functions_.find(mep_name);
   Eigen::VectorXd asc = Eigen::VectorXd::Zero(iter_pot->second.size());
-  if (hasFQ_) { /* MMFQ calculation */
-    asc = FQ_->computeCharge(iter_pot->second);
+  if (hasFQ_) {                      /* MMFQ calculation */
+    if (input_.isNonPolarizable()) { /* HACK We store point charges in the eta vector
+                                      */
+      asc = input_.fragments().eta;
+    } else {
+      asc = FQ_->computeCharge(iter_pot->second);
+    }
   } else { /* Pure PCM calculation */
     asc = K_0_->computeCharge(iter_pot->second, irrep);
     // Renormalize
@@ -402,9 +409,11 @@ void pcm::Meddle::computeResponseASC(const std::string & mep_name,
   // Get the proper iterators
   SurfaceFunctionMapConstIter iter_pot = functions_.find(mep_name);
   Eigen::VectorXd asc = Eigen::VectorXd::Zero(iter_pot->second.size());
-  if (hasFQ_) { /* MMFQ calculation */
-    // Do NOT add classical (electronegativities) contributions to RHS
-    asc = FQ_->computeCharge(iter_pot->second, false);
+  if (hasFQ_) {                       /* MMFQ calculation */
+    if (!input_.isNonPolarizable()) { /* HACK Can we do it more cleanly/clearly? */
+      // Do NOT add classical (electronegativities) contributions to RHS
+      asc = FQ_->computeCharge(iter_pot->second, false);
+    }
   } else { /* Pure PCM calculation */
     if (hasDynamic_) {
       asc = K_d_->computeCharge(iter_pot->second, irrep);
@@ -726,7 +735,8 @@ void Meddle::initStaticSolver() {
   delete biop;
 
   // Perform Gauss' theorem check for nuclear charges
-  if (!hasFQ_) GaussCheck();
+  if (!hasFQ_)
+    GaussCheck();
 
   infoStream_ << "========== Static solver " << std::endl;
   infoStream_ << *K_0_ << std::endl;
@@ -759,8 +769,8 @@ void Meddle::initDynamicSolver() {
 }
 
 void Meddle::initMMFQ() {
-  FQ_ = new mmfq::FQOhno(input_.fragments());
-  size_ = pcm::make_tuple(input_.fragments().sites.cols(),
+  FQ_ = new mmfq::FQOhno(input_.fragments(), input_.isNonPolarizable());
+  size_ = std::make_tuple(input_.fragments().sites.cols(),
                           input_.fragments().sites.cols());
   hasFQ_ = true;
 

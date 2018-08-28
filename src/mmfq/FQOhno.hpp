@@ -43,15 +43,19 @@ namespace mmfq {
  *  to solve for the charges.
  *  This avoids computing and storing the inverse explicitly.
  */
-class FQOhno __final {
+class FQOhno final {
 public:
-  FQOhno() {}
+  FQOhno() = default;
   /*! \brief Construct solver
    *  \param[in] ff the fluctuating charges force field
+   *  \param[in] nonpol whether this is a nonpolarizable MM calculation
    */
-  FQOhno(const utils::MMFQ & ff);
+  FQOhno(const utils::MMFQ & ff, bool nonpol = false)
+      : nonPolarizable_(nonpol), built_(false), mmfq_(ff) {
+    if (!nonPolarizable_)
+      buildSystemMatrix_impl();
+  }
 
-  ~FQOhno() {}
   friend std::ostream & operator<<(std::ostream & os, FQOhno & solver) {
     return solver.printSolver(os);
   }
@@ -63,6 +67,7 @@ public:
   }
 
 private:
+  bool nonPolarizable_;
   bool built_;
   utils::MMFQ mmfq_;
   /*! D_\lambda matrix, not symmetry blocked */

@@ -362,6 +362,9 @@ def setup_keywords():
     # Set a classical fluctuating charge force field
     # No additional spheres will be generated.
     mmfq = Section('MMFQ', callback = verify_mmfq)
+    # Valid values: boolean
+    # Default: False
+    mmfq.add_kw('NONPOLARIZABLE', 'BOOL', False)
     # Valid values: integer
     mmfq.add_kw('SITESPERFRAGMENT', 'INT', 3)
     # FQ force field
@@ -582,6 +585,7 @@ def verify_mmfq(section):
     if (dim % nSitesPerFragment != 0):
         print('Empty or incoherent SITES array')
         sys.exit(1)
+
 
 def verify_spheres(keyword):
     length = len(keyword.get())

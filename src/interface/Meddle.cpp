@@ -258,7 +258,10 @@ double pcm::Meddle::computePolarizationEnergy(const char * mep_name,
   if (hasFQ_) { /* MMFQ calculation */
     // Dot product of MEP + Electronegativities times Fluctuating charges
     energy = (functions_[std::string(mep_name)] + input_.fragments().chi)
-                 .dot(functions_[std::string(asc_name)]);
+      .dot(functions_[std::string(asc_name)]);
+    if (input_.isNonPolarizable()) { /* HACK Nonpolarizable doesn't need 1/2 */
+      energy *= 2.0;
+    }
   } else { /* Pure PCM calculation */
     // Dot product of MEP and ASC surface function
     energy =
@@ -298,7 +301,11 @@ void pcm::Meddle::computeASC(const char * mep_name,
   SurfaceFunctionMapConstIter iter_pot = functions_.find(MEP);
   Eigen::VectorXd asc = Eigen::VectorXd::Zero(iter_pot->second.size());
   if (hasFQ_) { /* MMFQ calculation */
-    asc = FQ_->computeCharge(iter_pot->second);
+    if (input_.isNonPolarizable()) { /* HACK We store point charges in the eta vector */
+      asc = input_.fragments().eta;
+    } else {
+      asc = FQ_->computeCharge(iter_pot->second);
+    }
   } else { /* Pure PCM calculation */
     asc = K_0_->computeCharge(iter_pot->second, irrep);
     // Renormalize
@@ -330,8 +337,10 @@ void pcm::Meddle::computeResponseASC(const char * mep_name,
   SurfaceFunctionMapConstIter iter_pot = functions_.find(MEP);
   Eigen::VectorXd asc = Eigen::VectorXd::Zero(iter_pot->second.size());
   if (hasFQ_) { /* MMFQ calculation */
-    // Do NOT add classical (electronegativities) contributions to RHS
-    asc = FQ_->computeCharge(iter_pot->second, false);
+    if (!input_.isNonPolarizable()) { /* HACK Can we do it more cleanly/clearly? */
+      // Do NOT add classical (electronegativities) contributions to RHS
+      asc = FQ_->computeCharge(iter_pot->second, false);
+    }
   } else { /* Pure PCM calculation */
     if (hasDynamic_) {
       asc = K_d_->computeCharge(iter_pot->second, irrep);
@@ -551,7 +560,7 @@ void Meddle::initDynamicSolver() {
 }
 
 void Meddle::initMMFQ() {
-  FQ_ = new mmfq::FQOhno(input_.fragments());
+  FQ_ = new mmfq::FQOhno(input_.fragments(), input_.isNonPolarizable());
   size_ = pcm::make_tuple(input_.fragments().sites.cols(),
                           input_.fragments().sites.cols());
   hasFQ_ = true;

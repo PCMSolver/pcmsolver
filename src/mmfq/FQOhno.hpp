@@ -48,8 +48,9 @@ public:
   FQOhno() {}
   /*! \brief Construct solver
    *  \param[in] ff the fluctuating charges force field
+   *  \param[in] nonpol whether this is a nonpolarizable MM calculation
    */
-  FQOhno(const utils::MMFQ & ff);
+  FQOhno(const utils::MMFQ & ff, bool nonpol = false);
 
   ~FQOhno() {}
   friend std::ostream & operator<<(std::ostream & os, FQOhno & solver) {
@@ -63,6 +64,7 @@ public:
   }
 
 private:
+  bool nonPolarizable_;
   bool built_;
   utils::MMFQ mmfq_;
   /*! D_\lambda matrix, not symmetry blocked */

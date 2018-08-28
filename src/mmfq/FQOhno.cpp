@@ -36,7 +36,9 @@ namespace pcm {
 namespace mmfq {
 using utils::MMFQ;
 
-FQOhno::FQOhno(const MMFQ & ff) : mmfq_(ff) { buildSystemMatrix_impl(); }
+FQOhno::FQOhno(const MMFQ & ff, bool nonpol) : mmfq_(ff), nonPolarizable_(nonpol) {
+  if (!nonPolarizable_) buildSystemMatrix_impl();
+}
 
 void FQOhno::buildSystemMatrix_impl() {
   PCMSolverIndex nFragments = mmfq_.nFragments;
@@ -80,6 +82,7 @@ Eigen::VectorXd FQOhno::computeCharge_impl(const Eigen::VectorXd & potential,
 
 std::ostream & FQOhno::printSolver(std::ostream & os) {
   os << "Fluctuating charge solver type: Ohno" << std::endl;
+  if (nonPolarizable_) os << "Nonpolarizable force field" << std::endl;
   os << "Number of fragments = " << mmfq_.nFragments << std::endl;
   os << "Number of sites per fragment = " << mmfq_.nSitesPerFragment << std::endl;
   os << "Number of sites = " << mmfq_.nFragments * mmfq_.nSitesPerFragment;

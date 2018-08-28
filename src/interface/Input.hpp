@@ -119,6 +119,7 @@ public:
   bool isDynamic() const { return isDynamic_; }
   double integratorScaling() const { return integratorScaling_; }
   bool isFQ() const { return isFQ_; }
+  bool isNonPolarizable() const { return isNonPolarizable_; }
   /// @}
 
   /// Keeps track of who did the parsing: the API or the host program
@@ -256,6 +257,8 @@ private:
   std::vector<double> geometry_;
   /// Whether this is a FQ calculation
   bool isFQ_;
+  /// Whether this is a nonpolarizable MM calculation
+  bool isNonPolarizable_;
   /// Whether to calculate the MEP from the molecular geometry
   bool MEPfromMolecule_;
   /// Whether to calculate the MEP from the charge distribution

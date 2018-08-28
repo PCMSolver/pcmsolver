@@ -205,6 +205,7 @@ void Input::reader(const std::string & filename) {
   const Section & mmfq = input_.getSect("MMFQ");
   if (mmfq.isDefined()) {
     isFQ_ = true;
+    isNonPolarizable_ = mmfq.getBool("NONPOLARIZABLE");
     fragments_.nSitesPerFragment =
         static_cast<PCMSolverIndex>(mmfq.getInt("SITESPERFRAGMENT"));
     std::vector<double> sites = mmfq.getDblVec("SITES");

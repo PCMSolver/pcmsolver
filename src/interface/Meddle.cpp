@@ -546,16 +546,14 @@ void Meddle::mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) {
 void Meddle::GaussCheck() const {
   Eigen::VectorXd nuclear_mep = computeMEP(input_.molecule(), cavity_->elements());
   Eigen::VectorXd nuclear_asc = K_0_->computeCharge(nuclear_mep);
-  // Renormalize
-  nuclear_asc /= double(cavity_->pointGroup().nrIrrep());
-  double total_nuclear_asc = nuclear_asc.sum();
+  double total_nuclear_asc = nuclear_asc.sum() * cavity_->pointGroup().nrIrrep();
   double gauss_nuclear_asc =
       detail::GaussEstimate(input_.molecule().charges(),
                             input_.outsideStaticGreenParams().epsilon,
                             input_.correction());
   double difference = total_nuclear_asc - gauss_nuclear_asc;
   std::stringstream tmp;
-  if (!utils::isZero(difference, 1.0e-3)) {
+  if (!utils::isZero(difference, 1.0e-2)) {
     std::ostringstream errmsg;
     errmsg << "The Gauss' theorem (" << gauss_nuclear_asc << ") ";
     errmsg << "and computed (" << total_nuclear_asc << ") values ";

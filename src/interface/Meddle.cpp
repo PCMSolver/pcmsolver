@@ -494,6 +494,9 @@ void Meddle::initStaticSolver() {
   K_0_->buildSystemMatrix(*cavity_, *gf_i, *gf_o, *biop);
   delete biop;
 
+  // Perform Gauss' theorem check for nuclear charges
+  GaussCheck();
+
   infoStream_ << "========== Static solver " << std::endl;
   infoStream_ << *K_0_ << std::endl;
   mediumInfo(gf_i, gf_o);
@@ -539,6 +542,34 @@ void Meddle::mediumInfo(IGreensFunction * gf_i, IGreensFunction * gf_o) {
   tmp << *gf_o;
   infoStream_ << tmp.str() << std::endl;
 }
+
+void Meddle::GaussCheck() const {
+  Eigen::VectorXd nuclear_mep = computeMEP(input_.molecule(), cavity_->elements());
+  Eigen::VectorXd nuclear_asc = K_0_->computeCharge(nuclear_mep);
+  // Renormalize
+  nuclear_asc /= double(cavity_->pointGroup().nrIrrep());
+  double total_nuclear_asc = nuclear_asc.sum();
+  double gauss_nuclear_asc =
+      detail::GaussEstimate(input_.molecule().charges(),
+                            input_.outsideStaticGreenParams().epsilon,
+                            input_.correction());
+  double difference = total_nuclear_asc - gauss_nuclear_asc;
+  std::stringstream tmp;
+  if (!utils::isZero(difference, 1.0e-3)) {
+    std::ostringstream errmsg;
+    errmsg << "The Gauss' theorem (" << gauss_nuclear_asc << ") ";
+    errmsg << "and computed (" << total_nuclear_asc << ") values ";
+    errmsg << "of the total nuclear ASC differ significantly (" << difference << ")."
+           << std::endl;
+    errmsg << "Consider changing the average area of the cavity finite elements."
+           << std::endl;
+    errmsg
+        << "Please report this issue: https://github.com/PCMSolver/pcmsolver/issues"
+        << std::endl;
+    PCMSOLVER_ERROR(errmsg.str());
+  }
+}
+
 namespace detail {
 Molecule initMolecule(const Input & inp,
                       const Symmetry & pg,
@@ -621,6 +652,12 @@ void print(const PCMInput & inp) {
   std::cout << "inside type " << std::string(inp.inside_type) << std::endl;
   std::cout << "outside type " << std::string(inp.outside_type) << std::endl;
   std::cout << "epsilon outside " << inp.outside_epsilon << std::endl;
+}
+
+double GaussEstimate(const Eigen::VectorXd & charges,
+                     double permittivity,
+                     double correction) {
+  return (-charges.sum() * (permittivity - 1) / (permittivity + correction));
 }
 } // namespace detail
 } // namespace pcm

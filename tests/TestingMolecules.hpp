@@ -73,6 +73,15 @@ inline Molecule C6H6();
  */
 inline Molecule H2O();
 
+/*! Returns the Gauss' theorem estimate of the total ASC
+ * \param[in] charges Vector of molecular charges
+ * \param[in] permittivity Solvent permittivity
+ * \param[in] correction The CPCM correction factor
+ */
+inline double Gauss_ASC(const Eigen::VectorXd & charges,
+                        double permittivity,
+                        double correction = 0.0);
+
 template <int group> Molecule dummy(double radius, const Eigen::Vector3d & center) {
   std::vector<Sphere> spheres;
   Sphere sph1(center, radius);
@@ -537,6 +546,12 @@ Molecule H2O() {
 
   return Molecule(nAtoms, charges, masses, geom, atoms, spheres, pGroup);
 };
+
+double Gauss_ASC(const Eigen::VectorXd & charges,
+                 double permittivity,
+                 double correction) {
+  return (-charges.sum() * (permittivity - 1) / (permittivity + correction));
+}
 } // namespace pcm
 
 #endif // TESTINGMOLECULES_HPP

@@ -71,9 +71,11 @@ def main():
     with open(parsedFile, 'w') as tmp:
         tmp.write(parsed)
     # Execute standalone
+    return_code = 0
     path_to_exe = arguments['--exe']
     if path_to_exe:
-        run_pcm(path_to_exe, parsedFile)
+        return_code = run_pcm(path_to_exe, parsedFile)
+    sys.exit(return_code)
 
 
 def run_pcm(path_to_exe, parsedFile):
@@ -87,6 +89,8 @@ def run_pcm(path_to_exe, parsedFile):
     print(stdout)
     # Print the contents of stderr, without exiting
     sys.stderr.write(stderr)
+
+    return p.returncode
 
 
 if __name__ == '__main__':

@@ -49,6 +49,11 @@ std::string remove_extension(const std::string & filename);
 int main(int argc, char * argv[]) {
   if (argc > 2)
     PCMSOLVER_ERROR("Too many arguments supplied");
+
+  // Prepare output filename
+  std::string filename(remove_extension(argv[1]).erase(0, 1) + ".out");
+  pcmsolver_out.open(filename.c_str());
+
   using namespace pcm;
 
   TIMER_ON("Input parsing");
@@ -56,9 +61,6 @@ int main(int argc, char * argv[]) {
   TIMER_OFF("Input parsing");
   Meddle context_(input, host_writer);
 
-  // Prepare output filename
-  std::string filename(remove_extension(argv[1]).erase(0, 1) + ".out");
-  pcmsolver_out.open(filename.c_str());
   context_.printInfo();
 
   PCMSolverIndex size = context_.getCavitySize();

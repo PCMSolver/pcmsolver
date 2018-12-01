@@ -65,16 +65,13 @@ TEST_CASE("Test solver for the C-PCM with H2O molecule and a GePol cavity",
   CPCMSolver solver(symm, correction);
   solver.buildSystemMatrix(cavity, gf_i, gf_o, Collocation());
 
-  double Ocharge = 8.0;
-  double Hcharge = 1.0;
   int size = cavity.size();
   Eigen::VectorXd fake_mep = computeMEP(molecule, cavity.elements());
   // The total ASC for a conductor is -Q
   // for CPCM it will be -Q*(epsilon-1)/(epsilon + correction)
   Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
   fake_asc = solver.computeCharge(fake_mep);
-  double totalASC =
-      -(Ocharge + 2.0 * Hcharge) * (permittivity - 1) / (permittivity + correction);
+  double totalASC = Gauss_ASC(molecule.charges(), permittivity, correction);
   double totalFakeASC = fake_asc.sum();
   CAPTURE(totalASC - totalFakeASC);
   REQUIRE(totalASC == Approx(totalFakeASC).epsilon(1.0e-03));

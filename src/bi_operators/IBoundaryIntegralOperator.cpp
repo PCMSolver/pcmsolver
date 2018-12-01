@@ -39,6 +39,17 @@ Eigen::MatrixXd IBoundaryIntegralOperator::computeS(
     const ICavity & cav,
     const IGreensFunction & gf) const {
   Eigen::MatrixXd biop = computeS_impl(cav.elements(), gf);
+  Eigen::LDLT<Eigen::MatrixXd> Sldlt(biop);
+  if (!Sldlt.isPositive()) {
+    std::ostringstream errmsg;
+    errmsg << "S matrix is not positive-definite!" << std::endl;
+    errmsg << "Consider changing the average area of the cavity finite elements."
+           << std::endl;
+    errmsg
+        << "Please report this issue: https://github.com/PCMSolver/pcmsolver/issues"
+        << std::endl;
+    PCMSOLVER_ERROR(errmsg.str());
+  }
   // Perform symmetry blocking
   // The total size of the cavity
   PCMSolverIndex cavitySize = cav.size();

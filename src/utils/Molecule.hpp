@@ -240,4 +240,13 @@ PCMSolver_EXPORT Eigen::VectorXd computeMEP(const Molecule & mol,
 Eigen::VectorXd computeMEP(const std::vector<cavity::Element> & el,
                            double charge = 1.0,
                            const Eigen::Vector3d & origin = Eigen::Vector3d::Zero());
+
+/*! Gauss' theorem estimate of the total ASC for a set of point charges
+ * \param[in] charges Vector of point charges
+ * \param[in] permittivity Solvent permittivity
+ * \param[in] correction The CPCM correction factor
+ */
+PCMSolver_EXPORT double GaussEstimate(const Eigen::VectorXd & charges,
+                                      double permittivity,
+                                      double correction = 0.0);
 } // namespace pcm

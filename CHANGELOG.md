@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Perform Gauss' theorem check on nuclear ASC upon initialization. In case a
+  discrepancy larger than 10^-3 is detected in the absolute difference between the
+  Gauss' theorem and computed values, calculation is aborted as this points to
+  numerical problems, most likely in the construction of the cavity.
+- Add check and test for S matrix positive-definiteness. Certain cavity
+  discretizations lead to the S matrix not being symmetric positive-definite. We
+  abort if that's the case.
+
 ## [Version 1.2.1] - 2018-05-02
 
 ### Fixed

@@ -302,4 +302,10 @@ Eigen::VectorXd computeMEP(const std::vector<Element> & el,
   }
   return mep;
 }
+
+double GaussEstimate(const Eigen::VectorXd & charges,
+                     double permittivity,
+                     double correction) {
+  return (-charges.sum() * (permittivity - 1) / (permittivity + correction));
+}
 } // namespace pcm

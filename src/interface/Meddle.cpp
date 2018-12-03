@@ -547,10 +547,9 @@ void Meddle::GaussCheck() const {
   Eigen::VectorXd nuclear_mep = computeMEP(input_.molecule(), cavity_->elements());
   Eigen::VectorXd nuclear_asc = K_0_->computeCharge(nuclear_mep);
   double total_nuclear_asc = nuclear_asc.sum() * cavity_->pointGroup().nrIrrep();
-  double gauss_nuclear_asc =
-      detail::GaussEstimate(input_.molecule().charges(),
-                            input_.outsideStaticGreenParams().epsilon,
-                            input_.correction());
+  double gauss_nuclear_asc = GaussEstimate(input_.molecule().charges(),
+                                           input_.outsideStaticGreenParams().epsilon,
+                                           input_.correction());
   double difference = total_nuclear_asc - gauss_nuclear_asc;
   std::stringstream tmp;
   if (!utils::isZero(difference, 1.0e-2)) {
@@ -650,12 +649,6 @@ void print(const PCMInput & inp) {
   std::cout << "inside type " << std::string(inp.inside_type) << std::endl;
   std::cout << "outside type " << std::string(inp.outside_type) << std::endl;
   std::cout << "epsilon outside " << inp.outside_epsilon << std::endl;
-}
-
-double GaussEstimate(const Eigen::VectorXd & charges,
-                     double permittivity,
-                     double correction) {
-  return (-charges.sum() * (permittivity - 1) / (permittivity + correction));
 }
 } // namespace detail
 } // namespace pcm

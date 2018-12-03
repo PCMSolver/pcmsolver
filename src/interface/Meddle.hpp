@@ -62,15 +62,6 @@ void initSpheresAtoms(const Input &,
                       const Eigen::Matrix3Xd &,
                       std::vector<Sphere> &);
 void print(const PCMInput &);
-
-/*! Gauss' theorem estimate of the total ASC for a set of point charges
- * \param[in] charges Vector of point charges
- * \param[in] permittivity Solvent permittivity
- * \param[in] correction The CPCM correction factor
- */
-double GaussEstimate(const Eigen::VectorXd & charges,
-                     double permittivity,
-                     double correction = 0.0);
 } // namespace detail
 
 /*! \class Meddle

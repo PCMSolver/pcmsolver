@@ -550,14 +550,17 @@ void Meddle::GaussCheck() const {
   double gauss_nuclear_asc = GaussEstimate(input_.molecule().charges(),
                                            input_.outsideStaticGreenParams().epsilon,
                                            input_.correction());
-  double difference = total_nuclear_asc - gauss_nuclear_asc;
+  double abs_rel_diff =
+      std::abs((total_nuclear_asc - gauss_nuclear_asc) / gauss_nuclear_asc);
   std::stringstream tmp;
-  if (!utils::isZero(difference, 1.0e-2)) {
+  if (!utils::isZero(abs_rel_diff, 1.0e-2)) {
     std::ostringstream errmsg;
-    errmsg << "The Gauss' theorem (" << gauss_nuclear_asc << ") ";
+    errmsg
+        << "Absolute value of the relative difference between the Gauss' theorem ("
+        << gauss_nuclear_asc << ") ";
     errmsg << "and computed (" << total_nuclear_asc << ") values ";
-    errmsg << "of the total nuclear ASC differ significantly (" << difference << ")."
-           << std::endl;
+    errmsg << "of the total nuclear ASC higher than threshold (" << abs_rel_diff
+           << ")." << std::endl;
     errmsg << "Consider changing the average area of the cavity finite elements."
            << std::endl;
     errmsg

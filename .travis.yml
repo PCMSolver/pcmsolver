@@ -1,6 +1,6 @@
 language: cpp
 sudo: false
-dist: trusty
+dist: xenial
 ruby: 2.2.0
 notifications:
   slack:
@@ -26,8 +26,6 @@ matrix:
       addons:
         apt:
           packages:
-            - cmake3
-            - cmake3-data
             - clang
             - clang-format-3.9
             - gfortran
@@ -43,16 +41,14 @@ matrix:
       addons:
         apt:
           packages:
-            - cmake3
-            - cmake3-data
-            - g++
-            - gcc
-            - gfortran
+            - g++-4.8
+            - gcc-4.8
+            - gfortran-4.8
             - libboost-math-dev
       env:
-        - CXX_COMPILER='g++'
-        - C_COMPILER='gcc'
-        - Fortran_COMPILER='gfortran'
+        - CXX_COMPILER='g++-4.8'
+        - C_COMPILER='gcc-4.8'
+        - Fortran_COMPILER='gfortran-4.8'
         - BUILD_TYPE='release'
         - PYTHON='--two'
         - RUN_DANGER=false
@@ -62,8 +58,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - cmake3
-            - cmake3-data
             - g++-6
             - gcc-6
             - gfortran-6
@@ -80,8 +74,6 @@ matrix:
       addons:
         apt:
           packages:
-            - cmake3
-            - cmake3-data
             - g++
             - gcc
             - gfortran

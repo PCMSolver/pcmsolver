@@ -95,7 +95,6 @@ install:
   - pip install --user pipenv --upgrade
   - pipenv $PYTHON install
 before_script:
-  - source $(pipenv --venv)/bin/activate
   - ./.ci/report_versions.sh
   - cd $TRAVIS_BUILD_DIR
   - echo 'Build set up summary'
@@ -109,7 +108,7 @@ script:
       BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile --verbose
     fi
   - |
-    python setup.py --cxx=$CXX_COMPILER \
+    pipenv run npython setup.py --cxx=$CXX_COMPILER \
                     --cc=$C_COMPILER \
                     --fc=$Fortran_COMPILER \
                     --type=$BUILD_TYPE \
@@ -118,8 +117,8 @@ script:
                     --prefix=$HOME/Software/pcmsolver
   - cd build
   - ../.ci/ci_build.sh
-  - travis_wait 40 python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2
-  - python ../.ci/ci_print_failing.py
+  - travis_wait 40 pipenv run python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2
+  - pipenv run python ../.ci/ci_print_failing.py
 after_success:
   - |
     if [[ "$COVERAGE" = "--coverage" ]]; then

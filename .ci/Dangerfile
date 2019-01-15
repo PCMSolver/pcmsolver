@@ -24,7 +24,7 @@ code_style_validation.check file_extensions: ['.hpp', '.cpp', '.h'],
                             ignore_file_patterns: [/^external\//]
 
 # Check code style with YAPF
-code_style_validation.check validator: 'yapf',
+code_style_validation.check validator: 'pipenv run yapf',
                             file_extensions: ['.py'],
                             ignore_file_patterns: [/^external\//]
 

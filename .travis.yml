@@ -1,6 +1,6 @@
 language: cpp
 sudo: false
-dist: trusty
+dist: xenial
 ruby: 2.2.0
 notifications:
   slack:
@@ -26,35 +26,33 @@ matrix:
       addons:
         apt:
           packages:
-            - cmake3
-            - cmake3-data
             - clang
             - clang-format-3.9
             - gfortran
             - libboost-math-dev
+            - python3
+            - python3-pip
       env:
         - CXX_COMPILER='clang++'
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='release'
-        - PYTHON='--three'
         - RUN_DANGER=true
     - os: linux
       addons:
         apt:
           packages:
-            - cmake3
-            - cmake3-data
-            - g++
-            - gcc
-            - gfortran
+            - g++-4.8
+            - gcc-4.8
+            - gfortran-4.8
             - libboost-math-dev
+            - python3
+            - python3-pip
       env:
-        - CXX_COMPILER='g++'
-        - C_COMPILER='gcc'
-        - Fortran_COMPILER='gfortran'
+        - CXX_COMPILER='g++-4.8'
+        - C_COMPILER='gcc-4.8'
+        - Fortran_COMPILER='gfortran-4.8'
         - BUILD_TYPE='release'
-        - PYTHON='--two'
         - RUN_DANGER=false
     - os: linux
       addons:
@@ -62,37 +60,35 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - cmake3
-            - cmake3-data
             - g++-6
             - gcc-6
             - gfortran-6
             - libboost-math-dev
+            - python3
+            - python3-pip
       env:
         - CXX_COMPILER='g++-6'
         - C_COMPILER='gcc-6'
         - Fortran_COMPILER='gfortran-6'
         - BUILD_TYPE='release'
-        - PYTHON='--two'
         - STATIC='--static'
         - RUN_DANGER=false
     - os: linux
       addons:
         apt:
           packages:
-            - cmake3
-            - cmake3-data
             - g++
             - gcc
             - gfortran
             - libboost-math-dev
             - lcov
+            - python3
+            - python3-pip
       env:
         - CXX_COMPILER='g++'
         - C_COMPILER='gcc'
         - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='debug'
-        - PYTHON='--two'
         - COVERAGE='--coverage'
         - RUN_DANGER=false
 before_install:
@@ -100,10 +96,9 @@ before_install:
   - test -n $CXX && unset CXX
   - test -n $FC && unset FC
 install:
-  - pip install --user pipenv --upgrade
-  - pipenv $PYTHON install
+  - pip3 install --user pipenv --upgrade
+  - pipenv --python $(type -P python3) install --dev
 before_script:
-  - source $(pipenv --venv)/bin/activate
   - ./.ci/report_versions.sh
   - cd $TRAVIS_BUILD_DIR
   - echo 'Build set up summary'
@@ -117,7 +112,7 @@ script:
       BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile --verbose
     fi
   - |
-    python setup.py --cxx=$CXX_COMPILER \
+    pipenv run python setup.py --cxx=$CXX_COMPILER \
                     --cc=$C_COMPILER \
                     --fc=$Fortran_COMPILER \
                     --type=$BUILD_TYPE \
@@ -126,8 +121,8 @@ script:
                     --prefix=$HOME/Software/pcmsolver
   - cd build
   - ../.ci/ci_build.sh
-  - travis_wait 40 python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2
-  - python ../.ci/ci_print_failing.py
+  - travis_wait 40 pipenv run python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2
+  - pipenv run python ../.ci/ci_print_failing.py
 after_success:
   - |
     if [[ "$COVERAGE" = "--coverage" ]]; then

@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2018 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -86,4 +86,4 @@ public:
   virtual void write(const std::string & msg) { (*outStream_) << msg << std::endl; }
 };
 
-} // close namespace logging
+} // namespace logging

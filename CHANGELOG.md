@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [Version 1.2.2] - 2019-01-27
+
 ### Changed
 
 - Perform Gauss' theorem check on nuclear ASC upon initialization. In case a
@@ -577,7 +579,8 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.2...HEAD
+[Version 1.2.2]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.1...v1.2.2
 [Version 1.2.1]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.0...v1.2.1
 [Version 1.2.0]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.0-rc1...v1.2.0
 [Version 1.2.0-rc1]: https://github.com/PCMSolver/pcmsolver/compare/v1.1.12...v1.2.0-rc1

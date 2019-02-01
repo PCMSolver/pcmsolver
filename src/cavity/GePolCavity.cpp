@@ -40,6 +40,7 @@
 #include <Eigen/Core>
 
 #include "CavityData.hpp"
+#include "utils/MathUtils.hpp"
 #include "utils/Sphere.hpp"
 #include "utils/Symmetry.hpp"
 
@@ -236,23 +237,40 @@ void GePolCavity::build(const std::string & suffix,
   }
 
   // Now take care of updating the rest of the cavity info.
-  nElements_ = nts;
-  nIrrElements_ = ntsirr;
-  elementCenter_.resize(Eigen::NoChange, nElements_);
-  elementSphereCenter_.resize(Eigen::NoChange, nElements_);
-  elementNormal_.resize(Eigen::NoChange, nElements_);
-  elementArea_.resize(nElements_);
-  elementRadius_.resize(nElements_);
-  for (PCMSolverIndex i = 0; i < nElements_; ++i) {
-    elementCenter_(0, i) = xtscor[i];
-    elementCenter_(1, i) = ytscor[i];
-    elementCenter_(2, i) = ztscor[i];
-    elementArea_(i) = ar[i];
-    elementSphereCenter_(0, i) = xsphcor[i];
-    elementSphereCenter_(1, i) = ysphcor[i];
-    elementSphereCenter_(2, i) = zsphcor[i];
-    elementRadius_(i) = rsph[i];
+  // We prune the list of tesserae coming out of PEDRA to remove the ones that
+  // have area smaller than 1.0e-4 AU^2 these finite elements can breake
+  // symmetric positive-definiteness of the S matrix.
+  Eigen::MatrixXd centers = Eigen::MatrixXd::Zero(3, nts);
+  Eigen::MatrixXd sphereCenters = Eigen::MatrixXd::Zero(3, nts);
+  Eigen::VectorXd areas = Eigen::VectorXd::Zero(nts);
+  Eigen::VectorXd radii = Eigen::VectorXd::Zero(nts);
+  // Filtering array
+  Eigen::Matrix<bool, 1, Eigen::Dynamic> filter =
+      Eigen::Matrix<bool, 1, Eigen::Dynamic>::Zero(nts);
+  PCMSolverIndex retval = 0;
+  for (PCMSolverIndex i = 0; i < nts; ++i) {
+    if (std::abs(ar[i]) >= 1.0e-04) {
+      retval += 1;
+      centers.col(i) =
+          (Eigen::Vector3d() << xtscor[i], ytscor[i], ztscor[i]).finished();
+      sphereCenters.col(i) =
+          (Eigen::Vector3d() << xsphcor[i], ysphcor[i], zsphcor[i]).finished();
+      areas(i) = ar[i];
+      filter(i) = true;
+      radii(i) = rsph[i];
+    }
   }
+  PCMSOLVER_ASSERT(filter.count() == retval);
+  // Resize data members and fill them up starting from the pruned arrays
+  // We first build a mask array, for the indices of the nonzero elements
+  elementCenter_ = utils::prune_zero_columns(centers, filter);
+  elementSphereCenter_ = utils::prune_zero_columns(sphereCenters, filter);
+  elementArea_ = utils::prune_vector(areas, filter);
+  elementRadius_ = utils::prune_vector(radii, filter);
+  nElements_ = retval;
+  nIrrElements_ =
+      static_cast<PCMSolverIndex>(nElements_ / molecule_.pointGroup().nrIrrep());
+
   // Check that no points are overlapping exactly
   // Do not perform float comparisons column by column.
   // Instead form differences between columns and evaluate if they differ
@@ -283,6 +301,7 @@ void GePolCavity::build(const std::string & suffix,
     PCMSOLVER_ERROR(message);
   }
   // Calculate normal vectors
+  elementNormal_.resize(Eigen::NoChange, nElements_);
   elementNormal_ = elementCenter_ - elementSphereCenter_;
   for (PCMSolverIndex i = 0; i < nElements_; ++i) {
     elementNormal_.col(i) /= elementNormal_.col(i).norm();

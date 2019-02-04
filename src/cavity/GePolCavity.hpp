@@ -71,6 +71,7 @@ private:
   double probeRadius;
   double minimalRadius;
   int addedSpheres;
+  int pruned_;
   virtual std::ostream & printCavity(std::ostream & os) __override;
   virtual void makeCavity() __override {
     build(std::string("PEDRA.OUT"), 10000, 200, 25000);

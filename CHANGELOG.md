@@ -12,6 +12,10 @@
 
 ### Changed
 
+- The list of finite elements return from the PEDRA Fortran code is now pruned
+  to remove finite elements with area less than 1.0e-4 This avoids numerical
+  artifacts in the formation of the PCM matrices.
+  The number of pruned finite elements is reported when printing the cavity.
 - The `pcmsolver_print` function now only prints out the set up for the PCM calculation.
 
 ## [Version 1.2.2] - 2019-01-27

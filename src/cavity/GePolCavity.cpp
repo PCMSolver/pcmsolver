@@ -268,6 +268,7 @@ void GePolCavity::build(const std::string & suffix,
   elementArea_ = utils::prune_vector(areas, filter);
   elementRadius_ = utils::prune_vector(radii, filter);
   nElements_ = retval;
+  pruned_ = nts - nElements_;
   nIrrElements_ =
       static_cast<PCMSolverIndex>(nElements_ / molecule_.pointGroup().nrIrrep());
 
@@ -416,7 +417,8 @@ std::ostream & GePolCavity::printCavity(std::ostream & os) {
   os << "Number of spheres = " << nSpheres_
      << " [initial = " << nSpheres_ - addedSpheres << "; added = " << addedSpheres
      << "]" << std::endl;
-  os << "Number of finite elements = " << nElements_ << std::endl;
+  os << "Number of finite elements = " << nElements_ << " (" << pruned_ << " pruned)"
+     << std::endl;
   os << "Number of irreducible finite elements = " << nIrrElements_ << std::endl;
   os << "============ Spheres list (in Angstrom)" << std::endl;
   os << " Sphere   on   Radius   Alpha       X            Y            Z     \n";

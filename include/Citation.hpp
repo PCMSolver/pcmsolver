@@ -41,7 +41,7 @@ inline std::string citation_message() {
      "                   PCMSolver %s\n\n"
      "           Git: Branch {%s}, Revision {%s}\n\n"
      " R. Di Remigio, A. H. Steindal, K. Mozgawa, V. Weijo, H. Cao, and\n"
-     " L. Frediani, Int. J. Quantum Chem., to be submitted\n\n"
+     " L. Frediani, Int. J. Quantum Chem., 2019, 119 (1), e25685.\n\n"
      " Source repository: https://github.com/PCMSolver/pcmsolver\n"
      " Documentation: https://pcmsolver.readthedocs.io/\n"
      " PCMSolver initialized on: %s\n"

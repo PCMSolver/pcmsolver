@@ -139,10 +139,15 @@ PCMSolver_API void pcmsolver_delete(pcmsolver_context_t * context);
  */
 PCMSolver_API pcmsolver_bool_t pcmsolver_is_compatible_library(void);
 
-/*! \brief Prints citation and set up information
+/*! \brief Prints set up information
  *  \param[in, out] context the PCM context object
  */
 PCMSolver_API void pcmsolver_print(pcmsolver_context_t * context);
+
+/*! \brief Print version information and citation for PCMSolver
+ *  \param[in] writer flush-to-host function
+ */
+PCMSolver_API void pcmsolver_citation(HostWriter writer);
 
 /*! \brief Getter for the number of finite elements composing the molecular cavity
  *  \param[in, out] context the PCM context object

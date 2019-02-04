@@ -21,14 +21,21 @@ import subprocess
 import sys
 
 
+def to_bool(x):
+    return True if x == 'True' else False
+
+
 def collect_version_input_from_fallback(meta_file='metadata.py'):
-    """From *meta_file*, collect lines matching ``_version_{key} = {value}``
+    """From *meta_file*, collect lines matching ``__version_{key} = {value}``
     and return as dictionary.
 
     """
     cwd = os.path.dirname(os.path.abspath(__file__))
-    res = dict(re.findall("__version_([a-z_]+)\s*=\s*'([^']+)'", open(cwd + '/' + meta_file).read()))
+    metapy = open(cwd + '/' + meta_file).read()
+    res = dict(re.findall("__version_([a-z_]+)\s*=\s*'([^']+)'", metapy))
     res.pop('_')
+    is_hard_copy = re.findall("__is_hard_copy\s*=\s*(True|False)", metapy)
+    res['is_hard_copy'] = to_bool(is_hard_copy[0]) if is_hard_copy else False
     return res
 
 
@@ -139,7 +146,7 @@ def reconcile_and_compute_version_output(quiet=False):
         sys.exit()
 
     cwd = os.path.dirname(os.path.abspath(__file__))
-    if is_git_repo(cwd=cwd):
+    if is_git_repo(cwd=cwd) and not res['is_hard_copy']:
         res.update(collect_version_input_from_git())
 
         # establish the default response
@@ -177,8 +184,8 @@ def reconcile_and_compute_version_output(quiet=False):
             else:
                 if res['branch_name'].endswith('.x'):
                     print(
-                        """Undefining version as development snapshots not allowed on maintenance branch: {} (rejected computed)""".
-                        format(trial_version_long_devel))
+                        """Undefining version as development snapshots not allowed on maintenance branch: {} (rejected computed)"""
+                        .format(trial_version_long_devel))
 
                 # TODO prob should be undef unless on master
                 else:
@@ -294,7 +301,11 @@ def write_new_header_metafile(versdata, project_name, outfile='metadata.out.h'):
     try:
         major, minor, patch, describe = version_long.split('.')
     except ValueError:
-        major, minor, patch, describe = (0, 0, 0, 'uuuuuuu')
+        # This means we're reading it off a recorded version, e.g. X.Y.Z+abcdefg
+        # So we first split on '.' then on '+'
+        major, minor, patch_and_describe = version_long.split('.')
+        patch, describe = patch_and_describe.split('+')
+
     with open(os.path.abspath(outfile), 'w') as handle:
         handle.write(
             main_fn.format(
@@ -319,8 +330,8 @@ def version_formatter(versdata, formatstring="""{version}"""):
     if formatstring == 'all':
         formatstring = '{version} {{{branch}}} {githash} {cmake} {clean} {release} {lastrel} <-- {versionlong}'
 
-    release = 'release' if versdata['__version_release'] else ('prerelease'
-                                                               if versdata['__version_prerelease'] else '')
+    release = 'release' if versdata['__version_release'] else (
+        'prerelease' if versdata['__version_prerelease'] else '')
 
     ans = formatstring.format(
         version=versdata['__version__'],

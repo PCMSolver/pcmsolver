@@ -243,9 +243,13 @@ public:
    */
   void loadSurfaceFunction(const std::string & name);
 
-  /*! \brief Prints citation and set up information
+  /*! \brief Prints set up information
    */
   void printInfo() const;
+
+  /*! \brief Prints citation
+   */
+  std::string printCitation() const;
 
   /*! \brief Writes timing results for the API
    */

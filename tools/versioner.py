@@ -298,7 +298,6 @@ def write_new_header_metafile(versdata, project_name, outfile='metadata.out.h'):
     version = versdata['__version__']
     version_branch_name = versdata['__version_branch_name']
     version_long = versdata['__version_long']
-    print(version_long)
     try:
         major, minor, patch, describe = version_long.split('.')
     except ValueError:

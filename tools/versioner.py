@@ -147,7 +147,9 @@ def reconcile_and_compute_version_output(quiet=False):
 
     cwd = os.path.dirname(os.path.abspath(__file__))
     if is_git_repo(cwd=cwd) and not res['is_hard_copy']:
+        print('res before update ', res)
         res.update(collect_version_input_from_git())
+        print('res after update ', res)
 
         # establish the default response
         project_release = False

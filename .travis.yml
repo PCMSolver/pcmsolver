@@ -119,8 +119,9 @@ script:
                     $STATIC \
                     $COVERAGE \
                     --prefix=$HOME/Software/pcmsolver
+  - |
+    pipenv run cmake --build build --target install -- --jobs=2 VERBOSE=1
   - cd build
-  - ../.ci/ci_build.sh
   - travis_wait 40 pipenv run python ../.ci/ci_test.py ctest --output-on-failure --verbose --parallel 2
   - pipenv run python ../.ci/ci_print_failing.py
 after_success:

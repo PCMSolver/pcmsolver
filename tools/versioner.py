@@ -298,6 +298,7 @@ def write_new_header_metafile(versdata, project_name, outfile='metadata.out.h'):
     version = versdata['__version__']
     version_branch_name = versdata['__version_branch_name']
     version_long = versdata['__version_long']
+    print('versdata is ', versdata)
     try:
         major, minor, patch, describe = version_long.split('.')
     except ValueError:
@@ -361,6 +362,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     ans = reconcile_and_compute_version_output(quiet=args.formatonly)
+    print('ans is ', ans)
     write_new_metafile(ans, args.metaout)
     write_new_cmake_metafile(ans, args.cmakeout)
     write_new_header_metafile(ans, 'PCMSolver', args.headerout)

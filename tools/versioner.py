@@ -85,6 +85,7 @@ def collect_version_input_from_git():
     process = subprocess.Popen(
         command.split(), stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=cwd, universal_newlines=True)
     (out, err) = process.communicate()
+    print('In collect_version_input_from_git ', out, err)
 
     sane_describe = re.compile(
         """^v?(?P<tag>(?P<forwardseries>(?P<major>\d+)\.(?P<minor>\d+))[\.]?(?P<patch>\d+)?[-]?(?P<prere>((a)|(b)|(rc))\d+)?)[-]?(?P<commits>\d+)?[-]?(?P<gsha>\w+)?|(?P<sha>\w+)?$"""
@@ -333,8 +334,8 @@ def version_formatter(versdata, formatstring="""{version}"""):
     if formatstring == 'all':
         formatstring = '{version} {{{branch}}} {githash} {cmake} {clean} {release} {lastrel} <-- {versionlong}'
 
-    release = 'release' if versdata['__version_release'] else (
-        'prerelease' if versdata['__version_prerelease'] else '')
+    release = 'release' if versdata['__version_release'] else ('prerelease'
+                                                               if versdata['__version_prerelease'] else '')
 
     ans = formatstring.format(
         version=versdata['__version__'],

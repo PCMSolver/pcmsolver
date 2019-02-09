@@ -353,6 +353,40 @@ inline void print_eigen_matrix(const Eigen::MatrixBase<Derived> & matrix,
   }
   fout.close();
 }
+
+/*! \brief Prune zero columns from matrix
+ *  \param[in] incoming Matrix to be pruned
+ *  \param[in] filter indexing array for pruning
+ *
+ *  Outgoing matrix has the same number of rows as the incoming.
+ */
+inline Eigen::MatrixXd prune_zero_columns(
+    const Eigen::MatrixXd & incoming,
+    const Eigen::Matrix<bool, 1, Eigen::Dynamic> & filter) {
+  Eigen::MatrixXd outgoing(incoming.rows(), filter.count());
+  Eigen::Index j = 0;
+  for (Eigen::Index i = 0; i < incoming.cols(); ++i) {
+    if (filter(i))
+      outgoing.col(j++) = incoming.col(i);
+  }
+  return outgoing;
+}
+
+/*! \brief Prune zero elements from Vector
+ *  \param[in] incoming VectorXd to be pruned
+ *  \param[in] filter indexing array for pruning
+ */
+inline Eigen::VectorXd prune_vector(
+    const Eigen::VectorXd & incoming,
+    const Eigen::Matrix<bool, 1, Eigen::Dynamic> & filter) {
+  Eigen::VectorXd outgoing = Eigen::VectorXd::Zero(filter.count());
+  Eigen::Index j = 0;
+  for (Eigen::Index i = 0; i < incoming.rows(); ++i) {
+    if (filter(i))
+      outgoing(j++) = incoming(i);
+  }
+  return outgoing;
+}
 } // namespace utils
 } // namespace pcm
 

@@ -43,7 +43,7 @@ TEST_CASE("Restart GePol cavity for an ammonia molecule",
    * loading the cavity from a .npz file
    */
   SECTION("Test size") {
-    int size = 230;
+    int size = 226;
     int actualSize = cavity.size();
     REQUIRE(size == actualSize);
   }
@@ -53,7 +53,7 @@ TEST_CASE("Restart GePol cavity for an ammonia molecule",
    * ammonia loading the cavity from from a .npz file
    */
   SECTION("Test area") {
-    double area = 147.13247859942391;
+    double area = 147.132275897320511;
     double actualArea = cavity.elementArea().sum();
     REQUIRE(area == Approx(actualArea));
   }
@@ -63,7 +63,7 @@ TEST_CASE("Restart GePol cavity for an ammonia molecule",
    * loading the cavity from from a .npz file
    */
   SECTION("Test volume") {
-    double volume = 153.12929788519045;
+    double volume = 153.129099964001966;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;

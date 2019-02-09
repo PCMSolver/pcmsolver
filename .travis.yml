@@ -1,7 +1,8 @@
 language: cpp
 sudo: false
 dist: xenial
-ruby: 2.2.0
+git:
+  depth: false
 notifications:
   slack:
     secure: F2nQIW6SiaGdw1LjuZOlgBu8rUVMllrDG/5bhmTQP7gyETfViFBjTsHQdTle6jtdb+LudleZaG7WhdEiVcKUa834rKqDk1UOt9p6bsmgbsBZBAaxmPh01iVFhKn3ML7JLjfr1YtH7MWJcsS60cNBrohXfVKfFzNgDqZEu/llr90=
@@ -20,14 +21,13 @@ env:
 branches:
   except:
     - fix-appveyor
-matrix:
+jobs:
   include:
     - os: linux
       addons:
         apt:
           packages:
             - clang
-            - clang-format-3.9
             - gfortran
             - libboost-math-dev
             - python3
@@ -37,7 +37,6 @@ matrix:
         - C_COMPILER='clang'
         - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='release'
-        - RUN_DANGER=true
     - os: linux
       addons:
         apt:
@@ -53,7 +52,6 @@ matrix:
         - C_COMPILER='gcc-4.8'
         - Fortran_COMPILER='gfortran-4.8'
         - BUILD_TYPE='release'
-        - RUN_DANGER=false
     - os: linux
       addons:
         apt:
@@ -72,7 +70,6 @@ matrix:
         - Fortran_COMPILER='gfortran-6'
         - BUILD_TYPE='release'
         - STATIC='--static'
-        - RUN_DANGER=false
     - os: linux
       addons:
         apt:
@@ -90,7 +87,17 @@ matrix:
         - Fortran_COMPILER='gfortran'
         - BUILD_TYPE='debug'
         - COVERAGE='--coverage'
-        - RUN_DANGER=false
+    - stage: Danger Bot
+      ruby: 2.5.3
+      addons:
+        apt:
+          packages:
+            - clang-format
+      if: commit_message !~ /(skip bot|bot skip|skip danger|danger skip)/
+      script:
+        - |
+          bundle install --gemfile=.ci/Gemfile
+          BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile
 before_install:
   - test -n $CC && unset CC
   - test -n $CXX && unset CXX
@@ -102,15 +109,7 @@ before_script:
   - ./.ci/report_versions.sh
   - cd $TRAVIS_BUILD_DIR
   - echo 'Build set up summary'
-  - |
-    if [[ "$RUN_DANGER" = true ]]; then
-      bundle install --gemfile=.ci/Gemfile
-    fi
 script:
-  - |
-    if [[ "$RUN_DANGER" = true ]]; then
-      BUNDLE_GEMFILE=.ci/Gemfile bundle exec danger --dangerfile=.ci/Dangerfile --verbose
-    fi
   - |
     pipenv run python setup.py --cxx=$CXX_COMPILER \
                     --cc=$C_COMPILER \

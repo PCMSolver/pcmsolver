@@ -438,10 +438,11 @@ void pcm::Meddle::writeTimings() const { TIMER_DONE("pcmsolver.timer.dat"); }
 void pcmsolver_print(pcmsolver_context_t * context) {
   AS_CTYPE(pcm::Meddle, context)->printInfo();
 }
-void pcm::Meddle::printInfo() const {
-  hostWriter_(citation_message());
-  hostWriter_(infoStream_);
-}
+void pcm::Meddle::printInfo() const { hostWriter_(infoStream_); }
+
+void pcmsolver_citation(HostWriter writer) { writer(citation_message().c_str()); }
+
+std::string pcm::Meddle::printCitation() const { return citation_message(); }
 
 bool pcmsolver_is_compatible_library(void) {
   unsigned int major = (pcm::pcmsolver_get_version() >> 16);

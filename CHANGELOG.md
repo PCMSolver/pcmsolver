@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Added
+
+- A `pcmsolver_citation` function was added which accepts a function pointer to
+  printing facilities used in the host program. `pcmsolver_citation` will print
+  versioning and citation information for the library. Please, include a call to
+  this function and print the returned string somewhere in your code, so that
+  users are aware of what literature to cite when using the library.
+
+### Changed
+
+- The `pcmsolver_print` function now only prints out the set up for the PCM calculation.
+
 ## [Version 1.2.2] - 2019-01-27
 
 ### Changed

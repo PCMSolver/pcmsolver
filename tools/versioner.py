@@ -234,7 +234,8 @@ def reconcile_and_compute_version_output(quiet=False):
         '__version_last_release': backwardseries,
         '__version_cmake': mapped_cmake_version(backwardseries, project_release),
         '__version_release': project_release,
-        '__version_prerelease': project_prerelease
+        '__version_prerelease': project_prerelease,
+        '__is_hard_copy': res['is_hard_copy']
     }
 
 
@@ -298,13 +299,16 @@ def write_new_header_metafile(versdata, project_name, outfile='metadata.out.h'):
     version = versdata['__version__']
     version_branch_name = versdata['__version_branch_name']
     version_long = versdata['__version_long']
-    try:
-        major, minor, patch, describe = version_long.split('.')
-    except ValueError:
+    if versdata['__is_hard_copy']:
         # This means we're reading it off a recorded version, e.g. X.Y.Z+abcdefg
         # So we first split on '.' then on '+'
         major, minor, patch_and_describe = version_long.split('.')
         patch, describe = patch_and_describe.split('+')
+    else:
+        try:
+            major, minor, patch, describe = version_long.split('.')
+        except ValueError:
+            major, minor, patch, describe = (0, 0, 0, 'uuuuuuu')
 
     with open(os.path.abspath(outfile), 'w') as handle:
         handle.write(

@@ -93,6 +93,8 @@ jobs:
         apt:
           packages:
             - clang-format
+            - python3
+            - python3-pip
       if: commit_message !~ /(skip bot|bot skip|skip danger|danger skip)/
       script:
         - |

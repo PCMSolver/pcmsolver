@@ -49,7 +49,7 @@ TEST_CASE("GePol cavity for an ammonia molecule", "[gepol][gepol_NH3]") {
    *  \test \b GePolCavityNH3Test_size tests GePol cavity size for ammonia
    */
   SECTION("Test size") {
-    int size = 230;
+    int size = 226;
     int actualSize = cavity.size();
     REQUIRE(size == actualSize);
   }
@@ -58,8 +58,11 @@ TEST_CASE("GePol cavity for an ammonia molecule", "[gepol][gepol_NH3]") {
    *  \test \b GePolCavityNH3Test_area tests GePol cavity surface area for ammonia
    */
   SECTION("Test surface area") {
-    double area = 147.13247859942391;
+    double area = 147.132275897320511;
     double actualArea = cavity.elementArea().sum();
+    INFO("actualArea  = " << std::setprecision(
+                                 std::numeric_limits<long double>::digits10)
+                          << actualArea);
     REQUIRE(area == Approx(actualArea));
   }
 
@@ -67,7 +70,7 @@ TEST_CASE("GePol cavity for an ammonia molecule", "[gepol][gepol_NH3]") {
    *  \test \b GePolCavityNH3Test_volume tests GePol cavity volume for ammonia
    */
   SECTION("Test volume") {
-    double volume = 153.12929788519045;
+    double volume = 153.129099964001966;
     Eigen::Matrix3Xd elementCenter = cavity.elementCenter();
     Eigen::Matrix3Xd elementNormal = cavity.elementNormal();
     double actualVolume = 0;
@@ -76,6 +79,9 @@ TEST_CASE("GePol cavity for an ammonia molecule", "[gepol][gepol_NH3]") {
           cavity.elementArea(i) * elementCenter.col(i).dot(elementNormal.col(i));
     }
     actualVolume /= 3;
+    INFO("actualVolume  = " << std::setprecision(
+                                   std::numeric_limits<long double>::digits10)
+                            << actualVolume);
     REQUIRE(volume == Approx(actualVolume));
   }
 }

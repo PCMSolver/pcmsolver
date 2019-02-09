@@ -72,6 +72,7 @@ program pcm_fortran_host
         access='sequential')
   rewind (output_unit)
   write (output_unit, *) 'Starting a PCMSolver calculation'
+  call pcmsolver_citation(c_funloc(host_writer))
 
   nr_nuclei = 6_c_int
   allocate (charges(nr_nuclei))

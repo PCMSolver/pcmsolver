@@ -61,6 +61,7 @@ int main(int argc, char * argv[]) {
   TIMER_OFF("Input parsing");
   Meddle context_(input, host_writer);
 
+  context_.printCitation();
   context_.printInfo();
 
   PCMSolverIndex size = context_.getCavitySize();

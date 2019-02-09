@@ -104,6 +104,13 @@ interface pcmsolver_print
   end subroutine
 end interface
 
+interface pcmsolver_citation
+   subroutine pcmsolver_citation(writer) bind(C)
+     import
+     type(c_funptr), intent(in), value :: writer
+   end subroutine
+end interface
+
 interface pcmsolver_get_cavity_size
   function pcmsolver_get_cavity_size(context) result(nr_points) bind(C)
     import
@@ -255,6 +262,6 @@ contains
         array_c(i) = string_f03(i:i)
     end do
     array_c(i) = c_null_char
-  end function pcmsolver_fstring_to_carray
+  end function
 
 end module pcmsolver

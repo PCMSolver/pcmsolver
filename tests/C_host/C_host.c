@@ -79,6 +79,8 @@ int main() {
                                                     &host_input,
                                                     host_writer);
 
+  pcmsolver_citation(host_writer);
+
   pcmsolver_print(pcm_context);
 
   int grid_size = pcmsolver_get_cavity_size(pcm_context);

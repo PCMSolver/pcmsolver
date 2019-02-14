@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [Version 1.2.3] - 2019-02-14
+
 ### Added
 
 - A `pcmsolver_citation` function was added which accepts a function pointer to
@@ -595,7 +597,8 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.3...HEAD
+[Version 1.2.3]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.2...v1.2.3
 [Version 1.2.2]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.1...v1.2.2
 [Version 1.2.1]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.0...v1.2.1
 [Version 1.2.0]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.0-rc1...v1.2.0

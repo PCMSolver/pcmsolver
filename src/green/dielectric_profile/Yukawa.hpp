@@ -36,7 +36,7 @@ namespace dielectric_profile {
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-struct Yukawa __final {
+struct Yukawa final {
   double epsilon;
   double kappa;
   Yukawa() : epsilon(1.0), kappa(0.0) {}

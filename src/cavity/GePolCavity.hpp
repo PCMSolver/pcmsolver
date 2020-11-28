@@ -47,7 +47,7 @@ namespace cavity {
  *  This class is an interface to the Fortran code PEDRA for the generation
  *  of cavities according to the GePol algorithm.
  */
-class GePolCavity __final : public ICavity {
+class GePolCavity final : public ICavity {
 public:
   GePolCavity() {}
   GePolCavity(const Molecule & molec,
@@ -71,8 +71,8 @@ private:
   double probeRadius;
   double minimalRadius;
   int addedSpheres;
-  virtual std::ostream & printCavity(std::ostream & os) __override;
-  virtual void makeCavity() __override {
+  virtual std::ostream & printCavity(std::ostream & os) override;
+  virtual void makeCavity() override {
     build(std::string("PEDRA.OUT"), 10000, 200, 25000);
   }
   /*! \brief Driver for PEDRA Fortran module.

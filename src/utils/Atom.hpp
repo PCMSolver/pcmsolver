@@ -91,7 +91,7 @@ struct Atom {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-typedef pcm::tuple<std::string, std::vector<Atom> > RadiiSet;
+typedef std::tuple<std::string, std::vector<Atom> > RadiiSet;
 
 namespace detail {
 /*! \brief Returns a vector<Atom> containing Bondi van der Waals
@@ -127,7 +127,7 @@ RadiiSet initUFF();
  */
 RadiiSet initAllinger();
 
-typedef pcm::function<RadiiSet()> CreateRadiiSet;
+typedef std::function<RadiiSet()> CreateRadiiSet;
 } // namespace detail
 
 Factory<detail::CreateRadiiSet> bootstrapRadiiSet();

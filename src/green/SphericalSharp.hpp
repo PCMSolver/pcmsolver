@@ -56,7 +56,7 @@ namespace green {
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
 template <typename DerivativeTraits = AD_directional>
-class SphericalSharp __final
+class SphericalSharp final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Sharp> {
 public:
   /*! Constructor for a one-layer interface
@@ -68,7 +68,7 @@ public:
    */
   SphericalSharp(double e, double esolv, double r, const Eigen::Vector3d & o, int l);
 
-  virtual double permittivity() const __override __final {
+  virtual double permittivity() const override final {
     PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
   }
 
@@ -109,7 +109,7 @@ private:
    *  \param[in] pp the probe point
    */
   virtual DerivativeTraits operator()(DerivativeTraits * sp,
-                                      DerivativeTraits * pp) const __override;
+                                      DerivativeTraits * pp) const override;
 
   /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the
    * pair of points p1, p2:
@@ -125,19 +125,19 @@ private:
    */
   virtual double kernelD_impl(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1,
-                              const Eigen::Vector3d & p2) const __override;
+                              const Eigen::Vector3d & p2) const override;
 
-  virtual KernelS exportKernelS_impl() const __override;
-  virtual KernelD exportKernelD_impl() const __override;
-  virtual DerivativeProbe exportDerivativeProbe_impl() const __override;
+  virtual KernelS exportKernelS_impl() const override;
+  virtual KernelD exportKernelD_impl() const override;
+  virtual DerivativeProbe exportDerivativeProbe_impl() const override;
 
-  virtual double singleLayer_impl(const Element & e, double factor) const __override;
-  virtual double doubleLayer_impl(const Element & e, double factor) const __override;
+  virtual double singleLayer_impl(const Element & e, double factor) const override;
+  virtual double doubleLayer_impl(const Element & e, double factor) const override;
 
   DerivativeTraits imagePotential_impl(DerivativeTraits * sp,
                                        DerivativeTraits * pp) const;
 
-  virtual std::ostream & printObject(std::ostream & os) __override;
+  virtual std::ostream & printObject(std::ostream & os) override;
 };
 
 template <typename DerivativeTraits>

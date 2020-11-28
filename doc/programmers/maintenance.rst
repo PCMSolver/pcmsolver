@@ -9,8 +9,7 @@ The code changes are developed on a *branch* of the
 through the web interface: a *pull request* (PR) is opened, requesting that the changes from
 the *source branch* on the fork be merged into a *target branch* in
 the canonical repository.
-Once the PR is open, the new code is automatically tested on Travis. A bot
-will pre-review the changes based on a set of simple rules.
+Once the PR is open, the new code is automatically tested.
 Core developers of PCMSolver will then review the contribution and
 discuss additional changes to be made.
 Eventually, if all the tests are passing and a developer approves the suggested
@@ -42,60 +41,6 @@ Then an issue *have* to be created to make sure it will also be fixed on the mas
 
 Feature branches are not created on the main repository, but on forks. 
 These are based on the master branch from the main repository and merged into the master branch through pull requests.
-
-Pull Request Requirements
--------------------------
-
-The project is integrated with `Danger.Systems <http://danger.systems/ruby/>`_.
-On each PR, one CI job will run the integration and a `bot <https://github.com/minazobot>`_ will
-report which requirements are **not met** in your PR.
-These reports can be _warnings_ and _errors_. You will discuss and solve both
-of them with the reviewers.
-The automatic rules are laid out in the ``Dangerfile`` and are used to enforce an
-adequate level of testing, documentation and code quality.
-
-Danger.Systems Warnings
-~~~~~~~~~~~~~~~~~~~~~~~
-
-- PRs classed as Work in Progress.
-- Codebase was modified, but no tests were added.
-- Nontrivial changes to the codebase, but no documentation added.
-- Codebase was modified, but ``CHANGELOG.md`` was not updated.
-- Source files were added or removed, but ``.gitattributes`` was not updated.
-
-Danger.Systems Errors
-~~~~~~~~~~~~~~~~~~~~~
-
-- Commit message linting, based on some of `these recommendations <https://chris.beams.io/posts/git-commit/>`_:
-  - Commit subject is more than one word.
-  - Commit subject is no longer than 50 characters.
-  - Commit subject and body are separated by an empty line.
-
-- Clean commit history, without merge commits.
-
-- Code style for ``.hpp``, ``.cpp``, ``.h`` files follows the conventions in
-  ``.clang-format``.
-
-- Code style for ``.py`` files follows the conventions in ``.style.yapf``.
-
-Updating the Danger Bot
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The bot reports results from running the `Danger.System ruby gem
-<http://danger.systems/ruby/>`_. From time to time, it is necessary to update
-the ``Gemfile`` and ``Gemfile.lock``:
-
-.. code-block:: bash
-
-   cd .ci
-   bundle update
-   bundle install
-
-The last command can also be run outside of the ``.ci`` folder:
-
-.. code-block:: bash
-
-   bundle install --gemfile=.ci/Gemfile
 
 Changelog
 =========

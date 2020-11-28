@@ -70,7 +70,7 @@ SCENARIO("Diffuse permittivity single layers", "[dielectric_profile][one_layer]"
           double value = 0.0, deriv = 0.0;
           double analytic = tanh_value(point, eps1, eps2, width, center);
           double analyticDeriv = tanh_deriv(point, eps1, eps2, width, center);
-          pcm::tie(value, deriv) = diffuse(point);
+          std::tie(value, deriv) = diffuse(point);
           INFO(" The evaluation point is: " << point);
           REQUIRE(value == Approx(analytic));
           REQUIRE(deriv == Approx(analyticDeriv));
@@ -89,7 +89,7 @@ SCENARIO("Diffuse permittivity single layers", "[dielectric_profile][one_layer]"
           double value = 0.0, deriv = 0.0;
           double analytic = erf_value(point, eps1, eps2, width, center);
           double analyticDeriv = erf_deriv(point, eps1, eps2, width, center);
-          pcm::tie(value, deriv) = diffuse(point);
+          std::tie(value, deriv) = diffuse(point);
           INFO(" The evaluation point is: " << point);
           REQUIRE(value == Approx(analytic));
           REQUIRE(deriv == Approx(analyticDeriv));
@@ -109,7 +109,7 @@ SCENARIO("Diffuse permittivity single layers", "[dielectric_profile][one_layer]"
           double value = 0.0, deriv = 0.0;
           double analytic = log_value(point, eps1, eps2, width, center);
           double analyticDeriv = log_deriv(point, eps1, eps2, width, center);
-          pcm::tie(value, deriv) = diffuse(point);
+          std::tie(value, deriv) = diffuse(point);
           INFO(" The evaluation point is: " << point);
           REQUIRE(value == Approx(analytic));
           REQUIRE(deriv == Approx(analyticDeriv));
@@ -138,7 +138,7 @@ double erf_value(double point, double e1, double e2, double w, double c) {
   w /= 6.0;
   double epsPlus = (e1 + e2) / 2.0;
   double epsMinus = (e2 - e1) / 2.0;
-  double val = pcm::erf((point - c) / w);
+  double val = std::erf((point - c) / w);
   return (epsPlus + epsMinus * val);
 }
 
@@ -153,7 +153,7 @@ double erf_deriv(double point, double e1, double e2, double w, double c) {
 double log_value(double point, double e1, double e2, double w, double c) {
   w /= 6.0;
   double epsLog = std::log(e2 / e1);
-  double val = (1.0 + pcm::erf((point - c) / w)) / 2.0;
+  double val = (1.0 + std::erf((point - c) / w)) / 2.0;
   double retval = e1 * std::exp(epsLog * val); // epsilon(r)
   return retval;
 }

@@ -84,15 +84,14 @@ private:
   virtual void buildSystemMatrix_impl(const ICavity & cavity,
                                       const IGreensFunction & gf_i,
                                       const IGreensFunction & gf_o,
-                                      const IBoundaryIntegralOperator & op)
-      __override;
+                                      const IBoundaryIntegralOperator & op) override;
   /*! \brief Returns the ASC given the MEP and the desired irreducible representation
    *  \param[in] potential the vector containing the MEP at cavity points
    *  \param[in] irrep the irreducible representation of the MEP and ASC
    */
   virtual Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential,
-                                             int irrep = 0) const __override;
-  virtual std::ostream & printSolver(std::ostream & os) __override;
+                                             int irrep = 0) const override;
+  virtual std::ostream & printSolver(std::ostream & os) override;
 };
 
 ISolver * createCPCMSolver(const SolverData & data);

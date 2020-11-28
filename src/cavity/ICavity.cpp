@@ -76,9 +76,9 @@ void ICavity::saveCavity(const std::string & fname) {
   for (PCMSolverIndex i = 0; i < nElements_; ++i) {
     // Write vertices
     cnpy::custom::npz_save(
-        fname, "vertices_" + pcm::to_string(i), elements_[i].vertices());
+        fname, "vertices_" + std::to_string(i), elements_[i].vertices());
     // Write arcs
-    cnpy::custom::npz_save(fname, "arcs_" + pcm::to_string(i), elements_[i].arcs());
+    cnpy::custom::npz_save(fname, "arcs_" + std::to_string(i), elements_[i].arcs());
   }
 }
 
@@ -140,14 +140,14 @@ void ICavity::loadCavity(const std::string & fname) {
     Eigen::Matrix3Xd vertices, arcs;
     // 6. Get vertices and arcs
     if (has_vertices) {
-      cnpy::NpyArray raw_vertices = loaded_cavity["vertices_" + pcm::to_string(i)];
+      cnpy::NpyArray raw_vertices = loaded_cavity["vertices_" + std::to_string(i)];
       vertices = cnpy::custom::npy_to_eigen<double>(raw_vertices);
     } else {
       // Vertices were not found on file, fill them up with zeros
       vertices = Eigen::Matrix3Xd::Zero(3, 3);
     }
     if (has_arcs) {
-      cnpy::NpyArray raw_arcs = loaded_cavity["arcs_" + pcm::to_string(i)];
+      cnpy::NpyArray raw_arcs = loaded_cavity["arcs_" + std::to_string(i)];
       arcs = cnpy::custom::npy_to_eigen<double>(raw_arcs);
     } else {
       // Arcs were not found on file, fill them up with zeros
@@ -155,7 +155,7 @@ void ICavity::loadCavity(const std::string & fname) {
     }
     if (arcs.cols() != vertices.cols())
       PCMSOLVER_ERROR("Inconsistent number of vertices read from file for element " +
-                      pcm::to_string(i));
+                      std::to_string(i));
     int nv = vertices.cols();
     // Populate vertices and arcs
     elements_.push_back(Element(nv,

@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+dependencies:
+  - boost-cpp
+  - c-compiler
+  - cmake
+  - cxx-compiler
+  - eigen
+  - fortran-compiler
+  - ninja

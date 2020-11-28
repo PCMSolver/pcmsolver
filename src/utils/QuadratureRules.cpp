@@ -64,7 +64,7 @@ QuadratureRule GaussLegendre16() {
   w16[6] = 0.1826034150449235888667637;
   w16[7] = 0.1894506104550684962853967;
 
-  return pcm::make_tuple(x16, w16);
+  return std::make_tuple(x16, w16);
 }
 
 QuadratureRule GaussLegendre32() {
@@ -104,7 +104,7 @@ QuadratureRule GaussLegendre32() {
   w32[14] = 0.0956387200792748594190820;
   w32[15] = 0.0965400885147278005667648;
 
-  return pcm::make_tuple(x32, w32);
+  return std::make_tuple(x32, w32);
 }
 
 QuadratureRule GaussLegendre64() {
@@ -178,7 +178,7 @@ QuadratureRule GaussLegendre64() {
   w64[30] = 0.0485754674415034269347991;
   w64[31] = 0.0486909570091397203833654;
 
-  return pcm::make_tuple(x64, w64);
+  return std::make_tuple(x64, w64);
 }
 } // namespace detail
 } // namespace utils

@@ -36,7 +36,7 @@ namespace dielectric_profile {
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-struct Uniform __final {
+struct Uniform final {
   double epsilon;
   Uniform() : epsilon(1.0) {}
   Uniform(double e) : epsilon(e) {}

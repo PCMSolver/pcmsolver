@@ -43,7 +43,7 @@ namespace cavity {
  *  Data structure containing relevant information about a finite element
  *  making up the cavity
  */
-class Element __final {
+class Element final {
 public:
   Element(int nv,
           int isphe,

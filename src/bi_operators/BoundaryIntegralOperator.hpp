@@ -46,7 +46,7 @@
 namespace pcm {
 namespace bi_operators {
 namespace detail {
-typedef pcm::function<IBoundaryIntegralOperator *(const BIOperatorData &)>
+typedef std::function<IBoundaryIntegralOperator *(const BIOperatorData &)>
     CreateBIOperator;
 } // namespace detail
 

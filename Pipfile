@@ -15,14 +15,10 @@ pyparsing = "*"
 Pygments = "*"
 breathe = "*"
 matplotlib = "*"
-pyyaml = ">=4.2b1"
+pyyaml = "*"
 recommonmark = "*"
 Sphinx = "*"
 sphinx_rtd_theme = "*"
 sphinxcontrib-bibtex = "*"
 yapf = "*"
 fprettify = "*"
-
-[pipenv]
-
-allow_prereleases = true

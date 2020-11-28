@@ -57,19 +57,28 @@ double Vacuum<DerivativeTraits>::kernelD_impl(const Eigen::Vector3d & direction,
 
 template <typename DerivativeTraits>
 KernelS Vacuum<DerivativeTraits>::exportKernelS_impl() const {
-  return pcm::bind(&Vacuum<DerivativeTraits>::kernelS, *this, pcm::_1, pcm::_2);
+  return std::bind(&Vacuum<DerivativeTraits>::kernelS,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2);
 }
 
 template <typename DerivativeTraits>
 KernelD Vacuum<DerivativeTraits>::exportKernelD_impl() const {
-  return pcm::bind(
-      &Vacuum<DerivativeTraits>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
+  return std::bind(&Vacuum<DerivativeTraits>::kernelD,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>
 DerivativeProbe Vacuum<DerivativeTraits>::exportDerivativeProbe_impl() const {
-  return pcm::bind(
-      &Vacuum<DerivativeTraits>::derivativeProbe, *this, pcm::_1, pcm::_2, pcm::_3);
+  return std::bind(&Vacuum<DerivativeTraits>::derivativeProbe,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>

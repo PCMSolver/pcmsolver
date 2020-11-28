@@ -37,7 +37,7 @@ namespace dielectric_profile {
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-struct Metal __final {
+struct Metal final {
   std::complex<double> epsilon;
   Metal() : epsilon(std::complex<double>(1.0, 1.0)) {}
   Metal(double eRe, double eIm) : epsilon(std::complex<double>(eRe, eIm)) {}

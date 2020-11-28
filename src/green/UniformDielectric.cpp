@@ -60,27 +60,29 @@ double UniformDielectric<DerivativeTraits>::kernelD_impl(
 
 template <typename DerivativeTraits>
 KernelS UniformDielectric<DerivativeTraits>::exportKernelS_impl() const {
-  return pcm::bind(
-      &UniformDielectric<DerivativeTraits>::kernelS, *this, pcm::_1, pcm::_2);
+  return std::bind(&UniformDielectric<DerivativeTraits>::kernelS,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2);
 }
 
 template <typename DerivativeTraits>
 KernelD UniformDielectric<DerivativeTraits>::exportKernelD_impl() const {
-  return pcm::bind(&UniformDielectric<DerivativeTraits>::kernelD,
+  return std::bind(&UniformDielectric<DerivativeTraits>::kernelD,
                    *this,
-                   pcm::_1,
-                   pcm::_2,
-                   pcm::_3);
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>
 DerivativeProbe UniformDielectric<DerivativeTraits>::exportDerivativeProbe_impl()
     const {
-  return pcm::bind(&UniformDielectric<DerivativeTraits>::derivativeProbe,
+  return std::bind(&UniformDielectric<DerivativeTraits>::derivativeProbe,
                    *this,
-                   pcm::_1,
-                   pcm::_2,
-                   pcm::_3);
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>

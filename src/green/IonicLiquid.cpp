@@ -62,22 +62,28 @@ double IonicLiquid<DerivativeTraits>::kernelD_impl(
 
 template <typename DerivativeTraits>
 KernelS IonicLiquid<DerivativeTraits>::exportKernelS_impl() const {
-  return pcm::bind(&IonicLiquid<DerivativeTraits>::kernelS, *this, pcm::_1, pcm::_2);
+  return std::bind(&IonicLiquid<DerivativeTraits>::kernelS,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2);
 }
 
 template <typename DerivativeTraits>
 KernelD IonicLiquid<DerivativeTraits>::exportKernelD_impl() const {
-  return pcm::bind(
-      &IonicLiquid<DerivativeTraits>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
+  return std::bind(&IonicLiquid<DerivativeTraits>::kernelD,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>
 DerivativeProbe IonicLiquid<DerivativeTraits>::exportDerivativeProbe_impl() const {
-  return pcm::bind(&IonicLiquid<DerivativeTraits>::derivativeProbe,
+  return std::bind(&IonicLiquid<DerivativeTraits>::derivativeProbe,
                    *this,
-                   pcm::_1,
-                   pcm::_2,
-                   pcm::_3);
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>

@@ -13,7 +13,6 @@ install(
   FILES
     Citation.hpp
     ${PROJECT_BINARY_DIR}/include/Config.hpp
-    Cxx11Workarounds.hpp
     ErrorHandling.hpp
     LoggerInterface.hpp
     PhysicalConstants.hpp

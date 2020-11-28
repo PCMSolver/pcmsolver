@@ -51,7 +51,7 @@
 namespace pcm {
 namespace green {
 namespace detail {
-typedef pcm::function<IGreensFunction *(const GreenData &)> CreateGreensFunction;
+typedef std::function<IGreensFunction *(const GreenData &)> CreateGreensFunction;
 } // namespace detail
 
 inline Factory<detail::CreateGreensFunction> bootstrapFactory() {

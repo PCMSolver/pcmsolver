@@ -33,7 +33,7 @@
  *  \brief sort of a function pointer to a function of a pair of vectors that can be
  * numerically differentiated
  */
-typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
     DifferentiableFunction;
 
 /*! \brief Calculate directional derivative using a three-point stencil

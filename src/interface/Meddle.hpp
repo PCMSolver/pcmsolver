@@ -50,7 +50,7 @@ struct PCMInput;
 
 /*! \namespace pcm */
 namespace pcm {
-unsigned int pcmsolver_get_version(void) attribute(const);
+unsigned int pcmsolver_get_version(void);
 
 namespace detail {
 Molecule initMolecule(const Input & inp,
@@ -69,7 +69,7 @@ void print(const PCMInput &);
  *  \author Roberto Di Remigio
  *  \date 2015-2017
  */
-class PCMSolver_API Meddle __final {
+class PCMSolver_API Meddle final {
 public:
   /*! \brief CTOR from Input object
    *  \param[in] input an Input object
@@ -120,18 +120,18 @@ public:
   ~Meddle();
 
   /*! \brief Getter for the molecule object */
-  Molecule molecule() const attribute(pure);
+  Molecule molecule() const;
 
   /*! \brief Getter for the number of finite elements composing the molecular cavity
    *  \return the size of the cavity
    */
-  PCMSolverIndex getCavitySize() const attribute(pure);
+  PCMSolverIndex getCavitySize() const;
 
   /*! \brief Getter for the number of irreducible finite elements composing the
    * molecular cavity
    *  \return the number of irreducible finite elements
    */
-  PCMSolverIndex getIrreducibleCavitySize() const attribute(pure);
+  PCMSolverIndex getIrreducibleCavitySize() const;
 
   /*! \brief Getter for the centers of the finite elements composing the molecular
    * cavity
@@ -151,7 +151,7 @@ public:
    *  \return a matrix with the finite elements centers (dimensions 3 x number of
    * finite elements)
    */
-  Eigen::Matrix3Xd getCenters() const attribute(pure);
+  Eigen::Matrix3Xd getCenters() const;
 
   /*! \brief Getter for the areas/weights of the finite elements
    *  \param[out] areas array holding the weights/areas of the finite elements

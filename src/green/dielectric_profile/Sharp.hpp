@@ -36,7 +36,7 @@ namespace dielectric_profile {
  *  \author Roberto Di Remigio
  *  \date 2015
  */
-struct Sharp __final {
+struct Sharp final {
   double epsilon;
   double epsilonSolvent;
   double radius;

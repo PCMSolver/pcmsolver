@@ -43,7 +43,7 @@
 namespace pcm {
 namespace cavity {
 namespace detail {
-typedef pcm::function<ICavity *(const CavityData &)> CreateCavity;
+typedef std::function<ICavity *(const CavityData &)> CreateCavity;
 } // namespace detail
 
 inline Factory<detail::CreateCavity> bootstrapFactory() {

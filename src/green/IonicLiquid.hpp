@@ -51,32 +51,32 @@ namespace green {
  *  \tparam DerivativeTraits evaluation strategy for the function and its derivatives
  */
 template <typename DerivativeTraits = AD_directional>
-class IonicLiquid __final
+class IonicLiquid final
     : public GreensFunction<DerivativeTraits, dielectric_profile::Yukawa> {
 public:
   IonicLiquid(double eps, double k);
 
-  virtual double permittivity() const __override __final {
+  virtual double permittivity() const override final {
     PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
   }
 
 private:
   virtual DerivativeTraits operator()(DerivativeTraits * sp,
-                                      DerivativeTraits * pp) const __override;
+                                      DerivativeTraits * pp) const override;
   virtual double kernelD_impl(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1,
-                              const Eigen::Vector3d & p2) const __override;
+                              const Eigen::Vector3d & p2) const override;
 
-  virtual KernelS exportKernelS_impl() const __override;
-  virtual KernelD exportKernelD_impl() const __override;
-  virtual DerivativeProbe exportDerivativeProbe_impl() const __override;
+  virtual KernelS exportKernelS_impl() const override;
+  virtual KernelD exportKernelD_impl() const override;
+  virtual DerivativeProbe exportDerivativeProbe_impl() const override;
 
-  __noreturn virtual double singleLayer_impl(const Element & /* e */,
-                                             double /* factor */) const __override;
-  __noreturn virtual double doubleLayer_impl(const Element & /* e */,
-                                             double /* factor */) const __override;
+  [[noreturn]] virtual double singleLayer_impl(const Element & /* e */,
+                                               double /* factor */) const override;
+  [[noreturn]] virtual double doubleLayer_impl(const Element & /* e */,
+                                               double /* factor */) const override;
 
-  virtual std::ostream & printObject(std::ostream & os) __override;
+  virtual std::ostream & printObject(std::ostream & os) override;
 };
 
 template <typename DerivativeTraits>

@@ -109,8 +109,8 @@ public:
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
-  pcm::tuple<double, double> operator()(const double r) const {
-    return pcm::make_tuple(value(r), derivative(r));
+  std::tuple<double, double> operator()(const double r) const {
+    return std::make_tuple(value(r), derivative(r));
   }
   double upperLimit() const { return domain_.second; }
   double relativeWidth() const {

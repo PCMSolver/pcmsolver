@@ -61,7 +61,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]") {
     WHEN("The function is a constant") {
       THEN("the integrals are the finite element areas") {
         for (int i = 0; i < cavity.size(); ++i) {
-          results(i) = integrateS<32, 16>(pcm::bind(constant, pcm::_1, pcm::_2),
+          results(i) = integrateS<32, 16>(std::bind(constant, std::placeholders::_1, std::placeholders::_2),
                                           cavity.elements(i));
           double diff = results(i) - cavity.elementArea(i);
           if (std::abs(diff) > 1.0e-12) {
@@ -85,7 +85,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]") {
            "radius") {
         for (int i = 0; i < cavity.size(); ++i) {
           results(i) = integrateS<32, 16>(
-              pcm::bind(one_over_r, 1.55, pcm::_1, pcm::_2), cavity.elements(i));
+              std::bind(one_over_r, 1.55, std::placeholders::_1, std::placeholders::_2), cavity.elements(i));
           double diff = results(i) - (cavity.elementArea(i) / radius);
           if (std::abs(diff) > 1.0e-11) {
             WARN("Test versus area divided by radius for single sphere");
@@ -116,7 +116,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]") {
     WHEN("The function is a constant") {
       THEN("the integrals are the finite element areas") {
         for (int i = 0; i < cavity.size(); ++i) {
-          results(i) = integrateS<64, 16>(pcm::bind(constant, pcm::_1, pcm::_2),
+          results(i) = integrateS<64, 16>(std::bind(constant, std::placeholders::_1, std::placeholders::_2),
                                           cavity.elements(i));
           double diff = results(i) - cavity.elementArea(i);
           if (std::abs(diff) > 1.0e-11) {
@@ -146,7 +146,7 @@ SCENARIO("Numerical quadrature of functions", "[numerical_quadrature]") {
            "radius") {
         for (int i = 0; i < cavity.size(); ++i) {
           results(i) = integrateS<64, 16>(
-              pcm::bind(one_over_r, 1.20, pcm::_1, pcm::_2), cavity.elements(i));
+              std::bind(one_over_r, 1.20, std::placeholders::_1, std::placeholders::_2), cavity.elements(i));
           double diff =
               results(i) - (cavity.elementArea(i) / molecule.spheres(0).radius);
           if (std::abs(diff) > 1.0e-11) {

@@ -6,7 +6,6 @@ target_sources(pcm-objlib
     ${CMAKE_CURRENT_SOURCE_DIR}/QuadratureRules.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Solvent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Sphere.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Symmetry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cnpy.cpp
   )
 

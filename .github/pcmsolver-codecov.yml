@@ -8,3 +8,4 @@ dependencies:
   - eigen
   - fortran-compiler
   - lcov
+  - ninja

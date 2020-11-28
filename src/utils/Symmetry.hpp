@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <algorithm>
+#include <array>
 #include <cmath>
 
 #include "Config.hpp"
@@ -42,41 +42,23 @@ private:
   /*!
    * Number of generators
    */
-  int nrGenerators_;
+  int nrGenerators_{0};
   /*!
    * Generators
    */
-  int generators_[3];
+  std::array<int, 3> generators_{0};
   /*!
    * Number of irreps
    */
-  int nrIrrep_;
+  int nrIrrep_{1};
 
 public:
-  /*! \brief Default constructor sets up C1 point group
-   */
-  Symmetry() : nrGenerators_(0) {
-    std::fill(generators_, generators_ + 3, 0);
-    nrIrrep_ = int(std::pow(2.0, nrGenerators_));
-  }
-  Symmetry(int nr_gen, int gen[3]) : nrGenerators_(nr_gen) {
-    // Transfer the passed generators array into generators_
-    std::copy(gen, gen + nrGenerators_, generators_);
-    // We can now initialize the number of irreps
-    nrIrrep_ = int(std::pow(2.0, nrGenerators_));
-  }
-  Symmetry(const Symmetry & other)
-      : nrGenerators_(other.nrGenerators_), nrIrrep_(other.nrIrrep_) {
-    std::copy(other.generators_, other.generators_ + nrGenerators_, generators_);
-  }
-  ~Symmetry() {}
+  Symmetry() = default;
+  Symmetry(int nr_gen, const std::array<int, 3> gens)
+      : nrGenerators_(nr_gen), generators_(gens) {}
+  Symmetry(int nr_gen, int g1, int g2, int g3)
+      : nrGenerators_(nr_gen), generators_({g1, g2, g3}) {}
   int nrGenerators() const { return nrGenerators_; }
   int generators(int i) const { return generators_[i]; }
-  int nrIrrep() const { return nrIrrep_; }
+  int nrIrrep() const { return std::pow(2, nrGenerators_); }
 };
-
-/*! Builds Symmetry object.
- *
- * \note C1 is built as Symmetry C1 = buildGroup(0, 0, 0, 0);
- */
-Symmetry buildGroup(int _nr_gen, int _gen1, int _gen2, int _gen3);

@@ -88,7 +88,7 @@ public:
    */
   virtual double derivativeProbe(const Eigen::Vector3d & normal_p2,
                                  const Eigen::Vector3d & p1,
-                                 const Eigen::Vector3d & p2) const __final {
+                                 const Eigen::Vector3d & p2) const final {
     DerivativeTraits t1[3], t2[3];
     t1[0] = p1(0);
     t1[1] = p1(1);
@@ -133,8 +133,8 @@ public:
   /*! @}*/
 
   /*! Whether the Green's function describes a uniform environment */
-  virtual bool uniform() const __final __override {
-    return pcm::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
+  virtual bool uniform() const final override {
+    return std::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
   }
 
 protected:
@@ -152,10 +152,10 @@ protected:
    *  \param[in] p2 second point
    *  \note Relies on the implementation of operator() in the subclasses and
    *  that is all subclasses need to implement.
-   *  Thus this method is marked __final.
+   *  Thus this method is marked final.
    */
   virtual double kernelS_impl(const Eigen::Vector3d & p1,
-                              const Eigen::Vector3d & p2) const __final __override {
+                              const Eigen::Vector3d & p2) const final override {
     DerivativeTraits sp[3], pp[3];
     sp[0] = p1(0);
     sp[1] = p1(1);
@@ -166,7 +166,7 @@ protected:
     return this->operator()(sp, pp)[0];
   }
 
-  virtual std::ostream & printObject(std::ostream & os) __override {
+  virtual std::ostream & printObject(std::ostream & os) override {
     os << "Green's Function" << std::endl;
     return os;
   }
@@ -195,10 +195,10 @@ public:
                           const Eigen::Vector3d & p1,
                           const Eigen::Vector3d & p2) const {
     return threePointStencil(
-        pcm::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
+        std::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
                   this,
-                  pcm::_1,
-                  pcm::_2),
+                  std::placeholders::_1,
+                  std::placeholders::_2),
         p1,
         p2,
         normal_p1,
@@ -218,10 +218,10 @@ public:
                          const Eigen::Vector3d & p1,
                          const Eigen::Vector3d & p2) const {
     return threePointStencil(
-        pcm::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
+        std::bind(&GreensFunction<Stencil, ProfilePolicy>::kernelS,
                   this,
-                  pcm::_1,
-                  pcm::_2),
+                  std::placeholders::_1,
+                  std::placeholders::_2),
         p2,
         p1,
         normal_p2,
@@ -262,8 +262,8 @@ public:
    *  \note This uses is_same to check whether the type of ProfilePolicy is uniform
    * not.
    */
-  virtual bool uniform() const __final __override {
-    return pcm::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
+  virtual bool uniform() const final override {
+    return std::is_same<ProfilePolicy, dielectric_profile::Uniform>::value;
   }
 
 protected:
@@ -280,14 +280,14 @@ protected:
    *  \param[in] p2 second point
    *  \note Relies on the implementation of operator() in the subclasses and that is
    * all subclasses
-   *  need to implement. Thus this method is marked __final.
+   *  need to implement. Thus this method is marked final.
    */
   virtual double kernelS_impl(const Eigen::Vector3d & p1,
-                              const Eigen::Vector3d & p2) const __final __override {
+                              const Eigen::Vector3d & p2) const final override {
     return this->operator()(const_cast<Stencil *>(p1.data()),
                             const_cast<Stencil *>(p2.data()));
   }
-  virtual std::ostream & printObject(std::ostream & os) __override {
+  virtual std::ostream & printObject(std::ostream & os) override {
     os << "Green's Function" << std::endl;
     return os;
   }

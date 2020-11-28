@@ -39,7 +39,7 @@
  *  Taken from StackOverflow http://stackoverflow.com/a/29825204/2528668
  */
 
-class SplineFunction __final {
+class SplineFunction final {
 private:
   typedef Eigen::Spline<double, 1> CubicSpline;
 
@@ -75,22 +75,14 @@ private:
    *  as scaled to fit in the [0, 1] interval.
    */
   double fitScalar(double x) const { return (x - xMin_) / (xMax_ - xMin_); }
-/*! \brief Scale a vector to [0, 1] interval
- *  \param[in] x_vec a vector
- *
- *  Given column vector, returns a *row* vector with the values scaled
- *  to fit a preset interval. The interval is embedded in the callable object.
- */
-#ifdef HAS_CXX11
+  /*! \brief Scale a vector to [0, 1] interval
+   *  \param[in] x_vec a vector
+   *
+   *  Given column vector, returns a *row* vector with the values scaled
+   *  to fit a preset interval. The interval is embedded in the callable object.
+   */
   Eigen::RowVectorXd fitVector(const Eigen::VectorXd & x_vec) const {
     return x_vec.unaryExpr([this](double x) -> double { return fitScalar(x); })
         .transpose();
   }
-#else  /* HAS_CXX11 */
-  Eigen::RowVectorXd fitVector(const Eigen::VectorXd & x_vec) const {
-    pcm::function<double(double)> fit =
-        pcm::bind(&SplineFunction::fitScalar, this, pcm::_1);
-    return x_vec.unaryExpr(fit).transpose();
-  }
-#endif /* HAS_CXX11 */
 };

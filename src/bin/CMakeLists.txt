@@ -8,14 +8,6 @@ target_link_libraries(run_pcm PCMSolver)
 if(ENABLE_GPERFTOOLS)
   target_link_libraries(run_pcm ${GPERFTOOLS_LIBRARIES})
 endif()
-target_compile_definitions(run_pcm
-  PRIVATE
-    "$<$<BOOL:${HAS_CXX11}>:HAS_CXX11>"
-  )
-target_compile_options(run_pcm
-  PRIVATE
-    "$<$<CONFIG:DEBUG>:${EXDIAG_CXX_FLAGS}>"
-  )
 set_target_properties(run_pcm
   PROPERTIES
     MACOSX_RPATH ON

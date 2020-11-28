@@ -141,8 +141,6 @@ be useful when not programming the library:
 
 Some options can only be tweaked `via` ``--cmake-options`` to the setup script:
 
-* ``ENABLE_CXX11_SUPPORT`` Enable C++11 support. This is enabled by default, as
-  C++03 backwards compatibility is deprecated for this project.
 * ``ENABLE_DOCS`` Enable build of documentation. This requires a number of additional dependencies.
   If any of these are not met, documentation is not built. Enabled by default.
 * ``ENABLE_LOGGER`` Enable compilation of logger sources. Disabled by default.

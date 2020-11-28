@@ -43,14 +43,14 @@ namespace cavity {
  *  \author Roberto Di Remigio
  *  \date 2014
  */
-class RestartCavity __final : public ICavity {
+class RestartCavity final : public ICavity {
 public:
   RestartCavity(const std::string & _fname) : file(_fname) { makeCavity(); }
-  virtual void makeCavity() __override { loadCavity(file); }
+  virtual void makeCavity() override { loadCavity(file); }
 
 private:
   std::string file;
-  virtual std::ostream & printCavity(std::ostream & os) __override;
+  virtual std::ostream & printCavity(std::ostream & os) override;
 };
 
 ICavity * createRestartCavity(const CavityData & data);

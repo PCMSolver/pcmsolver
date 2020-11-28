@@ -61,7 +61,7 @@ namespace green {
  *  at a pair of points, a translation of the sampling points is performed first.
  */
 template <typename ProfilePolicy = dielectric_profile::OneLayerLog>
-class SphericalDiffuse __final : public GreensFunction<Stencil, ProfilePolicy> {
+class SphericalDiffuse final : public GreensFunction<Stencil, ProfilePolicy> {
 public:
   /*! Constructor for a one-layer interface
    * \param[in] e1 left-side dielectric constant
@@ -84,7 +84,7 @@ public:
     initSphericalDiffuse();
   }
 
-  virtual double permittivity() const __override __final {
+  virtual double permittivity() const override final {
     PCMSOLVER_ERROR("permittivity() only implemented for uniform dielectrics");
   }
 
@@ -159,7 +159,7 @@ public:
                                   const Eigen::Vector3d & p2) const;
 
   /*! Handle to the dielectric profile evaluation */
-  pcm::tuple<double, double> epsilon(const Eigen::Vector3d & point) const;
+  std::tuple<double, double> epsilon(const Eigen::Vector3d & point) const;
   void toFile(const std::string & prefix = "");
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 private:
@@ -169,7 +169,7 @@ private:
    *
    *  \note This takes care of the origin shift
    */
-  virtual Stencil operator()(Stencil * sp, Stencil * pp) const __override;
+  virtual Stencil operator()(Stencil * sp, Stencil * pp) const override;
 
   /*! Returns value of the kernel of the \f$\mathcal{D}\f$ integral operator for the
    * pair of points p1, p2:
@@ -185,19 +185,19 @@ private:
    */
   virtual double kernelD_impl(const Eigen::Vector3d & direction,
                               const Eigen::Vector3d & p1,
-                              const Eigen::Vector3d & p2) const __override;
+                              const Eigen::Vector3d & p2) const override;
 
-  virtual KernelS exportKernelS_impl() const __override;
+  virtual KernelS exportKernelS_impl() const override;
 
-  virtual KernelD exportKernelD_impl() const __override;
+  virtual KernelD exportKernelD_impl() const override;
 
-  virtual DerivativeProbe exportDerivativeProbe_impl() const __override;
+  virtual DerivativeProbe exportDerivativeProbe_impl() const override;
 
-  virtual double singleLayer_impl(const Element & e, double factor) const __override;
+  virtual double singleLayer_impl(const Element & e, double factor) const override;
 
-  virtual double doubleLayer_impl(const Element & e, double factor) const __override;
+  virtual double doubleLayer_impl(const Element & e, double factor) const override;
 
-  virtual std::ostream & printObject(std::ostream & os) __override;
+  virtual std::ostream & printObject(std::ostream & os) override;
   /*! This calculates all the components needed to evaluate the Green's function */
   void initSphericalDiffuse();
 

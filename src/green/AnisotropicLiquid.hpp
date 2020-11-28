@@ -75,9 +75,9 @@ private:
   virtual DerivativeProbe exportDerivativeProbe_impl() const override;
 
   [[noreturn]] virtual double singleLayer_impl(const Element & /* e */,
-                                             double /* factor */) const override;
+                                               double /* factor */) const override;
   [[noreturn]] virtual double doubleLayer_impl(const Element & /* e */,
-                                             double /* factor */) const override;
+                                               double /* factor */) const override;
 
   virtual std::ostream & printObject(std::ostream & os) override;
 };

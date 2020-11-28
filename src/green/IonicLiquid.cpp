@@ -62,13 +62,19 @@ double IonicLiquid<DerivativeTraits>::kernelD_impl(
 
 template <typename DerivativeTraits>
 KernelS IonicLiquid<DerivativeTraits>::exportKernelS_impl() const {
-  return std::bind(&IonicLiquid<DerivativeTraits>::kernelS, *this, std::placeholders::_1, std::placeholders::_2);
+  return std::bind(&IonicLiquid<DerivativeTraits>::kernelS,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2);
 }
 
 template <typename DerivativeTraits>
 KernelD IonicLiquid<DerivativeTraits>::exportKernelD_impl() const {
-  return std::bind(
-      &IonicLiquid<DerivativeTraits>::kernelD, *this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+  return std::bind(&IonicLiquid<DerivativeTraits>::kernelD,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>

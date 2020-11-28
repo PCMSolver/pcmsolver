@@ -113,8 +113,7 @@ private:
   virtual void buildSystemMatrix_impl(const ICavity & cavity,
                                       const IGreensFunction & gf_i,
                                       const IGreensFunction & gf_o,
-                                      const IBoundaryIntegralOperator & op)
-      override;
+                                      const IBoundaryIntegralOperator & op) override;
   virtual Eigen::VectorXd computeCharge_impl(const Eigen::VectorXd & potential,
                                              int irrep = 0) const override;
   virtual std::ostream & printSolver(std::ostream & os) override;

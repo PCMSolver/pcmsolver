@@ -5,6 +5,7 @@
 
 - Use GitHub Actions instead of Travis for continuous integration.
 - Remove integration with Danger in CI.
+- A C++11-compliant compilers is **required** to compile the library.
 
 ## [Version 1.2.3] - 2019-02-14
 
@@ -419,7 +420,7 @@
   -Wunsafe-loop-optimizations` are always set when using the GNU C++ compiler
   in a debug configuration.
 - The C++11 compatibility CMake macros now check for the availability of the
-  `noreturn` attribute. A workaround macro, accessible _via_ `__noreturn`, has
+  `noreturn` attribute. A workaround macro, accessible _via_ ``, has
   been added to the `Cxx11Workarounds.hpp` header file.
 - **BREAKING CHANGE** The ouput flushing function must be passed explicitly as
   a function pointer to the `pcmsolver_new` function during library

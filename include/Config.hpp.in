@@ -26,12 +26,6 @@
 #cmakedefine HAVE_OPENMP
 
 #ifdef __GNUC__
-#define attribute(x) __attribute__((x))
-#else
-#define attribute(x)
-#endif
-
-#ifdef __GNUC__
 #define UNUSED(x) UNUSED_##x __attribute__((__unused__))
 #else
 #define UNUSED(x) UNUSED_##x
@@ -49,7 +43,6 @@
 typedef PCMSOLVER_DEFAULT_INDEX_TYPE PCMSolverIndex;
 #endif
 
-#include "Cxx11Workarounds.hpp"
 #include "ErrorHandling.hpp"
 #include "LoggerInterface.hpp"
 #include "PhysicalConstants.hpp"

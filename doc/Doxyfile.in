@@ -157,12 +157,7 @@ EXCLUDE_SYMBOLS        = EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
                          FAIL \
                          CAPTURE \
                          TEST_CASE \
-                         SECTION \
-                         __final \
-                         __override \
-                         __noexcept \
-                         __noreturn \
-                         __nullptr
+                         SECTION
 EXAMPLE_PATH           = @project_root_dir@/doc/snippets
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
@@ -320,11 +315,7 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = __attribute(x)__= \
-                        __final= \
-                        __override= \
-                        __noexcept= \
-                        __nullptr=
+PREDEFINED             = __attribute(x)__=
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

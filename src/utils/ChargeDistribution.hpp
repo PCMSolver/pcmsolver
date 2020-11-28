@@ -58,13 +58,13 @@ struct ChargeDistribution {
  *  \brief functor handle to the calculation of the value of a Greens's function in a
  * point
  */
-typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
     GFValue;
 
 /*! \typedef GFDerivative
  *  \brief functor handle to the derivative of a Green's function in a point
  */
-typedef pcm::function<double(const Eigen::Vector3d &,
+typedef std::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
                              const Eigen::Vector3d &)>
     GFDerivative;

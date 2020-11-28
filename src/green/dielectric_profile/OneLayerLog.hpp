@@ -59,7 +59,7 @@ private:
    */
   double value(double point) const {
     double epsLog = std::log(epsilon2_ / epsilon1_);
-    double val = (1.0 + pcm::erf((point - center_) / width_)) / 2.0;
+    double val = (1.0 + std::erf((point - center_) / width_)) / 2.0;
     double retval = epsilon1_ * std::exp(epsLog * val); // epsilon(r)
     return retval;
   }
@@ -94,8 +94,8 @@ public:
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
-  pcm::tuple<double, double> operator()(const double r) const {
-    return pcm::make_tuple(value(r), derivative(r));
+  std::tuple<double, double> operator()(const double r) const {
+    return std::make_tuple(value(r), derivative(r));
   }
   double upperLimit() const { return domain_.second; }
   double relativeWidth() const {

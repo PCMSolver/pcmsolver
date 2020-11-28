@@ -89,10 +89,7 @@ public:
    *  Initialize a dummy molecule, e.g. as placeholder, see ICavity.cpp loadCavity
    * method
    */
-  Molecule() {
-    rotor_ = rtAsymmetric;
-    pointGroup_ = buildGroup(0, 0, 0, 0);
-  }
+  Molecule() : rotor_(rtAsymmetric) {}
   /*! \brief Constructor from full molecular data
    *  \param[in] nat number of atoms
    *  \param[in] chg vector of atomic charges
@@ -130,7 +127,7 @@ public:
            const std::vector<Atom> & at,
            const std::vector<Sphere> & sph,
            int nr_gen,
-           int gen[3]);
+           std::array<int, 3> gens);
   /*! \brief Constructor from full molecular data and point group
    *  \param[in] nat number of atoms
    *  \param[in] chg vector of atomic charges

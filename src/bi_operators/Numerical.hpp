@@ -52,20 +52,20 @@ namespace bi_operators {
  *  Calculates the diagonal elements of S and D by collocation, using numerical
  *integration.
  */
-class Numerical __final : public IBoundaryIntegralOperator {
+class Numerical final : public IBoundaryIntegralOperator {
 private:
   /*! Computes the matrix representation of the single layer operator
    *  \param[in] elems list of finite elements of the discretized cavity
    *  \param[in] gf  a Green's function
    */
   virtual Eigen::MatrixXd computeS_impl(const std::vector<cavity::Element> & elems,
-                                        const IGreensFunction & gf) const __override;
+                                        const IGreensFunction & gf) const override;
   /*! Computes the matrix representation of the double layer operator
    *  \param[in] elems list of finite elements of the discretized cavity
    *  \param[in] gf  a Green's function
    */
   virtual Eigen::MatrixXd computeD_impl(const std::vector<cavity::Element> & elems,
-                                        const IGreensFunction & gf) const __override;
+                                        const IGreensFunction & gf) const override;
 };
 
 IBoundaryIntegralOperator * createNumerical(const BIOperatorData & /* data */);
@@ -73,13 +73,13 @@ IBoundaryIntegralOperator * createNumerical(const BIOperatorData & /* data */);
 /*! \typedef KernelS
  *  \brief functor handle to the kernelS method in IGreensFunction
  */
-typedef pcm::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
+typedef std::function<double(const Eigen::Vector3d &, const Eigen::Vector3d &)>
     KernelS;
 
 /*! \typedef KernelD
  *  \brief functor handle to the kernelD method in IGreensFunction
  */
-typedef pcm::function<double(const Eigen::Vector3d &,
+typedef std::function<double(const Eigen::Vector3d &,
                              const Eigen::Vector3d &,
                              const Eigen::Vector3d &)>
     KernelD;

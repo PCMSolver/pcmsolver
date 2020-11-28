@@ -69,7 +69,7 @@ private:
     } else {
       double epsPlus = (epsilon1_ + epsilon2_) / 2.0;
       double epsMinus = (epsilon2_ - epsilon1_) / 2.0;
-      double val = pcm::erf((point - center_) / width_);
+      double val = std::erf((point - center_) / width_);
       retval = epsPlus + epsMinus * val;
     }
     return retval;
@@ -111,8 +111,8 @@ public:
   /*! Returns a tuple holding the permittivity and its derivative
    *  \param[in]   r evaluation point
    */
-  pcm::tuple<double, double> operator()(const double r) const {
-    return pcm::make_tuple(value(r), derivative(r));
+  std::tuple<double, double> operator()(const double r) const {
+    return std::make_tuple(value(r), derivative(r));
   }
   double upperLimit() const { return domain_.second; }
   double relativeWidth() const {

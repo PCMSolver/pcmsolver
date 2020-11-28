@@ -46,7 +46,7 @@ namespace green {
  */
 template <typename DerivativeTraits>
 double derivativeProbe(
-    const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
+    const std::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
         functor,
     const Eigen::Vector3d & normal_p2,
     const Eigen::Vector3d & p1,
@@ -80,7 +80,7 @@ double derivativeProbe(
  */
 template <typename DerivativeTraits>
 double derivativeSource(
-    const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
+    const std::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
         functor,
     const Eigen::Vector3d & normal_p1,
     const Eigen::Vector3d & p1,
@@ -115,7 +115,7 @@ double derivativeProbe(const DifferentiableFunction & functor,
                        const Eigen::Vector3d & normal_p2,
                        const Eigen::Vector3d & p1,
                        const Eigen::Vector3d & p2) {
-  return threePointStencil(pcm::bind(functor, pcm::_1, _2), p2, p1, normal_p2);
+  return threePointStencil(std::bind(functor, std::placeholders::_1, _2), p2, p1, normal_p2);
 }
 
 /*! Returns value of the directional derivative of the function passed for the pair
@@ -134,7 +134,7 @@ double derivativeSource(const DifferentiableFunction & functor,
                         const Eigen::Vector3d & normal_p1,
                         const Eigen::Vector3d & p1,
                         const Eigen::Vector3d & p2) {
-  return threePointStencil(pcm::bind(functor, _1, _2), p1, p2, normal_p1);
+  return threePointStencil(std::bind(functor, _1, _2), p1, p2, normal_p1);
 }
 
 /*! Returns full gradient of the function passed for the pair of points p1, p2:
@@ -148,7 +148,7 @@ double derivativeSource(const DifferentiableFunction & functor,
  */
 template <typename DerivativeTraits>
 Eigen::Vector3d gradientSource(
-    const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
+    const std::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
         functor,
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) {
@@ -170,7 +170,7 @@ Eigen::Vector3d gradientSource(
  */
 template <typename DerivativeTraits>
 Eigen::Vector3d gradientProbe(
-    const pcm::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
+    const std::function<DerivativeTraits(DerivativeTraits *, DerivativeTraits *)> &
         functor,
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) {

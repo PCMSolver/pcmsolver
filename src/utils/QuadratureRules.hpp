@@ -30,7 +30,7 @@
 namespace pcm {
 namespace utils {
 namespace detail {
-typedef pcm::tuple<std::vector<double>, std::vector<double> > QuadratureRule;
+typedef std::tuple<std::vector<double>, std::vector<double> > QuadratureRule;
 
 QuadratureRule initializeRule(int nNodes);
 
@@ -45,7 +45,7 @@ template <int nNodes> class GaussLegendreRule {
 public:
   GaussLegendreRule()
       : nPoints_(nNodes), abscissa_((nPoints_ / 2), 0), weight_((nPoints_ / 2), 0) {
-    pcm::tie(abscissa_, weight_) = detail::initializeRule(nPoints_);
+    std::tie(abscissa_, weight_) = detail::initializeRule(nPoints_);
   }
   int nPoints() const { return nPoints_; }
   double abscissa(int i) const { return abscissa_[i]; }

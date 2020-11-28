@@ -32,10 +32,6 @@
 
 #include <Eigen/Core>
 
-#ifndef HAS_CXX11
-#include <boost/foreach.hpp>
-#endif
-
 #include "bi_operators/BIOperatorData.hpp"
 #include "bi_operators/BoundaryIntegralOperator.hpp"
 #include "cavity/Cavity.hpp"
@@ -127,9 +123,9 @@ void Meddle::CTORBody() {
 Meddle::Meddle(const Input & input, const HostWriter & write)
     : hostWriter_(write),
       input_(input),
-      cavity_(__nullptr),
-      K_0_(__nullptr),
-      K_d_(__nullptr),
+      cavity_(nullptr),
+      K_0_(nullptr),
+      K_d_(nullptr),
       hasDynamic_(false) {
   input_.initMolecule();
   CTORBody();
@@ -138,9 +134,9 @@ Meddle::Meddle(const Input & input, const HostWriter & write)
 Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
     : hostWriter_(write),
       input_(Input(inputFileName)),
-      cavity_(__nullptr),
-      K_0_(__nullptr),
-      K_d_(__nullptr),
+      cavity_(nullptr),
+      K_0_(nullptr),
+      K_d_(nullptr),
       hasDynamic_(false) {
   input_.initMolecule();
   CTORBody();
@@ -154,9 +150,9 @@ Meddle::Meddle(int nr_nuclei,
                const std::string & inputFileName)
     : hostWriter_(write),
       input_(Input(inputFileName)),
-      cavity_(__nullptr),
-      K_0_(__nullptr),
-      K_d_(__nullptr),
+      cavity_(nullptr),
+      K_0_(nullptr),
+      K_d_(nullptr),
       hasDynamic_(false) {
   TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
@@ -173,9 +169,9 @@ Meddle::Meddle(int nr_nuclei,
                const HostWriter & write)
     : hostWriter_(write),
       input_(Input(host_input)),
-      cavity_(__nullptr),
-      K_0_(__nullptr),
-      K_d_(__nullptr),
+      cavity_(nullptr),
+      K_0_(nullptr),
+      K_d_(nullptr),
       hasDynamic_(false) {
   TIMER_ON("Meddle::initInput");
   initInput(nr_nuclei, charges, coordinates, symmetry_info);
@@ -244,12 +240,7 @@ double pcmsolver_compute_polarization_energy(pcmsolver_context_t * context,
 }
 double pcm::Meddle::computePolarizationEnergy(const std::string & mep_name,
                                               const std::string & asc_name) const {
-#ifdef HAS_CXX11
   double energy = functions_.at(mep_name).dot(functions_.at(asc_name));
-#else  /* HAS_CXX11 */
-  double energy =
-      (functions_.find(mep_name)->second).dot(functions_.find(asc_name)->second);
-#endif /* HAS_CXX11 */
   return (energy / 2.0);
 }
 
@@ -261,12 +252,7 @@ double pcmsolver_get_asc_dipole(pcmsolver_context_t * context,
 }
 double pcm::Meddle::getASCDipole(const std::string & asc_name,
                                  double dipole[]) const {
-#ifdef HAS_CXX11
   Eigen::Vector3d asc_dipole = cavity_->elementCenter() * functions_.at(asc_name);
-#else  /* HAS_CXX11 */
-  Eigen::Vector3d asc_dipole =
-      cavity_->elementCenter() * functions_.find(asc_name)->second;
-#endif /* HAS_CXX11 */
   // Bind to host-allocated array
   Eigen::Map<Eigen::Vector3d>(dipole, 3, 1) = asc_dipole;
   return asc_dipole.norm();
@@ -378,11 +364,7 @@ void pcm::Meddle::printSurfaceFunction(const std::string & name) const {
   if (functions_.count(name) == 1) { // Key in map already
     std::ostringstream print_sf;
     Eigen::IOFormat fmt(Eigen::FullPrecision);
-#ifdef HAS_CXX11
     print_sf << functions_.at(name).format(fmt) << std::endl;
-#else  /* HAS_CXX11 */
-    print_sf << (functions_.find(name)->second).format(fmt) << std::endl;
-#endif /* HAS_CXX11 */
     hostWriter_(print_sf);
   } else {
     PCMSOLVER_ERROR("You are trying to print a nonexistent SurfaceFunction!");
@@ -394,11 +376,7 @@ void pcmsolver_save_surface_functions(pcmsolver_context_t * context) {
 }
 void pcm::Meddle::saveSurfaceFunctions() const {
   hostWriter_("\nDumping surface functions to .npy files");
-#ifdef HAS_CXX11
   for (auto sf_pair : functions_) {
-#else  /* HAS_CXX11 */
-  BOOST_FOREACH (SurfaceFunctionPair sf_pair, functions_) {
-#endif /* HAS_CXX11 */
     cnpy::custom::npy_save(sf_pair.first + ".npy", sf_pair.second);
   }
 }
@@ -464,7 +442,7 @@ void Meddle::initInput(int nr_nuclei,
   Eigen::Matrix3Xd centers = Eigen::Map<Eigen::Matrix3Xd>(coordinates, 3, nr_nuclei);
 
   if (input_.mode() != "EXPLICIT") {
-    Symmetry pg = buildGroup(
+    auto pg = Symmetry(
         symmetry_info[0], symmetry_info[1], symmetry_info[2], symmetry_info[3]);
     input_.molecule(detail::initMolecule(input_, pg, nr_nuclei, chg, centers));
   }

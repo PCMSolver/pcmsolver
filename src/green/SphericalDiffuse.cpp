@@ -79,10 +79,10 @@ double SphericalDiffuse<ProfilePolicy>::coefficientCoulombDerivative(
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      pcm::bind(&SphericalDiffuse<ProfilePolicy>::coefficientCoulomb,
+      std::bind(&SphericalDiffuse<ProfilePolicy>::coefficientCoulomb,
                 this,
-                pcm::_1,
-                pcm::_2),
+                std::placeholders::_1,
+                std::placeholders::_2),
       p2,
       p1,
       direction,
@@ -95,7 +95,7 @@ double SphericalDiffuse<ProfilePolicy>::CoulombDerivative(
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      pcm::bind(&SphericalDiffuse<ProfilePolicy>::Coulomb, this, pcm::_1, pcm::_2),
+      std::bind(&SphericalDiffuse<ProfilePolicy>::Coulomb, this, std::placeholders::_1, std::placeholders::_2),
       p2,
       p1,
       direction,
@@ -108,8 +108,8 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialDerivative(
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      pcm::bind(
-          &SphericalDiffuse<ProfilePolicy>::imagePotential, this, pcm::_1, pcm::_2),
+      std::bind(
+          &SphericalDiffuse<ProfilePolicy>::imagePotential, this, std::placeholders::_1, std::placeholders::_2),
       p2,
       p1,
       direction,
@@ -117,7 +117,7 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialDerivative(
 }
 
 template <typename ProfilePolicy>
-pcm::tuple<double, double> SphericalDiffuse<ProfilePolicy>::epsilon(
+std::tuple<double, double> SphericalDiffuse<ProfilePolicy>::epsilon(
     const Eigen::Vector3d & point) const {
   return this->profile_((point + this->origin_).norm());
 }
@@ -129,8 +129,8 @@ void SphericalDiffuse<ProfilePolicy>::toFile(const std::string & prefix) {
   writeToFile(zetaC_, tmp + "zetaC.dat");
   writeToFile(omegaC_, tmp + "omegaC.dat");
   for (int L = 1; L <= maxLGreen_; ++L) {
-    writeToFile(zeta_[L], tmp + "zeta_" + pcm::to_string(L) + ".dat");
-    writeToFile(omega_[L], tmp + "omega_" + pcm::to_string(L) + ".dat");
+    writeToFile(zeta_[L], tmp + "zeta_" + std::to_string(L) + ".dat");
+    writeToFile(omega_[L], tmp + "omega_" + std::to_string(L) + ".dat");
   }
 }
 
@@ -160,31 +160,31 @@ double SphericalDiffuse<ProfilePolicy>::kernelD_impl(
     const Eigen::Vector3d & p2) const {
   double eps_r2 = 0.0;
   // Shift p2 by origin_
-  pcm::tie(eps_r2, pcm::ignore) = this->epsilon(p2);
+  std::tie(eps_r2, std::ignore) = this->epsilon(p2);
 
   return (eps_r2 * this->derivativeProbe(direction, p1, p2));
 }
 
 template <typename ProfilePolicy>
 KernelS SphericalDiffuse<ProfilePolicy>::exportKernelS_impl() const {
-  return pcm::bind(
-      &SphericalDiffuse<ProfilePolicy>::kernelS, *this, pcm::_1, pcm::_2);
+  return std::bind(
+      &SphericalDiffuse<ProfilePolicy>::kernelS, *this, std::placeholders::_1, std::placeholders::_2);
 }
 
 template <typename ProfilePolicy>
 KernelD SphericalDiffuse<ProfilePolicy>::exportKernelD_impl() const {
-  return pcm::bind(
-      &SphericalDiffuse<ProfilePolicy>::kernelD, *this, pcm::_1, pcm::_2, pcm::_3);
+  return std::bind(
+      &SphericalDiffuse<ProfilePolicy>::kernelD, *this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>
 DerivativeProbe SphericalDiffuse<DerivativeTraits>::exportDerivativeProbe_impl()
     const {
-  return pcm::bind(&SphericalDiffuse<DerivativeTraits>::derivativeProbe,
+  return std::bind(&SphericalDiffuse<DerivativeTraits>::derivativeProbe,
                    *this,
-                   pcm::_1,
-                   pcm::_2,
-                   pcm::_3);
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename ProfilePolicy>
@@ -218,7 +218,7 @@ double SphericalDiffuse<ProfilePolicy>::doubleLayer_impl(const Element & e,
       this->imagePotentialDerivative(e.normal(), e.center(), e.center());
 
   double eps_r2 = 0.0;
-  pcm::tie(eps_r2, pcm::ignore) = this->epsilon(e.center());
+  std::tie(eps_r2, std::ignore) = this->epsilon(e.center());
 
   return (eps_r2 * (Dii_I / coulomb_coeff - Sii_I * coeff_grad + image_grad));
 }
@@ -252,7 +252,7 @@ void SphericalDiffuse<ProfilePolicy>::initSphericalDiffuse() {
 
   IntegratorParameters params_(y_0_, y_infinity_, observer_step_);
   ProfileEvaluator eval_ =
-      pcm::bind(&ProfilePolicy::operator(), this->profile_, pcm::_1);
+      std::bind(&ProfilePolicy::operator(), this->profile_, std::placeholders::_1);
 
   zetaC_ = RadialFunction<StateType, LnTransformedRadial, Zeta>(
       maxLC_, y_0_, y_infinity_, eval_, params_);
@@ -301,19 +301,19 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialComponent_impl(
   /* Sample zeta_[L] */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
   /* Value of zeta_[L] at point with index 1 */
-  pcm::tie(zeta1, pcm::ignore) = zeta_[L](y1);
+  std::tie(zeta1, std::ignore) = zeta_[L](y1);
   /* Value of zeta_[L] and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2) = zeta_[L](y2);
+  std::tie(zeta2, d_zeta2) = zeta_[L](y2);
 
   /* Sample omega_[L] */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omega_[L] at point with index 1 */
-  pcm::tie(omega1, pcm::ignore) = omega_[L](y1);
+  std::tie(omega1, std::ignore) = omega_[L](y1);
   /* Value of omega_[L] and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2) = omega_[L](y2);
+  std::tie(omega2, d_omega2) = omega_[L](y2);
 
   double eps_r2 = 0.0;
-  pcm::tie(eps_r2, pcm::ignore) = this->profile_(pp_shift.norm());
+  std::tie(eps_r2, std::ignore) = this->profile_(pp_shift.norm());
 
   /* Evaluation of the Wronskian and the denominator */
   double denominator = (d_zeta2 - d_omega2) * r2 * eps_r2;
@@ -350,20 +350,20 @@ double SphericalDiffuse<ProfilePolicy>::coefficient_impl(
   /* Sample zetaC_ */
   double zeta1 = 0.0, zeta2 = 0.0, d_zeta2 = 0.0;
   /* Value of zetaC_ at point with index 1 */
-  pcm::tie(zeta1, pcm::ignore) = zetaC_(y1);
+  std::tie(zeta1, std::ignore) = zetaC_(y1);
   /* Value of zetaC_ and its first derivative at point with index 2 */
-  pcm::tie(zeta2, d_zeta2) = zetaC_(y2);
+  std::tie(zeta2, d_zeta2) = zetaC_(y2);
 
   /* Sample omegaC_ */
   double omega1 = 0.0, omega2 = 0.0, d_omega2 = 0.0;
   /* Value of omegaC_ at point with index 1 */
-  pcm::tie(omega1, pcm::ignore) = omegaC_(y1);
+  std::tie(omega1, std::ignore) = omegaC_(y1);
   /* Value of omegaC_ and its first derivative at point with index 2 */
-  pcm::tie(omega2, d_omega2) = omegaC_(y2);
+  std::tie(omega2, d_omega2) = omegaC_(y2);
 
   double tmp = 0.0, coeff = 0.0;
   double eps_r2 = 0.0;
-  pcm::tie(eps_r2, pcm::ignore) = this->profile_(r2);
+  std::tie(eps_r2, std::ignore) = this->profile_(r2);
 
   /* Evaluation of the Wronskian and the denominator */
   double denominator = (d_zeta2 - d_omega2) * r2 * eps_r2;

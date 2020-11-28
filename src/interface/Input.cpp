@@ -384,22 +384,6 @@ BIOperatorData Input::integratorParams() const {
 }
 
 namespace detail {
-#ifndef HAS_CXX11
-std::string left_trim(std::string s) {
-  s.erase(s.begin(),
-          std::find_if(
-              s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-  return s;
-}
-
-std::string right_trim(std::string s) {
-  s.erase(std::find_if(
-              s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace)))
-              .base(),
-          s.end());
-  return s;
-}
-#else  /* HAS_CXX11 */
 std::string left_trim(std::string s) {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
             return !std::isspace(ch);
@@ -414,7 +398,6 @@ std::string right_trim(std::string s) {
       s.end());
   return s;
 }
-#endif /* HAS_CXX11 */
 
 std::string left_trim(const char * src) {
   std::string tmp(src);
@@ -438,8 +421,9 @@ std::string trim(const char * src) {
 }
 
 std::string uppercase(std::string s) {
-  std::transform(
-      s.begin(), s.end(), s.begin(), std::ptr_fun<int, int>(std::toupper));
+  std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) {
+    return std::toupper(c);
+  });
   return s;
 }
 

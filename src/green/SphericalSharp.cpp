@@ -100,12 +100,14 @@ double SphericalSharp<Stencil>::imagePotentialDerivative(
     const Eigen::Vector3d & direction,
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
-  return threePointStencil(
-      std::bind(&SphericalSharp<Stencil>::imagePotential, this, std::placeholders::_1, std::placeholders::_2),
-      p2,
-      p1,
-      direction,
-      this->delta_);
+  return threePointStencil(std::bind(&SphericalSharp<Stencil>::imagePotential,
+                                     this,
+                                     std::placeholders::_1,
+                                     std::placeholders::_2),
+                           p2,
+                           p1,
+                           direction,
+                           this->delta_);
 }
 
 template <typename DerivativeTraits>
@@ -138,14 +140,19 @@ double SphericalSharp<DerivativeTraits>::kernelD_impl(
 
 template <typename DerivativeTraits>
 KernelS SphericalSharp<DerivativeTraits>::exportKernelS_impl() const {
-  return std::bind(
-      &SphericalSharp<DerivativeTraits>::kernelS, *this, std::placeholders::_1, std::placeholders::_2);
+  return std::bind(&SphericalSharp<DerivativeTraits>::kernelS,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2);
 }
 
 template <typename DerivativeTraits>
 KernelD SphericalSharp<DerivativeTraits>::exportKernelD_impl() const {
-  return std::bind(
-      &SphericalSharp<DerivativeTraits>::kernelD, *this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+  return std::bind(&SphericalSharp<DerivativeTraits>::kernelD,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>

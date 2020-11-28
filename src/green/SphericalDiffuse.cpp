@@ -94,12 +94,14 @@ double SphericalDiffuse<ProfilePolicy>::CoulombDerivative(
     const Eigen::Vector3d & direction,
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
-  return threePointStencil(
-      std::bind(&SphericalDiffuse<ProfilePolicy>::Coulomb, this, std::placeholders::_1, std::placeholders::_2),
-      p2,
-      p1,
-      direction,
-      this->delta_);
+  return threePointStencil(std::bind(&SphericalDiffuse<ProfilePolicy>::Coulomb,
+                                     this,
+                                     std::placeholders::_1,
+                                     std::placeholders::_2),
+                           p2,
+                           p1,
+                           direction,
+                           this->delta_);
 }
 
 template <typename ProfilePolicy>
@@ -108,8 +110,10 @@ double SphericalDiffuse<ProfilePolicy>::imagePotentialDerivative(
     const Eigen::Vector3d & p1,
     const Eigen::Vector3d & p2) const {
   return threePointStencil(
-      std::bind(
-          &SphericalDiffuse<ProfilePolicy>::imagePotential, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&SphericalDiffuse<ProfilePolicy>::imagePotential,
+                this,
+                std::placeholders::_1,
+                std::placeholders::_2),
       p2,
       p1,
       direction,
@@ -167,14 +171,19 @@ double SphericalDiffuse<ProfilePolicy>::kernelD_impl(
 
 template <typename ProfilePolicy>
 KernelS SphericalDiffuse<ProfilePolicy>::exportKernelS_impl() const {
-  return std::bind(
-      &SphericalDiffuse<ProfilePolicy>::kernelS, *this, std::placeholders::_1, std::placeholders::_2);
+  return std::bind(&SphericalDiffuse<ProfilePolicy>::kernelS,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2);
 }
 
 template <typename ProfilePolicy>
 KernelD SphericalDiffuse<ProfilePolicy>::exportKernelD_impl() const {
-  return std::bind(
-      &SphericalDiffuse<ProfilePolicy>::kernelD, *this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+  return std::bind(&SphericalDiffuse<ProfilePolicy>::kernelD,
+                   *this,
+                   std::placeholders::_1,
+                   std::placeholders::_2,
+                   std::placeholders::_3);
 }
 
 template <typename DerivativeTraits>

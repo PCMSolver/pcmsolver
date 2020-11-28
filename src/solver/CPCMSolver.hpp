@@ -84,8 +84,7 @@ private:
   virtual void buildSystemMatrix_impl(const ICavity & cavity,
                                       const IGreensFunction & gf_i,
                                       const IGreensFunction & gf_o,
-                                      const IBoundaryIntegralOperator & op)
-      override;
+                                      const IBoundaryIntegralOperator & op) override;
   /*! \brief Returns the ASC given the MEP and the desired irreducible representation
    *  \param[in] potential the vector containing the MEP at cavity points
    *  \param[in] irrep the irreducible representation of the MEP and ASC

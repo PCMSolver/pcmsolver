@@ -1,6 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+
+- Use GitHub Actions instead of Travis for continuous integration.
+- Remove integration with Danger in CI.
 
 ## [Version 1.2.3] - 2019-02-14
 

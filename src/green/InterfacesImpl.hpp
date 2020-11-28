@@ -121,7 +121,8 @@ using detail::ProfileEvaluator;
  */
 template <typename StateVariable,
           typename ODESystem,
-          template <typename, typename> class IndependentSolution>
+          template <typename, typename>
+          class IndependentSolution>
 class RadialFunction final {
 public:
   RadialFunction() : solution_(IndependentSolution<StateVariable, ODESystem>()) {}
@@ -214,15 +215,16 @@ private:
     // Set initial conditions
     init_zeta[0] = L_ * y_0_;
     init_zeta[1] = L_;
-    odeint::integrate_const(
-        stepper,
-        system,
-        init_zeta,
-        y_0_,
-        y_infinity_,
-        parms.observer_step_,
-        std::bind(
-            &Zeta<StateVariable, ODESystem>::push_back, this, std::placeholders::_1, std::placeholders::_2));
+    odeint::integrate_const(stepper,
+                            system,
+                            init_zeta,
+                            y_0_,
+                            y_infinity_,
+                            parms.observer_step_,
+                            std::bind(&Zeta<StateVariable, ODESystem>::push_back,
+                                      this,
+                                      std::placeholders::_1,
+                                      std::placeholders::_2));
   }
   /*! \brief Returns value of function at given point
    *  \param[in] point evaluation point
@@ -318,15 +320,16 @@ private:
     init_omega[0] = -(L_ + 1) * y_infinity_;
     init_omega[1] = -(L_ + 1);
     // Notice that we integrate BACKWARDS, so we pass -step to integrate_adaptive
-    odeint::integrate_const(
-        stepper,
-        system,
-        init_omega,
-        y_infinity_,
-        y_0_,
-        -parms.observer_step_,
-        std::bind(
-            &Omega<StateVariable, ODESystem>::push_back, this, std::placeholders::_1, std::placeholders::_2));
+    odeint::integrate_const(stepper,
+                            system,
+                            init_omega,
+                            y_infinity_,
+                            y_0_,
+                            -parms.observer_step_,
+                            std::bind(&Omega<StateVariable, ODESystem>::push_back,
+                                      this,
+                                      std::placeholders::_1,
+                                      std::placeholders::_2));
     // Reverse order of StateVariable-s in RadialSolution
     // this ensures that they are in ascending order, as later expected by
     // function_impl and derivative_impl

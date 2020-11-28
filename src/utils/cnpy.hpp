@@ -286,6 +286,6 @@ std::vector<char> create_npy_header(const T * /* data */,
   return header;
 }
 
-} // closes namespace
+} // namespace cnpy
 
 cnpy::NpyArray load_the_npy_file(FILE * fp);

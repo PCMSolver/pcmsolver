@@ -115,7 +115,8 @@ double derivativeProbe(const DifferentiableFunction & functor,
                        const Eigen::Vector3d & normal_p2,
                        const Eigen::Vector3d & p1,
                        const Eigen::Vector3d & p2) {
-  return threePointStencil(std::bind(functor, std::placeholders::_1, _2), p2, p1, normal_p2);
+  return threePointStencil(
+      std::bind(functor, std::placeholders::_1, _2), p2, p1, normal_p2);
 }
 
 /*! Returns value of the directional derivative of the function passed for the pair

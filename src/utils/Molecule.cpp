@@ -72,7 +72,8 @@ Molecule::Molecule(int nat,
       masses_(m),
       geometry_(geo),
       atoms_(at),
-      spheres_(sph),  pointGroup_(nr_gen, gen) {
+      spheres_(sph),
+      pointGroup_(nr_gen, gen) {
   rotor_ = findRotorType();
 }
 

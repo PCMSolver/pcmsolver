@@ -470,7 +470,7 @@ def verify_medium(section):
         sys.exit(1)
 
     integrator = section.get('DIAGONALINTEGRATOR')
-    if (integrator.get() is not 'COLLOCATION'):
+    if (integrator.get() != 'COLLOCATION'):
         print('Only the collocation integrator is available')
         sys.exit(1)
 

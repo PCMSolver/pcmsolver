@@ -7,3 +7,4 @@ dependencies:
   - cxx-compiler
   - eigen
   - fortran-compiler
+  - ninja

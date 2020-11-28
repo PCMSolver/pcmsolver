@@ -14,7 +14,7 @@ on:
       - created
 
 env:
-  BUILD_TYPE: Debug
+  BUILD_TYPE: Release
 
 jobs:
   build:
@@ -50,12 +50,14 @@ jobs:
     - name: Configure
       shell: bash -l {0}
       run: |
-        python ./setup.py --type=$BUILD_TYPE ${{ matrix.static }} --prefix=$GITHUB_WORKSPACE/Software/PCMSolver build
+        export CFLAGS="-isystem /usr/share/miniconda/envs/pcmsolver-gha/include"
+        export CXXFLAGS="-isystem /usr/share/miniconda/envs/pcmsolver-gha/include"
+        python ./setup.py --type=$BUILD_TYPE ${{ matrix.static }} --generator=Ninja --prefix=$GITHUB_WORKSPACE/Software/PCMSolver build
         
     - name: Build
       shell: bash -l {0}
       run: |
-        cmake --build build --config $BUILD_TYPE --target install
+        cmake --build build --config $BUILD_TYPE --target install -- -v -d stats
         
     - name: Test
       shell: bash -l {0}

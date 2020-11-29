@@ -106,7 +106,7 @@ public:
     molecule_ = m;
     spheres_ = molecule_.spheres();
   }
-  void initMolecule();
+  void initMolecule(bool deferred_init = false);
   /// @}
 
   /// Medium section input
@@ -160,7 +160,7 @@ private:
    */
   void reader(const PCMInput & host_input);
   /*! Perform semantic input parsing aka sanity check */
-  void semanticCheck() attribute(const);
+  void semanticCheck();
 
   /// Units of measure
   std::string units_;
@@ -263,5 +263,28 @@ std::string uppercase(std::string s);
 std::string uppercase(const char * src);
 
 std::string trim_and_upper(const char * src);
+
+enum PCMInputFields {
+  cavity_type,
+  patch_level,
+  coarsity,
+  area,
+  radii_set,
+  min_distance,
+  der_order,
+  scaling,
+  restart_name,
+  min_radius,
+  solver_type,
+  correction,
+  solvent,
+  probe_radius,
+  equation_type,
+  inside_type,
+  outside_epsilon,
+  outside_type
+};
+
+PCMInputFields string_to_enum(std::string field);
 } // namespace detail
 } // namespace pcm

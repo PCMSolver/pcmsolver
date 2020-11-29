@@ -48,7 +48,7 @@ Eigen::MatrixXd IBoundaryIntegralOperator::computeS(
     errmsg
         << "Please report this issue: https://github.com/PCMSolver/pcmsolver/issues"
         << std::endl;
-    PCMSOLVER_ERROR(errmsg.str());
+    PCMSOLVER_WARNING(errmsg.str());
   }
   // Perform symmetry blocking
   // The total size of the cavity

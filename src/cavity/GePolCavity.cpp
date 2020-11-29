@@ -429,10 +429,10 @@ std::ostream & GePolCavity::printCavity(std::ostream & os) {
   for (int i = 0; i < original; ++i) {
     os << std::setw(4) << i + 1;
     os << "      " << molecule_.atoms()[i].symbol << "    ";
-    os << std::fixed << std::setprecision(4) << molecule_.atoms()[i].radius;
+    os << std::fixed << std::setprecision(4) << molecule_.spheres()[i].radius * bohrToAngstrom();
     os << std::fixed << std::setprecision(2) << "   "
        << molecule_.atoms()[i].radiusScaling << "     ";
-    os << (molecule_.geometry().col(i).transpose() * bohrToAngstrom())
+    os << (molecule_.spheres()[i].center.transpose() * bohrToAngstrom())
               .format(CleanFmt);
     os << std::endl;
   }

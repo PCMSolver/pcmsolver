@@ -126,6 +126,74 @@ PCMSolver_API pcmsolver_context_t * pcmsolver_new_v1112(
     struct PCMInput * host_input,
     HostWriter writer);
 
+/*! \brief Creates a new PCM context object, with deferred input parsing from host.
+ *  \param[in] nr_nuclei     number of atoms in the molecule
+ *  \param[in] charges       atomic charges
+ *  \param[in] coordinates   atomic coordinates
+ *  \param[in] symmetry_info molecular point group information
+ *  \param[in] writer        flush-to-host function
+ *
+ *  \note Added in v1.2.4-alpha1
+ *
+ *  The molecular point group information is passed as an array
+ *  of 4 integers: number of generators, first, second and third generator
+ *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
+ */
+PCMSolver_API pcmsolver_context_t * pcmsolver_new_read_host(int nr_nuclei,
+                                                            double charges[],
+                                                            double coordinates[],
+                                                            int symmetry_info[],
+                                                            HostWriter writer);
+
+/*! \brief Set a bool option in PCMSolver input
+ *  \param[in, out] context the PCM context object
+ *  \param[in] parameter the name of the parameter to set
+ *  \param[in] value the value of the parameter
+ *
+ *  \warning You should call pcmsolver_refresh to finalize the context object.
+ */
+PCMSolver_API void pcmsolver_set_bool_option(pcmsolver_context_t * context,
+                                             const char * parameter,
+                                             pcmsolver_bool_t value);
+
+/*! \brief Set an integer option in PCMSolver input
+ *  \param[in, out] context the PCM context object
+ *  \param[in] parameter the name of the parameter to set
+ *  \param[in] value the value of the parameter
+ *
+ *  \warning You should call pcmsolver_refresh to finalize the context object.
+ */
+PCMSolver_API void pcmsolver_set_int_option(pcmsolver_context_t * context,
+                                            const char * parameter,
+                                            int value);
+
+/*! \brief Set a double option in PCMSolver input
+ *  \param[in, out] context the PCM context object
+ *  \param[in] parameter the name of the parameter to set
+ *  \param[in] value the value of the parameter
+ *
+ *  \warning You should call pcmsolver_refresh to finalize the context object.
+ */
+PCMSolver_API void pcmsolver_set_double_option(pcmsolver_context_t * context,
+                                               const char * parameter,
+                                               double value);
+
+/*! \brief Set a string option in PCMSolver input
+ *  \param[in, out] context the PCM context object
+ *  \param[in] parameter the name of the parameter to set
+ *  \param[in] value the value of the parameter
+ *
+ *  \warning You should call pcmsolver_refresh to finalize the context object.
+ */
+PCMSolver_API void pcmsolver_set_string_option(pcmsolver_context_t * context,
+                                               const char * parameter,
+                                               const char * value);
+
+/*! \brief Refreshes the PCM context object
+ *  \param[in, out] context the PCM context object
+ */
+PCMSolver_API void pcmsolver_refresh(pcmsolver_context_t * context);
+
 /*! \brief Deletes a PCM context object
  *  \param[in, out] context the PCM context object to be deleted
  */

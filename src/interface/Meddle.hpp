@@ -57,7 +57,8 @@ Molecule initMolecule(const Input & inp,
                       const Symmetry & group,
                       int nuclei,
                       const Eigen::VectorXd & charges,
-                      const Eigen::Matrix3Xd & centers);
+                      const Eigen::Matrix3Xd & centers,
+                      bool deferred_init);
 void initSpheresAtoms(const Input &,
                       const Eigen::Matrix3Xd &,
                       std::vector<Sphere> &);
@@ -98,7 +99,7 @@ public:
          double coordinates[],
          int symmetry_info[],
          const HostWriter & writer,
-         const std::string & inputFileName = "@pcmsolver.inp");
+         const std::string & inputFileName);
   /*! \brief Constructor
    *  \param[in] nr_nuclei     number of atoms in the molecule
    *  \param[in] charges       atomic charges
@@ -116,6 +117,22 @@ public:
          double coordinates[],
          int symmetry_info[],
          const PCMInput & host_input,
+         const HostWriter & writer);
+  /*! \brief Constructor
+   *  \param[in] nr_nuclei     number of atoms in the molecule
+   *  \param[in] charges       atomic charges
+   *  \param[in] coordinates   atomic coordinates
+   *  \param[in] symmetry_info molecular point group information
+   *  \param[in] writer        the global HostWriter object
+   *
+   *  The molecular point group information is passed as an array
+   *  of 4 integers: number of generators, first, second and third generator
+   *  respectively. Generators map to integers as in table :ref:`symmetry-ops`
+   */
+  Meddle(int nr_nuclei,
+         double charges[],
+         double coordinates[],
+         int symmetry_info[],
          const HostWriter & writer);
   ~Meddle();
 
@@ -255,6 +272,13 @@ public:
    */
   void writeTimings() const;
 
+  void refresh();
+
+  void setInputOption(std::string parameter, bool value);
+  void setInputOption(std::string parameter, int value);
+  void setInputOption(std::string parameter, double value);
+  void setInputOption(std::string parameter, std::string value);
+
 private:
   typedef std::map<std::string, Eigen::VectorXd> SurfaceFunctionMap;
   typedef SurfaceFunctionMap::value_type SurfaceFunctionPair;
@@ -273,6 +297,8 @@ private:
   Printer hostWriter_;
   /*! Input object */
   Input input_;
+  /*! Host input struct */
+  PCMInput host_input_;
   /*! Cavity */
   ICavity * cavity_;
   /*! Solver with static permittivity */
@@ -292,11 +318,13 @@ private:
    *  \param[in] charges       atomic charges
    *  \param[in] coordinates   atomic coordinates
    *  \param[in] symmetry_info molecular point group information
+   *  \param[in] deferred_init whether to defer initialization of Molecule
    */
   void initInput(int nr_nuclei,
                  double charges[],
                  double coordinates[],
-                 int symmetry_info[]);
+                 int symmetry_info[],
+                 bool deferred_init = false);
   /*! Initialize cavity_ */
   void initCavity();
   /*! Initialize static solver K_0_ */

@@ -69,6 +69,17 @@
  *http://www.boost.org/doc/libs/1_59_0/doc/html/boost_staticassert.html
  */
 
+/// Macro to be used to signal warnings
+#define PCMSOLVER_WARNING(message)                                                  \
+  {                                                                                 \
+    std::ostringstream _err;                                                        \
+    _err << "PCMSolver warning.\n"                                                  \
+         << " In function " << __func__ << " at line " << __LINE__ << " of file "   \
+         << __FILE__ << "\n"                                                        \
+         << message << std::endl;                                                   \
+    std::fprintf(stderr, "%s\n", _err.str().c_str());                               \
+  }
+
 /// Macro to be used to signal error conditions
 #define PCMSOLVER_ERROR(message)                                                    \
   {                                                                                 \

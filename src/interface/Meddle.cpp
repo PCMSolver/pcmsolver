@@ -101,6 +101,46 @@ pcmsolver_context_t * pcmsolver_new_v1112(pcmsolver_reader_t input_reading,
   }
 }
 
+pcmsolver_context_t * pcmsolver_new_read_host(int nr_nuclei,
+                                              double charges[],
+                                              double coordinates[],
+                                              int symmetry_info[],
+                                              HostWriter writer) {
+  return AS_TYPE(
+      pcmsolver_context_t,
+      new pcm::Meddle(nr_nuclei, charges, coordinates, symmetry_info, writer));
+}
+
+PCMInput pcmsolver_default_input() {
+  PCMInput host_input;
+
+  // These parameters would be set by the host input reading
+  // Length and area parameters are all assumed to be in Angstrom,
+  // the module will convert to Bohr internally
+  strcpy(host_input.cavity_type, "gepol");
+  host_input.patch_level = 2;
+  host_input.coarsity = 0.5;
+  host_input.area = 0.2;
+  host_input.min_distance = 0.1;
+  host_input.der_order = 4;
+  host_input.scaling = true;
+  strcpy(host_input.radii_set, "bondi");
+  strcpy(host_input.restart_name, "cavity.npz");
+  host_input.min_radius = 100.0;
+
+  strcpy(host_input.solver_type, "iefpcm");
+  strcpy(host_input.solvent, "water");
+  strcpy(host_input.equation_type, "secondkind");
+  host_input.correction = 0.0;
+  host_input.probe_radius = 1.0;
+
+  strcpy(host_input.inside_type, "vacuum");
+  host_input.outside_epsilon = 1.0;
+  strcpy(host_input.outside_type, "uniformdielectric");
+
+  return host_input;
+}
+
 namespace pcm {
 void Meddle::CTORBody() {
   // Write PCMSolver output header
@@ -127,6 +167,7 @@ void Meddle::CTORBody() {
 Meddle::Meddle(const Input & input, const HostWriter & write)
     : hostWriter_(write),
       input_(input),
+      host_input_(pcmsolver_default_input()),
       cavity_(__nullptr),
       K_0_(__nullptr),
       K_d_(__nullptr),
@@ -138,6 +179,7 @@ Meddle::Meddle(const Input & input, const HostWriter & write)
 Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
     : hostWriter_(write),
       input_(Input(inputFileName)),
+      host_input_(pcmsolver_default_input()),
       cavity_(__nullptr),
       K_0_(__nullptr),
       K_d_(__nullptr),
@@ -153,7 +195,8 @@ Meddle::Meddle(int nr_nuclei,
                const HostWriter & write,
                const std::string & inputFileName)
     : hostWriter_(write),
-      input_(Input(inputFileName)),
+      input_(Input(inputFileName.empty() ? "@pcmsolver.inp" : inputFileName)),
+      host_input_(pcmsolver_default_input()),
       cavity_(__nullptr),
       K_0_(__nullptr),
       K_d_(__nullptr),
@@ -173,6 +216,7 @@ Meddle::Meddle(int nr_nuclei,
                const HostWriter & write)
     : hostWriter_(write),
       input_(Input(host_input)),
+      host_input_(host_input),
       cavity_(__nullptr),
       K_0_(__nullptr),
       K_d_(__nullptr),
@@ -182,6 +226,25 @@ Meddle::Meddle(int nr_nuclei,
   TIMER_OFF("Meddle::initInput");
 
   CTORBody();
+}
+
+Meddle::Meddle(int nr_nuclei,
+               double charges[],
+               double coordinates[],
+               int symmetry_info[],
+               const HostWriter & write)
+    : hostWriter_(write),
+      input_(Input(pcmsolver_default_input())),
+      host_input_(pcmsolver_default_input()),
+      cavity_(__nullptr),
+      K_0_(__nullptr),
+      K_d_(__nullptr),
+      hasDynamic_(false) {
+  // This one does a deferred initialization:
+  // The CTORBody function is not called at this point, but during refresh
+  TIMER_ON("Meddle::initInput");
+  initInput(nr_nuclei, charges, coordinates, symmetry_info, true);
+  TIMER_OFF("Meddle::initInput");
 }
 } // namespace pcm
 
@@ -435,6 +498,146 @@ void pcmsolver_write_timings(pcmsolver_context_t * context) {
 }
 void pcm::Meddle::writeTimings() const { TIMER_DONE("pcmsolver.timer.dat"); }
 
+void pcmsolver_refresh(pcmsolver_context_t * context) {
+  AS_TYPE(pcm::Meddle, context)->refresh();
+}
+void pcm::Meddle::refresh() {
+  // Gather info to refresh Molecule
+  // FIXME I need to refresh it because scaling of radii is done there -.-
+  Symmetry pg = molecule().pointGroup();
+  size_t nuclei = molecule().nAtoms();
+  Eigen::VectorXd chgs = molecule().charges();
+  Eigen::MatrixXd cnts = molecule().geometry();
+  // Refresh input_
+  input_ = Input(host_input_);
+  // Refresh Molecule
+  input_.molecule(detail::initMolecule(input_, pg, nuclei, chgs, cnts, false));
+  CTORBody();
+}
+
+void pcmsolver_set_bool_option(pcmsolver_context_t * context,
+                               const char * parameter,
+                               bool value) {
+  AS_TYPE(pcm::Meddle, context)->setInputOption(std::string(parameter), value);
+}
+void pcm::Meddle::setInputOption(std::string parameter, bool value) {
+  detail::PCMInputFields p = detail::string_to_enum(parameter);
+  switch (p) {
+    case detail::PCMInputFields::scaling:
+      host_input_.scaling = value;
+      break;
+    default:
+      std::ostringstream errmsg;
+      errmsg << "Unknown parameter " << parameter << std::endl;
+      errmsg << " See http://pcmsolver.readthedocs.org/en/latest/users/input.html"
+             << std::endl;
+      PCMSOLVER_ERROR(errmsg.str());
+  }
+}
+
+void pcmsolver_set_int_option(pcmsolver_context_t * context,
+                              const char * parameter,
+                              int value) {
+  AS_TYPE(pcm::Meddle, context)->setInputOption(std::string(parameter), value);
+}
+void pcm::Meddle::setInputOption(std::string parameter, int value) {
+  detail::PCMInputFields p = detail::string_to_enum(parameter);
+  switch (p) {
+    case detail::PCMInputFields::patch_level:
+      host_input_.patch_level = value;
+      break;
+    case detail::PCMInputFields::der_order:
+      host_input_.der_order = value;
+      break;
+    default:
+      std::ostringstream errmsg;
+      errmsg << "Unknown parameter " << parameter << std::endl;
+      errmsg << " See http://pcmsolver.readthedocs.org/en/latest/users/input.html"
+             << std::endl;
+      PCMSOLVER_ERROR(errmsg.str());
+  }
+}
+
+void pcmsolver_set_double_option(pcmsolver_context_t * context,
+                                 const char * parameter,
+                                 double value) {
+  AS_TYPE(pcm::Meddle, context)->setInputOption(std::string(parameter), value);
+}
+void pcm::Meddle::setInputOption(std::string parameter, double value) {
+  detail::PCMInputFields p = detail::string_to_enum(parameter);
+  switch (p) {
+    case detail::PCMInputFields::coarsity:
+      host_input_.coarsity = value;
+      break;
+    case detail::PCMInputFields::area:
+      host_input_.area = value;
+      break;
+    case detail::PCMInputFields::min_distance:
+      host_input_.min_distance = value;
+      break;
+    case detail::PCMInputFields::min_radius:
+      host_input_.min_radius = value;
+      break;
+    case detail::PCMInputFields::correction:
+      host_input_.correction = value;
+      break;
+    case detail::PCMInputFields::probe_radius:
+      host_input_.probe_radius = value;
+      break;
+    case detail::PCMInputFields::outside_epsilon:
+      host_input_.outside_epsilon = value;
+      break;
+    default:
+      std::ostringstream errmsg;
+      errmsg << "Unknown parameter " << parameter << std::endl;
+      errmsg << " See http://pcmsolver.readthedocs.org/en/latest/users/input.html"
+             << std::endl;
+      PCMSOLVER_ERROR(errmsg.str());
+  }
+}
+
+void pcmsolver_set_string_option(pcmsolver_context_t * context,
+                                 const char * parameter,
+                                 const char * value) {
+  AS_TYPE(pcm::Meddle, context)
+      ->setInputOption(std::string(parameter), std::string(value));
+}
+void pcm::Meddle::setInputOption(std::string parameter, std::string value) {
+  detail::PCMInputFields p = detail::string_to_enum(parameter);
+  switch (p) {
+    case detail::PCMInputFields::cavity_type:
+      strcpy(host_input_.cavity_type, value.c_str());
+      break;
+    case detail::PCMInputFields::radii_set:
+      strcpy(host_input_.radii_set, value.c_str());
+      break;
+    case detail::PCMInputFields::restart_name:
+      strcpy(host_input_.restart_name, value.c_str());
+      break;
+    case detail::PCMInputFields::solver_type:
+      strcpy(host_input_.solver_type, value.c_str());
+      break;
+    case detail::PCMInputFields::solvent:
+      strcpy(host_input_.solvent, value.c_str());
+      break;
+    case detail::PCMInputFields::equation_type:
+      strcpy(host_input_.equation_type, value.c_str());
+      break;
+    case detail::PCMInputFields::inside_type:
+      strcpy(host_input_.inside_type, value.c_str());
+      break;
+    case detail::PCMInputFields::outside_type:
+      strcpy(host_input_.outside_type, value.c_str());
+      break;
+    default:
+      std::ostringstream errmsg;
+      errmsg << "Unknown parameter " << parameter << std::endl;
+      errmsg << " See http://pcmsolver.readthedocs.org/en/latest/users/input.html"
+             << std::endl;
+      PCMSOLVER_ERROR(errmsg.str());
+  }
+}
+
 void pcmsolver_print(pcmsolver_context_t * context) {
   AS_CTYPE(pcm::Meddle, context)->printInfo();
 }
@@ -458,7 +661,8 @@ Eigen::Matrix3Xd Meddle::getCenters() const { return cavity_->elementCenter(); }
 void Meddle::initInput(int nr_nuclei,
                        double charges[],
                        double coordinates[],
-                       int symmetry_info[]) {
+                       int symmetry_info[],
+                       bool deferred_init) {
   // Position and charges of atomic centers
   Eigen::VectorXd chg = Eigen::Map<Eigen::VectorXd>(charges, nr_nuclei, 1);
   Eigen::Matrix3Xd centers = Eigen::Map<Eigen::Matrix3Xd>(coordinates, 3, nr_nuclei);
@@ -466,7 +670,8 @@ void Meddle::initInput(int nr_nuclei,
   if (input_.mode() != "EXPLICIT") {
     Symmetry pg = buildGroup(
         symmetry_info[0], symmetry_info[1], symmetry_info[2], symmetry_info[3]);
-    input_.molecule(detail::initMolecule(input_, pg, nr_nuclei, chg, centers));
+    input_.molecule(
+        detail::initMolecule(input_, pg, nr_nuclei, chg, centers, deferred_init));
   }
 }
 
@@ -576,7 +781,8 @@ Molecule initMolecule(const Input & inp,
                       const Symmetry & pg,
                       int nuclei,
                       const Eigen::VectorXd & charges,
-                      const Eigen::Matrix3Xd & centers) {
+                      const Eigen::Matrix3Xd & centers,
+                      bool deferred_init) {
   bool scaling = inp.scaling();
   std::string set = inp.radiiSet();
   std::vector<Atom> radiiSet;
@@ -610,7 +816,7 @@ Molecule initMolecule(const Input & inp,
   // Check that all atoms have a radius attached
   std::vector<Atom>::const_iterator res =
       std::find_if(atoms.begin(), atoms.end(), invalid);
-  if (res != atoms.end()) {
+  if (res != atoms.end() && !deferred_init) {
     std::ostringstream errmsg;
     errmsg << "In the molecule:\n" << molecule << std::endl;
     errmsg << "Some atoms do not have a radius attached." << std::endl;

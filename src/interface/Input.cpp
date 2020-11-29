@@ -270,7 +270,7 @@ void Input::reader(const PCMInput & host_input) {
 
 void Input::semanticCheck() {}
 
-void Input::initMolecule() {
+void Input::initMolecule(bool deferred_init) {
   // Gather information necessary to build molecule_
   // 1. number of atomic centers
   int nuclei = int(geometry_.size() / 4);
@@ -330,7 +330,7 @@ void Input::initMolecule() {
   // Check that all atoms have a radius attached
   std::vector<Atom>::const_iterator res =
       std::find_if(atoms.begin(), atoms.end(), invalid);
-  if (res != atoms.end()) {
+  if (res != atoms.end() && !deferred_init) {
     std::cout << molecule_ << std::endl;
     PCMSOLVER_ERROR("Some atoms do not have a radius attached. Please specify a "
                     "radius for all atoms (see "
@@ -451,6 +451,31 @@ std::string uppercase(const char * src) {
 std::string trim_and_upper(const char * src) {
   std::string tmp(src);
   return uppercase(trim(tmp));
+}
+
+PCMInputFields string_to_enum(std::string field) {
+  static std::map<std::string, PCMInputFields> mapper;
+
+  mapper["cavity_type"] = PCMInputFields::cavity_type;
+  mapper["patch_level"] = PCMInputFields::patch_level;
+  mapper["coarsity"] = PCMInputFields::coarsity;
+  mapper["area"] = PCMInputFields::area;
+  mapper["radii_set"] = PCMInputFields::radii_set;
+  mapper["min_distance"] = PCMInputFields::min_distance;
+  mapper["der_order"] = PCMInputFields::der_order;
+  mapper["scaling"] = PCMInputFields::scaling;
+  mapper["restart_name"] = PCMInputFields::restart_name;
+  mapper["min_radius"] = PCMInputFields::min_radius;
+  mapper["solver_type"] = PCMInputFields::solver_type;
+  mapper["correction"] = PCMInputFields::correction;
+  mapper["solvent"] = PCMInputFields::solvent;
+  mapper["probe_radius"] = PCMInputFields::probe_radius;
+  mapper["equation_type"] = PCMInputFields::equation_type;
+  mapper["inside_type"] = PCMInputFields::inside_type;
+  mapper["outside_epsilon"] = PCMInputFields::outside_epsilon;
+  mapper["outside_type"] = PCMInputFields::outside_type;
+
+  return mapper[field];
 }
 } // namespace detail
 } // namespace pcm

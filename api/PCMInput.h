@@ -77,3 +77,5 @@ typedef struct PCMInput {
   /// Type of Green's function requested outside the cavity.
   char outside_type[22];
 } PCMInput;
+
+PCMInput pcmsolver_default_input();

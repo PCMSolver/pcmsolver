@@ -1,6 +1,6 @@
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
-#  Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+#  Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
 #
 #  This file is part of PCMSolver.
 #
@@ -217,13 +217,12 @@ def setup(app):
     # Make a copy of api/pcmsolver.h and strip it of all
     # PCMSolver_API markers in front of function signatures
     rep = {'PCMSolver_API ': '', 'pcmsolver.h': 'mock_pcmsolver.h'}
-    configure_file(
-        rep,
-        'pcmsolver.h',
-        in_path=os.path.join(project_root_dir, 'api'),
-        suffix='',
-        prefix='mock_',
-        out_path=doc_build_dir)
+    configure_file(rep,
+                   'pcmsolver.h',
+                   in_path=os.path.join(project_root_dir, 'api'),
+                   suffix='',
+                   prefix='mock_',
+                   out_path=doc_build_dir)
     # Generate directories list (full paths), remove bin using filter
     dirs = [os.path.join(r, x) for r, d, _ in os.walk(project_src_dir) for x in d]
     # Filter bin and utils/getkw from from the directories list

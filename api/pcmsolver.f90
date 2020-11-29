@@ -1,6 +1,6 @@
 !
 ! PCMSolver, an API for the Polarizable Continuum Model
-! Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+! Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
 !
 ! This file is part of PCMSolver.
 !
@@ -52,9 +52,12 @@ module pcmsolver
     enumerator :: PCMSOLVER_READER_OWN = 0, PCMSOLVER_READER_HOST = 1
   end enum
 
-interface pcmsolver_new
+  private :: pcmsolver_fstring_to_carray
+
+interface
   function pcmsolver_new(input_reading, nr_nuclei, charges, coordinates, symmetry_info, &
-                         host_input, writer) result(context) bind(C)
+       host_input, writer) result(context) &
+       bind(C)
     import
     integer(c_int), intent(in), value :: input_reading
     integer(c_int), intent(in), value :: nr_nuclei
@@ -65,11 +68,10 @@ interface pcmsolver_new
     type(c_funptr), intent(in), value :: writer
     type(c_ptr) :: context
   end function
-end interface
 
-interface pcmsolver_new_v1112
   function pcmsolver_new_v1112(input_reading, nr_nuclei, charges, coordinates, symmetry_info, &
-                               parsed_fname, host_input, writer) result(context) bind(C)
+       parsed_fname, host_input, writer) result(context) &
+       bind(C)
     import
     integer(c_int), intent(in), value :: input_reading
     integer(c_int), intent(in), value :: nr_nuclei
@@ -81,167 +83,196 @@ interface pcmsolver_new_v1112
     type(c_funptr), intent(in), value :: writer
     type(c_ptr) :: context
   end function
-end interface
 
-interface pcmsolver_delete
-  subroutine pcmsolver_delete(context) bind(C)
+  function pcmsolver_new_read_host(nr_nuclei, charges, coordinates, symmetry_info, writer) result(context) &
+       bind(C)
+    import
+    integer(c_int), intent(in), value :: nr_nuclei
+    real(c_double), intent(in)        :: charges(*)
+    real(c_double), intent(in)        :: coordinates(*)
+    integer(c_int), intent(in)        :: symmetry_info(*)
+    type(c_funptr), intent(in), value :: writer
+    type(c_ptr) :: context
+  end function
+
+  subroutine pcmsolver_set_bool_option_c(context, param, val) &
+       bind(C, name="pcmsolver_set_bool_option")
+    import
+    type(c_ptr), value :: context
+    character(kind=c_char, len=1), intent(in) :: param(*)
+    logical(c_bool), intent(in), value :: val
+  end subroutine
+
+  subroutine pcmsolver_set_int_option_c(context, param, val) &
+       bind(C, name="pcmsolver_set_int_option")
+    import
+    type(c_ptr), value :: context
+    character(kind=c_char, len=1), intent(in) :: param(*)
+    integer(c_int), intent(in), value :: val
+  end subroutine
+
+  subroutine pcmsolver_set_double_option_c(context, param, val) &
+       bind(C, name="pcmsolver_set_double_option")
+    import
+    type(c_ptr), value :: context
+    character(kind=c_char, len=1), intent(in) :: param(*)
+    real(c_double), intent(in), value :: val
+  end subroutine
+
+  subroutine pcmsolver_set_string_option_c(context, param, val) &
+       bind(C, name="pcmsolver_set_string_option")
+    import
+    type(c_ptr), value :: context
+    character(kind=c_char, len=1), intent(in) :: param(*)
+    character(kind=c_char, len=1), intent(in) :: val(*)
+  end subroutine
+
+  subroutine pcmsolver_refresh(context) &
+       bind(C)
     import
     type(c_ptr), value :: context
   end subroutine
-end interface
 
-interface pcmsolver_is_compatible_library
-  function pcmsolver_is_compatible_library() result(compatible) bind(C)
+  subroutine pcmsolver_delete(context) &
+       bind(C)
+    import
+    type(c_ptr), value :: context
+  end subroutine
+
+  function pcmsolver_is_compatible_library() result(compatible) &
+       bind(C)
     import
     logical(c_bool) :: compatible
   end function
-end interface
 
-interface pcmsolver_print
-  subroutine pcmsolver_print(context) bind(C)
+  subroutine pcmsolver_print(context) &
+       bind(C)
     import
     type(c_ptr), value :: context
   end subroutine
-end interface
 
-interface pcmsolver_citation
-   subroutine pcmsolver_citation(writer) bind(C)
+  subroutine pcmsolver_citation(writer) &
+       bind(C)
      import
      type(c_funptr), intent(in), value :: writer
    end subroutine
-end interface
 
-interface pcmsolver_get_cavity_size
-  function pcmsolver_get_cavity_size(context) result(nr_points) bind(C)
+   function pcmsolver_get_cavity_size(context) result(nr_points) &
+        bind(C)
     import
     type(c_ptr), value :: context
     integer(c_int)  :: nr_points
   end function
-end interface
 
-interface pcmsolver_get_irreducible_cavity_size
-  function pcmsolver_get_irreducible_cavity_size(context) result(nr_points_irr) bind(C)
+  function pcmsolver_get_irreducible_cavity_size(context) result(nr_points_irr) &
+       bind(C)
     import
     type(c_ptr), value :: context
     integer(c_int)  :: nr_points_irr
   end function
-end interface
 
-interface pcmsolver_get_centers
-  subroutine pcmsolver_get_centers(context, centers) bind(C)
+  subroutine pcmsolver_get_centers(context, centers) &
+       bind(C)
     import
     type(c_ptr), value :: context
     real(c_double), intent(inout) :: centers(*)
   end subroutine
-end interface
 
-interface pcmsolver_get_center
-  subroutine pcmsolver_get_center(context, its, center) bind(C)
+  subroutine pcmsolver_get_center(context, its, center) &
+       bind(C)
     import
     type(c_ptr), value :: context
     integer(c_int), value, intent(in) :: its
     real(c_double), intent(inout) :: center(*)
   end subroutine
-end interface
 
-interface pcmsolver_get_areas
-  subroutine pcmsolver_get_areas(context, areas) bind(C)
+  subroutine pcmsolver_get_areas(context, areas) &
+       bind(C)
     import
     type(c_ptr), value :: context
     real(c_double), intent(inout) :: areas(*)
   end subroutine
-end interface
 
-interface pcmsolver_compute_asc
-  subroutine pcmsolver_compute_asc(context, mep_name, asc_name, irrep) bind(C)
+  subroutine pcmsolver_compute_asc_c(context, mep_name, asc_name, irrep) &
+       bind(C, name="pcmsolver_compute_asc")
     import
     type(c_ptr), value :: context
     character(kind=c_char, len=1), intent(in) :: mep_name(*), asc_name(*)
     integer(c_int), value, intent(in) :: irrep
   end subroutine
-end interface
 
-interface pcmsolver_compute_response_asc
-  subroutine pcmsolver_compute_response_asc(context, mep_name, asc_name, irrep) bind(C)
+  subroutine pcmsolver_compute_response_asc_c(context, mep_name, asc_name, irrep) &
+       bind(C, name="pcmsolver_compute_response_asc")
     import
     type(c_ptr), value :: context
     character(kind=c_char, len=1), intent(in) :: mep_name(*), asc_name(*)
     integer(c_int), value, intent(in) :: irrep
   end subroutine
-end interface
 
-interface pcmsolver_compute_polarization_energy
-  function pcmsolver_compute_polarization_energy(context, mep_name, asc_name) result(energy) bind(C)
+  function pcmsolver_compute_polarization_energy_c(context, mep_name, asc_name) result(energy) &
+       bind(C, name="pcmsolver_compute_polarization_energy")
     import
     type(c_ptr), value :: context
     character(kind=c_char, len=1), intent(in) :: mep_name(*), asc_name(*)
     real(c_double) :: energy
   end function
-end interface
 
-interface pcmsolver_get_asc_dipole
-  function pcmsolver_get_asc_dipole(context, asc_name, dipole) result(mu) bind(C)
+  function pcmsolver_get_asc_dipole_c(context, asc_name, dipole) result(mu) &
+       bind(C, name="pcmsolver_get_asc_dipole")
     import
     type(c_ptr), value :: context
     character(kind=c_char, len=1), intent(in) :: asc_name(*)
     real(c_double), intent(inout) :: dipole(*)
     real(c_double) :: mu
   end function
-end interface
 
-interface pcmsolver_get_surface_function
-  subroutine pcmsolver_get_surface_function(context, f_size, values, name) bind(C)
+  subroutine pcmsolver_get_surface_function_c(context, f_size, values, name) &
+       bind(C, name="pcmsolver_get_surface_function")
     import
     type(c_ptr), value :: context
     integer(c_int), value, intent(in) :: f_size
     real(c_double), intent(inout) :: values(*)
     character(kind=c_char, len=1), intent(in) :: name(*)
   end subroutine
-end interface
 
-interface pcmsolver_set_surface_function
-  subroutine pcmsolver_set_surface_function(context, f_size, values, name) bind(C)
+  subroutine pcmsolver_set_surface_function_c(context, f_size, values, name) &
+       bind(C, name="pcmsolver_set_surface_function")
     import
     type(c_ptr), value :: context
     integer(c_int), value, intent(in) :: f_size
     real(c_double), intent(in) :: values(*)
     character(kind=c_char, len=1), intent(in) :: name(*)
   end subroutine
-end interface
 
-interface pcmsolver_print_surface_function
-  subroutine pcmsolver_print_surface_function(context, name) bind(C)
-    import
-    type(c_ptr), value :: context
-    character(c_char), intent(in) :: name(*)
-  end subroutine
-end interface
-
-interface pcmsolver_save_surface_functions
-  subroutine pcmsolver_save_surface_functions(context) bind(C)
-    import
-    type(c_ptr), value :: context
-  end subroutine
-end interface
-
-interface pcmsolver_save_surface_function
-  subroutine pcmsolver_save_surface_function(context, name) bind(C)
+  subroutine pcmsolver_print_surface_function_c(context, name) &
+       bind(C, name="pcmsolver_print_surface_function")
     import
     type(c_ptr), value :: context
     character(kind=c_char, len=1), intent(in) :: name(*)
   end subroutine
-end interface
 
-interface pcmsolver_load_surface_function
-  subroutine pcmsolver_load_surface_function(context, name) bind(C)
+  subroutine pcmsolver_save_surface_functions(context) &
+       bind(C)
+    import
+    type(c_ptr), value :: context
+  end subroutine
+
+  subroutine pcmsolver_save_surface_function_c(context, name) &
+       bind(C, name="pcmsolver_save_surface_function")
     import
     type(c_ptr), value :: context
     character(kind=c_char, len=1), intent(in) :: name(*)
   end subroutine
-end interface
 
-interface pcmsolver_write_timings
-  subroutine pcmsolver_write_timings(context) bind(C)
+  subroutine pcmsolver_load_surface_function_c(context, name) &
+       bind(C, name="pcmsolver_load_surface_function")
+    import
+    type(c_ptr), value :: context
+    character(kind=c_char, len=1), intent(in) :: name(*)
+  end subroutine
+
+  subroutine pcmsolver_write_timings(context) &
+       bind(C)
     import
     type(c_ptr), value :: context
   end subroutine
@@ -264,4 +295,112 @@ contains
     array_c(i) = c_null_char
   end function
 
-end module pcmsolver
+  subroutine pcmsolver_compute_asc(context, mep_name, asc_name, irrep)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: mep_name, asc_name
+    integer(c_int), intent(in) :: irrep
+
+    call pcmsolver_compute_asc_c(context, pcmsolver_fstring_to_carray(mep_name), &
+                                          pcmsolver_fstring_to_carray(asc_name), irrep)
+  end subroutine
+
+  subroutine pcmsolver_compute_response_asc(context, mep_name, asc_name, irrep)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: mep_name, asc_name
+    integer(c_int), intent(in) :: irrep
+
+    call pcmsolver_compute_response_asc_c(context, pcmsolver_fstring_to_carray(mep_name), &
+         pcmsolver_fstring_to_carray(asc_name), irrep)
+  end subroutine
+
+  function pcmsolver_compute_polarization_energy(context, mep_name, asc_name) result(energy)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: mep_name, asc_name
+    real(c_double) :: energy
+
+    energy =  pcmsolver_compute_polarization_energy_c(context, &
+                                                      pcmsolver_fstring_to_carray(mep_name), &
+                                                      pcmsolver_fstring_to_carray(asc_name))
+  end function
+
+  function pcmsolver_get_asc_dipole(context, asc_name, dipole) result(mu)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: asc_name
+    real(c_double), intent(inout) :: dipole(*)
+    real(c_double) :: mu
+
+    mu = pcmsolver_get_asc_dipole_c(context, pcmsolver_fstring_to_carray(asc_name), dipole)
+  end function
+
+  subroutine pcmsolver_set_surface_function(context, f_size, values, name)
+    type(c_ptr), value :: context
+    integer(c_int), intent(in) :: f_size
+    real(c_double), intent(inout) :: values(*)
+    character(kind=c_char, len=*), intent(in) :: name
+
+    call pcmsolver_set_surface_function_c(context, f_size, values, pcmsolver_fstring_to_carray(name))
+  end subroutine
+
+  subroutine pcmsolver_get_surface_function(context, f_size, values, name)
+    type(c_ptr), value :: context
+    integer(c_int), intent(in) :: f_size
+    real(c_double), intent(inout) :: values(*)
+    character(kind=c_char, len=*), intent(in) :: name
+
+    call pcmsolver_get_surface_function_c(context, f_size, values, pcmsolver_fstring_to_carray(name))
+  end subroutine
+
+  subroutine pcmsolver_print_surface_function(context, name)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: name
+
+    call pcmsolver_print_surface_function_c(context, pcmsolver_fstring_to_carray(name))
+  end subroutine
+
+  subroutine pcmsolver_save_surface_function(context, name)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: name
+
+    call pcmsolver_save_surface_function_c(context, pcmsolver_fstring_to_carray(name))
+  end subroutine
+
+  subroutine pcmsolver_load_surface_function(context, name)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: name
+
+    call pcmsolver_load_surface_function_c(context, pcmsolver_fstring_to_carray(name))
+  end subroutine
+
+  subroutine pcmsolver_set_bool_option(context, param, val)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: param
+    logical(c_bool), intent(in) :: val
+
+    call pcmsolver_set_bool_option_c(context, pcmsolver_fstring_to_carray(param), val)
+  end subroutine
+
+  subroutine pcmsolver_set_int_option(context, param, val)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: param
+    integer(c_int), intent(in) :: val
+
+    call pcmsolver_set_int_option_c(context, pcmsolver_fstring_to_carray(param), val)
+  end subroutine
+
+  subroutine pcmsolver_set_double_option(context, param, val)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: param
+    real(c_double), intent(in) :: val
+
+    call pcmsolver_set_double_option_c(context, pcmsolver_fstring_to_carray(param), val)
+  end subroutine
+
+  subroutine pcmsolver_set_string_option(context, param, val)
+    type(c_ptr), value :: context
+    character(kind=c_char, len=*), intent(in) :: param
+    character(kind=c_char, len=*), intent(in) :: val
+
+    call pcmsolver_set_string_option_c(context, pcmsolver_fstring_to_carray(param), &
+                                                pcmsolver_fstring_to_carray(val))
+  end subroutine
+end module

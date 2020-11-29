@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -429,7 +429,8 @@ std::ostream & GePolCavity::printCavity(std::ostream & os) {
   for (int i = 0; i < original; ++i) {
     os << std::setw(4) << i + 1;
     os << "      " << molecule_.atoms()[i].symbol << "    ";
-    os << std::fixed << std::setprecision(4) << molecule_.spheres()[i].radius * bohrToAngstrom();
+    os << std::fixed << std::setprecision(4)
+       << molecule_.spheres()[i].radius * bohrToAngstrom();
     os << std::fixed << std::setprecision(2) << "   "
        << molecule_.atoms()[i].radiusScaling << "     ";
     os << (molecule_.spheres()[i].center.transpose() * bohrToAngstrom())

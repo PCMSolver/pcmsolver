@@ -1,6 +1,6 @@
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
-#  Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+#  Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
 #
 #  This file is part of PCMSolver.
 #
@@ -414,8 +414,8 @@ def verify_cavity(section):
     allowed_modes = ('EXPLICIT', 'ATOMS', 'IMPLICIT')
     mode = section.get('MODE')
     if (mode.get() not in allowed_modes):
-        print(('Cavity creation mode requested {} is not among the allowed modes: {}'.format(
-            mode.get(), allowed_modes)))
+        print(
+            ('Cavity creation mode requested {} is not among the allowed modes: {}'.format(mode.get(), allowed_modes)))
         sys.exit(1)
 
     atoms = section.get('ATOMS')

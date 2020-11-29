@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -121,7 +121,8 @@ using detail::ProfileEvaluator;
  */
 template <typename StateVariable,
           typename ODESystem,
-          template <typename, typename> class IndependentSolution>
+          template <typename, typename>
+          class IndependentSolution>
 class RadialFunction __final {
 public:
   RadialFunction() : solution_(IndependentSolution<StateVariable, ODESystem>()) {}
@@ -381,7 +382,8 @@ private:
  */
 template <typename StateVariable,
           typename ODESystem,
-          template <typename, typename> class IndependentSolution>
+          template <typename, typename>
+          class IndependentSolution>
 void writeToFile(RadialFunction<StateVariable, ODESystem, IndependentSolution> & f,
                  const std::string & fname) {
   std::ofstream fout;

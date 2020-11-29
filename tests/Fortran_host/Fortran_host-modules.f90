@@ -25,69 +25,12 @@ module utilities
 
   implicit none
 
-  public pcmsolver_input
   public nuclear_mep
   public host_writer
 
   private
 
 contains
-
-  ! Performs syntactic checks on PCMSolver input
-  ! and fills the data structure holding input data
-  function pcmsolver_input() result(host_input)
-
-    use, intrinsic :: iso_c_binding
-    use pcmsolver, only:PCMInput, pcmsolver_fstring_to_carray
-
-    type(PCMInput) :: host_input
-
-    ! These parameters would be set by the host input reading subroutine(s)
-    ! Notice that the strings have a maximum pre-set length.
-    ! This is to ensure C interoperability
-    ! Length and area parameters are all assumed to be in Angstrom,
-    ! the module will convert to Bohr internally
-    character(kind=c_char, len=6) :: pcmmod_cavity_type = 'gepol'//c_null_char
-    integer :: pcmmod_patch_level = 2
-    real(c_double) :: pcmmod_coarsity = 0.5
-    real(c_double) :: pcmmod_cavity_area = 0.2
-    real(c_double) :: pcmmod_min_distance = 0.1
-    integer :: pcmmod_der_order = 4
-    logical(c_bool) :: pcmmod_scaling = .true.
-    character(kind=c_char, len=6) :: pcmmod_radii_set = 'bondi'//c_null_char
-    character(kind=c_char, len=11) :: pcmmod_restart_name = 'cavity.npz'//c_null_char
-    real(c_double) :: pcmmod_min_radius = 100.0
-    character(kind=c_char, len=7) :: pcmmod_solver_type = 'iefpcm'//c_null_char
-    character(kind=c_char, len=6) :: pcmmod_solvent = 'water'//c_null_char
-    character(kind=c_char, len=11) :: pcmmod_equation_type = 'secondkind'//c_null_char
-    real(c_double) :: pcmmod_correction = 0.0
-    real(c_double) :: pcmmod_probe_radius = 1.0
-    character(kind=c_char, len=7) :: pcmmod_inside_type = 'vacuum'//c_null_char
-    character(kind=c_char, len=18) :: pcmmod_outside_type = 'uniformdielectric'//c_null_char
-    real(c_double) :: pcmmod_outside_epsilon = 1.0
-
-    host_input%cavity_type = pcmsolver_fstring_to_carray(pcmmod_cavity_type)
-    host_input%patch_level = int(pcmmod_patch_level, kind=c_int)
-    host_input%coarsity = pcmmod_coarsity
-    host_input%area = pcmmod_cavity_area
-    host_input%min_distance = pcmmod_min_distance
-    host_input%der_order = int(pcmmod_der_order, kind=c_int)
-    host_input%scaling = pcmmod_scaling
-    host_input%radii_set = pcmsolver_fstring_to_carray(pcmmod_radii_set)
-    host_input%restart_name = pcmsolver_fstring_to_carray(pcmmod_restart_name)
-    host_input%min_radius = pcmmod_min_radius
-
-    host_input%solver_type = pcmsolver_fstring_to_carray(pcmmod_solver_type)
-    host_input%solvent = pcmsolver_fstring_to_carray(pcmmod_solvent)
-    host_input%equation_type = pcmsolver_fstring_to_carray(pcmmod_equation_type)
-    host_input%correction = pcmmod_correction
-    host_input%probe_radius = pcmmod_probe_radius
-
-    host_input%inside_type = pcmsolver_fstring_to_carray(pcmmod_inside_type)
-    host_input%outside_epsilon = pcmmod_outside_epsilon
-    host_input%outside_type = pcmsolver_fstring_to_carray(pcmmod_outside_type)
-
-  end function pcmsolver_input
 
   !> \brief Flushes module output to host program
   !> \param message contents of the module output

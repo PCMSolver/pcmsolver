@@ -4,8 +4,7 @@ file(
     standalone.pcm
     standalone_atoms.pcm
     standalone_explicit.pcm
-    biphenyl_gauss_failure.pcm
-    pNA_SPD_failure.pcm
+    pNA_SPD_warning.pcm
   DESTINATION
     ${CMAKE_CURRENT_BINARY_DIR}
   )
@@ -58,38 +57,19 @@ set_tests_properties(pcmsolver_standalone-explicit
   ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )
 
-# Demonstrates catching non-SPD S matrix failure
+# Demonstrates non-SPD S matrix warning
 add_test(
   NAME
-  pcmsolver_pNA-SPD-failure
+  pcmsolver_pNA-SPD-warning
   COMMAND
     ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
       --exe=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
-      --inp=pNA_SPD_failure.pcm
+      --inp=pNA_SPD_warning.pcm
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}
   )
-set_tests_properties(pcmsolver_pNA-SPD-failure
+set_tests_properties(pcmsolver_pNA-SPD-warning
   PROPERTIES
-  LABELS "pcmsolver;standalone;SPD-failure"
-  WILL_FAIL TRUE
-  ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
-  )
-
-# Demonstrates failure caught by Gauss' theorem test
-add_test(
-  NAME
-    pcmsolver_biphenyl-gauss-failure
-  COMMAND
-    ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
-      --exe=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
-      --inp=biphenyl_gauss_failure.pcm
-  WORKING_DIRECTORY
-    ${CMAKE_CURRENT_BINARY_DIR}
-  )
-set_tests_properties(pcmsolver_biphenyl-gauss-failure
-  PROPERTIES
-  LABELS "pcmsolver;standalone;gauss-failure"
-  WILL_FAIL TRUE
+  LABELS "pcmsolver;standalone;SPD-warning"
   ENVIRONMENT PYTHONPATH=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}:$ENV{PYTHONPATH}
   )

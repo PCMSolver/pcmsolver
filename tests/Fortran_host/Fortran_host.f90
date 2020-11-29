@@ -24,7 +24,7 @@
 program pcm_fortran_host
 
   use, intrinsic :: iso_c_binding
-  use, intrinsic :: iso_fortran_env, only:output_unit, error_unit
+  use, intrinsic :: iso_fortran_env, only: output_unit, error_unit
   use pcmsolver
   use utilities
   use testing
@@ -92,7 +92,7 @@ program pcm_fortran_host
   ! the Oxy, Oxz and Oyz planes
   symmetry_info = (/3, 4, 2, 1/)
 
-  host_input = pcmsolver_input()
+  host_input = pcmsolver_fill_pcminput(area=.2d0, scaling=.true., solver_type='iefpcm', solvent='water')
 
   pcm_context = pcmsolver_new(PCMSOLVER_READER_HOST, &
                               nr_nuclei, charges, coordinates, &
@@ -113,19 +113,19 @@ program pcm_fortran_host
   mep = 0.0_c_double
   mep = nuclear_mep(nr_nuclei, charges, reshape(coordinates, (/3_c_int, nr_nuclei/)), &
                     grid_size, reshape(grid, (/3_c_int, grid_size/)))
-  call pcmsolver_set_surface_function(pcm_context, grid_size, mep, pcmsolver_fstring_to_carray(mep_lbl))
+  call pcmsolver_set_surface_function(pcm_context, grid_size, mep, mep_lbl)
   ! This is the Ag irreducible representation (totally symmetric)
   call pcmsolver_compute_asc(pcm_context, &
-                             pcmsolver_fstring_to_carray(mep_lbl), &
-                             pcmsolver_fstring_to_carray(asc_lbl), &
+                             mep_lbl, &
+                             asc_lbl, &
                              irrep=0_c_int)
   allocate (asc_Ag(grid_size))
   asc_Ag = 0.0_c_double
-  call pcmsolver_get_surface_function(pcm_context, grid_size, asc_Ag, pcmsolver_fstring_to_carray(asc_lbl))
+  call pcmsolver_get_surface_function(pcm_context, grid_size, asc_Ag, asc_lbl)
 
   energy = pcmsolver_compute_polarization_energy(pcm_context, &
-                                                 pcmsolver_fstring_to_carray(mep_lbl), &
-                                                 pcmsolver_fstring_to_carray(asc_lbl))
+                                                 mep_lbl, &
+                                                 asc_lbl)
 
   write (output_unit, '(A, F20.12)') 'Polarization energy = ', energy
 
@@ -133,10 +133,10 @@ program pcm_fortran_host
   asc_neq_B3g = 0.0_c_double
   ! This is the B3g irreducible representation
   call pcmsolver_compute_response_asc(pcm_context, &
-                                      pcmsolver_fstring_to_carray(mep_lbl), &
-                                      pcmsolver_fstring_to_carray(asc_neq_B3g_lbl), &
+                                      mep_lbl, &
+                                      asc_neq_B3g_lbl, &
                                       irrep=3_c_int)
-  call pcmsolver_get_surface_function(pcm_context, grid_size, asc_neq_B3g, pcmsolver_fstring_to_carray(asc_neq_B3g_lbl))
+  call pcmsolver_get_surface_function(pcm_context, grid_size, asc_neq_B3g, asc_neq_B3g_lbl)
 
   ! Equilibrium ASC in B3g symmetry.
   ! This is an internal check: the relevant segment of the vector
@@ -145,10 +145,10 @@ program pcm_fortran_host
   asc_B3g = 0.0_c_double
   ! This is the B3g irreducible representation
   call pcmsolver_compute_asc(pcm_context, &
-                             pcmsolver_fstring_to_carray(mep_lbl), &
-                             pcmsolver_fstring_to_carray(asc_B3g_lbl), &
+                             mep_lbl, &
+                             asc_B3g_lbl, &
                              irrep=3_c_int)
-  call pcmsolver_get_surface_function(pcm_context, grid_size, asc_B3g, pcmsolver_fstring_to_carray(asc_B3g_lbl))
+  call pcmsolver_get_surface_function(pcm_context, grid_size, asc_B3g, asc_B3g_lbl)
 
   ! Check that everything calculated is OK
   ! Cavity size
@@ -175,8 +175,8 @@ program pcm_fortran_host
   ! Surface functions
   call test_surface_functions(grid_size, mep, asc_Ag, asc_B3g, asc_neq_B3g, areas)
 
-  call pcmsolver_save_surface_function(pcm_context, pcmsolver_fstring_to_carray(mep_lbl))
-  call pcmsolver_load_surface_function(pcm_context, pcmsolver_fstring_to_carray(mep_lbl))
+  call pcmsolver_save_surface_function(pcm_context, mep_lbl)
+  call pcmsolver_load_surface_function(pcm_context, mep_lbl)
 
   call pcmsolver_write_timings(pcm_context)
 

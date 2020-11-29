@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-## [Version 1.3.0] - 2020-11-29
-
 ### Added
 
 - A new API initialization function `pcmsolver_new_read_host`. This allows
@@ -18,6 +16,8 @@
   objects managed through `pcmsolver_context_t`.  Use this function when you want
   to manage input parsing on the host side, rather than use a dedicated input file
  for PCMSolver.
+- A `pcmsolver_fill_pcminput` function in the Fortran interface. This function
+  simplifies the creation of the `PCMInput` object from Fortran.
 - A `PCMSOLVER_WARNING` macro to emit warning to users.
 
 ### Changed
@@ -32,7 +32,7 @@
 - We switched back to using LU decomposition for CPCM.
 - For IEF, we switched to LU decomposition, instead of partially pivoted LU.
 - UFF radii are scaled by 1.1 by default.
-  
+
 ## Fixed
 
 - The printout of sphere centers and radii always uses Angstrom.
@@ -632,8 +632,7 @@
 
 ## v1.0.0 - 2014-09-30 [YANKED]
 
-[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.3.0...HEAD
-[Version 1.3.0]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.3...v1.3.0
+[Unreleased]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.3...HEAD
 [Version 1.2.3]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.2...v1.2.3
 [Version 1.2.2]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.1...v1.2.2
 [Version 1.2.1]: https://github.com/PCMSolver/pcmsolver/compare/v1.2.0...v1.2.1

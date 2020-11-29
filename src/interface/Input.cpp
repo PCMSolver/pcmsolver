@@ -410,9 +410,7 @@ std::string right_trim(const char * src) {
 }
 
 std::string trim(std::string s) {
-  left_trim(s);
-  right_trim(s);
-  return s;
+  return right_trim(left_trim(s));
 }
 
 std::string trim(const char * src) {

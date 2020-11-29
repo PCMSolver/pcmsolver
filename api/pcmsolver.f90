@@ -52,7 +52,8 @@ module pcmsolver
     enumerator :: PCMSOLVER_READER_OWN = 0, PCMSOLVER_READER_HOST = 1
   end enum
 
-  private :: pcmsolver_fstring_to_carray
+  private :: fstring_to_carray, fstring_to_carray_w_len
+  public :: pcmsolver_fill_pcminput
 
 interface
   function pcmsolver_new(input_reading, nr_nuclei, charges, coordinates, symmetry_info, &
@@ -283,7 +284,7 @@ contains
   ! \brief Convert a Fortran string into a C string.
   ! \param[in] string_f03 a Fortran character string.
   ! \return array_c Null-terminated C string in a character array.
-  pure function pcmsolver_fstring_to_carray(string_f03) result(array_c)
+  pure function fstring_to_carray(string_f03) result(array_c)
     character(len=*), intent(in) :: string_f03
     character(kind=c_char, len=1) :: array_c(len(string_f03)+1)
 
@@ -295,13 +296,39 @@ contains
     array_c(i) = c_null_char
   end function
 
+  ! \brief Convert a Fortran string into a C string of prescribed length.
+  ! \param[in] string_f03 a Fortran character string.
+  ! \param[in] l the prescribed length of the output array.
+  ! \return array_c Null-terminated C string in a character array.
+  pure function fstring_to_carray_w_len(string_f03, l) result(array_c)
+    character(len=*), intent(in) :: string_f03
+    integer, intent(in) :: l
+    character(kind=c_char, len=1) :: array_c(l)
+
+    integer :: i
+    character(kind=c_char, len=l-1) :: spoof
+
+    ! first fill spoof with empty spaces
+    spoof = repeat(' ', l-1)
+    ! then copy string_f03 to spoof
+    do i = 1, len(string_f03)
+        spoof(i:i) = string_f03(i:i)
+    end do
+
+    ! make the C character array
+    do i = 1, len(spoof)
+        array_c(i) = spoof(i:i)
+    end do
+    array_c(i) = c_null_char
+  end function
+
   subroutine pcmsolver_compute_asc(context, mep_name, asc_name, irrep)
     type(c_ptr), value :: context
     character(kind=c_char, len=*), intent(in) :: mep_name, asc_name
     integer(c_int), intent(in) :: irrep
 
-    call pcmsolver_compute_asc_c(context, pcmsolver_fstring_to_carray(mep_name), &
-                                          pcmsolver_fstring_to_carray(asc_name), irrep)
+    call pcmsolver_compute_asc_c(context, fstring_to_carray(mep_name), &
+                                          fstring_to_carray(asc_name), irrep)
   end subroutine
 
   subroutine pcmsolver_compute_response_asc(context, mep_name, asc_name, irrep)
@@ -309,8 +336,8 @@ contains
     character(kind=c_char, len=*), intent(in) :: mep_name, asc_name
     integer(c_int), intent(in) :: irrep
 
-    call pcmsolver_compute_response_asc_c(context, pcmsolver_fstring_to_carray(mep_name), &
-         pcmsolver_fstring_to_carray(asc_name), irrep)
+    call pcmsolver_compute_response_asc_c(context, fstring_to_carray(mep_name), &
+         fstring_to_carray(asc_name), irrep)
   end subroutine
 
   function pcmsolver_compute_polarization_energy(context, mep_name, asc_name) result(energy)
@@ -319,8 +346,8 @@ contains
     real(c_double) :: energy
 
     energy =  pcmsolver_compute_polarization_energy_c(context, &
-                                                      pcmsolver_fstring_to_carray(mep_name), &
-                                                      pcmsolver_fstring_to_carray(asc_name))
+                                                      fstring_to_carray(mep_name), &
+                                                      fstring_to_carray(asc_name))
   end function
 
   function pcmsolver_get_asc_dipole(context, asc_name, dipole) result(mu)
@@ -329,7 +356,7 @@ contains
     real(c_double), intent(inout) :: dipole(*)
     real(c_double) :: mu
 
-    mu = pcmsolver_get_asc_dipole_c(context, pcmsolver_fstring_to_carray(asc_name), dipole)
+    mu = pcmsolver_get_asc_dipole_c(context, fstring_to_carray(asc_name), dipole)
   end function
 
   subroutine pcmsolver_set_surface_function(context, f_size, values, name)
@@ -338,7 +365,7 @@ contains
     real(c_double), intent(inout) :: values(*)
     character(kind=c_char, len=*), intent(in) :: name
 
-    call pcmsolver_set_surface_function_c(context, f_size, values, pcmsolver_fstring_to_carray(name))
+    call pcmsolver_set_surface_function_c(context, f_size, values, fstring_to_carray(name))
   end subroutine
 
   subroutine pcmsolver_get_surface_function(context, f_size, values, name)
@@ -347,28 +374,28 @@ contains
     real(c_double), intent(inout) :: values(*)
     character(kind=c_char, len=*), intent(in) :: name
 
-    call pcmsolver_get_surface_function_c(context, f_size, values, pcmsolver_fstring_to_carray(name))
+    call pcmsolver_get_surface_function_c(context, f_size, values, fstring_to_carray(name))
   end subroutine
 
   subroutine pcmsolver_print_surface_function(context, name)
     type(c_ptr), value :: context
     character(kind=c_char, len=*), intent(in) :: name
 
-    call pcmsolver_print_surface_function_c(context, pcmsolver_fstring_to_carray(name))
+    call pcmsolver_print_surface_function_c(context, fstring_to_carray(name))
   end subroutine
 
   subroutine pcmsolver_save_surface_function(context, name)
     type(c_ptr), value :: context
     character(kind=c_char, len=*), intent(in) :: name
 
-    call pcmsolver_save_surface_function_c(context, pcmsolver_fstring_to_carray(name))
+    call pcmsolver_save_surface_function_c(context, fstring_to_carray(name))
   end subroutine
 
   subroutine pcmsolver_load_surface_function(context, name)
     type(c_ptr), value :: context
     character(kind=c_char, len=*), intent(in) :: name
 
-    call pcmsolver_load_surface_function_c(context, pcmsolver_fstring_to_carray(name))
+    call pcmsolver_load_surface_function_c(context, fstring_to_carray(name))
   end subroutine
 
   subroutine pcmsolver_set_bool_option(context, param, val)
@@ -376,7 +403,7 @@ contains
     character(kind=c_char, len=*), intent(in) :: param
     logical(c_bool), intent(in) :: val
 
-    call pcmsolver_set_bool_option_c(context, pcmsolver_fstring_to_carray(param), val)
+    call pcmsolver_set_bool_option_c(context, fstring_to_carray(param), val)
   end subroutine
 
   subroutine pcmsolver_set_int_option(context, param, val)
@@ -384,7 +411,7 @@ contains
     character(kind=c_char, len=*), intent(in) :: param
     integer(c_int), intent(in) :: val
 
-    call pcmsolver_set_int_option_c(context, pcmsolver_fstring_to_carray(param), val)
+    call pcmsolver_set_int_option_c(context, fstring_to_carray(param), val)
   end subroutine
 
   subroutine pcmsolver_set_double_option(context, param, val)
@@ -392,7 +419,7 @@ contains
     character(kind=c_char, len=*), intent(in) :: param
     real(c_double), intent(in) :: val
 
-    call pcmsolver_set_double_option_c(context, pcmsolver_fstring_to_carray(param), val)
+    call pcmsolver_set_double_option_c(context, fstring_to_carray(param), val)
   end subroutine
 
   subroutine pcmsolver_set_string_option(context, param, val)
@@ -400,7 +427,148 @@ contains
     character(kind=c_char, len=*), intent(in) :: param
     character(kind=c_char, len=*), intent(in) :: val
 
-    call pcmsolver_set_string_option_c(context, pcmsolver_fstring_to_carray(param), &
-                                                pcmsolver_fstring_to_carray(val))
+    call pcmsolver_set_string_option_c(context, fstring_to_carray(param), &
+                                                fstring_to_carray(val))
   end subroutine
+
+  function pcmsolver_fill_pcminput(cavity_type, patch_level, coarsity, area, &
+                                   radii_set, min_distance, der_order, &
+                                   scaling, restart_name, min_radius, solver_type, &
+                                   correction, solvent, probe_radius, equation_type, &
+                                   inside_type, outside_epsilon, outside_type) result(host_input)
+    character(kind=c_char, len=*), intent(in), optional :: cavity_type
+    integer(c_int), intent(in), optional                :: patch_level
+    real(c_double), intent(in), optional                :: coarsity
+    real(c_double), intent(in)                          :: area
+    character(kind=c_char, len=*), intent(in), optional :: radii_set
+    real(c_double), intent(in), optional                :: min_distance
+    integer(c_int), intent(in), optional                :: der_order
+    logical, intent(in), optional                       :: scaling
+    character(kind=c_char, len=*), intent(in), optional :: restart_name
+    real(c_double), intent(in), optional                :: min_radius
+    character(kind=c_char, len=*), intent(in)           :: solver_type
+    real(c_double), intent(in), optional                :: correction
+    character(kind=c_char, len=*), intent(in)           :: solvent
+    real(c_double), intent(in), optional                :: probe_radius
+    character(kind=c_char, len=*), intent(in), optional :: equation_type
+    character(kind=c_char, len=*), intent(in), optional :: inside_type
+    real(c_double), intent(in), optional                :: outside_epsilon
+    character(kind=c_char, len=*), intent(in), optional :: outside_type
+
+    type(PCMInput) :: host_input
+
+    ! cavity_type
+    if (present(cavity_type)) then
+       host_input%cavity_type = fstring_to_carray_w_len(cavity_type, l=8)
+    else
+       host_input%cavity_type = fstring_to_carray_w_len('gepol', l=8)
+    end if
+
+    ! patch_level
+    if (present(patch_level)) then
+       host_input%patch_level = int(patch_level, kind=c_int)
+    else
+       host_input%patch_level = int(2, kind=c_int)
+    end if
+
+    ! coarsity
+    if (present(coarsity)) then
+       host_input%coarsity = coarsity
+    else
+       host_input%coarsity = 0.5
+    end if
+
+    ! area
+    host_input%area = area
+
+    ! radii_set
+    if (present(radii_set)) then
+       host_input%radii_set = fstring_to_carray_w_len(radii_set, l=8)
+    else
+       host_input%radii_set = fstring_to_carray_w_len('bondi', l=8)
+    end if
+
+    ! min_distance
+    if (present(min_distance)) then
+       host_input%min_distance = min_distance
+    else
+       host_input%min_distance = 0.1
+    end if
+
+    ! der_order
+    if (present(der_order)) then
+       host_input%der_order = int(der_order, kind=c_int)
+    else
+       host_input%der_order = int(4, kind=c_int)
+    end if
+
+    ! scaling
+    if (present(scaling)) then
+       host_input%scaling = logical(scaling, kind=c_bool)
+    else
+       host_input%scaling = logical(.false., kind=c_bool)
+    end if
+
+    ! restart_name
+    if (present(restart_name)) then
+       host_input%restart_name = fstring_to_carray_w_len(restart_name, l=20)
+    else
+       host_input%restart_name = fstring_to_carray_w_len('cavity.npz', l=20)
+    end if
+
+    ! min_radius
+    if (present(min_radius)) then
+       host_input%min_radius = min_radius
+    else
+       host_input%min_radius = 100.0
+    end if
+
+    ! solver_type
+    host_input%solver_type = fstring_to_carray_w_len(solver_type, l=7)
+
+    ! correction
+    if (present(correction)) then
+       host_input%correction = correction
+    else
+       host_input%correction = 0.0
+    end if
+
+    ! solvent
+    host_input%solvent = fstring_to_carray_w_len(solvent, l=16)
+
+    ! probe_radius
+    if (present(probe_radius)) then
+       host_input%probe_radius = probe_radius
+    else
+       host_input%probe_radius = 1.0
+    end if
+
+    ! equation_type
+    if (present(equation_type)) then
+       host_input%equation_type = fstring_to_carray_w_len(equation_type, l=11)
+    else
+       host_input%equation_type = fstring_to_carray_w_len('secondkind', l=11)
+    end if
+
+    ! inside_type
+    if (present(inside_type)) then
+       host_input%inside_type = fstring_to_carray_w_len(inside_type, l=7)
+    else
+       host_input%inside_type = fstring_to_carray_w_len('vacuum', l=7)
+    end if
+
+    ! outside_epsilon
+    if (present(outside_epsilon)) then
+       host_input%outside_epsilon = outside_epsilon
+    else
+       host_input%outside_epsilon = 1.0
+    end if
+
+    ! outside_type
+    if (present(outside_type)) then
+       host_input%outside_type = fstring_to_carray_w_len(outside_type, l=22)
+    else
+       host_input%outside_type = fstring_to_carray_w_len('uniformdielectric', l=22)
+    end if
+  end function
 end module

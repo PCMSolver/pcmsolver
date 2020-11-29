@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -77,3 +77,5 @@ typedef struct PCMInput {
   /// Type of Green's function requested outside the cavity.
   char outside_type[22];
 } PCMInput;
+
+PCMInput pcmsolver_default_input();

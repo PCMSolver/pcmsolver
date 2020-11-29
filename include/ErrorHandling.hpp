@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -66,6 +66,17 @@
  *  Same usage pattern as for normal assertions. Static assertions are
  *  checked at compile-time.
  */
+
+/// Macro to be used to signal warnings
+#define PCMSOLVER_WARNING(message)                                                  \
+  {                                                                                 \
+    std::ostringstream _err;                                                        \
+    _err << "PCMSolver warning.\n"                                                  \
+         << " In function " << __func__ << " at line " << __LINE__ << " of file "   \
+         << __FILE__ << "\n"                                                        \
+         << message << std::endl;                                                   \
+    std::fprintf(stderr, "%s\n", _err.str().c_str());                               \
+  }
 
 /// Macro to be used to signal error conditions
 #define PCMSOLVER_ERROR(message)                                                    \

@@ -1,6 +1,6 @@
 #
 #  PCMSolver, an API for the Polarizable Continuum Model
-#  Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+#  Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
 #
 #  This file is part of PCMSolver.
 #
@@ -29,7 +29,6 @@ class CODATA:
            ToAngstrom conversion factor from AU of length to Angstrom
            ToFemtoseconds conversion factor from AU of time to Femtoseconds
     """
-
     def __init__(self, toang, tofs):
         self.ToAngstrom = toang
         self.ToFemtosecond = tofs

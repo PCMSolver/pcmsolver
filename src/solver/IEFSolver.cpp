@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -100,16 +100,15 @@ Eigen::VectorXd IEFSolver::computeCharge_impl(const Eigen::VectorXd & potential,
   Eigen::VectorXd charge = Eigen::VectorXd::Zero(fullDim);
   int nrBlocks = blockRinfinity_.size();
   int irrDim = fullDim / nrBlocks;
-  charge.segment(irrep * irrDim, irrDim) =
-      -blockTepsilon_[irrep].partialPivLu().solve(
-          blockRinfinity_[irrep] * potential.segment(irrep * irrDim, irrDim));
+  charge.segment(irrep * irrDim, irrDim) = -blockTepsilon_[irrep].lu().solve(
+      blockRinfinity_[irrep] * potential.segment(irrep * irrDim, irrDim));
 
   // Obtain polarization weights
   if (hermitivitize_) {
     Eigen::VectorXd adj_asc = Eigen::VectorXd::Zero(fullDim);
     // Form T^\dagger * v = c
     adj_asc.segment(irrep * irrDim, irrDim) =
-        blockTepsilon_[irrep].adjoint().partialPivLu().solve(
+        blockTepsilon_[irrep].adjoint().lu().solve(
             potential.segment(irrep * irrDim, irrDim));
     // Form R^\dagger * c = q^* ("transposed" polarization charges)
     adj_asc.segment(irrep * irrDim, irrDim) =

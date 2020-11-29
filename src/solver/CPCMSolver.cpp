@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -29,8 +29,8 @@
 
 #include "Config.hpp"
 
-#include <Eigen/Cholesky>
 #include <Eigen/Core>
+#include <Eigen/LU>
 
 #include "SolverData.hpp"
 #include "bi_operators/IBoundaryIntegralOperator.hpp"
@@ -76,7 +76,7 @@ Eigen::VectorXd CPCMSolver::computeCharge_impl(const Eigen::VectorXd & potential
   int nrBlocks = blockS_.size();
   int irrDim = fullDim / nrBlocks;
   charge.segment(irrep * irrDim, irrDim) =
-      -blockS_[irrep].llt().solve(potential.segment(irrep * irrDim, irrDim));
+      -blockS_[irrep].lu().solve(potential.segment(irrep * irrDim, irrDim));
 
   return charge;
 }

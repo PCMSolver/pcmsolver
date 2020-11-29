@@ -1,6 +1,6 @@
 /*
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2019 Roberto Di Remigio, Luca Frediani and contributors.
+ * Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and contributors.
  *
  * This file is part of PCMSolver.
  *
@@ -106,7 +106,7 @@ public:
     molecule_ = m;
     spheres_ = molecule_.spheres();
   }
-  void initMolecule();
+  void initMolecule(bool deferred_init = false);
   /// @}
 
   /// Medium section input
@@ -263,5 +263,28 @@ std::string uppercase(std::string s);
 std::string uppercase(const char * src);
 
 std::string trim_and_upper(const char * src);
+
+enum PCMInputFields {
+  cavity_type,
+  patch_level,
+  coarsity,
+  area,
+  radii_set,
+  min_distance,
+  der_order,
+  scaling,
+  restart_name,
+  min_radius,
+  solver_type,
+  correction,
+  solvent,
+  probe_radius,
+  equation_type,
+  inside_type,
+  outside_epsilon,
+  outside_type
+};
+
+PCMInputFields string_to_enum(std::string field);
 } // namespace detail
 } // namespace pcm

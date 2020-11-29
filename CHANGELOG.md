@@ -1,11 +1,39 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- A new API initialization function `pcmsolver_new_read_host`. This allows
+  creating an *uninitialized* `pcmsolver_context_t` object: the initialization is
+  deferred to a later point and orchestrated by the host program.  The input
+  options are then set *via* the other API functions:
+  * `pcmsolver_set_bool_option`
+  * `pcmsolver_set_int_option`
+  * `pcmsolver_set_double_option`
+  * `pcmsolver_set_string_option`
+  A call to `pcmsolver_refresh` will trigger initialization of all internal
+  objects managed through `pcmsolver_context_t`.  Use this function when you want
+  to manage input parsing on the host side, rather than use a dedicated input file
+ for PCMSolver.
+- A `PCMSOLVER_WARNING` macro to emit warning to users.
+
 ### Changed
 
 - Use GitHub Actions instead of Travis for continuous integration.
 - Remove integration with Danger in CI.
 - A C++11-compliant compilers is **required** to compile the library.
+- The Fortran interface has been refactored to hide the transformation of
+  strings from Fortran to C from the host program. 
+- The check on the symmetric positive definiteness of the S matrix triggers a
+  warning, not an error.
+- We switched back to using LU decomposition for CPCM.
+- For IEF, we switched to LU decomposition, instead of partially pivoted LU.
+- UFF radii are scaled by 1.1 by default.
+  
+## Fixed
+
+- The printout of sphere centers and radii always uses Angstrom.
 
 ## [Version 1.2.3] - 2019-02-14
 

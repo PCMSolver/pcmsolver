@@ -18,6 +18,11 @@ option(STATIC_LIBRARY_ONLY "Create the static library only" OFF)
 option(SHARED_LIBRARY_ONLY "Create the shared library only" OFF)
 option(ENABLE_GENERIC "Enable mostly static linking in shared library" OFF)
 
+if(STATIC_LIBRARY_ONLY)
+ #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+ #set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
+endif()
+
 if(ENABLE_GENERIC)
     if(DEFINED CMAKE_Fortran_COMPILER_ID)
         if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)

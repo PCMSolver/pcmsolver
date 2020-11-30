@@ -485,6 +485,33 @@ No additional spheres will be generated.
 
      * **Type**: array of doubles
 
+MMFQ section keywords
+---------------------
+
+Set a classical fluctuating charge force field. This is incompatible with any
+options specifying a continuum model.  No additional spheres will be generated.
+
+.. glossary::
+
+   SitesPerFragment
+     Number of sites per MM fragment. For water this is 3.
+
+     * **Type**: integer
+     * **Default**: 3
+
+   Sites
+     Array of MM sites for the FQ model
+     Format is :math:`[\ldots, x_i, y_i, z_i, chi_i, eta_i \ldots]`
+
+     * **Type**: array of doubles
+
+   NonPolarizable
+     Whether to make this force field nonpolarizable.
+
+     * **Type**: bool
+     * **Default**: false
+
+
 .. _available-radii:
 
 Available radii

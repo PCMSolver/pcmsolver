@@ -11,7 +11,7 @@ file(
   COPY
     cpcm.inp
     diffuse.inp
-    fq.inp
+    mmfq.inp
     multipoles.inp
     restart.inp
     sharp.inp

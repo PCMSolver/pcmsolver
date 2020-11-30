@@ -44,3 +44,8 @@ ChargeDistribution {
   Monopoles = [Double]
   Dipoles = [Double]
 }
+MMFQ {
+  SitesPerFragment = [Integer]
+  Sites = [Array of Doubles]
+  NonPolarizable = [Bool]
+}

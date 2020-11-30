@@ -18,16 +18,17 @@ target_compile_definitions(unit_tests
     "$<$<NOT:$<BOOL:${HAS_CXX11}>>:CATCH_CONFIG_NO_CPP11>"
   )
 
-add_subdirectory(input)
-add_subdirectory(numerical_quadrature)
-add_subdirectory(gepol)
-add_subdirectory(dielectric_profile)
-add_subdirectory(green)
+add_subdirectory(benchmark)
 add_subdirectory(bi_operators)
 add_subdirectory(cpcm)
+add_subdirectory(dielectric_profile)
+add_subdirectory(gepol)
+add_subdirectory(green)
 add_subdirectory(iefpcm)
+add_subdirectory(input)
+add_subdirectory(mmfq)
+add_subdirectory(numerical_quadrature)
 add_subdirectory(utils)
-add_subdirectory(benchmark)
 
 target_link_libraries(unit_tests
   PRIVATE

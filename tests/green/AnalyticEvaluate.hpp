@@ -396,23 +396,33 @@ inline Eigen::Array4d analyticSphericalSharp(double eps,
   // Value of the function
   result(0) = 1.0 / (epsSolv * distance) - G_img;
 
-  double d_probe_G_img = sevenPointStencil(
-      std::bind(
-          imagePotential, eps, epsSolv, radius, origin, maxL, std::placeholders::_1, std::placeholders::_2),
-      pp,
-      sp,
-      ppNormal,
-      1.0e-04);
+  double d_probe_G_img = sevenPointStencil(std::bind(imagePotential,
+                                                     eps,
+                                                     epsSolv,
+                                                     radius,
+                                                     origin,
+                                                     maxL,
+                                                     std::placeholders::_1,
+                                                     std::placeholders::_2),
+                                           pp,
+                                           sp,
+                                           ppNormal,
+                                           1.0e-04);
   // Value of the directional derivative wrt probe
   result(1) = (sp - pp).dot(ppNormal) / (epsSolv * distance_3) - d_probe_G_img;
 
-  double d_source_G_img = sevenPointStencil(
-      std::bind(
-          imagePotential, eps, epsSolv, radius, origin, maxL, std::placeholders::_1, std::placeholders::_2),
-      sp,
-      pp,
-      spNormal,
-      1.0e-04);
+  double d_source_G_img = sevenPointStencil(std::bind(imagePotential,
+                                                      eps,
+                                                      epsSolv,
+                                                      radius,
+                                                      origin,
+                                                      maxL,
+                                                      std::placeholders::_1,
+                                                      std::placeholders::_2),
+                                            sp,
+                                            pp,
+                                            spNormal,
+                                            1.0e-04);
   // Directional derivative wrt source
   result(2) = -(sp - pp).dot(spNormal) / (epsSolv * distance_3) - d_source_G_img;
   // Value of the Hessian

@@ -4,6 +4,7 @@
 
 ### Added
 
+- An implementation of the fluctuating charge (FQ) molecular mechanics (MM) model.
 - A new API initialization function `pcmsolver_new_read_host`. This allows
   creating an *uninitialized* `pcmsolver_context_t` object: the initialization is
   deferred to a later point and orchestrated by the host program.  The input

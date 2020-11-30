@@ -1,6 +1,6 @@
 /**
  * PCMSolver, an API for the Polarizable Continuum Model
- * Copyright (C) 2017 Roberto Di Remigio, Luca Frediani and collaborators.
+ * Copyright (C) 2020 Roberto Di Remigio, Luca Frediani and collaborators.
  *
  * This file is part of PCMSolver.
  *
@@ -76,7 +76,8 @@ Eigen::VectorXd FQOhno::computeCharge_impl(const Eigen::VectorXd & potential,
 
 std::ostream & FQOhno::printSolver(std::ostream & os) {
   os << "Fluctuating charge solver type: Ohno" << std::endl;
-  if (nonPolarizable_) os << "Nonpolarizable force field" << std::endl;
+  if (nonPolarizable_)
+    os << "Nonpolarizable force field" << std::endl;
   os << "Number of fragments = " << mmfq_.nFragments << std::endl;
   os << "Number of sites per fragment = " << mmfq_.nSitesPerFragment << std::endl;
   os << "Number of sites = " << mmfq_.nFragments * mmfq_.nSitesPerFragment;

@@ -155,16 +155,16 @@ void Meddle::CTORBody() {
     TIMER_ON("Meddle::initCavity");
     initCavity();
     TIMER_OFF("Meddle::initCavity");
-  }
 
-  TIMER_ON("Meddle::initStaticSolver");
-  initStaticSolver();
-  TIMER_OFF("Meddle::initStaticSolver");
+    TIMER_ON("Meddle::initStaticSolver");
+    initStaticSolver();
+    TIMER_OFF("Meddle::initStaticSolver");
 
-  if (input_.isDynamic()) {
-    TIMER_ON("Meddle::initDynamicSolver");
-    initDynamicSolver();
-    TIMER_OFF("Meddle::initDynamicSolver");
+    if (input_.isDynamic()) {
+      TIMER_ON("Meddle::initDynamicSolver");
+      initDynamicSolver();
+      TIMER_OFF("Meddle::initDynamicSolver");
+    }
   }
 }
 
@@ -175,6 +175,7 @@ Meddle::Meddle(const Input & input, const HostWriter & write)
       cavity_(nullptr),
       K_0_(nullptr),
       K_d_(nullptr),
+      FQ_(nullptr),
       hasDynamic_(false),
       hasFQ_(false) {
   input_.initMolecule();
@@ -188,6 +189,7 @@ Meddle::Meddle(const std::string & inputFileName, const HostWriter & write)
       cavity_(nullptr),
       K_0_(nullptr),
       K_d_(nullptr),
+      FQ_(nullptr),
       hasDynamic_(false),
       hasFQ_(false) {
   input_.initMolecule();
@@ -206,6 +208,7 @@ Meddle::Meddle(int nr_nuclei,
       cavity_(nullptr),
       K_0_(nullptr),
       K_d_(nullptr),
+      FQ_(nullptr),
       hasDynamic_(false),
       hasFQ_(false) {
   TIMER_ON("Meddle::initInput");
@@ -227,6 +230,7 @@ Meddle::Meddle(int nr_nuclei,
       cavity_(nullptr),
       K_0_(nullptr),
       K_d_(nullptr),
+      FQ_(nullptr),
       hasDynamic_(false),
       hasFQ_(false) {
   TIMER_ON("Meddle::initInput");
@@ -247,6 +251,7 @@ Meddle::Meddle(int nr_nuclei,
       cavity_(nullptr),
       K_0_(nullptr),
       K_d_(nullptr),
+      FQ_(nullptr),
       hasDynamic_(false),
       hasFQ_(false) {
   // This one does a deferred initialization:

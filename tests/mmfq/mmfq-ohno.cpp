@@ -32,11 +32,11 @@
 #include "utils/MathUtils.hpp"
 
 using namespace pcm;
-using utils::MMFQ;
 using mmfq::FQOhno;
+using utils::MMFQ;
 
 TEST_CASE("Test MMFQ for a pair of water fragments and the Ohno kernel",
-          "[mmfq][ohno]") {
+          "[mmfq][ohno][mmfq-ohno]") {
   MMFQ fragments;
   fragments.nFragments = 2;
   fragments.nSitesPerFragment = 3;

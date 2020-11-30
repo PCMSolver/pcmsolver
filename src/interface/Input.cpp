@@ -435,9 +435,7 @@ std::string right_trim(const char * src) {
   return right_trim(tmp);
 }
 
-std::string trim(std::string s) {
-  return right_trim(left_trim(s));
-}
+std::string trim(std::string s) { return right_trim(left_trim(s)); }
 
 std::string trim(const char * src) {
   std::string tmp(src);

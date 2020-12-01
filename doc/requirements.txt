@@ -2,5 +2,5 @@ breathe
 pygments
 recommonmark
 sphinx
-sphinx_rtd_theme
+sphinx-rtd-theme
 sphinxcontrib-bibtex

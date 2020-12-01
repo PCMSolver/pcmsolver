@@ -1,0 +1,6 @@
+breathe
+pygments
+recommonmark
+sphinx
+sphinx_rtd_theme
+sphinxcontrib-bibtex

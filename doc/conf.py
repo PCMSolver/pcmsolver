@@ -48,10 +48,10 @@ project_doc_dir = os.getcwd()
 project_src_dir = os.path.join(project_root_dir, 'src')
 # Finally, this is where the documentation will be built
 doc_build_dir = os.path.join(project_doc_dir, '_build')
-print('Project root directory {}'.format(project_root_dir))
-print('Project doc directory {}'.format(project_doc_dir))
-print('Project src directory {}'.format(project_src_dir))
-print('Documentation build directory {}'.format(doc_build_dir))
+print(('Project root directory {}'.format(project_root_dir)))
+print(('Project doc directory {}'.format(project_doc_dir)))
+print(('Project src directory {}'.format(project_src_dir)))
+print(('Documentation build directory {}'.format(doc_build_dir)))
 
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.mathjax', 'sphinx.ext.ifconfig',
@@ -162,7 +162,7 @@ def configure_file(rep, fname, **kwargs):
     filedata = ''
     with open(os.path.join(in_path, fname_in), 'r') as fin:
         filedata = fin.read()
-    rep = dict((re.escape(k), v) for k, v in rep.items())
+    rep = dict((re.escape(k), v) for k, v in list(rep.items()))
     pattern = re.compile("|".join(list(rep.keys())))
     filedata = pattern.sub(lambda m: rep[re.escape(m.group(0))], filedata)
     fname_out = prefix + fname
@@ -227,7 +227,7 @@ def setup(app):
     dirs = [os.path.join(r, x) for r, d, _ in os.walk(project_src_dir) for x in d]
     # Filter bin and utils/getkw from from the directories list
     exclude = [os.path.join(project_src_dir, 'bin'), os.path.join(project_src_dir, 'utils', 'getkw')]
-    dirs = list(filter(lambda x: x not in exclude, dirs))
+    dirs = list([x for x in dirs if x not in exclude])
     generate_bar_charts(perl_exe, dirs, os.path.join(doc_build_dir), os.path.join(project_doc_dir, 'gfx',
                                                                                   'bar_charts'))
 

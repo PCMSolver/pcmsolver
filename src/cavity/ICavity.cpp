@@ -57,28 +57,30 @@ ICavity::ICavity(const Molecule & molec)
 }
 
 void ICavity::saveCavity(const std::string & fname) {
+  std::string ffname = std::tmpnam(nullptr);
+
   // Write everything in a single .npz binary file
   unsigned int dim = static_cast<unsigned int>(nElements_);
   // Write the number of elements, it will be used to check sanity of the save/load
   // operations.
   const unsigned int shape[] = {1};
-  cnpy::npz_save(fname, "elements", &dim, shape, 1, "w", false);
+  cnpy::npz_save(ffname, "elements", &dim, shape, 1, "w", false);
   // Write weights
-  cnpy::custom::npz_save(fname, "weights", elementArea_);
+  cnpy::custom::npz_save(ffname, "weights", elementArea_);
   // Write element sphere center
-  cnpy::custom::npz_save(fname, "elSphCenter", elementSphereCenter_);
+  cnpy::custom::npz_save(ffname, "elSphCenter", elementSphereCenter_);
   // Write element radius
-  cnpy::custom::npz_save(fname, "elRadius", elementRadius_);
+  cnpy::custom::npz_save(ffname, "elRadius", elementRadius_);
   // Write centers
-  cnpy::custom::npz_save(fname, "centers", elementCenter_);
+  cnpy::custom::npz_save(ffname, "centers", elementCenter_);
   // Write normals
-  cnpy::custom::npz_save(fname, "normals", elementNormal_);
+  cnpy::custom::npz_save(ffname, "normals", elementNormal_);
   for (PCMSolverIndex i = 0; i < nElements_; ++i) {
     // Write vertices
     cnpy::custom::npz_save(
-        fname, "vertices_" + pcm::to_string(i), elements_[i].vertices());
+        ffname, "vertices_" + pcm::to_string(i), elements_[i].vertices());
     // Write arcs
-    cnpy::custom::npz_save(fname, "arcs_" + pcm::to_string(i), elements_[i].arcs());
+    cnpy::custom::npz_save(ffname, "arcs_" + pcm::to_string(i), elements_[i].arcs());
   }
 }
 

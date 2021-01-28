@@ -483,9 +483,9 @@ contains
 
     ! radii_set
     if (present(radii_set)) then
-       host_input%radii_set = fstring_to_carray_w_len(radii_set, l=8)
+       host_input%radii_set = fstring_to_carray_w_len(radii_set, l=9)
     else
-       host_input%radii_set = fstring_to_carray_w_len('bondi', l=8)
+       host_input%radii_set = fstring_to_carray_w_len('bondi', l=9)
     end if
 
     ! min_distance

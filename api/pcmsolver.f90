@@ -32,7 +32,7 @@ module pcmsolver
     integer(c_int)                :: patch_level = 0
     real(c_double)                :: coarsity = 0.0
     real(c_double)                :: area = 0.0
-    character(kind=c_char, len=1) :: radii_set(8)
+    character(kind=c_char, len=1) :: radii_set(9)
     real(c_double)                :: min_distance = 0.0
     integer(c_int)                :: der_order = 0
     logical(c_bool)               :: scaling = .false.

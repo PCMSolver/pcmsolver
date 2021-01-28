@@ -49,7 +49,7 @@ typedef struct PCMInput {
   /// Average tesserae area.
   double area;
   /// The built-in radii set to be used.
-  char radii_set[8];
+  char radii_set[9];
   /// Minimal distance between sampling points.
   double min_distance;
   /// Derivative order for the switching function.

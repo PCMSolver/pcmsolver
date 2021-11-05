@@ -1,7 +1,7 @@
 cmake_policy(SET CMP0063 NEW)
 
 # Prepare "Catch" library for other executables
-set(CATCH_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/Catch)
+set(CATCH_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/Catch)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 

@@ -1,5 +1,17 @@
 # Change Log
 
+## [Version 1.3.1] - 2022-01-31
+
+### Changed
+
+- A C++14-compliant compiler is **required** to compile the library.
+
+### Fixed
+
+- Warnings from throwing DTOR #199
+- `glibc` errors due to outdated version of Catch #197
+- Unused variable compiler warnings.
+
 ## [Version 1.3.0] - 2020-11-30
 
 ### Added

@@ -74,7 +74,6 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -101,7 +100,6 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -133,7 +131,6 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -165,7 +162,6 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -197,7 +193,6 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -229,7 +224,6 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -261,7 +255,6 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -293,7 +286,6 @@ SCENARIO("Test solver for the IEFPCM for a point charge in different Abelian poi
       IEFSolver solver(symm);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, op);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();

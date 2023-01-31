@@ -64,7 +64,4 @@ jobs:
       shell: bash -l {0}
       run: |
         cd build
-        # exclude green_spherical_diffuse test
-        ctest -C $BUILD_TYPE -E green_spherical_diffuse --output-on-failure --verbose
-        # run green_spherical_diffuse test
-        ./bin/unit_tests "[green_spherical_diffuse]" --success
+        ctest -C $BUILD_TYPE --output-on-failure --verbose

@@ -67,5 +67,4 @@ jobs:
         # exclude green_spherical_diffuse test
         ctest -C $BUILD_TYPE -E green_spherical_diffuse --output-on-failure --verbose
         # run green_spherical_diffuse test
-        ctest -C $BUILD_TYPE -R green_spherical_diffuse --output-on-failure --verbose
-        cat tests/green_spherical_diffuse.log
+        ./bin/unit_tests "[green_spherical_diffuse]" --success

@@ -6,7 +6,7 @@ if(ENABLE_CXX11_SUPPORT)
   set_compiler_flag(
     RESULT cxx11_flag
     LANGUAGE CXX
-    REQUIRED
+    #REQUIRED
     FLAGS "-std=c++11;/std:c++11;-std=c++0x;--c++11;--c++0x"
     )
   if(cxx11_flag)

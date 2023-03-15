@@ -7,7 +7,7 @@ if(ENABLE_CXX11_SUPPORT)
     RESULT cxx11_flag
     LANGUAGE CXX
     REQUIRED
-    FLAGS "-std=c++11;-std=c++0x;--c++11;--c++0x"
+    FLAGS "-std=c++11;/std:c++11;-std=c++0x;--c++11;--c++0x"
     )
   if(cxx11_flag)
     set(CXX_STANDARD_FLAG ${cxx11_flag})

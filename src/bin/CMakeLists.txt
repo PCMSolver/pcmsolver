@@ -4,7 +4,8 @@
 #target_link_libraries(debug_wavcav solver cavity wavcav pwl wem utils)
 
 add_executable(run_pcm run_pcm.cpp)
-target_link_libraries(run_pcm PCMSolver)
+add_executable(PCMSolver::run_pcm ALIAS run_pcm)
+target_link_libraries(run_pcm PCMSolver::pcm)
 if(ENABLE_GPERFTOOLS)
   target_link_libraries(run_pcm ${GPERFTOOLS_LIBRARIES})
 endif()
@@ -23,5 +24,21 @@ set_target_properties(run_pcm
     BUILD_WITH_INSTALL_RPATH OFF
     INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}"
     INSTALL_RPATH_USE_LINK_PATH ON
+    EXPORT_NAME "exe"
   )
-install(TARGETS run_pcm RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(
+  TARGETS
+    run_pcm
+  EXPORT
+    "PCMSolverTargets-exe"
+  RUNTIME DESTINATION
+    ${CMAKE_INSTALL_BINDIR}
+  )
+install(
+  EXPORT
+    "PCMSolverTargets-exe"
+  NAMESPACE
+    "PCMSolver::"
+  DESTINATION
+    ${CMAKECONFIG_INSTALL_DIR}
+  )

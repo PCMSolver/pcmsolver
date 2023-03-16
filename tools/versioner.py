@@ -275,7 +275,7 @@ include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
         ${{WTO}}/${{PN}}ConfigVersion.cmake
         VERSION {ver}
-        COMPATIBILITY SameMajorVersion)
+        COMPATIBILITY SameMinorVersion)
 """
 
     with open(os.path.abspath(outfile), 'w') as handle:

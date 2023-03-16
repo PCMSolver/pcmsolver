@@ -41,6 +41,11 @@ add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)
 
+set(export_properties
+  "PCMSolver_VERSION"
+  "PCMSolver_PYMOD"
+  )
+
 if(NOT STATIC_LIBRARY_ONLY)
   add_library(pcm-shared SHARED $<TARGET_OBJECTS:pcm-objlib>)
   target_compile_definitions(pcm-shared
@@ -68,7 +73,9 @@ if(NOT STATIC_LIBRARY_ONLY)
       MACOSX_RPATH ON
       OUTPUT_NAME "pcm"
       EXPORT_NAME "pcm"
+      PCMSolver_PYMOD "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}"
     )
+  set_property(TARGET pcm-shared APPEND PROPERTY EXPORT_PROPERTIES "${export_properties}")
   install(
     TARGETS
       pcm-shared
@@ -105,7 +112,9 @@ if(NOT SHARED_LIBRARY_ONLY)
     PROPERTIES
        OUTPUT_NAME "pcm"
        EXPORT_NAME "pcm"
+      PCMSolver_PYMOD "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}"
     )
+  set_property(TARGET pcm-static APPEND PROPERTY EXPORT_PROPERTIES "${export_properties}")
   install(
     TARGETS
       pcm-static
@@ -119,8 +128,10 @@ endif()
 
 if(STATIC_LIBRARY_ONLY)
   add_library(PCMSolver ALIAS pcm-static)
+  add_library(PCMSolver::pcm ALIAS pcm-static)
 else()
   add_library(PCMSolver ALIAS pcm-shared)
+  add_library(PCMSolver::pcm ALIAS pcm-shared)
 endif()
 
 include(GenerateExportHeader)

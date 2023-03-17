@@ -3,6 +3,7 @@
 
 # set minimum cmake version
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
+cmake_policy(SET CMP0053 NEW)
 
 # project name
 project(PCMSolver LANGUAGES CXX C Fortran)

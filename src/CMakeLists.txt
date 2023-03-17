@@ -195,7 +195,7 @@ if(NOT STATIC_LIBRARY_ONLY)
     EXPORT
       shared_interface
     FILE
-      "PCMSolverTargets-shared"
+      "PCMSolverTargets-shared.cmake"
     NAMESPACE
       "PCMSolver::"
     DESTINATION
@@ -208,7 +208,7 @@ if(NOT SHARED_LIBRARY_ONLY)
     EXPORT
       static_interface
     FILE
-      "PCMSolverTargets-static"
+      "PCMSolverTargets-static.cmake"
     NAMESPACE
       "PCMSolver::"
     DESTINATION

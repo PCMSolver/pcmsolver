@@ -38,7 +38,7 @@ install(
   EXPORT
     executable_interface
   FILE
-    "PCMSolverTargets-exe"
+    "PCMSolverTargets-exe.cmake"
   NAMESPACE
     "PCMSolver::"
   DESTINATION

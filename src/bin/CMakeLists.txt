@@ -30,12 +30,14 @@ install(
   TARGETS
     run_pcm
   EXPORT
-    "PCMSolverTargets-exe"
+    executable_interface
   RUNTIME DESTINATION
     ${CMAKE_INSTALL_BINDIR}
   )
 install(
   EXPORT
+    executable_interface
+  FILE
     "PCMSolverTargets-exe"
   NAMESPACE
     "PCMSolver::"

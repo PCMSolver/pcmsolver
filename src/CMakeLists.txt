@@ -81,11 +81,15 @@ if(NOT STATIC_LIBRARY_ONLY)
     TARGETS
       pcm-shared
     EXPORT
-      "PCMSolverTargets-shared"
+      shared_interface
     RUNTIME DESTINATION
+      ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION
       ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION
       ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION
+      ${CMAKE_INSTALL_INCLUDEDIR}
     )
   add_dependencies(pcm-shared generate-config-hpp)
 endif()
@@ -121,9 +125,15 @@ if(NOT SHARED_LIBRARY_ONLY)
     TARGETS
       pcm-static
     EXPORT
-      "PCMSolverTargets-static"
+      static_interface
+    RUNTIME DESTINATION
+      ${CMAKE_INSTALL_BINDIR}
     ARCHIVE DESTINATION
       ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION
+      ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION
+      ${CMAKE_INSTALL_INCLUDEDIR}
     )
   add_dependencies(pcm-static generate-config-hpp)
 endif()
@@ -183,6 +193,8 @@ install(
 if(NOT STATIC_LIBRARY_ONLY)
   install(
     EXPORT
+      shared_interface
+    FILE
       "PCMSolverTargets-shared"
     NAMESPACE
       "PCMSolver::"
@@ -194,6 +206,8 @@ endif()
 if(NOT SHARED_LIBRARY_ONLY)
   install(
     EXPORT
+      static_interface
+    FILE
       "PCMSolverTargets-static"
     NAMESPACE
       "PCMSolver::"

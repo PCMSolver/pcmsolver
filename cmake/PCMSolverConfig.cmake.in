@@ -25,7 +25,7 @@
 #
 # ::
 #
-#   PCMSolver_VERSION - Libint2 version in format Major.Minor.Release
+#   PCMSolver_VERSION - PCMSolver version in format Major.Minor.Release
 #   PCMSolver_PYMOD - path to PCMSolver python modules
 #
 #   get_property(_ver TARGET PCMSolver::pcm PROPERTY PCMSolver_VERSION)

@@ -23,18 +23,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
 set(CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}")
 
 if(NOT DEFINED PYMOD_INSTALL_LIBDIR)
-  message(STATUS "Setting (unspecified) option PYMOD_INSTALL_LIBDIR: python")
-  set(PYMOD_INSTALL_LIBDIR "python" CACHE STRING "Location within CMAKE_INSTALL_LIBDIR to which Python modules are installed" FORCE)
+  message(STATUS "Setting (unspecified) option PYMOD_INSTALL_LIBDIR: /python")
+  set(PYMOD_INSTALL_LIBDIR "/python" CACHE STRING "Location within CMAKE_INSTALL_LIBDIR to which Python modules are installed" FORCE)
 else()
-  message(STATUS "Setting option PYMOD_INSTALL_LIBDIR: ${PYMOD_INSTALL_LIBDIR}")
+  message(STATUS "Setting option PYMOD_INSTALL_LIBDIR (should start with /): ${PYMOD_INSTALL_LIBDIR}")
   set(PYMOD_INSTALL_LIBDIR "${PYMOD_INSTALL_LIBDIR}" CACHE STRING "Location within CMAKE_INSTALL_LIBDIR to which Python modules are installed" FORCE)
 endif()
-file(TO_NATIVE_PATH "${CMAKE_INSTALL_LIBDIR}/${PYMOD_INSTALL_LIBDIR}/pcmsolver" PYMOD_INSTALL_FULLDIR)
+file(TO_NATIVE_PATH "${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}/pcmsolver" PYMOD_INSTALL_FULLDIR)
 
 add_custom_target(update_version
   ALL
   COMMAND
-    ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/versioner.py
+    ${Python_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/versioner.py
         --metaout ${CMAKE_CURRENT_BINARY_DIR}/metadata.py
         --cmakeout ${CMAKE_CURRENT_BINARY_DIR}/metadata.cmake
         --headerout ${CMAKE_CURRENT_BINARY_DIR}/include/VersionInfo.hpp

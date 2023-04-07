@@ -22,7 +22,7 @@ add_test(
   NAME
     parser_script-diffuse
   COMMAND
-    ${PYTHON_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
+    ${Python_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
      parsed = parse_pcm_input('diffuse.inp', write_out=True)"
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -46,7 +46,7 @@ add_test(
   NAME
     parser_script-multipoles
   COMMAND
-    ${PYTHON_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
+    ${Python_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
      parsed = parse_pcm_input('multipoles.inp', write_out=True)"
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -70,7 +70,7 @@ add_test(
   NAME
     parser_script-restart
   COMMAND
-    ${PYTHON_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
+    ${Python_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
      parsed = parse_pcm_input('restart.inp', write_out=True)"
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -95,7 +95,7 @@ add_test(
   NAME
     parser_script-cpcm
   COMMAND
-    ${PYTHON_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
+    ${Python_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
      parsed = parse_pcm_input('cpcm.inp', write_out=True)"
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -119,7 +119,7 @@ add_test(
   NAME
     parser_script-sharp
   COMMAND
-    ${PYTHON_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
+    ${Python_EXECUTABLE} "-c" "from pcmsolver import parse_pcm_input; \
      parsed = parse_pcm_input('sharp.inp', write_out=True)"
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}

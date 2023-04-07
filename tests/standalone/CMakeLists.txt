@@ -14,7 +14,7 @@ add_test(
   NAME
     pcmsolver_standalone
   COMMAND
-    ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
+    ${Python_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
       --exe=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
       --inp=standalone.pcm
   WORKING_DIRECTORY
@@ -30,7 +30,7 @@ add_test(
   NAME
     pcmsolver_standalone-atoms
   COMMAND
-    ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
+    ${Python_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
       --exe=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
       --inp=standalone_atoms.pcm
   WORKING_DIRECTORY
@@ -46,7 +46,7 @@ add_test(
   NAME
     pcmsolver_standalone-explicit
   COMMAND
-    ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
+    ${Python_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
       --exe=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
       --inp=standalone_explicit.pcm
   WORKING_DIRECTORY
@@ -63,7 +63,7 @@ add_test(
   NAME
   pcmsolver_pNA-SPD-failure
   COMMAND
-    ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
+    ${Python_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
       --exe=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
       --inp=pNA_SPD_failure.pcm
   WORKING_DIRECTORY
@@ -81,7 +81,7 @@ add_test(
   NAME
     pcmsolver_biphenyl-gauss-failure
   COMMAND
-    ${PYTHON_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
+    ${Python_EXECUTABLE} ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/go_pcm.py
       --exe=${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
       --inp=biphenyl_gauss_failure.pcm
   WORKING_DIRECTORY

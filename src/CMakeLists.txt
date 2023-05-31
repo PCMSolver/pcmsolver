@@ -42,7 +42,7 @@ add_subdirectory(solver)
 add_subdirectory(utils)
 
 set(export_properties
-  "PCMSolver_VERSION"
+  #"PCMSolver_VERSION" (can't be added b/c not available at configure-time)
   "PCMSolver_PYMOD"
   )
 

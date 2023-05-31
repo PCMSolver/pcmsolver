@@ -1,6 +1,7 @@
 option(ENABLE_LOGGER "Enable logger" OFF)
 option(ENABLE_TIMER "Enable timer" ON)
 option(BUILD_STANDALONE "Enable build of standalone executables" ON)
+option_with_default(PCMSolver_INSTALL_CMAKEDIR "Directory to which PCMSolver CMake config files installed." share/cmake/${PROJECT_NAME})
 
 # Add definitions
 if(ENABLE_TIMER)
@@ -18,9 +19,8 @@ include(GNUInstallDirs)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-# Hardcode to share, rather than use CMAKE_INSTALL_DATAROOTDIR as the latter
-# might resolve to a place not recognized by CMake
-set(CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}")
+
+set(CMAKECONFIG_INSTALL_DIR "${PCMSolver_INSTALL_CMAKEDIR}")
 
 if(NOT DEFINED PYMOD_INSTALL_LIBDIR)
   message(STATUS "Setting (unspecified) option PYMOD_INSTALL_LIBDIR: /python")

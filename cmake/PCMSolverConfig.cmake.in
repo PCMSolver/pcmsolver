@@ -7,7 +7,7 @@
 # ::
 #
 #   PCMSolver_FOUND - true if PCMSolver and all required components found on the system
-#   PCMSolver_VERSION - PCMSolver version in format Major.Minor.Release. Prefer target variable.
+#   PCMSolver_VERSION - PCMSolver version in format Major.Minor.Release.
 #   PCMSolver_INCLUDE_DIRS - Directory where the PCMSolver/pcmsolver.h,
 #                            PCMSolver/PCMInput.h headers and PCMSolver/pcmsolver.f90 source file are located.
 #                            Prefer targets.
@@ -25,10 +25,10 @@
 #
 # ::
 #
-#   PCMSolver_VERSION - PCMSolver version in format Major.Minor.Release
+#   PCMSolver_VERSION - (DNE) PCMSolver version in format Major.Minor.Release . Does not exist b/c computed at compile-time.
 #   PCMSolver_PYMOD - path to PCMSolver python modules
 #
-#   get_property(_ver TARGET PCMSolver::pcm PROPERTY PCMSolver_VERSION)
+#   get_property(_pym TARGET PCMSolver::pcm PROPERTY PCMSolver_PYMOD)
 #
 #
 # Available components: shared static exe
@@ -143,7 +143,7 @@ if(NOT TARGET ${pcm}::pcm)
 
         get_property(_ver TARGET ${pcm}::pcm PROPERTY PCMSolver_VERSION)
         get_property(_pym TARGET ${pcm}::pcm PROPERTY PCMSolver_PYMOD)
-        message(VERBOSE "${pcm}::pcm.${pcm}_VERSION ${_ver}")
+        message(VERBOSE "${pcm}::pcm.${pcm}_VERSION (DNE) ${_ver}")
         message(VERBOSE "${pcm}::pcm.${pcm}_PYMOD   ${_pym}")
 
         message(VERBOSE "${pcm}_FOUND                  ${${pcm}_FOUND}")

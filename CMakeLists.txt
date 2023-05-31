@@ -2,7 +2,8 @@
 # Copyright (c) 2015-2018 by Radovan Bast, Roberto Di Remigio, Jonas Juselius, and contributors.
 
 # set minimum cmake version
-cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+cmake_policy(SET CMP0053 NEW)
 
 # project name
 project(PCMSolver LANGUAGES CXX C Fortran)
@@ -71,7 +72,8 @@ include(gperftools)
 include(autocmake_int64)
 include(autocmake_omp)
 include(autocmake_safeguards)
-include(autocmake_python_interpreter)
+#include(autocmake_python_interpreter)
+find_package(Python REQUIRED COMPONENTS Interpreter)
 include(pcmsolver)
 include(api)
 include(autocmake_boost)

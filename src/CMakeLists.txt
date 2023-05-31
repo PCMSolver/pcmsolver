@@ -41,6 +41,11 @@ add_subdirectory(pedra)
 add_subdirectory(solver)
 add_subdirectory(utils)
 
+set(export_properties
+  #"PCMSolver_VERSION" (can't be added b/c not available at configure-time)
+  "PCMSolver_PYMOD"
+  )
+
 if(NOT STATIC_LIBRARY_ONLY)
   add_library(pcm-shared SHARED $<TARGET_OBJECTS:pcm-objlib>)
   target_compile_definitions(pcm-shared
@@ -53,6 +58,7 @@ if(NOT STATIC_LIBRARY_ONLY)
     INTERFACE
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/api>
       $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
@@ -68,16 +74,22 @@ if(NOT STATIC_LIBRARY_ONLY)
       MACOSX_RPATH ON
       OUTPUT_NAME "pcm"
       EXPORT_NAME "pcm"
+      PCMSolver_PYMOD "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}"
     )
+  set_property(TARGET pcm-shared APPEND PROPERTY EXPORT_PROPERTIES "${export_properties}")
   install(
     TARGETS
       pcm-shared
     EXPORT
-      "PCMSolverTargets-shared"
+      shared_interface
     RUNTIME DESTINATION
+      ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION
       ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION
       ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION
+      ${CMAKE_INSTALL_INCLUDEDIR}
     )
   add_dependencies(pcm-shared generate-config-hpp)
 endif()
@@ -94,6 +106,7 @@ if(NOT SHARED_LIBRARY_ONLY)
     INTERFACE
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/api>
       $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
@@ -105,22 +118,32 @@ if(NOT SHARED_LIBRARY_ONLY)
     PROPERTIES
        OUTPUT_NAME "pcm"
        EXPORT_NAME "pcm"
+      PCMSolver_PYMOD "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${PYMOD_INSTALL_LIBDIR}"
     )
+  set_property(TARGET pcm-static APPEND PROPERTY EXPORT_PROPERTIES "${export_properties}")
   install(
     TARGETS
       pcm-static
     EXPORT
-      "PCMSolverTargets-static"
+      static_interface
+    RUNTIME DESTINATION
+      ${CMAKE_INSTALL_BINDIR}
     ARCHIVE DESTINATION
       ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION
+      ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION
+      ${CMAKE_INSTALL_INCLUDEDIR}
     )
   add_dependencies(pcm-static generate-config-hpp)
 endif()
 
 if(STATIC_LIBRARY_ONLY)
   add_library(PCMSolver ALIAS pcm-static)
+  add_library(PCMSolver::pcm ALIAS pcm-static)
 else()
   add_library(PCMSolver ALIAS pcm-shared)
+  add_library(PCMSolver::pcm ALIAS pcm-shared)
 endif()
 
 include(GenerateExportHeader)
@@ -170,7 +193,9 @@ install(
 if(NOT STATIC_LIBRARY_ONLY)
   install(
     EXPORT
-      "PCMSolverTargets-shared"
+      shared_interface
+    FILE
+      "PCMSolverTargets-shared.cmake"
     NAMESPACE
       "PCMSolver::"
     DESTINATION
@@ -181,7 +206,9 @@ endif()
 if(NOT SHARED_LIBRARY_ONLY)
   install(
     EXPORT
-      "PCMSolverTargets-static"
+      static_interface
+    FILE
+      "PCMSolverTargets-static.cmake"
     NAMESPACE
       "PCMSolver::"
     DESTINATION

@@ -44,7 +44,6 @@ import os
 from copy import deepcopy
 import re
 
-from .getkw import Section, GetkwParser
 from .pcmdata import CODATAdict, allowedSolvents
 
 isAngstrom = False
@@ -80,6 +79,9 @@ def parse_pcm_input(inputFile, write_out=False):
 
     ...
     """
+    from importlib import reload
+    from . import getkw
+
     # Set up valid keywords.
     valid_keywords = setup_keywords()
 
@@ -88,7 +90,8 @@ def parse_pcm_input(inputFile, write_out=False):
 
     # Set up a GetKw object and let it parse our input:
     # here is where the magic happens.
-    inkw = GetkwParser().parseFile(uppercased)
+    getkw = reload(getkw)
+    inkw = getkw.GetkwParser().parseFile(uppercased)
     # Remove temporary file
     os.remove(uppercased)
     inkw.sanitize(valid_keywords)
@@ -153,6 +156,8 @@ def setup_keywords():
     """
     Sets up sections, keywords and respective callback functions.
     """
+    from .getkw import Section
+
     # Top-level section
     top = Section('toplevel', callback=verify_top)
     top.set_status(True)
@@ -470,7 +475,7 @@ def verify_medium(section):
         sys.exit(1)
 
     integrator = section.get('DIAGONALINTEGRATOR')
-    if (integrator.get() is not 'COLLOCATION'):
+    if (integrator.get() != 'COLLOCATION'):
         print('Only the collocation integrator is available')
         sys.exit(1)
 

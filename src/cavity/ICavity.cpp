@@ -57,6 +57,7 @@ ICavity::ICavity(const Molecule & molec)
 }
 
 void ICavity::saveCavity(const std::string & fname) {
+
   // Write everything in a single .npz binary file
   unsigned int dim = static_cast<unsigned int>(nElements_);
   // Write the number of elements, it will be used to check sanity of the save/load

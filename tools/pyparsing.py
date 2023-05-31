@@ -795,7 +795,7 @@ class ParseResults(object):
         return dir(super(ParseResults, self)) + list(self.keys())
 
 
-collections.MutableMapping.register(ParseResults)
+collections.abc.MutableMapping.register(ParseResults)
 
 
 def col(loc, strg):
@@ -2092,7 +2092,7 @@ class QuotedString(Token):
             if isinstance(ret, basestring):
                 # replace escaped characters
                 if self.escChar:
-                    ret = re.sub(self.escCharReplacePattern, "\g<1>", ret)
+                    ret = re.sub(self.escCharReplacePattern, r"\g<1>", ret)
 
                 # replace escaped quotes
                 if self.escQuote:
@@ -2386,7 +2386,7 @@ class ParseExpression(ParserElement):
 
         if isinstance(exprs, basestring):
             self.exprs = [Literal(exprs)]
-        elif isinstance(exprs, collections.Sequence):
+        elif isinstance(exprs, collections.abc.Sequence):
             # if sequence of strings provided, wrap with Literal
             if all(isinstance(expr, basestring) for expr in exprs):
                 exprs = map(Literal, exprs)
@@ -3439,7 +3439,7 @@ def oneOf(strs, caseless=False, useRegex=True):
     symbols = []
     if isinstance(strs, basestring):
         symbols = strs.split()
-    elif isinstance(strs, collections.Sequence):
+    elif isinstance(strs, collections.abc.Sequence):
         symbols = list(strs[:])
     elif isinstance(strs, _generatorType):
         symbols = list(strs)

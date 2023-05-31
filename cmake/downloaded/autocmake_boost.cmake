@@ -104,6 +104,7 @@ else()
     # Read from cache, needed for rebuilds
     set(BOOST_INCLUDEDIR ${Boost_INCLUDE_DIR})
     set(BOOST_LIBRARYDIR ${Boost_LIBRARY_DIR})
+    set(Boost_VERBOSE ON)
     find_package(Boost ${BOOST_MINIMUM_REQUIRED} COMPONENTS "${BOOST_COMPONENTS_REQUIRED}")
     if(NOT Boost_FOUND)
         set(BUILD_CUSTOM_BOOST TRUE)

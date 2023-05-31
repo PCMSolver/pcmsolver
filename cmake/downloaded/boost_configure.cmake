@@ -7,7 +7,7 @@ add_custom_command(
     OUTPUT ${CUSTOM_BOOST_LOCATION}/boost.configured
     COMMAND ./bootstrap.sh --with-toolset=${toolset}
             ${select_libraries}
-	    --with-python=${PYTHON_EXECUTABLE}
+	    --with-python=${Python_EXECUTABLE}
         --prefix=${CUSTOM_BOOST_LOCATION} 1> ${CUSTOM_BOOST_LOCATION}/boost.configured.log 2> ${CUSTOM_BOOST_LOCATION}/boost.configured.err
     COMMAND ${CMAKE_COMMAND} -E touch ${CUSTOM_BOOST_LOCATION}/boost.configured
     WORKING_DIRECTORY ${BOOST_BUILD_DIR}

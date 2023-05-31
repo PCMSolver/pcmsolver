@@ -29,7 +29,7 @@ Options:
   --gperf                                Enable profiling with gperftools [default: False].
   --int64                                Enable 64bit integers [default: False].
   --omp                                  Enable OpenMP parallelization [default: False].
-  --python=<PYTHON_INTERPRETER>          The Python interpreter (development version) to use. [default: ''].
+  --python=<Python_EXECUTABLE>           The Python interpreter (development version) to use. [default: ''].
   --fbindings=<TEST_Fortran_API>         Enable testing of Fortran 90 API bindings <ON/OFF> [default: ON].
   --boost-headers=<BOOST_INCLUDEDIR>     Include directories for Boost [default: ''].
   --boost-libraries=<BOOST_LIBRARYDIR>   Library directories for Boost [default: ''].
@@ -65,7 +65,7 @@ def gen_cmake_command(options, arguments):
     command.append('-DENABLE_GPERFTOOLS={0}'.format(arguments['--gperf']))
     command.append('-DENABLE_64BIT_INTEGERS={0}'.format(arguments['--int64']))
     command.append('-DENABLE_OPENMP={0}'.format(arguments['--omp']))
-    command.append('-DPYTHON_INTERPRETER="{0}"'.format(arguments['--python']))
+    command.append('-DPython_EXECUTABLE="{0}"'.format(arguments['--python']))
     command.append('-DTEST_Fortran_API={0}'.format(arguments['--fbindings']))
     command.append('-DBOOST_INCLUDEDIR="{0}"'.format(arguments['--boost-headers']))
     command.append('-DBOOST_LIBRARYDIR="{0}"'.format(arguments['--boost-libraries']))

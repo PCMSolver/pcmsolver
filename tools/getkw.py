@@ -738,9 +738,9 @@ class GetkwParser:
         dmark = Literal('$').suppress()
         end_data = Literal('$end').suppress()
         prtable = alphanums + r'!$%&*+-./<>?@^_|~'
-        ival = Regex('[-]?\d+')
-        dval = Regex('-?\d+\.\d*([eE]?[+-]?\d+)?')
-        lval = Regex('([Yy]es|[Nn]o|[Tt]rue|[Ff]alse|[Oo]n|[Oo]ff)')
+        ival = Regex(r'[-]?\d+')
+        dval = Regex(r'-?\d+\.\d*([eE]?[+-]?\d+)?')
+        lval = Regex(r'([Yy]es|[Nn]o|[Tt]rue|[Ff]alse|[Oo]n|[Oo]ff)')
 
         # Helper definitions
 

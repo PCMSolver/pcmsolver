@@ -77,7 +77,6 @@ SCENARIO(
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -104,7 +103,6 @@ SCENARIO(
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -136,7 +134,6 @@ SCENARIO(
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -168,7 +165,6 @@ SCENARIO(
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -200,7 +196,6 @@ SCENARIO(
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -232,7 +227,6 @@ SCENARIO(
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -264,7 +258,6 @@ SCENARIO(
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();
@@ -296,7 +289,6 @@ SCENARIO(
       CPCMSolver solver(symm, correction);
       solver.buildSystemMatrix(cavity, gf_i, gf_o, S);
       THEN("the total apparent surface charge is") {
-        int irr_size = cavity.irreducible_size();
         Eigen::VectorXd fake_asc = Eigen::VectorXd::Zero(size);
         fake_asc = solver.computeCharge(fake_mep);
         int nr_irrep = cavity.pointGroup().nrIrrep();

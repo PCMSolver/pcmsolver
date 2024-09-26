@@ -107,7 +107,6 @@ Section::~Section() {
       delete key;
       continue;
     }
-    THROW_GETKW("Error! Unknown key type!");
   }
 }
 

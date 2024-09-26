@@ -23,13 +23,17 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         static: ["--static", ""]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: 
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Cache conda
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       env:
         CACHE_NUMBER: 0  # Increase this value to reset cache if .github/pcmsolver-gha.yml has not changed
       with:
@@ -45,13 +49,10 @@ jobs:
           environment-file: .github/pcmsolver-gha.yml
           channel-priority: true
           python-version: ${{ matrix.python-version }}
-          use-only-tar-bz2: true  # IMPORTANT: This needs to be set for caching to work properly!
 
     - name: Configure
       shell: bash -l {0}
       run: |
-        export CFLAGS="-isystem /usr/share/miniconda/envs/pcmsolver-gha/include"
-        export CXXFLAGS="-isystem /usr/share/miniconda/envs/pcmsolver-gha/include"
         python ./setup.py --type=$BUILD_TYPE ${{ matrix.static }} --generator=Ninja --prefix=$GITHUB_WORKSPACE/Software/PCMSolver build
         
     - name: Build

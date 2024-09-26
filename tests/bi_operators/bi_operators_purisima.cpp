@@ -49,7 +49,7 @@ SCENARIO(
     "[bi_operators][bi_operators_purisima]") {
   GIVEN("A GePol cavity for a single sphere in the origin") {
     double radius = 1.44;
-    Molecule molec = dummy<0>(1.44 / bohrToAngstrom());
+    Molecule molec = dummy<0>(radius / bohrToAngstrom());
     double area = 10.0;
     GePolCavity cavity = GePolCavity(molec, area, 0.0, 100.0);
     Eigen::MatrixXd results = Eigen::MatrixXd::Zero(cavity.size(), cavity.size());
